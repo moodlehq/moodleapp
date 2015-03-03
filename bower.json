@@ -3,6 +3,7 @@
   "private": "true",
   "devDependencies": {
     "ionic": "driftyco/ionic-bower#master",
-    "ydn.db": "~1.0.3"
+    "ydn.db": "~1.0.3",
+    "ngCordova": "~0.1.12-alpha"
   }
 }
