@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Test for IndexedDB keys and values listing</title>
+</head>
+<body>
+
+    <script src="../../../closure-library/closure/goog/base.js"></script>
+    <script src="../../../closure-library/closure/goog/deps.js"></script>
+    <script type="text/javascript" src="../../../ydn-base/src/deps.js"></script>
+    <script type="text/javascript" src="../../src/deps.js"></script>
+    <script>
+	    goog.require('goog.testing.ContinuationTestCase');
+	    goog.require('goog.testing.jsunit');
+
+      options = {mechanisms: ['indexeddb']};
+        goog.require('ydn.db.Storage');
+    </script>
+	<script type="text/javascript" src="list_test.js"></script>
+
+</body>
+</html>

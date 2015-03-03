@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>NoSQL demo</title>
+    <link href="../../../ydn-dev/public/demo/ydn-db/nosql/app.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<script src="../../../closure-library/closure/goog/base.js"></script>
+<script src="../../../closure-library/closure/goog/deps.js"></script>
+<script type="text/javascript" src="../../../ydn-base/src/deps.js"></script>
+<script type="text/javascript" src="../../src/deps.js"></script>
+<script type="text/javascript">
+    goog.require('ydn.db.Storage');
+    goog.require('ydn.testing');
+    goog.require('goog.async.Deferred');
+    goog.require('ydn.db.algo.ZigzagMerge');
+    goog.require('goog.debug.Console');
+    goog.require('goog.debug.LogManager');
+    goog.require('goog.log');
+    goog.require('ydn.db.ValueIterator');
+</script>
+<script type="text/javascript">
+    goog.exportProperty(goog.async.Deferred.prototype, 'done',
+            goog.async.Deferred.prototype.addCallback);
+    goog.exportProperty(goog.async.Deferred.prototype, 'fail',
+            goog.async.Deferred.prototype.addErrback);
+    goog.exportProperty(goog.async.Deferred.prototype, 'then',
+            goog.async.Deferred.prototype.addCallbacks);
+
+
+</script>
+<article class="content">
+    <h2>NoSQL query demonstration application.</h2>
+</article>
+<div id="app-root">
+    <div id="app-menu_bar">
+        <div id="app-menu_bar-gen_author">
+            <span class="menu-title">Create</span>
+            <input title="Number of authors to generate" id="app-menu_bar-gen_author-num_author" value="10000" />
+            <button id="app-menu_bar-gen_author-btn">Generate</button>
+        </div>
+        <div id="app-menu_bar-system">
+            <span class="menu-title">System</span>
+            <select id="app-menu_bar-query-system">
+                <option value="index" selected>Compound index</option>
+                <option value="zigzag">Zigzag merge</option>
+                <!--<option value="hash">Hash merge</option>-->
+            </select>
+        </div>
+        <div id="app-menu_bar-query">
+            <span class="menu-title">Filter</span>
+            <span>License:</span>
+            <select id="app-menu_bar-query-license">
+                <option value="" selected>None</option>
+                <option value="CC">CC</option>
+                <option value="ND">ND</option>
+                <option value="SA">SA</option>
+                <option value="NC">NC</option>
+                <option value="BY">BY</option>
+            </select>
+            <span>Publisher:</span>
+            <select id="app-menu_bar-query-publisher">
+                <option value="" selected>None</option>
+            </select>
+            <span>Topic:</span>
+            <datalist id="app-menu_bar-query-topics-data">
+
+            </datalist>
+            <input type="text" id="app-menu_bar-query-topic" list="app-menu_bar-query-topics-data" />
+            <span>After:</span>
+            <input id="app-menu_bar-query-publish-after"/>
+            <span>Before:</span>
+            <input id="app-menu_bar-query-publish-before"/>
+        </div>
+        <div id="app-menu_bar-sort">
+            <span class="menu-title">Sort</span>
+            <select id="app-menu_bar-query-sort">
+                <option value="" selected>None</option>
+                <option value="title">Title</option>
+                <option value="publish">Publish</option>
+            </select>
+            <select id="app-menu_bar-query-direction">
+                <option value="ASC">Ascending</option>
+                <option value="DES">Descending</option>
+            </select>
+        </div>
+        <div id="app-menu_bar-paging">
+           <span class="menu-title">Paging</span>
+           <button id="app-menu_bar-paging-prev">Prev</button>
+            <span id="app-menu_bar-paging-label"></span>
+           <button id="app-menu_bar-paging-next">Next</button>
+        </div>
+    </div>
+    <div id="app-content">
+
+    </div>
+    <div id="app-status_bar" >
+        <span id="app-status_bar-num_authors" title="Number of authors" class="app-status-box"></span>
+        <span id="app-status_bar-num_articles" title="Number of articles" class="app-status-box"></span>
+
+        <span id="app-status_bar-msg" ></span>
+    </div>
+</div>
+
+
+<script type="text/javascript" src="../../../ydn-dev/public/js/ydn-db/data-seeding.js"></script>
+<script type="text/javascript" src="../../../ydn-dev/public/demo/ydn-db/nosql/generator.js"></script>
+<script type="text/javascript" src="../../../ydn-dev/public/demo/ydn-db/nosql/query_container.js"></script>
+<script type="text/javascript" src="../../../ydn-dev/public/demo/ydn-db/nosql/status_bar.js"></script>
+<script type="text/javascript" src="../../../ydn-dev/public/demo/ydn-db/nosql/app.js"></script>
+<script type="text/javascript">
+    if (false) {
+        var c = new goog.debug.Console();
+        c.setCapturing(true);
+        goog.debug.LogManager.getRoot().setLevel(goog.debug.Logger.Level.WARNING);
+        goog.log.getLogger('ydn.db').setLevel(goog.debug.Logger.Level.FINEST);
+
+    }
+</script>
+</body>
+</html>

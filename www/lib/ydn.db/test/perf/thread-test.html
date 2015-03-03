@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <title>Thread test</title>
+    <script src="../../../closure-library/closure/goog/base.js"></script>
+    <script type="text/javascript" src="../../../ydn-base/src/deps.js"></script>
+    <script type="text/javascript" src="../../src/deps.js"></script>
+    <script>
+        goog.require('ydn.db.Storage');
+        goog.require('ydn.debug');
+    </script>
+    <script type="text/javascript" src="../../src/config/conn.js"></script>
+    <link href="perf.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div>
+
+</div>
+<script type="text/javascript">
+    var schema = {
+        stores: [{
+            name: 'st1',
+            autoIncrement: true
+        }, {
+            name: 'st2',
+            autoIncrement: true
+        }, {
+            name: 'st3',
+            autoIncrement: true
+        }]
+    };
+    var db = new ydn.db.Storage('thread-test-1', schema);
+    ydn.debug.log('ydn.db', 'finest');
+
+    /**
+     * Return a random store name.
+     * @return {string} a store name.
+     */
+    var getRandStore = function() {
+        var idx = (schema.stores.length * Math.random()) | 0;
+        return schema.stores[idx].name;
+    };
+
+    var data = {foo: 'bar'};
+    var p_s_th = db.branch('multi', false);
+
+    for (var i = 0; i < 5; i++) {
+        var req = p_s_th.put('st1', data);
+        console.log(req.toJSON());
+        req.always(function(x) {
+            console.log(this.toJSON());
+        }, req);
+    }
+</script>
+</body>
+</html>

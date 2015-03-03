@@ -2,6 +2,7 @@
   "name": "mm2",
   "private": "true",
   "devDependencies": {
-    "ionic": "driftyco/ionic-bower#master"
+    "ionic": "driftyco/ionic-bower#master",
+    "ydn.db": "~1.0.3"
   }
 }

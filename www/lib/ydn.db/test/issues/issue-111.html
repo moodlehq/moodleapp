@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>issue 111</title>
+</head>
+<body>
+<script src="http://dev.yathit.com/jsc/ydn.db.js"></script>
+<script>
+
+    var db = new ydn.db.Storage('wb-db', {
+        stores: [
+            {
+                name: 'wordrecords',
+                keyPath: 't'
+            }
+        ]
+    });
+    db.values('wordrecords', null)
+            .then(function (values) {
+                console.log(values);
+                return db.get('wordrecords', 'xxx');
+            })
+            .fail(function (e) {
+                callback(e);
+            });
+
+</script>
+</body>
+</html>

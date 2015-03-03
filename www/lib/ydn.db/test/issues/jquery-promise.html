@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JQuery promise</title>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script type="text/javascript" src="http://dev.yathit.com/jsc/ydn.db-dev.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+        var schema   = {
+            stores: [
+                {
+                    name: 'items',
+                    keyPath: 'id'
+                },
+                {
+                    name: 'config',
+                    keyPath: 'id'
+                }
+            ]
+        };
+
+        var db = new ydn.db.Storage('initial', schema);
+        var items = [{
+            id: 1,
+            itemId: 'GTA5'
+        }, {
+            id: 2,
+            itemId: 'Simcity'
+        }];
+        var config = {
+            id: 1,
+            currency: 'USD'
+        };
+        db.put('items', items);
+        db.put('config', config);
+        var wrap = function(req) {
+            req.promise = function() {
+                return req;
+            };
+            return req;
+        };
+
+        var req = $.when(wrap(db.count('items')),wrap(db.values('items')),wrap(db.get('config', 1)));
+        var disp = function(s) {
+            var e = document.createElement('div');
+            e.textContent = s;
+            document.body.appendChild(e);
+        };
+        req.done(function(count,r,config) {
+            var currency = config.currency;
+            if(count > 0){
+                var n = r.length;
+                for (var i = 0; i < n; i++) {
+                    var id    = r[i].id;
+                    var itemId = r[i].itemId;
+                    disp('ID: '+id+' itemID: '+itemId+' Currency: '+currency);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

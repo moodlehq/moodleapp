@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<AccessControlList>
+    <Entries>
+        <Entry>
+            <Scope type="AllUsers"/>
+            <Permission>
+                READ
+            </Permission>
+        </Entry>
+
+        <Entry>
+            <Entry>
+                <Scope type="AllAuthenticatedUsers"/>
+                <Permission>
+                    WRITE
+                </Permission>
+            </Entry>
+        </Entry>
+    </Entries>
+</AccessControlList>
+
