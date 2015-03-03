@@ -1,0 +1,45 @@
+{
+  "name": "ionic",
+  "codename": "magnesium-mongoose",
+  "homepage": "https://github.com/driftyco/ionic",
+  "authors": [
+    "Max Lynch <max@drifty.com>",
+    "Adam Bradley <adam@drifty.com>",
+    "Ben Sperry <ben@drifty.com>"
+  ],
+  "description": "Advanced HTML5 hybrid mobile app development framework.",
+  "main": [
+    "css/ionic.css",
+    "fonts/*",
+    "js/ionic.js",
+    "js/ionic-angular.js"
+  ],
+  "keywords": [
+    "mobile",
+    "html5",
+    "ionic",
+    "cordova",
+    "phonegap",
+    "trigger",
+    "triggerio",
+    "angularjs",
+    "angular"
+  ],
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "angular": "1.3.6",
+    "angular-animate": "1.3.6",
+    "angular-sanitize": "1.3.6",
+    "angular-ui-router": "0.2.13"
+  },
+  "_release": "7679a9d8b6",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "7679a9d8b69f33f4b71d25498f5f18b18d3d61fd"
+  },
+  "_source": "git://github.com/driftyco/ionic-bower.git",
+  "_target": "master",
+  "_originalSource": "driftyco/ionic-bower"
+}
