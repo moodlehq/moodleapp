@@ -18,10 +18,10 @@ angular.module('mm', ['ionic'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
-    if (window.cordova && window.cordova.plugins.Keyboard) {
+    if(window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
       cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
     }
-    if (window.StatusBar) {
+    if(window.StatusBar) {
       StatusBar.styleDefault();
     }
   });
