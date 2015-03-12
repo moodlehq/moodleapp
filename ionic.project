@@ -2,6 +2,7 @@
   "name": "mm2",
   "app_id": "",
   "gulpStartupTasks": [
+    "build",
     "sass",
     "watch"
   ],
