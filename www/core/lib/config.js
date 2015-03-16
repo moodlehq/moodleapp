@@ -14,11 +14,11 @@
 
 angular.module('mm.core')
 
-.factory('$mmConfig', function($http, $q) {
+.factory('$mmConfig', function($http, $q, $mmApp) {
 
-    var store = window.sessionStorage;
-    var self = {};
-    self.config = {};
+    var self = {
+        config: {}
+    };
 
     self.initConfig = function() {
 
@@ -30,32 +30,36 @@ angular.module('mm.core')
             return deferred.promise;
         }
 
-        $http.get('config.json')
-            .then(function(response) {
-                self.config = response.data;
-                deferred.resolve();
-            }, function(response) {
-                deferred.reject();
-            });
+        $http.get('config.json').then(function(response) {
+            var data = response.data;
+            for(var name in data) {
+                self.set(name, data[name]);
+            }
+            deferred.resolve();
+        }, deferred.reject);
 
         return deferred.promise;
     };
 
     self.get = function(name) {
+
+        var deferred = $q.defer();
+
         var value = self.config[name];
-        if(typeof(value) == 'undefined' ){
-            value = store[name];
-            if(typeof(value) == 'undefined' || value == null) {
-                return undefined;
-            }
-            return JSON.parse( value );
+
+        if (typeof(value) == 'undefined' ){
+            $mmApp.getDB().get('settings', name).then(deferred.resolve, deferred.reject);
         }
-        return value;
+        else {
+            deferred.resolve(value);
+        }
+
+        return deferred.promise;
     };
 
     self.set = function(name, value) {
         self.config[name] = value;
-        store[name] = JSON.stringify(value);
+        $mmApp.getDB().insert('settings', {name: name, value: value});
     };
 
     return self;
