@@ -1,65 +1,74 @@
+// (C) Copyright 2015 Martin Dougiamas
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 angular.module('mm.core')
 
-.factory('$mmWS', function($http, $q, $injector) {
-
-    var deprecatedFunctions = {
-        "moodle_webservice_get_siteinfo": "core_webservice_get_site_info",
-        "moodle_enrol_get_users_courses": "core_enrol_get_users_courses",
-        "moodle_notes_create_notes": "core_notes_create_notes",
-        "moodle_message_send_instantmessages": "core_message_send_instant_messages",
-        "moodle_user_get_users_by_courseid": "core_enrol_get_enrolled_users",
-        "moodle_user_get_course_participants_by_id": "core_user_get_course_user_profiles",
-    };
+/**
+ * Web service module.
+ *
+ * @module mm.core
+ * @ngdoc service
+ * @name $mmWS
+ */
+.factory('$mmWS', function($http, $q, $log) {
 
     var self = {};
 
     /**
      * A wrapper function for a moodle WebService call.
      *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmWS#call
      * @param {string} method The WebService method to be called.
      * @param {Object} data Arguments to pass to the method.
-     * @param {Object} preSets Extra settings
-     *      cache For avoid using caching
-     *      sync For indicate that is a call in a sync process
-     *      silently For not raising errors.
+     * @param {Object} preSets Extra settings and information.
+     *                    - siteurl string The site URL.
+     *                    - wstoken string The Webservice token.
+     *                    - wsfunctions array List of functions available on the site.
+     *                    - responseExpected boolean (false) Raise an error if response is null.
+     *                    - getFromCache boolean (true) Use the cache when possible.
+     *                    - saveToCache boolean (true) Save the call results to the cache.
+     *                    - sync boolean (false) To indicate that is a call in a sync process
+     *                    - omitExpires boolean (false) Ignore cache expiry.
      */
-    self.moodleWSCall = function(method, data, preSets) {
+    self.call = function(method, data, preSets) {
 
-        var deferred = $q.defer();
+        var deferred = $q.defer(),
+            siteurl;
 
-        data = self.convertValuesToString(data);
+        data = convertValuesToString(data);
         preSets = self.verifyPresets(preSets);
 
-        if(!preSets) {
+        if (!preSets) {
             deferred.reject("unexpectederror");
             return;
         }
 
-        // TODO: Emulatrd site?
-
-        // Check if is a deprecated function.
-        if (typeof deprecatedFunctions[method] != "undefined") {
-            if (self.wsAvailable(preSets.wsfunctions, deprecatedFunctions[method])) {
-                //MM.log("You are using deprecated Web Services: " + method + " you must replace it with the newer function: " + MM.deprecatedFunctions[method]);
-                // Use the non-deprecated function.
-                method = deprecatedFunctions[method];
-            } else {
-                //MM.log("You are using deprecated Web Services. Your remote site seems to be outdated, consider upgrade it to the latest Moodle version.");
-            }
-        }
+        // TODO: Emulated site?
 
         data.wsfunction = method;
         data.wstoken = preSets.wstoken;
+        siteurl = preSets.siteurl + '/webservice/rest/server.php?moodlewsrestformat=json';
 
-        preSets.siteurl += '/webservice/rest/server.php?moodlewsrestformat=json';
         var ajaxData = data;
 
         // TODO: Sync
         // TODO: Get from cache
         // TODO: Show error if not connected.
-        // TODO: Show loading?
 
-        $http.post(preSets.siteurl, ajaxData).success(function(data) {
+        $http.post(siteurl, ajaxData).success(function(data) {
             // Some moodle web services return null.
             // If the responseExpected value is set then so long as no data
             // is returned, we create a blank object.
@@ -72,20 +81,11 @@ angular.module('mm.core')
                 return;
             }
 
-            if (typeof(data.exception) != 'undefined') {
-                // if (!preSets.silently && preSets.showModalLoading) {
-                //     MM.closeModalLoading();
-                // }
+            if (typeof(data.exception) !== 'undefined') {
                 if (data.errorcode == 'invalidtoken' || data.errorcode == 'accessexception') {
-
+                    // TODO: Send an event to logout the user and refirect to login page.
+                    $log.error("Critical error: " + JSON.stringify(data));
                     deferred.reject('lostconnection');
-
-                    // if (!preSets.silently) {
-                    //     MM.popMessage(MM.lang.s("lostconnection"));
-                    // }
-                    // MM.log("Critical error: " + JSON.stringify(data));
-
-                    // TODO: Send an event to logout the user and refirect to login page
                     return;
                 } else {
                     deferred.reject(data.message);
@@ -94,32 +94,18 @@ angular.module('mm.core')
             }
 
             if (typeof(data.debuginfo) != 'undefined') {
-                // if (!preSets.silently && preSets.showModalLoading) {
-                //     MM.closeModalLoading();
-                // }
                 deferred.reject('Error. ' + data.message);
-                // if (errorCallBack) {
-                //     errorCallBack('Error. ' + data.message);
-                // } else {
-                //     if (!preSets.silently) {
-                //         MM.popErrorMessage('Error. ' + data.message);
-                //     }
-                // }
                 return;
             }
 
-            // MM.log('WS: Data received from WS '+ typeof(data));
+            $log.info('WS: Data received from WS ' + typeof(data));
 
-            // if (typeof(data) == 'object' && typeof(data.length) != 'undefined') {
-            //     MM.log('WS: Data number of elements '+ data.length);
-            // }
+            if (typeof(data) == 'object' && typeof(data.length) != 'undefined') {
+                $log.info('WS: Data number of elements '+ data.length);
+            }
 
             // if (preSets.saveToCache) {
-            //     MM.cache.addWSCall(preSets.siteurl, ajaxData, data);
-            // }
-
-            // if (!preSets.silently && preSets.showModalLoading) {
-            //     MM.closeModalLoading();
+            //     MM.cache.addWSCall(siteurl, ajaxData, data);
             // }
 
             // We pass back a clone of the original object, this may
@@ -127,48 +113,39 @@ angular.module('mm.core')
             deferred.resolve(angular.copy(data));
 
         }).error(function(data) {
-            // MM.closeModalLoading();
             deferred.reject('cannotconnect');
-
-            // var error = MM.lang.s('cannotconnect');
-            // if (xhr.status == 404) {
-            //     error = MM.lang.s('invalidscheme');
-            // }
-            // if (!preSets.silently) {
-            //     MM.popErrorMessage(error);
-            // } else {
-            //     MM.log('WS: error on ' + method + ' error: ' + error);
-            // }
+            return;
         });
 
         return deferred.promise;
     };
 
-    self.verifyPresets = function(preSets) {
-        if (typeof(preSets) == 'undefined' || preSets == null) {
+    /**
+     * Pre-fill the presets.
+     *
+     * @param  {Object} preSets The presets.
+     * @return {Object}         The final presets.
+     */
+     function verifyPresets(preSets) {
+        if (typeof(preSets) === 'undefined' || preSets == null) {
             preSets = {};
         }
-        if (typeof(preSets.getFromCache) == 'undefined') {
+        if (typeof(preSets.getFromCache) === 'undefined') {
             preSets.getFromCache = 1;
         }
-        if (typeof(preSets.saveToCache) == 'undefined') {
+        if (typeof(preSets.saveToCache) === 'undefined') {
             preSets.saveToCache = 1;
         }
-        if (typeof(preSets.sync) == 'undefined') {
+        if (typeof(preSets.sync) === 'undefined') {
             preSets.sync = 0;
         }
-        if (typeof(preSets.silently) == 'undefined') {
-            preSets.silently = false;
-        }
-        if (typeof(preSets.omitExpires) == 'undefined') {
+        if (typeof(preSets.omitExpires) === 'undefined') {
             preSets.omitExpires = false;
         }
-
-        if (typeof(preSets.wstoken) == 'undefined') {
+        if (typeof(preSets.wstoken) === 'undefined') {
             return false;
         }
-
-        if (typeof(preSets.siteurl) == 'undefined') {
+        if (typeof(preSets.siteurl) === 'undefined') {
             return false;
         }
 
@@ -182,38 +159,19 @@ angular.module('mm.core')
      * @param {Object} data The data that needs all the non-object values set to strings.
      * @return {Object} The cleaned object, with multilevel array and objects preserved.
      */
-    self.convertValuesToString = function(data) {
+    function convertValuesToString(data) {
         var result = [];
         if (!angular.isArray(data) && angular.isObject(data)) {
             result = {};
         }
         for (var el in data) {
             if (angular.isObject(data[el])) {
-                result[el] = self.convertValuesToString(data[el]);
+                result[el] = convertValuesToString(data[el]);
             } else {
                 result[el] = data[el] + '';
             }
         }
         return result;
-    };
-
-    /**
-     * Check if a web service is available in the remote Moodle site.
-     *
-     * @return {bool} True if the web service exists (depends on Moodle version)
-     */
-    self.wsAvailable = function(functions, wsName) {
-        if (!functions) {
-            return false;
-        }
-
-        for(var i = 0; i < functions.length; i++) {
-            var f = functions[i];
-            if (f.name == wsName) {
-                return true;
-            }
-        }
-        return false;
     };
 
     return self;
