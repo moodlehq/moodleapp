@@ -1,0 +1,20 @@
+<ion-view view-title="Login">
+  <ion-nav-buttons side="secondary">
+      <button class="button button-icon ion-edit" ng-click="toggleDelete()" ng-show='data.hasSites'></button>
+      <button class="button button-icon ion-plus" ng-click="add()"></button>
+  </ion-nav-buttons>
+  <ion-content>
+      <ion-list ng-repeat="site in sites track by $index" show-delete='data.showDelete'>
+        <ion-item class="item item-thumbnail-left item-remove-animate" ng-click="login($index)">
+          <ion-delete-button class="ion-minus-circled" ng-click='onItemDelete($event, $index)'></ion-delete-button>
+          <img ng-src="{{site.userpictureurl}}">
+          <h2>{{site.fullname | formatText}}</h2>
+          <p>{{site.sitename | formatText}}</p>
+          <p>{{site.siteurl}}</p>
+        </a>
+      </ion-item>
+    </ion-list>
+      {{showDelete | json}}
+  </ion-content>
+</ion-view>
+
