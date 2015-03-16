@@ -12,46 +12,78 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm', ['ionic', 'mm.core'])
-.run(function($ionicPlatform) {
-  $ionicPlatform.ready(function() {
-    if (window.cordova && window.cordova.plugins.Keyboard) {
-      cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-    }
-    if (window.StatusBar) {
-      StatusBar.styleDefault();
-    }
-  });
-})
-
-angular.module('mm.core', []);
-
 angular.module('mm.core')
+
+/**
+ * Web service module.
+ *
+ * @module mm.core
+ * @ngdoc service
+ * @name $mmWS
+ */
 .factory('$mmWS', function($http, $q, $log) {
+
     var self = {};
-        self.call = function(method, data, preSets) {
+
+    /**
+     * A wrapper function for a moodle WebService call.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmWS#call
+     * @param {string} method The WebService method to be called.
+     * @param {Object} data Arguments to pass to the method.
+     * @param {Object} preSets Extra settings and information.
+     *                    - siteurl string The site URL.
+     *                    - wstoken string The Webservice token.
+     *                    - wsfunctions array List of functions available on the site.
+     *                    - responseExpected boolean (false) Raise an error if response is null.
+     *                    - getFromCache boolean (true) Use the cache when possible.
+     *                    - saveToCache boolean (true) Save the call results to the cache.
+     *                    - sync boolean (false) To indicate that is a call in a sync process
+     *                    - omitExpires boolean (false) Ignore cache expiry.
+     */
+    self.call = function(method, data, preSets) {
+
         var deferred = $q.defer(),
             siteurl;
+
         data = convertValuesToString(data);
         preSets = self.verifyPresets(preSets);
+
         if (!preSets) {
             deferred.reject("unexpectederror");
             return;
         }
+
+        // TODO: Emulated site?
+
         data.wsfunction = method;
         data.wstoken = preSets.wstoken;
         siteurl = preSets.siteurl + '/webservice/rest/server.php?moodlewsrestformat=json';
+
         var ajaxData = data;
+
+        // TODO: Sync
+        // TODO: Get from cache
+        // TODO: Show error if not connected.
+
         $http.post(siteurl, ajaxData).success(function(data) {
+            // Some moodle web services return null.
+            // If the responseExpected value is set then so long as no data
+            // is returned, we create a blank object.
             if (!data && !preSets.responseExpected) {
                 data = {};
             }
+
             if (!data) {
                 deferred.reject('cannotconnect');
                 return;
             }
+
             if (typeof(data.exception) !== 'undefined') {
                 if (data.errorcode == 'invalidtoken' || data.errorcode == 'accessexception') {
+                    // TODO: Send an event to logout the user and refirect to login page.
                     $log.error("Critical error: " + JSON.stringify(data));
                     deferred.reject('lostconnection');
                     return;
@@ -60,22 +92,41 @@ angular.module('mm.core')
                     return;
                 }
             }
+
             if (typeof(data.debuginfo) != 'undefined') {
                 deferred.reject('Error. ' + data.message);
                 return;
             }
+
             $log.info('WS: Data received from WS ' + typeof(data));
+
             if (typeof(data) == 'object' && typeof(data.length) != 'undefined') {
                 $log.info('WS: Data number of elements '+ data.length);
             }
+
+            // if (preSets.saveToCache) {
+            //     MM.cache.addWSCall(siteurl, ajaxData, data);
+            // }
+
+            // We pass back a clone of the original object, this may
+            // prevent errors if in the callback the object is modified.
             deferred.resolve(angular.copy(data));
+
         }).error(function(data) {
             deferred.reject('cannotconnect');
             return;
         });
+
         return deferred.promise;
     };
-         function verifyPresets(preSets) {
+
+    /**
+     * Pre-fill the presets.
+     *
+     * @param  {Object} preSets The presets.
+     * @return {Object}         The final presets.
+     */
+     function verifyPresets(preSets) {
         if (typeof(preSets) === 'undefined' || preSets == null) {
             preSets = {};
         }
@@ -97,9 +148,18 @@ angular.module('mm.core')
         if (typeof(preSets.siteurl) === 'undefined') {
             return false;
         }
+
         return preSets;
     };
-        function convertValuesToString(data) {
+
+    /**
+     * Converts an objects values to strings where appropriate.
+     * Arrays (associative or otherwise) will be maintained.
+     *
+     * @param {Object} data The data that needs all the non-object values set to strings.
+     * @return {Object} The cleaned object, with multilevel array and objects preserved.
+     */
+    function convertValuesToString(data) {
         var result = [];
         if (!angular.isArray(data) && angular.isObject(data)) {
             result = {};
@@ -113,5 +173,7 @@ angular.module('mm.core')
         }
         return result;
     };
+
     return self;
+
 });
