@@ -28,7 +28,13 @@ angular.module('mm.core', []);
 
 angular.module('mm.core')
 .factory('$mmSite', function($http, $q, $mmWS, $log, md5) {
-    var schema = {
+    var deprecatedFunctions = {
+        "moodle_webservice_get_siteinfo": "core_webservice_get_site_info",
+        "moodle_enrol_get_users_courses": "core_enrol_get_users_courses",
+        "moodle_notes_create_notes": "core_notes_create_notes",
+        "moodle_message_send_instantmessages": "core_message_send_instant_messages",
+        "moodle_user_get_users_by_courseid": "core_enrol_get_enrolled_users",
+        "moodle_user_get_course_participants_by_id": "core_user_get_course_user_profiles",
     };
     var self = {},
         currentSite;
@@ -74,6 +80,7 @@ angular.module('mm.core')
         if (!self.isLoggedIn()) {
             deferred.reject('notloggedin');
         }
+        method = checkDeprecatedFunction(method);
         preSets = preSets || {};
         preSets.wstoken = currentSite.token;
         preSets.siteurl = currentSite.siteurl;
@@ -94,6 +101,31 @@ angular.module('mm.core')
             });
         });
         return deferred.promise;
+    }
+    self.wsAvailable = function(method) {
+        if (!self.isLoggedIn()) {
+            return false;
+        }
+        for(var i = 0; i < currentSite.infos.functions; i++) {
+            var f = functions[i];
+            if (f.name == method) {
+                return true;
+            }
+        }
+        return false;
+    }
+    function checkDeprecatedFunction(method) {
+        if (typeof deprecatedFunctions[method] !== "undefined") {
+            if (self.wsAvailable(deprecatedFunctions[method])) {
+                $log.warn("You are using deprecated Web Services: " + method +
+                    " you must replace it with the newer function: " + MM.deprecatedFunctions[method]);
+                return deprecatedFunctions[method];
+            } else {
+                $log.warn("You are using deprecated Web Services. " +
+                    "Your remote site seems to be outdated, consider upgrade it to the latest Moodle version.");
+            }
+        }
+        return method;
     }
     function getFromCache(method, data, preSets) {
         var result,
