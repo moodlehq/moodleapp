@@ -1,35 +1,37 @@
+// (C) Copyright 2015 Martin Dougiamas
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 angular.module('mm.core')
 
 .factory('$mmSitesManager', function($http, $q, $mmSite, md5, $mmConfig, $mmUtil) {
 
     var self = {};
+    // TODO: Save to a real storage.
     var store = window.sessionStorage;
 
-    var logindata = {
-        siteurl: ''
-    };
+    function Site(id, siteurl, token, infos) {
+        this.id = id;
+        this.siteurl = siteurl;
+        this.token = token;
+        this.infos = infos;
 
-    /**
-     * Get the login's data.
-     * @return {Object} Login data with siteurl, username and password.
-     */
-    self.getLoginData = function() {
-        return logindata;
+        if (this.id) {
+            this.db = new $mmDB('Site-' + this.id, this.schema);
+        }
     };
+    Site.prototype.schema = {
 
-    /**
-     * Get the login's siteurl.
-     * @return {String} Login's siteurl.
-     */
-    self.getLoginURL = function() {
-        return logindata.siteurl;
-    };
-
-    /**
-     * Clear the login data.
-     */
-    self.clearLoginData = function() {
-        logindata.siteurl = '';
     };
 
     /**
@@ -48,10 +50,9 @@ angular.module('mm.core')
      */
     self.getDemoSiteData = function(siteurl) {
         var demo_sites = $mmConfig.get('demo_sites');
-        console.log(demo_sites);
 
-        for(var i = 0; i < demo_sites.length; i++) {
-            if(siteurl == demo_sites[i].key) {
+        for (var i = 0; i < demo_sites.length; i++) {
+            if (siteurl == demo_sites[i].key) {
                 return demo_sites[i];
             }
         }
@@ -85,9 +86,7 @@ angular.module('mm.core')
 
         self.siteExists(siteurl).then(function() {
 
-            logindata.siteurl = siteurl;
-
-            self.checkMobileLocalPlugin(siteurl).then(function(code) {
+            checkMobileLocalPlugin(siteurl).then(function(code) {
                 deferred.resolve(code);
             }, function(error) {
                 deferred.reject(error);
@@ -97,16 +96,10 @@ angular.module('mm.core')
             // Site doesn't exist.
 
             if (siteurl.indexOf("https://") === 0) {
-                // Retry
+                // Retry without HTTPS.
                 self.checkSite(siteurl, "http://").then(deferred.resolve, deferred.reject);
-            }
-            else{
+            } else{
                 deferred.reject('cannotconnect');
-                //var error = MM.lang.s('cannotconnect');
-                // if (error.status == 404) {
-                    //error = MM.lang.s('invalidscheme');
-                // }
-                //MM.popErrorMessage(error);
             }
         });
 
@@ -128,7 +121,7 @@ angular.module('mm.core')
      * This plugin provide extended services
      * @param  {string} siteurl         The Moodle SiteURL
      */
-    self.checkMobileLocalPlugin = function(siteurl) {
+    function checkMobileLocalPlugin(siteurl) {
 
         var deferred = $q.defer();
         var service = $mmConfig.get('wsextservice');
@@ -205,7 +198,7 @@ angular.module('mm.core')
         var data = {
             username: username,
             password: password,
-            service: self.determineService(siteurl)
+            service: determineService(siteurl)
         };
 
         $http.post(loginurl, data).success(function(response) {
@@ -230,23 +223,37 @@ angular.module('mm.core')
                 }
             }
         }).error(function(data) {
-            // var error = MM.lang.s('cannotconnect');
-            // if (xhr.status == 404) {
-            //     error = MM.lang.s('invalidscheme');
-            // }
-            // MM.popErrorMessage(error);
             deferred.reject('cannotconnect');
         });
 
         return deferred.promise;
     };
 
+    self.newSite = function(siteurl, token) {
+        var deferred = $q.defer();
+        $mmSite.setSite(new Site(null, siteurl, token));
+        $mmSite.getSiteInfo().then(function(infos) {
+            if (isValidMoodleVersion(infos.functions)) {
+                var siteid = md5.createHash(siteurl + infos.username);
+                self.addSite(id, siteurl, token, infos);
+                deferred.resolve(siteid);
+            } else {
+                deferred.reject('invalidmoodleversion'+'2.4');
+            }
+            $mmSite.logout();
+        }, function(error) {
+            deferred.reject(error);
+            $mmSite.logout();
+        });
+        return deferred.promise;
+    }
+
     /**
      * Function for determine which service we should use (default or extended plugin).
      * @param  {string} siteurl The site URL
      * @return {string}         The service shortname
      */
-    self.determineService = function(siteurl) {
+    function determineService(siteurl) {
         // We need to try siteurl in both https or http (due to loginhttps setting).
 
         // First http://
@@ -268,12 +275,28 @@ angular.module('mm.core')
     };
 
     /**
+     * Check for the minimum required version. We check for WebServices present, not for Moodle version.
+     * This may allow some hacks like using local plugins for adding missing functions in previous versions.
+     *
+     * @param {Array} sitefunctions List of functions of the Moodle site.
+     * @return {Boolean}            True if t
+     */
+    function isValidMoodleVersion(sitefunctions) {
+        for(var i = 0; i < sitefunctions.length; i++) {
+            if (sitefunctions[i].name.indexOf("component_strings") > -1) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    /**
      * Saves the site in local DB.
      * @param  {Object} site  Moodle site data returned from the server.
      */
-    self.addSite = function(site) {
+    self.addSite = function(id, siteurl, token, infos) {
         var sites = self.getSites();
-        sites.push(site);
+        sites.push(new Site(id, siteurl, token, infos));
         store.sites = JSON.stringify(sites);
     };
 
@@ -282,7 +305,8 @@ angular.module('mm.core')
      * @param  {Number} index  Position of the site in the list of stored sites.
      */
     self.loadSite = function(index) {
-        $mmSite.loadSite(self.getSite(index));
+        var site = self.getSite(index);
+        $mmSite.switchSite(siteurl, token, infos);
     };
 
     self.deleteSite = function(index) {

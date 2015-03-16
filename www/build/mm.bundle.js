@@ -27,6 +27,264 @@ angular.module('mm', ['ionic', 'mm.core'])
 angular.module('mm.core', []);
 
 angular.module('mm.core')
+.factory('$mmSite', function($http, $q, $mmWS, md5) {
+    var schema = {
+    };
+    var self = {},
+        currentSite;
+        self.getSiteInfo = function() {
+        var deferred = $q.defer();
+        if (!self.isLoggedIn()) {
+            deferred.reject('notloggedin');
+            return deferred.promise;
+        }
+        function siteDataRetrieved(infos) {
+            deferred.resolve(infos);
+        }
+        self.read('moodle_webservice_get_siteinfo', {}).then(siteDataRetrieved, function(error) {
+            self.read('core_webservice_get_site_info', {}).then(siteDataRetrieved, function(error) {
+                deferred.reject(error);
+            });
+        });
+        return deferred.promise;
+    };
+    self.isLoggedIn = function() {
+        return typeof(currentSite) != 'undefined' && typeof(currentSite.token) != 'undefined' && currentSite.token != '';
+    }
+    self.logout = function() {
+        delete currentSite;
+    }
+    self.setSite = function(site) {
+        currentSite = site;
+    }
+    self.read = function(method, data, preSets) {
+        preSets = preSets || {};
+        preSets.getFromCache = 1;
+        preSets.saveToCache = 1;
+        return self.request(method, data, preSets);
+    }
+    self.write = function(method, data, preSets) {
+        preSets = preSets || {};
+        preSets.getFromCache = 0;
+        preSets.saveToCache = 0;
+        return self.request(method, data, preSets);
+    }
+    self.request = function(method, data, preSets) {
+        var deferred = $q.defer();
+        if (!self.isLoggedIn()) {
+            deferred.reject('notloggedin');
+        }
+        preSets = preSets || {};
+        preSets.wstoken = currentSite.token;
+        preSets.siteurl = currentSite.siteurl;
+        $mmWS.call(method, data, preSets).then(function(data) {
+            deferred.resolve(data);
+        }, function(error) {
+            deferred.reject(error);
+        });
+        return deferred.promise;
+    }
+    return self;
+});
+
+angular.module('mm.core')
+.factory('$mmSitesManager', function($http, $q, $mmSite, md5, $mmConfig, $mmUtil) {
+    var self = {};
+    var store = window.sessionStorage;
+    function Site(id, siteurl, token, infos) {
+        this.id = id;
+        this.siteurl = siteurl;
+        this.token = token;
+        this.infos = infos;
+        if (this.id) {
+            this.db = new $mmDB('Site-' + this.id, this.schema);
+        }
+    };
+    Site.prototype.schema = {
+    };
+        self.isDemoSite = function(siteurl) {
+        return typeof(self.getDemoSiteData(siteurl)) != 'undefined';
+    };
+        self.getDemoSiteData = function(siteurl) {
+        var demo_sites = $mmConfig.get('demo_sites');
+        for (var i = 0; i < demo_sites.length; i++) {
+            if (siteurl == demo_sites[i].key) {
+                return demo_sites[i];
+            }
+        }
+        return undefined;
+    };
+        self.checkSite = function(siteurl, protocol) {
+        var deferred = $q.defer();
+        siteurl = $mmUtil.formatURL(siteurl);
+        if (siteurl.indexOf('http://localhost') == -1 && !$mmUtil.isValidURL(siteurl)) {
+            deferred.reject('siteurlrequired');
+            return deferred.promise;
+        }
+        protocol = protocol || "https://";
+        siteurl = siteurl.replace(/^http(s)?\:\/\//i, protocol);
+        self.siteExists(siteurl).then(function() {
+            checkMobileLocalPlugin(siteurl).then(function(code) {
+                deferred.resolve(code);
+            }, function(error) {
+                deferred.reject(error);
+            });
+        }, function(error) {
+            if (siteurl.indexOf("https://") === 0) {
+                self.checkSite(siteurl, "http://").then(deferred.resolve, deferred.reject);
+            } else{
+                deferred.reject('cannotconnect');
+            }
+        });
+        return deferred.promise;
+    };
+        self.siteExists = function(siteurl) {
+        return $http.head(siteurl + '/login/token.php', {timeout: 15000});
+    };
+        function checkMobileLocalPlugin(siteurl) {
+        var deferred = $q.defer();
+        var service = $mmConfig.get('wsextservice');
+        if (!service) {
+            deferred.resolve(0);
+            return deferred.promise;
+        }
+        $http.post(siteurl + '/local/mobile/check.php', {service: service} )
+            .success(function(response) {
+                if (typeof(response.code) == "undefined") {
+                    deferred.reject("unexpectederror");
+                    return;
+                }
+                var code = parseInt(response.code, 10);
+                if (response.error) {
+                    switch (code) {
+                        case 1:
+                            deferred.reject("siteinmaintenance");
+                            break;
+                        case 2:
+                            deferred.reject("webservicesnotenabled");
+                            break;
+                        case 3:
+                            deferred.resolve(0);
+                            break;
+                        case 4:
+                            deferred.reject("mobileservicesnotenabled");
+                            break;
+                        default:
+                            deferred.reject("unexpectederror");
+                    }
+                } else {
+                    store.setItem('service'+siteurl, service);
+                    deferred.resolve(code);
+                }
+            })
+            .error(function(data) {
+                deferred.resolve(0);
+            });
+        return deferred.promise;
+    };
+        self.getUserToken = function(siteurl, username, password, retry) {
+        retry = retry || false;
+        var deferred = $q.defer();
+        var loginurl = siteurl + '/login/token.php';
+        var data = {
+            username: username,
+            password: password,
+            service: determineService(siteurl)
+        };
+        $http.post(loginurl, data).success(function(response) {
+            if (typeof(response.token) != 'undefined') {
+                deferred.resolve(response.token);
+            } else {
+                if (typeof(response.error) != 'undefined') {
+                    if (!retry && response.errorcode == "requirecorrectaccess") {
+                        siteurl = siteurl.replace("https://", "https://www.");
+                        siteurl = siteurl.replace("http://", "http://www.");
+                        logindata.siteurl = siteurl;
+                        self.getUserToken(siteurl, username, password, true).then(deferred.resolve, deferred.reject);
+                    } else {
+                        deferred.reject(response.error);
+                    }
+                } else {
+                    deferred.reject('invalidaccount');
+                }
+            }
+        }).error(function(data) {
+            deferred.reject('cannotconnect');
+        });
+        return deferred.promise;
+    };
+    self.newSite = function(siteurl, token) {
+        var deferred = $q.defer();
+        $mmSite.setSite(new Site(null, siteurl, token));
+        $mmSite.getSiteInfo().then(function(infos) {
+            if (isValidMoodleVersion(infos.functions)) {
+                var siteid = md5.createHash(siteurl + infos.username);
+                self.addSite(id, siteurl, token, infos);
+                deferred.resolve(siteid);
+            } else {
+                deferred.reject('invalidmoodleversion'+'2.4');
+            }
+            $mmSite.logout();
+        }, function(error) {
+            deferred.reject(error);
+            $mmSite.logout();
+        });
+        return deferred.promise;
+    }
+        function determineService(siteurl) {
+        siteurl = siteurl.replace("https://", "http://");
+        var service = store.getItem('service'+siteurl);
+        if (service) {
+            return service;
+        }
+        siteurl = siteurl.replace("http://", "https://");
+        var service = store.getItem('service'+siteurl);
+        if (service) {
+            return service;
+        }
+        return mmConfig.get('wsservice');
+    };
+        function isValidMoodleVersion(sitefunctions) {
+        for(var i = 0; i < sitefunctions.length; i++) {
+            if (sitefunctions[i].name.indexOf("component_strings") > -1) {
+                return true;
+            }
+        }
+        return false;
+    };
+        self.addSite = function(id, siteurl, token, infos) {
+        var sites = self.getSites();
+        sites.push(new Site(id, siteurl, token, infos));
+        store.sites = JSON.stringify(sites);
+    };
+        self.loadSite = function(index) {
+        var site = self.getSite(index);
+        $mmSite.switchSite(siteurl, token, infos);
+    };
+    self.deleteSite = function(index) {
+        var sites = self.getSites();
+        sites.splice(index, 1);
+        store.sites = JSON.stringify(sites);
+    };
+    self.hasSites = function() {
+        var sites = self.getSites();
+        return sites.length > 0;
+    };
+    self.getSites = function() {
+        var sites = store.sites;
+        if (!sites) {
+            return [];
+        }
+        return JSON.parse(sites);
+    };
+    self.getSite = function(index) {
+        var sites = self.getSites();
+        return sites[index];
+    };
+    return self;
+});
+
+angular.module('mm.core')
 .factory('$mmWS', function($http, $q, $log) {
     var self = {};
         self.call = function(method, data, preSets) {
