@@ -25,3 +25,93 @@ angular.module('mm', ['ionic', 'mm.core'])
 })
 
 angular.module('mm.core', []);
+
+angular.module('mm.core')
+.factory('$mmWS', function($http, $q, $log) {
+    var self = {};
+        self.call = function(method, data, preSets) {
+        var deferred = $q.defer(),
+            siteurl;
+        data = convertValuesToString(data);
+        preSets = self.verifyPresets(preSets);
+        if (!preSets) {
+            deferred.reject("unexpectederror");
+            return;
+        }
+        data.wsfunction = method;
+        data.wstoken = preSets.wstoken;
+        siteurl = preSets.siteurl + '/webservice/rest/server.php?moodlewsrestformat=json';
+        var ajaxData = data;
+        $http.post(siteurl, ajaxData).success(function(data) {
+            if (!data && !preSets.responseExpected) {
+                data = {};
+            }
+            if (!data) {
+                deferred.reject('cannotconnect');
+                return;
+            }
+            if (typeof(data.exception) !== 'undefined') {
+                if (data.errorcode == 'invalidtoken' || data.errorcode == 'accessexception') {
+                    $log.error("Critical error: " + JSON.stringify(data));
+                    deferred.reject('lostconnection');
+                    return;
+                } else {
+                    deferred.reject(data.message);
+                    return;
+                }
+            }
+            if (typeof(data.debuginfo) != 'undefined') {
+                deferred.reject('Error. ' + data.message);
+                return;
+            }
+            $log.info('WS: Data received from WS ' + typeof(data));
+            if (typeof(data) == 'object' && typeof(data.length) != 'undefined') {
+                $log.info('WS: Data number of elements '+ data.length);
+            }
+            deferred.resolve(angular.copy(data));
+        }).error(function(data) {
+            deferred.reject('cannotconnect');
+            return;
+        });
+        return deferred.promise;
+    };
+         function verifyPresets(preSets) {
+        if (typeof(preSets) === 'undefined' || preSets == null) {
+            preSets = {};
+        }
+        if (typeof(preSets.getFromCache) === 'undefined') {
+            preSets.getFromCache = 1;
+        }
+        if (typeof(preSets.saveToCache) === 'undefined') {
+            preSets.saveToCache = 1;
+        }
+        if (typeof(preSets.sync) === 'undefined') {
+            preSets.sync = 0;
+        }
+        if (typeof(preSets.omitExpires) === 'undefined') {
+            preSets.omitExpires = false;
+        }
+        if (typeof(preSets.wstoken) === 'undefined') {
+            return false;
+        }
+        if (typeof(preSets.siteurl) === 'undefined') {
+            return false;
+        }
+        return preSets;
+    };
+        function convertValuesToString(data) {
+        var result = [];
+        if (!angular.isArray(data) && angular.isObject(data)) {
+            result = {};
+        }
+        for (var el in data) {
+            if (angular.isObject(data[el])) {
+                result[el] = convertValuesToString(data[el]);
+            } else {
+                result[el] = data[el] + '';
+            }
+        }
+        return result;
+    };
+    return self;
+});
