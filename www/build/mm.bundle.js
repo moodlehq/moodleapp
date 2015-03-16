@@ -27,7 +27,7 @@ angular.module('mm', ['ionic', 'mm.core'])
 angular.module('mm.core', []);
 
 angular.module('mm.core')
-.factory('$mmSite', function($http, $q, $mmWS, md5) {
+.factory('$mmSite', function($http, $q, $mmWS, $log, md5) {
     var schema = {
     };
     var self = {},
@@ -69,7 +69,7 @@ angular.module('mm.core')
         preSets.saveToCache = 0;
         return self.request(method, data, preSets);
     }
-    self.request = function(method, data, preSets) {
+        self.request = function(method, data, preSets) {
         var deferred = $q.defer();
         if (!self.isLoggedIn()) {
             deferred.reject('notloggedin');
@@ -77,10 +77,55 @@ angular.module('mm.core')
         preSets = preSets || {};
         preSets.wstoken = currentSite.token;
         preSets.siteurl = currentSite.siteurl;
-        $mmWS.call(method, data, preSets).then(function(data) {
+        getFromCache(method, data, preSets).then(function(data) {
             deferred.resolve(data);
-        }, function(error) {
-            deferred.reject(error);
+        }, function() {
+            var saveToCache = preSets.saveToCache;
+            delete preSets.getFromCache;
+            delete preSets.saveToCache;
+            delete preSets.omitExpires;
+            $mmWS.call(method, data, preSets).then(function(data) {
+                if (saveToCache) {
+                    db.set('wscache', key, data);
+                }
+                deferred.resolve(data);
+            }, function(error) {
+                deferred.reject(error);
+            });
+        });
+        return deferred.promise;
+    }
+    function getFromCache(method, data, preSets) {
+        var result,
+            db = currentSite.db,
+            deferred = $q.defer();
+            key;
+        if (!db) {
+            deferred.reject();
+            return deferred.promise;
+        } else if (!preSets.getFromCache) {
+            deferred.reject();
+            return deferred.promise;
+        }
+        key = method + ':' + JSON.stringify(data);
+        db.get('wscache', key).then(function(data) {
+            var d = new Date(),
+                now = d.getTime();
+            if (!omitExpires) {
+                if (now > cache.mmcacheexpirationtime) {
+                    deferred.reject();
+                    return;
+                }
+            }
+            if (typeof data !== 'undefined') {
+                var expires = (cache.mmcacheexpirationtime - now) / 1000;
+                $log.info('Cached element found, id: ' + key + ' expires in ' + expires + ' seconds');
+                deferred.resolve(data);
+                return;
+            }
+            deferred.reject();
+        }, function() {
+            deferred.reject();
         });
         return deferred.promise;
     }
@@ -91,16 +136,18 @@ angular.module('mm.core')
 .factory('$mmSitesManager', function($http, $q, $mmSite, md5, $mmConfig, $mmUtil) {
     var self = {};
     var store = window.sessionStorage;
+    var siteSchema = {
+        wscache: {
+        }
+    };
     function Site(id, siteurl, token, infos) {
         this.id = id;
         this.siteurl = siteurl;
         this.token = token;
         this.infos = infos;
         if (this.id) {
-            this.db = new $mmDB('Site-' + this.id, this.schema);
+            this.db = new $mmDB('Site-' + this.id, siteSchema);
         }
-    };
-    Site.prototype.schema = {
     };
         self.isDemoSite = function(siteurl) {
         return typeof(self.getDemoSiteData(siteurl)) != 'undefined';
@@ -259,7 +306,7 @@ angular.module('mm.core')
     };
         self.loadSite = function(index) {
         var site = self.getSite(index);
-        $mmSite.switchSite(siteurl, token, infos);
+        $mmSite.setSite(Site);
     };
     self.deleteSite = function(index) {
         var sites = self.getSites();

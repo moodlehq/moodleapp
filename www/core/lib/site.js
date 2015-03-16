@@ -21,7 +21,7 @@ angular.module('mm.core')
  * @ngdoc service
  * @name $mmSite
  */
-.factory('$mmSite', function($http, $q, $mmWS, md5) {
+.factory('$mmSite', function($http, $q, $mmWS, $log, md5) {
 
     var schema = {
     };
@@ -87,6 +87,20 @@ angular.module('mm.core')
         return self.request(method, data, preSets);
     }
 
+    /**
+     * WS request to the site.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSite#request
+     * @param {string} method The WebService method to be called.
+     * @param {Object} data Arguments to pass to the method.
+     * @param {Object} preSets Extra settings.
+     *                    - getFromCache boolean (true) Use the cache when possible.
+     *                    - saveToCache boolean (true) Save the call results to the cache.
+     *                    - omitExpires boolean (false) Ignore cache expiry.
+     * @return {Promise}
+     */
     self.request = function(method, data, preSets) {
         var deferred = $q.defer();
 
@@ -98,10 +112,69 @@ angular.module('mm.core')
         preSets.wstoken = currentSite.token;
         preSets.siteurl = currentSite.siteurl;
 
-        $mmWS.call(method, data, preSets).then(function(data) {
+        getFromCache(method, data, preSets).then(function(data) {
             deferred.resolve(data);
-        }, function(error) {
-            deferred.reject(error);
+        }, function() {
+            var saveToCache = preSets.saveToCache;
+
+            // Do not pass those options to the core WS factory.
+            delete preSets.getFromCache;
+            delete preSets.saveToCache;
+            delete preSets.omitExpires;
+
+            $mmWS.call(method, data, preSets).then(function(data) {
+
+                if (saveToCache) {
+                    db.set('wscache', key, data);
+                }
+
+                deferred.resolve(data);
+            }, function(error) {
+                deferred.reject(error);
+            });
+        });
+
+        return deferred.promise;
+    }
+
+    function getFromCache(method, data, preSets) {
+        var result,
+            db = currentSite.db,
+            deferred = $q.defer();
+            key;
+
+        if (!db) {
+            deferred.reject();
+            return deferred.promise;
+        } else if (!preSets.getFromCache) {
+            deferred.reject();
+            return deferred.promise;
+        }
+
+        key = method + ':' + JSON.stringify(data);
+        db.get('wscache', key).then(function(data) {
+            var d = new Date(),
+                now = d.getTime();
+
+            if (!omitExpires) {
+                // TODO use proper config value.
+                if (now > cache.mmcacheexpirationtime) {
+                    deferred.reject();
+                    return;
+                }
+            }
+
+            // TODO Check type of returned value.
+            if (typeof data !== 'undefined') {
+                var expires = (cache.mmcacheexpirationtime - now) / 1000;
+                $log.info('Cached element found, id: ' + key + ' expires in ' + expires + ' seconds');
+                deferred.resolve(data);
+                return;
+            }
+
+            deferred.reject();
+        }, function() {
+            deferred.reject();
         });
 
         return deferred.promise;

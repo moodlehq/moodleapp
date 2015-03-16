@@ -38,10 +38,7 @@ angular.module('mm.core')
      *                    - wstoken string The Webservice token.
      *                    - wsfunctions array List of functions available on the site.
      *                    - responseExpected boolean (false) Raise an error if response is null.
-     *                    - getFromCache boolean (true) Use the cache when possible.
-     *                    - saveToCache boolean (true) Save the call results to the cache.
      *                    - sync boolean (false) To indicate that is a call in a sync process
-     *                    - omitExpires boolean (false) Ignore cache expiry.
      */
     self.call = function(method, data, preSets) {
 

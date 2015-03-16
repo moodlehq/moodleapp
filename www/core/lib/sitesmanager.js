@@ -19,7 +19,15 @@ angular.module('mm.core')
     var self = {};
     // TODO: Save to a real storage.
     var store = window.sessionStorage;
+    var siteSchema = {
+        // TODO define this.
+        wscache: {
 
+        }
+    };
+
+    // I dislike the fact that this is in the factory... but placing it in $mmSite makes
+    // it weird when we 'log in', or half log-in (Fred).
     function Site(id, siteurl, token, infos) {
         this.id = id;
         this.siteurl = siteurl;
@@ -27,11 +35,8 @@ angular.module('mm.core')
         this.infos = infos;
 
         if (this.id) {
-            this.db = new $mmDB('Site-' + this.id, this.schema);
+            this.db = new $mmDB('Site-' + this.id, siteSchema);
         }
-    };
-    Site.prototype.schema = {
-
     };
 
     /**
@@ -306,7 +311,7 @@ angular.module('mm.core')
      */
     self.loadSite = function(index) {
         var site = self.getSite(index);
-        $mmSite.switchSite(siteurl, token, infos);
+        $mmSite.setSite(Site);
     };
 
     self.deleteSite = function(index) {
