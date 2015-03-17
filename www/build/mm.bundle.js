@@ -84,39 +84,66 @@ angular.module('mm.core')
     ];
     $mmAppProvider.registerStores(stores);
 })
-.factory('$mmConfig', function($http, $q, $mmApp, mmConfigStore) {
-    var self = {
-        config: {}
-    };
-    self.initConfig = function() {
+.factory('$mmConfig', function($http, $q, $log, $mmApp, mmConfigStore) {
+    var initialized = false,
+        self = {
+            config: {}
+        };
+    function init() {
         var deferred = $q.defer();
-        if( Object.keys(self.config).length > 0) {
-            deferred.resolve();
-            return deferred.promise;
-        }
         $http.get('config.json').then(function(response) {
             var data = response.data;
-            for(var name in data) {
-                self.set(name, data[name]);
+            for (var name in data) {
+                self.config[name] = data[name];
             }
+            initialized = true;
             deferred.resolve();
         }, deferred.reject);
         return deferred.promise;
     };
-    self.get = function(name) {
-        var deferred = $q.defer();
-        var value = self.config[name];
-        if (typeof(value) == 'undefined' ){
-            $mmApp.getDB().get(mmConfigStore, name).then(deferred.resolve, deferred.reject);
+        self.get = function(name) {
+        if (!initialized) {
+            return init().then(function() {
+                return getConfig(name);
+            }, function() {
+                $log.error('Failed to initialize $mmConfig.');
+            });
         }
-        else {
-            deferred.resolve(value);
+        return getConfig(name);
+        function getConfig(name) {
+            var deferred = $q.defer(),
+                value = self.config[name];
+            if (typeof(value) == 'undefined') {
+                $mmApp.getDB().get(mmConfigStore, name).then(function(entry) {
+                    deferred.resolve(entry.value);
+                }, deferred.reject);
+            } else {
+                deferred.resolve(value);
+            }
+            return deferred.promise;
         }
-        return deferred.promise;
     };
-    self.set = function(name, value) {
-        self.config[name] = value;
-        $mmApp.getDB().insert(mmConfigStore, {name: name, value: value});
+        self.set = function(name, value) {
+        if (!initialized) {
+            return init().then(function() {
+                return setConfig(name, value);
+            }, function() {
+                $log.error('Failed to initialize $mmConfig.');
+                deferred.reject();
+            });
+        }
+        return setConfig(name, value);
+        function setConfig(name, value) {
+            var deferred,
+                fromStatic = self.config[name];
+            if (typeof(fromStatic) === 'undefined') {
+                return $mmApp.getDB().insert(mmConfigStore, {name: name, value: value});
+            }
+            $log.error('Cannot save static config setting \'' + name + '\'.');
+            deferred = $q.defer()
+            deferred.reject();
+            return deferred.promise;
+        }
     };
     return self;
 });
