@@ -35,54 +35,107 @@ angular.module('mm.core')
  * @description
  * Provides access to the app settings.
  */
-.factory('$mmConfig', function($http, $q, $mmApp, mmConfigStore) {
+.factory('$mmConfig', function($http, $q, $log, $mmApp, mmConfigStore) {
 
-    var self = {
-        config: {}
-    };
+    var initialized = false,
+        self = {
+            config: {}
+        };
 
-    self.initConfig = function() {
-
+    function init() {
         var deferred = $q.defer();
-
-        if( Object.keys(self.config).length > 0) {
-            // Already loaded
-            deferred.resolve();
-            return deferred.promise;
-        }
 
         $http.get('config.json').then(function(response) {
             var data = response.data;
-            for(var name in data) {
-                self.set(name, data[name]);
+            for (var name in data) {
+                self.config[name] = data[name];
             }
+            initialized = true;
             deferred.resolve();
         }, deferred.reject);
 
         return deferred.promise;
     };
 
+    /**
+     * Get an app setting.
+     *
+     * @module mm.core
+     * @ngdoc service
+     * @name $mmConfig#get
+     * @param {String} name The config name.
+     * @return {Promise} Resolves upon success along with the config data. Reject on failure.
+     * @description
+     * Get an app setting.
+     */
     self.get = function(name) {
 
-        var deferred = $q.defer();
-
-        var value = self.config[name];
-
-        if (typeof(value) == 'undefined' ){
-            $mmApp.getDB().get(mmConfigStore, name).then(deferred.resolve, deferred.reject);
-        }
-        else {
-            deferred.resolve(value);
+        if (!initialized) {
+            return init().then(function() {
+                return getConfig(name);
+            }, function() {
+                $log.error('Failed to initialize $mmConfig.');
+                return $q.reject();
+            });
         }
 
-        return deferred.promise;
+        return getConfig(name);
+
+        function getConfig(name) {
+            var deferred = $q.defer(),
+                value = self.config[name];
+
+            if (typeof(value) == 'undefined') {
+                $mmApp.getDB().get(mmConfigStore, name).then(function(entry) {
+                    deferred.resolve(entry.value);
+                }, deferred.reject);
+            } else {
+                deferred.resolve(value);
+            }
+
+            return deferred.promise;
+        }
     };
 
+    /**
+     * Set an app setting.
+     *
+     * @module mm.core
+     * @ngdoc service
+     * @name $mmConfig#set
+     * @param {String} name The config name.
+     * @param {Mixed} value The config value.
+     * @return {Promise} which resolves on success, providing no data.
+     * @description
+     * Set an app setting.
+     */
     self.set = function(name, value) {
-        self.config[name] = value;
-        $mmApp.getDB().insert(mmConfigStore, {name: name, value: value});
+
+        if (!initialized) {
+            return init().then(function() {
+                return setConfig(name, value);
+            }, function() {
+                $log.error('Failed to initialize $mmConfig.');
+                return $q.reject();
+            });
+        }
+
+        return setConfig(name, value);
+
+        function setConfig(name, value) {
+            var deferred,
+                fromStatic = self.config[name];
+
+            if (typeof(fromStatic) === 'undefined') {
+                return $mmApp.getDB().insert(mmConfigStore, {name: name, value: value});
+            }
+
+            $log.error('Cannot save static config setting \'' + name + '\'.');
+            deferred = $q.defer()
+            deferred.reject();
+            return deferred.promise;
+        }
     };
 
     return self;
-
 });
