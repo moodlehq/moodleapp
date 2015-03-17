@@ -18,50 +18,102 @@ angular.module('mm.core')
  * Factory to provide some global functionalities, like access to the global app database.
  *
  * @module mm.core
- * @ngdoc service
+ * @ngdoc provider
  * @name $mmApp
+ * @description
+ * This provider is the interface with the app database. The modules that need to store
+ * information here need to register their stores.
+ *
+ * Example:
+ *
+ * .config(function($mmAppProvider) {
+ *      $mmAppProvider.registerStore({
+ *          name: 'settings',
+ *          keyPath: 'name'
+ *      });
+ *  })
  */
-.factory('$mmApp', function($q, $log) {
+.provider('$mmApp', function() {
 
     /** Define the app storage schema. */
-    var app_schema = {
-        autoSchema: true,
-        stores: [
-            {
-                name: 'settings',
-                keyPath: 'name'
-            },
-            {
-                name: 'sites',
-                keyPath: 'id'
-            },
-            {
-                name: 'cache',
-                keyPath: 'id',
-                indexes: [
-                    {
-                        name: 'type'
-                    }
-                ]
-            },
-            {
-                name: 'services',
-                keyPath: 'id'
-            }
-        ]
-    };
-
-    var db = mmDB.getDB('MoodleMobile', app_schema),
-        self = {};
+    var DBNAME = 'MoodleMobile',
+        dboptions = {
+            autoSchema: true
+        },
+        dbschema = {
+            stores: []
+        };
 
     /**
-     * Get the application global database.
-     * @return {Object} App's DB.
+     * Register a store schema.
+     *
+     * @param  {Object} store The store object definition.
+     * @return {Void}
      */
-    self.getDB = function() {
-        return db;
-    };
+    this.registerStore = function(store) {
+        if (typeof(store.name) === 'undefined') {
+            console.log('$mmApp: Error: store name is undefined.');
+            return;
+        } else if (storeExists(store.name)) {
+            console.log('$mmApp: Error: store ' + store.name + ' is already defined.');
+            return;
+        }
+        dbschema.stores.push(store);
+    }
 
-    return self;
+    /**
+     * Register multiple stores at once.
+     *
+     * @param  {Array} stores Array of store objects.
+     * @return {Void}
+     */
+    this.registerStores = function(stores) {
+        var self = this;
+        angular.forEach(stores, function(store) {
+            self.registerStore(store);
+        })
+    }
 
+    /**
+     * Check if a store is already defined.
+     *
+     * @param  {String} name The name of the store.
+     * @return {Boolean} True when the store was already defined.
+     */
+    function storeExists(name) {
+        var exists = false;
+        angular.forEach(dbschema.stores, function(store) {
+            if (store.name === name) {
+                exists = true;
+            }
+        });
+        return exists;
+    }
+
+    this.$get = function($mmDB) {
+
+        var db = $mmDB.getDB(DBNAME, dbschema, dboptions),
+            self = {};
+
+        /**
+         * Get the application global database.
+         * @return {Object} App's DB.
+         */
+        self.getDB = function() {
+            return db;
+        };
+
+        /**
+         * Get the database schema.
+         *
+         * Do not use this method to modify the schema. Use $mmAppProvider#registerStore instead.
+         *
+         * @return {Object} The schema.
+         */
+        self.getSchema = function() {
+            return dbschema;
+        }
+
+        return self;
+    }
 });
