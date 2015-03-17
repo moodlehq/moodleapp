@@ -14,7 +14,28 @@
 
 angular.module('mm.core')
 
-.factory('$mmConfig', function($http, $q, $mmApp) {
+.constant('mmConfigStore', 'config')
+
+.config(function($mmAppProvider, mmConfigStore) {
+    var stores = [
+        {
+            name: mmConfigStore,
+            keyPath: 'name'
+        }
+    ];
+    $mmAppProvider.registerStores(stores);
+})
+
+/**
+ * Factory to provide access to app config and settings.
+ *
+ * @module mm.core
+ * @ngdoc service
+ * @name $mmConfig
+ * @description
+ * Provides access to the app settings.
+ */
+.factory('$mmConfig', function($http, $q, $mmApp, mmConfigStore) {
 
     var self = {
         config: {}
@@ -48,7 +69,7 @@ angular.module('mm.core')
         var value = self.config[name];
 
         if (typeof(value) == 'undefined' ){
-            $mmApp.getDB().get('settings', name).then(deferred.resolve, deferred.reject);
+            $mmApp.getDB().get(mmConfigStore, name).then(deferred.resolve, deferred.reject);
         }
         else {
             deferred.resolve(value);
@@ -59,7 +80,7 @@ angular.module('mm.core')
 
     self.set = function(name, value) {
         self.config[name] = value;
-        $mmApp.getDB().insert('settings', {name: name, value: value});
+        $mmApp.getDB().insert(mmConfigStore, {name: name, value: value});
     };
 
     return self;

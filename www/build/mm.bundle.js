@@ -74,6 +74,54 @@ angular.module('mm.core')
 });
 
 angular.module('mm.core')
+.constant('mmConfigStore', 'config')
+.config(function($mmAppProvider, mmConfigStore) {
+    var stores = [
+        {
+            name: mmConfigStore,
+            keyPath: 'name'
+        }
+    ];
+    $mmAppProvider.registerStores(stores);
+})
+.factory('$mmConfig', function($http, $q, $mmApp, mmConfigStore) {
+    var self = {
+        config: {}
+    };
+    self.initConfig = function() {
+        var deferred = $q.defer();
+        if( Object.keys(self.config).length > 0) {
+            deferred.resolve();
+            return deferred.promise;
+        }
+        $http.get('config.json').then(function(response) {
+            var data = response.data;
+            for(var name in data) {
+                self.set(name, data[name]);
+            }
+            deferred.resolve();
+        }, deferred.reject);
+        return deferred.promise;
+    };
+    self.get = function(name) {
+        var deferred = $q.defer();
+        var value = self.config[name];
+        if (typeof(value) == 'undefined' ){
+            $mmApp.getDB().get(mmConfigStore, name).then(deferred.resolve, deferred.reject);
+        }
+        else {
+            deferred.resolve(value);
+        }
+        return deferred.promise;
+    };
+    self.set = function(name, value) {
+        self.config[name] = value;
+        $mmApp.getDB().insert(mmConfigStore, {name: name, value: value});
+    };
+    return self;
+});
+
+angular.module('mm.core')
 .factory('$mmDB', function($q, $log) {
     var self = {};
         function callDBFunction(db, func) {
