@@ -12,72 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm', ['ionic', 'mm.core'])
-.run(function($ionicPlatform) {
-  $ionicPlatform.ready(function() {
-    if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
-      cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-    }
-    if (window.StatusBar) {
-      StatusBar.styleDefault();
-    }
-  });
-})
-
-angular.module('mm.core', []);
-
 angular.module('mm.core')
-.provider('$mmApp', function() {
-        var DBNAME = 'MoodleMobile',
-        dboptions = {
-            autoSchema: true
-        },
-        dbschema = {
-            stores: []
-        };
-        this.registerStore = function(store) {
-        if (typeof(store.name) === 'undefined') {
-            console.log('$mmApp: Error: store name is undefined.');
-            return;
-        } else if (storeExists(store.name)) {
-            console.log('$mmApp: Error: store ' + store.name + ' is already defined.');
-            return;
-        }
-        dbschema.stores.push(store);
-    }
-        this.registerStores = function(stores) {
-        var self = this;
-        angular.forEach(stores, function(store) {
-            self.registerStore(store);
-        })
-    }
-        function storeExists(name) {
-        var exists = false;
-        angular.forEach(dbschema.stores, function(store) {
-            if (store.name === name) {
-                exists = true;
-            }
-        });
-        return exists;
-    }
-    this.$get = function($mmDB) {
-        var db = $mmDB.getDB(DBNAME, dbschema, dboptions),
-            self = {};
-                self.getDB = function() {
-            return db;
-        };
-                self.getSchema = function() {
-            return dbschema;
-        }
-        return self;
-    }
-});
 
-angular.module('mm.core')
+/**
+ * @ngdoc service
+ * @name $mmDB
+ * @module mm.core
+ * @description
+ * This service allows to interact with the local database to store and retrieve data.
+ */
 .factory('$mmDB', function($q, $log) {
+
     var self = {};
-        function callDBFunction(db, func) {
+
+    /**
+     * Call a DB simple function.
+     * @param  {Object}  db      DB to use.
+     * @param  {String}  func    Name of the function to call.
+     * @return {Promise}         Promise to be resolved when the operation finishes.
+     */
+    function callDBFunction(db, func) {
         var deferred = $q.defer();
+
         try{
             if(typeof(db) != 'undefined') {
                 db[func].apply(db, Array.prototype.slice.call(arguments, 2)).then(function(result) {
@@ -95,10 +51,24 @@ angular.module('mm.core')
             $log.error(ex.name+': '+ex.message);
             deferred.reject();
         }
+
         return deferred.promise;
     }
-        function callWhere(db, table, field_name, op, value, op2, value2) {
+
+    /**
+     * Retrieve the list of entries matching certain conditions.
+     * @param  {Object}  db         DB to use.
+     * @param  {String}  table      Name of the table to get the entries from.
+     * @param  {String}  field_name Name of the field that should match the conditions.
+     * @param  {String}  op         First operator symbol. One of '<', '<=', '=', '>', '>=', '^'.
+     * @param  {String}  value      Value for the first operator.
+     * @param  {String}  op2        Second operator symbol.
+     * @param  {String}  value2     Value for the second operator.
+     * @return {Promise}            Promise to be resolved when the list is retrieved.
+     */
+    function callWhere(db, table, field_name, op, value, op2, value2) {
         var deferred = $q.defer();
+
         try{
             if(typeof(db) != 'undefined') {
                 db.from(table).where(field_name, op, value, op2, value2).list().then(function(list) {
@@ -113,10 +83,22 @@ angular.module('mm.core')
             $log.error('Error querying db '+db.getName()+'. '+ex.name+': '+ex.message);
             deferred.reject();
         }
+
         return deferred.promise;
     }
-        function callWhereEqual(db, table, field_name, value) {
+
+    /**
+     * Retrieve the list of entries where a certain field is equal to a certain value.
+     * Important: the field must be an index.
+     * @param  {Object}  db         DB to use.
+     * @param  {String}  table      Name of the table to get the entries from.
+     * @param  {String}  field_name Name of the field to check.
+     * @param  {String}  value      Value the field should be equal to.
+     * @return {Promise}            Promise to be resolved when the list is retrieved.
+     */
+    function callWhereEqual(db, table, field_name, value) {
         var deferred = $q.defer();
+
         try{
             if(typeof(db) != 'undefined') {
                 db.from(table).where(field_name, '=', value).list().then(function(list) {
@@ -131,10 +113,20 @@ angular.module('mm.core')
             $log.error('Error getting where equal from db '+db.getName()+'. '+ex.name+': '+ex.message);
             deferred.reject();
         }
+
         return deferred.promise;
     }
-        function callEach(db, table, callback) {
+
+    /**
+     * Performs an operation with every entry in a certain table.
+     * @param  {Object}   db       DB to use.
+     * @param  {String}   table    Name of the table to get the entries from.
+     * @param  {Function} callback Function to call with each entry.
+     * @return {Promise}           Promise to be resolved when the the operation has been applied to all entries.
+     */
+    function callEach(db, table, callback) {
         var deferred = $q.defer();
+
         callDBFunction(db, 'values', table, undefined, 99999999).then(function(entries) {
             for(var i = 0; i < entries.length; i++) {
                 callback(entries[i]);
@@ -143,10 +135,19 @@ angular.module('mm.core')
         }, function() {
             deferred.reject();
         });
+
         return deferred.promise;
     };
-        self.getDB = function(name, schema) {
+
+    /**
+     * Create a new database object.
+     * @param  {String} name   DB name.
+     * @param  {Object} schema DB schema.
+     * @return {Object}        DB.
+     */
+    self.getDB = function(name, schema) {
         var db = new ydn.db.Storage(name, schema);
+
         return {
             getName: function() {
                 return db.getName();
@@ -181,8 +182,16 @@ angular.module('mm.core')
             }
         };
     };
-        self.deleteDB = function(name) {
+
+    /**
+     * Delete a DB.
+     * @param  {String} name   DB name.
+     * @return {Promise}       Promise to be resolved when the site DB is deleted.
+     */
+    self.deleteDB = function(name) {
         return ydn.db.deleteDatabase(name);
     };
+
     return self;
+
 });
