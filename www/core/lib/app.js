@@ -37,10 +37,8 @@ angular.module('mm.core')
 
     /** Define the app storage schema. */
     var DBNAME = 'MoodleMobile',
-        dboptions = {
-            autoSchema: true
-        },
         dbschema = {
+            autoSchema: true,
             stores: []
         };
 
@@ -92,7 +90,7 @@ angular.module('mm.core')
 
     this.$get = function($mmDB) {
 
-        var db = $mmDB.getDB(DBNAME, dbschema, dboptions),
+        var db = $mmDB.getDB(DBNAME, dbschema),
             self = {};
 
         /**
