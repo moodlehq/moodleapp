@@ -12,11 +12,6 @@ angular.module('mm.core.login', [])
         onEnter: function($ionicHistory) {
             // Ensure that there is no history stack when getting here.
             $ionicHistory.clearHistory();
-        },
-        resolve: {
-            config: function($mmConfig) {
-                return $mmConfig.initConfig();
-            }
         }
     })
 

@@ -1154,11 +1154,6 @@ angular.module('mm.core.login', [])
         cache: false,  
         onEnter: function($ionicHistory) {
             $ionicHistory.clearHistory();
-        },
-        resolve: {
-            config: function($mmConfig) {
-                return $mmConfig.initConfig();
-            }
         }
     })
     .state('mm_login.index', {
