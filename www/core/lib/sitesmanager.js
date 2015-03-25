@@ -40,29 +40,20 @@ angular.module('mm.core')
     };
 
     /**
-     * Check if the siteurl belongs to a demo site.
-     * @param  {String}  siteurl URL of the site to check.
-     * @return {Boolean}         True if it is a demo site, false otherwise.
-     */
-    self.isDemoSite = function(siteurl) {
-        return typeof(self.getDemoSiteData(siteurl)) != 'undefined';
-    };
-
-    /**
      * Get the demo data of the siteurl if it is a demo site.
      * @param  {String} siteurl URL of the site to check.
      * @return {Object}         Demo data if the site is a demo site, undefined otherwise.
      */
     self.getDemoSiteData = function(siteurl) {
-        var demo_sites = $mmConfig.get('demo_sites');
-
-        for (var i = 0; i < demo_sites.length; i++) {
-            if (siteurl == demo_sites[i].key) {
-                return demo_sites[i];
+        return $mmConfig.get('demo_sites').then(function(demo_sites) {
+            for (var i = 0; i < demo_sites.length; i++) {
+                if (siteurl == demo_sites[i].key) {
+                    return demo_sites[i];
+                }
             }
-        }
 
-        return undefined;
+            return $q.reject();
+        });
     };
 
     /**
@@ -129,60 +120,59 @@ angular.module('mm.core')
     function checkMobileLocalPlugin(siteurl) {
 
         var deferred = $q.defer();
-        var service = $mmConfig.get('wsextservice');
 
-        // First check if is disabled by config.
-        if (!service) {
-            deferred.resolve(0);
-            return deferred.promise;
-        }
+        $mmConfig.get('wsextservice').then(function(service) {
 
-        $http.post(siteurl + '/local/mobile/check.php', {service: service} )
-            .success(function(response) {
-                if (typeof(response.code) == "undefined") {
-                    deferred.reject("unexpectederror");
-                    return;
-                }
-
-                var code = parseInt(response.code, 10);
-                if (response.error) {
-                    switch (code) {
-                        case 1:
-                            // Site in maintenance mode.
-                            deferred.reject("siteinmaintenance");
-                            break;
-                        case 2:
-                            // Web services not enabled.
-                            deferred.reject("webservicesnotenabled");
-                            break;
-                        case 3:
-                            // Extended service not enabled, but the official is enabled.
-                            deferred.resolve(0);
-                            break;
-                        case 4:
-                            // Neither extended or official services enabled.
-                            deferred.reject("mobileservicesnotenabled");
-                            break;
-                        default:
-                            deferred.reject("unexpectederror");
+            $http.post(siteurl + '/local/mobile/check.php', {service: service} )
+                .success(function(response) {
+                    if (typeof(response.code) == "undefined") {
+                        deferred.reject("unexpectederror");
+                        return;
                     }
-                } else {
-                    // Now we store here the service used by this site.
-                    // var service = {
-                    //     id: hex_md5(siteurl),
-                    //     siteurl: siteurl,
-                    //     service: MM.config.wsextservice
-                    // };
-                    // MM.db.insert("services", service);
-                    // TODO: Store service
-                    store.setItem('service'+siteurl, service);
 
-                    deferred.resolve(code);
-                }
-            })
-            .error(function(data) {
-                deferred.resolve(0);
-            });
+                    var code = parseInt(response.code, 10);
+                    if (response.error) {
+                        switch (code) {
+                            case 1:
+                                // Site in maintenance mode.
+                                deferred.reject("siteinmaintenance");
+                                break;
+                            case 2:
+                                // Web services not enabled.
+                                deferred.reject("webservicesnotenabled");
+                                break;
+                            case 3:
+                                // Extended service not enabled, but the official is enabled.
+                                deferred.resolve(0);
+                                break;
+                            case 4:
+                                // Neither extended or official services enabled.
+                                deferred.reject("mobileservicesnotenabled");
+                                break;
+                            default:
+                                deferred.reject("unexpectederror");
+                        }
+                    } else {
+                        // Now we store here the service used by this site.
+                        // var service = {
+                        //     id: hex_md5(siteurl),
+                        //     siteurl: siteurl,
+                        //     service: MM.config.wsextservice
+                        // };
+                        // MM.db.insert("services", service);
+                        // TODO: Store service
+                        store.setItem('service'+siteurl, service);
+
+                        deferred.resolve(code);
+                    }
+                })
+                .error(function(data) {
+                    deferred.resolve(0);
+                });
+
+        }, function() {
+            deferred.resolve(0);
+        });
 
         return deferred.promise;
     };

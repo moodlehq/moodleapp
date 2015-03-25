@@ -13,9 +13,7 @@ angular.module('mm.core.login')
 
         $mmUtil.showModalLoading('Loading');
 
-        if($mmSitesManager.isDemoSite(url)) {
-
-            var sitedata = $mmSitesManager.getDemoSiteData(url);
+        $mmSitesManager.getDemoSiteData(url).then(function(sitedata) {
 
             $mmSitesManager.getUserToken(sitedata.url, sitedata.username, sitedata.password).then(function(token) {
                 $mmSite.newSite(sitedata.url, token).then(function(site) {
@@ -29,8 +27,9 @@ angular.module('mm.core.login')
             }, function(error) {
                 alert(error);
             });
-        }
-        else {
+
+        }, function() {
+            // Not a demo site.
             $mmSitesManager.checkSite(url).then(function(code) {
                 $mmUtil.closeModalLoading();
                 $state.go('mm_login.credentials');
@@ -39,8 +38,7 @@ angular.module('mm.core.login')
                 $mmUtil.closeModalLoading();
                 alert(error);
             });
-
-        }
+        });
     }
 
 });

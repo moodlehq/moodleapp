@@ -702,17 +702,15 @@ angular.module('mm.core')
             this.db = new $mmDB('Site-' + this.id, siteSchema);
         }
     };
-        self.isDemoSite = function(siteurl) {
-        return typeof(self.getDemoSiteData(siteurl)) != 'undefined';
-    };
         self.getDemoSiteData = function(siteurl) {
-        var demo_sites = $mmConfig.get('demo_sites');
-        for (var i = 0; i < demo_sites.length; i++) {
-            if (siteurl == demo_sites[i].key) {
-                return demo_sites[i];
+        return $mmConfig.get('demo_sites').then(function(demo_sites) {
+            for (var i = 0; i < demo_sites.length; i++) {
+                if (siteurl == demo_sites[i].key) {
+                    return demo_sites[i];
+                }
             }
-        }
-        return undefined;
+            return $q.reject();
+        });
     };
         self.checkSite = function(siteurl, protocol) {
         var deferred = $q.defer();
@@ -743,43 +741,42 @@ angular.module('mm.core')
     };
         function checkMobileLocalPlugin(siteurl) {
         var deferred = $q.defer();
-        var service = $mmConfig.get('wsextservice');
-        if (!service) {
-            deferred.resolve(0);
-            return deferred.promise;
-        }
-        $http.post(siteurl + '/local/mobile/check.php', {service: service} )
-            .success(function(response) {
-                if (typeof(response.code) == "undefined") {
-                    deferred.reject("unexpectederror");
-                    return;
-                }
-                var code = parseInt(response.code, 10);
-                if (response.error) {
-                    switch (code) {
-                        case 1:
-                            deferred.reject("siteinmaintenance");
-                            break;
-                        case 2:
-                            deferred.reject("webservicesnotenabled");
-                            break;
-                        case 3:
-                            deferred.resolve(0);
-                            break;
-                        case 4:
-                            deferred.reject("mobileservicesnotenabled");
-                            break;
-                        default:
-                            deferred.reject("unexpectederror");
+        $mmConfig.get('wsextservice').then(function(service) {
+            $http.post(siteurl + '/local/mobile/check.php', {service: service} )
+                .success(function(response) {
+                    if (typeof(response.code) == "undefined") {
+                        deferred.reject("unexpectederror");
+                        return;
                     }
-                } else {
-                    store.setItem('service'+siteurl, service);
-                    deferred.resolve(code);
-                }
-            })
-            .error(function(data) {
-                deferred.resolve(0);
-            });
+                    var code = parseInt(response.code, 10);
+                    if (response.error) {
+                        switch (code) {
+                            case 1:
+                                deferred.reject("siteinmaintenance");
+                                break;
+                            case 2:
+                                deferred.reject("webservicesnotenabled");
+                                break;
+                            case 3:
+                                deferred.resolve(0);
+                                break;
+                            case 4:
+                                deferred.reject("mobileservicesnotenabled");
+                                break;
+                            default:
+                                deferred.reject("unexpectederror");
+                        }
+                    } else {
+                        store.setItem('service'+siteurl, service);
+                        deferred.resolve(code);
+                    }
+                })
+                .error(function(data) {
+                    deferred.resolve(0);
+                });
+        }, function() {
+            deferred.resolve(0);
+        });
         return deferred.promise;
     };
         self.getUserToken = function(siteurl, username, password, retry) {
@@ -896,7 +893,7 @@ angular.module('mm.core')
                     fullSubName = name + '[' + i + ']';
                     innerObj = {};
                     innerObj[fullSubName] = subValue;
-                    query += param(innerObj) + '&';
+                    query += this.param(innerObj) + '&';
                 }
             }
             else if (value instanceof Object) {
@@ -905,7 +902,7 @@ angular.module('mm.core')
                     fullSubName = name + '[' + subName + ']';
                     innerObj = {};
                     innerObj[fullSubName] = subValue;
-                    query += param(innerObj) + '&';
+                    query += this.param(innerObj) + '&';
                 }
             }
             else if (value !== undefined && value !== null) query += encodeURIComponent(name) + '=' + encodeURIComponent(value) + '&';
@@ -1144,6 +1141,58 @@ angular.module('mm.core')
     return self;
 });
 
+angular.module('mm.core')
+.filter('formatText', function(md5, $mmSite, $mmUtil) {
+    return function(text) {
+        if (!text) {
+            return '';
+        }
+        text = text.replace(/<a([^>]+)>/g,"<a target=\"_blank\" $1>");
+        var ft = text.match(/\$\$(.+?)\$\$/);
+        if (ft) {
+            if(current_site) {
+                text = text.replace(/\$\$(.+?)\$\$/g, function(full, match) {
+                    if (!match) {
+                        return "";
+                    }
+                    var md5 = md5.createHash(match);
+                    return '<img src="' + current_site.siteurl + "/filter/tex/pix.php/" + md5 + '">';
+                });
+            }
+        }
+        if (!current_site) {
+            return text;
+        }
+        var url = current_site.siteurl.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        var expr = new RegExp(url + "[^\"']*", "gi");
+        text = text.replace(expr, function(match) {
+            if (!courseId) {
+                courseId = 1;
+            }
+            return $mmUtil.getMoodleFilePath(match, courseId);
+        });
+        return text;
+    }
+});
+angular.module('mm.core')
+.filter('noTags', function() {
+    return function(text) {
+        return String(text).replace(/(<([^>]+)>)/ig, '');
+    }
+});
+angular.module('mm.core')
+.directive('noInputValidation', function() {
+    return {
+        restrict: 'A',
+        priority: 500,
+        compile: function(el, attrs) {
+            attrs.$set('type',
+                null,               
+                false               
+            );
+        }
+    }
+});
 angular.module('mm.core.login', [])
 .config(function($stateProvider) {
     $stateProvider
@@ -1265,8 +1314,7 @@ angular.module('mm.core.login')
             return;
         }
         $mmUtil.showModalLoading('Loading');
-        if($mmSitesManager.isDemoSite(url)) {
-            var sitedata = $mmSitesManager.getDemoSiteData(url);
+        $mmSitesManager.getDemoSiteData(url).then(function(sitedata) {
             $mmSitesManager.getUserToken(sitedata.url, sitedata.username, sitedata.password).then(function(token) {
                 $mmSite.newSite(sitedata.url, token).then(function(site) {
                     $mmSitesManager.addSite(site);
@@ -1279,8 +1327,7 @@ angular.module('mm.core.login')
             }, function(error) {
                 alert(error);
             });
-        }
-        else {
+        }, function() {
             $mmSitesManager.checkSite(url).then(function(code) {
                 $mmUtil.closeModalLoading();
                 $state.go('mm_login.credentials');
@@ -1288,179 +1335,6 @@ angular.module('mm.core.login')
                 $mmUtil.closeModalLoading();
                 alert(error);
             });
-        }
+        });
     }
-});
-angular.module('mm.core.login')
-.factory('$mmSitesManager', function($http, $q, $mmSite, md5, $mmConfig, $mmUtil) {
-    var self = {};
-    var store = window.sessionStorage;
-    var logindata = {
-        siteurl: ''
-    };
-        self.getLoginData = function() {
-        return logindata;
-    };
-        self.getLoginURL = function() {
-        return logindata.siteurl;
-    };
-        self.clearLoginData = function() {
-        logindata.siteurl = '';
-    };
-        self.isDemoSite = function(siteurl) {
-        return typeof(self.getDemoSiteData(siteurl)) != 'undefined';
-    };
-        self.getDemoSiteData = function(siteurl) {
-        var demo_sites = $mmConfig.get('demo_sites');
-        console.log(demo_sites);
-        for(var i = 0; i < demo_sites.length; i++) {
-            if(siteurl == demo_sites[i].key) {
-                return demo_sites[i];
-            }
-        }
-        return undefined;
-    };
-        self.checkSite = function(siteurl, protocol) {
-        var deferred = $q.defer();
-        siteurl = $mmUtil.formatURL(siteurl);
-        if (siteurl.indexOf('http://localhost') == -1 && !$mmUtil.isValidURL(siteurl)) {
-            deferred.reject('siteurlrequired');
-            return deferred.promise;
-        }
-        protocol = protocol || "https://";
-        siteurl = siteurl.replace(/^http(s)?\:\/\//i, protocol);
-        self.siteExists(siteurl).then(function() {
-            logindata.siteurl = siteurl;
-            self.checkMobileLocalPlugin(siteurl).then(function(code) {
-                deferred.resolve(code);
-            }, function(error) {
-                deferred.reject(error);
-            });
-        }, function(error) {
-            if (siteurl.indexOf("https://") === 0) {
-                self.checkSite(siteurl, "http://").then(deferred.resolve, deferred.reject);
-            }
-            else{
-                deferred.reject('cannotconnect');
-            }
-        });
-        return deferred.promise;
-    };
-        self.siteExists = function(siteurl) {
-        return $http.head(siteurl + '/login/token.php', {timeout: 15000});
-    };
-        self.checkMobileLocalPlugin = function(siteurl) {
-        var deferred = $q.defer();
-        var service = $mmConfig.get('wsextservice');
-        if (!service) {
-            deferred.resolve(0);
-            return deferred.promise;
-        }
-        $http.post(siteurl + '/local/mobile/check.php', {service: service} )
-            .success(function(response) {
-                if (typeof(response.code) == "undefined") {
-                    deferred.reject("unexpectederror");
-                    return;
-                }
-                var code = parseInt(response.code, 10);
-                if (response.error) {
-                    switch (code) {
-                        case 1:
-                            deferred.reject("siteinmaintenance");
-                            break;
-                        case 2:
-                            deferred.reject("webservicesnotenabled");
-                            break;
-                        case 3:
-                            deferred.resolve(0);
-                            break;
-                        case 4:
-                            deferred.reject("mobileservicesnotenabled");
-                            break;
-                        default:
-                            deferred.reject("unexpectederror");
-                    }
-                } else {
-                    store.setItem('service'+siteurl, service);
-                    deferred.resolve(code);
-                }
-            })
-            .error(function(data) {
-                deferred.resolve(0);
-            });
-        return deferred.promise;
-    };
-        self.getUserToken = function(siteurl, username, password, retry) {
-        retry = retry || false;
-        var deferred = $q.defer();
-        var loginurl = siteurl + '/login/token.php';
-        var data = {
-            username: username,
-            password: password,
-            service: self.determineService(siteurl)
-        };
-        $http.post(loginurl, data).success(function(response) {
-            if (typeof(response.token) != 'undefined') {
-                deferred.resolve(response.token);
-            } else {
-                if (typeof(response.error) != 'undefined') {
-                    if (!retry && response.errorcode == "requirecorrectaccess") {
-                        siteurl = siteurl.replace("https://", "https://www.");
-                        siteurl = siteurl.replace("http://", "http://www.");
-                        logindata.siteurl = siteurl;
-                        self.getUserToken(siteurl, username, password, true).then(deferred.resolve, deferred.reject);
-                    } else {
-                        deferred.reject(response.error);
-                    }
-                } else {
-                    deferred.reject('invalidaccount');
-                }
-            }
-        }).error(function(data) {
-            deferred.reject('cannotconnect');
-        });
-        return deferred.promise;
-    };
-        self.determineService = function(siteurl) {
-        siteurl = siteurl.replace("https://", "http://");
-        var service = store.getItem('service'+siteurl);
-        if (service) {
-            return service;
-        }
-        siteurl = siteurl.replace("http://", "https://");
-        var service = store.getItem('service'+siteurl);
-        if (service) {
-            return service;
-        }
-        return mmConfig.get('wsservice');
-    };
-        self.addSite = function(site) {
-        var sites = self.getSites();
-        sites.push(site);
-        store.sites = JSON.stringify(sites);
-    };
-        self.loadSite = function(index) {
-        $mmSite.loadSite(self.getSite(index));
-    };
-    self.deleteSite = function(index) {
-        var sites = self.getSites();
-        sites.splice(index, 1);
-        store.sites = JSON.stringify(sites);
-    };
-    self.hasSites = function() {
-        var sites = self.getSites();
-        return sites.length > 0;
-    };
-    self.getSites = function() {
-        var sites = store.sites;
-        if (!sites) {
-            return [];
-        }
-        return JSON.parse(sites);
-    };
-    self.getSite = function(index) {
-        var sites = self.getSites();
-        return sites[index];
-    };
-    return self;
 });
