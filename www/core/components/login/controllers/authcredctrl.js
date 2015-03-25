@@ -2,15 +2,13 @@ angular.module('mm.core.login')
 
 .controller('mmAuthCredCtrl', function($scope, $state, $stateParams, $timeout, $mmSitesManager, $mmSite, $mmUtil) {
 
-    $scope.siteurl = $mmSitesManager.getLoginURL();
+    $scope.siteurl = $stateParams.siteurl;
     $scope.credentials = {};
     $scope.login = function() {
 
         var siteurl = $scope.siteurl,
             username = $scope.credentials.username,
             password = $scope.credentials.password;
-
-            console.log($scope.username);
 
         if (!username) {
             alert('usernamerequired');
@@ -24,14 +22,9 @@ angular.module('mm.core.login')
         $mmUtil.showModalLoading('Loading');
 
         $mmSitesManager.getUserToken(siteurl, username, password).then(function(token) {
-            $mmSite.newSite(siteurl, token).then(function(site) {
-                $mmSitesManager.addSite(site);
+            $mmSitesManager.newSite(siteurl, username, token).then(function() {
                 $mmUtil.closeModalLoading();
-
-                $mmSitesManager.clearLoginData();
-                $scope.username = '';
-                $scope.password = '';
-
+                delete $scope.credentials;
                 $state.go('site.index');
             }, function(error) {
                 alert(error);

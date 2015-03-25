@@ -46,7 +46,7 @@ angular.module('mm.core')
             siteurl;
 
         data = convertValuesToString(data);
-        preSets = self.verifyPresets(preSets);
+        preSets = verifyPresets(preSets);
 
         if (!preSets) {
             deferred.reject("unexpectederror");

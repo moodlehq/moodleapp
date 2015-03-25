@@ -548,7 +548,7 @@ angular.module('mm.core')
     });
 });
 angular.module('mm.core')
-.factory('$mmSite', function($http, $q, $mmWS, $log, md5) {
+.factory('$mmSite', function($http, $q, $mmWS, $mmDB, $mmConfig, $log, md5) {
     var deprecatedFunctions = {
         "moodle_webservice_get_siteinfo": "core_webservice_get_site_info",
         "moodle_enrol_get_users_courses": "core_enrol_get_users_courses",
@@ -558,7 +558,25 @@ angular.module('mm.core')
         "moodle_user_get_course_participants_by_id": "core_user_get_course_user_profiles",
     };
     var self = {},
-        currentSite;
+        currentSite,
+        siteSchema = {
+            autoSchema: true,
+            stores: [
+                {
+                    name: 'wscache',
+                    keyPath: 'id'
+                }
+            ]
+        };
+    function Site(id, siteurl, token, infos) {
+        this.id = id;
+        this.siteurl = siteurl;
+        this.token = token;
+        this.infos = infos;
+        if (this.id) {
+            this.db = $mmDB.getDB('Site-' + this.id, siteSchema);
+        }
+    };
         self.getSiteInfo = function() {
         var deferred = $q.defer();
         if (!self.isLoggedIn()) {
@@ -566,10 +584,11 @@ angular.module('mm.core')
             return deferred.promise;
         }
         function siteDataRetrieved(infos) {
+            currentSite.infos = infos;
             deferred.resolve(infos);
         }
-        self.read('moodle_webservice_get_siteinfo', {}).then(siteDataRetrieved, function(error) {
-            self.read('core_webservice_get_site_info', {}).then(siteDataRetrieved, function(error) {
+        self.read('core_webservice_get_site_info', {}).then(siteDataRetrieved, function(error) {
+            self.read('moodle_webservice_get_site_info', {}).then(siteDataRetrieved, function(error) {
                 deferred.reject(error);
             });
         });
@@ -581,25 +600,38 @@ angular.module('mm.core')
     self.logout = function() {
         delete currentSite;
     }
-    self.setSite = function(site) {
-        currentSite = site;
+    self.setSite = function(id, siteurl, token, infos) {
+        currentSite = new Site(id, siteurl, token, infos);
+    }
+    self.deleteCurrentSite = function(siteid) {
+        $mmDB.deleteDB('Site-' + siteid);
+        delete currentSite;
     }
     self.read = function(method, data, preSets) {
         preSets = preSets || {};
-        preSets.getFromCache = 1;
-        preSets.saveToCache = 1;
+        if (typeof(preSets.getFromCache) === 'undefined') {
+            preSets.getFromCache = 1;
+        }
+        if (typeof(preSets.saveToCache) === 'undefined') {
+            preSets.saveToCache = 1;
+        }
         return self.request(method, data, preSets);
     }
     self.write = function(method, data, preSets) {
         preSets = preSets || {};
-        preSets.getFromCache = 0;
-        preSets.saveToCache = 0;
+        if (typeof(preSets.getFromCache) === 'undefined') {
+            preSets.getFromCache = 1;
+        }
+        if (typeof(preSets.saveToCache) === 'undefined') {
+            preSets.saveToCache = 1;
+        }
         return self.request(method, data, preSets);
     }
         self.request = function(method, data, preSets) {
         var deferred = $q.defer();
         if (!self.isLoggedIn()) {
             deferred.reject('notloggedin');
+            return deferred.promise;
         }
         method = checkDeprecatedFunction(method);
         preSets = preSets || {};
@@ -608,15 +640,15 @@ angular.module('mm.core')
         getFromCache(method, data, preSets).then(function(data) {
             deferred.resolve(data);
         }, function() {
-            var saveToCache = preSets.saveToCache;
+            var mustSaveToCache = preSets.saveToCache;
             delete preSets.getFromCache;
             delete preSets.saveToCache;
             delete preSets.omitExpires;
-            $mmWS.call(method, data, preSets).then(function(data) {
-                if (saveToCache) {
-                    db.set('wscache', key, data);
+            $mmWS.call(method, data, preSets).then(function(response) {
+                if (mustSaveToCache) {
+                    saveToCache(method, data, response);
                 }
-                deferred.resolve(data);
+                deferred.resolve(response);
             }, function(error) {
                 deferred.reject(error);
             });
@@ -624,7 +656,7 @@ angular.module('mm.core')
         return deferred.promise;
     }
     self.wsAvailable = function(method) {
-        if (!self.isLoggedIn()) {
+        if (!self.isLoggedIn() || typeof(currentSite.infos) == 'undefined') {
             return false;
         }
         for(var i = 0; i < currentSite.infos.functions; i++) {
@@ -651,7 +683,7 @@ angular.module('mm.core')
     function getFromCache(method, data, preSets) {
         var result,
             db = currentSite.db,
-            deferred = $q.defer();
+            deferred = $q.defer(),
             key;
         if (!db) {
             deferred.reject();
@@ -661,19 +693,18 @@ angular.module('mm.core')
             return deferred.promise;
         }
         key = method + ':' + JSON.stringify(data);
-        db.get('wscache', key).then(function(data) {
-            var d = new Date(),
-                now = d.getTime();
-            if (!omitExpires) {
-                if (now > cache.mmcacheexpirationtime) {
+        db.get('wscache', key).then(function(entry) {
+            var now = new Date().getTime();
+            if (!preSets.omitExpires) {
+                if (now > entry.expirationtime) {
                     deferred.reject();
                     return;
                 }
             }
-            if (typeof data !== 'undefined') {
-                var expires = (cache.mmcacheexpirationtime - now) / 1000;
+            if (typeof(entry) !== 'undefined' && typeof(entry.data) !== 'undefined') {
+                var expires = (entry.expirationtime - now) / 1000;
                 $log.info('Cached element found, id: ' + key + ' expires in ' + expires + ' seconds');
-                deferred.resolve(data);
+                deferred.resolve(entry.data);
                 return;
             }
             deferred.reject();
@@ -682,26 +713,33 @@ angular.module('mm.core')
         });
         return deferred.promise;
     }
+    function saveToCache(method, data, response) {
+        var db = currentSite.db,
+            deferred = $q.defer(),
+            key = method + ':' + JSON.stringify(data);
+        if (!db) {
+            deferred.reject();
+        } else {
+            $mmConfig.get('cache_expiration_time').then(function(cacheExpirationTime) {
+                var entry = {
+                    id: key,
+                    data: response
+                };
+                entry.expirationtime = new Date().getTime() + cacheExpirationTime;
+                db.insert('wscache', entry);
+                deferred.resolve();
+            }, deferred.reject);
+        }
+        return deferred.promise;
+    }
     return self;
 });
 
 angular.module('mm.core')
 .factory('$mmSitesManager', function($http, $q, $mmSite, md5, $mmConfig, $mmUtil) {
-    var self = {};
+    var self = {},
+        services = {};
     var store = window.sessionStorage;
-    var siteSchema = {
-        wscache: {
-        }
-    };
-    function Site(id, siteurl, token, infos) {
-        this.id = id;
-        this.siteurl = siteurl;
-        this.token = token;
-        this.infos = infos;
-        if (this.id) {
-            this.db = new $mmDB('Site-' + this.id, siteSchema);
-        }
-    };
         self.getDemoSiteData = function(siteurl) {
         return $mmConfig.get('demo_sites').then(function(demo_sites) {
             for (var i = 0; i < demo_sites.length; i++) {
@@ -717,23 +755,23 @@ angular.module('mm.core')
         siteurl = $mmUtil.formatURL(siteurl);
         if (siteurl.indexOf('http://localhost') == -1 && !$mmUtil.isValidURL(siteurl)) {
             deferred.reject('siteurlrequired');
-            return deferred.promise;
-        }
-        protocol = protocol || "https://";
-        siteurl = siteurl.replace(/^http(s)?\:\/\//i, protocol);
-        self.siteExists(siteurl).then(function() {
-            checkMobileLocalPlugin(siteurl).then(function(code) {
-                deferred.resolve(code);
+        } else {
+            protocol = protocol || "https://";
+            siteurl = siteurl.replace(/^http(s)?\:\/\//i, protocol);
+            self.siteExists(siteurl).then(function() {
+                checkMobileLocalPlugin(siteurl).then(function(code) {
+                    deferred.resolve({siteurl: siteurl, code: code});
+                }, function(error) {
+                    deferred.reject(error);
+                });
             }, function(error) {
-                deferred.reject(error);
+                if (siteurl.indexOf("https://") === 0) {
+                    self.checkSite(siteurl, "http://").then(deferred.resolve, deferred.reject);
+                } else{
+                    deferred.reject('cannotconnect');
+                }
             });
-        }, function(error) {
-            if (siteurl.indexOf("https://") === 0) {
-                self.checkSite(siteurl, "http://").then(deferred.resolve, deferred.reject);
-            } else{
-                deferred.reject('cannotconnect');
-            }
-        });
+        }
         return deferred.promise;
     };
         self.siteExists = function(siteurl) {
@@ -767,7 +805,7 @@ angular.module('mm.core')
                                 deferred.reject("unexpectederror");
                         }
                     } else {
-                        store.setItem('service'+siteurl, service);
+                        services[siteurl] = service;
                         deferred.resolve(code);
                     }
                 })
@@ -782,64 +820,68 @@ angular.module('mm.core')
         self.getUserToken = function(siteurl, username, password, retry) {
         retry = retry || false;
         var deferred = $q.defer();
-        var loginurl = siteurl + '/login/token.php';
-        var data = {
-            username: username,
-            password: password,
-            service: determineService(siteurl)
-        };
-        $http.post(loginurl, data).success(function(response) {
-            if (typeof(response.token) != 'undefined') {
-                deferred.resolve(response.token);
-            } else {
-                if (typeof(response.error) != 'undefined') {
-                    if (!retry && response.errorcode == "requirecorrectaccess") {
-                        siteurl = siteurl.replace("https://", "https://www.");
-                        siteurl = siteurl.replace("http://", "http://www.");
-                        logindata.siteurl = siteurl;
-                        self.getUserToken(siteurl, username, password, true).then(deferred.resolve, deferred.reject);
-                    } else {
-                        deferred.reject(response.error);
-                    }
+        determineService(siteurl).then(function(service) {
+            var loginurl = siteurl + '/login/token.php';
+            var data = {
+                username: username,
+                password: password,
+                service: service
+            };
+            $http.post(loginurl, data).success(function(response) {
+                if (typeof(response.token) != 'undefined') {
+                    deferred.resolve(response.token);
                 } else {
-                    deferred.reject('invalidaccount');
+                    if (typeof(response.error) != 'undefined') {
+                        if (!retry && response.errorcode == "requirecorrectaccess") {
+                            siteurl = siteurl.replace("https://", "https://www.");
+                            siteurl = siteurl.replace("http://", "http://www.");
+                            logindata.siteurl = siteurl;
+                            self.getUserToken(siteurl, username, password, true).then(deferred.resolve, deferred.reject);
+                        } else {
+                            deferred.reject(response.error);
+                        }
+                    } else {
+                        deferred.reject('invalidaccount');
+                    }
                 }
-            }
-        }).error(function(data) {
-            deferred.reject('cannotconnect');
-        });
+            }).error(function(data) {
+                deferred.reject('cannotconnect');
+            });
+        }, deferred.reject);
         return deferred.promise;
     };
-    self.newSite = function(siteurl, token) {
+    self.newSite = function(siteurl, username, token) {
         var deferred = $q.defer();
-        $mmSite.setSite(new Site(null, siteurl, token));
+        var siteid = md5.createHash(siteurl + username);
+        $mmSite.setSite(siteid, siteurl, token);
         $mmSite.getSiteInfo().then(function(infos) {
             if (isValidMoodleVersion(infos.functions)) {
-                var siteid = md5.createHash(siteurl + infos.username);
-                self.addSite(id, siteurl, token, infos);
-                deferred.resolve(siteid);
+                self.addSite(siteid, siteurl, token, infos);
+                deferred.resolve();
             } else {
                 deferred.reject('invalidmoodleversion'+'2.4');
+                $mmSite.deleteCurrentSite();
             }
-            $mmSite.logout();
         }, function(error) {
             deferred.reject(error);
-            $mmSite.logout();
+            $mmSite.deleteCurrentSite();
         });
         return deferred.promise;
     }
         function determineService(siteurl) {
+        var deferred = $q.defer();
         siteurl = siteurl.replace("https://", "http://");
-        var service = store.getItem('service'+siteurl);
-        if (service) {
-            return service;
+        if (services[siteurl]) {
+            deferred.resolve(services[siteurl]);
+            return deferred.promise;
         }
         siteurl = siteurl.replace("http://", "https://");
-        var service = store.getItem('service'+siteurl);
-        if (service) {
-            return service;
+        if (services[siteurl]) {
+            deferred.resolve(services[siteurl]);
+            return deferred.promise;
         }
-        return mmConfig.get('wsservice');
+        $mmConfig.get('wsservice').then(deferred.resolve, deferred.reject);
+        return deferred.promise;
     };
         function isValidMoodleVersion(sitefunctions) {
         for(var i = 0; i < sitefunctions.length; i++) {
@@ -850,9 +892,6 @@ angular.module('mm.core')
         return false;
     };
         self.addSite = function(id, siteurl, token, infos) {
-        var sites = self.getSites();
-        sites.push(new Site(id, siteurl, token, infos));
-        store.sites = JSON.stringify(sites);
     };
         self.loadSite = function(index) {
         var site = self.getSite(index);
@@ -1058,7 +1097,7 @@ angular.module('mm.core')
         var deferred = $q.defer(),
             siteurl;
         data = convertValuesToString(data);
-        preSets = self.verifyPresets(preSets);
+        preSets = verifyPresets(preSets);
         if (!preSets) {
             deferred.reject("unexpectederror");
             return;
@@ -1229,9 +1268,12 @@ angular.module('mm.core.login', [])
         url: '/cred',
         templateUrl: 'core/components/login/templates/login-credentials.html',
         controller: 'mmAuthCredCtrl',
-        onEnter: function($state, $mmSitesManager) {
-            if ($mmSitesManager.getLoginURL() == '') {
-                $state.go('mm_login.index');
+        params: {
+            siteurl: ''
+        },
+        onEnter: function($state, $stateParams) {
+            if (!$stateParams.siteurl) {
+              $state.go('mm_login.index');
             }
         }
     });
@@ -1239,13 +1281,12 @@ angular.module('mm.core.login', [])
 
 angular.module('mm.core.login')
 .controller('mmAuthCredCtrl', function($scope, $state, $stateParams, $timeout, $mmSitesManager, $mmSite, $mmUtil) {
-    $scope.siteurl = $mmSitesManager.getLoginURL();
+    $scope.siteurl = $stateParams.siteurl;
     $scope.credentials = {};
     $scope.login = function() {
         var siteurl = $scope.siteurl,
             username = $scope.credentials.username,
             password = $scope.credentials.password;
-            console.log($scope.username);
         if (!username) {
             alert('usernamerequired');
             return;
@@ -1256,12 +1297,9 @@ angular.module('mm.core.login')
         }
         $mmUtil.showModalLoading('Loading');
         $mmSitesManager.getUserToken(siteurl, username, password).then(function(token) {
-            $mmSite.newSite(siteurl, token).then(function(site) {
-                $mmSitesManager.addSite(site);
+            $mmSitesManager.newSite(siteurl, username, token).then(function() {
                 $mmUtil.closeModalLoading();
-                $mmSitesManager.clearLoginData();
-                $scope.username = '';
-                $scope.password = '';
+                delete $scope.credentials;
                 $state.go('site.index');
             }, function(error) {
                 alert(error);
@@ -1307,7 +1345,7 @@ angular.module('mm.core.login')
 });
 angular.module('mm.core.login')
 .controller('mmAuthSiteCtrl', function($scope, $state, $mmSitesManager, $mmSite, $mmUtil) {
-    $scope.logindata = $mmSitesManager.getLoginData();
+    $scope.siteurl = '';
     $scope.connect = function(url) {
         if (!url) {
             alert('siteurlrequired');
@@ -1316,10 +1354,8 @@ angular.module('mm.core.login')
         $mmUtil.showModalLoading('Loading');
         $mmSitesManager.getDemoSiteData(url).then(function(sitedata) {
             $mmSitesManager.getUserToken(sitedata.url, sitedata.username, sitedata.password).then(function(token) {
-                $mmSite.newSite(sitedata.url, token).then(function(site) {
-                    $mmSitesManager.addSite(site);
+                $mmSitesManager.newSite(sitedata.url, sitedata.username, token).then(function() {
                     $mmUtil.closeModalLoading();
-                    $mmSitesManager.clearLoginData();
                     $state.go('site.index');
                 }, function(error) {
                     alert(error);
@@ -1328,9 +1364,9 @@ angular.module('mm.core.login')
                 alert(error);
             });
         }, function() {
-            $mmSitesManager.checkSite(url).then(function(code) {
+            $mmSitesManager.checkSite(url).then(function(result) {
                 $mmUtil.closeModalLoading();
-                $state.go('mm_login.credentials');
+                $state.go('mm_login.credentials', {siteurl: result.siteurl});
             }, function(error) {
                 $mmUtil.closeModalLoading();
                 alert(error);

@@ -42,10 +42,13 @@ angular.module('mm.core.login', [])
         url: '/cred',
         templateUrl: 'core/components/login/templates/login-credentials.html',
         controller: 'mmAuthCredCtrl',
-        onEnter: function($state, $mmSitesManager) {
+        params: {
+            siteurl: ''
+        },
+        onEnter: function($state, $stateParams) {
             // Do not allow access to this page when the URL was not passed.
-            if ($mmSitesManager.getLoginURL() == '') {
-                $state.go('mm_login.index');
+            if (!$stateParams.siteurl) {
+              $state.go('mm_login.index');
             }
         }
     });

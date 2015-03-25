@@ -2,7 +2,7 @@ angular.module('mm.core.login')
 
 .controller('mmAuthSiteCtrl', function($scope, $state, $mmSitesManager, $mmSite, $mmUtil) {
 
-    $scope.logindata = $mmSitesManager.getLoginData();
+    $scope.siteurl = '';
 
     $scope.connect = function(url) {
 
@@ -16,10 +16,8 @@ angular.module('mm.core.login')
         $mmSitesManager.getDemoSiteData(url).then(function(sitedata) {
 
             $mmSitesManager.getUserToken(sitedata.url, sitedata.username, sitedata.password).then(function(token) {
-                $mmSite.newSite(sitedata.url, token).then(function(site) {
-                    $mmSitesManager.addSite(site);
+                $mmSitesManager.newSite(sitedata.url, sitedata.username, token).then(function() {
                     $mmUtil.closeModalLoading();
-                    $mmSitesManager.clearLoginData();
                     $state.go('site.index');
                 }, function(error) {
                     alert(error);
@@ -30,9 +28,9 @@ angular.module('mm.core.login')
 
         }, function() {
             // Not a demo site.
-            $mmSitesManager.checkSite(url).then(function(code) {
+            $mmSitesManager.checkSite(url).then(function(result) {
                 $mmUtil.closeModalLoading();
-                $state.go('mm_login.credentials');
+                $state.go('mm_login.credentials', {siteurl: result.siteurl});
             }, function(error) {
                 // TODO: Show error message with ngMessages or popup
                 $mmUtil.closeModalLoading();

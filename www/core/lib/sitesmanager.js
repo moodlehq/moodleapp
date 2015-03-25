@@ -16,28 +16,10 @@ angular.module('mm.core')
 
 .factory('$mmSitesManager', function($http, $q, $mmSite, md5, $mmConfig, $mmUtil) {
 
-    var self = {};
+    var self = {},
+        services = {};
     // TODO: Save to a real storage.
     var store = window.sessionStorage;
-    var siteSchema = {
-        // TODO define this.
-        wscache: {
-
-        }
-    };
-
-    // I dislike the fact that this is in the factory... but placing it in $mmSite makes
-    // it weird when we 'log in', or half log-in (Fred).
-    function Site(id, siteurl, token, infos) {
-        this.id = id;
-        this.siteurl = siteurl;
-        this.token = token;
-        this.infos = infos;
-
-        if (this.id) {
-            this.db = new $mmDB('Site-' + this.id, siteSchema);
-        }
-    };
 
     /**
      * Get the demo data of the siteurl if it is a demo site.
@@ -62,7 +44,11 @@ angular.module('mm.core')
      *
      * @param {string} siteurl URL of the site to check.
      * @param {string} protocol Protocol to use. If not defined, use https.
-     * @return {Promise}        A promise to be resolved when the site is checked.
+     * @return {Promise}        A promise to be resolved when the site is checked. Resolve params:
+     *                            {
+     *                                code: Authentication code.
+     *                                siteurl: Site url to use (might have changed during the process).
+     *                            }
      */
     self.checkSite = function(siteurl, protocol) {
 
@@ -70,34 +56,36 @@ angular.module('mm.core')
 
         // formatURL adds the protocol if is missing.
         siteurl = $mmUtil.formatURL(siteurl);
+
         if (siteurl.indexOf('http://localhost') == -1 && !$mmUtil.isValidURL(siteurl)) {
             deferred.reject('siteurlrequired');
-            return deferred.promise;
-        }
+        } else {
 
-        protocol = protocol || "https://";
+            protocol = protocol || "https://";
 
-        // Now, replace the siteurl with the protocol.
-        siteurl = siteurl.replace(/^http(s)?\:\/\//i, protocol);
+            // Now, replace the siteurl with the protocol.
+            siteurl = siteurl.replace(/^http(s)?\:\/\//i, protocol);
 
-        self.siteExists(siteurl).then(function() {
+            self.siteExists(siteurl).then(function() {
 
-            checkMobileLocalPlugin(siteurl).then(function(code) {
-                deferred.resolve(code);
+                checkMobileLocalPlugin(siteurl).then(function(code) {
+                    deferred.resolve({siteurl: siteurl, code: code});
+                }, function(error) {
+                    deferred.reject(error);
+                });
+
             }, function(error) {
-                deferred.reject(error);
+                // Site doesn't exist.
+
+                if (siteurl.indexOf("https://") === 0) {
+                    // Retry without HTTPS.
+                    self.checkSite(siteurl, "http://").then(deferred.resolve, deferred.reject);
+                } else{
+                    deferred.reject('cannotconnect');
+                }
             });
 
-        }, function(error) {
-            // Site doesn't exist.
-
-            if (siteurl.indexOf("https://") === 0) {
-                // Retry without HTTPS.
-                self.checkSite(siteurl, "http://").then(deferred.resolve, deferred.reject);
-            } else{
-                deferred.reject('cannotconnect');
-            }
-        });
+        }
 
         return deferred.promise;
 
@@ -153,16 +141,7 @@ angular.module('mm.core')
                                 deferred.reject("unexpectederror");
                         }
                     } else {
-                        // Now we store here the service used by this site.
-                        // var service = {
-                        //     id: hex_md5(siteurl),
-                        //     siteurl: siteurl,
-                        //     service: MM.config.wsextservice
-                        // };
-                        // MM.db.insert("services", service);
-                        // TODO: Store service
-                        store.setItem('service'+siteurl, service);
-
+                        services[siteurl] = service; // No need to store it in DB.
                         deferred.resolve(code);
                     }
                 })
@@ -189,56 +168,62 @@ angular.module('mm.core')
         retry = retry || false;
         var deferred = $q.defer();
 
-        var loginurl = siteurl + '/login/token.php';
-        var data = {
-            username: username,
-            password: password,
-            service: determineService(siteurl)
-        };
+        determineService(siteurl).then(function(service) {
 
-        $http.post(loginurl, data).success(function(response) {
+            var loginurl = siteurl + '/login/token.php';
+            var data = {
+                username: username,
+                password: password,
+                service: service
+            };
 
-            if (typeof(response.token) != 'undefined') {
-                deferred.resolve(response.token);
-            } else {
+            $http.post(loginurl, data).success(function(response) {
 
-                if (typeof(response.error) != 'undefined') {
-                    // We only allow one retry (to avoid loops).
-                    if (!retry && response.errorcode == "requirecorrectaccess") {
-                        siteurl = siteurl.replace("https://", "https://www.");
-                        siteurl = siteurl.replace("http://", "http://www.");
-                        logindata.siteurl = siteurl;
-
-                        self.getUserToken(siteurl, username, password, true).then(deferred.resolve, deferred.reject);
-                    } else {
-                        deferred.reject(response.error);
-                    }
+                if (typeof(response.token) != 'undefined') {
+                    deferred.resolve(response.token);
                 } else {
-                    deferred.reject('invalidaccount');
+
+                    if (typeof(response.error) != 'undefined') {
+                        // We only allow one retry (to avoid loops).
+                        if (!retry && response.errorcode == "requirecorrectaccess") {
+                            siteurl = siteurl.replace("https://", "https://www.");
+                            siteurl = siteurl.replace("http://", "http://www.");
+                            logindata.siteurl = siteurl;
+
+                            self.getUserToken(siteurl, username, password, true).then(deferred.resolve, deferred.reject);
+                        } else {
+                            deferred.reject(response.error);
+                        }
+                    } else {
+                        deferred.reject('invalidaccount');
+                    }
                 }
-            }
-        }).error(function(data) {
-            deferred.reject('cannotconnect');
-        });
+            }).error(function(data) {
+                deferred.reject('cannotconnect');
+            });
+
+        }, deferred.reject);
 
         return deferred.promise;
     };
 
-    self.newSite = function(siteurl, token) {
+    self.newSite = function(siteurl, username, token) {
         var deferred = $q.defer();
-        $mmSite.setSite(new Site(null, siteurl, token));
+
+        var siteid = md5.createHash(siteurl + username);
+        $mmSite.setSite(siteid, siteurl, token);
+
         $mmSite.getSiteInfo().then(function(infos) {
             if (isValidMoodleVersion(infos.functions)) {
-                var siteid = md5.createHash(siteurl + infos.username);
-                self.addSite(id, siteurl, token, infos);
-                deferred.resolve(siteid);
+                self.addSite(siteid, siteurl, token, infos);
+                deferred.resolve();
             } else {
                 deferred.reject('invalidmoodleversion'+'2.4');
+                $mmSite.deleteCurrentSite();
             }
-            $mmSite.logout();
         }, function(error) {
             deferred.reject(error);
-            $mmSite.logout();
+            $mmSite.deleteCurrentSite();
         });
         return deferred.promise;
     }
@@ -251,22 +236,26 @@ angular.module('mm.core')
     function determineService(siteurl) {
         // We need to try siteurl in both https or http (due to loginhttps setting).
 
+        var deferred = $q.defer();
+
         // First http://
         siteurl = siteurl.replace("https://", "http://");
-        var service = store.getItem('service'+siteurl);
-        if (service) {
-            return service;
+        if (services[siteurl]) {
+            deferred.resolve(services[siteurl]);
+            return deferred.promise;
         }
 
         // Now https://
         siteurl = siteurl.replace("http://", "https://");
-        var service = store.getItem('service'+siteurl);
-        if (service) {
-            return service;
+        if (services[siteurl]) {
+            deferred.resolve(services[siteurl]);
+            return deferred.promise;
         }
 
         // Return default service.
-        return mmConfig.get('wsservice');
+        $mmConfig.get('wsservice').then(deferred.resolve, deferred.reject);
+
+        return deferred.promise;
     };
 
     /**
@@ -290,9 +279,9 @@ angular.module('mm.core')
      * @param  {Object} site  Moodle site data returned from the server.
      */
     self.addSite = function(id, siteurl, token, infos) {
-        var sites = self.getSites();
-        sites.push(new Site(id, siteurl, token, infos));
-        store.sites = JSON.stringify(sites);
+        // var sites = self.getSites();
+        // sites.push(new Site(id, siteurl, token, infos));
+        // store.sites = JSON.stringify(sites);
     };
 
     /**

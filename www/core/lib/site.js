@@ -21,7 +21,7 @@ angular.module('mm.core')
  * @ngdoc service
  * @name $mmSite
  */
-.factory('$mmSite', function($http, $q, $mmWS, $log, md5) {
+.factory('$mmSite', function($http, $q, $mmWS, $mmDB, $mmConfig, $log, md5) {
 
     var deprecatedFunctions = {
         "moodle_webservice_get_siteinfo": "core_webservice_get_site_info",
@@ -33,7 +33,27 @@ angular.module('mm.core')
     };
 
     var self = {},
-        currentSite;
+        currentSite,
+        siteSchema = {
+            autoSchema: true,
+            stores: [
+                {
+                    name: 'wscache',
+                    keyPath: 'id'
+                }
+            ]
+        };
+
+    function Site(id, siteurl, token, infos) {
+        this.id = id;
+        this.siteurl = siteurl;
+        this.token = token;
+        this.infos = infos;
+
+        if (this.id) {
+            this.db = $mmDB.getDB('Site-' + this.id, siteSchema);
+        }
+    };
 
     /**
      * Save the token retrieved and load the full siteinfo object.
@@ -54,12 +74,13 @@ angular.module('mm.core')
         }
 
         function siteDataRetrieved(infos) {
+            currentSite.infos = infos;
             deferred.resolve(infos);
         }
 
         // We have a valid token, try to get the site info.
-        self.read('moodle_webservice_get_siteinfo', {}).then(siteDataRetrieved, function(error) {
-            self.read('core_webservice_get_site_info', {}).then(siteDataRetrieved, function(error) {
+        self.read('core_webservice_get_site_info', {}).then(siteDataRetrieved, function(error) {
+            self.read('moodle_webservice_get_site_info', {}).then(siteDataRetrieved, function(error) {
                 deferred.reject(error);
             });
         });
@@ -75,21 +96,34 @@ angular.module('mm.core')
         delete currentSite;
     }
 
-    self.setSite = function(site) {
-        currentSite = site;
+    self.setSite = function(id, siteurl, token, infos) {
+        currentSite = new Site(id, siteurl, token, infos);
+    }
+
+    self.deleteCurrentSite = function(siteid) {
+        $mmDB.deleteDB('Site-' + siteid);
+        delete currentSite;
     }
 
     self.read = function(method, data, preSets) {
         preSets = preSets || {};
-        preSets.getFromCache = 1;
-        preSets.saveToCache = 1;
+        if (typeof(preSets.getFromCache) === 'undefined') {
+            preSets.getFromCache = 1;
+        }
+        if (typeof(preSets.saveToCache) === 'undefined') {
+            preSets.saveToCache = 1;
+        }
         return self.request(method, data, preSets);
     }
 
     self.write = function(method, data, preSets) {
         preSets = preSets || {};
-        preSets.getFromCache = 0;
-        preSets.saveToCache = 0;
+        if (typeof(preSets.getFromCache) === 'undefined') {
+            preSets.getFromCache = 1;
+        }
+        if (typeof(preSets.saveToCache) === 'undefined') {
+            preSets.saveToCache = 1;
+        }
         return self.request(method, data, preSets);
     }
 
@@ -112,6 +146,7 @@ angular.module('mm.core')
 
         if (!self.isLoggedIn()) {
             deferred.reject('notloggedin');
+            return deferred.promise;
         }
 
         // Alter the method to be non-deprecated if necessary/
@@ -124,20 +159,20 @@ angular.module('mm.core')
         getFromCache(method, data, preSets).then(function(data) {
             deferred.resolve(data);
         }, function() {
-            var saveToCache = preSets.saveToCache;
+            var mustSaveToCache = preSets.saveToCache;
 
             // Do not pass those options to the core WS factory.
             delete preSets.getFromCache;
             delete preSets.saveToCache;
             delete preSets.omitExpires;
 
-            $mmWS.call(method, data, preSets).then(function(data) {
+            $mmWS.call(method, data, preSets).then(function(response) {
 
-                if (saveToCache) {
-                    db.set('wscache', key, data);
+                if (mustSaveToCache) {
+                    saveToCache(method, data, response);
                 }
 
-                deferred.resolve(data);
+                deferred.resolve(response);
             }, function(error) {
                 deferred.reject(error);
             });
@@ -147,7 +182,7 @@ angular.module('mm.core')
     }
 
     self.wsAvailable = function(method) {
-        if (!self.isLoggedIn()) {
+        if (!self.isLoggedIn() || typeof(currentSite.infos) == 'undefined') {
             return false;
         }
         for(var i = 0; i < currentSite.infos.functions; i++) {
@@ -176,7 +211,7 @@ angular.module('mm.core')
     function getFromCache(method, data, preSets) {
         var result,
             db = currentSite.db,
-            deferred = $q.defer();
+            deferred = $q.defer(),
             key;
 
         if (!db) {
@@ -188,23 +223,22 @@ angular.module('mm.core')
         }
 
         key = method + ':' + JSON.stringify(data);
-        db.get('wscache', key).then(function(data) {
-            var d = new Date(),
-                now = d.getTime();
+        db.get('wscache', key).then(function(entry) {
+            var now = new Date().getTime();
 
-            if (!omitExpires) {
+            if (!preSets.omitExpires) {
                 // TODO use proper config value.
-                if (now > cache.mmcacheexpirationtime) {
+                if (now > entry.expirationtime) {
                     deferred.reject();
                     return;
                 }
             }
 
             // TODO Check type of returned value.
-            if (typeof data !== 'undefined') {
-                var expires = (cache.mmcacheexpirationtime - now) / 1000;
+            if (typeof(entry) !== 'undefined' && typeof(entry.data) !== 'undefined') {
+                var expires = (entry.expirationtime - now) / 1000;
                 $log.info('Cached element found, id: ' + key + ' expires in ' + expires + ' seconds');
-                deferred.resolve(data);
+                deferred.resolve(entry.data);
                 return;
             }
 
@@ -212,6 +246,31 @@ angular.module('mm.core')
         }, function() {
             deferred.reject();
         });
+
+        return deferred.promise;
+    }
+
+    function saveToCache(method, data, response) {
+        var db = currentSite.db,
+            deferred = $q.defer(),
+            key = method + ':' + JSON.stringify(data);
+
+        if (!db) {
+            deferred.reject();
+        } else {
+
+            $mmConfig.get('cache_expiration_time').then(function(cacheExpirationTime) {
+
+                var entry = {
+                    id: key,
+                    data: response
+                };
+                entry.expirationtime = new Date().getTime() + cacheExpirationTime;
+                db.insert('wscache', entry);
+                deferred.resolve();
+
+            }, deferred.reject);
+        }
 
         return deferred.promise;
     }
