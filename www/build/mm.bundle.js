@@ -144,6 +144,7 @@ angular.module('mm.core')
                 return getConfig(name);
             }, function() {
                 $log.error('Failed to initialize $mmConfig.');
+                return $q.reject();
             });
         }
         return getConfig(name);
@@ -166,7 +167,7 @@ angular.module('mm.core')
                 return setConfig(name, value);
             }, function() {
                 $log.error('Failed to initialize $mmConfig.');
-                deferred.reject();
+                return $q.reject();
             });
         }
         return setConfig(name, value);
