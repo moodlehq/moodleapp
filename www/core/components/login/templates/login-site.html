@@ -1,0 +1,17 @@
+<ion-view view-title="Connect to Moodle">
+  <ion-content>
+      <div class="list">
+        <div class="item item-text-wrap">Please enter the URL of your Moodle site. Note that it might not be configured to work with this app.</div>
+        <form>
+          <label class="item item-input item-stacked-label">
+            <span class="input-label">Site address</span>
+            <input type="url" placeholder="moodle.org" ng-model="logindata.siteurl" no-input-validation >
+          </label>
+          <div class="item">
+              <button class="button button-block" ng-click="connect(logindata.siteurl)">Connect!</button>
+          </div>
+        </form>
+      </div>
+    </form>
+  </ion-content>
+</ion-view>
