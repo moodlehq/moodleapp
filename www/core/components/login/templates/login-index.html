@@ -7,7 +7,7 @@
       <ion-list ng-repeat="site in sites track by $index" show-delete='data.showDelete'>
         <ion-item class="item item-thumbnail-left item-remove-animate" ng-click="login($index)">
           <ion-delete-button class="ion-minus-circled" ng-click='onItemDelete($event, $index)'></ion-delete-button>
-          <img ng-src="{{site.userpictureurl}}">
+          <img ng-src="{{site.avatar}}">
           <h2>{{site.fullname | formatText}}</h2>
           <p>{{site.sitename | formatText}}</p>
           <p>{{site.siteurl}}</p>

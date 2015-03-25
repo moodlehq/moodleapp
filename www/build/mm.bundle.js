@@ -101,10 +101,8 @@ angular.module('mm.core', ['pascalprecht.translate']);
 angular.module('mm.core')
 .provider('$mmApp', function() {
         var DBNAME = 'MoodleMobile',
-        dboptions = {
-            autoSchema: true
-        },
         dbschema = {
+            autoSchema: true,
             stores: []
         };
         this.registerStore = function(store) {
@@ -133,7 +131,7 @@ angular.module('mm.core')
         return exists;
     }
     this.$get = function($mmDB) {
-        var db = $mmDB.getDB(DBNAME, dbschema, dboptions),
+        var db = $mmDB.getDB(DBNAME, dbschema),
             self = {};
                 self.getDB = function() {
             return db;
@@ -603,9 +601,11 @@ angular.module('mm.core')
     self.setSite = function(id, siteurl, token, infos) {
         currentSite = new Site(id, siteurl, token, infos);
     }
-    self.deleteCurrentSite = function(siteid) {
-        $mmDB.deleteDB('Site-' + siteid);
-        delete currentSite;
+    self.deleteSite = function(siteid) {
+        if(typeof(currentSite) !== 'undefined' && currentSite.id == siteid) {
+            self.logout();
+        }
+        return $mmDB.deleteDB('Site-' + siteid);
     }
     self.read = function(method, data, preSets) {
         preSets = preSets || {};
@@ -667,6 +667,13 @@ angular.module('mm.core')
         }
         return false;
     }
+    self.getCurrentSiteURL = function() {
+        if (typeof(currentSite) !== 'undefined' && typeof(currentSite.siteurl) !== 'undefined') {
+            return currentSite.siteurl;
+        } else {
+            return undefined;
+        }
+    };
     function checkDeprecatedFunction(method) {
         if (typeof deprecatedFunctions[method] !== "undefined") {
             if (self.wsAvailable(deprecatedFunctions[method])) {
@@ -736,10 +743,20 @@ angular.module('mm.core')
 });
 
 angular.module('mm.core')
-.factory('$mmSitesManager', function($http, $q, $mmSite, md5, $mmConfig, $mmUtil) {
+.constant('mmSitesStore', 'sites')
+.config(function($mmAppProvider, mmSitesStore) {
+    var stores = [
+        {
+            name: mmSitesStore,
+            keyPath: 'id'
+        }
+    ];
+    $mmAppProvider.registerStores(stores);
+})
+.factory('$mmSitesManager', function($http, $q, $mmSite, md5, $mmConfig, $mmApp, $mmUtil, mmSitesStore) {
     var self = {},
-        services = {};
-    var store = window.sessionStorage;
+        services = {},
+        db = $mmApp.getDB();
         self.getDemoSiteData = function(siteurl) {
         return $mmConfig.get('demo_sites').then(function(demo_sites) {
             for (var i = 0; i < demo_sites.length; i++) {
@@ -892,30 +909,53 @@ angular.module('mm.core')
         return false;
     };
         self.addSite = function(id, siteurl, token, infos) {
+        db.insert(mmSitesStore, {
+            id: id,
+            siteurl: siteurl,
+            token: token,
+            infos: infos
+        });
     };
-        self.loadSite = function(index) {
-        var site = self.getSite(index);
-        $mmSite.setSite(Site);
+        self.loadSite = function(siteid) {
+        return db.get(mmSitesStore, siteid).then(function(site) {
+            console.log(site);
+            $mmSite.setSite(site.siteid, site.siteurl, site.token, site.infos);
+        });
     };
-    self.deleteSite = function(index) {
-        var sites = self.getSites();
-        sites.splice(index, 1);
-        store.sites = JSON.stringify(sites);
+    self.deleteSite = function(siteid) {
+        $log.debug('Delete site '+siteid);
+        return $mmSite.deleteSite(siteid).then(function() {
+            return db.remove(mmSitesStore, siteid);
+        });
+    };
+    self.noSites = function() {
+        return db.count(mmSitesStore).then(function(count) {
+            if(count > 0) {
+                return $q.reject();
+            }
+        });
     };
     self.hasSites = function() {
-        var sites = self.getSites();
-        return sites.length > 0;
+        return db.count(mmSitesStore).then(function(count) {
+            if(count == 0) {
+                return $q.reject();
+            }
+        });
     };
     self.getSites = function() {
-        var sites = store.sites;
-        if (!sites) {
-            return [];
-        }
-        return JSON.parse(sites);
-    };
-    self.getSite = function(index) {
-        var sites = self.getSites();
-        return sites[index];
+        return db.getAll(mmSitesStore).then(function(sites) {
+            var formattedSites = [];
+            angular.forEach(sites, function(site) {
+                formattedSites.push({
+                    id: site.id,
+                    siteurl: site.siteurl,
+                    fullname: site.infos.fullname,
+                    sitename: site.infos.sitename,
+                    avatar: site.infos.userpictureurl
+                });
+            });
+            return formattedSites;
+        });
     };
     return self;
 });
@@ -1187,22 +1227,21 @@ angular.module('mm.core')
             return '';
         }
         text = text.replace(/<a([^>]+)>/g,"<a target=\"_blank\" $1>");
+        var currentSiteURL = $mmSite.getCurrentSiteURL();
         var ft = text.match(/\$\$(.+?)\$\$/);
-        if (ft) {
-            if(current_site) {
-                text = text.replace(/\$\$(.+?)\$\$/g, function(full, match) {
-                    if (!match) {
-                        return "";
-                    }
-                    var md5 = md5.createHash(match);
-                    return '<img src="' + current_site.siteurl + "/filter/tex/pix.php/" + md5 + '">';
-                });
-            }
+        if (ft && typeof(currentSiteURL) !== 'undefined') {
+            text = text.replace(/\$\$(.+?)\$\$/g, function(full, match) {
+                if (!match) {
+                    return "";
+                }
+                var md5 = md5.createHash(match);
+                return '<img src="' + currentSiteURL + "/filter/tex/pix.php/" + md5 + '">';
+            });
         }
-        if (!current_site) {
+        if (typeof(currentSiteURL) === 'undefined') {
             return text;
         }
-        var url = current_site.siteurl.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        var url = currentSiteURL.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
         var expr = new RegExp(url + "[^\"']*", "gi");
         text = text.replace(expr, function(match) {
             if (!courseId) {
@@ -1249,19 +1288,24 @@ angular.module('mm.core.login', [])
         templateUrl: 'core/components/login/templates/login-index.html',
         controller: 'mmAuthLoginCtrl',
         onEnter: function($state, $mmSitesManager) {
-            if (!$mmSitesManager.hasSites()) {
+            $mmSitesManager.noSites().then(function() {
                 $state.go('mm_login.site');
+            });
+        },
+        resolve: {
+            sites: function($mmSitesManager) {
+                return $mmSitesManager.getSites();
             }
-        }
+          }
     })
     .state('mm_login.site', {
         url: '/site',
         templateUrl: 'core/components/login/templates/login-site.html',
         controller: 'mmAuthSiteCtrl',
         onEnter: function($ionicNavBarDelegate, $mmSitesManager) {
-            if (!$mmSitesManager.hasSites()) {
+            $mmSitesManager.noSites().then(function() {
                 $ionicNavBarDelegate.showBackButton(false);
-            }
+            });
         }
     })
     .state('mm_login.credentials', {
@@ -1312,36 +1356,45 @@ angular.module('mm.core.login')
 });
 
 angular.module('mm.core.login')
-.controller('mmAuthLoginCtrl', function($scope, $state, $ionicHistory, $mmSitesManager, $ionicLoading) {
-    $scope.sites = $mmSitesManager.getSites();
+.controller('mmAuthLoginCtrl', function($scope, $state, $mmSitesManager, $ionicPopup, $log, sites) {
+    $scope.sites = sites;
     $scope.data = {
-        hasSites: $mmSitesManager.hasSites(),
+        hasSites: sites.length > 0,
         showDetele: false
-    }
+    };
     $scope.toggleDelete = function() {
         $scope.data.showDelete = !$scope.data.showDelete;
     };
     $scope.onItemDelete = function(e, index) {
         e.stopPropagation();
-        var site = $mmSitesManager.getSite(index);
+        var site = $scope.sites[index];
         $ionicPopup.confirm({template: 'Are you sure you want to delete the site "'+site.sitename+'"?'})
             .then(function(confirmed) {
                 if(confirmed) {
-                    $mmSitesManager.deleteSite(index);
-                    $scope.sites.splice(index, 1);
-                    if(!$mmSitesManager.hasSites()) {
-                        $state.go('mm_login.site');
-                    }
+                    $mmSitesManager.deleteSite(site.id).then(function() {
+                        $scope.sites.splice(index, 1);
+                        $mmSitesManager.noSites().then(function() {
+                            $state.go('mm_login.site');
+                        });
+                    }, function(error) {
+                        $log.error('Delete site failed');
+                        console.log(error);
+                    });
                 }
             });
     }
     $scope.login = function(index) {
-        $mmSitesManager.loginInSite(index);
-        $state.go('site.index');
-    }
+        var siteid = $scope.sites[index].id;
+        $mmSitesManager.loadSite(siteid).then(function() {
+            $state.go('site.index');
+        }, function(error) {
+            $log.error('Error loading site.');
+            console.log(error);
+        });
+    };
     $scope.add = function() {
         $state.go('mm_login.site');
-    }
+    };
 });
 angular.module('mm.core.login')
 .controller('mmAuthSiteCtrl', function($scope, $state, $mmSitesManager, $mmSite, $mmUtil) {

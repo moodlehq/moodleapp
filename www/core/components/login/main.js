@@ -21,10 +21,15 @@ angular.module('mm.core.login', [])
         controller: 'mmAuthLoginCtrl',
         onEnter: function($state, $mmSitesManager) {
             // Skip this page if there are no sites yet.
-            if (!$mmSitesManager.hasSites()) {
+            $mmSitesManager.noSites().then(function() {
                 $state.go('mm_login.site');
+            });
+        },
+        resolve: {
+            sites: function($mmSitesManager) {
+                return $mmSitesManager.getSites();
             }
-        }
+          }
     })
 
     .state('mm_login.site', {
@@ -32,9 +37,10 @@ angular.module('mm.core.login', [])
         templateUrl: 'core/components/login/templates/login-site.html',
         controller: 'mmAuthSiteCtrl',
         onEnter: function($ionicNavBarDelegate, $mmSitesManager) {
-            if (!$mmSitesManager.hasSites()) {
+            // Don't show back button if there are no sites.
+            $mmSitesManager.noSites().then(function() {
                 $ionicNavBarDelegate.showBackButton(false);
-            }
+            });
         }
     })
 

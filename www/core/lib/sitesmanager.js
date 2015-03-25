@@ -14,12 +14,23 @@
 
 angular.module('mm.core')
 
-.factory('$mmSitesManager', function($http, $q, $mmSite, md5, $mmConfig, $mmUtil) {
+.constant('mmSitesStore', 'sites')
+
+.config(function($mmAppProvider, mmSitesStore) {
+    var stores = [
+        {
+            name: mmSitesStore,
+            keyPath: 'id'
+        }
+    ];
+    $mmAppProvider.registerStores(stores);
+})
+
+.factory('$mmSitesManager', function($http, $q, $mmSite, md5, $mmConfig, $mmApp, $mmUtil, mmSitesStore) {
 
     var self = {},
-        services = {};
-    // TODO: Save to a real storage.
-    var store = window.sessionStorage;
+        services = {},
+        db = $mmApp.getDB();
 
     /**
      * Get the demo data of the siteurl if it is a demo site.
@@ -279,42 +290,62 @@ angular.module('mm.core')
      * @param  {Object} site  Moodle site data returned from the server.
      */
     self.addSite = function(id, siteurl, token, infos) {
-        // var sites = self.getSites();
-        // sites.push(new Site(id, siteurl, token, infos));
-        // store.sites = JSON.stringify(sites);
+        db.insert(mmSitesStore, {
+            id: id,
+            siteurl: siteurl,
+            token: token,
+            infos: infos
+        });
     };
 
     /**
      * Login a user to a site from the list of sites.
      * @param  {Number} index  Position of the site in the list of stored sites.
      */
-    self.loadSite = function(index) {
-        var site = self.getSite(index);
-        $mmSite.setSite(Site);
+    self.loadSite = function(siteid) {
+        return db.get(mmSitesStore, siteid).then(function(site) {
+            console.log(site);
+            $mmSite.setSite(site.siteid, site.siteurl, site.token, site.infos);
+        });
     };
 
-    self.deleteSite = function(index) {
-        var sites = self.getSites();
-        sites.splice(index, 1);
-        store.sites = JSON.stringify(sites);
+    self.deleteSite = function(siteid) {
+        $log.debug('Delete site '+siteid);
+        return $mmSite.deleteSite(siteid).then(function() {
+            return db.remove(mmSitesStore, siteid);
+        });
+    };
+
+    self.noSites = function() {
+        return db.count(mmSitesStore).then(function(count) {
+            if(count > 0) {
+                return $q.reject();
+            }
+        });
     };
 
     self.hasSites = function() {
-        var sites = self.getSites();
-        return sites.length > 0;
+        return db.count(mmSitesStore).then(function(count) {
+            if(count == 0) {
+                return $q.reject();
+            }
+        });
     };
 
     self.getSites = function() {
-        var sites = store.sites;
-        if (!sites) {
-            return [];
-        }
-        return JSON.parse(sites);
-    };
-
-    self.getSite = function(index) {
-        var sites = self.getSites();
-        return sites[index];
+        return db.getAll(mmSitesStore).then(function(sites) {
+            var formattedSites = [];
+            angular.forEach(sites, function(site) {
+                formattedSites.push({
+                    id: site.id,
+                    siteurl: site.siteurl,
+                    fullname: site.infos.fullname,
+                    sitename: site.infos.sitename,
+                    avatar: site.infos.userpictureurl
+                });
+            });
+            return formattedSites;
+        });
     };
 
     return self;
