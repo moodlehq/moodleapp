@@ -100,9 +100,11 @@ angular.module('mm.core')
         currentSite = new Site(id, siteurl, token, infos);
     }
 
-    self.deleteCurrentSite = function(siteid) {
-        $mmDB.deleteDB('Site-' + siteid);
-        delete currentSite;
+    self.deleteSite = function(siteid) {
+        if(typeof(currentSite) !== 'undefined' && currentSite.id == siteid) {
+            self.logout();
+        }
+        return $mmDB.deleteDB('Site-' + siteid);
     }
 
     self.read = function(method, data, preSets) {
@@ -194,6 +196,14 @@ angular.module('mm.core')
         return false;
     }
 
+    self.getCurrentSiteURL = function() {
+        if (typeof(currentSite) !== 'undefined' && typeof(currentSite.siteurl) !== 'undefined') {
+            return currentSite.siteurl;
+        } else {
+            return undefined;
+        }
+    };
+
     function checkDeprecatedFunction(method) {
         if (typeof deprecatedFunctions[method] !== "undefined") {
             if (self.wsAvailable(deprecatedFunctions[method])) {
@@ -227,14 +237,12 @@ angular.module('mm.core')
             var now = new Date().getTime();
 
             if (!preSets.omitExpires) {
-                // TODO use proper config value.
                 if (now > entry.expirationtime) {
                     deferred.reject();
                     return;
                 }
             }
 
-            // TODO Check type of returned value.
             if (typeof(entry) !== 'undefined' && typeof(entry.data) !== 'undefined') {
                 var expires = (entry.expirationtime - now) / 1000;
                 $log.info('Cached element found, id: ' + key + ' expires in ' + expires + ' seconds');
