@@ -36,6 +36,8 @@ var paths = {
     './www/app.js',
     './www/core/main.js',
     './www/core/lib/*.js',
+    './www/core/filters/*.js',
+    './www/core/directives/*.js',
     './www/core/components/**/main.js',
     './www/core/components/**/*.js',
     './www/plugins/**/main.js',
