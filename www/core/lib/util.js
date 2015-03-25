@@ -14,7 +14,7 @@ angular.module('mm.core')
                     fullSubName = name + '[' + i + ']';
                     innerObj = {};
                     innerObj[fullSubName] = subValue;
-                    query += param(innerObj) + '&';
+                    query += this.param(innerObj) + '&';
                 }
             }
             else if (value instanceof Object) {
@@ -23,7 +23,7 @@ angular.module('mm.core')
                     fullSubName = name + '[' + subName + ']';
                     innerObj = {};
                     innerObj[fullSubName] = subValue;
-                    query += param(innerObj) + '&';
+                    query += this.param(innerObj) + '&';
                 }
             }
             else if (value !== undefined && value !== null) query += encodeURIComponent(name) + '=' + encodeURIComponent(value) + '&';
