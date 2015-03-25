@@ -26,6 +26,7 @@
     "shelljs": "^0.3.0"
   },
   "cordovaPlugins": [
-    "org.apache.cordova.globalization"
+    "org.apache.cordova.globalization",
+    "org.apache.cordova.file"
   ]
 }
