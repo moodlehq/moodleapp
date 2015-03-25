@@ -36,6 +36,7 @@ var paths = {
     './www/core/components/**/*.js',
     './www/plugins/**/main.js',
     './www/plugins/**/*.js',
+    '!./www/**/tests/*.js'
   ],
   sass: ['./scss/**/*.scss']
 };
