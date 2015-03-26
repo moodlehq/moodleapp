@@ -26,7 +26,8 @@ angular.module('mm.core')
     $mmAppProvider.registerStores(stores);
 })
 
-.factory('$mmSitesManager', function($http, $q, $mmSite, md5, $translate, $mmConfig, $mmApp, $mmUtil, mmSitesStore, $log) {
+.factory('$mmSitesManager', function($http, $q, $mmSite, md5, $translate, $mmConfig, $mmApp,
+                                     $mmUtil, mmSitesStore, $log, mmLoginSSO) {
 
     var self = {},
         services = {},
@@ -326,7 +327,6 @@ angular.module('mm.core')
      */
     self.loadSite = function(siteid) {
         return db.get(mmSitesStore, siteid).then(function(site) {
-            console.log(site);
             $mmSite.setSite(site.siteid, site.siteurl, site.token, site.infos);
         });
     };
@@ -367,6 +367,49 @@ angular.module('mm.core')
                 });
             });
             return formattedSites;
+        });
+    };
+
+    self.validateBrowserSSOLogin = function(url) {
+        // Delete the URL scheme from the URL.
+        url = url.replace("moodlemobile://token=", "");
+        // Decode from base64.
+        url = atob(url);
+
+        // Split signature:::token
+        var params = url.split(":::");
+
+        return $mmConfig.get(mmLoginSSO.siteurl).then(function(launchSiteURL) {
+            return $mmConfig.get(mmLoginSSO.passport).then(function(passport) {
+
+                // Reset temporary values.
+                $mmConfig.delete(mmLoginSSO.siteurl);
+                $mmConfig.delete(mmLoginSSO.passport);
+
+                // Validate the signature.
+                // We need to check both http and https.
+                var signature = md5.createHash(launchSiteURL + passport);
+                if (signature != params[0]) {
+                    if (launchSiteURL.indexOf("https://") != -1) {
+                        launchSiteURL = launchSiteURL.replace("https://", "http://");
+                    } else {
+                        launchSiteURL = launchSiteURL.replace("http://", "https://");
+                    }
+                    signature = md5.createHash(launchSiteURL + passport);
+                }
+
+                if (signature == params[0]) {
+                    $log.debug('Signature validated');
+                    return { siteurl: launchSiteURL, token: params[1] };
+                } else {
+                    $log.debug('Inalid signature in the URL request yours: ' + params[0] + ' mine: '
+                                    + signature + ' for passport ' + passport);
+                    return $translate('unexpectederror').then(function(errorString) {
+                        return $q.reject(errorString);
+                    });
+                }
+
+            });
         });
     };
 

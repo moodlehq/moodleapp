@@ -1,5 +1,10 @@
 angular.module('mm.core.login', [])
 
+.constant('mmLoginSSO', {
+    siteurl: 'launchSiteURL',
+    passport: 'launchPassport'
+})
+
 .config(function($stateProvider) {
 
     $stateProvider
@@ -60,4 +65,33 @@ angular.module('mm.core.login', [])
         }
     });
 
+})
+
+.run(function($log, $state, $mmUtil, $translate, $mmSitesManager, mmLoginSSO) {
+
+    window.handleOpenURL = function(url) {
+        // App opened using custom URL scheme. Probably an SSO authentication.
+        $log.debug('App launched by URL');
+
+        $translate('mm.core.login.authenticating').then(function(authenticatingString) {
+            $mmUtil.showModalLoading(authenticatingString);
+        });
+
+        $mmSitesManager.validateBrowserSSOLogin(url).then(function(sitedata) {
+
+            $mmSitesManager.newSite(sitedata.siteurl, sitedata.token).then(function() {
+                $state.go('site.index');
+            }, function(error) {
+                $mmUtil.showErrorModal(error);
+            }).finally(function() {
+                $mmUtil.closeModalLoading();
+            });
+
+        }, function(errorMessage) {
+            $mmUtil.closeModalLoading();
+            if (typeof(errorMessage) === 'string' && errorMessage != '') {
+                $mmUtil.showErrorModal(errorMessage);
+            }
+        });
+    }
 });

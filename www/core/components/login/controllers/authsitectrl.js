@@ -1,6 +1,7 @@
 angular.module('mm.core.login')
 
-.controller('mmAuthSiteCtrl', function($scope, $state, $mmSitesManager, $mmSite, $mmUtil, $ionicPopup, $translate, $ionicModal) {
+.controller('mmAuthSiteCtrl', function($scope, $state, $mmSitesManager, $mmSite, $mmUtil, $ionicPopup,
+                                       $translate, $ionicModal, $mmConfig, mmLoginSSO) {
 
     $scope.siteurl = '';
 
@@ -19,11 +20,11 @@ angular.module('mm.core.login')
 
             $mmSitesManager.getUserToken(sitedata.url, sitedata.username, sitedata.password).then(function(token) {
                 $mmSitesManager.newSite(sitedata.url, token).then(function() {
-                    $mmUtil.closeModalLoading();
                     $state.go('site.index');
                 }, function(error) {
-                    $mmUtil.closeModalLoading();
                     $mmUtil.showErrorModal(error);
+                }).finally(function() {
+                    $mmUtil.closeModalLoading();
                 });
             }, function(error) {
                 $mmUtil.closeModalLoading();
@@ -33,11 +34,37 @@ angular.module('mm.core.login')
         }, function() {
             // Not a demo site.
             $mmSitesManager.checkSite(url).then(function(result) {
-                $mmUtil.closeModalLoading();
-                $state.go('mm_login.credentials', {siteurl: result.siteurl});
+
+                if (result.code == 2) {
+                    // SSO. User needs to authenticate in a browser.
+                    $ionicPopup.confirm({template: $translate('mm.core.login.logininsiterequired')})
+                        .then(function(confirmed) {
+                            if (confirmed) {
+                                $mmConfig.get('wsextservice').then(function(service) {
+                                    var passport = Math.random() * 1000;
+                                    var loginurl = result.siteurl + "/local/mobile/launch.php?service=" + service;
+                                    loginurl += "&passport=" + passport;
+
+                                    $mmConfig.set(mmLoginSSO.siteurl, result.siteurl);
+                                    $mmConfig.set(mmLoginSSO.passport, passport);
+
+                                    window.open(loginurl, "_system");
+                                    if (navigator.app) {
+                                        navigator.app.exitApp();
+                                    }
+                                });
+
+                            }
+                        }
+                    );
+                } else {
+                    $state.go('mm_login.credentials', {siteurl: result.siteurl});
+                }
+
             }, function(error) {
-                $mmUtil.closeModalLoading();
                 $mmUtil.showErrorModal(error);
+            }).finally(function() {
+                $mmUtil.closeModalLoading();
             });
         });
     };

@@ -216,6 +216,28 @@ angular.module('mm.core')
             return deferred.promise;
         }
     };
+        self.delete = function(name) {
+        if (!initialized) {
+            return init().then(function() {
+                return deleteConfig(name);
+            }, function() {
+                $log.error('Failed to initialize $mmConfig.');
+                return $q.reject();
+            });
+        }
+        return deleteConfig(name);
+        function deleteConfig(name) {
+            var deferred,
+                fromStatic = self.config[name];
+            if (typeof(fromStatic) === 'undefined') {
+                return $mmApp.getDB().remove(mmConfigStore, name);
+            }
+            $log.error('Cannot delete static config setting \'' + name + '\'.');
+            deferred = $q.defer()
+            deferred.reject();
+            return deferred.promise;
+        }
+    };
     return self;
 });
 
@@ -768,7 +790,8 @@ angular.module('mm.core')
     ];
     $mmAppProvider.registerStores(stores);
 })
-.factory('$mmSitesManager', function($http, $q, $mmSite, md5, $translate, $mmConfig, $mmApp, $mmUtil, mmSitesStore, $log) {
+.factory('$mmSitesManager', function($http, $q, $mmSite, md5, $translate, $mmConfig, $mmApp,
+                                     $mmUtil, mmSitesStore, $log, mmLoginSSO) {
     var self = {},
         services = {},
         db = $mmApp.getDB();
@@ -954,7 +977,6 @@ angular.module('mm.core')
     };
         self.loadSite = function(siteid) {
         return db.get(mmSitesStore, siteid).then(function(site) {
-            console.log(site);
             $mmSite.setSite(site.siteid, site.siteurl, site.token, site.infos);
         });
     };
@@ -991,6 +1013,36 @@ angular.module('mm.core')
                 });
             });
             return formattedSites;
+        });
+    };
+    self.validateBrowserSSOLogin = function(url) {
+        url = url.replace("moodlemobile://token=", "");
+        url = atob(url);
+        var params = url.split(":::");
+        return $mmConfig.get(mmLoginSSO.siteurl).then(function(launchSiteURL) {
+            return $mmConfig.get(mmLoginSSO.passport).then(function(passport) {
+                $mmConfig.delete(mmLoginSSO.siteurl);
+                $mmConfig.delete(mmLoginSSO.passport);
+                var signature = md5.createHash(launchSiteURL + passport);
+                if (signature != params[0]) {
+                    if (launchSiteURL.indexOf("https://") != -1) {
+                        launchSiteURL = launchSiteURL.replace("https://", "http://");
+                    } else {
+                        launchSiteURL = launchSiteURL.replace("http://", "https://");
+                    }
+                    signature = md5.createHash(launchSiteURL + passport);
+                }
+                if (signature == params[0]) {
+                    $log.debug('Signature validated');
+                    return { siteurl: launchSiteURL, token: params[1] };
+                } else {
+                    $log.debug('Inalid signature in the URL request yours: ' + params[0] + ' mine: '
+                                    + signature + ' for passport ' + passport);
+                    return $translate('unexpectederror').then(function(errorString) {
+                        return $q.reject(errorString);
+                    });
+                }
+            });
         });
     };
     return self;
@@ -1320,6 +1372,10 @@ angular.module('mm.core')
     }
 });
 angular.module('mm.core.login', [])
+.constant('mmLoginSSO', {
+    siteurl: 'launchSiteURL',
+    passport: 'launchPassport'
+})
 .config(function($stateProvider) {
     $stateProvider
     .state('mm_login', {
@@ -1370,6 +1426,28 @@ angular.module('mm.core.login', [])
             }
         }
     });
+})
+.run(function($log, $state, $mmUtil, $translate, $mmSitesManager, mmLoginSSO) {
+    window.handleOpenURL = function(url) {
+        $log.debug('App launched by URL');
+        $translate('mm.core.login.authenticating').then(function(authenticatingString) {
+            $mmUtil.showModalLoading(authenticatingString);
+        });
+        $mmSitesManager.validateBrowserSSOLogin(url).then(function(sitedata) {
+            $mmSitesManager.newSite(sitedata.siteurl, sitedata.token).then(function() {
+                $state.go('site.index');
+            }, function(error) {
+                $mmUtil.showErrorModal(error);
+            }).finally(function() {
+                $mmUtil.closeModalLoading();
+            });
+        }, function(errorMessage) {
+            $mmUtil.closeModalLoading();
+            if (typeof(errorMessage) === 'string' && errorMessage != '') {
+                $mmUtil.showErrorModal(errorMessage);
+            }
+        });
+    }
 });
 
 angular.module('mm.core.login')
@@ -1449,7 +1527,8 @@ angular.module('mm.core.login')
     };
 });
 angular.module('mm.core.login')
-.controller('mmAuthSiteCtrl', function($scope, $state, $mmSitesManager, $mmSite, $mmUtil, $ionicPopup, $translate, $ionicModal) {
+.controller('mmAuthSiteCtrl', function($scope, $state, $mmSitesManager, $mmSite, $mmUtil, $ionicPopup,
+                                       $translate, $ionicModal, $mmConfig, mmLoginSSO) {
     $scope.siteurl = '';
     $scope.connect = function(url) {
         if (!url) {
@@ -1462,11 +1541,11 @@ angular.module('mm.core.login')
         $mmSitesManager.getDemoSiteData(url).then(function(sitedata) {
             $mmSitesManager.getUserToken(sitedata.url, sitedata.username, sitedata.password).then(function(token) {
                 $mmSitesManager.newSite(sitedata.url, token).then(function() {
-                    $mmUtil.closeModalLoading();
                     $state.go('site.index');
                 }, function(error) {
-                    $mmUtil.closeModalLoading();
                     $mmUtil.showErrorModal(error);
+                }).finally(function() {
+                    $mmUtil.closeModalLoading();
                 });
             }, function(error) {
                 $mmUtil.closeModalLoading();
@@ -1474,11 +1553,31 @@ angular.module('mm.core.login')
             });
         }, function() {
             $mmSitesManager.checkSite(url).then(function(result) {
-                $mmUtil.closeModalLoading();
-                $state.go('mm_login.credentials', {siteurl: result.siteurl});
+                if (result.code == 2) {
+                    $ionicPopup.confirm({template: $translate('mm.core.login.logininsiterequired')})
+                        .then(function(confirmed) {
+                            if (confirmed) {
+                                $mmConfig.get('wsextservice').then(function(service) {
+                                    var passport = Math.random() * 1000;
+                                    var loginurl = result.siteurl + "/local/mobile/launch.php?service=" + service;
+                                    loginurl += "&passport=" + passport;
+                                    $mmConfig.set(mmLoginSSO.siteurl, result.siteurl);
+                                    $mmConfig.set(mmLoginSSO.passport, passport);
+                                    window.open(loginurl, "_system");
+                                    if (navigator.app) {
+                                        navigator.app.exitApp();
+                                    }
+                                });
+                            }
+                        }
+                    );
+                } else {
+                    $state.go('mm_login.credentials', {siteurl: result.siteurl});
+                }
             }, function(error) {
-                $mmUtil.closeModalLoading();
                 $mmUtil.showErrorModal(error);
+            }).finally(function() {
+                $mmUtil.closeModalLoading();
             });
         });
     };
