@@ -1,14 +1,14 @@
-<ion-view view-title="Connect to Moodle">
+<ion-view view-title="{{ 'mm.core.login.connecttomoodle' | translate }}">
   <ion-content>
       <div class="list">
-        <div class="item item-text-wrap">Please enter the URL of your Moodle site. Note that it might not be configured to work with this app.</div>
+        <div class="item item-text-wrap">{{ 'mm.core.login.newsitedescription' | translate }}</div>
         <form>
           <label class="item item-input item-stacked-label">
-            <span class="input-label">Site address</span>
+            <span class="input-label">{{ 'mm.core.login.siteaddress' | translate }}</span>
             <input type="url" placeholder="moodle.org" ng-model="siteurl" no-input-validation >
           </label>
           <div class="item">
-              <button class="button button-block" ng-click="connect(siteurl)">Connect!</button>
+              <button class="button button-block" ng-click="connect(siteurl)">{{ 'mm.core.login.connect' | translate }}</button>
           </div>
         </form>
       </div>

@@ -1,6 +1,6 @@
 angular.module('mm.core.login')
 
-.controller('mmAuthCredCtrl', function($scope, $state, $stateParams, $timeout, $mmSitesManager, $mmSite, $mmUtil) {
+.controller('mmAuthCredCtrl', function($scope, $state, $stateParams, $mmSitesManager, $mmUtil, $translate) {
 
     $scope.siteurl = $stateParams.siteurl;
     $scope.credentials = {};
@@ -11,15 +11,17 @@ angular.module('mm.core.login')
             password = $scope.credentials.password;
 
         if (!username) {
-            alert('usernamerequired');
+            $mmUtil.showErrorModal('mm.core.login.usernamerequired', true);
             return;
         }
         if(!password) {
-            alert('passwordrequired');
+            $mmUtil.showErrorModal('mm.core.login.passwordrequired', true);
             return;
         }
 
-        $mmUtil.showModalLoading('Loading');
+        $translate('loading').then(function(loadingString) {
+            $mmUtil.showModalLoading(loadingString);
+        });
 
         $mmSitesManager.getUserToken(siteurl, username, password).then(function(token) {
             $mmSitesManager.newSite(siteurl, username, token).then(function() {
@@ -27,11 +29,12 @@ angular.module('mm.core.login')
                 delete $scope.credentials;
                 $state.go('site.index');
             }, function(error) {
-                alert(error);
+                $mmUtil.closeModalLoading();
+                $mmUtil.showErrorModal(error);
             });
         }, function(error) {
             $mmUtil.closeModalLoading();
-            alert(error);
+            $mmUtil.showErrorModal(error);
         });
     };
 

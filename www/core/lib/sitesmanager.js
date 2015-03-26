@@ -26,7 +26,7 @@ angular.module('mm.core')
     $mmAppProvider.registerStores(stores);
 })
 
-.factory('$mmSitesManager', function($http, $q, $mmSite, md5, $mmConfig, $mmApp, $mmUtil, mmSitesStore) {
+.factory('$mmSitesManager', function($http, $q, $mmSite, md5, $translate, $mmConfig, $mmApp, $mmUtil, mmSitesStore) {
 
     var self = {},
         services = {},
@@ -69,7 +69,9 @@ angular.module('mm.core')
         siteurl = $mmUtil.formatURL(siteurl);
 
         if (siteurl.indexOf('http://localhost') == -1 && !$mmUtil.isValidURL(siteurl)) {
-            deferred.reject('siteurlrequired');
+            $translate('mm.core.login.invalidsite').then(function(value) {
+                deferred.reject(value);
+            });
         } else {
 
             protocol = protocol || "https://";
@@ -92,7 +94,9 @@ angular.module('mm.core')
                     // Retry without HTTPS.
                     self.checkSite(siteurl, "http://").then(deferred.resolve, deferred.reject);
                 } else{
-                    deferred.reject('cannotconnect');
+                    $translate('cannotconnect').then(function(value) {
+                        deferred.reject(value);
+                    });
                 }
             });
 
@@ -125,7 +129,9 @@ angular.module('mm.core')
             $http.post(siteurl + '/local/mobile/check.php', {service: service} )
                 .success(function(response) {
                     if (typeof(response.code) == "undefined") {
-                        deferred.reject("unexpectederror");
+                        $translate('unexpectederror').then(function(value) {
+                            deferred.reject(value);
+                        });
                         return;
                     }
 
@@ -134,11 +140,15 @@ angular.module('mm.core')
                         switch (code) {
                             case 1:
                                 // Site in maintenance mode.
-                                deferred.reject("siteinmaintenance");
+                                $translate('mm.core.login.siteinmaintenance').then(function(value) {
+                                    deferred.reject(value);
+                                });
                                 break;
                             case 2:
                                 // Web services not enabled.
-                                deferred.reject("webservicesnotenabled");
+                                $translate('mm.core.login.webservicesnotenabled').then(function(value) {
+                                    deferred.reject(value);
+                                });
                                 break;
                             case 3:
                                 // Extended service not enabled, but the official is enabled.
@@ -146,10 +156,14 @@ angular.module('mm.core')
                                 break;
                             case 4:
                                 // Neither extended or official services enabled.
-                                deferred.reject("mobileservicesnotenabled");
+                                $translate('mm.core.login.mobileservicesnotenabled').then(function(value) {
+                                    deferred.reject(value);
+                                });
                                 break;
                             default:
-                                deferred.reject("unexpectederror");
+                                $translate('unexpectederror').then(function(value) {
+                                    deferred.reject(value);
+                                });
                         }
                     } else {
                         services[siteurl] = service; // No need to store it in DB.
@@ -206,11 +220,15 @@ angular.module('mm.core')
                             deferred.reject(response.error);
                         }
                     } else {
-                        deferred.reject('invalidaccount');
+                        $translate('mm.core.login.invalidaccount').then(function(value) {
+                            deferred.reject(value);
+                        });
                     }
                 }
             }).error(function(data) {
-                deferred.reject('cannotconnect');
+                $translate('cannotconnect').then(function(value) {
+                    deferred.reject(value);
+                });
             });
 
         }, deferred.reject);
@@ -229,7 +247,9 @@ angular.module('mm.core')
                 self.addSite(siteid, siteurl, token, infos);
                 deferred.resolve();
             } else {
-                deferred.reject('invalidmoodleversion'+'2.4');
+                $translate('mm.core.login.invalidmoodleversion').then(function(value) {
+                    deferred.reject(value);
+                });
                 $mmSite.deleteCurrentSite();
             }
         }, function(error) {

@@ -1,6 +1,6 @@
 angular.module('mm.core.login')
 
-.controller('mmAuthLoginCtrl', function($scope, $state, $mmSitesManager, $ionicPopup, $log, sites) {
+.controller('mmAuthLoginCtrl', function($scope, $state, $mmSitesManager, $ionicPopup, $log, sites, $translate) {
 
     $scope.sites = sites;
     $scope.data = {
@@ -19,7 +19,7 @@ angular.module('mm.core.login')
 
         var site = $scope.sites[index];
 
-        $ionicPopup.confirm({template: 'Are you sure you want to delete the site "'+site.sitename+'"?'})
+        $ionicPopup.confirm({template: $translate('mm.core.login.confirmdeletesite', {sitename: site.sitename})})
             .then(function(confirmed) {
                 if(confirmed) {
                     $mmSitesManager.deleteSite(site.id).then(function() {
@@ -28,9 +28,8 @@ angular.module('mm.core.login')
                             $state.go('mm_login.site');
                         });
                     }, function(error) {
-                        // TODO: Show error message.
                         $log.error('Delete site failed');
-                        console.log(error);
+                        $mmUtil.showErrorModal('mm.core.login.errordeletesite', true);
                     });
                 }
             });
@@ -42,9 +41,8 @@ angular.module('mm.core.login')
         $mmSitesManager.loadSite(siteid).then(function() {
             $state.go('site.index');
         }, function(error) {
-            // TODO: Show error message.
             $log.error('Error loading site.');
-            console.log(error);
+            $mmUtil.showErrorModal('mm.core.login.errorloadsite', true);
         });
     };
 

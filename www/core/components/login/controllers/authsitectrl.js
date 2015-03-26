@@ -1,17 +1,19 @@
 angular.module('mm.core.login')
 
-.controller('mmAuthSiteCtrl', function($scope, $state, $mmSitesManager, $mmSite, $mmUtil) {
+.controller('mmAuthSiteCtrl', function($scope, $state, $mmSitesManager, $mmSite, $mmUtil, $ionicPopup, $translate) {
 
     $scope.siteurl = '';
 
     $scope.connect = function(url) {
 
         if (!url) {
-            alert('siteurlrequired');
+            $mmUtil.showErrorModal('mm.core.login.siteurlrequired', true);
             return;
         }
 
-        $mmUtil.showModalLoading('Loading');
+        $translate('loading').then(function(loadingString) {
+            $mmUtil.showModalLoading(loadingString);
+        });
 
         $mmSitesManager.getDemoSiteData(url).then(function(sitedata) {
 
@@ -20,10 +22,12 @@ angular.module('mm.core.login')
                     $mmUtil.closeModalLoading();
                     $state.go('site.index');
                 }, function(error) {
-                    alert(error);
+                    $mmUtil.closeModalLoading();
+                    $mmUtil.showErrorModal(error);
                 });
             }, function(error) {
-                alert(error);
+                $mmUtil.closeModalLoading();
+                $mmUtil.showErrorModal(error);
             });
 
         }, function() {
@@ -32,9 +36,8 @@ angular.module('mm.core.login')
                 $mmUtil.closeModalLoading();
                 $state.go('mm_login.credentials', {siteurl: result.siteurl});
             }, function(error) {
-                // TODO: Show error message with ngMessages or popup
                 $mmUtil.closeModalLoading();
-                alert(error);
+                $mmUtil.showErrorModal(error);
             });
         });
     }

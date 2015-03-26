@@ -69,7 +69,9 @@ angular.module('mm.core')
         var deferred = $q.defer();
 
         if (!self.isLoggedIn()) {
-            deferred.reject('notloggedin');
+            $translate('mm.core.login.notloggedin').then(function(value) {
+                deferred.reject(value);
+            });
             return deferred.promise;
         }
 
@@ -147,7 +149,9 @@ angular.module('mm.core')
         var deferred = $q.defer();
 
         if (!self.isLoggedIn()) {
-            deferred.reject('notloggedin');
+            $translate('mm.core.login.notloggedin').then(function(value) {
+                deferred.reject(value);
+            });
             return deferred.promise;
         }
 

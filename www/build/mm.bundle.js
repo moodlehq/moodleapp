@@ -527,6 +527,7 @@ angular.module('mm.core')
     });
     $translatePartialLoaderProvider.addPart('build/lang');
     $translateProvider.fallbackLanguage('en');
+    $translateProvider.preferredLanguage('en');
 })
 .run(function($ionicPlatform, $translate, $cordovaGlobalization, $mmConfig) {
     $ionicPlatform.ready(function() {
@@ -578,7 +579,9 @@ angular.module('mm.core')
         self.getSiteInfo = function() {
         var deferred = $q.defer();
         if (!self.isLoggedIn()) {
-            deferred.reject('notloggedin');
+            $translate('mm.core.login.notloggedin').then(function(value) {
+                deferred.reject(value);
+            });
             return deferred.promise;
         }
         function siteDataRetrieved(infos) {
@@ -630,7 +633,9 @@ angular.module('mm.core')
         self.request = function(method, data, preSets) {
         var deferred = $q.defer();
         if (!self.isLoggedIn()) {
-            deferred.reject('notloggedin');
+            $translate('mm.core.login.notloggedin').then(function(value) {
+                deferred.reject(value);
+            });
             return deferred.promise;
         }
         method = checkDeprecatedFunction(method);
@@ -753,7 +758,7 @@ angular.module('mm.core')
     ];
     $mmAppProvider.registerStores(stores);
 })
-.factory('$mmSitesManager', function($http, $q, $mmSite, md5, $mmConfig, $mmApp, $mmUtil, mmSitesStore) {
+.factory('$mmSitesManager', function($http, $q, $mmSite, md5, $translate, $mmConfig, $mmApp, $mmUtil, mmSitesStore) {
     var self = {},
         services = {},
         db = $mmApp.getDB();
@@ -771,7 +776,9 @@ angular.module('mm.core')
         var deferred = $q.defer();
         siteurl = $mmUtil.formatURL(siteurl);
         if (siteurl.indexOf('http://localhost') == -1 && !$mmUtil.isValidURL(siteurl)) {
-            deferred.reject('siteurlrequired');
+            $translate('mm.core.login.invalidsite').then(function(value) {
+                deferred.reject(value);
+            });
         } else {
             protocol = protocol || "https://";
             siteurl = siteurl.replace(/^http(s)?\:\/\//i, protocol);
@@ -785,7 +792,9 @@ angular.module('mm.core')
                 if (siteurl.indexOf("https://") === 0) {
                     self.checkSite(siteurl, "http://").then(deferred.resolve, deferred.reject);
                 } else{
-                    deferred.reject('cannotconnect');
+                    $translate('cannotconnect').then(function(value) {
+                        deferred.reject(value);
+                    });
                 }
             });
         }
@@ -800,26 +809,36 @@ angular.module('mm.core')
             $http.post(siteurl + '/local/mobile/check.php', {service: service} )
                 .success(function(response) {
                     if (typeof(response.code) == "undefined") {
-                        deferred.reject("unexpectederror");
+                        $translate('unexpectederror').then(function(value) {
+                            deferred.reject(value);
+                        });
                         return;
                     }
                     var code = parseInt(response.code, 10);
                     if (response.error) {
                         switch (code) {
                             case 1:
-                                deferred.reject("siteinmaintenance");
+                                $translate('mm.core.login.siteinmaintenance').then(function(value) {
+                                    deferred.reject(value);
+                                });
                                 break;
                             case 2:
-                                deferred.reject("webservicesnotenabled");
+                                $translate('mm.core.login.webservicesnotenabled').then(function(value) {
+                                    deferred.reject(value);
+                                });
                                 break;
                             case 3:
                                 deferred.resolve(0);
                                 break;
                             case 4:
-                                deferred.reject("mobileservicesnotenabled");
+                                $translate('mm.core.login.mobileservicesnotenabled').then(function(value) {
+                                    deferred.reject(value);
+                                });
                                 break;
                             default:
-                                deferred.reject("unexpectederror");
+                                $translate('unexpectederror').then(function(value) {
+                                    deferred.reject(value);
+                                });
                         }
                     } else {
                         services[siteurl] = service;
@@ -858,11 +877,15 @@ angular.module('mm.core')
                             deferred.reject(response.error);
                         }
                     } else {
-                        deferred.reject('invalidaccount');
+                        $translate('mm.core.login.invalidaccount').then(function(value) {
+                            deferred.reject(value);
+                        });
                     }
                 }
             }).error(function(data) {
-                deferred.reject('cannotconnect');
+                $translate('cannotconnect').then(function(value) {
+                    deferred.reject(value);
+                });
             });
         }, deferred.reject);
         return deferred.promise;
@@ -876,7 +899,9 @@ angular.module('mm.core')
                 self.addSite(siteid, siteurl, token, infos);
                 deferred.resolve();
             } else {
-                deferred.reject('invalidmoodleversion'+'2.4');
+                $translate('mm.core.login.invalidmoodleversion').then(function(value) {
+                    deferred.reject(value);
+                });
                 $mmSite.deleteCurrentSite();
             }
         }, function(error) {
@@ -988,7 +1013,7 @@ angular.module('mm.core')
         }
         return query.length ? query.substr(0, query.length - 1) : query;
     };
-    function mmUtil($mmSite, $ionicLoading) {
+    function mmUtil($mmSite, $ionicLoading, $ionicPopup, $translate) {
                 this.formatURL = function(url) {
             url = url.trim();
             if (! /^http(s)?\:\/\/.*/i.test(url)) {
@@ -1013,9 +1038,21 @@ angular.module('mm.core')
                 this.closeModalLoading = function() {
             $ionicLoading.hide();
         };
+                this.showErrorModal = function(errorMessage, needsTranslate) {
+            var langKeys = ['error'];
+            if (needsTranslate) {
+                langKeys.push(errorMessage);
+            }
+            $translate(langKeys).then(function(translations) {
+                $ionicPopup.alert({
+                    title: translations.error,
+                    template: needsTranslate ? translations[errorMessage] : errorMessage
+                });
+            });
+        };
     }
-    this.$get = function($mmSite, $ionicLoading) {
-        return new mmUtil($mmSite, $ionicLoading);
+    this.$get = function($mmSite, $ionicLoading, $ionicPopup, $translate) {
+        return new mmUtil($mmSite, $ionicLoading, $ionicPopup, $translate);
     };
 });
 
@@ -1324,7 +1361,7 @@ angular.module('mm.core.login', [])
 });
 
 angular.module('mm.core.login')
-.controller('mmAuthCredCtrl', function($scope, $state, $stateParams, $timeout, $mmSitesManager, $mmSite, $mmUtil) {
+.controller('mmAuthCredCtrl', function($scope, $state, $stateParams, $mmSitesManager, $mmUtil, $translate) {
     $scope.siteurl = $stateParams.siteurl;
     $scope.credentials = {};
     $scope.login = function() {
@@ -1332,31 +1369,34 @@ angular.module('mm.core.login')
             username = $scope.credentials.username,
             password = $scope.credentials.password;
         if (!username) {
-            alert('usernamerequired');
+            $mmUtil.showErrorModal('mm.core.login.usernamerequired', true);
             return;
         }
         if(!password) {
-            alert('passwordrequired');
+            $mmUtil.showErrorModal('mm.core.login.passwordrequired', true);
             return;
         }
-        $mmUtil.showModalLoading('Loading');
+        $translate('loading').then(function(loadingString) {
+            $mmUtil.showModalLoading(loadingString);
+        });
         $mmSitesManager.getUserToken(siteurl, username, password).then(function(token) {
             $mmSitesManager.newSite(siteurl, username, token).then(function() {
                 $mmUtil.closeModalLoading();
                 delete $scope.credentials;
                 $state.go('site.index');
             }, function(error) {
-                alert(error);
+                $mmUtil.closeModalLoading();
+                $mmUtil.showErrorModal(error);
             });
         }, function(error) {
             $mmUtil.closeModalLoading();
-            alert(error);
+            $mmUtil.showErrorModal(error);
         });
     };
 });
 
 angular.module('mm.core.login')
-.controller('mmAuthLoginCtrl', function($scope, $state, $mmSitesManager, $ionicPopup, $log, sites) {
+.controller('mmAuthLoginCtrl', function($scope, $state, $mmSitesManager, $ionicPopup, $log, sites, $translate) {
     $scope.sites = sites;
     $scope.data = {
         hasSites: sites.length > 0,
@@ -1368,7 +1408,7 @@ angular.module('mm.core.login')
     $scope.onItemDelete = function(e, index) {
         e.stopPropagation();
         var site = $scope.sites[index];
-        $ionicPopup.confirm({template: 'Are you sure you want to delete the site "'+site.sitename+'"?'})
+        $ionicPopup.confirm({template: $translate('mm.core.login.confirmdeletesite', {sitename: site.sitename})})
             .then(function(confirmed) {
                 if(confirmed) {
                     $mmSitesManager.deleteSite(site.id).then(function() {
@@ -1378,7 +1418,7 @@ angular.module('mm.core.login')
                         });
                     }, function(error) {
                         $log.error('Delete site failed');
-                        console.log(error);
+                        $mmUtil.showErrorModal('mm.core.login.errordeletesite', true);
                     });
                 }
             });
@@ -1389,7 +1429,7 @@ angular.module('mm.core.login')
             $state.go('site.index');
         }, function(error) {
             $log.error('Error loading site.');
-            console.log(error);
+            $mmUtil.showErrorModal('mm.core.login.errorloadsite', true);
         });
     };
     $scope.add = function() {
@@ -1397,24 +1437,28 @@ angular.module('mm.core.login')
     };
 });
 angular.module('mm.core.login')
-.controller('mmAuthSiteCtrl', function($scope, $state, $mmSitesManager, $mmSite, $mmUtil) {
+.controller('mmAuthSiteCtrl', function($scope, $state, $mmSitesManager, $mmSite, $mmUtil, $ionicPopup, $translate) {
     $scope.siteurl = '';
     $scope.connect = function(url) {
         if (!url) {
-            alert('siteurlrequired');
+            $mmUtil.showErrorModal('mm.core.login.siteurlrequired', true);
             return;
         }
-        $mmUtil.showModalLoading('Loading');
+        $translate('loading').then(function(loadingString) {
+            $mmUtil.showModalLoading(loadingString);
+        });
         $mmSitesManager.getDemoSiteData(url).then(function(sitedata) {
             $mmSitesManager.getUserToken(sitedata.url, sitedata.username, sitedata.password).then(function(token) {
                 $mmSitesManager.newSite(sitedata.url, sitedata.username, token).then(function() {
                     $mmUtil.closeModalLoading();
                     $state.go('site.index');
                 }, function(error) {
-                    alert(error);
+                    $mmUtil.closeModalLoading();
+                    $mmUtil.showErrorModal(error);
                 });
             }, function(error) {
-                alert(error);
+                $mmUtil.closeModalLoading();
+                $mmUtil.showErrorModal(error);
             });
         }, function() {
             $mmSitesManager.checkSite(url).then(function(result) {
@@ -1422,7 +1466,7 @@ angular.module('mm.core.login')
                 $state.go('mm_login.credentials', {siteurl: result.siteurl});
             }, function(error) {
                 $mmUtil.closeModalLoading();
-                alert(error);
+                $mmUtil.showErrorModal(error);
             });
         });
     }

@@ -32,7 +32,7 @@ angular.module('mm.core')
         return query.length ? query.substr(0, query.length - 1) : query;
     };
 
-    function mmUtil($mmSite, $ionicLoading) {
+    function mmUtil($mmSite, $ionicLoading, $ionicPopup, $translate) {
 
         /**
          * Formats a URL, trim, lowercase, etc...
@@ -158,9 +158,29 @@ angular.module('mm.core')
         this.closeModalLoading = function() {
             $ionicLoading.hide();
         };
+
+        /**
+         * Show a modal with an error message.
+         *
+         * @param {String} errorMessage Message to show.
+         * @param {Boolean} needsTranslate True if the errorMessage is a $translate key, false otherwise.
+         */
+        this.showErrorModal = function(errorMessage, needsTranslate) {
+            var langKeys = ['error'];
+            if (needsTranslate) {
+                langKeys.push(errorMessage);
+            }
+
+            $translate(langKeys).then(function(translations) {
+                $ionicPopup.alert({
+                    title: translations.error,
+                    template: needsTranslate ? translations[errorMessage] : errorMessage
+                });
+            });
+        };
     }
 
-    this.$get = function($mmSite, $ionicLoading) {
-        return new mmUtil($mmSite, $ionicLoading);
+    this.$get = function($mmSite, $ionicLoading, $ionicPopup, $translate) {
+        return new mmUtil($mmSite, $ionicLoading, $ionicPopup, $translate);
     };
 });
