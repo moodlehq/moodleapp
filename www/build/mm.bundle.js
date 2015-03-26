@@ -758,7 +758,7 @@ angular.module('mm.core')
     ];
     $mmAppProvider.registerStores(stores);
 })
-.factory('$mmSitesManager', function($http, $q, $mmSite, md5, $translate, $mmConfig, $mmApp, $mmUtil, mmSitesStore) {
+.factory('$mmSitesManager', function($http, $q, $mmSite, md5, $translate, $mmConfig, $mmApp, $mmUtil, mmSitesStore, $log) {
     var self = {},
         services = {},
         db = $mmApp.getDB();
@@ -1339,9 +1339,10 @@ angular.module('mm.core.login', [])
         url: '/site',
         templateUrl: 'core/components/login/templates/login-site.html',
         controller: 'mmAuthSiteCtrl',
-        onEnter: function($ionicNavBarDelegate, $mmSitesManager) {
+        onEnter: function($ionicNavBarDelegate, $ionicHistory, $mmSitesManager) {
             $mmSitesManager.noSites().then(function() {
                 $ionicNavBarDelegate.showBackButton(false);
+                $ionicHistory.clearHistory();
             });
         }
     })

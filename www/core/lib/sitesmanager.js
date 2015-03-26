@@ -26,7 +26,7 @@ angular.module('mm.core')
     $mmAppProvider.registerStores(stores);
 })
 
-.factory('$mmSitesManager', function($http, $q, $mmSite, md5, $translate, $mmConfig, $mmApp, $mmUtil, mmSitesStore) {
+.factory('$mmSitesManager', function($http, $q, $mmSite, md5, $translate, $mmConfig, $mmApp, $mmUtil, mmSitesStore, $log) {
 
     var self = {},
         services = {},
