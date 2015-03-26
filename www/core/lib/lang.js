@@ -53,6 +53,7 @@ angular.module('mm.core')
 
     // Set fallback language.
     $translateProvider.fallbackLanguage('en');
+    $translateProvider.preferredLanguage('en'); // Set English until we know which language to use.
 })
 
 .run(function($ionicPlatform, $translate, $cordovaGlobalization, $mmConfig) {
