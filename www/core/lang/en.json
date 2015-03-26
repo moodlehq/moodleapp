@@ -1,0 +1,6 @@
+{
+    "cannotconnect": "Cannot connect: Verify that your have typed correctly the URL and that your site uses Moodle 2.4 or later.",
+    "error": "Error.",
+    "loading": "Loading",
+    "unexpectederror": "Unexepected error. Please close and reopen the application to try again"
+}
