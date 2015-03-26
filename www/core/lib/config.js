@@ -137,5 +137,44 @@ angular.module('mm.core')
         }
     };
 
+    /**
+     * Deletes an app setting.
+     *
+     * @module mm.core
+     * @ngdoc service
+     * @name $mmConfig#set
+     * @param {String} name The config name.
+     * @return {Promise} which resolves on success, providing no data.
+     * @description
+     * Delete an app setting.
+     */
+    self.delete = function(name) {
+
+        if (!initialized) {
+            return init().then(function() {
+                return deleteConfig(name);
+            }, function() {
+                $log.error('Failed to initialize $mmConfig.');
+                return $q.reject();
+            });
+        }
+
+        return deleteConfig(name);
+
+        function deleteConfig(name) {
+            var deferred,
+                fromStatic = self.config[name];
+
+            if (typeof(fromStatic) === 'undefined') {
+                return $mmApp.getDB().remove(mmConfigStore, name);
+            }
+
+            $log.error('Cannot delete static config setting \'' + name + '\'.');
+            deferred = $q.defer()
+            deferred.reject();
+            return deferred.promise;
+        }
+    };
+
     return self;
 });
