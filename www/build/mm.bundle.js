@@ -1437,7 +1437,7 @@ angular.module('mm.core.login')
     };
 });
 angular.module('mm.core.login')
-.controller('mmAuthSiteCtrl', function($scope, $state, $mmSitesManager, $mmSite, $mmUtil, $ionicPopup, $translate) {
+.controller('mmAuthSiteCtrl', function($scope, $state, $mmSitesManager, $mmSite, $mmUtil, $ionicPopup, $translate, $ionicModal) {
     $scope.siteurl = '';
     $scope.connect = function(url) {
         if (!url) {
@@ -1469,5 +1469,19 @@ angular.module('mm.core.login')
                 $mmUtil.showErrorModal(error);
             });
         });
-    }
+    };
+    $ionicModal.fromTemplateUrl('core/components/login/templates/login-help-modal.html', {
+        scope: $scope,
+        animation: 'slide-in-up'
+    }).then(function(helpModal) {
+        $scope.showHelp = function() {
+            helpModal.show();
+        };
+        $scope.closeHelp = function() {
+            helpModal.hide();
+        };
+        $scope.$on('$destroy', function() {
+            helpModal.remove();
+        });
+    });
 });
