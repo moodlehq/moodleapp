@@ -588,8 +588,12 @@ angular.module('mm.core')
             currentSite.infos = infos;
             deferred.resolve(infos);
         }
-        self.read('core_webservice_get_site_info', {}).then(siteDataRetrieved, function(error) {
-            self.read('moodle_webservice_get_site_info', {}).then(siteDataRetrieved, function(error) {
+        var preSets = {
+            getFromCache: 0,
+            saveToCache: 0
+        };
+        self.read('core_webservice_get_site_info', {}, preSets).then(siteDataRetrieved, function(error) {
+            self.read('moodle_webservice_get_site_info', {}, preSets).then(siteDataRetrieved, function(error) {
                 deferred.reject(error);
             });
         });
@@ -601,6 +605,12 @@ angular.module('mm.core')
     self.logout = function() {
         delete currentSite;
     }
+    self.setCandidateSite = function(siteurl, token) {
+        currentSite = new Site(undefined, siteurl, token);
+    }
+    self.deleteCandidateSite = function() {
+        delete currentSite;
+    };
     self.setSite = function(id, siteurl, token, infos) {
         currentSite = new Site(id, siteurl, token, infos);
     }
@@ -890,23 +900,24 @@ angular.module('mm.core')
         }, deferred.reject);
         return deferred.promise;
     };
-    self.newSite = function(siteurl, username, token) {
+    self.newSite = function(siteurl, token) {
         var deferred = $q.defer();
-        var siteid = md5.createHash(siteurl + username);
-        $mmSite.setSite(siteid, siteurl, token);
+        $mmSite.setCandidateSite(siteurl, token);
         $mmSite.getSiteInfo().then(function(infos) {
             if (isValidMoodleVersion(infos.functions)) {
+                var siteid = md5.createHash(siteurl + infos.username);
                 self.addSite(siteid, siteurl, token, infos);
+                $mmSite.setSite(siteid, siteurl, token, infos);
                 deferred.resolve();
             } else {
                 $translate('mm.core.login.invalidmoodleversion').then(function(value) {
                     deferred.reject(value);
                 });
-                $mmSite.deleteCurrentSite();
+                $mmSite.deleteCandidateSite();
             }
         }, function(error) {
             deferred.reject(error);
-            $mmSite.deleteCurrentSite();
+            $mmSite.deleteCandidateSite();
         });
         return deferred.promise;
     }
@@ -1381,13 +1392,13 @@ angular.module('mm.core.login')
             $mmUtil.showModalLoading(loadingString);
         });
         $mmSitesManager.getUserToken(siteurl, username, password).then(function(token) {
-            $mmSitesManager.newSite(siteurl, username, token).then(function() {
-                $mmUtil.closeModalLoading();
+            $mmSitesManager.newSite(siteurl, token).then(function() {
                 delete $scope.credentials;
                 $state.go('site.index');
             }, function(error) {
-                $mmUtil.closeModalLoading();
                 $mmUtil.showErrorModal(error);
+            }).finally(function() {
+                $mmUtil.closeModalLoading();
             });
         }, function(error) {
             $mmUtil.closeModalLoading();
@@ -1450,7 +1461,7 @@ angular.module('mm.core.login')
         });
         $mmSitesManager.getDemoSiteData(url).then(function(sitedata) {
             $mmSitesManager.getUserToken(sitedata.url, sitedata.username, sitedata.password).then(function(token) {
-                $mmSitesManager.newSite(sitedata.url, sitedata.username, token).then(function() {
+                $mmSitesManager.newSite(sitedata.url, token).then(function() {
                     $mmUtil.closeModalLoading();
                     $state.go('site.index');
                 }, function(error) {

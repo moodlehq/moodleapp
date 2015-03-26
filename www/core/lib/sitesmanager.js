@@ -236,26 +236,28 @@ angular.module('mm.core')
         return deferred.promise;
     };
 
-    self.newSite = function(siteurl, username, token) {
+    self.newSite = function(siteurl, token) {
         var deferred = $q.defer();
 
-        var siteid = md5.createHash(siteurl + username);
-        $mmSite.setSite(siteid, siteurl, token);
+        $mmSite.setCandidateSite(siteurl, token);
 
         $mmSite.getSiteInfo().then(function(infos) {
             if (isValidMoodleVersion(infos.functions)) {
+                var siteid = md5.createHash(siteurl + infos.username);
                 self.addSite(siteid, siteurl, token, infos);
+                $mmSite.setSite(siteid, siteurl, token, infos);
                 deferred.resolve();
             } else {
                 $translate('mm.core.login.invalidmoodleversion').then(function(value) {
                     deferred.reject(value);
                 });
-                $mmSite.deleteCurrentSite();
+                $mmSite.deleteCandidateSite();
             }
         }, function(error) {
             deferred.reject(error);
-            $mmSite.deleteCurrentSite();
+            $mmSite.deleteCandidateSite();
         });
+
         return deferred.promise;
     }
 

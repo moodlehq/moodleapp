@@ -18,7 +18,7 @@ angular.module('mm.core.login')
         $mmSitesManager.getDemoSiteData(url).then(function(sitedata) {
 
             $mmSitesManager.getUserToken(sitedata.url, sitedata.username, sitedata.password).then(function(token) {
-                $mmSitesManager.newSite(sitedata.url, sitedata.username, token).then(function() {
+                $mmSitesManager.newSite(sitedata.url, token).then(function() {
                     $mmUtil.closeModalLoading();
                     $state.go('site.index');
                 }, function(error) {

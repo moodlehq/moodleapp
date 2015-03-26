@@ -80,9 +80,15 @@ angular.module('mm.core')
             deferred.resolve(infos);
         }
 
+        // get_site_info won't be cached. The returned data is stored in the site.
+        var preSets = {
+            getFromCache: 0,
+            saveToCache: 0
+        };
+
         // We have a valid token, try to get the site info.
-        self.read('core_webservice_get_site_info', {}).then(siteDataRetrieved, function(error) {
-            self.read('moodle_webservice_get_site_info', {}).then(siteDataRetrieved, function(error) {
+        self.read('core_webservice_get_site_info', {}, preSets).then(siteDataRetrieved, function(error) {
+            self.read('moodle_webservice_get_site_info', {}, preSets).then(siteDataRetrieved, function(error) {
                 deferred.reject(error);
             });
         });
@@ -97,6 +103,14 @@ angular.module('mm.core')
     self.logout = function() {
         delete currentSite;
     }
+
+    self.setCandidateSite = function(siteurl, token) {
+        currentSite = new Site(undefined, siteurl, token);
+    }
+
+    self.deleteCandidateSite = function() {
+        delete currentSite;
+    };
 
     self.setSite = function(id, siteurl, token, infos) {
         currentSite = new Site(id, siteurl, token, infos);

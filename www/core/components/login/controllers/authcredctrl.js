@@ -24,7 +24,7 @@ angular.module('mm.core.login')
         });
 
         $mmSitesManager.getUserToken(siteurl, username, password).then(function(token) {
-            $mmSitesManager.newSite(siteurl, username, token).then(function() {
+            $mmSitesManager.newSite(siteurl, token).then(function() {
                 delete $scope.credentials;
                 $state.go('site.index');
             }, function(error) {
