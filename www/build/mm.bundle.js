@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm', ['ionic', 'mm.core', 'mm.core.login', 'ngCordova', 'angular-md5'])
+angular.module('mm', ['ionic', 'mm.core', 'mm.core.login', 'mm.core.sidemenu', 'ngCordova', 'angular-md5'])
 .run(function($ionicPlatform, $rootScope, $state, $mmSite, $ionicBody, $window) {
   $ionicPlatform.ready(function() {
     if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
@@ -711,6 +711,20 @@ angular.module('mm.core')
             return undefined;
         }
     };
+    self.getCurrentSiteToken = function() {
+        if (typeof(currentSite) !== 'undefined' && typeof(currentSite.token) !== 'undefined') {
+            return currentSite.token;
+        } else {
+            return undefined;
+        }
+    };
+    self.getCurrentSiteInfo = function() {
+        if (typeof(currentSite) !== 'undefined' && typeof(currentSite.infos) !== 'undefined') {
+            return currentSite.infos;
+        } else {
+            return undefined;
+        }
+    };
     function checkDeprecatedFunction(method) {
         if (typeof deprecatedFunctions[method] !== "undefined") {
             if (self.wsAvailable(deprecatedFunctions[method])) {
@@ -1050,7 +1064,7 @@ angular.module('mm.core')
 
 angular.module('mm.core')
 .provider('$mmUtil', function() {
-    this.param = function(obj) {
+        this.param = function(obj) {
         var query = '', name, value, fullSubName, subName, subValue, innerObj, i;
         for (name in obj) {
             value = obj[name];
@@ -1119,117 +1133,6 @@ angular.module('mm.core')
     };
 });
 
-angular.module('mm.core')
-.factory('$mmWS', function($http, $q, $injector) {
-    var deprecatedFunctions = {
-        "moodle_webservice_get_siteinfo": "core_webservice_get_site_info",
-        "moodle_enrol_get_users_courses": "core_enrol_get_users_courses",
-        "moodle_notes_create_notes": "core_notes_create_notes",
-        "moodle_message_send_instantmessages": "core_message_send_instant_messages",
-        "moodle_user_get_users_by_courseid": "core_enrol_get_enrolled_users",
-        "moodle_user_get_course_participants_by_id": "core_user_get_course_user_profiles",
-    };
-    var self = {};
-        self.moodleWSCall = function(method, data, preSets) {
-        var deferred = $q.defer();
-        data = self.convertValuesToString(data);
-        preSets = self.verifyPresets(preSets);
-        if(!preSets) {
-            deferred.reject("unexpectederror");
-            return;
-        }
-        if (typeof deprecatedFunctions[method] != "undefined") {
-            if (self.wsAvailable(preSets.wsfunctions, deprecatedFunctions[method])) {
-                method = deprecatedFunctions[method];
-            } else {
-            }
-        }
-        data.wsfunction = method;
-        data.wstoken = preSets.wstoken;
-        preSets.siteurl += '/webservice/rest/server.php?moodlewsrestformat=json';
-        var ajaxData = data;
-        $http.post(preSets.siteurl, ajaxData).success(function(data) {
-            if (!data && !preSets.responseExpected) {
-                data = {};
-            }
-            if (!data) {
-                deferred.reject('cannotconnect');
-                return;
-            }
-            if (typeof(data.exception) != 'undefined') {
-                if (data.errorcode == 'invalidtoken' || data.errorcode == 'accessexception') {
-                    deferred.reject('lostconnection');
-                    return;
-                } else {
-                    deferred.reject(data.message);
-                    return;
-                }
-            }
-            if (typeof(data.debuginfo) != 'undefined') {
-                deferred.reject('Error. ' + data.message);
-                return;
-            }
-            deferred.resolve(angular.copy(data));
-        }).error(function(data) {
-            deferred.reject('cannotconnect');
-        });
-        return deferred.promise;
-    };
-    self.verifyPresets = function(preSets) {
-        if (typeof(preSets) == 'undefined' || preSets == null) {
-            preSets = {};
-        }
-        if (typeof(preSets.getFromCache) == 'undefined') {
-            preSets.getFromCache = 1;
-        }
-        if (typeof(preSets.saveToCache) == 'undefined') {
-            preSets.saveToCache = 1;
-        }
-        if (typeof(preSets.sync) == 'undefined') {
-            preSets.sync = 0;
-        }
-        if (typeof(preSets.silently) == 'undefined') {
-            preSets.silently = false;
-        }
-        if (typeof(preSets.omitExpires) == 'undefined') {
-            preSets.omitExpires = false;
-        }
-        if (typeof(preSets.wstoken) == 'undefined') {
-            return false;
-        }
-        if (typeof(preSets.siteurl) == 'undefined') {
-            return false;
-        }
-        return preSets;
-    };
-        self.convertValuesToString = function(data) {
-        var result = [];
-        if (!angular.isArray(data) && angular.isObject(data)) {
-            result = {};
-        }
-        for (var el in data) {
-            if (angular.isObject(data[el])) {
-                result[el] = self.convertValuesToString(data[el]);
-            } else {
-                result[el] = data[el] + '';
-            }
-        }
-        return result;
-    };
-        self.wsAvailable = function(functions, wsName) {
-        if (!functions) {
-            return false;
-        }
-        for(var i = 0; i < functions.length; i++) {
-            var f = functions[i];
-            if (f.name == wsName) {
-                return true;
-            }
-        }
-        return false;
-    };
-    return self;
-});
 angular.module('mm.core')
 .factory('$mmWS', function($http, $q, $log) {
     var self = {};
@@ -1450,6 +1353,23 @@ angular.module('mm.core.login', [])
     }
 });
 
+angular.module('mm.core.sidemenu', [])
+.config(function($stateProvider) {
+    $stateProvider
+    .state('site', {
+        url: '/site',
+        templateUrl: 'core/components/sidemenu/templates/sidemenu.html',
+        controller: 'mmSideMenu',
+        abstract: true,
+        onEnter: function($ionicHistory, $state, $mmSite) {
+            $ionicHistory.clearHistory();
+            if (!$mmSite.isloggedin()) {
+                $state.go('mm_login.index');
+            }
+        }
+    });
+});
+
 angular.module('mm.core.login')
 .controller('mmAuthCredCtrl', function($scope, $state, $stateParams, $mmSitesManager, $mmUtil, $translate) {
     $scope.siteurl = $stateParams.siteurl;
@@ -1518,7 +1438,7 @@ angular.module('mm.core.login')
         $mmSitesManager.loadSite(siteid).then(function() {
             $state.go('site.index');
         }, function(error) {
-            $log.error('Error loading site.');
+            $log.error('Error loading site '+siteid);
             $mmUtil.showErrorModal('mm.core.login.errorloadsite', true);
         });
     };
@@ -1526,8 +1446,9 @@ angular.module('mm.core.login')
         $state.go('mm_login.site');
     };
 });
+
 angular.module('mm.core.login')
-.controller('mmAuthSiteCtrl', function($scope, $state, $mmSitesManager, $mmSite, $mmUtil, $ionicPopup,
+.controller('mmAuthSiteCtrl', function($scope, $state, $mmSitesManager, $mmUtil, $ionicPopup,
                                        $translate, $ionicModal, $mmConfig, mmLoginSSO) {
     $scope.siteurl = '';
     $scope.connect = function(url) {
@@ -1595,4 +1516,36 @@ angular.module('mm.core.login')
             helpModal.remove();
         });
     });
+});
+
+angular.module('mm.core.sidemenu')
+.controller('mmSideMenuCtrl', function($scope, $mmSideMenuDelegate, $mmSite) {
+    $scope.plugins = $mmSideMenuDelegate.getData();
+    $scope.siteinfo = $mmSite.getCurrentSiteInfo();
+});
+
+angular.module('mm.core.sidemenu')
+.factory('$mmSideMenuDelegate', function($log) {
+    var plugins = {},
+        self = {},
+        data,
+        controllers = [];
+        self.registerPlugin = function(name, callback) {
+        $log.debug("Register plugin '"+name+"'");
+        plugins[name] = callback;
+    };
+        self.updatePluginData = function(name) {
+        $log.debug("Update plugin '"+name+"' data");
+        data[name] = plugins[name]();
+    };
+        self.getData = function() {
+        if (typeof(data) == 'undefined') {
+            data = {};
+            angular.forEach(plugins, function(callback, plugin) {
+                self.updatePluginData(plugin);
+            });
+        }
+        return data;
+    }
+    return self;
 });

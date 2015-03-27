@@ -222,6 +222,22 @@ angular.module('mm.core')
         }
     };
 
+    self.getCurrentSiteToken = function() {
+        if (typeof(currentSite) !== 'undefined' && typeof(currentSite.token) !== 'undefined') {
+            return currentSite.token;
+        } else {
+            return undefined;
+        }
+    };
+
+    self.getCurrentSiteInfo = function() {
+        if (typeof(currentSite) !== 'undefined' && typeof(currentSite.infos) !== 'undefined') {
+            return currentSite.infos;
+        } else {
+            return undefined;
+        }
+    };
+
     function checkDeprecatedFunction(method) {
         if (typeof deprecatedFunctions[method] !== "undefined") {
             if (self.wsAvailable(deprecatedFunctions[method])) {
