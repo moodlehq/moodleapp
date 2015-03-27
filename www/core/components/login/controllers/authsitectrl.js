@@ -1,6 +1,27 @@
+// (C) Copyright 2015 Martin Dougiamas
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 angular.module('mm.core.login')
 
-.controller('mmAuthSiteCtrl', function($scope, $state, $mmSitesManager, $mmSite, $mmUtil, $ionicPopup,
+/**
+ * Controller to handle the input of a site URL and its validation.
+ *
+ * @module mm.core.login
+ * @ngdoc controller
+ * @name mmAuthSiteCtrl
+ */
+.controller('mmAuthSiteCtrl', function($scope, $state, $mmSitesManager, $mmUtil, $ionicPopup,
                                        $translate, $ionicModal, $mmConfig, mmLoginSSO) {
 
     $scope.siteurl = '';
@@ -69,7 +90,7 @@ angular.module('mm.core.login')
         });
     };
 
-    // Setup help modal
+    // Setup help modal.
     $ionicModal.fromTemplateUrl('core/components/login/templates/login-help-modal.html', {
         scope: $scope,
         animation: 'slide-in-up'
