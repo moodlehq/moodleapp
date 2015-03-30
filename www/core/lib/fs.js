@@ -346,7 +346,7 @@ angular.module('mm.core')
      */
     self.getExternalFile = function(fullPath) {
         return $cordovaFile.checkFile(fullPath, '');
-    }
+    };
 
     /**
      * Removes a file that might be outside the app's folder.
@@ -359,7 +359,22 @@ angular.module('mm.core')
         var directory = fullPath.substring(0, fullPath.lastIndexOf('/') );
         var filename = fullPath.substr(fullPath.lastIndexOf('/') + 1);
         return $cordovaFile.removeFile(directory, filename);
-    }
+    };
+
+    /**
+     * Get the base path where the application files are stored.
+     *
+     * @return {Promise} Promise to be resolved when the base path is retrieved.
+     */
+    self.getBasePath = function() {
+        return self.init().then(function() {
+            if (basePath.slice(-1) == '/') {
+                return basePath;
+            } else {
+                return basePath + '/';
+            }
+        });
+    };
 
     return self;
 });

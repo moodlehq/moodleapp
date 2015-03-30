@@ -97,75 +97,51 @@ angular.module('mm.core')
         };
 
         /**
-         * This function downloads a file from Moodle if the file is already downloaded the function replaces the www reference with
-         * the internal file system reference
+         * Generic function for adding the wstoken to Moodle urls and for pointing to the correct script.
+         * For download remote files from Moodle we need to use the special /webservice/pluginfile passing
+         * the ws token as a get parameter.
          *
-         * @param  {string} file The file path (usually a url)
-         * @return {string}      A local or URL path
+         * @param {String} url   The url to be fixed.
+         * @param {String} token Token to use. If not set, use the current site token.
          */
-        this.getMoodleFilePath = function (fileurl, courseId, siteId, token) {
-
-            return fileurl;
+        this.fixPluginfile = function(url, token) {
 
             // This function is used in regexp callbacks, better not to risk!!
-            // if (!fileurl) {
-            //     return '';
-            // }
+            if (!url) {
+                return '';
+            }
 
-            // if (!courseId) {
-            //     courseId = 1;
-            // }
+            // First check if we need to fix this url or is already fixed.
+            if (url.indexOf('token=') != -1) {
+                return url;
+            }
 
-            // if (!siteId) {
-            //     siteId = MM.config.current_site.id;
-            // }
+            // Check if is a valid URL (contains the pluginfile endpoint).
+            if (url.indexOf('pluginfile') == -1) {
+                return url;
+            }
 
-            // if (!token) {
-            //     var site = MM.db.get('sites', siteId);
-            //     token = site.get('token');
-            // }
+            if (!token) {
+                // Get current site token.
+                token = $mmSite.getCurrentSiteToken();
+                if (!token) {
+                    return '';
+                }
+            }
 
-            // var downloadURL = MM.fixPluginfile(fileurl, token);
-            // var extension = "." + fileurl.split('.').pop();
-            // if (extension.indexOf(".php") === 0) {
-            //     extension = "";
-            // }
+            // In which way the server is serving the files? Are we using slash parameters?
+            if (url.indexOf('?file=') != -1) {
+                url += '&';
+            } else {
+                url += '?';
+            }
+            url += 'token=' + token;
 
-            // var filename = hex_md5(fileurl) + extension;
-
-            // var path = {
-            //     directory: siteId + "/" + courseId,
-            //     file:      siteId + "/" + courseId + "/" + filename
-            // };
-
-            // // We download the file asynchronously because this function must to be sync.
-            // MM.fs.init(function() {
-            //     MM.fs.fileExists(path.file,
-            //     function(path) {
-            //         MM.util.replaceFile(downloadURL, path);
-            //     },
-            //     function() {});
-
-            //     if (MM.deviceConnected()) {
-            //         MM.log("Starting download of Moodle file: " + downloadURL);
-            //         // All the functions are asynchronous, like createDir.
-            //         MM.fs.createDir(path.directory, function() {
-            //             MM.log("Downloading Moodle file to " + path.file + " from URL: " + downloadURL);
-
-            //             MM.moodleDownloadFile(downloadURL, path.file,
-            //                 function(fullpath) {
-            //                     MM.util.replaceFile(downloadURL, fullpath);
-            //                     MM.log("Download of content finished " + fullpath + " URL: " + downloadURL);
-            //                 },
-            //                 function(fullpath) {
-            //                    MM.log("Error downloading " + fullpath + " URL: " + downloadURL);
-            //                 }
-            //             );
-            //         });
-            //     }
-            // });
-
-            // return downloadURL;
+            // Some webservices returns directly the correct download url, others not.
+            if (url.indexOf('/webservice/pluginfile') == -1) {
+                url = url.replace('/pluginfile', '/webservice/pluginfile');
+            }
+            return url;
         };
 
         /**

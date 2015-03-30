@@ -522,12 +522,21 @@ angular.module('mm.core')
     };
         self.getExternalFile = function(fullPath) {
         return $cordovaFile.checkFile(fullPath, '');
-    }
+    };
         self.removeExternalFile = function(fullPath) {
         var directory = fullPath.substring(0, fullPath.lastIndexOf('/') );
         var filename = fullPath.substr(fullPath.lastIndexOf('/') + 1);
         return $cordovaFile.removeFile(directory, filename);
-    }
+    };
+        self.getBasePath = function() {
+        return self.init().then(function() {
+            if (basePath.slice(-1) == '/') {
+                return basePath;
+            } else {
+                return basePath + '/';
+            }
+        });
+    };
     return self;
 });
 
@@ -704,6 +713,13 @@ angular.module('mm.core')
         }
         return false;
     }
+    self.getCurrentSiteId = function() {
+        if (typeof(currentSite) !== 'undefined' && typeof(currentSite.id) !== 'undefined') {
+            return currentSite.id;
+        } else {
+            return undefined;
+        }
+    };
     self.getCurrentSiteURL = function() {
         if (typeof(currentSite) !== 'undefined' && typeof(currentSite.siteurl) !== 'undefined') {
             return currentSite.siteurl;
@@ -804,8 +820,8 @@ angular.module('mm.core')
     ];
     $mmAppProvider.registerStores(stores);
 })
-.factory('$mmSitesManager', function($http, $q, $mmSite, md5, $translate, $mmConfig, $mmApp,
-                                     $mmUtil, mmSitesStore, $log, mmLoginSSO) {
+.factory('$mmSitesManager', function($http, $q, $mmSite, md5, $translate, $mmConfig, $mmApp, $mmWS,
+                                     $mmUtil, $mmFS, $cordovaNetwork, mmSitesStore, $log, mmLoginSSO) {
     var self = {},
         services = {},
         db = $mmApp.getDB();
@@ -1059,6 +1075,43 @@ angular.module('mm.core')
             });
         });
     };
+        self.getMoodleFilePath = function (fileurl, courseId, siteId) {
+        if (!fileurl) {
+            return $q.reject();
+        }
+        if (!courseId) {
+            courseId = 1;
+        }
+        if (!siteId) {
+            siteId = $mmSite.getCurrentSiteId();
+            if (typeof(siteId) === 'undefined') {
+                return $q.reject();
+            }
+        }
+        return db.get(mmSitesStore, siteId).then(function(site) {
+            var downloadURL = $mmUtil.fixPluginfile(fileurl, site.token);
+            var extension = "." + fileurl.split('.').pop();
+            if (extension.indexOf(".php") === 0) {
+                extension = "";
+            }
+            var filename = md5.createHash(fileurl) + extension;
+            var path = {
+                directory: siteId + "/" + courseId,
+                file:      siteId + "/" + courseId + "/" + filename
+            };
+            return $mmFS.getFile(path.file).then(function(fileEntry) {
+                $log.debug('File ' + url + ' already downloaded');
+                return fileEntry.toInternalURL();
+            }, function() {
+                if ($cordovaNetwork.isOnline()) {
+                    return $mmWS.downloadFile(downloadURL, path.file);
+                } else {
+                    console.log('Device not connected');
+                    return downloadURL;
+                }
+            });
+        });
+    };
     return self;
 });
 
@@ -1104,8 +1157,32 @@ angular.module('mm.core')
                 this.isValidURL = function(url) {
             return /^http(s)?\:\/\/([\da-zA-Z\.-]+)\.([\da-zA-Z\.]{2,6})([\/\w \.-]*)*\/?/i.test(url);
         };
-                this.getMoodleFilePath = function (fileurl, courseId, siteId, token) {
-            return fileurl;
+                this.fixPluginfile = function(url, token) {
+            if (!url) {
+                return '';
+            }
+            if (url.indexOf('token=') != -1) {
+                return url;
+            }
+            if (url.indexOf('pluginfile') == -1) {
+                return url;
+            }
+            if (!token) {
+                token = $mmSite.getCurrentSiteToken();
+                if (!token) {
+                    return '';
+                }
+            }
+            if (url.indexOf('?file=') != -1) {
+                url += '&';
+            } else {
+                url += '?';
+            }
+            url += 'token=' + token;
+            if (url.indexOf('/webservice/pluginfile') == -1) {
+                url = url.replace('/pluginfile', '/webservice/pluginfile');
+            }
+            return url;
         };
                 this.showModalLoading = function(text) {
             $ionicLoading.show({
@@ -1134,7 +1211,7 @@ angular.module('mm.core')
 });
 
 angular.module('mm.core')
-.factory('$mmWS', function($http, $q, $log) {
+.factory('$mmWS', function($http, $q, $log, $cordovaFileTransfer, $mmFS) {
     var self = {};
         self.call = function(method, data, preSets) {
         var deferred = $q.defer(),
@@ -1219,6 +1296,20 @@ angular.module('mm.core')
             }
         }
         return result;
+    };
+        self.downloadFile = function(url, path, background) {
+        $log.debug('Download file '+url);
+        $mmFS.getBasePath().then(function(basePath) {
+            var absolutePath = basePath + path;
+            return $cordovaFileTransfer.download(url, absolutePath, {}, true).then(function(result) {
+                $log.debug('Success downloading file ' + url + ' to '+absolutePath);
+                return result.toInternalURL();
+            }, function(err) {
+                $log.error('Error downloading file '+url);
+                $log.error(err);
+                return $q.reject();
+            });
+        });
     };
     return self;
 });

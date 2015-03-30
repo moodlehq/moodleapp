@@ -214,6 +214,14 @@ angular.module('mm.core')
         return false;
     }
 
+    self.getCurrentSiteId = function() {
+        if (typeof(currentSite) !== 'undefined' && typeof(currentSite.id) !== 'undefined') {
+            return currentSite.id;
+        } else {
+            return undefined;
+        }
+    };
+
     self.getCurrentSiteURL = function() {
         if (typeof(currentSite) !== 'undefined' && typeof(currentSite.siteurl) !== 'undefined') {
             return currentSite.siteurl;

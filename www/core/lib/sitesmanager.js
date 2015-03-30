@@ -26,8 +26,8 @@ angular.module('mm.core')
     $mmAppProvider.registerStores(stores);
 })
 
-.factory('$mmSitesManager', function($http, $q, $mmSite, md5, $translate, $mmConfig, $mmApp,
-                                     $mmUtil, mmSitesStore, $log, mmLoginSSO) {
+.factory('$mmSitesManager', function($http, $q, $mmSite, md5, $translate, $mmConfig, $mmApp, $mmWS,
+                                     $mmUtil, $mmFS, $cordovaNetwork, mmSitesStore, $log, mmLoginSSO) {
 
     var self = {},
         services = {},
@@ -407,6 +407,66 @@ angular.module('mm.core')
                     return $translate('unexpectederror').then(function(errorString) {
                         return $q.reject(errorString);
                     });
+                }
+
+            });
+        });
+    };
+
+    /**
+     * DANI: I don't like this function in here, but it's the only service that has the needed data.
+     * Maybe a new service?
+     *
+     * This function downloads a file from Moodle. If the file is already downloaded, the function replaces
+     * the www reference with the internal file system reference
+     *
+     * @param  {string} fileurl The file path (usually a url).
+     * @return {Promise}        Promise to be resolved with the downloaded URL.
+     */
+    self.getMoodleFilePath = function (fileurl, courseId, siteId) {
+
+        //This function is used in regexp callbacks, better not to risk!!
+        if (!fileurl) {
+            return $q.reject();
+        }
+
+        if (!courseId) {
+            courseId = 1;
+        }
+
+        if (!siteId) {
+            siteId = $mmSite.getCurrentSiteId();
+            if (typeof(siteId) === 'undefined') {
+                return $q.reject();
+            }
+        }
+
+        return db.get(mmSitesStore, siteId).then(function(site) {
+
+            var downloadURL = $mmUtil.fixPluginfile(fileurl, site.token);
+            var extension = "." + fileurl.split('.').pop();
+            if (extension.indexOf(".php") === 0) {
+                extension = "";
+            }
+
+            var filename = md5.createHash(fileurl) + extension;
+
+            var path = {
+                directory: siteId + "/" + courseId,
+                file:      siteId + "/" + courseId + "/" + filename
+            };
+
+            return $mmFS.getFile(path.file).then(function(fileEntry) {
+                // We use toInternalURL so images are loaded in iOS8 using img HTML tags,
+                // with toURL the OS is unable to find the image files.
+                $log.debug('File ' + url + ' already downloaded');
+                return fileEntry.toInternalURL();
+            }, function() {
+                if ($cordovaNetwork.isOnline()) {
+                    return $mmWS.downloadFile(downloadURL, path.file);
+                } else {
+                    console.log('Device not connected');
+                    return downloadURL;
                 }
 
             });

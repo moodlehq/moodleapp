@@ -21,7 +21,7 @@ angular.module('mm.core')
  * @ngdoc service
  * @name $mmWS
  */
-.factory('$mmWS', function($http, $q, $log) {
+.factory('$mmWS', function($http, $q, $log, $cordovaFileTransfer, $mmFS) {
 
     var self = {};
 
@@ -169,6 +169,30 @@ angular.module('mm.core')
             }
         }
         return result;
+    };
+
+    /**
+     * Downloads a file from Moodle using Cordova File API
+     *
+     * @param {String}   url        Download url.
+     * @param {String}   path       Local path to store the file.
+     * @param {Boolean}  background True if this function should be executed in background using Web Workers.
+     * @return {Promise} Promise to be resolved in success.
+     */
+    self.downloadFile = function(url, path, background) {
+        $log.debug('Download file '+url);
+        // TODO: Web Workers
+        $mmFS.getBasePath().then(function(basePath) {
+            var absolutePath = basePath + path;
+            return $cordovaFileTransfer.download(url, absolutePath, {}, true).then(function(result) {
+                $log.debug('Success downloading file ' + url + ' to '+absolutePath);
+                return result.toInternalURL();
+            }, function(err) {
+                $log.error('Error downloading file '+url);
+                $log.error(err);
+                return $q.reject();
+            });
+        });
     };
 
     return self;
