@@ -824,7 +824,8 @@ angular.module('mm.core')
                                      $mmUtil, $mmFS, $cordovaNetwork, mmSitesStore, $log, mmLoginSSO) {
     var self = {},
         services = {},
-        db = $mmApp.getDB();
+        db = $mmApp.getDB(),
+        sessionRestored = false;
         self.getDemoSiteData = function(siteurl) {
         return $mmConfig.get('demo_sites').then(function(demo_sites) {
             for (var i = 0; i < demo_sites.length; i++) {
@@ -961,6 +962,7 @@ angular.module('mm.core')
                 var siteid = md5.createHash(siteurl + infos.username);
                 self.addSite(siteid, siteurl, token, infos);
                 $mmSite.setSite(siteid, siteurl, token, infos);
+                self.login(siteid);
                 deferred.resolve();
             } else {
                 $translate('mm.core.login.invalidmoodleversion').then(function(value) {
@@ -1006,8 +1008,10 @@ angular.module('mm.core')
         });
     };
         self.loadSite = function(siteid) {
+        $log.debug('Load site '+siteid);
         return db.get(mmSitesStore, siteid).then(function(site) {
             $mmSite.setSite(site.siteid, site.siteurl, site.token, site.infos);
+            self.login(siteid);
         });
     };
     self.deleteSite = function(siteid) {
@@ -1109,6 +1113,22 @@ angular.module('mm.core')
                     return downloadURL;
                 }
             });
+        });
+    };
+        self.login = function(siteid) {
+        $mmConfig.set('current_site', siteid);
+    };
+        self.logout = function() {
+        $mmConfig.delete('current_site');
+    }
+        self.restoreSession = function() {
+        if (sessionRestored) {
+            return $q.reject();
+        }
+        sessionRestored = true;
+        return $mmConfig.get('current_site').then(function(siteid) {
+            $log.debug('Restore session in site '+siteid);
+            return self.loadSite(siteid);
         });
     };
     return self;
@@ -1416,8 +1436,13 @@ angular.module('mm.core.login', [])
         abstract: true,
         templateUrl: 'core/components/login/templates/login.html',
         cache: false,  
-        onEnter: function($ionicHistory) {
+        onEnter: function($ionicHistory, $state, $mmSitesManager, $mmSite) {
             $ionicHistory.clearHistory();
+            $mmSitesManager.restoreSession().then(function() {
+                if ($mmSite.isLoggedIn()) {
+                    $state.go('site.index');
+                }
+            });
         }
     })
     .state('mm_login.index', {

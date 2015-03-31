@@ -31,7 +31,8 @@ angular.module('mm.core')
 
     var self = {},
         services = {},
-        db = $mmApp.getDB();
+        db = $mmApp.getDB(),
+        sessionRestored = false;
 
     /**
      * Get the demo data of the siteurl if it is a demo site.
@@ -247,6 +248,7 @@ angular.module('mm.core')
                 var siteid = md5.createHash(siteurl + infos.username);
                 self.addSite(siteid, siteurl, token, infos);
                 $mmSite.setSite(siteid, siteurl, token, infos);
+                self.login(siteid);
                 deferred.resolve();
             } else {
                 $translate('mm.core.login.invalidmoodleversion').then(function(value) {
@@ -326,8 +328,10 @@ angular.module('mm.core')
      * @param  {Number} index  Position of the site in the list of stored sites.
      */
     self.loadSite = function(siteid) {
+        $log.debug('Load site '+siteid);
         return db.get(mmSitesStore, siteid).then(function(site) {
             $mmSite.setSite(site.siteid, site.siteurl, site.token, site.infos);
+            self.login(siteid);
         });
     };
 
@@ -469,6 +473,39 @@ angular.module('mm.core')
                 }
 
             });
+        });
+    };
+
+    /**
+     * Login the user in a site.
+     *
+     * @param  {String} siteid ID of the site the user is accessing.
+     */
+    self.login = function(siteid) {
+        $mmConfig.set('current_site', siteid);
+    };
+
+    /**
+     * Logout the user.
+     */
+    self.logout = function() {
+        $mmConfig.delete('current_site');
+    }
+
+    /**
+     * Restores the session to the previous one so the user doesn't has to login everytime the app is started.
+     *
+     * @return {Promise} Promise to be resolved if a session is restored.
+     */
+    self.restoreSession = function() {
+        if (sessionRestored) {
+            return $q.reject();
+        }
+        sessionRestored = true;
+
+        return $mmConfig.get('current_site').then(function(siteid) {
+            $log.debug('Restore session in site '+siteid);
+            return self.loadSite(siteid);
         });
     };
 

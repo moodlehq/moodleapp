@@ -124,21 +124,6 @@ angular.module('mm', ['ionic', 'ngCordova', 'angular-md5'])
     }
   }
 
-  // $mmStateProvider
-
-  //   .state('site', {
-  //     url: '/site',
-  //     abstract: true,
-  //     onEnter: function($ionicHistory) {
-  //       // Remove the login page from the history stack.
-  //       $ionicHistory.clearHistory();
-  //     }
-  //   })
-
-  //   .state('site.index', {
-  //     url: '/index'
-  //   });
-
   // Default redirect to the login page.
   $urlRouterProvider.otherwise(function($injector, $location) {
     var $state = $injector.get('$state');

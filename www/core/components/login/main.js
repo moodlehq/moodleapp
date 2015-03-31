@@ -14,9 +14,15 @@ angular.module('mm.core.login', [])
         abstract: true,
         templateUrl: 'core/components/login/templates/login.html',
         cache: false,   // Disable caching to force controller reload.
-        onEnter: function($ionicHistory) {
+        onEnter: function($ionicHistory, $state, $mmSitesManager, $mmSite) {
             // Ensure that there is no history stack when getting here.
             $ionicHistory.clearHistory();
+
+            $mmSitesManager.restoreSession().then(function() {
+                if ($mmSite.isLoggedIn()) {
+                    $state.go('site.index');
+                }
+            });
         }
     })
 
