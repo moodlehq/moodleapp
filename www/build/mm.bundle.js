@@ -1106,7 +1106,6 @@ angular.module('mm.core')
                 if ($cordovaNetwork.isOnline()) {
                     return $mmWS.downloadFile(downloadURL, path.file);
                 } else {
-                    console.log('Device not connected');
                     return downloadURL;
                 }
             });
@@ -1203,6 +1202,12 @@ angular.module('mm.core')
                     template: needsTranslate ? translations[errorMessage] : errorMessage
                 });
             });
+        };
+                this.cleanTags = function(text) {
+            text = text.replace(/(<([^>]+)>)/ig,"");
+            text = $("<p>" + text + "</p>").text();
+            text = text.replace(/(?:\r\n|\r|\n)/g, '<br />');
+            return text;
         };
     }
     this.$get = function($mmSite, $ionicLoading, $ionicPopup, $translate) {
@@ -1315,42 +1320,76 @@ angular.module('mm.core')
 });
 
 angular.module('mm.core')
-.filter('formatText', function(md5, $mmSite, $mmUtil) {
-    return function(text) {
-        if (!text) {
-            return '';
-        }
-        text = text.replace(/<a([^>]+)>/g,"<a target=\"_blank\" $1>");
-        var currentSiteURL = $mmSite.getCurrentSiteURL();
-        var ft = text.match(/\$\$(.+?)\$\$/);
-        if (ft && typeof(currentSiteURL) !== 'undefined') {
-            text = text.replace(/\$\$(.+?)\$\$/g, function(full, match) {
-                if (!match) {
-                    return "";
-                }
-                var md5 = md5.createHash(match);
-                return '<img src="' + currentSiteURL + "/filter/tex/pix.php/" + md5 + '">';
-            });
-        }
-        if (typeof(currentSiteURL) === 'undefined') {
-            return text;
-        }
-        var url = currentSiteURL.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-        var expr = new RegExp(url + "[^\"']*", "gi");
-        text = text.replace(expr, function(match) {
-            if (!courseId) {
-                courseId = 1;
-            }
-            return $mmUtil.getMoodleFilePath(match, courseId);
-        });
-        return text;
-    }
-});
-angular.module('mm.core')
 .filter('noTags', function() {
     return function(text) {
         return String(text).replace(/(<([^>]+)>)/ig, '');
     }
+});
+angular.module('mm.core')
+.directive('formatText', function($interpolate) {
+    return {
+        restrict: 'E',
+        scope: true,
+        transclude: true,
+        controller: function($q, md5, $mmSite, $mmSitesManager, $mmUtil) {
+                        this.formatText = function(text, clean, courseId) {
+                var deferred = $q.defer();
+                if (!text) {
+                    deferred.reject();
+                    return deferred.promise;
+                }
+                text = text.replace(/<a([^>]+)>/g,"<a target=\"_blank\" $1>");
+                var currentSiteURL = $mmSite.getCurrentSiteURL();
+                var ft = text.match(/\$\$(.+?)\$\$/);
+                if (ft && typeof(currentSiteURL) !== 'undefined') {
+                    text = text.replace(/\$\$(.+?)\$\$/g, function(full, match) {
+                        if (!match) {
+                            return '';
+                        }
+                        var md5 = md5.createHash(match);
+                        return '<img src="' + currentSiteURL + "/filter/tex/pix.php/" + md5 + '">';
+                    });
+                }
+                if (typeof(currentSiteURL) === 'undefined') {
+                    deferred.resolve(text);
+                    return deferred.promise;
+                }
+                var url = currentSiteURL.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                var expr = new RegExp(url + "[^\"']*", "gi");
+                if (!courseId) {
+                    courseId = 1;
+                }
+                var matches = text.match(expr);
+                var promises = [];
+                angular.forEach(matches, function(match) {
+                    var promise = $mmSitesManager.getMoodleFilePath(match, courseId);
+                    promises.push(promise);
+                    promise.then(function(url) {
+                        text = text.replace(match, url);
+                    });
+                });
+                return $q.all(promises).then(function() {
+                    text = text.replace(/ng-src/g, 'src');
+                    if (clean) {
+                        return $mmUtil.cleanTags(text);
+                    } else {
+                        return text;
+                    }
+                });
+            };
+        },
+        compile: function(element, attrs, transclude) {
+            return function(scope, linkElement, linkAttrs, ctrl) {
+                transclude(scope, function(clone) {
+                    var content = angular.element('<div>').append(clone).html();
+                    var interpolated = $interpolate(content)(scope);
+                    ctrl.formatText(interpolated, attrs.clean, attrs.courseid).then(function(text) {
+                        linkElement.html(text);
+                    });
+                });
+            }
+        }
+    };
 });
 angular.module('mm.core')
 .directive('noInputValidation', function() {

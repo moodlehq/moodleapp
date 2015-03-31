@@ -181,6 +181,21 @@ angular.module('mm.core')
                 });
             });
         };
+
+        /**
+         * Function for clean HTML tags
+         * @param  {str} text The text to be cleaned
+         * @return {str}      Text cleaned
+         */
+        this.cleanTags = function(text) {
+            // First, we use a regexpr.
+            text = text.replace(/(<([^>]+)>)/ig,"");
+            // Then, we rely on the browser. We need to wrap the text to be sure is HTML.
+            text = $("<p>" + text + "</p>").text();
+            // Recover new lines.
+            text = text.replace(/(?:\r\n|\r|\n)/g, '<br />');
+            return text;
+        };
     }
 
     this.$get = function($mmSite, $ionicLoading, $ionicPopup, $translate) {

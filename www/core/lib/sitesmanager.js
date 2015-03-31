@@ -465,7 +465,6 @@ angular.module('mm.core')
                 if ($cordovaNetwork.isOnline()) {
                     return $mmWS.downloadFile(downloadURL, path.file);
                 } else {
-                    console.log('Device not connected');
                     return downloadURL;
                 }
 
