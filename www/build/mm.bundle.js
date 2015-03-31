@@ -1339,6 +1339,7 @@ angular.module('mm.core')
                     return deferred.promise;
                 }
                 text = text.replace(/<a([^>]+)>/g,"<a target=\"_blank\" $1>");
+                text = text.replace(/ng-src/g, 'src');
                 var currentSiteURL = $mmSite.getCurrentSiteURL();
                 var ft = text.match(/\$\$(.+?)\$\$/);
                 if (ft && typeof(currentSiteURL) !== 'undefined') {
@@ -1369,7 +1370,6 @@ angular.module('mm.core')
                     });
                 });
                 return $q.all(promises).then(function() {
-                    text = text.replace(/ng-src/g, 'src');
                     if (clean) {
                         return $mmUtil.cleanTags(text);
                     } else {
@@ -1384,7 +1384,7 @@ angular.module('mm.core')
                     var content = angular.element('<div>').append(clone).html();
                     var interpolated = $interpolate(content)(scope);
                     ctrl.formatText(interpolated, attrs.clean, attrs.courseid).then(function(text) {
-                        linkElement.html(text);
+                        linkElement.replaceWith(text);
                     });
                 });
             }

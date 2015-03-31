@@ -25,6 +25,9 @@ angular.module('mm.core')
                 // Links should open in new browser.
                 text = text.replace(/<a([^>]+)>/g,"<a target=\"_blank\" $1>");
 
+                // Turn ng-src to src.
+                text = text.replace(/ng-src/g, 'src');
+
                 // Multilang tags (TODO)
                 // Match the current language
                 // var re = new RegExp('<(?:lang|span)[^>]+lang="' + MM.lang.current + '"[^>]*>(.*?)<\/(?:lang|span)>',"g");
@@ -72,7 +75,6 @@ angular.module('mm.core')
                 });
 
                 return $q.all(promises).then(function() {
-                    text = text.replace(/ng-src/g, 'src');
                     if (clean) {
                         return $mmUtil.cleanTags(text);
                     } else {
@@ -87,7 +89,8 @@ angular.module('mm.core')
                     var content = angular.element('<div>').append(clone).html(); // Get directive's content.
                     var interpolated = $interpolate(content)(scope); // "Evaluate" scope variables.
                     ctrl.formatText(interpolated, attrs.clean, attrs.courseid).then(function(text) {
-                        linkElement.html(text);
+                        // Use replaceWith instead of html to delete the format-text tags.
+                        linkElement.replaceWith(text);
                     });
                 });
             }
