@@ -137,10 +137,10 @@ angular.module('mm.core')
     self.write = function(method, data, preSets) {
         preSets = preSets || {};
         if (typeof(preSets.getFromCache) === 'undefined') {
-            preSets.getFromCache = 1;
+            preSets.getFromCache = 0;
         }
         if (typeof(preSets.saveToCache) === 'undefined') {
-            preSets.saveToCache = 1;
+            preSets.saveToCache = 0;
         }
         return self.request(method, data, preSets);
     }
