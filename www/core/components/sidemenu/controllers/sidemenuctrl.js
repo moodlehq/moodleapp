@@ -21,9 +21,15 @@ angular.module('mm.core.sidemenu')
  * @ngdoc controller
  * @name mmSideMenuCtrl
  */
-.controller('mmSideMenuCtrl', function($scope, $mmSideMenuDelegate, $mmSite, $mmConfig) {
+.controller('mmSideMenuCtrl', function($scope, $state, $mmSideMenuDelegate, $mmSitesManager, $mmSite, $mmConfig) {
     $scope.plugins = $mmSideMenuDelegate.getData();
     $scope.siteinfo = $mmSite.getCurrentSiteInfo();
+
+    $scope.logout = function() {
+        $mmSitesManager.logout().finally(function() {
+            $state.go('mm_login.index');
+        });
+    };
 
     // Get docs URL based on site version and current language.
     $scope.docsurl = 'http://docs.moodle.org/en/Mobile_app';

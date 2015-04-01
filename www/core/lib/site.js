@@ -101,7 +101,7 @@ angular.module('mm.core')
     }
 
     self.logout = function() {
-        delete currentSite;
+        currentSite = undefined;
     }
 
     self.setCandidateSite = function(siteurl, token) {
@@ -109,7 +109,7 @@ angular.module('mm.core')
     }
 
     self.deleteCandidateSite = function() {
-        delete currentSite;
+        currentSite = undefined;
     };
 
     self.setSite = function(id, siteurl, token, infos) {

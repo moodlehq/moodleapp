@@ -496,7 +496,8 @@ angular.module('mm.core')
      * Logout the user.
      */
     self.logout = function() {
-        $mmConfig.delete('current_site');
+        $mmSite.logout();
+        return $mmConfig.delete('current_site');
     }
 
     /**
