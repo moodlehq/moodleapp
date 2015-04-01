@@ -21,7 +21,7 @@ angular.module('mm.core')
  * @ngdoc service
  * @name $mmWS
  */
-.factory('$mmWS', function($http, $q, $log, $cordovaFileTransfer, $mmFS) {
+.factory('$mmWS', function($http, $q, $log, $mmLang, $cordovaFileTransfer, $mmFS) {
 
     var self = {};
 
@@ -49,11 +49,9 @@ angular.module('mm.core')
         preSets = verifyPresets(preSets);
 
         if (!preSets) {
-            deferred.reject("unexpectederror");
-            return;
+            $mmLang.translateErrorAndReject(deferred, 'unexpectederror');
+            return deferred.promise;
         }
-
-        // TODO: Emulated site?
 
         data.wsfunction = method;
         data.wstoken = preSets.wstoken;
@@ -74,20 +72,19 @@ angular.module('mm.core')
             }
 
             if (!data) {
-                deferred.reject('cannotconnect');
+                $mmLang.translateErrorAndReject(deferred, 'cannotconnect');
                 return;
             }
 
             if (typeof(data.exception) !== 'undefined') {
                 if (data.errorcode == 'invalidtoken' || data.errorcode == 'accessexception') {
-                    // TODO: Send an event to logout the user and refirect to login page.
+                    // TODO: Send an event to logout the user and redirect to login page.
                     $log.error("Critical error: " + JSON.stringify(data));
-                    deferred.reject('lostconnection');
-                    return;
+                    $mmLang.translateErrorAndReject(deferred, 'lostconnection');
                 } else {
                     deferred.reject(data.message);
-                    return;
                 }
+                return;
             }
 
             if (typeof(data.debuginfo) != 'undefined') {
@@ -109,9 +106,8 @@ angular.module('mm.core')
             // prevent errors if in the callback the object is modified.
             deferred.resolve(angular.copy(data));
 
-        }).error(function(data) {
-            deferred.reject('cannotconnect');
-            return;
+        }, function(error) {
+            $mmLang.translateErrorAndReject(deferred, 'cannotconnect');
         });
 
         return deferred.promise;

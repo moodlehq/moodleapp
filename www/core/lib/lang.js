@@ -32,12 +32,26 @@ angular.module('mm.core')
      */
     self.registerLanguageFolder = function(path) {
         $translatePartialLoader.addPart(path);
-    }
+    };
 
     self.changeCurrentLanguage = function(language) {
         $translate.use(language);
         $mmConfig.set('current_language', language);
-    }
+    };
+
+    /**
+     * Translates an error message and rejects a deferred with the translated message.
+     *
+     * @param  {Object} deferred Deferred object to reject.
+     * @param  {String} errorkey Key of the message to show.
+     */
+    self.translateErrorAndReject = function(deferred, errorkey) {
+        $translate(errorkey).then(function(errorMessage) {
+            deferred.reject(errorMessage);
+        }, function() {
+            deferred.reject(errorkey);
+        });
+    };
 
     return self;
 })
