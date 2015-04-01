@@ -178,7 +178,7 @@ angular.module('mm.core')
     self.downloadFile = function(url, path, background) {
         $log.debug('Download file '+url);
         // TODO: Web Workers
-        $mmFS.getBasePath().then(function(basePath) {
+        return $mmFS.getBasePath().then(function(basePath) {
             var absolutePath = basePath + path;
             return $cordovaFileTransfer.download(url, absolutePath, {}, true).then(function(result) {
                 $log.debug('Success downloading file ' + url + ' to '+absolutePath);

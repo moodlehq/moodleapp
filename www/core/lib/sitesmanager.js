@@ -330,7 +330,7 @@ angular.module('mm.core')
     self.loadSite = function(siteid) {
         $log.debug('Load site '+siteid);
         return db.get(mmSitesStore, siteid).then(function(site) {
-            $mmSite.setSite(site.siteid, site.siteurl, site.token, site.infos);
+            $mmSite.setSite(siteid, site.siteurl, site.token, site.infos);
             self.login(siteid);
         });
     };
@@ -463,12 +463,19 @@ angular.module('mm.core')
             return $mmFS.getFile(path.file).then(function(fileEntry) {
                 // We use toInternalURL so images are loaded in iOS8 using img HTML tags,
                 // with toURL the OS is unable to find the image files.
-                $log.debug('File ' + url + ' already downloaded');
+                $log.debug('File ' + downloadURL + ' already downloaded.');
                 return fileEntry.toInternalURL();
             }, function() {
-                if ($cordovaNetwork.isOnline()) {
-                    return $mmWS.downloadFile(downloadURL, path.file);
-                } else {
+                try { // Use try/catch because $cordovaNetwork fails in Chromium (until mm.emulator is migrated).
+                    if ($cordovaNetwork.isOnline()) {
+                        $log.debug('File ' + downloadURL + ' not downloaded. Lets download.');
+                        return $mmWS.downloadFile(downloadURL, path.file);
+                    } else {
+                        $log.debug('File ' + downloadURL + ' not downloaded, but the device is offline.');
+                        return downloadURL;
+                    }
+                } catch(err) {
+                    $log.debug('File ' + downloadURL + ' not downloaded, but cordova is not available.');
                     return downloadURL;
                 }
 
@@ -507,6 +514,28 @@ angular.module('mm.core')
             $log.debug('Restore session in site '+siteid);
             return self.loadSite(siteid);
         });
+    };
+
+    /**
+     * Gets the URL of a site. If no site is specified, return the URL of the current site.
+     *
+     * @param  {String} siteid ID of the site.
+     * @return {Promise}       Promise to be resolved with the URL of the site. This promise is never rejected.
+     */
+    self.getSiteURL = function(siteid) {
+        var deferred = $q.defer();
+
+        if (typeof(siteid) === 'undefined') {
+            deferred.resolve($mmSite.getCurrentSiteURL());
+        } else {
+            db.get(mmSitesStore, siteid).then(function(site) {
+                deferred.resolve(site.siteurl);
+            }, function() {
+                deferred.resolve(undefined);
+            });
+        }
+
+        return deferred.promise;
     };
 
     return self;
