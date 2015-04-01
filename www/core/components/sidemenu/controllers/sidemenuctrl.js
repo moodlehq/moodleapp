@@ -21,7 +21,26 @@ angular.module('mm.core.sidemenu')
  * @ngdoc controller
  * @name mmSideMenuCtrl
  */
-.controller('mmSideMenuCtrl', function($scope, $mmSideMenuDelegate, $mmSite) {
+.controller('mmSideMenuCtrl', function($scope, $mmSideMenuDelegate, $mmSite, $mmConfig) {
     $scope.plugins = $mmSideMenuDelegate.getData();
     $scope.siteinfo = $mmSite.getCurrentSiteInfo();
+
+    // Get docs URL based on site version and current language.
+    $scope.docsurl = 'http://docs.moodle.org/en/Mobile_app';
+    if (typeof($scope.siteinfo) !== 'undefined' && typeof($scope.siteinfo.release) === 'string') {
+        var release = $scope.siteinfo.release.substr(0, 3).replace(".", "");
+        // Check is a valid number.
+        if (parseInt(release) >= 24) {
+            // Append release number.
+            $scope.docsurl = $scope.docsurl.replace("http://docs.moodle.org/", "http://docs.moodle.org/" + release + "/");
+        }
+    }
+
+    $mmConfig.get('current_language').then(function(lang) {
+        $mmConfig.get('languages').then(function(languages) {
+            if (languages.indexOf(lang) > -1) {
+                $scope.docsurl = 'http://docs.moodle.org/' + lang + '/Mobile_app';
+            }
+        });
+    });
 });
