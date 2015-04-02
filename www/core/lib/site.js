@@ -21,7 +21,7 @@ angular.module('mm.core')
  * @ngdoc service
  * @name $mmSite
  */
-.factory('$mmSite', function($http, $q, $mmWS, $mmDB, $mmConfig, $log, md5) {
+.factory('$mmSite', function($http, $q, $mmWS, $mmDB, $mmConfig, $log, md5, $cordovaNetwork) {
 
     var deprecatedFunctions = {
         "moodle_webservice_get_siteinfo": "core_webservice_get_site_info",
@@ -274,12 +274,17 @@ angular.module('mm.core')
             return deferred.promise;
         }
 
-        key = method + ':' + JSON.stringify(data);
+        key = md5.createHash(method + ':' + JSON.stringify(data));
         db.get('wscache', key).then(function(entry) {
             var now = new Date().getTime();
 
+            try { // Use try/catch because $cordovaNetwork fails in Chromium (until mm.emulator is migrated).
+                preSets.omitExpires = preSets.omitExpires || $cordovaNetwork.isOffline(); // omitExpires in offline.
+            } catch(err) {}
+
             if (!preSets.omitExpires) {
                 if (now > entry.expirationtime) {
+                    $log.debug('Cached element found, but it is expired');
                     deferred.reject();
                     return;
                 }
@@ -303,12 +308,11 @@ angular.module('mm.core')
     function saveToCache(method, data, response) {
         var db = currentSite.db,
             deferred = $q.defer(),
-            key = method + ':' + JSON.stringify(data);
+            key = md5.createHash(method + ':' + JSON.stringify(data));
 
         if (!db) {
             deferred.reject();
         } else {
-
             $mmConfig.get('cache_expiration_time').then(function(cacheExpirationTime) {
 
                 var entry = {

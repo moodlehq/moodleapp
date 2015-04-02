@@ -21,7 +21,7 @@ angular.module('mm.core')
  * @ngdoc service
  * @name $mmWS
  */
-.factory('$mmWS', function($http, $q, $log, $mmLang, $cordovaFileTransfer, $mmFS) {
+.factory('$mmWS', function($http, $q, $log, $mmLang, $cordovaFileTransfer, $cordovaNetwork, $mmFS) {
 
     var self = {};
 
@@ -52,6 +52,12 @@ angular.module('mm.core')
             $mmLang.translateErrorAndReject(deferred, 'unexpectederror');
             return deferred.promise;
         }
+        try {
+            if ($cordovaNetwork.isOffline()) {
+                $mmLang.translateErrorAndReject(deferred, 'networkerrormsg');
+                return deferred.promise;
+            }
+        } catch(err) {}
 
         data.wsfunction = method;
         data.wstoken = preSets.wstoken;
