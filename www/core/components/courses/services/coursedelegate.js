@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.core.sidemenu')
+angular.module('mm.core.courses')
 
 /**
- * Service to interact with plugins to be shown in the side menu. Provides functions to register a plugin
+ * Service to interact with plugins to be shown in each course. Provides functions to register a plugin
  * and notify an update in the data.
  *
- * @module mm.core.sidemenu
+ * @module mm.core.courses
  * @ngdoc service
  * @name $mmSideMenuDelegate
  */
-.factory('$mmSideMenuDelegate', function($log) {
+.factory('$mmCourseDelegate', function($log) {
 
     var plugins = {},
         self = {},
@@ -30,7 +30,7 @@ angular.module('mm.core.sidemenu')
         controllers = [];
 
     /**
-     * Register a plugin to show in the side menu.
+     * Register a plugin to show in the course.
      *
      * @param  {String}   name     Name of the plugin.
      * @param  {Function} callback Function to call to get the plugin data. This function should return an object with:
@@ -40,7 +40,7 @@ angular.module('mm.core.sidemenu')
      *                                 -badge: Number to show next to the plugin (like new notifications number). Optional.
      */
     self.registerPlugin = function(name, callback) {
-        $log.debug("Register plugin '"+name+"'");
+        $log.debug("Register plugin '"+name+"' in course.");
         plugins[name] = callback;
     };
 
@@ -50,7 +50,7 @@ angular.module('mm.core.sidemenu')
      * @param  {String}   name     Name of the plugin.
      */
     self.updatePluginData = function(name) {
-        $log.debug("Update plugin '"+name+"' data");
+        $log.debug("Update plugin '"+name+"' data in course.");
         data[name] = plugins[name]();
         // self.notifyControllers();
     };
@@ -68,18 +68,7 @@ angular.module('mm.core.sidemenu')
             });
         }
         return data;
-    }
-
-    // self.on = function(callback) {
-    //     controllers.push(callback);
-    // }
-
-    // self.notifyControllers = function() {
-    //     angular.forEach(controllers, function(callback) {
-    //         callback();
-    //     });
-
-    // }
+    };
 
     return self;
 });

@@ -1,0 +1,23 @@
+<ion-view view-title="{{ 'mm.core.courses.mycourses' | translate }}">
+    <ion-content padding="true">
+        <div class="list">
+          <label class="item item-input">
+            <i class="icon ion-search placeholder-icon"></i>
+            <input type="text" placeholder="{{ 'mm.core.courses.filter' | translate}}" ng-model="filterText">
+          </label>
+        </div>
+        <div class="list card" ng-repeat="course in courses | filter:{fullname: filterText}">
+            <a class="item" ui-sref="site.sections">
+               {{course.fullname}}
+            </a>
+            <div class="item item-text-wrap">
+                <p>{{course.summary}}</p>
+            </div>
+            <div class="item tabs tabs-icon-left">
+                <a ng-repeat="plugin in plugins" class="tab-item active" ui-sref="{{plugin.state}}">
+                    <i class="icon {{plugin.icon}}"></i> {{plugin.name}}
+                </a>
+            </div>
+        </div>
+    </ion-content>
+</ion-view>
