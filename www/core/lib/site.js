@@ -205,14 +205,14 @@ angular.module('mm.core')
         if (!self.isLoggedIn() || typeof(currentSite.infos) == 'undefined') {
             return false;
         }
-        for(var i = 0; i < currentSite.infos.functions; i++) {
-            var f = functions[i];
+        for(var i = 0; i < currentSite.infos.functions.length; i++) {
+            var f = currentSite.infos.functions[i];
             if (f.name == method) {
                 return true;
             }
         }
         return false;
-    }
+    };
 
     self.getCurrentSiteId = function() {
         if (typeof(currentSite) !== 'undefined' && typeof(currentSite.id) !== 'undefined') {
