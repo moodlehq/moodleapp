@@ -20,7 +20,7 @@ angular.module('mm.core.courses')
  *
  * @module mm.core.courses
  * @ngdoc service
- * @name $mmSideMenuDelegate
+ * @name $mmCourseDelegate
  */
 .factory('$mmCourseDelegate', function($log) {
 
@@ -34,10 +34,10 @@ angular.module('mm.core.courses')
      *
      * @param  {String}   name     Name of the plugin.
      * @param  {Function} callback Function to call to get the plugin data. This function should return an object with:
-     *                                 -icon: Icon to show in the menu item.
+     *                                 -icon: Icon to show next to the plugin name.
      *                                 -name: Plugin name.
-     *                                 -state: sref to the plugin's main state (i.e. site.messages).
-     *                                 -badge: Number to show next to the plugin (like new notifications number). Optional.
+     *                                 -state: sref to the plugin's main state (i.e. site.grades).
+     *                             If the plugin should not be shown (disabled, etc.) this function should return undefined.
      */
     self.registerPlugin = function(name, callback) {
         $log.debug("Register plugin '"+name+"' in course.");
@@ -51,8 +51,10 @@ angular.module('mm.core.courses')
      */
     self.updatePluginData = function(name) {
         $log.debug("Update plugin '"+name+"' data in course.");
-        data[name] = plugins[name]();
-        // self.notifyControllers();
+        var pluginData = plugins[name]();
+        if (typeof(pluginData) !== 'undefined') {
+            data[name] = pluginData;
+        }
     };
 
     /**

@@ -38,9 +38,10 @@ angular.module('mm.core.sidemenu')
      *                                 -name: Plugin name.
      *                                 -state: sref to the plugin's main state (i.e. site.messages).
      *                                 -badge: Number to show next to the plugin (like new notifications number). Optional.
+     *                             If the plugin should not be shown (disabled, etc.) this function should return undefined.
      */
     self.registerPlugin = function(name, callback) {
-        $log.debug("Register plugin '"+name+"'");
+        $log.debug("Register plugin '"+name+"' in side menu.");
         plugins[name] = callback;
     };
 
@@ -50,9 +51,11 @@ angular.module('mm.core.sidemenu')
      * @param  {String}   name     Name of the plugin.
      */
     self.updatePluginData = function(name) {
-        $log.debug("Update plugin '"+name+"' data");
-        data[name] = plugins[name]();
-        // self.notifyControllers();
+        $log.debug("Update plugin '"+name+"' data in side menu.");
+        var pluginData = plugins[name]();
+        if (typeof(pluginData) !== 'undefined') {
+            data[name] = pluginData;
+        }
     };
 
     /**

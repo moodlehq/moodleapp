@@ -1623,7 +1623,10 @@ angular.module('mm.core.courses')
     };
         self.updatePluginData = function(name) {
         $log.debug("Update plugin '"+name+"' data in course.");
-        data[name] = plugins[name]();
+        var pluginData = plugins[name]();
+        if (typeof(pluginData) !== 'undefined') {
+            data[name] = pluginData;
+        }
     };
         self.getData = function() {
         if (typeof(data) == 'undefined') {
@@ -1848,12 +1851,15 @@ angular.module('mm.core.sidemenu')
         data,
         controllers = [];
         self.registerPlugin = function(name, callback) {
-        $log.debug("Register plugin '"+name+"'");
+        $log.debug("Register plugin '"+name+"' in side menu.");
         plugins[name] = callback;
     };
         self.updatePluginData = function(name) {
-        $log.debug("Update plugin '"+name+"' data");
-        data[name] = plugins[name]();
+        $log.debug("Update plugin '"+name+"' data in side menu.");
+        var pluginData = plugins[name]();
+        if (typeof(pluginData) !== 'undefined') {
+            data[name] = pluginData;
+        }
     };
         self.getData = function() {
         if (typeof(data) == 'undefined') {
