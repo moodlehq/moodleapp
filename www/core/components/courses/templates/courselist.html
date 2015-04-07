@@ -14,7 +14,7 @@
                 <p>{{course.summary}}</p>
             </div>
             <div class="item tabs tabs-icon-left">
-                <a ng-repeat="plugin in plugins" class="tab-item active" ui-sref="{{plugin.state}}">
+                <a ng-repeat="plugin in plugins" class="tab-item active" ui-sref="{{plugin.state}}({courseid: {{course.id}}})">
                     <i class="icon {{plugin.icon}}"></i> {{plugin.name}}
                 </a>
             </div>
