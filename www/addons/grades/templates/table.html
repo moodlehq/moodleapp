@@ -1,0 +1,16 @@
+<ion-view view-title="{{ 'mma.grades.grades' | translate }}">
+    <ion-content>
+        <div class="card">
+            <table cellspacing="0" cellpadding="0" class="mma-grades-table">
+                <thead>
+                    <th ng-repeat="column in gradesTable.columns track by $index" id="{{column.id}}" class="header" colspan="{{column.width}}">
+                        {{column.name | translate}}
+                    </th>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="myrow in gradesTable.rows track by $index" ng-bind-html="myrow"></tr>
+                </tbody>
+            </table>
+        </div>
+    </ion-content>
+</ion-view>

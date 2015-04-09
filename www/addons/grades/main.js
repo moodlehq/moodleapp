@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.plugins.grades', [])
+angular.module('mm.addons.grades', [])
 
 .config(function($stateProvider) {
 
@@ -22,21 +22,29 @@ angular.module('mm.plugins.grades', [])
         url: '/grades',
         views: {
             'site': {
-                templateUrl: 'plugins/grades/templates/grades.html',
-                controller: 'mmpGradesCtrl'
+                templateUrl: 'addons/grades/templates/table.html',
+                controller: 'mmaGradesTableCtrl'
             }
+        },
+        params: {
+            course: null
         }
     });
 
 })
-.run(function($mmCourseDelegate, $translate) {
-    $translate('mm.plugins.grades.grades').then(function(pluginName) {
-        $mmCourseDelegate.registerPlugin('mm.grades', function() {
-            return {
-                icon: 'ion-stats-bars',
-                state: 'site.grades',
-                name: pluginName
-            };
+.run(function($mmCoursesDelegate, $translate, $mmSite, $mmaGrades) {
+    $translate('mma.grades.grades').then(function(pluginName) {
+        $mmCoursesDelegate.registerPlugin('mmaGrades', function() {
+
+            if ($mmSite.wsAvailable('gradereport_user_get_grades_table')) {
+                return {
+                    icon: 'ion-stats-bars',
+                    state: 'site.grades',
+                    title: pluginName
+                };
+            }
+
+            return undefined;
         });
     });
 });

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm', ['ionic', 'mm.core', 'mm.core.course', 'mm.core.courses', 'mm.core.login', 'mm.core.sidemenu', 'mm.addons.files', 'mm.addons.mod_label', 'mm.addons.mod_url', 'mm.addons.participants', 'ngCordova', 'angular-md5', 'pascalprecht.translate'])
+angular.module('mm', ['ionic', 'mm.core', 'mm.core.course', 'mm.core.courses', 'mm.core.login', 'mm.core.sidemenu', 'mm.addons.files', 'mm.addons.grades', 'mm.addons.mod_label', 'mm.addons.mod_url', 'mm.addons.participants', 'ngCordova', 'angular-md5', 'pascalprecht.translate'])
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
     if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
@@ -2767,6 +2767,37 @@ angular.module('mm.addons.files', ['mm.core'])
   });
 });
 
+angular.module('mm.addons.grades', [])
+.config(function($stateProvider) {
+    $stateProvider
+    .state('site.grades', {
+        url: '/grades',
+        views: {
+            'site': {
+                templateUrl: 'addons/grades/templates/table.html',
+                controller: 'mmaGradesTableCtrl'
+            }
+        },
+        params: {
+            course: null
+        }
+    });
+})
+.run(function($mmCoursesDelegate, $translate, $mmSite, $mmaGrades) {
+    $translate('mma.grades.grades').then(function(pluginName) {
+        $mmCoursesDelegate.registerPlugin('mmaGrades', function() {
+            if ($mmSite.wsAvailable('gradereport_user_get_grades_table')) {
+                return {
+                    icon: 'ion-stats-bars',
+                    state: 'site.grades',
+                    title: pluginName
+                };
+            }
+            return undefined;
+        });
+    });
+});
+
 angular.module('mm.addons.mod_label', ['mm.core'])
 .config(function($stateProvider) {
     $stateProvider
@@ -2783,7 +2814,7 @@ angular.module('mm.addons.mod_label', ['mm.core'])
         }
     });
 })
-.run(function($mmCourseDelegate, $mmUtil, $translate) {
+.run(function($mmCourseDelegate, $mmUtil, $translate, $mmText) {
   $translate('mma.mod_label.taptoview').then(function(taptoview) {
     $mmCourseDelegate.registerContentHandler('mmaModLabel', 'label', function(module) {
       var title = $mmUtil.shortenText($mmText.cleanTags(module.description).trim(), 128);
@@ -3252,6 +3283,164 @@ angular.module('mm.addons.files')
             });
         });
         return deferred.promise;
+    };
+    return self;
+});
+
+angular.module('mm.addons.grades')
+.controller('mmaGradesTableCtrl', function($scope, $stateParams, $translate, $mmUtil, $mmaGrades) {
+    var course = $stateParams.course || {},
+        courseid = course.id;
+    function fetchGrades() {
+        $translate('mm.core.loading').then(function(str) {
+            $mmUtil.showModalLoading(str);
+        });
+        $mmaGrades.getGradesTable(courseid).then(function(table) {
+            $scope.gradesTable = table;
+        }, function(message) {
+            $mmUtil.showErrorModal(message);
+        }).finally(function() {
+            $mmUtil.closeModalLoading();
+        });
+    }
+    fetchGrades();
+});
+
+angular.module('mm.addons.grades')
+.factory('$mmaGrades', function($q, $log, $mmSite, $mmText, $ionicPlatform, $translate) {
+    $log = $log.getInstance('$mmaGrades');
+    var self = {};
+        function formatGradesTable(table, showSimple) {
+        var formatted = {
+            columns: [],
+            rows: []
+        };
+        if (!table || !table.tables) {
+            return formatted;
+        }
+        var columns = [ "itemname", "weight", "grade", "range", "percentage", "lettergrade", "rank",
+                        "average", "feedback", "contributiontocoursetotal"];
+        var returnedColumns = [];
+        var tabledata = [];
+        var maxDepth = 0;
+        if (table.tables && table.tables[0] && table.tables[0]['tabledata']) {
+            tabledata = table.tables[0]['tabledata'];
+            maxDepth = table.tables[0]['maxdepth'];
+            for (var el in tabledata) {
+                if (typeof(tabledata[el]["leader"]) === "undefined") {
+                    for (var col in tabledata[el]) {
+                        returnedColumns.push(col);
+                    }
+                    break;
+                }
+            }
+        }
+        if (returnedColumns.length > 0) {
+            if (showSimple) {
+                returnedColumns = ["itemname", "grade"];
+            }
+            for (var el in columns) {
+                var colName = columns[el];
+                if (returnedColumns.indexOf(colName) > -1) {
+                    var width = colName == "itemname" ? maxDepth : 1;
+                    var column = {
+                        id: colName,
+                        name: colName,
+                        width: width
+                    };
+                    formatted.columns.push(column);
+                }
+            }
+            var name, rowspan, tclass, colspan, content, celltype, id, headers,j, img, colspanVal;
+            var len = tabledata.length;
+            for (var i = 0; i < len; i++) {
+                var row = '';
+                if (typeof(tabledata[i]['leader']) != "undefined") {
+                    rowspan = tabledata[i]['leader']['rowspan'];
+                    tclass = tabledata[i]['leader']['class'];
+                    row += '<td class="' + tclass + '" rowspan="' + rowspan + '"></td>';
+                }
+                for (el in returnedColumns) {
+                    name = returnedColumns[el];
+                    if (typeof(tabledata[i][name]) != "undefined") {
+                        tclass = (typeof(tabledata[i][name]['class']) != "undefined")? tabledata[i][name]['class'] : '';
+                        colspan = (typeof(tabledata[i][name]['colspan']) != "undefined")? "colspan='"+tabledata[i][name]['colspan']+"'" : '';
+                        content = (typeof(tabledata[i][name]['content']) != "undefined")? tabledata[i][name]['content'] : null;
+                        celltype = (typeof(tabledata[i][name]['celltype']) != "undefined")? tabledata[i][name]['celltype'] : 'td';
+                        id = (typeof(tabledata[i][name]['id']) != "undefined")? "id='" + tabledata[i][name]['id'] +"'" : '';
+                        headers = (typeof(tabledata[i][name]['headers']) != "undefined")? "headers='" + tabledata[i][name]['headers'] + "'" : '';
+                        if (typeof(content) != "undefined") {
+                            img = getImgHTML(content);
+                            content = content.replace(/<\/span>/gi, "\n");
+                            content = $mmText.cleanTags(content);
+                            content = content.replace("\n", "<br />");
+                            content = img + " " + content;
+                            row += "<" + celltype + " " + id + " " + headers + " " + "class='"+ tclass +"' " + colspan +">";
+                            row += content;
+                            row += "</" + celltype + ">";
+                        }
+                    }
+                }
+                formatted.rows.push(row);
+            }
+        }
+        return formatted;
+    }
+        function getImgHTML(text) {
+        var img = '';
+        if (text.indexOf("/agg_mean") > -1) {
+            img = '<img src="addons/grades/img/agg_mean.png" width="16">';
+        } else if (text.indexOf("/agg_sum") > -1) {
+            img = '<img src="addons/grades/img/agg_sum.png" width="16">';
+        } else if (text.indexOf("/outcomes") > -1) {
+            img = '<img src="addons/grades/img/outcomes.png" width="16">';
+        } else if (text.indexOf("i/folder") > -1) {
+            img = '<img src="addons/grades/img/folder.png" width="16">';
+        } else if (text.indexOf("/manual_item") > -1) {
+            img = '<img src="addons/grades/img/manual_item.png" width="16">';
+        } else if (text.indexOf("/mod/") > -1) {
+            var module = text.match(/mod\/([^\/]*)\//);
+            if (typeof module[1] != "undefined") {
+                img = '<img src="img/mod/' + module[1] + '.png" width="16">';
+            }
+        }
+        if (img) {
+            img = '<span class="app-ico">' + img + '</span>';
+        }
+        return img;
+    }
+        function translateGradesTable(table) {
+        var columns = angular.copy(table.columns),
+            promises = [];
+        columns.forEach(function(column) {
+            var promise = $translate('mma.grades.'+column.name);
+            promises.push(promise);
+            promise.then(function(translated) {
+                column.name = translated;
+            });
+        });
+        return $q.all(promises).then(function() {
+            return {
+                columns: columns,
+                rows: table.rows
+            };
+        });
+    };
+        self.getGradesTable = function(courseid) {
+        $log.debug('Get grades for course '+courseid);
+        var siteinfo = $mmSite.getInfo();
+        if (typeof(siteinfo) === 'undefined' || typeof(siteinfo.userid) === 'undefined') {
+            $log.debug('Siteinfo not defined, reject.');
+            return $q.reject();
+        }
+        var data = {
+            'courseid' : courseid,
+            'userid'   : siteinfo.userid
+        };
+        return $mmSite.read('gradereport_user_get_grades_table', data).then(function(table) {
+            table = formatGradesTable(table, !$ionicPlatform.isTablet());
+            return translateGradesTable(table);
+        });
     };
     return self;
 });
