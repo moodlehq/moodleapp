@@ -250,7 +250,7 @@ angular.module('mm.core')
         if (typeof deprecatedFunctions[method] !== "undefined") {
             if (self.wsAvailable(deprecatedFunctions[method])) {
                 $log.warn("You are using deprecated Web Services: " + method +
-                    " you must replace it with the newer function: " + MM.deprecatedFunctions[method]);
+                    " you must replace it with the newer function: " + deprecatedFunctions[method]);
                 return deprecatedFunctions[method];
             } else {
                 $log.warn("You are using deprecated Web Services. " +

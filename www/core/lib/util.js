@@ -191,10 +191,20 @@ angular.module('mm.core')
             // First, we use a regexpr.
             text = text.replace(/(<([^>]+)>)/ig,"");
             // Then, we rely on the browser. We need to wrap the text to be sure is HTML.
-            text = $("<p>" + text + "</p>").text();
+            // text = $("<p>" + text + "</p>").text();
             // Recover new lines.
             text = text.replace(/(?:\r\n|\r|\n)/g, '<br />');
             return text;
+        };
+
+        /**
+         * Checks if the current device is a phone (by screen size).
+         *
+         * @return {Boolean} True if the device is a phone, false otherwise.
+         */
+        this.isPhone = function() {
+            var mq = 'only screen and (min-width: 768px) and (-webkit-min-device-pixel-ratio: 1)';
+            return !matchMedia(mq).matches;
         };
     }
 
