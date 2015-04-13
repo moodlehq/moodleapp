@@ -6462,9 +6462,9 @@ progress {
  * --------------------------------------------------
  */
 .button {
-  border-color: #b2b2b2;
-  background-color: #f8f8f8;
-  color: #444;
+  border-color: #387ef5;
+  background-color: transparent;
+  color: #387ef5;
   position: relative;
   display: inline-block;
   margin: 0;
@@ -6481,11 +6481,11 @@ progress {
   line-height: 42px;
   cursor: pointer; }
   .button:hover {
-    color: #444;
+    color: #387ef5;
     text-decoration: none; }
   .button.active, .button.activated {
-    border-color: #a2a2a2;
-    background-color: #e5e5e5;
+    border-color: #387ef5;
+    background-color: #387ef5;
     box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1); }
   .button:after {
     position: absolute;
@@ -6808,7 +6808,7 @@ progress {
     border-color: transparent;
     background: none;
     box-shadow: none;
-    color: #b2b2b2; }
+    color: #387ef5; }
   .button-clear.button-icon {
     border-color: transparent;
     background: none; }
@@ -6821,11 +6821,11 @@ progress {
   background: none;
   box-shadow: none; }
   .button-outline.button-outline {
-    border-color: #b2b2b2;
+    border-color: #387ef5;
     background: transparent;
-    color: #b2b2b2; }
+    color: #387ef5; }
     .button-outline.button-outline.active, .button-outline.button-outline.activated {
-      background-color: #b2b2b2;
+      background-color: #387ef5;
       box-shadow: none;
       color: #fff; }
 
@@ -7600,3 +7600,52 @@ a.button {
   opacity: 0;
   -webkit-transition-duration: 0s;
   transition-duration: 0s; }
+
+.bar-content {
+  border-color: transparent;
+  background-color: #f70;
+  background-image: linear-gradient(0deg, transparent, transparent 50%, transparent 50%);
+  color: #fff; }
+  .bar-content .title {
+    color: #fff; }
+  .bar-content .button {
+    border-color: transparent;
+    background-color: #f70;
+    color: #fff; }
+    .bar-content .button:hover {
+      color: #fff;
+      text-decoration: none; }
+    .bar-content .button.active, .bar-content .button.activated {
+      border-color: transparent;
+      background-color: #f70;
+      box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1); }
+    .bar-content .button.button-clear {
+      border-color: transparent;
+      background: none;
+      box-shadow: none;
+      color: #fff;
+      font-size: 17px; }
+    .bar-content .button.button-icon {
+      border-color: transparent;
+      background: none; }
+
+.bar-side-menu {
+  border-color: transparent;
+  background-color: #f70;
+  background-image: linear-gradient(0deg, transparent, transparent 50%, transparent 50%);
+  color: #fff;
+  height: 80px; }
+  .bar-side-menu .title {
+    color: #fff; }
+  .bar-side-menu .item {
+    background: transparent;
+    border: none; }
+  .bar-side-menu .item-avatar h2, .bar-side-menu .item-avatar p {
+    color: #fff; }
+
+.has-side-menu-header {
+  top: 80px; }
+
+.button.active, .button.activated {
+  box-shadow: none;
+  color: #fff; }
