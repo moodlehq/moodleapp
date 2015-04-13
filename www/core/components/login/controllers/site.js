@@ -19,9 +19,9 @@ angular.module('mm.core.login')
  *
  * @module mm.core.login
  * @ngdoc controller
- * @name mmAuthSiteCtrl
+ * @name mmLoginSiteCtrl
  */
-.controller('mmAuthSiteCtrl', function($scope, $state, $mmSitesManager, $mmUtil, $ionicPopup,
+.controller('mmLoginSiteCtrl', function($scope, $state, $mmSitesManager, $mmUtil, $ionicPopup,
                                        $translate, $ionicModal, $mmConfig, mmLoginSSO) {
 
     $scope.siteurl = '';
@@ -91,7 +91,7 @@ angular.module('mm.core.login')
     };
 
     // Setup help modal.
-    $ionicModal.fromTemplateUrl('core/components/login/templates/login-help-modal.html', {
+    $ionicModal.fromTemplateUrl('core/components/login/templates/help-modal.html', {
         scope: $scope,
         animation: 'slide-in-up'
     }).then(function(helpModal) {

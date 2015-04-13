@@ -26,7 +26,7 @@ angular.module('mm.core.login', [])
     .state('mm_login', {
         url: '/mm_login',
         abstract: true,
-        templateUrl: 'core/components/login/templates/login.html',
+        templateUrl: 'core/components/login/templates/base.html',
         cache: false,   // Disable caching to force controller reload.
         onEnter: function($ionicHistory, $state, $mmSitesManager, $mmSite) {
             // Ensure that there is no history stack when getting here.
@@ -42,8 +42,8 @@ angular.module('mm.core.login', [])
 
     .state('mm_login.index', {
         url: '/index',
-        templateUrl: 'core/components/login/templates/login-index.html',
-        controller: 'mmAuthLoginCtrl',
+        templateUrl: 'core/components/login/templates/sites.html',
+        controller: 'mmLoginSitesCtrl',
         onEnter: function($state, $mmSitesManager) {
             // Skip this page if there are no sites yet.
             $mmSitesManager.noSites().then(function() {
@@ -59,8 +59,8 @@ angular.module('mm.core.login', [])
 
     .state('mm_login.site', {
         url: '/site',
-        templateUrl: 'core/components/login/templates/login-site.html',
-        controller: 'mmAuthSiteCtrl',
+        templateUrl: 'core/components/login/templates/site.html',
+        controller: 'mmLoginSiteCtrl',
         onEnter: function($ionicNavBarDelegate, $ionicHistory, $mmSitesManager) {
             // Don't show back button if there are no sites.
             $mmSitesManager.noSites().then(function() {
@@ -72,8 +72,8 @@ angular.module('mm.core.login', [])
 
     .state('mm_login.credentials', {
         url: '/cred',
-        templateUrl: 'core/components/login/templates/login-credentials.html',
-        controller: 'mmAuthCredCtrl',
+        templateUrl: 'core/components/login/templates/credentials.html',
+        controller: 'mmLoginCredCtrl',
         params: {
             siteurl: ''
         },

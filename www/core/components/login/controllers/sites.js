@@ -19,9 +19,9 @@ angular.module('mm.core.login')
  *
  * @module mm.core.login
  * @ngdoc controller
- * @name mmAuthLoginCtrl
+ * @name mmLoginSitesCtrl
  */
-.controller('mmAuthLoginCtrl', function($scope, $state, $mmSitesManager, $ionicPopup, $log, sites, $translate) {
+.controller('mmLoginSitesCtrl', function($scope, $state, $mmSitesManager, $ionicPopup, $log, sites, $translate) {
 
     $scope.sites = sites;
     $scope.data = {

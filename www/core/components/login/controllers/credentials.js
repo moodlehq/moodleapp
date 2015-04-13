@@ -19,9 +19,9 @@ angular.module('mm.core.login')
  *
  * @module mm.core.login
  * @ngdoc controller
- * @name mmAuthCredCtrl
+ * @name mmLoginCredCtrl
  */
-.controller('mmAuthCredCtrl', function($scope, $state, $stateParams, $mmSitesManager, $mmUtil, $translate) {
+.controller('mmLoginCredCtrl', function($scope, $state, $stateParams, $mmSitesManager, $mmUtil, $translate) {
 
     $scope.siteurl = $stateParams.siteurl;
     $scope.credentials = {};

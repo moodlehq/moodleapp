@@ -20,7 +20,7 @@ angular.module('mm.core.sidemenu', [])
 
     .state('site', {
         url: '/site',
-        templateUrl: 'core/components/sidemenu/templates/sidemenu.html',
+        templateUrl: 'core/components/sidemenu/templates/menu.html',
         controller: 'mmSideMenuCtrl',
         abstract: true,
         onEnter: function($ionicHistory, $state, $mmSite) {

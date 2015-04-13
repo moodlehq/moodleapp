@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.core.sidemenu')
+angular.module('mm.core.courses')
 
 /**
- * Controller to handle the side menu.
+ * Controller to handle the course list.
  *
- * @module mm.core.sidemenu
+ * @module mm.core.courses
  * @ngdoc controller
- * @name mmSideMenuCtrl
+ * @name mmCourseListCtrl
  */
 .controller('mmCourseListCtrl', function($scope, courses, $mmCourseDelegate) {
     $scope.courses = courses;

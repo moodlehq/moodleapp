@@ -712,14 +712,14 @@ angular.module('mm.core')
         if (!self.isLoggedIn() || typeof(currentSite.infos) == 'undefined') {
             return false;
         }
-        for(var i = 0; i < currentSite.infos.functions; i++) {
-            var f = functions[i];
+        for(var i = 0; i < currentSite.infos.functions.length; i++) {
+            var f = currentSite.infos.functions[i];
             if (f.name == method) {
                 return true;
             }
         }
         return false;
-    }
+    };
     self.getCurrentSiteId = function() {
         if (typeof(currentSite) !== 'undefined' && typeof(currentSite.id) !== 'undefined') {
             return currentSite.id;
@@ -752,7 +752,7 @@ angular.module('mm.core')
         if (typeof deprecatedFunctions[method] !== "undefined") {
             if (self.wsAvailable(deprecatedFunctions[method])) {
                 $log.warn("You are using deprecated Web Services: " + method +
-                    " you must replace it with the newer function: " + MM.deprecatedFunctions[method]);
+                    " you must replace it with the newer function: " + deprecatedFunctions[method]);
                 return deprecatedFunctions[method];
             } else {
                 $log.warn("You are using deprecated Web Services. " +
@@ -1167,6 +1167,35 @@ angular.module('mm.core')
 });
 
 angular.module('mm.core')
+.factory('$mmUserDelegate', function($log) {
+    var plugins = {},
+        self = {},
+        data,
+        controllers = [];
+        self.registerPlugin = function(name, callback) {
+        $log.debug("Register plugin '"+name+"' in user.");
+        plugins[name] = callback;
+    };
+        self.updatePluginData = function(name) {
+        $log.debug("Update plugin '"+name+"' data in user.");
+        var pluginData = plugins[name]();
+        if (typeof(pluginData) !== 'undefined') {
+            data[name] = pluginData;
+        }
+    };
+        self.getData = function() {
+        if (typeof(data) == 'undefined') {
+            data = {};
+            angular.forEach(plugins, function(callback, plugin) {
+                self.updatePluginData(plugin);
+            });
+        }
+        return data;
+    };
+    return self;
+});
+
+angular.module('mm.core')
 .provider('$mmUtil', function() {
         this.param = function(obj) {
         var query = '', name, value, fullSubName, subName, subValue, innerObj, i;
@@ -1257,9 +1286,12 @@ angular.module('mm.core')
         };
                 this.cleanTags = function(text) {
             text = text.replace(/(<([^>]+)>)/ig,"");
-            text = $("<p>" + text + "</p>").text();
             text = text.replace(/(?:\r\n|\r|\n)/g, '<br />');
             return text;
+        };
+                this.isPhone = function() {
+            var mq = 'only screen and (min-width: 768px) and (-webkit-min-device-pixel-ratio: 1)';
+            return !matchMedia(mq).matches;
         };
     }
     this.$get = function($mmSite, $ionicLoading, $ionicPopup, $translate) {
@@ -1477,7 +1509,7 @@ angular.module('mm.core.courses', [])
         url: '/index',
         views: {
             'site': {
-                templateUrl: 'core/components/courses/templates/courselist.html',
+                templateUrl: 'core/components/courses/templates/list.html',
                 controller: 'mmCourseListCtrl'
             }
         },
@@ -1513,7 +1545,7 @@ angular.module('mm.core.login', [])
     .state('mm_login', {
         url: '/mm_login',
         abstract: true,
-        templateUrl: 'core/components/login/templates/login.html',
+        templateUrl: 'core/components/login/templates/base.html',
         cache: false,  
         onEnter: function($ionicHistory, $state, $mmSitesManager, $mmSite) {
             $ionicHistory.clearHistory();
@@ -1526,8 +1558,8 @@ angular.module('mm.core.login', [])
     })
     .state('mm_login.index', {
         url: '/index',
-        templateUrl: 'core/components/login/templates/login-index.html',
-        controller: 'mmAuthLoginCtrl',
+        templateUrl: 'core/components/login/templates/sites.html',
+        controller: 'mmLoginSitesCtrl',
         onEnter: function($state, $mmSitesManager) {
             $mmSitesManager.noSites().then(function() {
                 $state.go('mm_login.site');
@@ -1541,8 +1573,8 @@ angular.module('mm.core.login', [])
     })
     .state('mm_login.site', {
         url: '/site',
-        templateUrl: 'core/components/login/templates/login-site.html',
-        controller: 'mmAuthSiteCtrl',
+        templateUrl: 'core/components/login/templates/site.html',
+        controller: 'mmLoginSiteCtrl',
         onEnter: function($ionicNavBarDelegate, $ionicHistory, $mmSitesManager) {
             $mmSitesManager.noSites().then(function() {
                 $ionicNavBarDelegate.showBackButton(false);
@@ -1552,8 +1584,8 @@ angular.module('mm.core.login', [])
     })
     .state('mm_login.credentials', {
         url: '/cred',
-        templateUrl: 'core/components/login/templates/login-credentials.html',
-        controller: 'mmAuthCredCtrl',
+        templateUrl: 'core/components/login/templates/credentials.html',
+        controller: 'mmLoginCredCtrl',
         params: {
             siteurl: ''
         },
@@ -1592,7 +1624,7 @@ angular.module('mm.core.sidemenu', [])
     $stateProvider
     .state('site', {
         url: '/site',
-        templateUrl: 'core/components/sidemenu/templates/sidemenu.html',
+        templateUrl: 'core/components/sidemenu/templates/menu.html',
         controller: 'mmSideMenuCtrl',
         abstract: true,
         onEnter: function($ionicHistory, $state, $mmSite) {
@@ -1604,40 +1636,11 @@ angular.module('mm.core.sidemenu', [])
     });
 });
 
-angular.module('mm.core.sidemenu')
+angular.module('mm.core.courses')
 .controller('mmCourseListCtrl', function($scope, courses, $mmCourseDelegate) {
     $scope.courses = courses;
     $scope.plugins = $mmCourseDelegate.getData();
     $scope.filterText = '';
-});
-
-angular.module('mm.core.courses')
-.factory('$mmCourseDelegate', function($log) {
-    var plugins = {},
-        self = {},
-        data,
-        controllers = [];
-        self.registerPlugin = function(name, callback) {
-        $log.debug("Register plugin '"+name+"' in course.");
-        plugins[name] = callback;
-    };
-        self.updatePluginData = function(name) {
-        $log.debug("Update plugin '"+name+"' data in course.");
-        var pluginData = plugins[name]();
-        if (typeof(pluginData) !== 'undefined') {
-            data[name] = pluginData;
-        }
-    };
-        self.getData = function() {
-        if (typeof(data) == 'undefined') {
-            data = {};
-            angular.forEach(plugins, function(callback, plugin) {
-                self.updatePluginData(plugin);
-            });
-        }
-        return data;
-    };
-    return self;
 });
 
 angular.module('mm.core.courses')
@@ -1671,8 +1674,37 @@ angular.module('mm.core.courses')
     return self;
 });
 
+angular.module('mm.core.courses')
+.factory('$mmCourseDelegate', function($log) {
+    var plugins = {},
+        self = {},
+        data,
+        controllers = [];
+        self.registerPlugin = function(name, callback) {
+        $log.debug("Register plugin '"+name+"' in course.");
+        plugins[name] = callback;
+    };
+        self.updatePluginData = function(name) {
+        $log.debug("Update plugin '"+name+"' data in course.");
+        var pluginData = plugins[name]();
+        if (typeof(pluginData) !== 'undefined') {
+            data[name] = pluginData;
+        }
+    };
+        self.getData = function() {
+        if (typeof(data) == 'undefined') {
+            data = {};
+            angular.forEach(plugins, function(callback, plugin) {
+                self.updatePluginData(plugin);
+            });
+        }
+        return data;
+    };
+    return self;
+});
+
 angular.module('mm.core.login')
-.controller('mmAuthCredCtrl', function($scope, $state, $stateParams, $mmSitesManager, $mmUtil, $translate) {
+.controller('mmLoginCredCtrl', function($scope, $state, $stateParams, $mmSitesManager, $mmUtil, $translate) {
     $scope.siteurl = $stateParams.siteurl;
     $scope.credentials = {};
     $scope.login = function() {
@@ -1707,49 +1739,7 @@ angular.module('mm.core.login')
 });
 
 angular.module('mm.core.login')
-.controller('mmAuthLoginCtrl', function($scope, $state, $mmSitesManager, $ionicPopup, $log, sites, $translate) {
-    $scope.sites = sites;
-    $scope.data = {
-        hasSites: sites.length > 0,
-        showDetele: false
-    };
-    $scope.toggleDelete = function() {
-        $scope.data.showDelete = !$scope.data.showDelete;
-    };
-    $scope.onItemDelete = function(e, index) {
-        e.stopPropagation();
-        var site = $scope.sites[index];
-        $ionicPopup.confirm({template: $translate('mm.core.login.confirmdeletesite', {sitename: site.sitename})})
-            .then(function(confirmed) {
-                if(confirmed) {
-                    $mmSitesManager.deleteSite(site.id).then(function() {
-                        $scope.sites.splice(index, 1);
-                        $mmSitesManager.noSites().then(function() {
-                            $state.go('mm_login.site');
-                        });
-                    }, function(error) {
-                        $log.error('Delete site failed');
-                        $mmUtil.showErrorModal('mm.core.login.errordeletesite', true);
-                    });
-                }
-            });
-    }
-    $scope.login = function(index) {
-        var siteid = $scope.sites[index].id;
-        $mmSitesManager.loadSite(siteid).then(function() {
-            $state.go('site.index');
-        }, function(error) {
-            $log.error('Error loading site '+siteid);
-            $mmUtil.showErrorModal('mm.core.login.errorloadsite', true);
-        });
-    };
-    $scope.add = function() {
-        $state.go('mm_login.site');
-    };
-});
-
-angular.module('mm.core.login')
-.controller('mmAuthSiteCtrl', function($scope, $state, $mmSitesManager, $mmUtil, $ionicPopup,
+.controller('mmLoginSiteCtrl', function($scope, $state, $mmSitesManager, $mmUtil, $ionicPopup,
                                        $translate, $ionicModal, $mmConfig, mmLoginSSO) {
     $scope.siteurl = '';
     $scope.connect = function(url) {
@@ -1803,7 +1793,7 @@ angular.module('mm.core.login')
             });
         });
     };
-    $ionicModal.fromTemplateUrl('core/components/login/templates/login-help-modal.html', {
+    $ionicModal.fromTemplateUrl('core/components/login/templates/help-modal.html', {
         scope: $scope,
         animation: 'slide-in-up'
     }).then(function(helpModal) {
@@ -1817,6 +1807,48 @@ angular.module('mm.core.login')
             helpModal.remove();
         });
     });
+});
+
+angular.module('mm.core.login')
+.controller('mmLoginSitesCtrl', function($scope, $state, $mmSitesManager, $ionicPopup, $log, sites, $translate) {
+    $scope.sites = sites;
+    $scope.data = {
+        hasSites: sites.length > 0,
+        showDetele: false
+    };
+    $scope.toggleDelete = function() {
+        $scope.data.showDelete = !$scope.data.showDelete;
+    };
+    $scope.onItemDelete = function(e, index) {
+        e.stopPropagation();
+        var site = $scope.sites[index];
+        $ionicPopup.confirm({template: $translate('mm.core.login.confirmdeletesite', {sitename: site.sitename})})
+            .then(function(confirmed) {
+                if(confirmed) {
+                    $mmSitesManager.deleteSite(site.id).then(function() {
+                        $scope.sites.splice(index, 1);
+                        $mmSitesManager.noSites().then(function() {
+                            $state.go('mm_login.site');
+                        });
+                    }, function(error) {
+                        $log.error('Delete site failed');
+                        $mmUtil.showErrorModal('mm.core.login.errordeletesite', true);
+                    });
+                }
+            });
+    }
+    $scope.login = function(index) {
+        var siteid = $scope.sites[index].id;
+        $mmSitesManager.loadSite(siteid).then(function() {
+            $state.go('site.index');
+        }, function(error) {
+            $log.error('Error loading site '+siteid);
+            $mmUtil.showErrorModal('mm.core.login.errorloadsite', true);
+        });
+    };
+    $scope.add = function() {
+        $state.go('mm_login.site');
+    };
 });
 
 angular.module('mm.core.sidemenu')

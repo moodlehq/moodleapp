@@ -22,7 +22,7 @@ angular.module('mm.core.courses', [])
         url: '/index',
         views: {
             'site': {
-                templateUrl: 'core/components/courses/templates/courselist.html',
+                templateUrl: 'core/components/courses/templates/list.html',
                 controller: 'mmCourseListCtrl'
             }
         },
