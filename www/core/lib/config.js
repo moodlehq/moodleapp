@@ -27,7 +27,7 @@ angular.module('mm.core')
 })
 
 /**
- * Factory to provide access to app config and settings.
+ * Factory to provide access to app config and settings. It should not be abused into a temporary storage.
  *
  * @module mm.core
  * @ngdoc service
@@ -61,10 +61,10 @@ angular.module('mm.core')
      * Get an app setting.
      *
      * @module mm.core
-     * @ngdoc service
+     * @ngdoc method
      * @name $mmConfig#get
      * @param {String} name The config name.
-     * @return {Promise} Resolves upon success along with the config data. Reject on failure.
+     * @return {Promise}    Resolves upon success along with the config data. Reject on failure.
      * @description
      * Get an app setting.
      */
@@ -105,7 +105,7 @@ angular.module('mm.core')
      * @name $mmConfig#set
      * @param {String} name The config name.
      * @param {Mixed} value The config value.
-     * @return {Promise} which resolves on success, providing no data.
+     * @return {Promise}    Promise which resolves on success, providing no data.
      * @description
      * Set an app setting.
      */
@@ -141,10 +141,10 @@ angular.module('mm.core')
      * Deletes an app setting.
      *
      * @module mm.core
-     * @ngdoc service
-     * @name $mmConfig#set
+     * @ngdoc method
+     * @name $mmConfig#delete
      * @param {String} name The config name.
-     * @return {Promise} which resolves on success, providing no data.
+     * @return {Promise}    Promise which resolves on success, providing no data.
      * @description
      * Delete an app setting.
      */

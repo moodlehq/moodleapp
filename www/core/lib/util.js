@@ -26,6 +26,9 @@ angular.module('mm.core')
     /**
      * Serialize an object to be used in a request.
      *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmUtilProvider#param
      * @param  {Object} obj Object to serialize.
      * @return {String}     Serialization of the object.
      */
@@ -59,12 +62,16 @@ angular.module('mm.core')
         return query.length ? query.substr(0, query.length - 1) : query;
     };
 
-    function mmUtil($mmSite, $ionicLoading, $ionicPopup, $translate) {
+    function mmUtil($ionicLoading, $ionicPopup, $translate) {
 
         /**
          * Formats a URL, trim, lowercase, etc...
-         * @param  {str} url The url to be formatted
-         * @return {str}     The url formatted
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#formatURL
+         * @param  {String} url The url to be formatted.
+         * @return {String}     Fromatted url.
          */
         this.formatURL = function(url) {
 
@@ -88,9 +95,13 @@ angular.module('mm.core')
 
         /**
          * Validates a URL for a specific pattern.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#isValidURL
          * @param {String} url The url to test against the pattern
-         * @return {bool} TRUE if the url matches the expected pattern.
-         *                FALSE otherwise.
+         * @return {Boolean}   TRUE if the url matches the expected pattern.
+         *                     FALSE otherwise.
          */
         this.isValidURL = function(url) {
             return /^http(s)?\:\/\/([\da-zA-Z\.-]+)\.([\da-zA-Z\.]{2,6})([\/\w \.-]*)*\/?/i.test(url);
@@ -101,10 +112,14 @@ angular.module('mm.core')
          * For download remote files from Moodle we need to use the special /webservice/pluginfile passing
          * the ws token as a get parameter.
          *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#fixPluginfileURL
          * @param {String} url   The url to be fixed.
-         * @param {String} token Token to use. If not set, use the current site token.
+         * @param {String} token Token to use.
+         * @return {String}      Fixed URL.
          */
-        this.fixPluginfile = function(url, token) {
+        this.fixPluginfileURL = function(url, token) {
 
             // This function is used in regexp callbacks, better not to risk!!
             if (!url) {
@@ -122,11 +137,7 @@ angular.module('mm.core')
             }
 
             if (!token) {
-                // Get current site token.
-                token = $mmSite.getCurrentSiteToken();
-                if (!token) {
-                    return '';
-                }
+                return '';
             }
 
             // In which way the server is serving the files? Are we using slash parameters?
@@ -145,8 +156,11 @@ angular.module('mm.core')
         };
 
         /**
-         * Displays a loading modal window
+         * Displays a loading modal window.
          *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#showModalLoading
          * @param {string} title The text of the modal window
          */
         this.showModalLoading = function(text) {
@@ -156,7 +170,11 @@ angular.module('mm.core')
         };
 
         /**
-         * Close a modal loading window
+         * Close a modal loading window.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#closeModalLoading
          */
         this.closeModalLoading = function() {
             $ionicLoading.hide();
@@ -165,7 +183,10 @@ angular.module('mm.core')
         /**
          * Show a modal with an error message.
          *
-         * @param {String} errorMessage Message to show.
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#showErrorModal
+         * @param {String} errorMessage    Message to show.
          * @param {Boolean} needsTranslate True if the errorMessage is a $translate key, false otherwise.
          */
         this.showErrorModal = function(errorMessage, needsTranslate) {
@@ -183,9 +204,13 @@ angular.module('mm.core')
         };
 
         /**
-         * Function for clean HTML tags
-         * @param  {str} text The text to be cleaned
-         * @return {str}      Text cleaned
+         * Function to clean HTML tags.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#cleanTags
+         * @param  {String} text The text to be cleaned.
+         * @return {String}      Text cleaned.
          */
         this.cleanTags = function(text) {
             // First, we use a regexpr.
@@ -196,19 +221,9 @@ angular.module('mm.core')
             text = text.replace(/(?:\r\n|\r|\n)/g, '<br />');
             return text;
         };
-
-        /**
-         * Checks if the current device is a phone (by screen size).
-         *
-         * @return {Boolean} True if the device is a phone, false otherwise.
-         */
-        this.isPhone = function() {
-            var mq = 'only screen and (min-width: 768px) and (-webkit-min-device-pixel-ratio: 1)';
-            return !matchMedia(mq).matches;
-        };
     }
 
-    this.$get = function($mmSite, $ionicLoading, $ionicPopup, $translate) {
-        return new mmUtil($mmSite, $ionicLoading, $ionicPopup, $translate);
+    this.$get = function($ionicLoading, $ionicPopup, $translate) {
+        return new mmUtil($ionicLoading, $ionicPopup, $translate);
     };
 });

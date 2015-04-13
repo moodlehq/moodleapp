@@ -15,19 +15,31 @@
 angular.module('mm.core')
 
 .constant('mmSitesStore', 'sites')
+.constant('mmCurrentSiteStore', 'current_site')
 
-.config(function($mmAppProvider, mmSitesStore) {
+.config(function($mmAppProvider, mmSitesStore, mmCurrentSiteStore) {
     var stores = [
         {
             name: mmSitesStore,
+            keyPath: 'id'
+        },
+        {
+            name: mmCurrentSiteStore,
             keyPath: 'id'
         }
     ];
     $mmAppProvider.registerStores(stores);
 })
 
-.factory('$mmSitesManager', function($http, $q, $mmSite, md5, $translate, $mmConfig, $mmApp, $mmWS,
-                                     $mmUtil, $mmFS, $cordovaNetwork, mmSitesStore, $log, mmLoginSSO) {
+/**
+ * Sites manager service.
+ *
+ * @module mm.core
+ * @ngdoc service
+ * @name $mmSitesManager
+ */
+.factory('$mmSitesManager', function($http, $q, $mmSite, md5, $mmLang, $mmConfig, $mmApp, $mmWS, $mmUtil, $mmFS,
+                                     $cordovaNetwork, mmSitesStore, mmCurrentSiteStore, $log) {
 
     var self = {},
         services = {},
@@ -36,8 +48,13 @@ angular.module('mm.core')
 
     /**
      * Get the demo data of the siteurl if it is a demo site.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#getDemoSiteData
      * @param  {String} siteurl URL of the site to check.
-     * @return {Object}         Demo data if the site is a demo site, undefined otherwise.
+     * @return {Promise}        Promise to be resolved with the site data if it's a demo site.
+     *                          If it's not a demo site, the promise is rejected.
      */
     self.getDemoSiteData = function(siteurl) {
         return $mmConfig.get('demo_sites').then(function(demo_sites) {
@@ -53,10 +70,13 @@ angular.module('mm.core')
 
     /**
      * Check if a site is valid and if it has specifics settings for authentication
-     * (like force to log in using the browser)
+     * (like force to log in using the browser).
      *
-     * @param {string} siteurl URL of the site to check.
-     * @param {string} protocol Protocol to use. If not defined, use https.
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#checkSite
+     * @param {String} siteurl  URL of the site to check.
+     * @param {String} protocol Protocol to use. If not defined, use https.
      * @return {Promise}        A promise to be resolved when the site is checked. Resolve params:
      *                            {
      *                                code: Authentication code.
@@ -70,10 +90,8 @@ angular.module('mm.core')
         // formatURL adds the protocol if is missing.
         siteurl = $mmUtil.formatURL(siteurl);
 
-        if (siteurl.indexOf('http://localhost') == -1 && !$mmUtil.isValidURL(siteurl)) {
-            $translate('mm.core.login.invalidsite').then(function(value) {
-                deferred.reject(value);
-            });
+        if (siteurl.indexOf('://localhost') == -1 && !$mmUtil.isValidURL(siteurl)) {
+            $mmLang.translateErrorAndReject(deferred, 'mm.core.login.invalidsite');
         } else {
 
             protocol = protocol || "https://";
@@ -96,9 +114,7 @@ angular.module('mm.core')
                     // Retry without HTTPS.
                     self.checkSite(siteurl, "http://").then(deferred.resolve, deferred.reject);
                 } else{
-                    $translate('cannotconnect').then(function(value) {
-                        deferred.reject(value);
-                    });
+                    $mmLang.translateErrorAndReject(deferred, 'cannotconnect');
                 }
             });
 
@@ -110,17 +126,24 @@ angular.module('mm.core')
 
     /**
      * Check if a site exists.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#siteExists
      * @param  {String} siteurl URL of the site to check.
-     * @return {Promise}        A promise to be resolved when the check finishes.
+     * @return {Promise}        A promise to be resolved if the site exists.
      */
     self.siteExists = function(siteurl) {
         return $http.head(siteurl + '/login/token.php', {timeout: 15000});
     };
 
     /**
-     * Check if the local_mobile plugin is installed in the Moodle site
-     * This plugin provide extended services
-     * @param  {string} siteurl         The Moodle SiteURL
+     * Check if the local_mobile plugin is installed in the Moodle site.
+     * This plugin provide extended services.
+     *
+     * @param  {String} siteurl The Moodle SiteURL.
+     * @return {Promise}        Promise to be resolved if the local_mobile plugin is installed. The promise is resolved
+     *                          with an authentication code to identify the authentication method to use.
      */
     function checkMobileLocalPlugin(siteurl) {
 
@@ -131,9 +154,7 @@ angular.module('mm.core')
             $http.post(siteurl + '/local/mobile/check.php', {service: service} )
                 .success(function(response) {
                     if (typeof(response.code) == "undefined") {
-                        $translate('unexpectederror').then(function(value) {
-                            deferred.reject(value);
-                        });
+                        $mmLang.translateErrorAndReject(deferred, 'unexpectederror');
                         return;
                     }
 
@@ -142,15 +163,11 @@ angular.module('mm.core')
                         switch (code) {
                             case 1:
                                 // Site in maintenance mode.
-                                $translate('mm.core.login.siteinmaintenance').then(function(value) {
-                                    deferred.reject(value);
-                                });
+                                $mmLang.translateErrorAndReject(deferred, 'mm.core.login.siteinmaintenance');
                                 break;
                             case 2:
                                 // Web services not enabled.
-                                $translate('mm.core.login.webservicesnotenabled').then(function(value) {
-                                    deferred.reject(value);
-                                });
+                                $mmLang.translateErrorAndReject(deferred, 'mm.core.login.webservicesnotenabled');
                                 break;
                             case 3:
                                 // Extended service not enabled, but the official is enabled.
@@ -158,14 +175,10 @@ angular.module('mm.core')
                                 break;
                             case 4:
                                 // Neither extended or official services enabled.
-                                $translate('mm.core.login.mobileservicesnotenabled').then(function(value) {
-                                    deferred.reject(value);
-                                });
+                                $mmLang.translateErrorAndReject(deferred, 'mm.core.login.mobileservicesnotenabled');
                                 break;
                             default:
-                                $translate('unexpectederror').then(function(value) {
-                                    deferred.reject(value);
-                                });
+                                $mmLang.translateErrorAndReject(deferred, 'unexpectederror');
                         }
                     } else {
                         services[siteurl] = service; // No need to store it in DB.
@@ -185,11 +198,15 @@ angular.module('mm.core')
 
     /**
      * Gets a user token from the server.
-     * @param {string} siteurl   The site url.
-     * @param {string} username  User name.
-     * @param {string} password  Password.
-     * @param {bool}   retry     We are retrying with a prefixed URL.
-     * @return {Promise}         A promise to be resolved when the site is checked.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#getUserToken
+     * @param {String} siteurl   The site url.
+     * @param {String} username  User name.
+     * @param {String} password  Password.
+     * @param {Boolean} retry    We are retrying with a prefixed URL.
+     * @return {Promise}         A promise to be resolved when the token is retrieved.
      */
     self.getUserToken = function(siteurl, username, password, retry) {
         retry = retry || false;
@@ -222,15 +239,11 @@ angular.module('mm.core')
                             deferred.reject(response.error);
                         }
                     } else {
-                        $translate('mm.core.login.invalidaccount').then(function(value) {
-                            deferred.reject(value);
-                        });
+                        $mmLang.translateErrorAndReject(deferred, 'mm.core.login.invalidaccount');
                     }
                 }
             }).error(function(data) {
-                $translate('cannotconnect').then(function(value) {
-                    deferred.reject(value);
-                });
+                $mmLang.translateErrorAndReject(deferred, 'cannotconnect');
             });
 
         }, deferred.reject);
@@ -238,12 +251,23 @@ angular.module('mm.core')
         return deferred.promise;
     };
 
+    /**
+     * Add a new site to the site list and authenticate the user in this site.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#newSite
+     * @param {String} siteurl  The site url.
+     * @param {String} token    User's token.
+     * @return {Promise}        A promise to be resolved when the site is added and the user is authenticated.
+     */
     self.newSite = function(siteurl, token) {
         var deferred = $q.defer();
 
+        // Use a candidate site until the site info is retrieved and validated.
         $mmSite.setCandidateSite(siteurl, token);
 
-        $mmSite.getSiteInfo().then(function(infos) {
+        $mmSite.fetchSiteInfo().then(function(infos) {
             if (isValidMoodleVersion(infos.functions)) {
                 var siteid = md5.createHash(siteurl + infos.username);
                 self.addSite(siteid, siteurl, token, infos);
@@ -251,9 +275,7 @@ angular.module('mm.core')
                 self.login(siteid);
                 deferred.resolve();
             } else {
-                $translate('mm.core.login.invalidmoodleversion').then(function(value) {
-                    deferred.reject(value);
-                });
+                $mmLang.translateErrorAndReject(deferred, 'mm.core.login.invalidmoodleversion');
                 $mmSite.deleteCandidateSite();
             }
         }, function(error) {
@@ -266,8 +288,9 @@ angular.module('mm.core')
 
     /**
      * Function for determine which service we should use (default or extended plugin).
-     * @param  {string} siteurl The site URL
-     * @return {string}         The service shortname
+     *
+     * @param  {String} siteurl The site URL.
+     * @return {String}         The service shortname.
      */
     function determineService(siteurl) {
         // We need to try siteurl in both https or http (due to loginhttps setting).
@@ -299,7 +322,7 @@ angular.module('mm.core')
      * This may allow some hacks like using local plugins for adding missing functions in previous versions.
      *
      * @param {Array} sitefunctions List of functions of the Moodle site.
-     * @return {Boolean}            True if t
+     * @return {Boolean}            True if the moodle version is valid, false otherwise.
      */
     function isValidMoodleVersion(sitefunctions) {
         for(var i = 0; i < sitefunctions.length; i++) {
@@ -311,8 +334,15 @@ angular.module('mm.core')
     };
 
     /**
-     * Saves the site in local DB.
-     * @param  {Object} site  Moodle site data returned from the server.
+     * Saves a site in local DB.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#addSite
+     * @param {String} id      Site ID.
+     * @param {String} siteurl Site URL.
+     * @param {String} token   User's token in the site.
+     * @param {Object} infos   Site's info.
      */
     self.addSite = function(id, siteurl, token, infos) {
         db.insert(mmSitesStore, {
@@ -325,7 +355,12 @@ angular.module('mm.core')
 
     /**
      * Login a user to a site from the list of sites.
-     * @param  {Number} index  Position of the site in the list of stored sites.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#loadSite
+     * @param {String} siteid ID of the site to load.
+     * @return {Promise}      Promise to be resolved when the site is loaded.
      */
     self.loadSite = function(siteid) {
         $log.debug('Load site '+siteid);
@@ -335,6 +370,15 @@ angular.module('mm.core')
         });
     };
 
+    /**
+     * Delete a site from the sites list.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#deleteSite
+     * @param {String} siteid ID of the site to delete.
+     * @return {Promise}      Promise to be resolved when the site is deleted.
+     */
     self.deleteSite = function(siteid) {
         $log.debug('Delete site '+siteid);
         return $mmSite.deleteSite(siteid).then(function() {
@@ -342,6 +386,14 @@ angular.module('mm.core')
         });
     };
 
+    /**
+     * Check if there are no sites stored.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#noSites
+     * @return {Promise} Promise to be resolved if there are no sites, and rejected if there is at least one.
+     */
     self.noSites = function() {
         return db.count(mmSitesStore).then(function(count) {
             if(count > 0) {
@@ -350,6 +402,14 @@ angular.module('mm.core')
         });
     };
 
+    /**
+     * Check if there are sites stored.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#hasSites
+     * @return {Promise} Promise to be resolved if there is at least one site, and rejected if there aren't.
+     */
     self.hasSites = function() {
         return db.count(mmSitesStore).then(function(count) {
             if(count == 0) {
@@ -358,6 +418,14 @@ angular.module('mm.core')
         });
     };
 
+    /**
+     * Get the list of sites stored.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#getSites
+     * @return {Promise} Promise to be resolved when the sites are retrieved.
+     */
     self.getSites = function() {
         return db.getAll(mmSitesStore).then(function(sites) {
             var formattedSites = [];
@@ -374,49 +442,6 @@ angular.module('mm.core')
         });
     };
 
-    self.validateBrowserSSOLogin = function(url) {
-        // Delete the URL scheme from the URL.
-        url = url.replace("moodlemobile://token=", "");
-        // Decode from base64.
-        url = atob(url);
-
-        // Split signature:::token
-        var params = url.split(":::");
-
-        return $mmConfig.get(mmLoginSSO.siteurl).then(function(launchSiteURL) {
-            return $mmConfig.get(mmLoginSSO.passport).then(function(passport) {
-
-                // Reset temporary values.
-                $mmConfig.delete(mmLoginSSO.siteurl);
-                $mmConfig.delete(mmLoginSSO.passport);
-
-                // Validate the signature.
-                // We need to check both http and https.
-                var signature = md5.createHash(launchSiteURL + passport);
-                if (signature != params[0]) {
-                    if (launchSiteURL.indexOf("https://") != -1) {
-                        launchSiteURL = launchSiteURL.replace("https://", "http://");
-                    } else {
-                        launchSiteURL = launchSiteURL.replace("http://", "https://");
-                    }
-                    signature = md5.createHash(launchSiteURL + passport);
-                }
-
-                if (signature == params[0]) {
-                    $log.debug('Signature validated');
-                    return { siteurl: launchSiteURL, token: params[1] };
-                } else {
-                    $log.debug('Inalid signature in the URL request yours: ' + params[0] + ' mine: '
-                                    + signature + ' for passport ' + passport);
-                    return $translate('unexpectederror').then(function(errorString) {
-                        return $q.reject(errorString);
-                    });
-                }
-
-            });
-        });
-    };
-
     /**
      * DANI: I don't like this function in here, but it's the only service that has the needed data.
      * Maybe a new service?
@@ -424,12 +449,15 @@ angular.module('mm.core')
      * This function downloads a file from Moodle. If the file is already downloaded, the function replaces
      * the www reference with the internal file system reference
      *
-     * @param  {string} fileurl The file path (usually a url).
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#getMoodleFilePath
+     * @param  {String} fileurl The file path (usually a url).
      * @return {Promise}        Promise to be resolved with the downloaded URL.
      */
     self.getMoodleFilePath = function (fileurl, courseId, siteId) {
 
-        //This function is used in regexp callbacks, better not to risk!!
+        // This function is used in regexp callbacks, better not to risk!!
         if (!fileurl) {
             return $q.reject();
         }
@@ -439,7 +467,7 @@ angular.module('mm.core')
         }
 
         if (!siteId) {
-            siteId = $mmSite.getCurrentSiteId();
+            siteId = $mmSite.getId();
             if (typeof(siteId) === 'undefined') {
                 return $q.reject();
             }
@@ -447,7 +475,7 @@ angular.module('mm.core')
 
         return db.get(mmSitesStore, siteId).then(function(site) {
 
-            var downloadURL = $mmUtil.fixPluginfile(fileurl, site.token);
+            var downloadURL = $mmUtil.fixPluginfileURL(fileurl, site.token);
             var extension = "." + fileurl.split('.').pop();
             if (extension.indexOf(".php") === 0) {
                 extension = "";
@@ -486,23 +514,37 @@ angular.module('mm.core')
     /**
      * Login the user in a site.
      *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#login
      * @param  {String} siteid ID of the site the user is accessing.
      */
     self.login = function(siteid) {
-        $mmConfig.set('current_site', siteid);
+        db.insert(mmCurrentSiteStore, {
+            id: 1,
+            siteid: siteid
+        });
     };
 
     /**
      * Logout the user.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#logout
+     * @return {Promise} Promise to be resolved when the user is logged out.
      */
     self.logout = function() {
         $mmSite.logout();
-        return $mmConfig.delete('current_site');
+        return db.remove(mmCurrentSiteStore, 1);
     }
 
     /**
      * Restores the session to the previous one so the user doesn't has to login everytime the app is started.
      *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#restoreSession
      * @return {Promise} Promise to be resolved if a session is restored.
      */
     self.restoreSession = function() {
@@ -511,7 +553,8 @@ angular.module('mm.core')
         }
         sessionRestored = true;
 
-        return $mmConfig.get('current_site').then(function(siteid) {
+        return db.get(mmCurrentSiteStore, 1).then(function(current_site) {
+            var siteid = current_site.siteid;
             $log.debug('Restore session in site '+siteid);
             return self.loadSite(siteid);
         });
@@ -520,6 +563,9 @@ angular.module('mm.core')
     /**
      * Gets the URL of a site. If no site is specified, return the URL of the current site.
      *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#getSiteURL
      * @param  {String} siteid ID of the site.
      * @return {Promise}       Promise to be resolved with the URL of the site. This promise is never rejected.
      */
@@ -527,7 +573,7 @@ angular.module('mm.core')
         var deferred = $q.defer();
 
         if (typeof(siteid) === 'undefined') {
-            deferred.resolve($mmSite.getCurrentSiteURL());
+            deferred.resolve($mmSite.getURL());
         } else {
             db.get(mmSitesStore, siteid).then(function(site) {
                 deferred.resolve(site.siteurl);

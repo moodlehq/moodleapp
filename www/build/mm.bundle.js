@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm', ['ionic', 'mm.core', 'mm.core.courses', 'mm.core.login', 'mm.core.sidemenu', 'ngCordova', 'angular-md5'])
-.run(function($ionicPlatform, $rootScope, $state, $mmSite, $ionicBody, $window) {
+angular.module('mm', ['ionic', 'mm.core', 'mm.core.courses', 'mm.core.login', 'mm.core.sidemenu', 'ngCordova', 'angular-md5', 'pascalprecht.translate'])
+.run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
     if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
       cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
@@ -21,82 +21,71 @@ angular.module('mm', ['ionic', 'mm.core', 'mm.core.courses', 'mm.core.login', 'm
     if(window.StatusBar) {
       StatusBar.styleDefault();
     }
-    var checkTablet = function() {
-      $ionicBody.enableClass($ionicPlatform.isTablet(), 'tablet');
-    };
-    ionic.on('resize', checkTablet, $window);
-    checkTablet();
   });
-  $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
-    if (toState.name.substr(0, 8) !== 'mm_login' && !$mmSite.isLoggedIn()) {
-      event.preventDefault();
-      console.log('Redirect to login page, request was: ' + toState.name);
-      $state.transitionTo('mm_login.index');
-    } else if (toState.name.substr(0, 8) === 'mm_login' && $mmSite.isLoggedIn()) {
-      event.preventDefault();
-      console.log('Redirect to course page, request was: ' + toState.name);
-      $state.transitionTo('site.index');
-    }
-  });
-})
-.config(function($stateProvider, $urlRouterProvider, $provide, $ionicConfigProvider, 
-                  $httpProvider, $mmUtilProvider) {
-  $ionicConfigProvider.platform.android.tabs.position('bottom');
-  $provide.decorator('$ionicPlatform', ['$delegate', '$window', function($delegate, $window) {
-      $delegate.isTablet = function() {
-        return $window.matchMedia('(min-width:600px)').matches;
-      };
-      return $delegate;
-  }]);
-  var $mmStateProvider = {
-    state: function(name, stateConfig) {
-      function setupTablet(state) {
-        if (!state.tablet) {
-          return;
-        }
-        if (angular.isString(state.tablet)) {
-          state.tablet = {
-            parent: state.tablet
-          }
-        }
-        var params = state.tablet,
-            parent = params.parent,
-            node = params.node || 'tablet',
-            config = {};
-        delete state['tablet'];
-        delete params['node'];
-        delete params['parent'];
-        angular.copy(state, config);
-        angular.extend(config, params);
-        if (config.views.length > 1) {
-          console.log('Cannot guess the view data to use for tablet state of ' + name);
-          return;
-        }
-        var viewName, viewData;
-        angular.forEach(config.views, function(v, k) {
-          viewName = k;
-          viewData = v;
-        }, this);
-        delete config.views[viewName];
-        config.views['tablet'] = viewData;
-        $stateProvider.state.apply($stateProvider, [parent + '.' + node, config]);
-      }
-      setupTablet.apply(this, [stateConfig]);
-      $stateProvider.state.apply($stateProvider, [name, stateConfig]);
-      return this;
-    }
-  }
-  $urlRouterProvider.otherwise(function($injector, $location) {
-    var $state = $injector.get('$state');
-    $state.go('mm_login.index');
-  });
-  $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
-  $httpProvider.defaults.transformRequest = [function(data) {
-      return angular.isObject(data) && String(data) !== '[object File]' ? $mmUtilProvider.param(data) : data;
-  }];
-})
+});
 
-angular.module('mm.core', ['pascalprecht.translate']);
+angular.module('mm.core', ['pascalprecht.translate'])
+.config(function($stateProvider, $provide, $ionicConfigProvider, $httpProvider, $mmUtilProvider) {
+    $ionicConfigProvider.platform.android.tabs.position('bottom');
+    $provide.decorator('$ionicPlatform', ['$delegate', '$window', function($delegate, $window) {
+        $delegate.isTablet = function() {
+            var mq = 'only screen and (min-width: 768px) and (-webkit-min-device-pixel-ratio: 1)';
+            return $window.matchMedia(mq).matches;
+        };
+        return $delegate;
+    }]);
+    var $mmStateProvider = {
+        state: function(name, stateConfig) {
+            function setupTablet(state) {
+                if (!state.tablet) {
+                    return;
+                }
+                if (angular.isString(state.tablet)) {
+                    state.tablet = {
+                        parent: state.tablet
+                    }
+                }
+                var params = state.tablet,
+                    parent = params.parent,
+                    node = params.node || 'tablet',
+                    config = {};
+                delete state['tablet'];
+                delete params['node'];
+                delete params['parent'];
+                angular.copy(state, config);
+                angular.extend(config, params);
+                if (config.views.length > 1) {
+                    console.log('Cannot guess the view data to use for tablet state of ' + name);
+                    return;
+                }
+                var viewName, viewData;
+                angular.forEach(config.views, function(v, k) {
+                    viewName = k;
+                    viewData = v;
+                }, this);
+                delete config.views[viewName];
+                config.views['tablet'] = viewData;
+                $stateProvider.state.apply($stateProvider, [parent + '.' + node, config]);
+            }
+            setupTablet.apply(this, [stateConfig]);
+            $stateProvider.state.apply($stateProvider, [name, stateConfig]);
+            return this;
+        }
+    };
+    $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+    $httpProvider.defaults.transformRequest = [function(data) {
+        return angular.isObject(data) && String(data) !== '[object File]' ? $mmUtilProvider.param(data) : data;
+    }];
+})
+.run(function($ionicPlatform, $ionicBody, $window) {
+    $ionicPlatform.ready(function() {
+        var checkTablet = function() {
+            $ionicBody.enableClass($ionicPlatform.isTablet(), 'tablet');
+        };
+        ionic.on('resize', checkTablet, $window);
+        checkTablet();
+    });
+});
 
 angular.module('mm.core')
 .provider('$mmApp', function() {
@@ -585,8 +574,8 @@ angular.module('mm.core')
     });
 });
 angular.module('mm.core')
-.factory('$mmSite', function($http, $q, $mmWS, $mmDB, $mmConfig, $log, md5, $cordovaNetwork) {
-    var deprecatedFunctions = {
+.factory('$mmSite', function($http, $q, $mmWS, $mmDB, $mmConfig, $log, md5, $cordovaNetwork, $mmLang, $mmUtil) {
+        var deprecatedFunctions = {
         "moodle_webservice_get_siteinfo": "core_webservice_get_site_info",
         "moodle_enrol_get_users_courses": "core_enrol_get_users_courses",
         "moodle_notes_create_notes": "core_notes_create_notes",
@@ -605,7 +594,7 @@ angular.module('mm.core')
                 }
             ]
         };
-    function Site(id, siteurl, token, infos) {
+        function Site(id, siteurl, token, infos) {
         this.id = id;
         this.siteurl = siteurl;
         this.token = token;
@@ -614,12 +603,10 @@ angular.module('mm.core')
             this.db = $mmDB.getDB('Site-' + this.id, siteSchema);
         }
     };
-        self.getSiteInfo = function() {
+        self.fetchSiteInfo = function() {
         var deferred = $q.defer();
         if (!self.isLoggedIn()) {
-            $translate('mm.core.login.notloggedin').then(function(value) {
-                deferred.reject(value);
-            });
+            $mmLang.translateErrorAndReject(deferred, 'mm.core.login.notloggedin');
             return deferred.promise;
         }
         function siteDataRetrieved(infos) {
@@ -637,28 +624,28 @@ angular.module('mm.core')
         });
         return deferred.promise;
     };
-    self.isLoggedIn = function() {
+        self.isLoggedIn = function() {
         return typeof(currentSite) != 'undefined' && typeof(currentSite.token) != 'undefined' && currentSite.token != '';
     }
-    self.logout = function() {
+        self.logout = function() {
         currentSite = undefined;
     }
-    self.setCandidateSite = function(siteurl, token) {
+        self.setCandidateSite = function(siteurl, token) {
         currentSite = new Site(undefined, siteurl, token);
     }
-    self.deleteCandidateSite = function() {
+        self.deleteCandidateSite = function() {
         currentSite = undefined;
     };
-    self.setSite = function(id, siteurl, token, infos) {
+        self.setSite = function(id, siteurl, token, infos) {
         currentSite = new Site(id, siteurl, token, infos);
     }
-    self.deleteSite = function(siteid) {
+        self.deleteSite = function(siteid) {
         if(typeof(currentSite) !== 'undefined' && currentSite.id == siteid) {
             self.logout();
         }
         return $mmDB.deleteDB('Site-' + siteid);
     }
-    self.read = function(method, data, preSets) {
+        self.read = function(method, data, preSets) {
         preSets = preSets || {};
         if (typeof(preSets.getFromCache) === 'undefined') {
             preSets.getFromCache = 1;
@@ -668,7 +655,7 @@ angular.module('mm.core')
         }
         return self.request(method, data, preSets);
     }
-    self.write = function(method, data, preSets) {
+        self.write = function(method, data, preSets) {
         preSets = preSets || {};
         if (typeof(preSets.getFromCache) === 'undefined') {
             preSets.getFromCache = 0;
@@ -681,9 +668,7 @@ angular.module('mm.core')
         self.request = function(method, data, preSets) {
         var deferred = $q.defer();
         if (!self.isLoggedIn()) {
-            $translate('mm.core.login.notloggedin').then(function(value) {
-                deferred.reject(value);
-            });
+            $mmLang.translateErrorAndReject(deferred, 'mm.core.login.notloggedin');
             return deferred.promise;
         }
         method = checkDeprecatedFunction(method);
@@ -708,7 +693,7 @@ angular.module('mm.core')
         });
         return deferred.promise;
     }
-    self.wsAvailable = function(method) {
+        self.wsAvailable = function(method) {
         if (!self.isLoggedIn() || typeof(currentSite.infos) == 'undefined') {
             return false;
         }
@@ -720,35 +705,41 @@ angular.module('mm.core')
         }
         return false;
     };
-    self.getCurrentSiteId = function() {
+        self.getId = function() {
         if (typeof(currentSite) !== 'undefined' && typeof(currentSite.id) !== 'undefined') {
             return currentSite.id;
         } else {
             return undefined;
         }
     };
-    self.getCurrentSiteURL = function() {
+        self.getURL = function() {
         if (typeof(currentSite) !== 'undefined' && typeof(currentSite.siteurl) !== 'undefined') {
             return currentSite.siteurl;
         } else {
             return undefined;
         }
     };
-    self.getCurrentSiteToken = function() {
+        self.getToken = function() {
         if (typeof(currentSite) !== 'undefined' && typeof(currentSite.token) !== 'undefined') {
             return currentSite.token;
         } else {
             return undefined;
         }
     };
-    self.getCurrentSiteInfo = function() {
+        self.getInfo = function() {
         if (typeof(currentSite) !== 'undefined' && typeof(currentSite.infos) !== 'undefined') {
             return currentSite.infos;
         } else {
             return undefined;
         }
     };
-    function checkDeprecatedFunction(method) {
+        self.fixPluginfileURL = function(url, token) {
+        if (!token) {
+            token = self.getToken();
+        }
+        return $mmUtil.fixPluginfileURL(url, token);
+    };
+        function checkDeprecatedFunction(method) {
         if (typeof deprecatedFunctions[method] !== "undefined") {
             if (self.wsAvailable(deprecatedFunctions[method])) {
                 $log.warn("You are using deprecated Web Services: " + method +
@@ -761,7 +752,7 @@ angular.module('mm.core')
         }
         return method;
     }
-    function getFromCache(method, data, preSets) {
+        function getFromCache(method, data, preSets) {
         var result,
             db = currentSite.db,
             deferred = $q.defer(),
@@ -798,7 +789,7 @@ angular.module('mm.core')
         });
         return deferred.promise;
     }
-    function saveToCache(method, data, response) {
+        function saveToCache(method, data, response) {
         var db = currentSite.db,
             deferred = $q.defer(),
             key = md5.createHash(method + ':' + JSON.stringify(data));
@@ -822,17 +813,22 @@ angular.module('mm.core')
 
 angular.module('mm.core')
 .constant('mmSitesStore', 'sites')
-.config(function($mmAppProvider, mmSitesStore) {
+.constant('mmCurrentSiteStore', 'current_site')
+.config(function($mmAppProvider, mmSitesStore, mmCurrentSiteStore) {
     var stores = [
         {
             name: mmSitesStore,
+            keyPath: 'id'
+        },
+        {
+            name: mmCurrentSiteStore,
             keyPath: 'id'
         }
     ];
     $mmAppProvider.registerStores(stores);
 })
-.factory('$mmSitesManager', function($http, $q, $mmSite, md5, $translate, $mmConfig, $mmApp, $mmWS,
-                                     $mmUtil, $mmFS, $cordovaNetwork, mmSitesStore, $log, mmLoginSSO) {
+.factory('$mmSitesManager', function($http, $q, $mmSite, md5, $mmLang, $mmConfig, $mmApp, $mmWS, $mmUtil, $mmFS,
+                                     $cordovaNetwork, mmSitesStore, mmCurrentSiteStore, $log) {
     var self = {},
         services = {},
         db = $mmApp.getDB(),
@@ -850,10 +846,8 @@ angular.module('mm.core')
         self.checkSite = function(siteurl, protocol) {
         var deferred = $q.defer();
         siteurl = $mmUtil.formatURL(siteurl);
-        if (siteurl.indexOf('http://localhost') == -1 && !$mmUtil.isValidURL(siteurl)) {
-            $translate('mm.core.login.invalidsite').then(function(value) {
-                deferred.reject(value);
-            });
+        if (siteurl.indexOf('://localhost') == -1 && !$mmUtil.isValidURL(siteurl)) {
+            $mmLang.translateErrorAndReject(deferred, 'mm.core.login.invalidsite');
         } else {
             protocol = protocol || "https://";
             siteurl = siteurl.replace(/^http(s)?\:\/\//i, protocol);
@@ -867,9 +861,7 @@ angular.module('mm.core')
                 if (siteurl.indexOf("https://") === 0) {
                     self.checkSite(siteurl, "http://").then(deferred.resolve, deferred.reject);
                 } else{
-                    $translate('cannotconnect').then(function(value) {
-                        deferred.reject(value);
-                    });
+                    $mmLang.translateErrorAndReject(deferred, 'cannotconnect');
                 }
             });
         }
@@ -884,36 +876,26 @@ angular.module('mm.core')
             $http.post(siteurl + '/local/mobile/check.php', {service: service} )
                 .success(function(response) {
                     if (typeof(response.code) == "undefined") {
-                        $translate('unexpectederror').then(function(value) {
-                            deferred.reject(value);
-                        });
+                        $mmLang.translateErrorAndReject(deferred, 'unexpectederror');
                         return;
                     }
                     var code = parseInt(response.code, 10);
                     if (response.error) {
                         switch (code) {
                             case 1:
-                                $translate('mm.core.login.siteinmaintenance').then(function(value) {
-                                    deferred.reject(value);
-                                });
+                                $mmLang.translateErrorAndReject(deferred, 'mm.core.login.siteinmaintenance');
                                 break;
                             case 2:
-                                $translate('mm.core.login.webservicesnotenabled').then(function(value) {
-                                    deferred.reject(value);
-                                });
+                                $mmLang.translateErrorAndReject(deferred, 'mm.core.login.webservicesnotenabled');
                                 break;
                             case 3:
                                 deferred.resolve(0);
                                 break;
                             case 4:
-                                $translate('mm.core.login.mobileservicesnotenabled').then(function(value) {
-                                    deferred.reject(value);
-                                });
+                                $mmLang.translateErrorAndReject(deferred, 'mm.core.login.mobileservicesnotenabled');
                                 break;
                             default:
-                                $translate('unexpectederror').then(function(value) {
-                                    deferred.reject(value);
-                                });
+                                $mmLang.translateErrorAndReject(deferred, 'unexpectederror');
                         }
                     } else {
                         services[siteurl] = service;
@@ -952,23 +934,19 @@ angular.module('mm.core')
                             deferred.reject(response.error);
                         }
                     } else {
-                        $translate('mm.core.login.invalidaccount').then(function(value) {
-                            deferred.reject(value);
-                        });
+                        $mmLang.translateErrorAndReject(deferred, 'mm.core.login.invalidaccount');
                     }
                 }
             }).error(function(data) {
-                $translate('cannotconnect').then(function(value) {
-                    deferred.reject(value);
-                });
+                $mmLang.translateErrorAndReject(deferred, 'cannotconnect');
             });
         }, deferred.reject);
         return deferred.promise;
     };
-    self.newSite = function(siteurl, token) {
+        self.newSite = function(siteurl, token) {
         var deferred = $q.defer();
         $mmSite.setCandidateSite(siteurl, token);
-        $mmSite.getSiteInfo().then(function(infos) {
+        $mmSite.fetchSiteInfo().then(function(infos) {
             if (isValidMoodleVersion(infos.functions)) {
                 var siteid = md5.createHash(siteurl + infos.username);
                 self.addSite(siteid, siteurl, token, infos);
@@ -976,9 +954,7 @@ angular.module('mm.core')
                 self.login(siteid);
                 deferred.resolve();
             } else {
-                $translate('mm.core.login.invalidmoodleversion').then(function(value) {
-                    deferred.reject(value);
-                });
+                $mmLang.translateErrorAndReject(deferred, 'mm.core.login.invalidmoodleversion');
                 $mmSite.deleteCandidateSite();
             }
         }, function(error) {
@@ -1025,27 +1001,27 @@ angular.module('mm.core')
             self.login(siteid);
         });
     };
-    self.deleteSite = function(siteid) {
+        self.deleteSite = function(siteid) {
         $log.debug('Delete site '+siteid);
         return $mmSite.deleteSite(siteid).then(function() {
             return db.remove(mmSitesStore, siteid);
         });
     };
-    self.noSites = function() {
+        self.noSites = function() {
         return db.count(mmSitesStore).then(function(count) {
             if(count > 0) {
                 return $q.reject();
             }
         });
     };
-    self.hasSites = function() {
+        self.hasSites = function() {
         return db.count(mmSitesStore).then(function(count) {
             if(count == 0) {
                 return $q.reject();
             }
         });
     };
-    self.getSites = function() {
+        self.getSites = function() {
         return db.getAll(mmSitesStore).then(function(sites) {
             var formattedSites = [];
             angular.forEach(sites, function(site) {
@@ -1060,36 +1036,6 @@ angular.module('mm.core')
             return formattedSites;
         });
     };
-    self.validateBrowserSSOLogin = function(url) {
-        url = url.replace("moodlemobile://token=", "");
-        url = atob(url);
-        var params = url.split(":::");
-        return $mmConfig.get(mmLoginSSO.siteurl).then(function(launchSiteURL) {
-            return $mmConfig.get(mmLoginSSO.passport).then(function(passport) {
-                $mmConfig.delete(mmLoginSSO.siteurl);
-                $mmConfig.delete(mmLoginSSO.passport);
-                var signature = md5.createHash(launchSiteURL + passport);
-                if (signature != params[0]) {
-                    if (launchSiteURL.indexOf("https://") != -1) {
-                        launchSiteURL = launchSiteURL.replace("https://", "http://");
-                    } else {
-                        launchSiteURL = launchSiteURL.replace("http://", "https://");
-                    }
-                    signature = md5.createHash(launchSiteURL + passport);
-                }
-                if (signature == params[0]) {
-                    $log.debug('Signature validated');
-                    return { siteurl: launchSiteURL, token: params[1] };
-                } else {
-                    $log.debug('Inalid signature in the URL request yours: ' + params[0] + ' mine: '
-                                    + signature + ' for passport ' + passport);
-                    return $translate('unexpectederror').then(function(errorString) {
-                        return $q.reject(errorString);
-                    });
-                }
-            });
-        });
-    };
         self.getMoodleFilePath = function (fileurl, courseId, siteId) {
         if (!fileurl) {
             return $q.reject();
@@ -1098,13 +1044,13 @@ angular.module('mm.core')
             courseId = 1;
         }
         if (!siteId) {
-            siteId = $mmSite.getCurrentSiteId();
+            siteId = $mmSite.getId();
             if (typeof(siteId) === 'undefined') {
                 return $q.reject();
             }
         }
         return db.get(mmSitesStore, siteId).then(function(site) {
-            var downloadURL = $mmUtil.fixPluginfile(fileurl, site.token);
+            var downloadURL = $mmUtil.fixPluginfileURL(fileurl, site.token);
             var extension = "." + fileurl.split('.').pop();
             if (extension.indexOf(".php") === 0) {
                 extension = "";
@@ -1134,18 +1080,22 @@ angular.module('mm.core')
         });
     };
         self.login = function(siteid) {
-        $mmConfig.set('current_site', siteid);
+        db.insert(mmCurrentSiteStore, {
+            id: 1,
+            siteid: siteid
+        });
     };
         self.logout = function() {
         $mmSite.logout();
-        return $mmConfig.delete('current_site');
+        return db.remove(mmCurrentSiteStore, 1);
     }
         self.restoreSession = function() {
         if (sessionRestored) {
             return $q.reject();
         }
         sessionRestored = true;
-        return $mmConfig.get('current_site').then(function(siteid) {
+        return db.get(mmCurrentSiteStore, 1).then(function(current_site) {
+            var siteid = current_site.siteid;
             $log.debug('Restore session in site '+siteid);
             return self.loadSite(siteid);
         });
@@ -1153,7 +1103,7 @@ angular.module('mm.core')
         self.getSiteURL = function(siteid) {
         var deferred = $q.defer();
         if (typeof(siteid) === 'undefined') {
-            deferred.resolve($mmSite.getCurrentSiteURL());
+            deferred.resolve($mmSite.getURL());
         } else {
             db.get(mmSitesStore, siteid).then(function(site) {
                 deferred.resolve(site.siteurl);
@@ -1164,6 +1114,31 @@ angular.module('mm.core')
         return deferred.promise;
     };
     return self;
+});
+
+angular.module('mm.core')
+.factory('$mmURLDelegate', function($log) {
+    var observers = {},
+        self = {};
+        self.register = function(name, callback) {
+        $log.debug("Register observer '"+name+"' for custom URL.");
+        observers[name] = callback;
+    };
+        self.notify = function(url) {
+        var treated = false;
+        angular.forEach(observers, function(callback, name) {
+            if (!treated && typeof(callback) === 'function') {
+                treated = callback(url);
+            }
+        });
+    };
+    return self;
+})
+.run(function($mmURLDelegate, $log) {
+    window.handleOpenURL = function(url) {
+        $log.debug('App launched by URL.');
+        $mmURLDelegate.notify(url);
+    };
 });
 
 angular.module('mm.core')
@@ -1223,7 +1198,7 @@ angular.module('mm.core')
         }
         return query.length ? query.substr(0, query.length - 1) : query;
     };
-    function mmUtil($mmSite, $ionicLoading, $ionicPopup, $translate) {
+    function mmUtil($ionicLoading, $ionicPopup, $translate) {
                 this.formatURL = function(url) {
             url = url.trim();
             if (! /^http(s)?\:\/\/.*/i.test(url)) {
@@ -1237,7 +1212,7 @@ angular.module('mm.core')
                 this.isValidURL = function(url) {
             return /^http(s)?\:\/\/([\da-zA-Z\.-]+)\.([\da-zA-Z\.]{2,6})([\/\w \.-]*)*\/?/i.test(url);
         };
-                this.fixPluginfile = function(url, token) {
+                this.fixPluginfileURL = function(url, token) {
             if (!url) {
                 return '';
             }
@@ -1248,10 +1223,7 @@ angular.module('mm.core')
                 return url;
             }
             if (!token) {
-                token = $mmSite.getCurrentSiteToken();
-                if (!token) {
-                    return '';
-                }
+                return '';
             }
             if (url.indexOf('?file=') != -1) {
                 url += '&';
@@ -1289,13 +1261,9 @@ angular.module('mm.core')
             text = text.replace(/(?:\r\n|\r|\n)/g, '<br />');
             return text;
         };
-                this.isPhone = function() {
-            var mq = 'only screen and (min-width: 768px) and (-webkit-min-device-pixel-ratio: 1)';
-            return !matchMedia(mq).matches;
-        };
     }
-    this.$get = function($mmSite, $ionicLoading, $ionicPopup, $translate) {
-        return new mmUtil($mmSite, $ionicLoading, $ionicPopup, $translate);
+    this.$get = function($ionicLoading, $ionicPopup, $translate) {
+        return new mmUtil($ionicLoading, $ionicPopup, $translate);
     };
 });
 
@@ -1536,11 +1504,9 @@ angular.module('mm.core.courses', [])
 });
 
 angular.module('mm.core.login', [])
-.constant('mmLoginSSO', {
-    siteurl: 'launchSiteURL',
-    passport: 'launchPassport'
-})
-.config(function($stateProvider) {
+.constant('mmLoginLaunchSiteURL', 'mmLoginLaunchSiteURL')
+.constant('mmLoginLaunchPassport', 'mmLoginLaunchPassport')
+.config(function($stateProvider, $urlRouterProvider) {
     $stateProvider
     .state('mm_login', {
         url: '/mm_login',
@@ -1595,14 +1561,30 @@ angular.module('mm.core.login', [])
             }
         }
     });
+    $urlRouterProvider.otherwise(function($injector, $location) {
+        var $state = $injector.get('$state');
+        $state.go('mm_login.index');
+    });
 })
-.run(function($log, $state, $mmUtil, $translate, $mmSitesManager, mmLoginSSO) {
-    window.handleOpenURL = function(url) {
-        $log.debug('App launched by URL');
+.run(function($log, $q, $state, $mmUtil, $translate, $mmSitesManager, $rootScope, $mmSite, $mmURLDelegate, $mmConfig,
+                mmLoginLaunchSiteURL, mmLoginLaunchPassport, md5) {
+    $mmURLDelegate.register('login_sso', function(url) {
+        var ssoScheme = 'moodlemobile://token=';
+        if (url.indexOf(ssoScheme) == -1) {
+            return false;
+        }
+        $log.debug('Login: App launched by URL');
         $translate('mm.core.login.authenticating').then(function(authenticatingString) {
             $mmUtil.showModalLoading(authenticatingString);
         });
-        $mmSitesManager.validateBrowserSSOLogin(url).then(function(sitedata) {
+        url = url.replace(ssoScheme, '');
+        try {
+            url = atob(url);
+        } catch(err) {
+            $log.error('Error decoding parameter received for login SSO');
+            return false;
+        }
+        validateBrowserSSOLogin(url).then(function(sitedata) {
             $mmSitesManager.newSite(sitedata.siteurl, sitedata.token).then(function() {
                 $state.go('site.index');
             }, function(error) {
@@ -1616,7 +1598,47 @@ angular.module('mm.core.login', [])
                 $mmUtil.showErrorModal(errorMessage);
             }
         });
-    }
+        return true;
+    });
+    $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+        if (toState.name.substr(0, 8) !== 'mm_login' && !$mmSite.isLoggedIn()) {
+            event.preventDefault();
+            $log.debug('Redirect to login page, request was: ' + toState.name);
+            $state.transitionTo('mm_login.index');
+        } else if (toState.name.substr(0, 8) === 'mm_login' && $mmSite.isLoggedIn()) {
+            event.preventDefault();
+            $log.debug('Redirect to course page, request was: ' + toState.name);
+            $state.transitionTo('site.index');
+        }
+    });
+    function validateBrowserSSOLogin(url) {
+        var params = url.split(":::");
+        return $mmConfig.get(mmLoginLaunchSiteURL).then(function(launchSiteURL) {
+            return $mmConfig.get(mmLoginLaunchPassport).then(function(passport) {
+                $mmConfig.delete(mmLoginLaunchSiteURL);
+                $mmConfig.delete(mmLoginLaunchPassport);
+                var signature = md5.createHash(launchSiteURL + passport);
+                if (signature != params[0]) {
+                    if (launchSiteURL.indexOf("https://") != -1) {
+                        launchSiteURL = launchSiteURL.replace("https://", "http://");
+                    } else {
+                        launchSiteURL = launchSiteURL.replace("http://", "https://");
+                    }
+                    signature = md5.createHash(launchSiteURL + passport);
+                }
+                if (signature == params[0]) {
+                    $log.debug('Signature validated');
+                    return { siteurl: launchSiteURL, token: params[1] };
+                } else {
+                    $log.debug('Inalid signature in the URL request yours: ' + params[0] + ' mine: '
+                                    + signature + ' for passport ' + passport);
+                    return $translate('unexpectederror').then(function(errorString) {
+                        return $q.reject(errorString);
+                    });
+                }
+            });
+        });
+    };
 });
 
 angular.module('mm.core.sidemenu', [])
@@ -1661,13 +1683,12 @@ angular.module('mm.core.courses')
 .factory('$mmCourses', function($q, $log, $mmSite, frontPage) {
     var self = {};
     self.getUserCourses = function() {
-        var siteinfo = $mmSite.getCurrentSiteInfo();
+        var siteinfo = $mmSite.getInfo();
         if (typeof(siteinfo) === 'undefined' || typeof(siteinfo.userid) === 'undefined') {
             return $q.reject();
         }
         var data = {userid: siteinfo.userid};
         return $mmSite.read('core_enrol_get_users_courses', data).then(function(courses) {
-            courses.unshift(frontPage);
             return courses;
         });
     }
@@ -1739,8 +1760,8 @@ angular.module('mm.core.login')
 });
 
 angular.module('mm.core.login')
-.controller('mmLoginSiteCtrl', function($scope, $state, $mmSitesManager, $mmUtil, $ionicPopup,
-                                       $translate, $ionicModal, $mmConfig, mmLoginSSO) {
+.controller('mmLoginSiteCtrl', function($scope, $state, $mmSitesManager, $mmUtil, $ionicPopup, $translate, $ionicModal,
+                                        $mmConfig, mmLoginLaunchSiteURL, mmLoginLaunchPassport) {
     $scope.siteurl = '';
     $scope.connect = function(url) {
         if (!url) {
@@ -1773,8 +1794,8 @@ angular.module('mm.core.login')
                                     var passport = Math.random() * 1000;
                                     var loginurl = result.siteurl + "/local/mobile/launch.php?service=" + service;
                                     loginurl += "&passport=" + passport;
-                                    $mmConfig.set(mmLoginSSO.siteurl, result.siteurl);
-                                    $mmConfig.set(mmLoginSSO.passport, passport);
+                                    $mmConfig.set(mmLoginLaunchSiteURL, result.siteurl);
+                                    $mmConfig.set(mmLoginLaunchPassport, passport);
                                     window.open(loginurl, "_system");
                                     if (navigator.app) {
                                         navigator.app.exitApp();
@@ -1854,7 +1875,7 @@ angular.module('mm.core.login')
 angular.module('mm.core.sidemenu')
 .controller('mmSideMenuCtrl', function($scope, $state, $mmSideMenuDelegate, $mmSitesManager, $mmSite, $mmConfig) {
     $scope.plugins = $mmSideMenuDelegate.getData();
-    $scope.siteinfo = $mmSite.getCurrentSiteInfo();
+    $scope.siteinfo = $mmSite.getInfo();
     $scope.logout = function() {
         $mmSitesManager.logout().finally(function() {
             $state.go('mm_login.index');

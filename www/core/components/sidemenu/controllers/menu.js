@@ -23,7 +23,7 @@ angular.module('mm.core.sidemenu')
  */
 .controller('mmSideMenuCtrl', function($scope, $state, $mmSideMenuDelegate, $mmSitesManager, $mmSite, $mmConfig) {
     $scope.plugins = $mmSideMenuDelegate.getData();
-    $scope.siteinfo = $mmSite.getCurrentSiteInfo();
+    $scope.siteinfo = $mmSite.getInfo();
 
     $scope.logout = function() {
         $mmSitesManager.logout().finally(function() {

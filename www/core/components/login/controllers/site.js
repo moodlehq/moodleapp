@@ -21,8 +21,8 @@ angular.module('mm.core.login')
  * @ngdoc controller
  * @name mmLoginSiteCtrl
  */
-.controller('mmLoginSiteCtrl', function($scope, $state, $mmSitesManager, $mmUtil, $ionicPopup,
-                                       $translate, $ionicModal, $mmConfig, mmLoginSSO) {
+.controller('mmLoginSiteCtrl', function($scope, $state, $mmSitesManager, $mmUtil, $ionicPopup, $translate, $ionicModal,
+                                        $mmConfig, mmLoginLaunchSiteURL, mmLoginLaunchPassport) {
 
     $scope.siteurl = '';
 
@@ -66,8 +66,10 @@ angular.module('mm.core.login')
                                     var loginurl = result.siteurl + "/local/mobile/launch.php?service=" + service;
                                     loginurl += "&passport=" + passport;
 
-                                    $mmConfig.set(mmLoginSSO.siteurl, result.siteurl);
-                                    $mmConfig.set(mmLoginSSO.passport, passport);
+                                    // Store the siteurl and passport in $mmConfig for persistence. We are "configuring"
+                                    // the app to wait for an SSO. $mmConfig shouldn't be used as a temporary storage.
+                                    $mmConfig.set(mmLoginLaunchSiteURL, result.siteurl);
+                                    $mmConfig.set(mmLoginLaunchPassport, passport);
 
                                     window.open(loginurl, "_system");
                                     if (navigator.app) {

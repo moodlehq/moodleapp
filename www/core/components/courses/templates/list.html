@@ -10,10 +10,10 @@
             <a class="item" ui-sref="site.sections">
                {{course.fullname}}
             </a>
-            <div class="item item-text-wrap">
-                <p>{{course.summary}}</p>
+            <div class="item item-text-wrap" ng-show="course.summary">
+                <p><format-text>{{course.summary}}</format-text></p>
             </div>
-            <div class="item tabs tabs-icon-left">
+            <div class="item tabs tabs-icon-left" ng-show="plugins.length > 0">
                 <a ng-repeat="plugin in plugins" class="tab-item active" ui-sref="{{plugin.state}}({courseid: {{course.id}}})">
                     <i class="icon {{plugin.icon}}"></i> {{plugin.name}}
                 </a>

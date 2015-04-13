@@ -42,7 +42,7 @@ angular.module('mm.core.courses')
     var self = {};
 
     self.getUserCourses = function() {
-        var siteinfo = $mmSite.getCurrentSiteInfo();
+        var siteinfo = $mmSite.getInfo();
 
         if (typeof(siteinfo) === 'undefined' || typeof(siteinfo.userid) === 'undefined') {
             return $q.reject();
@@ -50,7 +50,8 @@ angular.module('mm.core.courses')
 
         var data = {userid: siteinfo.userid};
         return $mmSite.read('core_enrol_get_users_courses', data).then(function(courses) {
-            courses.unshift(frontPage);
+            // TODO: For now we won't show front page in the course list because we cannot retrieve its summary.
+            // courses.unshift(frontPage);
 
             // TODO: MM._loadGroups(courses);
 

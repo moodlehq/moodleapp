@@ -5,6 +5,7 @@
     "confirmdeletesite": "Are you sure you want to delete the site {{sitename}}?",
     "connect": "Connect!",
     "connecttomoodle": "Connect to Moodle",
+    "erroraccesscontrolalloworigin": "The Cross-Origin call you're trying to perform has been rejected. Please check https://docs.moodle.org/dev/Moodle_Mobile_development_using_Chrome_or_Chromium",
     "errordeletesite": "An error occurred while deleting this site. Please try again.",
     "errorloadsite": "An error occurred while loading this site. Please try again.",
     "help": "Help",

@@ -14,12 +14,10 @@
 
 angular.module('mm.core.login', [])
 
-.constant('mmLoginSSO', {
-    siteurl: 'launchSiteURL',
-    passport: 'launchPassport'
-})
+.constant('mmLoginLaunchSiteURL', 'mmLoginLaunchSiteURL')
+.constant('mmLoginLaunchPassport', 'mmLoginLaunchPassport')
 
-.config(function($stateProvider) {
+.config(function($stateProvider, $urlRouterProvider) {
 
     $stateProvider
 
@@ -85,19 +83,44 @@ angular.module('mm.core.login', [])
         }
     });
 
+    // Default redirect to the login page.
+    $urlRouterProvider.otherwise(function($injector, $location) {
+        var $state = $injector.get('$state');
+        $state.go('mm_login.index');
+    });
+
 })
 
-.run(function($log, $state, $mmUtil, $translate, $mmSitesManager, mmLoginSSO) {
+.run(function($log, $q, $state, $mmUtil, $translate, $mmSitesManager, $rootScope, $mmSite, $mmURLDelegate, $mmConfig,
+                mmLoginLaunchSiteURL, mmLoginLaunchPassport, md5) {
 
-    window.handleOpenURL = function(url) {
+    // Register observer to check if the app was launched via URL scheme.
+    $mmURLDelegate.register('login_sso', function(url) {
+
+        var ssoScheme = 'moodlemobile://token=';
+        if (url.indexOf(ssoScheme) == -1) {
+            return false;
+        }
+
         // App opened using custom URL scheme. Probably an SSO authentication.
-        $log.debug('App launched by URL');
+        $log.debug('Login: App launched by URL');
 
         $translate('mm.core.login.authenticating').then(function(authenticatingString) {
             $mmUtil.showModalLoading(authenticatingString);
         });
 
-        $mmSitesManager.validateBrowserSSOLogin(url).then(function(sitedata) {
+        // Delete the sso scheme from the URL.
+        url = url.replace(ssoScheme, '');
+        // Decode from base64.
+        try {
+            url = atob(url);
+        } catch(err) {
+            // Error decoding the parameter.
+            $log.error('Error decoding parameter received for login SSO');
+            return false;
+        }
+
+        validateBrowserSSOLogin(url).then(function(sitedata) {
 
             $mmSitesManager.newSite(sitedata.siteurl, sitedata.token).then(function() {
                 $state.go('site.index');
@@ -113,5 +136,64 @@ angular.module('mm.core.login', [])
                 $mmUtil.showErrorModal(errorMessage);
             }
         });
-    }
+
+        return true;
+    });
+
+    // Redirect depending on user session.
+    $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+
+        if (toState.name.substr(0, 8) !== 'mm_login' && !$mmSite.isLoggedIn()) {
+            // We are not logged in.
+            event.preventDefault();
+            $log.debug('Redirect to login page, request was: ' + toState.name);
+            $state.transitionTo('mm_login.index');
+        } else if (toState.name.substr(0, 8) === 'mm_login' && $mmSite.isLoggedIn()) {
+            // We are logged in and requested the login page.
+            event.preventDefault();
+            $log.debug('Redirect to course page, request was: ' + toState.name);
+            $state.transitionTo('site.index');
+        }
+
+    });
+
+    // Function to check that the SSO is valid.
+    function validateBrowserSSOLogin(url) {
+
+        // Split signature:::token
+        var params = url.split(":::");
+
+        return $mmConfig.get(mmLoginLaunchSiteURL).then(function(launchSiteURL) {
+            return $mmConfig.get(mmLoginLaunchPassport).then(function(passport) {
+
+                // Reset temporary values.
+                $mmConfig.delete(mmLoginLaunchSiteURL);
+                $mmConfig.delete(mmLoginLaunchPassport);
+
+                // Validate the signature.
+                // We need to check both http and https.
+                var signature = md5.createHash(launchSiteURL + passport);
+                if (signature != params[0]) {
+                    if (launchSiteURL.indexOf("https://") != -1) {
+                        launchSiteURL = launchSiteURL.replace("https://", "http://");
+                    } else {
+                        launchSiteURL = launchSiteURL.replace("http://", "https://");
+                    }
+                    signature = md5.createHash(launchSiteURL + passport);
+                }
+
+                if (signature == params[0]) {
+                    $log.debug('Signature validated');
+                    return { siteurl: launchSiteURL, token: params[1] };
+                } else {
+                    $log.debug('Inalid signature in the URL request yours: ' + params[0] + ' mine: '
+                                    + signature + ' for passport ' + passport);
+                    return $translate('unexpectederror').then(function(errorString) {
+                        return $q.reject(errorString);
+                    });
+                }
+
+            });
+        });
+    };
 });
