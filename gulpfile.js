@@ -40,15 +40,15 @@ var paths = {
     './www/core/directives/*.js',
     './www/core/components/**/main.js',
     './www/core/components/**/*.js',
-    './www/plugins/**/main.js',
-    './www/plugins/**/*.js',
+    './www/addons/**/main.js',
+    './www/addons/**/*.js',
     '!./www/**/tests/*.js'
   ],
   sass: ['./scss/**/*.scss'],
   lang: [
       './www/core/lang/',
       './www/core/components/**/lang/',
-      './www/plugins/**/lang/'
+      './www/addons/**/lang/'
     ]
 };
 
@@ -74,7 +74,7 @@ gulp.task('watch', function() {
 gulp.task('build', function() {
   var dependencies = ["'mm.core'"],
       componentRegex = /core\/components\/([^\/]+)\/main.js/,
-      pluginRegex = /plugins\/([^\/]+)\/main.js/;
+      pluginRegex = /addons\/([^\/]+)\/main.js/;
 
   gulp.src(paths.js)
     .pipe(clipEmptyFiles())
@@ -82,7 +82,7 @@ gulp.task('build', function() {
       if (componentRegex.test(file.path)) {
         dependencies.push("'mm.core." + file.path.match(componentRegex)[1] + "'");
       } else if (pluginRegex.test(file.path)) {
-        dependencies.push("'mm.plugins." + file.path.match(pluginRegex)[1] + "'");
+        dependencies.push("'mm.addons." + file.path.match(pluginRegex)[1] + "'");
       }
     }))
 
@@ -99,7 +99,7 @@ gulp.task('build', function() {
         "angular.module('mm', ['ionic', " + dependencies.join(', '));
     }))
     .pipe(gulp.dest('./www/build'));
-})
+});
 
 gulp.task('lang', function() {
 
@@ -147,11 +147,11 @@ gulp.task('lang', function() {
         componentName = componentName.substr(0, componentName.indexOf('/'));
         addProperties(merged, data[filepath], 'mm.core.'+componentName+'.');
 
-      } else if (filepath.indexOf('plugins') == 0) {
+      } else if (filepath.indexOf('addons') == 0) {
 
-        var pluginName = filepath.replace('plugins/', '');
+        var pluginName = filepath.replace('addons/', '');
         pluginName = pluginName.substr(0, pluginName.indexOf('/'));
-        addProperties(merged, data[filepath], 'mm.plugins.'+pluginName+'.');
+        addProperties(merged, data[filepath], 'mm.addons.'+pluginName+'.');
 
       }
 
@@ -221,7 +221,7 @@ gulp.task('lang', function() {
       .pipe(gulp.dest('./www/build/lang'));
 
   });
-})
+});
 
 gulp.task('install', ['git-check'], function() {
   return bower.commands.install()
