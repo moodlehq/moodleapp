@@ -1269,7 +1269,12 @@ angular.module('mm.core')
         }
         return query.length ? query.substr(0, query.length - 1) : query;
     };
-    function mmUtil($ionicLoading, $ionicPopup, $translate) {
+    function mmUtil($ionicLoading, $ionicPopup, $translate, $http) {
+        var mimeTypes = {};
+        $http.get('core/assets/mimetypes.json').then(function(response) {
+            mimeTypes = response.data;
+        }, function() {
+        });
                 this.formatURL = function(url) {
             url = url.trim();
             if (! /^http(s)?\:\/\/.*/i.test(url)) {
@@ -1279,6 +1284,27 @@ angular.module('mm.core')
             url = url.replace(/^https/i, 'https');
             url = url.replace(/\/$/, "");
             return url;
+        };
+                this.getFileExtension = function(filename) {
+            var dot = filename.lastIndexOf("."),
+                ext;
+            if (dot > -1) {
+                ext = filename.substr(dot + 1).toLowerCase();
+            }
+            return ext;
+        };
+                this.getFileIcon = function(filename) {
+            var ext = this.getFileExtension(filename),
+                icon;
+            if (ext && mimeTypes[ext] && mimeTypes[ext].icon) {
+                icon = mimeTypes[ext].icon + '-64.png';
+            } else {
+                icon = 'unknown-64.png';
+            }
+            return 'img/files/' + icon;
+        };
+                this.getFolderIcon = function() {
+            return 'img/files/folder-64.png';
         };
                 this.isValidURL = function(url) {
             return /^http(s)?\:\/\/([\da-zA-Z\.-]+)\.([\da-zA-Z\.]{2,6})([\/\w \.-]*)*\/?/i.test(url);
@@ -1333,8 +1359,8 @@ angular.module('mm.core')
             return text;
         };
     }
-    this.$get = function($ionicLoading, $ionicPopup, $translate) {
-        return new mmUtil($ionicLoading, $ionicPopup, $translate);
+    this.$get = function($ionicLoading, $ionicPopup, $translate, $http) {
+        return new mmUtil($ionicLoading, $ionicPopup, $translate, $http);
     };
 });
 

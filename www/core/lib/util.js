@@ -62,7 +62,15 @@ angular.module('mm.core')
         return query.length ? query.substr(0, query.length - 1) : query;
     };
 
-    function mmUtil($ionicLoading, $ionicPopup, $translate) {
+    function mmUtil($ionicLoading, $ionicPopup, $translate, $http) {
+
+        // // Loading all the mimetypes.
+        var mimeTypes = {};
+        $http.get('core/assets/mimetypes.json').then(function(response) {
+            mimeTypes = response.data;
+        }, function() {
+            // It failed, never mind...
+        });
 
         /**
          * Formats a URL, trim, lowercase, etc...
@@ -91,6 +99,62 @@ angular.module('mm.core')
             url = url.replace(/\/$/, "");
 
             return url;
+        };
+
+        /**
+         * Returns the file extension of a file.
+         *
+         * When the file does not have an extension, it returns undefined.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#getFileExtension
+         * @param  {string} filename The file name.
+         * @return {string}          The lowercased extension, or undefined.
+         */
+        this.getFileExtension = function(filename) {
+            var dot = filename.lastIndexOf("."),
+                ext;
+
+            if (dot > -1) {
+                ext = filename.substr(dot + 1).toLowerCase();
+            }
+
+            return ext;
+        };
+
+        /**
+         * Get a file icon URL based on its file name.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#getFileIcon
+         * @param  {String} The name of the file.
+         * @return {String} The path to a file icon.
+         */
+        this.getFileIcon = function(filename) {
+            var ext = this.getFileExtension(filename),
+                icon;
+
+            if (ext && mimeTypes[ext] && mimeTypes[ext].icon) {
+                icon = mimeTypes[ext].icon + '-64.png';
+            } else {
+                icon = 'unknown-64.png';
+            }
+
+            return 'img/files/' + icon;
+        };
+
+        /**
+         * Get the folder icon URL.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#getFolderIcon
+         * @return {String} The path to a folder icon.
+         */
+        this.getFolderIcon = function() {
+            return 'img/files/folder-64.png';
         };
 
         /**
@@ -223,7 +287,7 @@ angular.module('mm.core')
         };
     }
 
-    this.$get = function($ionicLoading, $ionicPopup, $translate) {
-        return new mmUtil($ionicLoading, $ionicPopup, $translate);
+    this.$get = function($ionicLoading, $ionicPopup, $translate, $http) {
+        return new mmUtil($ionicLoading, $ionicPopup, $translate, $http);
     };
 });
