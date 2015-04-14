@@ -10,7 +10,7 @@
                     <img ng-src="{{file.imgpath}}" alt="">
                     {{file.filename}}
                 </a>
-                <a class="item item-media" ng-if="!file.isdir">
+                <a class="item item-media" ng-if="!file.isdir" ng-click="download(file)">
                     <img ng-src="{{file.imgpath}}" alt="">
                     {{file.filename}}
                 </a>

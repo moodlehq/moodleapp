@@ -126,6 +126,9 @@ angular.module('mm.core')
     this.$get = function($mmDB) {
         var db = $mmDB.getDB(DBNAME, dbschema),
             self = {};
+                self.canUseChildBrowser = function() {
+            return window.plugins && window.plugins.childBrowser;
+        };
                 self.getDB = function() {
             return db;
         };
@@ -1269,7 +1272,7 @@ angular.module('mm.core')
         }
         return query.length ? query.substr(0, query.length - 1) : query;
     };
-    function mmUtil($ionicLoading, $ionicPopup, $translate, $http) {
+    function mmUtil($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp) {
         var mimeTypes = {};
         $http.get('core/assets/mimetypes.json').then(function(response) {
             mimeTypes = response.data;
@@ -1333,6 +1336,80 @@ angular.module('mm.core')
             }
             return url;
         };
+                this.openFile = function(path) {
+            if (false) {
+            } else if (window.plugins) {
+                var extension = this.getFileExtension(path),
+                    mimetype;
+                if (extension && mimeTypes[extension]) {
+                    mimetype = mimeTypes[extension];
+                }
+                if (ionic.Platform.isAndroid() && window.plugins.webintent) {
+                    var iParams = {
+                        action: "android.intent.action.VIEW",
+                        url: path,
+                        type: mimetype};
+                    window.plugins.webintent.startActivity(
+                        iParams,
+                        function() {
+                            $log.debug('Intent launched');
+                        },
+                        function() {
+                            $log.debug('Intent launching failed');
+                            $log.debug('action: ' + iParams.action);
+                            $log.debug('url: ' + iParams.url);
+                            $log.debug('type: ' + iParams.type);
+                            window.open(path, '_system');
+                        }
+                    );
+                } else if (ionic.Platform.isIOS() && typeof handleDocumentWithURL == 'function') {
+                    var fsRoot = $mmFS.getRoot();
+                    if (path.indexOf(fsRoot > -1)) {
+                        path = path.replace(fsRoot, "");
+                        path = encodeURIComponent(decodeURIComponent(path));
+                        path = fsRoot + path;
+                    }
+                    handleDocumentWithURL(
+                        function() {
+                            $log.debug('File opened with handleDocumentWithURL' + path);
+                        },
+                        function(error) {
+                            $log.debug('Error opening with handleDocumentWithURL' + path);
+                            if(error == 53) {
+                                $log.error('No app that handles this file type.');
+                            }
+                            this.openFileWithBrowser(path);
+                        },
+                        path
+                    );
+                } else {
+                    this.openFileWithBrowser(path);
+                }
+            } else {
+                $log.debug('Opening external file using window.open()');
+                window.open(path, '_blank');
+            }
+        },
+                this.openFileWithBrowser = function(path) {
+            if (this.canUseChildBrowser()) {
+                $log.debug('Launching childBrowser');
+                try {
+                    window.plugins.childBrowser.showWebPage(
+                        path,
+                        {
+                            showLocationBar: true ,
+                            showAddress: false
+                        }
+                    );
+                } catch(e) {
+                    $log.debug('Launching childBrowser failed!, opening as standard link.');
+                    window.open(path, '_blank');
+                }
+            } else {
+                $log.debug('Open external file using window.open()');
+                window.open(path, '_blank');
+            }
+        },
                 this.showModalLoading = function(text) {
             $ionicLoading.show({
                 template: '<i class="icon ion-load-c">'+text
@@ -1359,8 +1436,8 @@ angular.module('mm.core')
             return text;
         };
     }
-    this.$get = function($ionicLoading, $ionicPopup, $translate, $http) {
-        return new mmUtil($ionicLoading, $ionicPopup, $translate, $http);
+    this.$get = function($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp) {
+        return new mmUtil($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp);
     };
 });
 
@@ -2046,7 +2123,7 @@ angular.module('mm.addons.files')
 
 angular.module('mm.addons.files')
 .controller('mmaFilesListController', function($q, $ionicNavBarDelegate, $scope, $stateParams, $ionicActionSheet,
-        $mmaFiles, $mmSite, $translate, $timeout, $mmUtil) {
+        $mmaFiles, $mmSite, $translate, $timeout, $mmUtil, $mmFS, $mmWS, $log) {
     var path = $stateParams.path,
         root = $stateParams.root,
         title,
@@ -2083,6 +2160,26 @@ angular.module('mm.addons.files')
     }, function() {
         $mmUtil.showErrorModal('mm.addons.files.couldnotloadfiles', true);
     });
+    $scope.download = function(file) {
+        var downloadURL = $mmUtil.fixPluginfileURL(file.url),
+            siteId = $mmSite.getId(),
+            linkId = file.linkId,
+            filename = $mmFS.normalizeFileName(file.filename),
+            directory = siteId + "/files/" + linkId,
+            filePath = directory + "/" + filename;
+        $log.debug("Starting download of Moodle file: " + downloadURL);
+        $mmFS.createDir(directory).then(function() {
+            $log.debug("Downloading Moodle file to " + filePath + " from URL: " + downloadURL);
+            $mmWS.downloadFile(downloadURL, filePath).then(function(fullpath) {
+                $log.debug("Download of content finished " + fullpath + " URL: " + downloadURL);
+                $mmUtil.openFile(fullpath);
+            }, function() {
+                $log.error('Error downloading ' + fullpath + ' URL: ' + downloadURL);
+            });
+        }, function() {
+            $log.error('Error while creating the directory ' + directory);
+        });
+    };
     if (root === 'my') {
         $scope.add = function() {
             $ionicActionSheet.show({

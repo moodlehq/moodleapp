@@ -15,7 +15,7 @@
 angular.module('mm.addons.files')
 
 .controller('mmaFilesListController', function($q, $ionicNavBarDelegate, $scope, $stateParams, $ionicActionSheet,
-        $mmaFiles, $mmSite, $translate, $timeout, $mmUtil) {
+        $mmaFiles, $mmSite, $translate, $timeout, $mmUtil, $mmFS, $mmWS, $log) {
 
     var path = $stateParams.path,
         root = $stateParams.root,
@@ -31,6 +31,7 @@ angular.module('mm.addons.files')
             promise = $mmaFiles.getMyFiles();
             title = $translate('mm.addons.files.myprivatefiles');
         } else {
+            // Upon error we create a fake promise that is rejected.
             promise = (function() {
                 var q = $q.defer();
                 q.reject();
@@ -60,6 +61,41 @@ angular.module('mm.addons.files')
     }, function() {
         $mmUtil.showErrorModal('mm.addons.files.couldnotloadfiles', true);
     });
+
+    // Downloading a file.
+    $scope.download = function(file) {
+        var downloadURL = $mmUtil.fixPluginfileURL(file.url),
+            siteId = $mmSite.getId(),
+            linkId = file.linkId,
+            filename = $mmFS.normalizeFileName(file.filename),
+            directory = siteId + "/files/" + linkId,
+            filePath = directory + "/" + filename;
+
+        $log.debug("Starting download of Moodle file: " + downloadURL);
+        $mmFS.createDir(directory).then(function() {
+            $log.debug("Downloading Moodle file to " + filePath + " from URL: " + downloadURL);
+
+            // TODO Notify downloading...
+            $mmWS.downloadFile(downloadURL, filePath).then(function(fullpath) {
+                $log.debug("Download of content finished " + fullpath + " URL: " + downloadURL);
+
+                // TODO Caching.
+                // var uniqueId = siteId + "-" + hex_md5(url);
+                // var file = {
+                //     id: uniqueId,
+                //     url: url,
+                //     site: siteId,
+                //     localpath: fullpath
+                // };
+                // MM.db.insert("files", file);
+                $mmUtil.openFile(fullpath);
+            }, function() {
+                $log.error('Error downloading ' + fullpath + ' URL: ' + downloadURL);
+            });
+        }, function() {
+            $log.error('Error while creating the directory ' + directory);
+        });
+    };
 
     // When we are in private files we can add more files.
     if (root === 'my') {

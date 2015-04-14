@@ -93,6 +93,19 @@ angular.module('mm.core')
         var db = $mmDB.getDB(DBNAME, dbschema),
             self = {};
 
+
+        /**
+         * Returns whether the current window supports child browsers.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#canUseChildBrowser
+         * @return {Bool} True when it can.
+         */
+        self.canUseChildBrowser = function() {
+            return window.plugins && window.plugins.childBrowser;
+        };
+
         /**
          * Get the application global database.
          * @return {Object} App's DB.

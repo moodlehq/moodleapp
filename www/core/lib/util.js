@@ -62,7 +62,7 @@ angular.module('mm.core')
         return query.length ? query.substr(0, query.length - 1) : query;
     };
 
-    function mmUtil($ionicLoading, $ionicPopup, $translate, $http) {
+    function mmUtil($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp) {
 
         // // Loading all the mimetypes.
         var mimeTypes = {};
@@ -220,7 +220,125 @@ angular.module('mm.core')
         };
 
         /**
-         * Displays a loading modal window.
+         * Open a file using platform specific method.
+         *
+         * node-webkit: Using the default application configured.
+         * Android: Using the WebIntent plugin.
+         * iOs: Using the window.open method.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#openFile
+         * @param  {String} path The local path of the file to be open.
+         * @return {Void}
+         */
+        this.openFile = function(path) {
+
+            if (false) {
+                // TODO Restore node-webkit support.
+
+                // Link is the file path in the file system.
+                // We use the node-webkit shell for open the file (pdf, doc) using the default application configured in the os.
+                // var gui = require('nw.gui');
+                // gui.Shell.openItem(path);
+
+            } else if (window.plugins) {
+                var extension = this.getFileExtension(path),
+                    mimetype;
+
+                if (extension && mimeTypes[extension]) {
+                    mimetype = mimeTypes[extension];
+                }
+
+                if (ionic.Platform.isAndroid() && window.plugins.webintent) {
+                    var iParams = {
+                        action: "android.intent.action.VIEW",
+                        url: path,
+                        type: mimetype};
+
+                    window.plugins.webintent.startActivity(
+                        iParams,
+                        function() {
+                            $log.debug('Intent launched');
+                        },
+                        function() {
+                            $log.debug('Intent launching failed');
+                            $log.debug('action: ' + iParams.action);
+                            $log.debug('url: ' + iParams.url);
+                            $log.debug('type: ' + iParams.type);
+                            // This may work in cordova 2.4 and onwards.
+                            window.open(path, '_system');
+                        }
+                    );
+
+                } else if (ionic.Platform.isIOS() && typeof handleDocumentWithURL == 'function') {
+
+                    var fsRoot = $mmFS.getRoot();
+                    // Encode/decode the specific file path, note that a path may contain directories
+                    // with white spaces, special characters...
+                    if (path.indexOf(fsRoot > -1)) {
+                        path = path.replace(fsRoot, "");
+                        path = encodeURIComponent(decodeURIComponent(path));
+                        path = fsRoot + path;
+                    }
+
+                    handleDocumentWithURL(
+                        function() {
+                            $log.debug('File opened with handleDocumentWithURL' + path);
+                        },
+                        function(error) {
+                            $log.debug('Error opening with handleDocumentWithURL' + path);
+                            if(error == 53) {
+                                $log.error('No app that handles this file type.');
+                            }
+                            this.openFileWithBrowser(path);
+                        },
+                        path
+                    );
+                } else {
+                    // Last try, launch the file with the browser.
+                    this.openFileWithBrowser(path);
+                }
+            } else {
+                // Changing _blank for _system may work in cordova 2.4 and onwards.
+                $log.debug('Opening external file using window.open()');
+                window.open(path, '_blank');
+            }
+        },
+
+        /**
+         * Open a file using a browser.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#_openFileWithBrowser
+         * @param  {String} path The local path of the file to be open.
+         * @return {Void}
+         */
+        this.openFileWithBrowser = function(path) {
+            if (this.canUseChildBrowser()) {
+                $log.debug('Launching childBrowser');
+                try {
+                    window.plugins.childBrowser.showWebPage(
+                        path,
+                        {
+                            showLocationBar: true ,
+                            showAddress: false
+                        }
+                    );
+                } catch(e) {
+                    $log.debug('Launching childBrowser failed!, opening as standard link.');
+                    window.open(path, '_blank');
+                }
+            } else {
+                // Changing _blank for _system may work in cordova 2.4 and onwards.
+                $log.debug('Open external file using window.open()');
+                window.open(path, '_blank');
+            }
+        },
+
+        /**
+         * Displays a loading modal window
          *
          * @module mm.core
          * @ngdoc method
@@ -287,7 +405,7 @@ angular.module('mm.core')
         };
     }
 
-    this.$get = function($ionicLoading, $ionicPopup, $translate, $http) {
-        return new mmUtil($ionicLoading, $ionicPopup, $translate, $http);
+    this.$get = function($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp) {
+        return new mmUtil($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp);
     };
 });
