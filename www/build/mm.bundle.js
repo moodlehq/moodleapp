@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm', ['ionic', 'mm.core', 'mm.core.courses', 'mm.core.login', 'mm.core.sidemenu', 'ngCordova', 'angular-md5', 'pascalprecht.translate'])
+angular.module('mm', ['ionic', 'mm.core', 'mm.core.courses', 'mm.core.login', 'mm.core.sidemenu', 'mm.addons.files', 'ngCordova', 'angular-md5', 'pascalprecht.translate'])
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
     if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
@@ -2001,5 +2001,168 @@ angular.module('mm.core.sidemenu')
         }
         return data;
     }
+    return self;
+});
+
+angular.module('mm.addons.files', ['mm.core'])
+.config(function($stateProvider) {
+    $stateProvider
+      .state('site.files', {
+        url: '/files',
+        views: {
+          'site': {
+            controller: 'mmaFilesIndexController',
+            templateUrl: 'addons/files/templates/index.html'
+          }
+        }
+      })
+      .state('site.files-list', {
+        url: '/list?root&path&title',
+        views: {
+          'site': {
+            controller: 'mmaFilesListController',
+            templateUrl: 'addons/files/templates/list.html'
+          }
+        }
+      });
+})
+.run(function($mmSideMenuDelegate, $translate, $q) {
+  var promises = [$translate('mm.addons.files.myfiles')];
+  $q.all(promises).then(function(data) {
+    var strMyfiles = data[0];
+    $mmSideMenuDelegate.registerPlugin('mmaFiles', function() {
+      return {
+        icon: 'ion-folder',
+        name: strMyfiles,
+        state: 'site.files'
+      };
+    });
+  });
+});
+
+angular.module('mm.addons.files')
+.controller('mmaFilesIndexController', function() {
+});
+
+angular.module('mm.addons.files')
+.controller('mmaFilesListController', function($q, $ionicNavBarDelegate, $scope, $stateParams, $ionicActionSheet,
+        $mmaFiles, $mmSite, $translate, $timeout, $mmUtil) {
+    var path = $stateParams.path,
+        root = $stateParams.root,
+        title,
+        promise;
+    if (!path) {
+        if (root === 'site') {
+            promise = $mmaFiles.getSiteFiles();
+            title = $translate('mm.addons.files.sitefiles');
+        } else if (root === 'my') {
+            promise = $mmaFiles.getMyFiles();
+            title = $translate('mm.addons.files.myprivatefiles');
+        } else {
+            promise = (function() {
+                var q = $q.defer();
+                q.reject();
+                return q.promise;
+            })();
+            title = '';
+        }
+    } else {
+        pathdata = JSON.parse(path);
+        promise = $mmaFiles.getFiles(pathdata);
+        title = (function() {
+            var q = $q.defer();
+            q.resolve($stateParams.title);
+            return q.promise;
+        })();
+    }
+    $q.all([promise, title]).then(function(data) {
+        var files = data[0],
+            title = data[1];
+        $scope.files = files.entries;
+        $scope.title = title;
+    }, function() {
+        $mmUtil.showErrorModal('mm.addons.files.couldnotloadfiles', true);
+    });
+    if (root === 'my') {
+        $scope.add = function() {
+            $ionicActionSheet.show({
+                buttons: [
+                    { text: 'Photo albums' },
+                    { text: 'Camera' },
+                    { text: 'Audio' },
+                    { text: 'Video' },
+                ],
+                titleText: 'Upload a file from',
+                cancelText: 'Cancel',
+                buttonClicked: function(index) {
+                    return true;
+                }
+            });
+        };
+    }
+});
+
+angular.module('mm.addons.files')
+.factory('$mmaFiles', function($mmSite, $mmUtil, $q, md5) {
+    var self = {},
+        defaultParams = {
+            "contextid": 0,
+            "component": "",
+            "filearea": "",
+            "itemid": 0,
+            "filepath": "",
+            "filename": ""
+        };
+        self.getFile = function(params) {
+    };
+        self.getFiles = function(params) {
+        var deferred = $q.defer();
+        $mmSite.read('core_files_get_files', params).then(function(result) {
+            var data = {
+                entries: []
+            };
+            if (typeof result.files == 'undefined') {
+                deferred.reject();
+                return;
+            }
+            angular.forEach(result.files, function(entry) {
+                entry.link = {};
+                entry.link.contextid = (entry.contextid) ? entry.contextid : "";
+                entry.link.component = (entry.component) ? entry.component : "";
+                entry.link.filearea = (entry.filearea) ? entry.filearea : "";
+                entry.link.itemid = (entry.itemid) ? entry.itemid : 0;
+                entry.link.filepath = (entry.filepath) ? entry.filepath : "";
+                entry.link.filename = (entry.filename) ? entry.filename : "";
+                if (entry.component && entry.isdir) {
+                    entry.link.filename = "";
+                }
+                if (entry.isdir) {
+                    entry.imgpath = $mmUtil.getFolderIcon();
+                } else {
+                    entry.imgpath = $mmUtil.getFileIcon(entry.filename);
+                }
+                entry.link = JSON.stringify(entry.link);
+                entry.linkId = md5.createHash(entry.link);
+                data.entries.push(entry);
+            });
+            deferred.resolve(data);
+        }, function() {
+            deferred.reject();
+        });
+        return deferred.promise;
+    };
+        self.getMyFiles = function() {
+        var params = angular.copy(defaultParams, {});
+        params.component = "user";
+        params.filearea = "private";
+        params.contextid = -1;
+        params.contextlevel = "user";
+        params.instanceid = $mmSite.getCurrentSiteInfo().userid;
+        return self.getFiles(params);
+    };
+        self.getSiteFiles = function() {
+        var params = angular.copy(defaultParams, {});
+        return self.getFiles(params);
+    };
     return self;
 });

@@ -1,0 +1,19 @@
+<ion-view view-title="{{'mm.addons.files.myfiles' | translate}}">
+    <ion-content padding="true">
+        <div class="list card">
+            <a ui-sref="site.files-list({root: 'my'})" class="item item-icon-right">
+                <i class="icon ion-ios-arrow-right"></i>
+                My private files
+            </a>
+            <div class="item item-text-wrap"><p>The files that are available in your private area on this Moodle site.</p></div>
+        </div>
+
+        <div class="list card">
+            <a ui-sref="site.files-list({root: 'site'})" class="item item-icon-right">
+                <i class="icon ion-ios-arrow-right"></i>
+                Site files
+            </a>
+            <div class="item item-text-wrap"><p>The other files that are available to you on this Moodle site.</p></div>
+        </div>
+    </ion-content>
+</ion-view>
