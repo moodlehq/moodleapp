@@ -26,6 +26,7 @@ angular.module('mm.core.courses', [])
                 controller: 'mmCourseListCtrl'
             }
         },
+        cache: false,
         resolve: {
             courses: function($q, $mmCourses, $mmUtil, $translate) {
                 $translate('loading').then(function(loadingString) {

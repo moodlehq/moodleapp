@@ -1481,6 +1481,7 @@ angular.module('mm.core.courses', [])
                 controller: 'mmCourseListCtrl'
             }
         },
+        cache: false,
         resolve: {
             courses: function($q, $mmCourses, $mmUtil, $translate) {
                 $translate('loading').then(function(loadingString) {
@@ -1649,6 +1650,7 @@ angular.module('mm.core.sidemenu', [])
         templateUrl: 'core/components/sidemenu/templates/menu.html',
         controller: 'mmSideMenuCtrl',
         abstract: true,
+        cache: false,
         onEnter: function($ionicHistory, $state, $mmSite) {
             $ionicHistory.clearHistory();
             if (!$mmSite.isLoggedIn()) {

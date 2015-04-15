@@ -23,6 +23,7 @@ angular.module('mm.core.sidemenu', [])
         templateUrl: 'core/components/sidemenu/templates/menu.html',
         controller: 'mmSideMenuCtrl',
         abstract: true,
+        cache: false,
         onEnter: function($ionicHistory, $state, $mmSite) {
             // Remove the login page from the history stack.
             $ionicHistory.clearHistory();
