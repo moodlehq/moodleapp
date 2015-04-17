@@ -1376,13 +1376,13 @@ angular.module('mm.core')
 });
 
 angular.module('mm.core')
-.filter('noTags', function() {
+.filter('mmNoTags', function() {
     return function(text) {
         return String(text).replace(/(<([^>]+)>)/ig, '');
     }
 });
 angular.module('mm.core')
-.directive('formatText', function($interpolate) {
+.directive('mmFormatText', function($interpolate) {
     return {
         restrict: 'E',
         scope: true,
@@ -1458,7 +1458,7 @@ angular.module('mm.core')
     };
 });
 angular.module('mm.core')
-.directive('noInputValidation', function() {
+.directive('mmNoInputValidation', function() {
     return {
         restrict: 'A',
         priority: 500,

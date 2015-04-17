@@ -1,6 +1,6 @@
 angular.module('mm.core')
 
-.directive('noInputValidation', function() {
+.directive('mmNoInputValidation', function() {
     return {
         restrict: 'A',
         priority: 500,

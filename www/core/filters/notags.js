@@ -1,6 +1,6 @@
 angular.module('mm.core')
 
-.filter('noTags', function() {
+.filter('mmNoTags', function() {
     return function(text) {
         return String(text).replace(/(<([^>]+)>)/ig, '');
     }

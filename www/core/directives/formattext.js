@@ -1,9 +1,9 @@
 angular.module('mm.core')
 
-.directive('formatText', function($interpolate) {
+.directive('mmFormatText', function($interpolate) {
 
     return {
-        restrict: 'E', // Restrict to <format-text></format-text>.
+        restrict: 'E', // Restrict to <mm-format-text></mm-format-text>.
         scope: true,
         transclude: true,
         controller: function($q, md5, $mmSite, $mmSitesManager, $mmUtil) {
