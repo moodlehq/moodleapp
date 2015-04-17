@@ -68,13 +68,14 @@ angular.module('mm.core')
         // TODO: Sync
         // TODO: Get from cache
         // TODO: Show error if not connected.
-
-        $http.post(siteurl, ajaxData).success(function(data) {
+        $http.post(siteurl, ajaxData).then(function(data) {
             // Some moodle web services return null.
             // If the responseExpected value is set then so long as no data
             // is returned, we create a blank object.
-            if (!data && !preSets.responseExpected) {
+            if (!data && !data.data && !preSets.responseExpected) {
                 data = {};
+            } else {
+                data = data.data;
             }
 
             if (!data) {

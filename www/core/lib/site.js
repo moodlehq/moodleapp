@@ -273,7 +273,13 @@ angular.module('mm.core')
 
                 deferred.resolve(response);
             }, function(error) {
-                deferred.reject(error);
+                $log.debug('WS call failed. Try to get the value from the cache.');
+                preSets.omitExpires = true;
+                getFromCache(method, data, preSets).then(function(data) {
+                    deferred.resolve(data);
+                }, function() {
+                    deferred.reject(error);
+                });
             });
         });
 
