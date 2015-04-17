@@ -235,10 +235,10 @@ angular.module('mm.core')
     var self = {};
         function callDBFunction(db, func) {
         var deferred = $q.defer();
-        try{
-            if(typeof(db) != 'undefined') {
+        try {
+            if (typeof(db) != 'undefined') {
                 db[func].apply(db, Array.prototype.slice.call(arguments, 2)).then(function(result) {
-                    if(typeof(result) == 'undefined') {
+                    if (typeof(result) == 'undefined') {
                         deferred.reject();
                     } else {
                         deferred.resolve(result);
@@ -254,11 +254,11 @@ angular.module('mm.core')
         }
         return deferred.promise;
     }
-        function callWhere(db, table, field_name, op, value, op2, value2) {
+        function callWhere(db, store, field_name, op, value, op2, value2) {
         var deferred = $q.defer();
-        try{
-            if(typeof(db) != 'undefined') {
-                db.from(table).where(field_name, op, value, op2, value2).list().then(function(list) {
+        try {
+            if (typeof(db) != 'undefined') {
+                db.from(store).where(field_name, op, value, op2, value2).list().then(function(list) {
                     deferred.resolve(list);
                 }, function() {
                     deferred.reject();
@@ -272,11 +272,11 @@ angular.module('mm.core')
         }
         return deferred.promise;
     }
-        function callWhereEqual(db, table, field_name, value) {
+        function callWhereEqual(db, store, field_name, value) {
         var deferred = $q.defer();
-        try{
-            if(typeof(db) != 'undefined') {
-                db.from(table).where(field_name, '=', value).list().then(function(list) {
+        try {
+            if (typeof(db) != 'undefined') {
+                db.from(store).where(field_name, '=', value).list().then(function(list) {
                     deferred.resolve(list);
                 }, function() {
                     deferred.reject();
@@ -290,10 +290,10 @@ angular.module('mm.core')
         }
         return deferred.promise;
     }
-        function callEach(db, table, callback) {
+        function callEach(db, store, callback) {
         var deferred = $q.defer();
-        callDBFunction(db, 'values', table, undefined, 99999999).then(function(entries) {
-            for(var i = 0; i < entries.length; i++) {
+        callDBFunction(db, 'values', store, undefined, 99999999).then(function(entries) {
+            for (var i = 0; i < entries.length; i++) {
                 callback(entries[i]);
             }
             deferred.resolve();
@@ -305,34 +305,34 @@ angular.module('mm.core')
         self.getDB = function(name, schema) {
         var db = new ydn.db.Storage(name, schema);
         return {
-            getName: function() {
+                        getName: function() {
                 return db.getName();
             },
-            get: function(table, id) {
-                return callDBFunction(db, 'get', table, id);
+                        get: function(store, id) {
+                return callDBFunction(db, 'get', store, id);
             },
-            getAll: function(table) {
-                return callDBFunction(db, 'values', table, undefined, 99999999);
+                        getAll: function(store) {
+                return callDBFunction(db, 'values', store, undefined, 99999999);
             },
-            count: function(table) {
-                return callDBFunction(db, 'count', table);
+                        count: function(store) {
+                return callDBFunction(db, 'count', store);
             },
-            insert: function(table, value) {
-                return callDBFunction(db, 'put', table, value);
+                        insert: function(store, value) {
+                return callDBFunction(db, 'put', store, value);
             },
-            remove: function(table, id) {
-                return callDBFunction(db, 'remove', table, id);
+                        remove: function(store, id) {
+                return callDBFunction(db, 'remove', store, id);
             },
-            where: function(table, field_name, op, value, op2, value2) {
-                return callWhere(db, table, field_name, op, value, op2, value2);
+                        where: function(store, field_name, op, value, op2, value2) {
+                return callWhere(db, store, field_name, op, value, op2, value2);
             },
-            whereEqual: function(table, field_name, value) {
-                return callWhereEqual(db, table, field_name, value);
+                        whereEqual: function(store, field_name, value) {
+                return callWhereEqual(db, store, field_name, value);
             },
-            each: function(table, callback) {
-                return callEach(db, table, callback);
+                        each: function(store, callback) {
+                return callEach(db, store, callback);
             },
-            close: function() {
+                        close: function() {
                 db.close();
                 db = undefined;
             }
@@ -574,247 +574,279 @@ angular.module('mm.core')
     });
 });
 angular.module('mm.core')
-.factory('$mmSite', function($http, $q, $mmWS, $mmDB, $mmConfig, $log, md5, $cordovaNetwork, $mmLang, $mmUtil) {
-        var deprecatedFunctions = {
-        "moodle_webservice_get_siteinfo": "core_webservice_get_site_info",
-        "moodle_enrol_get_users_courses": "core_enrol_get_users_courses",
-        "moodle_notes_create_notes": "core_notes_create_notes",
-        "moodle_message_send_instantmessages": "core_message_send_instant_messages",
-        "moodle_user_get_users_by_courseid": "core_enrol_get_enrolled_users",
-        "moodle_user_get_course_participants_by_id": "core_user_get_course_user_profiles",
+.constant('mmWSCacheStore', 'wscache')
+.config(function($mmSiteProvider, mmWSCacheStore) {
+    var stores = [
+        {
+            name: mmWSCacheStore,
+            keyPath: 'id'
+        }
+    ];
+    $mmSiteProvider.registerStores(stores);
+})
+.provider('$mmSite', function() {
+        var siteSchema = {
+        autoSchema: true,
+        stores: []
     };
-    var self = {},
-        currentSite,
-        siteSchema = {
-            autoSchema: true,
-            stores: [
-                {
-                    name: 'wscache',
-                    keyPath: 'id'
-                }
-            ]
-        };
-        function Site(id, siteurl, token, infos) {
-        this.id = id;
-        this.siteurl = siteurl;
-        this.token = token;
-        this.infos = infos;
-        if (this.id) {
-            this.db = $mmDB.getDB('Site-' + this.id, siteSchema);
+        this.registerStore = function(store) {
+        if (typeof(store.name) === 'undefined') {
+            console.log('$mmSite: Error: store name is undefined.');
+            return;
+        } else if (storeExists(store.name)) {
+            console.log('$mmSite: Error: store ' + store.name + ' is already defined.');
+            return;
         }
-    };
-        self.fetchSiteInfo = function() {
-        var deferred = $q.defer();
-        if (!self.isLoggedIn()) {
-            $mmLang.translateErrorAndReject(deferred, 'mm.core.login.notloggedin');
-            return deferred.promise;
-        }
-        function siteDataRetrieved(infos) {
-            currentSite.infos = infos;
-            deferred.resolve(infos);
-        }
-        var preSets = {
-            getFromCache: 0,
-            saveToCache: 0
-        };
-        self.read('core_webservice_get_site_info', {}, preSets).then(siteDataRetrieved, function(error) {
-            self.read('moodle_webservice_get_site_info', {}, preSets).then(siteDataRetrieved, function(error) {
-                deferred.reject(error);
-            });
+        siteSchema.stores.push(store);
+    }
+        this.registerStores = function(stores) {
+        var self = this;
+        angular.forEach(stores, function(store) {
+            self.registerStore(store);
+        })
+    }
+        function storeExists(name) {
+        var exists = false;
+        angular.forEach(siteSchema.stores, function(store) {
+            if (store.name === name) {
+                exists = true;
+            }
         });
-        return deferred.promise;
-    };
-        self.isLoggedIn = function() {
-        return typeof(currentSite) != 'undefined' && typeof(currentSite.token) != 'undefined' && currentSite.token != '';
+        return exists;
     }
-        self.logout = function() {
-        currentSite = undefined;
-    }
-        self.setCandidateSite = function(siteurl, token) {
-        currentSite = new Site(undefined, siteurl, token);
-    }
-        self.deleteCandidateSite = function() {
-        currentSite = undefined;
-    };
-        self.setSite = function(id, siteurl, token, infos) {
-        currentSite = new Site(id, siteurl, token, infos);
-    }
-        self.deleteSite = function(siteid) {
-        if(typeof(currentSite) !== 'undefined' && currentSite.id == siteid) {
-            self.logout();
-        }
-        return $mmDB.deleteDB('Site-' + siteid);
-    }
-        self.read = function(method, data, preSets) {
-        preSets = preSets || {};
-        if (typeof(preSets.getFromCache) === 'undefined') {
-            preSets.getFromCache = 1;
-        }
-        if (typeof(preSets.saveToCache) === 'undefined') {
-            preSets.saveToCache = 1;
-        }
-        return self.request(method, data, preSets);
-    }
-        self.write = function(method, data, preSets) {
-        preSets = preSets || {};
-        if (typeof(preSets.getFromCache) === 'undefined') {
-            preSets.getFromCache = 0;
-        }
-        if (typeof(preSets.saveToCache) === 'undefined') {
-            preSets.saveToCache = 0;
-        }
-        return self.request(method, data, preSets);
-    }
-        self.request = function(method, data, preSets) {
-        var deferred = $q.defer();
-        if (!self.isLoggedIn()) {
-            $mmLang.translateErrorAndReject(deferred, 'mm.core.login.notloggedin');
-            return deferred.promise;
-        }
-        method = checkDeprecatedFunction(method);
-        preSets = preSets || {};
-        preSets.wstoken = currentSite.token;
-        preSets.siteurl = currentSite.siteurl;
-        getFromCache(method, data, preSets).then(function(data) {
-            deferred.resolve(data);
-        }, function() {
-            var mustSaveToCache = preSets.saveToCache;
-            delete preSets.getFromCache;
-            delete preSets.saveToCache;
-            delete preSets.omitExpires;
-            $mmWS.call(method, data, preSets).then(function(response) {
-                if (mustSaveToCache) {
-                    saveToCache(method, data, response);
-                }
-                deferred.resolve(response);
-            }, function(error) {
-                $log.debug('WS call failed. Try to get the value from the cache.');
-                preSets.omitExpires = true;
-                getFromCache(method, data, preSets).then(function(data) {
-                    deferred.resolve(data);
-                }, function() {
+    this.$get = function($http, $q, $mmWS, $mmDB, $mmConfig, $log, md5, $cordovaNetwork, $mmLang, $mmUtil, mmWSCacheStore) {
+                var deprecatedFunctions = {
+            "moodle_webservice_get_siteinfo": "core_webservice_get_site_info",
+            "moodle_enrol_get_users_courses": "core_enrol_get_users_courses",
+            "moodle_notes_create_notes": "core_notes_create_notes",
+            "moodle_message_send_instantmessages": "core_message_send_instant_messages",
+            "moodle_user_get_users_by_courseid": "core_enrol_get_enrolled_users",
+            "moodle_user_get_course_participants_by_id": "core_user_get_course_user_profiles",
+        };
+        var self = {},
+            currentSite;
+                function Site(id, siteurl, token, infos) {
+            this.id = id;
+            this.siteurl = siteurl;
+            this.token = token;
+            this.infos = infos;
+            if (this.id) {
+                this.db = $mmDB.getDB('Site-' + this.id, siteSchema);
+            }
+        };
+                self.fetchSiteInfo = function() {
+            var deferred = $q.defer();
+            if (!self.isLoggedIn()) {
+                $mmLang.translateErrorAndReject(deferred, 'mm.core.login.notloggedin');
+                return deferred.promise;
+            }
+            function siteDataRetrieved(infos) {
+                currentSite.infos = infos;
+                deferred.resolve(infos);
+            }
+            var preSets = {
+                getFromCache: 0,
+                saveToCache: 0
+            };
+            self.read('core_webservice_get_site_info', {}, preSets).then(siteDataRetrieved, function(error) {
+                self.read('moodle_webservice_get_site_info', {}, preSets).then(siteDataRetrieved, function(error) {
                     deferred.reject(error);
                 });
             });
-        });
-        return deferred.promise;
-    }
-        self.wsAvailable = function(method) {
-        if (!self.isLoggedIn() || typeof(currentSite.infos) == 'undefined') {
-            return false;
-        }
-        for(var i = 0; i < currentSite.infos.functions.length; i++) {
-            var f = currentSite.infos.functions[i];
-            if (f.name == method) {
-                return true;
-            }
-        }
-        return false;
-    };
-        self.getId = function() {
-        if (typeof(currentSite) !== 'undefined' && typeof(currentSite.id) !== 'undefined') {
-            return currentSite.id;
-        } else {
-            return undefined;
-        }
-    };
-        self.getURL = function() {
-        if (typeof(currentSite) !== 'undefined' && typeof(currentSite.siteurl) !== 'undefined') {
-            return currentSite.siteurl;
-        } else {
-            return undefined;
-        }
-    };
-        self.getToken = function() {
-        if (typeof(currentSite) !== 'undefined' && typeof(currentSite.token) !== 'undefined') {
-            return currentSite.token;
-        } else {
-            return undefined;
-        }
-    };
-        self.getInfo = function() {
-        if (typeof(currentSite) !== 'undefined' && typeof(currentSite.infos) !== 'undefined') {
-            return currentSite.infos;
-        } else {
-            return undefined;
-        }
-    };
-        self.fixPluginfileURL = function(url, token) {
-        if (!token) {
-            token = self.getToken();
-        }
-        return $mmUtil.fixPluginfileURL(url, token);
-    };
-        function checkDeprecatedFunction(method) {
-        if (typeof deprecatedFunctions[method] !== "undefined") {
-            if (self.wsAvailable(deprecatedFunctions[method])) {
-                $log.warn("You are using deprecated Web Services: " + method +
-                    " you must replace it with the newer function: " + deprecatedFunctions[method]);
-                return deprecatedFunctions[method];
-            } else {
-                $log.warn("You are using deprecated Web Services. " +
-                    "Your remote site seems to be outdated, consider upgrade it to the latest Moodle version.");
-            }
-        }
-        return method;
-    }
-        function getFromCache(method, data, preSets) {
-        var result,
-            db = currentSite.db,
-            deferred = $q.defer(),
-            key;
-        if (!db) {
-            deferred.reject();
             return deferred.promise;
-        } else if (!preSets.getFromCache) {
-            deferred.reject();
+        };
+                self.isLoggedIn = function() {
+            return typeof(currentSite) != 'undefined' && typeof(currentSite.token) != 'undefined' && currentSite.token != '';
+        }
+                self.logout = function() {
+            currentSite = undefined;
+        }
+                self.setCandidateSite = function(siteurl, token) {
+            currentSite = new Site(undefined, siteurl, token);
+        }
+                self.deleteCandidateSite = function() {
+            currentSite = undefined;
+        };
+                self.setSite = function(id, siteurl, token, infos) {
+            currentSite = new Site(id, siteurl, token, infos);
+        }
+                self.deleteSite = function(siteid) {
+            if(typeof(currentSite) !== 'undefined' && currentSite.id == siteid) {
+                self.logout();
+            }
+            return $mmDB.deleteDB('Site-' + siteid);
+        }
+                self.read = function(method, data, preSets) {
+            preSets = preSets || {};
+            if (typeof(preSets.getFromCache) === 'undefined') {
+                preSets.getFromCache = 1;
+            }
+            if (typeof(preSets.saveToCache) === 'undefined') {
+                preSets.saveToCache = 1;
+            }
+            return self.request(method, data, preSets);
+        }
+                self.write = function(method, data, preSets) {
+            preSets = preSets || {};
+            if (typeof(preSets.getFromCache) === 'undefined') {
+                preSets.getFromCache = 0;
+            }
+            if (typeof(preSets.saveToCache) === 'undefined') {
+                preSets.saveToCache = 0;
+            }
+            return self.request(method, data, preSets);
+        }
+                self.request = function(method, data, preSets) {
+            var deferred = $q.defer();
+            if (!self.isLoggedIn()) {
+                $mmLang.translateErrorAndReject(deferred, 'mm.core.login.notloggedin');
+                return deferred.promise;
+            }
+            method = checkDeprecatedFunction(method);
+            preSets = preSets || {};
+            preSets.wstoken = currentSite.token;
+            preSets.siteurl = currentSite.siteurl;
+            getFromCache(method, data, preSets).then(function(data) {
+                deferred.resolve(data);
+            }, function() {
+                var mustSaveToCache = preSets.saveToCache;
+                delete preSets.getFromCache;
+                delete preSets.saveToCache;
+                delete preSets.omitExpires;
+                $mmWS.call(method, data, preSets).then(function(response) {
+                    if (mustSaveToCache) {
+                        saveToCache(method, data, response);
+                    }
+                    deferred.resolve(response);
+                }, function(error) {
+                    $log.debug('WS call failed. Try to get the value from the cache.');
+                    preSets.omitExpires = true;
+                    getFromCache(method, data, preSets).then(function(data) {
+                        deferred.resolve(data);
+                    }, function() {
+                        deferred.reject(error);
+                    });
+                });
+            });
             return deferred.promise;
         }
-        key = md5.createHash(method + ':' + JSON.stringify(data));
-        db.get('wscache', key).then(function(entry) {
-            var now = new Date().getTime();
-            try {
-                preSets.omitExpires = preSets.omitExpires || $cordovaNetwork.isOffline();
-            } catch(err) {}
-            if (!preSets.omitExpires) {
-                if (now > entry.expirationtime) {
-                    $log.debug('Cached element found, but it is expired');
-                    deferred.reject();
-                    return;
+                self.wsAvailable = function(method) {
+            if (!self.isLoggedIn() || typeof(currentSite.infos) == 'undefined') {
+                return false;
+            }
+            for(var i = 0; i < currentSite.infos.functions.length; i++) {
+                var f = currentSite.infos.functions[i];
+                if (f.name == method) {
+                    return true;
                 }
             }
-            if (typeof(entry) !== 'undefined' && typeof(entry.data) !== 'undefined') {
-                var expires = (entry.expirationtime - now) / 1000;
-                $log.info('Cached element found, id: ' + key + ' expires in ' + expires + ' seconds');
-                deferred.resolve(entry.data);
-                return;
+            return false;
+        };
+                self.getId = function() {
+            if (typeof(currentSite) !== 'undefined' && typeof(currentSite.id) !== 'undefined') {
+                return currentSite.id;
+            } else {
+                return undefined;
             }
-            deferred.reject();
-        }, function() {
-            deferred.reject();
-        });
-        return deferred.promise;
-    }
-        function saveToCache(method, data, response) {
-        var db = currentSite.db,
-            deferred = $q.defer(),
-            key = md5.createHash(method + ':' + JSON.stringify(data));
-        if (!db) {
-            deferred.reject();
-        } else {
-            $mmConfig.get('cache_expiration_time').then(function(cacheExpirationTime) {
-                var entry = {
-                    id: key,
-                    data: response
-                };
-                entry.expirationtime = new Date().getTime() + cacheExpirationTime;
-                db.insert('wscache', entry);
-                deferred.resolve();
-            }, deferred.reject);
+        };
+                self.getURL = function() {
+            if (typeof(currentSite) !== 'undefined' && typeof(currentSite.siteurl) !== 'undefined') {
+                return currentSite.siteurl;
+            } else {
+                return undefined;
+            }
+        };
+                self.getToken = function() {
+            if (typeof(currentSite) !== 'undefined' && typeof(currentSite.token) !== 'undefined') {
+                return currentSite.token;
+            } else {
+                return undefined;
+            }
+        };
+                self.getInfo = function() {
+            if (typeof(currentSite) !== 'undefined' && typeof(currentSite.infos) !== 'undefined') {
+                return currentSite.infos;
+            } else {
+                return undefined;
+            }
+        };
+                self.fixPluginfileURL = function(url, token) {
+            if (!token) {
+                token = self.getToken();
+            }
+            return $mmUtil.fixPluginfileURL(url, token);
+        };
+                function checkDeprecatedFunction(method) {
+            if (typeof deprecatedFunctions[method] !== "undefined") {
+                if (self.wsAvailable(deprecatedFunctions[method])) {
+                    $log.warn("You are using deprecated Web Services: " + method +
+                        " you must replace it with the newer function: " + deprecatedFunctions[method]);
+                    return deprecatedFunctions[method];
+                } else {
+                    $log.warn("You are using deprecated Web Services. " +
+                        "Your remote site seems to be outdated, consider upgrade it to the latest Moodle version.");
+                }
+            }
+            return method;
         }
-        return deferred.promise;
-    }
-    return self;
+                function getFromCache(method, data, preSets) {
+            var result,
+                db = currentSite.db,
+                deferred = $q.defer(),
+                key;
+            if (!db) {
+                deferred.reject();
+                return deferred.promise;
+            } else if (!preSets.getFromCache) {
+                deferred.reject();
+                return deferred.promise;
+            }
+            key = md5.createHash(method + ':' + JSON.stringify(data));
+            db.get(mmWSCacheStore, key).then(function(entry) {
+                var now = new Date().getTime();
+                try {
+                    preSets.omitExpires = preSets.omitExpires || $cordovaNetwork.isOffline();
+                } catch(err) {}
+                if (!preSets.omitExpires) {
+                    if (now > entry.expirationtime) {
+                        $log.debug('Cached element found, but it is expired');
+                        deferred.reject();
+                        return;
+                    }
+                }
+                if (typeof(entry) !== 'undefined' && typeof(entry.data) !== 'undefined') {
+                    var expires = (entry.expirationtime - now) / 1000;
+                    $log.info('Cached element found, id: ' + key + ' expires in ' + expires + ' seconds');
+                    deferred.resolve(entry.data);
+                    return;
+                }
+                deferred.reject();
+            }, function() {
+                deferred.reject();
+            });
+            return deferred.promise;
+        }
+                function saveToCache(method, data, response) {
+            var db = currentSite.db,
+                deferred = $q.defer(),
+                key = md5.createHash(method + ':' + JSON.stringify(data));
+            if (!db) {
+                deferred.reject();
+            } else {
+                $mmConfig.get('cache_expiration_time').then(function(cacheExpirationTime) {
+                    var entry = {
+                        id: key,
+                        data: response
+                    };
+                    entry.expirationtime = new Date().getTime() + cacheExpirationTime;
+                    db.insert(mmWSCacheStore, entry);
+                    deferred.resolve();
+                }, deferred.reject);
+            }
+            return deferred.promise;
+        }
+        return self;
+    };
 });
 
 angular.module('mm.core')
@@ -1296,8 +1328,10 @@ angular.module('mm.core')
         siteurl = preSets.siteurl + '/webservice/rest/server.php?moodlewsrestformat=json';
         var ajaxData = data;
         $http.post(siteurl, ajaxData).then(function(data) {
-            if (!data && !preSets.responseExpected) {
+            if (!data && !data.data && !preSets.responseExpected) {
                 data = {};
+            } else {
+                data = data.data;
             }
             if (!data) {
                 $mmLang.translateErrorAndReject(deferred, 'cannotconnect');
