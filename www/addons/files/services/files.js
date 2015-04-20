@@ -173,6 +173,9 @@ angular.module('mm.addons.files')
                 mimeType: options.mimeType
             };
 
+        // TODO Handle offline device.
+        // if (!MM.deviceConnected()) MM.handleDisconnectedFileUpload(data, fileOptions);
+
         $mmSite.uploadFile(uri, ftOptions).then(function(result) {
             // Success.
             if (deleteAfterUpload) {

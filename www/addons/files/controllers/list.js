@@ -15,7 +15,8 @@
 angular.module('mm.addons.files')
 
 .controller('mmaFilesListController', function($q, $scope, $stateParams, $ionicActionSheet,
-        $mmaFiles, $mmSite, $translate, $timeout, $mmUtil, $mmFS, $mmWS, $log, $cordovaCamera, $cordovaCapture) {
+        $mmaFiles, $mmSite, $translate, $timeout, $mmUtil, $mmFS, $mmWS, $log,
+        $cordovaCamera, $cordovaCapture, $cordovaNetwork) {
 
     var path = $stateParams.path,
         root = $stateParams.root,
@@ -111,7 +112,14 @@ angular.module('mm.addons.files')
 
     // When we are in the root of the private files we can add more files.
     if (root === 'my' && !path) {
+
         $scope.add = function() {
+
+            if (!$cordovaNetwork.isOnline()) {
+                $mmUtil.showErrorModal('mm.addons.files.errormustbeonlinetoupload', true);
+                return;
+            }
+
             $ionicActionSheet.show({
                 buttons: [
                     { text: 'Photo albums' },

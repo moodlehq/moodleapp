@@ -1,4 +1,5 @@
 {
+    "errormustbeonlinetoupload": "You have to be online to upload files.",
     "errorwhiledownloading": "An error occured while trying to download the file.",
     "errorwhileuploading": "An error occured during the file upload.",
     "couldnotloadfiles": "The list of files could not be loaded.",

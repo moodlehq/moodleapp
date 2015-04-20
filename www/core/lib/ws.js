@@ -192,9 +192,6 @@ angular.module('mm.core')
             Connection: "close"
         };
 
-        // TODO Handle offline device.
-        // if (!MM.deviceConnected()) MM.handleDisconnectedFileUpload(data, fileOptions);
-
         $log.info('Initializing upload');
         $cordovaFileTransfer.upload(presets.siteurl + '/webservice/upload.php', uri, ftOptions).then(function(success) {
             $log.info('Successfully uploaded file');
