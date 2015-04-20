@@ -531,6 +531,23 @@ angular.module('mm.core')
 
         };
 
+        /*
+         * Uploads a file using Cordova File API.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmSite#uploadFile
+         * @param {Object} uri File URI.
+         * @param {Object} options File settings: fileKey, fileName and mimeType.
+         * @return {Promise}
+         */
+        self.uploadFile = function(uri, options) {
+            return $mmWS.uploadFile(uri, options, {
+                siteurl: self.getURL(),
+                token: self.getToken()
+            });
+        };
+
         /**
          * Check if a function is deprecated and returns the function that should be used.
          *

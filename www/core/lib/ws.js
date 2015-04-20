@@ -159,6 +159,52 @@ angular.module('mm.core')
         });
     };
 
+    /*
+     * Uploads a file using Cordova File API.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmWS#uploadFile
+     * @param {Object} uri File URI.
+     * @param {Object} options File settings: fileKey, fileName and mimeType.
+     * @param {Object} presets Contains siteurl and token.
+     * @return {Promise}
+     */
+    self.uploadFile = function(uri, options, presets) {
+        $log.info('Trying to upload file (' + uri.length + ' chars)');
+
+        var ftOptions = {},
+            deferred = $q.defer();
+
+        ftOptions.fileKey = options.fileKey;
+        ftOptions.fileName = options.fileName;
+        ftOptions.httpMethod = 'POST';
+        ftOptions.mimeType = options.mimeType;
+        ftOptions.params = {
+            token: presets.token
+        };
+        ftOptions.chunkedMode = false;
+        ftOptions.headers = {
+            Connection: "close"
+        };
+
+        // TODO Handle offline device.
+        // if (!MM.deviceConnected()) MM.handleDisconnectedFileUpload(data, fileOptions);
+
+        $log.info('Initializing upload');
+        $cordovaFileTransfer.upload(presets.siteurl + '/webservice/upload.php', uri, ftOptions).then(function(success) {
+            $log.info('Successfully uploaded file');
+            deferred.resolve(success);
+        }, function(error) {
+            $log.error('Error while uploading file: ' + error.exception);
+            deferred.reject(error);
+        }, function(progress) {
+            deferred.notify(progress);
+        });
+
+        return deferred.promise;
+    };
+
     return self;
 
 });

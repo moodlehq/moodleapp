@@ -347,7 +347,7 @@ angular.module('mm.core')
          */
         this.showModalLoading = function(text) {
             $ionicLoading.show({
-                template: '<i class="icon ion-load-c">'+text
+                template: '<i class="icon ion-load-c"> '+text
             });
         };
 

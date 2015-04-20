@@ -14,8 +14,8 @@
 
 angular.module('mm.addons.files')
 
-.controller('mmaFilesListController', function($q, $ionicNavBarDelegate, $scope, $stateParams, $ionicActionSheet,
-        $mmaFiles, $mmSite, $translate, $timeout, $mmUtil, $mmFS, $mmWS, $log) {
+.controller('mmaFilesListController', function($q, $scope, $stateParams, $ionicActionSheet,
+        $mmaFiles, $mmSite, $translate, $timeout, $mmUtil, $mmFS, $mmWS, $log, $cordovaCamera) {
 
     var path = $stateParams.path,
         root = $stateParams.root,
@@ -25,46 +25,53 @@ angular.module('mm.addons.files')
     // We're loading the files.
     $scope.count = -1;
 
-    if (!path) {
-        // The path is unknown, the user must be requesting a root.
-        if (root === 'site') {
-            promise = $mmaFiles.getSiteFiles();
-            title = $translate('mm.addons.files.sitefiles');
-        } else if (root === 'my') {
-            promise = $mmaFiles.getMyFiles();
-            title = $translate('mm.addons.files.myprivatefiles');
+    // Convenience function that fetches the files and updates the scope.
+    // It was place in its own function so that we can refresh the files.
+    function fetchFiles(root, path, refresh) {
+        refresh = (typeof refresh === 'undefined') ? false : refresh;
+
+        if (!path) {
+            // The path is unknown, the user must be requesting a root.
+            if (root === 'site') {
+                promise = $mmaFiles.getSiteFiles(refresh);
+                title = $translate('mm.addons.files.sitefiles');
+            } else if (root === 'my') {
+                promise = $mmaFiles.getMyFiles(refresh);
+                title = $translate('mm.addons.files.myprivatefiles');
+            } else {
+                // Upon error we create a fake promise that is rejected.
+                promise = (function() {
+                    var q = $q.defer();
+                    q.reject();
+                    return q.promise;
+                })();
+                title = '';
+            }
         } else {
-            // Upon error we create a fake promise that is rejected.
-            promise = (function() {
+            // Serve the files the user requested.
+            pathdata = JSON.parse(path);
+            promise = $mmaFiles.getFiles(pathdata, refresh);
+
+            // Put the title in a promise to act like translate does.
+            title = (function() {
                 var q = $q.defer();
-                q.reject();
+                q.resolve($stateParams.title);
                 return q.promise;
             })();
-            title = '';
         }
-    } else {
-        // Serve the files the user requested.
-        pathdata = JSON.parse(path);
-        promise = $mmaFiles.getFiles(pathdata);
 
-        // Put the title in a promise to act like translate does.
-        title = (function() {
-            var q = $q.defer();
-            q.resolve($stateParams.title);
-            return q.promise;
-        })();
+        $q.all([promise, title]).then(function(data) {
+            var files = data[0],
+                title = data[1];
+
+            $scope.files = files.entries;
+            $scope.count = files.count;
+            $scope.title = title;
+        }, function() {
+            $mmUtil.showErrorModal('mm.addons.files.couldnotloadfiles', true);
+        });
     }
-
-    $q.all([promise, title]).then(function(data) {
-        var files = data[0],
-            title = data[1];
-
-        $scope.files = files.entries;
-        $scope.count = files.count;
-        $scope.title = title;
-    }, function() {
-        $mmUtil.showErrorModal('mm.addons.files.couldnotloadfiles', true);
-    });
+    fetchFiles(root, path);
 
     // Downloading a file.
     $scope.download = function(file) {
@@ -101,8 +108,8 @@ angular.module('mm.addons.files')
         });
     };
 
-    // When we are in private files we can add more files.
-    if (root === 'my') {
+    // When we are in the root of the private files we can add more files.
+    if (root === 'my' && !path) {
         $scope.add = function() {
             $ionicActionSheet.show({
                 buttons: [
@@ -114,7 +121,43 @@ angular.module('mm.addons.files')
                 titleText: 'Upload a file from',
                 cancelText: 'Cancel',
                 buttonClicked: function(index) {
-                    // TODO Implement.
+                    if (index === 0) {
+                        $log.info('Trying to get a image from albums');
+
+                        var width  =  window.innerWidth  - 200;
+                        var height =  window.innerHeight - 200;
+
+                        // iPad popOver, see https://tracker.moodle.org/browse/MOBILE-208
+                        var popover = new CameraPopoverOptions(10, 10, width, height, Camera.PopoverArrowDirection.ARROW_ANY);
+                        $cordovaCamera.getPicture({
+                            quality: 50,
+                            destinationType: navigator.camera.DestinationType.FILE_URI,
+                            sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY,
+                            popoverOptions : popover
+                        }).then(function(img) {
+                            $translate('loading').then(function(loadingString) {
+                                $mmUtil.showModalLoading(loadingString);
+                            });
+
+                            $mmaFiles.uploadImage(img).then(function() {
+                                // Success.
+                                fetchFiles(root, path, true);
+                                $mmUtil.closeModalLoading();
+                            }, function() {
+                                $log.error('Whoops, the file could not be uploaded');
+                                $mmUtil.closeModalLoading();
+                                $mmUtil.showErrorModal('mm.addons.files.errorwhileuploading', true);
+                            });
+
+                        }, function() {
+                            $mmUtil.showErrorModal('mm.addons.files.errorwhilecapturing', true);
+                        });
+
+                    } else if (index === 1) {
+                    } else if (index === 2) {
+                    } else if (index === 3) {
+                    }
+
                     return true;
                 }
             });

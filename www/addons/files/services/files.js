@@ -14,7 +14,7 @@
 
 angular.module('mm.addons.files')
 
-.factory('$mmaFiles', function($mmSite, $mmUtil, $q, md5) {
+.factory('$mmaFiles', function($mmSite, $mmUtil, $q, $timeout, $log, md5) {
     var self = {},
         defaultParams = {
             "contextid": 0,
@@ -45,15 +45,22 @@ angular.module('mm.addons.files')
      * @ngdoc method
      * @name $mmaFiles#getFiles
      * @param  {Object} A list of parameters accepted by the Web service.
+     * @param  {Boolean} refresh Pass true to ignore the cache.
      * @return {Object} An object containing the files in the key 'entries', and 'count'.
      *                  Additional properties is added to the entries, such as:
      *                  - imgpath: The path to the icon.
      *                  - link: The JSON string of params to get to the file.
      *                  - linkId: A hash of the file parameters.
      */
-    self.getFiles = function(params) {
-        var deferred = $q.defer();
-        $mmSite.read('core_files_get_files', params).then(function(result) {
+    self.getFiles = function(params, refresh) {
+        var deferred = $q.defer(),
+            options = {};
+
+        if (refresh === true) {
+            options.getFromCache = false;
+        }
+
+        $mmSite.read('core_files_get_files', params, options).then(function(result) {
             var data = {
                 entries: [],
                 count: 0
@@ -115,17 +122,17 @@ angular.module('mm.addons.files')
      * @module mm.addons.files
      * @ngdoc method
      * @name $mmaFiles#getMyFiles
-     * @param  {Number} The user ID.
+     * @param  {Boolean} refresh Pass true to ignore the cache.
      * @return {Object} See $mmaFiles#getFiles
      */
-    self.getMyFiles = function() {
+    self.getMyFiles = function(refresh) {
         var params = angular.copy(defaultParams, {});
         params.component = "user";
         params.filearea = "private";
         params.contextid = -1;
         params.contextlevel = "user";
         params.instanceid = $mmSite.getInfo().userid;
-        return self.getFiles(params);
+        return self.getFiles(params, refresh);
     };
 
     /**
@@ -134,11 +141,119 @@ angular.module('mm.addons.files')
      * @module mm.addons.files
      * @ngdoc method
      * @name $mmaFiles#getSiteFiles
+     * @param  {Boolean} refresh Pass true to ignore the cache.
      * @return {Object} See $mmaFiles#getFiles
      */
-    self.getSiteFiles = function() {
+    self.getSiteFiles = function(refresh) {
         var params = angular.copy(defaultParams, {});
-        return self.getFiles(params);
+        return self.getFiles(params, refresh);
+    };
+
+    /**
+     * Upload a file.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#uploadFile
+     * @param  {Object} uri File URI.
+     * @param  {Object} options Options for the upload.
+     *                          - {Boolean} deleteAfterUpload Whether or not to delete the original after upload
+     *                          - {String} fileKey
+     *                          - {String} fileName
+     *                          - {String} mimeType
+     * @return {Promise}
+     */
+    self.uploadFile = function(uri, options) {
+        options = options || {};
+        var deleteAfterUpload = options.deleteAfterUpload && ionic.Platform.isIOS(),
+            deferred = $q.defer(),
+            ftOptions = {
+                fileKey: options.fileKey,
+                fileName: options.fileName,
+                mimeType: options.mimeType
+            };
+
+        $mmSite.uploadFile(uri, ftOptions).then(function(result) {
+            // Success.
+            if (deleteAfterUpload) {
+                $timeout(function() {
+                    // Delete image after upload in iOS (always copies the image to the tmp folder)
+                    // or if the photo is taken with the camera, not browsed.
+                    $mmFS.removeExternalFile(uri);
+                }, 500);
+            }
+            deferred.resolve(result);
+        }, function(error) {
+            // Error.
+            if (deleteAfterUpload) {
+                $timeout(function() {
+                    // Delete image after upload in iOS (always copies the image to the tmp folder)
+                    // or if the photo is taken with the camera, not browsed.
+                    $mmFS.removeExternalFile(uri);
+                }, 500);
+            }
+            deferred.reject(error);
+        }, function(progress) {
+            // Progress.
+            deferred.notify(progress);
+        });
+
+        return deferred.promise;
+    };
+
+    /**
+     * Upload image.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#uploadImage
+     * @param  {Object} uri File URI.
+     * @return {Promise}
+     */
+    self.uploadImage = function(uri) {
+        $log.info('Uploading an image');
+        var d = new Date(),
+            options = {};
+
+        if (typeof(uri) === 'undefined' || uri === ''){
+            // In Node-Webkit, if you successfully upload a picture and then you open the file picker again
+            // and cancel, this function is called with an empty uri. Let's filter it.
+            $log.info('Received invalid URI in $mmaFiles.uploadImage()');
+
+            var deferred = $q.defer();
+            deferred.reject();
+            return deferred.promise;
+        }
+
+        // TODO Handle Node Webkit.
+        options.deleteAfterUpload = true;
+        options.fileKey = "file";
+        options.fileName = "image_" + d.getTime() + ".jpg";
+        options.mimeType = "image/jpeg";
+
+        return self.uploadFile(uri, options);
+    };
+
+    /**
+     * Upload media.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#uploadMedia
+     * @param  {Array} mediaFiles Array of file objects.
+     * @return {Array} Array of promises.
+     */
+    self.uploadMedia = function(mediaFiles) {
+        $log.info('Uploading media');
+        var promises = [];
+        angular.each(mediaFiles, function(mediaFile, index) {
+            var options = {};
+            options.fileKey = null;
+            options.fileName = mediaFile.name;
+            options.mimeType = null;
+            promises.push(self.uploadFile(mediaFile.fullPath, options));
+        });
+        return promises;
     };
 
     return self;
