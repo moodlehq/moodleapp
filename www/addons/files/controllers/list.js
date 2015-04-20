@@ -15,7 +15,7 @@
 angular.module('mm.addons.files')
 
 .controller('mmaFilesListController', function($q, $scope, $stateParams, $ionicActionSheet,
-        $mmaFiles, $mmSite, $translate, $timeout, $mmUtil, $mmFS, $mmWS, $log, $cordovaCamera) {
+        $mmaFiles, $mmSite, $translate, $timeout, $mmUtil, $mmFS, $mmWS, $log, $cordovaCamera, $cordovaCapture) {
 
     var path = $stateParams.path,
         root = $stateParams.root,
@@ -144,7 +144,6 @@ angular.module('mm.addons.files')
                                 fetchFiles(root, path, true);
                                 $mmUtil.closeModalLoading();
                             }, function() {
-                                $log.error('Whoops, the file could not be uploaded');
                                 $mmUtil.closeModalLoading();
                                 $mmUtil.showErrorModal('mm.addons.files.errorwhileuploading', true);
                             });
@@ -169,7 +168,6 @@ angular.module('mm.addons.files')
                                 fetchFiles(root, path, true);
                                 $mmUtil.closeModalLoading();
                             }, function() {
-                                $log.error('Whoops, the file could not be uploaded');
                                 $mmUtil.closeModalLoading();
                                 $mmUtil.showErrorModal('mm.addons.files.errorwhileuploading', true);
                             });
@@ -179,7 +177,44 @@ angular.module('mm.addons.files')
                         });
 
                     } else if (index === 2) {
+                        $log.info('Trying to record an audio file');
+                        $cordovaCapture.captureAudio({limit: 1}).then(function(medias) {
+                            $translate('loading').then(function(loadingString) {
+                                $mmUtil.showModalLoading(loadingString);
+                            });
+
+                            $mmaFiles.uploadMedia(medias).then(function() {
+                                // Success.
+                                fetchFiles(root, path, true);
+                                $mmUtil.closeModalLoading();
+                            }, function() {
+                                $mmUtil.closeModalLoading();
+                                $mmUtil.showErrorModal('mm.addons.files.errorwhileuploading', true);
+                            });
+
+                        }, function() {
+                            // Cancelled, or error.
+                        });
+
                     } else if (index === 3) {
+                        $log.info('Trying to record a video file');
+                        $cordovaCapture.captureVideo({limit: 1}).then(function(medias) {
+                            $translate('loading').then(function(loadingString) {
+                                $mmUtil.showModalLoading(loadingString);
+                            });
+
+                            $mmaFiles.uploadMedia(medias).then(function() {
+                                // Success.
+                                fetchFiles(root, path, true);
+                                $mmUtil.closeModalLoading();
+                            }, function() {
+                                $mmUtil.closeModalLoading();
+                                $mmUtil.showErrorModal('mm.addons.files.errorwhileuploading', true);
+                            });
+
+                        }, function() {
+                            // Cancelled, or error.
+                        });
                     }
 
                     return true;

@@ -246,7 +246,7 @@ angular.module('mm.addons.files')
     self.uploadMedia = function(mediaFiles) {
         $log.info('Uploading media');
         var promises = [];
-        angular.each(mediaFiles, function(mediaFile, index) {
+        angular.forEach(mediaFiles, function(mediaFile, index) {
             var options = {};
             options.fileKey = null;
             options.fileName = mediaFile.name;
