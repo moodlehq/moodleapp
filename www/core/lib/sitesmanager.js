@@ -58,13 +58,11 @@ angular.module('mm.core')
      */
     self.getDemoSiteData = function(siteurl) {
         return $mmConfig.get('demo_sites').then(function(demo_sites) {
-            for (var i = 0; i < demo_sites.length; i++) {
-                if (siteurl == demo_sites[i].key) {
-                    return demo_sites[i];
-                }
+            if (typeof(demo_sites) !== 'undefined' && typeof(demo_sites[siteurl]) !== 'undefined') {
+                return demo_sites[siteurl];
+            } else {
+                return $q.reject();
             }
-
-            return $q.reject();
         });
     };
 

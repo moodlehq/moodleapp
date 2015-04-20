@@ -25,7 +25,7 @@ angular.module('mm', ['ionic', 'mm.core', 'mm.core.courses', 'mm.core.login', 'm
 });
 
 angular.module('mm.core', ['pascalprecht.translate'])
-.config(function($stateProvider, $provide, $ionicConfigProvider, $httpProvider, $mmUtilProvider) {
+.config(function($stateProvider, $provide, $ionicConfigProvider, $httpProvider, $urlRouterProvider, $mmUtilProvider) {
     $ionicConfigProvider.platform.android.tabs.position('bottom');
     $provide.decorator('$ionicPlatform', ['$delegate', '$window', function($delegate, $window) {
         $delegate.isTablet = function() {
@@ -76,6 +76,10 @@ angular.module('mm.core', ['pascalprecht.translate'])
     $httpProvider.defaults.transformRequest = [function(data) {
         return angular.isObject(data) && String(data) !== '[object File]' ? $mmUtilProvider.param(data) : data;
     }];
+    $urlRouterProvider.otherwise(function($injector, $location) {
+        var $state = $injector.get('$state');
+        $state.go('mm_login.index');
+    });
 })
 .run(function($ionicPlatform, $ionicBody, $window) {
     $ionicPlatform.ready(function() {
@@ -879,12 +883,11 @@ angular.module('mm.core')
         sessionRestored = false;
         self.getDemoSiteData = function(siteurl) {
         return $mmConfig.get('demo_sites').then(function(demo_sites) {
-            for (var i = 0; i < demo_sites.length; i++) {
-                if (siteurl == demo_sites[i].key) {
-                    return demo_sites[i];
-                }
+            if (typeof(demo_sites) !== 'undefined' && typeof(demo_sites[siteurl]) !== 'undefined') {
+                return demo_sites[siteurl];
+            } else {
+                return $q.reject();
             }
-            return $q.reject();
         });
     };
         self.checkSite = function(siteurl, protocol) {
@@ -1529,7 +1532,8 @@ angular.module('mm.core.courses', [])
 angular.module('mm.core.login', [])
 .constant('mmLoginLaunchSiteURL', 'mmLoginLaunchSiteURL')
 .constant('mmLoginLaunchPassport', 'mmLoginLaunchPassport')
-.config(function($stateProvider, $urlRouterProvider) {
+.constant('mmSSOCode', 2)
+.config(function($stateProvider) {
     $stateProvider
     .state('mm_login', {
         url: '/mm_login',
@@ -1574,7 +1578,7 @@ angular.module('mm.core.login', [])
     .state('mm_login.credentials', {
         url: '/cred',
         templateUrl: 'core/components/login/templates/credentials.html',
-        controller: 'mmLoginCredCtrl',
+        controller: 'mmLoginCredentialsCtrl',
         params: {
             siteurl: ''
         },
@@ -1584,14 +1588,10 @@ angular.module('mm.core.login', [])
             }
         }
     });
-    $urlRouterProvider.otherwise(function($injector, $location) {
-        var $state = $injector.get('$state');
-        $state.go('mm_login.index');
-    });
 })
 .run(function($log, $q, $state, $mmUtil, $translate, $mmSitesManager, $rootScope, $mmSite, $mmURLDelegate, $mmConfig,
                 mmLoginLaunchSiteURL, mmLoginLaunchPassport, md5) {
-    $mmURLDelegate.register('login_sso', function(url) {
+    $mmURLDelegate.register('mmLoginSSO', function(url) {
         var ssoScheme = 'moodlemobile://token=';
         if (url.indexOf(ssoScheme) == -1) {
             return false;
@@ -1749,7 +1749,7 @@ angular.module('mm.core.courses')
 });
 
 angular.module('mm.core.login')
-.controller('mmLoginCredCtrl', function($scope, $state, $stateParams, $mmSitesManager, $mmUtil, $translate) {
+.controller('mmLoginCredentialsCtrl', function($scope, $state, $stateParams, $mmSitesManager, $mmUtil, $translate) {
     $scope.siteurl = $stateParams.siteurl;
     $scope.credentials = {};
     $scope.login = function() {
@@ -1785,8 +1785,21 @@ angular.module('mm.core.login')
 
 angular.module('mm.core.login')
 .controller('mmLoginSiteCtrl', function($scope, $state, $mmSitesManager, $mmUtil, $ionicPopup, $translate, $ionicModal,
-                                        $mmConfig, mmLoginLaunchSiteURL, mmLoginLaunchPassport) {
+                                        $mmConfig, mmLoginLaunchSiteURL, mmLoginLaunchPassport, mmSSOCode) {
     $scope.siteurl = '';
+    $scope.isInvalidUrl = true;
+    $scope.validate = function(url) {
+        if (!url) {
+            $scope.isInvalidUrl = true;
+            return;
+        }
+        $mmSitesManager.getDemoSiteData(url).then(function() {
+            $scope.isInvalidUrl = false;
+        }, function() {
+            var formattedurl = $mmUtil.formatURL(url);
+            $scope.isInvalidUrl = formattedurl.indexOf('://localhost') == -1 && !$mmUtil.isValidURL(formattedurl);
+        });
+    };
     $scope.connect = function(url) {
         if (!url) {
             $mmUtil.showErrorModal('mm.core.login.siteurlrequired', true);
@@ -1810,7 +1823,7 @@ angular.module('mm.core.login')
             });
         }, function() {
             $mmSitesManager.checkSite(url).then(function(result) {
-                if (result.code == 2) {
+                if (result.code == mmSSOCode) {
                     $ionicPopup.confirm({template: $translate('mm.core.login.logininsiterequired')})
                         .then(function(confirmed) {
                             if (confirmed) {
@@ -1881,7 +1894,7 @@ angular.module('mm.core.login')
                     });
                 }
             });
-    }
+    };
     $scope.login = function(index) {
         var siteid = $scope.sites[index].id;
         $mmSitesManager.loadSite(siteid).then(function() {

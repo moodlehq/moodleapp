@@ -16,8 +16,9 @@ angular.module('mm.core.login', [])
 
 .constant('mmLoginLaunchSiteURL', 'mmLoginLaunchSiteURL')
 .constant('mmLoginLaunchPassport', 'mmLoginLaunchPassport')
+.constant('mmSSOCode', 2) // This code is returned by local_mobile Moodle plugin if SSO in browser is required.
 
-.config(function($stateProvider, $urlRouterProvider) {
+.config(function($stateProvider) {
 
     $stateProvider
 
@@ -71,7 +72,7 @@ angular.module('mm.core.login', [])
     .state('mm_login.credentials', {
         url: '/cred',
         templateUrl: 'core/components/login/templates/credentials.html',
-        controller: 'mmLoginCredCtrl',
+        controller: 'mmLoginCredentialsCtrl',
         params: {
             siteurl: ''
         },
@@ -83,19 +84,13 @@ angular.module('mm.core.login', [])
         }
     });
 
-    // Default redirect to the login page.
-    $urlRouterProvider.otherwise(function($injector, $location) {
-        var $state = $injector.get('$state');
-        $state.go('mm_login.index');
-    });
-
 })
 
 .run(function($log, $q, $state, $mmUtil, $translate, $mmSitesManager, $rootScope, $mmSite, $mmURLDelegate, $mmConfig,
                 mmLoginLaunchSiteURL, mmLoginLaunchPassport, md5) {
 
     // Register observer to check if the app was launched via URL scheme.
-    $mmURLDelegate.register('login_sso', function(url) {
+    $mmURLDelegate.register('mmLoginSSO', function(url) {
 
         var ssoScheme = 'moodlemobile://token=';
         if (url.indexOf(ssoScheme) == -1) {

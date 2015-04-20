@@ -22,9 +22,26 @@ angular.module('mm.core.login')
  * @name mmLoginSiteCtrl
  */
 .controller('mmLoginSiteCtrl', function($scope, $state, $mmSitesManager, $mmUtil, $ionicPopup, $translate, $ionicModal,
-                                        $mmConfig, mmLoginLaunchSiteURL, mmLoginLaunchPassport) {
+                                        $mmConfig, mmLoginLaunchSiteURL, mmLoginLaunchPassport, mmSSOCode) {
 
     $scope.siteurl = '';
+    $scope.isInvalidUrl = true;
+
+    $scope.validate = function(url) {
+        if (!url) {
+            $scope.isInvalidUrl = true;
+            return;
+        }
+
+        $mmSitesManager.getDemoSiteData(url).then(function() {
+            // Is demo site.
+            $scope.isInvalidUrl = false;
+        }, function() {
+            // formatURL adds the protocol if is missing.
+            var formattedurl = $mmUtil.formatURL(url);
+            $scope.isInvalidUrl = formattedurl.indexOf('://localhost') == -1 && !$mmUtil.isValidURL(formattedurl);
+        });
+    };
 
     $scope.connect = function(url) {
 
@@ -56,7 +73,7 @@ angular.module('mm.core.login')
             // Not a demo site.
             $mmSitesManager.checkSite(url).then(function(result) {
 
-                if (result.code == 2) {
+                if (result.code == mmSSOCode) {
                     // SSO. User needs to authenticate in a browser.
                     $ionicPopup.confirm({template: $translate('mm.core.login.logininsiterequired')})
                         .then(function(confirmed) {

@@ -22,7 +22,6 @@ angular.module('mm.core.login')
  * @name mmLoginSitesCtrl
  */
 .controller('mmLoginSitesCtrl', function($scope, $state, $mmSitesManager, $ionicPopup, $log, sites, $translate) {
-
     $scope.sites = sites;
     $scope.data = {
         hasSites: sites.length > 0,
@@ -54,8 +53,7 @@ angular.module('mm.core.login')
                     });
                 }
             });
-
-    }
+    };
 
     $scope.login = function(index) {
         var siteid = $scope.sites[index].id;
