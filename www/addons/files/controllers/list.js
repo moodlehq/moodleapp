@@ -150,10 +150,34 @@ angular.module('mm.addons.files')
                             });
 
                         }, function() {
-                            $mmUtil.showErrorModal('mm.addons.files.errorwhilecapturing', true);
+                            // Cancelled, or error.
                         });
 
                     } else if (index === 1) {
+                        $log.info('Trying to get a media from camera');
+
+                        $cordovaCamera.getPicture({
+                            quality: 50,
+                            destinationType: navigator.camera.DestinationType.FILE_URI
+                        }).then(function(img) {
+                            $translate('loading').then(function(loadingString) {
+                                $mmUtil.showModalLoading(loadingString);
+                            });
+
+                            $mmaFiles.uploadImage(img).then(function() {
+                                // Success.
+                                fetchFiles(root, path, true);
+                                $mmUtil.closeModalLoading();
+                            }, function() {
+                                $log.error('Whoops, the file could not be uploaded');
+                                $mmUtil.closeModalLoading();
+                                $mmUtil.showErrorModal('mm.addons.files.errorwhileuploading', true);
+                            });
+
+                        }, function() {
+                            // Cancelled, or error.
+                        });
+
                     } else if (index === 2) {
                     } else if (index === 3) {
                     }
