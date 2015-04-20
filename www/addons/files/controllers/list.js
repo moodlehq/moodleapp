@@ -75,7 +75,7 @@ angular.module('mm.addons.files')
 
     // Downloading a file.
     $scope.download = function(file) {
-        var downloadURL = $mmUtil.fixPluginfileURL(file.url),
+        var downloadURL = $mmSite.fixPluginfileURL(file.url),
             siteId = $mmSite.getId(),
             linkId = file.linkId,
             filename = $mmFS.normalizeFileName(file.filename),
@@ -87,8 +87,8 @@ angular.module('mm.addons.files')
             $log.debug("Downloading Moodle file to " + filePath + " from URL: " + downloadURL);
 
             // TODO Notify downloading...
-            $mmWS.downloadFile(downloadURL, filePath).then(function(fullpath) {
-                $log.debug("Download of content finished " + fullpath + " URL: " + downloadURL);
+            $mmWS.downloadFile(downloadURL, filePath).then(function(fileEntry) {
+                $log.debug("Download of content finished " + fileEntry.toURL() + " URL: " + downloadURL);
 
                 // TODO Caching.
                 // var uniqueId = siteId + "-" + hex_md5(url);
@@ -99,9 +99,10 @@ angular.module('mm.addons.files')
                 //     localpath: fullpath
                 // };
                 // MM.db.insert("files", file);
-                $mmUtil.openFile(fullpath);
+                $mmUtil.openFile(fileEntry.toURL());
             }, function() {
-                $log.error('Error downloading ' + fullpath + ' URL: ' + downloadURL);
+                $log.error('Error downloading from URL: ' + downloadURL);
+                $mmUtil.showErrorModal('mm.addons.files.errorwhiledownloading', true);
             });
         }, function() {
             $log.error('Error while creating the directory ' + directory);

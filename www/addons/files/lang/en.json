@@ -1,6 +1,5 @@
 {
-    "errorwhilebrowsing": "There was an error getting the picture from an album.",
-    "errorwhilecapturing": "There was an error during the capture of the picture.",
+    "errorwhiledownloading": "An error occured while trying to download the file.",
     "errorwhileuploading": "An error occured during the file upload.",
     "couldnotloadfiles": "The list of files could not be loaded.",
     "myfiles": "My files",
