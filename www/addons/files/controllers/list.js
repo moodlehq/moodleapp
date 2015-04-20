@@ -22,6 +22,9 @@ angular.module('mm.addons.files')
         title,
         promise;
 
+    // We're loading the files.
+    $scope.count = -1;
+
     if (!path) {
         // The path is unknown, the user must be requesting a root.
         if (root === 'site') {
@@ -57,6 +60,7 @@ angular.module('mm.addons.files')
             title = data[1];
 
         $scope.files = files.entries;
+        $scope.count = files.count;
         $scope.title = title;
     }, function() {
         $mmUtil.showErrorModal('mm.addons.files.couldnotloadfiles', true);

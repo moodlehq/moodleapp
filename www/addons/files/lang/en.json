@@ -2,5 +2,6 @@
     "couldnotloadfiles": "The list of files could not be loaded.",
     "myfiles": "My files",
     "myprivatefiles": "My private files",
+    "nofilesfound": "No files found.",
     "sitefiles": "Site files"
 }

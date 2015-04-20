@@ -45,7 +45,7 @@ angular.module('mm.addons.files')
      * @ngdoc method
      * @name $mmaFiles#getFiles
      * @param  {Object} A list of parameters accepted by the Web service.
-     * @return {Object} An object containing the files in the key 'entries'.
+     * @return {Object} An object containing the files in the key 'entries', and 'count'.
      *                  Additional properties is added to the entries, such as:
      *                  - imgpath: The path to the icon.
      *                  - link: The JSON string of params to get to the file.
@@ -55,7 +55,8 @@ angular.module('mm.addons.files')
         var deferred = $q.defer();
         $mmSite.read('core_files_get_files', params).then(function(result) {
             var data = {
-                entries: []
+                entries: [],
+                count: 0
             };
 
             if (typeof result.files == 'undefined') {
@@ -96,6 +97,7 @@ angular.module('mm.addons.files')
                 //     }
                 // }
 
+                data.count += 1;
                 data.entries.push(entry);
             });
 
@@ -122,7 +124,7 @@ angular.module('mm.addons.files')
         params.filearea = "private";
         params.contextid = -1;
         params.contextlevel = "user";
-        params.instanceid = $mmSite.getCurrentSiteInfo().userid;
+        params.instanceid = $mmSite.getInfo().userid;
         return self.getFiles(params);
     };
 
