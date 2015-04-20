@@ -18,7 +18,7 @@ angular.module('mm', ['ionic', 'mm.core', 'mm.core.courses', 'mm.core.login', 'm
     if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
       cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
     }
-    if(window.StatusBar) {
+    if (window.StatusBar) {
       StatusBar.styleDefault();
     }
   });
@@ -362,7 +362,7 @@ angular.module('mm.core')
         $ionicPlatform.ready(function() {
             if (ionic.Platform.isAndroid()) {
                 basePath = cordova.file.externalApplicationStorageDirectory;
-            } else if(ionic.Platform.isIOS()) {
+            } else if (ionic.Platform.isIOS()) {
                 basePath = cordova.file.documentsDirectory;
             } else {
                 $log.error('Error getting device OS.');
@@ -598,13 +598,13 @@ angular.module('mm.core')
             return;
         }
         siteSchema.stores.push(store);
-    }
+    };
         this.registerStores = function(stores) {
         var self = this;
         angular.forEach(stores, function(store) {
             self.registerStore(store);
-        })
-    }
+        });
+    };
         function storeExists(name) {
         var exists = false;
         angular.forEach(siteSchema.stores, function(store) {
@@ -657,25 +657,25 @@ angular.module('mm.core')
         };
                 self.isLoggedIn = function() {
             return typeof(currentSite) != 'undefined' && typeof(currentSite.token) != 'undefined' && currentSite.token != '';
-        }
+        };
                 self.logout = function() {
             currentSite = undefined;
-        }
+        };
                 self.setCandidateSite = function(siteurl, token) {
             currentSite = new Site(undefined, siteurl, token);
-        }
+        };
                 self.deleteCandidateSite = function() {
             currentSite = undefined;
         };
                 self.setSite = function(id, siteurl, token, infos) {
             currentSite = new Site(id, siteurl, token, infos);
-        }
+        };
                 self.deleteSite = function(siteid) {
-            if(typeof(currentSite) !== 'undefined' && currentSite.id == siteid) {
+            if (typeof(currentSite) !== 'undefined' && currentSite.id == siteid) {
                 self.logout();
             }
             return $mmDB.deleteDB('Site-' + siteid);
-        }
+        };
                 self.read = function(method, data, preSets) {
             preSets = preSets || {};
             if (typeof(preSets.getFromCache) === 'undefined') {
@@ -684,8 +684,11 @@ angular.module('mm.core')
             if (typeof(preSets.saveToCache) === 'undefined') {
                 preSets.saveToCache = 1;
             }
+            if (typeof(preSets.sync) === 'undefined') {
+                preSets.sync = 0;
+            }
             return self.request(method, data, preSets);
-        }
+        };
                 self.write = function(method, data, preSets) {
             preSets = preSets || {};
             if (typeof(preSets.getFromCache) === 'undefined') {
@@ -694,8 +697,11 @@ angular.module('mm.core')
             if (typeof(preSets.saveToCache) === 'undefined') {
                 preSets.saveToCache = 0;
             }
+            if (typeof(preSets.sync) === 'undefined') {
+                preSets.sync = 0;
+            }
             return self.request(method, data, preSets);
-        }
+        };
                 self.request = function(method, data, preSets) {
             var deferred = $q.defer();
             if (!self.isLoggedIn()) {
@@ -729,7 +735,7 @@ angular.module('mm.core')
                 });
             });
             return deferred.promise;
-        }
+        };
                 self.wsAvailable = function(method) {
             if (!self.isLoggedIn() || typeof(currentSite.infos) == 'undefined') {
                 return false;
@@ -1047,14 +1053,14 @@ angular.module('mm.core')
     };
         self.noSites = function() {
         return db.count(mmSitesStore).then(function(count) {
-            if(count > 0) {
+            if (count > 0) {
                 return $q.reject();
             }
         });
     };
         self.hasSites = function() {
         return db.count(mmSitesStore).then(function(count) {
-            if(count == 0) {
+            if (count == 0) {
                 return $q.reject();
             }
         });
@@ -1312,8 +1318,8 @@ angular.module('mm.core')
         var deferred = $q.defer(),
             siteurl;
         data = convertValuesToString(data);
-        preSets = verifyPresets(preSets);
-        if (!preSets) {
+        if (typeof(preSets) === 'undefined' || preSets == null ||
+                typeof(preSets.wstoken) === 'undefined' || typeof(preSets.siteurl) === 'undefined') {
             $mmLang.translateErrorAndReject(deferred, 'unexpectederror');
             return deferred.promise;
         }
@@ -1359,30 +1365,6 @@ angular.module('mm.core')
             $mmLang.translateErrorAndReject(deferred, 'cannotconnect');
         });
         return deferred.promise;
-    };
-         function verifyPresets(preSets) {
-        if (typeof(preSets) === 'undefined' || preSets == null) {
-            preSets = {};
-        }
-        if (typeof(preSets.getFromCache) === 'undefined') {
-            preSets.getFromCache = 1;
-        }
-        if (typeof(preSets.saveToCache) === 'undefined') {
-            preSets.saveToCache = 1;
-        }
-        if (typeof(preSets.sync) === 'undefined') {
-            preSets.sync = 0;
-        }
-        if (typeof(preSets.omitExpires) === 'undefined') {
-            preSets.omitExpires = false;
-        }
-        if (typeof(preSets.wstoken) === 'undefined') {
-            return false;
-        }
-        if (typeof(preSets.siteurl) === 'undefined') {
-            return false;
-        }
-        return preSets;
     };
         function convertValuesToString(data) {
         var result = [];
@@ -1778,7 +1760,7 @@ angular.module('mm.core.login')
             $mmUtil.showErrorModal('mm.core.login.usernamerequired', true);
             return;
         }
-        if(!password) {
+        if (!password) {
             $mmUtil.showErrorModal('mm.core.login.passwordrequired', true);
             return;
         }
@@ -1887,7 +1869,7 @@ angular.module('mm.core.login')
         var site = $scope.sites[index];
         $ionicPopup.confirm({template: $translate('mm.core.login.confirmdeletesite', {sitename: site.sitename})})
             .then(function(confirmed) {
-                if(confirmed) {
+                if (confirmed) {
                     $mmSitesManager.deleteSite(site.id).then(function() {
                         $scope.sites.splice(index, 1);
                         $mmSitesManager.noSites().then(function() {

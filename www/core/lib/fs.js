@@ -51,7 +51,7 @@ angular.module('mm.core')
 
             if (ionic.Platform.isAndroid()) {
                 basePath = cordova.file.externalApplicationStorageDirectory;
-            } else if(ionic.Platform.isIOS()) {
+            } else if (ionic.Platform.isIOS()) {
                 basePath = cordova.file.documentsDirectory;
             } else {
                 $log.error('Error getting device OS.');

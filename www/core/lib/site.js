@@ -70,7 +70,7 @@ angular.module('mm.core')
             return;
         }
         siteSchema.stores.push(store);
-    }
+    };
 
     /**
      * Register multiple stores at once.
@@ -84,8 +84,8 @@ angular.module('mm.core')
         var self = this;
         angular.forEach(stores, function(store) {
             self.registerStore(store);
-        })
-    }
+        });
+    };
 
     /**
      * Check if a store is already defined.
@@ -187,7 +187,7 @@ angular.module('mm.core')
          */
         self.isLoggedIn = function() {
             return typeof(currentSite) != 'undefined' && typeof(currentSite.token) != 'undefined' && currentSite.token != '';
-        }
+        };
 
         /**
          * Logouts a user from a site.
@@ -198,7 +198,7 @@ angular.module('mm.core')
          */
         self.logout = function() {
             currentSite = undefined;
-        }
+        };
 
         /**
          * Sets a site as a candidate to be a permanent site (during login).
@@ -211,7 +211,7 @@ angular.module('mm.core')
          */
         self.setCandidateSite = function(siteurl, token) {
             currentSite = new Site(undefined, siteurl, token);
-        }
+        };
 
         /**
          * Delete the candidate site.
@@ -237,7 +237,7 @@ angular.module('mm.core')
          */
         self.setSite = function(id, siteurl, token, infos) {
             currentSite = new Site(id, siteurl, token, infos);
-        }
+        };
 
         /**
          * Deletes a certain site and all its stored data.
@@ -249,11 +249,11 @@ angular.module('mm.core')
          * @return {Promise}       Promise to be resolved when the data is deleted.
          */
         self.deleteSite = function(siteid) {
-            if(typeof(currentSite) !== 'undefined' && currentSite.id == siteid) {
+            if (typeof(currentSite) !== 'undefined' && currentSite.id == siteid) {
                 self.logout();
             }
             return $mmDB.deleteDB('Site-' + siteid);
-        }
+        };
 
         /**
          * Read some data from the Moodle site using WS. Requests are cached by default.
@@ -263,7 +263,7 @@ angular.module('mm.core')
          * @name $mmSite#logout
          * @param  {String} read  WS method to use.
          * @param  {Object} data    Data to send to the WS.
-         * @param  {Object} preSets Options: getFromCache, saveToCache, omitExpires.
+         * @param  {Object} preSets Options: getFromCache, saveToCache, omitExpires, sync.
          * @return {Promise}        Promise to be resolved when the request is finished.
          */
         self.read = function(method, data, preSets) {
@@ -274,8 +274,11 @@ angular.module('mm.core')
             if (typeof(preSets.saveToCache) === 'undefined') {
                 preSets.saveToCache = 1;
             }
+            if (typeof(preSets.sync) === 'undefined') {
+                preSets.sync = 0;
+            }
             return self.request(method, data, preSets);
-        }
+        };
 
         /**
          * Sends some data to the Moodle site using WS. Requests are NOT cached by default.
@@ -296,8 +299,11 @@ angular.module('mm.core')
             if (typeof(preSets.saveToCache) === 'undefined') {
                 preSets.saveToCache = 0;
             }
+            if (typeof(preSets.sync) === 'undefined') {
+                preSets.sync = 0;
+            }
             return self.request(method, data, preSets);
-        }
+        };
 
         /**
          * WS request to the site.
@@ -308,9 +314,10 @@ angular.module('mm.core')
          * @param {string} method The WebService method to be called.
          * @param {Object} data Arguments to pass to the method.
          * @param {Object} preSets Extra settings.
-         *                    - getFromCache boolean (true) Use the cache when possible.
-         *                    - saveToCache boolean (true) Save the call results to the cache.
+         *                    - getFromCache boolean (false) Use the cache when possible.
+         *                    - saveToCache boolean (false) Save the call results to the cache.
          *                    - omitExpires boolean (false) Ignore cache expiry.
+         *                    - sync boolean (false) Add call to queue if device is not connected.
          * @return {Promise}
          */
         self.request = function(method, data, preSets) {
@@ -338,6 +345,8 @@ angular.module('mm.core')
                 delete preSets.saveToCache;
                 delete preSets.omitExpires;
 
+                // TODO: Sync
+
                 $mmWS.call(method, data, preSets).then(function(response) {
 
                     if (mustSaveToCache) {
@@ -357,7 +366,7 @@ angular.module('mm.core')
             });
 
             return deferred.promise;
-        }
+        };
 
         /**
          * Check if a WS is available in the current site.

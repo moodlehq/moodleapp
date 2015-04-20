@@ -38,7 +38,6 @@ angular.module('mm.core')
      *                    - wstoken string The Webservice token.
      *                    - wsfunctions array List of functions available on the site.
      *                    - responseExpected boolean (false) Raise an error if response is null.
-     *                    - sync boolean (false) To indicate that is a call in a sync process
      */
     self.call = function(method, data, preSets) {
 
@@ -46,9 +45,9 @@ angular.module('mm.core')
             siteurl;
 
         data = convertValuesToString(data);
-        preSets = verifyPresets(preSets);
 
-        if (!preSets) {
+        if (typeof(preSets) === 'undefined' || preSets == null ||
+                typeof(preSets.wstoken) === 'undefined' || typeof(preSets.siteurl) === 'undefined') {
             $mmLang.translateErrorAndReject(deferred, 'unexpectederror');
             return deferred.promise;
         }
@@ -65,8 +64,6 @@ angular.module('mm.core')
 
         var ajaxData = data;
 
-        // TODO: Sync
-        // TODO: Get from cache
         // TODO: Show error if not connected.
         $http.post(siteurl, ajaxData).then(function(data) {
             // Some moodle web services return null.
@@ -105,10 +102,6 @@ angular.module('mm.core')
                 $log.info('WS: Data number of elements '+ data.length);
             }
 
-            // if (preSets.saveToCache) {
-            //     MM.cache.addWSCall(siteurl, ajaxData, data);
-            // }
-
             // We pass back a clone of the original object, this may
             // prevent errors if in the callback the object is modified.
             deferred.resolve(angular.copy(data));
@@ -118,38 +111,6 @@ angular.module('mm.core')
         });
 
         return deferred.promise;
-    };
-
-    /**
-     * Pre-fill the presets.
-     *
-     * @param  {Object} preSets The presets.
-     * @return {Object}         The final presets.
-     */
-     function verifyPresets(preSets) {
-        if (typeof(preSets) === 'undefined' || preSets == null) {
-            preSets = {};
-        }
-        if (typeof(preSets.getFromCache) === 'undefined') {
-            preSets.getFromCache = 1;
-        }
-        if (typeof(preSets.saveToCache) === 'undefined') {
-            preSets.saveToCache = 1;
-        }
-        if (typeof(preSets.sync) === 'undefined') {
-            preSets.sync = 0;
-        }
-        if (typeof(preSets.omitExpires) === 'undefined') {
-            preSets.omitExpires = false;
-        }
-        if (typeof(preSets.wstoken) === 'undefined') {
-            return false;
-        }
-        if (typeof(preSets.siteurl) === 'undefined') {
-            return false;
-        }
-
-        return preSets;
     };
 
     /**

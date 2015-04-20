@@ -42,7 +42,7 @@ angular.module('mm.core.login')
 
         $ionicPopup.confirm({template: $translate('mm.core.login.confirmdeletesite', {sitename: site.sitename})})
             .then(function(confirmed) {
-                if(confirmed) {
+                if (confirmed) {
                     $mmSitesManager.deleteSite(site.id).then(function() {
                         $scope.sites.splice(index, 1);
                         $mmSitesManager.noSites().then(function() {

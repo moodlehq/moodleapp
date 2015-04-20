@@ -396,7 +396,7 @@ angular.module('mm.core')
      */
     self.noSites = function() {
         return db.count(mmSitesStore).then(function(count) {
-            if(count > 0) {
+            if (count > 0) {
                 return $q.reject();
             }
         });
@@ -412,7 +412,7 @@ angular.module('mm.core')
      */
     self.hasSites = function() {
         return db.count(mmSitesStore).then(function(count) {
-            if(count == 0) {
+            if (count == 0) {
                 return $q.reject();
             }
         });

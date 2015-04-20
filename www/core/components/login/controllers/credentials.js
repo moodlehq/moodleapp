@@ -37,7 +37,7 @@ angular.module('mm.core.login')
             $mmUtil.showErrorModal('mm.core.login.usernamerequired', true);
             return;
         }
-        if(!password) {
+        if (!password) {
             $mmUtil.showErrorModal('mm.core.login.passwordrequired', true);
             return;
         }
