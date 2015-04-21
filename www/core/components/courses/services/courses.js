@@ -14,19 +14,10 @@
 
 angular.module('mm.core.courses')
 
-.constant('frontPage', {
-    'id': 1,
-    'shortname': '',
-    'fullname': '',
-    'enrolledusercount': 0,
-    'idnumber': '',
-    'visible': 1
-})
-
-.run(function($translate, frontPage) {
+.run(function($translate, mmCoursesFrontPage) {
     $translate('mm.core.courses.frontpage').then(function(value) {
-        frontPage.shortname = value;
-        frontPage.fullname = value;
+        mmCoursesFrontPage.shortname = value;
+        mmCoursesFrontPage.fullname = value;
     });
 })
 
@@ -37,21 +28,21 @@ angular.module('mm.core.courses')
  * @ngdoc service
  * @name $mmCourses
  */
-.factory('$mmCourses', function($q, $log, $mmSite, frontPage) {
+.factory('$mmCourses', function($q, $log, $mmSite, mmCoursesFrontPage) {
 
     var self = {};
 
     self.getUserCourses = function() {
-        var siteinfo = $mmSite.getInfo();
+        var userid = $mmSite.getUserId();
 
-        if (typeof(siteinfo) === 'undefined' || typeof(siteinfo.userid) === 'undefined') {
+        if (typeof(userid) === 'undefined') {
             return $q.reject();
         }
 
-        var data = {userid: siteinfo.userid};
+        var data = {userid: userid};
         return $mmSite.read('core_enrol_get_users_courses', data).then(function(courses) {
             // TODO: For now we won't show front page in the course list because we cannot retrieve its summary.
-            // courses.unshift(frontPage);
+            // courses.unshift(mmCoursesFrontPage);
 
             // TODO: MM._loadGroups(courses);
 

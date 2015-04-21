@@ -16,7 +16,7 @@ angular.module('mm.core.login', [])
 
 .constant('mmLoginLaunchSiteURL', 'mmLoginLaunchSiteURL')
 .constant('mmLoginLaunchPassport', 'mmLoginLaunchPassport')
-.constant('mmSSOCode', 2) // This code is returned by local_mobile Moodle plugin if SSO in browser is required.
+.constant('mmLoginSSOCode', 2) // This code is returned by local_mobile Moodle plugin if SSO in browser is required.
 
 .config(function($stateProvider) {
 
@@ -33,7 +33,7 @@ angular.module('mm.core.login', [])
 
             $mmSitesManager.restoreSession().then(function() {
                 if ($mmSite.isLoggedIn()) {
-                    $state.go('site.index');
+                    $state.go('site.mm_courses');
                 }
             });
         }
@@ -45,7 +45,7 @@ angular.module('mm.core.login', [])
         controller: 'mmLoginSitesCtrl',
         onEnter: function($state, $mmSitesManager) {
             // Skip this page if there are no sites yet.
-            $mmSitesManager.noSites().then(function() {
+            $mmSitesManager.hasNoSites().then(function() {
                 $state.go('mm_login.site');
             });
         },
@@ -62,7 +62,7 @@ angular.module('mm.core.login', [])
         controller: 'mmLoginSiteCtrl',
         onEnter: function($ionicNavBarDelegate, $ionicHistory, $mmSitesManager) {
             // Don't show back button if there are no sites.
-            $mmSitesManager.noSites().then(function() {
+            $mmSitesManager.hasNoSites().then(function() {
                 $ionicNavBarDelegate.showBackButton(false);
                 $ionicHistory.clearHistory();
             });
@@ -118,7 +118,7 @@ angular.module('mm.core.login', [])
         validateBrowserSSOLogin(url).then(function(sitedata) {
 
             $mmSitesManager.newSite(sitedata.siteurl, sitedata.token).then(function() {
-                $state.go('site.index');
+                $state.go('site.mm_courses');
             }, function(error) {
                 $mmUtil.showErrorModal(error);
             }).finally(function() {
@@ -147,7 +147,7 @@ angular.module('mm.core.login', [])
             // We are logged in and requested the login page.
             event.preventDefault();
             $log.debug('Redirect to course page, request was: ' + toState.name);
-            $state.transitionTo('site.index');
+            $state.transitionTo('site.mm_courses');
         }
 
     });

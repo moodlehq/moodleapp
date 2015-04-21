@@ -14,16 +14,25 @@
 
 angular.module('mm.core.courses', [])
 
+.value('mmCoursesFrontPage', {
+    'id': 1,
+    'shortname': '',
+    'fullname': '',
+    'enrolledusercount': 0,
+    'idnumber': '',
+    'visible': 1
+})
+
 .config(function($stateProvider) {
 
     $stateProvider
 
-    .state('site.index', {
-        url: '/index',
+    .state('site.mm_courses', {
+        url: '/mm_courses',
         views: {
             'site': {
                 templateUrl: 'core/components/courses/templates/list.html',
-                controller: 'mmCourseListCtrl'
+                controller: 'mmCoursesListCtrl'
             }
         },
         cache: false,

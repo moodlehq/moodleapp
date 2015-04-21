@@ -14,12 +14,12 @@
 
 angular.module('mm.core')
 
-.constant('mmConfigStore', 'config')
+.constant('mmCoreConfigStore', 'config')
 
-.config(function($mmAppProvider, mmConfigStore) {
+.config(function($mmAppProvider, mmCoreConfigStore) {
     var stores = [
         {
-            name: mmConfigStore,
+            name: mmCoreConfigStore,
             keyPath: 'name'
         }
     ];
@@ -35,7 +35,7 @@ angular.module('mm.core')
  * @description
  * Provides access to the app settings.
  */
-.factory('$mmConfig', function($http, $q, $log, $mmApp, mmConfigStore) {
+.factory('$mmConfig', function($http, $q, $log, $mmApp, mmCoreConfigStore) {
 
     var initialized = false,
         self = {
@@ -86,7 +86,7 @@ angular.module('mm.core')
                 value = self.config[name];
 
             if (typeof(value) == 'undefined') {
-                $mmApp.getDB().get(mmConfigStore, name).then(function(entry) {
+                $mmApp.getDB().get(mmCoreConfigStore, name).then(function(entry) {
                     deferred.resolve(entry.value);
                 }, deferred.reject);
             } else {
@@ -127,7 +127,7 @@ angular.module('mm.core')
                 fromStatic = self.config[name];
 
             if (typeof(fromStatic) === 'undefined') {
-                return $mmApp.getDB().insert(mmConfigStore, {name: name, value: value});
+                return $mmApp.getDB().insert(mmCoreConfigStore, {name: name, value: value});
             }
 
             $log.error('Cannot save static config setting \'' + name + '\'.');
@@ -166,7 +166,7 @@ angular.module('mm.core')
                 fromStatic = self.config[name];
 
             if (typeof(fromStatic) === 'undefined') {
-                return $mmApp.getDB().remove(mmConfigStore, name);
+                return $mmApp.getDB().remove(mmCoreConfigStore, name);
             }
 
             $log.error('Cannot delete static config setting \'' + name + '\'.');

@@ -137,17 +137,17 @@ angular.module('mm.core')
 });
 
 angular.module('mm.core')
-.constant('mmConfigStore', 'config')
-.config(function($mmAppProvider, mmConfigStore) {
+.constant('mmCoreConfigStore', 'config')
+.config(function($mmAppProvider, mmCoreConfigStore) {
     var stores = [
         {
-            name: mmConfigStore,
+            name: mmCoreConfigStore,
             keyPath: 'name'
         }
     ];
     $mmAppProvider.registerStores(stores);
 })
-.factory('$mmConfig', function($http, $q, $log, $mmApp, mmConfigStore) {
+.factory('$mmConfig', function($http, $q, $log, $mmApp, mmCoreConfigStore) {
     var initialized = false,
         self = {
             config: {}
@@ -178,7 +178,7 @@ angular.module('mm.core')
             var deferred = $q.defer(),
                 value = self.config[name];
             if (typeof(value) == 'undefined') {
-                $mmApp.getDB().get(mmConfigStore, name).then(function(entry) {
+                $mmApp.getDB().get(mmCoreConfigStore, name).then(function(entry) {
                     deferred.resolve(entry.value);
                 }, deferred.reject);
             } else {
@@ -201,7 +201,7 @@ angular.module('mm.core')
             var deferred,
                 fromStatic = self.config[name];
             if (typeof(fromStatic) === 'undefined') {
-                return $mmApp.getDB().insert(mmConfigStore, {name: name, value: value});
+                return $mmApp.getDB().insert(mmCoreConfigStore, {name: name, value: value});
             }
             $log.error('Cannot save static config setting \'' + name + '\'.');
             deferred = $q.defer()
@@ -223,7 +223,7 @@ angular.module('mm.core')
             var deferred,
                 fromStatic = self.config[name];
             if (typeof(fromStatic) === 'undefined') {
-                return $mmApp.getDB().remove(mmConfigStore, name);
+                return $mmApp.getDB().remove(mmCoreConfigStore, name);
             }
             $log.error('Cannot delete static config setting \'' + name + '\'.');
             deferred = $q.defer()
@@ -578,11 +578,11 @@ angular.module('mm.core')
     });
 });
 angular.module('mm.core')
-.constant('mmWSCacheStore', 'wscache')
-.config(function($mmSiteProvider, mmWSCacheStore) {
+.constant('mmCoreWSCacheStore', 'wscache')
+.config(function($mmSiteProvider, mmCoreWSCacheStore) {
     var stores = [
         {
-            name: mmWSCacheStore,
+            name: mmCoreWSCacheStore,
             keyPath: 'id'
         }
     ];
@@ -618,7 +618,7 @@ angular.module('mm.core')
         });
         return exists;
     }
-    this.$get = function($http, $q, $mmWS, $mmDB, $mmConfig, $log, md5, $cordovaNetwork, $mmLang, $mmUtil, mmWSCacheStore) {
+    this.$get = function($http, $q, $mmWS, $mmDB, $mmConfig, $log, md5, $cordovaNetwork, $mmLang, $mmUtil, mmCoreWSCacheStore) {
                 var deprecatedFunctions = {
             "moodle_webservice_get_siteinfo": "core_webservice_get_site_info",
             "moodle_enrol_get_users_courses": "core_enrol_get_users_courses",
@@ -780,6 +780,14 @@ angular.module('mm.core')
                 return undefined;
             }
         };
+                self.getUserId = function() {
+            if (typeof(currentSite) !== 'undefined' && typeof(currentSite.infos) !== 'undefined'
+                    && typeof(currentSite.infos.userid) !== 'undefined') {
+                return currentSite.infos.userid;
+            } else {
+                return undefined;
+            }
+        };
                 self.fixPluginfileURL = function(url, token) {
             if (!token) {
                 token = self.getToken();
@@ -812,7 +820,7 @@ angular.module('mm.core')
                 return deferred.promise;
             }
             key = md5.createHash(method + ':' + JSON.stringify(data));
-            db.get(mmWSCacheStore, key).then(function(entry) {
+            db.get(mmCoreWSCacheStore, key).then(function(entry) {
                 var now = new Date().getTime();
                 try {
                     preSets.omitExpires = preSets.omitExpires || $cordovaNetwork.isOffline();
@@ -849,7 +857,7 @@ angular.module('mm.core')
                         data: response
                     };
                     entry.expirationtime = new Date().getTime() + cacheExpirationTime;
-                    db.insert(mmWSCacheStore, entry);
+                    db.insert(mmCoreWSCacheStore, entry);
                     deferred.resolve();
                 }, deferred.reject);
             }
@@ -860,23 +868,23 @@ angular.module('mm.core')
 });
 
 angular.module('mm.core')
-.constant('mmSitesStore', 'sites')
-.constant('mmCurrentSiteStore', 'current_site')
-.config(function($mmAppProvider, mmSitesStore, mmCurrentSiteStore) {
+.constant('mmCoreSitesStore', 'sites')
+.constant('mmCoreCurrentSiteStore', 'current_site')
+.config(function($mmAppProvider, mmCoreSitesStore, mmCoreCurrentSiteStore) {
     var stores = [
         {
-            name: mmSitesStore,
+            name: mmCoreSitesStore,
             keyPath: 'id'
         },
         {
-            name: mmCurrentSiteStore,
+            name: mmCoreCurrentSiteStore,
             keyPath: 'id'
         }
     ];
     $mmAppProvider.registerStores(stores);
 })
 .factory('$mmSitesManager', function($http, $q, $mmSite, md5, $mmLang, $mmConfig, $mmApp, $mmWS, $mmUtil, $mmFS,
-                                     $cordovaNetwork, mmSitesStore, mmCurrentSiteStore, $log) {
+                                     $cordovaNetwork, mmCoreSitesStore, mmCoreCurrentSiteStore, $log) {
     var self = {},
         services = {},
         db = $mmApp.getDB(),
@@ -1034,7 +1042,7 @@ angular.module('mm.core')
         return false;
     };
         self.addSite = function(id, siteurl, token, infos) {
-        db.insert(mmSitesStore, {
+        db.insert(mmCoreSitesStore, {
             id: id,
             siteurl: siteurl,
             token: token,
@@ -1043,7 +1051,7 @@ angular.module('mm.core')
     };
         self.loadSite = function(siteid) {
         $log.debug('Load site '+siteid);
-        return db.get(mmSitesStore, siteid).then(function(site) {
+        return db.get(mmCoreSitesStore, siteid).then(function(site) {
             $mmSite.setSite(siteid, site.siteurl, site.token, site.infos);
             self.login(siteid);
         });
@@ -1051,25 +1059,25 @@ angular.module('mm.core')
         self.deleteSite = function(siteid) {
         $log.debug('Delete site '+siteid);
         return $mmSite.deleteSite(siteid).then(function() {
-            return db.remove(mmSitesStore, siteid);
+            return db.remove(mmCoreSitesStore, siteid);
         });
     };
-        self.noSites = function() {
-        return db.count(mmSitesStore).then(function(count) {
+        self.hasNoSites = function() {
+        return db.count(mmCoreSitesStore).then(function(count) {
             if (count > 0) {
                 return $q.reject();
             }
         });
     };
         self.hasSites = function() {
-        return db.count(mmSitesStore).then(function(count) {
+        return db.count(mmCoreSitesStore).then(function(count) {
             if (count == 0) {
                 return $q.reject();
             }
         });
     };
         self.getSites = function() {
-        return db.getAll(mmSitesStore).then(function(sites) {
+        return db.getAll(mmCoreSitesStore).then(function(sites) {
             var formattedSites = [];
             angular.forEach(sites, function(site) {
                 formattedSites.push({
@@ -1096,7 +1104,7 @@ angular.module('mm.core')
                 return $q.reject();
             }
         }
-        return db.get(mmSitesStore, siteId).then(function(site) {
+        return db.get(mmCoreSitesStore, siteId).then(function(site) {
             var downloadURL = $mmUtil.fixPluginfileURL(fileurl, site.token);
             var extension = "." + fileurl.split('.').pop();
             if (extension.indexOf(".php") === 0) {
@@ -1127,21 +1135,21 @@ angular.module('mm.core')
         });
     };
         self.login = function(siteid) {
-        db.insert(mmCurrentSiteStore, {
+        db.insert(mmCoreCurrentSiteStore, {
             id: 1,
             siteid: siteid
         });
     };
         self.logout = function() {
         $mmSite.logout();
-        return db.remove(mmCurrentSiteStore, 1);
+        return db.remove(mmCoreCurrentSiteStore, 1);
     }
         self.restoreSession = function() {
         if (sessionRestored) {
             return $q.reject();
         }
         sessionRestored = true;
-        return db.get(mmCurrentSiteStore, 1).then(function(current_site) {
+        return db.get(mmCoreCurrentSiteStore, 1).then(function(current_site) {
             var siteid = current_site.siteid;
             $log.debug('Restore session in site '+siteid);
             return self.loadSite(siteid);
@@ -1152,7 +1160,7 @@ angular.module('mm.core')
         if (typeof(siteid) === 'undefined') {
             deferred.resolve($mmSite.getURL());
         } else {
-            db.get(mmSitesStore, siteid).then(function(site) {
+            db.get(mmCoreSitesStore, siteid).then(function(site) {
                 deferred.resolve(site.siteurl);
             }, function() {
                 deferred.resolve(undefined);
@@ -1496,14 +1504,22 @@ angular.module('mm.core')
     }
 });
 angular.module('mm.core.courses', [])
+.value('mmCoursesFrontPage', {
+    'id': 1,
+    'shortname': '',
+    'fullname': '',
+    'enrolledusercount': 0,
+    'idnumber': '',
+    'visible': 1
+})
 .config(function($stateProvider) {
     $stateProvider
-    .state('site.index', {
-        url: '/index',
+    .state('site.mm_courses', {
+        url: '/mm_courses',
         views: {
             'site': {
                 templateUrl: 'core/components/courses/templates/list.html',
-                controller: 'mmCourseListCtrl'
+                controller: 'mmCoursesListCtrl'
             }
         },
         cache: false,
@@ -1532,7 +1548,7 @@ angular.module('mm.core.courses', [])
 angular.module('mm.core.login', [])
 .constant('mmLoginLaunchSiteURL', 'mmLoginLaunchSiteURL')
 .constant('mmLoginLaunchPassport', 'mmLoginLaunchPassport')
-.constant('mmSSOCode', 2)
+.constant('mmLoginSSOCode', 2)
 .config(function($stateProvider) {
     $stateProvider
     .state('mm_login', {
@@ -1544,7 +1560,7 @@ angular.module('mm.core.login', [])
             $ionicHistory.clearHistory();
             $mmSitesManager.restoreSession().then(function() {
                 if ($mmSite.isLoggedIn()) {
-                    $state.go('site.index');
+                    $state.go('site.mm_courses');
                 }
             });
         }
@@ -1554,7 +1570,7 @@ angular.module('mm.core.login', [])
         templateUrl: 'core/components/login/templates/sites.html',
         controller: 'mmLoginSitesCtrl',
         onEnter: function($state, $mmSitesManager) {
-            $mmSitesManager.noSites().then(function() {
+            $mmSitesManager.hasNoSites().then(function() {
                 $state.go('mm_login.site');
             });
         },
@@ -1569,7 +1585,7 @@ angular.module('mm.core.login', [])
         templateUrl: 'core/components/login/templates/site.html',
         controller: 'mmLoginSiteCtrl',
         onEnter: function($ionicNavBarDelegate, $ionicHistory, $mmSitesManager) {
-            $mmSitesManager.noSites().then(function() {
+            $mmSitesManager.hasNoSites().then(function() {
                 $ionicNavBarDelegate.showBackButton(false);
                 $ionicHistory.clearHistory();
             });
@@ -1609,7 +1625,7 @@ angular.module('mm.core.login', [])
         }
         validateBrowserSSOLogin(url).then(function(sitedata) {
             $mmSitesManager.newSite(sitedata.siteurl, sitedata.token).then(function() {
-                $state.go('site.index');
+                $state.go('site.mm_courses');
             }, function(error) {
                 $mmUtil.showErrorModal(error);
             }).finally(function() {
@@ -1631,7 +1647,7 @@ angular.module('mm.core.login', [])
         } else if (toState.name.substr(0, 8) === 'mm_login' && $mmSite.isLoggedIn()) {
             event.preventDefault();
             $log.debug('Redirect to course page, request was: ' + toState.name);
-            $state.transitionTo('site.index');
+            $state.transitionTo('site.mm_courses');
         }
     });
     function validateBrowserSSOLogin(url) {
@@ -1683,35 +1699,27 @@ angular.module('mm.core.sidemenu', [])
 });
 
 angular.module('mm.core.courses')
-.controller('mmCourseListCtrl', function($scope, courses, $mmCourseDelegate) {
+.controller('mmCoursesListCtrl', function($scope, courses, $mmCoursesDelegate) {
     $scope.courses = courses;
-    $scope.plugins = $mmCourseDelegate.getData();
+    $scope.plugins = $mmCoursesDelegate.getData();
     $scope.filterText = '';
 });
 
 angular.module('mm.core.courses')
-.constant('frontPage', {
-    'id': 1,
-    'shortname': '',
-    'fullname': '',
-    'enrolledusercount': 0,
-    'idnumber': '',
-    'visible': 1
-})
-.run(function($translate, frontPage) {
+.run(function($translate, mmCoursesFrontPage) {
     $translate('mm.core.courses.frontpage').then(function(value) {
-        frontPage.shortname = value;
-        frontPage.fullname = value;
+        mmCoursesFrontPage.shortname = value;
+        mmCoursesFrontPage.fullname = value;
     });
 })
-.factory('$mmCourses', function($q, $log, $mmSite, frontPage) {
+.factory('$mmCourses', function($q, $log, $mmSite, mmCoursesFrontPage) {
     var self = {};
     self.getUserCourses = function() {
-        var siteinfo = $mmSite.getInfo();
-        if (typeof(siteinfo) === 'undefined' || typeof(siteinfo.userid) === 'undefined') {
+        var userid = $mmSite.getUserId();
+        if (typeof(userid) === 'undefined') {
             return $q.reject();
         }
-        var data = {userid: siteinfo.userid};
+        var data = {userid: userid};
         return $mmSite.read('core_enrol_get_users_courses', data).then(function(courses) {
             return courses;
         });
@@ -1720,7 +1728,7 @@ angular.module('mm.core.courses')
 });
 
 angular.module('mm.core.courses')
-.factory('$mmCourseDelegate', function($log) {
+.factory('$mmCoursesDelegate', function($log) {
     var plugins = {},
         self = {},
         data,
@@ -1770,7 +1778,7 @@ angular.module('mm.core.login')
         $mmSitesManager.getUserToken(siteurl, username, password).then(function(token) {
             $mmSitesManager.newSite(siteurl, token).then(function() {
                 delete $scope.credentials;
-                $state.go('site.index');
+                $state.go('site.mm_courses');
             }, function(error) {
                 $mmUtil.showErrorModal(error);
             }).finally(function() {
@@ -1785,7 +1793,7 @@ angular.module('mm.core.login')
 
 angular.module('mm.core.login')
 .controller('mmLoginSiteCtrl', function($scope, $state, $mmSitesManager, $mmUtil, $ionicPopup, $translate, $ionicModal,
-                                        $mmConfig, mmLoginLaunchSiteURL, mmLoginLaunchPassport, mmSSOCode) {
+                                        $mmConfig, mmLoginLaunchSiteURL, mmLoginLaunchPassport, mmLoginSSOCode) {
     $scope.siteurl = '';
     $scope.isInvalidUrl = true;
     $scope.validate = function(url) {
@@ -1811,7 +1819,7 @@ angular.module('mm.core.login')
         $mmSitesManager.getDemoSiteData(url).then(function(sitedata) {
             $mmSitesManager.getUserToken(sitedata.url, sitedata.username, sitedata.password).then(function(token) {
                 $mmSitesManager.newSite(sitedata.url, token).then(function() {
-                    $state.go('site.index');
+                    $state.go('site.mm_courses');
                 }, function(error) {
                     $mmUtil.showErrorModal(error);
                 }).finally(function() {
@@ -1823,7 +1831,7 @@ angular.module('mm.core.login')
             });
         }, function() {
             $mmSitesManager.checkSite(url).then(function(result) {
-                if (result.code == mmSSOCode) {
+                if (result.code == mmLoginSSOCode) {
                     $ionicPopup.confirm({template: $translate('mm.core.login.logininsiterequired')})
                         .then(function(confirmed) {
                             if (confirmed) {
@@ -1885,7 +1893,7 @@ angular.module('mm.core.login')
                 if (confirmed) {
                     $mmSitesManager.deleteSite(site.id).then(function() {
                         $scope.sites.splice(index, 1);
-                        $mmSitesManager.noSites().then(function() {
+                        $mmSitesManager.hasNoSites().then(function() {
                             $state.go('mm_login.site');
                         });
                     }, function(error) {
@@ -1898,7 +1906,7 @@ angular.module('mm.core.login')
     $scope.login = function(index) {
         var siteid = $scope.sites[index].id;
         $mmSitesManager.loadSite(siteid).then(function() {
-            $state.go('site.index');
+            $state.go('site.mm_courses');
         }, function(error) {
             $log.error('Error loading site '+siteid);
             $mmUtil.showErrorModal('mm.core.login.errorloadsite', true);

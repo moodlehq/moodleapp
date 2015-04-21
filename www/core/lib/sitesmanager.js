@@ -14,17 +14,17 @@
 
 angular.module('mm.core')
 
-.constant('mmSitesStore', 'sites')
-.constant('mmCurrentSiteStore', 'current_site')
+.constant('mmCoreSitesStore', 'sites')
+.constant('mmCoreCurrentSiteStore', 'current_site')
 
-.config(function($mmAppProvider, mmSitesStore, mmCurrentSiteStore) {
+.config(function($mmAppProvider, mmCoreSitesStore, mmCoreCurrentSiteStore) {
     var stores = [
         {
-            name: mmSitesStore,
+            name: mmCoreSitesStore,
             keyPath: 'id'
         },
         {
-            name: mmCurrentSiteStore,
+            name: mmCoreCurrentSiteStore,
             keyPath: 'id'
         }
     ];
@@ -39,7 +39,7 @@ angular.module('mm.core')
  * @name $mmSitesManager
  */
 .factory('$mmSitesManager', function($http, $q, $mmSite, md5, $mmLang, $mmConfig, $mmApp, $mmWS, $mmUtil, $mmFS,
-                                     $cordovaNetwork, mmSitesStore, mmCurrentSiteStore, $log) {
+                                     $cordovaNetwork, mmCoreSitesStore, mmCoreCurrentSiteStore, $log) {
 
     var self = {},
         services = {},
@@ -343,7 +343,7 @@ angular.module('mm.core')
      * @param {Object} infos   Site's info.
      */
     self.addSite = function(id, siteurl, token, infos) {
-        db.insert(mmSitesStore, {
+        db.insert(mmCoreSitesStore, {
             id: id,
             siteurl: siteurl,
             token: token,
@@ -362,7 +362,7 @@ angular.module('mm.core')
      */
     self.loadSite = function(siteid) {
         $log.debug('Load site '+siteid);
-        return db.get(mmSitesStore, siteid).then(function(site) {
+        return db.get(mmCoreSitesStore, siteid).then(function(site) {
             $mmSite.setSite(siteid, site.siteurl, site.token, site.infos);
             self.login(siteid);
         });
@@ -380,7 +380,7 @@ angular.module('mm.core')
     self.deleteSite = function(siteid) {
         $log.debug('Delete site '+siteid);
         return $mmSite.deleteSite(siteid).then(function() {
-            return db.remove(mmSitesStore, siteid);
+            return db.remove(mmCoreSitesStore, siteid);
         });
     };
 
@@ -389,11 +389,11 @@ angular.module('mm.core')
      *
      * @module mm.core
      * @ngdoc method
-     * @name $mmSitesManager#noSites
+     * @name $mmSitesManager#hasNoSites
      * @return {Promise} Promise to be resolved if there are no sites, and rejected if there is at least one.
      */
-    self.noSites = function() {
-        return db.count(mmSitesStore).then(function(count) {
+    self.hasNoSites = function() {
+        return db.count(mmCoreSitesStore).then(function(count) {
             if (count > 0) {
                 return $q.reject();
             }
@@ -409,7 +409,7 @@ angular.module('mm.core')
      * @return {Promise} Promise to be resolved if there is at least one site, and rejected if there aren't.
      */
     self.hasSites = function() {
-        return db.count(mmSitesStore).then(function(count) {
+        return db.count(mmCoreSitesStore).then(function(count) {
             if (count == 0) {
                 return $q.reject();
             }
@@ -425,7 +425,7 @@ angular.module('mm.core')
      * @return {Promise} Promise to be resolved when the sites are retrieved.
      */
     self.getSites = function() {
-        return db.getAll(mmSitesStore).then(function(sites) {
+        return db.getAll(mmCoreSitesStore).then(function(sites) {
             var formattedSites = [];
             angular.forEach(sites, function(site) {
                 formattedSites.push({
@@ -471,7 +471,7 @@ angular.module('mm.core')
             }
         }
 
-        return db.get(mmSitesStore, siteId).then(function(site) {
+        return db.get(mmCoreSitesStore, siteId).then(function(site) {
 
             var downloadURL = $mmUtil.fixPluginfileURL(fileurl, site.token);
             var extension = "." + fileurl.split('.').pop();
@@ -518,7 +518,7 @@ angular.module('mm.core')
      * @param  {String} siteid ID of the site the user is accessing.
      */
     self.login = function(siteid) {
-        db.insert(mmCurrentSiteStore, {
+        db.insert(mmCoreCurrentSiteStore, {
             id: 1,
             siteid: siteid
         });
@@ -534,7 +534,7 @@ angular.module('mm.core')
      */
     self.logout = function() {
         $mmSite.logout();
-        return db.remove(mmCurrentSiteStore, 1);
+        return db.remove(mmCoreCurrentSiteStore, 1);
     }
 
     /**
@@ -551,7 +551,7 @@ angular.module('mm.core')
         }
         sessionRestored = true;
 
-        return db.get(mmCurrentSiteStore, 1).then(function(current_site) {
+        return db.get(mmCoreCurrentSiteStore, 1).then(function(current_site) {
             var siteid = current_site.siteid;
             $log.debug('Restore session in site '+siteid);
             return self.loadSite(siteid);
@@ -573,7 +573,7 @@ angular.module('mm.core')
         if (typeof(siteid) === 'undefined') {
             deferred.resolve($mmSite.getURL());
         } else {
-            db.get(mmSitesStore, siteid).then(function(site) {
+            db.get(mmCoreSitesStore, siteid).then(function(site) {
                 deferred.resolve(site.siteurl);
             }, function() {
                 deferred.resolve(undefined);

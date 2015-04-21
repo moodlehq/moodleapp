@@ -22,7 +22,7 @@ angular.module('mm.core.login')
  * @name mmLoginSiteCtrl
  */
 .controller('mmLoginSiteCtrl', function($scope, $state, $mmSitesManager, $mmUtil, $ionicPopup, $translate, $ionicModal,
-                                        $mmConfig, mmLoginLaunchSiteURL, mmLoginLaunchPassport, mmSSOCode) {
+                                        $mmConfig, mmLoginLaunchSiteURL, mmLoginLaunchPassport, mmLoginSSOCode) {
 
     $scope.siteurl = '';
     $scope.isInvalidUrl = true;
@@ -58,7 +58,7 @@ angular.module('mm.core.login')
 
             $mmSitesManager.getUserToken(sitedata.url, sitedata.username, sitedata.password).then(function(token) {
                 $mmSitesManager.newSite(sitedata.url, token).then(function() {
-                    $state.go('site.index');
+                    $state.go('site.mm_courses');
                 }, function(error) {
                     $mmUtil.showErrorModal(error);
                 }).finally(function() {
@@ -73,7 +73,7 @@ angular.module('mm.core.login')
             // Not a demo site.
             $mmSitesManager.checkSite(url).then(function(result) {
 
-                if (result.code == mmSSOCode) {
+                if (result.code == mmLoginSSOCode) {
                     // SSO. User needs to authenticate in a browser.
                     $ionicPopup.confirm({template: $translate('mm.core.login.logininsiterequired')})
                         .then(function(confirmed) {

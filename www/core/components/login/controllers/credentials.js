@@ -50,7 +50,7 @@ angular.module('mm.core.login')
         $mmSitesManager.getUserToken(siteurl, username, password).then(function(token) {
             $mmSitesManager.newSite(siteurl, token).then(function() {
                 delete $scope.credentials; // Delete username and password from the scope.
-                $state.go('site.index');
+                $state.go('site.mm_courses');
             }, function(error) {
                 $mmUtil.showErrorModal(error);
             }).finally(function() {

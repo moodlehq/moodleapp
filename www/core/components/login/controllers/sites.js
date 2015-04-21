@@ -44,7 +44,7 @@ angular.module('mm.core.login')
                 if (confirmed) {
                     $mmSitesManager.deleteSite(site.id).then(function() {
                         $scope.sites.splice(index, 1);
-                        $mmSitesManager.noSites().then(function() {
+                        $mmSitesManager.hasNoSites().then(function() {
                             $state.go('mm_login.site');
                         });
                     }, function(error) {
@@ -58,7 +58,7 @@ angular.module('mm.core.login')
     $scope.login = function(index) {
         var siteid = $scope.sites[index].id;
         $mmSitesManager.loadSite(siteid).then(function() {
-            $state.go('site.index');
+            $state.go('site.mm_courses');
         }, function(error) {
             $log.error('Error loading site '+siteid);
             $mmUtil.showErrorModal('mm.core.login.errorloadsite', true);

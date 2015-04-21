@@ -14,12 +14,12 @@
 
 angular.module('mm.core')
 
-.constant('mmWSCacheStore', 'wscache')
+.constant('mmCoreWSCacheStore', 'wscache')
 
-.config(function($mmSiteProvider, mmWSCacheStore) {
+.config(function($mmSiteProvider, mmCoreWSCacheStore) {
     var stores = [
         {
-            name: mmWSCacheStore,
+            name: mmCoreWSCacheStore,
             keyPath: 'id'
         }
     ];
@@ -103,7 +103,7 @@ angular.module('mm.core')
         return exists;
     }
 
-    this.$get = function($http, $q, $mmWS, $mmDB, $mmConfig, $log, md5, $cordovaNetwork, $mmLang, $mmUtil, mmWSCacheStore) {
+    this.$get = function($http, $q, $mmWS, $mmDB, $mmConfig, $log, md5, $cordovaNetwork, $mmLang, $mmUtil, mmCoreWSCacheStore) {
 
         /**
          * List of deprecated WS functions with their corresponding NOT deprecated name.
@@ -455,6 +455,23 @@ angular.module('mm.core')
         };
 
         /**
+         * Get current site user's ID. If user is not logged in, return undefined.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmSite#getUserId
+         * @return {Object} User's ID.
+         */
+        self.getUserId = function() {
+            if (typeof(currentSite) !== 'undefined' && typeof(currentSite.infos) !== 'undefined'
+                    && typeof(currentSite.infos.userid) !== 'undefined') {
+                return currentSite.infos.userid;
+            } else {
+                return undefined;
+            }
+        };
+
+        /**
          * Generic function for adding the wstoken to Moodle urls and for pointing to the correct script.
          * Uses $mmUtil.fixPluginfileURL, passing current site's token if it's not set.
          *
@@ -516,7 +533,7 @@ angular.module('mm.core')
             }
 
             key = md5.createHash(method + ':' + JSON.stringify(data));
-            db.get(mmWSCacheStore, key).then(function(entry) {
+            db.get(mmCoreWSCacheStore, key).then(function(entry) {
                 var now = new Date().getTime();
 
                 try { // Use try/catch because $cordovaNetwork fails in Chromium (until mm.emulator is migrated).
@@ -569,7 +586,7 @@ angular.module('mm.core')
                         data: response
                     };
                     entry.expirationtime = new Date().getTime() + cacheExpirationTime;
-                    db.insert(mmWSCacheStore, entry);
+                    db.insert(mmCoreWSCacheStore, entry);
                     deferred.resolve();
 
                 }, deferred.reject);

@@ -15,14 +15,14 @@
 angular.module('mm.core.courses')
 
 /**
- * Controller to handle the course list.
+ * Controller to handle the courses list.
  *
  * @module mm.core.courses
  * @ngdoc controller
- * @name mmCourseListCtrl
+ * @name mmCoursesListCtrl
  */
-.controller('mmCourseListCtrl', function($scope, courses, $mmCourseDelegate) {
+.controller('mmCoursesListCtrl', function($scope, courses, $mmCoursesDelegate) {
     $scope.courses = courses;
-    $scope.plugins = $mmCourseDelegate.getData();
+    $scope.plugins = $mmCoursesDelegate.getData();
     $scope.filterText = '';
 });
