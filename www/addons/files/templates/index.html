@@ -1,19 +1,35 @@
 <ion-view view-title="{{'mm.addons.files.myfiles' | translate}}">
     <ion-content padding="true">
-        <div class="list card">
-            <a ui-sref="site.files-list({root: 'my'})" class="item item-icon-right">
-                <i class="icon ion-ios-arrow-right"></i>
-                My private files
-            </a>
-            <div class="item item-text-wrap"><p>The files that are available in your private area on this Moodle site.</p></div>
+        <div ng-if="canAccessFiles">
+            <div class="list card" ng-if="showPrivateFiles">
+                <a ui-sref="site.files-list({root: 'my'})" class="item item-icon-right">
+                    <i class="icon ion-ios-arrow-right"></i>
+                    My private files
+                </a>
+                <div class="item item-text-wrap"><p>The files that are available in your private area on this Moodle site.</p></div>
+            </div>
+
+            <div class="list card">
+                <a ui-sref="site.files-list({root: 'site'})" class="item item-icon-right">
+                    <i class="icon ion-ios-arrow-right"></i>
+                    Site files
+                </a>
+                <div class="item item-text-wrap"><p>The other files that are available to you on this Moodle site.</p></div>
+            </div>
+
+            <div class="list card" ng-if="!canDownload">
+                <div class="item item-text-wrap"><p>{{ 'mm.addons.files.admindisableddownload' | translate }}</p></div>
+            </div>
         </div>
 
-        <div class="list card">
-            <a ui-sref="site.files-list({root: 'site'})" class="item item-icon-right">
-                <i class="icon ion-ios-arrow-right"></i>
-                Site files
+        <div ng-if="showUpload">
+            <div class="card">
+                <h2 class="item-body">{{ 'mm.addons.files.uploadfiles' | translate }}</h2>
+                <p class="item-body">{{ 'mm.addons.files.clicktoupload' | translate }}</p>
+            </div>
+            <a target="_blank" class="button button-block" ng-click="add()">
+                <i class="icon ion-ios7-browsers-outline"></i> {{ 'mm.addons.files.uploadafile' | translate }}
             </a>
-            <div class="item item-text-wrap"><p>The other files that are available to you on this Moodle site.</p></div>
         </div>
     </ion-content>
 </ion-view>

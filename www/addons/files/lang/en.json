@@ -1,10 +1,21 @@
 {
+    "admindisableddownload": "Please note that your Moodle administrator disabled file downloads, you can browse through the files but not download them.",
+    "audio": "Audio",
+    "camera": "Camera",
+    "clicktoupload": "Click the button below to upload files to your private files.",
+    "couldnotloadfiles": "The list of files could not be loaded.",
     "errormustbeonlinetoupload": "You have to be online to upload files.",
     "errorwhiledownloading": "An error occured while trying to download the file.",
     "errorwhileuploading": "An error occured during the file upload.",
-    "couldnotloadfiles": "The list of files could not be loaded.",
+    "fileuploaded": "The file was successfully uploaded.",
     "myfiles": "My files",
     "myprivatefiles": "My private files",
     "nofilesfound": "No files found.",
-    "sitefiles": "Site files"
+    "photoalbums": "Photo albums",
+    "sitefiles": "Site files",
+    "success": "Success!",
+    "uploadfiles": "Upload files",
+    "uploadafile": "Upload a file",
+    "uploadafilefrom": "Upload a file from",
+    "video": "Video"
 }

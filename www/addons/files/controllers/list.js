@@ -15,13 +15,14 @@
 angular.module('mm.addons.files')
 
 .controller('mmaFilesListController', function($q, $scope, $stateParams, $ionicActionSheet,
-        $mmaFiles, $mmSite, $translate, $timeout, $mmUtil, $mmFS, $mmWS, $log,
-        $cordovaCamera, $cordovaCapture, $cordovaNetwork) {
+        $mmaFiles, $mmSite, $translate, $timeout, $mmUtil, $mmFS, $mmWS, $log, $mmaFilesHelper) {
 
     var path = $stateParams.path,
         root = $stateParams.root,
         title,
-        promise;
+        promise,
+        siteInfos = $mmSite.getInfo(),
+        showUpload = (root === 'my' && !path && $mmSite.canUploadFiles());
 
     // We're loading the files.
     $scope.count = -1;
@@ -81,6 +82,10 @@ angular.module('mm.addons.files')
 
     // Downloading a file.
     $scope.download = function(file) {
+        if (!$mmSite.canDownloadFiles()) {
+            return false;
+        }
+
         var downloadURL = $mmSite.fixPluginfileURL(file.url),
             siteId = $mmSite.getId(),
             linkId = file.linkId,
@@ -116,124 +121,17 @@ angular.module('mm.addons.files')
     };
 
     // When we are in the root of the private files we can add more files.
-    if (root === 'my' && !path) {
+    if (showUpload) {
 
         $scope.add = function() {
-
-            if (!$cordovaNetwork.isOnline()) {
-                $mmUtil.showErrorModal('mm.addons.files.errormustbeonlinetoupload', true);
-                return;
-            }
-
-            $ionicActionSheet.show({
-                buttons: [
-                    { text: 'Photo albums' },
-                    { text: 'Camera' },
-                    { text: 'Audio' },
-                    { text: 'Video' },
-                ],
-                titleText: 'Upload a file from',
-                cancelText: 'Cancel',
-                buttonClicked: function(index) {
-                    if (index === 0) {
-                        $log.info('Trying to get a image from albums');
-
-                        var width  =  window.innerWidth  - 200;
-                        var height =  window.innerHeight - 200;
-
-                        // iPad popOver, see https://tracker.moodle.org/browse/MOBILE-208
-                        var popover = new CameraPopoverOptions(10, 10, width, height, Camera.PopoverArrowDirection.ARROW_ANY);
-                        $cordovaCamera.getPicture({
-                            quality: 50,
-                            destinationType: navigator.camera.DestinationType.FILE_URI,
-                            sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY,
-                            popoverOptions : popover
-                        }).then(function(img) {
-                            $translate('loading').then(function(loadingString) {
-                                $mmUtil.showModalLoading(loadingString);
-                            });
-
-                            $mmaFiles.uploadImage(img).then(function() {
-                                // Success.
-                                $mmUtil.closeModalLoading();
-                                fetchFiles(root, path, true);
-                            }, function() {
-                                $mmUtil.closeModalLoading();
-                                $mmUtil.showErrorModal('mm.addons.files.errorwhileuploading', true);
-                            });
-
-                        }, function() {
-                            // Cancelled, or error.
-                        });
-
-                    } else if (index === 1) {
-                        $log.info('Trying to get a media from camera');
-
-                        $cordovaCamera.getPicture({
-                            quality: 50,
-                            destinationType: navigator.camera.DestinationType.FILE_URI
-                        }).then(function(img) {
-                            $translate('loading').then(function(loadingString) {
-                                $mmUtil.showModalLoading(loadingString);
-                            });
-
-                            $mmaFiles.uploadImage(img).then(function() {
-                                // Success.
-                                $mmUtil.closeModalLoading();
-                                fetchFiles(root, path, true);
-                            }, function() {
-                                $mmUtil.closeModalLoading();
-                                $mmUtil.showErrorModal('mm.addons.files.errorwhileuploading', true);
-                            });
-
-                        }, function() {
-                            // Cancelled, or error.
-                        });
-
-                    } else if (index === 2) {
-                        $log.info('Trying to record an audio file');
-                        $cordovaCapture.captureAudio({limit: 1}).then(function(medias) {
-                            $translate('loading').then(function(loadingString) {
-                                $mmUtil.showModalLoading(loadingString);
-                            });
-
-                            $mmaFiles.uploadMedia(medias).then(function() {
-                                // Success.
-                                $mmUtil.closeModalLoading();
-                                fetchFiles(root, path, true);
-                            }, function() {
-                                $mmUtil.closeModalLoading();
-                                $mmUtil.showErrorModal('mm.addons.files.errorwhileuploading', true);
-                            });
-
-                        }, function() {
-                            // Cancelled, or error.
-                        });
-
-                    } else if (index === 3) {
-                        $log.info('Trying to record a video file');
-                        $cordovaCapture.captureVideo({limit: 1}).then(function(medias) {
-                            $translate('loading').then(function(loadingString) {
-                                $mmUtil.showModalLoading(loadingString);
-                            });
-
-                            $mmaFiles.uploadMedia(medias).then(function() {
-                                // Success.
-                                $mmUtil.closeModalLoading();
-                                fetchFiles(root, path, true);
-                            }, function() {
-                                $mmUtil.closeModalLoading();
-                                $mmUtil.showErrorModal('mm.addons.files.errorwhileuploading', true);
-                            });
-
-                        }, function() {
-                            // Cancelled, or error.
-                        });
-                    }
-
-                    return true;
+            $mmaFilesHelper.pickAndUploadFile().then(function() {
+                fetchFiles(root, path, true);
+            }, function(err) {
+                if (err) {
+                    $mmUtil.showErrorModal(err);
                 }
             });
         };
+
     }
 });

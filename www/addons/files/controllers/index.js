@@ -14,6 +14,26 @@
 
 angular.module('mm.addons.files')
 
-.controller('mmaFilesIndexController', function() {
-    // TODO Handle Moodle instances which do not support file browsing.
+.controller('mmaFilesIndexController', function($scope, $mmaFiles, $mmSite, $mmUtil, $mmaFilesHelper) {
+    var canAccessFiles = $mmaFiles.canAccessFiles(),
+        canAccessMyFiles = canAccessFiles && $mmSite.canAccessMyFiles(),
+        canUploadFiles = $mmSite.canUploadFiles(),
+        canDownloadFiles = $mmSite.canDownloadFiles();
+
+    $scope.canAccessFiles = canAccessFiles;
+    $scope.showPrivateFiles = canAccessMyFiles;
+    $scope.showUpload = !canAccessFiles && canUploadFiles;
+    $scope.canDownload = canDownloadFiles;
+
+    if (canUploadFiles) {
+        $scope.add = function() {
+            $mmaFilesHelper.pickAndUploadFile().then(function() {
+                $mmUtil.showModal('mm.addons.files.success', 'mm.addons.files.fileuploaded');
+            }, function(err) {
+                if (err) {
+                    $mmUtil.showErrorModal(err);
+                }
+            });
+        };
+    }
 });

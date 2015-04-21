@@ -39,12 +39,14 @@ angular.module('mm.addons.files', ['mm.core'])
 
 })
 
-.run(function($mmSideMenuDelegate, $translate, $q) {
-
+.run(function($mmSideMenuDelegate, $translate, $q, $mmaFiles) {
   var promises = [$translate('mm.addons.files.myfiles')];
   $q.all(promises).then(function(data) {
     var strMyfiles = data[0];
     $mmSideMenuDelegate.registerPlugin('mmaFiles', function() {
+      if (!$mmaFiles.isPluginEnabled()) {
+        return undefined;
+      }
       return {
         icon: 'ion-folder',
         name: strMyfiles,

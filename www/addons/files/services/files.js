@@ -25,6 +25,10 @@ angular.module('mm.addons.files')
             "filename": ""
         };
 
+    self.canAccessFiles = function() {
+        return $mmSite.wsAvailable('core_files_get_files');
+    };
+
     /**
      * Get a file.
      *
@@ -147,6 +151,21 @@ angular.module('mm.addons.files')
     self.getSiteFiles = function(refresh) {
         var params = angular.copy(defaultParams, {});
         return self.getFiles(params, refresh);
+    };
+
+    /**
+     * Return whether or not the plugin is enabled.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#isPluginEnabled
+     * @return {Boolean}
+     */
+    self.isPluginEnabled = function() {
+        var canAccessFiles = self.canAccessFiles(),
+            canUploadFiles = $mmSite.canUploadFiles();
+
+        return canAccessFiles || canUploadFiles;
     };
 
     /**
