@@ -2166,6 +2166,9 @@ angular.module('mm.addons.files')
         promise;
     $scope.count = -1;
     function fetchFiles(root, path, refresh) {
+        $translate('loading').then(function(str) {
+            $mmUtil.showModalLoading(str);
+        });
         refresh = (typeof refresh === 'undefined') ? false : refresh;
         if (!path) {
             if (root === 'site') {
@@ -2199,6 +2202,8 @@ angular.module('mm.addons.files')
             $scope.title = title;
         }, function() {
             $mmUtil.showErrorModal('mm.addons.files.couldnotloadfiles', true);
+        }).finally(function() {
+            $mmUtil.closeModalLoading();
         });
     }
     fetchFiles(root, path);
@@ -2254,8 +2259,8 @@ angular.module('mm.addons.files')
                                 $mmUtil.showModalLoading(loadingString);
                             });
                             $mmaFiles.uploadImage(img).then(function() {
-                                fetchFiles(root, path, true);
                                 $mmUtil.closeModalLoading();
+                                fetchFiles(root, path, true);
                             }, function() {
                                 $mmUtil.closeModalLoading();
                                 $mmUtil.showErrorModal('mm.addons.files.errorwhileuploading', true);
@@ -2272,8 +2277,8 @@ angular.module('mm.addons.files')
                                 $mmUtil.showModalLoading(loadingString);
                             });
                             $mmaFiles.uploadImage(img).then(function() {
-                                fetchFiles(root, path, true);
                                 $mmUtil.closeModalLoading();
+                                fetchFiles(root, path, true);
                             }, function() {
                                 $mmUtil.closeModalLoading();
                                 $mmUtil.showErrorModal('mm.addons.files.errorwhileuploading', true);
@@ -2287,8 +2292,8 @@ angular.module('mm.addons.files')
                                 $mmUtil.showModalLoading(loadingString);
                             });
                             $mmaFiles.uploadMedia(medias).then(function() {
-                                fetchFiles(root, path, true);
                                 $mmUtil.closeModalLoading();
+                                fetchFiles(root, path, true);
                             }, function() {
                                 $mmUtil.closeModalLoading();
                                 $mmUtil.showErrorModal('mm.addons.files.errorwhileuploading', true);
@@ -2302,8 +2307,8 @@ angular.module('mm.addons.files')
                                 $mmUtil.showModalLoading(loadingString);
                             });
                             $mmaFiles.uploadMedia(medias).then(function() {
-                                fetchFiles(root, path, true);
                                 $mmUtil.closeModalLoading();
+                                fetchFiles(root, path, true);
                             }, function() {
                                 $mmUtil.closeModalLoading();
                                 $mmUtil.showErrorModal('mm.addons.files.errorwhileuploading', true);

@@ -29,6 +29,9 @@ angular.module('mm.addons.files')
     // Convenience function that fetches the files and updates the scope.
     // It was place in its own function so that we can refresh the files.
     function fetchFiles(root, path, refresh) {
+        $translate('loading').then(function(str) {
+            $mmUtil.showModalLoading(str);
+        });
         refresh = (typeof refresh === 'undefined') ? false : refresh;
 
         if (!path) {
@@ -70,6 +73,8 @@ angular.module('mm.addons.files')
             $scope.title = title;
         }, function() {
             $mmUtil.showErrorModal('mm.addons.files.couldnotloadfiles', true);
+        }).finally(function() {
+            $mmUtil.closeModalLoading();
         });
     }
     fetchFiles(root, path);
@@ -150,8 +155,8 @@ angular.module('mm.addons.files')
 
                             $mmaFiles.uploadImage(img).then(function() {
                                 // Success.
-                                fetchFiles(root, path, true);
                                 $mmUtil.closeModalLoading();
+                                fetchFiles(root, path, true);
                             }, function() {
                                 $mmUtil.closeModalLoading();
                                 $mmUtil.showErrorModal('mm.addons.files.errorwhileuploading', true);
@@ -174,8 +179,8 @@ angular.module('mm.addons.files')
 
                             $mmaFiles.uploadImage(img).then(function() {
                                 // Success.
-                                fetchFiles(root, path, true);
                                 $mmUtil.closeModalLoading();
+                                fetchFiles(root, path, true);
                             }, function() {
                                 $mmUtil.closeModalLoading();
                                 $mmUtil.showErrorModal('mm.addons.files.errorwhileuploading', true);
@@ -194,8 +199,8 @@ angular.module('mm.addons.files')
 
                             $mmaFiles.uploadMedia(medias).then(function() {
                                 // Success.
-                                fetchFiles(root, path, true);
                                 $mmUtil.closeModalLoading();
+                                fetchFiles(root, path, true);
                             }, function() {
                                 $mmUtil.closeModalLoading();
                                 $mmUtil.showErrorModal('mm.addons.files.errorwhileuploading', true);
@@ -214,8 +219,8 @@ angular.module('mm.addons.files')
 
                             $mmaFiles.uploadMedia(medias).then(function() {
                                 // Success.
-                                fetchFiles(root, path, true);
                                 $mmUtil.closeModalLoading();
+                                fetchFiles(root, path, true);
                             }, function() {
                                 $mmUtil.closeModalLoading();
                                 $mmUtil.showErrorModal('mm.addons.files.errorwhileuploading', true);
