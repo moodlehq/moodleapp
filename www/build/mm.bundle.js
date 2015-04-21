@@ -1522,26 +1522,7 @@ angular.module('mm.core.courses', [])
                 controller: 'mmCoursesListCtrl'
             }
         },
-        cache: false,
-        resolve: {
-            courses: function($q, $mmCourses, $mmUtil, $translate) {
-                $translate('loading').then(function(loadingString) {
-                    $mmUtil.showModalLoading(loadingString);
-                });
-                return $mmCourses.getUserCourses().then(function(courses) {
-                    $mmUtil.closeModalLoading();
-                    return courses;
-                }, function(error) {
-                    $mmUtil.closeModalLoading();
-                    if (typeof(error) !== 'undefined' && error != '') {
-                        $mmUtil.showErrorModal(error);
-                    } else {
-                        $mmUtil.showErrorModal('mm.core.courses.errorloadcourses', true);
-                    }
-                    return $q.reject();
-                });
-            }
-        }
+        cache: false
     });
 });
 
@@ -1573,12 +1554,7 @@ angular.module('mm.core.login', [])
             $mmSitesManager.hasNoSites().then(function() {
                 $state.go('mm_login.site');
             });
-        },
-        resolve: {
-            sites: function($mmSitesManager) {
-                return $mmSitesManager.getSites();
-            }
-          }
+        }
     })
     .state('mm_login.site', {
         url: '/site',
@@ -1699,10 +1675,23 @@ angular.module('mm.core.sidemenu', [])
 });
 
 angular.module('mm.core.courses')
-.controller('mmCoursesListCtrl', function($scope, courses, $mmCoursesDelegate) {
-    $scope.courses = courses;
+.controller('mmCoursesListCtrl', function($scope, $mmCourses, $mmCoursesDelegate, $mmUtil, $translate) {
+    $translate('loading').then(function(loadingString) {
+        $mmUtil.showModalLoading(loadingString);
+    });
+    $mmCourses.getUserCourses().then(function(courses) {
+        $scope.courses = courses;
+        $scope.filterText = '';
+    }, function(error) {
+        if (typeof(error) !== 'undefined' && error != '') {
+            $mmUtil.showErrorModal(error);
+        } else {
+            $mmUtil.showErrorModal('mm.core.courses.errorloadcourses', true);
+        }
+    }).finally(function() {
+        $mmUtil.closeModalLoading();
+    });
     $scope.plugins = $mmCoursesDelegate.getData();
-    $scope.filterText = '';
 });
 
 angular.module('mm.core.courses')
@@ -1876,12 +1865,14 @@ angular.module('mm.core.login')
 });
 
 angular.module('mm.core.login')
-.controller('mmLoginSitesCtrl', function($scope, $state, $mmSitesManager, $ionicPopup, $log, sites, $translate) {
-    $scope.sites = sites;
-    $scope.data = {
-        hasSites: sites.length > 0,
-        showDetele: false
-    };
+.controller('mmLoginSitesCtrl', function($scope, $state, $mmSitesManager, $ionicPopup, $log, $translate) {
+    $mmSitesManager.getSites().then(function(sites) {
+        $scope.sites = sites;
+        $scope.data = {
+            hasSites: sites.length > 0,
+            showDetele: false
+        };
+    });
     $scope.toggleDelete = function() {
         $scope.data.showDelete = !$scope.data.showDelete;
     };

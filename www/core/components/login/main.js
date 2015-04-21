@@ -48,12 +48,7 @@ angular.module('mm.core.login', [])
             $mmSitesManager.hasNoSites().then(function() {
                 $state.go('mm_login.site');
             });
-        },
-        resolve: {
-            sites: function($mmSitesManager) {
-                return $mmSitesManager.getSites();
-            }
-          }
+        }
     })
 
     .state('mm_login.site', {

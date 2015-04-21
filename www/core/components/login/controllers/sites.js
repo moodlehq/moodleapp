@@ -21,12 +21,15 @@ angular.module('mm.core.login')
  * @ngdoc controller
  * @name mmLoginSitesCtrl
  */
-.controller('mmLoginSitesCtrl', function($scope, $state, $mmSitesManager, $ionicPopup, $log, sites, $translate) {
-    $scope.sites = sites;
-    $scope.data = {
-        hasSites: sites.length > 0,
-        showDetele: false
-    };
+.controller('mmLoginSitesCtrl', function($scope, $state, $mmSitesManager, $ionicPopup, $log, $translate) {
+
+    $mmSitesManager.getSites().then(function(sites) {
+        $scope.sites = sites;
+        $scope.data = {
+            hasSites: sites.length > 0,
+            showDetele: false
+        };
+    });
 
     $scope.toggleDelete = function() {
         $scope.data.showDelete = !$scope.data.showDelete;

@@ -35,27 +35,7 @@ angular.module('mm.core.courses', [])
                 controller: 'mmCoursesListCtrl'
             }
         },
-        cache: false,
-        resolve: {
-            courses: function($q, $mmCourses, $mmUtil, $translate) {
-                $translate('loading').then(function(loadingString) {
-                    $mmUtil.showModalLoading(loadingString);
-                });
-
-                return $mmCourses.getUserCourses().then(function(courses) {
-                    $mmUtil.closeModalLoading();
-                    return courses;
-                }, function(error) {
-                    $mmUtil.closeModalLoading();
-                    if (typeof(error) !== 'undefined' && error != '') {
-                        $mmUtil.showErrorModal(error);
-                    } else {
-                        $mmUtil.showErrorModal('mm.core.courses.errorloadcourses', true);
-                    }
-                    return $q.reject();
-                });
-            }
-        }
+        cache: false
     });
 
 });
