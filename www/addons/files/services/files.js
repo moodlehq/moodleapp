@@ -14,7 +14,7 @@
 
 angular.module('mm.addons.files')
 
-.factory('$mmaFiles', function($mmSite, $mmUtil, $q, $timeout, $log, md5) {
+.factory('$mmaFiles', function($mmSite, $mmUtil, $mmFS, $mmWS, $q, $timeout, $log, md5) {
     var self = {},
         defaultParams = {
             "contextid": 0,
@@ -35,11 +35,45 @@ angular.module('mm.addons.files')
      * @module mm.addons.files
      * @ngdoc method
      * @name $mmaFiles#getFile
-     * @param  {Object} A list of parameters accepted by the Web service.
-     * @return {Path} // TODO
+     * @param  {Object} A file object typically returned from $mmaFiles#getFiles()
+     * @return {FileEntry}
      */
-    self.getFile = function(params) {
-        // TODO
+    self.getFile = function(file) {
+        var deferred = $q.defer(),
+            downloadURL = $mmSite.fixPluginfileURL(file.url),
+            siteId = $mmSite.getId(),
+            linkId = file.linkId,
+            filename = $mmFS.normalizeFileName(file.filename),
+            directory = siteId + "/files/" + linkId,
+            filePath = directory + "/" + filename;
+
+        $log.debug("Starting download of Moodle file: " + downloadURL);
+        $mmFS.createDir(directory).then(function() {
+            $log.debug("Downloading Moodle file to " + filePath + " from URL: " + downloadURL);
+
+            $mmWS.downloadFile(downloadURL, filePath).then(function(fileEntry) {
+                $log.debug("Download of content finished " + fileEntry.toURL() + " URL: " + downloadURL);
+
+                // TODO Caching.
+                // var uniqueId = siteId + "-" + hex_md5(url);
+                // var file = {
+                //     id: uniqueId,
+                //     url: url,
+                //     site: siteId,
+                //     localpath: fullpath
+                // };
+                // MM.db.insert("files", file);
+                deferred.resolve(fileEntry);
+            }, function() {
+                $log.error('Error downloading from URL: ' + downloadURL);
+                deferred.reject();
+            });
+        }, function() {
+            $log.error('Error while creating the directory ' + directory);
+            deferred.reject();
+        });
+
+        return deferred.promise;
     };
 
     /**

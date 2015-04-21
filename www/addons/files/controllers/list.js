@@ -86,37 +86,10 @@ angular.module('mm.addons.files')
             return false;
         }
 
-        var downloadURL = $mmSite.fixPluginfileURL(file.url),
-            siteId = $mmSite.getId(),
-            linkId = file.linkId,
-            filename = $mmFS.normalizeFileName(file.filename),
-            directory = siteId + "/files/" + linkId,
-            filePath = directory + "/" + filename;
-
-        $log.debug("Starting download of Moodle file: " + downloadURL);
-        $mmFS.createDir(directory).then(function() {
-            $log.debug("Downloading Moodle file to " + filePath + " from URL: " + downloadURL);
-
-            // TODO Notify downloading...
-            $mmWS.downloadFile(downloadURL, filePath).then(function(fileEntry) {
-                $log.debug("Download of content finished " + fileEntry.toURL() + " URL: " + downloadURL);
-
-                // TODO Caching.
-                // var uniqueId = siteId + "-" + hex_md5(url);
-                // var file = {
-                //     id: uniqueId,
-                //     url: url,
-                //     site: siteId,
-                //     localpath: fullpath
-                // };
-                // MM.db.insert("files", file);
-                $mmUtil.openFile(fileEntry.toURL());
-            }, function() {
-                $log.error('Error downloading from URL: ' + downloadURL);
-                $mmUtil.showErrorModal('mm.addons.files.errorwhiledownloading', true);
-            });
+        $mmaFiles.getFile(file).then(function(fileEntry) {
+            $mmUtil.openFile(fileEntry.toURL());
         }, function() {
-            $log.error('Error while creating the directory ' + directory);
+            $mmUtil.showErrorModal('mm.addons.files.errorwhiledownloading', true);
         });
     };
 

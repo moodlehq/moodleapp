@@ -2258,24 +2258,10 @@ angular.module('mm.addons.files')
         if (!$mmSite.canDownloadFiles()) {
             return false;
         }
-        var downloadURL = $mmSite.fixPluginfileURL(file.url),
-            siteId = $mmSite.getId(),
-            linkId = file.linkId,
-            filename = $mmFS.normalizeFileName(file.filename),
-            directory = siteId + "/files/" + linkId,
-            filePath = directory + "/" + filename;
-        $log.debug("Starting download of Moodle file: " + downloadURL);
-        $mmFS.createDir(directory).then(function() {
-            $log.debug("Downloading Moodle file to " + filePath + " from URL: " + downloadURL);
-            $mmWS.downloadFile(downloadURL, filePath).then(function(fileEntry) {
-                $log.debug("Download of content finished " + fileEntry.toURL() + " URL: " + downloadURL);
-                $mmUtil.openFile(fileEntry.toURL());
-            }, function() {
-                $log.error('Error downloading from URL: ' + downloadURL);
-                $mmUtil.showErrorModal('mm.addons.files.errorwhiledownloading', true);
-            });
+        $mmaFiles.getFile(file).then(function(fileEntry) {
+            $mmUtil.openFile(fileEntry.toURL());
         }, function() {
-            $log.error('Error while creating the directory ' + directory);
+            $mmUtil.showErrorModal('mm.addons.files.errorwhiledownloading', true);
         });
     };
     if (showUpload) {
@@ -2292,7 +2278,7 @@ angular.module('mm.addons.files')
 });
 
 angular.module('mm.addons.files')
-.factory('$mmaFiles', function($mmSite, $mmUtil, $q, $timeout, $log, md5) {
+.factory('$mmaFiles', function($mmSite, $mmUtil, $mmFS, $mmWS, $q, $timeout, $log, md5) {
     var self = {},
         defaultParams = {
             "contextid": 0,
@@ -2305,7 +2291,29 @@ angular.module('mm.addons.files')
     self.canAccessFiles = function() {
         return $mmSite.wsAvailable('core_files_get_files');
     };
-        self.getFile = function(params) {
+        self.getFile = function(file) {
+        var deferred = $q.defer(),
+            downloadURL = $mmSite.fixPluginfileURL(file.url),
+            siteId = $mmSite.getId(),
+            linkId = file.linkId,
+            filename = $mmFS.normalizeFileName(file.filename),
+            directory = siteId + "/files/" + linkId,
+            filePath = directory + "/" + filename;
+        $log.debug("Starting download of Moodle file: " + downloadURL);
+        $mmFS.createDir(directory).then(function() {
+            $log.debug("Downloading Moodle file to " + filePath + " from URL: " + downloadURL);
+            $mmWS.downloadFile(downloadURL, filePath).then(function(fileEntry) {
+                $log.debug("Download of content finished " + fileEntry.toURL() + " URL: " + downloadURL);
+                deferred.resolve(fileEntry);
+            }, function() {
+                $log.error('Error downloading from URL: ' + downloadURL);
+                deferred.reject();
+            });
+        }, function() {
+            $log.error('Error while creating the directory ' + directory);
+            deferred.reject();
+        });
+        return deferred.promise;
     };
         self.getFiles = function(params, refresh) {
         var deferred = $q.defer(),
