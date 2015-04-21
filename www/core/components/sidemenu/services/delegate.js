@@ -35,7 +35,7 @@ angular.module('mm.core.sidemenu')
      * @param  {String}   name     Name of the plugin.
      * @param  {Function} callback Function to call to get the plugin data. This function should return an object with:
      *                                 -icon: Icon to show in the menu item.
-     *                                 -name: Plugin name.
+     *                                 -title: Plugin name to be displayed.
      *                                 -state: sref to the plugin's main state (i.e. site.messages).
      *                                 -badge: Number to show next to the plugin (like new notifications number). Optional.
      *                             If the plugin should not be shown (disabled, etc.) this function should return undefined.

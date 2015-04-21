@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm', ['ionic', 'mm.core', 'mm.core.courses', 'mm.core.login', 'mm.core.sidemenu', 'ngCordova', 'angular-md5', 'pascalprecht.translate'])
+angular.module('mm', ['ionic', 'mm.core', 'mm.core.courses', 'mm.core.login', 'mm.core.sidemenu', 'mm.addons.files', 'ngCordova', 'angular-md5', 'pascalprecht.translate'])
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
     if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
@@ -126,6 +126,9 @@ angular.module('mm.core')
     this.$get = function($mmDB) {
         var db = $mmDB.getDB(DBNAME, dbschema),
             self = {};
+                self.canUseChildBrowser = function() {
+            return window.plugins && window.plugins.childBrowser;
+        };
                 self.getDB = function() {
             return db;
         };
@@ -578,6 +581,7 @@ angular.module('mm.core')
     });
 });
 angular.module('mm.core')
+.value('mmCoreWSPrefix', 'local_mobile_')
 .constant('mmCoreWSCacheStore', 'wscache')
 .config(function($mmSiteProvider, mmCoreWSCacheStore) {
     var stores = [
@@ -618,7 +622,8 @@ angular.module('mm.core')
         });
         return exists;
     }
-    this.$get = function($http, $q, $mmWS, $mmDB, $mmConfig, $log, md5, $cordovaNetwork, $mmLang, $mmUtil, mmCoreWSCacheStore) {
+    this.$get = function($http, $q, $mmWS, $mmDB, $mmConfig, $log, md5, $cordovaNetwork, $mmLang, $mmUtil,
+        mmCoreWSCacheStore, mmCoreWSPrefix) {
                 var deprecatedFunctions = {
             "moodle_webservice_get_siteinfo": "core_webservice_get_site_info",
             "moodle_enrol_get_users_courses": "core_enrol_get_users_courses",
@@ -637,6 +642,18 @@ angular.module('mm.core')
             if (this.id) {
                 this.db = $mmDB.getDB('Site-' + this.id, siteSchema);
             }
+        }
+                self.canAccessMyFiles = function() {
+            var infos = self.getInfo();
+            return infos && (typeof infos.usercanmanageownfiles === 'undefined' || infos.usercanmanageownfiles);
+        };
+                self.canDownloadFiles = function() {
+            var infos = self.getInfo();
+            return infos && infos.downloadfiles;
+        };
+                self.canUploadFiles = function() {
+            var infos = self.getInfo();
+            return infos && infos.uploadfiles;
         };
                 self.fetchSiteInfo = function() {
             var deferred = $q.defer();
@@ -713,6 +730,16 @@ angular.module('mm.core')
                 return deferred.promise;
             }
             method = checkDeprecatedFunction(method);
+            if (self.getInfo() && !self.wsAvailable(method, false)) {
+                if (self.wsAvailable(mmCoreWSPrefix + method, false)) {
+                    $log.info("Using compatibility WS method '" + mmCoreWSPrefix + method + "'");
+                    method = mmCoreWSPrefix + method;
+                } else {
+                    $log.error("WS function '" + method + "' is not available, even in compatibility mode.");
+                    $mmLang.translateErrorAndReject(deferred, 'wsfunctionnotavailable');
+                    return deferred.promise;
+                }
+            }
             preSets = preSets || {};
             preSets.wstoken = currentSite.token;
             preSets.siteurl = currentSite.siteurl;
@@ -740,15 +767,19 @@ angular.module('mm.core')
             });
             return deferred.promise;
         };
-                self.wsAvailable = function(method) {
+                self.wsAvailable = function(method, checkPrefix) {
+            checkPrefix = (typeof checkPrefix === 'undefined') ? true : checkPrefix;
             if (!self.isLoggedIn() || typeof(currentSite.infos) == 'undefined') {
                 return false;
             }
-            for(var i = 0; i < currentSite.infos.functions.length; i++) {
+            for (var i = 0; i < currentSite.infos.functions.length; i++) {
                 var f = currentSite.infos.functions[i];
                 if (f.name == method) {
                     return true;
                 }
+            }
+            if (checkPrefix) {
+                return self.wsAvailable(mmCoreWSPrefix + method, false);
             }
             return false;
         };
@@ -793,6 +824,12 @@ angular.module('mm.core')
                 token = self.getToken();
             }
             return $mmUtil.fixPluginfileURL(url, token);
+        };
+                self.uploadFile = function(uri, options) {
+            return $mmWS.uploadFile(uri, options, {
+                siteurl: self.getURL(),
+                token: self.getToken()
+            });
         };
                 function checkDeprecatedFunction(method) {
             if (typeof deprecatedFunctions[method] !== "undefined") {
@@ -1122,7 +1159,7 @@ angular.module('mm.core')
                 try {
                     if ($cordovaNetwork.isOnline()) {
                         $log.debug('File ' + downloadURL + ' not downloaded. Lets download.');
-                        return $mmWS.downloadFile(downloadURL, path.file);
+                        return $mmWS.downloadFile(downloadURL, path.file).toInternalURL();
                     } else {
                         $log.debug('File ' + downloadURL + ' not downloaded, but the device is offline.');
                         return downloadURL;
@@ -1227,7 +1264,8 @@ angular.module('mm.core')
 
 angular.module('mm.core')
 .provider('$mmUtil', function() {
-        this.param = function(obj) {
+    var self = this;
+        self.param = function(obj) {
         var query = '', name, value, fullSubName, subName, subValue, innerObj, i;
         for (name in obj) {
             value = obj[name];
@@ -1237,7 +1275,7 @@ angular.module('mm.core')
                     fullSubName = name + '[' + i + ']';
                     innerObj = {};
                     innerObj[fullSubName] = subValue;
-                    query += this.param(innerObj) + '&';
+                    query += self.param(innerObj) + '&';
                 }
             }
             else if (value instanceof Object) {
@@ -1246,15 +1284,21 @@ angular.module('mm.core')
                     fullSubName = name + '[' + subName + ']';
                     innerObj = {};
                     innerObj[fullSubName] = subValue;
-                    query += this.param(innerObj) + '&';
+                    query += self.param(innerObj) + '&';
                 }
             }
             else if (value !== undefined && value !== null) query += encodeURIComponent(name) + '=' + encodeURIComponent(value) + '&';
         }
         return query.length ? query.substr(0, query.length - 1) : query;
     };
-    function mmUtil($ionicLoading, $ionicPopup, $translate) {
-                this.formatURL = function(url) {
+    function mmUtil($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp, $q) {
+        var self = this;
+        var mimeTypes = {};
+        $http.get('core/assets/mimetypes.json').then(function(response) {
+            mimeTypes = response.data;
+        }, function() {
+        });
+                self.formatURL = function(url) {
             url = url.trim();
             if (! /^http(s)?\:\/\/.*/i.test(url)) {
                 url = "https://" + url;
@@ -1264,10 +1308,31 @@ angular.module('mm.core')
             url = url.replace(/\/$/, "");
             return url;
         };
-                this.isValidURL = function(url) {
+                self.getFileExtension = function(filename) {
+            var dot = filename.lastIndexOf("."),
+                ext;
+            if (dot > -1) {
+                ext = filename.substr(dot + 1).toLowerCase();
+            }
+            return ext;
+        };
+                self.getFileIcon = function(filename) {
+            var ext = self.getFileExtension(filename),
+                icon;
+            if (ext && mimeTypes[ext] && mimeTypes[ext].icon) {
+                icon = mimeTypes[ext].icon + '-64.png';
+            } else {
+                icon = 'unknown-64.png';
+            }
+            return 'img/files/' + icon;
+        };
+                self.getFolderIcon = function() {
+            return 'img/files/folder-64.png';
+        };
+                self.isValidURL = function(url) {
             return /^http(s)?\:\/\/([\da-zA-Z\.-]+)\.([\da-zA-Z\.]{2,6})([\/\w \.-]*)*\/?/i.test(url);
         };
-                this.fixPluginfileURL = function(url, token) {
+                self.fixPluginfileURL = function(url, token) {
             if (!url) {
                 return '';
             }
@@ -1291,15 +1356,89 @@ angular.module('mm.core')
             }
             return url;
         };
-                this.showModalLoading = function(text) {
+                self.openFile = function(path) {
+            if (false) {
+            } else if (window.plugins) {
+                var extension = self.getFileExtension(path),
+                    mimetype;
+                if (extension && mimeTypes[extension]) {
+                    mimetype = mimeTypes[extension];
+                }
+                if (ionic.Platform.isAndroid() && window.plugins.webintent) {
+                    var iParams = {
+                        action: "android.intent.action.VIEW",
+                        url: path,
+                        type: mimetype};
+                    window.plugins.webintent.startActivity(
+                        iParams,
+                        function() {
+                            $log.debug('Intent launched');
+                        },
+                        function() {
+                            $log.debug('Intent launching failed');
+                            $log.debug('action: ' + iParams.action);
+                            $log.debug('url: ' + iParams.url);
+                            $log.debug('type: ' + iParams.type);
+                            window.open(path, '_system');
+                        }
+                    );
+                } else if (ionic.Platform.isIOS() && typeof handleDocumentWithURL == 'function') {
+                    var fsRoot = $mmFS.getRoot();
+                    if (path.indexOf(fsRoot > -1)) {
+                        path = path.replace(fsRoot, "");
+                        path = encodeURIComponent(decodeURIComponent(path));
+                        path = fsRoot + path;
+                    }
+                    handleDocumentWithURL(
+                        function() {
+                            $log.debug('File opened with handleDocumentWithURL' + path);
+                        },
+                        function(error) {
+                            $log.debug('Error opening with handleDocumentWithURL' + path);
+                            if(error == 53) {
+                                $log.error('No app that handles this file type.');
+                            }
+                            self.openFileWithBrowser(path);
+                        },
+                        path
+                    );
+                } else {
+                    self.openFileWithBrowser(path);
+                }
+            } else {
+                $log.debug('Opening external file using window.open()');
+                window.open(path, '_blank');
+            }
+        };
+                self.openFileWithBrowser = function(path) {
+            if ($mmApp.canUseChildBrowser()) {
+                $log.debug('Launching childBrowser');
+                try {
+                    window.plugins.childBrowser.showWebPage(
+                        path,
+                        {
+                            showLocationBar: true ,
+                            showAddress: false
+                        }
+                    );
+                } catch(e) {
+                    $log.debug('Launching childBrowser failed!, opening as standard link.');
+                    window.open(path, '_blank');
+                }
+            } else {
+                $log.debug('Open external file using window.open()');
+                window.open(path, '_blank');
+            }
+        };
+                self.showModalLoading = function(text) {
             $ionicLoading.show({
-                template: '<i class="icon ion-load-c">'+text
+                template: '<i class="icon ion-load-c"> '+text
             });
         };
-                this.closeModalLoading = function() {
+                self.closeModalLoading = function() {
             $ionicLoading.hide();
         };
-                this.showErrorModal = function(errorMessage, needsTranslate) {
+                self.showErrorModal = function(errorMessage, needsTranslate) {
             var langKeys = ['error'];
             if (needsTranslate) {
                 langKeys.push(errorMessage);
@@ -1311,14 +1450,26 @@ angular.module('mm.core')
                 });
             });
         };
-                this.cleanTags = function(text) {
+                self.showModal = function(title, message) {
+            var promises = [
+                $translate(title),
+                $translate(message),
+            ];
+            $q.all(promises).then(function(translations) {
+                $ionicPopup.alert({
+                    title: translations[0],
+                    template: translations[1]
+                });
+            });
+        };
+                self.cleanTags = function(text) {
             text = text.replace(/(<([^>]+)>)/ig,"");
             text = text.replace(/(?:\r\n|\r|\n)/g, '<br />');
             return text;
         };
     }
-    this.$get = function($ionicLoading, $ionicPopup, $translate) {
-        return new mmUtil($ionicLoading, $ionicPopup, $translate);
+    self.$get = function($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp, $q) {
+        return new mmUtil($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp, $q);
     };
 });
 
@@ -1392,18 +1543,47 @@ angular.module('mm.core')
         return result;
     };
         self.downloadFile = function(url, path, background) {
-        $log.debug('Download file '+url);
-        return $mmFS.getBasePath().then(function(basePath) {
+        var deferred = $q.defer();
+        $log.debug('Downloading file ' + url);
+        $mmFS.getBasePath().then(function(basePath) {
             var absolutePath = basePath + path;
-            return $cordovaFileTransfer.download(url, absolutePath, {}, true).then(function(result) {
-                $log.debug('Success downloading file ' + url + ' to '+absolutePath);
-                return result.toInternalURL();
+            return $cordovaFileTransfer.download(url, absolutePath, { encodeURI: false }, true).then(function(result) {
+                $log.debug('Success downloading file ' + url + ' to ' + absolutePath);
+                deferred.resolve(result);
             }, function(err) {
-                $log.error('Error downloading file '+url);
-                $log.error(err);
-                return $q.reject();
+                $log.error('Error downloading ' + url + ' to ' + absolutePath);
+                $log.error(JSON.stringify(err));
+                deferred.reject(err);
             });
         });
+        return deferred.promise;
+    };
+        self.uploadFile = function(uri, options, presets) {
+        $log.info('Trying to upload file (' + uri.length + ' chars)');
+        var ftOptions = {},
+            deferred = $q.defer();
+        ftOptions.fileKey = options.fileKey;
+        ftOptions.fileName = options.fileName;
+        ftOptions.httpMethod = 'POST';
+        ftOptions.mimeType = options.mimeType;
+        ftOptions.params = {
+            token: presets.token
+        };
+        ftOptions.chunkedMode = false;
+        ftOptions.headers = {
+            Connection: "close"
+        };
+        $log.info('Initializing upload');
+        $cordovaFileTransfer.upload(presets.siteurl + '/webservice/upload.php', uri, ftOptions).then(function(success) {
+            $log.info('Successfully uploaded file');
+            deferred.resolve(success);
+        }, function(error) {
+            $log.error('Error while uploading file: ' + error.exception);
+            deferred.reject(error);
+        }, function(progress) {
+            deferred.notify(progress);
+        });
+        return deferred.promise;
     };
     return self;
 });
@@ -1959,5 +2139,423 @@ angular.module('mm.core.sidemenu')
         }
         return data;
     }
+    return self;
+});
+
+angular.module('mm.addons.files', ['mm.core'])
+.config(function($stateProvider) {
+    $stateProvider
+      .state('site.files', {
+        url: '/files',
+        views: {
+          'site': {
+            controller: 'mmaFilesIndexController',
+            templateUrl: 'addons/files/templates/index.html'
+          }
+        }
+      })
+      .state('site.files-list', {
+        url: '/list',
+        params: {
+          path: false,
+          root: false,
+          title: false
+        },
+        views: {
+          'site': {
+            controller: 'mmaFilesListController',
+            templateUrl: 'addons/files/templates/list.html'
+          }
+        }
+      });
+})
+.run(function($mmSideMenuDelegate, $translate, $q, $mmaFiles) {
+  var promises = [$translate('mma.files.myfiles')];
+  $q.all(promises).then(function(data) {
+    var strMyfiles = data[0];
+    $mmSideMenuDelegate.registerPlugin('mmaFiles', function() {
+      if (!$mmaFiles.isPluginEnabled()) {
+        return undefined;
+      }
+      return {
+        icon: 'ion-folder',
+        title: strMyfiles,
+        state: 'site.files'
+      };
+    });
+  });
+});
+
+angular.module('mm.addons.files')
+.controller('mmaFilesIndexController', function($scope, $mmaFiles, $mmSite, $mmUtil, $mmaFilesHelper) {
+    var canAccessFiles = $mmaFiles.canAccessFiles(),
+        canAccessMyFiles = canAccessFiles && $mmSite.canAccessMyFiles(),
+        canUploadFiles = $mmSite.canUploadFiles(),
+        canDownloadFiles = $mmSite.canDownloadFiles();
+    $scope.canAccessFiles = canAccessFiles;
+    $scope.showPrivateFiles = canAccessMyFiles;
+    $scope.showUpload = !canAccessFiles && canUploadFiles;
+    $scope.canDownload = canDownloadFiles;
+    if (canUploadFiles) {
+        $scope.add = function() {
+            $mmaFilesHelper.pickAndUploadFile().then(function() {
+                $mmUtil.showModal('mma.files.success', 'mma.files.fileuploaded');
+            }, function(err) {
+                if (err) {
+                    $mmUtil.showErrorModal(err);
+                }
+            });
+        };
+    }
+});
+
+angular.module('mm.addons.files')
+.controller('mmaFilesListController', function($q, $scope, $stateParams, $ionicActionSheet,
+        $mmaFiles, $mmSite, $translate, $timeout, $mmUtil, $mmFS, $mmWS, $log, $mmaFilesHelper) {
+    var path = $stateParams.path,
+        root = $stateParams.root,
+        title,
+        promise,
+        siteInfos = $mmSite.getInfo(),
+        showUpload = (root === 'my' && !path && $mmSite.canUploadFiles());
+    $scope.count = -1;
+    function fetchFiles(root, path, refresh) {
+        $translate('loading').then(function(str) {
+            $mmUtil.showModalLoading(str);
+        });
+        refresh = (typeof refresh === 'undefined') ? false : refresh;
+        if (!path) {
+            if (root === 'site') {
+                promise = $mmaFiles.getSiteFiles(refresh);
+                title = $translate('mma.files.sitefiles');
+            } else if (root === 'my') {
+                promise = $mmaFiles.getMyFiles(refresh);
+                title = $translate('mma.files.myprivatefiles');
+            } else {
+                promise = $q.reject();
+                title = (function() {
+                    var q = $q.defer();
+                    q.resolve('');
+                    return q.promise;
+                })();
+            }
+        } else {
+            pathdata = JSON.parse(path);
+            promise = $mmaFiles.getFiles(pathdata, refresh);
+            title = (function() {
+                var q = $q.defer();
+                q.resolve($stateParams.title);
+                return q.promise;
+            })();
+        }
+        $q.all([promise, title]).then(function(data) {
+            var files = data[0],
+                title = data[1];
+            $scope.files = files.entries;
+            $scope.count = files.count;
+            $scope.title = title;
+        }, function() {
+            $mmUtil.showErrorModal('mma.files.couldnotloadfiles', true);
+        }).finally(function() {
+            $mmUtil.closeModalLoading();
+        });
+    }
+    fetchFiles(root, path);
+    $scope.download = function(file) {
+        if (!$mmSite.canDownloadFiles()) {
+            return false;
+        }
+        $translate('mma.files.downloading').then(function(str) {
+            $mmUtil.showModalLoading(str);
+        });
+        $mmaFiles.getFile(file).then(function(fileEntry) {
+            $mmUtil.closeModalLoading();
+            $mmUtil.openFile(fileEntry.toURL());
+        }, function() {
+            $mmUtil.closeModalLoading();
+            $mmUtil.showErrorModal('mma.files.errorwhiledownloading', true);
+        });
+    };
+    if (showUpload) {
+        $scope.add = function() {
+            $mmaFilesHelper.pickAndUploadFile().then(function() {
+                fetchFiles(root, path, true);
+            }, function(err) {
+                if (err) {
+                    $mmUtil.showErrorModal(err);
+                }
+            });
+        };
+    }
+});
+
+angular.module('mm.addons.files')
+.factory('$mmaFiles', function($mmSite, $mmUtil, $mmFS, $mmWS, $q, $timeout, $log, md5) {
+    var self = {},
+        defaultParams = {
+            "contextid": 0,
+            "component": "",
+            "filearea": "",
+            "itemid": 0,
+            "filepath": "",
+            "filename": ""
+        };
+    self.canAccessFiles = function() {
+        return $mmSite.wsAvailable('core_files_get_files');
+    };
+        self.getFile = function(file) {
+        var deferred = $q.defer(),
+            downloadURL = $mmSite.fixPluginfileURL(file.url),
+            siteId = $mmSite.getId(),
+            linkId = file.linkId,
+            filename = $mmFS.normalizeFileName(file.filename),
+            directory = siteId + "/files/" + linkId,
+            filePath = directory + "/" + filename;
+        $log.debug("Starting download of Moodle file: " + downloadURL);
+        $mmFS.createDir(directory).then(function() {
+            $log.debug("Downloading Moodle file to " + filePath + " from URL: " + downloadURL);
+            $mmWS.downloadFile(downloadURL, filePath).then(function(fileEntry) {
+                $log.debug("Download of content finished " + fileEntry.toURL() + " URL: " + downloadURL);
+                deferred.resolve(fileEntry);
+            }, function() {
+                $log.error('Error downloading from URL: ' + downloadURL);
+                deferred.reject();
+            });
+        }, function() {
+            $log.error('Error while creating the directory ' + directory);
+            deferred.reject();
+        });
+        return deferred.promise;
+    };
+        self.getFiles = function(params, refresh) {
+        var deferred = $q.defer(),
+            options = {};
+        if (refresh === true) {
+            options.getFromCache = false;
+        }
+        $mmSite.read('core_files_get_files', params, options).then(function(result) {
+            var data = {
+                entries: [],
+                count: 0
+            };
+            if (typeof result.files == 'undefined') {
+                deferred.reject();
+                return;
+            }
+            angular.forEach(result.files, function(entry) {
+                entry.link = {};
+                entry.link.contextid = (entry.contextid) ? entry.contextid : "";
+                entry.link.component = (entry.component) ? entry.component : "";
+                entry.link.filearea = (entry.filearea) ? entry.filearea : "";
+                entry.link.itemid = (entry.itemid) ? entry.itemid : 0;
+                entry.link.filepath = (entry.filepath) ? entry.filepath : "";
+                entry.link.filename = (entry.filename) ? entry.filename : "";
+                if (entry.component && entry.isdir) {
+                    entry.link.filename = "";
+                }
+                if (entry.isdir) {
+                    entry.imgpath = $mmUtil.getFolderIcon();
+                } else {
+                    entry.imgpath = $mmUtil.getFileIcon(entry.filename);
+                }
+                entry.link = JSON.stringify(entry.link);
+                entry.linkId = md5.createHash(entry.link);
+                data.count += 1;
+                data.entries.push(entry);
+            });
+            deferred.resolve(data);
+        }, function() {
+            deferred.reject();
+        });
+        return deferred.promise;
+    };
+        self.getMyFiles = function(refresh) {
+        var params = angular.copy(defaultParams, {});
+        params.component = "user";
+        params.filearea = "private";
+        params.contextid = -1;
+        params.contextlevel = "user";
+        params.instanceid = $mmSite.getInfo().userid;
+        return self.getFiles(params, refresh);
+    };
+        self.getSiteFiles = function(refresh) {
+        var params = angular.copy(defaultParams, {});
+        return self.getFiles(params, refresh);
+    };
+        self.isPluginEnabled = function() {
+        var canAccessFiles = self.canAccessFiles(),
+            canUploadFiles = $mmSite.canUploadFiles();
+        return canAccessFiles || canUploadFiles;
+    };
+        self.uploadFile = function(uri, options) {
+        options = options || {};
+        var deleteAfterUpload = options.deleteAfterUpload && ionic.Platform.isIOS(),
+            deferred = $q.defer(),
+            ftOptions = {
+                fileKey: options.fileKey,
+                fileName: options.fileName,
+                mimeType: options.mimeType
+            };
+        $mmSite.uploadFile(uri, ftOptions).then(function(result) {
+            if (deleteAfterUpload) {
+                $timeout(function() {
+                    $mmFS.removeExternalFile(uri);
+                }, 500);
+            }
+            deferred.resolve(result);
+        }, function(error) {
+            if (deleteAfterUpload) {
+                $timeout(function() {
+                    $mmFS.removeExternalFile(uri);
+                }, 500);
+            }
+            deferred.reject(error);
+        }, function(progress) {
+            deferred.notify(progress);
+        });
+        return deferred.promise;
+    };
+        self.uploadImage = function(uri) {
+        $log.info('Uploading an image');
+        var d = new Date(),
+            options = {};
+        if (typeof(uri) === 'undefined' || uri === ''){
+            $log.info('Received invalid URI in $mmaFiles.uploadImage()');
+            var deferred = $q.defer();
+            deferred.reject();
+            return deferred.promise;
+        }
+        options.deleteAfterUpload = true;
+        options.fileKey = "file";
+        options.fileName = "image_" + d.getTime() + ".jpg";
+        options.mimeType = "image/jpeg";
+        return self.uploadFile(uri, options);
+    };
+        self.uploadMedia = function(mediaFiles) {
+        $log.info('Uploading media');
+        var promises = [];
+        angular.forEach(mediaFiles, function(mediaFile, index) {
+            var options = {};
+            options.fileKey = null;
+            options.fileName = mediaFile.name;
+            options.mimeType = null;
+            promises.push(self.uploadFile(mediaFile.fullPath, options));
+        });
+        return promises;
+    };
+    return self;
+});
+
+angular.module('mm.addons.files')
+.factory('$mmaFilesHelper', function($q, $mmUtil, $cordovaNetwork, $ionicActionSheet,
+        $log, $translate, $mmaFiles, $cordovaCamera, $cordovaCapture) {
+    var self = {};
+        self.pickAndUploadFile = function() {
+        var deferred = $q.defer();
+        if (!$cordovaNetwork.isOnline()) {
+            $mmUtil.showErrorModal('mma.files.errormustbeonlinetoupload', true);
+            deferred.reject();
+            return deferred.promise;
+        }
+        var promises = [
+            $translate('cancel'),
+            $translate('mma.files.audio'),
+            $translate('mma.files.camera'),
+            $translate('mma.files.photoalbums'),
+            $translate('mma.files.video'),
+            $translate('mma.files.uploadafilefrom'),
+            $translate('mma.files.uploading'),
+            $translate('mma.files.errorwhileuploading')
+        ];
+        $q.all(promises).then(function(translations) {
+            var strCancel = translations[0],
+                strAudio = translations[1],
+                strCamera = translations[2],
+                strPhotoalbums = translations[3],
+                strVideo = translations[4],
+                strUploadafilefrom = translations[5],
+                strLoading = translations[6],
+                strErrorWhileUploading = translations[7],
+                buttons = [
+                    { text: strPhotoalbums, uniqid: 'albums' },
+                    { text: strCamera, uniqid: 'camera'  },
+                    { text: strAudio, uniqid: 'audio'  },
+                    { text: strVideo, uniqid: 'video'  },
+                ];
+            $ionicActionSheet.show({
+                buttons: buttons,
+                titleText: strUploadafilefrom,
+                cancelText: strCancel,
+                buttonClicked: function(index) {
+                    if (buttons[index].uniqid === 'albums') {
+                        $log.info('Trying to get a image from albums');
+                        var width  =  window.innerWidth  - 200;
+                        var height =  window.innerHeight - 200;
+                        var popover = new CameraPopoverOptions(10, 10, width, height, Camera.PopoverArrowDirection.ARROW_ANY);
+                        $cordovaCamera.getPicture({
+                            quality: 50,
+                            destinationType: navigator.camera.DestinationType.FILE_URI,
+                            sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY,
+                            popoverOptions : popover
+                        }).then(function(img) {
+                            $mmUtil.showModalLoading(strLoading);
+                            $mmaFiles.uploadImage(img).then(function() {
+                                deferred.resolve();
+                            }, function() {
+                                deferred.reject(strErrorWhileUploading);
+                            }).finally(function() {
+                                $mmUtil.closeModalLoading();
+                            });
+                        }, function() {
+                            deferred.reject();
+                        });
+                    } else if (buttons[index].uniqid === 'camera') {
+                        $log.info('Trying to get a media from camera');
+                        $cordovaCamera.getPicture({
+                            quality: 50,
+                            destinationType: navigator.camera.DestinationType.FILE_URI
+                        }).then(function(img) {
+                            $mmUtil.showModalLoading(strLoading);
+                            $mmaFiles.uploadImage(img).then(function() {
+                                deferred.resolve();
+                            }, function() {
+                                deferred.reject(strErrorWhileUploading);
+                            });
+                        }, function() {
+                            deferred.reject();
+                        });
+                    } else if (buttons[index].uniqid === 'audio') {
+                        $log.info('Trying to record an audio file');
+                        $cordovaCapture.captureAudio({limit: 1}).then(function(medias) {
+                            $mmUtil.showModalLoading(strLoading);
+                            $q.all($mmaFiles.uploadMedia(medias)).then(function() {
+                                deferred.resolve();
+                            }, function() {
+                                deferred.reject(strErrorWhileUploading);
+                            });
+                        }, function() {
+                            deferred.reject();
+                        });
+                    } else if (buttons[index].uniqid === 'video') {
+                        $log.info('Trying to record a video file');
+                        $cordovaCapture.captureVideo({limit: 1}).then(function(medias) {
+                            $mmUtil.showModalLoading(strLoading);
+                            $q.all($mmaFiles.uploadMedia(medias)).then(function() {
+                                deferred.resolve();
+                            }, function() {
+                                deferred.reject(strErrorWhileUploading);
+                            });
+                        }, function() {
+                            deferred.reject();
+                        });
+                    } else {
+                        deferred.reject();
+                    }
+                    return true;
+                }
+            });
+        });
+        return deferred.promise;
+    };
     return self;
 });

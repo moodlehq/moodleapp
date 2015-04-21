@@ -31,6 +31,9 @@
     "org.apache.cordova.file",
     "org.apache.cordova.inappbrowser",
     "org.apache.cordova.file-transfer",
-    "org.apache.cordova.network-information"
-  ]
+    "org.apache.cordova.network-information",
+    "org.apache.cordova.camera",
+    "org.apache.cordova.media-capture"
+  ],
+  "cordovaPlatforms": []
 }

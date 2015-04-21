@@ -141,22 +141,69 @@ angular.module('mm.core')
      * @param {String}   url        Download url.
      * @param {String}   path       Local path to store the file.
      * @param {Boolean}  background True if this function should be executed in background using Web Workers.
-     * @return {Promise} Promise to be resolved in success.
+     * @return {Promise} Promise The success returns the fileEntry, the reject will contain the error object.
      */
     self.downloadFile = function(url, path, background) {
-        $log.debug('Download file '+url);
+        var deferred = $q.defer();
+
+        $log.debug('Downloading file ' + url);
         // TODO: Web Workers
-        return $mmFS.getBasePath().then(function(basePath) {
+        $mmFS.getBasePath().then(function(basePath) {
             var absolutePath = basePath + path;
-            return $cordovaFileTransfer.download(url, absolutePath, {}, true).then(function(result) {
-                $log.debug('Success downloading file ' + url + ' to '+absolutePath);
-                return result.toInternalURL();
+            return $cordovaFileTransfer.download(url, absolutePath, { encodeURI: false }, true).then(function(result) {
+                $log.debug('Success downloading file ' + url + ' to ' + absolutePath);
+                deferred.resolve(result);
             }, function(err) {
-                $log.error('Error downloading file '+url);
-                $log.error(err);
-                return $q.reject();
+                $log.error('Error downloading ' + url + ' to ' + absolutePath);
+                $log.error(JSON.stringify(err));
+                deferred.reject(err);
             });
         });
+
+        return deferred.promise;
+    };
+
+    /*
+     * Uploads a file using Cordova File API.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmWS#uploadFile
+     * @param {Object} uri File URI.
+     * @param {Object} options File settings: fileKey, fileName and mimeType.
+     * @param {Object} presets Contains siteurl and token.
+     * @return {Promise}
+     */
+    self.uploadFile = function(uri, options, presets) {
+        $log.info('Trying to upload file (' + uri.length + ' chars)');
+
+        var ftOptions = {},
+            deferred = $q.defer();
+
+        ftOptions.fileKey = options.fileKey;
+        ftOptions.fileName = options.fileName;
+        ftOptions.httpMethod = 'POST';
+        ftOptions.mimeType = options.mimeType;
+        ftOptions.params = {
+            token: presets.token
+        };
+        ftOptions.chunkedMode = false;
+        ftOptions.headers = {
+            Connection: "close"
+        };
+
+        $log.info('Initializing upload');
+        $cordovaFileTransfer.upload(presets.siteurl + '/webservice/upload.php', uri, ftOptions).then(function(success) {
+            $log.info('Successfully uploaded file');
+            deferred.resolve(success);
+        }, function(error) {
+            $log.error('Error while uploading file: ' + error.exception);
+            deferred.reject(error);
+        }, function(progress) {
+            deferred.notify(progress);
+        });
+
+        return deferred.promise;
     };
 
     return self;

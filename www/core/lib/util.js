@@ -23,6 +23,8 @@ angular.module('mm.core')
  */
 .provider('$mmUtil', function() {
 
+    var self = this; // Use 'self' to be coherent with the rest of services.
+
     /**
      * Serialize an object to be used in a request.
      *
@@ -32,7 +34,7 @@ angular.module('mm.core')
      * @param  {Object} obj Object to serialize.
      * @return {String}     Serialization of the object.
      */
-    this.param = function(obj) {
+    self.param = function(obj) {
         var query = '', name, value, fullSubName, subName, subValue, innerObj, i;
 
         for (name in obj) {
@@ -44,7 +46,7 @@ angular.module('mm.core')
                     fullSubName = name + '[' + i + ']';
                     innerObj = {};
                     innerObj[fullSubName] = subValue;
-                    query += this.param(innerObj) + '&';
+                    query += self.param(innerObj) + '&';
                 }
             }
             else if (value instanceof Object) {
@@ -53,7 +55,7 @@ angular.module('mm.core')
                     fullSubName = name + '[' + subName + ']';
                     innerObj = {};
                     innerObj[fullSubName] = subValue;
-                    query += this.param(innerObj) + '&';
+                    query += self.param(innerObj) + '&';
                 }
             }
             else if (value !== undefined && value !== null) query += encodeURIComponent(name) + '=' + encodeURIComponent(value) + '&';
@@ -62,7 +64,17 @@ angular.module('mm.core')
         return query.length ? query.substr(0, query.length - 1) : query;
     };
 
-    function mmUtil($ionicLoading, $ionicPopup, $translate) {
+    function mmUtil($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp, $q) {
+
+        var self = this; // Use 'self' to be coherent with the rest of services.
+
+        // // Loading all the mimetypes.
+        var mimeTypes = {};
+        $http.get('core/assets/mimetypes.json').then(function(response) {
+            mimeTypes = response.data;
+        }, function() {
+            // It failed, never mind...
+        });
 
         /**
          * Formats a URL, trim, lowercase, etc...
@@ -73,7 +85,7 @@ angular.module('mm.core')
          * @param  {String} url The url to be formatted.
          * @return {String}     Fromatted url.
          */
-        this.formatURL = function(url) {
+        self.formatURL = function(url) {
 
             url = url.trim();
 
@@ -94,6 +106,62 @@ angular.module('mm.core')
         };
 
         /**
+         * Returns the file extension of a file.
+         *
+         * When the file does not have an extension, it returns undefined.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#getFileExtension
+         * @param  {string} filename The file name.
+         * @return {string}          The lowercased extension, or undefined.
+         */
+        self.getFileExtension = function(filename) {
+            var dot = filename.lastIndexOf("."),
+                ext;
+
+            if (dot > -1) {
+                ext = filename.substr(dot + 1).toLowerCase();
+            }
+
+            return ext;
+        };
+
+        /**
+         * Get a file icon URL based on its file name.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#getFileIcon
+         * @param  {String} The name of the file.
+         * @return {String} The path to a file icon.
+         */
+        self.getFileIcon = function(filename) {
+            var ext = self.getFileExtension(filename),
+                icon;
+
+            if (ext && mimeTypes[ext] && mimeTypes[ext].icon) {
+                icon = mimeTypes[ext].icon + '-64.png';
+            } else {
+                icon = 'unknown-64.png';
+            }
+
+            return 'img/files/' + icon;
+        };
+
+        /**
+         * Get the folder icon URL.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#getFolderIcon
+         * @return {String} The path to a folder icon.
+         */
+        self.getFolderIcon = function() {
+            return 'img/files/folder-64.png';
+        };
+
+        /**
          * Validates a URL for a specific pattern.
          *
          * @module mm.core
@@ -103,7 +171,7 @@ angular.module('mm.core')
          * @return {Boolean}   TRUE if the url matches the expected pattern.
          *                     FALSE otherwise.
          */
-        this.isValidURL = function(url) {
+        self.isValidURL = function(url) {
             return /^http(s)?\:\/\/([\da-zA-Z\.-]+)\.([\da-zA-Z\.]{2,6})([\/\w \.-]*)*\/?/i.test(url);
         };
 
@@ -119,7 +187,7 @@ angular.module('mm.core')
          * @param {String} token Token to use.
          * @return {String}      Fixed URL.
          */
-        this.fixPluginfileURL = function(url, token) {
+        self.fixPluginfileURL = function(url, token) {
 
             // This function is used in regexp callbacks, better not to risk!!
             if (!url) {
@@ -156,16 +224,134 @@ angular.module('mm.core')
         };
 
         /**
-         * Displays a loading modal window.
+         * Open a file using platform specific method.
+         *
+         * node-webkit: Using the default application configured.
+         * Android: Using the WebIntent plugin.
+         * iOs: Using the window.open method.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#openFile
+         * @param  {String} path The local path of the file to be open.
+         * @return {Void}
+         */
+        self.openFile = function(path) {
+
+            if (false) {
+                // TODO Restore node-webkit support.
+
+                // Link is the file path in the file system.
+                // We use the node-webkit shell for open the file (pdf, doc) using the default application configured in the os.
+                // var gui = require('nw.gui');
+                // gui.Shell.openItem(path);
+
+            } else if (window.plugins) {
+                var extension = self.getFileExtension(path),
+                    mimetype;
+
+                if (extension && mimeTypes[extension]) {
+                    mimetype = mimeTypes[extension];
+                }
+
+                if (ionic.Platform.isAndroid() && window.plugins.webintent) {
+                    var iParams = {
+                        action: "android.intent.action.VIEW",
+                        url: path,
+                        type: mimetype};
+
+                    window.plugins.webintent.startActivity(
+                        iParams,
+                        function() {
+                            $log.debug('Intent launched');
+                        },
+                        function() {
+                            $log.debug('Intent launching failed');
+                            $log.debug('action: ' + iParams.action);
+                            $log.debug('url: ' + iParams.url);
+                            $log.debug('type: ' + iParams.type);
+                            // This may work in cordova 2.4 and onwards.
+                            window.open(path, '_system');
+                        }
+                    );
+
+                } else if (ionic.Platform.isIOS() && typeof handleDocumentWithURL == 'function') {
+
+                    var fsRoot = $mmFS.getRoot();
+                    // Encode/decode the specific file path, note that a path may contain directories
+                    // with white spaces, special characters...
+                    if (path.indexOf(fsRoot > -1)) {
+                        path = path.replace(fsRoot, "");
+                        path = encodeURIComponent(decodeURIComponent(path));
+                        path = fsRoot + path;
+                    }
+
+                    handleDocumentWithURL(
+                        function() {
+                            $log.debug('File opened with handleDocumentWithURL' + path);
+                        },
+                        function(error) {
+                            $log.debug('Error opening with handleDocumentWithURL' + path);
+                            if(error == 53) {
+                                $log.error('No app that handles this file type.');
+                            }
+                            self.openFileWithBrowser(path);
+                        },
+                        path
+                    );
+                } else {
+                    // Last try, launch the file with the browser.
+                    self.openFileWithBrowser(path);
+                }
+            } else {
+                // Changing _blank for _system may work in cordova 2.4 and onwards.
+                $log.debug('Opening external file using window.open()');
+                window.open(path, '_blank');
+            }
+        };
+
+        /**
+         * Open a file using a browser.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#_openFileWithBrowser
+         * @param  {String} path The local path of the file to be open.
+         * @return {Void}
+         */
+        self.openFileWithBrowser = function(path) {
+            if ($mmApp.canUseChildBrowser()) {
+                $log.debug('Launching childBrowser');
+                try {
+                    window.plugins.childBrowser.showWebPage(
+                        path,
+                        {
+                            showLocationBar: true ,
+                            showAddress: false
+                        }
+                    );
+                } catch(e) {
+                    $log.debug('Launching childBrowser failed!, opening as standard link.');
+                    window.open(path, '_blank');
+                }
+            } else {
+                // Changing _blank for _system may work in cordova 2.4 and onwards.
+                $log.debug('Open external file using window.open()');
+                window.open(path, '_blank');
+            }
+        };
+
+        /**
+         * Displays a loading modal window
          *
          * @module mm.core
          * @ngdoc method
          * @name $mmUtil#showModalLoading
          * @param {string} title The text of the modal window
          */
-        this.showModalLoading = function(text) {
+        self.showModalLoading = function(text) {
             $ionicLoading.show({
-                template: '<i class="icon ion-load-c">'+text
+                template: '<i class="icon ion-load-c"> '+text
             });
         };
 
@@ -176,7 +362,7 @@ angular.module('mm.core')
          * @ngdoc method
          * @name $mmUtil#closeModalLoading
          */
-        this.closeModalLoading = function() {
+        self.closeModalLoading = function() {
             $ionicLoading.hide();
         };
 
@@ -189,7 +375,7 @@ angular.module('mm.core')
          * @param {String} errorMessage    Message to show.
          * @param {Boolean} needsTranslate True if the errorMessage is a $translate key, false otherwise.
          */
-        this.showErrorModal = function(errorMessage, needsTranslate) {
+        self.showErrorModal = function(errorMessage, needsTranslate) {
             var langKeys = ['error'];
             if (needsTranslate) {
                 langKeys.push(errorMessage);
@@ -204,6 +390,29 @@ angular.module('mm.core')
         };
 
         /**
+         * Show a modal with an error message.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#showModal
+         * @param {String} title        Language key.
+         * @param {String} message      Language key.
+         */
+        self.showModal = function(title, message) {
+            var promises = [
+                $translate(title),
+                $translate(message),
+            ];
+
+            $q.all(promises).then(function(translations) {
+                $ionicPopup.alert({
+                    title: translations[0],
+                    template: translations[1]
+                });
+            });
+        };
+
+        /**
          * Function to clean HTML tags.
          *
          * @module mm.core
@@ -212,7 +421,7 @@ angular.module('mm.core')
          * @param  {String} text The text to be cleaned.
          * @return {String}      Text cleaned.
          */
-        this.cleanTags = function(text) {
+        self.cleanTags = function(text) {
             // First, we use a regexpr.
             text = text.replace(/(<([^>]+)>)/ig,"");
             // Then, we rely on the browser. We need to wrap the text to be sure is HTML.
@@ -223,7 +432,7 @@ angular.module('mm.core')
         };
     }
 
-    this.$get = function($ionicLoading, $ionicPopup, $translate) {
-        return new mmUtil($ionicLoading, $ionicPopup, $translate);
+    self.$get = function($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp, $q) {
+        return new mmUtil($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp, $q);
     };
 });

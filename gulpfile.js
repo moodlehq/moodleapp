@@ -152,7 +152,7 @@ gulp.task('lang', function() {
 
         var pluginName = filepath.replace('addons/', '');
         pluginName = pluginName.substr(0, pluginName.indexOf('/'));
-        addProperties(merged, data[filepath], 'mm.addons.'+pluginName+'.');
+        addProperties(merged, data[filepath], 'mma.'+pluginName+'.');
 
       }
 

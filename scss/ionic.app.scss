@@ -38,7 +38,7 @@ $button-default-active-border: $positive;
 $item-media-width: 32px;
 $item-media-height: 32px;
 
-// The path for our ionicons font files, relative to the built CSS in www/css.
+// The path for our ionicons font files, relative to the built CSS in www/css
 $ionicons-font-path: "../lib/ionic/fonts" !default;
 
 // Include all of Ionic.
@@ -77,4 +77,16 @@ $ionicons-font-path: "../lib/ionic/fonts" !default;
 .button.activated {
   box-shadow: none;
   color: #fff;
+}
+
+// Media item, ideal for icons.
+.item-media {
+  @extend .item-avatar;
+  padding-left: $item-media-width + ($item-padding * 2);
+  min-height: $item-media-width + ($item-padding * 2);
+  > img:first-child {
+    max-width: $item-media-width;
+    max-height: $item-media-height;
+    border-radius: 0;
+  }
 }
