@@ -28,7 +28,7 @@ angular.module('mm.addons.files')
     if (canUploadFiles) {
         $scope.add = function() {
             $mmaFilesHelper.pickAndUploadFile().then(function() {
-                $mmUtil.showModal('mm.addons.files.success', 'mm.addons.files.fileuploaded');
+                $mmUtil.showModal('mma.files.success', 'mma.files.fileuploaded');
             }, function(err) {
                 if (err) {
                     $mmUtil.showErrorModal(err);

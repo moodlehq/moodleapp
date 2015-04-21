@@ -1264,7 +1264,8 @@ angular.module('mm.core')
 
 angular.module('mm.core')
 .provider('$mmUtil', function() {
-        this.param = function(obj) {
+    var self = this;
+        self.param = function(obj) {
         var query = '', name, value, fullSubName, subName, subValue, innerObj, i;
         for (name in obj) {
             value = obj[name];
@@ -1274,7 +1275,7 @@ angular.module('mm.core')
                     fullSubName = name + '[' + i + ']';
                     innerObj = {};
                     innerObj[fullSubName] = subValue;
-                    query += this.param(innerObj) + '&';
+                    query += self.param(innerObj) + '&';
                 }
             }
             else if (value instanceof Object) {
@@ -1283,7 +1284,7 @@ angular.module('mm.core')
                     fullSubName = name + '[' + subName + ']';
                     innerObj = {};
                     innerObj[fullSubName] = subValue;
-                    query += this.param(innerObj) + '&';
+                    query += self.param(innerObj) + '&';
                 }
             }
             else if (value !== undefined && value !== null) query += encodeURIComponent(name) + '=' + encodeURIComponent(value) + '&';
@@ -1291,12 +1292,13 @@ angular.module('mm.core')
         return query.length ? query.substr(0, query.length - 1) : query;
     };
     function mmUtil($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp, $q) {
+        var self = this;
         var mimeTypes = {};
         $http.get('core/assets/mimetypes.json').then(function(response) {
             mimeTypes = response.data;
         }, function() {
         });
-                this.formatURL = function(url) {
+                self.formatURL = function(url) {
             url = url.trim();
             if (! /^http(s)?\:\/\/.*/i.test(url)) {
                 url = "https://" + url;
@@ -1306,7 +1308,7 @@ angular.module('mm.core')
             url = url.replace(/\/$/, "");
             return url;
         };
-                this.getFileExtension = function(filename) {
+                self.getFileExtension = function(filename) {
             var dot = filename.lastIndexOf("."),
                 ext;
             if (dot > -1) {
@@ -1314,8 +1316,8 @@ angular.module('mm.core')
             }
             return ext;
         };
-                this.getFileIcon = function(filename) {
-            var ext = this.getFileExtension(filename),
+                self.getFileIcon = function(filename) {
+            var ext = self.getFileExtension(filename),
                 icon;
             if (ext && mimeTypes[ext] && mimeTypes[ext].icon) {
                 icon = mimeTypes[ext].icon + '-64.png';
@@ -1324,13 +1326,13 @@ angular.module('mm.core')
             }
             return 'img/files/' + icon;
         };
-                this.getFolderIcon = function() {
+                self.getFolderIcon = function() {
             return 'img/files/folder-64.png';
         };
-                this.isValidURL = function(url) {
+                self.isValidURL = function(url) {
             return /^http(s)?\:\/\/([\da-zA-Z\.-]+)\.([\da-zA-Z\.]{2,6})([\/\w \.-]*)*\/?/i.test(url);
         };
-                this.fixPluginfileURL = function(url, token) {
+                self.fixPluginfileURL = function(url, token) {
             if (!url) {
                 return '';
             }
@@ -1354,10 +1356,10 @@ angular.module('mm.core')
             }
             return url;
         };
-                this.openFile = function(path) {
+                self.openFile = function(path) {
             if (false) {
             } else if (window.plugins) {
-                var extension = this.getFileExtension(path),
+                var extension = self.getFileExtension(path),
                     mimetype;
                 if (extension && mimeTypes[extension]) {
                     mimetype = mimeTypes[extension];
@@ -1396,19 +1398,19 @@ angular.module('mm.core')
                             if(error == 53) {
                                 $log.error('No app that handles this file type.');
                             }
-                            this.openFileWithBrowser(path);
+                            self.openFileWithBrowser(path);
                         },
                         path
                     );
                 } else {
-                    this.openFileWithBrowser(path);
+                    self.openFileWithBrowser(path);
                 }
             } else {
                 $log.debug('Opening external file using window.open()');
                 window.open(path, '_blank');
             }
         };
-                this.openFileWithBrowser = function(path) {
+                self.openFileWithBrowser = function(path) {
             if ($mmApp.canUseChildBrowser()) {
                 $log.debug('Launching childBrowser');
                 try {
@@ -1428,15 +1430,15 @@ angular.module('mm.core')
                 window.open(path, '_blank');
             }
         };
-                this.showModalLoading = function(text) {
+                self.showModalLoading = function(text) {
             $ionicLoading.show({
                 template: '<i class="icon ion-load-c"> '+text
             });
         };
-                this.closeModalLoading = function() {
+                self.closeModalLoading = function() {
             $ionicLoading.hide();
         };
-                this.showErrorModal = function(errorMessage, needsTranslate) {
+                self.showErrorModal = function(errorMessage, needsTranslate) {
             var langKeys = ['error'];
             if (needsTranslate) {
                 langKeys.push(errorMessage);
@@ -1448,7 +1450,7 @@ angular.module('mm.core')
                 });
             });
         };
-                this.showModal = function(title, message) {
+                self.showModal = function(title, message) {
             var promises = [
                 $translate(title),
                 $translate(message),
@@ -1460,13 +1462,13 @@ angular.module('mm.core')
                 });
             });
         };
-                this.cleanTags = function(text) {
+                self.cleanTags = function(text) {
             text = text.replace(/(<([^>]+)>)/ig,"");
             text = text.replace(/(?:\r\n|\r|\n)/g, '<br />');
             return text;
         };
     }
-    this.$get = function($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp, $q) {
+    self.$get = function($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp, $q) {
         return new mmUtil($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp, $q);
     };
 });
@@ -2168,7 +2170,7 @@ angular.module('mm.addons.files', ['mm.core'])
       });
 })
 .run(function($mmSideMenuDelegate, $translate, $q, $mmaFiles) {
-  var promises = [$translate('mm.addons.files.myfiles')];
+  var promises = [$translate('mma.files.myfiles')];
   $q.all(promises).then(function(data) {
     var strMyfiles = data[0];
     $mmSideMenuDelegate.registerPlugin('mmaFiles', function() {
@@ -2177,7 +2179,7 @@ angular.module('mm.addons.files', ['mm.core'])
       }
       return {
         icon: 'ion-folder',
-        name: strMyfiles,
+        title: strMyfiles,
         state: 'site.files'
       };
     });
@@ -2197,7 +2199,7 @@ angular.module('mm.addons.files')
     if (canUploadFiles) {
         $scope.add = function() {
             $mmaFilesHelper.pickAndUploadFile().then(function() {
-                $mmUtil.showModal('mm.addons.files.success', 'mm.addons.files.fileuploaded');
+                $mmUtil.showModal('mma.files.success', 'mma.files.fileuploaded');
             }, function(err) {
                 if (err) {
                     $mmUtil.showErrorModal(err);
@@ -2225,10 +2227,10 @@ angular.module('mm.addons.files')
         if (!path) {
             if (root === 'site') {
                 promise = $mmaFiles.getSiteFiles(refresh);
-                title = $translate('mm.addons.files.sitefiles');
+                title = $translate('mma.files.sitefiles');
             } else if (root === 'my') {
                 promise = $mmaFiles.getMyFiles(refresh);
-                title = $translate('mm.addons.files.myprivatefiles');
+                title = $translate('mma.files.myprivatefiles');
             } else {
                 promise = $q.reject();
                 title = (function() {
@@ -2253,7 +2255,7 @@ angular.module('mm.addons.files')
             $scope.count = files.count;
             $scope.title = title;
         }, function() {
-            $mmUtil.showErrorModal('mm.addons.files.couldnotloadfiles', true);
+            $mmUtil.showErrorModal('mma.files.couldnotloadfiles', true);
         }).finally(function() {
             $mmUtil.closeModalLoading();
         });
@@ -2263,7 +2265,7 @@ angular.module('mm.addons.files')
         if (!$mmSite.canDownloadFiles()) {
             return false;
         }
-        $translate('mm.addons.files.downloading').then(function(str) {
+        $translate('mma.files.downloading').then(function(str) {
             $mmUtil.showModalLoading(str);
         });
         $mmaFiles.getFile(file).then(function(fileEntry) {
@@ -2271,7 +2273,7 @@ angular.module('mm.addons.files')
             $mmUtil.openFile(fileEntry.toURL());
         }, function() {
             $mmUtil.closeModalLoading();
-            $mmUtil.showErrorModal('mm.addons.files.errorwhiledownloading', true);
+            $mmUtil.showErrorModal('mma.files.errorwhiledownloading', true);
         });
     };
     if (showUpload) {
@@ -2451,19 +2453,19 @@ angular.module('mm.addons.files')
         self.pickAndUploadFile = function() {
         var deferred = $q.defer();
         if (!$cordovaNetwork.isOnline()) {
-            $mmUtil.showErrorModal('mm.addons.files.errormustbeonlinetoupload', true);
+            $mmUtil.showErrorModal('mma.files.errormustbeonlinetoupload', true);
             deferred.reject();
             return deferred.promise;
         }
         var promises = [
             $translate('cancel'),
-            $translate('mm.addons.files.audio'),
-            $translate('mm.addons.files.camera'),
-            $translate('mm.addons.files.photoalbums'),
-            $translate('mm.addons.files.video'),
-            $translate('mm.addons.files.uploadafilefrom'),
-            $translate('mm.addons.files.uploading'),
-            $translate('mm.addons.files.errorwhileuploading')
+            $translate('mma.files.audio'),
+            $translate('mma.files.camera'),
+            $translate('mma.files.photoalbums'),
+            $translate('mma.files.video'),
+            $translate('mma.files.uploadafilefrom'),
+            $translate('mma.files.uploading'),
+            $translate('mma.files.errorwhileuploading')
         ];
         $q.all(promises).then(function(translations) {
             var strCancel = translations[0],

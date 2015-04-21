@@ -39,10 +39,10 @@ angular.module('mm.addons.files')
             // The path is unknown, the user must be requesting a root.
             if (root === 'site') {
                 promise = $mmaFiles.getSiteFiles(refresh);
-                title = $translate('mm.addons.files.sitefiles');
+                title = $translate('mma.files.sitefiles');
             } else if (root === 'my') {
                 promise = $mmaFiles.getMyFiles(refresh);
-                title = $translate('mm.addons.files.myprivatefiles');
+                title = $translate('mma.files.myprivatefiles');
             } else {
                 // Upon error we create a fake promise that is rejected.
                 promise = $q.reject();
@@ -73,7 +73,7 @@ angular.module('mm.addons.files')
             $scope.count = files.count;
             $scope.title = title;
         }, function() {
-            $mmUtil.showErrorModal('mm.addons.files.couldnotloadfiles', true);
+            $mmUtil.showErrorModal('mma.files.couldnotloadfiles', true);
         }).finally(function() {
             $mmUtil.closeModalLoading();
         });
@@ -86,7 +86,7 @@ angular.module('mm.addons.files')
             return false;
         }
 
-        $translate('mm.addons.files.downloading').then(function(str) {
+        $translate('mma.files.downloading').then(function(str) {
             $mmUtil.showModalLoading(str);
         });
         $mmaFiles.getFile(file).then(function(fileEntry) {
@@ -94,7 +94,7 @@ angular.module('mm.addons.files')
             $mmUtil.openFile(fileEntry.toURL());
         }, function() {
             $mmUtil.closeModalLoading();
-            $mmUtil.showErrorModal('mm.addons.files.errorwhiledownloading', true);
+            $mmUtil.showErrorModal('mma.files.errorwhiledownloading', true);
         });
     };
 

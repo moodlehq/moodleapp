@@ -45,7 +45,7 @@ angular.module('mm.addons.files', ['mm.core'])
 })
 
 .run(function($mmSideMenuDelegate, $translate, $q, $mmaFiles) {
-  var promises = [$translate('mm.addons.files.myfiles')];
+  var promises = [$translate('mma.files.myfiles')];
   $q.all(promises).then(function(data) {
     var strMyfiles = data[0];
     $mmSideMenuDelegate.registerPlugin('mmaFiles', function() {
@@ -54,7 +54,7 @@ angular.module('mm.addons.files', ['mm.core'])
       }
       return {
         icon: 'ion-folder',
-        name: strMyfiles,
+        title: strMyfiles,
         state: 'site.files'
       };
     });

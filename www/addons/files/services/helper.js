@@ -31,20 +31,20 @@ angular.module('mm.addons.files')
         var deferred = $q.defer();
 
         if (!$cordovaNetwork.isOnline()) {
-            $mmUtil.showErrorModal('mm.addons.files.errormustbeonlinetoupload', true);
+            $mmUtil.showErrorModal('mma.files.errormustbeonlinetoupload', true);
             deferred.reject();
             return deferred.promise;
         }
 
         var promises = [
             $translate('cancel'),
-            $translate('mm.addons.files.audio'),
-            $translate('mm.addons.files.camera'),
-            $translate('mm.addons.files.photoalbums'),
-            $translate('mm.addons.files.video'),
-            $translate('mm.addons.files.uploadafilefrom'),
-            $translate('mm.addons.files.uploading'),
-            $translate('mm.addons.files.errorwhileuploading')
+            $translate('mma.files.audio'),
+            $translate('mma.files.camera'),
+            $translate('mma.files.photoalbums'),
+            $translate('mma.files.video'),
+            $translate('mma.files.uploadafilefrom'),
+            $translate('mma.files.uploading'),
+            $translate('mma.files.errorwhileuploading')
         ];
 
         $q.all(promises).then(function(translations) {

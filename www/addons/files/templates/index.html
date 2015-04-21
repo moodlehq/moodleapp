@@ -1,34 +1,34 @@
-<ion-view view-title="{{'mm.addons.files.myfiles' | translate}}">
+<ion-view view-title="{{'mma.files.myfiles' | translate}}">
     <ion-content padding="true">
         <div ng-if="canAccessFiles">
             <div class="list card" ng-if="showPrivateFiles">
                 <a ui-sref="site.files-list({root: 'my'})" class="item item-icon-right">
                     <i class="icon ion-ios-arrow-right"></i>
-                    {{ 'mm.addons.files.myprivatefiles' | translate }}
+                    {{ 'mma.files.myprivatefiles' | translate }}
                 </a>
-                <div class="item item-text-wrap"><p>{{ 'mm.addons.files.myprivatefilesdesc' | translate }}</p></div>
+                <div class="item item-text-wrap"><p>{{ 'mma.files.myprivatefilesdesc' | translate }}</p></div>
             </div>
 
             <div class="list card">
                 <a ui-sref="site.files-list({root: 'site'})" class="item item-icon-right">
                     <i class="icon ion-ios-arrow-right"></i>
-                    {{ 'mm.addons.files.sitefiles' | translate }}
+                    {{ 'mma.files.sitefiles' | translate }}
                 </a>
-                <div class="item item-text-wrap"><p>{{ 'mm.addons.files.sitefilesdesc' | translate }}</p></div>
+                <div class="item item-text-wrap"><p>{{ 'mma.files.sitefilesdesc' | translate }}</p></div>
             </div>
 
             <div class="list card" ng-if="!canDownload">
-                <div class="item item-text-wrap"><p>{{ 'mm.addons.files.admindisableddownload' | translate }}</p></div>
+                <div class="item item-text-wrap"><p>{{ 'mma.files.admindisableddownload' | translate }}</p></div>
             </div>
         </div>
 
         <div ng-if="showUpload">
             <div class="card">
-                <h2 class="item-body">{{ 'mm.addons.files.uploadfiles' | translate }}</h2>
-                <p class="item-body">{{ 'mm.addons.files.clicktoupload' | translate }}</p>
+                <h2 class="item-body">{{ 'mma.files.uploadfiles' | translate }}</h2>
+                <p class="item-body">{{ 'mma.files.clicktoupload' | translate }}</p>
             </div>
             <a target="_blank" class="button button-block" ng-click="add()">
-                <i class="icon ion-ios7-browsers-outline"></i> {{ 'mm.addons.files.uploadafile' | translate }}
+                <i class="icon ion-ios7-browsers-outline"></i> {{ 'mma.files.uploadafile' | translate }}
             </a>
         </div>
     </ion-content>
