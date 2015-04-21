@@ -69,6 +69,7 @@ gulp.task('sass', function(done) {
 gulp.task('watch', function() {
   gulp.watch(paths.sass, ['sass']);
   gulp.watch(paths.js, ['build']);
+  gulp.watch(paths.lang, ['lang']);
 });
 
 gulp.task('build', function() {
