@@ -28,7 +28,12 @@ angular.module('mm.addons.files', ['mm.core'])
       })
 
       .state('site.files-list', {
-        url: '/list?root&path&title',
+        url: '/list',
+        params: {
+          path: false,
+          root: false,
+          title: false
+        },
         views: {
           'site': {
             controller: 'mmaFilesListController',

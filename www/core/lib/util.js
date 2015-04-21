@@ -316,7 +316,7 @@ angular.module('mm.core')
          * @return {Void}
          */
         this.openFileWithBrowser = function(path) {
-            if (this.canUseChildBrowser()) {
+            if ($mmApp.canUseChildBrowser()) {
                 $log.debug('Launching childBrowser');
                 try {
                     window.plugins.childBrowser.showWebPage(

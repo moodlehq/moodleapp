@@ -45,12 +45,12 @@ angular.module('mm.addons.files')
                 title = $translate('mm.addons.files.myprivatefiles');
             } else {
                 // Upon error we create a fake promise that is rejected.
-                promise = (function() {
+                promise = $q.reject();
+                title = (function() {
                     var q = $q.defer();
-                    q.reject();
+                    q.resolve('');
                     return q.promise;
                 })();
-                title = '';
             }
         } else {
             // Serve the files the user requested.

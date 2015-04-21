@@ -1409,7 +1409,7 @@ angular.module('mm.core')
             }
         };
                 this.openFileWithBrowser = function(path) {
-            if (this.canUseChildBrowser()) {
+            if ($mmApp.canUseChildBrowser()) {
                 $log.debug('Launching childBrowser');
                 try {
                     window.plugins.childBrowser.showWebPage(
@@ -2153,7 +2153,12 @@ angular.module('mm.addons.files', ['mm.core'])
         }
       })
       .state('site.files-list', {
-        url: '/list?root&path&title',
+        url: '/list',
+        params: {
+          path: false,
+          root: false,
+          title: false
+        },
         views: {
           'site': {
             controller: 'mmaFilesListController',
@@ -2225,12 +2230,12 @@ angular.module('mm.addons.files')
                 promise = $mmaFiles.getMyFiles(refresh);
                 title = $translate('mm.addons.files.myprivatefiles');
             } else {
-                promise = (function() {
+                promise = $q.reject();
+                title = (function() {
                     var q = $q.defer();
-                    q.reject();
+                    q.resolve('');
                     return q.promise;
                 })();
-                title = '';
             }
         } else {
             pathdata = JSON.parse(path);
@@ -2457,7 +2462,7 @@ angular.module('mm.addons.files')
             $translate('mm.addons.files.photoalbums'),
             $translate('mm.addons.files.video'),
             $translate('mm.addons.files.uploadafilefrom'),
-            $translate('loading'),
+            $translate('mm.addons.files.uploading'),
             $translate('mm.addons.files.errorwhileuploading')
         ];
         $q.all(promises).then(function(translations) {
@@ -2468,18 +2473,19 @@ angular.module('mm.addons.files')
                 strVideo = translations[4],
                 strUploadafilefrom = translations[5],
                 strLoading = translations[6],
-                strErrorWhileUploading = translations[7];
+                strErrorWhileUploading = translations[7],
+                buttons = [
+                    { text: strPhotoalbums, uniqid: 'albums' },
+                    { text: strCamera, uniqid: 'camera'  },
+                    { text: strAudio, uniqid: 'audio'  },
+                    { text: strVideo, uniqid: 'video'  },
+                ];
             $ionicActionSheet.show({
-                buttons: [
-                    { text: strPhotoalbums },
-                    { text: strCamera },
-                    { text: strAudio },
-                    { text: strVideo },
-                ],
+                buttons: buttons,
                 titleText: strUploadafilefrom,
                 cancelText: strCancel,
                 buttonClicked: function(index) {
-                    if (index === 0) {
+                    if (buttons[index].uniqid === 'albums') {
                         $log.info('Trying to get a image from albums');
                         var width  =  window.innerWidth  - 200;
                         var height =  window.innerHeight - 200;
@@ -2501,7 +2507,7 @@ angular.module('mm.addons.files')
                         }, function() {
                             deferred.reject();
                         });
-                    } else if (index === 1) {
+                    } else if (buttons[index].uniqid === 'camera') {
                         $log.info('Trying to get a media from camera');
                         $cordovaCamera.getPicture({
                             quality: 50,
@@ -2516,7 +2522,7 @@ angular.module('mm.addons.files')
                         }, function() {
                             deferred.reject();
                         });
-                    } else if (index === 2) {
+                    } else if (buttons[index].uniqid === 'audio') {
                         $log.info('Trying to record an audio file');
                         $cordovaCapture.captureAudio({limit: 1}).then(function(medias) {
                             $mmUtil.showModalLoading(strLoading);
@@ -2528,7 +2534,7 @@ angular.module('mm.addons.files')
                         }, function() {
                             deferred.reject();
                         });
-                    } else if (index === 3) {
+                    } else if (buttons[index].uniqid === 'video') {
                         $log.info('Trying to record a video file');
                         $cordovaCapture.captureVideo({limit: 1}).then(function(medias) {
                             $mmUtil.showModalLoading(strLoading);

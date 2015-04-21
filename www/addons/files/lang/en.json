@@ -11,12 +11,15 @@
     "fileuploaded": "The file was successfully uploaded.",
     "myfiles": "My files",
     "myprivatefiles": "My private files",
+    "myprivatefilesdesc": "The files that are available in your private area on this Moodle site.",
     "nofilesfound": "No files found.",
     "photoalbums": "Photo albums",
     "sitefiles": "Site files",
+    "sitefilesdesc": "The other files that are available to you on this Moodle site.",
     "success": "Success!",
-    "uploadfiles": "Upload files",
     "uploadafile": "Upload a file",
     "uploadafilefrom": "Upload a file from",
+    "uploadfiles": "Upload files",
+    "uploading": "Uploading",
     "video": "Video"
 }
