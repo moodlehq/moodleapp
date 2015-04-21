@@ -29,7 +29,7 @@
                     <i class="icon ion-ionic"></i>{{ 'mm.core.sidemenu.mycourses' | translate}}
                 </a>
                 <a ng-repeat="plugin in plugins" menu-close class="item item-icon-left" ui-sref="{{plugin.state}}">
-                    <i class="icon {{plugin.icon}}"></i> {{plugin.name}}
+                    <i class="icon {{plugin.icon}}"></i> {{plugin.title}}
                     <span ng-show="plugin.badge > 0" class="badge badge-positive">{{plugin.badge}}</span>
                 </a>
                 <a menu-close class="item item-icon-left" ui-sref="site.preferences">
