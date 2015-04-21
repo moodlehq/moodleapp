@@ -62,7 +62,7 @@ angular.module('mm.core')
         return query.length ? query.substr(0, query.length - 1) : query;
     };
 
-    function mmUtil($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp) {
+    function mmUtil($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp, $q) {
 
         // // Loading all the mimetypes.
         var mimeTypes = {};
@@ -304,7 +304,7 @@ angular.module('mm.core')
                 $log.debug('Opening external file using window.open()');
                 window.open(path, '_blank');
             }
-        },
+        };
 
         /**
          * Open a file using a browser.
@@ -335,7 +335,7 @@ angular.module('mm.core')
                 $log.debug('Open external file using window.open()');
                 window.open(path, '_blank');
             }
-        },
+        };
 
         /**
          * Displays a loading modal window
@@ -386,6 +386,29 @@ angular.module('mm.core')
         };
 
         /**
+         * Show a modal with an error message.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#showModal
+         * @param {String} title        Language key.
+         * @param {String} message      Language key.
+         */
+        this.showModal = function(title, message) {
+            var promises = [
+                $translate(title),
+                $translate(message),
+            ];
+
+            $q.all(promises).then(function(translations) {
+                $ionicPopup.alert({
+                    title: translations[0],
+                    template: translations[1]
+                });
+            });
+        };
+
+        /**
          * Function to clean HTML tags.
          *
          * @module mm.core
@@ -405,7 +428,7 @@ angular.module('mm.core')
         };
     }
 
-    this.$get = function($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp) {
-        return new mmUtil($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp);
+    this.$get = function($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp, $q) {
+        return new mmUtil($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp, $q);
     };
 });
