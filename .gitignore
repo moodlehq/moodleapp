@@ -3,4 +3,5 @@
 
 node_modules/
 platforms/
-plugins/
+/plugins/
+hooks/

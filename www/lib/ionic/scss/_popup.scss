@@ -49,6 +49,11 @@
     @include display-flex();
     @include flex-direction(column);
   }
+
+  input,
+  textarea {
+    width: 100%;
+  }
 }
 
 .popup-head {
@@ -69,7 +74,7 @@
 }
 .popup-body {
   padding: 10px;
-  overflow: scroll;
+  overflow: auto;
 }
 
 .popup-buttons {
