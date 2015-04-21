@@ -141,6 +141,45 @@ angular.module('mm.core')
             if (this.id) {
                 this.db = $mmDB.getDB('Site-' + this.id, siteSchema);
             }
+        }
+
+        /**
+         * Can the user access their private files?
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmSite#canAccessMyFiles
+         * @return {Boolean} False when they cannot.
+         */
+        self.canAccessMyFiles = function() {
+            var infos = self.getInfo();
+            return infos && (typeof infos.usercanmanageownfiles === 'undefined' || infos.usercanmanageownfiles);
+        };
+
+        /**
+         * Can the user download files?
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmSite#canDownloadFiles
+         * @return {Boolean} False when they cannot.
+         */
+        self.canDownloadFiles = function() {
+            var infos = self.getInfo();
+            return infos && infos.downloadfiles;
+        };
+
+        /**
+         * Can the user upload files?
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmSite#canUploadFiles
+         * @return {Boolean} False when they cannot.
+         */
+        self.canUploadFiles = function() {
+            var infos = self.getInfo();
+            return infos && infos.uploadfiles;
         };
 
         /**
