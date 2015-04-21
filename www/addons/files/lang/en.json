@@ -4,6 +4,7 @@
     "camera": "Camera",
     "clicktoupload": "Click the button below to upload files to your private files.",
     "couldnotloadfiles": "The list of files could not be loaded.",
+    "downloading": "Downloading",
     "errormustbeonlinetoupload": "You have to be online to upload files.",
     "errorwhiledownloading": "An error occured while trying to download the file.",
     "errorwhileuploading": "An error occured during the file upload.",
