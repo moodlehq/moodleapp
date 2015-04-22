@@ -22,7 +22,7 @@ angular.module('mm.core.courses')
  * @name mmCoursesListCtrl
  */
 .controller('mmCoursesListCtrl', function($scope, $mmCourses, $mmCoursesDelegate, $mmUtil, $translate) {
-    $translate('loading').then(function(loadingString) {
+    $translate('mm.core.loading').then(function(loadingString) {
         $mmUtil.showModalLoading(loadingString);
     });
 
@@ -33,7 +33,7 @@ angular.module('mm.core.courses')
         if (typeof(error) !== 'undefined' && error != '') {
             $mmUtil.showErrorModal(error);
         } else {
-            $mmUtil.showErrorModal('mm.core.courses.errorloadcourses', true);
+            $mmUtil.showErrorModal('mm.courses.errorloadcourses', true);
         }
     }).finally(function() {
         $mmUtil.closeModalLoading();

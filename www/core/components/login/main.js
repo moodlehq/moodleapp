@@ -95,7 +95,7 @@ angular.module('mm.core.login', [])
         // App opened using custom URL scheme. Probably an SSO authentication.
         $log.debug('Login: App launched by URL');
 
-        $translate('mm.core.login.authenticating').then(function(authenticatingString) {
+        $translate('mm.login.authenticating').then(function(authenticatingString) {
             $mmUtil.showModalLoading(authenticatingString);
         });
 
@@ -178,7 +178,7 @@ angular.module('mm.core.login', [])
                 } else {
                     $log.debug('Inalid signature in the URL request yours: ' + params[0] + ' mine: '
                                     + signature + ' for passport ' + passport);
-                    return $translate('unexpectederror').then(function(errorString) {
+                    return $translate('mm.core.unexpectederror').then(function(errorString) {
                         return $q.reject(errorString);
                     });
                 }

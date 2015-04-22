@@ -15,7 +15,7 @@
 angular.module('mm.core.courses')
 
 .run(function($translate, mmCoursesFrontPage) {
-    $translate('mm.core.courses.frontpage').then(function(value) {
+    $translate('mm.courses.frontpage').then(function(value) {
         mmCoursesFrontPage.shortname = value;
         mmCoursesFrontPage.fullname = value;
     });

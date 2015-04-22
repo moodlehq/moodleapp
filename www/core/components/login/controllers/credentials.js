@@ -34,15 +34,15 @@ angular.module('mm.core.login')
             password = $scope.credentials.password;
 
         if (!username) {
-            $mmUtil.showErrorModal('mm.core.login.usernamerequired', true);
+            $mmUtil.showErrorModal('mm.login.usernamerequired', true);
             return;
         }
         if (!password) {
-            $mmUtil.showErrorModal('mm.core.login.passwordrequired', true);
+            $mmUtil.showErrorModal('mm.login.passwordrequired', true);
             return;
         }
 
-        $translate('loading').then(function(loadingString) {
+        $translate('mm.core.loading').then(function(loadingString) {
             $mmUtil.showModalLoading(loadingString);
         });
 

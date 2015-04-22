@@ -46,11 +46,11 @@ angular.module('mm.core.login')
     $scope.connect = function(url) {
 
         if (!url) {
-            $mmUtil.showErrorModal('mm.core.login.siteurlrequired', true);
+            $mmUtil.showErrorModal('mm.login.siteurlrequired', true);
             return;
         }
 
-        $translate('loading').then(function(loadingString) {
+        $translate('mm.core.loading').then(function(loadingString) {
             $mmUtil.showModalLoading(loadingString);
         });
 
@@ -75,7 +75,7 @@ angular.module('mm.core.login')
 
                 if (result.code == mmLoginSSOCode) {
                     // SSO. User needs to authenticate in a browser.
-                    $ionicPopup.confirm({template: $translate('mm.core.login.logininsiterequired')})
+                    $ionicPopup.confirm({template: $translate('mm.login.logininsiterequired')})
                         .then(function(confirmed) {
                             if (confirmed) {
                                 $mmConfig.get('wsextservice').then(function(service) {

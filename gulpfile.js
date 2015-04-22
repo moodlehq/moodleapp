@@ -140,13 +140,13 @@ gulp.task('lang', function() {
 
       if (filepath.indexOf('core/lang') == 0) {
 
-        addProperties(merged, data[filepath], '');
+        addProperties(merged, data[filepath], 'mm.core.');
 
       } else if (filepath.indexOf('core/components') == 0) {
 
         var componentName = filepath.replace('core/components/', '');
         componentName = componentName.substr(0, componentName.indexOf('/'));
-        addProperties(merged, data[filepath], 'mm.core.'+componentName+'.');
+        addProperties(merged, data[filepath], 'mm.'+componentName+'.');
 
       } else if (filepath.indexOf('addons') == 0) {
 
@@ -158,7 +158,7 @@ gulp.task('lang', function() {
 
     }
 
-    return new Buffer(JSON.stringify(merged));
+    return new Buffer(JSON.stringify(merged, null, 4));
   }
 
   /**

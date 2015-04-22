@@ -194,7 +194,7 @@ angular.module('mm.core')
             var deferred = $q.defer();
 
             if (!self.isLoggedIn()) {
-                $mmLang.translateErrorAndReject(deferred, 'mm.core.login.notloggedin');
+                $mmLang.translateErrorAndReject(deferred, 'mm.login.notloggedin');
                 return deferred.promise;
             }
 
@@ -377,7 +377,7 @@ angular.module('mm.core')
             var deferred = $q.defer();
 
             if (!self.isLoggedIn()) {
-                $mmLang.translateErrorAndReject(deferred, 'mm.core.login.notloggedin');
+                $mmLang.translateErrorAndReject(deferred, 'mm.login.notloggedin');
                 return deferred.promise;
             }
 
@@ -392,7 +392,7 @@ angular.module('mm.core')
                     method = mmCoreWSPrefix + method;
                 } else {
                     $log.error("WS function '" + method + "' is not available, even in compatibility mode.");
-                    $mmLang.translateErrorAndReject(deferred, 'wsfunctionnotavailable');
+                    $mmLang.translateErrorAndReject(deferred, 'mm.core.wsfunctionnotavailable');
                     return deferred.promise;
                 }
             }
