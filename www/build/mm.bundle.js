@@ -1310,35 +1310,6 @@ angular.module('mm.core')
 });
 
 angular.module('mm.core')
-.factory('$mmUserDelegate', function($log) {
-    var plugins = {},
-        self = {},
-        data,
-        controllers = [];
-        self.registerPlugin = function(name, callback) {
-        $log.debug("Register plugin '"+name+"' in user.");
-        plugins[name] = callback;
-    };
-        self.updatePluginData = function(name) {
-        $log.debug("Update plugin '"+name+"' data in user.");
-        var pluginData = plugins[name]();
-        if (typeof(pluginData) !== 'undefined') {
-            data[name] = pluginData;
-        }
-    };
-        self.getData = function() {
-        if (typeof(data) == 'undefined') {
-            data = {};
-            angular.forEach(plugins, function(callback, plugin) {
-                self.updatePluginData(plugin);
-            });
-        }
-        return data;
-    };
-    return self;
-});
-
-angular.module('mm.core')
 .provider('$mmUtil', function() {
     var self = this;
         self.param = function(obj) {
@@ -2739,6 +2710,35 @@ angular.module('mm.addons.participants')
     $translate('loading').then(function(loadingString) {
         $mmUtil.showModalLoading(loadingString);
     });
+});
+
+angular.module('mm.addons.participants')
+.factory('$mmaParticipantsDelegate', function($log) {
+    var plugins = {},
+        self = {},
+        data,
+        controllers = [];
+        self.registerPlugin = function(name, callback) {
+        $log.debug("Register plugin '"+name+"' in participant.");
+        plugins[name] = callback;
+    };
+        self.updatePluginData = function(name) {
+        $log.debug("Update plugin '"+name+"' data in participant.");
+        var pluginData = plugins[name]();
+        if (typeof(pluginData) !== 'undefined') {
+            data[name] = pluginData;
+        }
+    };
+        self.getData = function() {
+        if (typeof(data) == 'undefined') {
+            data = {};
+            angular.forEach(plugins, function(callback, plugin) {
+                self.updatePluginData(plugin);
+            });
+        }
+        return data;
+    };
+    return self;
 });
 
 angular.module('mm.addons.participants')
