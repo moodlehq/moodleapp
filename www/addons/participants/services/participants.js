@@ -21,10 +21,11 @@ angular.module('mm.addons.participants')
  * @ngdoc service
  * @name $mmaParticipants
  */
-.factory('$mmaParticipants', function($q, $log, $mmSite, $mmUtil, mmaParticipantsListLimit) {
+.factory('$mmaParticipants', function($q, $log, $mmSite, $mmUtil, mmaParticipantsListLimit, $mmLang, $mmUtil) {
 
-    var self = {},
-        canLoadMore = true;
+    $log = $log.getInstance('$mmaParticipants');
+
+    var self = {};
 
     /**
      * Get participants for a certain course.
@@ -46,6 +47,8 @@ angular.module('mm.addons.participants')
             limitNumber = mmaParticipantsListLimit;
         }
 
+        $log.debug('Get participants for course ' + courseid + ' starting at ' + limitFrom);
+
         var data = {
             "courseid" : courseid,
             "options[0][name]" : "limitfrom",
@@ -54,22 +57,52 @@ angular.module('mm.addons.participants')
             "options[1][value]": limitNumber,
         };
 
-        return $mmSite.read('moodle_user_get_users_by_courseid', data).then(function(users) {
-            canLoadMore = users.length >= limitNumber;
-            return users;
+        return $mmSite.read('core_user_get_users_by_courseid', data).then(function(users) {
+            var canLoadMore = users.length >= limitNumber;
+            return {participants: users, canLoadMore: canLoadMore};
         });
     };
 
     /**
-     * Check if more participants can be loaded.
+     * Get a participant.
      *
      * @module mm.addons.participants
      * @ngdoc method
-     * @name $mmaParticipants#canLoadMore
-     * @return {Boolean} True if more participants can be loaded, false otherwise.
+     * @name $mmaParticipants#getParticipant
+     * @param  {String} courseid ID of the course the participant belongs to.
+     * @param  {String} userid   ID of the participant.
+     * @return {Promise}         Promise to be resolved when the participant is retrieved.
      */
-    self.canLoadMore = function() {
-        return canLoadMore;
+    self.getParticipant = function(courseid, userid) {
+        $log.debug('Get participant with ID ' + userid + ' in course '+courseid);
+        var deferred = $q.defer();
+
+        var data = {
+            "userlist[0][userid]": userid,
+            "userlist[0][courseid]": courseid
+        };
+
+        $mmSite.read('core_user_get_course_participants_by_id', data).then(function(users) {
+            if (users.length == 0) {
+                $mmLang.translateErrorAndReject(deferred, 'errorparticipantnotfound');
+                return;
+            }
+
+            $mmUtil.getCountries().then(function(countries) {
+
+                var user = users.shift();
+
+                if (user.country && typeof(countries) !== 'undefined'
+                                 && typeof(countries[user.country]) !== "undefined") {
+                    user.country = countries[user.country];
+                }
+
+                deferred.resolve(user);
+
+            });
+        }, deferred.reject);
+
+        return deferred.promise;
     };
 
     return self;

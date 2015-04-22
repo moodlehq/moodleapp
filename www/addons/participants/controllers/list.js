@@ -25,19 +25,23 @@ angular.module('mm.addons.participants')
 
     var courseid = $stateParams.courseid;
     $scope.participants = [];
+    $scope.courseid = courseid;
 
-    $scope.getURL = function(id) {
-        if ($ionicPlatform.isTablet()) {
-            return $state.href('site.participant', {courseid: courseid, userid: id});
-        } else {
-            return $state.href('site.participants.tablet', {userid: id});
-        }
+    // Get participant ui-sref depending on Mobile or Tablet.
+    // @todo Adapt to tablet split view when it is implemented.
+    $scope.getState = function(id) {
+        return 'site.participants-profile({courseid: '+courseid+', userid: '+id+'})';
     };
 
-    function fetchParticipants() {
-        return $mmaParticipants.getParticipants(courseid, $scope.participants.length).then(function(newParts) {
-            $scope.participants = $scope.participants.concat(newParts);
-            $scope.canLoadMore = $mmaParticipants.canLoadMore();
+    function fetchParticipants(refresh) {
+        var firstToGet = refresh ? 0 : $scope.participants.length;
+        return $mmaParticipants.getParticipants(courseid, firstToGet).then(function(data) {
+            if (refresh) {
+                $scope.participants = data.participants;
+            } else {
+                $scope.participants = $scope.participants.concat(data.participants);
+            }
+            $scope.canLoadMore = data.canLoadMore;
         }, function(message) {
             $mmUtil.showErrorModal(message);
         });
@@ -47,7 +51,7 @@ angular.module('mm.addons.participants')
     $translate('mm.core.loading').then(function(loadingString) {
         $mmUtil.showModalLoading(loadingString);
     });
-    fetchParticipants().finally(function() {
+    fetchParticipants(true).finally(function() {
         $mmUtil.closeModalLoading();
     });
 

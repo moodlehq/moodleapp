@@ -67,5 +67,14 @@
     "mma.files.uploadfiles": "Upload files",
     "mma.files.uploading": "Uploading",
     "mma.files.video": "Video",
-    "mma.participants.participants": "Participants"
+    "mma.participants.address": "Address",
+    "mma.participants.city": "City",
+    "mma.participants.contact": "Contact",
+    "mma.participants.country": "Country",
+    "mma.participants.description": "Description",
+    "mma.participants.email": "Email",
+    "mma.participants.errorparticipantnotfound": "Participant not found.",
+    "mma.participants.participants": "Participants",
+    "mma.participants.phone1": "Phone",
+    "mma.participants.phone2": "Mobile"
 }

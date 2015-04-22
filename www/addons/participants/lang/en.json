@@ -1,3 +1,12 @@
 {
-    "participants": "Participants"
+    "address": "Address",
+    "city": "City",
+    "contact": "Contact",
+    "country": "Country",
+    "description": "Description",
+    "email": "Email",
+    "errorparticipantnotfound": "Participant not found.",
+    "participants": "Participants",
+    "phone1": "Phone",
+    "phone2": "Mobile"
 }

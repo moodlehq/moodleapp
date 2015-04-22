@@ -10,7 +10,7 @@
                     </ion-refresher> -->
                     <div class="list">
                         <div ng-repeat="participant in participants">
-                            <a ng-href="{{getURL(participant.id)}}" class="item item-avatar">
+                            <a ui-sref="{{getState(participant.id)}}" class="item item-avatar">
                                 <mm-format-text>
                                     <img ng-src="{{participant.profileimageurlsmall}}" alt="">
                                     {{participant.fullname}}

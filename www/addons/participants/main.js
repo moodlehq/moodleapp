@@ -30,6 +30,20 @@ angular.module('mm.addons.participants', [])
             params: {
                 courseid: 0
             }
+        })
+
+        .state('site.participants-profile', {
+            url: '/participant',
+            views: {
+                'site': {
+                    controller: 'mmaParticipantsProfileCtrl',
+                    templateUrl: 'addons/participants/templates/profile.html'
+                }
+            },
+            params: {
+                courseid: 0,
+                userid: 0
+            }
         });
 
 })

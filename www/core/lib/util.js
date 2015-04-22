@@ -68,7 +68,8 @@ angular.module('mm.core')
 
         $log = $log.getInstance('$mmUtil');
 
-        var self = this; // Use 'self' to be coherent with the rest of services.
+        var self = this, // Use 'self' to be coherent with the rest of services.
+            countries;
 
         // // Loading all the mimetypes.
         var mimeTypes = {};
@@ -431,6 +432,100 @@ angular.module('mm.core')
             // Recover new lines.
             text = text.replace(/(?:\r\n|\r|\n)/g, '<br />');
             return text;
+        };
+
+        /**
+         * Reads and parses a JSON file.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#readJSONFile
+         * @param  {String} path Path to the file.
+         * @return {Promise}     Promise to be resolved when the file is parsed.
+         */
+        self.readJSONFile = function(path) {
+            return $http.get(path).then(function(response) {
+                return response.data;
+            });
+        };
+
+        /**
+         * Formats a user address, concatenating address, city and country.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#formatUserAddress
+         * @param  {String} address Address.
+         * @param  {String} city    City..
+         * @param  {String} country Country.
+         * @return {String}         Formatted address.
+         */
+        self.formatUserAddress = function(address, city, country) {
+            if (address) {
+                address += city ? ', ' + city : '';
+                address += country ? ', ' + country : '';
+            }
+            return address;
+        };
+
+        /**
+         * Formats a user role list, translating and concatenating them.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#formatUserRoleList
+         * @param  {Array} roles List of user roles.
+         * @return {Promise}     Promise resolved with the formatted roles (string).
+         */
+        self.formatUserRoleList = function(roles) {
+            var deferred = $q.defer();
+
+            if (roles && roles.length > 0) {
+                var rolekeys = roles.map(function(el) {
+                    return 'mma.participants.'+el.shortname; // Set the string key to be translated.
+                });
+
+                $translate(rolekeys).then(function(roleNames) {
+                    var roles = '';
+                    for (var roleKey in roleNames) {
+                        var roleName = roleNames[roleKey];
+                        if (roleName.indexOf('mma.participants.') > -1) {
+                            // Role name couldn't be translated, leave it like it was.
+                            roleName = roleName.replace('mma.participants.', '');
+                        }
+                        roles += (roles != '' ? ', ' : '') + roleName;
+                    }
+                    deferred.resolve(roles);
+                });
+            } else {
+                deferred.resolve('');
+            }
+            return deferred.promise;
+        };
+
+        /**
+         * Get the countries list.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#getCountries
+         * @return {Promise} Promise to be resolved when the list is retrieved.
+         */
+        self.getCountries = function() {
+            var deferred = $q.defer();
+
+            if (typeof(countries) !== 'undefined') {
+                deferred.resolve(countries);
+            } else {
+                self.readJSONFile('core/assets/countries.json').then(function(data) {
+                    countries = data;
+                    deferred.resolve(countries);
+                }, function(){
+                    deferred.resolve();
+                });
+            }
+
+            return deferred.promise;
         };
     }
 
