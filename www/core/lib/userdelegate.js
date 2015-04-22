@@ -24,6 +24,8 @@ angular.module('mm.core')
  */
 .factory('$mmUserDelegate', function($log) {
 
+    $log = $log.getInstance('$mmaParticipantsDelegate');
+
     var plugins = {},
         self = {},
         data,

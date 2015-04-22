@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm', ['ionic', 'mm.core', 'mm.core.courses', 'mm.core.login', 'mm.core.sidemenu', 'mm.addons.files', 'ngCordova', 'angular-md5', 'pascalprecht.translate'])
+angular.module('mm', ['ionic', 'mm.core', 'mm.core.courses', 'mm.core.login', 'mm.core.sidemenu', 'mm.addons.files', 'mm.addons.participants', 'ngCordova', 'angular-md5', 'pascalprecht.translate'])
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
     if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
@@ -1963,7 +1963,9 @@ angular.module('mm.core.courses')
     }).finally(function() {
         $mmUtil.closeModalLoading();
     });
-    $scope.plugins = $mmCoursesDelegate.getData();
+    var plugins = $mmCoursesDelegate.getData();
+    $scope.hasPlugins = Object.keys(plugins).length;
+    $scope.plugins = plugins;
 });
 
 angular.module('mm.core.courses')
@@ -2297,6 +2299,35 @@ angular.module('mm.addons.files', ['mm.core'])
       };
     });
   });
+});
+
+angular.module('mm.addons.participants', [])
+.constant('mmaParticipantsListLimit', 100)
+.config(function($stateProvider) {
+    $stateProvider
+        .state('site.participants', {
+            url: '/participants',
+            views: {
+                'site': {
+                    controller: 'mmaParticipantsListCtrl',
+                    templateUrl: 'addons/participants/templates/list.html'
+                }
+            },
+            params: {
+                courseid: 0
+            }
+        });
+})
+.run(function($mmCoursesDelegate, $translate, $q, $mmaParticipants) {
+    $translate('mma.participants.participants').then(function(pluginName) {
+        $mmCoursesDelegate.registerPlugin('mmaParticipants', function() {
+            return {
+                icon: 'ion-person-stalker',
+                title: pluginName,
+                state: 'site.participants'
+            };
+        });
+    });
 });
 
 angular.module('mm.addons.files')
@@ -2671,6 +2702,70 @@ angular.module('mm.addons.files')
             });
         });
         return deferred.promise;
+    };
+    return self;
+});
+
+angular.module('mm.addons.participants')
+.controller('mmaParticipantsListCtrl', function($scope, $state, $stateParams, $mmUtil, $mmaParticipants, $translate, $ionicPlatform) {
+    var courseid = $stateParams.courseid;
+    $scope.participants = [];
+    $scope.getURL = function(id) {
+        if ($ionicPlatform.isTablet()) {
+            return $state.href('site.participant', {courseid: courseid, userid: id});
+        } else {
+            return $state.href('site.participants.tablet', {userid: id});
+        }
+    };
+    function fetchParticipants() {
+        return $mmaParticipants.getParticipants(courseid, $scope.participants.length).then(function(newParts) {
+            $scope.participants = $scope.participants.concat(newParts);
+            $scope.canLoadMore = $mmaParticipants.canLoadMore();
+        }, function(message) {
+            $mmUtil.showErrorModal(message);
+        });
+    }
+    $translate('mm.core.loading').then(function(loadingString) {
+        $mmUtil.showModalLoading(loadingString);
+    });
+    fetchParticipants().finally(function() {
+        $mmUtil.closeModalLoading();
+    });
+    $scope.loadMoreParticipants = function(){
+        fetchParticipants().finally(function() {
+            $scope.$broadcast('scroll.infiniteScrollComplete');
+        });
+    };
+    $translate('loading').then(function(loadingString) {
+        $mmUtil.showModalLoading(loadingString);
+    });
+});
+
+angular.module('mm.addons.participants')
+.factory('$mmaParticipants', function($q, $log, $mmSite, $mmUtil, mmaParticipantsListLimit) {
+    var self = {},
+        canLoadMore = true;
+        self.getParticipants = function(courseid, limitFrom, limitNumber) {
+        if (typeof(limitFrom) === 'undefined') {
+            limitFrom = 0;
+        }
+        if (typeof(limitNumber) === 'undefined') {
+            limitNumber = mmaParticipantsListLimit;
+        }
+        var data = {
+            "courseid" : courseid,
+            "options[0][name]" : "limitfrom",
+            "options[0][value]": limitFrom,
+            "options[1][name]" : "limitnumber",
+            "options[1][value]": limitNumber,
+        };
+        return $mmSite.read('moodle_user_get_users_by_courseid', data).then(function(users) {
+            canLoadMore = users.length >= limitNumber;
+            return users;
+        });
+    };
+        self.canLoadMore = function() {
+        return canLoadMore;
     };
     return self;
 });

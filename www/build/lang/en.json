@@ -66,5 +66,6 @@
     "mma.files.uploadafilefrom": "Upload a file from",
     "mma.files.uploadfiles": "Upload files",
     "mma.files.uploading": "Uploading",
-    "mma.files.video": "Video"
+    "mma.files.video": "Video",
+    "mma.participants.participants": "Participants"
 }

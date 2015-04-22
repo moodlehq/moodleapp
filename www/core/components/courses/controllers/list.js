@@ -39,5 +39,7 @@ angular.module('mm.core.courses')
         $mmUtil.closeModalLoading();
     });
 
-    $scope.plugins = $mmCoursesDelegate.getData();
+    var plugins = $mmCoursesDelegate.getData();
+    $scope.hasPlugins = Object.keys(plugins).length;
+    $scope.plugins = plugins;
 });
