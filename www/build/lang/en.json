@@ -72,9 +72,18 @@
     "mma.participants.contact": "Contact",
     "mma.participants.country": "Country",
     "mma.participants.description": "Description",
+    "mma.participants.details": "Details",
+    "mma.participants.editingteacher": "Teacher",
     "mma.participants.email": "Email",
     "mma.participants.errorparticipantnotfound": "Participant not found.",
+    "mma.participants.interests": "Interests",
+    "mma.participants.manager": "Manager",
     "mma.participants.participants": "Participants",
     "mma.participants.phone1": "Phone",
-    "mma.participants.phone2": "Mobile"
+    "mma.participants.phone2": "Mobile",
+    "mma.participants.roles": "Course roles",
+    "mma.participants.roleseparator": ",",
+    "mma.participants.student": "Student",
+    "mma.participants.teacher": "Non-editing teacher",
+    "mma.participants.webpage": "Web page"
 }

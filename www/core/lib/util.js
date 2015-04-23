@@ -481,21 +481,23 @@ angular.module('mm.core')
             var deferred = $q.defer();
 
             if (roles && roles.length > 0) {
-                var rolekeys = roles.map(function(el) {
-                    return 'mma.participants.'+el.shortname; // Set the string key to be translated.
-                });
+                $translate('mma.participants.roleseparator').then(function(separator) {
+                    var rolekeys = roles.map(function(el) {
+                        return 'mma.participants.'+el.shortname; // Set the string key to be translated.
+                    });
 
-                $translate(rolekeys).then(function(roleNames) {
-                    var roles = '';
-                    for (var roleKey in roleNames) {
-                        var roleName = roleNames[roleKey];
-                        if (roleName.indexOf('mma.participants.') > -1) {
-                            // Role name couldn't be translated, leave it like it was.
-                            roleName = roleName.replace('mma.participants.', '');
+                    $translate(rolekeys).then(function(roleNames) {
+                        var roles = '';
+                        for (var roleKey in roleNames) {
+                            var roleName = roleNames[roleKey];
+                            if (roleName.indexOf('mma.participants.') > -1) {
+                                // Role name couldn't be translated, leave it like it was.
+                                roleName = roleName.replace('mma.participants.', '');
+                            }
+                            roles += (roles != '' ? separator+' ' : '') + roleName;
                         }
-                        roles += (roles != '' ? ', ' : '') + roleName;
-                    }
-                    deferred.resolve(roles);
+                        deferred.resolve(roles);
+                    });
                 });
             } else {
                 deferred.resolve('');
