@@ -42,7 +42,7 @@ angular.module('mm.core.login')
 
         var site = $scope.sites[index];
 
-        $ionicPopup.confirm({template: $translate('mm.core.login.confirmdeletesite', {sitename: site.sitename})})
+        $ionicPopup.confirm({template: $translate('mm.login.confirmdeletesite', {sitename: site.sitename})})
             .then(function(confirmed) {
                 if (confirmed) {
                     $mmSitesManager.deleteSite(site.id).then(function() {
@@ -52,7 +52,7 @@ angular.module('mm.core.login')
                         });
                     }, function(error) {
                         $log.error('Delete site failed');
-                        $mmUtil.showErrorModal('mm.core.login.errordeletesite', true);
+                        $mmUtil.showErrorModal('mm.login.errordeletesite', true);
                     });
                 }
             });
@@ -64,7 +64,7 @@ angular.module('mm.core.login')
             $state.go('site.mm_courses');
         }, function(error) {
             $log.error('Error loading site '+siteid);
-            $mmUtil.showErrorModal('mm.core.login.errorloadsite', true);
+            $mmUtil.showErrorModal('mm.login.errorloadsite', true);
         });
     };
 

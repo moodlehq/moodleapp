@@ -1,9 +1,9 @@
-<ion-view view-title="{{ 'mm.core.courses.mycourses' | translate }}">
+<ion-view view-title="{{ 'mm.courses.mycourses' | translate }}">
     <ion-content padding="true">
         <div class="list">
           <label class="item item-input">
             <i class="icon ion-search placeholder-icon"></i>
-            <input type="text" placeholder="{{ 'mm.core.courses.filter' | translate}}" ng-model="filterText">
+            <input type="text" placeholder="{{ 'mm.courses.filter' | translate}}" ng-model="filterText">
           </label>
         </div>
         <div class="list card" ng-repeat="course in courses | filter:{fullname: filterText}">

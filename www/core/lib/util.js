@@ -376,7 +376,7 @@ angular.module('mm.core')
          * @param {Boolean} needsTranslate True if the errorMessage is a $translate key, false otherwise.
          */
         self.showErrorModal = function(errorMessage, needsTranslate) {
-            var langKeys = ['error'];
+            var langKeys = ['mm.core.error'];
             if (needsTranslate) {
                 langKeys.push(errorMessage);
             }

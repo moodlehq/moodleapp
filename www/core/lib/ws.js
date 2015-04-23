@@ -48,12 +48,12 @@ angular.module('mm.core')
 
         if (typeof(preSets) === 'undefined' || preSets == null ||
                 typeof(preSets.wstoken) === 'undefined' || typeof(preSets.siteurl) === 'undefined') {
-            $mmLang.translateErrorAndReject(deferred, 'unexpectederror');
+            $mmLang.translateErrorAndReject(deferred, 'mm.core.unexpectederror');
             return deferred.promise;
         }
         try {
             if ($cordovaNetwork.isOffline()) {
-                $mmLang.translateErrorAndReject(deferred, 'networkerrormsg');
+                $mmLang.translateErrorAndReject(deferred, 'mm.core.networkerrormsg');
                 return deferred.promise;
             }
         } catch(err) {}
@@ -76,7 +76,7 @@ angular.module('mm.core')
             }
 
             if (!data) {
-                $mmLang.translateErrorAndReject(deferred, 'cannotconnect');
+                $mmLang.translateErrorAndReject(deferred, 'mm.core.cannotconnect');
                 return;
             }
 
@@ -84,7 +84,7 @@ angular.module('mm.core')
                 if (data.errorcode == 'invalidtoken' || data.errorcode == 'accessexception') {
                     // TODO: Send an event to logout the user and redirect to login page.
                     $log.error("Critical error: " + JSON.stringify(data));
-                    $mmLang.translateErrorAndReject(deferred, 'lostconnection');
+                    $mmLang.translateErrorAndReject(deferred, 'mm.core.lostconnection');
                 } else {
                     deferred.reject(data.message);
                 }
@@ -107,7 +107,7 @@ angular.module('mm.core')
             deferred.resolve(angular.copy(data));
 
         }, function(error) {
-            $mmLang.translateErrorAndReject(deferred, 'cannotconnect');
+            $mmLang.translateErrorAndReject(deferred, 'mm.core.cannotconnect');
         });
 
         return deferred.promise;

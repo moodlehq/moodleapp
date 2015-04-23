@@ -89,7 +89,7 @@ angular.module('mm.core')
         siteurl = $mmUtil.formatURL(siteurl);
 
         if (siteurl.indexOf('://localhost') == -1 && !$mmUtil.isValidURL(siteurl)) {
-            $mmLang.translateErrorAndReject(deferred, 'mm.core.login.invalidsite');
+            $mmLang.translateErrorAndReject(deferred, 'mm.login.invalidsite');
         } else {
 
             protocol = protocol || "https://";
@@ -112,7 +112,7 @@ angular.module('mm.core')
                     // Retry without HTTPS.
                     self.checkSite(siteurl, "http://").then(deferred.resolve, deferred.reject);
                 } else{
-                    $mmLang.translateErrorAndReject(deferred, 'cannotconnect');
+                    $mmLang.translateErrorAndReject(deferred, 'mm.core.cannotconnect');
                 }
             });
 
@@ -152,7 +152,7 @@ angular.module('mm.core')
             $http.post(siteurl + '/local/mobile/check.php', {service: service} )
                 .success(function(response) {
                     if (typeof(response.code) == "undefined") {
-                        $mmLang.translateErrorAndReject(deferred, 'unexpectederror');
+                        $mmLang.translateErrorAndReject(deferred, 'mm.core.unexpectederror');
                         return;
                     }
 
@@ -161,11 +161,11 @@ angular.module('mm.core')
                         switch (code) {
                             case 1:
                                 // Site in maintenance mode.
-                                $mmLang.translateErrorAndReject(deferred, 'mm.core.login.siteinmaintenance');
+                                $mmLang.translateErrorAndReject(deferred, 'mm.login.siteinmaintenance');
                                 break;
                             case 2:
                                 // Web services not enabled.
-                                $mmLang.translateErrorAndReject(deferred, 'mm.core.login.webservicesnotenabled');
+                                $mmLang.translateErrorAndReject(deferred, 'mm.login.webservicesnotenabled');
                                 break;
                             case 3:
                                 // Extended service not enabled, but the official is enabled.
@@ -173,10 +173,10 @@ angular.module('mm.core')
                                 break;
                             case 4:
                                 // Neither extended or official services enabled.
-                                $mmLang.translateErrorAndReject(deferred, 'mm.core.login.mobileservicesnotenabled');
+                                $mmLang.translateErrorAndReject(deferred, 'mm.login.mobileservicesnotenabled');
                                 break;
                             default:
-                                $mmLang.translateErrorAndReject(deferred, 'unexpectederror');
+                                $mmLang.translateErrorAndReject(deferred, 'mm.core.unexpectederror');
                         }
                     } else {
                         services[siteurl] = service; // No need to store it in DB.
@@ -237,11 +237,11 @@ angular.module('mm.core')
                             deferred.reject(response.error);
                         }
                     } else {
-                        $mmLang.translateErrorAndReject(deferred, 'mm.core.login.invalidaccount');
+                        $mmLang.translateErrorAndReject(deferred, 'mm.login.invalidaccount');
                     }
                 }
             }).error(function(data) {
-                $mmLang.translateErrorAndReject(deferred, 'cannotconnect');
+                $mmLang.translateErrorAndReject(deferred, 'mm.core.cannotconnect');
             });
 
         }, deferred.reject);
@@ -273,7 +273,7 @@ angular.module('mm.core')
                 self.login(siteid);
                 deferred.resolve();
             } else {
-                $mmLang.translateErrorAndReject(deferred, 'mm.core.login.invalidmoodleversion');
+                $mmLang.translateErrorAndReject(deferred, 'mm.login.invalidmoodleversion');
                 $mmSite.deleteCandidateSite();
             }
         }, function(error) {
