@@ -26,7 +26,7 @@ angular.module('mm', ['ionic', 'mm.core', 'mm.core.courses', 'mm.core.login', 'm
 
 angular.module('mm.core', ['pascalprecht.translate'])
 .config(function($stateProvider, $provide, $ionicConfigProvider, $httpProvider, $mmUtilProvider,
-        $mmLogProvider) {
+        $mmLogProvider, $compileProvider) {
     $ionicConfigProvider.platform.android.tabs.position('bottom');
     $provide.decorator('$ionicPlatform', ['$delegate', '$window', function($delegate, $window) {
         $delegate.isTablet = function() {
@@ -78,6 +78,7 @@ angular.module('mm.core', ['pascalprecht.translate'])
     $httpProvider.defaults.transformRequest = [function(data) {
         return angular.isObject(data) && String(data) !== '[object File]' ? $mmUtilProvider.param(data) : data;
     }];
+    $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|geo):/);
 })
 .run(function($ionicPlatform, $ionicBody, $window) {
     $ionicPlatform.ready(function() {
