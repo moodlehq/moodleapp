@@ -213,7 +213,7 @@ angular.module('mm.core')
 
             // We have a valid token, try to get the site info.
             self.read('core_webservice_get_site_info', {}, preSets).then(siteDataRetrieved, function(error) {
-                self.read('moodle_webservice_get_site_info', {}, preSets).then(siteDataRetrieved, function(error) {
+                self.read('moodle_webservice_get_siteinfo', {}, preSets).then(siteDataRetrieved, function(error) {
                     deferred.reject(error);
                 });
             });
@@ -383,8 +383,10 @@ angular.module('mm.core')
                 return deferred.promise;
             }
 
-            // Alter the method to be non-deprecated if necessary.
+            // Alter the method to be non-deprecated if necessary and available.
             method = checkDeprecatedFunction(method);
+            // Fallback to deprecated if the non-deprecated method is not available.
+            method = getCompatibleFunction(method);
 
             // Check if the method is available, use a prefixed version if possible.
             // We ignore this check when we do not have the site info, as the list of functions is not loaded yet.
@@ -597,6 +599,7 @@ angular.module('mm.core')
          */
         function checkDeprecatedFunction(method) {
             if (typeof deprecatedFunctions[method] !== "undefined") {
+                // Deprecated function is being used. Warn the developer.
                 if (self.wsAvailable(deprecatedFunctions[method])) {
                     $log.warn("You are using deprecated Web Services: " + method +
                         " you must replace it with the newer function: " + deprecatedFunctions[method]);
@@ -604,6 +607,25 @@ angular.module('mm.core')
                 } else {
                     $log.warn("You are using deprecated Web Services. " +
                         "Your remote site seems to be outdated, consider upgrade it to the latest Moodle version.");
+                }
+            }
+            return method;
+        }
+
+        /**
+         * Check if a function is available in the Moodle site and returns the function to be used.
+         *
+         * @param  {String} method WS function to check.
+         * @return {String}        Method to use based in the available functions.
+         */
+        function getCompatibleFunction(method) {
+            if (!self.wsAvailable(method)) {
+                for (var oldFunc in deprecatedFunctions) {
+                    if (deprecatedFunctions[oldFunc] === method && self.wsAvailable(oldFunc)) {
+                        $log.warn("Your remote site doesn't support the function " + method +
+                            ", it seems to be outdated, consider upgrade it to the latest Moodle version.");
+                        return oldFunc; // Use deprecated function.
+                    }
                 }
             }
             return method;
