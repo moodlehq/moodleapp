@@ -86,6 +86,9 @@
             <div class="item item-text-wrap" ng-if="participant.description">
                 <mm-format-text>{{participant.description}}</mm-format-text>
             </div>
+            <a ng-repeat="plugin in plugins" class="button button-block" ui-sref="{{plugin.state}}">
+                {{plugin.title}}
+            </a>
         </ul>
     </ion-content>
 </ion-view>

@@ -39,7 +39,6 @@ angular.module('mm.addons.participants')
      * @name $mmaParticipantsDelegate#registerPlugin
      * @param  {String}   name     Name of the plugin.
      * @param  {Function} callback Function to call to get the plugin data. This function should return an object with:
-     *                                 -icon: Icon to show next to the plugin name.
      *                                 -title: Plugin name to be displayed.
      *                                 -state: sref to the plugin's main state (i.e. site.grades).
      *                             If the plugin should not be shown (disabled, etc.) this function should return undefined.

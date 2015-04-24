@@ -2780,11 +2780,13 @@ angular.module('mm.addons.participants')
 });
 
 angular.module('mm.addons.participants')
-.controller('mmaParticipantsProfileCtrl', function($scope, $stateParams, $mmUtil, $mmaParticipants, $translate) {
+.controller('mmaParticipantsProfileCtrl', function($scope, $stateParams, $mmUtil, $mmaParticipants, $translate,
+        $mmaParticipantsDelegate) {
     var courseid = $stateParams.courseid,
         userid   = $stateParams.userid;
     $scope.courseid = courseid;
     $scope.isAndroid = ionic.Platform.isAndroid();
+    $scope.plugins = $mmaParticipantsDelegate.getData();
     $translate('mm.core.loading').then(function(loadingString) {
         $mmUtil.showModalLoading(loadingString);
     });
