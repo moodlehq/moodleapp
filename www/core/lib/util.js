@@ -418,6 +418,23 @@ angular.module('mm.core')
         };
 
         /**
+         * Show a confirm modal.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#showConfirm
+         * @param  {Mixed} template Template to show in the modal body. Can be a string or a promise.
+         * @return {Promise}        Promise resolved if the user confirms and rejected if he cancels.
+         */
+        self.showConfirm = function(template) {
+            return $ionicPopup.confirm({template: template}).then(function(confirmed) {
+                if (!confirmed) {
+                    return $q.reject();
+                }
+            });
+        };
+
+        /**
          * Shortens a text to length and adds an ellipsis.
          *
          * @module mm.core

@@ -14,10 +14,6 @@
 
 angular.module('mm.core.login', [])
 
-.constant('mmLoginLaunchSiteURL', 'mmLoginLaunchSiteURL')
-.constant('mmLoginLaunchPassport', 'mmLoginLaunchPassport')
-.constant('mmLoginSSOCode', 2) // This code is returned by local_mobile Moodle plugin if SSO in browser is required.
-
 .config(function($stateProvider, $urlRouterProvider) {
 
     $stateProvider
@@ -78,6 +74,17 @@ angular.module('mm.core.login', [])
               $state.go('mm_login.init');
             }
         }
+    })
+
+    .state('mm_login.reconnect', {
+        url: '/reconnect',
+        templateUrl: 'core/components/login/templates/reconnect.html',
+        controller: 'mmLoginReconnectCtrl',
+        cache: false,
+        params: {
+            siteurl: '',
+            username: ''
+        }
     });
 
     // Default redirect to the login page.
@@ -88,14 +95,67 @@ angular.module('mm.core.login', [])
 
 })
 
-.run(function($log, $q, $state, $mmUtil, $translate, $mmSitesManager, $rootScope, $mmSite, $mmURLDelegate, $mmConfig,
-                $ionicHistory, mmLoginLaunchSiteURL, mmLoginLaunchPassport, md5) {
+.run(function($log, $state, $mmUtil, $translate, $mmSitesManager, $rootScope, $mmSite, $mmURLDelegate, $ionicHistory,
+                $mmEvents, $mmLoginHelper) {
 
     $log = $log.getInstance('mmLogin');
 
-    // Register observer to check if the app was launched via URL scheme.
-    $mmURLDelegate.register('mmLoginSSO', function(url) {
+    // Listen for sessionExpired event to reconnect the user.
+    $mmEvents.on('sessionExpired', sessionExpired, 'mmLogin');
 
+    // Register observer to check if the app was launched via URL scheme.
+    $mmURLDelegate.register('mmLoginSSO', appLaunchedByURL);
+
+    // Redirect depending on user session.
+    $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+
+        if ((toState.name.substr(0, 8) !== 'mm_login' || toState.name === 'mm_login.reconnect') && !$mmSite.isLoggedIn()) {
+            // We are not logged in.
+            event.preventDefault();
+            $log.debug('Redirect to login page, request was: ' + toState.name);
+            // Disable animation and back button for the next transition.
+            $ionicHistory.nextViewOptions({
+                disableAnimate: true,
+                disableBack: true
+            });
+            $state.transitionTo('mm_login.init');
+        } else if (toState.name.substr(0, 8) === 'mm_login' && toState.name !== 'mm_login.reconnect' && $mmSite.isLoggedIn()) {
+            // We are logged in and requested the login page.
+            event.preventDefault();
+            $log.debug('Redirect to course page, request was: ' + toState.name);
+            // Disable animation and back button for the next transition.
+            $ionicHistory.nextViewOptions({
+                disableAnimate: true,
+                disableBack: true
+            });
+            $state.transitionTo('site.mm_courses');
+        }
+
+    });
+
+    // Function to handle session expired events.
+    function sessionExpired() {
+        var siteurl = $mmSite.getURL();
+        if (typeof(siteurl) !== 'undefined') {
+            // Check authentication method.
+            $mmSitesManager.checkSite(siteurl).then(function(result) {
+                if ($mmLoginHelper.isSSOLoginNeeded(result.code)) {
+                    // SSO. User needs to authenticate in a browser.
+                    $mmUtil.showConfirm($translate('mm.login.reconnectssodescription')).then(function() {
+                        $mmLoginHelper.openBrowserForSSOLogin(siteurl);
+                    });
+                } else {
+                    var info = $mmSite.getInfo();
+                    if (typeof(info) !== 'undefined' && typeof(info.username) !== 'undefined') {
+                        $state.go('mm_login.reconnect', {siteurl: siteurl, username: info.username});
+                    }
+                }
+            });
+        }
+    }
+
+    // Function to handle URL received by Custom URL Scheme. If it's a SSO login, perform authentication.
+    function appLaunchedByURL(url) {
         var ssoScheme = 'moodlemobile://token=';
         if (url.indexOf(ssoScheme) == -1) {
             return false;
@@ -119,9 +179,9 @@ angular.module('mm.core.login', [])
             return false;
         }
 
-        validateBrowserSSOLogin(url).then(function(sitedata) {
+        $mmLoginHelper.validateBrowserSSOLogin(url).then(function(sitedata) {
 
-            $mmSitesManager.newSite(sitedata.siteurl, sitedata.token).then(function() {
+            $mmLoginHelper.handleSSOLoginAuthentication(sitedata.siteurl, sitedata.token).then(function() {
                 $state.go('site.mm_courses');
             }, function(error) {
                 $mmUtil.showErrorModal(error);
@@ -137,72 +197,5 @@ angular.module('mm.core.login', [])
         });
 
         return true;
-    });
-
-    // Redirect depending on user session.
-    $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
-
-        if (toState.name.substr(0, 8) !== 'mm_login' && !$mmSite.isLoggedIn()) {
-            // We are not logged in.
-            event.preventDefault();
-            $log.debug('Redirect to login page, request was: ' + toState.name);
-            // Disable animation and back button for the next transition.
-            $ionicHistory.nextViewOptions({
-                disableAnimate: true,
-                disableBack: true
-            });
-            $state.transitionTo('mm_login.init');
-        } else if (toState.name.substr(0, 8) === 'mm_login' && $mmSite.isLoggedIn()) {
-            // We are logged in and requested the login page.
-            event.preventDefault();
-            $log.debug('Redirect to course page, request was: ' + toState.name);
-            // Disable animation and back button for the next transition.
-            $ionicHistory.nextViewOptions({
-                disableAnimate: true,
-                disableBack: true
-            });
-            $state.transitionTo('site.mm_courses');
-        }
-
-    });
-
-    // Function to check that the SSO is valid.
-    function validateBrowserSSOLogin(url) {
-
-        // Split signature:::token
-        var params = url.split(":::");
-
-        return $mmConfig.get(mmLoginLaunchSiteURL).then(function(launchSiteURL) {
-            return $mmConfig.get(mmLoginLaunchPassport).then(function(passport) {
-
-                // Reset temporary values.
-                $mmConfig.delete(mmLoginLaunchSiteURL);
-                $mmConfig.delete(mmLoginLaunchPassport);
-
-                // Validate the signature.
-                // We need to check both http and https.
-                var signature = md5.createHash(launchSiteURL + passport);
-                if (signature != params[0]) {
-                    if (launchSiteURL.indexOf("https://") != -1) {
-                        launchSiteURL = launchSiteURL.replace("https://", "http://");
-                    } else {
-                        launchSiteURL = launchSiteURL.replace("http://", "https://");
-                    }
-                    signature = md5.createHash(launchSiteURL + passport);
-                }
-
-                if (signature == params[0]) {
-                    $log.debug('Signature validated');
-                    return { siteurl: launchSiteURL, token: params[1] };
-                } else {
-                    $log.debug('Inalid signature in the URL request yours: ' + params[0] + ' mine: '
-                                    + signature + ' for passport ' + passport);
-                    return $translate('mm.core.unexpectederror').then(function(errorString) {
-                        return $q.reject(errorString);
-                    });
-                }
-
-            });
-        });
-    };
+    }
 });

@@ -30,7 +30,7 @@ angular.module('mm.core')
      *
      * @module mm.core
      * @ngdoc method
-     * @name $mmUtil#cleanTags
+     * @name $mmText#cleanTags
      * @param  {String} text The text to be cleaned.
      * @return {String}      Text cleaned.
      */

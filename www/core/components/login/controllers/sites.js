@@ -21,7 +21,7 @@ angular.module('mm.core.login')
  * @ngdoc controller
  * @name mmLoginSitesCtrl
  */
-.controller('mmLoginSitesCtrl', function($scope, $state, $mmSitesManager, $ionicPopup, $log, $translate) {
+.controller('mmLoginSitesCtrl', function($scope, $state, $mmSitesManager, $log, $translate, $mmUtil) {
 
     $log = $log.getInstance('mmLoginSitesCtrl');
 
@@ -44,20 +44,17 @@ angular.module('mm.core.login')
 
         var site = $scope.sites[index];
 
-        $ionicPopup.confirm({template: $translate('mm.login.confirmdeletesite', {sitename: site.sitename})})
-            .then(function(confirmed) {
-                if (confirmed) {
-                    $mmSitesManager.deleteSite(site.id).then(function() {
-                        $scope.sites.splice(index, 1);
-                        $mmSitesManager.hasNoSites().then(function() {
-                            $state.go('mm_login.site');
-                        });
-                    }, function(error) {
-                        $log.error('Delete site failed');
-                        $mmUtil.showErrorModal('mm.login.errordeletesite', true);
-                    });
-                }
+        $mmUtil.showConfirm($translate('mm.login.confirmdeletesite', {sitename: site.sitename})).then(function() {
+            $mmSitesManager.deleteSite(site.id).then(function() {
+                $scope.sites.splice(index, 1);
+                $mmSitesManager.hasNoSites().then(function() {
+                    $state.go('mm_login.site');
+                });
+            }, function(error) {
+                $log.error('Delete site failed');
+                $mmUtil.showErrorModal('mm.login.errordeletesite', true);
             });
+        });
     };
 
     $scope.login = function(index) {
