@@ -34,6 +34,44 @@ angular.module('mm.core', ['pascalprecht.translate'])
         };
         return $delegate;
     }]);
+        $provide.decorator('$log', ['$delegate', function($log) {
+        var _$log = (function($log) {
+            return {
+                log   : $log.log,
+                info  : $log.info,
+                warn  : $log.warn,
+                debug : $log.debug,
+                error : $log.error
+            };
+        })($log);
+        var prepareLogFn = function(logFn, className) {
+            className = className || 'Core';
+            var enhancedLogFn = function() {
+                var args = Array.prototype.slice.call(arguments),
+                    now  = new Date().toLocaleString();
+                args[0] = now + ' ' + className + ': ' + args[0];
+                logFn.apply(null, args);
+            };
+            enhancedLogFn.logs = [];
+            return enhancedLogFn;
+        };
+        var getInstance = function(className) {
+            return {
+                log   : prepareLogFn( _$log.log,    className ),
+                info  : prepareLogFn( _$log.info,   className ),
+                warn  : prepareLogFn( _$log.warn,   className ),
+                debug : prepareLogFn( _$log.debug,  className ),
+                error : prepareLogFn( _$log.error,  className )
+            };
+        };
+        $log.log   = prepareLogFn( $log.log );
+        $log.info  = prepareLogFn( $log.info );
+        $log.warn  = prepareLogFn( $log.warn );
+        $log.debug = prepareLogFn( $log.debug );
+        $log.error = prepareLogFn( $log.error );
+        $log.getInstance = getInstance;
+        return $log;
+    }]);
     var $mmStateProvider = {
         state: function(name, stateConfig) {
             function setupTablet(state) {
