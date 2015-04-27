@@ -24,6 +24,8 @@ angular.module('mm.core.courses')
  */
 .factory('$mmCoursesDelegate', function($log) {
 
+    $log = $log.getInstance('$mmCoursesDelegate');
+
     var plugins = {},
         self = {},
         data,

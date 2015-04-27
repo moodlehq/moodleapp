@@ -23,6 +23,8 @@ angular.module('mm.core')
  */
 .factory('$mmFS', function($ionicPlatform, $cordovaFile, $log, $q) {
 
+    $log = $log.getInstance('$mmFS');
+
     var self = {},
         initialized = false,
         basePath = '';

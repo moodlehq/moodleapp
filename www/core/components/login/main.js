@@ -84,6 +84,8 @@ angular.module('mm.core.login', [])
 .run(function($log, $q, $state, $mmUtil, $translate, $mmSitesManager, $rootScope, $mmSite, $mmURLDelegate, $mmConfig,
                 mmLoginLaunchSiteURL, mmLoginLaunchPassport, md5) {
 
+    $log = $log.getInstance('mmLogin');
+
     // Register observer to check if the app was launched via URL scheme.
     $mmURLDelegate.register('mmLoginSSO', function(url) {
 
@@ -93,7 +95,7 @@ angular.module('mm.core.login', [])
         }
 
         // App opened using custom URL scheme. Probably an SSO authentication.
-        $log.debug('Login: App launched by URL');
+        $log.debug('App launched by URL');
 
         $translate('mm.login.authenticating').then(function(authenticatingString) {
             $mmUtil.showModalLoading(authenticatingString);

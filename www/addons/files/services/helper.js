@@ -16,6 +16,9 @@ angular.module('mm.addons.files')
 
 .factory('$mmaFilesHelper', function($q, $mmUtil, $cordovaNetwork, $ionicActionSheet,
         $log, $translate, $mmaFiles, $cordovaCamera, $cordovaCapture) {
+
+    $log = $log.getInstance('$mmaFilesHelper');
+
     var self = {};
 
     /**

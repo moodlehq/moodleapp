@@ -28,7 +28,7 @@ angular.module('mm.core.courses')
  * @ngdoc service
  * @name $mmCourses
  */
-.factory('$mmCourses', function($q, $log, $mmSite, mmCoursesFrontPage) {
+.factory('$mmCourses', function($q, $mmSite, mmCoursesFrontPage) {
 
     var self = {};
 

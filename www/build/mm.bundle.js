@@ -189,6 +189,7 @@ angular.module('mm.core')
     $mmAppProvider.registerStores(stores);
 })
 .factory('$mmConfig', function($http, $q, $log, $mmApp, mmCoreConfigStore) {
+    $log = $log.getInstance('$mmConfig');
     var initialized = false,
         self = {
             config: {}
@@ -277,6 +278,7 @@ angular.module('mm.core')
 
 angular.module('mm.core')
 .factory('$mmDB', function($q, $log) {
+    $log = $log.getInstance('$mmDB');
     var self = {};
         function callDBFunction(db, func) {
         var deferred = $q.defer();
@@ -391,6 +393,7 @@ angular.module('mm.core')
 
 angular.module('mm.core')
 .factory('$mmFS', function($ionicPlatform, $cordovaFile, $log, $q) {
+    $log = $log.getInstance('$mmFS');
     var self = {},
         initialized = false,
         basePath = '';
@@ -662,6 +665,7 @@ angular.module('mm.core')
     }
     this.$get = function($http, $q, $mmWS, $mmDB, $mmConfig, $log, md5, $cordovaNetwork, $mmLang, $mmUtil,
         mmCoreWSCacheStore, mmCoreWSPrefix) {
+        $log = $log.getInstance('$mmSite');
                 var deprecatedFunctions = {
             "moodle_webservice_get_siteinfo": "core_webservice_get_site_info",
             "moodle_enrol_get_users_courses": "core_enrol_get_users_courses",
@@ -960,6 +964,7 @@ angular.module('mm.core')
 })
 .factory('$mmSitesManager', function($http, $q, $mmSite, md5, $mmLang, $mmConfig, $mmApp, $mmWS, $mmUtil, $mmFS,
                                      $cordovaNetwork, mmCoreSitesStore, mmCoreCurrentSiteStore, $log) {
+    $log = $log.getInstance('$mmSitesManager');
     var self = {},
         services = {},
         db = $mmApp.getDB(),
@@ -1248,6 +1253,7 @@ angular.module('mm.core')
 
 angular.module('mm.core')
 .factory('$mmURLDelegate', function($log) {
+    $log = $log.getInstance('$mmURLDelegate');
     var observers = {},
         self = {};
         self.register = function(name, callback) {
@@ -1330,6 +1336,7 @@ angular.module('mm.core')
         return query.length ? query.substr(0, query.length - 1) : query;
     };
     function mmUtil($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp, $q) {
+        $log = $log.getInstance('$mmUtil');
         var self = this;
         var mimeTypes = {};
         $http.get('core/assets/mimetypes.json').then(function(response) {
@@ -1513,6 +1520,7 @@ angular.module('mm.core')
 
 angular.module('mm.core')
 .factory('$mmWS', function($http, $q, $log, $mmLang, $cordovaFileTransfer, $cordovaNetwork, $mmFS) {
+    $log = $log.getInstance('$mmWS');
     var self = {};
         self.call = function(method, data, preSets) {
         var deferred = $q.defer(),
@@ -1801,12 +1809,13 @@ angular.module('mm.core.login', [])
 })
 .run(function($log, $q, $state, $mmUtil, $translate, $mmSitesManager, $rootScope, $mmSite, $mmURLDelegate, $mmConfig,
                 mmLoginLaunchSiteURL, mmLoginLaunchPassport, md5) {
+    $log = $log.getInstance('mmLogin');
     $mmURLDelegate.register('mmLoginSSO', function(url) {
         var ssoScheme = 'moodlemobile://token=';
         if (url.indexOf(ssoScheme) == -1) {
             return false;
         }
-        $log.debug('Login: App launched by URL');
+        $log.debug('App launched by URL');
         $translate('mm.login.authenticating').then(function(authenticatingString) {
             $mmUtil.showModalLoading(authenticatingString);
         });
@@ -1919,7 +1928,7 @@ angular.module('mm.core.courses')
         mmCoursesFrontPage.fullname = value;
     });
 })
-.factory('$mmCourses', function($q, $log, $mmSite, mmCoursesFrontPage) {
+.factory('$mmCourses', function($q, $mmSite, mmCoursesFrontPage) {
     var self = {};
     self.getUserCourses = function() {
         var userid = $mmSite.getUserId();
@@ -1936,6 +1945,7 @@ angular.module('mm.core.courses')
 
 angular.module('mm.core.courses')
 .factory('$mmCoursesDelegate', function($log) {
+    $log = $log.getInstance('$mmCoursesDelegate');
     var plugins = {},
         self = {},
         data,
@@ -2084,6 +2094,7 @@ angular.module('mm.core.login')
 
 angular.module('mm.core.login')
 .controller('mmLoginSitesCtrl', function($scope, $state, $mmSitesManager, $ionicPopup, $log, $translate) {
+    $log = $log.getInstance('mmLoginSitesCtrl');
     $mmSitesManager.getSites().then(function(sites) {
         $scope.sites = sites;
         $scope.data = {
@@ -2153,6 +2164,7 @@ angular.module('mm.core.sidemenu')
 
 angular.module('mm.core.sidemenu')
 .factory('$mmSideMenuDelegate', function($log) {
+    $log = $log.getInstance('$mmSideMenuDelegate');
     var plugins = {},
         self = {},
         data,
@@ -2249,7 +2261,7 @@ angular.module('mm.addons.files')
 
 angular.module('mm.addons.files')
 .controller('mmaFilesListController', function($q, $scope, $stateParams, $ionicActionSheet,
-        $mmaFiles, $mmSite, $translate, $timeout, $mmUtil, $mmFS, $mmWS, $log, $mmaFilesHelper) {
+        $mmaFiles, $mmSite, $translate, $timeout, $mmUtil, $mmFS, $mmWS, $mmaFilesHelper) {
     var path = $stateParams.path,
         root = $stateParams.root,
         title,
@@ -2329,6 +2341,7 @@ angular.module('mm.addons.files')
 
 angular.module('mm.addons.files')
 .factory('$mmaFiles', function($mmSite, $mmUtil, $mmFS, $mmWS, $q, $timeout, $log, md5) {
+    $log = $log.getInstance('$mmaFiles');
     var self = {},
         defaultParams = {
             "contextid": 0,
@@ -2487,6 +2500,7 @@ angular.module('mm.addons.files')
 angular.module('mm.addons.files')
 .factory('$mmaFilesHelper', function($q, $mmUtil, $cordovaNetwork, $ionicActionSheet,
         $log, $translate, $mmaFiles, $cordovaCamera, $cordovaCapture) {
+    $log = $log.getInstance('$mmaFilesHelper');
     var self = {};
         self.pickAndUploadFile = function() {
         var deferred = $q.defer();

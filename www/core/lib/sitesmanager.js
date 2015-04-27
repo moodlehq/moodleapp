@@ -41,6 +41,8 @@ angular.module('mm.core')
 .factory('$mmSitesManager', function($http, $q, $mmSite, md5, $mmLang, $mmConfig, $mmApp, $mmWS, $mmUtil, $mmFS,
                                      $cordovaNetwork, mmCoreSitesStore, mmCoreCurrentSiteStore, $log) {
 
+    $log = $log.getInstance('$mmSitesManager');
+
     var self = {},
         services = {},
         db = $mmApp.getDB(),

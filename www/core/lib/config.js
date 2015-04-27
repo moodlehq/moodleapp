@@ -37,6 +37,8 @@ angular.module('mm.core')
  */
 .factory('$mmConfig', function($http, $q, $log, $mmApp, mmCoreConfigStore) {
 
+    $log = $log.getInstance('$mmConfig');
+
     var initialized = false,
         self = {
             config: {}
