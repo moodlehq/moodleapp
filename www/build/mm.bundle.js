@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm', ['ionic', 'mm.core', 'mm.core.courses', 'mm.core.login', 'mm.core.sidemenu', 'mm.addons.files', 'mm.addons.participants', 'ngCordova', 'angular-md5', 'pascalprecht.translate'])
+angular.module('mm', ['ionic', 'mm.core', 'mm.core.course', 'mm.core.courses', 'mm.core.login', 'mm.core.sidemenu', 'mm.addons.files', 'mm.addons.participants', 'ngCordova', 'angular-md5', 'pascalprecht.translate'])
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
     if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
@@ -1784,6 +1784,47 @@ angular.module('mm.core')
         }
     }
 });
+angular.module('mm.core.course', [])
+.config(function($stateProvider) {
+    $stateProvider
+    .state('site.mm_course', {
+        url: '/mm_course',
+        params: {
+            course: null
+        },
+        views: {
+            'site': {
+                templateUrl: 'core/components/course/templates/sections.html',
+                controller: 'mmCourseSectionsCtrl'
+            }
+        }
+    })
+    .state('site.mm_course-section', {
+        url: '/mm_course-section',
+        params: {
+            sectionid: null,
+            courseid: null,
+        },
+        views: {
+            'site': {
+                templateUrl: 'core/components/course/templates/section.html',
+                controller: 'mmCourseSectionCtrl'
+            }
+        }
+    });
+})
+.run(function($mmCoursesDelegate, $translate) {
+    $translate('mm.course.contents').then(function(str) {
+        $mmCoursesDelegate.registerPlugin('mmCourse', function() {
+            return {
+                icon: 'ion-briefcase',
+                title: str,
+                state: 'site.mm_course'
+            };
+        });
+    });
+});
+
 angular.module('mm.core.courses', [])
 .value('mmCoursesFrontPage', {
     'id': 1,
@@ -1967,6 +2008,105 @@ angular.module('mm.core.sidemenu', [])
             }
         }
     });
+});
+
+angular.module('mm.core.course')
+.controller('mmCourseSectionCtrl', function($mmCourse, $mmUtil, $scope, $stateParams, $translate) {
+    var courseid = $stateParams.courseid,
+        sectionid = $stateParams.sectionid,
+        sections = [];
+    if (sectionid < 0) {
+        $translate('mm.course.allsections').then(function(str) {
+            $scope.title = str;
+        });
+        $scope.summary = null;
+    }
+    function loadContent(sectionid) {
+        $translate('mm.core.loading').then(function(str) {
+            $mmUtil.showModalLoading(str);
+        });
+        if (sectionid < 0) {
+            $mmCourse.getSections(courseid).then(function(sections) {
+                $scope.sections = sections;
+            }, function() {
+                $mmUtil.showErrorModal('mm.course.couldnotloadsectioncontent', true);
+            }).finally(function() {
+                $mmUtil.closeModalLoading();
+            });
+        } else {
+            $mmCourse.getSection(courseid, sectionid).then(function(section) {
+                $scope.sections = [section];
+                $scope.title = section.name;
+                $scope.summary = section.summary;
+            }, function() {
+                $mmUtil.showErrorModal('mm.course.couldnotloadsectioncontent', true);
+            }).finally(function() {
+                $mmUtil.closeModalLoading();
+            });
+        }
+    }
+    loadContent(sectionid);
+});
+
+angular.module('mm.core.course')
+.controller('mmCourseSectionsCtrl', function($mmCourse, $mmUtil, $scope, $stateParams, $translate) {
+    var course = $stateParams.course,
+        courseid = course.id;
+    $scope.courseid = courseid;
+    $scope.fullname = course.fullname;
+    function loadSections() {
+        $translate('mm.core.loading').then(function(str) {
+            $mmUtil.showModalLoading(str);
+        });
+        $mmCourse.getSections(courseid).then(function(sections) {
+            $translate('mm.course.showall').then(function(str) {
+                var result = [{
+                    name: str,
+                    id: -1
+                }].concat(sections);
+                $scope.sections = result;
+            });
+        }, function(error) {
+            $mmUtil.showErrorModal('mm.course.couldnotloadsections', true);
+        }).finally(function() {
+            $mmUtil.closeModalLoading();
+        });
+    }
+    $scope.getState = function(section) {
+        return 'site.mm_course-section';
+    };
+    loadSections();
+});
+
+angular.module('mm.core.course')
+.factory('$mmCourse', function($mmSite, $translate, $q) {
+    var self = {};
+        self.getSection = function(courseid, sectionid) {
+        var deferred = $q.defer();
+        if (sectionid < 0) {
+            deferred.reject('Invalid section ID');
+            return deferred.promise;
+        }
+        self.getSections(courseid).then(function(sections) {
+            for (var i = 0; i < sections.length; i++) {
+                if (sections[i].id == sectionid) {
+                    deferred.resolve(sections[i]);
+                    break;
+                }
+            }
+            deferred.reject('Unkown section');
+        }, function(error) {
+            deferred.reject(error);
+        });
+        return deferred.promise;
+    };
+        self.getSections = function(courseid) {
+        return $mmSite.read('core_course_get_contents', {
+            courseid: courseid,
+            options: []
+        });
+    };
+    return self;
 });
 
 angular.module('mm.core.courses')
@@ -2337,7 +2477,7 @@ angular.module('mm.addons.participants', [])
                 }
             },
             params: {
-                courseid: 0
+                course: null
             }
         })
         .state('site.participants-profile', {
@@ -2744,7 +2884,8 @@ angular.module('mm.addons.files')
 
 angular.module('mm.addons.participants')
 .controller('mmaParticipantsListCtrl', function($scope, $state, $stateParams, $mmUtil, $mmaParticipants, $translate, $ionicPlatform) {
-    var courseid = $stateParams.courseid;
+    var course = $stateParams.course,
+        courseid = course.id;
     $scope.participants = [];
     $scope.courseid = courseid;
     $scope.getState = function(id) {

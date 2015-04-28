@@ -22,8 +22,9 @@ angular.module('mm.addons.participants')
  * @name mmaParticipantsListCtrl
  */
 .controller('mmaParticipantsListCtrl', function($scope, $state, $stateParams, $mmUtil, $mmaParticipants, $translate, $ionicPlatform) {
+    var course = $stateParams.course,
+        courseid = course.id;
 
-    var courseid = $stateParams.courseid;
     $scope.participants = [];
     $scope.courseid = courseid;
 
