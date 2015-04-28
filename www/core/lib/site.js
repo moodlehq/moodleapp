@@ -383,9 +383,7 @@ angular.module('mm.core')
                 return deferred.promise;
             }
 
-            // Alter the method to be non-deprecated if necessary and available.
-            method = checkDeprecatedFunction(method);
-            // Fallback to deprecated if the non-deprecated method is not available.
+            // Get the method to use based on the available ones.
             method = getCompatibleFunction(method);
 
             // Check if the method is available, use a prefixed version if possible.
@@ -592,12 +590,13 @@ angular.module('mm.core')
         };
 
         /**
-         * Check if a function is deprecated and returns the function that should be used.
+         * Return the function to be used, based on the available functions in the site. It'll try to use non-deprecated
+         * functions first, and fallback to deprecated ones if needed.
          *
          * @param  {String} method WS function to check.
          * @return {String}        Method to use based in the available functions.
          */
-        function checkDeprecatedFunction(method) {
+        function getCompatibleFunction(method) {
             if (typeof deprecatedFunctions[method] !== "undefined") {
                 // Deprecated function is being used. Warn the developer.
                 if (self.wsAvailable(deprecatedFunctions[method])) {
@@ -608,18 +607,8 @@ angular.module('mm.core')
                     $log.warn("You are using deprecated Web Services. " +
                         "Your remote site seems to be outdated, consider upgrade it to the latest Moodle version.");
                 }
-            }
-            return method;
-        }
-
-        /**
-         * Check if a function is available in the Moodle site and returns the function to be used.
-         *
-         * @param  {String} method WS function to check.
-         * @return {String}        Method to use based in the available functions.
-         */
-        function getCompatibleFunction(method) {
-            if (!self.wsAvailable(method)) {
+            } else if (!self.wsAvailable(method)) {
+                // Method not available. Check if there is a deprecated method to use.
                 for (var oldFunc in deprecatedFunctions) {
                     if (deprecatedFunctions[oldFunc] === method && self.wsAvailable(oldFunc)) {
                         $log.warn("Your remote site doesn't support the function " + method +

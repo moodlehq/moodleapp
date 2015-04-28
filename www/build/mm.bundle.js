@@ -799,7 +799,6 @@ angular.module('mm.core')
                 $mmLang.translateErrorAndReject(deferred, 'mm.login.notloggedin');
                 return deferred.promise;
             }
-            method = checkDeprecatedFunction(method);
             method = getCompatibleFunction(method);
             if (self.getInfo() && !self.wsAvailable(method, false)) {
                 if (self.wsAvailable(mmCoreWSPrefix + method, false)) {
@@ -902,7 +901,7 @@ angular.module('mm.core')
                 token: self.getToken()
             });
         };
-                function checkDeprecatedFunction(method) {
+                function getCompatibleFunction(method) {
             if (typeof deprecatedFunctions[method] !== "undefined") {
                 if (self.wsAvailable(deprecatedFunctions[method])) {
                     $log.warn("You are using deprecated Web Services: " + method +
@@ -912,11 +911,7 @@ angular.module('mm.core')
                     $log.warn("You are using deprecated Web Services. " +
                         "Your remote site seems to be outdated, consider upgrade it to the latest Moodle version.");
                 }
-            }
-            return method;
-        }
-                function getCompatibleFunction(method) {
-            if (!self.wsAvailable(method)) {
+            } else if (!self.wsAvailable(method)) {
                 for (var oldFunc in deprecatedFunctions) {
                     if (deprecatedFunctions[oldFunc] === method && self.wsAvailable(oldFunc)) {
                         $log.warn("Your remote site doesn't support the function " + method +
