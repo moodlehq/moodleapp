@@ -14,7 +14,8 @@
 
 angular.module('mm.core', ['pascalprecht.translate'])
 
-.config(function($stateProvider, $provide, $ionicConfigProvider, $httpProvider, $urlRouterProvider, $mmUtilProvider) {
+.config(function($stateProvider, $provide, $ionicConfigProvider, $httpProvider, $urlRouterProvider, $mmUtilProvider,
+        $mmLogProvider) {
 
     // Set tabs to bottom on Android.
     $ionicConfigProvider.platform.android.tabs.position('bottom');
@@ -33,59 +34,7 @@ angular.module('mm.core', ['pascalprecht.translate'])
      * $log = $log.getInstance('MyFactory')
      * $log.debug('My message') -> "dd/mm/aaaa hh:mm:ss MyFactory: My message"
      */
-    $provide.decorator('$log', ['$delegate', function($log) {
-
-        // Copy the original methods.
-        var _$log = (function($log) {
-            return {
-                log   : $log.log,
-                info  : $log.info,
-                warn  : $log.warn,
-                debug : $log.debug,
-                error : $log.error
-            };
-        })($log);
-
-        // Function to pre-capture a logger function.
-        var prepareLogFn = function(logFn, className) {
-            className = className || 'Core';
-            // Invoke the specified 'logFn' with our new code.
-            var enhancedLogFn = function() {
-                var args = Array.prototype.slice.call(arguments),
-                    now  = new Date().toLocaleString();
-
-                args[0] = now + ' ' + className + ': ' + args[0]; // Prepend timestamp and className to the original message.
-                logFn.apply(null, args);
-            };
-
-            // Special, only needed to support angular-mocks expectations.
-            enhancedLogFn.logs = [];
-
-            return enhancedLogFn;
-        };
-
-        // Create the getInstance method so services/controllers can configure the className to be shown.
-        var getInstance = function(className) {
-            return {
-                log   : prepareLogFn( _$log.log,    className ),
-                info  : prepareLogFn( _$log.info,   className ),
-                warn  : prepareLogFn( _$log.warn,   className ),
-                debug : prepareLogFn( _$log.debug,  className ),
-                error : prepareLogFn( _$log.error,  className )
-            };
-        };
-
-        // Decorate original $log functions too. This way if a service/controller uses $log without $log.getInstance,
-        // it's going to prepend the date and 'Core'.
-        $log.log   = prepareLogFn( $log.log );
-        $log.info  = prepareLogFn( $log.info );
-        $log.warn  = prepareLogFn( $log.warn );
-        $log.debug = prepareLogFn( $log.debug );
-        $log.error = prepareLogFn( $log.error );
-        $log.getInstance = getInstance;
-
-        return $log;
-    }]);
+    $provide.decorator('$log', ['$delegate', $mmLogProvider.logDecorator]);
 
     // Ugly hack to "decorate" the $stateProvider.state() method.
     // This allows us to automagically define 'tablet' states which use split views.

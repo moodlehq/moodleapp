@@ -25,7 +25,8 @@ angular.module('mm', ['ionic', 'mm.core', 'mm.core.courses', 'mm.core.login', 'm
 });
 
 angular.module('mm.core', ['pascalprecht.translate'])
-.config(function($stateProvider, $provide, $ionicConfigProvider, $httpProvider, $urlRouterProvider, $mmUtilProvider) {
+.config(function($stateProvider, $provide, $ionicConfigProvider, $httpProvider, $urlRouterProvider, $mmUtilProvider,
+        $mmLogProvider) {
     $ionicConfigProvider.platform.android.tabs.position('bottom');
     $provide.decorator('$ionicPlatform', ['$delegate', '$window', function($delegate, $window) {
         $delegate.isTablet = function() {
@@ -34,44 +35,7 @@ angular.module('mm.core', ['pascalprecht.translate'])
         };
         return $delegate;
     }]);
-        $provide.decorator('$log', ['$delegate', function($log) {
-        var _$log = (function($log) {
-            return {
-                log   : $log.log,
-                info  : $log.info,
-                warn  : $log.warn,
-                debug : $log.debug,
-                error : $log.error
-            };
-        })($log);
-        var prepareLogFn = function(logFn, className) {
-            className = className || 'Core';
-            var enhancedLogFn = function() {
-                var args = Array.prototype.slice.call(arguments),
-                    now  = new Date().toLocaleString();
-                args[0] = now + ' ' + className + ': ' + args[0];
-                logFn.apply(null, args);
-            };
-            enhancedLogFn.logs = [];
-            return enhancedLogFn;
-        };
-        var getInstance = function(className) {
-            return {
-                log   : prepareLogFn( _$log.log,    className ),
-                info  : prepareLogFn( _$log.info,   className ),
-                warn  : prepareLogFn( _$log.warn,   className ),
-                debug : prepareLogFn( _$log.debug,  className ),
-                error : prepareLogFn( _$log.error,  className )
-            };
-        };
-        $log.log   = prepareLogFn( $log.log );
-        $log.info  = prepareLogFn( $log.info );
-        $log.warn  = prepareLogFn( $log.warn );
-        $log.debug = prepareLogFn( $log.debug );
-        $log.error = prepareLogFn( $log.error );
-        $log.getInstance = getInstance;
-        return $log;
-    }]);
+        $provide.decorator('$log', ['$delegate', $mmLogProvider.logDecorator]);
     var $mmStateProvider = {
         state: function(name, stateConfig) {
             function setupTablet(state) {
@@ -621,6 +585,70 @@ angular.module('mm.core')
         });
     });
 });
+angular.module('mm.core')
+.constant('mmCoreLogEnabledDefault', true)
+.constant('mmCoreLogEnabledConfigName', 'debug_enabled')
+.provider('$mmLog', function(mmCoreLogEnabledDefault) {
+    var isEnabled = mmCoreLogEnabledDefault,
+        self = this;
+    function prepareLogFn(logFn, className) {
+        className = className || '';
+        var enhancedLogFn = function() {
+            if (isEnabled) {
+                var args = Array.prototype.slice.call(arguments),
+                    now  = new Date().toLocaleString();
+                args[0] = now + ' ' + className + ': ' + args[0];
+                logFn.apply(null, args);
+            }
+        };
+        enhancedLogFn.logs = [];
+        return enhancedLogFn;
+    }
+        self.logDecorator = function($log) {
+        var _$log = (function($log) {
+            return {
+                log   : $log.log,
+                info  : $log.info,
+                warn  : $log.warn,
+                debug : $log.debug,
+                error : $log.error
+            };
+        })($log);
+        var getInstance = function(className) {
+            return {
+                log   : prepareLogFn(_$log.log, className),
+                info  : prepareLogFn(_$log.info, className),
+                warn  : prepareLogFn(_$log.warn, className),
+                debug : prepareLogFn(_$log.debug, className),
+                error : prepareLogFn(_$log.error, className)
+            };
+        };
+        $log.log   = prepareLogFn($log.log);
+        $log.info  = prepareLogFn($log.info);
+        $log.warn  = prepareLogFn($log.warn);
+        $log.debug = prepareLogFn($log.debug);
+        $log.error = prepareLogFn($log.error);
+        $log.getInstance = getInstance;
+        return $log;
+    };
+    this.$get = function($mmConfig, mmCoreLogEnabledDefault, mmCoreLogEnabledConfigName) {
+        var self = {};
+                function init() {
+            $mmConfig.get(mmCoreLogEnabledConfigName).then(function(enabled) {
+                isEnabled = enabled;
+            }, function() {
+                isEnabled = mmCoreLogEnabledDefault;
+            });
+        }
+        init();
+                self.enabled = function(flag) {
+            $mmConfig.set(mmCoreLogEnabledConfigName, flag);
+            isEnabled = flag;
+        };
+        return self;
+    };
+});
+
 angular.module('mm.core')
 .value('mmCoreWSPrefix', 'local_mobile_')
 .constant('mmCoreWSCacheStore', 'wscache')
