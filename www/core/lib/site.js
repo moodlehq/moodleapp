@@ -108,6 +108,8 @@ angular.module('mm.core')
     this.$get = function($http, $q, $mmWS, $mmDB, $mmConfig, $log, md5, $cordovaNetwork, $mmLang, $mmUtil,
         mmCoreWSCacheStore, mmCoreWSPrefix) {
 
+        $log = $log.getInstance('$mmSite');
+
         /**
          * List of deprecated WS functions with their corresponding NOT deprecated name.
          * @type {Object}

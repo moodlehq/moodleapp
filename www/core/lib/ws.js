@@ -23,6 +23,8 @@ angular.module('mm.core')
  */
 .factory('$mmWS', function($http, $q, $log, $mmLang, $cordovaFileTransfer, $cordovaNetwork, $mmFS) {
 
+    $log = $log.getInstance('$mmWS');
+
     var self = {};
 
     /**

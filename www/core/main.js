@@ -14,7 +14,8 @@
 
 angular.module('mm.core', ['pascalprecht.translate'])
 
-.config(function($stateProvider, $provide, $ionicConfigProvider, $httpProvider, $urlRouterProvider, $mmUtilProvider) {
+.config(function($stateProvider, $provide, $ionicConfigProvider, $httpProvider, $urlRouterProvider, $mmUtilProvider,
+        $mmLogProvider) {
 
     // Set tabs to bottom on Android.
     $ionicConfigProvider.platform.android.tabs.position('bottom');
@@ -27,6 +28,13 @@ angular.module('mm.core', ['pascalprecht.translate'])
         };
         return $delegate;
     }]);
+
+    /**
+     * Decorate $log. Usage:
+     * $log = $log.getInstance('MyFactory')
+     * $log.debug('My message') -> "dd/mm/aaaa hh:mm:ss MyFactory: My message"
+     */
+    $provide.decorator('$log', ['$delegate', $mmLogProvider.logDecorator]);
 
     // Ugly hack to "decorate" the $stateProvider.state() method.
     // This allows us to automagically define 'tablet' states which use split views.

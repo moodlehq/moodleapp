@@ -23,6 +23,8 @@ angular.module('mm.core.login')
  */
 .controller('mmLoginSitesCtrl', function($scope, $state, $mmSitesManager, $ionicPopup, $log, $translate) {
 
+    $log = $log.getInstance('mmLoginSitesCtrl');
+
     $mmSitesManager.getSites().then(function(sites) {
         $scope.sites = sites;
         $scope.data = {

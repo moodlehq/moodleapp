@@ -23,6 +23,8 @@ angular.module('mm.core')
  */
 .factory('$mmURLDelegate', function($log) {
 
+    $log = $log.getInstance('$mmURLDelegate');
+
     var observers = {},
         self = {};
 

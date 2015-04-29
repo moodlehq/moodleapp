@@ -15,6 +15,9 @@
 angular.module('mm.addons.files')
 
 .factory('$mmaFiles', function($mmSite, $mmUtil, $mmFS, $mmWS, $q, $timeout, $log, md5) {
+
+    $log = $log.getInstance('$mmaFiles');
+
     var self = {},
         defaultParams = {
             "contextid": 0,

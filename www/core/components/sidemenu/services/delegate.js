@@ -24,6 +24,8 @@ angular.module('mm.core.sidemenu')
  */
 .factory('$mmSideMenuDelegate', function($log) {
 
+    $log = $log.getInstance('$mmSideMenuDelegate');
+
     var plugins = {},
         self = {},
         data,

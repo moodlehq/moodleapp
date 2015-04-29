@@ -66,6 +66,8 @@ angular.module('mm.core')
 
     function mmUtil($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp, $q) {
 
+        $log = $log.getInstance('$mmUtil');
+
         var self = this; // Use 'self' to be coherent with the rest of services.
 
         // // Loading all the mimetypes.

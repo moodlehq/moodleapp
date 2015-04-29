@@ -23,6 +23,8 @@ angular.module('mm.core')
  */
 .factory('$mmDB', function($q, $log) {
 
+    $log = $log.getInstance('$mmDB');
+
     var self = {};
 
     /**

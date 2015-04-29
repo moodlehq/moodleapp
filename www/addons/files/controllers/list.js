@@ -15,7 +15,7 @@
 angular.module('mm.addons.files')
 
 .controller('mmaFilesListController', function($q, $scope, $stateParams, $ionicActionSheet,
-        $mmaFiles, $mmSite, $translate, $timeout, $mmUtil, $mmFS, $mmWS, $log, $mmaFilesHelper) {
+        $mmaFiles, $mmSite, $translate, $timeout, $mmUtil, $mmFS, $mmWS, $mmaFilesHelper) {
 
     var path = $stateParams.path,
         root = $stateParams.root,
