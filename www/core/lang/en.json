@@ -4,6 +4,7 @@
     "loading": "Loading",
     "lostconnection": "We lost connection you need to reconnect. Your token is now invalid",
     "networkerrormsg": "Network not enabled or not working.",
+    "pulltorefresh": "Pull to refresh",
     "unexpectederror": "Unexepected error. Please close and reopen the application to try again",
     "wsfunctionnotavailable": "The webservice function is not available."
 }

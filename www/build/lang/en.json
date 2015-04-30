@@ -4,6 +4,7 @@
     "mm.core.loading": "Loading",
     "mm.core.lostconnection": "We lost connection you need to reconnect. Your token is now invalid",
     "mm.core.networkerrormsg": "Network not enabled or not working.",
+    "mm.core.pulltorefresh": "Pull to refresh",
     "mm.core.unexpectederror": "Unexepected error. Please close and reopen the application to try again",
     "mm.core.wsfunctionnotavailable": "The webservice function is not available.",
     "mm.courses.errorloadcourses": "An error occurred while loading courses.",

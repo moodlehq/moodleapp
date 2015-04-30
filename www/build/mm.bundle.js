@@ -2774,9 +2774,11 @@ angular.module('mm.addons.participants')
             $scope.$broadcast('scroll.infiniteScrollComplete');
         });
     };
-    $translate('loading').then(function(loadingString) {
-        $mmUtil.showModalLoading(loadingString);
-    });
+    $scope.refreshParticipants = function() {
+        fetchParticipants(true).finally(function() {
+            $scope.$broadcast('scroll.refreshComplete');
+        });
+    };
 });
 
 angular.module('mm.addons.participants')

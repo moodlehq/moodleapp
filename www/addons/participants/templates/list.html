@@ -3,11 +3,9 @@
         <div class="mm-split-pane">
             <div class="mm-split-pane-menu">
                 <ion-scroll style="height: 100%;">
-                    <!-- For now we won't have Pull to refresh
-                    <ion-refresher pulling-text="Pull to refresh"
-                                   on-refresh="refreshParticipants()"
-                                   refreshing-icon="ion-loading-c">
-                    </ion-refresher> -->
+                    <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}"
+                                   on-refresh="refreshParticipants()">
+                    </ion-refresher>
                     <div class="list">
                         <div ng-repeat="participant in participants">
                             <a ui-sref="{{getState(participant.id)}}" class="item item-avatar">

@@ -62,7 +62,9 @@ angular.module('mm.addons.participants')
         });
     };
 
-    $translate('loading').then(function(loadingString) {
-        $mmUtil.showModalLoading(loadingString);
-    });
+    $scope.refreshParticipants = function() {
+        fetchParticipants(true).finally(function() {
+            $scope.$broadcast('scroll.refreshComplete');
+        });
+    };
 });
