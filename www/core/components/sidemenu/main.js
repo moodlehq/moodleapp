@@ -30,7 +30,7 @@ angular.module('mm.core.sidemenu', [])
 
             // Go to login if user is not logged in.
             if (!$mmSite.isLoggedIn()) {
-                $state.go('mm_login.index');
+                $state.go('mm_login.init');
             }
         }
     });

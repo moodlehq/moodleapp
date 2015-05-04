@@ -18,7 +18,7 @@ angular.module('mm.core.login', [])
 .constant('mmLoginLaunchPassport', 'mmLoginLaunchPassport')
 .constant('mmLoginSSOCode', 2) // This code is returned by local_mobile Moodle plugin if SSO in browser is required.
 
-.config(function($stateProvider) {
+.config(function($stateProvider, $urlRouterProvider) {
 
     $stateProvider
 
@@ -30,17 +30,18 @@ angular.module('mm.core.login', [])
         onEnter: function($ionicHistory, $state, $mmSitesManager, $mmSite) {
             // Ensure that there is no history stack when getting here.
             $ionicHistory.clearHistory();
-
-            $mmSitesManager.restoreSession().then(function() {
-                if ($mmSite.isLoggedIn()) {
-                    $state.go('site.mm_courses');
-                }
-            });
         }
     })
 
-    .state('mm_login.index', {
-        url: '/index',
+    .state('mm_login.init', {
+        url: '/init',
+        templateUrl: 'core/components/login/templates/init.html',
+        controller: 'mmLoginInitCtrl',
+        cache: false // Disable caching to force controller reload.
+    })
+
+    .state('mm_login.sites', {
+        url: '/sites',
         templateUrl: 'core/components/login/templates/sites.html',
         controller: 'mmLoginSitesCtrl',
         onEnter: function($state, $mmSitesManager) {
@@ -74,15 +75,21 @@ angular.module('mm.core.login', [])
         onEnter: function($state, $stateParams) {
             // Do not allow access to this page when the URL was not passed.
             if (!$stateParams.siteurl) {
-              $state.go('mm_login.index');
+              $state.go('mm_login.init');
             }
         }
+    });
+
+    // Default redirect to the login page.
+    $urlRouterProvider.otherwise(function($injector, $location) {
+        var $state = $injector.get('$state');
+        return $state.href('mm_login.init').replace('#', '');
     });
 
 })
 
 .run(function($log, $q, $state, $mmUtil, $translate, $mmSitesManager, $rootScope, $mmSite, $mmURLDelegate, $mmConfig,
-                mmLoginLaunchSiteURL, mmLoginLaunchPassport, md5) {
+                $ionicHistory, mmLoginLaunchSiteURL, mmLoginLaunchPassport, md5) {
 
     $log = $log.getInstance('mmLogin');
 
@@ -139,11 +146,21 @@ angular.module('mm.core.login', [])
             // We are not logged in.
             event.preventDefault();
             $log.debug('Redirect to login page, request was: ' + toState.name);
-            $state.transitionTo('mm_login.index');
+            // Disable animation and back button for the next transition.
+            $ionicHistory.nextViewOptions({
+                disableAnimate: true,
+                disableBack: true
+            });
+            $state.transitionTo('mm_login.init');
         } else if (toState.name.substr(0, 8) === 'mm_login' && $mmSite.isLoggedIn()) {
             // We are logged in and requested the login page.
             event.preventDefault();
             $log.debug('Redirect to course page, request was: ' + toState.name);
+            // Disable animation and back button for the next transition.
+            $ionicHistory.nextViewOptions({
+                disableAnimate: true,
+                disableBack: true
+            });
             $state.transitionTo('site.mm_courses');
         }
 

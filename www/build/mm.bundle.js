@@ -25,7 +25,7 @@ angular.module('mm', ['ionic', 'mm.core', 'mm.core.courses', 'mm.core.login', 'm
 });
 
 angular.module('mm.core', ['pascalprecht.translate'])
-.config(function($stateProvider, $provide, $ionicConfigProvider, $httpProvider, $urlRouterProvider, $mmUtilProvider,
+.config(function($stateProvider, $provide, $ionicConfigProvider, $httpProvider, $mmUtilProvider,
         $mmLogProvider) {
     $ionicConfigProvider.platform.android.tabs.position('bottom');
     $provide.decorator('$ionicPlatform', ['$delegate', '$window', function($delegate, $window) {
@@ -78,10 +78,6 @@ angular.module('mm.core', ['pascalprecht.translate'])
     $httpProvider.defaults.transformRequest = [function(data) {
         return angular.isObject(data) && String(data) !== '[object File]' ? $mmUtilProvider.param(data) : data;
     }];
-    $urlRouterProvider.otherwise(function($injector, $location) {
-        var $state = $injector.get('$state');
-        $state.go('mm_login.index');
-    });
 })
 .run(function($ionicPlatform, $ionicBody, $window) {
     $ionicPlatform.ready(function() {
@@ -136,7 +132,7 @@ angular.module('mm.core')
         };
                 self.getSchema = function() {
             return dbschema;
-        }
+        };
         return self;
     }
 });
@@ -1792,7 +1788,7 @@ angular.module('mm.core.login', [])
 .constant('mmLoginLaunchSiteURL', 'mmLoginLaunchSiteURL')
 .constant('mmLoginLaunchPassport', 'mmLoginLaunchPassport')
 .constant('mmLoginSSOCode', 2)
-.config(function($stateProvider) {
+.config(function($stateProvider, $urlRouterProvider) {
     $stateProvider
     .state('mm_login', {
         url: '/mm_login',
@@ -1801,15 +1797,16 @@ angular.module('mm.core.login', [])
         cache: false,  
         onEnter: function($ionicHistory, $state, $mmSitesManager, $mmSite) {
             $ionicHistory.clearHistory();
-            $mmSitesManager.restoreSession().then(function() {
-                if ($mmSite.isLoggedIn()) {
-                    $state.go('site.mm_courses');
-                }
-            });
         }
     })
-    .state('mm_login.index', {
-        url: '/index',
+    .state('mm_login.init', {
+        url: '/init',
+        templateUrl: 'core/components/login/templates/init.html',
+        controller: 'mmLoginInitCtrl',
+        cache: false
+    })
+    .state('mm_login.sites', {
+        url: '/sites',
         templateUrl: 'core/components/login/templates/sites.html',
         controller: 'mmLoginSitesCtrl',
         onEnter: function($state, $mmSitesManager) {
@@ -1838,13 +1835,17 @@ angular.module('mm.core.login', [])
         },
         onEnter: function($state, $stateParams) {
             if (!$stateParams.siteurl) {
-              $state.go('mm_login.index');
+              $state.go('mm_login.init');
             }
         }
     });
+    $urlRouterProvider.otherwise(function($injector, $location) {
+        var $state = $injector.get('$state');
+        return $state.href('mm_login.init').replace('#', '');
+    });
 })
 .run(function($log, $q, $state, $mmUtil, $translate, $mmSitesManager, $rootScope, $mmSite, $mmURLDelegate, $mmConfig,
-                mmLoginLaunchSiteURL, mmLoginLaunchPassport, md5) {
+                $ionicHistory, mmLoginLaunchSiteURL, mmLoginLaunchPassport, md5) {
     $log = $log.getInstance('mmLogin');
     $mmURLDelegate.register('mmLoginSSO', function(url) {
         var ssoScheme = 'moodlemobile://token=';
@@ -1882,10 +1883,18 @@ angular.module('mm.core.login', [])
         if (toState.name.substr(0, 8) !== 'mm_login' && !$mmSite.isLoggedIn()) {
             event.preventDefault();
             $log.debug('Redirect to login page, request was: ' + toState.name);
-            $state.transitionTo('mm_login.index');
+            $ionicHistory.nextViewOptions({
+                disableAnimate: true,
+                disableBack: true
+            });
+            $state.transitionTo('mm_login.init');
         } else if (toState.name.substr(0, 8) === 'mm_login' && $mmSite.isLoggedIn()) {
             event.preventDefault();
             $log.debug('Redirect to course page, request was: ' + toState.name);
+            $ionicHistory.nextViewOptions({
+                disableAnimate: true,
+                disableBack: true
+            });
             $state.transitionTo('site.mm_courses');
         }
     });
@@ -1931,7 +1940,7 @@ angular.module('mm.core.sidemenu', [])
         onEnter: function($ionicHistory, $state, $mmSite) {
             $ionicHistory.clearHistory();
             if (!$mmSite.isLoggedIn()) {
-                $state.go('mm_login.index');
+                $state.go('mm_login.init');
             }
         }
     });
@@ -2044,6 +2053,24 @@ angular.module('mm.core.login')
     };
 });
 
+angular.module('mm.core.login')
+.controller('mmLoginInitCtrl', function($ionicHistory, $state, $mmSitesManager, $mmSite) {
+    $ionicHistory.nextViewOptions({
+        disableAnimate: true,
+        disableBack: true
+    });
+    $mmSitesManager.restoreSession().finally(function() {
+        if ($mmSite.isLoggedIn()) {
+            $state.go('site.mm_courses');
+        } else {
+            $mmSitesManager.hasSites().then(function() {
+                $state.go('mm_login.sites');
+            }, function() {
+                $state.go('mm_login.site');
+            });
+        }
+    });
+});
 angular.module('mm.core.login')
 .controller('mmLoginSiteCtrl', function($scope, $state, $mmSitesManager, $mmUtil, $ionicPopup, $translate, $ionicModal,
                                         $mmConfig, mmLoginLaunchSiteURL, mmLoginLaunchPassport, mmLoginSSOCode) {
@@ -2179,7 +2206,7 @@ angular.module('mm.core.sidemenu')
     $scope.siteinfo = $mmSite.getInfo();
     $scope.logout = function() {
         $mmSitesManager.logout().finally(function() {
-            $state.go('mm_login.index');
+            $state.go('mm_login.sites');
         });
     };
     $scope.docsurl = 'http://docs.moodle.org/en/Mobile_app';

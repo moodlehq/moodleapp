@@ -27,7 +27,7 @@ angular.module('mm.core.sidemenu')
 
     $scope.logout = function() {
         $mmSitesManager.logout().finally(function() {
-            $state.go('mm_login.index');
+            $state.go('mm_login.sites');
         });
     };
 

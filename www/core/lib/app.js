@@ -123,7 +123,7 @@ angular.module('mm.core')
          */
         self.getSchema = function() {
             return dbschema;
-        }
+        };
 
         return self;
     }
