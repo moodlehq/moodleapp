@@ -100,6 +100,10 @@ angular.module('mm.core')
                     var content = angular.element('<div>').append(clone).html(); // Get directive's content.
                     var interpolated = $interpolate(content)(scope); // "Evaluate" scope variables.
 
+                    // IMPORTANT: In order for $interpolate to work, the scope variables need to be set when mm-format-text
+                    // is applied. If the variables need to be fetched asynchronously, mm-format-text needs to be inside a
+                    // ng-repeat, ng-if or similar to delay its execution until the data is obtained.
+
                     var siteid = attrs.siteid;
                     if (typeof(siteid) !== 'undefined') {
                         siteid = $interpolate(siteid)(scope); // "Evaluate" siteurl.

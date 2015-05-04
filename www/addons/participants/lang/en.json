@@ -1,0 +1,21 @@
+{
+    "address": "Address",
+    "city": "City",
+    "contact": "Contact",
+    "country": "Country",
+    "description": "Description",
+    "details": "Details",
+    "editingteacher": "Teacher",
+    "email": "Email",
+    "errorparticipantnotfound": "Participant not found.",
+    "interests": "Interests",
+    "manager": "Manager",
+    "participants": "Participants",
+    "phone1": "Phone",
+    "phone2": "Mobile",
+    "roles": "Course roles",
+    "roleseparator": ",",
+    "student": "Student",
+    "teacher": "Non-editing teacher",
+    "webpage": "Web page"
+}

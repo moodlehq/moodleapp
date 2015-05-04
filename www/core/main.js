@@ -15,7 +15,7 @@
 angular.module('mm.core', ['pascalprecht.translate'])
 
 .config(function($stateProvider, $provide, $ionicConfigProvider, $httpProvider, $mmUtilProvider,
-        $mmLogProvider) {
+        $mmLogProvider, $compileProvider) {
 
     // Set tabs to bottom on Android.
     $ionicConfigProvider.platform.android.tabs.position('bottom');
@@ -100,6 +100,9 @@ angular.module('mm.core', ['pascalprecht.translate'])
     $httpProvider.defaults.transformRequest = [function(data) {
         return angular.isObject(data) && String(data) !== '[object File]' ? $mmUtilProvider.param(data) : data;
     }];
+
+    // Set our own safe protocols, otherwise geo:// is marked as unsafe.
+    $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|geo):/);
 })
 
 .run(function($ionicPlatform, $ionicBody, $window) {

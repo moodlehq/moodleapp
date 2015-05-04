@@ -1,0 +1,94 @@
+<ion-view>
+    <ion-nav-title>{{title}}</ion-nav-title>
+    <ion-content padding="true">
+        <div class="list" ng-if="participant"> <!-- Use ng-if to delay mm-format-text execution until the data is obtained -->
+            <div class="item item-avatar">
+                <mm-format-text>
+                    <img ng-src="{{participant.profileimageurl}}">
+                    <h2>{{participant.fullname}}</h2>
+                </mm-format-text>
+            </div>
+            <div class="item item-divider" ng-if="hasContact">
+                {{ 'mma.participants.contact' | translate}}
+            </div>
+            <div class="item" ng-if="participant.email">
+                <h2>{{ 'mma.participants.email' | translate}}</h2>
+                <p>
+                    <a href="mailto:{{participant.email}}" target="_blank">
+                        <mm-format-text clean="true">{{participant.email}}</mm-format-text>
+                    </a>
+                </p>
+            </div>
+            <div class="item" ng-if="participant.phone1">
+                <h2>{{ 'mma.participants.phone1' | translate}}</h2>
+                <p>
+                    <a href="tel:{{participant.phone1}}" target="_blank">
+                        <mm-format-text clean="true">{{participant.phone1}}</mm-format-text>
+                    </a>
+                </p>
+            </div>
+            <div class="item" ng-if="participant.phone2">
+                <h2>{{ 'mma.participants.phone2' | translate}}</h2>
+                <p>
+                    <a href="tel:{{participant.phone2}}" target="_blank">
+                    <mm-format-text clean="true">{{participant.phone2}}</mm-format-text>
+                </a>
+            </div>
+            <div class="item" ng-if="participant.address">
+                <h2>{{ 'mma.participants.address' | translate}}</h2>
+                <p>
+                    <a ng-if="isAndroid" href="geo:0,0?q={{participant.encodedAddress}}" target="_blank">
+                        <mm-format-text clean="true">{{participant.address}}</mm-format-text>
+                    </a>
+                    <a ng-if="!isAndroid" href="http://maps.google.com?q={{participant.encodedAddress}}" target="_blank">
+                        <mm-format-text clean="true">{{participant.address}}</mm-format-text>
+                    </a>
+                </p>
+            </div>
+            <div class="item" ng-if="participant.city && !participant.address">
+                <h2>{{ 'mma.participants.city' | translate}}</h2>
+                <p>
+                    <mm-format-text clean="true">{{participant.city}}</mm-format-text>
+                </p>
+            </div>
+            <div class="item" ng-if="participant.country && !participant.address">
+                <h2>{{ 'mma.participants.country' | translate}}</h2>
+                <p>
+                    <mm-format-text clean="true">{{participant.country}}</mm-format-text>
+                </p>
+            </div>
+            <div class="item item-divider" ng-if="hasDetails">
+                {{ 'mma.participants.details' | translate}}
+            </div>
+            <div class="item" ng-if="participant.url">
+                <h2>{{ 'mma.participants.webpage' | translate}}</h2>
+                <p>
+                    <a href="{{participant.url}}" target="_blank">
+                        <mm-format-text clean="true">{{participant.url}}</mm-format-text>
+                    </a>
+                </p>
+            </div>
+            <div class="item" ng-if="participant.roles">
+                <h2>{{ 'mma.participants.roles' | translate}}:
+                <p>
+                    <mm-format-text clean="true">{{participant.roles}}</mm-format-text>
+                </p>
+            </div>
+            <div class="item" ng-if="participant.interests">
+                <h2>{{ 'mma.participants.interests' | translate}}</h2>
+                <p>
+                    <mm-format-text clean="true">{{participant.interests}}</mm-format-text>
+                </p>
+            </div>
+            <div class="item item-divider" ng-if="participant.description">
+                {{ 'mma.participants.description' | translate}}
+            </div>
+            <div class="item item-text-wrap" ng-if="participant.description">
+                <mm-format-text>{{participant.description}}</mm-format-text>
+            </div>
+            <a ng-repeat="plugin in plugins" class="button button-block" ui-sref="{{plugin.state}}">
+                {{plugin.title}}
+            </a>
+        </ul>
+    </ion-content>
+</ion-view>
