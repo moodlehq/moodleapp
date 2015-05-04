@@ -1811,6 +1811,18 @@ angular.module('mm.core.course', [])
                 controller: 'mmCourseSectionCtrl'
             }
         }
+    })
+    .state('site.mm_course-modcontent', {
+        url: '/mm_course-modcontent',
+        params: {
+            module: null
+        },
+        views: {
+            site: {
+                templateUrl: 'core/components/course/templates/modcontent.html',
+                controller: 'mmCourseModContentCtrl'
+            }
+        }
     });
 })
 .run(function($mmCoursesDelegate, $translate) {
@@ -2011,6 +2023,15 @@ angular.module('mm.core.sidemenu', [])
 });
 
 angular.module('mm.core.course')
+.controller('mmCourseModContentCtrl', function($log, $stateParams, $scope) {
+    $log = $log.getInstance('mmCourseModContentCtrl');
+    var module = $stateParams.module || {};
+    $scope.description = module.description;
+    $scope.title = module.name;
+    $scope.url = module.url;
+});
+
+angular.module('mm.core.course')
 .controller('mmCourseSectionCtrl', function($mmCourse, $mmUtil, $scope, $stateParams, $translate) {
     var courseid = $stateParams.courseid,
         sectionid = $stateParams.sectionid,
@@ -2079,6 +2100,37 @@ angular.module('mm.core.course')
 });
 
 angular.module('mm.core.course')
+.directive('mmCourseContent', function($log, $mmCourseDelegate, $state) {
+    $log = $log.getInstance('mmCourseContent');
+    function link(scope, element, attrs) {
+        var module = JSON.parse(attrs.module),
+            data;
+        data = $mmCourseDelegate.getDataFromContentHandlerFor(module.modname, module);
+        scope = angular.extend(scope, data);
+    }
+    function controller($scope) {
+        $scope.handleClick = function(e, button) {
+            e.stopPropagation();
+            e.preventDefault();
+            button.callback($scope);
+        };
+        $scope.jump = function(e, state, stateParams) {
+            e.stopPropagation();
+            e.preventDefault();
+            $state.go(state, stateParams);
+        };
+    }
+    return {
+        controller: controller,
+        link: link,
+        replace: true,
+        restrict: 'E',
+        scope: {},
+        templateUrl: 'core/components/course/templates/content.html',
+    };
+});
+
+angular.module('mm.core.course')
 .factory('$mmCourse', function($mmSite, $translate, $q) {
     var self = {};
         self.getSection = function(courseid, sectionid) {
@@ -2105,6 +2157,46 @@ angular.module('mm.core.course')
             courseid: courseid,
             options: []
         });
+    };
+    return self;
+});
+
+angular.module('mm.core.course')
+.factory('$mmCourseDelegate', function($log) {
+    $log = $log.getInstance('$mmCourseDelegate');
+    var contentHandlers = {},
+        self = {};
+        self.registerContentHandler = function(addon, handles, callback) {
+        if (typeof contentHandlers[handles] !== 'undefined') {
+            $log.error("Addon '" + contentHandlers[handles].addon + "' already registered as handler for '" + handles + "'");
+            return;
+        }
+        $log.debug("Registered addon '" + addon + "' as course content handler.");
+        contentHandlers[handles] = {
+            addon: addon,
+            callback: callback
+        };
+    };
+        self.getDataFromContentHandlerFor = function(handles, module) {
+        var data = {
+            icon: module.modicon,
+            title: module.name
+        };
+        if (typeof contentHandlers[handles] === 'undefined') {
+            data.state = 'site.mm_course-modcontent';
+            data.stateParams = { module: module };
+            if (module.url) {
+                data.buttons = [{
+                    icon: 'ion-ios-browsers-outline',
+                    callback: function($scope) {
+                        window.open(module.url, "_system");
+                    }
+                }];
+            }
+            return data;
+        }
+        data = angular.extend(data, contentHandlers[handles].callback(module));
+        return data;
     };
     return self;
 });

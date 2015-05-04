@@ -18,11 +18,7 @@
                 <mm-format-text>{{ section.summary }}</mm-format-text>
             </div>
 
-            <!-- TODO Use delegates to handle how this should look, and what state to go to. -->
-            <a class="item item-text-wrap" ng-repeat="module in section.modules">
-                <img src="{{ module.modicon }}" alt="" role="presentation">
-                {{ module.name }}
-            </a>
+            <mm-course-content ng-repeat="module in section.modules" module="{{ module }}"></mm-course-content>
 
             <!-- When there is nothing in the section. -->
             <div class="item item-text-wrap" ng-if="section.modules.length < 1">
