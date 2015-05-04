@@ -14,7 +14,7 @@
 
 angular.module('mm.core', ['pascalprecht.translate'])
 
-.config(function($stateProvider, $provide, $ionicConfigProvider, $httpProvider, $urlRouterProvider, $mmUtilProvider,
+.config(function($stateProvider, $provide, $ionicConfigProvider, $httpProvider, $mmUtilProvider,
         $mmLogProvider) {
 
     // Set tabs to bottom on Android.
@@ -100,12 +100,6 @@ angular.module('mm.core', ['pascalprecht.translate'])
     $httpProvider.defaults.transformRequest = [function(data) {
         return angular.isObject(data) && String(data) !== '[object File]' ? $mmUtilProvider.param(data) : data;
     }];
-
-    // Default redirect to the login page.
-    $urlRouterProvider.otherwise(function($injector, $location) {
-        var $state = $injector.get('$state');
-        $state.go('mm_login.index');
-    });
 })
 
 .run(function($ionicPlatform, $ionicBody, $window) {
