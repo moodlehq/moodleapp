@@ -379,14 +379,16 @@ angular.module('mm.core')
          * @param {Boolean} needsTranslate True if the errorMessage is a $translate key, false otherwise.
          */
         self.showErrorModal = function(errorMessage, needsTranslate) {
-            var langKeys = ['mm.core.error'];
+            var errorKey = 'mm.core.error',
+                langKeys = [errorKey];
+
             if (needsTranslate) {
                 langKeys.push(errorMessage);
             }
 
             $translate(langKeys).then(function(translations) {
                 $ionicPopup.alert({
-                    title: translations.error,
+                    title: translations[errorKey],
                     template: needsTranslate ? translations[errorMessage] : errorMessage
                 });
             });

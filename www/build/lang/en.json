@@ -1,6 +1,6 @@
 {
     "mm.core.cannotconnect": "Cannot connect: Verify that your have typed correctly the URL and that your site uses Moodle 2.4 or later.",
-    "mm.core.error": "Error.",
+    "mm.core.error": "Error",
     "mm.core.loading": "Loading",
     "mm.core.lostconnection": "We lost connection you need to reconnect. Your token is now invalid",
     "mm.core.networkerrormsg": "Network not enabled or not working.",

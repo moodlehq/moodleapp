@@ -1,6 +1,6 @@
 {
     "cannotconnect": "Cannot connect: Verify that your have typed correctly the URL and that your site uses Moodle 2.4 or later.",
-    "error": "Error.",
+    "error": "Error",
     "loading": "Loading",
     "lostconnection": "We lost connection you need to reconnect. Your token is now invalid",
     "networkerrormsg": "Network not enabled or not working.",
