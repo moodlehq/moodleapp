@@ -2,7 +2,7 @@
     <ion-content scroll="false" padding="false">
         <div class="mm-split-pane">
             <div class="mm-split-pane-menu">
-                <ion-scroll style="height: 100%;">
+                <ion-content>
                     <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}"
                                    on-refresh="refreshParticipants()">
                     </ion-refresher>
@@ -22,7 +22,7 @@
                             immediate-check="false"
                             on-infinite="loadMoreParticipants()" >
                      </ion-infinite-scroll>
-                </ion-scroll>
+                </ion-content>
             </div>
             <div ui-view="tablet" class="mm-split-pane-content">
             </div>
