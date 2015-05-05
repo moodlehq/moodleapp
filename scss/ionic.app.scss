@@ -90,3 +90,35 @@ $ionicons-font-path: "../lib/ionic/fonts" !default;
     border-radius: 0;
   }
 }
+
+// Split pane.
+.mm-split-pane {
+  @include display-flex();
+  @include align-items(stretch);
+  width: 100%;
+  height: 100%;
+}
+
+.mm-split-pane-menu {
+  overflow-y: auto;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.mm-split-pane-content {
+  @include flex(1, 0, auto);
+  position: relative;
+  display: none;
+}
+
+.tablet {
+  .mm-split-pane-menu {
+    @include flex(0, 0, $menu-width);
+    width: $menu-width;
+    border-right: 1px solid #ddd;
+  }
+  .mm-split-pane-content {
+    display: block;
+  }
+}

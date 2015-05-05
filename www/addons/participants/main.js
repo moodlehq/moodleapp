@@ -28,7 +28,7 @@ angular.module('mm.addons.participants', [])
                 }
             },
             params: {
-                courseid: 0
+                course: null
             }
         })
 

@@ -1,0 +1,17 @@
+<ion-view view-title="{{ fullname }}">
+    <ion-content scroll="false" padding="false">
+        <div class="mm-split-pane">
+            <div class="mm-split-pane-menu">
+                <ion-scroll style="height: 100%;">
+                    <ion-list>
+                        <a ng-repeat="section in sections" class="item" ui-sref="{{getState(section)}}({courseid: {{courseid}}, sectionid: {{section.id}}})">
+                            {{section.name}}
+                        </a>
+                    </ion-list>
+                </ion-scroll>
+            </div>
+            <div ui-view="tablet" class="mm-split-pane-content">
+            </div>
+        </div>
+    </ion-content>
+</ion-view>
