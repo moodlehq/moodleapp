@@ -43,6 +43,19 @@ angular.module('mm.core.course', [])
                 controller: 'mmCourseSectionCtrl'
             }
         }
+    })
+
+    .state('site.mm_course-modcontent', {
+        url: '/mm_course-modcontent',
+        params: {
+            module: null
+        },
+        views: {
+            site: {
+                templateUrl: 'core/components/course/templates/modcontent.html',
+                controller: 'mmCourseModContentCtrl'
+            }
+        }
     });
 
 })

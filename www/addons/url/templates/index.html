@@ -1,0 +1,15 @@
+<ion-view>
+    <ion-nav-title>{{ title }}</ion-nav-title>
+    <ion-content padding="true">
+        <div class="card" ng-if="description">
+            <div class="item item-text-wrap">
+                <mm-format-text>{{ description }}</mm-format-text>
+            </div>
+        </div>
+        <div class="item item-text-wrap">
+            <h2>{{ 'mma.url.pointingtourl' | translate }}</h2>
+            <p>{{ url }}</p>
+        </div>
+        <a href="{{ url }}" target="_system" class="button button-block"><i class="icon ion-link"></i> {{ 'mma.url.accessurl' | translate }}</a>
+    </ion-content>
+</ion-view>

@@ -1,0 +1,16 @@
+<ion-view>
+    <ion-nav-title>{{ title }}</ion-nav-title>
+    <ion-content padding="true">
+        <div class="card" ng-if="description">
+            <div class="item item-text-wrap">
+                <mm-format-text>{{ description }}</mm-format-text>
+            </div>
+        </div>
+        <div class="card">
+            <h2 class="item-body">{{ 'mm.course.whoops' | translate }}</h2>
+            <p ng-if="url" class="item-body">{{ 'mm.course.activitynotyetviewablegothere' | translate }}</p>
+            <p ng-if="!url" class="item-body">{{ 'mm.course.activitynotyetviewable' | translate }}</p>
+        </div>
+        <a ng-if="url" href="{{ url }}" target="_system" class="button button-block"><i class="icon ion-ios-browsers-outline"></i> {{ 'mm.course.gotothesite' | translate }}</a>
+    </ion-content>
+</ion-view>

@@ -32,7 +32,7 @@ angular.module('mm.core.course')
      * @name $mmCourse#getSection
      * @param {Number} courseid The course ID.
      * @param {Number} sectionid The section ID.
-     * @return {Promise} The reject contains the error message, else contains the sections.
+     * @return {Promise} The reject contains the error message, else contains the section.
      */
     self.getSection = function(courseid, sectionid) {
         var deferred = $q.defer();
