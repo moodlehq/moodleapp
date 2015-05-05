@@ -1541,6 +1541,17 @@ angular.module('mm.core')
             text = text.replace(/(?:\r\n|\r|\n)/g, '<br />');
             return text;
         };
+                self.shortenText = function(text, length) {
+            if (text.length > length) {
+                text = text.substr(0, length - 1);
+                var lastWordPos = text.lastIndexOf(' ');
+                if (lastWordPos > 0) {
+                    text = text.substr(0, lastWordPos);
+                }
+                text += '&hellip;';
+            }
+            return text;
+        };
                 self.readJSONFile = function(path) {
             return $http.get(path).then(function(response) {
                 return response.data;
