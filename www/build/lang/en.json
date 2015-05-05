@@ -96,5 +96,7 @@
     "mma.participants.roleseparator": ",",
     "mma.participants.student": "Student",
     "mma.participants.teacher": "Non-editing teacher",
-    "mma.participants.webpage": "Web page"
+    "mma.participants.webpage": "Web page",
+    "mma.url.accessurl": "Access the URL",
+    "mma.url.pointingtourl": "URL this resource points to"
 }
