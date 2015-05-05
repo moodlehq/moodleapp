@@ -57,7 +57,7 @@ angular.module('mm.addons.participants')
             "options[1][value]": limitNumber,
         };
 
-        return $mmSite.read('core_user_get_users_by_courseid', data).then(function(users) {
+        return $mmSite.read('core_enrol_get_enrolled_users', data).then(function(users) {
             var canLoadMore = users.length >= limitNumber;
             return {participants: users, canLoadMore: canLoadMore};
         });
@@ -82,7 +82,7 @@ angular.module('mm.addons.participants')
             "userlist[0][courseid]": courseid
         };
 
-        $mmSite.read('core_user_get_course_participants_by_id', data).then(function(users) {
+        $mmSite.read('core_user_get_course_user_profiles', data).then(function(users) {
             if (users.length == 0) {
                 $mmLang.translateErrorAndReject(deferred, 'errorparticipantnotfound');
                 return;
