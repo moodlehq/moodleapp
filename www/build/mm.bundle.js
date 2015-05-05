@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm', ['ionic', 'mm.core', 'mm.core.course', 'mm.core.courses', 'mm.core.login', 'mm.core.sidemenu', 'mm.addons.files', 'mm.addons.participants', 'ngCordova', 'angular-md5', 'pascalprecht.translate'])
+angular.module('mm', ['ionic', 'mm.core', 'mm.core.course', 'mm.core.courses', 'mm.core.login', 'mm.core.sidemenu', 'mm.addons.files', 'mm.addons.mod_url', 'mm.addons.participants', 'ngCordova', 'angular-md5', 'pascalprecht.translate'])
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
     if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
@@ -2578,6 +2578,42 @@ angular.module('mm.addons.files', ['mm.core'])
   });
 });
 
+angular.module('mm.addons.mod_url', ['mm.core'])
+.config(function($stateProvider) {
+    $stateProvider
+    .state('site.mod_url', {
+      url: '/mod_url',
+      params: {
+        module: null
+      },
+      views: {
+        'site': {
+          controller: 'mmaModUrlIndexCtrl',
+          templateUrl: 'addons/mod_url/templates/index.html'
+        }
+      }
+    });
+})
+.run(function($mmCourseDelegate, $mmaModUrl) {
+    $mmCourseDelegate.registerContentHandler('mmaModUrl', 'url', function(module) {
+        var buttons = [];
+        if (module.contents && module.contents[0] && module.contents[0].fileurl) {
+            buttons.push({
+                icon: 'ion-link',
+                callback: function() {
+                    $mmaModUrl.open(module.instance, module.contents[0].fileurl);
+                }
+            });
+        }
+        return {
+            title: module.name,
+            state: 'site.mod_url',
+            stateParams: { module: module },
+            buttons: buttons
+        };
+    });
+});
+
 angular.module('mm.addons.participants', [])
 .constant('mmaParticipantsListLimit', 50)
 .config(function($stateProvider) {
@@ -2992,6 +3028,31 @@ angular.module('mm.addons.files')
             });
         });
         return deferred.promise;
+    };
+    return self;
+});
+
+angular.module('mm.addons.mod_url')
+.controller('mmaModUrlIndexCtrl', function($scope, $stateParams, $mmaModUrl) {
+    var module = $stateParams.module || {};
+    $scope.title = module.name;
+    $scope.description = module.description;
+    $scope.url = (module.contents && module.contents[0] && module.contents[0].fileurl) ? module.contents[0].fileurl : undefined;
+    $scope.go = function() {
+        $mmaModUrl.open(module.instance, $scope.url);
+    };
+});
+
+angular.module('mm.addons.mod_url')
+.factory('$mmaModUrl', function($mmSite) {
+    var self = {};
+        self.open = function(instanceId, url) {
+        if (instanceId) {
+            $mmSite.write('mod_url_view_url', {
+                urlid: instanceId
+            });
+        }
+        window.open(url, '_system');
     };
     return self;
 });

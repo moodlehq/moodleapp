@@ -78,6 +78,8 @@
     "mma.files.uploadfiles": "Upload files",
     "mma.files.uploading": "Uploading",
     "mma.files.video": "Video",
+    "mma.mod_url.accessurl": "Access the URL",
+    "mma.mod_url.pointingtourl": "URL this resource points to",
     "mma.participants.address": "Address",
     "mma.participants.city": "City",
     "mma.participants.contact": "Contact",
