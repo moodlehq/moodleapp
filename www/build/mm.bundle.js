@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm', ['ionic', 'mm.core', 'mm.core.course', 'mm.core.courses', 'mm.core.login', 'mm.core.sidemenu', 'mm.addons.files', 'mm.addons.participants', 'ngCordova', 'angular-md5', 'pascalprecht.translate'])
+angular.module('mm', ['ionic', 'mm.core', 'mm.core.course', 'mm.core.courses', 'mm.core.login', 'mm.core.sidemenu', 'mm.addons.files', 'mm.addons.mod_label', 'mm.addons.participants', 'ngCordova', 'angular-md5', 'pascalprecht.translate'])
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
     if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
@@ -2589,6 +2589,41 @@ angular.module('mm.addons.files', ['mm.core'])
   });
 });
 
+angular.module('mm.addons.mod_label', ['mm.core'])
+.config(function($stateProvider) {
+    $stateProvider
+    .state('site.mod_label', {
+        url: '/mod_label',
+        params: {
+            description: null
+        },
+        views: {
+            'site': {
+                templateUrl: 'addons/mod_label/templates/index.html',
+                controller: 'mmaModLabelIndexCtrl'
+            }
+        }
+    });
+})
+.run(function($mmCourseDelegate, $mmUtil, $translate) {
+  $translate('mma.mod_label.taptoview').then(function(taptoview) {
+    $mmCourseDelegate.registerContentHandler('mmaModLabel', 'label', function(module) {
+      var title = $mmUtil.shortenText($mmUtil.cleanTags(module.description).trim(), 128);
+      if (title.length <= 0) {
+        title = '<span class="mma-mod_label-empty">' + taptoview + '</span>';
+      }
+      return {
+        icon: false,
+        title: '<p>' + title + '</p>',
+        state: 'site.mod_label',
+        stateParams: {
+          description: module.description
+        }
+      };
+    });
+  });
+});
+
 angular.module('mm.addons.participants', [])
 .constant('mmaParticipantsListLimit', 50)
 .config(function($stateProvider) {
@@ -3005,6 +3040,12 @@ angular.module('mm.addons.files')
         return deferred.promise;
     };
     return self;
+});
+
+angular.module('mm.core.course')
+.controller('mmaModLabelIndexCtrl', function($scope, $stateParams, $log) {
+    $log = $log.getInstance('mmaModLabelIndexCtrl');
+    $scope.description = $stateParams.description;
 });
 
 angular.module('mm.addons.participants')
