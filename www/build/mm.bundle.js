@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 angular.module('mm', ['ionic', 'mm.core', 'mm.core.course', 'mm.core.courses', 'mm.core.login', 'mm.core.sidemenu', 'mm.addons.files', 'mm.addons.mod_label', 'mm.addons.mod_url', 'mm.addons.participants', 'ngCordova', 'angular-md5', 'pascalprecht.translate'])
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -540,12 +539,38 @@ angular.module('mm.core')
 });
 
 angular.module('mm.core')
-.factory('$mmLang', function($translate, $translatePartialLoader, $mmConfig) {
+.factory('$mmLang', function($translate, $translatePartialLoader, $mmConfig, $cordovaGlobalization) {
     var self = {};
         self.registerLanguageFolder = function(path) {
         $translatePartialLoader.addPart(path);
     };
-    self.changeCurrentLanguage = function(language) {
+        self.getCurrentLanguage = function() {
+        function getDefaultLanguage() {
+            return $mmConfig.get('default_lang').then(function(language) {
+                return language;
+            }, function() {
+                return 'en';
+            });
+        }
+        return $mmConfig.get('current_language').then(function(language) {
+            return language;
+        }, function() {
+            try {
+                return $cordovaGlobalization.getPreferredLanguage().then(function(result) {
+                    var language = result.value;
+                    if (language.indexOf('-') > -1) {
+                        language = language.substr(0, language.indexOf('-'));
+                    }
+                    return language;
+                }, function() {
+                    return getDefaultLanguage();
+                });
+            } catch(err) {
+                return getDefaultLanguage();
+            }
+        });
+    };
+        self.changeCurrentLanguage = function(language) {
         $translate.use(language);
         $mmConfig.set('current_language', language);
     };
@@ -560,26 +585,16 @@ angular.module('mm.core')
 })
 .config(function($translateProvider, $translatePartialLoaderProvider) {
     $translateProvider.useLoader('$translatePartialLoader', {
-      urlTemplate: '{part}/{lang}.json'
+        urlTemplate: '{part}/{lang}.json'
     });
     $translatePartialLoaderProvider.addPart('build/lang');
     $translateProvider.fallbackLanguage('en');
     $translateProvider.preferredLanguage('en');
 })
-.run(function($ionicPlatform, $translate, $cordovaGlobalization, $mmConfig) {
+.run(function($ionicPlatform, $translate, $mmLang) {
     $ionicPlatform.ready(function() {
-        $mmConfig.get('current_language').then(function(language) {
+        $mmLang.getCurrentLanguage().then(function(language) {
             $translate.use(language);
-        }, function() {
-            $cordovaGlobalization.getPreferredLanguage().then(function(result) {
-                var language = result.value;
-                if (language.indexOf('-') > -1) {
-                    language = language.substr(0, language.indexOf('-'));
-                }
-                $translate.use(language);
-            }, function() {
-                $translate.use('en');
-            });
         });
     });
 });
@@ -1309,6 +1324,39 @@ angular.module('mm.core')
 });
 
 angular.module('mm.core')
+.factory('$mmText', function($q, $mmSite, $mmLang) {
+    var self = {};
+        self.cleanTags = function(text) {
+        text = text.replace(/(<([^>]+)>)/ig,"");
+        text = angular.element('<p>').html(text).text();
+        text = text.replace(/(?:\r\n|\r|\n)/g, '<br />');
+        return text;
+    };
+        self.formatText = function(text, clean) {
+        return self.treatMultilangTags(text).then(function(formatted) {
+            if (clean) {
+                return self.cleanTags(formatted);
+            }
+            return formatted;
+        });
+    };
+        self.treatMultilangTags = function(text) {
+        var deferred = $q.defer();
+        if (!text) {
+            deferred.resolve('');
+            return deferred.promise;
+        }
+        return $mmLang.getCurrentLanguage().then(function(language) {
+            var re = new RegExp('<(?:lang|span)[^>]+lang="' + language + '"[^>]*>(.*?)<\/(?:lang|span)>',"g");
+            text = text.replace(re, "$1");
+            text = text.replace(/<(?:lang|span)[^>]+lang="([a-zA-Z0-9_-]+)"[^>]*>(.*?)<\/(?:lang|span)>/g,"");
+            return text;
+        });
+    };
+    return self;
+});
+
+angular.module('mm.core')
 .factory('$mmURLDelegate', function($log) {
     $log = $log.getInstance('$mmURLDelegate');
     var observers = {},
@@ -1537,11 +1585,6 @@ angular.module('mm.core')
                 });
             });
         };
-                self.cleanTags = function(text) {
-            text = text.replace(/(<([^>]+)>)/ig,"");
-            text = text.replace(/(?:\r\n|\r|\n)/g, '<br />');
-            return text;
-        };
                 self.shortenText = function(text, length) {
             if (text.length > length) {
                 text = text.substr(0, length - 1);
@@ -1730,81 +1773,35 @@ angular.module('mm.core')
     }
 });
 angular.module('mm.core')
-.directive('mmFormatText', function($interpolate) {
+.directive('mmFormatText', function($interpolate, $mmText, $compile) {
+    var curlyBracketsRegex = new RegExp('[{{|}}]', 'gi');
     return {
         restrict: 'E',
         scope: true,
         transclude: true,
-        controller: function($q, md5, $mmSite, $mmSitesManager, $mmUtil) {
-                        this.formatText = function(text, siteId, clean, courseId) {
-                var deferred = $q.defer();
-                if (!text) {
-                    deferred.reject();
-                    return deferred.promise;
-                }
-                if (!courseId) {
-                    courseId = 1;
-                }
-                text = text.replace(/<a([^>]+)>/g,"<a target=\"_blank\" $1>");
-                text = text.replace(/ng-src/g, 'src');
-                return $mmSitesManager.getSiteURL(siteId).then(function(siteurl) {
-                    var ft = text.match(/\$\$(.+?)\$\$/);
-                    if (ft && typeof(siteurl) !== 'undefined') {
-                        text = text.replace(/\$\$(.+?)\$\$/g, function(full, match) {
-                            if (!match) {
-                                return '';
-                            }
-                            var md5 = md5.createHash(match);
-                            return '<img src="' + siteurl + "/filter/tex/pix.php/" + md5 + '">';
-                        });
-                    }
-                    if (typeof(siteurl) === 'undefined') {
-                        deferred.resolve(text);
-                        return deferred.promise;
-                    }
-                    var urlToMatch = siteurl.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&').replace(/http(s)?/, 'http(s)?');
-                    var expr = new RegExp(urlToMatch + "[^\"']*pluginfile[^\"']*", "gi");
-                    var matches = text.match(expr);
-                    var promises = [];
-                    angular.forEach(matches, function(match) {
-                        var promise = $mmSitesManager.getMoodleFilePath(match, courseId, siteId);
-                        promises.push(promise);
-                        promise.then(function(url) {
-                            text = text.replace(match, url);
-                        });
-                    });
-                    function cleanTextIfNeeded() {
-                        if (clean) {
-                            return $mmUtil.cleanTags(text);
-                        } else {
-                            return text;
-                        }
-                    }
-                    return $q.all(promises).then(function() {
-                        return cleanTextIfNeeded();
-                    }, function() {
-                        return cleanTextIfNeeded();
-                    });
-                });
-            };
-        },
-        compile: function(element, attrs, transclude) {
-            return function(scope, linkElement, linkAttrs, ctrl) {
-                transclude(scope, function(clone) {
-                    var content = angular.element('<div>').append(clone).html();
+        link: function(scope, element, attrs, ctrl, transclude) {
+            transclude(scope, function(clone) {
+                var content = angular.element('<div>').append(clone).html();
+                function treatContents() {
                     var interpolated = $interpolate(content)(scope);
-                    var siteid = attrs.siteid;
-                    if (typeof(siteid) !== 'undefined') {
-                        siteid = $interpolate(siteid)(scope);
-                    }
-                    ctrl.formatText(interpolated, siteid, attrs.clean, attrs.courseid).then(function(text) {
-                        linkElement.replaceWith(text);
+                    interpolated = interpolated.trim();
+                    $mmText.formatText(interpolated, attrs.clean).then(function(formatted) {
+                        element.html(formatted);
                     });
-                });
-            }
+                }
+                if (attrs.watch) {
+                    var variable = $mmText.cleanTags(content).replace(curlyBracketsRegex, '');
+                    scope.$watch(variable, function() {
+                        treatContents();
+                    });
+                } else {
+                    treatContents();
+                }
+            });
         }
     };
 });
+
 angular.module('mm.core')
 .directive('mmNoInputValidation', function() {
     return {
@@ -1812,8 +1809,8 @@ angular.module('mm.core')
         priority: 500,
         compile: function(el, attrs) {
             attrs.$set('type',
-                null,
-                false
+                null,               
+                false               
             );
         }
     }
@@ -1904,7 +1901,7 @@ angular.module('mm.core.login', [])
         url: '/mm_login',
         abstract: true,
         templateUrl: 'core/components/login/templates/base.html',
-        cache: false,
+        cache: false,  
         onEnter: function($ionicHistory, $state, $mmSitesManager, $mmSite) {
             $ionicHistory.clearHistory();
         }
@@ -2590,6 +2587,41 @@ angular.module('mm.addons.files', ['mm.core'])
   });
 });
 
+angular.module('mm.addons.mod_label', ['mm.core'])
+.config(function($stateProvider) {
+    $stateProvider
+    .state('site.mod_label', {
+        url: '/mod_label',
+        params: {
+            description: null
+        },
+        views: {
+            'site': {
+                templateUrl: 'addons/mod_label/templates/index.html',
+                controller: 'mmaModLabelIndexCtrl'
+            }
+        }
+    });
+})
+.run(function($mmCourseDelegate, $mmUtil, $translate) {
+  $translate('mma.mod_label.taptoview').then(function(taptoview) {
+    $mmCourseDelegate.registerContentHandler('mmaModLabel', 'label', function(module) {
+      var title = $mmUtil.shortenText($mmUtil.cleanTags(module.description).trim(), 128);
+      if (title.length <= 0) {
+        title = '<span class="mma-mod_label-empty">' + taptoview + '</span>';
+      }
+      return {
+        icon: false,
+        title: '<p>' + title + '</p>',
+        state: 'site.mod_label',
+        stateParams: {
+          description: module.description
+        }
+      };
+    });
+  });
+});
+
 angular.module('mm.addons.mod_url', ['mm.core'])
 .config(function($stateProvider) {
     $stateProvider
@@ -2624,41 +2656,6 @@ angular.module('mm.addons.mod_url', ['mm.core'])
             buttons: buttons
         };
     });
-});
-
-angular.module('mm.addons.mod_label', ['mm.core'])
-.config(function($stateProvider) {
-    $stateProvider
-    .state('site.mod_label', {
-        url: '/mod_label',
-        params: {
-            description: null
-        },
-        views: {
-            'site': {
-                templateUrl: 'addons/mod_label/templates/index.html',
-                controller: 'mmaModLabelIndexCtrl'
-            }
-        }
-    });
-})
-.run(function($mmCourseDelegate, $mmUtil, $translate) {
-  $translate('mma.mod_label.taptoview').then(function(taptoview) {
-    $mmCourseDelegate.registerContentHandler('mmaModLabel', 'label', function(module) {
-      var title = $mmUtil.shortenText($mmUtil.cleanTags(module.description).trim(), 128);
-      if (title.length <= 0) {
-        title = '<span class="mma-mod_label-empty">' + taptoview + '</span>';
-      }
-      return {
-        icon: false,
-        title: '<p>' + title + '</p>',
-        state: 'site.mod_label',
-        stateParams: {
-          description: module.description
-        }
-      };
-    });
-  });
 });
 
 angular.module('mm.addons.participants', [])
@@ -3079,6 +3076,12 @@ angular.module('mm.addons.files')
     return self;
 });
 
+angular.module('mm.core.course')
+.controller('mmaModLabelIndexCtrl', function($scope, $stateParams, $log) {
+    $log = $log.getInstance('mmaModLabelIndexCtrl');
+    $scope.description = $stateParams.description;
+});
+
 angular.module('mm.addons.mod_url')
 .controller('mmaModUrlIndexCtrl', function($scope, $stateParams, $mmaModUrl) {
     var module = $stateParams.module || {};
@@ -3102,13 +3105,6 @@ angular.module('mm.addons.mod_url')
         window.open(url, '_system');
     };
     return self;
-
-});
-
-angular.module('mm.core.course')
-.controller('mmaModLabelIndexCtrl', function($scope, $stateParams, $log) {
-    $log = $log.getInstance('mmaModLabelIndexCtrl');
-    $scope.description = $stateParams.description;
 });
 
 angular.module('mm.addons.participants')
