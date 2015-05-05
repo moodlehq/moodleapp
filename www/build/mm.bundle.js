@@ -692,12 +692,31 @@ angular.module('mm.core')
         mmCoreWSCacheStore, mmCoreWSPrefix) {
         $log = $log.getInstance('$mmSite');
                 var deprecatedFunctions = {
-            "moodle_webservice_get_siteinfo": "core_webservice_get_site_info",
+            "core_grade_get_definitions": "core_grading_get_definitions",
+            "moodle_course_create_courses": "core_course_create_courses",
+            "moodle_course_get_courses": "core_course_get_courses",
+            "moodle_enrol_get_enrolled_users": "core_enrol_get_enrolled_users",
             "moodle_enrol_get_users_courses": "core_enrol_get_users_courses",
-            "moodle_notes_create_notes": "core_notes_create_notes",
+            "moodle_file_get_files": "core_files_get_files",
+            "moodle_file_upload": "core_files_upload",
+            "moodle_group_add_groupmembers": "core_group_add_group_members",
+            "moodle_group_create_groups": "core_group_create_groups",
+            "moodle_group_delete_groupmembers": "core_group_delete_group_members",
+            "moodle_group_delete_groups": "core_group_delete_groups",
+            "moodle_group_get_course_groups": "core_group_get_course_groups",
+            "moodle_group_get_groupmembers": "core_group_get_group_members",
+            "moodle_group_get_groups": "core_group_get_groups",
             "moodle_message_send_instantmessages": "core_message_send_instant_messages",
-            "moodle_user_get_users_by_courseid": "core_enrol_get_enrolled_users",
+            "moodle_notes_create_notes": "core_notes_create_notes",
+            "moodle_role_assign": "core_role_assign_role",
+            "moodle_role_unassign": "core_role_unassign_role",
+            "moodle_user_create_users": "core_user_create_users",
+            "moodle_user_delete_users": "core_user_delete_users",
             "moodle_user_get_course_participants_by_id": "core_user_get_course_user_profiles",
+            "moodle_user_get_users_by_courseid": "core_enrol_get_enrolled_users",
+            "moodle_user_get_users_by_id": "core_user_get_users_by_id",
+            "moodle_user_update_users": "core_user_update_users",
+            "moodle_webservice_get_siteinfo": "core_webservice_get_site_info",
         };
         var self = {},
             currentSite;
@@ -2861,7 +2880,7 @@ angular.module('mm.addons.participants')
             "options[1][name]" : "limitnumber",
             "options[1][value]": limitNumber,
         };
-        return $mmSite.read('core_user_get_users_by_courseid', data).then(function(users) {
+        return $mmSite.read('core_enrol_get_enrolled_users', data).then(function(users) {
             var canLoadMore = users.length >= limitNumber;
             return {participants: users, canLoadMore: canLoadMore};
         });
@@ -2873,7 +2892,7 @@ angular.module('mm.addons.participants')
             "userlist[0][userid]": userid,
             "userlist[0][courseid]": courseid
         };
-        $mmSite.read('core_user_get_course_participants_by_id', data).then(function(users) {
+        $mmSite.read('core_user_get_course_user_profiles', data).then(function(users) {
             if (users.length == 0) {
                 $mmLang.translateErrorAndReject(deferred, 'errorparticipantnotfound');
                 return;
