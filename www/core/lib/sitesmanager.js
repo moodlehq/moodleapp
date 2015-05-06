@@ -497,7 +497,11 @@ angular.module('mm.core')
                 try { // Use try/catch because $cordovaNetwork fails in Chromium (until mm.emulator is migrated).
                     if ($cordovaNetwork.isOnline()) {
                         $log.debug('File ' + downloadURL + ' not downloaded. Lets download.');
-                        return $mmWS.downloadFile(downloadURL, path.file).toInternalURL();
+                        return $mmWS.downloadFile(downloadURL, path.file).then(function(fileEntry) {
+                            return fileEntry.toInternalURL();
+                        }, function(err) {
+                            return downloadURL;
+                        });
                     } else {
                         $log.debug('File ' + downloadURL + ' not downloaded, but the device is offline.');
                         return downloadURL;
