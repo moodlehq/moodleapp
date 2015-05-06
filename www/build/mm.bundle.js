@@ -1254,7 +1254,11 @@ angular.module('mm.core')
                 try {
                     if ($cordovaNetwork.isOnline()) {
                         $log.debug('File ' + downloadURL + ' not downloaded. Lets download.');
-                        return $mmWS.downloadFile(downloadURL, path.file).toInternalURL();
+                        return $mmWS.downloadFile(downloadURL, path.file).then(function(fileEntry) {
+                            return fileEntry.toInternalURL();
+                        }, function(err) {
+                            return downloadURL;
+                        });
                     } else {
                         $log.debug('File ' + downloadURL + ' not downloaded, but the device is offline.');
                         return downloadURL;
@@ -1664,20 +1668,18 @@ angular.module('mm.core')
         return result;
     };
         self.downloadFile = function(url, path, background) {
-        var deferred = $q.defer();
         $log.debug('Downloading file ' + url);
-        $mmFS.getBasePath().then(function(basePath) {
+        return $mmFS.getBasePath().then(function(basePath) {
             var absolutePath = basePath + path;
             return $cordovaFileTransfer.download(url, absolutePath, { encodeURI: false }, true).then(function(result) {
                 $log.debug('Success downloading file ' + url + ' to ' + absolutePath);
-                deferred.resolve(result);
+                return result;
             }, function(err) {
                 $log.error('Error downloading ' + url + ' to ' + absolutePath);
                 $log.error(JSON.stringify(err));
-                deferred.reject(err);
+                return $q.reject(err);
             });
         });
-        return deferred.promise;
     };
         self.uploadFile = function(uri, options, presets) {
         $log.info('Trying to upload file (' + uri.length + ' chars)');

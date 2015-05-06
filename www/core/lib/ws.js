@@ -138,31 +138,28 @@ angular.module('mm.core')
     };
 
     /**
-     * Downloads a file from Moodle using Cordova File API
+     * Downloads a file from Moodle using Cordova File API.
+     * @todo Use Web Workers.
      *
      * @param {String}   url        Download url.
      * @param {String}   path       Local path to store the file.
      * @param {Boolean}  background True if this function should be executed in background using Web Workers.
-     * @return {Promise} Promise The success returns the fileEntry, the reject will contain the error object.
+     * @return {Promise}            The success returns the fileEntry, the reject will contain the error object.
      */
     self.downloadFile = function(url, path, background) {
-        var deferred = $q.defer();
-
         $log.debug('Downloading file ' + url);
-        // TODO: Web Workers
-        $mmFS.getBasePath().then(function(basePath) {
+
+        return $mmFS.getBasePath().then(function(basePath) {
             var absolutePath = basePath + path;
             return $cordovaFileTransfer.download(url, absolutePath, { encodeURI: false }, true).then(function(result) {
                 $log.debug('Success downloading file ' + url + ' to ' + absolutePath);
-                deferred.resolve(result);
+                return result;
             }, function(err) {
                 $log.error('Error downloading ' + url + ' to ' + absolutePath);
                 $log.error(JSON.stringify(err));
-                deferred.reject(err);
+                return $q.reject(err);
             });
         });
-
-        return deferred.promise;
     };
 
     /*
