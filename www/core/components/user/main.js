@@ -12,36 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.addons.participants', [])
-
-.constant('mmaParticipantsListLimit', 50) // Max of participants to retrieve in each WS call.
+angular.module('mm.core.user', [])
 
 .config(function($stateProvider) {
 
     $stateProvider
-        .state('site.participants', {
-            url: '/participants',
+
+        .state('site.mm_user-profile', {
+            url: '/mm_user-profile',
             views: {
                 'site': {
-                    controller: 'mmaParticipantsListCtrl',
-                    templateUrl: 'addons/participants/templates/list.html'
+                    controller: 'mmUserProfileCtrl',
+                    templateUrl: 'core/components/user/templates/profile.html'
                 }
             },
             params: {
-                course: null
+                courseid: 0,
+                userid: 0
             }
         });
 
-})
-
-.run(function($mmCoursesDelegate, $translate) {
-    $translate('mma.participants.participants').then(function(pluginName) {
-        $mmCoursesDelegate.registerPlugin('mmaParticipants', function() {
-            return {
-                icon: 'ion-person-stalker',
-                title: pluginName,
-                state: 'site.participants'
-            };
-        });
-    });
 });

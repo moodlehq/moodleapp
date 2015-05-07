@@ -12,19 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.addons.participants')
+angular.module('mm.core.user')
 
 /**
- * Service to interact with plugins to be shown in participant views. Provides functions to register a plugin
+ * Service to interact with plugins to be shown in user profile. Provides functions to register a plugin
  * and notify an update in the data.
  *
- * @module mm.core
+ * @module mm.core.user
  * @ngdoc service
- * @name $mmaParticipantsDelegate
+ * @name $mmUserDelegate
  */
-.factory('$mmaParticipantsDelegate', function($log) {
+.factory('$mmUserDelegate', function($log) {
 
-    $log = $log.getInstance('$mmaParticipantsDelegate');
+    $log = $log.getInstance('$mmUserDelegate');
 
     var plugins = {},
         self = {},
@@ -32,11 +32,11 @@ angular.module('mm.addons.participants')
         controllers = [];
 
     /**
-     * Register a plugin to show in the participant.
+     * Register a plugin to show in the user profile.
      *
-     * @module mm.addons.participants
+     * @module mm.core.user
      * @ngdoc method
-     * @name $mmaParticipantsDelegate#registerPlugin
+     * @name $mmUserDelegate#registerPlugin
      * @param  {String}   name     Name of the plugin.
      * @param  {Function} callback Function to call to get the plugin data. This function should return an object with:
      *                                 -title: Plugin name to be displayed.
@@ -51,9 +51,9 @@ angular.module('mm.addons.participants')
     /**
      * Update the plugin data stored in the delegate.
      *
-     * @module mm.addons.participants
+     * @module mm.core.user
      * @ngdoc method
-     * @name $mmaParticipantsDelegate#updatePluginData
+     * @name $mmUserDelegate#updatePluginData
      * @param  {String}   name     Name of the plugin.
      */
     self.updatePluginData = function(name) {
@@ -67,9 +67,9 @@ angular.module('mm.addons.participants')
     /**
      * Get the data of the registered plugins.
      *
-     * @module mm.addons.participants
+     * @module mm.core.user
      * @ngdoc method
-     * @name $mmaParticipantsDelegate#getData
+     * @name $mmUserDelegate#getData
      * @return {Object} Registered plugins data.
      */
     self.getData = function() {

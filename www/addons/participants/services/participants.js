@@ -21,7 +21,7 @@ angular.module('mm.addons.participants')
  * @ngdoc service
  * @name $mmaParticipants
  */
-.factory('$mmaParticipants', function($q, $log, $mmSite, $mmUtil, mmaParticipantsListLimit, $mmLang, $mmUtil, md5) {
+.factory('$mmaParticipants', function($log, $mmSite, mmaParticipantsListLimit) {
 
     $log = $log.getInstance('$mmaParticipants');
 
@@ -74,48 +74,6 @@ angular.module('mm.addons.participants')
             var canLoadMore = users.length >= limitNumber;
             return {participants: users, canLoadMore: canLoadMore};
         });
-    };
-
-    /**
-     * Get a participant.
-     *
-     * @module mm.addons.participants
-     * @ngdoc method
-     * @name $mmaParticipants#getParticipant
-     * @param  {String} courseid ID of the course the participant belongs to.
-     * @param  {String} userid   ID of the participant.
-     * @return {Promise}         Promise to be resolved when the participant is retrieved.
-     */
-    self.getParticipant = function(courseid, userid) {
-        $log.debug('Get participant with ID ' + userid + ' in course '+courseid);
-        var deferred = $q.defer();
-
-        var data = {
-            "userlist[0][userid]": userid,
-            "userlist[0][courseid]": courseid
-        };
-
-        $mmSite.read('core_user_get_course_user_profiles', data).then(function(users) {
-            if (users.length == 0) {
-                $mmLang.translateErrorAndReject(deferred, 'errorparticipantnotfound');
-                return;
-            }
-
-            $mmUtil.getCountries().then(function(countries) {
-
-                var user = users.shift();
-
-                if (user.country && typeof(countries) !== 'undefined'
-                                 && typeof(countries[user.country]) !== "undefined") {
-                    user.country = countries[user.country];
-                }
-
-                deferred.resolve(user);
-
-            });
-        }, deferred.reject);
-
-        return deferred.promise;
     };
 
     /**
