@@ -1,5 +1,6 @@
 {
     "cannotconnect": "Cannot connect: Verify that your have typed correctly the URL and that your site uses Moodle 2.4 or later.",
+    "elementseparator": ", ",
     "error": "Error",
     "loading": "Loading",
     "lostconnection": "Your authentication token is invalid or has expired, you will have to reconnect to the site.",

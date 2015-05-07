@@ -28,18 +28,6 @@ angular.module('mm.core.user')
     var self = {};
 
     /**
-     * Get user profile's state name.
-     *
-     * @module mm.core.user
-     * @ngdoc method
-     * @name $mmUser#getProfileStateName
-     * @return {String} User profile's state name.
-     */
-    self.getProfileStateName = function() {
-        return 'site.mm_user-profile';
-    };
-
-    /**
      * Get user profile. The type of profile retrieved depends on the params.
      *
      * @module mm.core.user
@@ -50,35 +38,37 @@ angular.module('mm.core.user')
      * @return {Promise}         Promise to be resolved with the user data.
      */
     self.getProfile = function(userid, courseid) {
-        if (courseid) {
-            return self.getCourseProfile(userid, courseid);
+
+        var deferred = $q.defer(),
+            wsName,
+            data;
+
+        // Determine WS and data to use.
+        if (courseid > 1) {
+            $log.debug('Get participant with ID ' + userid + ' in course '+courseid);
+            wsName = 'core_user_get_course_user_profiles';
+            var data = {
+                "userlist[0][userid]": userid,
+                "userlist[0][courseid]": courseid
+            };
         } else {
-            return self.getSiteProfile(userid);
+            $log.debug('Get user with ID ' + userid);
+            if ($mmSite.wsAvailable('core_user_get_users_by_field')) {
+                wsName = 'core_user_get_users_by_field';
+                data = {
+                    'id': userid
+                };
+            } else {
+                wsName = 'core_user_get_users_by_id';
+                data = {
+                    'userids[0]': userid
+                };
+            }
         }
-    };
 
-    /**
-     * Get user's course profile.
-     *
-     * @module mm.core.user
-     * @ngdoc method
-     * @name $mmUser#getCourseProfile
-     * @param  {Number} userid   User ID.
-     * @param  {Number} courseid Course ID.
-     * @return {Promise}         Promise to be resolved with the user data.
-     */
-    self.getCourseProfile = function(userid, courseid) {
-        $log.debug('Get participant with ID ' + userid + ' in course '+courseid);
-        var deferred = $q.defer();
-
-        var data = {
-            "userlist[0][userid]": userid,
-            "userlist[0][courseid]": courseid
-        };
-
-        $mmSite.read('core_user_get_course_user_profiles', data).then(function(users) {
+        $mmSite.read(wsName, data).then(function(users) {
             if (users.length == 0) {
-                $mmLang.translateErrorAndReject(deferred, 'errorparticipantnotfound');
+                $mmLang.translateErrorAndReject(deferred, 'mm.user.invaliduser');
                 return;
             }
 
@@ -95,25 +85,6 @@ angular.module('mm.core.user')
 
             });
         }, deferred.reject);
-
-        return deferred.promise;
-    };
-
-    /**
-     * Get user's site profile.
-     * @todo To be implemented.
-     *
-     * @module mm.core.user
-     * @ngdoc method
-     * @name $mmUser#getSiteProfile
-     * @param  {Number} userid   User ID.
-     * @return {Promise}         Promise to be resolved with the user data.
-     */
-    self.getSiteProfile = function(userid) {
-        $log.debug('Get user with ID ' + userid);
-        var deferred = $q.defer();
-
-        deferred.resolve({});
 
         return deferred.promise;
     };
@@ -150,7 +121,7 @@ angular.module('mm.core.user')
         var deferred = $q.defer();
 
         if (roles && roles.length > 0) {
-            $translate('mm.user.roleseparator').then(function(separator) {
+            $translate('mm.core.elementseparator').then(function(separator) {
                 var rolekeys = roles.map(function(el) {
                     return 'mm.user.'+el.shortname; // Set the string key to be translated.
                 });
@@ -163,7 +134,7 @@ angular.module('mm.core.user')
                             // Role name couldn't be translated, leave it like it was.
                             roleName = roleName.replace('mm.user.', '');
                         }
-                        roles += (roles != '' ? separator+' ' : '') + roleName;
+                        roles += (roles != '' ? separator: '') + roleName;
                     }
                     deferred.resolve(roles);
                 });

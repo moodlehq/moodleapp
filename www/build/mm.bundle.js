@@ -2119,6 +2119,7 @@ angular.module('mm.core.sidemenu', [])
 });
 
 angular.module('mm.core.user', [])
+.value('mmUserProfileState', 'site.mm_user-profile')
 .config(function($stateProvider) {
     $stateProvider
         .state('site.mm_user-profile', {
@@ -2806,26 +2807,34 @@ angular.module('mm.core.user')
 .factory('$mmUser', function($log, $q, $mmSite, $mmLang, $mmUtil, $translate) {
     $log = $log.getInstance('$mmUser');
     var self = {};
-        self.getProfileStateName = function() {
-        return 'site.mm_user-profile';
-    };
         self.getProfile = function(userid, courseid) {
-        if (courseid) {
-            return self.getCourseProfile(userid, courseid);
+        var deferred = $q.defer(),
+            wsName,
+            data;
+        if (courseid > 1) {
+            $log.debug('Get participant with ID ' + userid + ' in course '+courseid);
+            wsName = 'core_user_get_course_user_profiles';
+            var data = {
+                "userlist[0][userid]": userid,
+                "userlist[0][courseid]": courseid
+            };
         } else {
-            return self.getSiteProfile(userid);
+            $log.debug('Get user with ID ' + userid);
+            if ($mmSite.wsAvailable('core_user_get_users_by_field')) {
+                wsName = 'core_user_get_users_by_field';
+                data = {
+                    'id': userid
+                };
+            } else {
+                wsName = 'core_user_get_users_by_id';
+                data = {
+                    'userids[0]': userid
+                };
+            }
         }
-    };
-        self.getCourseProfile = function(userid, courseid) {
-        $log.debug('Get participant with ID ' + userid + ' in course '+courseid);
-        var deferred = $q.defer();
-        var data = {
-            "userlist[0][userid]": userid,
-            "userlist[0][courseid]": courseid
-        };
-        $mmSite.read('core_user_get_course_user_profiles', data).then(function(users) {
+        $mmSite.read(wsName, data).then(function(users) {
             if (users.length == 0) {
-                $mmLang.translateErrorAndReject(deferred, 'errorparticipantnotfound');
+                $mmLang.translateErrorAndReject(deferred, 'mm.user.invaliduser');
                 return;
             }
             $mmUtil.getCountries().then(function(countries) {
@@ -2839,12 +2848,6 @@ angular.module('mm.core.user')
         }, deferred.reject);
         return deferred.promise;
     };
-        self.getSiteProfile = function(userid) {
-        $log.debug('Get user with ID ' + userid);
-        var deferred = $q.defer();
-        deferred.resolve({});
-        return deferred.promise;
-    };
         self.formatAddress = function(address, city, country) {
         if (address) {
             address += city ? ', ' + city : '';
@@ -2855,7 +2858,7 @@ angular.module('mm.core.user')
         self.formatRoleList = function(roles) {
         var deferred = $q.defer();
         if (roles && roles.length > 0) {
-            $translate('mm.user.roleseparator').then(function(separator) {
+            $translate('mm.core.elementseparator').then(function(separator) {
                 var rolekeys = roles.map(function(el) {
                     return 'mm.user.'+el.shortname;
                 });
@@ -2866,7 +2869,7 @@ angular.module('mm.core.user')
                         if (roleName.indexOf('mm.user.') > -1) {
                             roleName = roleName.replace('mm.user.', '');
                         }
-                        roles += (roles != '' ? separator+' ' : '') + roleName;
+                        roles += (roles != '' ? separator: '') + roleName;
                     }
                     deferred.resolve(roles);
                 });
@@ -3621,13 +3624,13 @@ angular.module('mm.addons.mod_url')
 
 angular.module('mm.addons.participants')
 .controller('mmaParticipantsListCtrl', function($scope, $state, $stateParams, $mmUtil, $mmaParticipants, $translate,
-            $ionicPlatform, $mmSite, $mmUser) {
+            $ionicPlatform, mmUserProfileState) {
     var course = $stateParams.course,
         courseid = course.id;
     $scope.participants = [];
     $scope.courseid = courseid;
     $scope.getState = function(id) {
-        return $mmUser.getProfileStateName() + '({courseid: '+courseid+', userid: '+id+'})';
+        return mmUserProfileState + '({courseid: '+courseid+', userid: '+id+'})';
     };
     function fetchParticipants(refresh) {
         var firstToGet = refresh ? 0 : $scope.participants.length;

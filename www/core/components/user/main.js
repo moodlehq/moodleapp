@@ -14,6 +14,8 @@
 
 angular.module('mm.core.user', [])
 
+.value('mmUserProfileState', 'site.mm_user-profile')
+
 .config(function($stateProvider) {
 
     $stateProvider
