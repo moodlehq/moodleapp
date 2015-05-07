@@ -44,7 +44,12 @@ var paths = {
     './www/addons/**/*.js',
     '!./www/**/tests/*.js'
   ],
-  sass: ['./scss/**/*.scss'],
+  sass: [
+    './scss/**/*.scss',
+    './www/addons/**/scss/*.scss',
+    './www/core/scss/*.scss',
+    './www/core/components/**/scss/*.scss'
+  ],
   lang: [
       './www/core/lang/',
       './www/core/components/**/lang/',
@@ -55,7 +60,8 @@ var paths = {
 gulp.task('default', ['build', 'sass', 'lang']);
 
 gulp.task('sass', function(done) {
-  gulp.src('./scss/ionic.app.scss')
+  gulp.src(paths.sass)
+    .pipe(concat('ionic.app.css'))
     .pipe(sass())
     .pipe(gulp.dest('./www/css/'))
     .pipe(minifyCss({
