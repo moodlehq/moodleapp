@@ -16,16 +16,16 @@ angular.module('mm.addons.files')
 
 .controller('mmaFilesIndexController', function($scope, $mmaFiles, $mmSite, $mmUtil, $mmaFilesHelper) {
     var canAccessFiles = $mmaFiles.canAccessFiles(),
-        canAccessMyFiles = canAccessFiles && $mmSite.canAccessMyFiles(),
+        canAccessMyFiles = $mmSite.canAccessMyFiles(),
         canUploadFiles = $mmSite.canUploadFiles(),
         canDownloadFiles = $mmSite.canDownloadFiles();
 
     $scope.canAccessFiles = canAccessFiles;
-    $scope.showPrivateFiles = canAccessMyFiles;
-    $scope.showUpload = !canAccessFiles && canUploadFiles;
+    $scope.showPrivateFiles = canAccessFiles && canAccessMyFiles;
+    $scope.showUpload = canAccessMyFiles && canUploadFiles;
     $scope.canDownload = canDownloadFiles;
 
-    if (canUploadFiles) {
+    if ($scope.showUpload) {
         $scope.add = function() {
             $mmaFilesHelper.pickAndUploadFile().then(function() {
                 $mmUtil.showModal('mma.files.success', 'mma.files.fileuploaded');
