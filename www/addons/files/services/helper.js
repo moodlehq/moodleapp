@@ -15,7 +15,7 @@
 angular.module('mm.addons.files')
 
 .factory('$mmaFilesHelper', function($q, $mmUtil, $mmApp, $ionicActionSheet,
-        $log, $translate, $mmaFiles, $cordovaCamera, $cordovaCapture) {
+        $log, $translate, $mmaFiles, $cordovaCamera, $cordovaCapture, $mmLang) {
 
     $log = $log.getInstance('$mmaFilesHelper');
 
@@ -40,7 +40,7 @@ angular.module('mm.addons.files')
         }
 
         var promises = [
-            $translate('cancel'),
+            $translate('mm.core.cancel'),
             $translate('mma.files.audio'),
             $translate('mma.files.camera'),
             $translate('mma.files.photoalbums'),
@@ -73,7 +73,7 @@ angular.module('mm.addons.files')
                 cancelText: strCancel,
                 buttonClicked: function(index) {
                     if (buttons[index].uniqid === 'albums') {
-                        $log.info('Trying to get a image from albums');
+                        $log.debug('Trying to get a image from albums');
 
                         var width  =  window.innerWidth  - 200;
                         var height =  window.innerHeight - 200;
@@ -97,13 +97,12 @@ angular.module('mm.addons.files')
                                 $mmUtil.closeModalLoading();
                             });
 
-                        }, function() {
-                            // Cancelled, or error.
-                            deferred.reject();
+                        }, function(error) {
+                            treatImageError(error, deferred, 'mma.files.errorgettingimagealbum');
                         });
 
                     } else if (buttons[index].uniqid === 'camera') {
-                        $log.info('Trying to get a media from camera');
+                        $log.debug('Trying to get a media from camera');
 
                         $cordovaCamera.getPicture({
                             quality: 50,
@@ -116,15 +115,16 @@ angular.module('mm.addons.files')
                                 deferred.resolve();
                             }, function() {
                                 deferred.reject(strErrorWhileUploading);
+                            }).finally(function() {
+                                $mmUtil.closeModalLoading();
                             });
 
-                        }, function() {
-                            // Cancelled, or error.
-                            deferred.reject();
+                        }, function(error) {
+                            treatImageError(error, deferred, 'mma.files.errorcapturingimage');
                         });
 
                     } else if (buttons[index].uniqid === 'audio') {
-                        $log.info('Trying to record an audio file');
+                        $log.debug('Trying to record an audio file');
                         $cordovaCapture.captureAudio({limit: 1}).then(function(medias) {
                             $mmUtil.showModalLoading(strLoading);
 
@@ -133,15 +133,16 @@ angular.module('mm.addons.files')
                                 deferred.resolve();
                             }, function() {
                                 deferred.reject(strErrorWhileUploading);
+                            }).finally(function() {
+                                $mmUtil.closeModalLoading();
                             });
 
-                        }, function() {
-                            // Cancelled, or error.
-                            deferred.reject();
+                        }, function(error) {
+                            treatCaptureError(error, deferred, 'mma.files.errorcapturingaudio');
                         });
 
                     } else if (buttons[index].uniqid === 'video') {
-                        $log.info('Trying to record a video file');
+                        $log.debug('Trying to record a video file');
                         $cordovaCapture.captureVideo({limit: 1}).then(function(medias) {
                             $mmUtil.showModalLoading(strLoading);
 
@@ -150,11 +151,12 @@ angular.module('mm.addons.files')
                                 deferred.resolve();
                             }, function() {
                                 deferred.reject(strErrorWhileUploading);
+                            }).finally(function() {
+                                $mmUtil.closeModalLoading();
                             });
 
-                        }, function() {
-                            // Cancelled, or error.
-                            deferred.reject();
+                        }, function(error) {
+                            treatCaptureError(error, deferred, 'mma.files.errorcapturingvideo');
                         });
 
                     } else {
@@ -168,6 +170,64 @@ angular.module('mm.addons.files')
 
         return deferred.promise;
     };
+
+    /**
+     * Treat a capture image or browse album error.
+     *
+     * @param  {String} error          Error returned by the Cordova plugin.
+     * @param  {Promise} deferred      Promise to reject.
+     * @param  {String} defaultMessage Key of the default message to show.
+     */
+    function treatImageError(error, deferred, defaultMessage) {
+        // Cancelled, or error. If cancelled, error is a string with "Selection cancelled." or "Camera cancelled.".
+        if (error) {
+            if (typeof(error) === 'string') {
+                if (error.toLowerCase().indexOf("error") > -1 || error.toLowerCase().indexOf("unable") > -1) {
+                    $log.error('Error getting image: ' + error);
+                    deferred.reject(error);
+                } else {
+                    $log.debug('Cancelled');
+                    deferred.reject();
+                }
+            } else {
+                $mmLang.translateErrorAndReject(deferred, defaultMessage);
+            }
+        } else {
+            deferred.reject();
+        }
+    }
+
+    /**
+     * Treat a capture audio/video error.
+     *
+     * @param  {Mixed} error           Error returned by the Cordova plugin. Can be a string or an object.
+     * @param  {Promise} deferred      Promise to reject.
+     * @param  {String} defaultMessage Key of the default message to show.
+     */
+    function treatCaptureError(error, deferred, defaultMessage) {
+        // Cancelled, or error. If cancelled, error is an object with code = 3.
+        if (error) {
+            if (typeof(error) === 'string') {
+                $log.error('Error while recording audio/video: ' + error);
+                if (error.indexOf('No Activity found') > -1) {
+                    // User doesn't have an app to do this.
+                    $mmLang.translateErrorAndReject(deferred, 'mma.files.errornoapp');
+                } else {
+                    $mmLang.translateErrorAndReject(deferred, defaultMessage);
+                }
+            } else {
+                if (error.code != 3) {
+                    // Error, not cancelled.
+                    $log.error('Error while recording audio/video: ' + JSON.stringify(error));
+                    $mmLang.translateErrorAndReject(deferred, defaultMessage);
+                } else {
+                    $log.debug('Cancelled');
+                }
+            }
+        } else {
+            deferred.reject();
+        }
+    }
 
     return self;
 });

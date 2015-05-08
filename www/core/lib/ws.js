@@ -188,7 +188,7 @@ angular.module('mm.core')
         };
 
         $log.info('Initializing upload');
-        $cordovaFileTransfer.upload(presets.siteurl + '/webservice/upload.php', uri, ftOptions).then(function(success) {
+        $cordovaFileTransfer.upload(presets.siteurl + '/webservice/upload.php', uri, ftOptions, true).then(function(success) {
             $log.info('Successfully uploaded file');
             deferred.resolve(success);
         }, function(error) {

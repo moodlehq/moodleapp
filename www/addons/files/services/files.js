@@ -263,6 +263,7 @@ angular.module('mm.addons.files')
 
     /**
      * Upload image.
+     * @todo Handle Node Webkit.
      *
      * @module mm.addons.files
      * @ngdoc method
@@ -271,21 +272,17 @@ angular.module('mm.addons.files')
      * @return {Promise}
      */
     self.uploadImage = function(uri) {
-        $log.info('Uploading an image');
+        $log.debug('Uploading an image');
         var d = new Date(),
             options = {};
 
         if (typeof(uri) === 'undefined' || uri === ''){
             // In Node-Webkit, if you successfully upload a picture and then you open the file picker again
             // and cancel, this function is called with an empty uri. Let's filter it.
-            $log.info('Received invalid URI in $mmaFiles.uploadImage()');
-
-            var deferred = $q.defer();
-            deferred.reject();
-            return deferred.promise;
+            $log.debug('Received invalid URI in $mmaFiles.uploadImage()');
+            return $q.reject();
         }
 
-        // TODO Handle Node Webkit.
         options.deleteAfterUpload = true;
         options.fileKey = "file";
         options.fileName = "image_" + d.getTime() + ".jpg";
@@ -304,7 +301,7 @@ angular.module('mm.addons.files')
      * @return {Array} Array of promises.
      */
     self.uploadMedia = function(mediaFiles) {
-        $log.info('Uploading media');
+        $log.debug('Uploading media');
         var promises = [];
         angular.forEach(mediaFiles, function(mediaFile, index) {
             var options = {};
