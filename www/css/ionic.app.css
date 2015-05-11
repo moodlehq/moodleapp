@@ -7602,6 +7602,9 @@ a.button {
   -webkit-transition-duration: 0s;
   transition-duration: 0s; }
 
+em {
+  font-style: italic; }
+
 .bar-content {
   border-color: transparent;
   background-color: #f70;

@@ -44,6 +44,11 @@ $ionicons-font-path: "../lib/ionic/fonts" !default;
 // Include all of Ionic.
 @import "www/lib/ionic/scss/ionic";
 
+// Revert reset.
+em {
+  font-style: italic;
+}
+
 // Bar styles
 .bar-content {
   @include bar-style($bar-content-bg, $bar-content-border, $bar-content-text);

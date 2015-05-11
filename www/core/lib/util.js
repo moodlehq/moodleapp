@@ -437,6 +437,30 @@ angular.module('mm.core')
         };
 
         /**
+         * Shortens a text to length and adds an ellipsis.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#shortenText
+         * @param  {String} text The text to be shortened.
+         * @param  {Number} length The desired length.
+         * @return {String} Shortened text.
+         */
+        self.shortenText = function(text, length) {
+            if (text.length > length) {
+                text = text.substr(0, length - 1);
+
+                // Now, truncate at the last word boundary (if exists).
+                var lastWordPos = text.lastIndexOf(' ');
+                if (lastWordPos > 0) {
+                    text = text.substr(0, lastWordPos);
+                }
+                text += '&hellip;';
+            }
+            return text;
+        };
+
+        /**
          * Reads and parses a JSON file.
          *
          * @module mm.core
