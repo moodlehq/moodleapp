@@ -107,13 +107,13 @@ angular.module('mm.core')
             return;
         }
         dbschema.stores.push(store);
-    }
+    };
         this.registerStores = function(stores) {
         var self = this;
         angular.forEach(stores, function(store) {
             self.registerStore(store);
-        })
-    }
+        });
+    };
         function storeExists(name) {
         var exists = false;
         angular.forEach(dbschema.stores, function(store) {
@@ -126,9 +126,6 @@ angular.module('mm.core')
     this.$get = function($mmDB) {
         var db = $mmDB.getDB(DBNAME, dbschema),
             self = {};
-                self.canUseChildBrowser = function() {
-            return window.plugins && window.plugins.childBrowser;
-        };
                 self.getDB = function() {
             return db;
         };
@@ -136,7 +133,7 @@ angular.module('mm.core')
             return dbschema;
         };
         return self;
-    }
+    };
 });
 
 angular.module('mm.core')
@@ -1586,37 +1583,20 @@ angular.module('mm.core')
                             if(error == 53) {
                                 $log.error('No app that handles this file type.');
                             }
-                            self.openFileWithBrowser(path);
+                            self.openInBrowser(path);
                         },
                         path
                     );
                 } else {
-                    self.openFileWithBrowser(path);
+                    self.openInBrowser(path);
                 }
             } else {
                 $log.debug('Opening external file using window.open()');
                 window.open(path, '_blank');
             }
         };
-                self.openFileWithBrowser = function(path) {
-            if ($mmApp.canUseChildBrowser()) {
-                $log.debug('Launching childBrowser');
-                try {
-                    window.plugins.childBrowser.showWebPage(
-                        path,
-                        {
-                            showLocationBar: true ,
-                            showAddress: false
-                        }
-                    );
-                } catch(e) {
-                    $log.debug('Launching childBrowser failed!, opening as standard link.');
-                    window.open(path, '_blank');
-                }
-            } else {
-                $log.debug('Open external file using window.open()');
-                window.open(path, '_blank');
-            }
+                self.openInBrowser = function(url) {
+            window.open(url, '_system');
         };
                 self.showModalLoading = function(text) {
             $ionicLoading.show({
@@ -1846,6 +1826,21 @@ angular.module('mm.core')
         return String(text).replace(/(<([^>]+)>)/ig, '');
     }
 });
+angular.module('mm.core')
+.directive('mmBrowser', function($mmUtil) {
+    return {
+        restrict: 'A',
+        link: function(scope, element, attrs) {
+            element.on('click', function(event) {
+                if (attrs.href) {
+                    event.preventDefault();
+                    $mmUtil.openInBrowser(attrs.href);
+                }
+            });
+        }
+    };
+});
+
 angular.module('mm.core')
 .directive('mmFormatText', function($interpolate, $mmText, $compile) {
     var curlyBracketsRegex = new RegExp('[{{|}}]', 'gi');
