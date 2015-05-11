@@ -80,6 +80,8 @@
     "mma.files.video": "Video",
     "mma.mod_url.accessurl": "Access the URL",
     "mma.mod_url.pointingtourl": "URL this resource points to",
+    "mma.mod_label.label": "Label",
+    "mma.mod_label.taptoview": "Tap to view the label.",
     "mma.participants.address": "Address",
     "mma.participants.city": "City",
     "mma.participants.contact": "Contact",
