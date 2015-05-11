@@ -26,7 +26,7 @@ angular.module('mm.core.login')
  * @name $mmLoginHelper
  */
 .factory('$mmLoginHelper', function($q, $log, $mmConfig, $translate, mmLoginSSOCode, mmLoginLaunchSiteURL, mmLoginLaunchPassport,
-            md5, $mmSite, $mmSitesManager, $mmLang) {
+            md5, $mmSite, $mmSitesManager, $mmLang, $mmUtil) {
 
     $log = $log.getInstance('$mmLoginHelper');
 
@@ -64,7 +64,7 @@ angular.module('mm.core.login')
             $mmConfig.set(mmLoginLaunchSiteURL, siteurl);
             $mmConfig.set(mmLoginLaunchPassport, passport);
 
-            window.open(loginurl, "_system");
+            $mmUtil.openInBrowser(loginurl);
             if (navigator.app) {
                 navigator.app.exitApp();
             }

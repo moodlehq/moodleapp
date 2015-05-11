@@ -2270,7 +2270,7 @@ angular.module('mm.core.course')
 });
 
 angular.module('mm.core.course')
-.factory('$mmCourseDelegate', function($log, $mmCourse) {
+.factory('$mmCourseDelegate', function($log, $mmCourse, $mmUtil) {
     $log = $log.getInstance('$mmCourseDelegate');
     var contentHandlers = {},
         self = {};
@@ -2297,7 +2297,7 @@ angular.module('mm.core.course')
                 data.buttons = [{
                     icon: 'ion-ios-browsers-outline',
                     callback: function($scope) {
-                        window.open(module.url, "_system");
+                        $mmUtil.openInBrowser(module.url);
                     }
                 }];
             }
@@ -2598,7 +2598,7 @@ angular.module('mm.core.login')
 .constant('mmLoginLaunchSiteURL', 'mmLoginLaunchSiteURL')
 .constant('mmLoginLaunchPassport', 'mmLoginLaunchPassport')
 .factory('$mmLoginHelper', function($q, $log, $mmConfig, $translate, mmLoginSSOCode, mmLoginLaunchSiteURL, mmLoginLaunchPassport,
-            md5, $mmSite, $mmSitesManager, $mmLang) {
+            md5, $mmSite, $mmSitesManager, $mmLang, $mmUtil) {
     $log = $log.getInstance('$mmLoginHelper');
     var self = {};
         self.isSSOLoginNeeded = function(code) {
@@ -2611,7 +2611,7 @@ angular.module('mm.core.login')
             loginurl += "&passport=" + passport;
             $mmConfig.set(mmLoginLaunchSiteURL, siteurl);
             $mmConfig.set(mmLoginLaunchPassport, passport);
-            window.open(loginurl, "_system");
+            $mmUtil.openInBrowser(loginurl);
             if (navigator.app) {
                 navigator.app.exitApp();
             }
@@ -3460,7 +3460,7 @@ angular.module('mm.addons.mod_url')
 });
 
 angular.module('mm.addons.mod_url')
-.factory('$mmaModUrl', function($mmSite) {
+.factory('$mmaModUrl', function($mmSite, $mmUtil) {
     var self = {};
         self.open = function(instanceId, url) {
         if (instanceId) {
@@ -3468,7 +3468,7 @@ angular.module('mm.addons.mod_url')
                 urlid: instanceId
             });
         }
-        window.open(url, '_system');
+        $mmUtil.openInBrowser(url);
     };
     return self;
 });

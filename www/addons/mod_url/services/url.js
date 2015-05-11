@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_url')
  * @ngdoc controller
  * @name $mmaModUrl
  */
-.factory('$mmaModUrl', function($mmSite) {
+.factory('$mmaModUrl', function($mmSite, $mmUtil) {
     var self = {};
 
     /**
@@ -42,8 +42,7 @@ angular.module('mm.addons.mod_url')
             });
         }
 
-        // TODO MDL-992 Use helper to open external links.
-        window.open(url, '_system');
+        $mmUtil.openInBrowser(url);
     };
 
     return self;

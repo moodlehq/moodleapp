@@ -21,7 +21,7 @@ angular.module('mm.core.course')
  * @ngdoc service
  * @name $mmCourseDelegate
  */
-.factory('$mmCourseDelegate', function($log, $mmCourse) {
+.factory('$mmCourseDelegate', function($log, $mmCourse, $mmUtil) {
     $log = $log.getInstance('$mmCourseDelegate');
 
     var contentHandlers = {},
@@ -89,7 +89,7 @@ angular.module('mm.core.course')
                 data.buttons = [{
                     icon: 'ion-ios-browsers-outline',
                     callback: function($scope) {
-                        window.open(module.url, "_system");
+                        $mmUtil.openInBrowser(module.url);
                     }
                 }];
             }

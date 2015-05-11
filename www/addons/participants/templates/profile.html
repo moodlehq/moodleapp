@@ -38,7 +38,7 @@
                     <a ng-if="isAndroid" href="geo:0,0?q={{participant.encodedAddress}}" target="_blank">
                         <mm-format-text watch="true" clean="true">{{participant.address}}</mm-format-text>
                     </a>
-                    <a ng-if="!isAndroid" href="http://maps.google.com?q={{participant.encodedAddress}}" target="_blank">
+                    <a ng-if="!isAndroid" href="http://maps.google.com?q={{participant.encodedAddress}}" mm-browser>
                         <mm-format-text watch="true" clean="true">{{participant.address}}</mm-format-text>
                     </a>
                 </p>
@@ -61,7 +61,7 @@
             <div class="item" ng-if="participant.url">
                 <h2>{{ 'mma.participants.webpage' | translate}}</h2>
                 <p>
-                    <a href="{{participant.url}}" target="_blank">
+                    <a href="{{participant.url}}" mm-browser>
                         <mm-format-text watch="true" clean="true">{{participant.url}}</mm-format-text>
                     </a>
                 </p>
