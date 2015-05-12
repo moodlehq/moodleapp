@@ -418,25 +418,6 @@ angular.module('mm.core')
         };
 
         /**
-         * Function to clean HTML tags.
-         *
-         * @module mm.core
-         * @ngdoc method
-         * @name $mmUtil#cleanTags
-         * @param  {String} text The text to be cleaned.
-         * @return {String}      Text cleaned.
-         */
-        self.cleanTags = function(text) {
-            // First, we use a regexpr.
-            text = text.replace(/(<([^>]+)>)/ig,"");
-            // Then, we rely on the browser. We need to wrap the text to be sure is HTML.
-            // text = $("<p>" + text + "</p>").text();
-            // Recover new lines.
-            text = text.replace(/(?:\r\n|\r|\n)/g, '<br />');
-            return text;
-        };
-
-        /**
          * Shortens a text to length and adds an ellipsis.
          *
          * @module mm.core
