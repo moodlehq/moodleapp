@@ -170,7 +170,7 @@ angular.module('mm.core')
      * @return {Promise}
      */
     self.uploadFile = function(uri, options, presets) {
-        $log.info('Trying to upload file (' + uri.length + ' chars)');
+        $log.debug('Trying to upload file: ' + uri);
 
         var ftOptions = {},
             deferred = $q.defer();
@@ -187,9 +187,9 @@ angular.module('mm.core')
             Connection: "close"
         };
 
-        $log.info('Initializing upload');
+        $log.debug('Initializing upload');
         $cordovaFileTransfer.upload(presets.siteurl + '/webservice/upload.php', uri, ftOptions, true).then(function(success) {
-            $log.info('Successfully uploaded file');
+            $log.debug('Successfully uploaded file');
             deferred.resolve(success);
         }, function(error) {
             $log.error('Error while uploading file: ' + error.exception);

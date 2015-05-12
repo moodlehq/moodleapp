@@ -28,6 +28,21 @@ angular.module('mm.addons.files')
             "filename": ""
         };
 
+    /**
+     * Get cache key for file list WS calls.
+     *
+     * @param  {Boolean} getMyFiles True if the key is for user private files, false if it's for site files.
+     * @return {String}             Cache key.
+     */
+    function getFilesListCacheKey(getMyFiles) {
+        return 'mmaFiles:list:' + (getMyFiles ? 'my' : 'sites');
+    }
+
+    /**
+     * Check if core_files_get_files WS call is available.
+     *
+     * @return {Boolean} True if WS is available, false otherwise.
+     */
     self.canAccessFiles = function() {
         return $mmSite.wsAvailable('core_files_get_files');
     };
@@ -93,13 +108,8 @@ angular.module('mm.addons.files')
      *                  - link: The JSON string of params to get to the file.
      *                  - linkId: A hash of the file parameters.
      */
-    self.getFiles = function(params, refresh) {
-        var deferred = $q.defer(),
-            options = {};
-
-        if (refresh === true) {
-            options.getFromCache = false;
-        }
+    self.getFiles = function(params, options) {
+        var deferred = $q.defer();
 
         $mmSite.read('core_files_get_files', params, options).then(function(result) {
             var data = {
@@ -163,17 +173,19 @@ angular.module('mm.addons.files')
      * @module mm.addons.files
      * @ngdoc method
      * @name $mmaFiles#getMyFiles
-     * @param  {Boolean} refresh Pass true to ignore the cache.
      * @return {Object} See $mmaFiles#getFiles
      */
-    self.getMyFiles = function(refresh) {
+    self.getMyFiles = function() {
         var params = angular.copy(defaultParams, {});
         params.component = "user";
         params.filearea = "private";
         params.contextid = -1;
         params.contextlevel = "user";
         params.instanceid = $mmSite.getInfo().userid;
-        return self.getFiles(params, refresh);
+        var options = {
+            cacheKey: getFilesListCacheKey(true)
+        };
+        return self.getFiles(params, options);
     };
 
     /**
@@ -182,12 +194,38 @@ angular.module('mm.addons.files')
      * @module mm.addons.files
      * @ngdoc method
      * @name $mmaFiles#getSiteFiles
-     * @param  {Boolean} refresh Pass true to ignore the cache.
      * @return {Object} See $mmaFiles#getFiles
      */
-    self.getSiteFiles = function(refresh) {
+    self.getSiteFiles = function() {
         var params = angular.copy(defaultParams, {});
-        return self.getFiles(params, refresh);
+        var options = {
+            cacheKey: getFilesListCacheKey(false)
+        };
+        return self.getFiles(params, options);
+    };
+
+    /**
+     * Invalidates private files list.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#invalidateMyFilesList
+     * @return {Promise}  Promise resolved when the list is invalidated.
+     */
+    self.invalidateMyFilesList = function() {
+        return $mmSite.invalidateWsCacheForKey(getFilesListCacheKey(true));
+    };
+
+    /**
+     * Invalidates site files list.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#invalidateSiteFilesList
+     * @return {Promise}  Promise resolved when the list is invalidated.
+     */
+    self.invalidateSiteFilesList = function() {
+        return $mmSite.invalidateWsCacheForKey(getFilesListCacheKey(false));
     };
 
     /**
@@ -217,7 +255,7 @@ angular.module('mm.addons.files')
      * @name $mmaFiles#uploadFile
      * @param  {Object} uri File URI.
      * @param  {Object} options Options for the upload.
-     *                          - {Boolean} deleteAfterUpload Whether or not to delete the original after upload
+     *                          - {Boolean} deleteAfterUpload Whether or not to delete the original after upload.
      *                          - {String} fileKey
      *                          - {String} fileName
      *                          - {String} mimeType
@@ -225,7 +263,7 @@ angular.module('mm.addons.files')
      */
     self.uploadFile = function(uri, options) {
         options = options || {};
-        var deleteAfterUpload = options.deleteAfterUpload && ionic.Platform.isIOS(),
+        var deleteAfterUpload = options.deleteAfterUpload,
             deferred = $q.defer(),
             ftOptions = {
                 fileKey: options.fileKey,
@@ -237,8 +275,7 @@ angular.module('mm.addons.files')
             // Success.
             if (deleteAfterUpload) {
                 $timeout(function() {
-                    // Delete image after upload in iOS (always copies the image to the tmp folder)
-                    // or if the photo is taken with the camera, not browsed.
+                    // Use set timeout, otherwise in Node-Webkit the upload threw an error sometimes.
                     $mmFS.removeExternalFile(uri);
                 }, 500);
             }
@@ -247,8 +284,7 @@ angular.module('mm.addons.files')
             // Error.
             if (deleteAfterUpload) {
                 $timeout(function() {
-                    // Delete image after upload in iOS (always copies the image to the tmp folder)
-                    // or if the photo is taken with the camera, not browsed.
+                    // Use set timeout, otherwise in Node-Webkit the upload threw an error sometimes.
                     $mmFS.removeExternalFile(uri);
                 }, 500);
             }
@@ -268,10 +304,11 @@ angular.module('mm.addons.files')
      * @module mm.addons.files
      * @ngdoc method
      * @name $mmaFiles#uploadImage
-     * @param  {Object} uri File URI.
+     * @param  {String}  uri         File URI.
+     * @param  {Boolean} isFromAlbum True if the image was taken from album, false if it's a new image taken with camera.
      * @return {Promise}
      */
-    self.uploadImage = function(uri) {
+    self.uploadImage = function(uri, isFromAlbum) {
         $log.debug('Uploading an image');
         var d = new Date(),
             options = {};
@@ -283,7 +320,7 @@ angular.module('mm.addons.files')
             return $q.reject();
         }
 
-        options.deleteAfterUpload = true;
+        options.deleteAfterUpload = !isFromAlbum;
         options.fileKey = "file";
         options.fileName = "image_" + d.getTime() + ".jpg";
         options.mimeType = "image/jpeg";
@@ -308,9 +345,31 @@ angular.module('mm.addons.files')
             options.fileKey = null;
             options.fileName = mediaFile.name;
             options.mimeType = null;
+            options.deleteAfterUpload = true;
             promises.push(self.uploadFile(mediaFile.fullPath, options));
         });
         return promises;
+    };
+
+    /**
+     * Upload a file of any type.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#uploadGenericFile
+     * @param  {String} uri  File URI.
+     * @param  {String} name File name.
+     * @param  {String} type File type.
+     * @return {Promise}     Promise resolved when the file is uploaded.
+     */
+    self.uploadGenericFile = function(uri, name, type) {
+        var options = {};
+        options.fileKey = null;
+        options.fileName = name;
+        options.mimeType = type;
+        options.deleteAfterUpload = true;
+
+        return self.uploadFile(uri, options);
     };
 
     return self;

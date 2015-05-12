@@ -14,8 +14,8 @@
 
 angular.module('mm.addons.files')
 
-.controller('mmaFilesListController', function($q, $scope, $stateParams, $ionicActionSheet,
-        $mmaFiles, $mmSite, $translate, $timeout, $mmUtil, $mmFS, $mmWS, $mmaFilesHelper) {
+.controller('mmaFilesListController', function($q, $scope, $stateParams, $ionicActionSheet, $mmaFiles, $mmSite,
+        $translate, $timeout, $mmUtil, $mmFS, $mmWS, $mmaFilesHelper, $ionicHistory, mmaFilesUploadStateName) {
 
     var path = $stateParams.path,
         root = $stateParams.root,
@@ -28,20 +28,18 @@ angular.module('mm.addons.files')
     $scope.count = -1;
 
     // Convenience function that fetches the files and updates the scope.
-    // It was place in its own function so that we can refresh the files.
-    function fetchFiles(root, path, refresh) {
-        $translate('loading').then(function(str) {
+    function fetchFiles(root, path) {
+        $translate('mm.core.loading').then(function(str) {
             $mmUtil.showModalLoading(str);
         });
-        refresh = (typeof refresh === 'undefined') ? false : refresh;
 
         if (!path) {
             // The path is unknown, the user must be requesting a root.
             if (root === 'site') {
-                promise = $mmaFiles.getSiteFiles(refresh);
+                promise = $mmaFiles.getSiteFiles();
                 title = $translate('mma.files.sitefiles');
             } else if (root === 'my') {
-                promise = $mmaFiles.getMyFiles(refresh);
+                promise = $mmaFiles.getMyFiles();
                 title = $translate('mma.files.myprivatefiles');
             } else {
                 // Upon error we create a fake promise that is rejected.
@@ -55,7 +53,7 @@ angular.module('mm.addons.files')
         } else {
             // Serve the files the user requested.
             pathdata = JSON.parse(path);
-            promise = $mmaFiles.getFiles(pathdata, refresh);
+            promise = $mmaFiles.getFiles(pathdata);
 
             // Put the title in a promise to act like translate does.
             title = (function() {
@@ -80,6 +78,14 @@ angular.module('mm.addons.files')
     }
     fetchFiles(root, path);
 
+    $scope.$on('$ionicView.enter', function(e) {
+        var forwardView = $ionicHistory.forwardView();
+        if (forwardView && forwardView.stateName === mmaFilesUploadStateName) {
+            // Update list if we come from upload page (we don't know if user upoaded a file or not).
+            fetchFiles(root, path);
+        }
+    });
+
     // Downloading a file.
     $scope.download = function(file) {
         if (!$mmSite.canDownloadFiles()) {
@@ -103,7 +109,9 @@ angular.module('mm.addons.files')
 
         $scope.add = function() {
             $mmaFilesHelper.pickAndUploadFile().then(function() {
-                fetchFiles(root, path, true);
+                $mmaFiles.invalidateMyFilesList().finally(function() {
+                    fetchFiles(root, path);
+                });
             }, function(err) {
                 if (err) {
                     $mmUtil.showErrorModal(err);

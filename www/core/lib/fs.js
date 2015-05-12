@@ -15,6 +15,7 @@
 angular.module('mm.core')
 
 .constant('mmFsSitesFolder', 'sites')
+.constant('mmFsTmpFolder', 'tmp')
 
 /**
  * @ngdoc service
@@ -23,7 +24,7 @@ angular.module('mm.core')
  * @description
  * This service handles the interaction with the FileSystem.
  */
-.factory('$mmFS', function($ionicPlatform, $cordovaFile, $log, $q, mmFsSitesFolder) {
+.factory('$mmFS', function($ionicPlatform, $cordovaFile, $log, $q, mmFsSitesFolder, mmFsTmpFolder) {
 
     $log = $log.getInstance('$mmFS');
 
@@ -40,6 +41,9 @@ angular.module('mm.core')
     /**
      * Initialize basePath based on the OS if it's not initialized already.
      *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#init
      * @return {Promise} Promise to be resolved when the initialization is finished.
      */
     self.init = function() {
@@ -83,6 +87,9 @@ angular.module('mm.core')
     /**
      * Get a file.
      *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#getFile
      * @param  {String}  path Relative path to the file.
      * @return {Promise}      Promise to be resolved when the file is retrieved.
      */
@@ -96,6 +103,9 @@ angular.module('mm.core')
     /**
      * Get a directory.
      *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#getDir
      * @param  {String}  path Relative path to the directory.
      * @return {Promise}      Promise to be resolved when the directory is retrieved.
      */
@@ -152,6 +162,9 @@ angular.module('mm.core')
     /**
      * Create a directory.
      *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#createDir
      * @param  {String}  path         Relative path to the directory.
      * @param  {Boolean} failIfExists True if it should fail if the directory exists, false otherwise.
      * @return {Promise}              Promise to be resolved when the directory is created.
@@ -164,6 +177,9 @@ angular.module('mm.core')
     /**
      * Create a file.
      *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#createFile
      * @param  {String}  path         Relative path to the file.
      * @param  {Boolean} failIfExists True if it should fail if the file exists, false otherwise..
      * @return {Promise}              Promise to be resolved when the file is created.
@@ -176,6 +192,9 @@ angular.module('mm.core')
     /**
      * Removes a directory and all its contents.
      *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#removeDir
      * @param  {String}  path    Relative path to the directory.
      * @return {Promise}         Promise to be resolved when the directory is deleted.
      */
@@ -189,6 +208,9 @@ angular.module('mm.core')
     /**
      * Removes a file and all its contents.
      *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#removeFile
      * @param  {String}  path    Relative path to the file.
      * @return {Promise}         Promise to be resolved when the file is deleted.
      */
@@ -202,6 +224,9 @@ angular.module('mm.core')
     /**
      * Retrieve the contents of a directory (not subdirectories).
      *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#getDirectoryContents
      * @param  {String} path Relative path to the directory.
      * @return {Promise}     Promise to be resolved when the contents are retrieved.
      */
@@ -267,6 +292,9 @@ angular.module('mm.core')
     /**
      * Calculate the size of a directory.
      *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#getDirectorySize
      * @param  {String} path Relative path to the directory.
      * @return {Promise}     Promise to be resolved when the size is calculated.
      */
@@ -280,6 +308,9 @@ angular.module('mm.core')
     /**
      * Calculate the size of a file.
      *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#getFileSize
      * @param  {String} path Relative path to the file.
      * @return {Promise}     Promise to be resolved when the size is calculated.
      */
@@ -292,9 +323,11 @@ angular.module('mm.core')
 
     /**
      * Calculate the free space in the disk.
-     * TODO: Check if $cordovaFile.getFreeDiskSpace adapts to our needs. Does it calculate the space in
-     * internal memory, sdcard or both?
+     * @todo MOBILE-956: not working in iOS.
      *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#calculateFreeSpace
      * @param  {object} callBack        Success callback
      * @param  {object} errorCallback   Error Callback
      * @return {float}                  The estimated free space in bytes
@@ -306,6 +339,9 @@ angular.module('mm.core')
     /**
      * Normalize a filename that usually comes URL encoded.
      *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#normalizeFileName
      * @param  {String} filename The file name.
      * @return {String}          The file name normalized.
      */
@@ -315,8 +351,11 @@ angular.module('mm.core')
     };
 
     /**
-     * Read a file.
+     * Read a file from local file system.
      *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#readFile
      * @param  {String}  path   Relative path to the file.
      * @param  {Number}  format Format to read the file. By default, FORMATTEXT. Must be one of:
      *                                  $mmFS.FORMATTEXT
@@ -335,15 +374,65 @@ angular.module('mm.core')
                 return $cordovaFile.readAsBinaryString(basePath, path);
             case self.FORMATARRAYBUFFER:
                 return $cordovaFile.readAsArrayBuffer(basePath, path);
-            case self.FORMATTEXT:
             default:
                 return $cordovaFile.readAsText(basePath, path);
         }
     };
 
     /**
+     * Read file contents from a file data object.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#readFileData
+     * @param  {Object}  fileData File's data.
+     * @param  {Number}  format   Format to read the file. By default, FORMATTEXT. Must be one of:
+     *                                  $mmFS.FORMATTEXT
+     *                                  $mmFS.FORMATDATAURL
+     *                                  $mmFS.FORMATBINARYSTRING
+     *                                  $mmFS.FORMATARRAYBUFFER
+     * @return {Promise}          Promise to be resolved when the file is read.
+     */
+    self.readFileData = function(fileData, format) {
+        format = format || self.FORMATTEXT;
+        $log.debug('Read file from file data with format '+format);
+
+        var deferred = $q.defer();
+
+        var reader = new FileReader();
+        reader.onloadend = function(evt) {
+            if (evt.target.result !== undefined || evt.target.result !== null) {
+                deferred.resolve(evt.target.result);
+            } else if (evt.target.error !== undefined || evt.target.error !== null) {
+                deferred.reject(evt.target.error);
+            } else {
+                deferred.reject({code: null, message: 'READER_ONLOADEND_ERR'});
+            }
+        };
+
+        switch (format) {
+            case self.FORMATDATAURL:
+                reader.readAsDataURL(fileData);
+                break;
+            case self.FORMATBINARYSTRING:
+                reader.readAsBinaryString(fileData);
+                break;
+            case self.FORMATARRAYBUFFER:
+                reader.readAsArrayBuffer(fileData);
+                break;
+            default:
+                reader.readAsText(fileData);
+        }
+
+        return deferred.promise;
+    };
+
+    /**
      * Writes some data in a file.
      *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#writeFile
      * @param  {String}  path Relative path to the file.
      * @param  {String}  data Data to write.
      * @return {Promise}      Promise to be resolved when the file is written.
@@ -351,13 +440,21 @@ angular.module('mm.core')
     self.writeFile = function(path, data) {
         $log.debug('Write file: ' + path);
         return self.init().then(function() {
-            return $cordovaFile.writeFile(basePath, path, data, true);
+            // Create file (and parent folders) to prevent errors.
+            return self.createFile(path).then(function(fileEntry) {
+                return $cordovaFile.writeFile(basePath, path, data, true).then(function() {
+                    return fileEntry;
+                });
+            });
         });
     };
 
     /**
      * Gets a file that might be outside the app's folder.
      *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#getExternalFile
      * @param  {String}  fullPath Absolute path to the file.
      * @return {Promise}          Promise to be resolved when the file is retrieved.
      */
@@ -368,6 +465,9 @@ angular.module('mm.core')
     /**
      * Removes a file that might be outside the app's folder.
      *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#removeExternalFile
      * @param  {String}  fullPath Absolute path to the file.
      * @return {Promise}          Promise to be resolved when the file is removed.
      */
@@ -381,6 +481,9 @@ angular.module('mm.core')
     /**
      * Get the base path where the application files are stored.
      *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#getBasePath
      * @return {Promise} Promise to be resolved when the base path is retrieved.
      */
     self.getBasePath = function() {
@@ -391,6 +494,15 @@ angular.module('mm.core')
                 return basePath + '/';
             }
         });
+    };
+
+    /**
+     * Get temporary directory path.
+     *
+     * @return {String} Tmp directory path.
+     */
+    self.getTmpFolder = function() {
+        return mmFsTmpFolder;
     };
 
     return self;

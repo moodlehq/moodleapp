@@ -14,8 +14,10 @@
 
 angular.module('mm.addons.files')
 
-.factory('$mmaFilesHelper', function($q, $mmUtil, $mmApp, $ionicActionSheet,
-        $log, $translate, $mmaFiles, $cordovaCamera, $cordovaCapture, $mmLang) {
+.constant('mmaFilesFileSizeWarning', 5242880)
+
+.factory('$mmaFilesHelper', function($q, $mmUtil, $mmApp, $ionicActionSheet, $log, $translate,
+        $mmaFiles, $cordovaCamera, $cordovaCapture, $mmLang, $ionicPopup, $state, $mmFS, $mmText, mmaFilesFileSizeWarning) {
 
     $log = $log.getInstance('$mmaFilesHelper');
 
@@ -34,8 +36,7 @@ angular.module('mm.addons.files')
         var deferred = $q.defer();
 
         if (!$mmApp.isOnline()) {
-            $mmUtil.showErrorModal('mma.files.errormustbeonlinetoupload', true);
-            deferred.reject();
+            $mmLang.translateErrorAndReject(deferred, 'mma.files.errormustbeonlinetoupload');
             return deferred.promise;
         }
 
@@ -47,7 +48,8 @@ angular.module('mm.addons.files')
             $translate('mma.files.video'),
             $translate('mma.files.uploadafilefrom'),
             $translate('mma.files.uploading'),
-            $translate('mma.files.errorwhileuploading')
+            $translate('mma.files.errorwhileuploading'),
+            $translate('mma.files.file')
         ];
 
         $q.all(promises).then(function(translations) {
@@ -60,12 +62,17 @@ angular.module('mm.addons.files')
                 strUploadafilefrom = translations[5],
                 strLoading = translations[6],
                 strErrorWhileUploading = translations[7],
+                strFile = translations[8],
                 buttons = [
                     { text: strPhotoalbums, uniqid: 'albums' },
                     { text: strCamera, uniqid: 'camera'  },
                     { text: strAudio, uniqid: 'audio'  },
-                    { text: strVideo, uniqid: 'video'  },
+                    { text: strVideo, uniqid: 'video'  }
                 ];
+
+            if (ionic.Platform.isAndroid()) {
+                buttons.push({ text: strFile, uniqid: 'file'  });
+            }
 
             $ionicActionSheet.show({
                 buttons: buttons,
@@ -88,7 +95,7 @@ angular.module('mm.addons.files')
                         }).then(function(img) {
                             $mmUtil.showModalLoading(strLoading);
 
-                            $mmaFiles.uploadImage(img).then(function() {
+                            $mmaFiles.uploadImage(img, true).then(function() {
                                 // Success.
                                 deferred.resolve();
                             }, function() {
@@ -110,7 +117,7 @@ angular.module('mm.addons.files')
                         }).then(function(img) {
                             $mmUtil.showModalLoading(strLoading);
 
-                            $mmaFiles.uploadImage(img).then(function() {
+                            $mmaFiles.uploadImage(img, false).then(function() {
                                 // Success.
                                 deferred.resolve();
                             }, function() {
@@ -159,6 +166,9 @@ angular.module('mm.addons.files')
                             treatCaptureError(error, deferred, 'mma.files.errorcapturingvideo');
                         });
 
+                    } else if(buttons[index].uniqid === 'file') {
+                        $state.go('site.files-upload');
+                        deferred.reject();
                     } else {
                         deferred.reject();
                     }
@@ -166,6 +176,107 @@ angular.module('mm.addons.files')
                     return true;
                 }
             });
+        });
+
+        return deferred.promise;
+    };
+
+    /**
+     * Show a confirmation modal to the user if he is using a limited connection or the file size is higher than 5MB.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFilesHelper#confirmUploadFile
+     * @param  {Number} size File's size.
+     * @return {Promise}     Promise resolved when the user confirms or if there's no need to show a modal.
+     */
+    self.confirmUploadFile = function(size) {
+        if (!$cordovaNetwork.isOnline()) {
+            return $translate('mma.files.errormustbeonlinetoupload').then(function(errString) {
+                return $q.reject(errString);
+            });
+        }
+
+        if ($mmApp.isNetworkAccessLimited() || size >= mmaFilesFileSizeWarning) {
+            return $mmText.bytesToSize(size, 2).then(function(size) {
+                return $mmUtil.showConfirm($translate('mma.files.confirmuploadfile', {size: size}));
+            });
+        } else {
+            var deferred = $q.defer();
+            deferred.resolve();
+            return deferred.promise;
+        }
+    };
+
+    /**
+     * Create a temporary copy of a file and upload it.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFilesHelper#copyAndUploadFile
+     * @param {Object} file File to copy and upload.
+     * @return {Promise}    Promise resolved when the file is uploaded.
+     */
+    self.copyAndUploadFile = function(file) {
+        var deferred = $q.defer();
+
+        $translate('mma.files.readingfile').then(function(readingString) {
+            $mmUtil.showModalLoading(readingString);
+        });
+
+        // We have the data of the file to be uploaded, but not its URL (needed). Create a copy of the file to upload it.
+        $mmFS.readFileData(file, $mmFS.FORMATARRAYBUFFER).then(function(data) {
+
+            var filepath = $mmFS.getTmpFolder() + '/' + file.name;
+
+            $mmFS.writeFile(filepath, data).then(function(fileEntry) {
+                $mmUtil.closeModalLoading();
+                self.uploadGenericFile(fileEntry.toURL(), file.name, file.type).then(deferred.resolve, deferred.reject);
+            }, function(error) {
+                $log.error('Error writing file to upload: '+JSON.stringify(error));
+                $mmLang.translateErrorAndReject(deferred, 'mma.files.errorreadingfile');
+                $mmUtil.closeModalLoading();
+            });
+
+        }, function(error) {
+            $log.error('Error reading file to upload: '+JSON.stringify(error));
+            $mmLang.translateErrorAndReject(deferred, 'mma.files.errorreadingfile');
+            $mmUtil.closeModalLoading();
+        });
+
+        return deferred.promise;
+    };
+
+    /**
+     * Uploads a file of any type.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFilesHelper#uploadGenericFile
+     * @param  {String} uri  File URI.
+     * @param  {String} name File name.
+     * @param  {String} type File type.
+     * @return {Promise}    Promise resolved when the file is uploaded.
+     */
+    self.uploadGenericFile = function(uri, name, type) {
+        var deferred = $q.defer();
+
+        if (!$cordovaNetwork.isOnline()) {
+            $translate('mma.files.errormustbeonlinetoupload').then(function(errString) {
+                deferred.reject(errString);
+            });
+            return deferred.promise;
+        }
+
+        $translate('mma.files.uploading').then(function(uploadingString) {
+            $mmUtil.showModalLoading(uploadingString);
+        });
+
+        $mmaFiles.uploadGenericFile(uri, name, type).then(deferred.resolve, function(error) {
+            $log.error('Error uploading file: '+JSON.stringify(error));
+            $mmLang.translateErrorAndReject(deferred, 'mma.files.errorwhileuploading');
+        }).finally(function() {
+            $mmUtil.closeModalLoading();
         });
 
         return deferred.promise;

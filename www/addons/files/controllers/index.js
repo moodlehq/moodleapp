@@ -22,7 +22,8 @@ angular.module('mm.addons.files')
 
     $scope.canAccessFiles = canAccessFiles;
     $scope.showPrivateFiles = canAccessFiles && canAccessMyFiles;
-    $scope.showUpload = canAccessMyFiles && canUploadFiles;
+    // Show upload in this page if user can upload but he can't see the My Files option.
+    $scope.showUpload = !canAccessFiles && canAccessMyFiles && canUploadFiles;
     $scope.canDownload = canDownloadFiles;
 
     if ($scope.showUpload) {
