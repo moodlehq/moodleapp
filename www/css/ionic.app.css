@@ -7704,3 +7704,62 @@ em {
   border-right: 1px solid #ddd; }
 .tablet .mm-split-pane-content {
   display: block; }
+
+/* - User grades table (most of it extracted from MM1)
+-------------------------------------------------------------------------- */
+.mma-grades-table {
+  border-collapse: collapse;
+  line-height: 20px;
+  width: 100%;
+  border-top: 1px solid #eee; }
+  .mma-grades-table tr {
+    border-bottom: 1px solid #eee; }
+  .mma-grades-table th, .mma-grades-table td {
+    text-align: left;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 10px;
+    vertical-align: top; }
+  .mma-grades-table thead th {
+    padding-left: 10px;
+    vertical-align: bottom;
+    font-weight: bold; }
+  .mma-grades-table tbody th {
+    font-weight: normal; }
+  .mma-grades-table .item {
+    display: table-cell; }
+  .mma-grades-table th.b1b {
+    padding-left: 20px; }
+  .mma-grades-table th.item {
+    padding-left: 40px; }
+  .mma-grades-table th.baggt {
+    padding-left: 40px; }
+  .mma-grades-table th img {
+    margin-left: -20px;
+    float: left; }
+  .mma-grades-table .b1l {
+    width: 20px;
+    min-width: 20px; }
+  .mma-grades-table .b1t, .mma-grades-table .baggt {
+    font-weight: bold; }
+  .mma-grades-table .itemcenter {
+    padding-left: 10px;
+    white-space: nowrap; }
+  .mma-grades-table .feedbacktext {
+    padding-left: 10px; }
+    .mma-grades-table .feedbacktext .no-overflow {
+      overflow: auto; }
+  .mma-grades-table .dimmed_text, .mma-grades-table .hidden, .mma-grades-table .hidden a {
+    color: #aaa; }
+  .mma-grades-table .oddd1, .mma-grades-table .oddd3, .mma-grades-table .evend3 {
+    background-color: #eee; }
+    .mma-grades-table .oddd1.b1b, .mma-grades-table .oddd1.b1l, .mma-grades-table .oddd3.b1b, .mma-grades-table .oddd3.b1l, .mma-grades-table .evend3.b1b, .mma-grades-table .evend3.b1l {
+      border-top: 1px solid #fff; }
+  .mma-grades-table .oddd2, .mma-grades-table .evend2, .mma-grades-table .oddd4, .mma-grades-table .evend4 {
+    background-color: #f9f9f9; }
+  .mma-grades-table .levelodd {
+    background-color: #eee; }
+    .mma-grades-table .levelodd.b1b, .mma-grades-table .levelodd.b1l {
+      border-top: 1px solid #fff; }
+  .mma-grades-table .leveleven {
+    background-color: #fff; }

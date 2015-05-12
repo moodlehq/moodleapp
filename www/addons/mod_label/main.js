@@ -32,7 +32,7 @@ angular.module('mm.addons.mod_label', ['mm.core'])
 
 })
 
-.run(function($mmCourseDelegate, $mmUtil, $translate) {
+.run(function($mmCourseDelegate, $mmUtil, $translate, $mmText) {
   $translate('mma.mod_label.taptoview').then(function(taptoview) {
     $mmCourseDelegate.registerContentHandler('mmaModLabel', 'label', function(module) {
       var title = $mmUtil.shortenText($mmText.cleanTags(module.description).trim(), 128);
