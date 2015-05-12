@@ -1,0 +1,27 @@
+<ion-view view-title="{{ 'mm.login.reconnect' | translate }}">
+    <ion-content>
+        <div class="list">
+            <div class="item item-text-wrap">{{ 'mm.login.reconnectdescription' | translate }}</div>
+            <div class="item">
+                <h2>{{ 'mm.login.siteurl' | translate }}</h2>
+                <p>{{siteurl}}</p>
+            </div>
+            <div class="item">
+                <h2>{{ 'mm.login.username' | translate }}</h2>
+                <p>{{credentials.username}}</p>
+            </div>
+            <form>
+                <label class="item item-input item-stacked-label">
+                    <span class="input-label">{{ 'mm.login.password' | translate }}</span>
+                    <input type="password" placeholder="{{ 'mm.login.password' | translate }}" ng-model="credentials.password">
+                </label>
+                <div class="item">
+                    <button class="button button-block" ng-click="login()">{{ 'mm.login.loginbutton' | translate }}</button>
+                </div>
+                <div class="item">
+                    <button class="button button-block" ng-click="cancel()">{{ 'mm.login.cancel' | translate }}</button>
+                </div>
+            </form>
+        </div>
+    </ion-content>
+</ion-view>

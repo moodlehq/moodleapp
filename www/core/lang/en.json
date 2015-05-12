@@ -2,7 +2,7 @@
     "cannotconnect": "Cannot connect: Verify that your have typed correctly the URL and that your site uses Moodle 2.4 or later.",
     "error": "Error",
     "loading": "Loading",
-    "lostconnection": "We lost connection you need to reconnect. Your token is now invalid",
+    "lostconnection": "Your authentication token is invalid or has expired, you will have to reconnect to the site.",
     "networkerrormsg": "Network not enabled or not working.",
     "pulltorefresh": "Pull to refresh",
     "unexpectederror": "Unexepected error. Please close and reopen the application to try again",

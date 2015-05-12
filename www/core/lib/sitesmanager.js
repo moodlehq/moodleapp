@@ -269,7 +269,7 @@ angular.module('mm.core')
 
         $mmSite.fetchSiteInfo().then(function(infos) {
             if (isValidMoodleVersion(infos.functions)) {
-                var siteid = md5.createHash(siteurl + infos.username);
+                var siteid = self.createSiteID(siteurl, infos.username);
                 self.addSite(siteid, siteurl, token, infos);
                 $mmSite.setSite(siteid, siteurl, token, infos);
                 self.login(siteid);
@@ -284,7 +284,21 @@ angular.module('mm.core')
         });
 
         return deferred.promise;
-    }
+    };
+
+    /**
+     * Create a site ID based on site URL and username.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#createSiteID
+     * @param {String} siteurl  The site url.
+     * @param {String} username Username.
+     * @return {String}         Site ID.
+     */
+    self.createSiteID = function(siteurl, username) {
+        return md5.createHash(siteurl + username);
+    };
 
     /**
      * Function for determine which service we should use (default or extended plugin).
@@ -587,6 +601,29 @@ angular.module('mm.core')
         }
 
         return deferred.promise;
+    };
+
+    /**
+     * Updates a site's token.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#updateSiteToken
+     * @param {String} siteurl  Site's URL.
+     * @param {String} username Username.
+     * @param {String} token    User's new token.
+     * @return {Promise}        A promise to be resolved when the site is updated.
+     */
+    self.updateSiteToken = function(siteurl, username, token) {
+        var siteid = self.createSiteID(siteurl, username);
+        return db.get(mmCoreSitesStore, siteid).then(function(site) {
+            return db.insert(mmCoreSitesStore, {
+                id: siteid,
+                siteurl: site.siteurl,
+                token: token,
+                infos: site.infos
+            });
+        });
     };
 
     return self;

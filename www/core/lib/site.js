@@ -106,7 +106,7 @@ angular.module('mm.core')
     }
 
     this.$get = function($http, $q, $mmWS, $mmDB, $mmConfig, $log, md5, $cordovaNetwork, $mmLang, $mmUtil,
-        mmCoreWSCacheStore, mmCoreWSPrefix) {
+        mmCoreWSCacheStore, mmCoreWSPrefix, mmCoreSessionExpired, $mmEvents) {
 
         $log = $log.getInstance('$mmSite');
 
@@ -446,13 +446,19 @@ angular.module('mm.core')
 
                     deferred.resolve(response);
                 }, function(error) {
-                    $log.debug('WS call failed. Try to get the value from the cache.');
-                    preSets.omitExpires = true;
-                    getFromCache(method, data, preSets).then(function(data) {
-                        deferred.resolve(data);
-                    }, function() {
-                        deferred.reject(error);
-                    });
+                    if (error === mmCoreSessionExpired) {
+                        // Session expired, trigger event.
+                        $mmLang.translateErrorAndReject(deferred, 'mm.core.lostconnection');
+                        $mmEvents.trigger('sessionExpired'); // Notify session expired.
+                    } else {
+                        $log.debug('WS call failed. Try to get the value from the cache.');
+                        preSets.omitExpires = true;
+                        getFromCache(method, data, preSets).then(function(data) {
+                            deferred.resolve(data);
+                        }, function() {
+                            deferred.reject(error);
+                        });
+                    }
                 });
             });
 
@@ -573,6 +579,20 @@ angular.module('mm.core')
                 return currentSite.infos.userid;
             } else {
                 return undefined;
+            }
+        };
+
+        /**
+         * Set current site token.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmSite#getToken
+         * @param {String} New token.
+         */
+        self.setToken = function(token) {
+            if (typeof(currentSite) !== 'undefined') {
+                currentSite.token = token;
             }
         };
 

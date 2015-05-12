@@ -21,7 +21,7 @@ angular.module('mm.core')
  * @ngdoc service
  * @name $mmWS
  */
-.factory('$mmWS', function($http, $q, $log, $mmLang, $cordovaFileTransfer, $cordovaNetwork, $mmFS) {
+.factory('$mmWS', function($http, $q, $log, $mmLang, $cordovaFileTransfer, $cordovaNetwork, $mmFS, mmCoreSessionExpired) {
 
     $log = $log.getInstance('$mmWS');
 
@@ -83,10 +83,10 @@ angular.module('mm.core')
             }
 
             if (typeof(data.exception) !== 'undefined') {
-                if (data.errorcode == 'invalidtoken' || data.errorcode == 'accessexception') {
-                    // TODO: Send an event to logout the user and redirect to login page.
+                if (data.errorcode == 'invalidtoken' ||
+                        (data.errorcode == 'accessexception' && data.message.indexOf('Invalid token - token expired') > -1)) {
                     $log.error("Critical error: " + JSON.stringify(data));
-                    $mmLang.translateErrorAndReject(deferred, 'mm.core.lostconnection');
+                    deferred.reject(mmCoreSessionExpired);
                 } else {
                     deferred.reject(data.message);
                 }

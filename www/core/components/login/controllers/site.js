@@ -21,8 +21,7 @@ angular.module('mm.core.login')
  * @ngdoc controller
  * @name mmLoginSiteCtrl
  */
-.controller('mmLoginSiteCtrl', function($scope, $state, $mmSitesManager, $mmUtil, $ionicPopup, $translate, $ionicModal,
-                                        $mmConfig, mmLoginLaunchSiteURL, mmLoginLaunchPassport, mmLoginSSOCode) {
+.controller('mmLoginSiteCtrl', function($scope, $state, $mmSitesManager, $mmUtil, $translate, $ionicModal, $mmLoginHelper) {
 
     $scope.siteurl = '';
     $scope.isInvalidUrl = true;
@@ -73,30 +72,11 @@ angular.module('mm.core.login')
             // Not a demo site.
             $mmSitesManager.checkSite(url).then(function(result) {
 
-                if (result.code == mmLoginSSOCode) {
+                if ($mmLoginHelper.isSSOLoginNeeded(result.code)) {
                     // SSO. User needs to authenticate in a browser.
-                    $ionicPopup.confirm({template: $translate('mm.login.logininsiterequired')})
-                        .then(function(confirmed) {
-                            if (confirmed) {
-                                $mmConfig.get('wsextservice').then(function(service) {
-                                    var passport = Math.random() * 1000;
-                                    var loginurl = result.siteurl + "/local/mobile/launch.php?service=" + service;
-                                    loginurl += "&passport=" + passport;
-
-                                    // Store the siteurl and passport in $mmConfig for persistence. We are "configuring"
-                                    // the app to wait for an SSO. $mmConfig shouldn't be used as a temporary storage.
-                                    $mmConfig.set(mmLoginLaunchSiteURL, result.siteurl);
-                                    $mmConfig.set(mmLoginLaunchPassport, passport);
-
-                                    window.open(loginurl, "_system");
-                                    if (navigator.app) {
-                                        navigator.app.exitApp();
-                                    }
-                                });
-
-                            }
-                        }
-                    );
+                    $mmUtil.showConfirm($translate('mm.login.logininsiterequired')).then(function() {
+                        $mmLoginHelper.openBrowserForSSOLogin(result.siteurl);
+                    });
                 } else {
                     $state.go('mm_login.credentials', {siteurl: result.siteurl});
                 }
