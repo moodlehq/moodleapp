@@ -21,7 +21,7 @@ angular.module('mm.core.course')
  * @ngdoc service
  * @name $mmCourseDelegate
  */
-.factory('$mmCourseDelegate', function($log) {
+.factory('$mmCourseDelegate', function($log, $mmCourse) {
     $log = $log.getInstance('$mmCourseDelegate');
 
     var contentHandlers = {},
@@ -33,7 +33,7 @@ angular.module('mm.core.course')
      * A handler should return an object with the following keys:
      *
      * - title: The title of the module
-     * - icon: The full URL to the icon
+     * - icon: The image SRC to the icon
      * - state: The state to go to
      * - stateParams: Parameters to use with state,
      * - buttons: An array of buttons with the properties:
@@ -77,7 +77,7 @@ angular.module('mm.core.course')
      */
     self.getDataFromContentHandlerFor = function(handles, module) {
         var data = {
-            icon: module.modicon,
+            icon: $mmCourse.getModuleIconSrc(module.modname),
             title: module.name
         };
 

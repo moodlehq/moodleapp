@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 angular.module('mm', ['ionic', 'mm.core', 'mm.core.course', 'mm.core.courses', 'mm.core.login', 'mm.core.sidemenu', 'mm.addons.files', 'mm.addons.mod_label', 'mm.addons.mod_url', 'mm.addons.participants', 'ngCordova', 'angular-md5', 'pascalprecht.translate'])
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -1812,8 +1811,8 @@ angular.module('mm.core')
         priority: 500,
         compile: function(el, attrs) {
             attrs.$set('type',
-                null,
-                false
+                null,               
+                false               
             );
         }
     }
@@ -1904,7 +1903,7 @@ angular.module('mm.core.login', [])
         url: '/mm_login',
         abstract: true,
         templateUrl: 'core/components/login/templates/base.html',
-        cache: false,
+        cache: false,  
         onEnter: function($ionicHistory, $state, $mmSitesManager, $mmSite) {
             $ionicHistory.clearHistory();
         }
@@ -2057,6 +2056,37 @@ angular.module('mm.core.sidemenu', [])
 });
 
 angular.module('mm.core.course')
+.directive('mmCourseContent', function($log, $mmCourseDelegate, $state) {
+    $log = $log.getInstance('mmCourseContent');
+    function link(scope, element, attrs) {
+        var module = JSON.parse(attrs.module),
+            data;
+        data = $mmCourseDelegate.getDataFromContentHandlerFor(module.modname, module);
+        scope = angular.extend(scope, data);
+    }
+    function controller($scope) {
+        $scope.handleClick = function(e, button) {
+            e.stopPropagation();
+            e.preventDefault();
+            button.callback($scope);
+        };
+        $scope.jump = function(e, state, stateParams) {
+            e.stopPropagation();
+            e.preventDefault();
+            $state.go(state, stateParams);
+        };
+    }
+    return {
+        controller: controller,
+        link: link,
+        replace: true,
+        restrict: 'E',
+        scope: {},
+        templateUrl: 'core/components/course/templates/content.html',
+    };
+});
+
+angular.module('mm.core.course')
 .controller('mmCourseModContentCtrl', function($log, $stateParams, $scope) {
     $log = $log.getInstance('mmCourseModContentCtrl');
     var module = $stateParams.module || {};
@@ -2134,39 +2164,18 @@ angular.module('mm.core.course')
 });
 
 angular.module('mm.core.course')
-.directive('mmCourseContent', function($log, $mmCourseDelegate, $state) {
-    $log = $log.getInstance('mmCourseContent');
-    function link(scope, element, attrs) {
-        var module = JSON.parse(attrs.module),
-            data;
-        data = $mmCourseDelegate.getDataFromContentHandlerFor(module.modname, module);
-        scope = angular.extend(scope, data);
-    }
-    function controller($scope) {
-        $scope.handleClick = function(e, button) {
-            e.stopPropagation();
-            e.preventDefault();
-            button.callback($scope);
-        };
-        $scope.jump = function(e, state, stateParams) {
-            e.stopPropagation();
-            e.preventDefault();
-            $state.go(state, stateParams);
-        };
-    }
-    return {
-        controller: controller,
-        link: link,
-        replace: true,
-        restrict: 'E',
-        scope: {},
-        templateUrl: 'core/components/course/templates/content.html',
-    };
-});
-
-angular.module('mm.core.course')
 .factory('$mmCourse', function($mmSite, $translate, $q) {
     var self = {};
+        self.getModuleIconSrc = function(moduleName) {
+        var mods = ["assign", "assignment", "book", "chat", "choice", "data", "database", "date", "external-tool",
+            "feedback", "file", "folder", "forum", "glossary", "ims", "imscp", "label", "lesson", "lti", "page", "quiz",
+            "resource", "scorm", "survey", "url", "wiki", "workshop"
+        ];
+        if (mods.indexOf(moduleName) < 0) {
+            moduleName = "external-tool";
+        }
+        return "img/mod/" + moduleName + ".png";
+    };
         self.getSection = function(courseid, sectionid) {
         var deferred = $q.defer();
         if (sectionid < 0) {
@@ -2196,7 +2205,7 @@ angular.module('mm.core.course')
 });
 
 angular.module('mm.core.course')
-.factory('$mmCourseDelegate', function($log) {
+.factory('$mmCourseDelegate', function($log, $mmCourse) {
     $log = $log.getInstance('$mmCourseDelegate');
     var contentHandlers = {},
         self = {};
@@ -2213,7 +2222,7 @@ angular.module('mm.core.course')
     };
         self.getDataFromContentHandlerFor = function(handles, module) {
         var data = {
-            icon: module.modicon,
+            icon: $mmCourse.getModuleIconSrc(module.modname),
             title: module.name
         };
         if (typeof contentHandlers[handles] === 'undefined') {
@@ -2590,6 +2599,41 @@ angular.module('mm.addons.files', ['mm.core'])
   });
 });
 
+angular.module('mm.addons.mod_label', ['mm.core'])
+.config(function($stateProvider) {
+    $stateProvider
+    .state('site.mod_label', {
+        url: '/mod_label',
+        params: {
+            description: null
+        },
+        views: {
+            'site': {
+                templateUrl: 'addons/mod_label/templates/index.html',
+                controller: 'mmaModLabelIndexCtrl'
+            }
+        }
+    });
+})
+.run(function($mmCourseDelegate, $mmUtil, $translate) {
+  $translate('mma.mod_label.taptoview').then(function(taptoview) {
+    $mmCourseDelegate.registerContentHandler('mmaModLabel', 'label', function(module) {
+      var title = $mmUtil.shortenText($mmUtil.cleanTags(module.description).trim(), 128);
+      if (title.length <= 0) {
+        title = '<span class="mma-mod_label-empty">' + taptoview + '</span>';
+      }
+      return {
+        icon: false,
+        title: '<p>' + title + '</p>',
+        state: 'site.mod_label',
+        stateParams: {
+          description: module.description
+        }
+      };
+    });
+  });
+});
+
 angular.module('mm.addons.mod_url', ['mm.core'])
 .config(function($stateProvider) {
     $stateProvider
@@ -2624,41 +2668,6 @@ angular.module('mm.addons.mod_url', ['mm.core'])
             buttons: buttons
         };
     });
-});
-
-angular.module('mm.addons.mod_label', ['mm.core'])
-.config(function($stateProvider) {
-    $stateProvider
-    .state('site.mod_label', {
-        url: '/mod_label',
-        params: {
-            description: null
-        },
-        views: {
-            'site': {
-                templateUrl: 'addons/mod_label/templates/index.html',
-                controller: 'mmaModLabelIndexCtrl'
-            }
-        }
-    });
-})
-.run(function($mmCourseDelegate, $mmUtil, $translate) {
-  $translate('mma.mod_label.taptoview').then(function(taptoview) {
-    $mmCourseDelegate.registerContentHandler('mmaModLabel', 'label', function(module) {
-      var title = $mmUtil.shortenText($mmUtil.cleanTags(module.description).trim(), 128);
-      if (title.length <= 0) {
-        title = '<span class="mma-mod_label-empty">' + taptoview + '</span>';
-      }
-      return {
-        icon: false,
-        title: '<p>' + title + '</p>',
-        state: 'site.mod_label',
-        stateParams: {
-          description: module.description
-        }
-      };
-    });
-  });
 });
 
 angular.module('mm.addons.participants', [])
@@ -3079,6 +3088,12 @@ angular.module('mm.addons.files')
     return self;
 });
 
+angular.module('mm.core.course')
+.controller('mmaModLabelIndexCtrl', function($scope, $stateParams, $log) {
+    $log = $log.getInstance('mmaModLabelIndexCtrl');
+    $scope.description = $stateParams.description;
+});
+
 angular.module('mm.addons.mod_url')
 .controller('mmaModUrlIndexCtrl', function($scope, $stateParams, $mmaModUrl) {
     var module = $stateParams.module || {};
@@ -3102,13 +3117,6 @@ angular.module('mm.addons.mod_url')
         window.open(url, '_system');
     };
     return self;
-
-});
-
-angular.module('mm.core.course')
-.controller('mmaModLabelIndexCtrl', function($scope, $stateParams, $log) {
-    $log = $log.getInstance('mmaModLabelIndexCtrl');
-    $scope.description = $stateParams.description;
 });
 
 angular.module('mm.addons.participants')
