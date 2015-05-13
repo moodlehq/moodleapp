@@ -15,65 +15,102 @@
 angular.module('mm.addons.files', ['mm.core'])
 
 .constant('mmaFilesUploadStateName', 'site.files-upload')
+.constant('mmaFilesSharedFilesStore', 'shared_files')
 
 .config(function($stateProvider, mmaFilesUploadStateName) {
 
     $stateProvider
-      .state('site.files', {
-        url: '/files',
-        views: {
-          'site': {
-            controller: 'mmaFilesIndexController',
-            templateUrl: 'addons/files/templates/index.html'
-          }
-        }
-      })
+        .state('site.files', {
+            url: '/files',
+            views: {
+                'site': {
+                    controller: 'mmaFilesIndexController',
+                    templateUrl: 'addons/files/templates/index.html'
+                }
+            }
+        })
 
-      .state('site.files-list', {
-        url: '/list',
-        params: {
-          path: false,
-          root: false,
-          title: false
-        },
-        views: {
-          'site': {
-            controller: 'mmaFilesListController',
-            templateUrl: 'addons/files/templates/list.html'
-          }
-        }
-      })
+        .state('site.files-list', {
+            url: '/list',
+            params: {
+                path: false,
+                root: false,
+                title: false
+            },
+            views: {
+                'site': {
+                    controller: 'mmaFilesListController',
+                    templateUrl: 'addons/files/templates/list.html'
+                }
+            }
+        })
 
-      .state(mmaFilesUploadStateName, {
-        url: '/upload',
-        params: {
-          path: false,
-          root: false
-        },
-        views: {
-          'site': {
-            controller: 'mmaFilesUploadCtrl',
-            templateUrl: 'addons/files/templates/upload.html'
-          }
-        }
-      });
+        .state(mmaFilesUploadStateName, {
+            url: '/upload',
+            params: {
+                path: false,
+                root: false
+            },
+            views: {
+                'site': {
+                    controller: 'mmaFilesUploadCtrl',
+                    templateUrl: 'addons/files/templates/upload.html'
+                }
+            }
+        })
+
+        .state('site.files-choose-site', {
+            url: '/choose-site',
+            params: {
+                file: null
+            },
+            views: {
+                'site': {
+                    controller: 'mmaFilesChooseSiteCtrl',
+                    templateUrl: 'addons/files/templates/choosesite.html'
+                }
+            }
+        });
 
 })
 
-.run(function($mmSideMenuDelegate, $translate, $q, $mmaFiles) {
-  var promises = [$translate('mma.files.myfiles')];
-  $q.all(promises).then(function(data) {
-    var strMyfiles = data[0];
-    $mmSideMenuDelegate.registerPlugin('mmaFiles', function() {
-      if (!$mmaFiles.isPluginEnabled()) {
-        return undefined;
-      }
-      return {
-        icon: 'ion-folder',
-        title: strMyfiles,
-        state: 'site.files'
-      };
+.run(function($mmSideMenuDelegate, $translate, $q, $mmaFiles, $state, $mmSitesManager, $mmUtil, $mmaFilesHelper, $ionicPlatform) {
+
+    // Register plugin in side menu.
+    var promises = [$translate('mma.files.myfiles')];
+    $q.all(promises).then(function(data) {
+        var strMyfiles = data[0];
+        $mmSideMenuDelegate.registerPlugin('mmaFiles', function() {
+            if (!$mmaFiles.isPluginEnabled()) {
+                return undefined;
+            }
+            return {
+                icon: 'ion-folder',
+                title: strMyfiles,
+                state: 'site.files'
+            };
+        });
     });
-  });
+
+    // Search for new files shared with the upload (to upload).
+    if (ionic.Platform.isIOS()) {
+        // In iOS we need to manually check if there are new files in the app Inbox folder.
+        function searchToUpload() {
+            $mmaFiles.checkIOSNewFiles().then(function(fileEntry) {
+                $mmSitesManager.getSites().then(function(sites) {
+                    if (sites.length == 0) {
+                        $mmUtil.showErrorModal('mma.files.errorreceivefilenosites', true);
+                    } else if (sites.length == 1) {
+                        $mmaFilesHelper.showConfirmAndUploadInSite(fileEntry, sites[0].id);
+                    } else {
+                        $state.go('site.files-choose-site', {file: fileEntry});
+                    }
+                });
+            });
+        }
+        // We want to check it at app start and when the app is resumed.
+        $ionicPlatform.on('resume', searchToUpload);
+        searchToUpload();
+    }
 
 });

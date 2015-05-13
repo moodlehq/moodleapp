@@ -14,7 +14,18 @@
 
 angular.module('mm.addons.files')
 
-.factory('$mmaFiles', function($mmSite, $mmUtil, $mmFS, $mmWS, $q, $timeout, $log, md5) {
+.config(function($mmAppProvider, mmaFilesSharedFilesStore) {
+    var stores = [
+        {
+            name: mmaFilesSharedFilesStore,
+            keyPath: 'id'
+        }
+    ];
+    $mmAppProvider.registerStores(stores);
+})
+
+.factory('$mmaFiles', function($mmSite, $mmUtil, $mmFS, $mmWS, $q, $timeout, $log, $mmSitesManager, $mmApp, md5,
+            mmaFilesSharedFilesStore) {
 
     $log = $log.getInstance('$mmaFiles');
 
@@ -31,10 +42,95 @@ angular.module('mm.addons.files')
     /**
      * Check if core_files_get_files WS call is available.
      *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#canAccessFiles
      * @return {Boolean} True if WS is available, false otherwise.
      */
     self.canAccessFiles = function() {
         return $mmSite.wsAvailable('core_files_get_files');
+    };
+
+    /**
+     * Checks if there is a new file received in iOS. If more than one file is found, treat only the first one.
+     * The file returned is marked as "treated" and will be deleted in the next execution.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#checkIOSNewFiles
+     * @return {Promise} Promise resolved with a new file to be treated. If no new files found, promise is rejected.
+     */
+    self.checkIOSNewFiles = function() {
+
+        var deferred = $q.defer();
+
+        $log.debug('Search for new files on iOS');
+        $mmFS.getDirectoryContents('Inbox').then(function(entries) {
+
+            if (entries.length > 0) {
+
+                var promises = [];
+                angular.forEach(entries, function(entry) {
+
+                    var fileDeferred = $q.defer(),
+                        fileId = md5.createHash(entry.name);
+
+                    // Check if file was already treated.
+                    $mmApp.getDB().get(mmaFilesSharedFilesStore, fileId).then(function() {
+                        // File already treated. Delete it.
+                        $log.debug('Delete already treated file: ' + entry.name);
+                        fileDeferred.resolve();
+
+                        entry.remove(function() {
+                            $log.debug('File deleted: ' + entry.name);
+                            $mmApp.getDB().remove(mmaFilesSharedFilesStore, fileId).then(function() {
+                                $log.debug('"Treated" mark removed from file: ' + entry.name);
+                            }, function() {
+                                $log.debug('Error deleting "treated" mark from file: ' + entry.name);
+                            });
+                        }, function() {
+                            $log.debug('Error deleting file in Inbox: ' + entry.name);
+                        });
+
+                    }, function() {
+                        // File not treated before, send it to resolve so it's a candidate to be notified.
+                        $log.debug('Found new file ' + entry.name + ' shared with the app.');
+                        fileDeferred.resolve(entry);
+                    });
+
+                    promises.push(fileDeferred.promise);
+                });
+
+                $q.all(promises).then(function(responses) {
+                    var fileToReturn,
+                        fileId;
+                    for (var i = 0; i < responses.length; i++) {
+                        if (typeof(responses[i]) !== 'undefined') {
+                            // Found new entry to treat.
+                            fileToReturn = responses[i];
+                            break;
+                        }
+                    }
+                    if (fileToReturn) {
+                        fileId = md5.createHash(fileToReturn.name);
+                        // Mark it as "treated".
+                        $mmApp.getDB().insert(mmaFilesSharedFilesStore, {id: fileId}).then(function() {
+                            $log.debug('File marked as "treated": ' + fileToReturn.name);
+                            deferred.resolve(fileToReturn);
+                        }, function() {
+                            $log.debug('Error marking file as "treated": ' + fileToReturn.name);
+                            deferred.reject();
+                        });
+                    } else {
+                        deferred.reject();
+                    }
+                }, deferred.reject);
+            } else {
+                deferred.reject();
+            }
+        });
+
+        return deferred.promise;
     };
 
     /**
@@ -235,11 +331,14 @@ angular.module('mm.addons.files')
      * @module mm.addons.files
      * @ngdoc method
      * @name $mmaFiles#invalidateDirectory
-     * @param  {String} root Root of the directory ('my' for private files, 'site' for site files).
-     * @param  {String} path Path to the directory.
-     * @return {Promise}     Promise resolved when the list is invalidated.
+     * @param  {String} root     Root of the directory ('my' for private files, 'site' for site files).
+     * @param  {String} path     Path to the directory.
+     * @param  {String} [siteid] Id of the site to invalidate. If not defined, use current site.
+     * @return {Promise}         Promise resolved when the list is invalidated.
      */
-    self.invalidateDirectory = function(root, path) {
+    self.invalidateDirectory = function(root, path, siteid) {
+        siteid = siteid || $mmSite.getId();
+
         var params = {};
         if (!path) {
             if (root === 'site') {
@@ -251,7 +350,9 @@ angular.module('mm.addons.files')
             params = JSON.parse(path);
         }
 
-        return $mmSite.invalidateWsCacheForKey(getFilesListCacheKey(params));
+        return $mmSitesManager.getSite(siteid).then(function(site) {
+            site.invalidateWsCacheForKey(getFilesListCacheKey(params));
+        });
     };
 
     /**
@@ -303,16 +404,19 @@ angular.module('mm.addons.files')
      * @module mm.addons.files
      * @ngdoc method
      * @name $mmaFiles#uploadFile
-     * @param  {Object} uri File URI.
-     * @param  {Object} options Options for the upload.
-     *                          - {Boolean} deleteAfterUpload Whether or not to delete the original after upload.
-     *                          - {String} fileKey
-     *                          - {String} fileName
-     *                          - {String} mimeType
+     * @param  {Object} uri      File URI.
+     * @param  {Object} options  Options for the upload.
+     *                           - {Boolean} deleteAfterUpload Whether or not to delete the original after upload.
+     *                           - {String} fileKey
+     *                           - {String} fileName
+     *                           - {String} mimeType
+     * @param  {String} [siteid] Id of the site to upload the file to. If not defined, use current site.
      * @return {Promise}
      */
-    self.uploadFile = function(uri, options) {
+    self.uploadFile = function(uri, options, siteid) {
         options = options || {};
+        siteid = siteid || $mmSite.getId();
+
         var deleteAfterUpload = options.deleteAfterUpload,
             deferred = $q.defer(),
             ftOptions = {
@@ -321,27 +425,24 @@ angular.module('mm.addons.files')
                 mimeType: options.mimeType
             };
 
-        $mmSite.uploadFile(uri, ftOptions).then(function(result) {
-            // Success.
+        function deleteFile() {
+            $timeout(function() {
+                // Use set timeout, otherwise in Node-Webkit the upload threw an error sometimes.
+                $mmFS.removeExternalFile(uri);
+            }, 500);
+        }
+
+        $mmSitesManager.getSite(siteid).then(function(site) {
+            site.uploadFile(uri, ftOptions).then(deferred.resolve, deferred.reject, deferred.notify).finally(function() {
+                if (deleteAfterUpload) {
+                    deleteFile();
+                }
+            });
+        }, function() {
             if (deleteAfterUpload) {
-                $timeout(function() {
-                    // Use set timeout, otherwise in Node-Webkit the upload threw an error sometimes.
-                    $mmFS.removeExternalFile(uri);
-                }, 500);
-            }
-            deferred.resolve(result);
-        }, function(error) {
-            // Error.
-            if (deleteAfterUpload) {
-                $timeout(function() {
-                    // Use set timeout, otherwise in Node-Webkit the upload threw an error sometimes.
-                    $mmFS.removeExternalFile(uri);
-                }, 500);
+                deleteFile();
             }
             deferred.reject(error);
-        }, function(progress) {
-            // Progress.
-            deferred.notify(progress);
         });
 
         return deferred.promise;
@@ -407,19 +508,21 @@ angular.module('mm.addons.files')
      * @module mm.addons.files
      * @ngdoc method
      * @name $mmaFiles#uploadGenericFile
-     * @param  {String} uri  File URI.
-     * @param  {String} name File name.
-     * @param  {String} type File type.
+     * @param  {String} uri      File URI.
+     * @param  {String} name     File name.
+     * @param  {String} type     File type.
+     * @param  {String} [siteid] Id of the site to upload the file to. If not defined, use current site.
      * @return {Promise}     Promise resolved when the file is uploaded.
      */
-    self.uploadGenericFile = function(uri, name, type) {
+    self.uploadGenericFile = function(uri, name, type, siteid) {
         var options = {};
         options.fileKey = null;
         options.fileName = name;
         options.mimeType = type;
-        options.deleteAfterUpload = true;
+        // Don't delete the file on iOS, it's going to be deleted on $mmaFiles#checkIOSNewFiles.
+        options.deleteAfterUpload = !ionic.Platform.isIOS();
 
-        return self.uploadFile(uri, options);
+        return self.uploadFile(uri, options, siteid);
     };
 
     return self;
