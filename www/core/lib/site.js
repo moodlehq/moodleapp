@@ -453,6 +453,7 @@ angular.module('mm.core')
                     } else {
                         $log.debug('WS call failed. Try to get the value from the cache.');
                         preSets.omitExpires = true;
+                        preSets.getFromCache = true;
                         getFromCache(method, data, preSets).then(function(data) {
                             deferred.resolve(data);
                         }, function() {
