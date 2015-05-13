@@ -867,6 +867,7 @@ angular.module('mm.core')
         };
                 self.request = function(method, data, preSets) {
             var deferred = $q.defer();
+            data = data || {};
             if (!self.isLoggedIn()) {
                 $mmLang.translateErrorAndReject(deferred, 'mm.login.notloggedin');
                 return deferred.promise;
@@ -885,6 +886,7 @@ angular.module('mm.core')
             preSets = preSets || {};
             preSets.wstoken = currentSite.token;
             preSets.siteurl = currentSite.siteurl;
+            data.moodlewssettingfilter = true;
             getFromCache(method, data, preSets).then(function(data) {
                 deferred.resolve(data);
             }, function() {
