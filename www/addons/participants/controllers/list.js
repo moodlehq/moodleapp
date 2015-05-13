@@ -21,7 +21,8 @@ angular.module('mm.addons.participants')
  * @ngdoc controller
  * @name mmaParticipantsListCtrl
  */
-.controller('mmaParticipantsListCtrl', function($scope, $state, $stateParams, $mmUtil, $mmaParticipants, $translate, $ionicPlatform) {
+.controller('mmaParticipantsListCtrl', function($scope, $state, $stateParams, $mmUtil, $mmaParticipants, $translate, 
+            $ionicPlatform, $mmSite) {
     var course = $stateParams.course,
         courseid = course.id;
 
@@ -52,7 +53,12 @@ angular.module('mm.addons.participants')
     $translate('mm.core.loading').then(function(loadingString) {
         $mmUtil.showModalLoading(loadingString);
     });
-    fetchParticipants(true).finally(function() {
+    fetchParticipants(true).then(function() {
+        // Add log in Moodle.
+        $mmSite.write('core_user_view_user_list', {
+            courseid: courseid
+        });
+    }).finally(function() {
         $mmUtil.closeModalLoading();
     });
 
