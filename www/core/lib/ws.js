@@ -66,7 +66,6 @@ angular.module('mm.core')
 
         var ajaxData = data;
 
-        // TODO: Show error if not connected.
         $http.post(siteurl, ajaxData).then(function(data) {
             // Some moodle web services return null.
             // If the responseExpected value is set then so long as no data
