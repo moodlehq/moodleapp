@@ -2746,7 +2746,7 @@ angular.module('mm.core.sidemenu')
 });
 
 angular.module('mm.core.user')
-.controller('mmUserProfileCtrl', function($scope, $stateParams, $mmUtil, $mmUser, $translate, $mmUserDelegate) {
+.controller('mmUserProfileCtrl', function($scope, $stateParams, $mmUtil, $mmUser, $translate, $mmUserDelegate, $mmSite) {
     var courseid = $stateParams.courseid,
         userid   = $stateParams.userid;
     $scope.isAndroid = ionic.Platform.isAndroid();
@@ -2766,6 +2766,10 @@ angular.module('mm.core.user')
         $scope.title = user.fullname;
         $scope.hasContact = user.email || user.phone1 || user.phone2 || user.city || user.country || user.address;
         $scope.hasDetails = user.url || user.roles || user.interests;
+        $mmSite.write('core_user_view_user_profile', {
+            userid: userid,
+            courseid: courseid
+        });
     }, function(message) {
         $mmUtil.showErrorModal(message);
     }).finally(function() {
@@ -3624,7 +3628,7 @@ angular.module('mm.addons.mod_url')
 
 angular.module('mm.addons.participants')
 .controller('mmaParticipantsListCtrl', function($scope, $state, $stateParams, $mmUtil, $mmaParticipants, $translate,
-            $ionicPlatform, mmUserProfileState) {
+            $ionicPlatform, mmUserProfileState, $mmSite) {
     var course = $stateParams.course,
         courseid = course.id;
     $scope.participants = [];

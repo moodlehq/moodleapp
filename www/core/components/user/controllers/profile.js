@@ -21,7 +21,7 @@ angular.module('mm.core.user')
  * @ngdoc controller
  * @name mmaParticipantsProfileCtrl
  */
-.controller('mmUserProfileCtrl', function($scope, $stateParams, $mmUtil, $mmUser, $translate, $mmUserDelegate) {
+.controller('mmUserProfileCtrl', function($scope, $stateParams, $mmUtil, $mmUser, $translate, $mmUserDelegate, $mmSite) {
 
     var courseid = $stateParams.courseid,
         userid   = $stateParams.userid;
@@ -48,6 +48,12 @@ angular.module('mm.core.user')
         $scope.title = user.fullname;
         $scope.hasContact = user.email || user.phone1 || user.phone2 || user.city || user.country || user.address;
         $scope.hasDetails = user.url || user.roles || user.interests;
+
+        // Add log in Moodle.
+        $mmSite.write('core_user_view_user_profile', {
+            userid: userid,
+            courseid: courseid
+        });
     }, function(message) {
         $mmUtil.showErrorModal(message);
     }).finally(function() {
