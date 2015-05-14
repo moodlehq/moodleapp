@@ -2133,7 +2133,7 @@ angular.module('mm.core.course')
 });
 
 angular.module('mm.core.course')
-.controller('mmCourseSectionCtrl', function($mmCourse, $mmUtil, $scope, $stateParams, $translate) {
+.controller('mmCourseSectionCtrl', function($mmCourse, $mmUtil, $scope, $stateParams, $translate, $mmSite) {
     var courseid = $stateParams.courseid,
         sectionid = $stateParams.sectionid,
         sections = [];
@@ -2150,6 +2150,10 @@ angular.module('mm.core.course')
         if (sectionid < 0) {
             $mmCourse.getSections(courseid).then(function(sections) {
                 $scope.sections = sections;
+                $mmSite.write('core_course_view_course', {
+                    courseid: courseid,
+                    sectionnumber: 0
+                });
             }, function() {
                 $mmUtil.showErrorModal('mm.course.couldnotloadsectioncontent', true);
             }).finally(function() {
@@ -2160,6 +2164,10 @@ angular.module('mm.core.course')
                 $scope.sections = [section];
                 $scope.title = section.name;
                 $scope.summary = section.summary;
+                $mmSite.write('core_course_view_course', {
+                    courseid: courseid,
+                    sectionnumber: sectionid
+                });
             }, function() {
                 $mmUtil.showErrorModal('mm.course.couldnotloadsectioncontent', true);
             }).finally(function() {
@@ -2254,7 +2262,7 @@ angular.module('mm.core.course')
             for (var i = 0; i < sections.length; i++) {
                 if (sections[i].id == sectionid) {
                     deferred.resolve(sections[i]);
-                    break;
+                    return;
                 }
             }
             deferred.reject('Unkown section');
