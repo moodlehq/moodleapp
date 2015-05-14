@@ -7711,14 +7711,16 @@ em {
   background-color: #f70;
   background-image: linear-gradient(0deg, transparent, transparent 50%, transparent 50%);
   color: #fff;
-  height: 80px; }
+  height: 80px !important; }
   .bar-side-menu .title {
     color: #fff; }
   .bar-side-menu .item {
     background: transparent;
     border: none; }
-  .bar-side-menu .item-avatar h2, .bar-side-menu .item-media h2, .bar-side-menu .item-avatar p, .bar-side-menu .item-media p {
-    color: #fff; }
+  .bar-side-menu .item-avatar, .bar-side-menu .item-media {
+    margin-top: 0px !important; }
+    .bar-side-menu .item-avatar h2, .bar-side-menu .item-media h2, .bar-side-menu .item-avatar p, .bar-side-menu .item-media p {
+      color: #fff; }
 
 .has-side-menu-header {
   top: 80px; }
