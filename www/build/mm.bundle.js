@@ -709,7 +709,12 @@ angular.module('mm.core')
     var stores = [
         {
             name: mmCoreWSCacheStore,
-            keyPath: 'id'
+            keyPath: 'id',
+            indexes: [
+                {
+                    name: 'key'
+                }
+            ]
         }
     ];
     $mmSiteProvider.registerStores(stores);
@@ -891,12 +896,14 @@ angular.module('mm.core')
                 deferred.resolve(data);
             }, function() {
                 var mustSaveToCache = preSets.saveToCache;
+                var cacheKey = preSets.cacheKey;
                 delete preSets.getFromCache;
                 delete preSets.saveToCache;
                 delete preSets.omitExpires;
+                delete preSets.cacheKey;
                 $mmWS.call(method, data, preSets).then(function(response) {
                     if (mustSaveToCache) {
-                        saveToCache(method, data, response);
+                        saveToCache(method, data, response, cacheKey);
                     }
                     deferred.resolve(response);
                 }, function(error) {
@@ -985,6 +992,24 @@ angular.module('mm.core')
                 token: self.getToken()
             });
         };
+                self.invalidateWsCacheForKey = function(key) {
+            var db = currentSite.db;
+            if (!db || !key) {
+                return $q.reject();
+            }
+            $log.debug('Invalidate cache for key: '+key);
+            return db.whereEqual(mmCoreWSCacheStore, 'key', key).then(function(entries) {
+                if (entries && entries.length > 0) {
+                    var promises = [];
+                    angular.forEach(entries, function(entry) {
+                        entry.expirationtime = 0;
+                        var promise = db.insert(mmCoreWSCacheStore, entry);
+                        promises.push(promise);
+                    });
+                    return $q.all(promises);
+                }
+            });
+        };
                 function getCompatibleFunction(method) {
             if (typeof deprecatedFunctions[method] !== "undefined") {
                 if (self.wsAvailable(deprecatedFunctions[method])) {
@@ -1043,19 +1068,22 @@ angular.module('mm.core')
             });
             return deferred.promise;
         }
-                function saveToCache(method, data, response) {
+                function saveToCache(method, data, response, cacheKey) {
             var db = currentSite.db,
                 deferred = $q.defer(),
-                key = md5.createHash(method + ':' + JSON.stringify(data));
+                id = md5.createHash(method + ':' + JSON.stringify(data));
             if (!db) {
                 deferred.reject();
             } else {
                 $mmConfig.get('cache_expiration_time').then(function(cacheExpirationTime) {
                     var entry = {
-                        id: key,
+                        id: id,
                         data: response
                     };
                     entry.expirationtime = new Date().getTime() + cacheExpirationTime;
+                    if (cacheKey) {
+                        entry.key = cacheKey;
+                    }
                     db.insert(mmCoreWSCacheStore, entry);
                     deferred.resolve();
                 }, deferred.reject);
@@ -3512,8 +3540,10 @@ angular.module('mm.addons.participants')
         });
     };
     $scope.refreshParticipants = function() {
-        fetchParticipants(true).finally(function() {
-            $scope.$broadcast('scroll.refreshComplete');
+        $mmaParticipants.invalidateParticipantsList(courseid).finally(function() {
+            fetchParticipants(true).finally(function() {
+                $scope.$broadcast('scroll.refreshComplete');
+            });
         });
     };
 });
@@ -3579,9 +3609,12 @@ angular.module('mm.addons.participants')
 });
 
 angular.module('mm.addons.participants')
-.factory('$mmaParticipants', function($q, $log, $mmSite, $mmUtil, mmaParticipantsListLimit, $mmLang, $mmUtil) {
+.factory('$mmaParticipants', function($q, $log, $mmSite, $mmUtil, mmaParticipantsListLimit, $mmLang, $mmUtil, md5) {
     $log = $log.getInstance('$mmaParticipants');
     var self = {};
+        function getParticipantsListCacheKey(courseid) {
+        return 'mmaParticipants:list:'+courseid;
+    }
         self.getParticipants = function(courseid, limitFrom, limitNumber) {
         if (typeof(limitFrom) === 'undefined') {
             limitFrom = 0;
@@ -3597,7 +3630,10 @@ angular.module('mm.addons.participants')
             "options[1][name]" : "limitnumber",
             "options[1][value]": limitNumber,
         };
-        return $mmSite.read('core_enrol_get_enrolled_users', data).then(function(users) {
+        var preSets = {
+            cacheKey: getParticipantsListCacheKey(courseid)
+        };
+        return $mmSite.read('core_enrol_get_enrolled_users', data, preSets).then(function(users) {
             var canLoadMore = users.length >= limitNumber;
             return {participants: users, canLoadMore: canLoadMore};
         });
@@ -3624,6 +3660,9 @@ angular.module('mm.addons.participants')
             });
         }, deferred.reject);
         return deferred.promise;
+    };
+        self.invalidateParticipantsList = function(courseid) {
+        return $mmSite.invalidateWsCacheForKey(getParticipantsListCacheKey(courseid));
     };
     return self;
 });
