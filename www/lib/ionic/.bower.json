@@ -1,6 +1,7 @@
 {
   "name": "ionic",
-  "codename": "palladium-platypus",
+  "version": "1.0.0",
+  "codename": "uranium-unicorn",
   "homepage": "https://github.com/driftyco/ionic",
   "authors": [
     "Max Lynch <max@drifty.com>",
@@ -33,13 +34,13 @@
     "angular-sanitize": "1.3.13",
     "angular-ui-router": "0.2.13"
   },
-  "_release": "8663df7310",
+  "_release": "1.0.0",
   "_resolution": {
-    "type": "branch",
-    "branch": "master",
-    "commit": "8663df73109dbbd5eff04a9e76b19fca6c16547d"
+    "type": "version",
+    "tag": "v1.0.0",
+    "commit": "3ea71d863e53b7a8d3d75a2757386fd7124b0653"
   },
   "_source": "git://github.com/driftyco/ionic-bower.git",
-  "_target": "master",
+  "_target": "v1.0.0",
   "_originalSource": "driftyco/ionic-bower"
 }
