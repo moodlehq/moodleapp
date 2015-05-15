@@ -433,6 +433,41 @@ angular.module('mm.core')
     };
 
     /**
+     * Returns a site object.
+     *
+     * @param  {Number} siteId The site ID.
+     * @return {Promise}
+     */
+    self.getSite = function(siteId) {
+        if ($mmSite.getId() == siteId) {
+            var deferred = $q.defer();
+            deferred.resolve($mmSite.getCurrentSite());
+            return deferred.promise;
+        }
+        return db.get(mmCoreSitesStore, siteId).then(function(site) {
+            return $mmSite.makeSite(siteid, site.siteurl, site.token, site.infos);
+        });
+    };
+
+    /**
+     * Returns the database object of a site.
+     *
+     * @param  {Number} siteId The site ID.
+     * @return {Promise}
+     */
+    self.getSiteDb = function(siteId) {
+        if ($mmSite.getId() == siteId) {
+            var deferred = $q.defer();
+            deferred.resolve($mmSite.getDb());
+            return deferred.promise;
+        }
+        return db.get(mmCoreSitesStore, siteId).then(function(site) {
+            var obj = $mmSite.makeSite(siteid, site.siteurl, site.token, site.infos);
+            return obj.db;
+        });
+    };
+
+    /**
      * Get the list of sites stored.
      *
      * @module mm.core
@@ -502,7 +537,14 @@ angular.module('mm.core')
                 file:      siteId + "/" + courseId + "/" + filename
             };
 
-            return $mmFS.getFile(path.file).then(function(fileEntry) {
+            var getFileFromFS = (function() {
+                if ($mmFS.isAvailable()) {
+                    return $mmFS.getFile(path.file);
+                }
+                return $q.reject();
+            })();
+
+            return getFileFromFS.then(function(fileEntry) {
                 // We use toInternalURL so images are loaded in iOS8 using img HTML tags,
                 // with toURL the OS is unable to find the image files.
                 $log.debug('File ' + downloadURL + ' already downloaded.');

@@ -174,6 +174,21 @@ angular.module('mm.core')
         }
 
         /**
+         * Make a site object.
+         *
+         * @param {String} id      Site ID.
+         * @param {String} siteurl Site URL.
+         * @param {String} token   User's token in the site.
+         * @param {Object} infos   Site's info.
+         * @return {Object} The current site object.
+         * @description
+         * This returns a site object. It's not intended to be used directly.
+         */
+        self.makeSite = function(id, siteurl, token, infos) {
+            return new Site(id, siteurl, token, infos);
+        };
+
+        /**
          * Can the user access their private files?
          *
          * @module mm.core
@@ -282,7 +297,7 @@ angular.module('mm.core')
          * @param {String} token   User's token in the site.
          */
         self.setCandidateSite = function(siteurl, token) {
-            currentSite = new Site(undefined, siteurl, token);
+            currentSite = self.makeSite(undefined, siteurl, token);
         };
 
         /**
@@ -308,7 +323,7 @@ angular.module('mm.core')
          * @param {Object} infos   Site info.
          */
         self.setSite = function(id, siteurl, token, infos) {
-            currentSite = new Site(id, siteurl, token, infos);
+            currentSite = self.makeSite(id, siteurl, token, infos);
         };
 
         /**
@@ -513,6 +528,34 @@ angular.module('mm.core')
             }
 
             return false;
+        };
+
+        /**
+         * Returns the current site object.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmSite#getCurrentSite
+         * @return {Object} The current site object.
+         */
+        self.getCurrentSite = function() {
+            return currentSite;
+        };
+
+        /**
+         * Get current site DB.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmSite#getDb
+         * @return {Object} Current site DB.
+         */
+        self.getDb = function() {
+            if (typeof(currentSite) !== 'undefined' && typeof(currentSite.db) !== 'undefined') {
+                return currentSite.db;
+            } else {
+                return undefined;
+            }
         };
 
         /**

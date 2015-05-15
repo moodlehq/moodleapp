@@ -14,6 +14,8 @@
 
 angular.module('mm.core')
 
+.constant('mmFsSitesFolder', 'sites')
+
 /**
  * @ngdoc service
  * @name $mmFS
@@ -21,7 +23,7 @@ angular.module('mm.core')
  * @description
  * This service handles the interaction with the FileSystem.
  */
-.factory('$mmFS', function($ionicPlatform, $cordovaFile, $log, $q) {
+.factory('$mmFS', function($ionicPlatform, $cordovaFile, $log, $q, mmFsSitesFolder) {
 
     $log = $log.getInstance('$mmFS');
 
@@ -70,6 +72,15 @@ angular.module('mm.core')
     };
 
     /**
+     * Check if the plugin is available.
+     *
+     * @return {Boolean} True when cordova is initialised.
+     */
+    self.isAvailable = function() {
+        return (typeof cordova !== 'undefined' && typeof cordova.file !== 'undefined');
+    };
+
+    /**
      * Get a file.
      *
      * @param  {String}  path Relative path to the file.
@@ -93,6 +104,10 @@ angular.module('mm.core')
             $log.debug('Get directory: '+path);
             return $cordovaFile.checkDir(basePath, path);
         });
+    };
+
+    self.getSiteFolder = function(siteId) {
+        return mmFsSitesFolder + '/' + siteId;
     };
 
     /**
