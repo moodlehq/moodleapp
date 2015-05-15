@@ -45,8 +45,20 @@ angular.module('mm.core')
                     var interpolated = $interpolate(content)(scope); // "Evaluate" scope variables.
                     interpolated = interpolated.trim();
 
+                    // Apply format text function.
                     $mmText.formatText(interpolated, attrs.clean).then(function(formatted) {
-                        element.html(formatted);
+
+                        // Convert the content into DOM.
+                        var dom = angular.element('<div>').html(formatted);
+
+                        // Walk through the content to find the links and add our directive to it.
+                        angular.forEach(dom.find('a'), function(anchor) {
+                            anchor.setAttribute('mm-browser', '');
+                        });
+
+                        // Send for display, and compile.
+                        element.html(dom.html());
+                        $compile(element.contents())(scope);
                     });
                 }
 
