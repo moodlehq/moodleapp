@@ -3483,7 +3483,8 @@ angular.module('mm.addons.mod_url')
 });
 
 angular.module('mm.addons.participants')
-.controller('mmaParticipantsListCtrl', function($scope, $state, $stateParams, $mmUtil, $mmaParticipants, $translate, $ionicPlatform) {
+.controller('mmaParticipantsListCtrl', function($scope, $state, $stateParams, $mmUtil, $mmaParticipants, $translate, 
+            $ionicPlatform, $mmSite) {
     var course = $stateParams.course,
         courseid = course.id;
     $scope.participants = [];
@@ -3507,7 +3508,11 @@ angular.module('mm.addons.participants')
     $translate('mm.core.loading').then(function(loadingString) {
         $mmUtil.showModalLoading(loadingString);
     });
-    fetchParticipants(true).finally(function() {
+    fetchParticipants(true).then(function() {
+        $mmSite.write('core_user_view_user_list', {
+            courseid: courseid
+        });
+    }).finally(function() {
         $mmUtil.closeModalLoading();
     });
     $scope.loadMoreParticipants = function(){
