@@ -2252,7 +2252,7 @@ angular.module('mm.core.course')
         if (mods.indexOf(moduleName) < 0) {
             moduleName = "external-tool";
         }
-        return "img/mod/" + moduleName + ".png";
+        return "img/mod/" + moduleName + ".svg";
     };
         self.getSection = function(courseid, sectionid) {
         var deferred = $q.defer();

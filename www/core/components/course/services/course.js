@@ -43,7 +43,7 @@ angular.module('mm.core.course')
             moduleName = "external-tool";
         }
 
-        return "img/mod/" + moduleName + ".png";
+        return "img/mod/" + moduleName + ".svg";
     };
 
     /**
