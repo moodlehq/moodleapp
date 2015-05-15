@@ -68,7 +68,7 @@ angular.module('mm.core.course')
             for (var i = 0; i < sections.length; i++) {
                 if (sections[i].id == sectionid) {
                     deferred.resolve(sections[i]);
-                    break;
+                    return;
                 }
             }
             deferred.reject('Unkown section');
