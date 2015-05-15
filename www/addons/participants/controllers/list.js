@@ -70,8 +70,10 @@ angular.module('mm.addons.participants')
     };
 
     $scope.refreshParticipants = function() {
-        fetchParticipants(true).finally(function() {
-            $scope.$broadcast('scroll.refreshComplete');
+        $mmaParticipants.invalidateParticipantsList(courseid).finally(function() {
+            fetchParticipants(true).finally(function() {
+                $scope.$broadcast('scroll.refreshComplete');
+            });
         });
     };
 });

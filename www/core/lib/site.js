@@ -22,7 +22,12 @@ angular.module('mm.core')
     var stores = [
         {
             name: mmCoreWSCacheStore,
-            keyPath: 'id'
+            keyPath: 'id',
+            indexes: [
+                {
+                    name: 'key'
+                }
+            ]
         }
     ];
     $mmSiteProvider.registerStores(stores);
@@ -385,6 +390,8 @@ angular.module('mm.core')
          *                    - saveToCache boolean (false) Save the call results to the cache.
          *                    - omitExpires boolean (false) Ignore cache expiry.
          *                    - sync boolean (false) Add call to queue if device is not connected.
+         *                    - cacheKey (string) Extra key to add to the cache when storing this call. This key is to
+         *                                        flag the cache entry, it doesn't affect the data retrieved in this call.
          * @return {Promise}
          * @description
          *
@@ -434,18 +441,20 @@ angular.module('mm.core')
                 deferred.resolve(data);
             }, function() {
                 var mustSaveToCache = preSets.saveToCache;
+                var cacheKey = preSets.cacheKey;
 
                 // Do not pass those options to the core WS factory.
                 delete preSets.getFromCache;
                 delete preSets.saveToCache;
                 delete preSets.omitExpires;
+                delete preSets.cacheKey;
 
                 // TODO: Sync
 
                 $mmWS.call(method, data, preSets).then(function(response) {
 
                     if (mustSaveToCache) {
-                        saveToCache(method, data, response);
+                        saveToCache(method, data, response, cacheKey);
                     }
 
                     deferred.resolve(response);
@@ -638,6 +647,35 @@ angular.module('mm.core')
         };
 
         /**
+         * Invalidates all the cache entries with a certain key.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmSite#invalidateWsCacheForKey
+         * @param  {String} key Key to search.
+         * @return {Promise}    Promise resolved when the cache entries are invalidated.
+         */
+        self.invalidateWsCacheForKey = function(key) {
+            var db = currentSite.db;
+            if (!db || !key) {
+                return $q.reject();
+            }
+
+            $log.debug('Invalidate cache for key: '+key);
+            return db.whereEqual(mmCoreWSCacheStore, 'key', key).then(function(entries) {
+                if (entries && entries.length > 0) {
+                    var promises = [];
+                    angular.forEach(entries, function(entry) {
+                        entry.expirationtime = 0;
+                        var promise = db.insert(mmCoreWSCacheStore, entry);
+                        promises.push(promise);
+                    });
+                    return $q.all(promises);
+                }
+            });
+        };
+
+        /**
          * Return the function to be used, based on the available functions in the site. It'll try to use non-deprecated
          * functions first, and fallback to deprecated ones if needed.
          *
@@ -724,15 +762,16 @@ angular.module('mm.core')
         /**
          * Save a WS response to cache.
          *
-         * @param {String} method  The WebService method.
-         * @param {Object} data    Arguments to pass to the method.
-         * @param {Object} preSets Extra settings.
-         * @return {Promise}       Promise to be resolved when the response is saved.
+         * @param {String} method   The WebService method.
+         * @param {Object} data     Arguments to pass to the method.
+         * @param {Object} preSets  Extra settings.
+         * @param {String} cacheKey (Optional) Extra key to add to the cache object to identify similar calls.
+         * @return {Promise}        Promise to be resolved when the response is saved.
          */
-        function saveToCache(method, data, response) {
+        function saveToCache(method, data, response, cacheKey) {
             var db = currentSite.db,
                 deferred = $q.defer(),
-                key = md5.createHash(method + ':' + JSON.stringify(data));
+                id = md5.createHash(method + ':' + JSON.stringify(data));
 
             if (!db) {
                 deferred.reject();
@@ -740,10 +779,13 @@ angular.module('mm.core')
                 $mmConfig.get('cache_expiration_time').then(function(cacheExpirationTime) {
 
                     var entry = {
-                        id: key,
+                        id: id,
                         data: response
                     };
                     entry.expirationtime = new Date().getTime() + cacheExpirationTime;
+                    if (cacheKey) {
+                        entry.key = cacheKey;
+                    }
                     db.insert(mmCoreWSCacheStore, entry);
                     deferred.resolve();
 

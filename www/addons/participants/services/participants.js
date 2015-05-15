@@ -21,11 +21,21 @@ angular.module('mm.addons.participants')
  * @ngdoc service
  * @name $mmaParticipants
  */
-.factory('$mmaParticipants', function($q, $log, $mmSite, $mmUtil, mmaParticipantsListLimit, $mmLang, $mmUtil) {
+.factory('$mmaParticipants', function($q, $log, $mmSite, $mmUtil, mmaParticipantsListLimit, $mmLang, $mmUtil, md5) {
 
     $log = $log.getInstance('$mmaParticipants');
 
     var self = {};
+
+    /**
+     * Get cache key for participant list WS calls.
+     *
+     * @param  {Number} courseid Course ID.
+     * @return {String}          Cache key.
+     */
+    function getParticipantsListCacheKey(courseid) {
+        return 'mmaParticipants:list:'+courseid;
+    }
 
     /**
      * Get participants for a certain course.
@@ -56,8 +66,11 @@ angular.module('mm.addons.participants')
             "options[1][name]" : "limitnumber",
             "options[1][value]": limitNumber,
         };
+        var preSets = {
+            cacheKey: getParticipantsListCacheKey(courseid)
+        };
 
-        return $mmSite.read('core_enrol_get_enrolled_users', data).then(function(users) {
+        return $mmSite.read('core_enrol_get_enrolled_users', data, preSets).then(function(users) {
             var canLoadMore = users.length >= limitNumber;
             return {participants: users, canLoadMore: canLoadMore};
         });
@@ -103,6 +116,19 @@ angular.module('mm.addons.participants')
         }, deferred.reject);
 
         return deferred.promise;
+    };
+
+    /**
+     * Invalidates participant list for a certain course.
+     *
+     * @module mm.addons.participants
+     * @ngdoc method
+     * @name $mmaParticipants#invalidateParticipantsList
+     * @param  {Number} courseid Course ID.
+     * @return {Promise}         Promise resolved when the list is invalidated.
+     */
+    self.invalidateParticipantsList = function(courseid) {
+        return $mmSite.invalidateWsCacheForKey(getParticipantsListCacheKey(courseid));
     };
 
     return self;
