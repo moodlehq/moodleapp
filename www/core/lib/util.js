@@ -298,13 +298,13 @@ angular.module('mm.core')
                             if(error == 53) {
                                 $log.error('No app that handles this file type.');
                             }
-                            self.openFileWithBrowser(path);
+                            self.openInBrowser(path);
                         },
                         path
                     );
                 } else {
                     // Last try, launch the file with the browser.
-                    self.openFileWithBrowser(path);
+                    self.openInBrowser(path);
                 }
             } else {
                 // Changing _blank for _system may work in cordova 2.4 and onwards.
@@ -314,34 +314,18 @@ angular.module('mm.core')
         };
 
         /**
-         * Open a file using a browser.
+         * Open a URL using a browser.
+         *
+         * Do not use for files, refer to {@link $mmUtil#openFile}.
          *
          * @module mm.core
          * @ngdoc method
-         * @name $mmUtil#_openFileWithBrowser
-         * @param  {String} path The local path of the file to be open.
+         * @name $mmUtil#openInBrowser
+         * @param  {String} url The URL to open.
          * @return {Void}
          */
-        self.openFileWithBrowser = function(path) {
-            if ($mmApp.canUseChildBrowser()) {
-                $log.debug('Launching childBrowser');
-                try {
-                    window.plugins.childBrowser.showWebPage(
-                        path,
-                        {
-                            showLocationBar: true ,
-                            showAddress: false
-                        }
-                    );
-                } catch(e) {
-                    $log.debug('Launching childBrowser failed!, opening as standard link.');
-                    window.open(path, '_blank');
-                }
-            } else {
-                // Changing _blank for _system may work in cordova 2.4 and onwards.
-                $log.debug('Open external file using window.open()');
-                window.open(path, '_blank');
-            }
+        self.openInBrowser = function(url) {
+            window.open(url, '_system');
         };
 
         /**

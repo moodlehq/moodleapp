@@ -57,7 +57,7 @@ angular.module('mm.core')
             return;
         }
         dbschema.stores.push(store);
-    }
+    };
 
     /**
      * Register multiple stores at once.
@@ -69,8 +69,8 @@ angular.module('mm.core')
         var self = this;
         angular.forEach(stores, function(store) {
             self.registerStore(store);
-        })
-    }
+        });
+    };
 
     /**
      * Check if a store is already defined.
@@ -93,19 +93,6 @@ angular.module('mm.core')
         var db = $mmDB.getDB(DBNAME, dbschema),
             self = {};
 
-
-        /**
-         * Returns whether the current window supports child browsers.
-         *
-         * @module mm.core
-         * @ngdoc method
-         * @name $mmApp#canUseChildBrowser
-         * @return {Bool} True when it can.
-         */
-        self.canUseChildBrowser = function() {
-            return window.plugins && window.plugins.childBrowser;
-        };
-
         /**
          * Get the application global database.
          * @return {Object} App's DB.
@@ -126,5 +113,5 @@ angular.module('mm.core')
         };
 
         return self;
-    }
+    };
 });
