@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm', ['ionic', 'mm.core', 'mm.core.course', 'mm.core.courses', 'mm.core.login', 'mm.core.sidemenu', 'mm.addons.files', 'mm.addons.grades', 'mm.addons.mod_label', 'mm.addons.mod_url', 'mm.addons.participants', 'ngCordova', 'angular-md5', 'pascalprecht.translate'])
+angular.module('mm', ['ionic', 'mm.core', 'mm.core.course', 'mm.core.courses', 'mm.core.login', 'mm.core.sidemenu', 'mm.core.user', 'mm.addons.files', 'mm.addons.grades', 'mm.addons.mod_label', 'mm.addons.mod_url', 'mm.addons.participants', 'ngCordova', 'angular-md5', 'pascalprecht.translate'])
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
     if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
@@ -1683,37 +1683,6 @@ angular.module('mm.core')
                 return response.data;
             });
         };
-                self.formatUserAddress = function(address, city, country) {
-            if (address) {
-                address += city ? ', ' + city : '';
-                address += country ? ', ' + country : '';
-            }
-            return address;
-        };
-                self.formatUserRoleList = function(roles) {
-            var deferred = $q.defer();
-            if (roles && roles.length > 0) {
-                $translate('mma.participants.roleseparator').then(function(separator) {
-                    var rolekeys = roles.map(function(el) {
-                        return 'mma.participants.'+el.shortname;
-                    });
-                    $translate(rolekeys).then(function(roleNames) {
-                        var roles = '';
-                        for (var roleKey in roleNames) {
-                            var roleName = roleNames[roleKey];
-                            if (roleName.indexOf('mma.participants.') > -1) {
-                                roleName = roleName.replace('mma.participants.', '');
-                            }
-                            roles += (roles != '' ? separator+' ' : '') + roleName;
-                        }
-                        deferred.resolve(roles);
-                    });
-                });
-            } else {
-                deferred.resolve('');
-            }
-            return deferred.promise;
-        };
                 self.getCountries = function() {
             var deferred = $q.defer();
             if (typeof(countries) !== 'undefined') {
@@ -2147,6 +2116,25 @@ angular.module('mm.core.sidemenu', [])
             }
         }
     });
+});
+
+angular.module('mm.core.user', [])
+.value('mmUserProfileState', 'site.mm_user-profile')
+.config(function($stateProvider) {
+    $stateProvider
+        .state('site.mm_user-profile', {
+            url: '/mm_user-profile',
+            views: {
+                'site': {
+                    controller: 'mmUserProfileCtrl',
+                    templateUrl: 'core/components/user/templates/profile.html'
+                }
+            },
+            params: {
+                courseid: 0,
+                userid: 0
+            }
+        });
 });
 
 angular.module('mm.core.course')
@@ -2757,6 +2745,147 @@ angular.module('mm.core.sidemenu')
     return self;
 });
 
+angular.module('mm.core.user')
+.controller('mmUserProfileCtrl', function($scope, $stateParams, $mmUtil, $mmUser, $translate, $mmUserDelegate, $mmSite) {
+    var courseid = $stateParams.courseid,
+        userid   = $stateParams.userid;
+    $scope.isAndroid = ionic.Platform.isAndroid();
+    $scope.plugins = $mmUserDelegate.getData();
+    $translate('mm.core.loading').then(function(loadingString) {
+        $mmUtil.showModalLoading(loadingString);
+    });
+    $mmUser.getProfile(userid, courseid).then(function(user) {
+        user.address = $mmUser.formatAddress(user.address, user.city, user.country);
+        if (user.address) {
+            user.encodedAddress = encodeURIComponent(user.address);
+        }
+        $mmUser.formatRoleList(user.roles).then(function(roles) {
+            user.roles = roles;
+        });
+        $scope.user = user;
+        $scope.title = user.fullname;
+        $scope.hasContact = user.email || user.phone1 || user.phone2 || user.city || user.country || user.address;
+        $scope.hasDetails = user.url || user.roles || user.interests;
+        $mmSite.write('core_user_view_user_profile', {
+            userid: userid,
+            courseid: courseid
+        });
+    }, function(message) {
+        $mmUtil.showErrorModal(message);
+    }).finally(function() {
+        $mmUtil.closeModalLoading();
+    });
+});
+
+angular.module('mm.core.user')
+.factory('$mmUserDelegate', function($log) {
+    $log = $log.getInstance('$mmUserDelegate');
+    var plugins = {},
+        self = {},
+        data,
+        controllers = [];
+        self.registerPlugin = function(name, callback) {
+        $log.debug("Register plugin '"+name+"' in participant.");
+        plugins[name] = callback;
+    };
+        self.updatePluginData = function(name) {
+        $log.debug("Update plugin '"+name+"' data in participant.");
+        var pluginData = plugins[name]();
+        if (typeof(pluginData) !== 'undefined') {
+            data[name] = pluginData;
+        }
+    };
+        self.getData = function() {
+        if (typeof(data) == 'undefined') {
+            data = {};
+            angular.forEach(plugins, function(callback, plugin) {
+                self.updatePluginData(plugin);
+            });
+        }
+        return data;
+    };
+    return self;
+});
+
+angular.module('mm.core.user')
+.factory('$mmUser', function($log, $q, $mmSite, $mmLang, $mmUtil, $translate) {
+    $log = $log.getInstance('$mmUser');
+    var self = {};
+        self.getProfile = function(userid, courseid) {
+        var deferred = $q.defer(),
+            wsName,
+            data;
+        if (courseid > 1) {
+            $log.debug('Get participant with ID ' + userid + ' in course '+courseid);
+            wsName = 'core_user_get_course_user_profiles';
+            var data = {
+                "userlist[0][userid]": userid,
+                "userlist[0][courseid]": courseid
+            };
+        } else {
+            $log.debug('Get user with ID ' + userid);
+            if ($mmSite.wsAvailable('core_user_get_users_by_field')) {
+                wsName = 'core_user_get_users_by_field';
+                data = {
+                    'id': userid
+                };
+            } else {
+                wsName = 'core_user_get_users_by_id';
+                data = {
+                    'userids[0]': userid
+                };
+            }
+        }
+        $mmSite.read(wsName, data).then(function(users) {
+            if (users.length == 0) {
+                $mmLang.translateErrorAndReject(deferred, 'mm.user.invaliduser');
+                return;
+            }
+            $mmUtil.getCountries().then(function(countries) {
+                var user = users.shift();
+                if (user.country && typeof(countries) !== 'undefined'
+                                 && typeof(countries[user.country]) !== "undefined") {
+                    user.country = countries[user.country];
+                }
+                deferred.resolve(user);
+            });
+        }, deferred.reject);
+        return deferred.promise;
+    };
+        self.formatAddress = function(address, city, country) {
+        if (address) {
+            address += city ? ', ' + city : '';
+            address += country ? ', ' + country : '';
+        }
+        return address;
+    };
+        self.formatRoleList = function(roles) {
+        var deferred = $q.defer();
+        if (roles && roles.length > 0) {
+            $translate('mm.core.elementseparator').then(function(separator) {
+                var rolekeys = roles.map(function(el) {
+                    return 'mm.user.'+el.shortname;
+                });
+                $translate(rolekeys).then(function(roleNames) {
+                    var roles = '';
+                    for (var roleKey in roleNames) {
+                        var roleName = roleNames[roleKey];
+                        if (roleName.indexOf('mm.user.') > -1) {
+                            roleName = roleName.replace('mm.user.', '');
+                        }
+                        roles += (roles != '' ? separator: '') + roleName;
+                    }
+                    deferred.resolve(roles);
+                });
+            });
+        } else {
+            deferred.resolve('');
+        }
+        return deferred.promise;
+    };
+    return self;
+});
+
 angular.module('mm.addons.files', ['mm.core'])
 .config(function($stateProvider) {
     $stateProvider
@@ -2917,19 +3046,6 @@ angular.module('mm.addons.participants', [])
             },
             params: {
                 course: null
-            }
-        })
-        .state('site.participants-profile', {
-            url: '/participant',
-            views: {
-                'site': {
-                    controller: 'mmaParticipantsProfileCtrl',
-                    templateUrl: 'addons/participants/templates/profile.html'
-                }
-            },
-            params: {
-                courseid: 0,
-                userid: 0
             }
         });
 })
@@ -3511,14 +3627,14 @@ angular.module('mm.addons.mod_url')
 });
 
 angular.module('mm.addons.participants')
-.controller('mmaParticipantsListCtrl', function($scope, $state, $stateParams, $mmUtil, $mmaParticipants, $translate, 
-            $ionicPlatform, $mmSite) {
+.controller('mmaParticipantsListCtrl', function($scope, $state, $stateParams, $mmUtil, $mmaParticipants, $translate,
+            $ionicPlatform, mmUserProfileState, $mmSite) {
     var course = $stateParams.course,
         courseid = course.id;
     $scope.participants = [];
     $scope.courseid = courseid;
     $scope.getState = function(id) {
-        return 'site.participants-profile({courseid: '+courseid+', userid: '+id+'})';
+        return mmUserProfileState + '({courseid: '+courseid+', userid: '+id+'})';
     };
     function fetchParticipants(refresh) {
         var firstToGet = refresh ? 0 : $scope.participants.length;
@@ -3558,67 +3674,7 @@ angular.module('mm.addons.participants')
 });
 
 angular.module('mm.addons.participants')
-.controller('mmaParticipantsProfileCtrl', function($scope, $stateParams, $mmUtil, $mmaParticipants, $translate,
-        $mmaParticipantsDelegate) {
-    var courseid = $stateParams.courseid,
-        userid   = $stateParams.userid;
-    $scope.courseid = courseid;
-    $scope.isAndroid = ionic.Platform.isAndroid();
-    $scope.plugins = $mmaParticipantsDelegate.getData();
-    $translate('mm.core.loading').then(function(loadingString) {
-        $mmUtil.showModalLoading(loadingString);
-    });
-    $mmaParticipants.getParticipant(courseid, userid).then(function(user) {
-        user.address = $mmUtil.formatUserAddress(user.address, user.city, user.country);
-        if (user.address) {
-            user.encodedAddress = encodeURIComponent(user.address);
-        }
-        $mmUtil.formatUserRoleList(user.roles).then(function(roles) {
-            user.roles = roles;
-        });
-        $scope.participant = user;
-        $scope.title = user.fullname;
-        $scope.hasContact = user.email || user.phone1 || user.phone2 || user.city || user.country || user.address;
-        $scope.hasDetails = user.url || user.roles || user.interests;
-    }, function(message) {
-        $mmUtil.showErrorModal(message);
-    }).finally(function() {
-        $mmUtil.closeModalLoading();
-    });
-});
-
-angular.module('mm.addons.participants')
-.factory('$mmaParticipantsDelegate', function($log) {
-    $log = $log.getInstance('$mmaParticipantsDelegate');
-    var plugins = {},
-        self = {},
-        data,
-        controllers = [];
-        self.registerPlugin = function(name, callback) {
-        $log.debug("Register plugin '"+name+"' in participant.");
-        plugins[name] = callback;
-    };
-        self.updatePluginData = function(name) {
-        $log.debug("Update plugin '"+name+"' data in participant.");
-        var pluginData = plugins[name]();
-        if (typeof(pluginData) !== 'undefined') {
-            data[name] = pluginData;
-        }
-    };
-        self.getData = function() {
-        if (typeof(data) == 'undefined') {
-            data = {};
-            angular.forEach(plugins, function(callback, plugin) {
-                self.updatePluginData(plugin);
-            });
-        }
-        return data;
-    };
-    return self;
-});
-
-angular.module('mm.addons.participants')
-.factory('$mmaParticipants', function($q, $log, $mmSite, $mmUtil, mmaParticipantsListLimit, $mmLang, $mmUtil, md5) {
+.factory('$mmaParticipants', function($log, $mmSite, mmaParticipantsListLimit) {
     $log = $log.getInstance('$mmaParticipants');
     var self = {};
         function getParticipantsListCacheKey(courseid) {
@@ -3646,29 +3702,6 @@ angular.module('mm.addons.participants')
             var canLoadMore = users.length >= limitNumber;
             return {participants: users, canLoadMore: canLoadMore};
         });
-    };
-        self.getParticipant = function(courseid, userid) {
-        $log.debug('Get participant with ID ' + userid + ' in course '+courseid);
-        var deferred = $q.defer();
-        var data = {
-            "userlist[0][userid]": userid,
-            "userlist[0][courseid]": courseid
-        };
-        $mmSite.read('core_user_get_course_user_profiles', data).then(function(users) {
-            if (users.length == 0) {
-                $mmLang.translateErrorAndReject(deferred, 'errorparticipantnotfound');
-                return;
-            }
-            $mmUtil.getCountries().then(function(countries) {
-                var user = users.shift();
-                if (user.country && typeof(countries) !== 'undefined'
-                                 && typeof(countries[user.country]) !== "undefined") {
-                    user.country = countries[user.country];
-                }
-                deferred.resolve(user);
-            });
-        }, deferred.reject);
-        return deferred.promise;
     };
         self.invalidateParticipantsList = function(courseid) {
         return $mmSite.invalidateWsCacheForKey(getParticipantsListCacheKey(courseid));

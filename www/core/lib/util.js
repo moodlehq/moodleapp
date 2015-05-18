@@ -458,62 +458,6 @@ angular.module('mm.core')
         };
 
         /**
-         * Formats a user address, concatenating address, city and country.
-         *
-         * @module mm.core
-         * @ngdoc method
-         * @name $mmUtil#formatUserAddress
-         * @param  {String} address Address.
-         * @param  {String} city    City..
-         * @param  {String} country Country.
-         * @return {String}         Formatted address.
-         */
-        self.formatUserAddress = function(address, city, country) {
-            if (address) {
-                address += city ? ', ' + city : '';
-                address += country ? ', ' + country : '';
-            }
-            return address;
-        };
-
-        /**
-         * Formats a user role list, translating and concatenating them.
-         *
-         * @module mm.core
-         * @ngdoc method
-         * @name $mmUtil#formatUserRoleList
-         * @param  {Array} roles List of user roles.
-         * @return {Promise}     Promise resolved with the formatted roles (string).
-         */
-        self.formatUserRoleList = function(roles) {
-            var deferred = $q.defer();
-
-            if (roles && roles.length > 0) {
-                $translate('mma.participants.roleseparator').then(function(separator) {
-                    var rolekeys = roles.map(function(el) {
-                        return 'mma.participants.'+el.shortname; // Set the string key to be translated.
-                    });
-
-                    $translate(rolekeys).then(function(roleNames) {
-                        var roles = '';
-                        for (var roleKey in roleNames) {
-                            var roleName = roleNames[roleKey];
-                            if (roleName.indexOf('mma.participants.') > -1) {
-                                // Role name couldn't be translated, leave it like it was.
-                                roleName = roleName.replace('mma.participants.', '');
-                            }
-                            roles += (roles != '' ? separator+' ' : '') + roleName;
-                        }
-                        deferred.resolve(roles);
-                    });
-                });
-            } else {
-                deferred.resolve('');
-            }
-            return deferred.promise;
-        };
-
-        /**
          * Get the countries list.
          *
          * @module mm.core
