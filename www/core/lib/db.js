@@ -50,7 +50,12 @@ angular.module('mm.core')
      * Convenient helper to apply a where condition to a query.
      *
      * @param  {Object} [query]   A query object.
-     * @param  {Array}  [where]   Array or where parameters.
+     * @param  {Array}  [where]   Array of parameters, in order:
+     *                            - The field to filter on
+     *                            - The operator: <, <=, =, >, >=, ^ (starts with)
+     *                            - The value
+     *                            - An additional operator
+     *                            - An additional value
      * @return {Object} The updated query object (or initial one).
      */
     function applyWhere(query, where) {
@@ -94,7 +99,7 @@ angular.module('mm.core')
      * Retrieve the count of entries matching certain conditions.
      * @param  {Object}  db         DB to use.
      * @param  {String}  store      Name of the store to get the entries from.
-     * @param  {Array}   where   An array of where() parameters.
+     * @param  {Array}   where      Array of where conditions, see applyWhere.
      * @return {Promise}
      */
     function callCount(db, store, where) {
@@ -210,7 +215,7 @@ angular.module('mm.core')
      *
      * @param  {Object}  db      DB to use.
      * @param  {String}  store   Name of the store to get the entries from.
-     * @param  {Array}   where   An array of where() parameters.
+     * @param  {Array}   where   Array of where conditions, see applyWhere.
      * @param  {Array}   order   The key to order on.
      * @param  {Boolean} reverse Whether to reverse the order.
      * @param  {Number}  limit   The number of result to return.
@@ -322,7 +327,7 @@ angular.module('mm.core')
                  * Count the number of entries in a store.
                  *
                  * @param {String} store Name of the store.
-                 * @param {Array} where An array of array of where parameters.
+                 * @param {Array} [where] Array of where conditions, see applyWhere.
                  * @return {Promise}     Promise resolved when the count is done. Resolve param: number of entries.
                  */
                 count: function(store, where) {
@@ -343,7 +348,7 @@ angular.module('mm.core')
                  * Query the database.
                  *
                  * @param {String} store Name of the store.
-                 * @param {Array} [where] Array of where arguments.
+                 * @param {Array} [where] Array of where conditions, see applyWhere.
                  * @param {String} [order] The key to sort the results with.
                  * @param {Boolean} [reverse=false] Whether to reverse the results.
                  * @param {Number} [limit] The number of results to return.
@@ -367,7 +372,7 @@ angular.module('mm.core')
                  *
                  * @param {String} store Name of the store.
                  * @param {Object} values The values to update.
-                 * @param {Array} [where] Array of where arguments.
+                 * @param {Array} [where] Array of where conditions, see applyWhere.
                  * @return {Promise}
                  */
                 update: function(store, values, where) {
