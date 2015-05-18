@@ -15,9 +15,6 @@
 angular.module('mm.core')
 
 .constant('mmFilepoolQueueProcessInterval', 300)
-.constant('mmFilepoolQueuePauseEmptyQueue', 5000)
-.constant('mmFilepoolQueuePauseFSNetwork', 30000)
-
 .constant('mmFilepoolFolder', 'filepool')
 .constant('mmFilepoolStore', 'filepool')
 .constant('mmFilepoolQueueStore', 'files_queue')
@@ -125,23 +122,27 @@ angular.module('mm.core')
  * @module mm.core
  * @ngdoc factory
  * @name $mmFilepool
- * @todo Use transactions?
+ * @todo Use transactions (e.g. when querying, then updating)
  * @todo Setting files as stale after a certain time
  * @todo Use ETAGs
+ * @todo Do not download on limited network
  */
 .factory('$mmFilepool', function($q, $log, $timeout, $mmApp, $mmFS, $mmWS, $mmSitesManager, md5, mmFilepoolStore,
-        mmFilepoolLinksStore, mmFilepoolQueueStore, mmFilepoolFolder, mmFilepoolQueueProcessInterval,
-        mmFilepoolQueuePauseFSNetwork, mmFilepoolQueuePauseEmptyQueue) {
+        mmFilepoolLinksStore, mmFilepoolQueueStore, mmFilepoolFolder, mmFilepoolQueueProcessInterval) {
 
     $log = $log.getInstance('$mmFilepool');
 
     var self = {},
         tokenRegex = new RegExp('(\\?|&)token=([A-Za-z0-9]+)'),
-        pauseQueueUntil,
+        queueState;
         urlAttributes = [
             tokenRegex,
             new RegExp('(\\?|&)forcedownload=[0-1]')
         ];
+
+    // Queue status codes.
+    var QUEUE_RUNNING = 'mmFilepool:QUEUE_RUNNING',
+        QUEUE_PAUSED = 'mmFilepool:QUEUE_PAUSED';
 
     // Error codes.
     var ERR_QUEUE_IS_EMPTY = 'mmFilepoolError:ERR_QUEUE_IS_EMPTY',
@@ -330,8 +331,40 @@ angular.module('mm.core')
                 priority: priority,
                 url: url,
                 links: link ? [link] : []
+            }).then(function(result) {
+                // Check if the queue is running.
+                self.checkQueueProcessing();
+                return result;
             });
         }
+    };
+
+    /**
+     * Check the queue processing.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#checkQueueProcessing
+     * @return {Void}
+     * @description
+     * In mose cases, this will enable the queue processing if it was paused.
+     * Though, this will disable the queue if we are missing network or if the file system
+     * is not accessible. Also, this will have no effect if the queue is already running.
+     *
+     * Do not use directly, it is reserved for core use.
+     */
+    self.checkQueueProcessing = function() {
+
+        if (!$mmFS.isAvailable() || !$mmApp.isOnline()) {
+            queueState = QUEUE_PAUSED;
+            return;
+
+        } else if (queueState === QUEUE_RUNNING) {
+            return;
+        }
+
+        queueState = QUEUE_RUNNING;
+        self._processQueue();
     };
 
     /**
@@ -655,22 +688,20 @@ angular.module('mm.core')
      *
      * @module mm.core
      * @ngdoc method
-     * @name $mmFilepool#processQueue
+     * @name $mmFilepool#_processQueue
      * @return {Void}
      * @description
      * Processes the queue.
      *
      * This loops over itself to keep on processing the queue in the background.
      * The queue process is site agnostic.
-     *
-     * Never call this directly, its usage is reserved to core.
      */
-    self.processQueue = function() {
+    self._processQueue = function() {
         var deferred = $q.defer(),
             now = new Date(),
             promise;
 
-        if (pauseQueueUntil && pauseQueueUntil.getTime() > now.getTime()) {
+        if (queueState !== QUEUE_RUNNING) {
             // Silently ignore, the queue is on pause.
             deferred.reject(ERR_QUEUE_ON_PAUSE);
             promise = deferred.promise;
@@ -684,30 +715,20 @@ angular.module('mm.core')
         }
 
         promise.then(function() {
-            // All good.
-        }, function(error) {
-            var now = new Date(),
-                pause;
+            // All good, we schedule next execution.
+            $timeout(self._processQueue, mmFilepoolQueueProcessInterval);
 
-            // We found an error, in which case we might want to hold onto the queue processing.
+        }, function(error) {
+
+            // We had an error, in which case we pause the processing.
             if (error === ERR_FS_OR_NETWORK_UNAVAILABLE) {
-                pause = new Date(now.getTime() + mmFilepoolQueuePauseFSNetwork);
-                $log.debug('Filesysem or network unavailable, pausing queue processing for ' +
-                    mmFilepoolQueuePauseFSNetwork + 'ms.');
+                $log.debug('Filesysem or network unavailable, pausing queue processing.');
 
             } else if (error === ERR_QUEUE_IS_EMPTY) {
-                pause = new Date(now.getTime() + mmFilepoolQueuePauseEmptyQueue);
-                $log.debug('Queue is empty, pausing queue processing for ' +
-                    mmFilepoolQueuePauseEmptyQueue + 'ms.');
+                $log.debug('Queue is empty, pausing queue processing.');
             }
 
-            if (pause) {
-                pauseQueueUntil = pause;
-            }
-
-        }).finally(function() {
-            // Trigger next execution.
-            $timeout(self.processQueue, mmFilepoolQueueProcessInterval);
+            queueState = QUEUE_PAUSED;
         });
     };
 
@@ -823,6 +844,7 @@ angular.module('mm.core')
 
                 if (dropFromQueue) {
                     // Consider this as a silent error.
+                    $log.debug('Item dropped from queue due to error: ' + fileUrl);
                     self._removeFromQueue(siteId, fileId);
                 } else {
                     // We considered the file as legit but did not get it, failure.
@@ -882,7 +904,7 @@ angular.module('mm.core')
 
     $ionicPlatform.ready(function() {
         // Waiting for the platform to be ready, and a few more before we start processing the queue.
-        $timeout($mmFilepool.processQueue, 1000);
+        $timeout($mmFilepool.checkQueueProcessing, 1000);
     });
 
 });

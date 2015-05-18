@@ -484,8 +484,6 @@ angular.module('mm.core')
 
 angular.module('mm.core')
 .constant('mmFilepoolQueueProcessInterval', 300)
-.constant('mmFilepoolQueuePauseEmptyQueue', 5000)
-.constant('mmFilepoolQueuePauseFSNetwork', 30000)
 .constant('mmFilepoolFolder', 'filepool')
 .constant('mmFilepoolStore', 'filepool')
 .constant('mmFilepoolQueueStore', 'files_queue')
@@ -548,16 +546,17 @@ angular.module('mm.core')
     $mmSiteProvider.registerStores(siteStores);
 })
 .factory('$mmFilepool', function($q, $log, $timeout, $mmApp, $mmFS, $mmWS, $mmSitesManager, md5, mmFilepoolStore,
-        mmFilepoolLinksStore, mmFilepoolQueueStore, mmFilepoolFolder, mmFilepoolQueueProcessInterval,
-        mmFilepoolQueuePauseFSNetwork, mmFilepoolQueuePauseEmptyQueue) {
+        mmFilepoolLinksStore, mmFilepoolQueueStore, mmFilepoolFolder, mmFilepoolQueueProcessInterval) {
     $log = $log.getInstance('$mmFilepool');
     var self = {},
         tokenRegex = new RegExp('(\\?|&)token=([A-Za-z0-9]+)'),
-        pauseQueueUntil,
+        queueState;
         urlAttributes = [
             tokenRegex,
             new RegExp('(\\?|&)forcedownload=[0-1]')
         ];
+    var QUEUE_RUNNING = 'mmFilepool:QUEUE_RUNNING',
+        QUEUE_PAUSED = 'mmFilepool:QUEUE_PAUSED';
     var ERR_QUEUE_IS_EMPTY = 'mmFilepoolError:ERR_QUEUE_IS_EMPTY',
         ERR_FS_OR_NETWORK_UNAVAILABLE = 'mmFilepoolError:ERR_FS_OR_NETWORK_UNAVAILABLE',
         ERR_QUEUE_ON_PAUSE = 'mmFilepoolError:ERR_QUEUE_ON_PAUSE';
@@ -650,8 +649,21 @@ angular.module('mm.core')
                 priority: priority,
                 url: url,
                 links: link ? [link] : []
+            }).then(function(result) {
+                self.checkQueueProcessing();
+                return result;
             });
         }
+    };
+        self.checkQueueProcessing = function() {
+        if (!$mmFS.isAvailable() || !$mmApp.isOnline()) {
+            queueState = QUEUE_PAUSED;
+            return;
+        } else if (queueState === QUEUE_RUNNING) {
+            return;
+        }
+        queueState = QUEUE_RUNNING;
+        self._processQueue();
     };
         self.componentHasFiles = function(siteId, component, componentId) {
         return getSiteDb(siteId).then(function(db) {
@@ -790,11 +802,11 @@ angular.module('mm.core')
             }, where);
         });
     };
-        self.processQueue = function() {
+        self._processQueue = function() {
         var deferred = $q.defer(),
             now = new Date(),
             promise;
-        if (pauseQueueUntil && pauseQueueUntil.getTime() > now.getTime()) {
+        if (queueState !== QUEUE_RUNNING) {
             deferred.reject(ERR_QUEUE_ON_PAUSE);
             promise = deferred.promise;
         } else if (!$mmFS.isAvailable() || !$mmApp.isOnline()) {
@@ -804,23 +816,14 @@ angular.module('mm.core')
             promise = self._processImportantQueueItem();
         }
         promise.then(function() {
+            $timeout(self._processQueue, mmFilepoolQueueProcessInterval);
         }, function(error) {
-            var now = new Date(),
-                pause;
             if (error === ERR_FS_OR_NETWORK_UNAVAILABLE) {
-                pause = new Date(now.getTime() + mmFilepoolQueuePauseFSNetwork);
-                $log.debug('Filesysem or network unavailable, pausing queue processing for ' +
-                    mmFilepoolQueuePauseFSNetwork + 'ms.');
+                $log.debug('Filesysem or network unavailable, pausing queue processing.');
             } else if (error === ERR_QUEUE_IS_EMPTY) {
-                pause = new Date(now.getTime() + mmFilepoolQueuePauseEmptyQueue);
-                $log.debug('Queue is empty, pausing queue processing for ' +
-                    mmFilepoolQueuePauseEmptyQueue + 'ms.');
+                $log.debug('Queue is empty, pausing queue processing.');
             }
-            if (pause) {
-                pauseQueueUntil = pause;
-            }
-        }).finally(function() {
-            $timeout(self.processQueue, mmFilepoolQueueProcessInterval);
+            queueState = QUEUE_PAUSED;
         });
     };
         self._processImportantQueueItem = function() {
@@ -881,6 +884,7 @@ angular.module('mm.core')
                     }
                 }
                 if (dropFromQueue) {
+                    $log.debug('Item dropped from queue due to error: ' + fileUrl);
                     self._removeFromQueue(siteId, fileId);
                 } else {
                     return $q.reject();
@@ -909,7 +913,7 @@ angular.module('mm.core')
 .run(function($log, $ionicPlatform, $timeout, $mmFilepool) {
     $log = $log.getInstance('$mmFilepool');
     $ionicPlatform.ready(function() {
-        $timeout($mmFilepool.processQueue, 1000);
+        $timeout($mmFilepool.checkQueueProcessing, 1000);
     });
 });
 
