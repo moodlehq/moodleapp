@@ -133,6 +133,7 @@ angular.module('mm.core')
     $log = $log.getInstance('$mmFilepool');
 
     var self = {},
+        extensionRegex = new RegExp('^[a-z0-9]+$'),
         tokenRegex = new RegExp('(\\?|&)token=([A-Za-z0-9]+)'),
         queueState;
         urlAttributes = [
@@ -512,14 +513,28 @@ angular.module('mm.core')
      * @protected
      */
     self._getFileIdByUrl = function(fileUrl) {
-        var url = fileUrl;
+        var url = fileUrl,
+            candidate,
+            extension = '';
+
         if (url.indexOf('/webservice/pluginfile') !== -1) {
             // Remove attributes that do not matter.
             angular.forEach(urlAttributes, function(regex) {
                 url = url.replace(regex, '');
             });
+
+            // For now only guesses the extension of the plugin files. We need the extension
+            // for the inAppBrowser to open the files properly, e.g. the extension needs to be
+            // part of the file name. Also, we need the mimetype to open the file with
+            // web intents. The easiest way to provide such information is to keep the extension
+            // in the file ID. Developers should not care about it, but as we are using the
+            // file ID in the file path, devs and system can guess it.
+            candidate = self._guessExtensionFromUrl(url);
+            if (candidate && candidate !== 'php') {
+                extension = '.' + candidate;
+            }
         }
-        return md5.createHash('url:' + url);
+        return md5.createHash('url:' + url) + extension;
     };
 
     /**
@@ -601,7 +616,7 @@ angular.module('mm.core')
             return $mmFS.getFile(self._getFilePath(siteId, fileId)).then(function(fileEntry) {
                 // We use toInternalURL so images are loaded in iOS8 using img HTML tags,
                 // with toURL the OS is unable to find the image files.
-                return fileEntry.toInternalURL();
+                return fileEntry.toURL();
             });
         }
         return $q.reject();
@@ -622,6 +637,33 @@ angular.module('mm.core')
      */
     self._getFilePath = function(siteId, fileId) {
         return $mmFS.getSiteFolder(siteId) + '/' + mmFilepoolFolder + '/' + fileId;
+    };
+
+    /**
+     * Guess the extension of a file from its URL.
+     *
+     * This is very weak and unreliable.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#_guessExtensionFromUrl
+     * @param {String} fileUrl The file URL.
+     * @return {String} The lowercased extension without the dot, or undefined.
+     * @protected
+     */
+    self._guessExtensionFromUrl = function(fileUrl) {
+        var split = fileUrl.split('.'),
+            candidate,
+            extension;
+
+        if (split.length > 1) {
+            candidate = split.pop().toLowerCase();
+            if (extensionRegex.test(candidate)) {
+                extension = candidate;
+            }
+        }
+
+        return extension;
     };
 
     /**
