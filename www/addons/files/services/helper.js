@@ -16,166 +16,157 @@ angular.module('mm.addons.files')
 
 .constant('mmaFilesFileSizeWarning', 5242880)
 
-.factory('$mmaFilesHelper', function($q, $mmUtil, $mmApp, $ionicActionSheet, $log, $translate,
-        $mmaFiles, $cordovaCamera, $cordovaCapture, $mmLang, $ionicPopup, $state, $mmFS, $mmText, mmaFilesFileSizeWarning) {
+.factory('$mmaFilesHelper', function($q, $mmUtil, $mmApp, $log, $translate, $window,
+        $mmaFiles, $cordovaCamera, $cordovaCapture, $mmLang, $mmFS, $mmText, mmaFilesFileSizeWarning) {
 
     $log = $log.getInstance('$mmaFilesHelper');
 
     var self = {};
 
     /**
-     * Convenient helper for the user to upload a file.
+     * Convenient helper for the user to upload an image from an album.
      *
      * @module mm.addons.files
      * @ngdoc method
-     * @name $mmaFilesHelper#pickAndUploadFile
+     * @name $mmaFilesHelper#uploadImageFromAlbum
      * @return {Promise} The reject contains the error message, if there is no error message
      *                   then we can consider that this is a silent fail.
      */
-    self.pickAndUploadFile = function() {
+    self.uploadImageFromAlbum = function() {
+        $log.debug('Trying to get a image from albums');
         var deferred = $q.defer();
 
-        if (!$mmApp.isOnline()) {
-            $mmLang.translateErrorAndReject(deferred, 'mma.files.errormustbeonlinetoupload');
-            return deferred.promise;
-        }
+        var width  =  $window.innerWidth  - 200;
+        var height =  $window.innerHeight - 200;
 
-        var promises = [
-            $translate('mm.core.cancel'),
-            $translate('mma.files.audio'),
-            $translate('mma.files.camera'),
-            $translate('mma.files.photoalbums'),
-            $translate('mma.files.video'),
-            $translate('mma.files.uploadafilefrom'),
-            $translate('mma.files.uploading'),
-            $translate('mma.files.errorwhileuploading'),
-            $translate('mma.files.file')
-        ];
-
-        $q.all(promises).then(function(translations) {
-
-            var strCancel = translations[0],
-                strAudio = translations[1],
-                strCamera = translations[2],
-                strPhotoalbums = translations[3],
-                strVideo = translations[4],
-                strUploadafilefrom = translations[5],
-                strLoading = translations[6],
-                strErrorWhileUploading = translations[7],
-                strFile = translations[8],
-                buttons = [
-                    { text: strPhotoalbums, uniqid: 'albums' },
-                    { text: strCamera, uniqid: 'camera'  },
-                    { text: strAudio, uniqid: 'audio'  },
-                    { text: strVideo, uniqid: 'video'  }
-                ];
-
-            if (ionic.Platform.isAndroid()) {
-                buttons.push({ text: strFile, uniqid: 'file'  });
-            }
-
-            $ionicActionSheet.show({
-                buttons: buttons,
-                titleText: strUploadafilefrom,
-                cancelText: strCancel,
-                buttonClicked: function(index) {
-                    if (buttons[index].uniqid === 'albums') {
-                        $log.debug('Trying to get a image from albums');
-
-                        var width  =  window.innerWidth  - 200;
-                        var height =  window.innerHeight - 200;
-
-                        // iPad popOver, see https://tracker.moodle.org/browse/MOBILE-208
-                        var popover = new CameraPopoverOptions(10, 10, width, height, Camera.PopoverArrowDirection.ARROW_ANY);
-                        $cordovaCamera.getPicture({
-                            quality: 50,
-                            destinationType: navigator.camera.DestinationType.FILE_URI,
-                            sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY,
-                            popoverOptions : popover
-                        }).then(function(img) {
-                            $mmUtil.showModalLoading(strLoading);
-
-                            $mmaFiles.uploadImage(img, true).then(function() {
-                                // Success.
-                                deferred.resolve();
-                            }, function() {
-                                deferred.reject(strErrorWhileUploading);
-                            }).finally(function() {
-                                $mmUtil.closeModalLoading();
-                            });
-
-                        }, function(error) {
-                            treatImageError(error, deferred, 'mma.files.errorgettingimagealbum');
-                        });
-
-                    } else if (buttons[index].uniqid === 'camera') {
-                        $log.debug('Trying to get a media from camera');
-
-                        $cordovaCamera.getPicture({
-                            quality: 50,
-                            destinationType: navigator.camera.DestinationType.FILE_URI
-                        }).then(function(img) {
-                            $mmUtil.showModalLoading(strLoading);
-
-                            $mmaFiles.uploadImage(img, false).then(function() {
-                                // Success.
-                                deferred.resolve();
-                            }, function() {
-                                deferred.reject(strErrorWhileUploading);
-                            }).finally(function() {
-                                $mmUtil.closeModalLoading();
-                            });
-
-                        }, function(error) {
-                            treatImageError(error, deferred, 'mma.files.errorcapturingimage');
-                        });
-
-                    } else if (buttons[index].uniqid === 'audio') {
-                        $log.debug('Trying to record an audio file');
-                        $cordovaCapture.captureAudio({limit: 1}).then(function(medias) {
-                            $mmUtil.showModalLoading(strLoading);
-
-                            $q.all($mmaFiles.uploadMedia(medias)).then(function() {
-                                // Success.
-                                deferred.resolve();
-                            }, function() {
-                                deferred.reject(strErrorWhileUploading);
-                            }).finally(function() {
-                                $mmUtil.closeModalLoading();
-                            });
-
-                        }, function(error) {
-                            treatCaptureError(error, deferred, 'mma.files.errorcapturingaudio');
-                        });
-
-                    } else if (buttons[index].uniqid === 'video') {
-                        $log.debug('Trying to record a video file');
-                        $cordovaCapture.captureVideo({limit: 1}).then(function(medias) {
-                            $mmUtil.showModalLoading(strLoading);
-
-                            $q.all($mmaFiles.uploadMedia(medias)).then(function() {
-                                // Success.
-                                deferred.resolve();
-                            }, function() {
-                                deferred.reject(strErrorWhileUploading);
-                            }).finally(function() {
-                                $mmUtil.closeModalLoading();
-                            });
-
-                        }, function(error) {
-                            treatCaptureError(error, deferred, 'mma.files.errorcapturingvideo');
-                        });
-
-                    } else if(buttons[index].uniqid === 'file') {
-                        $state.go('site.files-upload');
-                        deferred.reject();
-                    } else {
-                        deferred.reject();
-                    }
-
-                    return true;
-                }
+        // iPad popOver, see https://tracker.moodle.org/browse/MOBILE-208
+        var popover = new CameraPopoverOptions(10, 10, width, height, Camera.PopoverArrowDirection.ARROW_ANY);
+        $cordovaCamera.getPicture({
+            quality: 50,
+            destinationType: navigator.camera.DestinationType.FILE_URI,
+            sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY,
+            popoverOptions : popover
+        }).then(function(img) {
+            $translate('mma.files.uploading').then(function(str) {
+                $mmUtil.showModalLoading(str);
             });
+
+            $mmaFiles.uploadImage(img, true).then(function() {
+                // Success.
+                deferred.resolve();
+            }, function() {
+                $mmLang.translateErrorAndReject(deferred, 'mma.files.errorwhileuploading');
+            }).finally(function() {
+                $mmUtil.closeModalLoading();
+            });
+
+        }, function(error) {
+            treatImageError(error, deferred, 'mma.files.errorgettingimagealbum');
+        });
+
+        return deferred.promise;
+    };
+
+    /**
+     * Convenient helper for the user to take an image with the camera and upload it.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFilesHelper#uploadImageFromCamera
+     * @return {Promise} The reject contains the error message, if there is no error message
+     *                   then we can consider that this is a silent fail.
+     */
+    self.uploadImageFromCamera = function() {
+        $log.debug('Trying to capture an image with camera');
+        var deferred = $q.defer();
+
+        $cordovaCamera.getPicture({
+            quality: 50,
+            destinationType: navigator.camera.DestinationType.FILE_URI
+        }).then(function(img) {
+            $translate('mma.files.uploading').then(function(str) {
+                $mmUtil.showModalLoading(str);
+            });
+
+            $mmaFiles.uploadImage(img, false).then(function() {
+                // Success.
+                deferred.resolve();
+            }, function() {
+                $mmLang.translateErrorAndReject(deferred, 'mma.files.errorwhileuploading');
+            }).finally(function() {
+                $mmUtil.closeModalLoading();
+            });
+
+        }, function(error) {
+            treatImageError(error, deferred, 'mma.files.errorcapturingimage');
+        });
+
+        return deferred.promise;
+    };
+
+    /**
+     * Convenient helper for the user to record and upload an audio.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFilesHelper#uploadAudio
+     * @return {Promise} The reject contains the error message, if there is no error message
+     *                   then we can consider that this is a silent fail.
+     */
+    self.uploadAudio = function() {
+        $log.debug('Trying to record an audio file');
+        var deferred = $q.defer();
+
+        $cordovaCapture.captureAudio({limit: 1}).then(function(medias) {
+            $translate('mma.files.uploading').then(function(str) {
+                $mmUtil.showModalLoading(str);
+            });
+
+            $q.all($mmaFiles.uploadMedia(medias)).then(function() {
+                // Success.
+                deferred.resolve();
+            }, function() {
+                $mmLang.translateErrorAndReject(deferred, 'mma.files.errorwhileuploading');
+            }).finally(function() {
+                $mmUtil.closeModalLoading();
+            });
+
+        }, function(error) {
+            treatCaptureError(error, deferred, 'mma.files.errorcapturingaudio');
+        });
+
+        return deferred.promise;
+    };
+
+    /**
+     * Convenient helper for the user to record and upload a video.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFilesHelper#uploadVideo
+     * @return {Promise} The reject contains the error message, if there is no error message
+     *                   then we can consider that this is a silent fail.
+     */
+    self.uploadVideo = function() {
+        $log.debug('Trying to record a video file');
+        var deferred = $q.defer();
+
+        $cordovaCapture.captureVideo({limit: 1}).then(function(medias) {
+            $translate('mma.files.uploading').then(function(str) {
+                $mmUtil.showModalLoading(str);
+            });
+
+            $q.all($mmaFiles.uploadMedia(medias)).then(function() {
+                // Success.
+                deferred.resolve();
+            }, function() {
+                $mmLang.translateErrorAndReject(deferred, 'mma.files.errorwhileuploading');
+            }).finally(function() {
+                $mmUtil.closeModalLoading();
+            });
+
+        }, function(error) {
+            treatCaptureError(error, deferred, 'mma.files.errorcapturingvideo');
         });
 
         return deferred.promise;
@@ -191,7 +182,7 @@ angular.module('mm.addons.files')
      * @return {Promise}     Promise resolved when the user confirms or if there's no need to show a modal.
      */
     self.confirmUploadFile = function(size) {
-        if (!$cordovaNetwork.isOnline()) {
+        if (!$mmApp.isOnline()) {
             return $translate('mma.files.errormustbeonlinetoupload').then(function(errString) {
                 return $q.reject(errString);
             });
@@ -261,7 +252,7 @@ angular.module('mm.addons.files')
     self.uploadGenericFile = function(uri, name, type) {
         var deferred = $q.defer();
 
-        if (!$cordovaNetwork.isOnline()) {
+        if (!$mmApp.isOnline()) {
             $translate('mma.files.errormustbeonlinetoupload').then(function(errString) {
                 deferred.reject(errString);
             });
@@ -333,6 +324,7 @@ angular.module('mm.addons.files')
                     $mmLang.translateErrorAndReject(deferred, defaultMessage);
                 } else {
                     $log.debug('Cancelled');
+                    deferred.reject();
                 }
             }
         } else {

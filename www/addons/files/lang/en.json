@@ -2,7 +2,6 @@
     "admindisableddownload": "Please note that your Moodle administrator disabled file downloads, you can browse through the files but not download them.",
     "audio": "Audio",
     "camera": "Camera",
-    "choosefile": "Choose a file",
     "clicktoupload": "Click the button below to upload files to your private files.",
     "confirmuploadfile": "You are about to upload {{size}}. Are you sure you want to continue?",
     "couldnotloadfiles": "The list of files could not be loaded.",
@@ -29,7 +28,6 @@
     "sitefilesdesc": "The other files that are available to you on this Moodle site.",
     "success": "Success!",
     "uploadafile": "Upload a file",
-    "uploadafilefrom": "Upload a file from",
     "uploadfiles": "Upload files",
     "uploading": "Uploading",
     "video": "Video"

@@ -14,8 +14,8 @@
 
 angular.module('mm.addons.files')
 
-.controller('mmaFilesListController', function($q, $scope, $stateParams, $ionicActionSheet, $mmaFiles, $mmSite,
-        $translate, $timeout, $mmUtil, $mmFS, $mmWS, $mmaFilesHelper, $ionicHistory, mmaFilesUploadStateName) {
+.controller('mmaFilesListController', function($q, $scope, $stateParams, $mmaFiles, $mmSite,
+        $translate, $mmUtil, $ionicHistory, mmaFilesUploadStateName, $state, $mmApp) {
 
     var path = $stateParams.path,
         root = $stateParams.root,
@@ -108,15 +108,11 @@ angular.module('mm.addons.files')
     if (showUpload) {
 
         $scope.add = function() {
-            $mmaFilesHelper.pickAndUploadFile().then(function() {
-                $mmaFiles.invalidateMyFilesList().finally(function() {
-                    fetchFiles(root, path);
-                });
-            }, function(err) {
-                if (err) {
-                    $mmUtil.showErrorModal(err);
-                }
-            });
+            if (!$mmApp.isOnline()) {
+                $mmUtil.showErrorModal('mma.files.errormustbeonlinetoupload', true);
+            } else {
+                $state.go('site.files-upload');
+            }
         };
 
     }

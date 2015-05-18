@@ -21,7 +21,42 @@ angular.module('mm.addons.files')
  * @ngdoc controller
  * @name mmaFilesUploadCtrl
  */
-.controller('mmaFilesUploadCtrl', function($scope, $mmUtil, $mmaFilesHelper, $ionicHistory, $mmaFiles, $state) {
+.controller('mmaFilesUploadCtrl', function($scope, $mmUtil, $mmaFilesHelper, $ionicHistory, $mmaFiles, $mmApp) {
+
+    var uploadMethods = {
+        album: $mmaFilesHelper.uploadImageFromAlbum,
+        camera: $mmaFilesHelper.uploadImageFromCamera,
+        audio: $mmaFilesHelper.uploadAudio,
+        video: $mmaFilesHelper.uploadVideo
+    };
+
+    $scope.isAndroid = ionic.Platform.isAndroid();
+
+    // Function called when a file is uploaded.
+    function successUploading() {
+        $mmaFiles.invalidateMyFilesList().finally(function() {
+            $mmUtil.showModal('mma.files.success', 'mma.files.fileuploaded');
+            $ionicHistory.goBack();
+        });
+    }
+
+    // Function called when a file upload fails.
+    function errorUploading(err) {
+        if (err) {
+            $mmUtil.showErrorModal(err);
+        }
+    }
+
+    $scope.upload = function(type) {
+        if (!$mmApp.isOnline()) {
+            $mmUtil.showErrorModal('mma.files.errormustbeonlinetoupload', true);
+        } else {
+            if (typeof(uploadMethods[type]) !== 'undefined') {
+                uploadMethods[type]().then(successUploading, errorUploading);
+            }
+        }
+    };
+
     $scope.uploadFile = function(evt) {
         var input = evt.srcElement;
         var file = input.files[0];
@@ -29,21 +64,8 @@ angular.module('mm.addons.files')
         if (file) {
             $mmaFilesHelper.confirmUploadFile(file.size).then(function() {
                 // We have the data of the file to be uploaded, but not its URL (needed). Create a copy of the file to upload it.
-                $mmaFilesHelper.copyAndUploadFile(file).then(function() {
-                    $mmaFiles.invalidateMyFilesList().finally(function() {
-                        $mmUtil.showModal('mma.files.success', 'mma.files.fileuploaded');
-                        $ionicHistory.goBack();
-                    });
-                }, function(err) {
-                    if (err) {
-                        $mmUtil.showErrorModal(err);
-                    }
-                });
-            }, function(err) {
-                if (err) {
-                    $mmUtil.showErrorModal(err);
-                }
-            });
+                $mmaFilesHelper.copyAndUploadFile(file).then(successUploading, errorUploading);
+            }, errorUploading);
         }
     }
 });
