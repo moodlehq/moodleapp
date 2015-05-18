@@ -89,7 +89,7 @@ angular.module('mm.core')
                     name: 'sortorder',
                     generator: function(obj) {
                         // Creates an index to sort the queue items by priority, sort is ascending.
-                        // The oldest are considered to be the most important onces.
+                        // The oldest are considered to be the most important ones.
                         // The additional priority argument allows to bump any queue item on top of the queue.
                         // The index will look as follow:
                         //    [999 - priority] + "-" + timestamp
@@ -191,10 +191,10 @@ angular.module('mm.core')
      * @param {Number} [componentId] An ID to use in conjunction with the component.
      * @return {Promise} Resolved on success. Rejected on failure. It is advised to silently ignore failures.
      * @description
-     * Use this method to create a link between a URL and a file. You usually do not need to call
+     * Use this method to create a link between a URL and a component. You usually do not need to call
      * this manually as adding a file to queue allows you to do so. Note that this method
      * does not check if the file exists in the pool, so you probably want to use is after
-     * a successful {@link $mmFilepool#_downloadUrlAndAddToPool}.
+     * a successful {@link $mmFilepool#downloadUrl}.
      */
     self.addFileLinkByUrl = function(siteId, fileUrl, component, componentId) {
         var fileId = self._getFileIdByUrl(fileUrl);
@@ -596,7 +596,7 @@ angular.module('mm.core')
      *
      * @module mm.core
      * @ngdoc method
-     * @name $mmFilepool#_getFilePath
+     * @name $mmFilepool#invalidateFileByUrl
      * @param {String} siteId The site ID.
      * @param {String} fileUrl The file URL.
      * @return {Promise} Resolved on success. Rejected on failure. It is advised to ignore a failure.
@@ -644,12 +644,9 @@ angular.module('mm.core')
             where = ['component', '=', component];
         }
         return getSiteDb(siteId).then(function(db) {
-            return db.query(mmFilepoolQueueStore, where).then(function(list) {
-                angular.forEach(list, function(fileObject) {
-                    fileObject.stale = true;
-                    db.insert(mmFilepoolStore, fileObject);
-                });
-            });
+            return db.update(mmFilepoolQueueStore, {
+                stale: true
+            }, where);
         });
     };
 
@@ -751,7 +748,7 @@ angular.module('mm.core')
             fileUrl = item.url,
             links = item.links || [];
 
-        $log.debug('Processing queue item: ' + siteId + ', ' + itemId);
+        $log.debug('Processing queue item: ' + siteId + ', ' + fileId);
         return getSiteDb(siteId).then(function(db) {
             db.get(mmFilepoolStore, fileId).then(function(fileObject) {
                 if (fileObject && !fileObject.stale) {
@@ -800,7 +797,10 @@ angular.module('mm.core')
                             dropFromQueue = true;
 
                         } else if (!errorObject.http_status) {
-                            // We are guessing that this was a connection issue, keep in queue.
+                            // There was a connection issue, we are going to drop the file from the
+                            // queue because it's a strange error, we are supposed to be online but the
+                            // site is somehow not accessible.
+                            dropFromQueue = true;
 
                         } else {
                             // If there was an HTTP status, then let's remove from the queue.
