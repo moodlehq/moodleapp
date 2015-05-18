@@ -39,7 +39,7 @@ angular.module('mm.core')
  * @name $mmSitesManager
  */
 .factory('$mmSitesManager', function($http, $q, $mmSite, md5, $mmLang, $mmConfig, $mmApp, $mmWS, $mmUtil, $mmFS,
-                                     $cordovaNetwork, mmCoreSitesStore, mmCoreCurrentSiteStore, $log) {
+                                     mmCoreSitesStore, mmCoreCurrentSiteStore, $log) {
 
     $log = $log.getInstance('$mmSitesManager');
 
@@ -550,20 +550,15 @@ angular.module('mm.core')
                 $log.debug('File ' + downloadURL + ' already downloaded.');
                 return fileEntry.toInternalURL();
             }, function() {
-                try { // Use try/catch because $cordovaNetwork fails in Chromium (until mm.emulator is migrated).
-                    if ($cordovaNetwork.isOnline()) {
-                        $log.debug('File ' + downloadURL + ' not downloaded. Lets download.');
-                        return $mmWS.downloadFile(downloadURL, path.file).then(function(fileEntry) {
-                            return fileEntry.toInternalURL();
-                        }, function(err) {
-                            return downloadURL;
-                        });
-                    } else {
-                        $log.debug('File ' + downloadURL + ' not downloaded, but the device is offline.');
+                if ($mmApp.isOnline()) {
+                    $log.debug('File ' + downloadURL + ' not downloaded. Lets download.');
+                    return $mmWS.downloadFile(downloadURL, path.file).then(function(fileEntry) {
+                        return fileEntry.toInternalURL();
+                    }, function(err) {
                         return downloadURL;
-                    }
-                } catch(err) {
-                    $log.debug('File ' + downloadURL + ' not downloaded, but cordova is not available.');
+                    });
+                } else {
+                    $log.debug('File ' + downloadURL + ' not downloaded, but the device is offline.');
                     return downloadURL;
                 }
 

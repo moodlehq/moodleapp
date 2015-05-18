@@ -110,7 +110,7 @@ angular.module('mm.core')
         return exists;
     }
 
-    this.$get = function($http, $q, $mmWS, $mmDB, $mmConfig, $log, md5, $cordovaNetwork, $mmLang, $mmUtil,
+    this.$get = function($http, $q, $mmWS, $mmDB, $mmConfig, $log, md5, $mmApp, $mmLang, $mmUtil,
         mmCoreWSCacheStore, mmCoreWSPrefix, mmCoreSessionExpired, $mmEvents) {
 
         $log = $log.getInstance('$mmSite');
@@ -775,9 +775,7 @@ angular.module('mm.core')
             db.get(mmCoreWSCacheStore, key).then(function(entry) {
                 var now = new Date().getTime();
 
-                try { // Use try/catch because $cordovaNetwork fails in Chromium (until mm.emulator is migrated).
-                    preSets.omitExpires = preSets.omitExpires || $cordovaNetwork.isOffline(); // omitExpires in offline.
-                } catch(err) {}
+                preSets.omitExpires = preSets.omitExpires || !$mmApp.isOnline();
 
                 if (!preSets.omitExpires) {
                     if (now > entry.expirationtime) {
