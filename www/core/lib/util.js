@@ -165,6 +165,16 @@ angular.module('mm.core')
         };
 
         /**
+         * Returns if a URL is a pluginfile URL.
+         *
+         * @param  {String}  url The URL to test.
+         * @return {Boolean}     True when the URL is a pluginfile URL.
+         */
+        self.isPluginFileUrl = function(url) {
+            return url && (url.indexOf('/pluginfile.php') !== -1);
+        };
+
+        /**
          * Validates a URL for a specific pattern.
          *
          * @module mm.core

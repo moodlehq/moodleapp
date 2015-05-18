@@ -2160,6 +2160,9 @@ angular.module('mm.core')
                 self.getFolderIcon = function() {
             return 'img/files/folder-64.png';
         };
+                self.isPluginFileUrl = function(url) {
+            return url && (url.indexOf('/pluginfile.php') !== -1);
+        };
                 self.isValidURL = function(url) {
             return /^http(s)?\:\/\/([\da-zA-Z\.-]+)\.([\da-zA-Z\.]{2,6})([\/\w \.-]*)*\/?/i.test(url);
         };
@@ -2454,6 +2457,67 @@ angular.module('mm.core')
 });
 
 angular.module('mm.core')
+.directive('mmExternalContent', function($log, $mmFilepool, $mmSite, $mmSitesManager, $mmUtil) {
+    $log = $log.getInstance('mmExternalContent');
+    function handleExternalContent(siteId, dom, targetAttr, url) {
+        if (!url || !$mmUtil.isPluginFileUrl(url)) {
+            $log.debug('Ignoring non-pluginfile URL: ' + url);
+            return;
+        }
+        $mmSitesManager.getSite(siteId).then(function(site) {
+            var pluginfileURL = $mmUtil.fixPluginfileURL(url, site.token),
+                fn;
+            if (!pluginfileURL) {
+                $log.debug('Ignoring invalid pluginfile URL');
+                return;
+            } else if (targetAttr === 'src') {
+                fn = $mmFilepool.getSrcByUrl;
+            } else {
+                fn = $mmFilepool.getUrlByUrl;
+            }
+            fn(siteId, pluginfileURL).then(function(finalUrl) {
+                $log.debug('Using URL ' + finalUrl + ' for ' + url);
+                dom.setAttribute(targetAttr, finalUrl);
+            });
+        });
+    }
+    return {
+        restrict: 'A',
+        link: function(scope, element, attrs) {
+            var dom = element[0],
+                siteId = attrs.siteid || $mmSite.getId(),
+                targetAttr,
+                observe = false,
+                url;
+            if (dom.tagName === 'A') {
+                targetAttr = 'href';
+                if (attrs.hasOwnProperty('ngHref')) {
+                    observe = true;
+                }
+            } else if (dom.tagName === 'IMG') {
+                targetAttr = 'src';
+                if (attrs.hasOwnProperty('ngSrc')) {
+                    observe = true;
+                }
+            } else {
+                $log.warn('Directive attached to non-supported tag: ' + dom.tagName);
+                return;
+            }
+            if (observe) {
+                attrs.$observe(targetAttr, function(url) {
+                    if (!url) {
+                        return;
+                    }
+                    handleExternalContent(siteId, dom, targetAttr, url);
+                });
+            } else {
+                handleExternalContent(siteId, dom, targetAttr, attrs[targetAttr]);
+            }
+        }
+    };
+});
+
+angular.module('mm.core')
 .directive('mmFormatText', function($interpolate, $mmText, $compile) {
     var curlyBracketsRegex = new RegExp('[{{|}}]', 'gi');
     return {
@@ -2461,6 +2525,7 @@ angular.module('mm.core')
         scope: true,
         transclude: true,
         link: function(scope, element, attrs, ctrl, transclude) {
+            var siteId = attrs.siteid;
             transclude(scope, function(clone) {
                 var content = angular.element('<div>').append(clone).html();
                 function treatContents() {
@@ -2468,8 +2533,18 @@ angular.module('mm.core')
                     interpolated = interpolated.trim();
                     $mmText.formatText(interpolated, attrs.clean).then(function(formatted) {
                         var dom = angular.element('<div>').html(formatted);
+                        angular.forEach(dom.find('img'), function(img) {
+                            img.setAttribute('mm-external-content', '');
+                            if (siteId) {
+                                img.setAttribute('siteid', siteId);
+                            }
+                        });
                         angular.forEach(dom.find('a'), function(anchor) {
+                            anchor.setAttribute('mm-external-content', '');
                             anchor.setAttribute('mm-browser', '');
+                            if (siteId) {
+                                anchor.setAttribute('siteid', siteId);
+                            }
                         });
                         element.html(dom.html());
                         $compile(element.contents())(scope);
@@ -2757,37 +2832,6 @@ angular.module('mm.core.user', [])
 });
 
 angular.module('mm.core.course')
-.directive('mmCourseContent', function($log, $mmCourseDelegate, $state) {
-    $log = $log.getInstance('mmCourseContent');
-    function link(scope, element, attrs) {
-        var module = JSON.parse(attrs.module),
-            data;
-        data = $mmCourseDelegate.getDataFromContentHandlerFor(module.modname, module);
-        scope = angular.extend(scope, data);
-    }
-    function controller($scope) {
-        $scope.handleClick = function(e, button) {
-            e.stopPropagation();
-            e.preventDefault();
-            button.callback($scope);
-        };
-        $scope.jump = function(e, state, stateParams) {
-            e.stopPropagation();
-            e.preventDefault();
-            $state.go(state, stateParams);
-        };
-    }
-    return {
-        controller: controller,
-        link: link,
-        replace: true,
-        restrict: 'E',
-        scope: {},
-        templateUrl: 'core/components/course/templates/content.html',
-    };
-});
-
-angular.module('mm.core.course')
 .controller('mmCourseModContentCtrl', function($log, $stateParams, $scope) {
     $log = $log.getInstance('mmCourseModContentCtrl');
     var module = $stateParams.module || {};
@@ -2870,6 +2914,37 @@ angular.module('mm.core.course')
         return 'site.mm_course-section';
     };
     loadSections();
+});
+
+angular.module('mm.core.course')
+.directive('mmCourseContent', function($log, $mmCourseDelegate, $state) {
+    $log = $log.getInstance('mmCourseContent');
+    function link(scope, element, attrs) {
+        var module = JSON.parse(attrs.module),
+            data;
+        data = $mmCourseDelegate.getDataFromContentHandlerFor(module.modname, module);
+        scope = angular.extend(scope, data);
+    }
+    function controller($scope) {
+        $scope.handleClick = function(e, button) {
+            e.stopPropagation();
+            e.preventDefault();
+            button.callback($scope);
+        };
+        $scope.jump = function(e, state, stateParams) {
+            e.stopPropagation();
+            e.preventDefault();
+            $state.go(state, stateParams);
+        };
+    }
+    return {
+        controller: controller,
+        link: link,
+        replace: true,
+        restrict: 'E',
+        scope: {},
+        templateUrl: 'core/components/course/templates/content.html',
+    };
 });
 
 angular.module('mm.core.course')

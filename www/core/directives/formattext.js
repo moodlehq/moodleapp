@@ -37,6 +37,7 @@ angular.module('mm.core')
         scope: true,
         transclude: true,
         link: function(scope, element, attrs, ctrl, transclude) { // Link function.
+            var siteId = attrs.siteid;
             transclude(scope, function(clone) {
 
                 var content = angular.element('<div>').append(clone).html(); // Get directive's content.
@@ -51,9 +52,21 @@ angular.module('mm.core')
                         // Convert the content into DOM.
                         var dom = angular.element('<div>').html(formatted);
 
+                        // Walk through the content to find images, and add our directive.
+                        angular.forEach(dom.find('img'), function(img) {
+                            img.setAttribute('mm-external-content', '');
+                            if (siteId) {
+                                img.setAttribute('siteid', siteId);
+                            }
+                        });
+
                         // Walk through the content to find the links and add our directive to it.
                         angular.forEach(dom.find('a'), function(anchor) {
+                            anchor.setAttribute('mm-external-content', '');
                             anchor.setAttribute('mm-browser', '');
+                            if (siteId) {
+                                anchor.setAttribute('siteid', siteId);
+                            }
                         });
 
                         // Send for display, and compile.
