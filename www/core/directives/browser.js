@@ -26,9 +26,16 @@ angular.module('mm.core')
         restrict: 'A',
         link: function(scope, element, attrs) {
             element.on('click', function(event) {
-                if (attrs.href) {
+                var href = element[0].getAttribute('href');
+                if (href) {
                     event.preventDefault();
-                    $mmUtil.openInBrowser(attrs.href);
+                    if (href.indexOf('cdvfile://') === 0 || href.indexOf('file://') === 0) {
+                        // We have a local file.
+                        $mmUtil.openFile(href);
+                    } else {
+                        // It's an external link, we will open with browser.
+                        $mmUtil.openInBrowser(href);
+                    }
                 }
             });
         }

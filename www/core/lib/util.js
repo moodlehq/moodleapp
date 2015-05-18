@@ -271,7 +271,8 @@ angular.module('mm.core')
                     var iParams = {
                         action: "android.intent.action.VIEW",
                         url: path,
-                        type: mimetype};
+                        type: mimetype.type
+                    };
 
                     window.plugins.webintent.startActivity(
                         iParams,

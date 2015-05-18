@@ -2202,7 +2202,8 @@ angular.module('mm.core')
                     var iParams = {
                         action: "android.intent.action.VIEW",
                         url: path,
-                        type: mimetype};
+                        type: mimetype.type
+                    };
                     window.plugins.webintent.startActivity(
                         iParams,
                         function() {
@@ -2447,9 +2448,14 @@ angular.module('mm.core')
         restrict: 'A',
         link: function(scope, element, attrs) {
             element.on('click', function(event) {
-                if (attrs.href) {
+                var href = element[0].getAttribute('href');
+                if (href) {
                     event.preventDefault();
-                    $mmUtil.openInBrowser(attrs.href);
+                    if (href.indexOf('cdvfile://') === 0 || href.indexOf('file://') === 0) {
+                        $mmUtil.openFile(href);
+                    } else {
+                        $mmUtil.openInBrowser(href);
+                    }
                 }
             });
         }
