@@ -792,9 +792,18 @@ angular.module('mm.core')
          */
         function download(siteId, fileUrl, fileObject, links) {
             return self._downloadForPoolByUrl(siteId, fileUrl, fileObject).then(function() {
+                var promise,
+                    deferred;
+
                 // Success, we add links and remove from queue.
                 self._addFileLinks(siteId, fileId, links);
-                self._removeFromQueue(siteId, fileId);
+                promise = self._removeFromQueue(siteId, fileId);
+
+                // Wait for the item to be removed from queue before resolving the promise.
+                // If the item could not be removed from queue we still resolve the promise.
+                deferred = $q.defer();
+                promise.then(deferred.resolve, deferred.resolve);
+                return deferred.promise;
 
             }, function(errorObject) {
                 // Whoops, we have an error...
@@ -843,9 +852,16 @@ angular.module('mm.core')
                 }
 
                 if (dropFromQueue) {
-                    // Consider this as a silent error.
+                    var deferred,
+                        promise;
+
                     $log.debug('Item dropped from queue due to error: ' + fileUrl);
-                    self._removeFromQueue(siteId, fileId);
+                    promise = self._removeFromQueue(siteId, fileId);
+
+                    // Consider this as a silent error, never reject the promise here.
+                    deferred = $q.defer();
+                    promise.then(deferred.resolve, deferred.resolve);
+                    return deferred.promise;
                 } else {
                     // We considered the file as legit but did not get it, failure.
                     return $q.reject();

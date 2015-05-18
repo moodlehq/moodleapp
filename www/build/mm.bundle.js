@@ -859,8 +859,13 @@ angular.module('mm.core')
         });
                 function download(siteId, fileUrl, fileObject, links) {
             return self._downloadForPoolByUrl(siteId, fileUrl, fileObject).then(function() {
+                var promise,
+                    deferred;
                 self._addFileLinks(siteId, fileId, links);
-                self._removeFromQueue(siteId, fileId);
+                promise = self._removeFromQueue(siteId, fileId);
+                deferred = $q.defer();
+                promise.then(deferred.resolve, deferred.resolve);
+                return deferred.promise;
             }, function(errorObject) {
                 var dropFromQueue = false;
                 if (typeof errorObject !== 'undefined' && errorObject.source === fileUrl) {
@@ -884,8 +889,13 @@ angular.module('mm.core')
                     }
                 }
                 if (dropFromQueue) {
+                    var deferred,
+                        promise;
                     $log.debug('Item dropped from queue due to error: ' + fileUrl);
-                    self._removeFromQueue(siteId, fileId);
+                    promise = self._removeFromQueue(siteId, fileId);
+                    deferred = $q.defer();
+                    promise.then(deferred.resolve, deferred.resolve);
+                    return deferred.promise;
                 } else {
                     return $q.reject();
                 }
