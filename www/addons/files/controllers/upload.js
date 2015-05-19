@@ -21,20 +21,22 @@ angular.module('mm.addons.files')
  * @ngdoc controller
  * @name mmaFilesUploadCtrl
  */
-.controller('mmaFilesUploadCtrl', function($scope, $mmUtil, $mmaFilesHelper, $ionicHistory, $mmaFiles, $mmApp) {
+.controller('mmaFilesUploadCtrl', function($scope, $stateParams, $mmUtil, $mmaFilesHelper, $ionicHistory, $mmaFiles, $mmApp) {
 
     var uploadMethods = {
-        album: $mmaFilesHelper.uploadImageFromAlbum,
-        camera: $mmaFilesHelper.uploadImageFromCamera,
-        audio: $mmaFilesHelper.uploadAudio,
-        video: $mmaFilesHelper.uploadVideo
-    };
+            album: $mmaFilesHelper.uploadImageFromAlbum,
+            camera: $mmaFilesHelper.uploadImageFromCamera,
+            audio: $mmaFilesHelper.uploadAudio,
+            video: $mmaFilesHelper.uploadVideo
+        },
+        path = $stateParams.path,
+        root = $stateParams.root;
 
     $scope.isAndroid = ionic.Platform.isAndroid();
 
     // Function called when a file is uploaded.
     function successUploading() {
-        $mmaFiles.invalidateMyFilesList().finally(function() {
+        $mmaFiles.invalidateDirectory(root, path).finally(function() {
             $mmUtil.showModal('mma.files.success', 'mma.files.fileuploaded');
             $ionicHistory.goBack();
         });

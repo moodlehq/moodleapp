@@ -46,6 +46,10 @@ angular.module('mm.addons.files', ['mm.core'])
 
       .state(mmaFilesUploadStateName, {
         url: '/upload',
+        params: {
+          path: false,
+          root: false
+        },
         views: {
           'site': {
             controller: 'mmaFilesUploadCtrl',

@@ -29,16 +29,6 @@ angular.module('mm.addons.files')
         };
 
     /**
-     * Get cache key for file list WS calls.
-     *
-     * @param  {Boolean} getMyFiles True if the key is for user private files, false if it's for site files.
-     * @return {String}             Cache key.
-     */
-    function getFilesListCacheKey(getMyFiles) {
-        return 'mmaFiles:list:' + (getMyFiles ? 'my' : 'sites');
-    }
-
-    /**
      * Check if core_files_get_files WS call is available.
      *
      * @return {Boolean} True if WS is available, false otherwise.
@@ -100,16 +90,18 @@ angular.module('mm.addons.files')
      * @module mm.addons.files
      * @ngdoc method
      * @name $mmaFiles#getFiles
-     * @param  {Object} A list of parameters accepted by the Web service.
-     * @param  {Boolean} refresh Pass true to ignore the cache.
-     * @return {Object} An object containing the files in the key 'entries', and 'count'.
-     *                  Additional properties is added to the entries, such as:
-     *                  - imgpath: The path to the icon.
-     *                  - link: The JSON string of params to get to the file.
-     *                  - linkId: A hash of the file parameters.
+     * @param  {Object} params A list of parameters accepted by the Web service.
+     * @return {Object}        An object containing the files in the key 'entries', and 'count'.
+     *                         Additional properties is added to the entries, such as:
+     *                          - imgpath: The path to the icon.
+     *                          - link: The JSON string of params to get to the file.
+     *                          - linkId: A hash of the file parameters.
      */
-    self.getFiles = function(params, options) {
-        var deferred = $q.defer();
+    self.getFiles = function(params) {
+        var deferred = $q.defer(),
+            options = {};
+
+        options.cacheKey = getFilesListCacheKey(params);
 
         $mmSite.read('core_files_get_files', params, options).then(function(result) {
             var data = {
@@ -168,6 +160,17 @@ angular.module('mm.addons.files')
     };
 
     /**
+     * Get cache key for file list WS calls.
+     *
+     * @param  {Object} params Params of the directory to get.
+     * @return {String}        Cache key.
+     */
+    function getFilesListCacheKey(params) {
+        var root = params.component === '' ? 'site' : 'my';
+        return 'mmaFiles:list:' + root + ':' + params.contextid + ':' + params.filepath;
+    }
+
+    /**
      * Get the private files of the current user.
      *
      * @module mm.addons.files
@@ -176,17 +179,33 @@ angular.module('mm.addons.files')
      * @return {Object} See $mmaFiles#getFiles
      */
     self.getMyFiles = function() {
+        var params = getMyFilesRootParams();
+        return self.getFiles(params);
+    };
+
+    /**
+     * Get the common part of the cache keys for private files WS calls.
+     *
+     * @return {String} Cache key.
+     */
+    function getMyFilesListCommonCacheKey() {
+        return 'mmaFiles:list:my';
+    }
+
+    /**
+     * Get params to get root private files directory.
+     *
+     * @return {Object} Params.
+     */
+    function getMyFilesRootParams() {
         var params = angular.copy(defaultParams, {});
         params.component = "user";
         params.filearea = "private";
         params.contextid = -1;
         params.contextlevel = "user";
         params.instanceid = $mmSite.getInfo().userid;
-        var options = {
-            cacheKey: getFilesListCacheKey(true)
-        };
-        return self.getFiles(params, options);
-    };
+        return params;
+    }
 
     /**
      * Get the site files.
@@ -198,34 +217,65 @@ angular.module('mm.addons.files')
      */
     self.getSiteFiles = function() {
         var params = angular.copy(defaultParams, {});
-        var options = {
-            cacheKey: getFilesListCacheKey(false)
-        };
-        return self.getFiles(params, options);
+        return self.getFiles(params);
     };
 
     /**
-     * Invalidates private files list.
+     * Get the common part of the cache keys for site files WS calls.
+     *
+     * @return {String} Cache key.
+     */
+    function getSiteFilesListCommonCacheKey() {
+        return 'mmaFiles:list:site';
+    }
+
+    /**
+     * Invalidates list of files in a certain directory.
      *
      * @module mm.addons.files
      * @ngdoc method
-     * @name $mmaFiles#invalidateMyFilesList
-     * @return {Promise}  Promise resolved when the list is invalidated.
+     * @name $mmaFiles#invalidateDirectory
+     * @param  {String} root Root of the directory ('my' for private files, 'site' for site files).
+     * @param  {String} path Path to the directory.
+     * @return {Promise}     Promise resolved when the list is invalidated.
      */
-    self.invalidateMyFilesList = function() {
-        return $mmSite.invalidateWsCacheForKey(getFilesListCacheKey(true));
+    self.invalidateDirectory = function(root, path) {
+        var params = {};
+        if (!path) {
+            if (root === 'site') {
+                params = angular.copy(defaultParams, {});
+            } else if (root === 'my') {
+                params = getMyFilesRootParams();
+            }
+        } else {
+            params = JSON.parse(path);
+        }
+
+        return $mmSite.invalidateWsCacheForKey(getFilesListCacheKey(params));
     };
 
     /**
-     * Invalidates site files list.
+     * Invalidates list of private files.
      *
      * @module mm.addons.files
      * @ngdoc method
-     * @name $mmaFiles#invalidateSiteFilesList
-     * @return {Promise}  Promise resolved when the list is invalidated.
+     * @name $mmaFiles#invalidateMyFiles
+     * @return {Promise} Promise resolved when the list is invalidated.
      */
-    self.invalidateSiteFilesList = function() {
-        return $mmSite.invalidateWsCacheForKey(getFilesListCacheKey(false));
+    self.invalidateMyFiles = function() {
+        return $mmSite.invalidateWsCacheForKeyStartingWith(getMyFilesListCommonCacheKey());
+    };
+
+    /**
+     * Invalidates list of site files.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#invalidateSiteFiles
+     * @return {Promise} Promise resolved when the list is invalidated.
+     */
+    self.invalidateSiteFiles = function() {
+        return $mmSite.invalidateWsCacheForKeyStartingWith(getSiteFilesListCommonCacheKey());
     };
 
     /**

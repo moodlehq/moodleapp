@@ -1631,6 +1631,15 @@ angular.module('mm.core')
                 token: self.getToken()
             });
         };
+                function invalidateWsCacheEntries(db, entries) {
+            var promises = [];
+            angular.forEach(entries, function(entry) {
+                entry.expirationtime = 0;
+                var promise = db.insert(mmCoreWSCacheStore, entry);
+                promises.push(promise);
+            });
+            return $q.all(promises);
+        }
                 self.invalidateWsCacheForKey = function(key) {
             var db = currentSite.db;
             if (!db || !key) {
@@ -1639,13 +1648,19 @@ angular.module('mm.core')
             $log.debug('Invalidate cache for key: '+key);
             return db.whereEqual(mmCoreWSCacheStore, 'key', key).then(function(entries) {
                 if (entries && entries.length > 0) {
-                    var promises = [];
-                    angular.forEach(entries, function(entry) {
-                        entry.expirationtime = 0;
-                        var promise = db.insert(mmCoreWSCacheStore, entry);
-                        promises.push(promise);
-                    });
-                    return $q.all(promises);
+                    return invalidateWsCacheEntries(db, entries);
+                }
+            });
+        };
+                self.invalidateWsCacheForKeyStartingWith = function(key) {
+            var db = currentSite.db;
+            if (!db || !key) {
+                return $q.reject();
+            }
+            $log.debug('Invalidate cache for key starting with: '+key);
+            return db.where(mmCoreWSCacheStore, 'key', '^', key).then(function(entries) {
+                if (entries && entries.length > 0) {
+                    return invalidateWsCacheEntries(db, entries);
                 }
             });
         };
@@ -3593,6 +3608,10 @@ angular.module('mm.addons.files', ['mm.core'])
       })
       .state(mmaFilesUploadStateName, {
         url: '/upload',
+        params: {
+          path: false,
+          root: false
+        },
         views: {
           'site': {
             controller: 'mmaFilesUploadCtrl',
@@ -3847,23 +3866,25 @@ angular.module('mm.addons.files')
             if (!$mmApp.isOnline()) {
                 $mmUtil.showErrorModal('mma.files.errormustbeonlinetoupload', true);
             } else {
-                $state.go('site.files-upload');
+                $state.go('site.files-upload', {root: root, path: path});
             }
         };
     }
 });
 
 angular.module('mm.addons.files')
-.controller('mmaFilesUploadCtrl', function($scope, $mmUtil, $mmaFilesHelper, $ionicHistory, $mmaFiles, $mmApp) {
+.controller('mmaFilesUploadCtrl', function($scope, $stateParams, $mmUtil, $mmaFilesHelper, $ionicHistory, $mmaFiles, $mmApp) {
     var uploadMethods = {
-        album: $mmaFilesHelper.uploadImageFromAlbum,
-        camera: $mmaFilesHelper.uploadImageFromCamera,
-        audio: $mmaFilesHelper.uploadAudio,
-        video: $mmaFilesHelper.uploadVideo
-    };
+            album: $mmaFilesHelper.uploadImageFromAlbum,
+            camera: $mmaFilesHelper.uploadImageFromCamera,
+            audio: $mmaFilesHelper.uploadAudio,
+            video: $mmaFilesHelper.uploadVideo
+        },
+        path = $stateParams.path,
+        root = $stateParams.root;
     $scope.isAndroid = ionic.Platform.isAndroid();
     function successUploading() {
-        $mmaFiles.invalidateMyFilesList().finally(function() {
+        $mmaFiles.invalidateDirectory(root, path).finally(function() {
             $mmUtil.showModal('mma.files.success', 'mma.files.fileuploaded');
             $ionicHistory.goBack();
         });
@@ -3916,9 +3937,6 @@ angular.module('mm.addons.files')
             "filepath": "",
             "filename": ""
         };
-        function getFilesListCacheKey(getMyFiles) {
-        return 'mmaFiles:list:' + (getMyFiles ? 'my' : 'sites');
-    }
         self.canAccessFiles = function() {
         return $mmSite.wsAvailable('core_files_get_files');
     };
@@ -3946,8 +3964,10 @@ angular.module('mm.addons.files')
         });
         return deferred.promise;
     };
-        self.getFiles = function(params, options) {
-        var deferred = $q.defer();
+        self.getFiles = function(params) {
+        var deferred = $q.defer(),
+            options = {};
+        options.cacheKey = getFilesListCacheKey(params);
         $mmSite.read('core_files_get_files', params, options).then(function(result) {
             var data = {
                 entries: [],
@@ -3984,30 +4004,51 @@ angular.module('mm.addons.files')
         });
         return deferred.promise;
     };
+        function getFilesListCacheKey(params) {
+        var root = params.component === '' ? 'site' : 'my';
+        return 'mmaFiles:list:' + root + ':' + params.contextid + ':' + params.filepath;
+    }
         self.getMyFiles = function() {
+        var params = getMyFilesRootParams();
+        return self.getFiles(params);
+    };
+        function getMyFilesListCommonCacheKey() {
+        return 'mmaFiles:list:my';
+    }
+        function getMyFilesRootParams() {
         var params = angular.copy(defaultParams, {});
         params.component = "user";
         params.filearea = "private";
         params.contextid = -1;
         params.contextlevel = "user";
         params.instanceid = $mmSite.getInfo().userid;
-        var options = {
-            cacheKey: getFilesListCacheKey(true)
-        };
-        return self.getFiles(params, options);
-    };
+        return params;
+    }
         self.getSiteFiles = function() {
         var params = angular.copy(defaultParams, {});
-        var options = {
-            cacheKey: getFilesListCacheKey(false)
-        };
-        return self.getFiles(params, options);
+        return self.getFiles(params);
     };
-        self.invalidateMyFilesList = function() {
-        return $mmSite.invalidateWsCacheForKey(getFilesListCacheKey(true));
+        function getSiteFilesListCommonCacheKey() {
+        return 'mmaFiles:list:site';
+    }
+        self.invalidateDirectory = function(root, path) {
+        var params = {};
+        if (!path) {
+            if (root === 'site') {
+                params = angular.copy(defaultParams, {});
+            } else if (root === 'my') {
+                params = getMyFilesRootParams();
+            }
+        } else {
+            params = JSON.parse(path);
+        }
+        return $mmSite.invalidateWsCacheForKey(getFilesListCacheKey(params));
     };
-        self.invalidateSiteFilesList = function() {
-        return $mmSite.invalidateWsCacheForKey(getFilesListCacheKey(false));
+        self.invalidateMyFiles = function() {
+        return $mmSite.invalidateWsCacheForKeyStartingWith(getMyFilesListCommonCacheKey());
+    };
+        self.invalidateSiteFiles = function() {
+        return $mmSite.invalidateWsCacheForKeyStartingWith(getSiteFilesListCommonCacheKey());
     };
         self.isPluginEnabled = function() {
         var canAccessFiles = self.canAccessFiles(),

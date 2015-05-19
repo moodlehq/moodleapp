@@ -690,6 +690,23 @@ angular.module('mm.core')
         };
 
         /**
+         * Invalidate entries from the cache.
+         *
+         * @param  {Object} db      DB the entries belong to.
+         * @param  {Array}  entries Entries to invalidate.
+         * @return {Promise}        Promise resolved when the cache entries are invalidated.
+         */
+        function invalidateWsCacheEntries(db, entries) {
+            var promises = [];
+            angular.forEach(entries, function(entry) {
+                entry.expirationtime = 0;
+                var promise = db.insert(mmCoreWSCacheStore, entry);
+                promises.push(promise);
+            });
+            return $q.all(promises);
+        }
+
+        /**
          * Invalidates all the cache entries with a certain key.
          *
          * @module mm.core
@@ -707,13 +724,30 @@ angular.module('mm.core')
             $log.debug('Invalidate cache for key: '+key);
             return db.whereEqual(mmCoreWSCacheStore, 'key', key).then(function(entries) {
                 if (entries && entries.length > 0) {
-                    var promises = [];
-                    angular.forEach(entries, function(entry) {
-                        entry.expirationtime = 0;
-                        var promise = db.insert(mmCoreWSCacheStore, entry);
-                        promises.push(promise);
-                    });
-                    return $q.all(promises);
+                    return invalidateWsCacheEntries(db, entries);
+                }
+            });
+        };
+
+        /**
+         * Invalidates all the cache entries whose key starts with a certain value.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmSite#invalidateWsCacheForKeyStartingWith
+         * @param  {String} key Key to search.
+         * @return {Promise}    Promise resolved when the cache entries are invalidated.
+         */
+        self.invalidateWsCacheForKeyStartingWith = function(key) {
+            var db = currentSite.db;
+            if (!db || !key) {
+                return $q.reject();
+            }
+
+            $log.debug('Invalidate cache for key starting with: '+key);
+            return db.where(mmCoreWSCacheStore, 'key', '^', key).then(function(entries) {
+                if (entries && entries.length > 0) {
+                    return invalidateWsCacheEntries(db, entries);
                 }
             });
         };

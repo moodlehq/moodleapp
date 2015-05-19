@@ -111,7 +111,7 @@ angular.module('mm.addons.files')
             if (!$mmApp.isOnline()) {
                 $mmUtil.showErrorModal('mma.files.errormustbeonlinetoupload', true);
             } else {
-                $state.go('site.files-upload');
+                $state.go('site.files-upload', {root: root, path: path});
             }
         };
 
