@@ -1853,7 +1853,12 @@ angular.module('mm.core')
                     var interpolated = $interpolate(content)(scope);
                     interpolated = interpolated.trim();
                     $mmText.formatText(interpolated, attrs.clean).then(function(formatted) {
-                        element.html(formatted);
+                        var dom = angular.element('<div>').html(formatted);
+                        angular.forEach(dom.find('a'), function(anchor) {
+                            anchor.setAttribute('mm-browser', '');
+                        });
+                        element.html(dom.html());
+                        $compile(element.contents())(scope);
                     });
                 }
                 if (attrs.watch) {
