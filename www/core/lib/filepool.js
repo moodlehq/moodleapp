@@ -568,6 +568,8 @@ angular.module('mm.core')
      * @param {String} siteId The site ID.
      * @param {String} fileUrl The absolute URL to the file.
      * @param {String} [mode=url] The type of URL to return. Accepts 'url' or 'src'.
+     * @param {String} component The component to link the file to.
+     * @param {Number} [componentId] An ID to use in conjunction with the component.
      * @return {Promise} Resolved with the URL to use. When rejected, nothing could be done.
      * @description
      * This will return a URL pointing to the content of the requested URL.
@@ -580,7 +582,7 @@ angular.module('mm.core')
      * When the file cannot be found, and we are offline, then we reject the promise because
      * there was nothing we could do.
      */
-    self._getFileUrlByUrl = function(siteId, fileUrl, mode) {
+    self._getFileUrlByUrl = function(siteId, fileUrl, mode, component, componentId) {
         var fileId = self._getFileIdByUrl(fileUrl);
         return self._hasFileInPool(siteId, fileId).then(function(fileObject) {
             var response,
@@ -589,12 +591,12 @@ angular.module('mm.core')
 
             if (typeof fileObject === 'undefined') {
                 // We do not have the file, add it to the queue, and return real URL.
-                self.addToQueueByUrl(siteId, fileUrl);
+                self.addToQueueByUrl(siteId, fileUrl, component, componentId);
                 response = fileUrl;
 
             } else if (fileObject.stale && $mmApp.isOnline()) {
                 // The file is outdated, we add to the queue and return real URL.
-                self.addToQueueByUrl(siteId, fileUrl);
+                self.addToQueueByUrl(siteId, fileUrl, component, componentId);
                 response = fileUrl;
 
             } else {
@@ -608,13 +610,14 @@ angular.module('mm.core')
 
                 response = fn(siteId, fileId).then(function(internalUrl) {
                     // Perfect, the file is on disk.
+                    // For the time we assume that the component link already exists.
                     return internalUrl;
                 }, function() {
                     // We have a problem here, we could not retrieve the file though we thought
                     // we had it, we will delete the entries associated with that ID.
                     $log.debug('File ' + fileId + ' not found on disk');
                     self._removeFileById(siteId, fileId);
-                    self.addToQueueByUrl(siteId, fileUrl);
+                    self.addToQueueByUrl(siteId, fileUrl, component, componentId);
 
                     if ($mmApp.isOnline()) {
                         // We still have a chance to serve the right content.
@@ -628,7 +631,7 @@ angular.module('mm.core')
             return response;
         }, function() {
             // We do not have the file in store yet.
-            self.addToQueueByUrl(siteId, fileUrl);
+            self.addToQueueByUrl(siteId, fileUrl, component, componentId);
             return fileUrl;
         });
     };
@@ -702,6 +705,8 @@ angular.module('mm.core')
      * @name $mmFilepool#getSrcByUrl
      * @param {String} siteId The site ID.
      * @param {String} fileUrl The absolute URL to the file.
+     * @param {String} component The component to link the file to.
+     * @param {Number} [componentId] An ID to use in conjunction with the component.
      * @return {Promise} Resolved with the URL to use. When rejected, nothing could be done,
      *                   which means that you should not even use the fileUrl passed.
      * @description
@@ -709,8 +714,8 @@ angular.module('mm.core')
      * The URL returned is compatible to use with IMG tags.
      * See {@link $mmFilepool#_getFileUrlByUrl} for more details.
      */
-    self.getSrcByUrl = function(siteId, fileUrl) {
-        return self._getFileUrlByUrl(siteId, fileUrl, 'src');
+    self.getSrcByUrl = function(siteId, fileUrl, component, componentId) {
+        return self._getFileUrlByUrl(siteId, fileUrl, 'src', component, componentId);
     };
 
     /**
@@ -721,6 +726,8 @@ angular.module('mm.core')
      * @name $mmFilepool#getUrlByUrl
      * @param {String} siteId The site ID.
      * @param {String} fileUrl The absolute URL to the file.
+     * @param {String} component The component to link the file to.
+     * @param {Number} [componentId] An ID to use in conjunction with the component.
      * @return {Promise} Resolved with the URL to use. When rejected, nothing could be done,
      *                   which means that you should not even use the fileUrl passed.
      * @description
@@ -728,8 +735,8 @@ angular.module('mm.core')
      * The URL returned is compatible to use with a local browser.
      * See {@link $mmFilepool#_getFileUrlByUrl} for more details.
      */
-    self.getUrlByUrl = function(siteId, fileUrl) {
-        return self._getFileUrlByUrl(siteId, fileUrl, 'url');
+    self.getUrlByUrl = function(siteId, fileUrl, component, componentId) {
+        return self._getFileUrlByUrl(siteId, fileUrl, 'url', component, componentId);
     };
 
     /**

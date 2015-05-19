@@ -742,17 +742,17 @@ angular.module('mm.core')
         }
         return md5.createHash('url:' + url) + extension;
     };
-        self._getFileUrlByUrl = function(siteId, fileUrl, mode) {
+        self._getFileUrlByUrl = function(siteId, fileUrl, mode, component, componentId) {
         var fileId = self._getFileIdByUrl(fileUrl);
         return self._hasFileInPool(siteId, fileId).then(function(fileObject) {
             var response,
                 addToQueue = false,
                 fn;
             if (typeof fileObject === 'undefined') {
-                self.addToQueueByUrl(siteId, fileUrl);
+                self.addToQueueByUrl(siteId, fileUrl, component, componentId);
                 response = fileUrl;
             } else if (fileObject.stale && $mmApp.isOnline()) {
-                self.addToQueueByUrl(siteId, fileUrl);
+                self.addToQueueByUrl(siteId, fileUrl, component, componentId);
                 response = fileUrl;
             } else {
                 if (mode === 'src') {
@@ -765,7 +765,7 @@ angular.module('mm.core')
                 }, function() {
                     $log.debug('File ' + fileId + ' not found on disk');
                     self._removeFileById(siteId, fileId);
-                    self.addToQueueByUrl(siteId, fileUrl);
+                    self.addToQueueByUrl(siteId, fileUrl, component, componentId);
                     if ($mmApp.isOnline()) {
                         return fileUrl;
                     }
@@ -774,7 +774,7 @@ angular.module('mm.core')
             }
             return response;
         }, function() {
-            self.addToQueueByUrl(siteId, fileUrl);
+            self.addToQueueByUrl(siteId, fileUrl, component, componentId);
             return fileUrl;
         });
     };
@@ -797,11 +797,11 @@ angular.module('mm.core')
         }
         return $q.reject();
     };
-        self.getSrcByUrl = function(siteId, fileUrl) {
-        return self._getFileUrlByUrl(siteId, fileUrl, 'src');
+        self.getSrcByUrl = function(siteId, fileUrl, component, componentId) {
+        return self._getFileUrlByUrl(siteId, fileUrl, 'src', component, componentId);
     };
-        self.getUrlByUrl = function(siteId, fileUrl) {
-        return self._getFileUrlByUrl(siteId, fileUrl, 'url');
+        self.getUrlByUrl = function(siteId, fileUrl, component, componentId) {
+        return self._getFileUrlByUrl(siteId, fileUrl, 'url', component, componentId);
     };
         self._guessExtensionFromUrl = function(fileUrl) {
         var split = fileUrl.split('.'),
