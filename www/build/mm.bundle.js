@@ -549,6 +549,7 @@ angular.module('mm.core')
         mmFilepoolLinksStore, mmFilepoolQueueStore, mmFilepoolFolder, mmFilepoolQueueProcessInterval) {
     $log = $log.getInstance('$mmFilepool');
     var self = {},
+        extensionRegex = new RegExp('^[a-z0-9]+$'),
         tokenRegex = new RegExp('(\\?|&)token=([A-Za-z0-9]+)'),
         queueState;
         urlAttributes = [
@@ -693,7 +694,7 @@ angular.module('mm.core')
             } else if (fileObject.stale && $mmApp.isOnline()) {
                 return self._downloadForPoolByUrl(siteId, fileUrl, fileObject);
             }
-            return self._getFileInternalUrlById(siteId, fileId);
+            return self._getInternalUrlById(siteId, fileId);
         }, function() {
             return self._downloadForPoolByUrl(siteId, fileUrl);
         });
@@ -727,19 +728,26 @@ angular.module('mm.core')
         });
     };
         self._getFileIdByUrl = function(fileUrl) {
-        var url = fileUrl;
+        var url = fileUrl,
+            candidate,
+            extension = '';
         if (url.indexOf('/webservice/pluginfile') !== -1) {
             angular.forEach(urlAttributes, function(regex) {
                 url = url.replace(regex, '');
             });
+            candidate = self._guessExtensionFromUrl(url);
+            if (candidate && candidate !== 'php') {
+                extension = '.' + candidate;
+            }
         }
-        return md5.createHash('url:' + url);
+        return md5.createHash('url:' + url) + extension;
     };
-        self.getFileUrlByUrl = function(siteId, fileUrl) {
+        self._getFileUrlByUrl = function(siteId, fileUrl, mode) {
         var fileId = self._getFileIdByUrl(fileUrl);
         return self._hasFileInPool(siteId, fileId).then(function(fileObject) {
             var response,
-                addToQueue = false;
+                addToQueue = false,
+                fn;
             if (typeof fileObject === 'undefined') {
                 self.addToQueueByUrl(siteId, fileUrl);
                 response = fileUrl;
@@ -747,7 +755,12 @@ angular.module('mm.core')
                 self.addToQueueByUrl(siteId, fileUrl);
                 response = fileUrl;
             } else {
-                response = self._getFileInternalUrlById(siteId, fileId).then(function(internalUrl) {
+                if (mode === 'src') {
+                    fn = self._getInternalSrcById;
+                } else {
+                    fn = self._getInternalUrlById;
+                }
+                response = fn(siteId, fileId).then(function(internalUrl) {
                     return internalUrl;
                 }, function() {
                     $log.debug('File ' + fileId + ' not found on disk');
@@ -765,7 +778,10 @@ angular.module('mm.core')
             return fileUrl;
         });
     };
-        self._getFileInternalUrlById = function(siteId, fileId) {
+        self._getFilePath = function(siteId, fileId) {
+        return $mmFS.getSiteFolder(siteId) + '/' + mmFilepoolFolder + '/' + fileId;
+    };
+        self._getInternalSrcById = function(siteId, fileId) {
         if ($mmFS.isAvailable()) {
             return $mmFS.getFile(self._getFilePath(siteId, fileId)).then(function(fileEntry) {
                 return fileEntry.toInternalURL();
@@ -773,8 +789,31 @@ angular.module('mm.core')
         }
         return $q.reject();
     };
-        self._getFilePath = function(siteId, fileId) {
-        return $mmFS.getSiteFolder(siteId) + '/' + mmFilepoolFolder + '/' + fileId;
+        self._getInternalUrlById = function(siteId, fileId) {
+        if ($mmFS.isAvailable()) {
+            return $mmFS.getFile(self._getFilePath(siteId, fileId)).then(function(fileEntry) {
+                return fileEntry.toURL();
+            });
+        }
+        return $q.reject();
+    };
+        self.getSrcByUrl = function(siteId, fileUrl) {
+        return self._getFileUrlByUrl(siteId, fileUrl, 'src');
+    };
+        self.getUrlByUrl = function(siteId, fileUrl) {
+        return self._getFileUrlByUrl(siteId, fileUrl, 'url');
+    };
+        self._guessExtensionFromUrl = function(fileUrl) {
+        var split = fileUrl.split('.'),
+            candidate,
+            extension;
+        if (split.length > 1) {
+            candidate = split.pop().toLowerCase();
+            if (extensionRegex.test(candidate)) {
+                extension = candidate;
+            }
+        }
+        return extension;
     };
         self.invalidateFileByUrl = function(siteId, fileUrl) {
         var fileId = self._getFileIdByUrl(fileUrl);
@@ -845,7 +884,7 @@ angular.module('mm.core')
             links = item.links || [];
         $log.debug('Processing queue item: ' + siteId + ', ' + fileId);
         return getSiteDb(siteId).then(function(db) {
-            db.get(mmFilepoolStore, fileId).then(function(fileObject) {
+            return db.get(mmFilepoolStore, fileId).then(function(fileObject) {
                 if (fileObject && !fileObject.stale) {
                     self._addFileLinks(siteId, fileId, links);
                     self._removeFromQueue(siteId, fileId);

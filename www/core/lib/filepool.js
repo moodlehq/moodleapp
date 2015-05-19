@@ -126,6 +126,20 @@ angular.module('mm.core')
  * @todo Setting files as stale after a certain time
  * @todo Use ETAGs
  * @todo Do not download on limited network
+ * @description
+ *
+ * This factory is responsible for handling external content.
+ *
+ * It will always try to get a file from the filepool and return it, when the file is not
+ * found it will be added to a queue to be downloaded later. The two main goals of this
+ * is to keep the content available offline, and improve the user experience by caching
+ * the content locally.
+ *
+ * The filepool has a very limited understanding of pluginfiles, you should always call
+ * {@link $mmUtil#fixPluginfileURL} prior to passing the URL. The reason for this is to
+ * allow for any type of URL to be handled here. We can download and cache content
+ * that is not served by Moodle. The only little handling of pluginfile is located in
+ * {@link $mmFilepool#_getFileIdByUrl}.
  */
 .factory('$mmFilepool', function($q, $log, $timeout, $mmApp, $mmFS, $mmWS, $mmSitesManager, md5, mmFilepoolStore,
         mmFilepoolLinksStore, mmFilepoolQueueStore, mmFilepoolFolder, mmFilepoolQueueProcessInterval) {
@@ -399,17 +413,21 @@ angular.module('mm.core')
     /**
      * Downloads a file on the spot.
      *
-     * This will also take care of adding the file to the pool if it's missing.
-     * However, please note that this will not force a file to be re-downloaded
-     * if it is already part of the pool. You should mark a file as stale using
-     * {@link $mmFilepool#invalidateFileByUrl} to trigger a download.
-     *
      * @module mm.core
      * @ngdoc method
      * @name $mmFilepool#downloadUrl
      * @param {String} siteId The site ID.
      * @param {String} fileUrl The file URL.
      * @return {Promise} Resolved with internal URL on success, rejected otherwise.
+     * @description
+     * Downloads a file on the spot.
+     *
+     * This will also take care of adding the file to the pool if it's missing.
+     * However, please note that this will not force a file to be re-downloaded
+     * if it is already part of the pool. You should mark a file as stale using
+     * {@link $mmFilepool#invalidateFileByUrl} to trigger a download.
+     *
+     * See {@link $mmFilepool#_getInternalUrlById} for the type of local URL returned.
      */
     self.downloadUrl = function(siteId, fileUrl) {
         var fileId = self._getFileIdByUrl(fileUrl),
@@ -431,7 +449,7 @@ angular.module('mm.core')
             }
 
             // Everything is fine, return the file on disk.
-            return self._getFileInternalUrlById(siteId, fileId);
+            return self._getInternalUrlById(siteId, fileId);
 
         }, function() {
 
@@ -505,6 +523,10 @@ angular.module('mm.core')
     /**
      * Creates a unique ID based on a URL.
      *
+     * This has a minimal handling of pluginfiles in order to generate a clean
+     * file ID which will not change if pointing to the same pluginfile URL even
+     * if the token or extra attributes have changed.
+     *
      * @module mm.core
      * @ngdoc method
      * @name $mmFilepool#_getFileIdByUrl
@@ -542,38 +564,49 @@ angular.module('mm.core')
      *
      * @module mm.core
      * @ngdoc method
-     * @name $mmFilepool#getFileUrlByUrl
+     * @name $mmFilepool#_getFileUrlByUrl
      * @param {String} siteId The site ID.
      * @param {String} fileUrl The absolute URL to the file.
-     * @return {Promise} Resolved with the URL to use. When rejected, nothing could be done,
-     *                   which means that you should not even use the fileUrl passed.
+     * @param {String} [mode=url] The type of URL to return. Accepts 'url' or 'src'.
+     * @return {Promise} Resolved with the URL to use. When rejected, nothing could be done.
      * @description
      * This will return a URL pointing to the content of the requested URL.
      *
-     * If the URL is unknown to us, it will be added to a queue to be downloaded and stored
-     * for offline use. Once the URL is known, when requested again the downloaded file
-     * interal URL will be returned.
+     * This handles the queue and validity of the file. When we have a local copy of the file
+     * we will assess whether or not it is still valid. If it is not valid, or we did not find
+     * the file, we will add it to the queue to be downloaded later and we will return the URL
+     * we received. When the file is valid we return a local URL to it.
      *
-     * If we do not have the file, and the app does not have network access, the promise
-     * will be rejected. In any other case either the local URL, or the original URL will be returned.
+     * When the file cannot be found, and we are offline, then we reject the promise because
+     * there was nothing we could do.
      */
-    self.getFileUrlByUrl = function(siteId, fileUrl) {
+    self._getFileUrlByUrl = function(siteId, fileUrl, mode) {
         var fileId = self._getFileIdByUrl(fileUrl);
         return self._hasFileInPool(siteId, fileId).then(function(fileObject) {
             var response,
-                addToQueue = false;
+                addToQueue = false,
+                fn;
 
             if (typeof fileObject === 'undefined') {
                 // We do not have the file, add it to the queue, and return real URL.
                 self.addToQueueByUrl(siteId, fileUrl);
                 response = fileUrl;
+
             } else if (fileObject.stale && $mmApp.isOnline()) {
                 // The file is outdated, we add to the queue and return real URL.
                 self.addToQueueByUrl(siteId, fileUrl);
                 response = fileUrl;
+
             } else {
                 // We found the file entry, now look for the file on disk.
-                response = self._getFileInternalUrlById(siteId, fileId).then(function(internalUrl) {
+
+                if (mode === 'src') {
+                    fn = self._getInternalSrcById;
+                } else {
+                    fn = self._getInternalUrlById;
+                }
+
+                response = fn(siteId, fileId).then(function(internalUrl) {
                     // Perfect, the file is on disk.
                     return internalUrl;
                 }, function() {
@@ -601,28 +634,6 @@ angular.module('mm.core')
     };
 
     /**
-     * Returns the internal URL of a file.
-     *
-     * @module mm.core
-     * @ngdoc method
-     * @name $mmFilepool#_getFileInternalUrlById
-     * @param {String} siteId The site ID.
-     * @param {String} fileId The file ID.
-     * @return {Promise} Resolved with the internal URL. Rejected otherwise.
-     * @protected
-     */
-    self._getFileInternalUrlById = function(siteId, fileId) {
-        if ($mmFS.isAvailable()) {
-            return $mmFS.getFile(self._getFilePath(siteId, fileId)).then(function(fileEntry) {
-                // We use toInternalURL so images are loaded in iOS8 using img HTML tags,
-                // with toURL the OS is unable to find the image files.
-                return fileEntry.toURL();
-            });
-        }
-        return $q.reject();
-    };
-
-    /**
      * Get the path to a file.
      *
      * This does not check if the file exists or not.
@@ -637,6 +648,88 @@ angular.module('mm.core')
      */
     self._getFilePath = function(siteId, fileId) {
         return $mmFS.getSiteFolder(siteId) + '/' + mmFilepoolFolder + '/' + fileId;
+    };
+
+    /**
+     * Returns the internal SRC of a file.
+     *
+     * The returned URL from this method is typically used with IMG tags.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#_getInternalSrcById
+     * @param {String} siteId The site ID.
+     * @param {String} fileId The file ID.
+     * @return {Promise} Resolved with the internal URL. Rejected otherwise.
+     * @protected
+     */
+    self._getInternalSrcById = function(siteId, fileId) {
+        if ($mmFS.isAvailable()) {
+            return $mmFS.getFile(self._getFilePath(siteId, fileId)).then(function(fileEntry) {
+                // We use toInternalURL so images are loaded in iOS8 using img HTML tags,
+                // with toURL the OS is unable to find the image files.
+                return fileEntry.toInternalURL();
+            });
+        }
+        return $q.reject();
+    };
+
+    /**
+     * Returns the local URL of a file.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#_getInternalUrlById
+     * @param {String} siteId The site ID.
+     * @param {String} fileId The file ID.
+     * @return {Promise} Resolved with the URL. Rejected otherwise.
+     * @protected
+     */
+    self._getInternalUrlById = function(siteId, fileId) {
+        if ($mmFS.isAvailable()) {
+            return $mmFS.getFile(self._getFilePath(siteId, fileId)).then(function(fileEntry) {
+                return fileEntry.toURL();
+            });
+        }
+        return $q.reject();
+    };
+
+    /**
+     * Returns an absolute URL to use in IMG tags.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#getSrcByUrl
+     * @param {String} siteId The site ID.
+     * @param {String} fileUrl The absolute URL to the file.
+     * @return {Promise} Resolved with the URL to use. When rejected, nothing could be done,
+     *                   which means that you should not even use the fileUrl passed.
+     * @description
+     * This will return a URL pointing to the content of the requested URL.
+     * The URL returned is compatible to use with IMG tags.
+     * See {@link $mmFilepool#_getFileUrlByUrl} for more details.
+     */
+    self.getSrcByUrl = function(siteId, fileUrl) {
+        return self._getFileUrlByUrl(siteId, fileUrl, 'src');
+    };
+
+    /**
+     * Returns an absolute URL to access the file.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#getUrlByUrl
+     * @param {String} siteId The site ID.
+     * @param {String} fileUrl The absolute URL to the file.
+     * @return {Promise} Resolved with the URL to use. When rejected, nothing could be done,
+     *                   which means that you should not even use the fileUrl passed.
+     * @description
+     * This will return a URL pointing to the content of the requested URL.
+     * The URL returned is compatible to use with a local browser.
+     * See {@link $mmFilepool#_getFileUrlByUrl} for more details.
+     */
+    self.getUrlByUrl = function(siteId, fileUrl) {
+        return self._getFileUrlByUrl(siteId, fileUrl, 'url');
     };
 
     /**
@@ -813,7 +906,7 @@ angular.module('mm.core')
 
         $log.debug('Processing queue item: ' + siteId + ', ' + fileId);
         return getSiteDb(siteId).then(function(db) {
-            db.get(mmFilepoolStore, fileId).then(function(fileObject) {
+            return db.get(mmFilepoolStore, fileId).then(function(fileObject) {
                 if (fileObject && !fileObject.stale) {
                     // We have the file, it is not stale, we can update links and remove from queue.
                     self._addFileLinks(siteId, fileId, links);
