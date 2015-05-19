@@ -86,7 +86,7 @@ angular.module('mm.addons.mod_page')
                 return $q.reject();
             } else if ($mmFS.isAvailable()) {
                 // The file system is available.
-                return $mmFilepool.downloadUrl($mmSite.getId(), indexUrl, mmaModPageComponent, moduleId);
+                return $mmFilepool.downloadUrl($mmSite.getId(), indexUrl, false, mmaModPageComponent, moduleId);
             } else {
                 // We return the live URL.
                 deferred = $q.defer();
