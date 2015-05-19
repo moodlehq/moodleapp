@@ -2465,7 +2465,7 @@ angular.module('mm.core')
 angular.module('mm.core')
 .directive('mmExternalContent', function($log, $mmFilepool, $mmSite, $mmSitesManager, $mmUtil) {
     $log = $log.getInstance('mmExternalContent');
-    function handleExternalContent(siteId, dom, targetAttr, url) {
+    function handleExternalContent(siteId, dom, targetAttr, url, component, componentId) {
         if (!url || !$mmUtil.isPluginFileUrl(url)) {
             $log.debug('Ignoring non-pluginfile URL: ' + url);
             return;
@@ -2481,7 +2481,7 @@ angular.module('mm.core')
             } else {
                 fn = $mmFilepool.getUrlByUrl;
             }
-            fn(siteId, pluginfileURL).then(function(finalUrl) {
+            fn(siteId, pluginfileURL, component, componentId).then(function(finalUrl) {
                 $log.debug('Using URL ' + finalUrl + ' for ' + url);
                 dom.setAttribute(targetAttr, finalUrl);
             });
@@ -2492,6 +2492,8 @@ angular.module('mm.core')
         link: function(scope, element, attrs) {
             var dom = element[0],
                 siteId = attrs.siteid || $mmSite.getId(),
+                component = attrs.component,
+                componentId = attrs.componentId,
                 targetAttr,
                 observe = false,
                 url;
@@ -2514,10 +2516,10 @@ angular.module('mm.core')
                     if (!url) {
                         return;
                     }
-                    handleExternalContent(siteId, dom, targetAttr, url);
+                    handleExternalContent(siteId, dom, targetAttr, url, component, componentId);
                 });
             } else {
-                handleExternalContent(siteId, dom, targetAttr, attrs[targetAttr]);
+                handleExternalContent(siteId, dom, targetAttr, attrs[targetAttr], component, componentId);
             }
         }
     };
@@ -2531,7 +2533,9 @@ angular.module('mm.core')
         scope: true,
         transclude: true,
         link: function(scope, element, attrs, ctrl, transclude) {
-            var siteId = attrs.siteid;
+            var siteId = attrs.siteid,
+                component = attrs.component,
+                componentId = attrs.componentId;
             transclude(scope, function(clone) {
                 var content = angular.element('<div>').append(clone).html();
                 function treatContents() {
@@ -2541,6 +2545,12 @@ angular.module('mm.core')
                         var dom = angular.element('<div>').html(formatted);
                         angular.forEach(dom.find('img'), function(img) {
                             img.setAttribute('mm-external-content', '');
+                            if (component) {
+                                img.setAttribute('component', component);
+                                if (componentId) {
+                                    img.setAttribute('component-id', componentId);
+                                }
+                            }
                             if (siteId) {
                                 img.setAttribute('siteid', siteId);
                             }
@@ -2548,6 +2558,12 @@ angular.module('mm.core')
                         angular.forEach(dom.find('a'), function(anchor) {
                             anchor.setAttribute('mm-external-content', '');
                             anchor.setAttribute('mm-browser', '');
+                            if (component) {
+                                anchor.setAttribute('component', component);
+                                if (componentId) {
+                                    anchor.setAttribute('component-id', componentId);
+                                }
+                            }
                             if (siteId) {
                                 anchor.setAttribute('siteid', siteId);
                             }

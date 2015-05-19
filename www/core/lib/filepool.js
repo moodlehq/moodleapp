@@ -610,7 +610,7 @@ angular.module('mm.core')
 
                 response = fn(siteId, fileId).then(function(internalUrl) {
                     // Perfect, the file is on disk.
-                    // For the time we assume that the component link already exists.
+                    // For the time being we assume that the component link already exists.
                     return internalUrl;
                 }, function() {
                     // We have a problem here, we could not retrieve the file though we thought

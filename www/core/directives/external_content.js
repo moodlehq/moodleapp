@@ -34,7 +34,7 @@ angular.module('mm.core')
 .directive('mmExternalContent', function($log, $mmFilepool, $mmSite, $mmSitesManager, $mmUtil) {
     $log = $log.getInstance('mmExternalContent');
 
-    function handleExternalContent(siteId, dom, targetAttr, url) {
+    function handleExternalContent(siteId, dom, targetAttr, url, component, componentId) {
 
         if (!url || !$mmUtil.isPluginFileUrl(url)) {
             $log.debug('Ignoring non-pluginfile URL: ' + url);
@@ -55,7 +55,7 @@ angular.module('mm.core')
                 fn = $mmFilepool.getUrlByUrl;
             }
 
-            fn(siteId, pluginfileURL).then(function(finalUrl) {
+            fn(siteId, pluginfileURL, component, componentId).then(function(finalUrl) {
                 $log.debug('Using URL ' + finalUrl + ' for ' + url);
                 dom.setAttribute(targetAttr, finalUrl);
             });
@@ -67,6 +67,8 @@ angular.module('mm.core')
         link: function(scope, element, attrs) {
             var dom = element[0],
                 siteId = attrs.siteid || $mmSite.getId(),
+                component = attrs.component,
+                componentId = attrs.componentId,
                 targetAttr,
                 observe = false,
                 url;
@@ -94,10 +96,10 @@ angular.module('mm.core')
                     if (!url) {
                         return;
                     }
-                    handleExternalContent(siteId, dom, targetAttr, url);
+                    handleExternalContent(siteId, dom, targetAttr, url, component, componentId);
                 });
             } else {
-                handleExternalContent(siteId, dom, targetAttr, attrs[targetAttr]);
+                handleExternalContent(siteId, dom, targetAttr, attrs[targetAttr], component, componentId);
             }
 
         }
