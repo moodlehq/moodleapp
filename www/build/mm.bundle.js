@@ -123,7 +123,7 @@ angular.module('mm.core')
         });
         return exists;
     }
-    this.$get = function($mmDB) {
+    this.$get = function($mmDB, $cordovaNetwork) {
         var db = $mmDB.getDB(DBNAME, dbschema),
             self = {};
                 self.getDB = function() {
@@ -131,6 +131,9 @@ angular.module('mm.core')
         };
                 self.getSchema = function() {
             return dbschema;
+        };
+                self.isOnline = function() {
+            return typeof navigator.connection !== 'undefined' && $cordovaNetwork.isOnline();
         };
         return self;
     };
@@ -238,7 +241,23 @@ angular.module('mm.core')
 angular.module('mm.core')
 .factory('$mmDB', function($q, $log) {
     $log = $log.getInstance('$mmDB');
-    var self = {};
+    var self = {},
+        dbInstances = {};
+        function applyOrder(query, order, reverse) {
+        if (order) {
+            query = query.order(order);
+            if (reverse) {
+                query = query.reverse();
+            }
+        }
+        return query;
+    }
+        function applyWhere(query, where) {
+        if (where && where.length > 0) {
+            query = query.where.apply(query, where);
+        }
+        return query;
+    }
         function callDBFunction(db, func) {
         var deferred = $q.defer();
         try {
@@ -256,6 +275,27 @@ angular.module('mm.core')
         } catch(ex) {
             $log.error('Error executing function '+func+' to DB '+db.getName());
             $log.error(ex.name+': '+ex.message);
+            deferred.reject();
+        }
+        return deferred.promise;
+    }
+        function callCount(db, store, where) {
+        var deferred = $q.defer(),
+            query;
+        try {
+            if (typeof(db) != 'undefined') {
+                query = db.from(store);
+                query = applyWhere(query, where);
+                query.count().then(function(count) {
+                    deferred.resolve(count);
+                }, function() {
+                    deferred.reject();
+                });
+            } else {
+                deferred.reject();
+            }
+        } catch(ex) {
+            $log.error('Error querying db '+db.getName()+'. '+ex.name+': '+ex.message);
             deferred.reject();
         }
         return deferred.promise;
@@ -307,44 +347,97 @@ angular.module('mm.core')
             deferred.reject();
         });
         return deferred.promise;
-    };
-        self.getDB = function(name, schema) {
-        var db = new ydn.db.Storage(name, schema);
-        return {
-                        getName: function() {
-                return db.getName();
-            },
-                        get: function(store, id) {
-                return callDBFunction(db, 'get', store, id);
-            },
-                        getAll: function(store) {
-                return callDBFunction(db, 'values', store, undefined, 99999999);
-            },
-                        count: function(store) {
-                return callDBFunction(db, 'count', store);
-            },
-                        insert: function(store, value) {
-                return callDBFunction(db, 'put', store, value);
-            },
-                        remove: function(store, id) {
-                return callDBFunction(db, 'remove', store, id);
-            },
-                        where: function(store, field_name, op, value, op2, value2) {
-                return callWhere(db, store, field_name, op, value, op2, value2);
-            },
-                        whereEqual: function(store, field_name, value) {
-                return callWhereEqual(db, store, field_name, value);
-            },
-                        each: function(store, callback) {
-                return callEach(db, store, callback);
-            },
-                        close: function() {
-                db.close();
-                db = undefined;
+    }
+        function doQuery(db, store, where, order, reverse, limit) {
+        var deferred = $q.defer(),
+            query;
+        try {
+            if (typeof(db) != 'undefined') {
+                query = db.from(store);
+                query = applyWhere(query, where);
+                query = applyOrder(query, order, reverse);
+                query.list(limit).then(function(list) {
+                    deferred.resolve(list);
+                }, function() {
+                    deferred.reject();
+                });
+            } else {
+                deferred.reject();
             }
-        };
+        } catch(ex) {
+            $log.error('Error querying ' + store + ' on ' + db.getName() + '. ' + ex.name + ': ' + ex.message);
+            deferred.reject();
+        }
+        return deferred.promise;
+    }
+        function doUpdate(db, store, values, where) {
+        var deferred = $q.defer(),
+            query;
+        try {
+            if (typeof(db) != 'undefined') {
+                query = db.from(store);
+                query = applyWhere(query, where);
+                query.patch(values).then(function(count) {
+                    deferred.resolve(count);
+                }, function() {
+                    deferred.reject();
+                });
+            } else {
+                deferred.reject();
+            }
+        } catch(ex) {
+            $log.error('Error querying ' + store + ' on ' + db.getName() + '. ' + ex.name + ': ' + ex.message);
+            deferred.reject();
+        }
+        return deferred.promise;
+    }
+        self.getDB = function(name, schema) {
+        if (typeof dbInstances[name] === 'undefined') {
+            var db = new ydn.db.Storage(name, schema);
+            dbInstances[name] = {
+                                getName: function() {
+                    return db.getName();
+                },
+                                get: function(store, id) {
+                    return callDBFunction(db, 'get', store, id);
+                },
+                                getAll: function(store) {
+                    return callDBFunction(db, 'values', store, undefined, 99999999);
+                },
+                                count: function(store, where) {
+                    return callCount(db, store, where);
+                },
+                                insert: function(store, value, id) {
+                    return callDBFunction(db, 'put', store, value, id);
+                },
+                                query: function(store, where, order, reverse, limit) {
+                    return doQuery(db, store, where, order, reverse, limit);
+                },
+                                remove: function(store, id) {
+                    return callDBFunction(db, 'remove', store, id);
+                },
+                                update: function(store, values, where) {
+                    return doUpdate(db, store, values, where);
+                },
+                                where: function(store, field_name, op, value, op2, value2) {
+                    return callWhere(db, store, field_name, op, value, op2, value2);
+                },
+                                whereEqual: function(store, field_name, value) {
+                    return callWhereEqual(db, store, field_name, value);
+                },
+                                each: function(store, callback) {
+                    return callEach(db, store, callback);
+                },
+                                close: function() {
+                    db.close();
+                    db = undefined;
+                }
+            };
+        }
+        return dbInstances[name];
     };
         self.deleteDB = function(name) {
+        delete dbInstances[name];
         return ydn.db.deleteDatabase(name);
     };
     return self;
@@ -390,7 +483,492 @@ angular.module('mm.core')
 });
 
 angular.module('mm.core')
-.factory('$mmFS', function($ionicPlatform, $cordovaFile, $log, $q) {
+.constant('mmFilepoolQueueProcessInterval', 300)
+.constant('mmFilepoolFolder', 'filepool')
+.constant('mmFilepoolStore', 'filepool')
+.constant('mmFilepoolQueueStore', 'files_queue')
+.constant('mmFilepoolLinksStore', 'files_links')
+.config(function($mmAppProvider, $mmSiteProvider, mmFilepoolStore, mmFilepoolLinksStore, mmFilepoolQueueStore) {
+    var siteStores = [
+        {
+            name: mmFilepoolStore,
+            keyPath: 'fileId',
+            indexes: [
+                {
+                    name: 'modified',
+                }
+            ]
+        },
+        {
+            name: mmFilepoolLinksStore,
+            keyPath: ['fileId', 'component', 'componentId'],
+            indexes: [
+                {
+                    name: 'fileId',
+                },
+                {
+                    name: 'component',
+                },
+                {
+                    name: 'componentAndId',
+                    generator: function(obj) {
+                        return [obj.component, obj.componentId];
+                    }
+                }
+            ]
+        },
+    ];
+    var appStores = [
+        {
+            name: mmFilepoolQueueStore,
+            keyPath: ['siteId', 'fileId'],
+            indexes: [
+                {
+                    name: 'siteId',
+                },
+                {
+                    name: 'sortorder',
+                    generator: function(obj) {
+                        var sortorder = parseInt(obj.added, 10),
+                            priority = 999 - Math.max(0, Math.min(parseInt(obj.priority || 0, 10), 999)),
+                            padding = "000";
+                        sortorder = "" + sortorder;
+                        priority = "" + priority;
+                        priority = padding.substring(0, padding.length - priority.length) + priority;
+                        sortorder = priority + '-' + sortorder;
+                        return sortorder;
+                    }
+                }
+            ]
+        }
+    ];
+    $mmAppProvider.registerStores(appStores);
+    $mmSiteProvider.registerStores(siteStores);
+})
+.factory('$mmFilepool', function($q, $log, $timeout, $mmApp, $mmFS, $mmWS, $mmSitesManager, md5, mmFilepoolStore,
+        mmFilepoolLinksStore, mmFilepoolQueueStore, mmFilepoolFolder, mmFilepoolQueueProcessInterval) {
+    $log = $log.getInstance('$mmFilepool');
+    var self = {},
+        extensionRegex = new RegExp('^[a-z0-9]+$'),
+        tokenRegex = new RegExp('(\\?|&)token=([A-Za-z0-9]+)'),
+        queueState;
+        urlAttributes = [
+            tokenRegex,
+            new RegExp('(\\?|&)forcedownload=[0-1]')
+        ];
+    var QUEUE_RUNNING = 'mmFilepool:QUEUE_RUNNING',
+        QUEUE_PAUSED = 'mmFilepool:QUEUE_PAUSED';
+    var ERR_QUEUE_IS_EMPTY = 'mmFilepoolError:ERR_QUEUE_IS_EMPTY',
+        ERR_FS_OR_NETWORK_UNAVAILABLE = 'mmFilepoolError:ERR_FS_OR_NETWORK_UNAVAILABLE',
+        ERR_QUEUE_ON_PAUSE = 'mmFilepoolError:ERR_QUEUE_ON_PAUSE';
+        function getSiteDb(siteId) {
+        return $mmSitesManager.getSiteDb(siteId);
+    }
+        self._addFileLink = function(siteId, fileId, component, componentId) {
+        componentId = (typeof componentId === 'undefined') ? -1 : componentId;
+        return getSiteDb(siteId).then(function(db) {
+            return db.insert(mmFilepoolLinksStore, {
+                fileId: fileId,
+                component: component,
+                componentId: componentId
+            });
+        });
+    };
+        self.addFileLinkByUrl = function(siteId, fileUrl, component, componentId) {
+        var fileId = self._getFileIdByUrl(fileUrl);
+        return self._addFileLink(siteId, fileId, component, componentId);
+    };
+        self._addFileLinks = function(siteId, fileId, links) {
+        var promises = [];
+        angular.forEach(links, function(link) {
+            promises.push(self._addFileLink(siteId, fileId, link.component, link.componentId));
+        });
+        return $q.all(promises);
+    };
+        self._addFileToPool = function(siteId, fileId, data) {
+        var values = angular.copy(data) || {};
+        values.fileId = fileId;
+        return getSiteDb(siteId).then(function(db) {
+            return db.insert(mmFilepoolStore, values);
+        });
+    };
+        self.addToQueueByUrl = function(siteId, url, component, componentId, priority) {
+        var db = $mmApp.getDB(),
+            fileId,
+            now = new Date(),
+            link;
+        fileId = self._getFileIdByUrl(url);
+        priority = priority || 0;
+        if (typeof component !== 'undefined') {
+            link = {
+                component: component,
+                componentId: componentId
+            };
+        }
+        return db.get(mmFilepoolQueueStore, [siteId, fileId]).then(function(fileObject) {
+            var foundLink = false,
+                update = false;
+            if (fileObject) {
+                if (fileObject.priority < priority) {
+                    update = true;
+                    fileObject.priority = priority;
+                }
+                if (link) {
+                    angular.forEach(fileObject.links, function(fileLink) {
+                        if (fileLink.component == link.component && fileLink.componentId == link.componentId) {
+                            foundLink = true;
+                        }
+                    });
+                    if (!foundLink) {
+                        update = true;
+                        fileObject.links.push(link);
+                    }
+                }
+                if (update) {
+                    $log.debug('Updating file ' + fileId + ' which is already in queue');
+                    return db.insert(mmFilepoolQueueStore, fileObject);
+                }
+                var response = (function() {
+                    var deferred = $q.defer();
+                    deferred.resolve([fileObject.siteId, fileObject.fileId]);
+                    return deferred.promise;
+                })();
+                $log.debug('File ' + fileId + ' already in queue and does not require update');
+                return response;
+            } else {
+                return addToQueue();
+            }
+        }, function() {
+            return addToQueue();
+        });
+        function addToQueue() {
+            $log.debug('Adding ' + fileId + ' to the queue');
+            return db.insert(mmFilepoolQueueStore, {
+                siteId: siteId,
+                fileId: fileId,
+                added: now.getTime(),
+                priority: priority,
+                url: url,
+                links: link ? [link] : []
+            }).then(function(result) {
+                self.checkQueueProcessing();
+                return result;
+            });
+        }
+    };
+        self.checkQueueProcessing = function() {
+        if (!$mmFS.isAvailable() || !$mmApp.isOnline()) {
+            queueState = QUEUE_PAUSED;
+            return;
+        } else if (queueState === QUEUE_RUNNING) {
+            return;
+        }
+        queueState = QUEUE_RUNNING;
+        self._processQueue();
+    };
+        self.componentHasFiles = function(siteId, component, componentId) {
+        return getSiteDb(siteId).then(function(db) {
+            var where;
+            if (typeof componentId !== 'undefined') {
+                where = ['componentAndId', '=', [component, componentId]];
+            } else {
+                where = ['component', '=', component];
+            }
+            return db.count(mmFilepoolLinksStore, where).then(function(count) {
+                if (count > 0) {
+                    return true;
+                }
+                return $q.reject();
+            });
+        });
+    };
+        self.downloadUrl = function(siteId, fileUrl) {
+        var fileId = self._getFileIdByUrl(fileUrl),
+            now = new Date();
+        if (!$mmFS.isAvailable()) {
+            return $q.reject();
+        }
+        return self._hasFileInPool(siteId, fileId).then(function(fileObject) {
+            if (typeof fileObject === 'undefined') {
+                return self._downloadForPoolByUrl(siteId, fileUrl);
+            } else if (fileObject.stale && $mmApp.isOnline()) {
+                return self._downloadForPoolByUrl(siteId, fileUrl, fileObject);
+            }
+            return self._getInternalUrlById(siteId, fileId);
+        }, function() {
+            return self._downloadForPoolByUrl(siteId, fileUrl);
+        });
+    };
+        self._downloadForPoolByUrl = function(siteId, fileUrl, poolFileObject) {
+        var fileId = self._getFileIdByUrl(fileUrl),
+            filePath = self._getFilePath(siteId, fileId);
+        if (poolFileObject && poolFileObject.fileId !== fileId) {
+            $log.error('Invalid object to update passed');
+            return $q.reject();
+        }
+        return $mmWS.downloadFile(fileUrl, filePath).then(function(fileEntry) {
+            var now = new Date(),
+                data = poolFileObject || {};
+            data.modified = now.getTime();
+            data.stale = false;
+            data.url = fileUrl;
+            return self._addFileToPool(siteId, fileId, data).then(function() {
+                return fileEntry.toInternalURL();
+            });
+        });
+    };
+        self._hasFileInPool = function(siteId, fileId) {
+        return getSiteDb(siteId).then(function(db) {
+            return db.get(mmFilepoolStore, fileId).then(function(fileObject) {
+                if (typeof fileObject === 'undefined') {
+                    return $q.reject();
+                }
+                return fileObject;
+            });
+        });
+    };
+        self._getFileIdByUrl = function(fileUrl) {
+        var url = fileUrl,
+            candidate,
+            extension = '';
+        if (url.indexOf('/webservice/pluginfile') !== -1) {
+            angular.forEach(urlAttributes, function(regex) {
+                url = url.replace(regex, '');
+            });
+            candidate = self._guessExtensionFromUrl(url);
+            if (candidate && candidate !== 'php') {
+                extension = '.' + candidate;
+            }
+        }
+        return md5.createHash('url:' + url) + extension;
+    };
+        self._getFileUrlByUrl = function(siteId, fileUrl, mode) {
+        var fileId = self._getFileIdByUrl(fileUrl);
+        return self._hasFileInPool(siteId, fileId).then(function(fileObject) {
+            var response,
+                addToQueue = false,
+                fn;
+            if (typeof fileObject === 'undefined') {
+                self.addToQueueByUrl(siteId, fileUrl);
+                response = fileUrl;
+            } else if (fileObject.stale && $mmApp.isOnline()) {
+                self.addToQueueByUrl(siteId, fileUrl);
+                response = fileUrl;
+            } else {
+                if (mode === 'src') {
+                    fn = self._getInternalSrcById;
+                } else {
+                    fn = self._getInternalUrlById;
+                }
+                response = fn(siteId, fileId).then(function(internalUrl) {
+                    return internalUrl;
+                }, function() {
+                    $log.debug('File ' + fileId + ' not found on disk');
+                    self._removeFileById(siteId, fileId);
+                    self.addToQueueByUrl(siteId, fileUrl);
+                    if ($mmApp.isOnline()) {
+                        return fileUrl;
+                    }
+                    return $q.reject();
+                });
+            }
+            return response;
+        }, function() {
+            self.addToQueueByUrl(siteId, fileUrl);
+            return fileUrl;
+        });
+    };
+        self._getFilePath = function(siteId, fileId) {
+        return $mmFS.getSiteFolder(siteId) + '/' + mmFilepoolFolder + '/' + fileId;
+    };
+        self._getInternalSrcById = function(siteId, fileId) {
+        if ($mmFS.isAvailable()) {
+            return $mmFS.getFile(self._getFilePath(siteId, fileId)).then(function(fileEntry) {
+                return fileEntry.toInternalURL();
+            });
+        }
+        return $q.reject();
+    };
+        self._getInternalUrlById = function(siteId, fileId) {
+        if ($mmFS.isAvailable()) {
+            return $mmFS.getFile(self._getFilePath(siteId, fileId)).then(function(fileEntry) {
+                return fileEntry.toURL();
+            });
+        }
+        return $q.reject();
+    };
+        self.getSrcByUrl = function(siteId, fileUrl) {
+        return self._getFileUrlByUrl(siteId, fileUrl, 'src');
+    };
+        self.getUrlByUrl = function(siteId, fileUrl) {
+        return self._getFileUrlByUrl(siteId, fileUrl, 'url');
+    };
+        self._guessExtensionFromUrl = function(fileUrl) {
+        var split = fileUrl.split('.'),
+            candidate,
+            extension;
+        if (split.length > 1) {
+            candidate = split.pop().toLowerCase();
+            if (extensionRegex.test(candidate)) {
+                extension = candidate;
+            }
+        }
+        return extension;
+    };
+        self.invalidateFileByUrl = function(siteId, fileUrl) {
+        var fileId = self._getFileIdByUrl(fileUrl);
+        return getSiteDb(siteId).then(function(db) {
+            return db.get(mmFilepoolStore, fileId).then(function(fileObject) {
+                if (!fileObject) {
+                    return;
+                }
+                fileObject.stale = true;
+                return db.insert(mmFilepoolStore, fileObject);
+            });
+        });
+    };
+        self.invalidateFilesByComponent = function(siteId, component, componentId) {
+        var values = { stale: true },
+            where;
+        if (typeof componentId !== 'undefined') {
+            where = ['componentAndId', '=', [component, componentId]];
+        } else {
+            where = ['component', '=', component];
+        }
+        return getSiteDb(siteId).then(function(db) {
+            return db.update(mmFilepoolQueueStore, {
+                stale: true
+            }, where);
+        });
+    };
+        self._processQueue = function() {
+        var deferred = $q.defer(),
+            now = new Date(),
+            promise;
+        if (queueState !== QUEUE_RUNNING) {
+            deferred.reject(ERR_QUEUE_ON_PAUSE);
+            promise = deferred.promise;
+        } else if (!$mmFS.isAvailable() || !$mmApp.isOnline()) {
+            deferred.reject(ERR_FS_OR_NETWORK_UNAVAILABLE);
+            promise = deferred.promise;
+        } else {
+            promise = self._processImportantQueueItem();
+        }
+        promise.then(function() {
+            $timeout(self._processQueue, mmFilepoolQueueProcessInterval);
+        }, function(error) {
+            if (error === ERR_FS_OR_NETWORK_UNAVAILABLE) {
+                $log.debug('Filesysem or network unavailable, pausing queue processing.');
+            } else if (error === ERR_QUEUE_IS_EMPTY) {
+                $log.debug('Queue is empty, pausing queue processing.');
+            }
+            queueState = QUEUE_PAUSED;
+        });
+    };
+        self._processImportantQueueItem = function() {
+        return $mmApp.getDB().query(mmFilepoolQueueStore, undefined, 'sortorder', undefined, 1)
+        .then(function(items) {
+            var item = items.pop();
+            if (!item) {
+                return $q.reject(ERR_QUEUE_IS_EMPTY);
+            }
+            return self._processQueueItem(item);
+        }, function() {
+            return $q.reject(ERR_QUEUE_IS_EMPTY);
+        });
+    };
+        self._processQueueItem = function(item) {
+        var siteId = item.siteId,
+            fileId = item.fileId,
+            fileUrl = item.url,
+            links = item.links || [];
+        $log.debug('Processing queue item: ' + siteId + ', ' + fileId);
+        return getSiteDb(siteId).then(function(db) {
+            return db.get(mmFilepoolStore, fileId).then(function(fileObject) {
+                if (fileObject && !fileObject.stale) {
+                    self._addFileLinks(siteId, fileId, links);
+                    self._removeFromQueue(siteId, fileId);
+                    $log.debug('Queued file already in store, ignoring...');
+                    return;
+                }
+                return download(siteId, fileUrl, fileObject, links);
+            }, function() {
+                return download(siteId, fileUrl, undefined, links);
+            });
+        });
+                function download(siteId, fileUrl, fileObject, links) {
+            return self._downloadForPoolByUrl(siteId, fileUrl, fileObject).then(function() {
+                var promise,
+                    deferred;
+                self._addFileLinks(siteId, fileId, links);
+                promise = self._removeFromQueue(siteId, fileId);
+                deferred = $q.defer();
+                promise.then(deferred.resolve, deferred.resolve);
+                return deferred.promise;
+            }, function(errorObject) {
+                var dropFromQueue = false;
+                if (typeof errorObject !== 'undefined' && errorObject.source === fileUrl) {
+                    if (errorObject.code === 1) {
+                        dropFromQueue = true;
+                    } else if (errorObject.code === 2) {
+                        dropFromQueue = true;
+                    } else if (errorObject.code === 3) {
+                        if (errorObject.http_status === 401) {
+                            dropFromQueue = true;
+                        } else if (!errorObject.http_status) {
+                            dropFromQueue = true;
+                        } else {
+                            dropFromQueue = true;
+                        }
+                    } else if (errorObject.code === 4) {
+                    } else if (errorObject.code === 5) {
+                        dropFromQueue = true;
+                    } else {
+                        dropFromQueue = true;
+                    }
+                }
+                if (dropFromQueue) {
+                    var deferred,
+                        promise;
+                    $log.debug('Item dropped from queue due to error: ' + fileUrl);
+                    promise = self._removeFromQueue(siteId, fileId);
+                    deferred = $q.defer();
+                    promise.then(deferred.resolve, deferred.resolve);
+                    return deferred.promise;
+                } else {
+                    return $q.reject();
+                }
+            });
+        }
+    };
+        self._removeFromQueue = function(siteId, fileId) {
+        return $mmApp.getDB().remove(mmFilepoolQueueStore, [siteId, fileId]);
+    };
+        self._removeFileById = function(siteId, fileId) {
+        return getSiteDb(siteId).then(function(db) {
+            var p1, p2, p3;
+            p1 = db.remove(mmFilepoolStore, fileId);
+            p2 = db.where(mmFilepoolLinksStore, 'fileId', '=', fileId).then(function(entries) {
+                angular.forEach(entries, function(entry) {
+                    db.remove(mmFilepoolLinksStore, entry.id);
+                });
+            });
+            p3 = $mmFS.removeFile(self._getFilePath(siteId, fileId));
+            return $q.all([p1, p2, p3]);
+        });
+    };
+    return self;
+})
+.run(function($log, $ionicPlatform, $timeout, $mmFilepool) {
+    $log = $log.getInstance('$mmFilepool');
+    $ionicPlatform.ready(function() {
+        $timeout($mmFilepool.checkQueueProcessing, 1000);
+    });
+});
+
+angular.module('mm.core')
+.constant('mmFsSitesFolder', 'sites')
+.factory('$mmFS', function($ionicPlatform, $cordovaFile, $log, $q, mmFsSitesFolder) {
     $log = $log.getInstance('$mmFS');
     var self = {},
         initialized = false,
@@ -421,6 +999,9 @@ angular.module('mm.core')
         });
         return deferred.promise;
     };
+        self.isAvailable = function() {
+        return (typeof cordova !== 'undefined' && typeof cordova.file !== 'undefined');
+    };
         self.getFile = function(path) {
         return self.init().then(function() {
             $log.debug('Get file: '+path);
@@ -432,6 +1013,9 @@ angular.module('mm.core')
             $log.debug('Get directory: '+path);
             return $cordovaFile.checkDir(basePath, path);
         });
+    };
+    self.getSiteFolder = function(siteId) {
+        return mmFsSitesFolder + '/' + siteId;
     };
         function create(isDirectory, path, failIfExists, base) {
         return self.init().then(function() {
@@ -746,7 +1330,7 @@ angular.module('mm.core')
         });
         return exists;
     }
-    this.$get = function($http, $q, $mmWS, $mmDB, $mmConfig, $log, md5, $cordovaNetwork, $mmLang, $mmUtil,
+    this.$get = function($http, $q, $mmWS, $mmDB, $mmConfig, $log, md5, $mmApp, $mmLang, $mmUtil,
         mmCoreWSCacheStore, mmCoreWSPrefix, mmCoreSessionExpired, $mmEvents) {
         $log = $log.getInstance('$mmSite');
                 var deprecatedFunctions = {
@@ -787,6 +1371,9 @@ angular.module('mm.core')
                 this.db = $mmDB.getDB('Site-' + this.id, siteSchema);
             }
         }
+                self.makeSite = function(id, siteurl, token, infos) {
+            return new Site(id, siteurl, token, infos);
+        };
                 self.canAccessMyFiles = function() {
             var infos = self.getInfo();
             return infos && (typeof infos.usercanmanageownfiles === 'undefined' || infos.usercanmanageownfiles);
@@ -827,13 +1414,13 @@ angular.module('mm.core')
             currentSite = undefined;
         };
                 self.setCandidateSite = function(siteurl, token) {
-            currentSite = new Site(undefined, siteurl, token);
+            currentSite = self.makeSite(undefined, siteurl, token);
         };
                 self.deleteCandidateSite = function() {
             currentSite = undefined;
         };
                 self.setSite = function(id, siteurl, token, infos) {
-            currentSite = new Site(id, siteurl, token, infos);
+            currentSite = self.makeSite(id, siteurl, token, infos);
         };
                 self.deleteSite = function(siteid) {
             if (typeof(currentSite) !== 'undefined' && currentSite.id == siteid) {
@@ -936,6 +1523,16 @@ angular.module('mm.core')
                 return self.wsAvailable(mmCoreWSPrefix + method, false);
             }
             return false;
+        };
+                self.getCurrentSite = function() {
+            return currentSite;
+        };
+                self.getDb = function() {
+            if (typeof(currentSite) !== 'undefined' && typeof(currentSite.db) !== 'undefined') {
+                return currentSite.db;
+            } else {
+                return undefined;
+            }
         };
                 self.getId = function() {
             if (typeof(currentSite) !== 'undefined' && typeof(currentSite.id) !== 'undefined') {
@@ -1044,9 +1641,7 @@ angular.module('mm.core')
             key = md5.createHash(method + ':' + JSON.stringify(data));
             db.get(mmCoreWSCacheStore, key).then(function(entry) {
                 var now = new Date().getTime();
-                try {
-                    preSets.omitExpires = preSets.omitExpires || $cordovaNetwork.isOffline();
-                } catch(err) {}
+                preSets.omitExpires = preSets.omitExpires || !$mmApp.isOnline();
                 if (!preSets.omitExpires) {
                     if (now > entry.expirationtime) {
                         $log.debug('Cached element found, but it is expired');
@@ -1109,7 +1704,7 @@ angular.module('mm.core')
     $mmAppProvider.registerStores(stores);
 })
 .factory('$mmSitesManager', function($http, $q, $mmSite, md5, $mmLang, $mmConfig, $mmApp, $mmWS, $mmUtil, $mmFS,
-                                     $cordovaNetwork, mmCoreSitesStore, mmCoreCurrentSiteStore, $log) {
+                                     mmCoreSitesStore, mmCoreCurrentSiteStore, $log) {
     $log = $log.getInstance('$mmSitesManager');
     var self = {},
         services = {},
@@ -1305,6 +1900,27 @@ angular.module('mm.core')
             }
         });
     };
+        self.getSite = function(siteId) {
+        if ($mmSite.getId() == siteId) {
+            var deferred = $q.defer();
+            deferred.resolve($mmSite.getCurrentSite());
+            return deferred.promise;
+        }
+        return db.get(mmCoreSitesStore, siteId).then(function(site) {
+            return $mmSite.makeSite(siteid, site.siteurl, site.token, site.infos);
+        });
+    };
+        self.getSiteDb = function(siteId) {
+        if ($mmSite.getId() == siteId) {
+            var deferred = $q.defer();
+            deferred.resolve($mmSite.getDb());
+            return deferred.promise;
+        }
+        return db.get(mmCoreSitesStore, siteId).then(function(site) {
+            var obj = $mmSite.makeSite(siteid, site.siteurl, site.token, site.infos);
+            return obj.db;
+        });
+    };
         self.getSites = function() {
         return db.getAll(mmCoreSitesStore).then(function(sites) {
             var formattedSites = [];
@@ -1344,24 +1960,25 @@ angular.module('mm.core')
                 directory: siteId + "/" + courseId,
                 file:      siteId + "/" + courseId + "/" + filename
             };
-            return $mmFS.getFile(path.file).then(function(fileEntry) {
+            var getFileFromFS = (function() {
+                if ($mmFS.isAvailable()) {
+                    return $mmFS.getFile(path.file);
+                }
+                return $q.reject();
+            })();
+            return getFileFromFS.then(function(fileEntry) {
                 $log.debug('File ' + downloadURL + ' already downloaded.');
                 return fileEntry.toInternalURL();
             }, function() {
-                try {
-                    if ($cordovaNetwork.isOnline()) {
-                        $log.debug('File ' + downloadURL + ' not downloaded. Lets download.');
-                        return $mmWS.downloadFile(downloadURL, path.file).then(function(fileEntry) {
-                            return fileEntry.toInternalURL();
-                        }, function(err) {
-                            return downloadURL;
-                        });
-                    } else {
-                        $log.debug('File ' + downloadURL + ' not downloaded, but the device is offline.');
+                if ($mmApp.isOnline()) {
+                    $log.debug('File ' + downloadURL + ' not downloaded. Lets download.');
+                    return $mmWS.downloadFile(downloadURL, path.file).then(function(fileEntry) {
+                        return fileEntry.toInternalURL();
+                    }, function(err) {
                         return downloadURL;
-                    }
-                } catch(err) {
-                    $log.debug('File ' + downloadURL + ' not downloaded, but cordova is not available.');
+                    });
+                } else {
+                    $log.debug('File ' + downloadURL + ' not downloaded, but the device is offline.');
                     return downloadURL;
                 }
             });
@@ -1559,7 +2176,7 @@ angular.module('mm.core')
             if (!token) {
                 return '';
             }
-            if (url.indexOf('?file=') != -1) {
+            if (url.indexOf('?file=') != -1 || url.indexOf('?forcedownload=') != -1) {
                 url += '&';
             } else {
                 url += '?';
@@ -1704,7 +2321,7 @@ angular.module('mm.core')
 });
 
 angular.module('mm.core')
-.factory('$mmWS', function($http, $q, $log, $mmLang, $cordovaFileTransfer, $cordovaNetwork, $mmFS, mmCoreSessionExpired) {
+.factory('$mmWS', function($http, $q, $log, $mmLang, $cordovaFileTransfer, $mmApp, $mmFS, mmCoreSessionExpired) {
     $log = $log.getInstance('$mmWS');
     var self = {};
         self.call = function(method, data, preSets) {
@@ -1715,13 +2332,10 @@ angular.module('mm.core')
                 typeof(preSets.wstoken) === 'undefined' || typeof(preSets.siteurl) === 'undefined') {
             $mmLang.translateErrorAndReject(deferred, 'mm.core.unexpectederror');
             return deferred.promise;
+        } else if (!$mmApp.isOnline()) {
+            $mmLang.translateErrorAndReject(deferred, 'mm.core.networkerrormsg');
+            return deferred.promise;
         }
-        try {
-            if ($cordovaNetwork.isOffline()) {
-                $mmLang.translateErrorAndReject(deferred, 'mm.core.networkerrormsg');
-                return deferred.promise;
-            }
-        } catch(err) {}
         data.wsfunction = method;
         data.wstoken = preSets.wstoken;
         siteurl = preSets.siteurl + '/webservice/rest/server.php?moodlewsrestformat=json';
@@ -2143,6 +2757,37 @@ angular.module('mm.core.user', [])
 });
 
 angular.module('mm.core.course')
+.directive('mmCourseContent', function($log, $mmCourseDelegate, $state) {
+    $log = $log.getInstance('mmCourseContent');
+    function link(scope, element, attrs) {
+        var module = JSON.parse(attrs.module),
+            data;
+        data = $mmCourseDelegate.getDataFromContentHandlerFor(module.modname, module);
+        scope = angular.extend(scope, data);
+    }
+    function controller($scope) {
+        $scope.handleClick = function(e, button) {
+            e.stopPropagation();
+            e.preventDefault();
+            button.callback($scope);
+        };
+        $scope.jump = function(e, state, stateParams) {
+            e.stopPropagation();
+            e.preventDefault();
+            $state.go(state, stateParams);
+        };
+    }
+    return {
+        controller: controller,
+        link: link,
+        replace: true,
+        restrict: 'E',
+        scope: {},
+        templateUrl: 'core/components/course/templates/content.html',
+    };
+});
+
+angular.module('mm.core.course')
 .controller('mmCourseModContentCtrl', function($log, $stateParams, $scope) {
     $log = $log.getInstance('mmCourseModContentCtrl');
     var module = $stateParams.module || {};
@@ -2225,37 +2870,6 @@ angular.module('mm.core.course')
         return 'site.mm_course-section';
     };
     loadSections();
-});
-
-angular.module('mm.core.course')
-.directive('mmCourseContent', function($log, $mmCourseDelegate, $state) {
-    $log = $log.getInstance('mmCourseContent');
-    function link(scope, element, attrs) {
-        var module = JSON.parse(attrs.module),
-            data;
-        data = $mmCourseDelegate.getDataFromContentHandlerFor(module.modname, module);
-        scope = angular.extend(scope, data);
-    }
-    function controller($scope) {
-        $scope.handleClick = function(e, button) {
-            e.stopPropagation();
-            e.preventDefault();
-            button.callback($scope);
-        };
-        $scope.jump = function(e, state, stateParams) {
-            e.stopPropagation();
-            e.preventDefault();
-            $state.go(state, stateParams);
-        };
-    }
-    return {
-        controller: controller,
-        link: link,
-        replace: true,
-        restrict: 'E',
-        scope: {},
-        templateUrl: 'core/components/course/templates/content.html',
-    };
 });
 
 angular.module('mm.core.course')
@@ -3328,13 +3942,13 @@ angular.module('mm.addons.files')
 });
 
 angular.module('mm.addons.files')
-.factory('$mmaFilesHelper', function($q, $mmUtil, $cordovaNetwork, $ionicActionSheet,
+.factory('$mmaFilesHelper', function($q, $mmUtil, $mmApp, $ionicActionSheet,
         $log, $translate, $mmaFiles, $cordovaCamera, $cordovaCapture) {
     $log = $log.getInstance('$mmaFilesHelper');
     var self = {};
         self.pickAndUploadFile = function() {
         var deferred = $q.defer();
-        if (!$cordovaNetwork.isOnline()) {
+        if (!$mmApp.isOnline()) {
             $mmUtil.showErrorModal('mma.files.errormustbeonlinetoupload', true);
             deferred.reject();
             return deferred.promise;

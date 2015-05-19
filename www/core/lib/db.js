@@ -25,7 +25,45 @@ angular.module('mm.core')
 
     $log = $log.getInstance('$mmDB');
 
-    var self = {};
+    var self = {},
+        dbInstances = {};
+
+    /**
+     * Convenient helper to apply an order to a query.
+     *
+     * @param  {Object}  [query]   A query object.
+     * @param  {String}  [order]   The field to order on.
+     * @param  {Boolean} [reverse] Whether to reverse the results.
+     * @return {Object}  The updated query object (or initial one).
+     */
+    function applyOrder(query, order, reverse) {
+        if (order) {
+            query = query.order(order);
+            if (reverse) {
+                query = query.reverse();
+            }
+        }
+        return query;
+    }
+
+    /**
+     * Convenient helper to apply a where condition to a query.
+     *
+     * @param  {Object} [query]   A query object.
+     * @param  {Array}  [where]   Array of parameters, in order:
+     *                            - The field to filter on
+     *                            - The operator: <, <=, =, >, >=, ^ (starts with)
+     *                            - The value
+     *                            - An additional operator
+     *                            - An additional value
+     * @return {Object} The updated query object (or initial one).
+     */
+    function applyWhere(query, where) {
+        if (where && where.length > 0) {
+            query = query.where.apply(query, where);
+        }
+        return query;
+    }
 
     /**
      * Call a DB simple function.
@@ -51,6 +89,37 @@ angular.module('mm.core')
         } catch(ex) {
             $log.error('Error executing function '+func+' to DB '+db.getName());
             $log.error(ex.name+': '+ex.message);
+            deferred.reject();
+        }
+
+        return deferred.promise;
+    }
+
+    /**
+     * Retrieve the count of entries matching certain conditions.
+     * @param  {Object}  db         DB to use.
+     * @param  {String}  store      Name of the store to get the entries from.
+     * @param  {Array}   where      Array of where conditions, see applyWhere.
+     * @return {Promise}
+     */
+    function callCount(db, store, where) {
+        var deferred = $q.defer(),
+            query;
+
+        try {
+            if (typeof(db) != 'undefined') {
+                query = db.from(store);
+                query = applyWhere(query, where);
+                query.count().then(function(count) {
+                    deferred.resolve(count);
+                }, function() {
+                    deferred.reject();
+                });
+            } else {
+                deferred.reject();
+            }
+        } catch(ex) {
+            $log.error('Error querying db '+db.getName()+'. '+ex.name+': '+ex.message);
             deferred.reject();
         }
 
@@ -139,10 +208,81 @@ angular.module('mm.core')
         });
 
         return deferred.promise;
-    };
+    }
+
+    /**
+     * Retrieve the list of entries matching certain conditions.
+     *
+     * @param  {Object}  db      DB to use.
+     * @param  {String}  store   Name of the store to get the entries from.
+     * @param  {Array}   where   Array of where conditions, see applyWhere.
+     * @param  {Array}   order   The key to order on.
+     * @param  {Boolean} reverse Whether to reverse the order.
+     * @param  {Number}  limit   The number of result to return.
+     * @return {Promise}
+     */
+    function doQuery(db, store, where, order, reverse, limit) {
+        var deferred = $q.defer(),
+            query;
+
+        try {
+            if (typeof(db) != 'undefined') {
+                query = db.from(store);
+                query = applyWhere(query, where);
+                query = applyOrder(query, order, reverse);
+                query.list(limit).then(function(list) {
+                    deferred.resolve(list);
+                }, function() {
+                    deferred.reject();
+                });
+            } else {
+                deferred.reject();
+            }
+        } catch(ex) {
+            $log.error('Error querying ' + store + ' on ' + db.getName() + '. ' + ex.name + ': ' + ex.message);
+            deferred.reject();
+        }
+
+        return deferred.promise;
+    }
+
+    /**
+     * Update a list of entries matching conditions.
+     *
+     * @param  {Object}  db      DB to use.
+     * @param  {String}  store   Name of the store to get the entries from.
+     * @param  {Object}  values  The values to set.
+     * @param  {Array}   where   An array of where() parameters.
+     * @return {Promise}
+     */
+    function doUpdate(db, store, values, where) {
+        var deferred = $q.defer(),
+            query;
+
+        try {
+            if (typeof(db) != 'undefined') {
+                query = db.from(store);
+                query = applyWhere(query, where);
+                query.patch(values).then(function(count) {
+                    deferred.resolve(count);
+                }, function() {
+                    deferred.reject();
+                });
+            } else {
+                deferred.reject();
+            }
+        } catch(ex) {
+            $log.error('Error querying ' + store + ' on ' + db.getName() + '. ' + ex.name + ': ' + ex.message);
+            deferred.reject();
+        }
+
+        return deferred.promise;
+    }
 
     /**
      * Create a new database object.
+     *
+     * The database objects are cached statically.
      *
      * @module mm.core
      * @ngdoc method
@@ -152,108 +292,137 @@ angular.module('mm.core')
      * @return {Object}        DB.
      */
     self.getDB = function(name, schema) {
-        var db = new ydn.db.Storage(name, schema);
+        if (typeof dbInstances[name] === 'undefined') {
+            var db = new ydn.db.Storage(name, schema);
 
-        return {
-            /**
-             * Get DB name.
-             *
-             * @return {String} DB name.
-             */
-            getName: function() {
-                return db.getName();
-            },
-            /**
-             * Get an entry from a store.
-             *
-             * @param {String} store Name of the store.
-             * @param {Mixed}  id    Entry's identifier (primary key / keyPath).
-             * @return {Promise}     Promise resolved when the entry is retrieved. Resolve param: DB entry (object).
-             */
-            get: function(store, id) {
-                return callDBFunction(db, 'get', store, id);
-            },
-            /**
-             * Get all the entries from a store.
-             *
-             * @param {String} store Name of the store.
-             * @return {Promise}     Promise resolved when the entries are retrieved. Resolve param: DB entries (array).
-             */
-            getAll: function(store) {
-                return callDBFunction(db, 'values', store, undefined, 99999999);
-            },
-            /**
-             * Count the number of entries in a store.
-             *
-             * @param {String} store Name of the store.
-             * @return {Promise}     Promise resolved when the count is done. Resolve param: number of entries.
-             */
-            count: function(store) {
-                return callDBFunction(db, 'count', store);
-            },
-            /**
-             * Add an entry to a store.
-             *
-             * @param {String} store Name of the store.
-             * @param {Object} value Object to store. Primary key (keyPath) is required.
-             * @return {Promise}     Promise resolved when the entry is inserted. Resolve param: new entry's primary key.
-             */
-            insert: function(store, value) {
-                return callDBFunction(db, 'put', store, value);
-            },
-            /**
-             * Removes an entry from a store.
-             *
-             * @param {String} store Name of the store.
-             * @param {Mixed}  id    Entry's identifier (primary key / keyPath).
-             * @return {Promise}     Promise resolved when the entry is deleted. Resolve param: number of entries deleted.
-             */
-            remove: function(store, id) {
-                return callDBFunction(db, 'remove', store, id);
-            },
-            /**
-             * Get the entries where a field match certain conditions.
-             *
-             * @param {String} store      Name of the store.
-             * @param {String} field_name Name of the field to match.
-             * @param {String} op         First operator to apply to the field. <, <=, =, >, >=, ^ (start with).
-             * @param {Mixed}  value      Value to compare using the first operator.
-             * @param {String} op2        Second operator to apply to the field. Optional.
-             * @param {Mixed}  value2     Value to compare using the second operator. Optional.
-             * @return {Promise}          Promise resolved when the entries are retrieved. Resolve param: entries (array).
-             */
-            where: function(store, field_name, op, value, op2, value2) {
-                return callWhere(db, store, field_name, op, value, op2, value2);
-            },
-            /**
-             * Get the entries where a field is equal to a certain value.
-             *
-             * @param {String} store      Name of the store.
-             * @param {String} field_name Name of the field to match.
-             * @param {Mixed}  value      Value to compare to the field.
-             * @return {Promise}          Promise resolved when the entries are retrieved. Resolve param: entries (array).
-             */
-            whereEqual: function(store, field_name, value) {
-                return callWhereEqual(db, store, field_name, value);
-            },
-            /**
-             * Call a function with each of the entries from a store.
-             *
-             * @param {String} store      Name of the store.
-             * @param {Function} callback Function to call with each entry.
-             * @return {Promise}          Promise resolved when the function is called for all entries. No resolve params.
-             */
-            each: function(store, callback) {
-                return callEach(db, store, callback);
-            },
-            /**
-             * Close the database.
-             */
-            close: function() {
-                db.close();
-                db = undefined;
-            }
-        };
+            dbInstances[name] = {
+                /**
+                 * Get DB name.
+                 *
+                 * @return {String} DB name.
+                 */
+                getName: function() {
+                    return db.getName();
+                },
+                /**
+                 * Get an entry from a store.
+                 *
+                 * @param {String} store Name of the store.
+                 * @param {Mixed}  id    Entry's identifier (primary key / keyPath).
+                 * @return {Promise}     Promise resolved when the entry is retrieved. Resolve param: DB entry (object).
+                 */
+                get: function(store, id) {
+                    return callDBFunction(db, 'get', store, id);
+                },
+                /**
+                 * Get all the entries from a store.
+                 *
+                 * @param {String} store Name of the store.
+                 * @return {Promise}     Promise resolved when the entries are retrieved. Resolve param: DB entries (array).
+                 */
+                getAll: function(store) {
+                    return callDBFunction(db, 'values', store, undefined, 99999999);
+                },
+                /**
+                 * Count the number of entries in a store.
+                 *
+                 * @param {String} store Name of the store.
+                 * @param {Array} [where] Array of where conditions, see applyWhere.
+                 * @return {Promise}     Promise resolved when the count is done. Resolve param: number of entries.
+                 */
+                count: function(store, where) {
+                    return callCount(db, store, where);
+                },
+                /**
+                 * Add an entry to a store.
+                 *
+                 * @param {String} store Name of the store.
+                 * @param {Object} value Object to store. Primary key (keyPath) is required.
+                 * @param {IDbKey} id The key when needed.
+                 * @return {Promise}     Promise resolved when the entry is inserted. Resolve param: new entry's primary key.
+                 */
+                insert: function(store, value, id) {
+                    return callDBFunction(db, 'put', store, value, id);
+                },
+                /**
+                 * Query the database.
+                 *
+                 * @param {String} store Name of the store.
+                 * @param {Array} [where] Array of where conditions, see applyWhere.
+                 * @param {String} [order] The key to sort the results with.
+                 * @param {Boolean} [reverse=false] Whether to reverse the results.
+                 * @param {Number} [limit] The number of results to return.
+                 * @return {Promise} Promise resolved with an array of entries.
+                 */
+                query: function(store, where, order, reverse, limit) {
+                    return doQuery(db, store, where, order, reverse, limit);
+                },
+                /**
+                 * Removes an entry from a store.
+                 *
+                 * @param {String} store Name of the store.
+                 * @param {Mixed}  id    Entry's identifier (primary key / keyPath).
+                 * @return {Promise}     Promise resolved when the entry is deleted. Resolve param: number of entries deleted.
+                 */
+                remove: function(store, id) {
+                    return callDBFunction(db, 'remove', store, id);
+                },
+                /**
+                 * Update records matching.
+                 *
+                 * @param {String} store Name of the store.
+                 * @param {Object} values The values to update.
+                 * @param {Array} [where] Array of where conditions, see applyWhere.
+                 * @return {Promise}
+                 */
+                update: function(store, values, where) {
+                    return doUpdate(db, store, values, where);
+                },
+                /**
+                 * Get the entries where a field match certain conditions.
+                 *
+                 * @param {String} store      Name of the store.
+                 * @param {String} field_name Name of the field to match.
+                 * @param {String} op         First operator to apply to the field. <, <=, =, >, >=, ^ (start with).
+                 * @param {Mixed}  value      Value to compare using the first operator.
+                 * @param {String} op2        Second operator to apply to the field. Optional.
+                 * @param {Mixed}  value2     Value to compare using the second operator. Optional.
+                 * @return {Promise}          Promise resolved when the entries are retrieved. Resolve param: entries (array).
+                 */
+                where: function(store, field_name, op, value, op2, value2) {
+                    return callWhere(db, store, field_name, op, value, op2, value2);
+                },
+                /**
+                 * Get the entries where a field is equal to a certain value.
+                 *
+                 * @param {String} store      Name of the store.
+                 * @param {String} field_name Name of the field to match.
+                 * @param {Mixed}  value      Value to compare to the field.
+                 * @return {Promise}          Promise resolved when the entries are retrieved. Resolve param: entries (array).
+                 */
+                whereEqual: function(store, field_name, value) {
+                    return callWhereEqual(db, store, field_name, value);
+                },
+                /**
+                 * Call a function with each of the entries from a store.
+                 *
+                 * @param {String} store      Name of the store.
+                 * @param {Function} callback Function to call with each entry.
+                 * @return {Promise}          Promise resolved when the function is called for all entries. No resolve params.
+                 */
+                each: function(store, callback) {
+                    return callEach(db, store, callback);
+                },
+                /**
+                 * Close the database.
+                 */
+                close: function() {
+                    db.close();
+                    db = undefined;
+                }
+            };
+        }
+        return dbInstances[name];
     };
 
     /**
@@ -266,6 +435,7 @@ angular.module('mm.core')
      * @return {Promise}       Promise to be resolved when the site DB is deleted.
      */
     self.deleteDB = function(name) {
+        delete dbInstances[name];
         return ydn.db.deleteDatabase(name);
     };
 

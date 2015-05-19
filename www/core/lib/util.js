@@ -212,7 +212,7 @@ angular.module('mm.core')
             }
 
             // In which way the server is serving the files? Are we using slash parameters?
-            if (url.indexOf('?file=') != -1) {
+            if (url.indexOf('?file=') != -1 || url.indexOf('?forcedownload=') != -1) {
                 url += '&';
             } else {
                 url += '?';

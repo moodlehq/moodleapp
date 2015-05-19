@@ -110,7 +110,7 @@ angular.module('mm.core')
         return exists;
     }
 
-    this.$get = function($http, $q, $mmWS, $mmDB, $mmConfig, $log, md5, $cordovaNetwork, $mmLang, $mmUtil,
+    this.$get = function($http, $q, $mmWS, $mmDB, $mmConfig, $log, md5, $mmApp, $mmLang, $mmUtil,
         mmCoreWSCacheStore, mmCoreWSPrefix, mmCoreSessionExpired, $mmEvents) {
 
         $log = $log.getInstance('$mmSite');
@@ -172,6 +172,21 @@ angular.module('mm.core')
                 this.db = $mmDB.getDB('Site-' + this.id, siteSchema);
             }
         }
+
+        /**
+         * Make a site object.
+         *
+         * @param {String} id      Site ID.
+         * @param {String} siteurl Site URL.
+         * @param {String} token   User's token in the site.
+         * @param {Object} infos   Site's info.
+         * @return {Object} The current site object.
+         * @description
+         * This returns a site object. It's not intended to be used directly.
+         */
+        self.makeSite = function(id, siteurl, token, infos) {
+            return new Site(id, siteurl, token, infos);
+        };
 
         /**
          * Can the user access their private files?
@@ -282,7 +297,7 @@ angular.module('mm.core')
          * @param {String} token   User's token in the site.
          */
         self.setCandidateSite = function(siteurl, token) {
-            currentSite = new Site(undefined, siteurl, token);
+            currentSite = self.makeSite(undefined, siteurl, token);
         };
 
         /**
@@ -308,7 +323,7 @@ angular.module('mm.core')
          * @param {Object} infos   Site info.
          */
         self.setSite = function(id, siteurl, token, infos) {
-            currentSite = new Site(id, siteurl, token, infos);
+            currentSite = self.makeSite(id, siteurl, token, infos);
         };
 
         /**
@@ -513,6 +528,34 @@ angular.module('mm.core')
             }
 
             return false;
+        };
+
+        /**
+         * Returns the current site object.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmSite#getCurrentSite
+         * @return {Object} The current site object.
+         */
+        self.getCurrentSite = function() {
+            return currentSite;
+        };
+
+        /**
+         * Get current site DB.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmSite#getDb
+         * @return {Object} Current site DB.
+         */
+        self.getDb = function() {
+            if (typeof(currentSite) !== 'undefined' && typeof(currentSite.db) !== 'undefined') {
+                return currentSite.db;
+            } else {
+                return undefined;
+            }
         };
 
         /**
@@ -732,9 +775,7 @@ angular.module('mm.core')
             db.get(mmCoreWSCacheStore, key).then(function(entry) {
                 var now = new Date().getTime();
 
-                try { // Use try/catch because $cordovaNetwork fails in Chromium (until mm.emulator is migrated).
-                    preSets.omitExpires = preSets.omitExpires || $cordovaNetwork.isOffline(); // omitExpires in offline.
-                } catch(err) {}
+                preSets.omitExpires = preSets.omitExpires || !$mmApp.isOnline();
 
                 if (!preSets.omitExpires) {
                     if (now > entry.expirationtime) {

@@ -14,7 +14,7 @@
 
 angular.module('mm.addons.files')
 
-.factory('$mmaFilesHelper', function($q, $mmUtil, $cordovaNetwork, $ionicActionSheet,
+.factory('$mmaFilesHelper', function($q, $mmUtil, $mmApp, $ionicActionSheet,
         $log, $translate, $mmaFiles, $cordovaCamera, $cordovaCapture) {
 
     $log = $log.getInstance('$mmaFilesHelper');
@@ -33,7 +33,7 @@ angular.module('mm.addons.files')
     self.pickAndUploadFile = function() {
         var deferred = $q.defer();
 
-        if (!$cordovaNetwork.isOnline()) {
+        if (!$mmApp.isOnline()) {
             $mmUtil.showErrorModal('mma.files.errormustbeonlinetoupload', true);
             deferred.reject();
             return deferred.promise;
