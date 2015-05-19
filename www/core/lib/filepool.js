@@ -818,10 +818,25 @@ angular.module('mm.core')
         } else {
             where = ['component', '=', component];
         }
+
         return getSiteDb(siteId).then(function(db) {
-            return db.update(mmFilepoolQueueStore, {
-                stale: true
-            }, where);
+            return db.query(mmFilepoolLinksStore, where).then(function(items) {
+                var promise,
+                    promises = [];
+
+                angular.forEach(items, function(item) {
+                    promise = db.get(mmFilepoolStore, item.fileId).then(function(fileEntry) {
+                        if (!fileEntry) {
+                            return;
+                        }
+                        fileEntry.stale = true;
+                        return db.insert(mmFilepoolStore, fileEntry);
+                    });
+                    promises.push(promise);
+                });
+
+                return $q.all(promises);
+            });
         });
     };
 
