@@ -565,7 +565,7 @@ angular.module('mm.core')
         return $mmSitesManager.getSiteDb(siteId);
     }
         self._addFileLink = function(siteId, fileId, component, componentId) {
-        componentId = (typeof componentId === 'undefined') ? -1 : componentId;
+        componentId = self._fixComponentId(componentId);
         return getSiteDb(siteId).then(function(db) {
             return db.insert(mmFilepoolLinksStore, {
                 fileId: fileId,
@@ -670,7 +670,7 @@ angular.module('mm.core')
         return getSiteDb(siteId).then(function(db) {
             var where;
             if (typeof componentId !== 'undefined') {
-                where = ['componentAndId', '=', [component, componentId]];
+                where = ['componentAndId', '=', [component, self._fixComponentId(componentId)]];
             } else {
                 where = ['component', '=', component];
             }
@@ -717,6 +717,12 @@ angular.module('mm.core')
             });
         });
     };
+        self._fixComponentId = function(componentId) {
+        if (!componentId) {
+            return -1;
+        }
+        return parseInt(componentId, 10);
+    };
         self._hasFileInPool = function(siteId, fileId) {
         return getSiteDb(siteId).then(function(db) {
             return db.get(mmFilepoolStore, fileId).then(function(fileObject) {
@@ -742,17 +748,17 @@ angular.module('mm.core')
         }
         return md5.createHash('url:' + url) + extension;
     };
-        self._getFileUrlByUrl = function(siteId, fileUrl, mode) {
+        self._getFileUrlByUrl = function(siteId, fileUrl, mode, component, componentId) {
         var fileId = self._getFileIdByUrl(fileUrl);
         return self._hasFileInPool(siteId, fileId).then(function(fileObject) {
             var response,
                 addToQueue = false,
                 fn;
             if (typeof fileObject === 'undefined') {
-                self.addToQueueByUrl(siteId, fileUrl);
+                self.addToQueueByUrl(siteId, fileUrl, component, componentId);
                 response = fileUrl;
             } else if (fileObject.stale && $mmApp.isOnline()) {
-                self.addToQueueByUrl(siteId, fileUrl);
+                self.addToQueueByUrl(siteId, fileUrl, component, componentId);
                 response = fileUrl;
             } else {
                 if (mode === 'src') {
@@ -765,7 +771,7 @@ angular.module('mm.core')
                 }, function() {
                     $log.debug('File ' + fileId + ' not found on disk');
                     self._removeFileById(siteId, fileId);
-                    self.addToQueueByUrl(siteId, fileUrl);
+                    self.addToQueueByUrl(siteId, fileUrl, component, componentId);
                     if ($mmApp.isOnline()) {
                         return fileUrl;
                     }
@@ -774,7 +780,7 @@ angular.module('mm.core')
             }
             return response;
         }, function() {
-            self.addToQueueByUrl(siteId, fileUrl);
+            self.addToQueueByUrl(siteId, fileUrl, component, componentId);
             return fileUrl;
         });
     };
@@ -797,11 +803,11 @@ angular.module('mm.core')
         }
         return $q.reject();
     };
-        self.getSrcByUrl = function(siteId, fileUrl) {
-        return self._getFileUrlByUrl(siteId, fileUrl, 'src');
+        self.getSrcByUrl = function(siteId, fileUrl, component, componentId) {
+        return self._getFileUrlByUrl(siteId, fileUrl, 'src', component, componentId);
     };
-        self.getUrlByUrl = function(siteId, fileUrl) {
-        return self._getFileUrlByUrl(siteId, fileUrl, 'url');
+        self.getUrlByUrl = function(siteId, fileUrl, component, componentId) {
+        return self._getFileUrlByUrl(siteId, fileUrl, 'url', component, componentId);
     };
         self._guessExtensionFromUrl = function(fileUrl) {
         var split = fileUrl.split('.'),
@@ -831,14 +837,26 @@ angular.module('mm.core')
         var values = { stale: true },
             where;
         if (typeof componentId !== 'undefined') {
-            where = ['componentAndId', '=', [component, componentId]];
+            where = ['componentAndId', '=', [component, self._fixComponentId(componentId)]];
         } else {
             where = ['component', '=', component];
         }
         return getSiteDb(siteId).then(function(db) {
-            return db.update(mmFilepoolQueueStore, {
-                stale: true
-            }, where);
+            return db.query(mmFilepoolLinksStore, where).then(function(items) {
+                var promise,
+                    promises = [];
+                angular.forEach(items, function(item) {
+                    promise = db.get(mmFilepoolStore, item.fileId).then(function(fileEntry) {
+                        if (!fileEntry) {
+                            return;
+                        }
+                        fileEntry.stale = true;
+                        return db.insert(mmFilepoolStore, fileEntry);
+                    });
+                    promises.push(promise);
+                });
+                return $q.all(promises);
+            });
         });
     };
         self._processQueue = function() {
@@ -2160,6 +2178,9 @@ angular.module('mm.core')
                 self.getFolderIcon = function() {
             return 'img/files/folder-64.png';
         };
+                self.isPluginFileUrl = function(url) {
+            return url && (url.indexOf('/pluginfile.php') !== -1);
+        };
                 self.isValidURL = function(url) {
             return /^http(s)?\:\/\/([\da-zA-Z\.-]+)\.([\da-zA-Z\.]{2,6})([\/\w \.-]*)*\/?/i.test(url);
         };
@@ -2199,7 +2220,8 @@ angular.module('mm.core')
                     var iParams = {
                         action: "android.intent.action.VIEW",
                         url: path,
-                        type: mimetype};
+                        type: mimetype.type
+                    };
                     window.plugins.webintent.startActivity(
                         iParams,
                         function() {
@@ -2444,11 +2466,79 @@ angular.module('mm.core')
         restrict: 'A',
         link: function(scope, element, attrs) {
             element.on('click', function(event) {
-                if (attrs.href) {
+                var href = element[0].getAttribute('href');
+                if (href) {
                     event.preventDefault();
-                    $mmUtil.openInBrowser(attrs.href);
+                    if (href.indexOf('cdvfile://') === 0 || href.indexOf('file://') === 0) {
+                        $mmUtil.openFile(href);
+                    } else {
+                        $mmUtil.openInBrowser(href);
+                    }
                 }
             });
+        }
+    };
+});
+
+angular.module('mm.core')
+.directive('mmExternalContent', function($log, $mmFilepool, $mmSite, $mmSitesManager, $mmUtil) {
+    $log = $log.getInstance('mmExternalContent');
+    function handleExternalContent(siteId, dom, targetAttr, url, component, componentId) {
+        if (!url || !$mmUtil.isPluginFileUrl(url)) {
+            $log.debug('Ignoring non-pluginfile URL: ' + url);
+            return;
+        }
+        $mmSitesManager.getSite(siteId).then(function(site) {
+            var pluginfileURL = $mmUtil.fixPluginfileURL(url, site.token),
+                fn;
+            if (!pluginfileURL) {
+                $log.debug('Ignoring invalid pluginfile URL');
+                return;
+            } else if (targetAttr === 'src') {
+                fn = $mmFilepool.getSrcByUrl;
+            } else {
+                fn = $mmFilepool.getUrlByUrl;
+            }
+            fn(siteId, pluginfileURL, component, componentId).then(function(finalUrl) {
+                $log.debug('Using URL ' + finalUrl + ' for ' + url);
+                dom.setAttribute(targetAttr, finalUrl);
+            });
+        });
+    }
+    return {
+        restrict: 'A',
+        link: function(scope, element, attrs) {
+            var dom = element[0],
+                siteId = attrs.siteid || $mmSite.getId(),
+                component = attrs.component,
+                componentId = attrs.componentId,
+                targetAttr,
+                observe = false,
+                url;
+            if (dom.tagName === 'A') {
+                targetAttr = 'href';
+                if (attrs.hasOwnProperty('ngHref')) {
+                    observe = true;
+                }
+            } else if (dom.tagName === 'IMG') {
+                targetAttr = 'src';
+                if (attrs.hasOwnProperty('ngSrc')) {
+                    observe = true;
+                }
+            } else {
+                $log.warn('Directive attached to non-supported tag: ' + dom.tagName);
+                return;
+            }
+            if (observe) {
+                attrs.$observe(targetAttr, function(url) {
+                    if (!url) {
+                        return;
+                    }
+                    handleExternalContent(siteId, dom, targetAttr, url, component, componentId);
+                });
+            } else {
+                handleExternalContent(siteId, dom, targetAttr, attrs[targetAttr], component, componentId);
+            }
         }
     };
 });
@@ -2461,6 +2551,9 @@ angular.module('mm.core')
         scope: true,
         transclude: true,
         link: function(scope, element, attrs, ctrl, transclude) {
+            var siteId = attrs.siteid,
+                component = attrs.component,
+                componentId = attrs.componentId;
             transclude(scope, function(clone) {
                 var content = angular.element('<div>').append(clone).html();
                 function treatContents() {
@@ -2468,8 +2561,30 @@ angular.module('mm.core')
                     interpolated = interpolated.trim();
                     $mmText.formatText(interpolated, attrs.clean).then(function(formatted) {
                         var dom = angular.element('<div>').html(formatted);
+                        angular.forEach(dom.find('img'), function(img) {
+                            img.setAttribute('mm-external-content', '');
+                            if (component) {
+                                img.setAttribute('component', component);
+                                if (componentId) {
+                                    img.setAttribute('component-id', componentId);
+                                }
+                            }
+                            if (siteId) {
+                                img.setAttribute('siteid', siteId);
+                            }
+                        });
                         angular.forEach(dom.find('a'), function(anchor) {
+                            anchor.setAttribute('mm-external-content', '');
                             anchor.setAttribute('mm-browser', '');
+                            if (component) {
+                                anchor.setAttribute('component', component);
+                                if (componentId) {
+                                    anchor.setAttribute('component-id', componentId);
+                                }
+                            }
+                            if (siteId) {
+                                anchor.setAttribute('siteid', siteId);
+                            }
                         });
                         element.html(dom.html());
                         $compile(element.contents())(scope);
@@ -2757,37 +2872,6 @@ angular.module('mm.core.user', [])
 });
 
 angular.module('mm.core.course')
-.directive('mmCourseContent', function($log, $mmCourseDelegate, $state) {
-    $log = $log.getInstance('mmCourseContent');
-    function link(scope, element, attrs) {
-        var module = JSON.parse(attrs.module),
-            data;
-        data = $mmCourseDelegate.getDataFromContentHandlerFor(module.modname, module);
-        scope = angular.extend(scope, data);
-    }
-    function controller($scope) {
-        $scope.handleClick = function(e, button) {
-            e.stopPropagation();
-            e.preventDefault();
-            button.callback($scope);
-        };
-        $scope.jump = function(e, state, stateParams) {
-            e.stopPropagation();
-            e.preventDefault();
-            $state.go(state, stateParams);
-        };
-    }
-    return {
-        controller: controller,
-        link: link,
-        replace: true,
-        restrict: 'E',
-        scope: {},
-        templateUrl: 'core/components/course/templates/content.html',
-    };
-});
-
-angular.module('mm.core.course')
 .controller('mmCourseModContentCtrl', function($log, $stateParams, $scope) {
     $log = $log.getInstance('mmCourseModContentCtrl');
     var module = $stateParams.module || {};
@@ -2870,6 +2954,37 @@ angular.module('mm.core.course')
         return 'site.mm_course-section';
     };
     loadSections();
+});
+
+angular.module('mm.core.course')
+.directive('mmCourseContent', function($log, $mmCourseDelegate, $state) {
+    $log = $log.getInstance('mmCourseContent');
+    function link(scope, element, attrs) {
+        var module = JSON.parse(attrs.module),
+            data;
+        data = $mmCourseDelegate.getDataFromContentHandlerFor(module.modname, module);
+        scope = angular.extend(scope, data);
+    }
+    function controller($scope) {
+        $scope.handleClick = function(e, button) {
+            e.stopPropagation();
+            e.preventDefault();
+            button.callback($scope);
+        };
+        $scope.jump = function(e, state, stateParams) {
+            e.stopPropagation();
+            e.preventDefault();
+            $state.go(state, stateParams);
+        };
+    }
+    return {
+        controller: controller,
+        link: link,
+        replace: true,
+        restrict: 'E',
+        scope: {},
+        templateUrl: 'core/components/course/templates/content.html',
+    };
 });
 
 angular.module('mm.core.course')

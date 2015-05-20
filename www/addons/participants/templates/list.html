@@ -9,7 +9,7 @@
                     <div class="list">
                         <div ng-repeat="participant in participants">
                             <a ui-sref="{{getState(participant.id)}}" class="item item-avatar">
-                                <img ng-src="{{participant.profileimageurlsmall}}" alt="">
+                                <img ng-src="{{participant.profileimageurlsmall}}" alt="" mm-external-content>
                                 <mm-format-text>{{participant.fullname}}</mm-format-text>
                             </a>
                         </div>

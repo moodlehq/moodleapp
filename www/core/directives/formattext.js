@@ -24,6 +24,8 @@ angular.module('mm.core')
  * Directive to format text rendered. Attributes it accepts:
  *     -siteid: Site ID to use.
  *     -courseid: Course ID to use.
+ *     -component: The component for mmExternalContent
+ *     -component-id: The component ID for mmExternalContent
  *     -clean: True if all HTML tags should be removed, false otherwise.
  *     -watch: True if the variable used inside the directive should be watched for changes. If the variable data is retrieved
  *             asynchronously, this value must be set to true, or the directive should be inside a ng-if, ng-repeat or similar.
@@ -37,6 +39,10 @@ angular.module('mm.core')
         scope: true,
         transclude: true,
         link: function(scope, element, attrs, ctrl, transclude) { // Link function.
+            var siteId = attrs.siteid,
+                component = attrs.component,
+                componentId = attrs.componentId;
+
             transclude(scope, function(clone) {
 
                 var content = angular.element('<div>').append(clone).html(); // Get directive's content.
@@ -51,9 +57,33 @@ angular.module('mm.core')
                         // Convert the content into DOM.
                         var dom = angular.element('<div>').html(formatted);
 
+                        // Walk through the content to find images, and add our directive.
+                        angular.forEach(dom.find('img'), function(img) {
+                            img.setAttribute('mm-external-content', '');
+                            if (component) {
+                                img.setAttribute('component', component);
+                                if (componentId) {
+                                    img.setAttribute('component-id', componentId);
+                                }
+                            }
+                            if (siteId) {
+                                img.setAttribute('siteid', siteId);
+                            }
+                        });
+
                         // Walk through the content to find the links and add our directive to it.
                         angular.forEach(dom.find('a'), function(anchor) {
+                            anchor.setAttribute('mm-external-content', '');
                             anchor.setAttribute('mm-browser', '');
+                            if (component) {
+                                anchor.setAttribute('component', component);
+                                if (componentId) {
+                                    anchor.setAttribute('component-id', componentId);
+                                }
+                            }
+                            if (siteId) {
+                                anchor.setAttribute('siteid', siteId);
+                            }
                         });
 
                         // Send for display, and compile.
