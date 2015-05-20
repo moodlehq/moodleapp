@@ -185,7 +185,7 @@ angular.module('mm.core')
      * @protected
      */
     self._addFileLink = function(siteId, fileId, component, componentId) {
-        componentId = (typeof componentId === 'undefined') ? -1 : componentId;
+        componentId = self._fixComponentId(componentId);
         return getSiteDb(siteId).then(function(db) {
             return db.insert(mmFilepoolLinksStore, {
                 fileId: fileId,
@@ -397,7 +397,7 @@ angular.module('mm.core')
         return getSiteDb(siteId).then(function(db) {
             var where;
             if (typeof componentId !== 'undefined') {
-                where = ['componentAndId', '=', [component, componentId]];
+                where = ['componentAndId', '=', [component, self._fixComponentId(componentId)]];
             } else {
                 where = ['component', '=', component];
             }
@@ -494,6 +494,23 @@ angular.module('mm.core')
                 return fileEntry.toInternalURL();
             });
         });
+    };
+
+    /**
+     * Fix a component ID to always be a Number.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#_fixComponentId
+     * @param {String|Number|undefined} The component ID.
+     * @return {Number} The normalised component ID. -1 when undefined was passed.
+     * @protected
+     */
+    self._fixComponentId = function(componentId) {
+        if (!componentId) {
+            return -1;
+        }
+        return parseInt(componentId, 10);
     };
 
     /**
@@ -814,7 +831,7 @@ angular.module('mm.core')
         var values = { stale: true },
             where;
         if (typeof componentId !== 'undefined') {
-            where = ['componentAndId', '=', [component, componentId]];
+            where = ['componentAndId', '=', [component, self._fixComponentId(componentId)]];
         } else {
             where = ['component', '=', component];
         }

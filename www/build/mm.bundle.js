@@ -565,7 +565,7 @@ angular.module('mm.core')
         return $mmSitesManager.getSiteDb(siteId);
     }
         self._addFileLink = function(siteId, fileId, component, componentId) {
-        componentId = (typeof componentId === 'undefined') ? -1 : componentId;
+        componentId = self._fixComponentId(componentId);
         return getSiteDb(siteId).then(function(db) {
             return db.insert(mmFilepoolLinksStore, {
                 fileId: fileId,
@@ -670,7 +670,7 @@ angular.module('mm.core')
         return getSiteDb(siteId).then(function(db) {
             var where;
             if (typeof componentId !== 'undefined') {
-                where = ['componentAndId', '=', [component, componentId]];
+                where = ['componentAndId', '=', [component, self._fixComponentId(componentId)]];
             } else {
                 where = ['component', '=', component];
             }
@@ -716,6 +716,12 @@ angular.module('mm.core')
                 return fileEntry.toInternalURL();
             });
         });
+    };
+        self._fixComponentId = function(componentId) {
+        if (!componentId) {
+            return -1;
+        }
+        return parseInt(componentId, 10);
     };
         self._hasFileInPool = function(siteId, fileId) {
         return getSiteDb(siteId).then(function(db) {
@@ -831,7 +837,7 @@ angular.module('mm.core')
         var values = { stale: true },
             where;
         if (typeof componentId !== 'undefined') {
-            where = ['componentAndId', '=', [component, componentId]];
+            where = ['componentAndId', '=', [component, self._fixComponentId(componentId)]];
         } else {
             where = ['component', '=', component];
         }
