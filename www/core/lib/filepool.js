@@ -458,7 +458,12 @@ angular.module('mm.core')
             }
 
             // Everything is fine, return the file on disk.
-            return self._getInternalUrlById(siteId, fileId);
+            return self._getInternalUrlById(siteId, fileId).then(function(response) {
+                return response;
+            }, function() {
+                // The file was not found in the pool, weird.
+                return self._downloadForPoolByUrl(siteId, fileUrl, fileObject);
+            });
 
         }, function() {
 
