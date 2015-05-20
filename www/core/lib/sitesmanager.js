@@ -463,7 +463,7 @@ angular.module('mm.core')
             return deferred.promise;
         }
         return db.get(mmCoreSitesStore, siteId).then(function(site) {
-            return $mmSite.makeSite(siteid, site.siteurl, site.token, site.infos);
+            return $mmSite.makeSite(siteId, site.siteurl, site.token, site.infos);
         });
     };
 
@@ -480,7 +480,7 @@ angular.module('mm.core')
             return deferred.promise;
         }
         return db.get(mmCoreSitesStore, siteId).then(function(site) {
-            var obj = $mmSite.makeSite(siteid, site.siteurl, site.token, site.infos);
+            var obj = $mmSite.makeSite(siteId, site.siteurl, site.token, site.infos);
             return obj.db;
         });
     };
