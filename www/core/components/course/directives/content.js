@@ -24,6 +24,8 @@ angular.module('mm.core.course')
 .directive('mmCourseContent', function($log, $mmCourseDelegate, $state) {
     $log = $log.getInstance('mmCourseContent');
 
+    var customController = function() {};
+
     // Directive link function.
     function link(scope, element, attrs) {
         var module = JSON.parse(attrs.module),
@@ -31,7 +33,13 @@ angular.module('mm.core.course')
             data;
 
         data = $mmCourseDelegate.getDataFromContentHandlerFor(module.modname, module, courseid);
+        if (data.controller) {
+            customController = data.controller;
+            delete data.controller;
+        }
+
         scope = angular.extend(scope, data);
+        customController(scope);
     }
 
     // Directive controller.

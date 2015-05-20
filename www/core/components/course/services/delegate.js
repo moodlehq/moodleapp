@@ -34,6 +34,7 @@ angular.module('mm.core.course')
      *
      * - title: The title of the module
      * - icon: The image SRC to the icon
+     * - controller: A function which is executed once the first time the module is displayed. Receives $scope as argument.
      * - state: The state to go to
      * - stateParams: Parameters to use with state,
      * - buttons: An array of buttons with the properties:
