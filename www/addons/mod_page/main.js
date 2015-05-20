@@ -35,13 +35,71 @@ angular.module('mm.addons.mod_page', ['mm.core'])
 
 })
 
-.run(function($mmCourseDelegate) {
+.run(function($mmCourseDelegate, $mmaModPage, $q, $timeout) {
+
+    function prefetchContent(module) {
+        var q = $q.defer();
+        $mmaModPage.prefetchContent(module);
+        $timeout(function() {
+            // Show loading for a short moment.
+            q.resolve();
+        }, 1500);
+        return q.promise;
+    }
 
     $mmCourseDelegate.registerContentHandler('mmaModPage', 'page', function(module) {
+
+        var downloadBtn = {
+            hidden: true,
+            icon: 'ion-ios-cloud-download',
+            callback: function($scope) {
+                downloadBtn.hidden = true;
+                refreshBtn.hidden = true;
+                loadingBtn.hidden = false;
+                prefetchContent(module).then(function() {
+                    loadingBtn.hidden = true;
+                    // Do not show the refresh button after a download.
+                });
+            }
+        };
+
+        var loadingBtn = {
+            icon: 'ion-load-c',
+            hidden: true,
+            callback: function() {
+            }
+        };
+
+        var refreshBtn = {
+            icon: 'ion-android-refresh',
+            hidden: true,
+            callback: function($scope) {
+                downloadBtn.hidden = true;
+                refreshBtn.hidden = true;
+                loadingBtn.hidden = false;
+                $mmaModPage.invalidateContent(module.id).then(function() {
+                    prefetchContent(module).then(function() {
+                        loadingBtn.hidden = true;
+                        // Do not show the refresh button after a refresh.
+                    });
+                });
+            }
+        };
+
         return {
+            controller: function($scope) {
+                $mmaModPage.hasPrefetchedContent(module.id).then(function() {
+                    refreshBtn.hidden = false;
+                }, function() {
+                    downloadBtn.hidden = false;
+                });
+            },
             title: module.name,
             state: 'site.mod_page',
-            stateParams: { module: module }
+            stateParams: { module: module },
+            buttons: [
+              downloadBtn, loadingBtn, refreshBtn
+            ]
         };
     });
 
