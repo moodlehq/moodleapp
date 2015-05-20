@@ -64,11 +64,11 @@ angular.module('mm.core')
         return query.length ? query.substr(0, query.length - 1) : query;
     };
 
-    function mmUtil($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp, $q) {
+    this.$get = function($ionicLoading, $ionicPopup, $translate, $http, $log, $q) {
 
         $log = $log.getInstance('$mmUtil');
 
-        var self = this, // Use 'self' to be coherent with the rest of services.
+        var self = {}, // Use 'self' to be coherent with the rest of services.
             countries;
 
         // // Loading all the mimetypes.
@@ -492,9 +492,7 @@ angular.module('mm.core')
 
             return deferred.promise;
         };
-    }
 
-    self.$get = function($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp, $q) {
-        return new mmUtil($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp, $q);
+        return self;
     };
 });

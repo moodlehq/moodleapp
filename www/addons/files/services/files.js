@@ -28,6 +28,11 @@ angular.module('mm.addons.files')
             "filename": ""
         };
 
+    /**
+     * Check if core_files_get_files WS call is available.
+     *
+     * @return {Boolean} True if WS is available, false otherwise.
+     */
     self.canAccessFiles = function() {
         return $mmSite.wsAvailable('core_files_get_files');
     };
@@ -85,21 +90,18 @@ angular.module('mm.addons.files')
      * @module mm.addons.files
      * @ngdoc method
      * @name $mmaFiles#getFiles
-     * @param  {Object} A list of parameters accepted by the Web service.
-     * @param  {Boolean} refresh Pass true to ignore the cache.
-     * @return {Object} An object containing the files in the key 'entries', and 'count'.
-     *                  Additional properties is added to the entries, such as:
-     *                  - imgpath: The path to the icon.
-     *                  - link: The JSON string of params to get to the file.
-     *                  - linkId: A hash of the file parameters.
+     * @param  {Object} params A list of parameters accepted by the Web service.
+     * @return {Object}        An object containing the files in the key 'entries', and 'count'.
+     *                         Additional properties is added to the entries, such as:
+     *                          - imgpath: The path to the icon.
+     *                          - link: The JSON string of params to get to the file.
+     *                          - linkId: A hash of the file parameters.
      */
-    self.getFiles = function(params, refresh) {
+    self.getFiles = function(params) {
         var deferred = $q.defer(),
             options = {};
 
-        if (refresh === true) {
-            options.getFromCache = false;
-        }
+        options.cacheKey = getFilesListCacheKey(params);
 
         $mmSite.read('core_files_get_files', params, options).then(function(result) {
             var data = {
@@ -158,23 +160,52 @@ angular.module('mm.addons.files')
     };
 
     /**
+     * Get cache key for file list WS calls.
+     *
+     * @param  {Object} params Params of the directory to get.
+     * @return {String}        Cache key.
+     */
+    function getFilesListCacheKey(params) {
+        var root = params.component === '' ? 'site' : 'my';
+        return 'mmaFiles:list:' + root + ':' + params.contextid + ':' + params.filepath;
+    }
+
+    /**
      * Get the private files of the current user.
      *
      * @module mm.addons.files
      * @ngdoc method
      * @name $mmaFiles#getMyFiles
-     * @param  {Boolean} refresh Pass true to ignore the cache.
      * @return {Object} See $mmaFiles#getFiles
      */
-    self.getMyFiles = function(refresh) {
+    self.getMyFiles = function() {
+        var params = getMyFilesRootParams();
+        return self.getFiles(params);
+    };
+
+    /**
+     * Get the common part of the cache keys for private files WS calls.
+     *
+     * @return {String} Cache key.
+     */
+    function getMyFilesListCommonCacheKey() {
+        return 'mmaFiles:list:my';
+    }
+
+    /**
+     * Get params to get root private files directory.
+     *
+     * @return {Object} Params.
+     */
+    function getMyFilesRootParams() {
         var params = angular.copy(defaultParams, {});
         params.component = "user";
         params.filearea = "private";
         params.contextid = -1;
         params.contextlevel = "user";
         params.instanceid = $mmSite.getInfo().userid;
-        return self.getFiles(params, refresh);
-    };
+        return params;
+    }
 
     /**
      * Get the site files.
@@ -182,16 +213,76 @@ angular.module('mm.addons.files')
      * @module mm.addons.files
      * @ngdoc method
      * @name $mmaFiles#getSiteFiles
-     * @param  {Boolean} refresh Pass true to ignore the cache.
      * @return {Object} See $mmaFiles#getFiles
      */
-    self.getSiteFiles = function(refresh) {
+    self.getSiteFiles = function() {
         var params = angular.copy(defaultParams, {});
-        return self.getFiles(params, refresh);
+        return self.getFiles(params);
     };
 
     /**
-     * Return whether or not the plugin is enabled.
+     * Get the common part of the cache keys for site files WS calls.
+     *
+     * @return {String} Cache key.
+     */
+    function getSiteFilesListCommonCacheKey() {
+        return 'mmaFiles:list:site';
+    }
+
+    /**
+     * Invalidates list of files in a certain directory.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#invalidateDirectory
+     * @param  {String} root Root of the directory ('my' for private files, 'site' for site files).
+     * @param  {String} path Path to the directory.
+     * @return {Promise}     Promise resolved when the list is invalidated.
+     */
+    self.invalidateDirectory = function(root, path) {
+        var params = {};
+        if (!path) {
+            if (root === 'site') {
+                params = angular.copy(defaultParams, {});
+            } else if (root === 'my') {
+                params = getMyFilesRootParams();
+            }
+        } else {
+            params = JSON.parse(path);
+        }
+
+        return $mmSite.invalidateWsCacheForKey(getFilesListCacheKey(params));
+    };
+
+    /**
+     * Invalidates list of private files.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#invalidateMyFiles
+     * @return {Promise} Promise resolved when the list is invalidated.
+     */
+    self.invalidateMyFiles = function() {
+        return $mmSite.invalidateWsCacheForKeyStartingWith(getMyFilesListCommonCacheKey());
+    };
+
+    /**
+     * Invalidates list of site files.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#invalidateSiteFiles
+     * @return {Promise} Promise resolved when the list is invalidated.
+     */
+    self.invalidateSiteFiles = function() {
+        return $mmSite.invalidateWsCacheForKeyStartingWith(getSiteFilesListCommonCacheKey());
+    };
+
+    /**
+     * Return whether or not the plugin is enabled. Plugin is enabled if:
+     *     - Site supports core_files_get_files
+     *     or
+     *     - User has capability moodle/user:manageownfiles and WS allows uploading files.
      *
      * @module mm.addons.files
      * @ngdoc method
@@ -200,9 +291,10 @@ angular.module('mm.addons.files')
      */
     self.isPluginEnabled = function() {
         var canAccessFiles = self.canAccessFiles(),
+            canAccessMyFiles = $mmSite.canAccessMyFiles(),
             canUploadFiles = $mmSite.canUploadFiles();
 
-        return canAccessFiles || canUploadFiles;
+        return canAccessFiles || (canUploadFiles && canAccessMyFiles);
     };
 
     /**
@@ -213,7 +305,7 @@ angular.module('mm.addons.files')
      * @name $mmaFiles#uploadFile
      * @param  {Object} uri File URI.
      * @param  {Object} options Options for the upload.
-     *                          - {Boolean} deleteAfterUpload Whether or not to delete the original after upload
+     *                          - {Boolean} deleteAfterUpload Whether or not to delete the original after upload.
      *                          - {String} fileKey
      *                          - {String} fileName
      *                          - {String} mimeType
@@ -221,7 +313,7 @@ angular.module('mm.addons.files')
      */
     self.uploadFile = function(uri, options) {
         options = options || {};
-        var deleteAfterUpload = options.deleteAfterUpload && ionic.Platform.isIOS(),
+        var deleteAfterUpload = options.deleteAfterUpload,
             deferred = $q.defer(),
             ftOptions = {
                 fileKey: options.fileKey,
@@ -233,8 +325,7 @@ angular.module('mm.addons.files')
             // Success.
             if (deleteAfterUpload) {
                 $timeout(function() {
-                    // Delete image after upload in iOS (always copies the image to the tmp folder)
-                    // or if the photo is taken with the camera, not browsed.
+                    // Use set timeout, otherwise in Node-Webkit the upload threw an error sometimes.
                     $mmFS.removeExternalFile(uri);
                 }, 500);
             }
@@ -243,8 +334,7 @@ angular.module('mm.addons.files')
             // Error.
             if (deleteAfterUpload) {
                 $timeout(function() {
-                    // Delete image after upload in iOS (always copies the image to the tmp folder)
-                    // or if the photo is taken with the camera, not browsed.
+                    // Use set timeout, otherwise in Node-Webkit the upload threw an error sometimes.
                     $mmFS.removeExternalFile(uri);
                 }, 500);
             }
@@ -259,30 +349,28 @@ angular.module('mm.addons.files')
 
     /**
      * Upload image.
+     * @todo Handle Node Webkit.
      *
      * @module mm.addons.files
      * @ngdoc method
      * @name $mmaFiles#uploadImage
-     * @param  {Object} uri File URI.
+     * @param  {String}  uri         File URI.
+     * @param  {Boolean} isFromAlbum True if the image was taken from album, false if it's a new image taken with camera.
      * @return {Promise}
      */
-    self.uploadImage = function(uri) {
-        $log.info('Uploading an image');
+    self.uploadImage = function(uri, isFromAlbum) {
+        $log.debug('Uploading an image');
         var d = new Date(),
             options = {};
 
         if (typeof(uri) === 'undefined' || uri === ''){
             // In Node-Webkit, if you successfully upload a picture and then you open the file picker again
             // and cancel, this function is called with an empty uri. Let's filter it.
-            $log.info('Received invalid URI in $mmaFiles.uploadImage()');
-
-            var deferred = $q.defer();
-            deferred.reject();
-            return deferred.promise;
+            $log.debug('Received invalid URI in $mmaFiles.uploadImage()');
+            return $q.reject();
         }
 
-        // TODO Handle Node Webkit.
-        options.deleteAfterUpload = true;
+        options.deleteAfterUpload = !isFromAlbum;
         options.fileKey = "file";
         options.fileName = "image_" + d.getTime() + ".jpg";
         options.mimeType = "image/jpeg";
@@ -300,16 +388,38 @@ angular.module('mm.addons.files')
      * @return {Array} Array of promises.
      */
     self.uploadMedia = function(mediaFiles) {
-        $log.info('Uploading media');
+        $log.debug('Uploading media');
         var promises = [];
         angular.forEach(mediaFiles, function(mediaFile, index) {
             var options = {};
             options.fileKey = null;
             options.fileName = mediaFile.name;
             options.mimeType = null;
+            options.deleteAfterUpload = true;
             promises.push(self.uploadFile(mediaFile.fullPath, options));
         });
         return promises;
+    };
+
+    /**
+     * Upload a file of any type.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#uploadGenericFile
+     * @param  {String} uri  File URI.
+     * @param  {String} name File name.
+     * @param  {String} type File type.
+     * @return {Promise}     Promise resolved when the file is uploaded.
+     */
+    self.uploadGenericFile = function(uri, name, type) {
+        var options = {};
+        options.fileKey = null;
+        options.fileName = name;
+        options.mimeType = type;
+        options.deleteAfterUpload = true;
+
+        return self.uploadFile(uri, options);
     };
 
     return self;

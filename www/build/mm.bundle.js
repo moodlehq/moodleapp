@@ -135,6 +135,14 @@ angular.module('mm.core')
                 self.isOnline = function() {
             return typeof navigator.connection !== 'undefined' && $cordovaNetwork.isOnline();
         };
+                self.isNetworkAccessLimited = function() {
+            if (typeof navigator.connection === 'undefined') {
+                return false;
+            }
+            var type = $cordovaNetwork.getNetwork();
+            var limited = [Connection.CELL_2G, Connection.CELL_3G, Connection.CELL_4G, Connection.CELL];
+            return limited.indexOf(type) > -1;
+        };
         return self;
     };
 });
@@ -986,7 +994,8 @@ angular.module('mm.core')
 
 angular.module('mm.core')
 .constant('mmFsSitesFolder', 'sites')
-.factory('$mmFS', function($ionicPlatform, $cordovaFile, $log, $q, mmFsSitesFolder) {
+.constant('mmFsTmpFolder', 'tmp')
+.factory('$mmFS', function($ionicPlatform, $cordovaFile, $log, $q, mmFsSitesFolder, mmFsTmpFolder) {
     $log = $log.getInstance('$mmFS');
     var self = {},
         initialized = false,
@@ -1146,15 +1155,47 @@ angular.module('mm.core')
                 return $cordovaFile.readAsBinaryString(basePath, path);
             case self.FORMATARRAYBUFFER:
                 return $cordovaFile.readAsArrayBuffer(basePath, path);
-            case self.FORMATTEXT:
             default:
                 return $cordovaFile.readAsText(basePath, path);
         }
     };
+        self.readFileData = function(fileData, format) {
+        format = format || self.FORMATTEXT;
+        $log.debug('Read file from file data with format '+format);
+        var deferred = $q.defer();
+        var reader = new FileReader();
+        reader.onloadend = function(evt) {
+            if (evt.target.result !== undefined || evt.target.result !== null) {
+                deferred.resolve(evt.target.result);
+            } else if (evt.target.error !== undefined || evt.target.error !== null) {
+                deferred.reject(evt.target.error);
+            } else {
+                deferred.reject({code: null, message: 'READER_ONLOADEND_ERR'});
+            }
+        };
+        switch (format) {
+            case self.FORMATDATAURL:
+                reader.readAsDataURL(fileData);
+                break;
+            case self.FORMATBINARYSTRING:
+                reader.readAsBinaryString(fileData);
+                break;
+            case self.FORMATARRAYBUFFER:
+                reader.readAsArrayBuffer(fileData);
+                break;
+            default:
+                reader.readAsText(fileData);
+        }
+        return deferred.promise;
+    };
         self.writeFile = function(path, data) {
         $log.debug('Write file: ' + path);
         return self.init().then(function() {
-            return $cordovaFile.writeFile(basePath, path, data, true);
+            return self.createFile(path).then(function(fileEntry) {
+                return $cordovaFile.writeFile(basePath, path, data, true).then(function() {
+                    return fileEntry;
+                });
+            });
         });
     };
         self.getExternalFile = function(fullPath) {
@@ -1173,6 +1214,9 @@ angular.module('mm.core')
                 return basePath + '/';
             }
         });
+    };
+        self.getTmpFolder = function() {
+        return mmFsTmpFolder;
     };
     return self;
 });
@@ -1605,6 +1649,15 @@ angular.module('mm.core')
                 token: self.getToken()
             });
         };
+                function invalidateWsCacheEntries(db, entries) {
+            var promises = [];
+            angular.forEach(entries, function(entry) {
+                entry.expirationtime = 0;
+                var promise = db.insert(mmCoreWSCacheStore, entry);
+                promises.push(promise);
+            });
+            return $q.all(promises);
+        }
                 self.invalidateWsCacheForKey = function(key) {
             var db = currentSite.db;
             if (!db || !key) {
@@ -1613,13 +1666,19 @@ angular.module('mm.core')
             $log.debug('Invalidate cache for key: '+key);
             return db.whereEqual(mmCoreWSCacheStore, 'key', key).then(function(entries) {
                 if (entries && entries.length > 0) {
-                    var promises = [];
-                    angular.forEach(entries, function(entry) {
-                        entry.expirationtime = 0;
-                        var promise = db.insert(mmCoreWSCacheStore, entry);
-                        promises.push(promise);
-                    });
-                    return $q.all(promises);
+                    return invalidateWsCacheEntries(db, entries);
+                }
+            });
+        };
+                self.invalidateWsCacheForKeyStartingWith = function(key) {
+            var db = currentSite.db;
+            if (!db || !key) {
+                return $q.reject();
+            }
+            $log.debug('Invalidate cache for key starting with: '+key);
+            return db.where(mmCoreWSCacheStore, 'key', '^', key).then(function(entries) {
+                if (entries && entries.length > 0) {
+                    return invalidateWsCacheEntries(db, entries);
                 }
             });
         };
@@ -2051,8 +2110,25 @@ angular.module('mm.core')
 });
 
 angular.module('mm.core')
-.factory('$mmText', function($q, $mmSite, $mmLang) {
+.factory('$mmText', function($q, $mmSite, $mmLang, $translate) {
     var self = {};
+        self.bytesToSize = function(bytes, precision) {
+        if (typeof(bytes) === 'undefined' || bytes < 0) {
+            return $translate('mm.core.notapplicable');
+        }
+        var keys = ['mm.core.bytes', 'mm.core.kb', 'mm.core.mb', 'mm.core.gb', 'mm.core.tb'];
+        return $translate(keys).then(function(translations) {
+            var posttxt = 0;
+            if (bytes >= 1024) {
+                while( bytes >= 1024 ) {
+                    posttxt++;
+                    bytes = bytes / 1024;
+                }
+                bytes = Math.round(bytes, precision);
+            }
+            return $translate('mm.core.humanreadablesize', {size: Number(bytes), unit: translations[keys[posttxt]]});
+        });
+    };
         self.cleanTags = function(text) {
         text = text.replace(/(<([^>]+)>)/ig,"");
         text = angular.element('<p>').html(text).text();
@@ -2138,9 +2214,9 @@ angular.module('mm.core')
         }
         return query.length ? query.substr(0, query.length - 1) : query;
     };
-    function mmUtil($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp, $q) {
+    this.$get = function($ionicLoading, $ionicPopup, $translate, $http, $log, $q) {
         $log = $log.getInstance('$mmUtil');
-        var self = this,
+        var self = {},
             countries;
         var mimeTypes = {};
         $http.get('core/assets/mimetypes.json').then(function(response) {
@@ -2336,9 +2412,7 @@ angular.module('mm.core')
             }
             return deferred.promise;
         };
-    }
-    self.$get = function($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp, $q) {
-        return new mmUtil($ionicLoading, $ionicPopup, $translate, $http, $log, $mmApp, $q);
+        return self;
     };
 });
 
@@ -2425,7 +2499,7 @@ angular.module('mm.core')
         });
     };
         self.uploadFile = function(uri, options, presets) {
-        $log.info('Trying to upload file (' + uri.length + ' chars)');
+        $log.debug('Trying to upload file: ' + uri);
         var ftOptions = {},
             deferred = $q.defer();
         ftOptions.fileKey = options.fileKey;
@@ -2439,9 +2513,9 @@ angular.module('mm.core')
         ftOptions.headers = {
             Connection: "close"
         };
-        $log.info('Initializing upload');
-        $cordovaFileTransfer.upload(presets.siteurl + '/webservice/upload.php', uri, ftOptions).then(function(success) {
-            $log.info('Successfully uploaded file');
+        $log.debug('Initializing upload');
+        $cordovaFileTransfer.upload(presets.siteurl + '/webservice/upload.php', uri, ftOptions, true).then(function(success) {
+            $log.debug('Successfully uploaded file');
             deferred.resolve(success);
         }, function(error) {
             $log.error('Error while uploading file: ' + error.exception);
@@ -3621,7 +3695,8 @@ angular.module('mm.core.user')
 });
 
 angular.module('mm.addons.files', ['mm.core'])
-.config(function($stateProvider) {
+.constant('mmaFilesUploadStateName', 'site.files-upload')
+.config(function($stateProvider, mmaFilesUploadStateName) {
     $stateProvider
       .state('site.files', {
         url: '/files',
@@ -3643,6 +3718,19 @@ angular.module('mm.addons.files', ['mm.core'])
           'site': {
             controller: 'mmaFilesListController',
             templateUrl: 'addons/files/templates/list.html'
+          }
+        }
+      })
+      .state(mmaFilesUploadStateName, {
+        url: '/upload',
+        params: {
+          path: false,
+          root: false
+        },
+        views: {
+          'site': {
+            controller: 'mmaFilesUploadCtrl',
+            templateUrl: 'addons/files/templates/upload.html'
           }
         }
       });
@@ -3796,31 +3884,29 @@ angular.module('mm.addons.participants', [])
 });
 
 angular.module('mm.addons.files')
-.controller('mmaFilesIndexController', function($scope, $mmaFiles, $mmSite, $mmUtil, $mmaFilesHelper) {
+.controller('mmaFilesIndexController', function($scope, $mmaFiles, $mmSite, $mmUtil, $mmaFilesHelper, $mmApp) {
     var canAccessFiles = $mmaFiles.canAccessFiles(),
-        canAccessMyFiles = canAccessFiles && $mmSite.canAccessMyFiles(),
+        canAccessMyFiles = $mmSite.canAccessMyFiles(),
         canUploadFiles = $mmSite.canUploadFiles(),
         canDownloadFiles = $mmSite.canDownloadFiles();
     $scope.canAccessFiles = canAccessFiles;
-    $scope.showPrivateFiles = canAccessMyFiles;
-    $scope.showUpload = !canAccessFiles && canUploadFiles;
+    $scope.showPrivateFiles = canAccessFiles && canAccessMyFiles;
+    $scope.showUpload = !canAccessFiles && canAccessMyFiles && canUploadFiles;
     $scope.canDownload = canDownloadFiles;
-    if (canUploadFiles) {
+    if ($scope.showUpload) {
         $scope.add = function() {
-            $mmaFilesHelper.pickAndUploadFile().then(function() {
-                $mmUtil.showModal('mma.files.success', 'mma.files.fileuploaded');
-            }, function(err) {
-                if (err) {
-                    $mmUtil.showErrorModal(err);
-                }
-            });
+            if (!$mmApp.isOnline()) {
+                $mmUtil.showErrorModal('mma.files.errormustbeonlinetoupload', true);
+            } else {
+                $state.go('site.files-upload');
+            }
         };
     }
 });
 
 angular.module('mm.addons.files')
-.controller('mmaFilesListController', function($q, $scope, $stateParams, $ionicActionSheet,
-        $mmaFiles, $mmSite, $translate, $timeout, $mmUtil, $mmFS, $mmWS, $mmaFilesHelper) {
+.controller('mmaFilesListController', function($q, $scope, $stateParams, $mmaFiles, $mmSite,
+        $translate, $mmUtil, $ionicHistory, mmaFilesUploadStateName, $state, $mmApp) {
     var path = $stateParams.path,
         root = $stateParams.root,
         title,
@@ -3828,17 +3914,16 @@ angular.module('mm.addons.files')
         siteInfos = $mmSite.getInfo(),
         showUpload = (root === 'my' && !path && $mmSite.canUploadFiles());
     $scope.count = -1;
-    function fetchFiles(root, path, refresh) {
-        $translate('loading').then(function(str) {
+    function fetchFiles(root, path) {
+        $translate('mm.core.loading').then(function(str) {
             $mmUtil.showModalLoading(str);
         });
-        refresh = (typeof refresh === 'undefined') ? false : refresh;
         if (!path) {
             if (root === 'site') {
-                promise = $mmaFiles.getSiteFiles(refresh);
+                promise = $mmaFiles.getSiteFiles();
                 title = $translate('mma.files.sitefiles');
             } else if (root === 'my') {
-                promise = $mmaFiles.getMyFiles(refresh);
+                promise = $mmaFiles.getMyFiles();
                 title = $translate('mma.files.myprivatefiles');
             } else {
                 promise = $q.reject();
@@ -3850,7 +3935,7 @@ angular.module('mm.addons.files')
             }
         } else {
             pathdata = JSON.parse(path);
-            promise = $mmaFiles.getFiles(pathdata, refresh);
+            promise = $mmaFiles.getFiles(pathdata);
             title = (function() {
                 var q = $q.defer();
                 q.resolve($stateParams.title);
@@ -3870,6 +3955,12 @@ angular.module('mm.addons.files')
         });
     }
     fetchFiles(root, path);
+    $scope.$on('$ionicView.enter', function(e) {
+        var forwardView = $ionicHistory.forwardView();
+        if (forwardView && forwardView.stateName === mmaFilesUploadStateName) {
+            fetchFiles(root, path);
+        }
+    });
     $scope.download = function(file) {
         if (!$mmSite.canDownloadFiles()) {
             return false;
@@ -3887,17 +3978,68 @@ angular.module('mm.addons.files')
     };
     if (showUpload) {
         $scope.add = function() {
-            $mmaFilesHelper.pickAndUploadFile().then(function() {
-                fetchFiles(root, path, true);
-            }, function(err) {
-                if (err) {
-                    $mmUtil.showErrorModal(err);
-                }
-            });
+            if (!$mmApp.isOnline()) {
+                $mmUtil.showErrorModal('mma.files.errormustbeonlinetoupload', true);
+            } else {
+                $state.go('site.files-upload', {root: root, path: path});
+            }
         };
     }
 });
 
+angular.module('mm.addons.files')
+.controller('mmaFilesUploadCtrl', function($scope, $stateParams, $mmUtil, $mmaFilesHelper, $ionicHistory, $mmaFiles, $mmApp) {
+    var uploadMethods = {
+            album: $mmaFilesHelper.uploadImageFromAlbum,
+            camera: $mmaFilesHelper.uploadImageFromCamera,
+            audio: $mmaFilesHelper.uploadAudio,
+            video: $mmaFilesHelper.uploadVideo
+        },
+        path = $stateParams.path,
+        root = $stateParams.root;
+    $scope.isAndroid = ionic.Platform.isAndroid();
+    function successUploading() {
+        $mmaFiles.invalidateDirectory(root, path).finally(function() {
+            $mmUtil.showModal('mma.files.success', 'mma.files.fileuploaded');
+            $ionicHistory.goBack();
+        });
+    }
+    function errorUploading(err) {
+        if (err) {
+            $mmUtil.showErrorModal(err);
+        }
+    }
+    $scope.upload = function(type) {
+        if (!$mmApp.isOnline()) {
+            $mmUtil.showErrorModal('mma.files.errormustbeonlinetoupload', true);
+        } else {
+            if (typeof(uploadMethods[type]) !== 'undefined') {
+                uploadMethods[type]().then(successUploading, errorUploading);
+            }
+        }
+    };
+    $scope.uploadFile = function(evt) {
+        var input = evt.srcElement;
+        var file = input.files[0];
+        input.value = '';
+        if (file) {
+            $mmaFilesHelper.confirmUploadFile(file.size).then(function() {
+                $mmaFilesHelper.copyAndUploadFile(file).then(successUploading, errorUploading);
+            }, errorUploading);
+        }
+    }
+});
+
+angular.module('mm.addons.files')
+.directive('mmaFilesOnChange', function() {
+  return {
+    restrict: 'A',
+    link: function (scope, element, attrs) {
+      var onChangeHandler = scope.$eval(attrs.mmaFilesOnChange);
+      element.bind('change', onChangeHandler);
+    }
+  };
+});
 angular.module('mm.addons.files')
 .factory('$mmaFiles', function($mmSite, $mmUtil, $mmFS, $mmWS, $q, $timeout, $log, md5) {
     $log = $log.getInstance('$mmaFiles');
@@ -3910,7 +4052,7 @@ angular.module('mm.addons.files')
             "filepath": "",
             "filename": ""
         };
-    self.canAccessFiles = function() {
+        self.canAccessFiles = function() {
         return $mmSite.wsAvailable('core_files_get_files');
     };
         self.getFile = function(file) {
@@ -3937,12 +4079,10 @@ angular.module('mm.addons.files')
         });
         return deferred.promise;
     };
-        self.getFiles = function(params, refresh) {
+        self.getFiles = function(params) {
         var deferred = $q.defer(),
             options = {};
-        if (refresh === true) {
-            options.getFromCache = false;
-        }
+        options.cacheKey = getFilesListCacheKey(params);
         $mmSite.read('core_files_get_files', params, options).then(function(result) {
             var data = {
                 entries: [],
@@ -3979,27 +4119,61 @@ angular.module('mm.addons.files')
         });
         return deferred.promise;
     };
-        self.getMyFiles = function(refresh) {
+        function getFilesListCacheKey(params) {
+        var root = params.component === '' ? 'site' : 'my';
+        return 'mmaFiles:list:' + root + ':' + params.contextid + ':' + params.filepath;
+    }
+        self.getMyFiles = function() {
+        var params = getMyFilesRootParams();
+        return self.getFiles(params);
+    };
+        function getMyFilesListCommonCacheKey() {
+        return 'mmaFiles:list:my';
+    }
+        function getMyFilesRootParams() {
         var params = angular.copy(defaultParams, {});
         params.component = "user";
         params.filearea = "private";
         params.contextid = -1;
         params.contextlevel = "user";
         params.instanceid = $mmSite.getInfo().userid;
-        return self.getFiles(params, refresh);
-    };
-        self.getSiteFiles = function(refresh) {
+        return params;
+    }
+        self.getSiteFiles = function() {
         var params = angular.copy(defaultParams, {});
-        return self.getFiles(params, refresh);
+        return self.getFiles(params);
+    };
+        function getSiteFilesListCommonCacheKey() {
+        return 'mmaFiles:list:site';
+    }
+        self.invalidateDirectory = function(root, path) {
+        var params = {};
+        if (!path) {
+            if (root === 'site') {
+                params = angular.copy(defaultParams, {});
+            } else if (root === 'my') {
+                params = getMyFilesRootParams();
+            }
+        } else {
+            params = JSON.parse(path);
+        }
+        return $mmSite.invalidateWsCacheForKey(getFilesListCacheKey(params));
+    };
+        self.invalidateMyFiles = function() {
+        return $mmSite.invalidateWsCacheForKeyStartingWith(getMyFilesListCommonCacheKey());
+    };
+        self.invalidateSiteFiles = function() {
+        return $mmSite.invalidateWsCacheForKeyStartingWith(getSiteFilesListCommonCacheKey());
     };
         self.isPluginEnabled = function() {
         var canAccessFiles = self.canAccessFiles(),
+            canAccessMyFiles = $mmSite.canAccessMyFiles(),
             canUploadFiles = $mmSite.canUploadFiles();
-        return canAccessFiles || canUploadFiles;
+        return canAccessFiles || (canUploadFiles && canAccessMyFiles);
     };
         self.uploadFile = function(uri, options) {
         options = options || {};
-        var deleteAfterUpload = options.deleteAfterUpload && ionic.Platform.isIOS(),
+        var deleteAfterUpload = options.deleteAfterUpload,
             deferred = $q.defer(),
             ftOptions = {
                 fileKey: options.fileKey,
@@ -4025,149 +4199,233 @@ angular.module('mm.addons.files')
         });
         return deferred.promise;
     };
-        self.uploadImage = function(uri) {
-        $log.info('Uploading an image');
+        self.uploadImage = function(uri, isFromAlbum) {
+        $log.debug('Uploading an image');
         var d = new Date(),
             options = {};
         if (typeof(uri) === 'undefined' || uri === ''){
-            $log.info('Received invalid URI in $mmaFiles.uploadImage()');
-            var deferred = $q.defer();
-            deferred.reject();
-            return deferred.promise;
+            $log.debug('Received invalid URI in $mmaFiles.uploadImage()');
+            return $q.reject();
         }
-        options.deleteAfterUpload = true;
+        options.deleteAfterUpload = !isFromAlbum;
         options.fileKey = "file";
         options.fileName = "image_" + d.getTime() + ".jpg";
         options.mimeType = "image/jpeg";
         return self.uploadFile(uri, options);
     };
         self.uploadMedia = function(mediaFiles) {
-        $log.info('Uploading media');
+        $log.debug('Uploading media');
         var promises = [];
         angular.forEach(mediaFiles, function(mediaFile, index) {
             var options = {};
             options.fileKey = null;
             options.fileName = mediaFile.name;
             options.mimeType = null;
+            options.deleteAfterUpload = true;
             promises.push(self.uploadFile(mediaFile.fullPath, options));
         });
         return promises;
+    };
+        self.uploadGenericFile = function(uri, name, type) {
+        var options = {};
+        options.fileKey = null;
+        options.fileName = name;
+        options.mimeType = type;
+        options.deleteAfterUpload = true;
+        return self.uploadFile(uri, options);
     };
     return self;
 });
 
 angular.module('mm.addons.files')
-.factory('$mmaFilesHelper', function($q, $mmUtil, $mmApp, $ionicActionSheet,
-        $log, $translate, $mmaFiles, $cordovaCamera, $cordovaCapture) {
+.constant('mmaFilesFileSizeWarning', 5242880)
+.factory('$mmaFilesHelper', function($q, $mmUtil, $mmApp, $log, $translate, $window,
+        $mmaFiles, $cordovaCamera, $cordovaCapture, $mmLang, $mmFS, $mmText, mmaFilesFileSizeWarning) {
     $log = $log.getInstance('$mmaFilesHelper');
     var self = {};
-        self.pickAndUploadFile = function() {
+        self.uploadImageFromAlbum = function() {
+        $log.debug('Trying to get a image from albums');
         var deferred = $q.defer();
-        if (!$mmApp.isOnline()) {
-            $mmUtil.showErrorModal('mma.files.errormustbeonlinetoupload', true);
-            deferred.reject();
-            return deferred.promise;
-        }
-        var promises = [
-            $translate('cancel'),
-            $translate('mma.files.audio'),
-            $translate('mma.files.camera'),
-            $translate('mma.files.photoalbums'),
-            $translate('mma.files.video'),
-            $translate('mma.files.uploadafilefrom'),
-            $translate('mma.files.uploading'),
-            $translate('mma.files.errorwhileuploading')
-        ];
-        $q.all(promises).then(function(translations) {
-            var strCancel = translations[0],
-                strAudio = translations[1],
-                strCamera = translations[2],
-                strPhotoalbums = translations[3],
-                strVideo = translations[4],
-                strUploadafilefrom = translations[5],
-                strLoading = translations[6],
-                strErrorWhileUploading = translations[7],
-                buttons = [
-                    { text: strPhotoalbums, uniqid: 'albums' },
-                    { text: strCamera, uniqid: 'camera'  },
-                    { text: strAudio, uniqid: 'audio'  },
-                    { text: strVideo, uniqid: 'video'  },
-                ];
-            $ionicActionSheet.show({
-                buttons: buttons,
-                titleText: strUploadafilefrom,
-                cancelText: strCancel,
-                buttonClicked: function(index) {
-                    if (buttons[index].uniqid === 'albums') {
-                        $log.info('Trying to get a image from albums');
-                        var width  =  window.innerWidth  - 200;
-                        var height =  window.innerHeight - 200;
-                        var popover = new CameraPopoverOptions(10, 10, width, height, Camera.PopoverArrowDirection.ARROW_ANY);
-                        $cordovaCamera.getPicture({
-                            quality: 50,
-                            destinationType: navigator.camera.DestinationType.FILE_URI,
-                            sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY,
-                            popoverOptions : popover
-                        }).then(function(img) {
-                            $mmUtil.showModalLoading(strLoading);
-                            $mmaFiles.uploadImage(img).then(function() {
-                                deferred.resolve();
-                            }, function() {
-                                deferred.reject(strErrorWhileUploading);
-                            }).finally(function() {
-                                $mmUtil.closeModalLoading();
-                            });
-                        }, function() {
-                            deferred.reject();
-                        });
-                    } else if (buttons[index].uniqid === 'camera') {
-                        $log.info('Trying to get a media from camera');
-                        $cordovaCamera.getPicture({
-                            quality: 50,
-                            destinationType: navigator.camera.DestinationType.FILE_URI
-                        }).then(function(img) {
-                            $mmUtil.showModalLoading(strLoading);
-                            $mmaFiles.uploadImage(img).then(function() {
-                                deferred.resolve();
-                            }, function() {
-                                deferred.reject(strErrorWhileUploading);
-                            });
-                        }, function() {
-                            deferred.reject();
-                        });
-                    } else if (buttons[index].uniqid === 'audio') {
-                        $log.info('Trying to record an audio file');
-                        $cordovaCapture.captureAudio({limit: 1}).then(function(medias) {
-                            $mmUtil.showModalLoading(strLoading);
-                            $q.all($mmaFiles.uploadMedia(medias)).then(function() {
-                                deferred.resolve();
-                            }, function() {
-                                deferred.reject(strErrorWhileUploading);
-                            });
-                        }, function() {
-                            deferred.reject();
-                        });
-                    } else if (buttons[index].uniqid === 'video') {
-                        $log.info('Trying to record a video file');
-                        $cordovaCapture.captureVideo({limit: 1}).then(function(medias) {
-                            $mmUtil.showModalLoading(strLoading);
-                            $q.all($mmaFiles.uploadMedia(medias)).then(function() {
-                                deferred.resolve();
-                            }, function() {
-                                deferred.reject(strErrorWhileUploading);
-                            });
-                        }, function() {
-                            deferred.reject();
-                        });
-                    } else {
-                        deferred.reject();
-                    }
-                    return true;
-                }
+        var width  =  $window.innerWidth  - 200;
+        var height =  $window.innerHeight - 200;
+        var popover = new CameraPopoverOptions(10, 10, width, height, Camera.PopoverArrowDirection.ARROW_ANY);
+        $cordovaCamera.getPicture({
+            quality: 50,
+            destinationType: navigator.camera.DestinationType.FILE_URI,
+            sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY,
+            popoverOptions : popover
+        }).then(function(img) {
+            $translate('mma.files.uploading').then(function(str) {
+                $mmUtil.showModalLoading(str);
             });
+            $mmaFiles.uploadImage(img, true).then(function() {
+                deferred.resolve();
+            }, function() {
+                $mmLang.translateErrorAndReject(deferred, 'mma.files.errorwhileuploading');
+            }).finally(function() {
+                $mmUtil.closeModalLoading();
+            });
+        }, function(error) {
+            treatImageError(error, deferred, 'mma.files.errorgettingimagealbum');
         });
         return deferred.promise;
     };
+        self.uploadImageFromCamera = function() {
+        $log.debug('Trying to capture an image with camera');
+        var deferred = $q.defer();
+        $cordovaCamera.getPicture({
+            quality: 50,
+            destinationType: navigator.camera.DestinationType.FILE_URI
+        }).then(function(img) {
+            $translate('mma.files.uploading').then(function(str) {
+                $mmUtil.showModalLoading(str);
+            });
+            $mmaFiles.uploadImage(img, false).then(function() {
+                deferred.resolve();
+            }, function() {
+                $mmLang.translateErrorAndReject(deferred, 'mma.files.errorwhileuploading');
+            }).finally(function() {
+                $mmUtil.closeModalLoading();
+            });
+        }, function(error) {
+            treatImageError(error, deferred, 'mma.files.errorcapturingimage');
+        });
+        return deferred.promise;
+    };
+        self.uploadAudio = function() {
+        $log.debug('Trying to record an audio file');
+        var deferred = $q.defer();
+        $cordovaCapture.captureAudio({limit: 1}).then(function(medias) {
+            $translate('mma.files.uploading').then(function(str) {
+                $mmUtil.showModalLoading(str);
+            });
+            $q.all($mmaFiles.uploadMedia(medias)).then(function() {
+                deferred.resolve();
+            }, function() {
+                $mmLang.translateErrorAndReject(deferred, 'mma.files.errorwhileuploading');
+            }).finally(function() {
+                $mmUtil.closeModalLoading();
+            });
+        }, function(error) {
+            treatCaptureError(error, deferred, 'mma.files.errorcapturingaudio');
+        });
+        return deferred.promise;
+    };
+        self.uploadVideo = function() {
+        $log.debug('Trying to record a video file');
+        var deferred = $q.defer();
+        $cordovaCapture.captureVideo({limit: 1}).then(function(medias) {
+            $translate('mma.files.uploading').then(function(str) {
+                $mmUtil.showModalLoading(str);
+            });
+            $q.all($mmaFiles.uploadMedia(medias)).then(function() {
+                deferred.resolve();
+            }, function() {
+                $mmLang.translateErrorAndReject(deferred, 'mma.files.errorwhileuploading');
+            }).finally(function() {
+                $mmUtil.closeModalLoading();
+            });
+        }, function(error) {
+            treatCaptureError(error, deferred, 'mma.files.errorcapturingvideo');
+        });
+        return deferred.promise;
+    };
+        self.confirmUploadFile = function(size) {
+        if (!$mmApp.isOnline()) {
+            return $translate('mma.files.errormustbeonlinetoupload').then(function(errString) {
+                return $q.reject(errString);
+            });
+        }
+        if ($mmApp.isNetworkAccessLimited() || size >= mmaFilesFileSizeWarning) {
+            return $mmText.bytesToSize(size, 2).then(function(size) {
+                return $mmUtil.showConfirm($translate('mma.files.confirmuploadfile', {size: size}));
+            });
+        } else {
+            var deferred = $q.defer();
+            deferred.resolve();
+            return deferred.promise;
+        }
+    };
+        self.copyAndUploadFile = function(file) {
+        var deferred = $q.defer();
+        $translate('mma.files.readingfile').then(function(readingString) {
+            $mmUtil.showModalLoading(readingString);
+        });
+        $mmFS.readFileData(file, $mmFS.FORMATARRAYBUFFER).then(function(data) {
+            var filepath = $mmFS.getTmpFolder() + '/' + file.name;
+            $mmFS.writeFile(filepath, data).then(function(fileEntry) {
+                $mmUtil.closeModalLoading();
+                self.uploadGenericFile(fileEntry.toURL(), file.name, file.type).then(deferred.resolve, deferred.reject);
+            }, function(error) {
+                $log.error('Error writing file to upload: '+JSON.stringify(error));
+                $mmLang.translateErrorAndReject(deferred, 'mma.files.errorreadingfile');
+                $mmUtil.closeModalLoading();
+            });
+        }, function(error) {
+            $log.error('Error reading file to upload: '+JSON.stringify(error));
+            $mmLang.translateErrorAndReject(deferred, 'mma.files.errorreadingfile');
+            $mmUtil.closeModalLoading();
+        });
+        return deferred.promise;
+    };
+        self.uploadGenericFile = function(uri, name, type) {
+        var deferred = $q.defer();
+        if (!$mmApp.isOnline()) {
+            $translate('mma.files.errormustbeonlinetoupload').then(function(errString) {
+                deferred.reject(errString);
+            });
+            return deferred.promise;
+        }
+        $translate('mma.files.uploading').then(function(uploadingString) {
+            $mmUtil.showModalLoading(uploadingString);
+        });
+        $mmaFiles.uploadGenericFile(uri, name, type).then(deferred.resolve, function(error) {
+            $log.error('Error uploading file: '+JSON.stringify(error));
+            $mmLang.translateErrorAndReject(deferred, 'mma.files.errorwhileuploading');
+        }).finally(function() {
+            $mmUtil.closeModalLoading();
+        });
+        return deferred.promise;
+    };
+        function treatImageError(error, deferred, defaultMessage) {
+        if (error) {
+            if (typeof(error) === 'string') {
+                if (error.toLowerCase().indexOf("error") > -1 || error.toLowerCase().indexOf("unable") > -1) {
+                    $log.error('Error getting image: ' + error);
+                    deferred.reject(error);
+                } else {
+                    $log.debug('Cancelled');
+                    deferred.reject();
+                }
+            } else {
+                $mmLang.translateErrorAndReject(deferred, defaultMessage);
+            }
+        } else {
+            deferred.reject();
+        }
+    }
+        function treatCaptureError(error, deferred, defaultMessage) {
+        if (error) {
+            if (typeof(error) === 'string') {
+                $log.error('Error while recording audio/video: ' + error);
+                if (error.indexOf('No Activity found') > -1) {
+                    $mmLang.translateErrorAndReject(deferred, 'mma.files.errornoapp');
+                } else {
+                    $mmLang.translateErrorAndReject(deferred, defaultMessage);
+                }
+            } else {
+                if (error.code != 3) {
+                    $log.error('Error while recording audio/video: ' + JSON.stringify(error));
+                    $mmLang.translateErrorAndReject(deferred, defaultMessage);
+                } else {
+                    $log.debug('Cancelled');
+                    deferred.reject();
+                }
+            }
+        } else {
+            deferred.reject();
+        }
+    }
     return self;
 });
 

@@ -127,6 +127,27 @@ angular.module('mm.core')
             return typeof navigator.connection !== 'undefined' && $cordovaNetwork.isOnline();
         };
 
+        /*
+         * Check if device uses a limited connection.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#isNetworkAccessLimited
+         * @return {Boolean} True if device used a limited connection, false otherwise.
+         * @description
+         * This method allows for us to first check if cordova is loaded,
+         * otherwise exceptions can be thrown when trying on a browser.
+         */
+        self.isNetworkAccessLimited = function() {
+            if (typeof navigator.connection === 'undefined') {
+                // Plugin not defined, probably in browser.
+                return false;
+            }
+            var type = $cordovaNetwork.getNetwork();
+            var limited = [Connection.CELL_2G, Connection.CELL_3G, Connection.CELL_4G, Connection.CELL];
+            return limited.indexOf(type) > -1;
+        };
+
         return self;
     };
 });
