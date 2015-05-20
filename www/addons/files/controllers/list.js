@@ -90,15 +90,13 @@ angular.module('mm.addons.files')
             return false;
         }
 
-        $translate('mma.files.downloading').then(function(str) {
-            $mmUtil.showModalLoading(str);
-        });
+        var modal = $mmUtil.showModalLoading('mma.files.downloading', true);
         $mmaFiles.getFile(file).then(function(fileEntry) {
-            $mmUtil.closeModalLoading();
             $mmUtil.openFile(fileEntry.toURL());
         }, function() {
-            $mmUtil.closeModalLoading();
             $mmUtil.showErrorModal('mma.files.errorwhiledownloading', true);
+        }).finally(function() {
+            modal.dismiss();
         });
     };
 

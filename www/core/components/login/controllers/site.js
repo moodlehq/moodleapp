@@ -49,9 +49,7 @@ angular.module('mm.core.login')
             return;
         }
 
-        $translate('mm.core.loading').then(function(loadingString) {
-            $mmUtil.showModalLoading(loadingString);
-        });
+        var modal = $mmUtil.showModalLoading();
 
         $mmSitesManager.getDemoSiteData(url).then(function(sitedata) {
 
@@ -61,10 +59,10 @@ angular.module('mm.core.login')
                 }, function(error) {
                     $mmUtil.showErrorModal(error);
                 }).finally(function() {
-                    $mmUtil.closeModalLoading();
+                    modal.dismiss();
                 });
             }, function(error) {
-                $mmUtil.closeModalLoading();
+                modal.dismiss();
                 $mmUtil.showErrorModal(error);
             });
 
@@ -84,7 +82,7 @@ angular.module('mm.core.login')
             }, function(error) {
                 $mmUtil.showErrorModal(error);
             }).finally(function() {
-                $mmUtil.closeModalLoading();
+                modal.dismiss();
             });
         });
     };

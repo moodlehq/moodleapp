@@ -164,9 +164,7 @@ angular.module('mm.core.login', [])
         // App opened using custom URL scheme. Probably an SSO authentication.
         $log.debug('App launched by URL');
 
-        $translate('mm.login.authenticating').then(function(authenticatingString) {
-            $mmUtil.showModalLoading(authenticatingString);
-        });
+        var modal = $mmUtil.showModalLoading('mm.login.authenticating', true);
 
         // Delete the sso scheme from the URL.
         url = url.replace(ssoScheme, '');
@@ -186,11 +184,11 @@ angular.module('mm.core.login', [])
             }, function(error) {
                 $mmUtil.showErrorModal(error);
             }).finally(function() {
-                $mmUtil.closeModalLoading();
+                modal.dismiss();
             });
 
         }, function(errorMessage) {
-            $mmUtil.closeModalLoading();
+            modal.dismiss();
             if (typeof(errorMessage) === 'string' && errorMessage != '') {
                 $mmUtil.showErrorModal(errorMessage);
             }
