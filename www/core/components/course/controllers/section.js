@@ -24,8 +24,7 @@ angular.module('mm.core.course')
 .controller('mmCourseSectionCtrl', function($mmCourse, $mmUtil, $scope, $stateParams, $translate, $mmSite) {
     var courseid = $stateParams.courseid,
         sectionid = $stateParams.sectionid,
-        sections = [],
-        showLoading = true;
+        sections = [];
 
     if (sectionid < 0) {
         // Special scenario, we want all sections.
@@ -36,7 +35,6 @@ angular.module('mm.core.course')
     }
 
     function loadContent(sectionid, refresh) {
-
         if (sectionid < 0) {
             return $mmCourse.getSections(courseid, refresh).then(function(sections) {
                 $scope.sections = sections;
@@ -70,13 +68,7 @@ angular.module('mm.core.course')
         });
     };
 
-    $translate('mm.core.loading').then(function(str) {
-        if (showLoading) {
-            $mmUtil.showModalLoading(str);
-        }
-    });
     loadContent(sectionid).finally(function() {
-        showLoading = false;
-        $mmUtil.closeModalLoading();
+        $scope.sectionLoaded = true;
     });
 });

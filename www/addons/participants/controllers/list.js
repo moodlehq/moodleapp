@@ -50,16 +50,13 @@ angular.module('mm.addons.participants')
     }
 
     // Get first participants.
-    $translate('mm.core.loading').then(function(loadingString) {
-        $mmUtil.showModalLoading(loadingString);
-    });
     fetchParticipants(true).then(function() {
         // Add log in Moodle.
         $mmSite.write('core_user_view_user_list', {
             courseid: courseid
         });
     }).finally(function() {
-        $mmUtil.closeModalLoading();
+        $scope.participantsLoaded = true;
     });
 
     // Load more participants.

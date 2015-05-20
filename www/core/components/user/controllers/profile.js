@@ -29,10 +29,6 @@ angular.module('mm.core.user')
     $scope.isAndroid = ionic.Platform.isAndroid();
     $scope.plugins = $mmUserDelegate.getData();
 
-    $translate('mm.core.loading').then(function(loadingString) {
-        $mmUtil.showModalLoading(loadingString);
-    });
-
     $mmUser.getProfile(userid, courseid).then(function(user) {
 
         user.address = $mmUser.formatAddress(user.address, user.city, user.country);
@@ -57,7 +53,7 @@ angular.module('mm.core.user')
     }, function(message) {
         $mmUtil.showErrorModal(message);
     }).finally(function() {
-        $mmUtil.closeModalLoading();
+        $scope.userLoaded = true;
     });
 
 });

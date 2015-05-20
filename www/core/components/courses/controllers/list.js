@@ -22,10 +22,6 @@ angular.module('mm.core.courses')
  * @name mmCoursesListCtrl
  */
 .controller('mmCoursesListCtrl', function($scope, $mmCourses, $mmCoursesDelegate, $mmUtil, $translate) {
-    $translate('mm.core.loading').then(function(loadingString) {
-        $mmUtil.showModalLoading(loadingString);
-    });
-
     $mmCourses.getUserCourses().then(function(courses) {
         $scope.courses = courses;
         $scope.filterText = ''; // Filter value MUST be set after courses are shown.
@@ -36,7 +32,7 @@ angular.module('mm.core.courses')
             $mmUtil.showErrorModal('mm.courses.errorloadcourses', true);
         }
     }).finally(function() {
-        $mmUtil.closeModalLoading();
+        $scope.coursesLoaded = true;
     });
 
     var plugins = $mmCoursesDelegate.getData();

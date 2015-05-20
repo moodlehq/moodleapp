@@ -3,23 +3,25 @@
         <div class="mm-split-pane">
             <div class="mm-split-pane-menu">
                 <ion-content>
-                    <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}"
-                                   on-refresh="refreshParticipants()">
-                    </ion-refresher>
-                    <div class="list">
-                        <div ng-repeat="participant in participants">
-                            <a ui-sref="{{getState(participant.id)}}" class="item item-avatar">
-                                <img ng-src="{{participant.profileimageurlsmall}}" alt="" mm-external-content>
-                                <mm-format-text>{{participant.fullname}}</mm-format-text>
-                            </a>
+                    <mm-loading hide-until="participantsLoaded">
+                        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}"
+                                       on-refresh="refreshParticipants()">
+                        </ion-refresher>
+                        <div class="list">
+                            <div ng-repeat="participant in participants">
+                                <a ui-sref="{{getState(participant.id)}}" class="item item-avatar">
+                                    <img ng-src="{{participant.profileimageurlsmall}}" alt="" mm-external-content>
+                                    <mm-format-text>{{participant.fullname}}</mm-format-text>
+                                </a>
+                            </div>
                         </div>
-                    </div>
 
-                    <ion-infinite-scroll ng-if="canLoadMore"
-                            icon="ion-loading-c"
-                            immediate-check="false"
-                            on-infinite="loadMoreParticipants()" >
-                     </ion-infinite-scroll>
+                        <ion-infinite-scroll ng-if="canLoadMore"
+                                icon="ion-loading-c"
+                                immediate-check="false"
+                                on-infinite="loadMoreParticipants()" >
+                         </ion-infinite-scroll>
+                    </mm-loading>
                 </ion-content>
             </div>
             <div ui-view="tablet" class="mm-split-pane-content">
