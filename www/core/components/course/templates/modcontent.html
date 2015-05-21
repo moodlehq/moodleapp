@@ -1,11 +1,7 @@
 <ion-view>
     <ion-nav-title>{{ title }}</ion-nav-title>
     <ion-content padding="true">
-        <div class="card" ng-if="description">
-            <div class="item item-text-wrap">
-                <mm-format-text>{{ description }}</mm-format-text>
-            </div>
-        </div>
+        <mm-course-mod-description description="description"></mm-course-mod-description>
         <div class="card">
             <h2 class="item-body">{{ 'mm.course.whoops' | translate }}</h2>
             <p ng-if="url" class="item-body">{{ 'mm.course.activitynotyetviewablegothere' | translate }}</p>
