@@ -4449,7 +4449,7 @@ angular.module('mm.addons.grades')
 });
 
 angular.module('mm.addons.grades')
-.factory('$mmaGrades', function($q, $log, $mmSite, $mmText, $ionicPlatform, $translate) {
+.factory('$mmaGrades', function($q, $log, $mmSite, $mmText, $ionicPlatform, $translate, $mmCourse) {
     $log = $log.getInstance('$mmaGrades');
     var self = {};
         function formatGradesTable(table, showSimple) {
@@ -4543,7 +4543,8 @@ angular.module('mm.addons.grades')
         } else if (text.indexOf("/mod/") > -1) {
             var module = text.match(/mod\/([^\/]*)\//);
             if (typeof module[1] != "undefined") {
-                img = '<img src="img/mod/' + module[1] + '.png" width="16">';
+                var moduleSrc = $mmCourse.getModuleIconSrc(module[1]);
+                img = '<img src="' + moduleSrc + '" width="16">';
             }
         }
         if (img) {
