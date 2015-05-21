@@ -31,6 +31,7 @@ var license = '' +
   '// limitations under the License.\n\n';
 
 var paths = {
+  build: './www/build',
   js: [
     './www/app.js',
     './www/core/main.js',
@@ -43,12 +44,17 @@ var paths = {
     './www/addons/**/*.js',
     '!./www/**/tests/*.js'
   ],
-  sass: [
-    './scss/**/*.scss',
-    './www/addons/**/scss/*.scss',
-    './www/core/scss/*.scss',
-    './www/core/components/**/scss/*.scss'
-  ],
+  sass: {
+    core: [
+      './www/core/scss/*.scss',
+      './www/core/components/**/scss/*.scss',
+      './www/addons/**/scss/*.scss',
+    ],
+    custom: [
+      './scss/app.scss',
+      './scss/**/*.scss'
+    ]
+  },
   lang: [
       './www/core/lang/',
       './www/core/components/**/lang/',
@@ -58,21 +64,29 @@ var paths = {
 
 gulp.task('default', ['build', 'sass', 'lang']);
 
-gulp.task('sass', function(done) {
-  gulp.src(paths.sass)
-    .pipe(concat('ionic.app.css'))
+gulp.task('sass-build', function(done) {
+   gulp.src(paths.sass.core)
+      .pipe(concat('mm.bundle.scss'))
+      .pipe(gulp.dest(paths.build))
+      .on('end', done);
+});
+
+gulp.task('sass', ['sass-build'], function(done) {
+  gulp.src(paths.sass.custom)
+    .pipe(concat('mm.bundle.css'))
     .pipe(sass())
-    .pipe(gulp.dest('./www/css/'))
+    .pipe(gulp.dest(paths.build))
     .pipe(minifyCss({
       keepSpecialComments: 0
     }))
     .pipe(rename({ extname: '.min.css' }))
-    .pipe(gulp.dest('./www/css/'))
+    .pipe(gulp.dest(paths.build))
     .on('end', done);
 });
 
 gulp.task('watch', function() {
-  gulp.watch(paths.sass, ['sass']);
+  gulp.watch(paths.sass.core, ['sass']);
+  gulp.watch(paths.sass.custom, ['sass']);
   gulp.watch(paths.js, ['build']);
   gulp.watch(paths.lang, ['lang']);
 });
@@ -104,7 +118,7 @@ gulp.task('build', function() {
         "angular.module('mm', ['ionic'",
         "angular.module('mm', ['ionic', " + dependencies.join(', '));
     }))
-    .pipe(gulp.dest('./www/build'));
+    .pipe(gulp.dest(paths.build));
 });
 
 gulp.task('lang', function() {
@@ -224,7 +238,7 @@ gulp.task('lang', function() {
         }
         this.emit('end');
       }))
-      .pipe(gulp.dest('./www/build/lang'));
+      .pipe(gulp.dest(paths.build + '/lang'));
 
   });
 });

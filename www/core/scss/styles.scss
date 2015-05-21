@@ -1,3 +1,98 @@
+/**
+ * Core styles for the app.
+ *
+ * Here you will find all the styles that Moodle Mobile creates for you to use, as well
+ * as all the necessary overrides for the app to look nice everywhere.
+ *
+ * Any style that cannot be re-used has to be placed in the its component or addon.
+ *
+ * There should always be a variable for anything that is styleable, but do not
+ * over create variables try to re-use as manu as you can. Always remember to add !default
+ * to your variable declarations to allow a themer to override in app.scss.
+ */
+
+/**
+ * Variables
+ */
+
+// Bar content.
+$bar-content-bg: #f70 !default;
+$bar-content-border: transparent !default;
+$bar-content-text: #fff !default;
+
+// Small avatar ideal for icons.
+$item-media-width: 32px !default;
+$item-media-height: 32px !default;
+
+/**
+ * Styles revert.
+ */
+
+em {
+  font-style: italic;
+}
+
+/**
+ * Styles.
+ */
+
+// Default bar.
+.bar-content {
+  @include bar-style($bar-content-bg, $bar-content-border, $bar-content-text);
+  .button {
+    @include button-style($bar-content-bg, $bar-content-border, $bar-content-bg, $bar-content-border, $bar-content-text);
+    @include button-clear(#fff, $bar-title-font-size);
+  }
+}
+
+// Media item, ideal for icons.
+.item-media {
+  @extend .item-avatar;
+  padding-left: $item-media-width + ($item-padding * 2);
+  min-height: $item-media-width + ($item-padding * 2);
+  > img:first-child {
+    max-width: $item-media-width;
+    max-height: $item-media-height;
+    border-radius: 0;
+  }
+}
+
+
+// Split pane.
+.mm-split-pane {
+  @include display-flex();
+  @include align-items(stretch);
+  width: 100%;
+  height: 100%;
+}
+
+.mm-split-pane-menu {
+  overflow-y: auto;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.mm-split-pane-content {
+  @include flex(1, 0, auto);
+  position: relative;
+  display: none;
+}
+
+.tablet {
+  .mm-split-pane-menu {
+    @include flex(0, 0, $menu-width);
+    width: $menu-width;
+    border-right: 1px solid #ddd;
+  }
+  .mm-split-pane-content {
+    display: block;
+  }
+}
+
+/**
+ * Core directives.
+ */
 .mm-loading-container {
     width: 100%;
     text-align: center;
