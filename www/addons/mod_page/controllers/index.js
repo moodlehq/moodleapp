@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_page')
  * @ngdoc controller
  * @name mmaModPageIndexCtrl
  */
-.controller('mmaModPageIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModPage,
+.controller('mmaModPageIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModPage, $mmSite,
         $translate, $log, mmaModPageComponent) {
     $log = $log.getInstance('mmaModPageIndexCtrl');
 
@@ -61,5 +61,11 @@ angular.module('mm.addons.mod_page')
         });
     };
 
-    fetchContent();
+    fetchContent().then(function() {
+        if (module.instance) {
+            $mmSite.write('mod_page_view_page', {
+                urlid: module.instance
+            });
+        }
+    });
 });
