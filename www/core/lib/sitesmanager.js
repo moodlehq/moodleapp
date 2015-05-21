@@ -395,8 +395,26 @@ angular.module('mm.core')
      */
     self.deleteSite = function(siteid) {
         $log.debug('Delete site '+siteid);
+
+        function deleteSiteFolder() {
+            var deferred = $q.defer();
+            if ($mmFS.isAvailable()) {
+                var siteFolder = $mmFS.getSiteFolder(siteid);
+                // Ignore any errors, $mmFS.removeDir fails if folder doesn't exists .
+                $mmFS.removeDir(siteFolder).then(deferred.resolve, deferred.resolve);
+            } else {
+                deferred.resolve();
+            }
+            return deferred.promise;
+        }
+
         return $mmSite.deleteSite(siteid).then(function() {
-            return db.remove(mmCoreSitesStore, siteid);
+            return db.remove(mmCoreSitesStore, siteid).then(function() {
+                return deleteSiteFolder();
+            }, function() {
+                // DB remove shouldn't fail, but we'll go ahead even if it does.
+                return deleteSiteFolder();
+            });
         });
     };
 
