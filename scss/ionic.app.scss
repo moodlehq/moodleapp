@@ -60,12 +60,13 @@ em {
 
 .bar-side-menu {
   @include bar-style($bar-side-menu-color, $bar-side-menu-border-color, $bar-side-menu-text-color);
-  height: $bar-side-menu-height;
+  height: $bar-side-menu-height !important; // MOBILE-959: Added !important to fix side menu header in iOS.
   .item {
     background: transparent;
     border: none;
   }
   .item-avatar {
+    margin-top: 0px !important; // MOBILE-959: Added to fix side menu header in iOS.
     h2,
     p {
       color: $bar-side-menu-text-color;
