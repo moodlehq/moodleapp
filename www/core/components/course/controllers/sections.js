@@ -23,16 +23,14 @@ angular.module('mm.core.course')
  */
 .controller('mmCourseSectionsCtrl', function($mmCourse, $mmUtil, $scope, $stateParams, $translate) {
     var course = $stateParams.course,
-        courseid = course.id;
+        courseid = course.id,
+        showLoading = true;
 
     $scope.courseid = courseid;
     $scope.fullname = course.fullname;
 
-    function loadSections() {
-        $translate('mm.core.loading').then(function(str) {
-            $mmUtil.showModalLoading(str);
-        });
-        $mmCourse.getSections(courseid).then(function(sections) {
+    function loadSections(refresh) {
+        return $mmCourse.getSections(courseid, refresh).then(function(sections) {
             $translate('mm.course.showall').then(function(str) {
                 // Adding fake first section.
                 var result = [{
@@ -43,8 +41,6 @@ angular.module('mm.core.course')
             });
         }, function(error) {
             $mmUtil.showErrorModal('mm.course.couldnotloadsections', true);
-        }).finally(function() {
-            $mmUtil.closeModalLoading();
         });
     }
 
@@ -52,5 +48,19 @@ angular.module('mm.core.course')
         return 'site.mm_course-section';
     };
 
-    loadSections();
+    $scope.doRefresh = function() {
+        loadSections(true).finally(function() {
+            $scope.$broadcast('scroll.refreshComplete');
+        });
+    };
+
+    $translate('mm.core.loading').then(function(str) {
+        if (showLoading) {
+            $mmUtil.showModalLoading(str);
+        }
+    });
+    loadSections().finally(function() {
+        showLoading = false;
+        $mmUtil.closeModalLoading();
+    });
 });

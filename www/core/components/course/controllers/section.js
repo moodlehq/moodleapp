@@ -24,7 +24,8 @@ angular.module('mm.core.course')
 .controller('mmCourseSectionCtrl', function($mmCourse, $mmUtil, $scope, $stateParams, $translate, $mmSite) {
     var courseid = $stateParams.courseid,
         sectionid = $stateParams.sectionid,
-        sections = [];
+        sections = [],
+        showLoading = true;
 
     if (sectionid < 0) {
         // Special scenario, we want all sections.
@@ -34,12 +35,10 @@ angular.module('mm.core.course')
         $scope.summary = null;
     }
 
-    function loadContent(sectionid) {
-        $translate('mm.core.loading').then(function(str) {
-            $mmUtil.showModalLoading(str);
-        });
+    function loadContent(sectionid, refresh) {
+
         if (sectionid < 0) {
-            $mmCourse.getSections(courseid).then(function(sections) {
+            return $mmCourse.getSections(courseid, refresh).then(function(sections) {
                 $scope.sections = sections;
                 // Add log in Moodle.
                 $mmSite.write('core_course_view_course', {
@@ -48,11 +47,9 @@ angular.module('mm.core.course')
                 });
             }, function() {
                 $mmUtil.showErrorModal('mm.course.couldnotloadsectioncontent', true);
-            }).finally(function() {
-                $mmUtil.closeModalLoading();
             });
         } else {
-            $mmCourse.getSection(courseid, sectionid).then(function(section) {
+            return $mmCourse.getSection(courseid, sectionid, refresh).then(function(section) {
                 $scope.sections = [section];
                 $scope.title = section.name;
                 $scope.summary = section.summary;
@@ -63,11 +60,23 @@ angular.module('mm.core.course')
                 });
             }, function() {
                 $mmUtil.showErrorModal('mm.course.couldnotloadsectioncontent', true);
-            }).finally(function() {
-                $mmUtil.closeModalLoading();
             });
         }
     }
 
-    loadContent(sectionid);
+    $scope.doRefresh = function() {
+        loadContent(sectionid, true).finally(function() {
+            $scope.$broadcast('scroll.refreshComplete');
+        });
+    };
+
+    $translate('mm.core.loading').then(function(str) {
+        if (showLoading) {
+            $mmUtil.showModalLoading(str);
+        }
+    });
+    loadContent(sectionid).finally(function() {
+        showLoading = false;
+        $mmUtil.closeModalLoading();
+    });
 });
