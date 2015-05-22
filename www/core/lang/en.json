@@ -4,6 +4,7 @@
     "cannotconnect": "Cannot connect: Verify that your have typed correctly the URL and that your site uses Moodle 2.4 or later.",
     "clearsearch": "Clear search",
     "course": "Course",
+    "downloading": "Downloading",
     "elementseparator": ", ",
     "error": "Error",
     "errordownloadingfile": "Error downloading file.",
