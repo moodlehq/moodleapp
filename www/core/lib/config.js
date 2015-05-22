@@ -65,12 +65,13 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmConfig#get
-     * @param {String} name The config name.
-     * @return {Promise}    Resolves upon success along with the config data. Reject on failure.
+     * @param {String} name           The config name.
+     * @param {Mixed}  [defaultValue] Default value to use if the entry is not found.
+     * @return {Promise}              Resolves upon success along with the config data. Reject on failure.
      * @description
      * Get an app setting.
      */
-    self.get = function(name) {
+    self.get = function(name, defaultValue) {
 
         if (!initialized) {
             return init().then(function() {
@@ -87,10 +88,16 @@ angular.module('mm.core')
             var deferred = $q.defer(),
                 value = self.config[name];
 
-            if (typeof(value) == 'undefined') {
+            if (typeof value == 'undefined') {
                 $mmApp.getDB().get(mmCoreConfigStore, name).then(function(entry) {
                     deferred.resolve(entry.value);
-                }, deferred.reject);
+                }, function() {
+                    if (typeof defaultValue != 'undefined') {
+                        deferred.resolve(defaultValue);
+                    } else {
+                        deferred.reject();
+                    }
+                });
             } else {
                 deferred.resolve(value);
             }
