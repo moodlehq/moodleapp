@@ -54,9 +54,10 @@ angular.module('mm.core.course')
      * @name $mmCourse#getSection
      * @param {Number} courseid The course ID.
      * @param {Number} sectionid The section ID.
+     * @param {Boolean} refresh True when we should not get the value from the cache.
      * @return {Promise} The reject contains the error message, else contains the section.
      */
-    self.getSection = function(courseid, sectionid) {
+    self.getSection = function(courseid, sectionid, refresh) {
         var deferred = $q.defer();
 
         if (sectionid < 0) {
@@ -64,7 +65,7 @@ angular.module('mm.core.course')
             return deferred.promise;
         }
 
-        self.getSections(courseid).then(function(sections) {
+        self.getSections(courseid, refresh).then(function(sections) {
             for (var i = 0; i < sections.length; i++) {
                 if (sections[i].id == sectionid) {
                     deferred.resolve(sections[i]);
@@ -86,13 +87,18 @@ angular.module('mm.core.course')
      * @ngdoc method
      * @name $mmCourse#getSections
      * @param {Number} courseid The course ID.
+     * @param {Boolean} refresh True when we should not get the value from the cache.
      * @return {Promise} The reject contains the error message, else contains the sections.
      */
-    self.getSections = function(courseid) {
+    self.getSections = function(courseid, refresh) {
+        var presets = {};
+        if (refresh) {
+            presets.getFromCache = false;
+        }
         return $mmSite.read('core_course_get_contents', {
             courseid: courseid,
             options: []
-        });
+        }, presets);
     };
 
     return self;

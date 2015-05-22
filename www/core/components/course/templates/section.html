@@ -2,6 +2,8 @@
     <ion-nav-title>{{ title }}</ion-nav-title>
     <ion-content>
 
+        <ion-refresher on-refresh="doRefresh()" pulling-text="{{ 'mm.core.pulltorefresh' | translate }}"></ion-refresher>
+
         <div class="card" ng-if="summary">
             <!-- Only displayed when 1 section per page. -->
             <div class="item item-text-wrap">
