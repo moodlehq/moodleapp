@@ -275,6 +275,36 @@ angular.module('mm.core')
         };
 
         /**
+         * Can the user use an advanced feature?
+         *
+         * @param {String} feature The name of the feature.
+         * @param {Boolean} [whenUndefined=true] The value to return when the parameter is undefined
+         * @return {Boolean} False when they cannot.
+         */
+        Site.prototype.canUseAdvancedFeature = function(feature, whenUndefined) {
+            var infos = this.getInfo(),
+                canUse = true;
+
+            whenUndefined = (typeof whenUndefined === 'undefined') ? true : whenUndefined;
+
+            if (!this.isLoggedIn()) {
+                canUse = false;
+            } else if (typeof infos.advancedfeatures === 'undefined') {
+                canUse = whenUndefined;
+            } else {
+
+                angular.forEach(infos.advancedfeatures, function(item) {
+                    if (item.name === feature && parseInt(item.value, 10) === 0) {
+                        canUse = false;
+                    }
+                });
+
+            }
+
+            return canUse;
+        };
+
+        /**
          * Can the user upload files?
          *
          * @return {Boolean} False when they cannot.
