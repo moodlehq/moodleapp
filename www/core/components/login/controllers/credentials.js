@@ -42,9 +42,7 @@ angular.module('mm.core.login')
             return;
         }
 
-        $translate('mm.core.loading').then(function(loadingString) {
-            $mmUtil.showModalLoading(loadingString);
-        });
+        var modal = $mmUtil.showModalLoading();
 
         // Start the authentication process.
         $mmSitesManager.getUserToken(siteurl, username, password).then(function(token) {
@@ -54,10 +52,10 @@ angular.module('mm.core.login')
             }, function(error) {
                 $mmUtil.showErrorModal(error);
             }).finally(function() {
-                $mmUtil.closeModalLoading();
+                modal.dismiss();
             });
         }, function(error) {
-            $mmUtil.closeModalLoading();
+            modal.dismiss();
             $mmUtil.showErrorModal(error);
         });
     };

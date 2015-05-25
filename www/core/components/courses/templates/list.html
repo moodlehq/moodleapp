@@ -1,23 +1,25 @@
 <ion-view view-title="{{ 'mm.courses.mycourses' | translate }}">
     <ion-content padding="true">
-        <div class="list">
-          <label class="item item-input">
-            <i class="icon ion-search placeholder-icon"></i>
-            <input type="text" placeholder="{{ 'mm.courses.filter' | translate}}" ng-model="filterText">
-          </label>
-        </div>
-        <div class="list card" ng-repeat="course in courses | filter:{fullname: filterText}">
-            <a class="item" ui-sref="site.mm_course({course: {{course}}})">
-               {{course.fullname}}
-            </a>
-            <div class="item item-text-wrap" ng-show="course.summary">
-                <p><mm-format-text>{{course.summary}}</mm-format-text></p>
+        <mm-loading hide-until="coursesLoaded">
+            <div class="list">
+              <label class="item item-input">
+                <i class="icon ion-search placeholder-icon"></i>
+                <input type="text" placeholder="{{ 'mm.courses.filter' | translate}}" ng-model="filterText">
+              </label>
             </div>
-            <div class="item tabs tabs-icon-left" ng-show="hasPlugins">
-                <a ng-repeat="plugin in plugins" class="tab-item active" ui-sref="{{plugin.state}}({course: {{course}}})">
-                    <i class="icon {{plugin.icon}}"></i> {{plugin.title}}
+            <div class="list card" ng-repeat="course in courses | filter:{fullname: filterText}">
+                <a class="item" ui-sref="site.mm_course({course: {{course}}})">
+                   {{course.fullname}}
                 </a>
+                <div class="item item-text-wrap" ng-show="course.summary">
+                    <p><mm-format-text>{{course.summary}}</mm-format-text></p>
+                </div>
+                <div class="item tabs tabs-icon-left" ng-show="hasPlugins">
+                    <a ng-repeat="plugin in plugins" class="tab-item active" ui-sref="{{plugin.state}}({course: {{course}}})">
+                        <i class="icon {{plugin.icon}}"></i> {{plugin.title}}
+                    </a>
+                </div>
             </div>
-        </div>
+        </mm-loading>
     </ion-content>
 </ion-view>

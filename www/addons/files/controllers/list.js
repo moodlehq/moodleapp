@@ -29,9 +29,7 @@ angular.module('mm.addons.files')
 
     // Convenience function that fetches the files and updates the scope.
     function fetchFiles(root, path) {
-        $translate('mm.core.loading').then(function(str) {
-            $mmUtil.showModalLoading(str);
-        });
+        $scope.filesLoaded = false;
 
         if (!path) {
             // The path is unknown, the user must be requesting a root.
@@ -73,7 +71,7 @@ angular.module('mm.addons.files')
         }, function() {
             $mmUtil.showErrorModal('mma.files.couldnotloadfiles', true);
         }).finally(function() {
-            $mmUtil.closeModalLoading();
+            $scope.filesLoaded = true;
         });
     }
     fetchFiles(root, path);
@@ -92,15 +90,13 @@ angular.module('mm.addons.files')
             return false;
         }
 
-        $translate('mma.files.downloading').then(function(str) {
-            $mmUtil.showModalLoading(str);
-        });
+        var modal = $mmUtil.showModalLoading('mma.files.downloading', true);
         $mmaFiles.getFile(file).then(function(fileEntry) {
-            $mmUtil.closeModalLoading();
             $mmUtil.openFile(fileEntry.toURL());
         }, function() {
-            $mmUtil.closeModalLoading();
             $mmUtil.showErrorModal('mma.files.errorwhiledownloading', true);
+        }).finally(function() {
+            modal.dismiss();
         });
     };
 

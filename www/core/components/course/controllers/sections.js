@@ -23,8 +23,7 @@ angular.module('mm.core.course')
  */
 .controller('mmCourseSectionsCtrl', function($mmCourse, $mmUtil, $scope, $stateParams, $translate) {
     var course = $stateParams.course,
-        courseid = course.id,
-        showLoading = true;
+        courseid = course.id;
 
     $scope.courseid = courseid;
     $scope.fullname = course.fullname;
@@ -54,13 +53,7 @@ angular.module('mm.core.course')
         });
     };
 
-    $translate('mm.core.loading').then(function(str) {
-        if (showLoading) {
-            $mmUtil.showModalLoading(str);
-        }
-    });
     loadSections().finally(function() {
-        showLoading = false;
-        $mmUtil.closeModalLoading();
+        $scope.sectionsLoaded = true;
     });
 });

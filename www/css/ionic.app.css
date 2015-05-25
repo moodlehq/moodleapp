@@ -7847,3 +7847,7 @@ input.mma-files-picker {
       border-top: 1px solid #fff; }
   .mma-grades-table .leveleven {
     background-color: #fff; }
+
+.mm-loading-container {
+  width: 100%;
+  text-align: center; }

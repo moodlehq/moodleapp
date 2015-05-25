@@ -340,28 +340,53 @@ angular.module('mm.core')
         };
 
         /**
-         * Displays a loading modal window
+         * Displays a loading modal window.
          *
          * @module mm.core
          * @ngdoc method
          * @name $mmUtil#showModalLoading
-         * @param {string} title The text of the modal window
+         * @param {String}  text           The text of the modal window.
+         * @param {Boolean} needsTranslate True if the 'text' is a $translate key, false otherwise.
+         * @return {Object}                Object with a 'dismiss' function to close the modal.
+         * @description
+         * Usage:
+         *     var modal = $mmUtil.showModalLoading(myText);
+         *     ...
+         *     modal.dismiss();
          */
-        self.showModalLoading = function(text) {
-            $ionicLoading.show({
-                template: '<i class="icon ion-load-c"> '+text
-            });
-        };
+        self.showModalLoading = function(text, needsTranslate) {
+            var modalClosed = false,
+                modalShown = false;
 
-        /**
-         * Close a modal loading window.
-         *
-         * @module mm.core
-         * @ngdoc method
-         * @name $mmUtil#closeModalLoading
-         */
-        self.closeModalLoading = function() {
-            $ionicLoading.hide();
+            if (!text) {
+                text = 'mm.core.loading';
+                needsTranslate = true;
+            }
+
+            function showModal(text) {
+                if (!modalClosed) {
+                    $ionicLoading.show({
+                        template:   '<ion-spinner></ion-spinner>' +
+                                    '<p>'+text+'</p>'
+                    });
+                    modalShown = true;
+                }
+            }
+
+            if (needsTranslate) {
+                $translate(text).then(showModal);
+            } else {
+                showModal(text);
+            }
+
+            return {
+                dismiss: function() {
+                    modalClosed = true;
+                    if (modalShown) {
+                        $ionicLoading.hide();
+                    }
+                }
+            };
         };
 
         /**

@@ -27,16 +27,12 @@ angular.module('mm.addons.grades')
         courseid = course.id;
 
     function fetchGrades() {
-        $translate('mm.core.loading').then(function(str) {
-            $mmUtil.showModalLoading(str);
-        });
-
         $mmaGrades.getGradesTable(courseid).then(function(table) {
             $scope.gradesTable = table;
         }, function(message) {
             $mmUtil.showErrorModal(message);
         }).finally(function() {
-            $mmUtil.closeModalLoading();
+            $scope.gradesLoaded = true;
         });
     }
     fetchGrades();

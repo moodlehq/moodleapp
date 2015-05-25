@@ -47,17 +47,14 @@ angular.module('mm.addons.files')
             sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY,
             popoverOptions : popover
         }).then(function(img) {
-            $translate('mma.files.uploading').then(function(str) {
-                $mmUtil.showModalLoading(str);
-            });
-
+            var modal = $mmUtil.showModalLoading('mma.files.uploading', true);
             $mmaFiles.uploadImage(img, true).then(function() {
                 // Success.
                 deferred.resolve();
             }, function() {
                 $mmLang.translateErrorAndReject(deferred, 'mma.files.errorwhileuploading');
             }).finally(function() {
-                $mmUtil.closeModalLoading();
+                modal.dismiss();
             });
 
         }, function(error) {
@@ -84,17 +81,14 @@ angular.module('mm.addons.files')
             quality: 50,
             destinationType: navigator.camera.DestinationType.FILE_URI
         }).then(function(img) {
-            $translate('mma.files.uploading').then(function(str) {
-                $mmUtil.showModalLoading(str);
-            });
-
+            var modal = $mmUtil.showModalLoading('mma.files.uploading', true);
             $mmaFiles.uploadImage(img, false).then(function() {
                 // Success.
                 deferred.resolve();
             }, function() {
                 $mmLang.translateErrorAndReject(deferred, 'mma.files.errorwhileuploading');
             }).finally(function() {
-                $mmUtil.closeModalLoading();
+                modal.dismiss();
             });
 
         }, function(error) {
@@ -118,17 +112,14 @@ angular.module('mm.addons.files')
         var deferred = $q.defer();
 
         $cordovaCapture.captureAudio({limit: 1}).then(function(medias) {
-            $translate('mma.files.uploading').then(function(str) {
-                $mmUtil.showModalLoading(str);
-            });
-
+            var modal = $mmUtil.showModalLoading('mma.files.uploading', true);
             $q.all($mmaFiles.uploadMedia(medias)).then(function() {
                 // Success.
                 deferred.resolve();
             }, function() {
                 $mmLang.translateErrorAndReject(deferred, 'mma.files.errorwhileuploading');
             }).finally(function() {
-                $mmUtil.closeModalLoading();
+                modal.dismiss();
             });
 
         }, function(error) {
@@ -152,17 +143,14 @@ angular.module('mm.addons.files')
         var deferred = $q.defer();
 
         $cordovaCapture.captureVideo({limit: 1}).then(function(medias) {
-            $translate('mma.files.uploading').then(function(str) {
-                $mmUtil.showModalLoading(str);
-            });
-
+            var modal = $mmUtil.showModalLoading('mma.files.uploading', true);
             $q.all($mmaFiles.uploadMedia(medias)).then(function() {
                 // Success.
                 deferred.resolve();
             }, function() {
                 $mmLang.translateErrorAndReject(deferred, 'mma.files.errorwhileuploading');
             }).finally(function() {
-                $mmUtil.closeModalLoading();
+                modal.dismiss();
             });
 
         }, function(error) {
@@ -211,9 +199,7 @@ angular.module('mm.addons.files')
     self.copyAndUploadFile = function(file) {
         var deferred = $q.defer();
 
-        $translate('mma.files.readingfile').then(function(readingString) {
-            $mmUtil.showModalLoading(readingString);
-        });
+        var modal = $mmUtil.showModalLoading('mma.files.readingfile', true);
 
         // We have the data of the file to be uploaded, but not its URL (needed). Create a copy of the file to upload it.
         $mmFS.readFileData(file, $mmFS.FORMATARRAYBUFFER).then(function(data) {
@@ -221,18 +207,18 @@ angular.module('mm.addons.files')
             var filepath = $mmFS.getTmpFolder() + '/' + file.name;
 
             $mmFS.writeFile(filepath, data).then(function(fileEntry) {
-                $mmUtil.closeModalLoading();
+                modal.dismiss();
                 self.uploadGenericFile(fileEntry.toURL(), file.name, file.type).then(deferred.resolve, deferred.reject);
             }, function(error) {
                 $log.error('Error writing file to upload: '+JSON.stringify(error));
                 $mmLang.translateErrorAndReject(deferred, 'mma.files.errorreadingfile');
-                $mmUtil.closeModalLoading();
+                modal.dismiss();
             });
 
         }, function(error) {
             $log.error('Error reading file to upload: '+JSON.stringify(error));
             $mmLang.translateErrorAndReject(deferred, 'mma.files.errorreadingfile');
-            $mmUtil.closeModalLoading();
+            modal.dismiss();
         });
 
         return deferred.promise;
@@ -253,21 +239,17 @@ angular.module('mm.addons.files')
         var deferred = $q.defer();
 
         if (!$mmApp.isOnline()) {
-            $translate('mma.files.errormustbeonlinetoupload').then(function(errString) {
-                deferred.reject(errString);
-            });
+            $mmLang.translateErrorAndReject(deferred, 'mma.files.errormustbeonlinetoupload');
             return deferred.promise;
         }
 
-        $translate('mma.files.uploading').then(function(uploadingString) {
-            $mmUtil.showModalLoading(uploadingString);
-        });
+        var modal = $mmUtil.showModalLoading('mma.files.uploading', true);
 
         $mmaFiles.uploadGenericFile(uri, name, type).then(deferred.resolve, function(error) {
             $log.error('Error uploading file: '+JSON.stringify(error));
             $mmLang.translateErrorAndReject(deferred, 'mma.files.errorwhileuploading');
         }).finally(function() {
-            $mmUtil.closeModalLoading();
+            modal.dismiss();
         });
 
         return deferred.promise;
