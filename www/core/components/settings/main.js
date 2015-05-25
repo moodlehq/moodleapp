@@ -26,6 +26,16 @@ angular.module('mm.core.settings', [])
                 controller: 'mmSettingsListCtrl'
             }
         }
+    })
+
+    .state('site.mm_settings-about', {
+        url: '/mm_settings-about',
+        views: {
+            'site': {
+                templateUrl: 'core/components/settings/templates/about.html',
+                controller: 'mmSettingsAboutCtrl'
+            }
+        }
     });
 
 });
