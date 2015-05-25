@@ -229,6 +229,39 @@ angular.module('mm.core')
         };
 
         /**
+         * Can the user use an advanced feature?
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmSite#canUseAdvancedFeature
+         * @param {String} feature The name of the feature.
+         * @param {Boolean} [whenUndefined=true] The value to return when the parameter is undefined
+         * @return {Boolean} False when they cannot.
+         */
+        self.canUseAdvancedFeature = function(feature, whenUndefined) {
+            var infos = self.getInfo(),
+                canUse = true;
+
+            whenUndefined = (typeof whenUndefined === 'undefined') ? true : whenUndefined;
+
+            if (!self.isLoggedIn()) {
+                canUse = false;
+            } else if (typeof infos.advancedfeatures === 'undefined') {
+                canUse = whenUndefined;
+            } else {
+
+                angular.forEach(infos.advancedfeatures, function(item) {
+                    if (item.name === feature && parseInt(item.value, 10) === 0) {
+                        canUse = false;
+                    }
+                });
+
+            }
+
+            return canUse;
+        };
+
+        /**
          * Fetch current site info from the Moodle site.
          *
          * @module mm.core
