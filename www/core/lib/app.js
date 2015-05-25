@@ -120,11 +120,11 @@ angular.module('mm.core')
          * @name $mmApp#isOnline
          * @return {Bool} True when we are.
          * @description
-         * This method allows for us to first check if cordova is loaded,
-         * otherwise exceptions can be thrown when trying on a browser.
+         * This methods returns whether the app is online or not.
+         * Note that a browser is always considered being online.
          */
         self.isOnline = function() {
-            return typeof navigator.connection !== 'undefined' && $cordovaNetwork.isOnline();
+            return typeof navigator.connection === 'undefined' || $cordovaNetwork.isOnline();
         };
 
         /*
