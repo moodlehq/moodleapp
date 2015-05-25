@@ -1,0 +1,22 @@
+<ion-view view-title="{{ 'mm.settings.spaceusage' | translate }}" >
+    <ion-content>
+        <ion-list>
+            <ion-item ng-repeat="site in sites" class="item-button-right">
+                <span class="item-note">{{ site.spaceusage | mmBytesToSize }}</span>
+                <h2><mm-format-text>{{site.sitename}}</mm-format-text></h2>
+                <p>{{site.fullname}}</p>
+                <button class="button button-icon" ng-click="deleteSiteFiles($index)" ng-show="site.spaceusage > '0'">
+                    <i class="icon ion-trash-a positive"></i>
+                </button>
+            </ion-item>
+            <ion-item class="item-divider">
+                <span class="item-note">{{ totalusage | mmBytesToSize }}</span>
+                <p>{{ 'mm.settings.total' | translate }}</p>
+            </ion-item>
+            <ion-item class="item-divider">
+                <span class="item-note">{{ freespace | mmBytesToSize }}</span>
+                <p>{{ 'mm.settings.estimatedfreespace' | translate }}</p>
+            </ion-item>
+        </ion-list>
+    </ion-content>
+</ion-view>

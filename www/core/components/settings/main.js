@@ -46,6 +46,16 @@ angular.module('mm.core.settings', [])
                 controller: 'mmSettingsGeneralCtrl'
             }
         }
+    })
+
+    .state('site.mm_settings-spaceusage', {
+        url: '/mm_settings-spaceusage',
+        views: {
+            'site': {
+                templateUrl: 'core/components/settings/templates/space-usage.html',
+                controller: 'mmSettingsSpaceUsageCtrl'
+            }
+        }
     });
 
 });

@@ -32,28 +32,31 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmText#bytesToSize
-     * @param {Number} bytes     Number of bytes to convert.
-     * @param {Number} precision Number of digits after the decimal separator.
-     * @return {Promise}         Promise resolved with the size in human readable format.
+     * @param {Number} bytes         Number of bytes to convert.
+     * @param {Number} [precision=2] Number of digits after the decimal separator.
+     * @return {String}              Size in human readable format.
      */
     self.bytesToSize = function(bytes, precision) {
 
-        if (typeof(bytes) === 'undefined' || bytes < 0) {
-            return $translate('mm.core.notapplicable');
+        if (typeof bytes == 'undefined' || bytes < 0) {
+            return $translate.instant('mm.core.notapplicable');
+        }
+
+        if (typeof precision == 'undefined' || precision < 0) {
+            precision = 2;
         }
 
         var keys = ['mm.core.bytes', 'mm.core.kb', 'mm.core.mb', 'mm.core.gb', 'mm.core.tb'];
-        return $translate(keys).then(function(translations) {
-            var posttxt = 0;
-            if (bytes >= 1024) {
-                while( bytes >= 1024 ) {
-                    posttxt++;
-                    bytes = bytes / 1024;
-                }
-                bytes = Math.round(bytes, precision);
+        var units = $translate.instant(keys);
+        var posttxt = 0;
+        if (bytes >= 1024) {
+            while (bytes >= 1024) {
+                posttxt++;
+                bytes = bytes / 1024;
             }
-            return $translate('mm.core.humanreadablesize', {size: Number(bytes), unit: translations[keys[posttxt]]});
-        });
+            bytes = Number(Math.round(bytes+'e+'+precision) + 'e-'+precision); // Round to "precision" decimals if needed.
+        }
+        return $translate.instant('mm.core.humanreadablesize', {size: Number(bytes), unit: units[keys[posttxt]]});
     };
 
     /**
