@@ -1,0 +1,22 @@
+{
+    "addcontact": "Add contact",
+    "blockcontact": "Block contact",
+    "contacts": "Contacts",
+    "errorwhileretrievingcontacts": "Error while retrieving the contacts from the server.",
+    "errorwhileretrievingdiscussions": "Error while retrieving the discussions from the server.",
+    "errorwhileretrievingmessages": "Error while retrieving the messages from the server.",
+    "messagenotsent": "The message was not sent, please try again later.",
+    "messages": "Messages",
+    "mustbeonlinetosendmessages": "You must be online to send messages",
+    "newmessage": "New message...",
+    "nocontactsyet": "No contacts yet.",
+    "nomessagesyet": "No messages yet.",
+    "removecontact": "Remove contact",
+    "send": "Send",
+    "sendmessage": "Send message",
+    "type_blocked": "Blocked",
+    "type_offline": "Offline",
+    "type_online": "Online",
+    "type_strangers": "Others",
+    "unblockcontact": "Unlock contact"
+}
