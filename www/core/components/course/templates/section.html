@@ -1,9 +1,10 @@
 <ion-view>
     <ion-nav-title>{{ title }}</ion-nav-title>
     <ion-content>
+        <!-- ion-refresher needs to be direct child of ion-content to work with native scrolling -->
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="sectionLoaded" on-refresh="doRefresh()">
+        </ion-refresher>
         <mm-loading hide-until="sectionLoaded">
-
-            <ion-refresher on-refresh="doRefresh()" pulling-text="{{ 'mm.core.pulltorefresh' | translate }}"></ion-refresher>
 
             <div class="card" ng-if="summary">
                 <!-- Only displayed when 1 section per page. -->

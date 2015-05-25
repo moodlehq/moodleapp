@@ -3,10 +3,11 @@
         <div class="mm-split-pane">
             <div class="mm-split-pane-menu">
                 <ion-content>
+                    <!-- ion-refresher needs to be direct child of ion-content to work with native scrolling -->
+                    <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="participantsLoaded"
+                                   on-refresh="refreshParticipants()">
+                    </ion-refresher>
                     <mm-loading hide-until="participantsLoaded">
-                        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}"
-                                       on-refresh="refreshParticipants()">
-                        </ion-refresher>
                         <div class="list">
                             <div ng-repeat="participant in participants">
                                 <a ui-sref="{{getState(participant.id)}}" class="item item-avatar">
