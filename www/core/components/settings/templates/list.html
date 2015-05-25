@@ -1,0 +1,18 @@
+<ion-view view-title="{{ 'mm.settings.settings' | translate }}">
+    <ion-content>
+        <div class="list">
+            <a class="item" ui-sref="{{getState('general')}}">
+                {{ 'mm.settings.language' | translate }}
+            </a>
+            <a class="item" ui-sref="{{getState('spaceusage')}}">
+                {{ 'mm.settings.spaceusage' | translate }}
+            </a>
+            <a class="item" ui-sref="{{getState('about')}}">
+                {{ 'mm.settings.about' | translate }}
+            </a>
+            <a ng-repeat="plugin in plugins" class="item" ui-sref="{{plugin.state}}">
+                {{plugin.title}}
+            </a>
+        </div>
+    </ion-content>
+</ion-view>
