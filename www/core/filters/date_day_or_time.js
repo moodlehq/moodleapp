@@ -38,8 +38,6 @@ angular.module('mm.core')
 
   return function(timestamp) {
 
-    console.log(timestamp);
-
     var d = new Date(timestamp * 1000);
 
     var todayStarts = new Date();
