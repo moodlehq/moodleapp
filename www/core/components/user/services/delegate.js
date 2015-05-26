@@ -28,7 +28,7 @@ angular.module('mm.core.user')
 
     var plugins = {},
         self = {},
-        data,
+        data = {},
         controllers = [];
 
     /**
@@ -41,7 +41,10 @@ angular.module('mm.core.user')
      * @param  {Function} callback Function to call to get the plugin data. This function should return an object with:
      *                                 -title: Plugin name to be displayed.
      *                                 -state: sref to the plugin's main state (i.e. site.grades).
-     *                             If the plugin should not be shown (disabled, etc.) this function should return undefined.
+     *                                 -stateParams: The parameter for the sref.
+     *
+     *                              The function received the user object as parameter.
+     *                              If the plugin should not be shown (disabled, etc.) this function should return undefined.
      */
     self.registerPlugin = function(name, callback) {
         $log.debug("Register plugin '"+name+"' in participant.");
@@ -55,12 +58,15 @@ angular.module('mm.core.user')
      * @ngdoc method
      * @name $mmUserDelegate#updatePluginData
      * @param  {String}   name     Name of the plugin.
+     * @param  {Object}   user     The user object.
      */
-    self.updatePluginData = function(name) {
+    self.updatePluginData = function(name, user) {
         $log.debug("Update plugin '"+name+"' data in participant.");
-        var pluginData = plugins[name]();
+        var pluginData = plugins[name](user);
         if (typeof(pluginData) !== 'undefined') {
             data[name] = pluginData;
+        } else {
+            delete data[name];
         }
     };
 
@@ -70,15 +76,13 @@ angular.module('mm.core.user')
      * @module mm.core.user
      * @ngdoc method
      * @name $mmUserDelegate#getData
+     * @param {Object} user The user object.
      * @return {Object} Registered plugins data.
      */
-    self.getData = function() {
-        if (typeof(data) == 'undefined') {
-            data = {};
-            angular.forEach(plugins, function(callback, plugin) {
-                self.updatePluginData(plugin);
-            });
-        }
+    self.getData = function(user) {
+        angular.forEach(plugins, function(callback, plugin) {
+            self.updatePluginData(plugin, user);
+        });
         return data;
     };
 
