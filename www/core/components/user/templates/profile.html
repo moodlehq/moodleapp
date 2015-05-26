@@ -86,9 +86,11 @@
                 <div class="item item-text-wrap" ng-if="user.description">
                     <mm-format-text watch="true">{{user.description}}</mm-format-text>
                 </div>
-                <a ng-repeat="plugin in plugins" class="button button-block" ui-sref="{{plugin.state}}">
+
+                <a ng-repeat="plugin in plugins" class="button button-block" ng-click="goTo($event, plugin.state, plugin.stateParams)" >
                     {{plugin.title}}
                 </a>
+
             </div>
         </mm-loading>
     </ion-content>
