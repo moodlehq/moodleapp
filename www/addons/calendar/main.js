@@ -27,6 +27,16 @@ angular.module('mm.addons.calendar', [])
                     templateUrl: 'addons/calendar/templates/list.html'
                 }
             }
+        })
+
+        .state('site.calendar-event', {
+            url: '/calendar-event/:id', // We need to add ID to the URL since params to make ng-href work.
+            views: {
+                'site': {
+                    controller: 'mmaCalendarEventCtrl',
+                    templateUrl: 'addons/calendar/templates/event.html'
+                }
+            }
         });
 
 })

@@ -350,7 +350,7 @@ angular.module('mm.core')
          *
          * @param  {String} read  WS method to use.
          * @param  {Object} data    Data to send to the WS.
-         * @param  {Object} preSets Options: getFromCache, saveToCache, omitExpires, sync.
+         * @param  {Object} preSets Options: @see Site#request.
          * @return {Promise}        Promise to be resolved when the request is finished.
          */
         Site.prototype.read = function(method, data, preSets) {
@@ -372,7 +372,7 @@ angular.module('mm.core')
          *
          * @param  {String} method  WS method to use.
          * @param  {Object} data    Data to send to the WS.
-         * @param  {Object} preSets Options: getFromCache, saveToCache, omitExpires.
+         * @param  {Object} preSets Options: @see Site#request.
          * @return {Promise}        Promise to be resolved when the request is finished.
          */
         Site.prototype.write = function(method, data, preSets) {
@@ -402,6 +402,8 @@ angular.module('mm.core')
          *                    - sync boolean (false) Add call to queue if device is not connected.
          *                    - cacheKey (string) Extra key to add to the cache when storing this call. This key is to
          *                                        flag the cache entry, it doesn't affect the data retrieved in this call.
+         *                    - getCacheUsingCacheKey (boolean) True if it should retrieve cached data by cacheKey,
+         *                                        false if it should get the data based on the params passed (usual behavior).
          * @return {Promise}
          * @description
          *
@@ -688,7 +690,8 @@ angular.module('mm.core')
             var result,
                 db = site.db,
                 deferred = $q.defer(),
-                key;
+                id,
+                promise;
 
             if (!db) {
                 deferred.reject();
@@ -698,8 +701,21 @@ angular.module('mm.core')
                 return deferred.promise;
             }
 
-            key = md5.createHash(method + ':' + JSON.stringify(data));
-            db.get(mmCoreWSCacheStore, key).then(function(entry) {
+            id = md5.createHash(method + ':' + JSON.stringify(data));
+
+            if (preSets.getCacheUsingCacheKey) {
+                promise = db.whereEqual(mmCoreWSCacheStore, 'key', preSets.cacheKey).then(function(entries) {
+                    if (entries.length == 0) {
+                        // Cache key not found, get by params sent.
+                        return db.get(mmCoreWSCacheStore, id);
+                    }
+                    return entries[0];
+                });
+            } else {
+                promise = db.get(mmCoreWSCacheStore, id);
+            }
+
+            promise.then(function(entry) {
                 var now = new Date().getTime();
 
                 preSets.omitExpires = preSets.omitExpires || !$mmApp.isOnline();
@@ -712,9 +728,9 @@ angular.module('mm.core')
                     }
                 }
 
-                if (typeof(entry) !== 'undefined' && typeof(entry.data) !== 'undefined') {
+                if (typeof entry != 'undefined' && typeof entry.data != 'undefined') {
                     var expires = (entry.expirationtime - now) / 1000;
-                    $log.info('Cached element found, id: ' + key + ' expires in ' + expires + ' seconds');
+                    $log.info('Cached element found, id: ' + id + ' expires in ' + expires + ' seconds');
                     deferred.resolve(entry.data);
                     return;
                 }

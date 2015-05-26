@@ -21,7 +21,8 @@ angular.module('mm.addons.calendar')
  * @ngdoc service
  * @name $mmaCalendar
  */
-.factory('$mmaCalendar', function($log, $q, $mmSite, $mmUtil, $mmCourses, $mmGroups, mmCoreSecondsDay, mmaCalendarDaysInterval) {
+.factory('$mmaCalendar', function($log, $q, $mmSite, $mmUtil, $mmCourses, $mmGroups, $mmCourse, mmCoreSecondsDay,
+        mmaCalendarDaysInterval) {
 
     $log = $log.getInstance('$mmaCalendar');
 
@@ -37,22 +38,53 @@ angular.module('mm.addons.calendar')
     /**
      * Get cache key for events list WS calls.
      *
+     * @param {Number} daysToStart  Number of days from now to start getting events.
+     * @param {Number} daysInterval Number of days between timestart and timeend.
      * @return {String} Cache key.
      */
-    function getEventsListCacheKey() {
-        return 'mmaCalendar:events';
+    function getEventsListCacheKey(daysToStart, daysInterval) {
+        return 'mmaCalendar:events:' + daysToStart + ':' + daysInterval;
     }
 
     /**
-     * Check if calendar events WS is available.
+     * Get cache key for a single event WS call.
+     *
+     * @param {Number} id Event ID.
+     * @return {String} Cache key.
+     */
+    function getEventCacheKey(id) {
+        return 'mmaCalendar:events:' + id;
+    }
+
+    /**
+     * Get the common part of the cache keys for events WS calls. Invalidate the whole list also invalidates all the
+     * single events.
+     *
+     * @return {String} Cache key.
+     */
+    function getEventsCommonCacheKey() {
+        return 'mmaCalendar:events:';
+    }
+
+    /**
+     * Convenience function to format some event data to be rendered. Adds properties 'start', 'end', 'icon'
+     * and (if it's a module event) 'moduleicon'.
      *
      * @module mm.addons.calendar
      * @ngdoc method
-     * @name $mmaCalendar#isAvailable
-     * @return {Boolean} True if calendar events WS is available, false otherwise.
+     * @name $mmaCalendar#formatEventData
+     * @param {Object} e Event to format.
      */
-    self.isAvailable = function() {
-        return $mmSite.wsAvailable('core_calendar_get_calendar_events');
+    self.formatEventData = function(e) {
+        var icon = self.getEventIcon(e.eventtype);
+        if (icon === '') {
+            // It's a module event.
+            icon = $mmCourse.getModuleIconSrc(e.modulename);
+            e.moduleicon = icon;
+        }
+        e.icon = icon;
+        e.start = new Date(e.timestart * 1000).toLocaleString();
+        e.end = new Date((e.timestart + e.timeduration) * 1000).toLocaleString();
     };
 
     /**
@@ -66,6 +98,37 @@ angular.module('mm.addons.calendar')
      */
     self.getEventIcon = function(type) {
         return eventicons[type] || '';
+    };
+
+    /**
+     * Get a calendar event. By default, it tries to get the data from "loadedEvents" variable. If the event is not there or
+     * refresh param is true, retrieve the data from server.
+     *
+     * @param {Number}  id        Event ID.
+     * @param {Boolean} [refresh] True when we should update the event data.
+     * @return {Promise}          Promise resolved when the event data is retrieved.
+     */
+    self.getEvent = function(id, refresh) {
+        var presets = {},
+            data = {
+                "options[userevents]": 0,
+                "options[siteevents]": 0,
+                "events[eventids][0]": id
+            };
+
+        presets.cacheKey = getEventCacheKey(id);
+        if (refresh) {
+            presets.getFromCache = false;
+        }
+
+        return $mmSite.read('core_calendar_get_calendar_events', data, presets).then(function(response) {
+            var e = response.events[0];
+            if (e) {
+                return e;
+            } else {
+                return $q.reject();
+            }
+        });
     };
 
     /**
@@ -89,18 +152,20 @@ angular.module('mm.addons.calendar')
         daysToStart = daysToStart || 0;
         daysInterval = daysInterval || mmaCalendarDaysInterval;
 
-        // The core_calendar_get_calendar_events needs all the current user courses and groups.
-        var now = $mmUtil.timestamp(),
+         var now = $mmUtil.timestamp(),
             start = now + (mmCoreSecondsDay * daysToStart),
-            end = start + (mmCoreSecondsDay * daysInterval),
-            data = {
-                "options[userevents]": 1,
-                "options[siteevents]": 1,
-                "options[timestart]": start,
-                "options[timeend]": end
-            };
+            end = start + (mmCoreSecondsDay * daysInterval);
+
+        // The core_calendar_get_calendar_events needs all the current user courses and groups.
+        var data = {
+            "options[userevents]": 1,
+            "options[siteevents]": 1,
+            "options[timestart]": start,
+            "options[timeend]": end
+        };
 
         return $mmCourses.getUserCourses(refresh).then(function(courses) {
+            courses.push({id: 1}); // Add front page.
             angular.forEach(courses, function(course, index) {
                 data["events[courseids][" + index + "]"] = course.id;
             });
@@ -110,8 +175,10 @@ angular.module('mm.addons.calendar')
                     data["events[groupids][" + index + "]"] = group.id;
                 });
 
+                // We need to retrieve cached data using cache key because we have timestamp in the params.
                 var preSets = {
-                    cacheKey: getEventsListCacheKey()
+                    cacheKey: getEventsListCacheKey(daysToStart, daysInterval),
+                    getCacheUsingCacheKey: true
                 };
                 return $mmSite.read('core_calendar_get_calendar_events', data, preSets).then(function(response) {
                     return response.events;
@@ -122,7 +189,7 @@ angular.module('mm.addons.calendar')
     };
 
     /**
-     * Invalidates events list.
+     * Invalidates events list and all the single events.
      *
      * @module mm.addons.calendar
      * @ngdoc method
@@ -130,7 +197,19 @@ angular.module('mm.addons.calendar')
      * @return {Promise} Promise resolved when the list is invalidated.
      */
     self.invalidateEventsList = function() {
-        return $mmSite.invalidateWsCacheForKey(getEventsListCacheKey());
+        return $mmSite.invalidateWsCacheForKeyStartingWith(getEventsCommonCacheKey());
+    };
+
+    /**
+     * Check if calendar events WS is available.
+     *
+     * @module mm.addons.calendar
+     * @ngdoc method
+     * @name $mmaCalendar#isAvailable
+     * @return {Boolean} True if calendar events WS is available, false otherwise.
+     */
+    self.isAvailable = function() {
+        return $mmSite.wsAvailable('core_calendar_get_calendar_events');
     };
 
     return self;

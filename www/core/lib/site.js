@@ -202,6 +202,8 @@ angular.module('mm.core')
      *                    - sync boolean (false) Add call to queue if device is not connected.
      *                    - cacheKey (string) Extra key to add to the cache when storing this call. This key is to
      *                                        flag the cache entry, it doesn't affect the data retrieved in this call.
+     *                    - getCacheUsingCacheKey (boolean) True if it should retrieve cached data by cacheKey,
+     *                                        false if it should get the data based on the params passed (usual behavior).
      * @return {Promise}
      * @description
      *

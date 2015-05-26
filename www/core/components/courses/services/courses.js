@@ -30,7 +30,24 @@ angular.module('mm.core.courses')
  */
 .factory('$mmCourses', function($q, $mmSite, mmCoursesFrontPage) {
 
-    var self = {};
+    var self = {},
+        currentCourses = {};
+
+    function storeCoursesInMemory(courses) {
+        angular.forEach(courses, function(course) {
+            currentCourses[course.id] = course;
+        });
+    }
+
+    /**
+     * Get a course stored in memory.
+     *
+     * @param  {Number} id ID of the course to get.
+     * @return {Object}    Course.
+     */
+    self.getStoredCourse = function(id) {
+        return currentCourses[id];
+    };
 
     /**
      * Get user courses.
@@ -61,6 +78,7 @@ angular.module('mm.core.courses')
             // TODO: MM._loadGroups(courses);
 
             // TODO: Store courses in DB.
+            storeCoursesInMemory(courses);
 
             return courses;
         });

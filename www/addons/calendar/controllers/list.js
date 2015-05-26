@@ -21,27 +21,32 @@ angular.module('mm.addons.calendar')
  * @ngdoc controller
  * @name mmaCalendarListCtrl
  */
-.controller('mmaCalendarListCtrl', function($scope, $log, $mmaCalendar, $mmUtil, mmaCalendarDaysInterval) {
+.controller('mmaCalendarListCtrl', function($scope, $log, $state, $mmaCalendar, $mmUtil, mmaCalendarDaysInterval) {
 
     $log = $log.getInstance('mmaCalendarListCtrl');
 
-    var daysLoaded = 0,
-        emptyEventsTimes = 0; // Variable to identify consecutive calls returning 0 events.
+    var daysLoaded,
+        emptyEventsTimes; // Variable to identify consecutive calls returning 0 events.
 
-    $scope.events = [];
-    $scope.canLoadMore = true;
+    // Convenience function to initialize variables.
+    function initVars() {
+        daysLoaded = 0;
+        emptyEventsTimes = 0;
+        $scope.events = [];
+        $scope.canLoadMore = true;
+    }
 
-    // Get event ui-sref depending on Mobile or Tablet.
+    // Get event ng-href depending on Mobile or Tablet.
+    // We need to use ng-href instead of ui-sref to make it work when list is refreshed.
     // @todo Adapt to tablet split view when it is implemented.
-    $scope.getState = function(id) {
-        return 'site.calendar-event({id: '+id+'})';
+    $scope.getUrl = function(id) {
+        return $state.href('site.calendar-event', {id: id});
     };
 
     // Convenience function that fetches the events and updates the scope.
     function fetchEvents(refresh) {
         if (refresh) {
-            daysLoaded = 0;
-            emptyEventsTimes = 0;
+            initVars();
         }
 
         return $mmaCalendar.getEvents(daysLoaded, mmaCalendarDaysInterval, refresh).then(function(events) {
@@ -51,16 +56,12 @@ angular.module('mm.addons.calendar')
                 emptyEventsTimes++;
                 if (emptyEventsTimes > 5) { // Stop execution if we retrieve empty list 6 consecutive times.
                     $scope.canLoadMore = false;
-                    $scope.count = $scope.events.length;
                 } else if($scope.events.length === 0) {
                     // No events returned and empty list. Load next events.
                     return fetchEvents();
                 }
             } else {
-                angular.forEach(events, function(e) {
-                    e.icon = $mmaCalendar.getEventIcon(e.eventtype);
-                    e.start = new Date(e.timestart * 1000).toLocaleString();
-                });
+                angular.forEach(events, $mmaCalendar.formatEventData);
                 if (refresh) {
                     $scope.events = events;
                 } else {
@@ -75,6 +76,9 @@ angular.module('mm.addons.calendar')
             $mmUtil.showErrorModal('mma.calendar.errorloadevents', true);
         });
     }
+
+    initVars();
+    $scope.count = 0;
 
     // Get first events.
     fetchEvents().finally(function() {
