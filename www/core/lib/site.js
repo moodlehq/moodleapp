@@ -478,7 +478,7 @@ angular.module('mm.core')
                 }
             }
 
-            preSets = preSets || {};
+            preSets = angular.copy(preSets);
             preSets.wstoken = currentSite.token;
             preSets.siteurl = currentSite.siteurl;
 
