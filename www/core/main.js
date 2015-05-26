@@ -15,6 +15,7 @@
 angular.module('mm.core', ['pascalprecht.translate'])
 
 .constant('mmCoreSessionExpired', 'mmCoreSessionExpired')
+.constant('mmCoreSecondsDay', 86400)
 
 .config(function($stateProvider, $provide, $ionicConfigProvider, $httpProvider, $mmUtilProvider,
         $mmLogProvider, $compileProvider) {

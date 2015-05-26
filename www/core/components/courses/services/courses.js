@@ -38,21 +38,22 @@ angular.module('mm.core.courses')
      * @module mm.core.courses
      * @ngdoc method
      * @name $mmCourses#getUserCourses
-     * @param {Boolean} refresh True when we should not get the value from the cache.
-     * @return {Promise}        Promise to be resolved when the courses are retrieved.
+     * @param {Boolean} [refresh] True when we should not get the value from the cache.
+     * @return {Promise}          Promise to be resolved when the courses are retrieved.
      */
     self.getUserCourses = function(refresh) {
-        var userid = $mmSite.getUserId();
+        var userid = $mmSite.getUserId(),
+            presets = {},
+            data = {userid: userid};
 
-        if (typeof userid == 'undefined') {
+        if (typeof userid === 'undefined') {
             return $q.reject();
         }
 
-        var data = {userid: userid},
-            presets = {};
         if (refresh) {
             presets.getFromCache = false;
         }
+
         return $mmSite.read('core_enrol_get_users_courses', data, presets).then(function(courses) {
             // TODO: For now we won't show front page in the course list because we cannot retrieve its summary.
             // courses.unshift(mmCoursesFrontPage);
@@ -63,7 +64,7 @@ angular.module('mm.core.courses')
 
             return courses;
         });
-    }
+    };
 
     return self;
 });

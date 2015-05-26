@@ -1,0 +1,21 @@
+<ion-view view-title="{{ 'mma.calendar.calendarevents' | translate }}">
+    <ion-content>
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="eventsLoaded" on-refresh="refreshEvents()">
+        </ion-refresher>
+        <mm-loading hide-until="eventsLoaded">
+            <div class="list">
+                <div ng-if="count == 0" class="item">{{ 'mma.calendar.noevents' | translate }}</div>
+                <a ng-repeat="event in events track by $index" class="item item-media item-text-wrap" ng-href="{{getUrl(event.id)}}">
+                    <img ng-src="{{event.icon}}">
+                    <h2><mm-format-text watch="true">{{event.name}}</mm-format-text></h2>
+                    <p>{{event.start}}</p>
+                </a>
+            </div>
+
+            <ion-infinite-scroll ng-if="canLoadMore"
+                    immediate-check="false"
+                    on-infinite="loadMoreEvents()" >
+             </ion-infinite-scroll>
+        </mm-loading>
+    </ion-content>
+</ion-view>

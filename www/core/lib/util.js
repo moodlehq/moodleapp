@@ -522,6 +522,18 @@ angular.module('mm.core')
             });
         };
 
+        /**
+         * Return the current timestamp (UNIX format, seconds).
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#timestamp
+         * @return {Number} The current timestamp in seconds.
+         */
+        self.timestamp = function() {
+            return Math.round(new Date().getTime() / 1000);
+        };
+
         return self;
     };
 });
