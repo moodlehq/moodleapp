@@ -287,13 +287,14 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmDB#getDB
-     * @param  {String} name   DB name.
-     * @param  {Object} schema DB schema.
-     * @return {Object}        DB.
+     * @param  {String} name    DB name.
+     * @param  {Object} schema  DB schema.
+     * @param  {Object} options DB options.
+     * @return {Object}         DB.
      */
-    self.getDB = function(name, schema) {
+    self.getDB = function(name, schema, options) {
         if (typeof dbInstances[name] === 'undefined') {
-            var db = new ydn.db.Storage(name, schema);
+            var db = new ydn.db.Storage(name, schema, options);
 
             dbInstances[name] = {
                 /**

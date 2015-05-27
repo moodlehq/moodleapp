@@ -56,9 +56,10 @@ angular.module('mm.core')
 
     /** Define the site storage schema. */
     var siteSchema = {
-        autoSchema: true,
-        stores: []
-    };
+            stores: []
+        }, dboptions = {
+            autoSchema: true
+        };
 
     /**
      * Register a store schema.
@@ -169,7 +170,7 @@ angular.module('mm.core')
             this.infos = infos;
 
             if (this.id) {
-                this.db = $mmDB.getDB('Site-' + this.id, siteSchema);
+                this.db = $mmDB.getDB('Site-' + this.id, siteSchema, dboptions);
             }
         }
 

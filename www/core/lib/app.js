@@ -38,8 +38,10 @@ angular.module('mm.core')
     /** Define the app storage schema. */
     var DBNAME = 'MoodleMobile',
         dbschema = {
-            autoSchema: true,
             stores: []
+        },
+        dboptions = {
+            autoSchema: true
         };
 
     /**
@@ -90,7 +92,7 @@ angular.module('mm.core')
 
     this.$get = function($mmDB, $cordovaNetwork) {
 
-        var db = $mmDB.getDB(DBNAME, dbschema),
+        var db = $mmDB.getDB(DBNAME, dbschema, dboptions),
             self = {};
 
         /**
