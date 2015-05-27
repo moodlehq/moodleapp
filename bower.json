@@ -3,8 +3,14 @@
   "private": "true",
   "devDependencies": {
     "ionic": "driftyco/ionic-bower#v1.0.0",
-    "ydn.db": "~1.0.3",
-    "ngCordova": "~0.1.12-alpha",
-    "angular-mocks": "~1.3.13"
+    "ydn.db": ">=1.0.3",
+    "ngCordova": ">=0.1.12-alpha",
+    "angular-mocks": ">=1.3.13",
+    "angular-md5": ">=0.1.7",
+    "angular-translate": ">=2.7.0",
+    "angular-translate-loader-partial": ">=2.7.0"
+  },
+  "resolutions": {
+    "angular": "1.3.15"
   }
 }

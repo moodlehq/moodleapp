@@ -35,5 +35,7 @@
     "org.apache.cordova.camera",
     "org.apache.cordova.media-capture"
   ],
-  "cordovaPlatforms": []
+  "cordovaPlatforms": [
+    "android"
+  ]
 }

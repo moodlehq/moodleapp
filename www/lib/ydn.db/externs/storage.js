@@ -1,4 +1,0 @@
-/**
- * @externs ydn.db.Storage
- */
-
