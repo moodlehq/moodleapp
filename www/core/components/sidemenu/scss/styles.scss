@@ -1,0 +1,25 @@
+// Variables.
+$bar-side-menu-height: 80px !default;
+$bar-side-menu-color: $bar-content-bg !default;
+$bar-side-menu-border-color: $bar-content-border !default;
+$bar-side-menu-text-color: $bar-content-text !default;
+
+// Bar styles
+.bar-side-menu {
+  @include bar-style($bar-side-menu-color, $bar-side-menu-border-color, $bar-side-menu-text-color);
+  height: $bar-side-menu-height;
+  .item {
+    background: transparent;
+    border: none;
+  }
+  .item-avatar {
+    h2,
+    p {
+      color: $bar-side-menu-text-color;
+    }
+  }
+}
+
+.has-side-menu-header {
+  top: $bar-side-menu-height;
+}

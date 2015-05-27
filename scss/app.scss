@@ -1,0 +1,31 @@
+/**
+ * This file will be the head of all the other SCSS files in the project.
+ *
+ * Use it to customise the look and feel of the app.
+ */
+
+// Colors.
+$positive: #387ef5;
+
+// Setting the default button to button-outline.
+$button-default-bg: transparent;
+$button-default-text: $positive;
+$button-default-border: $positive;
+$button-default-active-bg: $positive;
+$button-default-active-border: $positive;
+
+// The path to the font icons.
+$ionicons-font-path: "../lib/ionic/fonts" !default;
+
+// Include all of Ionic.
+@import "www/lib/ionic/scss/ionic";
+
+// Include all of Moodle Mobile.
+@import "www/build/mm.bundle.scss";
+
+// Setting the default button to button-outline.
+.button.active,
+.button.activated {
+  box-shadow: none;
+  color: #fff;
+}
