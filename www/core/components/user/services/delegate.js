@@ -22,14 +22,13 @@ angular.module('mm.core.user')
  * @ngdoc service
  * @name $mmUserDelegate
  */
-.factory('$mmUserDelegate', function($log) {
+.factory('$mmUserDelegate', function($log, $mmSite) {
 
     $log = $log.getInstance('$mmUserDelegate');
 
-    var plugins = {},
+    var handlers = {},
         self = {},
-        data = {},
-        controllers = [];
+        controllers = {};
 
     /**
      * Register a plugin to show in the user profile.
@@ -38,36 +37,18 @@ angular.module('mm.core.user')
      * @ngdoc method
      * @name $mmUserDelegate#registerPlugin
      * @param  {String}   name     Name of the plugin.
-     * @param  {Function} callback Function to call to get the plugin data. This function should return an object with:
-     *                                 -title: Plugin name to be displayed.
-     *                                 -state: sref to the plugin's main state (i.e. site.grades).
-     *                                 -stateParams: The parameter for the sref.
+     * @param  {Object}   handler  Object defining the following methods:
+     *                             - isEnabled (Boolean) Whether or not the handler is enabled on a site level.
+     *                             - isEnabledForUser(user) (Boolean) Whether or not the handler is to be used for the user.
+     *                             - getController(user) (Function) Returns the function that will act as controller.
+     *                                                              See core/components/user/templates/profile.html for the list
+     *                                                              of scope variables expected.
      *
-     *                              The function received the user object as parameter.
-     *                              If the plugin should not be shown (disabled, etc.) this function should return undefined.
+     * @todo Support promises in isEnabled/isEnabledForUser.
      */
-    self.registerPlugin = function(name, callback) {
-        $log.debug("Register plugin '"+name+"' in participant.");
-        plugins[name] = callback;
-    };
-
-    /**
-     * Update the plugin data stored in the delegate.
-     *
-     * @module mm.core.user
-     * @ngdoc method
-     * @name $mmUserDelegate#updatePluginData
-     * @param  {String}   name     Name of the plugin.
-     * @param  {Object}   user     The user object.
-     */
-    self.updatePluginData = function(name, user) {
-        $log.debug("Update plugin '"+name+"' data in participant.");
-        var pluginData = plugins[name](user);
-        if (typeof(pluginData) !== 'undefined') {
-            data[name] = pluginData;
-        } else {
-            delete data[name];
-        }
+    self.registerPlugin = function(name, handler) {
+        $log.debug("Register plugin '" + name + "' in profile.");
+        handlers[name] = handler();
     };
 
     /**
@@ -80,10 +61,22 @@ angular.module('mm.core.user')
      * @return {Object} Registered plugins data.
      */
     self.getData = function(user) {
-        angular.forEach(plugins, function(callback, plugin) {
-            self.updatePluginData(plugin, user);
+        controllers = {};
+
+        angular.forEach(handlers, function(handler, name) {
+
+            if (!handler.isEnabled()) {
+                delete controllers[name];
+                return;
+            } else if (!handler.isEnabledForUser(user)) {
+                delete controllers[name];
+                return;
+            }
+
+            controllers[name] = handler.getController(user);
         });
-        return data;
+
+        return controllers;
     };
 
     return self;
