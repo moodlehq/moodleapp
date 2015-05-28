@@ -38,8 +38,8 @@ angular.module('mm.core')
  * @ngdoc service
  * @name $mmSitesManager
  */
-.factory('$mmSitesManager', function($http, $q, $mmSitesFactory, md5, $mmLang, $mmConfig, $mmApp, $mmWS, $mmUtil, $mmFS,
-                                     mmCoreSitesStore, mmCoreCurrentSiteStore, $log) {
+.factory('$mmSitesManager', function($http, $q, $mmSitesFactory, md5, $mmLang, $mmConfig, $mmApp, $mmWS, $mmUtil, $mmFS, $mmEvents,
+                                     mmCoreSitesStore, mmCoreCurrentSiteStore, mmCoreEventLogin, mmCoreEventLogout, $log) {
 
     $log = $log.getInstance('$mmSitesManager');
 
@@ -622,6 +622,7 @@ angular.module('mm.core')
             id: 1,
             siteid: siteid
         });
+        $mmEvents.trigger(mmCoreEventLogin);
     };
 
     /**
@@ -634,6 +635,7 @@ angular.module('mm.core')
      */
     self.logout = function() {
         currentSite = undefined;
+        $mmEvents.trigger(mmCoreEventLogout);
         return db.remove(mmCoreCurrentSiteStore, 1);
     }
 

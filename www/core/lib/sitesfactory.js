@@ -116,7 +116,7 @@ angular.module('mm.core')
     }
 
     this.$get = function($http, $q, $mmWS, $mmDB, $mmConfig, $log, md5, $mmApp, $mmLang, $mmUtil, $mmFS,
-        mmCoreWSCacheStore, mmCoreWSPrefix, mmCoreSessionExpired, $mmEvents) {
+        mmCoreWSCacheStore, mmCoreWSPrefix, mmCoreSessionExpired, $mmEvents, mmCoreEventSessionExpired) {
 
         $log = $log.getInstance('$mmSite');
 
@@ -470,7 +470,7 @@ angular.module('mm.core')
                     if (error === mmCoreSessionExpired) {
                         // Session expired, trigger event.
                         $mmLang.translateErrorAndReject(deferred, 'mm.core.lostconnection');
-                        $mmEvents.trigger('sessionExpired', {siteid: site.id});
+                        $mmEvents.trigger(mmCoreEventSessionExpired, {siteid: site.id});
                     } else if (!emergencyCache) {
                         $log.debug('WS call ' + method + ' failed. Emergency cache is forbidden, rejecting.');
                         deferred.reject(error);
