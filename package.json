@@ -33,7 +33,9 @@
     "org.apache.cordova.file-transfer",
     "org.apache.cordova.network-information",
     "org.apache.cordova.camera",
-    "org.apache.cordova.media-capture"
+    "org.apache.cordova.media-capture",
+    "de.appplant.cordova.plugin.local-notification",
+    "org.apache.cordova.device"
   ],
   "cordovaPlatforms": [
     "android"
