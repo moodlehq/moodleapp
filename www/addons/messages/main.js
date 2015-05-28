@@ -45,8 +45,10 @@ angular.module('mm.addons.messages', [])
 
 })
 
-.run(function($mmSideMenuDelegate, $translate, $mmaMessages, $mmUserDelegate) {
-    var strings = ['mma.messages.messages', 'mma.messages.sendmessage'];
+.run(function($mmSideMenuDelegate, $translate, $mmaMessages, $mmUserDelegate, $mmaMessagesHandlers) {
+    var strings = [
+        'mma.messages.messages'
+    ];
 
     $translate(strings).then(function(translations) {
 
@@ -63,23 +65,9 @@ angular.module('mm.addons.messages', [])
             };
         });
 
-        $mmUserDelegate.registerPlugin('mmaMessages', function(user) {
-            if (!$mmaMessages.isPluginEnabled()) {
-                return;
-            } else if (user.id == $mmSite.getUserId()) {
-                // A user cannot message themselves.
-                return;
-            }
-
-            return {
-                state: 'site.messages-discussion',
-                stateParams: {
-                    userId: user.id,
-                    userFullname: user.fullname
-                },
-                title: translations['mma.messages.sendmessage']
-            };
-        });
+        $mmUserDelegate.registerPlugin('mmaMessages:sendMessage', $mmaMessagesHandlers.sendMessage);
+        $mmUserDelegate.registerPlugin('mmaMessages:addContact', $mmaMessagesHandlers.addContact);
+        $mmUserDelegate.registerPlugin('mmaMessages:blockContact', $mmaMessagesHandlers.blockContact);
 
     });
 

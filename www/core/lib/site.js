@@ -512,7 +512,7 @@ angular.module('mm.core')
                         $mmLang.translateErrorAndReject(deferred, 'mm.core.lostconnection');
                         $mmEvents.trigger('sessionExpired'); // Notify session expired.
                     } else {
-                        $log.debug('WS call failed. Try to get the value from the cache.');
+                        $log.debug('WS call ' + method + ' failed. Try to get the value from the cache.');
                         preSets.omitExpires = true;
                         preSets.getFromCache = true;
                         getFromCache(method, data, preSets).then(function(data) {

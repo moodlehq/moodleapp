@@ -27,6 +27,40 @@ angular.module('mm.addons.messages')
     var self = {};
 
     /**
+     * Add a contact.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#addContact
+     * @param {Number} to User ID of the person to add.
+     * @return {Promise}
+     */
+    self.addContact = function(userId) {
+        return $mmSite.write('core_message_create_contacts', {
+            userids: [ userId ]
+        }).then(function() {
+            return self.invalidateAllContactsCache($mmSite.getUserId());
+        });
+    };
+
+    /**
+     * Block a contact.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#blockContact
+     * @param {Number} to User ID of the person to block.
+     * @return {Promise}
+     */
+    self.blockContact = function(userId) {
+        return $mmSite.write('core_message_block_contacts', {
+            userids: [ userId ]
+        }).then(function() {
+            return self.invalidateAllContactsCache($mmSite.getUserId());
+        });
+    };
+
+    /**
      * Get all the contacts of the current user.
      *
      * @module mm.addons.messages
@@ -456,6 +490,25 @@ angular.module('mm.addons.messages')
     };
 
     /**
+     * Remove a contact.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#removeContact
+     * @param {Number} to User ID of the person to remove.
+     * @return {Promise}
+     */
+    self.removeContact = function(userId) {
+        return $mmSite.write('core_message_delete_contacts', {
+            userids: [ userId ]
+        }, {
+            responseExpected: false
+        }).then(function() {
+            return self.invalidateContactsCache();
+        });
+    };
+
+    /**
      * Send a message to someone.
      *
      * @module mm.addons.messages
@@ -493,6 +546,23 @@ angular.module('mm.addons.messages')
             a = parseInt(a.timecreated, 10);
             b = parseInt(b.timecreated, 10);
             return a >= b ? 1 : -1;
+        });
+    };
+
+    /**
+     * Unblock a user.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#unblockContact
+     * @param {Number} to User ID of the person to unblock.
+     * @return {Promise}
+     */
+    self.unblockContact = function(userId) {
+        return $mmSite.write('core_message_unblock_contacts', {
+            userids: [ userId ]
+        }).then(function() {
+            return self.invalidateAllContactsCache($mmSite.getUserId());
         });
     };
 

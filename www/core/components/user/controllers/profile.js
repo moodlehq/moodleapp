@@ -27,12 +27,7 @@ angular.module('mm.core.user')
         userid   = $stateParams.userid;
 
     $scope.isAndroid = ionic.Platform.isAndroid();
-
-    $scope.goTo = function(e, state, stateParams) {
-        e.stopPropagation();
-        e.preventDefault();
-        $state.go(state, stateParams);
-    };
+    $scope.plugins = [];
 
     $mmUser.getProfile(userid, courseid).then(function(user) {
 
