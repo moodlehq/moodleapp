@@ -21,27 +21,38 @@ angular.module('mm.addons.messages')
  * @ngdoc controller
  * @name mmaMessagesContactsCtrl
  */
-.controller('mmaMessagesContactsCtrl', function($scope, $mmaMessages, $mmSite, mmUserProfileState) {
+.controller('mmaMessagesContactsCtrl', function($q, $scope, $mmaMessages, $mmSite, mmUserProfileState) {
+
+    var currentUserId = $mmSite.getUserId();
 
     $scope.loaded = false;
-    $scope.currentUserId = $mmSite.getUserId();
     $scope.contactTypes = ['online', 'offline', 'blocked', 'strangers'];
     $scope.profileState = mmUserProfileState;
     $scope.hasContacts = false;
 
-    $mmaMessages.getAllContacts().then(function(contacts) {
-        $scope.contacts = contacts;
-
-        angular.forEach(contacts, function(contact) {
-            if (contact.length > 0) {
-                $scope.hasContacts = true;
-            }
+    $scope.refresh = function() {
+        $mmaMessages.invalidateAllContactsCache(currentUserId).then(function() {
+            return fetchContacts(true);
+        }).finally(function() {
+            $scope.$broadcast('scroll.refreshComplete');
         });
-    }, function() {
-        $mmUtil.showErrorModal('mma.messages.errorwhileretrievingcontacts', true);
-    }).finally(function() {
+    };
+
+    function fetchContacts() {
+        return $mmaMessages.getAllContacts().then(function(contacts) {
+            $scope.contacts = contacts;
+
+            angular.forEach(contacts, function(contact) {
+                if (contact.length > 0) {
+                    $scope.hasContacts = true;
+                }
+            });
+        }, function() {
+            $mmUtil.showErrorModal('mma.messages.errorwhileretrievingcontacts', true);
+        });
+    }
+    fetchContacts().finally(function() {
         $scope.loaded = true;
     });
-
 });
 
