@@ -53,7 +53,7 @@ angular.module('mm.core.user')
             courseid: courseid
         });
     }, function(message) {
-        $mmUtil.showErrorModal(message);
+        $scope.user = false;
     }).finally(function() {
         $scope.userLoaded = true;
     });
