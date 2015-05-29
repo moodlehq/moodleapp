@@ -21,7 +21,7 @@ angular.module('mm.core')
  * @ngdoc service
  * @name $mmGroups
  */
-.factory('$mmGroups', function($log, $q, $mmSite) {
+.factory('$mmGroups', function($log, $q, $mmSite, $mmSitesManager) {
 
     $log = $log.getInstance('$mmGroups');
 
@@ -33,9 +33,10 @@ angular.module('mm.core')
      * @name $mmGroups#getUserGroups
      * @param {Object[]|Number[]} courses List of courses or course ids to get the groups from.
      * @param {Boolean} [refresh]         True when we should not get the value from the cache.
+     * @param {String} [siteid]           Site to get the groups from. If not defined, use current site.
      * @return {Promise}                  Promise to be resolved when the groups are retrieved.
      */
-    self.getUserGroups = function(courses, refresh) {
+    self.getUserGroups = function(courses, refresh, siteid) {
         var userid = $mmSite.getUserId(),
             promises = [],
             groups = [],
@@ -48,7 +49,7 @@ angular.module('mm.core')
             } else { // Param is array of courseids.
                 courseid = course;
             }
-            var promise = self.getUserGroupsInCourse(userid, courseid, refresh);
+            var promise = self.getUserGroupsInCourse(userid, courseid, refresh, siteid);
             promises.push(promise);
             promise.then(function(response) {
                 if (response.groups && response.groups.length > 0) {
@@ -74,9 +75,12 @@ angular.module('mm.core')
      * @param {Number} userid     ID of the user.
      * @param {Number} courseid   ID of the course.
      * @param {Boolean} [refresh] True when we should not get the value from the cache.
+     * @param {String} [siteid]   Site to get the groups from. If not defined, use current site.
      * @return {Promise}        Promise to be resolved when the groups are retrieved.
      */
-    self.getUserGroupsInCourse = function(userid, courseid, refresh) {
+    self.getUserGroupsInCourse = function(userid, courseid, refresh, siteid) {
+        siteid = siteid || $mmSite.getId();
+
         var presets = {},
             data = {
                 userid: userid,
@@ -85,7 +89,9 @@ angular.module('mm.core')
         if (refresh) {
             presets.getFromCache = false;
         }
-        return $mmSite.read('core_group_get_course_user_groups', data, presets);
+        return $mmSitesManager.getSite(siteid).then(function(site) {
+            return site.read('core_group_get_course_user_groups', data, presets);
+        });
     };
 
     return self;

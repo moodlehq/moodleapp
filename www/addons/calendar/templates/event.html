@@ -24,21 +24,21 @@
                     <mm-format-text watch="true">{{event.description}}</mm-format-text>
                 </li>
             </ul>
-            <!-- <div class="card">
+            <div class="card" ng-if="notificationsEnabled">
                 <div class="item item-select">
-                    Notifications
-                    <select>
-                        <option>Disabled</option>
-                        <option>10 Minutes</option>
-                        <option>30 Minutes</option>
-                        <option>1 Hour</option>
-                        <option selected>2 Hours</option>
-                        <option>6 Hours</option>
-                        <option>12 Hours</option>
-                        <option>24 Hours</option>
+                    {{ 'mma.calendar.notifications' | translate }}
+                    <select ng-model="notification.time" convert-to-number ng-change="updateNotificationTime()">
+                        <option value="0">Disabled</option>
+                        <option value="10">10 Minutes</option>
+                        <option value="30">30 Minutes</option>
+                        <option value="60">1 Hour</option>
+                        <option value="120">2 Hours</option>
+                        <option value="360">6 Hours</option>
+                        <option value="720">12 Hours</option>
+                        <option value="1240">24 Hours</option>
                     </select>
                 </div>
-            </div> -->
+            </div>
         </mm-loading>
     </ion-content>
 </ion-view>

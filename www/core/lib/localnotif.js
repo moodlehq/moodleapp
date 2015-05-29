@@ -23,7 +23,7 @@ angular.module('mm.core')
         mmCoreNotificationsTriggeredStore) {
     var stores = [
         {
-            name: mmCoreNotificationsSitesStore,
+            name: mmCoreNotificationsSitesStore, // Store to asigne unique codes to each site.
             keyPath: 'id',
             indexes: [
                 {
@@ -39,6 +39,11 @@ angular.module('mm.core')
                     name: 'code',
                 }
             ]
+        },
+        {
+            name: mmCoreNotificationsTriggeredStore, // Store to prevent re-triggering notifications.
+            keyPath: 'id',
+            indexes: []
         }
     ];
     $mmAppProvider.registerStores(stores);
@@ -224,6 +229,34 @@ angular.module('mm.core')
     };
 
     /**
+     * Register an observer to be notified when a notification is clicked.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmLocalNotifications#registerClick
+     * @param {String} name       Observer's name. Must be unique.
+     * @param {Function} callback Function to call with the data received by the notification. This function should return
+     *                            true if it receives the data expected, so no more observers get notified.
+     */
+    self.registerClick = function(name, callback) {
+        $log.debug("Register observer '"+name+"' for notification click.");
+        observers[name] = callback;
+    };
+
+    /**
+     * Remove a notification from triggered store.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmLocalNotifications#removeTriggered
+     * @param {String} id Notification ID.
+     * @return {Promise}  Promise resolved when it is removed.
+     */
+    self.removeTriggered = function(id) {
+        return $mmApp.getDB().remove(mmCoreNotificationsTriggeredStore, id);
+    };
+
+    /**
      * Schedule a local notification.
      * @see https://github.com/katzer/cordova-plugin-local-notifications/wiki/04.-Scheduling
      *
@@ -253,30 +286,35 @@ angular.module('mm.core')
     };
 
     /**
-     * Register an observer to be notified when a notification is clicked.
+     * Function to call when a notification is triggered. Stores the notification so it's not scheduled again unless the
+     * time is changed.
      *
      * @module mm.core
      * @ngdoc method
-     * @name $mmLocalNotifications#registerClick
-     * @param {String} name       Observer's name. Must be unique.
-     * @param {Function} callback Function to call with the data received by the notification. This function should return
-     *                            true if it receives the data expected, so no more observers get notified.
+     * @name $mmLocalNotifications#trigger
+     * @param {Object} notification Triggered notification.
      */
-    self.registerClick = function(name, callback) {
-        $log.debug("Register observer '"+name+"' for notification click.");
-        observers[name] = callback;
+    self.trigger = function(notification) {
+        $mmApp.getDB().insert(mmCoreNotificationsTriggeredStore, {
+            id: parseInt(notification.id),
+            at: parseInt(notification.at)
+        });
     };
 
     return self;
 })
 
-.run(function($rootScope, $log, $mmLocalNotifications) {
+.run(function($rootScope, $log, $mmLocalNotifications, $cordovaLocalNotification) { window.cln = $cordovaLocalNotification;
     $log = $log.getInstance('$mmLocalNotifications');
 
-     $rootScope.$on('$cordovaLocalNotification:clicked', function(e, notification, state) {
-        if (notification && notification.id && notification.id.data) {
-            $log.debug('Notification clicked: '+notification.id.data);
-            var data = JSON.parse(notification.id.data);
+    $rootScope.$on('$cordovaLocalNotification:trigger', function(e, notification, state) {
+        $mmLocalNotifications.trigger(notification);
+    });
+
+    $rootScope.$on('$cordovaLocalNotification:click', function(e, notification, state) {
+        if (notification && notification.data) {
+            $log.debug('Notification clicked: '+notification.data);
+            var data = JSON.parse(notification.data);
             $mmLocalNotifications.notifyClick(data);
         }
     });

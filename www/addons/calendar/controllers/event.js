@@ -21,11 +21,12 @@ angular.module('mm.addons.calendar')
  * @ngdoc controller
  * @name mmaCalendarEventCtrl
  */
-.controller('mmaCalendarEventCtrl', function($scope, $log, $stateParams, $mmaCalendar, $mmUtil, $mmCourse, $mmCourses) {
+.controller('mmaCalendarEventCtrl', function($scope, $log, $stateParams, $mmaCalendar, $mmUtil, $mmCourse, $mmCourses,
+        $mmLocalNotifications) {
 
     $log = $log.getInstance('mmaCalendarEventCtrl');
 
-    var eventid = $stateParams.id;
+    var eventid = parseInt($stateParams.id);
 
     // Convenience function that fetches the event and updates the scope.
     function fetchEvent(refresh) {
@@ -68,4 +69,19 @@ angular.module('mm.addons.calendar')
             $scope.$broadcast('scroll.refreshComplete');
         });
     };
+
+    $scope.notificationsEnabled = $mmLocalNotifications.isAvailable();
+    if ($scope.notificationsEnabled) {
+
+        $mmaCalendar.getEventNotificationTime(eventid).then(function(notificationtime) {
+            $scope.notification = { // Use an object, otherwise changes are not reflected.
+                time: notificationtime
+            };
+        });
+
+        $scope.updateNotificationTime = function() {
+            var time = $scope.notification.time;
+            $mmaCalendar.updateNotificationTime($scope.event, time);
+        };
+    }
 });

@@ -535,6 +535,24 @@ angular.module('mm.core')
     };
 
     /**
+     * Get the list of IDs of sites stored.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#getSitesIds
+     * @return {Promise} Promise to be resolved when the sites IDs are retrieved.
+     */
+    self.getSitesIds = function() {
+        return db.getAll(mmCoreSitesStore).then(function(sites) {
+            var ids = [];
+            angular.forEach(sites, function(site) {
+                ids.push(site.id);
+            });
+            return ids;
+        });
+    };
+
+    /**
      * DANI: I don't like this function in here, but it's the only service that has the needed data.
      * Maybe a new service?
      *

@@ -15,6 +15,8 @@
 angular.module('mm.addons.calendar', [])
 
 .constant('mmaCalendarDaysInterval', 30)
+.constant('mmaCalendarDefaultNotifTime', 60)
+.constant('mmaCalendarComponent', 'mmaCalendarEvents')
 
 .config(function($stateProvider) {
 
@@ -26,11 +28,15 @@ angular.module('mm.addons.calendar', [])
                     controller: 'mmaCalendarListCtrl',
                     templateUrl: 'addons/calendar/templates/list.html'
                 }
+            },
+            params: {
+                eventid: null,
+                clear: false
             }
         })
 
         .state('site.calendar-event', {
-            url: '/calendar-event/:id', // We need to add ID to the URL since params to make ng-href work.
+            url: '/calendar-event/:id', // We need to add ID to the URL to make ng-href work.
             views: {
                 'site': {
                     controller: 'mmaCalendarEventCtrl',

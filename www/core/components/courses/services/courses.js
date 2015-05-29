@@ -28,7 +28,7 @@ angular.module('mm.core.courses')
  * @ngdoc service
  * @name $mmCourses
  */
-.factory('$mmCourses', function($q, $mmSite, mmCoursesFrontPage) {
+.factory('$mmCourses', function($q, $mmSite, $mmSitesManager, mmCoursesFrontPage) {
 
     var self = {},
         currentCourses = {};
@@ -56,9 +56,12 @@ angular.module('mm.core.courses')
      * @ngdoc method
      * @name $mmCourses#getUserCourses
      * @param {Boolean} [refresh] True when we should not get the value from the cache.
+     * @param {String} [siteid]   Site to get the courses from. If not defined, use current site.
      * @return {Promise}          Promise to be resolved when the courses are retrieved.
      */
-    self.getUserCourses = function(refresh) {
+    self.getUserCourses = function(refresh, siteid) {
+        siteid = siteid || $mmSite.getId();
+
         var userid = $mmSite.getUserId(),
             presets = {},
             data = {userid: userid};
@@ -71,16 +74,18 @@ angular.module('mm.core.courses')
             presets.getFromCache = false;
         }
 
-        return $mmSite.read('core_enrol_get_users_courses', data, presets).then(function(courses) {
-            // TODO: For now we won't show front page in the course list because we cannot retrieve its summary.
-            // courses.unshift(mmCoursesFrontPage);
+        return $mmSitesManager.getSite(siteid).then(function(site) {
+            return site.read('core_enrol_get_users_courses', data, presets).then(function(courses) {
+                // TODO: For now we won't show front page in the course list because we cannot retrieve its summary.
+                // courses.unshift(mmCoursesFrontPage);
 
-            // TODO: MM._loadGroups(courses);
+                // TODO: MM._loadGroups(courses);
 
-            // TODO: Store courses in DB.
-            storeCoursesInMemory(courses);
+                // TODO: Store courses in DB.
+                storeCoursesInMemory(courses);
 
-            return courses;
+                return courses;
+            });
         });
     };
 

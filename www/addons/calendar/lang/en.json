@@ -2,5 +2,6 @@
     "calendarevents": "Calendar events",
     "errorloadevent": "Error loading event.",
     "errorloadevents": "Error loading events.",
-    "noevents": "There are no events"
+    "noevents": "There are no events",
+    "notifications": "Notifications"
 }

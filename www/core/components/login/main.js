@@ -109,7 +109,9 @@ angular.module('mm.core.login', [])
     // Redirect depending on user session.
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 
-        if ((toState.name.substr(0, 8) !== 'mm_login' || toState.name === 'mm_login.reconnect') && !$mmSite.isLoggedIn()) {
+        if (toState.name.substr(0, 8) === 'redirect') {
+            return;
+        } else if ((toState.name.substr(0, 8) !== 'mm_login' || toState.name === 'mm_login.reconnect') && !$mmSite.isLoggedIn()) {
             // We are not logged in.
             event.preventDefault();
             $log.debug('Redirect to login page, request was: ' + toState.name);
