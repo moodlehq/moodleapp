@@ -10,7 +10,7 @@
 
                 <a class="item item-avatar"  ng-repeat="contact in contacts[contactType] | orderBy:'fullname' track by $index" ui-sref="{{ profileState }}({userid: contact.id})">
                     <img ng-src="{{ contact.profileimageurlsmall || contact.profileimageurl }}" alt="" role="presentation" mm-external-content ng-if="contact.profileimageurlsmall || contact.profileimageurl">
-                    <img src="img/user-avatar.png" alt="" role="presentation" ng-if="!disc.profileimageurl" ng-if="!(contact.profileimageurlsmall || contact.profileimageurl)">
+                    <img src="img/user-avatar.png" alt="" role="presentation" ng-if="!(contact.profileimageurlsmall || contact.profileimageurl)">
 
                     <h2>{{ contact.fullname }}</h2>
                 </a>
