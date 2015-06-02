@@ -56,7 +56,8 @@ angular.module('mm.core.user')
             if ($mmSite.wsAvailable('core_user_get_users_by_field')) {
                 wsName = 'core_user_get_users_by_field';
                 data = {
-                    'id': userid
+                    'field': 'id',
+                    'values[0]': userid
                 };
             } else {
                 wsName = 'core_user_get_users_by_id';
