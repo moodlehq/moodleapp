@@ -26,7 +26,12 @@ angular.module('mm.addons.messages')
 
     function fetchDiscussions() {
         return $mmaMessages.getDiscussions().then(function(discussions) {
-            $scope.discussions = discussions;
+            // Convert to an array for sorting.
+            var array = [];
+            angular.forEach(discussions, function(v) {
+                array.push(v);
+            });
+            $scope.discussions = array;
         }, function() {
             $mmUtil.showErrorModal('mma.messages.errorwhileretrievingdiscussions', true);
         });
@@ -45,10 +50,6 @@ angular.module('mm.addons.messages')
             userId: discussion.message.user,
             userFullname: discussion.fullname
         });
-    };
-
-    $scope.hasMessages = function(discussion) {
-        return typeof discussion.message !== 'undefined';
     };
 
     fetchDiscussions().finally(function() {
