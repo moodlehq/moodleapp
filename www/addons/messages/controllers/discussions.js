@@ -21,16 +21,24 @@ angular.module('mm.addons.messages')
  * @ngdoc controller
  * @name mmaMessagesDiscussionsCtrl
  */
-.controller('mmaMessagesDiscussionsCtrl', function($state, $scope, $mmaMessages) {
+.controller('mmaMessagesDiscussionsCtrl', function($q, $state, $scope, $mmaMessages) {
     $scope.loaded = false;
 
-    $mmaMessages.getDiscussions().then(function(discussions) {
-        $scope.discussions = discussions;
-    }, function() {
-        $mmUtil.showErrorModal('mma.messages.errorwhileretrievingdiscussions', true);
-    }).finally(function() {
-        $scope.loaded = true;
-    });
+    function fetchDiscussions() {
+        return $mmaMessages.getDiscussions().then(function(discussions) {
+            $scope.discussions = discussions;
+        }, function() {
+            $mmUtil.showErrorModal('mma.messages.errorwhileretrievingdiscussions', true);
+        });
+    }
+
+    $scope.refresh = function() {
+        $mmaMessages.invalidateDiscussionsCache().then(function() {
+            return fetchDiscussions();
+        }).finally(function() {
+            $scope.$broadcast('scroll.refreshComplete');
+        });
+    };
 
     $scope.goToDiscussion = function(discussion) {
         $state.go('site.messages-discussion', {
@@ -43,5 +51,8 @@ angular.module('mm.addons.messages')
         return typeof discussion.message !== 'undefined';
     };
 
+    fetchDiscussions().finally(function() {
+        $scope.loaded = true;
+    });
 });
 
