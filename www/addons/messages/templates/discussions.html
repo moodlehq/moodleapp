@@ -1,4 +1,5 @@
 <ion-content class="has-tabs">
+    <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="loaded" on-refresh="refresh()"></ion-refresher>
     <mm-loading hide-until="loaded">
         <ion-list>
             <a class="item item-avatar" ng-repeat="disc in discussions | filter:hasMessages | orderBy:'message.timecreated':true track by $index" ng-click="goToDiscussion(disc)">

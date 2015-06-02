@@ -141,6 +141,18 @@ angular.module('mm.addons.messages')
         return 'mmaMessages:discussion:' + userId;
     };
 
+    /**
+     * Get the cache key for the list of discussions.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#_getCacheKeyForDiscussions
+     * @return {String}
+     * @protected
+     */
+    self._getCacheKeyForDiscussions = function() {
+        return 'mmaMessages:discussions';
+    };
 
     /**
      * Get the contacts of the current user.
@@ -197,10 +209,13 @@ angular.module('mm.addons.messages')
      * @module mm.addons.messages
      * @ngdoc method
      * @name $mmaMessages#getDiscussions
-     * @return {Promise} Resolved with an array where the key is the user ID of the other user.
+     * @return {Promise} Resolved with an object where the keys are the user ID of the other user.
      */
     self.getDiscussions = function() {
-        var discussions = [],
+        var discussions = {},
+            presets = {
+                cacheKey: self._getCacheKeyForDiscussions()
+            },
             promise;
 
         return self._getRecentMessages({
@@ -208,7 +223,7 @@ angular.module('mm.addons.messages')
             useridfrom: 0,
             limitfrom: 0,
             limitnum: 50
-        }).then(function(messages) {
+        }, presets).then(function(messages) {
 
             // Extract the discussions by filtering same senders.
             angular.forEach(messages, function(message) {
@@ -236,7 +251,7 @@ angular.module('mm.addons.messages')
                 useridto: 0,
                 limitfrom: 0,
                 limitnum: 50
-            }).then(function(messages) {
+            }, presets).then(function(messages) {
 
                 // Extract the discussions by filtering same senders.
                 angular.forEach(messages, function(message) {
@@ -266,28 +281,27 @@ angular.module('mm.addons.messages')
                         if (contacts[type] && contacts[type].length > 0) {
                             angular.forEach(contacts[type], function(contact) {
 
-                                if (typeof discussions[contact.id] === 'undefined') {
-                                    // Is a contact with unread messages, add it to the recent contact messages.
+                                if (typeof discussions[contact.id] === 'undefined' && contact.unread) {
+                                    // It's a contact with unread messages. Contacts without unread messages are not used.
                                     discussions[contact.id] = {
                                         fullname: contact.fullname,
-                                        profileimageurl: ""
-                                    };
-
-                                    if (contact.unread) {
-                                        discussions[contact.id].message = {
+                                        profileimageurl: "",
+                                        message: {
                                             user: contact.id,
                                             message: "...",
                                             timecreated: 0,
-                                        };
+                                        }
+                                    };
+                                }
+
+                                if (typeof discussions[contact.id] !== 'undefined') {
+                                    // The contact is used in a discussion.
+                                    if (contact.profileimageurl) {
+                                        discussions[contact.id].profileimageurl = contact.profileimageurl;
                                     }
-                                }
-
-                                if (contact.profileimageurl) {
-                                    discussions[contact.id].profileimageurl = contact.profileimageurl;
-                                }
-
-                                if (typeof contact.unread !== 'undefined') {
-                                    discussions[contact.id].unread = contact.unread;
+                                    if (typeof contact.unread !== 'undefined') {
+                                        discussions[contact.id].unread = contact.unread;
+                                    }
                                 }
                             });
                         }
@@ -413,6 +427,22 @@ angular.module('mm.addons.messages')
      */
     self.invalidateDiscussionCache = function(userId) {
         return $mmSite.invalidateWsCacheForKey(self._getCacheKeyForDiscussion(userId));
+    };
+
+    /**
+     * Invalidate discussions cache.
+     *
+     * Note that {@link $mmaMessages#getDiscussions} uses the contacts, so we need to invalidate contacts too.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#invalidateDiscussionsCache
+     * @return {Promise}
+     */
+    self.invalidateDiscussionsCache = function(userId) {
+        return $mmSite.invalidateWsCacheForKey(self._getCacheKeyForDiscussions()).then(function(){
+            return self.invalidateContactsCache();
+        });
     };
 
     /**
