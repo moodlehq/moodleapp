@@ -1,0 +1,766 @@
+// (C) Copyright 2015 Martin Dougiamas
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+angular.module('mm.core')
+
+.value('mmCoreWSPrefix', 'local_mobile_')
+
+.constant('mmCoreWSCacheStore', 'wscache')
+
+.config(function($mmSitesFactoryProvider, mmCoreWSCacheStore) {
+    var stores = [
+        {
+            name: mmCoreWSCacheStore,
+            keyPath: 'id',
+            indexes: [
+                {
+                    name: 'key'
+                }
+            ]
+        }
+    ];
+    $mmSitesFactoryProvider.registerStores(stores);
+})
+
+/**
+ * Provider to create sites instances.
+ *
+ * @module mm.core
+ * @ngdoc provider
+ * @name $mmSitesFactory
+ * @description
+ * This provider is the interface with the DB database. The modules that need to store
+ * information here need to register their stores.
+ *
+ * Example:
+ *
+ * .config(function($mmSitesFactoryProvider) {
+ *      $mmSitesFactoryProvider.registerStore({
+ *          name: 'courses',
+ *          keyPath: 'id'
+ *      });
+ *  })
+ *
+ * The service $mmSitesFactory is used to create site instances. It's not intended to be used directly, its usage is
+ * restricted to core. Developers should only use $mmSitesFactoryProvider, $mmSitesManager and $mmSite.
+ */
+.provider('$mmSitesFactory', function() {
+
+    /** Define the site storage schema. */
+    var siteSchema = {
+            stores: []
+        },
+        dboptions = {
+            autoSchema: true
+        };
+
+    /**
+     * Register a store schema.
+     * IMPORTANT: Modifying the schema of an already existing store deletes all its data in WebSQL Storage.
+     * If a store schema needs to be modified, the data should be manually migrated to the new store.
+     *
+     * @param  {Object} store The store object definition.
+     * @return {Void}
+     */
+    this.registerStore = function(store) {
+        if (typeof(store.name) === 'undefined') {
+            console.log('$mmSite: Error: store name is undefined.');
+            return;
+        } else if (storeExists(store.name)) {
+            console.log('$mmSite: Error: store ' + store.name + ' is already defined.');
+            return;
+        }
+        siteSchema.stores.push(store);
+    };
+
+    /**
+     * Register multiple stores at once.
+     * IMPORTANT: Modifying the schema of an already existing store deletes all its data in WebSQL Storage.
+     * If a store schema needs to be modified, the data should be manually migrated to the new store.
+     *
+     * @param  {Array} stores Array of store objects.
+     * @return {Void}
+     */
+    this.registerStores = function(stores) {
+        var self = this;
+        angular.forEach(stores, function(store) {
+            self.registerStore(store);
+        });
+    };
+
+    /**
+     * Check if a store is already defined.
+     *
+     * @param  {String} name The name of the store.
+     * @return {Boolean} True when the store was already defined.
+     */
+    function storeExists(name) {
+        var exists = false;
+        angular.forEach(siteSchema.stores, function(store) {
+            if (store.name === name) {
+                exists = true;
+            }
+        });
+        return exists;
+    }
+
+    this.$get = function($http, $q, $mmWS, $mmDB, $mmConfig, $log, md5, $mmApp, $mmLang, $mmUtil, $mmFS,
+        mmCoreWSCacheStore, mmCoreWSPrefix, mmCoreSessionExpired, $mmEvents) {
+
+        $log = $log.getInstance('$mmSite');
+
+        /**
+         * List of deprecated WS functions with their corresponding NOT deprecated name.
+         *
+         * When the function does not have an equivalent set its value to true.
+         *
+         * @type {Object}
+         */
+        var deprecatedFunctions = {
+            "core_grade_get_definitions": "core_grading_get_definitions",
+            "moodle_course_create_courses": "core_course_create_courses",
+            "moodle_course_get_courses": "core_course_get_courses",
+            "moodle_enrol_get_enrolled_users": "core_enrol_get_enrolled_users",
+            "moodle_enrol_get_users_courses": "core_enrol_get_users_courses",
+            "moodle_file_get_files": "core_files_get_files",
+            "moodle_file_upload": "core_files_upload",
+            "moodle_group_add_groupmembers": "core_group_add_group_members",
+            "moodle_group_create_groups": "core_group_create_groups",
+            "moodle_group_delete_groupmembers": "core_group_delete_group_members",
+            "moodle_group_delete_groups": "core_group_delete_groups",
+            "moodle_group_get_course_groups": "core_group_get_course_groups",
+            "moodle_group_get_groupmembers": "core_group_get_group_members",
+            "moodle_group_get_groups": "core_group_get_groups",
+            "moodle_message_send_instantmessages": "core_message_send_instant_messages",
+            "moodle_notes_create_notes": "core_notes_create_notes",
+            "moodle_role_assign": "core_role_assign_role",
+            "moodle_role_unassign": "core_role_unassign_role",
+            "moodle_user_create_users": "core_user_create_users",
+            "moodle_user_delete_users": "core_user_delete_users",
+            "moodle_user_get_course_participants_by_id": "core_user_get_course_user_profiles",
+            "moodle_user_get_users_by_courseid": "core_enrol_get_enrolled_users",
+            // Both *_user_get_users_by_id are deprecated, but there is no equivalent available in the Mobile service.
+            "moodle_user_get_users_by_id": "core_user_get_users_by_id",
+            "moodle_user_update_users": "core_user_update_users",
+            "moodle_webservice_get_siteinfo": "core_webservice_get_site_info",
+        };
+
+        var self = {};
+
+        /**
+         * Site object to store site data.
+         *
+         * @param {String} id      Site ID.
+         * @param {String} siteurl Site URL.
+         * @param {String} token   User's token in the site.
+         * @param {Object} infos   Site's info.
+         */
+        function Site(id, siteurl, token, infos) {
+            this.id = id;
+            this.siteurl = siteurl;
+            this.token = token;
+            this.infos = infos;
+
+            if (this.id) {
+                this.db = $mmDB.getDB('Site-' + this.id, siteSchema, dboptions);
+            }
+        }
+
+        /**
+         * Get site ID.
+         *
+         * @return {String} Current site ID.
+         */
+        Site.prototype.getId = function() {
+            return this.id;
+        };
+
+        /**
+         * Get site URL.
+         *
+         * @return {String} Current site URL.
+         */
+        Site.prototype.getURL = function() {
+            return this.siteurl;
+        };
+
+        /**
+         * Get site token.
+         *
+         * @return {String} Current site token.
+         */
+        Site.prototype.getToken = function() {
+            return this.token;
+        };
+
+        /**
+         * Get site info.
+         *
+         * @return {Object} Current site info.
+         */
+        Site.prototype.getInfo = function() {
+            return this.infos;
+        };
+
+        /**
+         * Get site DB.
+         *
+         * @return {Object} Current site DB.
+         */
+        Site.prototype.getDb = function() {
+            return this.db;
+        };
+
+        /**
+         * Get site user's ID.
+         *
+         * @return {Object} User's ID.
+         */
+        Site.prototype.getUserId = function() {
+            if (typeof this.infos != 'undefined' && typeof this.infos.userid != 'undefined') {
+                return this.infos.userid;
+            } else {
+                return undefined;
+            }
+        };
+
+        /**
+         * Set site ID.
+         *
+         * @param {String} New ID.
+         */
+        Site.prototype.setId = function(id) {
+            this.id = id;
+            this.db = $mmDB.getDB('Site-' + this.id, siteSchema, dboptions);
+        };
+
+        /**
+         * Set site token.
+         *
+         * @param {String} New token.
+         */
+        Site.prototype.setToken = function(token) {
+            this.token = token;
+        };
+
+        /**
+         * Can the user access their private files?
+         *
+         * @return {Boolean} False when they cannot.
+         */
+        Site.prototype.canAccessMyFiles = function() {
+            var infos = this.getInfo();
+            return infos && (typeof infos.usercanmanageownfiles === 'undefined' || infos.usercanmanageownfiles);
+        };
+
+        /**
+         * Can the user download files?
+         *
+         * @return {Boolean} False when they cannot.
+         */
+        Site.prototype.canDownloadFiles = function() {
+            var infos = this.getInfo();
+            return infos && infos.downloadfiles;
+        };
+
+        /**
+         * Can the user upload files?
+         *
+         * @return {Boolean} False when they cannot.
+         */
+        Site.prototype.canUploadFiles = function() {
+            var infos = this.getInfo();
+            return infos && infos.uploadfiles;
+        };
+
+        /**
+         * Fetch site info from the Moodle site.
+         *
+         * @return {Promise} A promise to be resolved when the site info is retrieved.
+         */
+        Site.prototype.fetchSiteInfo = function() {
+            var deferred = $q.defer(),
+                site = this;
+
+            function siteDataRetrieved(infos) {
+                site.infos = infos;
+                deferred.resolve(infos);
+            }
+
+            // get_site_info won't be cached. The returned data is stored in the site.
+            var preSets = {
+                getFromCache: 0,
+                saveToCache: 0
+            };
+
+            // We have a valid token, try to get the site info.
+            site.read('core_webservice_get_site_info', {}, preSets).then(siteDataRetrieved, function(error) {
+                site.read('moodle_webservice_get_siteinfo', {}, preSets).then(siteDataRetrieved, function(error) {
+                    deferred.reject(error);
+                });
+            });
+
+            return deferred.promise;
+        };
+
+        /**
+         * Read some data from the Moodle site using WS. Requests are cached by default.
+         *
+         * @param  {String} read  WS method to use.
+         * @param  {Object} data    Data to send to the WS.
+         * @param  {Object} preSets Options: getFromCache, saveToCache, omitExpires, sync.
+         * @return {Promise}        Promise to be resolved when the request is finished.
+         */
+        Site.prototype.read = function(method, data, preSets) {
+            preSets = preSets || {};
+            if (typeof(preSets.getFromCache) === 'undefined') {
+                preSets.getFromCache = 1;
+            }
+            if (typeof(preSets.saveToCache) === 'undefined') {
+                preSets.saveToCache = 1;
+            }
+            if (typeof(preSets.sync) === 'undefined') {
+                preSets.sync = 0;
+            }
+            return this.request(method, data, preSets);
+        };
+
+        /**
+         * Sends some data to the Moodle site using WS. Requests are NOT cached by default.
+         *
+         * @param  {String} method  WS method to use.
+         * @param  {Object} data    Data to send to the WS.
+         * @param  {Object} preSets Options: getFromCache, saveToCache, omitExpires.
+         * @return {Promise}        Promise to be resolved when the request is finished.
+         */
+        Site.prototype.write = function(method, data, preSets) {
+            preSets = preSets || {};
+            if (typeof(preSets.getFromCache) === 'undefined') {
+                preSets.getFromCache = 0;
+            }
+            if (typeof(preSets.saveToCache) === 'undefined') {
+                preSets.saveToCache = 0;
+            }
+            if (typeof(preSets.sync) === 'undefined') {
+                preSets.sync = 0;
+            }
+            return this.request(method, data, preSets);
+        };
+
+        /**
+         * WS request to the site.
+         *
+         * @param {string} method The WebService method to be called.
+         * @param {Object} data Arguments to pass to the method.
+         * @param {Object} preSets Extra settings.
+         *                    - getFromCache boolean (false) Use the cache when possible.
+         *                    - saveToCache boolean (false) Save the call results to the cache.
+         *                    - omitExpires boolean (false) Ignore cache expiry.
+         *                    - sync boolean (false) Add call to queue if device is not connected.
+         *                    - cacheKey (string) Extra key to add to the cache when storing this call. This key is to
+         *                                        flag the cache entry, it doesn't affect the data retrieved in this call.
+         * @return {Promise}
+         * @description
+         *
+         * Sends a webservice request to the site. This method will automatically add the
+         * required parameters and pass it on to the low level API in $mmWS.call().
+         *
+         * Caching is also implemented, when enabled this method will returned a cached
+         * version of itself rather than contacting the server.
+         *
+         * This method is smart which means that it will try to map the method to a
+         * compatibility one if need be, usually that means that it will fallback on
+         * the 'local_mobile_' prefixed function if it is available and the non-prefixed is not.
+         */
+        Site.prototype.request = function(method, data, preSets) {
+            var deferred = $q.defer(),
+                site = this;
+            data = data || {};
+
+            // Get the method to use based on the available ones.
+            method = getCompatibleFunction(site, method);
+
+            // Check if the method is available, use a prefixed version if possible.
+            // We ignore this check when we do not have the site info, as the list of functions is not loaded yet.
+            if (site.getInfo() && !site.wsAvailable(method, false)) {
+                if (site.wsAvailable(mmCoreWSPrefix + method, false)) {
+                    $log.info("Using compatibility WS method '" + mmCoreWSPrefix + method + "'");
+                    method = mmCoreWSPrefix + method;
+                } else {
+                    $log.error("WS function '" + method + "' is not available, even in compatibility mode.");
+                    $mmLang.translateErrorAndReject(deferred, 'mm.core.wsfunctionnotavailable');
+                    return deferred.promise;
+                }
+            }
+
+            preSets = preSets || {};
+            preSets.wstoken = site.token;
+            preSets.siteurl = site.siteurl;
+
+            // Enable text filtering.
+            data.moodlewssettingfilter = true;
+
+            getFromCache(site, method, data, preSets).then(function(data) {
+                deferred.resolve(data);
+            }, function() {
+                var mustSaveToCache = preSets.saveToCache;
+                var cacheKey = preSets.cacheKey;
+
+                // Do not pass those options to the core WS factory.
+                delete preSets.getFromCache;
+                delete preSets.saveToCache;
+                delete preSets.omitExpires;
+                delete preSets.cacheKey;
+
+                // TODO: Sync
+
+                $mmWS.call(method, data, preSets).then(function(response) {
+
+                    if (mustSaveToCache) {
+                        saveToCache(site, method, data, response, cacheKey);
+                    }
+
+                    deferred.resolve(response);
+                }, function(error) {
+                    if (error === mmCoreSessionExpired) {
+                        // Session expired, trigger event.
+                        $mmLang.translateErrorAndReject(deferred, 'mm.core.lostconnection');
+                        $mmEvents.trigger('sessionExpired', {siteid: site.id});
+                    } else {
+                        $log.debug('WS call failed. Try to get the value from the cache.');
+                        preSets.omitExpires = true;
+                        preSets.getFromCache = true;
+                        getFromCache(site, method, data, preSets).then(function(data) {
+                            deferred.resolve(data);
+                        }, function() {
+                            deferred.reject(error);
+                        });
+                    }
+                });
+            });
+
+            return deferred.promise;
+        };
+
+        /**
+         * Check if a WS is available in this site.
+         *
+         * @param  {String} method WS name.
+         * @param  {Boolean=true} checkPrefix When true also checks with the compatibility prefix.
+         * @return {Boolean}       True if the WS is available, false otherwise.
+         * @description
+         *
+         * This method checks if a web service function is available. By default it will
+         * also check if there is a compatibility function for it, e.g. a prefixed one.
+         */
+        Site.prototype.wsAvailable = function(method, checkPrefix) {
+            checkPrefix = (typeof checkPrefix === 'undefined') ? true : checkPrefix;
+
+            if (typeof this.infos == 'undefined') {
+                return false;
+            }
+
+            for (var i = 0; i < this.infos.functions.length; i++) {
+                var f = this.infos.functions[i];
+                if (f.name == method) {
+                    return true;
+                }
+            }
+
+            // Let's try again with the compatibility prefix.
+            if (checkPrefix) {
+                return this.wsAvailable(mmCoreWSPrefix + method, false);
+            }
+
+            return false;
+        };
+
+        /*
+         * Uploads a file using Cordova File API.
+         *
+         * @param {Object} uri File URI.
+         * @param {Object} options File settings: fileKey, fileName and mimeType.
+         * @return {Promise}
+         */
+        Site.prototype.uploadFile = function(uri, options) {
+            return $mmWS.uploadFile(uri, options, {
+                siteurl: this.siteurl,
+                token: this.token
+            });
+        };
+
+        /**
+         * Invalidates all the cache entries with a certain key.
+         *
+         * @param  {String} key Key to search.
+         * @return {Promise}    Promise resolved when the cache entries are invalidated.
+         */
+        Site.prototype.invalidateWsCacheForKey = function(key) {
+            var db = this.db;
+            if (!db || !key) {
+                return $q.reject();
+            }
+
+            $log.debug('Invalidate cache for key: '+key);
+            return db.whereEqual(mmCoreWSCacheStore, 'key', key).then(function(entries) {
+                if (entries && entries.length > 0) {
+                    return invalidateWsCacheEntries(db, entries);
+                }
+            });
+        };
+
+        /**
+         * Invalidates all the cache entries whose key starts with a certain value.
+         *
+         * @param  {String} key Key to search.
+         * @return {Promise}    Promise resolved when the cache entries are invalidated.
+         */
+        Site.prototype.invalidateWsCacheForKeyStartingWith = function(key) {
+            var db = this.db;
+            if (!db || !key) {
+                return $q.reject();
+            }
+
+            $log.debug('Invalidate cache for key starting with: '+key);
+            return db.where(mmCoreWSCacheStore, 'key', '^', key).then(function(entries) {
+                if (entries && entries.length > 0) {
+                    return invalidateWsCacheEntries(db, entries);
+                }
+            });
+        };
+
+        /**
+         * Generic function for adding the wstoken to Moodle urls and for pointing to the correct script.
+         * Uses $mmUtil.fixPluginfileURL, passing site's token.
+         *
+         * @param {String} url   The url to be fixed.
+         * @return {String}      Fixed URL.
+         */
+        Site.prototype.fixPluginfileURL = function(url) {
+            return $mmUtil.fixPluginfileURL(url, this.token);
+
+        };
+
+        /**
+         * Deletes site's DB.
+         *
+         * @return {Promise} Promise to be resolved when the DB is deleted.
+         */
+        Site.prototype.deleteDB = function() {
+            return $mmDB.deleteDB('Site-' + this.id);
+        };
+
+        /**
+         * Deletes site's folder.
+         *
+         * @return {Promise} Promise to be resolved when the DB is deleted.
+         */
+        Site.prototype.deleteFolder = function() {
+            var deferred = $q.defer();
+            if ($mmFS.isAvailable()) {
+                var siteFolder = $mmFS.getSiteFolder(this.id);
+                // Ignore any errors, $mmFS.removeDir fails if folder doesn't exists.
+                $mmFS.removeDir(siteFolder).then(deferred.resolve, deferred.resolve);
+            } else {
+                deferred.resolve();
+            }
+            return deferred.promise;
+        };
+
+        /**
+         * Returns the URL to the documentation of the app, based on Moodle version and current language.
+         *
+         * @param {String} [page]    Docs page to go to.
+         * @return {Promise}         Promise resolved with the Moodle docs URL.
+         */
+        Site.prototype.getDocsUrl = function(page) {
+            var release = this.infos.release ? this.infos.release : undefined;
+            return $mmUtil.getDocsUrl(release, page);
+        };
+
+        /**
+         * Invalidate entries from the cache.
+         *
+         * @param  {Object} db      DB the entries belong to.
+         * @param  {Array}  entries Entries to invalidate.
+         * @return {Promise}        Promise resolved when the cache entries are invalidated.
+         */
+        function invalidateWsCacheEntries(db, entries) {
+            var promises = [];
+            angular.forEach(entries, function(entry) {
+                entry.expirationtime = 0;
+                var promise = db.insert(mmCoreWSCacheStore, entry);
+                promises.push(promise);
+            });
+            return $q.all(promises);
+        }
+
+        /**
+         * Return the function to be used, based on the available functions in the site. It'll try to use non-deprecated
+         * functions first, and fallback to deprecated ones if needed.
+         *
+         * @param  {Object} site   Site to check.
+         * @param  {String} method WS function to check.
+         * @return {String}        Method to use based in the available functions.
+         */
+        function getCompatibleFunction(site, method) {
+            if (typeof deprecatedFunctions[method] !== "undefined") {
+                // Deprecated function is being used. Warn the developer.
+                if (site.wsAvailable(deprecatedFunctions[method])) {
+                    $log.warn("You are using deprecated Web Services: " + method +
+                        " you must replace it with the newer function: " + deprecatedFunctions[method]);
+                    return deprecatedFunctions[method];
+                } else {
+                    $log.warn("You are using deprecated Web Services. " +
+                        "Your remote site seems to be outdated, consider upgrade it to the latest Moodle version.");
+                }
+            } else if (!site.wsAvailable(method)) {
+                // Method not available. Check if there is a deprecated method to use.
+                for (var oldFunc in deprecatedFunctions) {
+                    if (deprecatedFunctions[oldFunc] === method && site.wsAvailable(oldFunc)) {
+                        $log.warn("Your remote site doesn't support the function " + method +
+                            ", it seems to be outdated, consider upgrade it to the latest Moodle version.");
+                        return oldFunc; // Use deprecated function.
+                    }
+                }
+            }
+            return method;
+        }
+
+        /**
+         * Get a WS response from cache.
+         *
+         * @param {Object} site    Site.
+         * @param {String} method  The WebService method.
+         * @param {Object} data    Arguments to pass to the method.
+         * @param {Object} preSets Extra settings.
+         * @return {Promise}       Promise to be resolved with the WS response.
+         */
+        function getFromCache(site, method, data, preSets) {
+            var result,
+                db = site.db,
+                deferred = $q.defer(),
+                key;
+
+            if (!db) {
+                deferred.reject();
+                return deferred.promise;
+            } else if (!preSets.getFromCache) {
+                deferred.reject();
+                return deferred.promise;
+            }
+
+            key = md5.createHash(method + ':' + JSON.stringify(data));
+            db.get(mmCoreWSCacheStore, key).then(function(entry) {
+                var now = new Date().getTime();
+
+                preSets.omitExpires = preSets.omitExpires || !$mmApp.isOnline();
+
+                if (!preSets.omitExpires) {
+                    if (now > entry.expirationtime) {
+                        $log.debug('Cached element found, but it is expired');
+                        deferred.reject();
+                        return;
+                    }
+                }
+
+                if (typeof(entry) !== 'undefined' && typeof(entry.data) !== 'undefined') {
+                    var expires = (entry.expirationtime - now) / 1000;
+                    $log.info('Cached element found, id: ' + key + ' expires in ' + expires + ' seconds');
+                    deferred.resolve(entry.data);
+                    return;
+                }
+
+                deferred.reject();
+            }, function() {
+                deferred.reject();
+            });
+
+            return deferred.promise;
+        }
+
+        /**
+         * Save a WS response to cache.
+         *
+         * @param {Object} site    Site.
+         * @param {String} method   The WebService method.
+         * @param {Object} data     Arguments to pass to the method.
+         * @param {Object} preSets  Extra settings.
+         * @param {String} cacheKey (Optional) Extra key to add to the cache object to identify similar calls.
+         * @return {Promise}        Promise to be resolved when the response is saved.
+         */
+        function saveToCache(site, method, data, response, cacheKey) {
+            var db = site.db,
+                deferred = $q.defer(),
+                id = md5.createHash(method + ':' + JSON.stringify(data));
+
+            if (!db) {
+                deferred.reject();
+            } else {
+                $mmConfig.get('cache_expiration_time').then(function(cacheExpirationTime) {
+
+                    var entry = {
+                        id: id,
+                        data: response
+                    };
+                    entry.expirationtime = new Date().getTime() + cacheExpirationTime;
+                    if (cacheKey) {
+                        entry.key = cacheKey;
+                    }
+                    db.insert(mmCoreWSCacheStore, entry);
+                    deferred.resolve();
+
+                }, deferred.reject);
+            }
+
+            return deferred.promise;
+        }
+
+        /**
+         * Make a site object.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmSitesFactory#makeSite
+         * @param {String} id      Site ID.
+         * @param {String} siteurl Site URL.
+         * @param {String} token   User's token in the site.
+         * @param {Object} infos   Site's info.
+         * @return {Object} The current site object.
+         * @description
+         * This returns a site object.
+         */
+        self.makeSite = function(id, siteurl, token, infos) {
+            return new Site(id, siteurl, token, infos);
+        };
+
+        /**
+         * Gets the list of Site methods.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmSitesFactory#getSiteMethods
+         * @return {Array} List of methods.
+         */
+        self.getSiteMethods = function() {
+            var methods = [];
+            for (var name in Site.prototype) {
+                methods.push(name);
+            }
+            return methods;
+        };
+
+        return self;
+    };
+});

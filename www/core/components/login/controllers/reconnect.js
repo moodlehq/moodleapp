@@ -21,7 +21,7 @@ angular.module('mm.core.login')
  * @ngdoc controller
  * @name mmLoginReconnectCtrl
  */
-.controller('mmLoginReconnectCtrl', function($scope, $state, $stateParams, $mmSitesManager, $mmSite, $mmUtil, 
+.controller('mmLoginReconnectCtrl', function($scope, $state, $stateParams, $mmSitesManager, $mmSite, $mmUtil,
             $translate, $ionicHistory) {
 
     $scope.siteurl = $stateParams.siteurl;
@@ -57,7 +57,6 @@ angular.module('mm.core.login')
         // Start the authentication process.
         $mmSitesManager.getUserToken(siteurl, username, password).then(function(token) {
 
-            $mmSite.setToken(token);
             $mmSitesManager.updateSiteToken(siteurl, username, token).then(function() {
                 delete $scope.credentials; // Delete password from the scope.
                 $state.go('site.mm_courses');

@@ -31,8 +31,7 @@ angular.module('mm.core.sidemenu')
         });
     };
 
-    var release = $scope.siteinfo ? $scope.siteinfo.release : undefined;
-    $mmSite.getDocsUrl(release).then(function(docsurl) {
+    $mmSite.getDocsUrl().then(function(docsurl) {
         $scope.docsurl = docsurl;
     });
 });
