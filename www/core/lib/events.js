@@ -37,13 +37,14 @@ angular.module('mm.core')
      * @ngdoc method
      * @name $mmEvents#trigger
      * @param {String} event Name of the event to trigger.
+     * @param {Mixed}  data  Data to pass to the observers.
      */
-    self.trigger = function(eventName) {
+    self.trigger = function(eventName, data) {
         $log.debug('Event ' + eventName + ' triggered.');
         var affected = observers[eventName];
         for (var observerName in affected) {
             if (typeof(affected[observerName]) === 'function') {
-                affected[observerName]();
+                affected[observerName](data);
             }
         }
     };
