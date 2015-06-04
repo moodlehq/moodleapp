@@ -32,10 +32,10 @@ angular.module('mm.addons.mod_label', ['mm.core'])
 
 })
 
-.run(function($mmCourseDelegate, $mmUtil, $translate, $mmText) {
+.run(function($mmCourseDelegate, $translate, $mmText) {
   $translate('mma.mod_label.taptoview').then(function(taptoview) {
     $mmCourseDelegate.registerContentHandler('mmaModLabel', 'label', function(module) {
-      var title = $mmUtil.shortenText($mmText.cleanTags(module.description).trim(), 128);
+      var title = $mmText.shortenText($mmText.cleanTags(module.description).trim(), 128);
 
       if (title.length <= 0) {
         title = '<span class="mma-mod_label-empty">' + taptoview + '</span>';
