@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_forum')
  * @ngdoc controller
  * @name mmaModForumDiscussionsCtrl
  */
-.controller('mmaModForumDiscussionsCtrl', function($scope, $stateParams, $mmaModForum, $mmSite, $mmUtil) {
+.controller('mmaModForumDiscussionsCtrl', function($scope, $stateParams, $mmaModForum, $mmSite, $mmUtil, mmUserProfileState) {
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
         forum,
@@ -32,6 +32,17 @@ angular.module('mm.addons.mod_forum')
 
     $scope.openInBrowser = function() {
         $mmUtil.openInBrowser(module.url);
+    };
+
+    // Get user profile ui-sref.
+    $scope.getUserProfileState = function(id) {
+        return mmUserProfileState + '({courseid: '+courseid+', userid: '+id+'})';
+    };
+
+    // Get discussion ui-sref depending on Mobile or Tablet.
+    // @todo Adapt to tablet split view when it is implemented.
+    $scope.getDiscussionState = function(id) {
+        return 'site.mod_forum-discussion({courseid: '+courseid+', discussionid: '+id+'})';
     };
 
     // Convenience function to get forum data and discussions.
@@ -58,7 +69,6 @@ angular.module('mm.addons.mod_forum')
         }
 
         return $mmaModForum.getDiscussions(forum.id, page).then(function(response) {
-
             if (page == 0) {
                 $scope.discussions = response.discussions;
             } else {
@@ -83,7 +93,7 @@ angular.module('mm.addons.mod_forum')
         $scope.discussionsLoaded = true;
     });
 
-    // Load more events.
+    // Load more discussions.
     $scope.loadMoreDiscussions = function() {
         fetchDiscussions().finally(function() {
             $scope.$broadcast('scroll.infiniteScrollComplete');

@@ -11,13 +11,13 @@
             <mm-course-mod-description watch="true" description="description" note="'mma.mod_forum.numdiscussions' | translate:{numdiscussions: forum.numdiscussions}" ></mm-course-mod-description>
             <div class="list">
                 <div class="card" ng-repeat="discussion in discussions track by $index">
-                    <div class="item item-avatar">
+                    <div class="item item-avatar" ui-sref="{{getUserProfileState(discussion.userid)}}">
                         <img ng-src="{{discussion.userpictureurl}}" mm-external-content>
                         <h2>{{discussion.subject}}</h2>
                         <div class="item-note">{{discussion.created | mmDateDayOrTime}}</div>
                         <p>{{discussion.userfullname}}</p>
                     </div>
-                    <a class="item item-body">
+                    <a class="item item-body" ui-sref="{{getDiscussionState(discussion.discussion)}}">
                         <p><mm-format-text watch="true" clean="true" shorten="150">{{discussion.message}}</mm-format-text></p>
                         <span class="item-note text-right">
                             <span><i class="icon ion-ios-chatboxes-outline"></i> {{ 'mma.mod_forum.numreplies' | translate:{numreplies: discussion.numreplies} }}</span>

@@ -27,11 +27,21 @@ angular.module('mm.addons.mod_forum')
     /**
      * Get cache key for forum data WS calls.
      *
-     * @param {Number} cmid Course module ID.
-     * @return {String}     Cache key.
+     * @param {Number} courseid Course ID.
+     * @return {String}         Cache key.
      */
-    function getForumDataCacheKey(cmid) {
-        return 'mmaModForum:forum:' + cmid;
+    function getForumDataCacheKey(courseid) {
+        return 'mmaModForum:forum:' + courseid;
+    }
+
+    /**
+     * Get cache key for forum discussion posts WS calls.
+     *
+     * @param  {Number} discussionid Discussion ID.
+     * @return {String}              Cache key.
+     */
+    function getDiscussionPostsCacheKey(discussionid) {
+        return 'mmaModForum:discussion:' + discussionid;
     }
 
     /**
@@ -43,6 +53,34 @@ angular.module('mm.addons.mod_forum')
     function getDiscussionsListCacheKey(forumid) {
         return 'mmaModForum:discussions:' + forumid;
     }
+
+    /**
+     * Extract the starting post of a discussion from a list of posts. The post is removed from the array passed as a parameter.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#getStartingPost
+     * @param  {Object[]} posts Posts to search.
+     * @return {Object}         Starting post.
+     */
+    self.extractStartingPost = function(posts) {
+        // Check the last post first, since they'll usually be ordered by create time.
+        var lastPost = posts[posts.length - 1];
+        if (lastPost.parent == 0) {
+            posts.pop(); // Remove it from the array.
+            return lastPost;
+        }
+
+        // Last post wasn't the starting one. Let's search all the posts until we find the first one.
+        for (var i = 0; i < posts.length; i++) {
+            if (posts[i].parent == 0) {
+                array.splice(i, 1); // Remove it from the array.
+                return posts[i];
+            }
+        }
+
+        return undefined;
+    };
 
     /**
      * Return whether or not the plugin is enabled. Plugin is enabled if the forum WS are available.
@@ -70,10 +108,10 @@ angular.module('mm.addons.mod_forum')
      */
     self.getForum = function(courseid, cmid) {
         var params = {
-                'courseids[0]': courseid
+                courseids: [courseid]
             },
             preSets = {
-                cacheKey: getForumDataCacheKey(cmid)
+                cacheKey: getForumDataCacheKey(courseid)
             };
 
         return $mmSite.read('mod_forum_get_forums_by_courses', params, preSets).then(function(forums) {
@@ -84,6 +122,32 @@ angular.module('mm.addons.mod_forum')
                 }
             });
             return currentForum;
+        });
+    };
+
+    /**
+     * Get forum discussion posts.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#getDiscussionPosts
+     * @param {Number} discussionid Discussion ID.
+     * @return {Promise}            Promise resolved with forum discussions.
+     */
+    self.getDiscussionPosts = function(discussionid) {
+        var params = {
+                discussionid: discussionid
+            },
+            preSets = {
+                cacheKey: getDiscussionPostsCacheKey(discussionid)
+            };
+
+        return $mmSite.read('mod_forum_get_forum_discussion_posts', params, preSets).then(function(response) {
+            if (response) {
+                return response.posts;
+            } else {
+                return $q.reject();
+            }
         });
     };
 
@@ -101,11 +165,11 @@ angular.module('mm.addons.mod_forum')
         page = page || 0;
 
         var params = {
-                'forumid': forumid,
-                'sortby':  'timemodified',
-                'sortdirection':  'DESC',
-                'page': page,
-                'perpage': mmaModForumDiscPerPage
+                forumid: forumid,
+                sortby:  'timemodified',
+                sortdirection:  'DESC',
+                page: page,
+                perpage: mmaModForumDiscPerPage
             },
             preSets = {
                 cacheKey: getDiscussionsListCacheKey(forumid)
@@ -122,17 +186,30 @@ angular.module('mm.addons.mod_forum')
     };
 
     /**
+     * Invalidates forum discussion posts.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#invalidateDiscussionPosts
+     * @param {Number} discussionid Discussion ID.
+     * @return {Promise}            Promise resolved when the data is invalidated.
+     */
+    self.invalidateDiscussionPosts = function(discussionid) {
+        return $mmSite.invalidateWsCacheForKey(getDiscussionPostsCacheKey(discussionid));
+    };
+
+    /**
      * Invalidates forum data and discussion list.
      *
      * @module mm.addons.mod_forum
      * @ngdoc method
      * @name $mmaModForum#invalidateDiscussionsList
-     * @param {Number} cmid     Course module ID.
+     * @param {Number} courseid Course ID.
      * @param  {Number} forumid Forum ID.
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
-    self.invalidateDiscussionsList = function(cmid, forumid) {
-        return $mmSite.invalidateWsCacheForKey(getForumDataCacheKey(cmid)).then(function() {
+    self.invalidateDiscussionsList = function(courseid, forumid) {
+        return $mmSite.invalidateWsCacheForKey(getForumDataCacheKey(courseid)).then(function() {
             return $mmSite.invalidateWsCacheForKey(getDiscussionsListCacheKey(forumid));
         });
     };

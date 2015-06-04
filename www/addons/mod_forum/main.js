@@ -32,6 +32,20 @@ angular.module('mm.addons.mod_forum', [])
                 templateUrl: 'addons/mod_forum/templates/discussions.html'
             }
         }
+    })
+
+    .state('site.mod_forum-discussion', {
+        url: '/mod_forum-discussion',
+        params: {
+            discussionid: null,
+            courseid: null
+        },
+        views: {
+            'site': {
+                controller: 'mmaModForumDiscussionCtrl',
+                templateUrl: 'addons/mod_forum/templates/discussion.html'
+            }
+        }
     });
 
 })
