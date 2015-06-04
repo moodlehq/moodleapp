@@ -44,6 +44,15 @@ angular.module('mm.core')
                     content = angular.element(divs[i]);
                 }
             }
+        },
+        setMessage = function(element, message) {
+            var p = element.find('p');
+            for (var i = 0; i < p.length; i++) {
+                var className = p[i].className;
+                if (className.indexOf('mm-loading-message') > -1) {
+                    p[i].innerHTML = message;
+                }
+            }
         };
 
     return {
@@ -55,11 +64,11 @@ angular.module('mm.core')
             content = undefined;
 
             if (attrs.message) {
-                element.find('p').html(attrs.message);
+                setMessage(element, attrs.message);
             } else {
                 // Default loading message.
                 $translate('mm.core.loading').then(function(loadingString) {
-                    element.find('p').html(loadingString);
+                    setMessage(element, loadingString);
                 });
             }
 
