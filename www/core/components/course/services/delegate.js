@@ -28,7 +28,7 @@ angular.module('mm.core.course')
         self = {};
 
     /**
-     * Register a content handler.
+     * Register a content handler. If module is not supported in current site, handler should return undefined.
      *
      * A handler should return an object with the following keys:
      *
@@ -71,32 +71,48 @@ angular.module('mm.core.course')
      * @module mm.core.course
      * @ngdoc method
      * @name $mmCourseDelegate#getDataFromContentHandlerFor
-     * @param {String} handles The module to work on
-     * @param {Object} module The module data
+     * @param {String} handles  The module to work on.
+     * @param {Object} module   The module data.
+     * @param {Object} courseid Course ID the module belongs to.
      * @return {Object}
      */
-    self.getDataFromContentHandlerFor = function(handles, module) {
+    self.getDataFromContentHandlerFor = function(handles, module, courseid) {
         var data = {
             icon: $mmCourse.getModuleIconSrc(module.modname),
             title: module.name
         };
 
-        // We do not have a handler, add some additional info.
-        if (typeof contentHandlers[handles] === 'undefined') {
-            data.state = 'site.mm_course-modcontent';
-            data.stateParams = { module: module };
+        // Use a default handler for the module. Used when no handler registered or it's not supported in current site.
+        function getDefaultHandler() {
+            var defaultData = {
+                state: 'site.mm_course-modcontent',
+                stateParams: { module: module }
+            };
             if (module.url) {
-                data.buttons = [{
+                defaultData.buttons = [{
                     icon: 'ion-ios-browsers-outline',
                     callback: function($scope) {
                         $mmUtil.openInBrowser(module.url);
                     }
                 }];
             }
-            return data;
+
+            return angular.extend(data, defaultData);
         }
 
-        data = angular.extend(data, contentHandlers[handles].callback(module));
+        if (typeof contentHandlers[handles] == 'undefined') {
+            // No handler registered.
+            data = getDefaultHandler();
+        } else {
+            var handlerData = contentHandlers[handles].callback(module, courseid);
+            if (typeof handlerData == 'undefined') {
+                // Handler not supported in current site.
+                data = getDefaultHandler();
+            } else {
+                data = angular.extend(data, handlerData);
+            }
+        }
+
         return data;
     };
 

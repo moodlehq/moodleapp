@@ -26,6 +26,8 @@ angular.module('mm.core.course')
         sectionid = $stateParams.sectionid,
         sections = [];
 
+    $scope.courseid = courseid;
+
     if (sectionid < 0) {
         // Special scenario, we want all sections.
         $translate('mm.course.allsections').then(function(str) {
