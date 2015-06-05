@@ -5,6 +5,7 @@
     "clearsearch": "Clear search",
     "elementseparator": ", ",
     "error": "Error",
+    "errordownloadingfile": "Error downloading file.",
     "gb": "GB",
     "humanreadablesize": "{{size}} {{unit}}",
     "kb": "KB",

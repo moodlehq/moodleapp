@@ -61,6 +61,9 @@ em {
     max-height: $item-media-height;
     border-radius: 0;
   }
+  p {
+    margin: 0px;
+  }
 }
 
 // Message item.
@@ -147,4 +150,11 @@ em {
 .mm-loading-container {
     width: 100%;
     text-align: center;
+}
+
+// Algin ion-spinner right
+.spinner-right {
+  position: absolute;
+  top: 8px;
+  right: 16px;
 }
