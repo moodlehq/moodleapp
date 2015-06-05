@@ -323,17 +323,56 @@ angular.module('mm.core')
 
     /**
      * Calculate the free space in the disk.
-     * @todo MOBILE-956: not working in iOS.
      *
      * @module mm.core
      * @ngdoc method
      * @name $mmFS#calculateFreeSpace
-     * @param  {object} callBack        Success callback
-     * @param  {object} errorCallback   Error Callback
-     * @return {float}                  The estimated free space in bytes
+     * @return {Promise} Promise resolved with the estimated free space in bytes.
      */
     self.calculateFreeSpace = function() {
-        return $cordovaFile.getFreeDiskSpace();
+        if (ionic.Platform.isIOS()) {
+            // getFreeDiskSpace doesn't work on iOS. See https://tracker.moodle.org/browse/MOBILE-956.
+            // Ugly fix: request a file system instance with a minimum size until we get an error.
+
+            if (window.requestFileSystem) {
+
+                var iterations = 0,
+                    maxIterations = 50,
+                    deferred = $q.defer();
+
+                function calculateByRequest(size, ratio) {
+                    var deferred = $q.defer();
+
+                    window.requestFileSystem(LocalFileSystem.PERSISTENT, size, function() {
+                        iterations++;
+                        if (iterations > maxIterations) {
+                            deferred.resolve(size);
+                            return;
+                        }
+                        calculateByRequest(size * ratio, ratio).then(deferred.resolve);
+                    }, function() {
+                        deferred.resolve(size / ratio);
+                    });
+
+                    return deferred.promise;
+                };
+
+                // General calculation, base 1MB and increasing factor 1.3.
+                calculateByRequest(1048576, 1.3).then(function(size) {
+                    iterations = 0;
+                    maxIterations = 10;
+                    // More accurate. Factor is 1.1.
+                    calculateByRequest(size, 1.1).then(deferred.resolve);
+                });
+
+                return deferred.promise;
+            } else {
+                return $q.reject();
+            }
+
+        } else {
+            return $cordovaFile.getFreeDiskSpace();
+        }
     };
 
     /**
