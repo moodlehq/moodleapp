@@ -15,6 +15,7 @@
                 </a>
                 <div class="item item-body">
                     <mm-format-text watch="true">{{discussion.message}}</mm-format-text>
+                    <mm-attachment ng-repeat="attachment in discussion.attachments" attachment="attachment" component="{{component}}" component-id="{{discussion.id}}"></mm-attachment>
                 </div>
             </div>
             <div class="card">
@@ -28,6 +29,7 @@
                     </a>
                     <div class="item item-body">
                         <mm-format-text watch="true">{{post.message}}</mm-format-text>
+                        <mm-attachment ng-repeat="attachment in post.attachments" attachment="attachment" component="{{component}}" component-id="{{post.id}}"></mm-attachment>
                     </div>
                 </div>
             </div>

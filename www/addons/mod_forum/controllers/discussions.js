@@ -77,10 +77,20 @@ angular.module('mm.addons.mod_forum')
 
             $scope.count = $scope.discussions.length;
             $scope.canLoadMore = response.canLoadMore;
-
             page++;
+
+            preFetchDiscussionsPosts(response.discussions);
+
         }, function(message) {
             $mmUtil.showErrorModal(message);
+        });
+    }
+
+    // Convenience function to prefetch the posts of each discussion, so they're available in offline mode.
+    function preFetchDiscussionsPosts(discussions) {
+        angular.forEach(discussions, function(discussion) {
+            var discussionid = discussion.discussion;
+            $mmaModForum.getDiscussionPosts(discussionid);
         });
     }
 

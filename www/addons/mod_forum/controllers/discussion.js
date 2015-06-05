@@ -21,15 +21,13 @@ angular.module('mm.addons.mod_forum')
  * @ngdoc controller
  * @name mmaModForumDiscussionCtrl
  */
-.controller('mmaModForumDiscussionCtrl', function($scope, $stateParams, $mmaModForum, $mmSite, $mmUtil, mmUserProfileState) {
+.controller('mmaModForumDiscussionCtrl', function($scope, $stateParams, $mmaModForum, $mmSite, $mmUtil, mmUserProfileState,
+        mmaModForumComponent) {
 
     var discussionid = $stateParams.discussionid,
         courseid = $stateParams.courseid;
 
-    // Get user profile ui-sref.
-    $scope.getUserProfileState = function(id) {
-        return mmUserProfileState + '({courseid: '+courseid+', userid: '+id+'})';
-    }
+    $scope.component = mmaModForumComponent;
 
     // Convenience function to get forum discussions.
     function fetchPosts() {

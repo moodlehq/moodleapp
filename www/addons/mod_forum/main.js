@@ -15,6 +15,7 @@
 angular.module('mm.addons.mod_forum', [])
 
 .constant('mmaModForumDiscPerPage', 10) // Max of discussions per page.
+.constant('mmaModForumComponent', 'mmaModForum')
 
 .config(function($stateProvider) {
 

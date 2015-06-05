@@ -71,7 +71,7 @@ angular.module('mm.core')
                 filename = attachment.filename,
                 siteid = $mmSite.getId(),
                 component = attrs.component,
-                componentid = attrs.componentid,
+                componentid = attrs.componentId,
                 eventName = $mmFilepool.getFileEventNameByUrl(siteid, fileurl);
 
             scope.filename = filename;
