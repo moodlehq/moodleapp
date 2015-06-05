@@ -21,21 +21,33 @@ angular.module('mm.core.courses')
  * @ngdoc controller
  * @name mmCoursesListCtrl
  */
-.controller('mmCoursesListCtrl', function($scope, $mmCourses, $mmCoursesDelegate, $mmUtil, $translate) {
-    $mmCourses.getUserCourses().then(function(courses) {
-        $scope.courses = courses;
-        $scope.filterText = ''; // Filter value MUST be set after courses are shown.
-    }, function(error) {
-        if (typeof(error) !== 'undefined' && error != '') {
-            $mmUtil.showErrorModal(error);
-        } else {
-            $mmUtil.showErrorModal('mm.courses.errorloadcourses', true);
-        }
-    }).finally(function() {
+.controller('mmCoursesListCtrl', function($scope, $state, $mmCourses, $mmCoursesDelegate, $mmUtil, $translate) {
+
+    var plugins = $mmCoursesDelegate.getData();
+
+    // Convenience function to fetch courses.
+    function fetchCourses(refresh) {
+        return $mmCourses.getUserCourses(refresh).then(function(courses) {
+            $scope.courses = courses;
+            $scope.filterText = ''; // Filter value MUST be set after courses are shown.
+        }, function(error) {
+            if (typeof error != 'undefined' && error != '') {
+                $mmUtil.showErrorModal(error);
+            } else {
+                $mmUtil.showErrorModal('mm.courses.errorloadcourses', true);
+            }
+        })
+    }
+    fetchCourses().finally(function() {
         $scope.coursesLoaded = true;
     });
 
-    var plugins = $mmCoursesDelegate.getData();
     $scope.hasPlugins = Object.keys(plugins).length;
     $scope.plugins = plugins;
+
+    $scope.refreshCourses = function() {
+        fetchCourses(true).finally(function() {
+            $scope.$broadcast('scroll.refreshComplete');
+        });
+    };
 });

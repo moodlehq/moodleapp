@@ -193,9 +193,10 @@ angular.module('mm.addons.grades')
      * @ngdoc method
      * @name $mmaGrades#getGradesTable
      * @param {String} courseid ID of the course to get the grades from.
+     * @param {Boolean} refresh True when we should not get the value from the cache.
      * @return {Promise}        Promise to be resolved when the grades table is retrieved.
      */
-    self.getGradesTable = function(courseid) {
+    self.getGradesTable = function(courseid, refresh) {
 
         $log.debug('Get grades for course '+courseid);
 
@@ -206,11 +207,15 @@ angular.module('mm.addons.grades')
         }
 
         var data = {
-            'courseid' : courseid,
-            'userid'   : siteinfo.userid
-        };
+                'courseid' : courseid,
+                'userid'   : siteinfo.userid
+            },
+            presets = {};
+        if (refresh) {
+            presets.getFromCache = false;
+        }
 
-        return $mmSite.read('gradereport_user_get_grades_table', data).then(function(table) {
+        return $mmSite.read('gradereport_user_get_grades_table', data, presets).then(function(table) {
             table = formatGradesTable(table, !$ionicPlatform.isTablet());
             return translateGradesTable(table);
         });
