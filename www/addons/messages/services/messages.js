@@ -520,6 +520,18 @@ angular.module('mm.addons.messages')
     };
 
     /**
+     * Returns whether or not we can search contacts.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#isSearchEnabled
+     * @return {Boolean}
+     */
+    self.isSearchEnabled = function() {
+        return $mmSite.wsAvailable('core_message_search_contacts');
+    };
+
+    /**
      * Remove a contact.
      *
      * @module mm.addons.messages
@@ -535,6 +547,34 @@ angular.module('mm.addons.messages')
             responseExpected: false
         }).then(function() {
             return self.invalidateContactsCache();
+        });
+    };
+
+    /**
+     * Search for contacts.
+     *
+     * By default this only returns the first 100 contacts, but note that the WS can return thousands
+     * of results which would take a while to process. The limit here is just a convenience to
+     * prevent viewed to crash because too many DOM elements are created.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#searchContacts
+     * @param {String} query The query string.
+     * @param {Number} [limit=100] The number of results to return, 0 for none.
+     * @return {Promise}
+     */
+    self.searchContacts = function(query, limit) {
+        var data = {
+                searchtext: query,
+                onlymycourses: 0
+            };
+        limit = typeof limit === 'undefined' ? 100 : limit;
+        return $mmSite.read('core_message_search_contacts', data).then(function(contacts) {
+            if (limit && contacts.length > limit) {
+                contacts = contacts.splice(0, limit);
+            }
+            return contacts;
         });
     };
 
