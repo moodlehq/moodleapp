@@ -21,7 +21,8 @@ angular.module('mm.core.login')
  * @ngdoc controller
  * @name mmLoginSiteCtrl
  */
-.controller('mmLoginSiteCtrl', function($scope, $state, $mmSitesManager, $mmUtil, $translate, $ionicModal, $mmLoginHelper) {
+.controller('mmLoginSiteCtrl', function($scope, $state, $mmSitesManager, $mmUtil, $mmSite, $translate,
+        $ionicModal, $mmLoginHelper) {
 
     $scope.siteurl = '';
     $scope.isInvalidUrl = true;
@@ -86,6 +87,11 @@ angular.module('mm.core.login')
             });
         });
     };
+
+    // Get docs URL for help modal.
+    $mmSite.getDocsUrl().then(function(docsurl) {
+        $scope.docsurl = docsurl;
+    });
 
     // Setup help modal.
     $ionicModal.fromTemplateUrl('core/components/login/templates/help-modal.html', {

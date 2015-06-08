@@ -64,7 +64,7 @@ angular.module('mm.core')
         return query.length ? query.substr(0, query.length - 1) : query;
     };
 
-    this.$get = function($ionicLoading, $ionicPopup, $translate, $http, $log, $q) {
+    this.$get = function($ionicLoading, $ionicPopup, $translate, $http, $log, $q, $mmLang) {
 
         $log = $log.getInstance('$mmUtil');
 
