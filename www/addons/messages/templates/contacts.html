@@ -1,8 +1,22 @@
 <ion-content class="has-tabs">
     <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="loaded" on-refresh="refresh()"></ion-refresher>
+
+    <form ng-if="canSearch" ng-submit="search(formData.searchString);">
+        <div class="list">
+            <div class="item item-input-inset">
+                <label class="item-input-wrapper">
+                    <i class="icon ion-search placeholder-icon"></i>
+                    <input type="text" placeholder="{{ 'mma.messages.contactname' | translate }}" ng-model="formData.searchString">
+                </label>
+                <button type="submit" class="button button-clear" ng-disabled="!formData.searchString || formData.searchString.length < 3">{{ 'mm.core.search' | translate}}</button>
+            </div>
+        </div>
+    </form>
+
     <mm-loading hide-until="loaded">
         <ion-list>
             <div ng-repeat="contactType in contactTypes" ng-if="contacts[contactType] && contacts[contactType].length > 0">
+
                 <ion-item class="item-divider">
                     <span class="item-note">{{ contacts[contactType].length }}</span>
                     {{ 'mma.messages.type_' + contactType | translate }}
@@ -18,7 +32,8 @@
         </ion-list>
 
         <div ng-if="!hasContacts" class="padding">
-            <p>{{ 'mma.messages.nocontactsyet' | translate}}</p>
+            <p>{{ 'mma.messages.nocontacts' | translate}}</p>
         </div>
+
     </mm-loading>
 </ion-content>

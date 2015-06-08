@@ -21,20 +21,46 @@ angular.module('mm.addons.messages')
  * @ngdoc controller
  * @name mmaMessagesContactsCtrl
  */
-.controller('mmaMessagesContactsCtrl', function($q, $scope, $mmaMessages, $mmSite, mmUserProfileState) {
+.controller('mmaMessagesContactsCtrl', function($q, $scope, $mmaMessages, $mmSite, $mmUtil, mmUserProfileState) {
 
     var currentUserId = $mmSite.getUserId();
 
     $scope.loaded = false;
-    $scope.contactTypes = ['online', 'offline', 'blocked', 'strangers'];
+    $scope.contactTypes = ['online', 'offline', 'blocked', 'strangers', 'search'];
     $scope.profileState = mmUserProfileState;
     $scope.hasContacts = false;
+    $scope.canSearch = $mmaMessages.isSearchEnabled();
+    $scope.formData = {
+        searchString: ''
+    };
 
     $scope.refresh = function() {
         $mmaMessages.invalidateAllContactsCache(currentUserId).then(function() {
-            return fetchContacts(true);
+            return fetchContacts(true).then(function() {
+                $scope.formData.searchString = '';
+            });
         }).finally(function() {
             $scope.$broadcast('scroll.refreshComplete');
+        });
+    };
+
+    $scope.search = function(query) {
+        if (query.length < 3) {
+            // The view should handle this case, but adding this check here to document that
+            // we do not want users to query on less than 3 characters as they could retrieve
+            // too many users!
+            return;
+        }
+        $scope.loaded = false;
+        return $mmaMessages.searchContacts(query).then(function(result) {
+            $scope.hasContacts = result.length > 0;
+            $scope.contacts = {
+                search: result
+            };
+        }).catch(function() {
+            $mmUtil.showErrorModal('mma.messages.errorwhileretrievingcontacts', true);
+        }).finally(function() {
+            $scope.loaded = true;
         });
     };
 

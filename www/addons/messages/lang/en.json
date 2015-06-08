@@ -1,6 +1,7 @@
 {
     "addcontact": "Add contact",
     "blockcontact": "Block contact",
+    "contactname": "Contact name",
     "contacts": "Contacts",
     "errorwhileretrievingcontacts": "Error while retrieving the contacts from the server.",
     "errorwhileretrievingdiscussions": "Error while retrieving the discussions from the server.",
@@ -9,7 +10,7 @@
     "messages": "Messages",
     "mustbeonlinetosendmessages": "You must be online to send messages",
     "newmessage": "New message...",
-    "nocontactsyet": "No contacts yet.",
+    "nocontacts": "No contacts.",
     "nomessagesyet": "No messages yet.",
     "removecontact": "Remove contact",
     "send": "Send",
@@ -17,6 +18,7 @@
     "type_blocked": "Blocked",
     "type_offline": "Offline",
     "type_online": "Online",
+    "type_search": "Search results",
     "type_strangers": "Others",
     "unblockcontact": "Unlock contact"
 }
