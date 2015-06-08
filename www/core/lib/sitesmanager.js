@@ -38,7 +38,7 @@ angular.module('mm.core')
  * @ngdoc service
  * @name $mmSitesManager
  */
-.factory('$mmSitesManager', function($http, $q, $mmSite, md5, $mmLang, $mmConfig, $mmApp, $mmWS, $mmUtil, $mmFS,
+.factory('$mmSitesManager', function($http, $q, $mmSitesFactory, md5, $mmLang, $mmConfig, $mmApp, $mmWS, $mmUtil, $mmFS,
                                      mmCoreSitesStore, mmCoreCurrentSiteStore, $log) {
 
     $log = $log.getInstance('$mmSitesManager');
@@ -46,7 +46,9 @@ angular.module('mm.core')
     var self = {},
         services = {},
         db = $mmApp.getDB(),
-        sessionRestored = false;
+        sessionRestored = false,
+        currentSite,
+        sites = {};
 
     /**
      * Get the demo data of the siteurl if it is a demo site.
@@ -264,23 +266,24 @@ angular.module('mm.core')
     self.newSite = function(siteurl, token) {
         var deferred = $q.defer();
 
-        // Use a candidate site until the site info is retrieved and validated.
-        $mmSite.setCandidateSite(siteurl, token);
+        var candidateSite = $mmSitesFactory.makeSite(undefined, siteurl, token);
 
-        $mmSite.fetchSiteInfo().then(function(infos) {
+        candidateSite.fetchSiteInfo().then(function(infos) {
             if (isValidMoodleVersion(infos.functions)) {
                 var siteid = self.createSiteID(siteurl, infos.username);
+                // Add site to sites list.
                 self.addSite(siteid, siteurl, token, infos);
-                $mmSite.setSite(siteid, siteurl, token, infos);
+                // Turn candidate site into current site.
+                candidateSite.setId(siteid);
+                currentSite = candidateSite;
+                // Store session.
                 self.login(siteid);
                 deferred.resolve();
             } else {
                 $mmLang.translateErrorAndReject(deferred, 'mm.login.invalidmoodleversion');
-                $mmSite.deleteCandidateSite();
             }
         }, function(error) {
             deferred.reject(error);
-            $mmSite.deleteCandidateSite();
         });
 
         return deferred.promise;
@@ -378,10 +381,22 @@ angular.module('mm.core')
      */
     self.loadSite = function(siteid) {
         $log.debug('Load site '+siteid);
-        return db.get(mmCoreSitesStore, siteid).then(function(site) {
-            $mmSite.setSite(siteid, site.siteurl, site.token, site.infos);
+        return self.getSite(siteid).then(function(site) {
+            currentSite = site;
             self.login(siteid);
         });
+    };
+
+    /**
+     * Get current site.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#getCurrentSite
+     * @return {Object} Current site.
+     */
+    self.getCurrentSite = function() {
+        return currentSite;
     };
 
     /**
@@ -396,24 +411,19 @@ angular.module('mm.core')
     self.deleteSite = function(siteid) {
         $log.debug('Delete site '+siteid);
 
-        function deleteSiteFolder() {
-            var deferred = $q.defer();
-            if ($mmFS.isAvailable()) {
-                var siteFolder = $mmFS.getSiteFolder(siteid);
-                // Ignore any errors, $mmFS.removeDir fails if folder doesn't exists .
-                $mmFS.removeDir(siteFolder).then(deferred.resolve, deferred.resolve);
-            } else {
-                deferred.resolve();
-            }
-            return deferred.promise;
+        if (typeof currentSite != 'undefined' && currentSite.id == siteid) {
+            self.logout();
         }
 
-        return $mmSite.deleteSite(siteid).then(function() {
-            return db.remove(mmCoreSitesStore, siteid).then(function() {
-                return deleteSiteFolder();
-            }, function() {
-                // DB remove shouldn't fail, but we'll go ahead even if it does.
-                return deleteSiteFolder();
+        return self.getSite(siteid).then(function(site) {
+            return site.deleteDB().then(function() {
+                delete sites[siteid];
+                return db.remove(mmCoreSitesStore, siteid).then(function() {
+                    return site.deleteFolder();
+                }, function() {
+                    // DB remove shouldn't fail, but we'll go ahead even if it does.
+                    return site.deleteFolder();
+                });
             });
         });
     };
@@ -453,35 +463,42 @@ angular.module('mm.core')
     /**
      * Returns a site object.
      *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#getSite
      * @param  {Number} siteId The site ID.
      * @return {Promise}
      */
     self.getSite = function(siteId) {
-        if ($mmSite.getId() == siteId) {
-            var deferred = $q.defer();
-            deferred.resolve($mmSite.getCurrentSite());
-            return deferred.promise;
+        var deferred = $q.defer();
+
+        if (currentSite && currentSite.getId() === siteId) {
+            deferred.resolve(currentSite);
+        } else if (typeof sites[siteId] != 'undefined') {
+            deferred.resolve(sites[siteId]);
+        } else {
+            db.get(mmCoreSitesStore, siteId).then(function(site) {
+                var site = $mmSitesFactory.makeSite(siteId, site.siteurl, site.token, site.infos);
+                sites[siteId] = site;
+                deferred.resolve(site);
+            });
         }
-        return db.get(mmCoreSitesStore, siteId).then(function(site) {
-            return $mmSite.makeSite(siteId, site.siteurl, site.token, site.infos);
-        });
+
+        return deferred.promise;
     };
 
     /**
      * Returns the database object of a site.
      *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#getSiteDb
      * @param  {Number} siteId The site ID.
      * @return {Promise}
      */
     self.getSiteDb = function(siteId) {
-        if ($mmSite.getId() == siteId) {
-            var deferred = $q.defer();
-            deferred.resolve($mmSite.getDb());
-            return deferred.promise;
-        }
-        return db.get(mmCoreSitesStore, siteId).then(function(site) {
-            var obj = $mmSite.makeSite(siteId, site.siteurl, site.token, site.infos);
-            return obj.db;
+        return self.getSite(siteId).then(function(site) {
+            return site.getDb();
         });
     };
 
@@ -534,15 +551,15 @@ angular.module('mm.core')
         }
 
         if (!siteId) {
-            siteId = $mmSite.getId();
-            if (typeof(siteId) === 'undefined') {
+            if (typeof currentSite == 'undefined') {
                 return $q.reject();
             }
+            siteId = currentSite.getId();
         }
 
-        return db.get(mmCoreSitesStore, siteId).then(function(site) {
+        return self.getSite(siteId).then(function(site) {
 
-            var downloadURL = $mmUtil.fixPluginfileURL(fileurl, site.token);
+            var downloadURL = site.fixPluginfileURL(fileurl);
             var extension = "." + fileurl.split('.').pop();
             if (extension.indexOf(".php") === 0) {
                 extension = "";
@@ -608,7 +625,7 @@ angular.module('mm.core')
      * @return {Promise} Promise to be resolved when the user is logged out.
      */
     self.logout = function() {
-        $mmSite.logout();
+        currentSite = undefined;
         return db.remove(mmCoreCurrentSiteStore, 1);
     }
 
@@ -634,31 +651,6 @@ angular.module('mm.core')
     };
 
     /**
-     * Gets the URL of a site. If no site is specified, return the URL of the current site.
-     *
-     * @module mm.core
-     * @ngdoc method
-     * @name $mmSitesManager#getSiteURL
-     * @param  {String} siteid ID of the site.
-     * @return {Promise}       Promise to be resolved with the URL of the site. This promise is never rejected.
-     */
-    self.getSiteURL = function(siteid) {
-        var deferred = $q.defer();
-
-        if (typeof(siteid) === 'undefined') {
-            deferred.resolve($mmSite.getURL());
-        } else {
-            db.get(mmCoreSitesStore, siteid).then(function(site) {
-                deferred.resolve(site.siteurl);
-            }, function() {
-                deferred.resolve(undefined);
-            });
-        }
-
-        return deferred.promise;
-    };
-
-    /**
      * Updates a site's token.
      *
      * @module mm.core
@@ -671,12 +663,14 @@ angular.module('mm.core')
      */
     self.updateSiteToken = function(siteurl, username, token) {
         var siteid = self.createSiteID(siteurl, username);
-        return db.get(mmCoreSitesStore, siteid).then(function(site) {
+        return self.getSite(siteid).then(function(site) {
+            site.token = token;
+
             return db.insert(mmCoreSitesStore, {
                 id: siteid,
-                siteurl: site.siteurl,
+                siteurl: site.getURL(),
                 token: token,
-                infos: site.infos
+                infos: site.getInfo()
             });
         });
     };

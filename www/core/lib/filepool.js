@@ -20,7 +20,7 @@ angular.module('mm.core')
 .constant('mmFilepoolQueueStore', 'files_queue')
 .constant('mmFilepoolLinksStore', 'files_links')
 
-.config(function($mmAppProvider, $mmSiteProvider, mmFilepoolStore, mmFilepoolLinksStore, mmFilepoolQueueStore) {
+.config(function($mmAppProvider, $mmSitesFactoryProvider, mmFilepoolStore, mmFilepoolLinksStore, mmFilepoolQueueStore) {
     var siteStores = [
         {
             // File store.
@@ -113,7 +113,7 @@ angular.module('mm.core')
         }
     ];
     $mmAppProvider.registerStores(appStores);
-    $mmSiteProvider.registerStores(siteStores);
+    $mmSitesFactoryProvider.registerStores(siteStores);
 })
 
 /**

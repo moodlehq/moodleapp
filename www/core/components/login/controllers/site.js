@@ -21,7 +21,7 @@ angular.module('mm.core.login')
  * @ngdoc controller
  * @name mmLoginSiteCtrl
  */
-.controller('mmLoginSiteCtrl', function($scope, $state, $mmSitesManager, $mmUtil, $mmSite, $translate,
+.controller('mmLoginSiteCtrl', function($scope, $state, $mmSitesManager, $mmUtil, $translate,
         $ionicModal, $mmLoginHelper) {
 
     $scope.siteurl = '';
@@ -89,7 +89,7 @@ angular.module('mm.core.login')
     };
 
     // Get docs URL for help modal.
-    $mmSite.getDocsUrl().then(function(docsurl) {
+    $mmUtil.getDocsUrl().then(function(docsurl) {
         $scope.docsurl = docsurl;
     });
 
