@@ -32,7 +32,7 @@ angular.module('mm.core')
  */
 .directive('mmFormatText', function($interpolate, $mmText, $compile) {
 
-    var curlyBracketsRegex = new RegExp('[{{|}}]', 'gi');
+    var extractVariableRegex = new RegExp('{{([^|]+)(|.*)?}}', 'i');
 
     return {
         restrict: 'E', // Restrict to <mm-format-text></mm-format-text>.
@@ -94,10 +94,13 @@ angular.module('mm.core')
 
                 if (attrs.watch) {
                     // Watch the variable inside the directive. We clean tags that might be added by ionic.
-                    var variable = $mmText.cleanTags(content).replace(curlyBracketsRegex, '');
-                    scope.$watch(variable, function() {
-                        treatContents();
-                    });
+                    var matches = $mmText.cleanTags(content).match(extractVariableRegex);
+                    if (matches && typeof matches[1] == 'string') {
+                        var variable = matches[1].trim();
+                        scope.$watch(variable, function() {
+                            treatContents();
+                        });
+                    }
                 } else {
                     treatContents();
                 }
