@@ -31,8 +31,8 @@ angular.module('mm.addons.participants')
 
     // Get participant ui-sref depending on Mobile or Tablet.
     // @todo Adapt to tablet split view when it is implemented.
-    $scope.getState = function(id) {
-        return mmUserProfileState + '({courseid: '+courseid+', userid: '+id+'})';
+    $scope.getState = function() {
+        return mmUserProfileState;
     };
 
     function fetchParticipants(refresh) {

@@ -28,6 +28,8 @@ angular.module('mm.addons.mod_forum')
         courseid = $stateParams.courseid;
 
     $scope.component = mmaModForumComponent;
+    $scope.courseid = courseid;
+    $scope.userstate = mmUserProfileState;
 
     // Convenience function to get forum discussions.
     function fetchPosts() {

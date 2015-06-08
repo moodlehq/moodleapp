@@ -29,21 +29,9 @@ angular.module('mm.addons.mod_forum')
 
     $scope.title = module.name;
     $scope.description = module.description;
-
-    $scope.openInBrowser = function() {
-        $mmUtil.openInBrowser(module.url);
-    };
-
-    // Get user profile ui-sref.
-    $scope.getUserProfileState = function(id) {
-        return mmUserProfileState + '({courseid: '+courseid+', userid: '+id+'})';
-    };
-
-    // Get discussion ui-sref depending on Mobile or Tablet.
-    // @todo Adapt to tablet split view when it is implemented.
-    $scope.getDiscussionState = function(id) {
-        return 'site.mod_forum-discussion({courseid: '+courseid+', discussionid: '+id+'})';
-    };
+    $scope.moduleurl = module.url;
+    $scope.courseid = courseid;
+    $scope.userstate = mmUserProfileState;
 
     // Convenience function to get forum data and discussions.
     function fetchForumDataAndDiscussions(refresh) {

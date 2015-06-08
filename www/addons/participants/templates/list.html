@@ -9,7 +9,7 @@
                     <mm-loading hide-until="participantsLoaded">
                         <div class="list">
                             <div ng-repeat="participant in participants">
-                                <a ui-sref="{{getState(participant.id)}}" class="item item-avatar">
+                                <a class="item item-avatar" ui-sref="{{getState()}}({courseid: courseid, userid: participant.id})">
                                     <img ng-src="{{participant.profileimageurlsmall}}" alt="" mm-external-content>
                                     <mm-format-text>{{participant.fullname}}</mm-format-text>
                                 </a>
