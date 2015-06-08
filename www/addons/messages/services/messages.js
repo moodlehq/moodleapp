@@ -236,6 +236,11 @@ angular.module('mm.addons.messages')
                     if (!message.timeread) {
                         discussions[message.useridfrom].unread = true;
                     }
+                }
+
+                // Extract the most recent message.
+                if (typeof discussions[message.useridfrom].message === 'undefined' ||
+                        discussions[message.useridfrom].message.timecreated < message.timecreated) {
 
                     discussions[message.useridfrom].message = {
                         user: message.useridfrom,
@@ -264,6 +269,11 @@ angular.module('mm.addons.messages')
                         if (!message.timeread) {
                             discussions[message.useridto].unread = true;
                         }
+                    }
+
+                    // Extract the most recent message.
+                    if (typeof discussions[message.useridto].message === 'undefined' ||
+                            discussions[message.useridto].message.timecreated < message.timecreated) {
 
                         discussions[message.useridto].message = {
                             user: message.useridto,
