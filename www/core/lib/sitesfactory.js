@@ -255,6 +255,15 @@ angular.module('mm.core')
         };
 
         /**
+         * Set site info.
+         *
+         * @param {Object} New info.
+         */
+        Site.prototype.setInfo = function(infos) {
+            this.infos = infos;
+        };
+
+        /**
          * Can the user access their private files?
          *
          * @return {Boolean} False when they cannot.
@@ -321,20 +330,14 @@ angular.module('mm.core')
             var deferred = $q.defer(),
                 site = this;
 
-            function siteDataRetrieved(infos) {
-                site.infos = infos;
-                deferred.resolve(infos);
-            }
-
-            // get_site_info won't be cached. The returned data is stored in the site.
+            // get_site_info won't be cached.
             var preSets = {
                 getFromCache: 0,
                 saveToCache: 0
             };
 
-            // We have a valid token, try to get the site info.
-            site.read('core_webservice_get_site_info', {}, preSets).then(siteDataRetrieved, function(error) {
-                site.read('moodle_webservice_get_siteinfo', {}, preSets).then(siteDataRetrieved, function(error) {
+            site.read('core_webservice_get_site_info', {}, preSets).then(deferred.resolve, function(error) {
+                site.read('moodle_webservice_get_siteinfo', {}, preSets).then(deferred.resolve, function(error) {
                     deferred.reject(error);
                 });
             });
