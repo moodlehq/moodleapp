@@ -63,12 +63,22 @@ angular.module('mm.core')
             try {
                 // User hasn't defined a language. Get it from cordova globalization.
                 return $cordovaGlobalization.getPreferredLanguage().then(function(result) {
-                    var language = result.value;
-                    // For now we won't support codes like en-US or es-US defined by locale.
+                    var language = result.value.toLowerCase();
                     if (language.indexOf('-') > -1) {
-                        language = language.substr(0, language.indexOf('-'));
+                        // Language code defined by locale has a dash, like en-US or es-ES. Check if it's supported.
+                        return $mmConfig.get('languages').then(function(languages) {
+                            if (typeof languages[language] == 'undefined') {
+                                // Code is NOT supported. Fallback to language without dash. E.g. 'en-US' would fallback to 'en'.
+                                language = language.substr(0, language.indexOf('-'));
+                            }
+                            return language;
+                        }, function() {
+                            // Languages array not found (shouldn't happen).
+                            return language;
+                        });
+                    } else {
+                        return language;
                     }
-                    return language;
                 }, function() {
                     // Error getting locale. Use default language.
                     return getDefaultLanguage();
