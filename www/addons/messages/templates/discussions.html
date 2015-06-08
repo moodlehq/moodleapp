@@ -1,0 +1,20 @@
+<ion-content class="has-tabs">
+    <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="loaded" on-refresh="refresh()"></ion-refresher>
+    <mm-loading hide-until="loaded">
+        <ion-list>
+            <a class="item item-avatar" ng-repeat="disc in discussions | orderBy:'message.timecreated':true track by $index" ng-click="goToDiscussion(disc)">
+
+                <img ng-src="{{disc.profileimageurl}}" alt="" role="presentation" mm-external-content ng-if="disc.profileimageurl">
+                <img src="img/user-avatar.png" alt="" role="presentation" ng-if="!disc.profileimageurl">
+
+                <span class="item-note">{{disc.message.timecreated | mmDateDayOrTime}}</span>
+                <h2>{{disc.fullname}}</h2>
+                <p><mm-format-text clean="true">{{disc.message.message | mmaMessagesFormat}}</mm-format-text></p>
+            </a>
+        </ion-list>
+
+        <div ng-if="!discussions || discussions.length <= 0" class="padding">
+            <p>{{ 'mma.messages.nomessagesyet' | translate}}</p>
+        </div>
+    </mm-loading>
+</ion-content>

@@ -21,13 +21,13 @@ angular.module('mm.core.user')
  * @ngdoc controller
  * @name mmaParticipantsProfileCtrl
  */
-.controller('mmUserProfileCtrl', function($scope, $stateParams, $mmUtil, $mmUser, $translate, $mmUserDelegate, $mmSite) {
+.controller('mmUserProfileCtrl', function($scope, $state, $stateParams, $mmUtil, $mmUser, $translate, $mmUserDelegate, $mmSite) {
 
     var courseid = $stateParams.courseid,
         userid   = $stateParams.userid;
 
     $scope.isAndroid = ionic.Platform.isAndroid();
-    $scope.plugins = $mmUserDelegate.getData();
+    $scope.plugins = [];
 
     $mmUser.getProfile(userid, courseid).then(function(user) {
 
@@ -45,13 +45,15 @@ angular.module('mm.core.user')
         $scope.hasContact = user.email || user.phone1 || user.phone2 || user.city || user.country || user.address;
         $scope.hasDetails = user.url || user.roles || user.interests;
 
+        $scope.plugins = $mmUserDelegate.getData(user);
+
         // Add log in Moodle.
         $mmSite.write('core_user_view_user_profile', {
             userid: userid,
             courseid: courseid
         });
     }, function(message) {
-        $mmUtil.showErrorModal(message);
+        $scope.user = false;
     }).finally(function() {
         $scope.userLoaded = true;
     });
