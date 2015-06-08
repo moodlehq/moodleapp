@@ -26,14 +26,20 @@ angular.module('mm.addons.grades')
     var course = $stateParams.course || {},
         courseid = course.id;
 
-    function fetchGrades() {
-        $mmaGrades.getGradesTable(courseid).then(function(table) {
+    function fetchGrades(refresh) {
+        return $mmaGrades.getGradesTable(courseid, refresh).then(function(table) {
             $scope.gradesTable = table;
         }, function(message) {
             $mmUtil.showErrorModal(message);
-        }).finally(function() {
-            $scope.gradesLoaded = true;
         });
     }
-    fetchGrades();
+    fetchGrades().finally(function() {
+        $scope.gradesLoaded = true;
+    });
+
+    $scope.refreshGrades = function() {
+        fetchGrades(true).finally(function() {
+            $scope.$broadcast('scroll.refreshComplete');
+        });
+    };
 });
