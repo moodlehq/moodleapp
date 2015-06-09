@@ -21,12 +21,15 @@ angular.module('mm.core.course')
  * @ngdoc controller
  * @name mmCourseSectionsCtrl
  */
-.controller('mmCourseSectionsCtrl', function($mmCourse, $mmUtil, $scope, $stateParams, $translate) {
+.controller('mmCourseSectionsCtrl', function($mmCourse, $mmUtil, $scope, $stateParams, $translate, $mmText) {
     var course = $stateParams.course,
         courseid = course.id;
 
     $scope.courseid = courseid;
-    $scope.fullname = course.fullname;
+    // Format the title in here instead of using mm-format-text to make ionic history get the treated text.
+    $mmText.formatText(course.fullname, true).then(function(fullname) {
+        $scope.fullname = fullname;
+    });
 
     function loadSections(refresh) {
         return $mmCourse.getSections(courseid, refresh).then(function(sections) {
