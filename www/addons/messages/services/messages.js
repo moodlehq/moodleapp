@@ -517,7 +517,45 @@ angular.module('mm.addons.messages')
     };
 
     /**
+     * Returns whether or not messaging is enabled for the current site.
+     *
+     * This could call a WS so do not abuse this method.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#isMessagingEnabled
+     * @return {Promise} Resolved when enabled, otherwise rejected.
+     */
+    self.isMessagingEnabled = function() {
+        var deferred,
+            enabled = $mmSite.canUseAdvancedFeature('messaging', 'unknown');
+
+        if (enabled === 'unknown') {
+            // On older version we cannot check other than calling a WS. If the request
+            // fails there is a very high chance that messaging is disabled.
+            $log.debug('Using WS call to check if messaging is enabled.');
+            return $mmSite.read('core_message_search_contacts', {
+                searchtext: 'CheckingIfMessagingIsEnabled',
+                onlymycourses: 0
+            }, {
+                emergencyCache: false
+            });
+        }
+
+        deferred = $q.defer();
+        if (enabled) {
+            deferred.resolve();
+        } else {
+            deferred.reject();
+        }
+        return deferred.promise;
+    };
+
+    /**
      * Returns whether or not the plugin is enabled for the current site.
+     *
+     * This method is called quite often and thus should only perform a quick
+     * check, we should not be calling WS from here.
      *
      * @module mm.addons.messages
      * @ngdoc method
