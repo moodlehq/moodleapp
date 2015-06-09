@@ -32,8 +32,12 @@ angular.module('mm.addons.messages')
                 array.push(v);
             });
             $scope.discussions = array;
-        }, function() {
-            $mmUtil.showErrorModal('mma.messages.errorwhileretrievingdiscussions', true);
+        }, function(error) {
+            if (typeof error === 'string') {
+                $mmUtil.showErrorModal(error);
+            } else {
+                $mmUtil.showErrorModal('mma.messages.errorwhileretrievingdiscussions', true);
+            }
         });
     }
 

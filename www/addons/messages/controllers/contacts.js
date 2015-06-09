@@ -57,8 +57,12 @@ angular.module('mm.addons.messages')
             $scope.contacts = {
                 search: result
             };
-        }).catch(function() {
-            $mmUtil.showErrorModal('mma.messages.errorwhileretrievingcontacts', true);
+        }).catch(function(error) {
+            if (typeof error === 'string') {
+                $mmUtil.showErrorModal(error);
+            } else {
+                $mmUtil.showErrorModal('mma.messages.errorwhileretrievingcontacts', true);
+            }
         }).finally(function() {
             $scope.loaded = true;
         });
@@ -73,8 +77,12 @@ angular.module('mm.addons.messages')
                     $scope.hasContacts = true;
                 }
             });
-        }, function() {
-            $mmUtil.showErrorModal('mma.messages.errorwhileretrievingcontacts', true);
+        }, function(error) {
+            if (typeof error === 'string') {
+                $mmUtil.showErrorModal(error);
+            } else {
+                $mmUtil.showErrorModal('mma.messages.errorwhileretrievingcontacts', true);
+            }
         });
     }
     fetchContacts().finally(function() {

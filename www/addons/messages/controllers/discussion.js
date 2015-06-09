@@ -98,8 +98,12 @@ angular.module('mm.addons.messages')
         messagesBeingSent++;
         $mmaMessages.sendMessage(userId, text).then(function() {
             message.sending = false;
-        }, function() {
-            $mmUtil.showErrorModal('mma.messages.messagenotsent', true);
+        }, function(error) {
+            if (typeof error === 'string') {
+                $mmUtil.showErrorModal(error);
+            } else {
+                $mmUtil.showErrorModal('mma.messages.messagenotsent', true);
+            }
             $scope.messages.splice($scope.messages.indexOf(message), 1);
         }).finally(function() {
             messagesBeingSent--;
@@ -121,8 +125,12 @@ angular.module('mm.addons.messages')
             }
         }
         scrollToBottom();
-    }, function() {
-        $mmUtil.showErrorModal('mma.messages.errorwhileretrievingmessages', true);
+    }, function(error) {
+        if (typeof error === 'string') {
+            $mmUtil.showErrorModal(error);
+        } else {
+            $mmUtil.showErrorModal('mma.messages.errorwhileretrievingmessages', true);
+        }
     }).finally(function() {
         $scope.loaded = true;
     });

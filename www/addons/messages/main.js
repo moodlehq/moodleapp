@@ -58,11 +58,14 @@ angular.module('mm.addons.messages', [])
                 return;
             }
 
-            return {
-                icon: 'ion-chatbox',
-                state: 'site.messages',
-                title: translations['mma.messages.messages']
-            };
+            return $mmaMessages.isMessagingEnabled().then(function() {
+                return {
+                    icon: 'ion-chatbox',
+                    state: 'site.messages',
+                    title: translations['mma.messages.messages']
+                };
+            });
+
         });
 
         $mmUserDelegate.registerPlugin('mmaMessages:sendMessage', $mmaMessagesHandlers.sendMessage);
