@@ -95,7 +95,16 @@ angular.module('mm.addons.messages')
             },
             presets = {
                 cacheKey: self._getCacheKeyForBlockedContacts($mmSite.getUserId())
-            };
+            },
+            deferred;
+
+        if (!$mmSite.wsAvailable('core_message_get_blocked_users')) {
+            // If the WS is not available, we mock an empty response.
+            deferred = $q.defer();
+            deferred.resolve({users: [], warnings: []});
+            return deferred.promise;
+        }
+
         return $mmSite.read('core_message_get_blocked_users', params, presets);
     };
 
