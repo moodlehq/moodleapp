@@ -26,6 +26,7 @@ angular.module('mm.core')
  *     -courseid: Course ID to use.
  *     -component: The component for mmExternalContent
  *     -component-id: The component ID for mmExternalContent
+ *     -after-render: Scope function to call once the content is renderered. Passes the current scope as argument.
  *     -clean: True if all HTML tags should be removed, false otherwise.
  *     -watch: True if the variable used inside the directive should be watched for changes. If the variable data is retrieved
  *             asynchronously, this value must be set to true, or the directive should be inside a ng-if, ng-repeat or similar.
@@ -36,12 +37,12 @@ angular.module('mm.core')
 
     return {
         restrict: 'E', // Restrict to <mm-format-text></mm-format-text>.
-        scope: true,
         transclude: true,
         link: function(scope, element, attrs, ctrl, transclude) { // Link function.
             var siteId = attrs.siteid,
                 component = attrs.component,
                 componentId = attrs.componentId;
+                afterRender = attrs.afterRender;
 
             transclude(scope, function(clone) {
 
@@ -89,6 +90,11 @@ angular.module('mm.core')
                         // Send for display, and compile.
                         element.html(dom.html());
                         $compile(element.contents())(scope);
+
+                        // Call the after render function.
+                        if (afterRender && scope[afterRender]) {
+                            scope[afterRender](scope);
+                        }
                     });
                 }
 
