@@ -26,10 +26,7 @@ angular.module('mm.core.course')
         courseid = course.id;
 
     $scope.courseid = courseid;
-    // Format the title in here instead of using mm-format-text to make ionic history get the treated text.
-    $mmText.formatText(course.fullname, true).then(function(fullname) {
-        $scope.fullname = fullname;
-    });
+    $scope.fullname = course.fullname;
 
     function loadSections(refresh) {
         return $mmCourse.getSections(courseid, refresh).then(function(sections) {
