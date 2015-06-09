@@ -108,8 +108,6 @@ angular.module('mm.addons.messages')
         }).finally(function() {
             messagesBeingSent--;
         });
-
-        scrollToBottom();
     };
 
     // Fetch the messages for the first time.
@@ -124,7 +122,6 @@ angular.module('mm.addons.messages')
                 $scope.title = messages[0].userfromfullname || '';
             }
         }
-        scrollToBottom();
     }, function(error) {
         if (typeof error === 'string') {
             $mmUtil.showErrorModal(error);
@@ -135,13 +132,15 @@ angular.module('mm.addons.messages')
         $scope.loaded = true;
     });
 
-    function scrollToBottom() {
-        // Need a timeout to leave time to the view to be rendered.
-        $timeout(function() {
-            var scrollView = $ionicScrollDelegate.$getByHandle('mmaMessagesScroll');
-            scrollView.scrollBottom();
-        }, 100);
-    }
+    $scope.scrollAfterRender = function(scope) {
+        if (scope.$last === true) {
+            // Need a timeout to leave time to the view to be rendered.
+            $timeout(function() {
+                var scrollView = $ionicScrollDelegate.$getByHandle('mmaMessagesScroll');
+                scrollView.scrollBottom();
+            });
+        }
+    };
 
     // Set up the polling on a view enter, this allows for the user to go back and resume the polling.
     $scope.$on('$ionicView.enter', function() {
