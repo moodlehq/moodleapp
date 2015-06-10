@@ -21,10 +21,11 @@ angular.module('mm.addons.messages')
  * @ngdoc filter
  * @name mmaMessagesFormat
  */
-.filter('mmaMessagesFormat', function($filter) {
+.filter('mmaMessagesFormat', function($mmText) {
   return function(text) {
     text = text.replace(/-{4,}/ig, '');
     text = text.replace(/<br \/><br \/>/ig, "<br />");
+    text = $mmText.replaceNewLines(text, '<br />');
     return text;
   };
 });

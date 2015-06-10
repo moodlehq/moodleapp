@@ -23,11 +23,11 @@ angular.module('mm.core')
  * @description
  * Directive to format text rendered. Attributes it accepts:
  *     -siteid: Site ID to use.
- *     -courseid: Course ID to use.
  *     -component: The component for mmExternalContent
  *     -component-id: The component ID for mmExternalContent
  *     -after-render: Scope function to call once the content is renderered. Passes the current scope as argument.
  *     -clean: True if all HTML tags should be removed, false otherwise.
+ *     -singleline: True if new lines should be removed (all the text in a single line). Only valid if clean is true.
  *     -watch: True if the variable used inside the directive should be watched for changes. If the variable data is retrieved
  *             asynchronously, this value must be set to true, or the directive should be inside a ng-if, ng-repeat or similar.
  */
@@ -53,7 +53,7 @@ angular.module('mm.core')
                     interpolated = interpolated.trim();
 
                     // Apply format text function.
-                    $mmText.formatText(interpolated, attrs.clean).then(function(formatted) {
+                    $mmText.formatText(interpolated, attrs.clean, attrs.singleline).then(function(formatted) {
 
                         // Convert the content into DOM.
                         var dom = angular.element('<div>').html(formatted);

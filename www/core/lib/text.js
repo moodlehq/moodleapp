@@ -62,18 +62,33 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmText#cleanTags
-     * @param  {String} text The text to be cleaned.
-     * @return {String}      Text cleaned.
+     * @param  {String}  text         The text to be cleaned.
+     * @param  {Boolean} [singleLine] True if new lines should be removed (all the text in a single line).
+     * @return {String}               Text cleaned.
      */
-    self.cleanTags = function(text) {
+    self.cleanTags = function(text, singleLine) {
         // First, we use a regexpr.
         text = text.replace(/(<([^>]+)>)/ig,"");
         // Then, we rely on the browser. We need to wrap the text to be sure is HTML.
         text = angular.element('<p>').html(text).text(); // Get directive's content.
-        // Recover new lines.
-        text = text.replace(/(?:\r\n|\r|\n)/g, '<br />');
+        // Recover or remove new lines.
+        text = self.replaceNewLines(text, singleLine ? ' ' : '<br />');
         return text;
     };
+
+    /**
+     * Replace all the new lines on a certain text.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#replaceNewLines
+     * @param  {String}  text     The text to be treated.
+     * @param  {Boolean} newValue Text to place on each new line.
+     * @return {String}           Treated text.
+     */
+    self.replaceNewLines = function(text, newValue) {
+        return text.replace(/(?:\r\n|\r|\n)/g, newValue);
+    }
 
     /**
      * Formats a text, treating multilang tags and cleaning HTML if needed.
@@ -81,14 +96,15 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmText#formatText
-     * @param  {String} text   Text to format.
-     * @param  {Boolean} clean True if HTML tags should be removed, false otherwise.
-     * @return {Promise}       Promise resolved with the formatted text.
+     * @param  {String} text          Text to format.
+     * @param  {Boolean} clean        True if HTML tags should be removed, false otherwise.
+     * @param  {Boolean} [singleLine] True if new lines should be removed. Only valid if clean is true.
+     * @return {Promise}              Promise resolved with the formatted text.
      */
-    self.formatText = function(text, clean) {
+    self.formatText = function(text, clean, singleLine) {
         return self.treatMultilangTags(text).then(function(formatted) {
             if (clean) {
-                return self.cleanTags(formatted);
+                formatted = self.cleanTags(formatted, singleLine);
             }
             return formatted;
         });
