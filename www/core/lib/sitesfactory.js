@@ -287,9 +287,7 @@ angular.module('mm.core')
 
             whenUndefined = (typeof whenUndefined === 'undefined') ? true : whenUndefined;
 
-            if (!this.isLoggedIn()) {
-                canUse = false;
-            } else if (typeof infos.advancedfeatures === 'undefined') {
+            if (typeof infos.advancedfeatures === 'undefined') {
                 canUse = whenUndefined;
             } else {
 
