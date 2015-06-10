@@ -17,9 +17,12 @@
         <ion-list>
             <div ng-repeat="contactType in contactTypes" ng-if="contacts[contactType] && contacts[contactType].length > 0">
 
-                <ion-item class="item-divider">
+                <ion-item class="item-divider item-button-right">
                     <span class="item-note">{{ contacts[contactType].length }}</span>
                     {{ 'mma.messages.type_' + contactType | translate }}
+                    <button ng-if="contactType === 'search'" class="button button-clear mma-messages-clear-search" ng-click="clearSearch()">
+                        <i class="icon ion-close-round"></i>
+                    </button>
                 </ion-item>
 
                 <a class="item item-avatar"  ng-repeat="contact in contacts[contactType] | orderBy:'fullname' track by $index" ui-sref="{{ profileState }}({userid: contact.id})">

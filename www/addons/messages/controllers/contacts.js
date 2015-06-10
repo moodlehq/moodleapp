@@ -68,6 +68,13 @@ angular.module('mm.addons.messages')
         });
     };
 
+    $scope.clearSearch = function() {
+        $scope.loaded = false;
+        fetchContacts().finally(function() {
+            $scope.loaded = true;
+        });
+    }
+
     function fetchContacts() {
         return $mmaMessages.getAllContacts().then(function(contacts) {
             $scope.contacts = contacts;
