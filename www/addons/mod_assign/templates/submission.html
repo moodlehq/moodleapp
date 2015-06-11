@@ -1,0 +1,7 @@
+<ion-view>
+    <ion-nav-title>{{ title }}</ion-nav-title>
+    <ion-content padding="true">
+        <p><mm-format-text watch="true">{{ submission.text }}</mm-format-text></p>
+        <mm-attachment ng-repeat="attachment in submission.attachments" attachment="attachment" component="{{component}}" component-id="{{submission.id}}"></mm-attachment>
+    </ion-content>
+</ion-view>
