@@ -2,6 +2,7 @@
     "bytes": "Bytes",
     "cancel": "Cancel",
     "cannotconnect": "Cannot connect: Verify that your have typed correctly the URL and that your site uses Moodle 2.4 or later.",
+    "clearsearch": "Clear search",
     "elementseparator": ", ",
     "error": "Error",
     "gb": "GB",
@@ -13,6 +14,7 @@
     "networkerrormsg": "Network not enabled or not working.",
     "notapplicable": "n/a",
     "pulltorefresh": "Pull to refresh",
+    "search": "Search",
     "tb": "TB",
     "unexpectederror": "Unexepected error. Please close and reopen the application to try again",
     "wsfunctionnotavailable": "The webservice function is not available."

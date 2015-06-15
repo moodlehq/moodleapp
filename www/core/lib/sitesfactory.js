@@ -275,6 +275,34 @@ angular.module('mm.core')
         };
 
         /**
+         * Can the user use an advanced feature?
+         *
+         * @param {String} feature The name of the feature.
+         * @param {Boolean} [whenUndefined=true] The value to return when the parameter is undefined
+         * @return {Boolean} False when they cannot.
+         */
+        Site.prototype.canUseAdvancedFeature = function(feature, whenUndefined) {
+            var infos = this.getInfo(),
+                canUse = true;
+
+            whenUndefined = (typeof whenUndefined === 'undefined') ? true : whenUndefined;
+
+            if (typeof infos.advancedfeatures === 'undefined') {
+                canUse = whenUndefined;
+            } else {
+
+                angular.forEach(infos.advancedfeatures, function(item) {
+                    if (item.name === feature && parseInt(item.value, 10) === 0) {
+                        canUse = false;
+                    }
+                });
+
+            }
+
+            return canUse;
+        };
+
+        /**
          * Can the user upload files?
          *
          * @return {Boolean} False when they cannot.
@@ -367,6 +395,7 @@ angular.module('mm.core')
          *                    - getFromCache boolean (false) Use the cache when possible.
          *                    - saveToCache boolean (false) Save the call results to the cache.
          *                    - omitExpires boolean (false) Ignore cache expiry.
+         *                    - emergencyCache boolean (true) If possible, use the cache when the request fails.
          *                    - sync boolean (false) Add call to queue if device is not connected.
          *                    - cacheKey (string) Extra key to add to the cache when storing this call. This key is to
          *                                        flag the cache entry, it doesn't affect the data retrieved in this call.
@@ -404,7 +433,7 @@ angular.module('mm.core')
                 }
             }
 
-            preSets = preSets || {};
+            preSets = angular.copy(preSets) || {};
             preSets.wstoken = site.token;
             preSets.siteurl = site.siteurl;
 
@@ -416,12 +445,14 @@ angular.module('mm.core')
             }, function() {
                 var mustSaveToCache = preSets.saveToCache;
                 var cacheKey = preSets.cacheKey;
+                var emergencyCache = typeof preSets.emergencyCache !== 'undefined' ? preSets.emergencyCache : true;
 
                 // Do not pass those options to the core WS factory.
                 delete preSets.getFromCache;
                 delete preSets.saveToCache;
                 delete preSets.omitExpires;
                 delete preSets.cacheKey;
+                delete preSets.emergencyCache;
 
                 // TODO: Sync
 
@@ -437,8 +468,11 @@ angular.module('mm.core')
                         // Session expired, trigger event.
                         $mmLang.translateErrorAndReject(deferred, 'mm.core.lostconnection');
                         $mmEvents.trigger('sessionExpired', {siteid: site.id});
+                    } else if (!emergencyCache) {
+                        $log.debug('WS call ' + method + ' failed. Emergency cache is forbidden, rejecting.');
+                        deferred.reject(error);
                     } else {
-                        $log.debug('WS call failed. Try to get the value from the cache.');
+                        $log.debug('WS call ' + method + ' failed. Trying to use the emergency cache.');
                         preSets.omitExpires = true;
                         preSets.getFromCache = true;
                         getFromCache(site, method, data, preSets).then(function(data) {

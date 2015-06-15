@@ -132,6 +132,18 @@ angular.module('mm.core')
     /**
      * @module mm.core
      * @ngdoc method
+     * @name $mmSite#canUseAdvancedFeature
+     * @param {String} feature The name of the feature.
+     * @param {Boolean} [whenUndefined=true] The value to return when the parameter is undefined
+     * @return {Boolean} False when they cannot.
+     * @description
+     *
+     * Can the user use an advanced feature?
+     */
+
+    /**
+     * @module mm.core
+     * @ngdoc method
      * @name $mmSite#canUploadFiles
      * @return {Boolean} False when they cannot.
      * #description
