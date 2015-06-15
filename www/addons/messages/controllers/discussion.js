@@ -36,7 +36,6 @@ angular.module('mm.addons.messages')
     $scope.messages = [];
     $scope.userId = userId;
     $scope.currentUserId = $mmSite.getUserId();
-    $scope.profileState = mmUserProfileState;
     $scope.profileLink = true;
 
     if (userFullname) {

@@ -6,12 +6,12 @@
         </ion-refresher>
         <mm-loading hide-until="discussionLoaded">
             <div class="card">
-                <a class="item item-avatar" ui-sref="{{userstate}}({courseid: courseid, userid: discussion.userid})">
-                    <img ng-src="{{discussion.userpictureurl}}" mm-external-content>
+                <div class="item item-avatar">
+                    <img ng-src="{{discussion.userpictureurl}}" mm-external-content mm-user-link courseid="courseid" userid="discussion.userid">
                     <h2>{{discussion.subject}}</h2>
                     <div class="item-note">{{discussion.modified | mmDateDayOrTime}}</div>
                     <p>{{discussion.userfullname}}</p>
-                </a>
+                </div>
                 <div class="item item-body">
                     <mm-format-text watch="true">{{discussion.message}}</mm-format-text>
                     <mm-attachment ng-repeat="attachment in discussion.attachments" attachment="attachment" component="{{component}}" component-id="{{discussion.id}}"></mm-attachment>
@@ -20,12 +20,12 @@
             <div class="card" ng-if="posts && posts.length">
                 <div ng-repeat="post in posts track by $index">
                     <div class="item item-divider" ng-if="$index > 0"></div>
-                    <a class="item item-avatar" ui-sref="{{userstate}}({courseid: courseid, userid: post.userid})">
-                        <img ng-src="{{post.userpictureurl}}" mm-external-content>
+                    <div class="item item-avatar">
+                        <img ng-src="{{post.userpictureurl}}" mm-external-content mm-user-link courseid="courseid" userid="post.userid">
                         <p>{{post.userfullname}}</p>
                         <div class="item-note">{{post.modified | mmDateDayOrTime}}</div>
                         <p>{{post.subject}}</p>
-                    </a>
+                    </div>
                     <div class="item item-body">
                         <mm-format-text watch="true">{{post.message}}</mm-format-text>
                         <mm-attachment ng-repeat="attachment in post.attachments" attachment="attachment" component="{{component}}" component-id="{{post.id}}"></mm-attachment>

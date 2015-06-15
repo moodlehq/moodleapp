@@ -22,18 +22,12 @@ angular.module('mm.addons.participants')
  * @name mmaParticipantsListCtrl
  */
 .controller('mmaParticipantsListCtrl', function($scope, $state, $stateParams, $mmUtil, $mmaParticipants, $translate,
-            $ionicPlatform, mmUserProfileState, $mmSite) {
+            $ionicPlatform, $mmSite) {
     var course = $stateParams.course,
         courseid = course.id;
 
     $scope.participants = [];
     $scope.courseid = courseid;
-
-    // Get participant ui-sref depending on Mobile or Tablet.
-    // @todo Adapt to tablet split view when it is implemented.
-    $scope.getState = function() {
-        return mmUserProfileState;
-    };
 
     function fetchParticipants(refresh) {
         var firstToGet = refresh ? 0 : $scope.participants.length;
