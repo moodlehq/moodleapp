@@ -1,0 +1,18 @@
+<ion-view view-title="{{ 'mma.messages.messages' | translate }}">
+    <ion-nav-buttons side="secondary">
+        <!-- This state is not registered in the history when this directive is not set, weird. -->
+    </ion-nav-buttons>
+
+    <ion-tabs class="tabs-icon-top">
+        <ion-tab title="{{ 'mma.messages.messages' | translate }}" icon="ion-chatbox">
+            <ion-pane ng-controller="mmaMessagesDiscussionsCtrl">
+                <ng-include src="'addons/messages/templates/discussions.html'"></ng-include>
+            </ion-pane>
+        </ion-tab>
+        <ion-tab title="{{ 'mma.messages.contacts' | translate }}" icon="ion-person-stalker">
+            <ion-pane ng-controller="mmaMessagesContactsCtrl">
+                <ng-include src="'addons/messages/templates/contacts.html'"></ng-include>
+            </ion-pane>
+        </ion-tab>
+    </ion-tabs>
+</ion-view>

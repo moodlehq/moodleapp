@@ -39,7 +39,7 @@ angular.module('mm.core')
      *                    - siteurl string The site URL.
      *                    - wstoken string The Webservice token.
      *                    - wsfunctions array List of functions available on the site.
-     *                    - responseExpected boolean (false) Raise an error if response is null.
+     *                    - responseExpected boolean Defaults to true. Set to false when the expected response is null.
      */
     self.call = function(method, data, preSets) {
 
@@ -67,7 +67,7 @@ angular.module('mm.core')
             // Some moodle web services return null.
             // If the responseExpected value is set then so long as no data
             // is returned, we create a blank object.
-            if (!data && !data.data && !preSets.responseExpected) {
+            if ((!data || !data.data) && !preSets.responseExpected) {
                 data = {};
             } else {
                 data = data.data;

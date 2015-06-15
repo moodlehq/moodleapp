@@ -5,6 +5,7 @@
     "country": "Country",
     "description": "Description",
     "details": "Details",
+    "detailsnotavailable": "The details of this user are not available to you.",
     "editingteacher": "Teacher",
     "email": "Email",
     "interests": "Interests",
