@@ -166,6 +166,19 @@ angular.module('mm.addons.messages')
     };
 
     /**
+     * Get the cache key for the messaging enabled call.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#_getCacheKeyForEnabled
+     * @return {String}
+     * @protected
+     */
+    self._getCacheKeyForEnabled = function() {
+        return 'mmaMessages:enabled';
+    };
+
+    /**
      * Get the contacts of the current user.
      *
      * This excludes the blocked users.
@@ -468,6 +481,18 @@ angular.module('mm.addons.messages')
     };
 
     /**
+     * Invalidate messaging enabled cache.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#invalidateEnabledCache
+     * @return {Promise}
+     */
+    self.invalidateEnabledCache = function() {
+        return $mmSite.invalidateWsCacheForKey(self._getCacheKeyForEnabled());
+    };
+
+    /**
      * Checks if the a user is blocked by the current user.
      *
      * @module mm.addons.messages
@@ -541,7 +566,8 @@ angular.module('mm.addons.messages')
                 searchtext: 'CheckingIfMessagingIsEnabled',
                 onlymycourses: 0
             }, {
-                emergencyCache: false
+                emergencyCache: false,
+                cacheKey: self._getCacheKeyForEnabled()
             });
         }
 
