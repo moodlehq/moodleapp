@@ -116,6 +116,15 @@ angular.module('mm.core')
         });
     };
 
+    /**
+     * Get site folder path.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#getSiteFolder
+     * @param  {String} siteId Site ID.
+     * @return {String}        Site folder path.
+     */
     self.getSiteFolder = function(siteId) {
         return mmFsSitesFolder + '/' + siteId;
     };
@@ -371,7 +380,9 @@ angular.module('mm.core')
             }
 
         } else {
-            return $cordovaFile.getFreeDiskSpace();
+            return $cordovaFile.getFreeDiskSpace().then(function(size) {
+                return size * 1024; // GetFreeDiskSpace returns KB.
+            });
         }
     };
 

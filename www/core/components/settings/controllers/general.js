@@ -12,17 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.core')
+angular.module('mm.core.settings')
 
 /**
- * Filter to remove HTML tags.
+ * Controller to handle the app 'General' section in settings.
  *
- * @module mm.core
- * @ngdoc filter
- * @name mmNoTags
+ * @module mm.core.settings
+ * @ngdoc controller
+ * @name mmSettingsGeneralCtrl
  */
-.filter('mmNoTags', function() {
-    return function(text) {
-        return String(text).replace(/(<([^>]+)>)/ig, '');
-    }
+.controller('mmSettingsGeneralCtrl', function($scope, $mmConfig, $mmLang) {
+
+    $mmConfig.get('languages').then(function(languages) {
+        $scope.langs = languages;
+    });
+
+    $mmLang.getCurrentLanguage().then(function(currentLanguage) {
+        $scope.selectedLanguage = currentLanguage;
+    });
+
+    $scope.languageChanged = function(newLang) {
+        $mmLang.changeCurrentLanguage(newLang);
+    };
 });

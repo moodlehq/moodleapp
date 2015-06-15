@@ -446,8 +446,8 @@ angular.module('mm.core')
          * @param  {Mixed} template Template to show in the modal body. Can be a string or a promise.
          * @return {Promise}        Promise resolved if the user confirms and rejected if he cancels.
          */
-        self.showConfirm = function(template) {
-            return $ionicPopup.confirm({template: template}).then(function(confirmed) {
+        self.showConfirm = function(template, title) {
+            return $ionicPopup.confirm({template: template, title: title}).then(function(confirmed) {
                 if (!confirmed) {
                     return $q.reject();
                 }

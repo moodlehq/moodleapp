@@ -1,0 +1,18 @@
+{
+    "about": "About",
+    "appname": "Moodle Mobile {{version}}",
+    "cacheexpirationtime": "Cache expiration time (miliseconds)",
+    "credits": "Credits",
+    "deletesitefilestitle": "Delete site files",
+    "deletesitefiles": "Are you sure that you want to delete the downloaded files from the site '{{sitename}}'?",
+    "development": "Development",
+    "enabledebugging": "Enable debugging",
+    "errordeletesitefiles": "Error deleting site files.",
+    "estimatedfreespace": "Estimated free space",
+    "general": "General",
+    "language": "Language",
+    "license": "License",
+    "settings": "Settings",
+    "spaceusage": "Space usage",
+    "total": "Total"
+}

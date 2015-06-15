@@ -15,14 +15,14 @@
 angular.module('mm.core')
 
 /**
- * Filter to remove HTML tags.
+ * Filter to turn a number in bytes to a human readable size (e.g. 5,25 MB).
  *
  * @module mm.core
- * @ngdoc filter
- * @name mmNoTags
+ * @ngdoc directive
+ * @name mmBytesToSize
  */
-.filter('mmNoTags', function() {
+.filter('mmBytesToSize', function($mmText) {
     return function(text) {
-        return String(text).replace(/(<([^>]+)>)/ig, '');
-    }
+        return $mmText.bytesToSize(text);
+    };
 });

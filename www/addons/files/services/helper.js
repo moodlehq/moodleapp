@@ -177,9 +177,8 @@ angular.module('mm.addons.files')
         }
 
         if ($mmApp.isNetworkAccessLimited() || size >= mmaFilesFileSizeWarning) {
-            return $mmText.bytesToSize(size, 2).then(function(size) {
-                return $mmUtil.showConfirm($translate('mma.files.confirmuploadfile', {size: size}));
-            });
+             var size = $mmText.bytesToSize(size, 2);
+            return $mmUtil.showConfirm($translate('mma.files.confirmuploadfile', {size: size}));
         } else {
             var deferred = $q.defer();
             deferred.resolve();

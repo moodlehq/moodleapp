@@ -105,8 +105,12 @@ angular.module('mm.core')
 
         /**
          * Initialize logging, enabling/disabling it based on settings and mmCoreLogEnabledDefault.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmLog#init
          */
-        function init() {
+        self.init = function() {
             $mmConfig.get(mmCoreLogEnabledConfigName).then(function(enabled) {
                 isEnabled = enabled;
             }, function() {
@@ -114,7 +118,6 @@ angular.module('mm.core')
                 isEnabled = mmCoreLogEnabledDefault;
             });
         }
-        init();
 
         /**
          * Enable/disable logging in the app.
@@ -122,13 +125,29 @@ angular.module('mm.core')
          * @module mm.core
          * @ngdoc method
          * @name $mmLog#enabled
-         * @param {Boolean} flag True if log should be disabled, false otherwise.
+         * @param {Boolean} flag True if log should be enabled, false otherwise.
          */
         self.enabled = function(flag) {
             $mmConfig.set(mmCoreLogEnabledConfigName, flag);
             isEnabled = flag;
         };
 
+        /**
+         * Check if app logging is enabled.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmLog#isEnabled
+         * @return {Boolean} True if log is enabled, false otherwise.
+         */
+        self.isEnabled = function() {
+            return isEnabled;
+        };
+
         return self;
     };
+})
+
+.run(function($mmLog) {
+    $mmLog.init();
 });

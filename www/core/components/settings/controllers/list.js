@@ -12,17 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.core')
+angular.module('mm.core.settings')
 
 /**
- * Filter to remove HTML tags.
+ * Controller to handle the app settings list.
  *
- * @module mm.core
- * @ngdoc filter
- * @name mmNoTags
+ * @module mm.core.settings
+ * @ngdoc controller
+ * @name mmSettingsListCtrl
  */
-.filter('mmNoTags', function() {
-    return function(text) {
-        return String(text).replace(/(<([^>]+)>)/ig, '');
-    }
+.controller('mmSettingsListCtrl', function($scope, $mmSettingsDelegate) {
+
+    // Get setting ui-sref depending on Mobile or Tablet.
+    // @todo Adapt to tablet split view when it is implemented.
+    $scope.getState = function(name) {
+        return 'site.mm_settings-' + name;
+    };
+
+    var plugins = $mmSettingsDelegate.getData();
+    $scope.plugins = plugins;
 });
