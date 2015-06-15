@@ -64,9 +64,11 @@ angular.module('mm.core')
 
     return {
         restrict: 'A',
+        scope: {
+            siteid: '='
+        },
         link: function(scope, element, attrs) {
             var dom = element[0],
-                siteId = attrs.siteid || $mmSite.getId(),
                 component = attrs.component,
                 componentId = attrs.componentId,
                 targetAttr,
@@ -96,10 +98,10 @@ angular.module('mm.core')
                     if (!url) {
                         return;
                     }
-                    handleExternalContent(siteId, dom, targetAttr, url, component, componentId);
+                    handleExternalContent(scope.siteid || $mmSite.getId(), dom, targetAttr, url, component, componentId);
                 });
             } else {
-                handleExternalContent(siteId, dom, targetAttr, attrs[targetAttr], component, componentId);
+                handleExternalContent(scope.siteid || $mmSite.getId(), dom, targetAttr, attrs[targetAttr], component, componentId);
             }
 
         }

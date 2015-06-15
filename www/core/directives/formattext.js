@@ -38,7 +38,7 @@ angular.module('mm.core')
 
     function treatContents(scope, element, attrs, text) {
 
-        var siteId = attrs.siteid,
+        var siteId = scope.siteid,
             component = attrs.component,
             componentId = attrs.componentId,
             afterRender = attrs.afterRender;
