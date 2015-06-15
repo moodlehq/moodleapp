@@ -58,12 +58,16 @@ angular.module('mm.core.login')
     };
 
     $scope.login = function(index) {
-        var siteid = $scope.sites[index].id;
+        var siteid = $scope.sites[index].id,
+            modal = $mmUtil.showModalLoading();
+
         $mmSitesManager.loadSite(siteid).then(function() {
             $state.go('site.mm_courses');
         }, function(error) {
             $log.error('Error loading site '+siteid);
             $mmUtil.showErrorModal('mm.login.errorloadsite', true);
+        }).finally(function() {
+            modal.dismiss();
         });
     };
 

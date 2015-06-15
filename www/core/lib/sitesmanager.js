@@ -275,6 +275,7 @@ angular.module('mm.core')
                 self.addSite(siteid, siteurl, token, infos);
                 // Turn candidate site into current site.
                 candidateSite.setId(siteid);
+                candidateSite.setInfo(infos);
                 currentSite = candidateSite;
                 // Store session.
                 self.login(siteid);
@@ -381,10 +382,17 @@ angular.module('mm.core')
      */
     self.loadSite = function(siteid) {
         $log.debug('Load site '+siteid);
-        return self.getSite(siteid).then(function(site) {
+
+        var deferred = $q.defer();
+
+        self.getSite(siteid).then(function(site) {
             currentSite = site;
             self.login(siteid);
-        });
+            // Update site info. Resolve the promise even if the update fails.
+            self.updateSiteInfo(siteid).then(deferred.resolve, deferred.resolve);
+        }, deferred.reject);
+
+        return deferred.promise;
     };
 
     /**
@@ -481,7 +489,7 @@ angular.module('mm.core')
                 var site = $mmSitesFactory.makeSite(siteId, site.siteurl, site.token, site.infos);
                 sites[siteId] = site;
                 deferred.resolve(site);
-            });
+            }, deferred.reject);
         }
 
         return deferred.promise;
@@ -671,6 +679,29 @@ angular.module('mm.core')
                 siteurl: site.getURL(),
                 token: token,
                 infos: site.getInfo()
+            });
+        });
+    };
+
+    /**
+     * Updates a site's info.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#updateSiteInfo
+     * @param {String} siteid Site's ID.
+     * @return {Promise}      A promise to be resolved when the site is updated.
+     */
+    self.updateSiteInfo = function(siteid) {
+        return self.getSite(siteid).then(function(site) {
+            return site.fetchSiteInfo().then(function(infos) {
+                site.setInfo(infos);
+                return db.insert(mmCoreSitesStore, {
+                    id: siteid,
+                    siteurl: site.getURL(),
+                    token: site.getToken(),
+                    infos: infos
+                });
             });
         });
     };
