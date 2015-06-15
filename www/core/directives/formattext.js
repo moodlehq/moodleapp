@@ -35,82 +35,86 @@ angular.module('mm.core')
 
     var extractVariableRegex = new RegExp('{{([^|]+)(|.*)?}}', 'i');
 
-    return {
-        restrict: 'E', // Restrict to <mm-format-text></mm-format-text>.
-        transclude: true,
-        link: function(scope, element, attrs, ctrl, transclude) { // Link function.
-            var siteId = attrs.siteid,
-                component = attrs.component,
-                componentId = attrs.componentId;
-                afterRender = attrs.afterRender;
+    function treatContents(scope, element, attrs, text) {
 
-            transclude(scope, function(clone) {
+        var siteId = attrs.siteid,
+            component = attrs.component,
+            componentId = attrs.componentId,
+            afterRender = attrs.afterRender;
 
-                var content = angular.element('<div>').append(clone).html(); // Get directive's content.
+        if (typeof text == 'undefined') {
+            element.removeClass('hide');
+            return;
+        }
 
-                function treatContents() {
-                    var interpolated = $interpolate(content)(scope); // "Evaluate" scope variables.
-                    interpolated = interpolated.trim();
+        text = text.trim();
 
-                    // Apply format text function.
-                    $mmText.formatText(interpolated, attrs.clean, attrs.singleline).then(function(formatted) {
+        // Apply format text function.
+        $mmText.formatText(text, attrs.clean, attrs.singleline).then(function(formatted) {
 
-                        // Convert the content into DOM.
-                        var dom = angular.element('<div>').html(formatted);
+            // Convert the content into DOM.
+            var dom = angular.element('<div>').html(formatted);
 
-                        // Walk through the content to find images, and add our directive.
-                        angular.forEach(dom.find('img'), function(img) {
-                            img.setAttribute('mm-external-content', '');
-                            if (component) {
-                                img.setAttribute('component', component);
-                                if (componentId) {
-                                    img.setAttribute('component-id', componentId);
-                                }
-                            }
-                            if (siteId) {
-                                img.setAttribute('siteid', siteId);
-                            }
-                        });
-
-                        // Walk through the content to find the links and add our directive to it.
-                        angular.forEach(dom.find('a'), function(anchor) {
-                            anchor.setAttribute('mm-external-content', '');
-                            anchor.setAttribute('mm-browser', '');
-                            if (component) {
-                                anchor.setAttribute('component', component);
-                                if (componentId) {
-                                    anchor.setAttribute('component-id', componentId);
-                                }
-                            }
-                            if (siteId) {
-                                anchor.setAttribute('siteid', siteId);
-                            }
-                        });
-
-                        // Send for display, and compile.
-                        element.html(dom.html());
-                        $compile(element.contents())(scope);
-
-                        // Call the after render function.
-                        if (afterRender && scope[afterRender]) {
-                            scope[afterRender](scope);
-                        }
-                    });
-                }
-
-                if (attrs.watch) {
-                    // Watch the variable inside the directive. We clean tags that might be added by ionic.
-                    var matches = $mmText.cleanTags(content).match(extractVariableRegex);
-                    if (matches && typeof matches[1] == 'string') {
-                        var variable = matches[1].trim();
-                        scope.$watch(variable, function() {
-                            treatContents();
-                        });
+            // Walk through the content to find images, and add our directive.
+            angular.forEach(dom.find('img'), function(img) {
+                img.setAttribute('mm-external-content', '');
+                if (component) {
+                    img.setAttribute('component', component);
+                    if (componentId) {
+                        img.setAttribute('component-id', componentId);
                     }
-                } else {
-                    treatContents();
+                }
+                if (siteId) {
+                    img.setAttribute('siteid', siteId);
                 }
             });
+
+            // Walk through the content to find the links and add our directive to it.
+            angular.forEach(dom.find('a'), function(anchor) {
+                anchor.setAttribute('mm-external-content', '');
+                anchor.setAttribute('mm-browser', '');
+                if (component) {
+                    anchor.setAttribute('component', component);
+                    if (componentId) {
+                        anchor.setAttribute('component-id', componentId);
+                    }
+                }
+                if (siteId) {
+                    anchor.setAttribute('siteid', siteId);
+                }
+            });
+
+            // Send for display, and compile.
+            element.html(dom.html());
+            element.removeClass('hide');
+            $compile(element.contents())(scope);
+            // Call the after render function.
+            if (afterRender && scope[afterRender]) {
+                scope[afterRender](scope);
+            }
+        });
+    }
+
+    return {
+        restrict: 'E', // Restrict to <mm-format-text></mm-format-text>.
+        scope: true,
+        link: function(scope, element, attrs) {
+            element.addClass('hide'); // Hide contents until they're treated.
+            var content = element.html(); // Get directive's content.
+
+            if (attrs.watch) {
+                // Watch the variable inside the directive.
+                var matches = content.match(extractVariableRegex);
+                if (matches && typeof matches[1] == 'string') {
+                    var variable = matches[1].trim();
+                    scope.$watch(variable, function(newValue) {
+                        treatContents(scope, element, attrs, newValue);
+                    });
+                }
+            } else {
+                var text = $interpolate(content)(scope); // "Evaluate" scope variables.
+                treatContents(scope, element, attrs, text);
+            }
         }
     };
 });
