@@ -7,7 +7,8 @@
         <mm-loading hide-until="discussionLoaded">
             <div class="card">
                 <div class="item item-avatar">
-                    <img ng-src="{{discussion.userpictureurl}}" mm-external-content mm-user-link courseid="courseid" userid="discussion.userid">
+                    <img ng-if="discussion.userpictureurl" ng-src="{{discussion.userpictureurl}}" mm-external-content mm-user-link courseid="courseid" userid="discussion.userid">
+                    <img ng-if="!discussion.userpictureurl" src="img/user-avatar.png" alt="">
                     <h2>{{discussion.subject}}</h2>
                     <div class="item-note">{{discussion.modified | mmDateDayOrTime}}</div>
                     <p>{{discussion.userfullname}}</p>
@@ -21,7 +22,8 @@
                 <div ng-repeat="post in posts track by $index">
                     <div class="item item-divider" ng-if="$index > 0"></div>
                     <div class="item item-avatar">
-                        <img ng-src="{{post.userpictureurl}}" mm-external-content mm-user-link courseid="courseid" userid="post.userid">
+                        <img ng-if="post.userpictureurl" ng-src="{{post.userpictureurl}}" mm-external-content mm-user-link courseid="courseid" userid="post.userid">
+                        <img ng-if="!post.userpictureurl" src="img/user-avatar.png" alt="">
                         <p>{{post.userfullname}}</p>
                         <div class="item-note">{{post.modified | mmDateDayOrTime}}</div>
                         <p>{{post.subject}}</p>
