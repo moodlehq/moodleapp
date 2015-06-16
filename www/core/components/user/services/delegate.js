@@ -58,9 +58,10 @@ angular.module('mm.core.user')
      * @ngdoc method
      * @name $mmUserDelegate#getData
      * @param {Object} user The user object.
+     * @param {Number} courseid The course id.
      * @return {Object} Registered plugins data.
      */
-    self.getData = function(user) {
+    self.getData = function(user, courseid) {
         controllers = {};
 
         angular.forEach(handlers, function(handler, name) {
@@ -68,12 +69,12 @@ angular.module('mm.core.user')
             if (!handler.isEnabled()) {
                 delete controllers[name];
                 return;
-            } else if (!handler.isEnabledForUser(user)) {
+            } else if (!handler.isEnabledForUser(user, courseid)) {
                 delete controllers[name];
                 return;
             }
 
-            controllers[name] = handler.getController(user);
+            controllers[name] = handler.getController(user, courseid);
         });
 
         return controllers;
