@@ -1,7 +1,0 @@
-<a class="item item-text-wrap" ng-click="jump($event, state, stateParams)" ng-class="{'item-button-right': buttons && buttons.length > 0, 'item-media': icon}">
-    <img ng-src="{{ icon }}" alt="" role="presentation" ng-if="icon">
-    <mm-format-text ng-if="title">{{ title }}</mm-format-text>
-    <button class="button button-icon" ng-repeat="button in buttons" ng-hide="button.hidden" ng-click="handleClick($event, button)">
-        <i class="icon positive" ng-class="{'{{button.icon}}': button.icon}"></i>
-    </button>
-</a>

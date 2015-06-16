@@ -17,11 +17,22 @@
                 <div class="item item-divider" ng-if="sections.length > 1">
                     {{ section.name }}
                 </div>
+
                 <div class="item item-text-wrap" ng-if="sections.length > 1 && section.summary">
                     <mm-format-text>{{ section.summary }}</mm-format-text>
                 </div>
 
-                <mm-course-content ng-repeat="module in section.modules" module="{{ module }}" courseid="{{ courseid }}"></mm-course-content>
+                <a class="item item-text-wrap" ng-click="action($event)" ng-class="{'item-button-right': buttons && buttons.length > 0, 'item-media': icon}" ng-repeat="module in section.modules" ng-controller="module._controller">
+
+                    <img ng-src="{{ icon }}" alt="" role="presentation" ng-if="icon">
+                    <mm-format-text watch="true">{{ title }}</mm-format-text>
+
+                    <button ng-repeat="button in buttons" ng-hide="button.hidden" ng-click="button.action($event)" class="button button-icon">
+                        <i class="icon positive" ng-class="{'{{button.icon}}': button.icon}"></i>
+                    </button>
+
+                    <ion-spinner ng-if="spinner"></ion-spinner>
+                </a>
 
                 <!-- When there is nothing in the section. -->
                 <div class="item item-text-wrap" ng-if="section.modules.length < 1">

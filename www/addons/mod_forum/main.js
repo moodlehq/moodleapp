@@ -51,20 +51,6 @@ angular.module('mm.addons.mod_forum', [])
 
 })
 
-.run(function($mmCourseDelegate, $mmaModForum, $mmUtil) {
-
-    $mmCourseDelegate.registerContentHandler('mmaModForum', 'forum', function(module, courseid) {
-
-        if (!$mmaModForum.isPluginEnabled()) {
-            return undefined;
-        }
-
-        return {
-            title: module.name,
-            state: 'site.mod_forum',
-            stateParams: { module: module, courseid: courseid },
-            buttons: []
-        };
-    });
-
+.config(function($mmCourseDelegateProvider) {
+    $mmCourseDelegateProvider.registerContentHandler('mmaModForum', 'forum', '$mmaModForumCourseContentHandler');
 });

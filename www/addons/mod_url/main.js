@@ -33,25 +33,6 @@ angular.module('mm.addons.mod_url', ['mm.core'])
 
 })
 
-.run(function($mmCourseDelegate, $mmaModUrl) {
-
-    $mmCourseDelegate.registerContentHandler('mmaModUrl', 'url', function(module) {
-        var buttons = [];
-        if (module.contents && module.contents[0] && module.contents[0].fileurl) {
-            buttons.push({
-                icon: 'ion-link',
-                callback: function() {
-                    $mmaModUrl.open(module.instance, module.contents[0].fileurl);
-                }
-            });
-        }
-
-        return {
-            title: module.name,
-            state: 'site.mod_url',
-            stateParams: { module: module },
-            buttons: buttons
-        };
-    });
-
+.config(function($mmCourseDelegateProvider) {
+    $mmCourseDelegateProvider.registerContentHandler('mmaModUrl', 'url', '$mmaModUrlCourseContentHandler');
 });
