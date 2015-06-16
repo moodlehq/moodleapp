@@ -25,36 +25,27 @@ angular.module('mm.addons.mod_page')
         $translate, $log, mmaModPageComponent) {
     $log = $log.getInstance('mmaModPageIndexCtrl');
 
-    var module = $stateParams.module || {},
-        showLoading = true;
+    var module = $stateParams.module || {};
 
     $scope.title = module.name;
     $scope.description = module.description;
     $scope.component = mmaModPageComponent;
     $scope.componentId = module.id;
     $scope.externalUrl = module.url;
+    $scope.loaded = false;
 
     function fetchContent() {
-        $translate('mm.core.loading').then(function(str) {
-            if (showLoading) {
-                $mmUtil.showModalLoading(str);
-            }
-        });
-
         return $mmaModPage.getPageHtml(module.contents, module.id).then(function(content) {
             $scope.content = content;
-        }, function() {
-            showLoading = false;
-            $mmUtil.showErrorModal('mma.mod_page.errorwhileloadingthepage', true);
+        }).catch(function() {
+            $mmUtil.showErrorModal('mma.mod_page.errorwhileloadingthepage');
         }).finally(function() {
-            $mmUtil.closeModalLoading();
+            $scope.loaded = true;
         });
     }
 
     $scope.doRefresh = function() {
-        showLoading = false;
-        $mmaModPage.invalidateContent(module.id)
-        .then(function() {
+        $mmaModPage.invalidateContent(module.id).then(function() {
             return fetchContent();
         }).finally(function() {
             $scope.$broadcast('scroll.refreshComplete');

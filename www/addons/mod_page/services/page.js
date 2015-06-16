@@ -44,6 +44,88 @@ angular.module('mm.addons.mod_page')
     };
 
     /**
+     * Returns a list of file event names.
+     *
+     * @module mm.addons.mod_page
+     * @ngdoc method
+     * @name $mmaModPage#getFileEventNames
+     * @param {Object} module The module object returned by WS.
+     * @return {String[]} Array of $mmEvent names.
+     */
+    self.getFileEventNames = function(module) {
+        var eventNames = [];
+        angular.forEach(module.contents, function(content) {
+            var url;
+            if (content.type !== 'file') {
+                return;
+            }
+            url = self._fixUrl(content.fileurl);
+            eventNames.push($mmFilepool.getFileEventNameByUrl($mmSite.getId(), url));
+        });
+        return eventNames;
+    };
+
+    /**
+     * Check the status of the files.
+     *
+     * Return those status in order of priority:
+     * - $mmFilepool.FILENOTDOWNLOADED
+     * - $mmFilepool.FILEDOWNLOADING
+     * - $mmFilepool.FILEDOWNLOADED
+     *
+     * @module mm.addons.mod_page
+     * @ngdoc method
+     * @name $mmaModPage#getFilesStatus
+     * @param {Object} module The module object returned by WS.
+     * @return {Promise} Resolved with an array. The first element is the status, the second a list of event to observe.
+     */
+    self.getFilesStatus = function(module) {
+        var promises = [],
+            eventNames = [],
+            notDownloaded = 0,
+            downloading = 0,
+            downloaded = 0,
+            fileCount = 0;
+
+        angular.forEach(module.contents, function(content) {
+            var url;
+            if (content.type !== 'file') {
+                return;
+            }
+            fileCount++;
+            url = self._fixUrl(content.fileurl);
+            promises.push($mmFilepool.getFileStateByUrl($mmSite.getId(), url).then(function(state) {
+                if (state == $mmFilepool.FILENOTDOWNLOADED) {
+                    notDownloaded++;
+                } else if (state == $mmFilepool.FILEDOWNLOADING) {
+                    downloading++;
+                    eventNames.push($mmFilepool.getFileEventNameByUrl($mmSite.getId(), url));
+                } else if (state == $mmFilepool.FILEDOWNLOADED) {
+                    downloaded++;
+                }
+            }));
+        });
+
+        function prepareResult() {
+            var status = $mmFilepool.FILENOTDOWNLOADED;
+            if (notDownloaded > 0) {
+                status = $mmFilepool.FILENOTDOWNLOADED;
+            } else if (downloading > 0) {
+                status = $mmFilepool.FILEDOWNLOADING;
+            } else if (downloaded == fileCount) {
+                status = $mmFilepool.FILEDOWNLOADED;
+            }
+            return [status, eventNames];
+        }
+
+        return $q.all(promises).then(function() {
+            return prepareResult();
+        }, function() {
+            return prepareResult();
+        });
+    };
+
+    /**
      * Gets the page HTML.
      *
      * @module mm.addons.mod_page
@@ -103,7 +185,8 @@ angular.module('mm.addons.mod_page')
                 } else {
                     // Now that we have the content, we update the SRC to point back to
                     // the external resource. That will be caught by mm-format-text.
-                    var html = angular.element(response.data);
+                    var html = angular.element('<div>');
+                    html.html(response.data);
                     angular.forEach(html.find('img'), function(img) {
                         var src = paths[decodeURIComponent(img.getAttribute('src'))];
                         if (typeof src !== 'undefined') {
@@ -121,19 +204,6 @@ angular.module('mm.addons.mod_page')
                 }
             });
         });
-    };
-
-    /**
-     * Return whether or some content was prefetched.
-     *
-     * @module mm.addons.mod_page
-     * @ngdoc method
-     * @name $mmaModPage#hasPrefetchedContent
-     * @param {Object} moduleId The module ID.
-     * @return {Promise}
-     */
-    self.hasPrefetchedContent = function(moduleId) {
-        return $mmFilepool.componentHasFiles($mmSite.getId(), mmaModPageComponent, moduleId);
     };
 
     /**
