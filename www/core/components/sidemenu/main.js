@@ -26,10 +26,7 @@ angular.module('mm.core.sidemenu', [])
         cache: false,
         onEnter: function($ionicHistory, $state, $mmSite, $timeout) {
             // Remove the login page from the history stack.
-            // MOBILE-1062: If we don't use $timeout, clearHistory leaves the backView on the history stack.
-            $timeout(function() {
-                $ionicHistory.clearHistory();
-            });
+            $ionicHistory.clearHistory();
 
             // Go to login if user is not logged in.
             if (!$mmSite.isLoggedIn()) {
