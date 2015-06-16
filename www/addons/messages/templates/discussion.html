@@ -2,7 +2,7 @@
     <ion-nav-title>{{ title }}</ion-nav-title>
 
     <ion-nav-buttons side="secondary">
-        <button ng-if="profileLink" class="button button-icon icon ion-person" ui-sref="{{ profileState }}({userid: userId})"></button>
+        <button ng-if="profileLink" class="button button-icon icon ion-person" mm-user-link userid="userId"></button>
     </ion-nav-buttons>
 
     <ion-content class="padding" delegate-handle="mmaMessagesScroll">

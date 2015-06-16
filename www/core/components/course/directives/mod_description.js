@@ -46,7 +46,8 @@ angular.module('mm.core.course')
         },
         restrict: 'E',
         scope: {
-            description: '='
+            description: '=',
+            note: '='
         },
         templateUrl: 'core/components/course/templates/mod_description.html'
     };

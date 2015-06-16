@@ -549,10 +549,29 @@ angular.module('mm.core')
     /**
      * Get temporary directory path.
      *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#getTmpFolder
      * @return {String} Tmp directory path.
      */
     self.getTmpFolder = function() {
         return mmFsTmpFolder;
+    };
+
+    /**
+     * Move a file.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#moveEntry
+     * @param {String} originalPath Path to the file to move.
+     * @param {String} newPath      New path of the file.
+     * @return {Promise}            Promise resolved when the entry is moved.
+     */
+    self.moveFile = function(originalPath, newPath) {
+        return self.init().then(function() {
+            return $cordovaFile.moveFile(basePath, originalPath, basePath, newPath);
+        });
     };
 
     return self;

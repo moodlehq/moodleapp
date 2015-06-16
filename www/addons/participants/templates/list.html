@@ -3,14 +3,13 @@
         <div class="mm-split-pane">
             <div class="mm-split-pane-menu">
                 <ion-content>
-                    <!-- ion-refresher needs to be direct child of ion-content to work with native scrolling -->
                     <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="participantsLoaded"
                                    on-refresh="refreshParticipants()">
                     </ion-refresher>
                     <mm-loading hide-until="participantsLoaded">
                         <div class="list">
                             <div ng-repeat="participant in participants">
-                                <a ui-sref="{{getState(participant.id)}}" class="item item-avatar">
+                                <a class="item item-avatar" mm-user-link courseid="courseid" userid="participant.id">
                                     <img ng-src="{{participant.profileimageurlsmall}}" alt="" mm-external-content>
                                     <mm-format-text>{{participant.fullname}}</mm-format-text>
                                 </a>
@@ -18,7 +17,6 @@
                         </div>
 
                         <ion-infinite-scroll ng-if="canLoadMore"
-                                icon="ion-loading-c"
                                 immediate-check="false"
                                 on-infinite="loadMoreParticipants()" >
                          </ion-infinite-scroll>

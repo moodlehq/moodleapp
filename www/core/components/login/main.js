@@ -101,7 +101,7 @@ angular.module('mm.core.login', [])
     $log = $log.getInstance('mmLogin');
 
     // Listen for sessionExpired event to reconnect the user.
-    $mmEvents.on('sessionExpired', sessionExpired, 'mmLogin');
+    $mmEvents.on('sessionExpired', sessionExpired);
 
     // Register observer to check if the app was launched via URL scheme.
     $mmURLDelegate.register('mmLoginSSO', appLaunchedByURL);

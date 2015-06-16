@@ -43,7 +43,7 @@ angular.module('mm.core.course')
         });
     }
 
-    $scope.getState = function(section) {
+    $scope.getState = function() {
         return 'site.mm_course-section';
     };
 

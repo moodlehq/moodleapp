@@ -27,9 +27,10 @@ angular.module('mm.core.course')
     // Directive link function.
     function link(scope, element, attrs) {
         var module = JSON.parse(attrs.module),
+            courseid = attrs.courseid,
             data;
 
-        data = $mmCourseDelegate.getDataFromContentHandlerFor(module.modname, module);
+        data = $mmCourseDelegate.getDataFromContentHandlerFor(module.modname, module, courseid);
         scope = angular.extend(scope, data);
     }
 

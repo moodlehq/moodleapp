@@ -7,7 +7,7 @@
                     <ion-refresher on-refresh="doRefresh()" pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="sectionsLoaded"></ion-refresher>
                     <mm-loading hide-until="sectionsLoaded">
                         <ion-list>
-                            <a ng-repeat="section in sections" class="item" ui-sref="{{getState(section)}}({courseid: {{courseid}}, sectionid: {{section.id}}})">
+                            <a ng-repeat="section in sections" class="item" ui-sref="{{getState()}}({courseid: courseid, sectionid: section.id})">
                                 {{section.name}}
                             </a>
                         </ion-list>

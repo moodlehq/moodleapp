@@ -141,7 +141,7 @@ angular.module('mm.core')
  * that is not served by Moodle. The only little handling of pluginfile is located in
  * {@link $mmFilepool#_getFileIdByUrl}.
  */
-.factory('$mmFilepool', function($q, $log, $timeout, $mmApp, $mmFS, $mmWS, $mmSitesManager, md5, mmFilepoolStore,
+.factory('$mmFilepool', function($q, $log, $timeout, $mmApp, $mmFS, $mmWS, $mmSitesManager, $mmEvents, md5, mmFilepoolStore,
         mmFilepoolLinksStore, mmFilepoolQueueStore, mmFilepoolFolder, mmFilepoolQueueProcessInterval) {
 
     $log = $log.getInstance('$mmFilepool');
@@ -163,6 +163,11 @@ angular.module('mm.core')
     var ERR_QUEUE_IS_EMPTY = 'mmFilepoolError:ERR_QUEUE_IS_EMPTY',
         ERR_FS_OR_NETWORK_UNAVAILABLE = 'mmFilepoolError:ERR_FS_OR_NETWORK_UNAVAILABLE',
         ERR_QUEUE_ON_PAUSE = 'mmFilepoolError:ERR_QUEUE_ON_PAUSE';
+
+    // File states and events.
+    self.FILEDOWNLOADED = 'downloaded';
+    self.FILEDOWNLOADING = 'downloading';
+    self.FILENOTDOWNLOADED = 'notdownloaded';
 
     /**
      * Convenient site DB getter.
@@ -418,6 +423,7 @@ angular.module('mm.core')
      * @name $mmFilepool#downloadUrl
      * @param {String} siteId The site ID.
      * @param {String} fileUrl The file URL.
+     * @param {Boolean} [ignoreStale] True if 'stale' should be ignored.
      * @return {Promise} Resolved with internal URL on success, rejected otherwise.
      * @description
      * Downloads a file on the spot.
@@ -429,7 +435,7 @@ angular.module('mm.core')
      *
      * See {@link $mmFilepool#_getInternalUrlById} for the type of local URL returned.
      */
-    self.downloadUrl = function(siteId, fileUrl) {
+    self.downloadUrl = function(siteId, fileUrl, ignoreStale) {
         var fileId = self._getFileIdByUrl(fileUrl),
             now = new Date();
 
@@ -443,7 +449,7 @@ angular.module('mm.core')
                 // We do not have the file, download and add to pool.
                 return self._downloadForPoolByUrl(siteId, fileUrl);
 
-            } else if (fileObject.stale && $mmApp.isOnline()) {
+            } else if (fileObject.stale && $mmApp.isOnline() && !ignoreStale) {
                 // The file is outdated, force the download and update it.
                 return self._downloadForPoolByUrl(siteId, fileUrl, fileObject);
             }
@@ -514,6 +520,36 @@ angular.module('mm.core')
     };
 
     /**
+     * Get the name of the event used to notify download events ($mmEvents).
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#getFileEventName
+     * @param {String} siteId The site ID.
+     * @param {String} fileId The file ID.
+     * @return {String}       Event name.
+     * @protected
+     */
+    self._getFileEventName = function(siteId, fileId) {
+        return 'mmFilepoolFile:'+siteId+':'+fileId;
+    };
+
+    /**
+     * Get the name of the event used to notify download events ($mmEvents).
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#getFileEventNameByUrl
+     * @param {String} siteId  The site ID.
+     * @param {String} fileUrl The absolute URL to the file.
+     * @return {String}        Event name.
+     */
+    self.getFileEventNameByUrl = function(siteId, fileUrl) {
+        var fileId = self._getFileIdByUrl(fileUrl);
+        return self._getFileEventName(siteId, fileId);
+    };
+
+    /**
      * Is the file already in the pool?
      *
      * This does not check if the file is on the disk.
@@ -534,6 +570,26 @@ angular.module('mm.core')
                 }
                 return fileObject;
             });
+        });
+    };
+
+    /**
+     * Is the file in queue?
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#_hasFileInQueue
+     * @param {String} siteId The site ID.
+     * @param {String} fileUrl The file URL.
+     * @return {Promise} Resolved with file object from DB on success, rejected otherwise.
+     * @protected
+     */
+    self._hasFileInQueue = function(siteId, fileId) {
+        return $mmApp.getDB().get(mmFilepoolQueueStore, [siteId, fileId]).then(function(fileObject) {
+            if (typeof fileObject === 'undefined') {
+                return $q.reject();
+            }
+            return fileObject;
         });
     };
 
@@ -668,6 +724,29 @@ angular.module('mm.core')
      */
     self._getFilePath = function(siteId, fileId) {
         return $mmFS.getSiteFolder(siteId) + '/' + mmFilepoolFolder + '/' + fileId;
+    };
+
+    /**
+     * Returns the file state: FILEDOWNLOADED, FILEDOWNLOADING or FILENOTDOWNLOADED.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#getFileStateByUrl
+     * @param {String} siteId  The site ID.
+     * @param {String} fileUrl File URL.
+     * @return {Promise}       Promise resolved with the file state.
+     */
+    self.getFileStateByUrl = function(siteId, fileUrl) {
+        var fileId = self._getFileIdByUrl(fileUrl)
+        return self._hasFileInQueue(siteId, fileId).then(function() {
+            return self.FILEDOWNLOADING;
+        }, function() {
+            return self._hasFileInPool(siteId, fileId).then(function() {
+                return self.FILEDOWNLOADED;
+            }, function() {
+                return self.FILENOTDOWNLOADED;
+            });
+        });
     };
 
     /**
@@ -858,6 +937,32 @@ angular.module('mm.core')
     };
 
     /**
+     * Notify a file has been downloaded.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#_notifyFileDownloaded
+     * @param {String} siteId The site ID.
+     * @param {String} fileId The file ID.
+     */
+    self._notifyFileDownloaded = function(siteId, fileId) {
+        $mmEvents.trigger(self._getFileEventName(siteId, fileId), {success: true});
+    };
+
+    /**
+     * Notify error occurred while downloading a file.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#_notifyFileDownloadError
+     * @param {String} siteId The site ID.
+     * @param {String} fileId The file ID.
+     */
+    self._notifyFileDownloadError = function(siteId, fileId) {
+        $mmEvents.trigger(self._getFileEventName(siteId, fileId), {success: false});
+    };
+
+    /**
      * Process the queue.
      *
      * @module mm.core
@@ -951,6 +1056,7 @@ angular.module('mm.core')
                     self._addFileLinks(siteId, fileId, links);
                     self._removeFromQueue(siteId, fileId);
                     $log.debug('Queued file already in store, ignoring...');
+                    self._notifyFileDownloaded(siteId, fileId);
                     return;
                 }
                 // The file does not exist, or is stale, ... download it.
@@ -972,6 +1078,8 @@ angular.module('mm.core')
                 // Success, we add links and remove from queue.
                 self._addFileLinks(siteId, fileId, links);
                 promise = self._removeFromQueue(siteId, fileId);
+
+                self._notifyFileDownloaded(siteId, fileId);
 
                 // Wait for the item to be removed from queue before resolving the promise.
                 // If the item could not be removed from queue we still resolve the promise.
@@ -1034,10 +1142,13 @@ angular.module('mm.core')
 
                     // Consider this as a silent error, never reject the promise here.
                     deferred = $q.defer();
-                    promise.then(deferred.resolve, deferred.resolve);
+                    promise.then(deferred.resolve, deferred.resolve).finally(function() {
+                        self._notifyFileDownloadError(siteId, fileId);
+                    });
                     return deferred.promise;
                 } else {
                     // We considered the file as legit but did not get it, failure.
+                    self._notifyFileDownloadError(siteId, fileId);
                     return $q.reject();
                 }
 

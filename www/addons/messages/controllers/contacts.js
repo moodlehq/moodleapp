@@ -21,13 +21,12 @@ angular.module('mm.addons.messages')
  * @ngdoc controller
  * @name mmaMessagesContactsCtrl
  */
-.controller('mmaMessagesContactsCtrl', function($q, $scope, $mmaMessages, $mmSite, $mmUtil, mmUserProfileState) {
+.controller('mmaMessagesContactsCtrl', function($q, $scope, $mmaMessages, $mmSite, $mmUtil) {
 
     var currentUserId = $mmSite.getUserId();
 
     $scope.loaded = false;
     $scope.contactTypes = ['online', 'offline', 'blocked', 'strangers', 'search'];
-    $scope.profileState = mmUserProfileState;
     $scope.hasContacts = false;
     $scope.canSearch = $mmaMessages.isSearchEnabled();
     $scope.formData = {

@@ -99,18 +99,46 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmText#formatText
-     * @param  {String} text          Text to format.
-     * @param  {Boolean} clean        True if HTML tags should be removed, false otherwise.
-     * @param  {Boolean} [singleLine] True if new lines should be removed. Only valid if clean is true.
-     * @return {Promise}              Promise resolved with the formatted text.
+     * @param  {String} text             Text to format.
+     * @param  {Boolean} clean           True if HTML tags should be removed, false otherwise.
+     * @param  {Boolean} [singleLine]    True if new lines should be removed. Only valid if clean is true.
+     * @param  {Number}  [shortenLength] Number of characters to shorten the text.
+     * @return {Promise}                 Promise resolved with the formatted text.
      */
-    self.formatText = function(text, clean, singleLine) {
+    self.formatText = function(text, clean, singleLine, shortenLength) {
         return self.treatMultilangTags(text).then(function(formatted) {
             if (clean) {
                 formatted = self.cleanTags(formatted, singleLine);
             }
+            if (shortenLength && parseInt(shortenLength) > 0) {
+                formatted = self.shortenText(formatted, parseInt(shortenLength));
+            }
             return formatted;
         });
+    };
+
+    /**
+     * Shortens a text to length and adds an ellipsis.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#shortenText
+     * @param  {String} text The text to be shortened.
+     * @param  {Number} length The desired length.
+     * @return {String} Shortened text.
+     */
+    self.shortenText = function(text, length) {
+        if (text.length > length) {
+            text = text.substr(0, length - 1);
+
+            // Now, truncate at the last word boundary (if exists).
+            var lastWordPos = text.lastIndexOf(' ');
+            if (lastWordPos > 0) {
+                text = text.substr(0, lastWordPos);
+            }
+            text += '&hellip;';
+        }
+        return text;
     };
 
     /**
