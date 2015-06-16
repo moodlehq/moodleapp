@@ -1,6 +1,7 @@
 {
     "authenticating": "Authenticating",
     "cancel": "Cancel",
+    "cannotdownloadfiles": "File downloading is disabled in your Mobile service, the app can't work with this setting disabled. Please, contact your site administrator.",
     "credentials": "Credentials",
     "credentialsdescription": "Please provide your username and password to login on ",
     "confirmdeletesite": "Are you sure you want to delete the site {{sitename}}?",
@@ -8,7 +9,6 @@
     "connecttomoodle": "Connect to Moodle",
     "erroraccesscontrolalloworigin": "The Cross-Origin call you're trying to perform has been rejected. Please check https://docs.moodle.org/dev/Moodle_Mobile_development_using_Chrome_or_Chromium",
     "errordeletesite": "An error occurred while deleting this site. Please try again.",
-    "errorloadsite": "An error occurred while loading this site. Please try again.",
     "errorupdatesite": "An error ocurred while updating the site's token.",
     "help": "Help",
     "helpmeloginend": "To test the app in a Moodle demo site type <b>teacher</b> or <b>student</b> in the <b>Site URL</b> field and click the <b>Add button</b>.",

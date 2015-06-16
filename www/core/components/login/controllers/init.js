@@ -21,7 +21,7 @@ angular.module('mm.core.login')
  * @ngdoc controller
  * @name mmLoginInitCtrl
  */
-.controller('mmLoginInitCtrl', function($ionicHistory, $state, $mmSitesManager, $mmSite, $mmEvents) {
+.controller('mmLoginInitCtrl', function($ionicHistory, $state, $mmSitesManager, $mmSite, $mmEvents, $mmUtil) {
 
     // Disable animation and back button for the next transition.
     $ionicHistory.nextViewOptions({
@@ -29,7 +29,11 @@ angular.module('mm.core.login')
         disableBack: true
     });
 
-    $mmSitesManager.restoreSession().finally(function() {
+    $mmSitesManager.restoreSession().then(function() {}, function(error) {
+        if (error) {
+            $mmUtil.showErrorModal(error);
+        }
+    }).finally(function() {
         if ($mmSite.isLoggedIn()) {
             $state.go('site.mm_courses').then(function() {
                 $mmEvents.triggerUnique('initialized'); // @todo: Replace with "app ready" when it is implemented.
