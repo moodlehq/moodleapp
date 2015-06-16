@@ -60,7 +60,12 @@ angular.module('mm.core.course', [])
 
 })
 
-.run(function($mmCoursesDelegate, $translate) {
+.run(function($mmEvents, mmCoreEventLogin, $mmCourseDelegate, $mmCoursesDelegate, $translate) {
+
+    $mmEvents.on(mmCoreEventLogin, function() {
+        $mmCourseDelegate.updateContentHandlers();
+    });
+
     $translate('mm.course.contents').then(function(str) {
         $mmCoursesDelegate.registerPlugin('mmCourse', function() {
             return {
