@@ -90,7 +90,7 @@ angular.module('mm.core')
         return exists;
     }
 
-    this.$get = function($mmDB, $cordovaNetwork) {
+    this.$get = function($mmDB, $cordovaNetwork, $q) {
 
         var db = $mmDB.getDB(DBNAME, dbschema, dboptions),
             self = {};

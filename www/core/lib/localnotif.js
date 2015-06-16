@@ -16,9 +16,11 @@ angular.module('mm.core')
 
 // Stores used to create unique IDs for notifications.
 .constant('mmCoreNotificationsSitesStore', 'notification_sites')
-.constant('mmCoreNotificationsTypesStore', 'notification_types')
+.constant('mmCoreNotificationsComponentsStore', 'notification_components')
+.constant('mmCoreNotificationsTriggeredStore', 'notifications_triggered')
 
-.config(function($mmAppProvider, mmCoreNotificationsSitesStore, mmCoreNotificationsTypesStore) {
+.config(function($mmAppProvider, mmCoreNotificationsSitesStore, mmCoreNotificationsComponentsStore,
+        mmCoreNotificationsTriggeredStore) {
     var stores = [
         {
             name: mmCoreNotificationsSitesStore,
@@ -30,7 +32,7 @@ angular.module('mm.core')
             ]
         },
         {
-            name: mmCoreNotificationsTypesStore,
+            name: mmCoreNotificationsComponentsStore, // Store to asigne unique codes to each component.
             keyPath: 'id',
             indexes: [
                 {
@@ -52,7 +54,7 @@ angular.module('mm.core')
  * Provides methods to trigger notifications, listen clicks on them, etc.
  */
 .factory('$mmLocalNotifications', function($log, $mmSitesManager, $mmSite, $cordovaLocalNotification, $mmApp,
-        mmCoreNotificationsSitesStore, mmCoreNotificationsTypesStore) {
+        mmCoreNotificationsSitesStore, mmCoreNotificationsComponentsStore, mmCoreNotificationsTriggeredStore) {
 
     $log = $log.getInstance('$mmLocalNotifications');
 
@@ -98,14 +100,14 @@ angular.module('mm.core')
     }
 
     /**
-     * Get a notification type code to be used.
-     * If it's the first time this type is used to send notifications, create a new code for it.
+     * Get a notification component code to be used.
+     * If it's the first time this component is used to send notifications, create a new code for it.
      *
-     * @param  {String} type Type name.
-     * @return {Promise}     Promise resolved when the type code is retrieved.
+     * @param {String} component Component name.
+     * @return {Promise}         Promise resolved when the component code is retrieved.
      */
-    function getTypeCode(type) {
-        return getCode(mmCoreNotificationsTypesStore, type);
+    function getComponentCode(component) {
+        return getCode(mmCoreNotificationsComponentsStore, component);
     }
 
     /**
@@ -113,19 +115,18 @@ angular.module('mm.core')
      * The generated ID shouldn't be higher than 2147483647 or it's going to cause problems in Android.
      * This function will prevent collisions and keep the number under Android limit if:
      *     -User has used less than 21 sites.
-     *     -There are less than 11 types of events.
+     *     -There are less than 11 components.
      *     -The notificationid passed as parameter is lower than 10000000.
      *
      * @param  {Number} notificationid Notification ID.
-     * @param  {String} type           Type of the notification.
+     * @param {String} component       Component triggering the notification.
      * @param  {Number} [siteid]       Site ID. If not defined, use current site.
      * @return {Promise}               Promise resolved when the notification ID is generated.
      */
-    function getUniqueNotificationId(notificationid, type, siteid) {
-
+    function getUniqueNotificationId(notificationid, component, siteid) {
         return getSiteCode(siteid).then(function(sitecode) {
-            return getTypeCode(type).then(function(typecode) {
-                return sitecode * 100000000 + typecode * 10000000 + notificationid;
+            return getComponentCode(component).then(function(componentcode) {
+                return sitecode * 100000000 + componentcode * 10000000 + notificationid;
             });
         });
     }
@@ -136,14 +137,15 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmLocalNotifications#cancel
-     * @param {Number} id       Notification id.
-     * @param {String} type     Type of the notification.
-     * @param {Number} [siteid] Site ID. If not defined, use current site.
-     * @return {Promise}        Promise resolved when the notification is cancelled.
+     * @param {Number} id        Notification id.
+     * @param {String} component Component of the notification.
+     * @param {Number} [siteid]  Site ID. If not defined, use current site.
+     * @return {Promise}         Promise resolved when the notification is cancelled.
      */
-    self.cancel = function(id, type, siteid) {
-        var uniqueId = getUniqueNotificationId(id, type, siteid);
-        return $cordovaLocalNotification.cancel(uniqueId);
+    self.cancel = function(id, component, siteid) {
+        return getUniqueNotificationId(id, component, siteid).then(function(uniqueId) {
+            return $cordovaLocalNotification.cancel(uniqueId);
+        });
     };
 
     /**
@@ -159,7 +161,25 @@ angular.module('mm.core')
     };
 
     /**
-     * Notify notification click to observers. If an observer "consumes" the notification, stops notifying.
+     * Check if a notification has been triggered with the same trigger time.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmLocalNotifications#isTriggered
+     * @param  {Object}  notification Notification to check. Needs to have 'id' and 'at' properties.
+     * @return {Promise}              Promise resolved with a boolean indicating if promise is triggered (true) or not.
+     */
+    self.isTriggered = function(notification) {
+        return $mmApp.getDB().get(mmCoreNotificationsTriggeredStore, notification.id).then(function(stored) {
+            var notifTime = notification.at.getTime() / 1000;
+            return stored.at === notifTime;
+        }, function() {
+            return false;
+        });
+    };
+
+    /**
+     * Notify notification click to observer. Only the observer with the same component as the notification will be notified.
      *
      * @module mm.core
      * @ngdoc method
@@ -167,12 +187,40 @@ angular.module('mm.core')
      * @param {Object} data Data received by the notification.
      */
     self.notifyClick = function(data) {
-        var treated = false; // Once an observer accepts the data (return true) we stop notifying.
-        angular.forEach(observers, function(callback, name) {
-            if (!treated && typeof callback == 'function') {
-                treated = callback(data);
+        var component = data.component;
+        if (component) {
+            var callback = observers[component];
+            if (typeof callback == 'function') {
+                callback(data);
             }
-        });
+        }
+    };
+
+    /**
+     * Register an observer to be notified when a notification belonging to a certain component is clicked.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmLocalNotifications#registerClick
+     * @param {String} component  Component to listen notifications for.
+     * @param {Function} callback Function to call with the data received by the notification.
+     */
+    self.registerClick = function(component, callback) {
+        $log.debug("Register observer '"+component+"' for notification click.");
+        observers[component] = callback;
+    };
+
+    /**
+     * Remove a notification from triggered store.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmLocalNotifications#removeTriggered
+     * @param {String} id Notification ID.
+     * @return {Promise}  Promise resolved when it is removed.
+     */
+    self.removeTriggered = function(id) {
+        return $mmApp.getDB().remove(mmCoreNotificationsTriggeredStore, id);
     };
 
     /**
@@ -183,14 +231,25 @@ angular.module('mm.core')
      * @ngdoc method
      * @name $mmLocalNotifications#schedule
      * @param {Object} notification Notification to schedule. Its ID must be lower than 10000000 and it should be unique
-     *                              inside its type and site.
-     * @param {String} type         Type of the notification. It is used to generate unique IDs.
+     *                              inside its component and site.
+     * @param {String} component    Component triggering the notification. It is used to generate unique IDs.
      * @param {Number} [siteid]     Site ID. If not defined, use current site.
      * @return {Promise}            Promise resolved when the notification is scheduled.
      */
-    self.schedule = function(notification, type, siteid) {
-        notification.id = getUniqueNotificationId(notification.id, type, siteid);
-        return $cordovaLocalNotification.add(notification);
+    self.schedule = function(notification, component, siteid) {
+        return getUniqueNotificationId(notification.id, component, siteid).then(function(uniqueId) {
+            notification.id = uniqueId;
+            notification.data = notification.data || {};
+            notification.data.component = component;
+
+            return self.isTriggered(notification).then(function(triggered) {
+                if (!triggered) {
+                    // Remove from triggered, since the notification could be in there with a different time.
+                    self.removeTriggered(notification.id);
+                    return $cordovaLocalNotification.schedule(notification);
+                }
+            });
+        });
     };
 
     /**

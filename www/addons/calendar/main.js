@@ -41,7 +41,9 @@ angular.module('mm.addons.calendar', [])
 
 })
 
-.run(function($mmSideMenuDelegate, $translate, $mmaCalendar) {
+.run(function($mmSideMenuDelegate, $translate, $mmaCalendar, $mmLocalNotifications, $state, $ionicPlatform, $mmEvents,
+        mmaCalendarComponent) {
+    // Register plugin in side menu.
     $translate('mma.calendar.calendarevents').then(function(strCalendar) {
         $mmSideMenuDelegate.registerPlugin('mmaCalendar', function() {
             if (!$mmaCalendar.isAvailable()) {
@@ -53,5 +55,21 @@ angular.module('mm.addons.calendar', [])
                 state: 'site.calendar'
             };
         });
+    });
+
+    // Listen for notification clicks.
+    $mmLocalNotifications.registerClick(mmaCalendarComponent, function(data) {
+        if (data.eventid) {
+            var observer = $mmEvents.on('initialized', function() {
+                if (observer && observer.off) {
+                    observer.off();
+                }
+                $state.go('redirect', {siteid: data.siteid, state: 'site.calendar', params: {eventid: data.eventid}});
+            });
+        }
+    });
+
+    $ionicPlatform.ready(function() {
+        $mmaCalendar.scheduleAllSitesEventsNotifications();
     });
 });
