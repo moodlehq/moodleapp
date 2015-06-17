@@ -11,12 +11,7 @@
                 <div class="item item-body">
                     <p><mm-format-text watch="true">{{ notification.mobiletext | mmCreateLinks | mmaNotificationsFormat }}</mm-format-text></p>
                 </div>
-                <div ng-if="notification.action" class="item tabs tabs-icon-left">
-                    <a class="tab-item" ui-sref="notification.action.state">
-                        <i class="icon notification.action.icon"></i>
-                        {{ notification.action.message | translate}}
-                    </a>
-                </div>
+                <mma-notifications-actions contexturl="notification.contexturl" courseid="notification.courseid"></mma-notifications-actions>
             </div>
 
             <ion-infinite-scroll ng-if="canLoadMore"

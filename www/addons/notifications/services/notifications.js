@@ -30,10 +30,17 @@ angular.module('mm.addons.notifications')
     // Function to format notification data.
     function formatNotificationsData(notifications) {
         angular.forEach(notifications, function(notification) {
+            // Set message to show.
             if (notification.contexturl && notification.contexturl.indexOf('/mod/forum/')) {
                 notification.mobiletext = notification.smallmessage;
             } else {
                 notification.mobiletext = notification.fullmessage;
+            }
+
+            // Try to set courseid the notification belongs to.
+            var cid = notification.fullmessagehtml.match(/course\/view\.php\?id=([^"]*)/);
+            if (cid && cid[1]) {
+                notification.courseid = cid[1];
             }
         });
     }
