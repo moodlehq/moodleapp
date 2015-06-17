@@ -71,7 +71,7 @@ angular.module('mm.core.course')
         return true;
     };
 
-    self.$get = function($injector, $q, $log, $mmCourse, $mmUtil, $mmSite, $mmCourseContentHandler) {
+    self.$get = function($injector, $q, $log, $mmSite, $mmCourseContentHandler) {
         var enabledHandlers = {},
             self = {};
 
@@ -104,19 +104,17 @@ angular.module('mm.core.course')
          *
          * @module mm.core.course
          * @ngdoc method
-         * @name $mmCourseDelegate#_updateEnabledHandlers
+         * @name $mmCourseDelegate#updateContentHandler
          * @param {String} handles The module this handler handles, e.g. forum, label. This value will be compared with
          * @param {Object} handlerInfo The handler details.
          * @return {Promise} Resolved when enabled, rejected when not.
          * @protected
          */
         self.updateContentHandler = function(handles, handlerInfo) {
-            var promise,
-                handler;
+            var promise;
 
             if (typeof handlerInfo.instance === 'undefined') {
-                handler = $injector.get(handlerInfo.handler);
-                handlerInfo.instance = handler;
+                handlerInfo.instance = $injector.get(handlerInfo.handler);
             }
 
             if (!$mmSite.isLoggedIn()) {
@@ -138,7 +136,7 @@ angular.module('mm.core.course')
          *
          * @module mm.core.course
          * @ngdoc method
-         * @name $mmCourseDelegate#_updateEnabledHandlers
+         * @name $mmCourseDelegate#updateContentHandlers
          * @return {Promise} Resolved when done.
          * @protected
          */

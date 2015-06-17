@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_forum')
  * @ngdoc service
  * @name $mmaModForumCourseContentHandler
  */
-.factory('$mmaModForumCourseContentHandler', function($mmCourse, $mmaModForum) {
+.factory('$mmaModForumCourseContentHandler', function($mmCourse, $mmaModForum, $state) {
     var self = {};
 
     /**
@@ -47,7 +47,7 @@ angular.module('mm.addons.mod_forum')
      * @return {Function}
      */
     self.getController = function(module, courseid) {
-        return function($scope, $state) {
+        return function($scope) {
             $scope.title = module.name;
             $scope.icon = $mmCourse.getModuleIconSrc('forum');
             $scope.action = function(e) {

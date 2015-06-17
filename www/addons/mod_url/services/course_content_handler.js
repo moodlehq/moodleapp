@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_url')
  * @ngdoc service
  * @name $mmaModUrlCourseContentHandler
  */
-.factory('$mmaModUrlCourseContentHandler', function($mmCourse, $mmaModUrl) {
+.factory('$mmaModUrlCourseContentHandler', function($mmCourse, $mmaModUrl, $state) {
     var self = {};
 
     /**
@@ -46,7 +46,7 @@ angular.module('mm.addons.mod_url')
      * @return {Function}
      */
     self.getController = function(module) {
-        return function($scope, $state) {
+        return function($scope) {
             $scope.icon = $mmCourse.getModuleIconSrc('url');
             $scope.title = module.name;
             $scope.action = function(e) {

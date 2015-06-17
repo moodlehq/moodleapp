@@ -15,13 +15,13 @@
 angular.module('mm.addons.mod_page')
 
 /**
- * Mod label course content handler.
+ * Mod page course content handler.
  *
  * @module mm.addons.mod_page
  * @ngdoc service
  * @name $mmaModPageCourseContentHandler
  */
-.factory('$mmaModPageCourseContentHandler', function($q, $timeout, $mmCourse, $mmaModPage, $mmFilepool, $mmEvents) {
+.factory('$mmaModPageCourseContentHandler', function($mmCourse, $mmaModPage, $mmFilepool, $mmEvents, $state) {
     var self = {};
 
     /**
@@ -46,7 +46,7 @@ angular.module('mm.addons.mod_page')
      * @return {Function}
      */
     self.getController = function(module) {
-        return function($scope, $state) {
+        return function($scope) {
             var downloadBtn,
                 refreshBtn,
                 observers = {};
@@ -112,11 +112,11 @@ angular.module('mm.addons.mod_page')
             $scope.spinner = false;
 
             $mmaModPage.getFilesStatus(module).then(function(result) {
-                if (result[0] == $mmFilepool.FILENOTDOWNLOADED) {
+                if (result.status == $mmFilepool.FILENOTDOWNLOADED) {
                     downloadBtn.hidden = false;
-                } else if (result[0] == $mmFilepool.FILEDOWNLOADING) {
+                } else if (result.status == $mmFilepool.FILEDOWNLOADING) {
                     $scope.spinner = true;
-                    addObservers(result[1]);
+                    addObservers(result.eventNames);
                 } else {
                     refreshBtn.hidden = false;
                 }

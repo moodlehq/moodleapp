@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_label')
  * @ngdoc service
  * @name $mmaModLabelCourseContentHandler
  */
-.factory('$mmaModLabelCourseContentHandler', function($mmCourse, $mmText, $translate) {
+.factory('$mmaModLabelCourseContentHandler', function($mmCourse, $mmText, $translate, $state) {
     var self = {};
 
     /**
@@ -46,7 +46,7 @@ angular.module('mm.addons.mod_label')
      * @return {Function}
      */
     self.getController = function(module) {
-        return function($scope, $state) {
+        return function($scope) {
             var title = $mmText.shortenText($mmText.cleanTags(module.description).trim(), 128);
             if (title.length <= 0) {
                 $translate('mma.mod_label.taptoview').then(function(taptoview) {

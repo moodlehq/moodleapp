@@ -77,7 +77,7 @@ angular.module('mm.addons.mod_page')
      * @ngdoc method
      * @name $mmaModPage#getFilesStatus
      * @param {Object} module The module object returned by WS.
-     * @return {Promise} Resolved with an array. The first element is the status, the second a list of event to observe.
+     * @return {Promise} Resolved with an object containing the status and a list of event to observe.
      */
     self.getFilesStatus = function(module) {
         var promises = [],
@@ -115,7 +115,7 @@ angular.module('mm.addons.mod_page')
             } else if (downloaded == fileCount) {
                 status = $mmFilepool.FILEDOWNLOADED;
             }
-            return [status, eventNames];
+            return {status: status, eventNames: eventNames};
         }
 
         return $q.all(promises).then(function() {
