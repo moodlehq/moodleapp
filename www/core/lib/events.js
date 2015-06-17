@@ -14,6 +14,10 @@
 
 angular.module('mm.core')
 
+.constant('mmCoreEventSessionExpired', 'session_expired')
+.constant('mmCoreEventLogin', 'login')
+.constant('mmCoreEventLogout', 'logout')
+
 /**
  * Service to send and listen to events.
  *
@@ -28,26 +32,9 @@ angular.module('mm.core')
     $log = $log.getInstance('$mmEvents');
 
     var self = {},
-        observers = {};
-
-    /**
-     * Triggers an event, notifying all the observers.
-     *
-     * @module mm.core
-     * @ngdoc method
-     * @name $mmEvents#trigger
-     * @param {String} event Name of the event to trigger.
-     * @param {Mixed}  data  Data to pass to the observers.
-     */
-    self.trigger = function(eventName, data) {
-        $log.debug('Event ' + eventName + ' triggered.');
-        var affected = observers[eventName];
-        for (var observerName in affected) {
-            if (typeof(affected[observerName]) === 'function') {
-                affected[observerName](data);
-            }
-        }
-    };
+        observers = {},
+        uniqueEvents = {},
+        uniqueEventsData = {};
 
     /**
      * Adds an observer for a certain event.
@@ -60,9 +47,16 @@ angular.module('mm.core')
      * @name $mmEvents#on
      * @param  {String}   eventName  Name of the event to listen to.
      * @param  {Function} callBack   Function to call when the event is triggered.
-     * @return {Object}              Object to deregister the observer.
+     * @return {Object}              Object to deregister the observer. Undefined if it's an already triggered unique event.
      */
     self.on = function(eventName, callBack) {
+
+        // If it's a unique event and has been triggered already, call the callBack.
+        // We don't need to store the observer because the event won't be triggered again.
+        if (uniqueEvents[eventName]) {
+            callBack(uniqueEventsData[eventName]);
+            return;
+        }
 
         var observerID;
 
@@ -89,6 +83,50 @@ angular.module('mm.core')
             }
         };
         return observer;
+    };
+
+    /**
+     * Triggers an event, notifying all the observers.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmEvents#trigger
+     * @param {String} event Name of the event to trigger.
+     * @param {Mixed}  data  Data to pass to the observers.
+     */
+    self.trigger = function(eventName, data) {
+        $log.debug('Event ' + eventName + ' triggered.');
+        var affected = observers[eventName];
+        for (var observerName in affected) {
+            if (typeof(affected[observerName]) === 'function') {
+                affected[observerName](data);
+            }
+        }
+    };
+
+    /**
+     * Triggers a unique event, notifying all the observers. If the event has already been triggered, don't do anything.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmEvents#trigger
+     * @param {String} event Name of the event to trigger.
+     * @param {Mixed}  data  Data to pass to the observers.
+     */
+    self.triggerUnique = function(eventName, data) {
+        if (uniqueEvents[eventName]) {
+            $log.debug('Unique event ' + eventName + ' ignored because it was already triggered.');
+        } else {
+            $log.debug('Unique event ' + eventName + ' triggered.');
+            uniqueEvents[eventName] = true;
+            uniqueEventsData[eventName] = data;
+            var affected = observers[eventName];
+            angular.forEach(affected, function(callBack) {
+                if (typeof callBack === 'function') {
+                    callBack(data);
+                }
+            });
+        }
     };
 
     return self;

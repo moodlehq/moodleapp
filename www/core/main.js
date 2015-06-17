@@ -15,6 +15,7 @@
 angular.module('mm.core', ['pascalprecht.translate'])
 
 .constant('mmCoreSessionExpired', 'mmCoreSessionExpired')
+.constant('mmCoreSecondsDay', 86400)
 
 .config(function($stateProvider, $provide, $ionicConfigProvider, $httpProvider, $mmUtilProvider,
         $mmLogProvider, $compileProvider) {
@@ -96,6 +97,38 @@ angular.module('mm.core', ['pascalprecht.translate'])
         }
     };
 
+    $stateProvider
+        .state('redirect', {
+            url: '/redirect',
+            params: {
+                siteid: null,
+                state: null,
+                params: null
+            },
+            controller: function($scope, $state, $stateParams, $mmSite, $mmSitesManager) {
+                $scope.$on('$ionicView.enter', function() {
+                    if ($mmSite.isLoggedIn()) {
+                        if ($stateParams.siteid && $stateParams.siteid != $mmSite.getId()) {
+                            // Notification belongs to a different site. Change site.
+                            $mmSitesManager.logout().then(function() {
+                                $mmSitesManager.loadSite($stateParams.siteid).then(function() {
+                                    $state.go($stateParams.state, $stateParams.params);
+                                });
+                            });
+                        } else {
+                            $state.go($stateParams.state, $stateParams.params);
+                        }
+                    } else {
+                        if ($stateParams.siteid) {
+                            $mmSitesManager.loadSite($stateParams.siteid).then(function() {
+                                $state.go($stateParams.state, $stateParams.params);
+                            });
+                        }
+                    }
+                });
+            }
+        });
+
     // This code is to be able to get data sent with $http.post using $_POST variable.
     // Otherwise all the data ends up in php://input and seems like local/mobile/check.php doesn't like it.
     $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
@@ -104,7 +137,7 @@ angular.module('mm.core', ['pascalprecht.translate'])
     }];
 
     // Set our own safe protocols, otherwise geo:// is marked as unsafe.
-    $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|geo):/);
+    $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|geo|file):/);
 })
 
 .run(function($ionicPlatform, $ionicBody, $window) {

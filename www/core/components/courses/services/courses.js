@@ -28,9 +28,26 @@ angular.module('mm.core.courses')
  * @ngdoc service
  * @name $mmCourses
  */
-.factory('$mmCourses', function($q, $mmSite, mmCoursesFrontPage) {
+.factory('$mmCourses', function($q, $mmSite, $mmSitesManager, mmCoursesFrontPage) {
 
-    var self = {};
+    var self = {},
+        currentCourses = {};
+
+    function storeCoursesInMemory(courses) {
+        angular.forEach(courses, function(course) {
+            currentCourses[course.id] = course;
+        });
+    }
+
+    /**
+     * Get a course stored in memory.
+     *
+     * @param  {Number} id ID of the course to get.
+     * @return {Object}    Course.
+     */
+    self.getStoredCourse = function(id) {
+        return currentCourses[id];
+    };
 
     /**
      * Get user courses.
@@ -38,32 +55,39 @@ angular.module('mm.core.courses')
      * @module mm.core.courses
      * @ngdoc method
      * @name $mmCourses#getUserCourses
-     * @param {Boolean} refresh True when we should not get the value from the cache.
-     * @return {Promise}        Promise to be resolved when the courses are retrieved.
+     * @param {Boolean} [refresh] True when we should not get the value from the cache.
+     * @param {String} [siteid]   Site to get the courses from. If not defined, use current site.
+     * @return {Promise}          Promise to be resolved when the courses are retrieved.
      */
-    self.getUserCourses = function(refresh) {
-        var userid = $mmSite.getUserId();
+    self.getUserCourses = function(refresh, siteid) {
+        siteid = siteid || $mmSite.getId();
 
-        if (typeof userid == 'undefined') {
+        var userid = $mmSite.getUserId(),
+            presets = {},
+            data = {userid: userid};
+
+        if (typeof userid === 'undefined') {
             return $q.reject();
         }
 
-        var data = {userid: userid},
-            presets = {};
         if (refresh) {
             presets.getFromCache = false;
         }
-        return $mmSite.read('core_enrol_get_users_courses', data, presets).then(function(courses) {
-            // TODO: For now we won't show front page in the course list because we cannot retrieve its summary.
-            // courses.unshift(mmCoursesFrontPage);
 
-            // TODO: MM._loadGroups(courses);
+        return $mmSitesManager.getSite(siteid).then(function(site) {
+            return site.read('core_enrol_get_users_courses', data, presets).then(function(courses) {
+                // TODO: For now we won't show front page in the course list because we cannot retrieve its summary.
+                // courses.unshift(mmCoursesFrontPage);
 
-            // TODO: Store courses in DB.
+                // TODO: MM._loadGroups(courses);
 
-            return courses;
+                // TODO: Store courses in DB.
+                storeCoursesInMemory(courses);
+
+                return courses;
+            });
         });
-    }
+    };
 
     return self;
 });

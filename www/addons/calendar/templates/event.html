@@ -1,0 +1,44 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{title}}</mm-format-text></ion-nav-title>
+    <ion-content>
+        <!-- ion-refresher needs to be direct child of ion-content to work with native scrolling -->
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="eventLoaded"
+                       on-refresh="refreshEvent()">
+        </ion-refresher>
+        <mm-loading hide-until="eventLoaded">
+            <ul class="list card">
+                <li class="item item-text-wrap">
+                    {{event.start}}<span ng-if="event.start != event.end"> - {{event.end}}</span>
+                </li>
+                <li class="item item-text-wrap">
+                    <h2><mm-format-text watch="true">{{event.name}}</mm-format-text></h2>
+                </li>
+                <li class="item item-text-wrap" ng-if="coursename">
+                    <h3>{{ 'mm.core.course' | translate}}</h3>
+                    <p><mm-format-text watch="true">{{coursename}}</mm-format-text></p>
+                </li>
+                <li class="item item-text-wrap item-media" ng-if="event.moduleicon">
+                    <img ng-src="{{event.moduleicon}}"> {{event.modulename}}
+                </li>
+                <li class="item item-text-wrap" ng-if="event.description">
+                    <mm-format-text watch="true">{{event.description}}</mm-format-text>
+                </li>
+            </ul>
+            <div class="card" ng-if="notificationsEnabled">
+                <div class="item item-select">
+                    {{ 'mma.calendar.notifications' | translate }}
+                    <select ng-model="notification.time" convert-to-number ng-change="updateNotificationTime()">
+                        <option value="0">Disabled</option>
+                        <option value="10">10 Minutes</option>
+                        <option value="30">30 Minutes</option>
+                        <option value="60">1 Hour</option>
+                        <option value="120">2 Hours</option>
+                        <option value="360">6 Hours</option>
+                        <option value="720">12 Hours</option>
+                        <option value="1240">24 Hours</option>
+                    </select>
+                </div>
+            </div>
+        </mm-loading>
+    </ion-content>
+</ion-view>

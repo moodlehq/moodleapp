@@ -96,12 +96,12 @@ angular.module('mm.core.login', [])
 })
 
 .run(function($log, $state, $mmUtil, $translate, $mmSitesManager, $rootScope, $mmSite, $mmURLDelegate, $ionicHistory,
-                $mmEvents, $mmLoginHelper) {
+                $mmEvents, $mmLoginHelper, mmCoreEventSessionExpired) {
 
     $log = $log.getInstance('mmLogin');
 
     // Listen for sessionExpired event to reconnect the user.
-    $mmEvents.on('sessionExpired', sessionExpired);
+    $mmEvents.on(mmCoreEventSessionExpired, sessionExpired);
 
     // Register observer to check if the app was launched via URL scheme.
     $mmURLDelegate.register('mmLoginSSO', appLaunchedByURL);
@@ -109,7 +109,9 @@ angular.module('mm.core.login', [])
     // Redirect depending on user session.
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 
-        if ((toState.name.substr(0, 8) !== 'mm_login' || toState.name === 'mm_login.reconnect') && !$mmSite.isLoggedIn()) {
+        if (toState.name.substr(0, 8) === 'redirect') {
+            return;
+        } else if ((toState.name.substr(0, 8) !== 'mm_login' || toState.name === 'mm_login.reconnect') && !$mmSite.isLoggedIn()) {
             // We are not logged in.
             event.preventDefault();
             $log.debug('Redirect to login page, request was: ' + toState.name);

@@ -22,7 +22,11 @@ angular.module('mm.core.course')
  * @name $mmCourse
  */
 .factory('$mmCourse', function($mmSite, $translate, $q) {
-    var self = {};
+    var self = {},
+        mods = ["assign", "assignment", "book", "chat", "choice", "data", "database", "date", "external-tool",
+            "feedback", "file", "folder", "forum", "glossary", "ims", "imscp", "label", "lesson", "lti", "page", "quiz",
+            "resource", "scorm", "survey", "url", "wiki", "workshop"
+        ];
 
     /**
      * Returns the source to a module icon.
@@ -34,11 +38,6 @@ angular.module('mm.core.course')
      * @return {String} The IMG src.
      */
     self.getModuleIconSrc = function(moduleName) {
-        var mods = ["assign", "assignment", "book", "chat", "choice", "data", "database", "date", "external-tool",
-            "feedback", "file", "folder", "forum", "glossary", "ims", "imscp", "label", "lesson", "lti", "page", "quiz",
-            "resource", "scorm", "survey", "url", "wiki", "workshop"
-        ];
-
         if (mods.indexOf(moduleName) < 0) {
             moduleName = "external-tool";
         }
@@ -100,6 +99,27 @@ angular.module('mm.core.course')
             options: []
         }, presets);
     };
+
+    /**
+     * Translate a module name to current language.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#translateModuleName
+     * @param {String} moduleName The module name.
+     * @return {Promise}          Promise resolved with the translated name.
+     */
+    self.translateModuleName = function(moduleName) {
+        if (mods.indexOf(moduleName) < 0) {
+            moduleName = "external-tool";
+        }
+
+        var langkey = 'mm.core.mod_'+moduleName;
+        return $translate(langkey).then(function(translated) {
+            return translated !== langkey ? translated : moduleName;
+        });
+    };
+
 
     return self;
 });
