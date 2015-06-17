@@ -148,11 +148,11 @@ angular.module('mm.core')
         return $mmFS.getBasePath().then(function(basePath) {
             // Use a tmp path to download the file and then move it to final location. This is because if the download fails,
             // the local file is deleted.
-            var tmpPath = basePath + path + 'tmp';
+            var tmpPath = basePath + path + '.tmp';
             return $cordovaFileTransfer.download(url, tmpPath, { encodeURI: false }, true).then(function(result) {
-                return $mmFS.moveFile(path + 'tmp', path).then(function(movedEntry) {
+                return $mmFS.moveFile(path + '.tmp', path).then(function(movedEntry) {
                     $log.debug('Success downloading file ' + url + ' to ' + path);
-                    return result;
+                    return movedEntry;
                 });
             }, function(err) {
                 $log.error('Error downloading ' + url + ' to ' + path);
