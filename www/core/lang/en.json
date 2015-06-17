@@ -51,5 +51,6 @@
     "search": "Search",
     "tb": "TB",
     "unexpectederror": "Unexepected error. Please close and reopen the application to try again",
+    "view": "View",
     "wsfunctionnotavailable": "The webservice function is not available."
 }
