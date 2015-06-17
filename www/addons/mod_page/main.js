@@ -12,26 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.addons.mod_label', ['mm.core'])
+angular.module('mm.addons.mod_page', ['mm.core'])
+
+.constant('mmaModPageComponent', 'mmaModPage')
 
 .config(function($stateProvider) {
 
     $stateProvider
-    .state('site.mod_label', {
-        url: '/mod_label',
-        params: {
-            description: null
-        },
-        views: {
-            'site': {
-                templateUrl: 'addons/mod_label/templates/index.html',
-                controller: 'mmaModLabelIndexCtrl'
-            }
+
+    .state('site.mod_page', {
+      url: '/mod_page',
+      params: {
+        module: null
+      },
+      views: {
+        'site': {
+          controller: 'mmaModPageIndexCtrl',
+          templateUrl: 'addons/mod_page/templates/index.html'
         }
+      }
     });
 
 })
 
 .config(function($mmCourseDelegateProvider) {
-    $mmCourseDelegateProvider.registerContentHandler('mmaModLabel', 'label', '$mmaModLabelCourseContentHandler');
+    $mmCourseDelegateProvider.registerContentHandler('mmaModPage', 'page', '$mmaModPageCourseContentHandler');
 });

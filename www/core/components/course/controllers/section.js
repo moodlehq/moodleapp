@@ -21,12 +21,10 @@ angular.module('mm.core.course')
  * @ngdoc controller
  * @name mmCourseSectionCtrl
  */
-.controller('mmCourseSectionCtrl', function($mmCourse, $mmUtil, $scope, $stateParams, $translate, $mmSite) {
+.controller('mmCourseSectionCtrl', function($mmCourseDelegate, $mmCourse, $mmUtil, $scope, $stateParams, $translate, $mmSite) {
     var courseid = $stateParams.courseid,
         sectionid = $stateParams.sectionid,
         sections = [];
-
-    $scope.courseid = courseid;
 
     if (sectionid < 0) {
         // Special scenario, we want all sections.
@@ -39,6 +37,12 @@ angular.module('mm.core.course')
     function loadContent(sectionid, refresh) {
         if (sectionid < 0) {
             return $mmCourse.getSections(courseid, refresh).then(function(sections) {
+                angular.forEach(sections, function(section) {
+                    angular.forEach(section.modules, function(module) {
+                        module._controller = $mmCourseDelegate.getContentHandlerControllerFor(module.modname, module, courseid);
+                    });
+                });
+
                 $scope.sections = sections;
                 // Add log in Moodle.
                 $mmSite.write('core_course_view_course', {
@@ -50,6 +54,10 @@ angular.module('mm.core.course')
             });
         } else {
             return $mmCourse.getSection(courseid, sectionid, refresh).then(function(section) {
+                angular.forEach(section.modules, function(module) {
+                    module._controller = $mmCourseDelegate.getContentHandlerControllerFor(module.modname, module, courseid);
+                });
+
                 $scope.sections = [section];
                 $scope.title = section.name;
                 $scope.summary = section.summary;

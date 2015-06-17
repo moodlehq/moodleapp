@@ -20,101 +20,148 @@ angular.module('mm.core.course')
  * @module mm.core.course
  * @ngdoc service
  * @name $mmCourseDelegate
+ * @description
+ *
+ * To register a content handler:
+ *
+ * .config($mmCourseDelegate, function() {
+ *     $mmCourseDelegate.registerContentHandler('mmaYourAddon', 'moduleName', 'handlerName');
+ *     $mmCourseDelegate.registerContentHandler('mmaModPage', 'page', '$mmaModPageCourseContentHandler');
+ * })
+ *
+ * The content handler must provide two methods.
+ *
+ * 1/ isEnabled() which will be called once in a while to check if the plugin works on the current site.
+ * 2/ getController(module, courseid) which should return a controller object
+ *
+ * The controller has its own scope inheriting the parent one. Though you should not use the
+ * parent scope. To find out more what scope variables are expected look at the template
+ * core/components/course/templates/section.html and at existing content handlers.
  */
-.factory('$mmCourseDelegate', function($log, $mmCourse, $mmUtil) {
-    $log = $log.getInstance('$mmCourseDelegate');
-
+.provider('$mmCourseDelegate', function() {
     var contentHandlers = {},
         self = {};
 
     /**
      * Register a content handler. If module is not supported in current site, handler should return undefined.
      *
-     * A handler should return an object with the following keys:
-     *
-     * - title: The title of the module
-     * - icon: The image SRC to the icon
-     * - state: The state to go to
-     * - stateParams: Parameters to use with state,
-     * - buttons: An array of buttons with the properties:
-     *            - icon: The ionicon to use
-     *            - hidden: Whether the button should be hidden
-     *            - callback: The function to execute on click, this will receive $scope as argument
-     *
      * @module mm.core.course
      * @ngdoc method
      * @name $mmCourseDelegate#registerContentHandler
-     * @param {String} addon The addon's name
+     * @param {String} addon The addon's name (mmaLabel, mmaForum, ...)
      * @param {String} handles The module this handler handles, e.g. forum, label. This value will be compared with
      *                         the value contained in module.modname from the Webservice core_course_get_contents.
-     * @param {Function} callback The callback function
+     * @param  {Function} handler  Returns an object defining the following methods:
+     *                             - isEnabled (Boolean) Whether or not the handler is enabled on a site level.
+     *                             - getController(module, courseid) (Function) Returns the function that will act as controller.
+     *                                                                See core/components/course/templates/section.html
+     *                                                                for the list of scope variables expected.
      */
-    self.registerContentHandler = function(addon, handles, callback) {
+    self.registerContentHandler = function(addon, handles, handler) {
         if (typeof contentHandlers[handles] !== 'undefined') {
-            $log.error("Addon '" + contentHandlers[handles].addon + "' already registered as handler for '" + handles + "'");
-            return;
+            console.log("$mmCourseDelegateProvider: Addon '" + contentHandlers[handles].addon + "' already registered as handler for '" + handles + "'");
+            return false;
         }
-        $log.debug("Registered addon '" + addon + "' as course content handler.");
+        console.log("$mmCourseDelegateProvider: Registered addon '" + addon + "' as course content handler.");
         contentHandlers[handles] = {
             addon: addon,
-            callback: callback
+            handler: handler,
+            instance: undefined
         };
+        return true;
     };
 
-    /**
-     * Get the data a content handler provides.
-     *
-     * This will first get the default data, then call the handler if any and override
-     * the default data with the new data from the handler. That means that a handler
-     * should always override any existing attribute if they want to change the defaults.
-     *
-     * @module mm.core.course
-     * @ngdoc method
-     * @name $mmCourseDelegate#getDataFromContentHandlerFor
-     * @param {String} handles  The module to work on.
-     * @param {Object} module   The module data.
-     * @param {Object} courseid Course ID the module belongs to.
-     * @return {Object}
-     */
-    self.getDataFromContentHandlerFor = function(handles, module, courseid) {
-        var data = {
-            icon: $mmCourse.getModuleIconSrc(module.modname),
-            title: module.name
+    self.$get = function($injector, $q, $log, $mmSite, $mmCourseContentHandler) {
+        var enabledHandlers = {},
+            self = {};
+
+        $log = $log.getInstance('$mmCourseDelegate');
+
+        /**
+         * Get the controller a content handler provides.
+         *
+         * This will first get the default data, then call the handler if any and override
+         * the default data with the new data from the handler. That means that a handler
+         * should always override any existing attribute if they want to change the defaults.
+         *
+         * @module mm.core.course
+         * @ngdoc method
+         * @name $mmCourseDelegate#getContentHandlerControllerFor
+         * @param {String} handles The module to work on
+         * @param {Object} module The module data
+         * @param {Number} courseid The course ID.
+         * @return {Object}
+         */
+        self.getContentHandlerControllerFor = function(handles, module, courseid) {
+            if (typeof enabledHandlers[handles] !== 'undefined') {
+                return enabledHandlers[handles].getController(module, courseid);
+            }
+            return $mmCourseContentHandler.getController(module, courseid);
         };
 
-        // Use a default handler for the module. Used when no handler registered or it's not supported in current site.
-        function getDefaultHandler() {
-            var defaultData = {
-                state: 'site.mm_course-modcontent',
-                stateParams: { module: module }
-            };
-            if (module.url) {
-                defaultData.buttons = [{
-                    icon: 'ion-ios-browsers-outline',
-                    callback: function($scope) {
-                        $mmUtil.openInBrowser(module.url);
-                    }
-                }];
+        /**
+         * Update the enabled handlers for the current site.
+         *
+         * @module mm.core.course
+         * @ngdoc method
+         * @name $mmCourseDelegate#updateContentHandler
+         * @param {String} handles The module this handler handles, e.g. forum, label. This value will be compared with
+         * @param {Object} handlerInfo The handler details.
+         * @return {Promise} Resolved when enabled, rejected when not.
+         * @protected
+         */
+        self.updateContentHandler = function(handles, handlerInfo) {
+            var promise;
+
+            if (typeof handlerInfo.instance === 'undefined') {
+                handlerInfo.instance = $injector.get(handlerInfo.handler);
             }
 
-            return angular.extend(data, defaultData);
-        }
-
-        if (typeof contentHandlers[handles] == 'undefined') {
-            // No handler registered.
-            data = getDefaultHandler();
-        } else {
-            var handlerData = contentHandlers[handles].callback(module, courseid);
-            if (typeof handlerData == 'undefined') {
-                // Handler not supported in current site.
-                data = getDefaultHandler();
+            if (!$mmSite.isLoggedIn()) {
+                promise = $q.reject();
             } else {
-                data = angular.extend(data, handlerData);
+                promise = $q.when(handlerInfo.instance.isEnabled());
             }
-        }
 
-        return data;
+            // Checks if the content is enabled.
+            return promise.then(function() {
+                    enabledHandlers[handles] = handlerInfo.instance;
+                }, function() {
+                    delete enabledHandlers[handles];
+                });
+        };
+
+        /**
+         * Update the handlers for the current site.
+         *
+         * @module mm.core.course
+         * @ngdoc method
+         * @name $mmCourseDelegate#updateContentHandlers
+         * @return {Promise} Resolved when done.
+         * @protected
+         */
+        self.updateContentHandlers = function() {
+            var promises = [],
+                enabledHandlers = {};
+
+            $log.debug('Updating content handlers for current site.');
+
+            // Loop over all the content handlers.
+            angular.forEach(contentHandlers, function(handlerInfo, handles) {
+                promises.push(self.updateContentHandler(handles, handlerInfo));
+            });
+
+            return $q.all(promises).then(function() {
+                return true;
+            }, function() {
+                // Never reject.
+                return true;
+            });
+        };
+
+        return self;
     };
+
 
     return self;
 });

@@ -424,6 +424,8 @@ angular.module('mm.core')
      * @param {String} siteId The site ID.
      * @param {String} fileUrl The file URL.
      * @param {Boolean} [ignoreStale] True if 'stale' should be ignored.
+     * @param {String} component The component to link the file to.
+     * @param {Number} [componentId] An ID to use in conjunction with the component.
      * @return {Promise} Resolved with internal URL on success, rejected otherwise.
      * @description
      * Downloads a file on the spot.
@@ -435,15 +437,16 @@ angular.module('mm.core')
      *
      * See {@link $mmFilepool#_getInternalUrlById} for the type of local URL returned.
      */
-    self.downloadUrl = function(siteId, fileUrl, ignoreStale) {
+    self.downloadUrl = function(siteId, fileUrl, ignoreStale, component, componentId) {
         var fileId = self._getFileIdByUrl(fileUrl),
-            now = new Date();
+            now = new Date(),
+            promise;
 
         if (!$mmFS.isAvailable()) {
             return $q.reject();
         }
 
-        return self._hasFileInPool(siteId, fileId).then(function(fileObject) {
+        promise = self._hasFileInPool(siteId, fileId).then(function(fileObject) {
 
             if (typeof fileObject === 'undefined') {
                 // We do not have the file, download and add to pool.
@@ -455,12 +458,24 @@ angular.module('mm.core')
             }
 
             // Everything is fine, return the file on disk.
-            return self._getInternalUrlById(siteId, fileId);
+            return self._getInternalUrlById(siteId, fileId).then(function(response) {
+                return response;
+            }, function() {
+                // The file was not found in the pool, weird.
+                return self._downloadForPoolByUrl(siteId, fileUrl, fileObject);
+            });
 
         }, function() {
 
             // The file is not in the pool just yet.
             return self._downloadForPoolByUrl(siteId, fileUrl);
+        });
+
+        return promise.then(function(response) {
+            if (typeof component !== 'undefined') {
+                self._addFileLink(siteId, fileId, component, componentId);
+            }
+            return response;
         });
     };
 
