@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_forum')
  * @ngdoc controller
  * @name $mmaModForum
  */
-.factory('$mmaModForum', function($q, $mmSite, $mmUtil, mmaModForumDiscPerPage) {
+.factory('$mmaModForum', function($q, $mmSite, $mmUtil, $mmUser, mmaModForumDiscPerPage) {
     var self = {};
 
     /**
@@ -144,6 +144,7 @@ angular.module('mm.addons.mod_forum')
 
         return $mmSite.read('mod_forum_get_forum_discussion_posts', params, preSets).then(function(response) {
             if (response) {
+                storeUserData(response.posts);
                 return response.posts;
             } else {
                 return $q.reject();
@@ -178,6 +179,7 @@ angular.module('mm.addons.mod_forum')
         return $mmSite.read('mod_forum_get_forum_discussions_paginated', params, preSets).then(function(response) {
             if (response) {
                 var canLoadMore = response.discussions.length >= mmaModForumDiscPerPage;
+                storeUserData(response.discussions);
                 return {discussions: response.discussions, canLoadMore: canLoadMore};
             } else {
                 return $q.reject();
@@ -213,6 +215,29 @@ angular.module('mm.addons.mod_forum')
             return $mmSite.invalidateWsCacheForKey(getDiscussionsListCacheKey(forumid));
         });
     };
+
+    /**
+     * Store the users data from a discussions/posts list.
+     *
+     * @param {Object[]} list Array of posts or discussions.
+     */
+    function storeUserData(list) {
+        var ids = [];
+        angular.forEach(list, function(entry) {
+            var id = parseInt(entry.userid);
+            if (ids.indexOf(id) === -1) {
+                ids.push(id);
+                $mmUser.storeUser(id, entry.userfullname, entry.userpictureurl);
+            }
+            if (typeof entry.usermodified != 'undefined') {
+                id = parseInt(entry.usermodified);
+                if(ids.indexOf(id) === -1) {
+                    ids.push(id);
+                    $mmUser.storeUser(id, entry.usermodifiedfullname, entry.usermodifiedpictureurl);
+                }
+            }
+        });
+    }
 
     return self;
 });

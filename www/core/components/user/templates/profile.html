@@ -4,7 +4,8 @@
         <mm-loading hide-until="userLoaded">
             <div class="list" ng-if="user">
                 <div class="item item-avatar">
-                    <img ng-src="{{user.profileimageurl}}">
+                    <img ng-if="user.profileimageurl" ng-src="{{user.profileimageurl}}" mm-external-content>
+                    <img ng-if="!user.profileimageurl" src="img/user-avatar.png" alt="">
                     <h2><mm-format-text watch="true" clean="true">{{user.fullname}}</mm-format-text></h2>
                 </div>
                 <div class="item item-divider" ng-if="hasContact">
