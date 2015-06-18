@@ -1203,12 +1203,40 @@ angular.module('mm.core')
             var p1, p2, p3;
             p1 = db.remove(mmFilepoolStore, fileId);
             p2 = db.where(mmFilepoolLinksStore, 'fileId', '=', fileId).then(function(entries) {
-                angular.forEach(entries, function(entry) {
-                    db.remove(mmFilepoolLinksStore, entry.id);
-                });
+                return $q.all(entries.map(function(entry) {
+                    return db.remove(mmFilepoolLinksStore, [entry.fileId, entry.component, entry.componentId]);
+                }));
             });
             p3 = $mmFS.removeFile(self._getFilePath(siteId, fileId));
             return $q.all([p1, p2, p3]);
+        });
+    };
+
+    /**
+     * Delete all the matching files from a component.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#removeFilesByComponent
+     * @param {String} siteId        The site ID.
+     * @param {String} component     The component to link the file to.
+     * @param {Number} [componentId] An ID to use in conjunction with the component.
+     * @return {Promise}             Resolved on success. Rejected on failure.
+     */
+    self.removeFilesByComponent = function(siteId, component, componentId) {
+        var where;
+        if (typeof componentId !== 'undefined') {
+            where = ['componentAndId', '=', [component, self._fixComponentId(componentId)]];
+        } else {
+            where = ['component', '=', component];
+        }
+
+        return getSiteDb(siteId).then(function(db) {
+            return db.query(mmFilepoolLinksStore, where);
+        }).then(function(items) {
+            return $q.all(items.map(function(item) {
+                return self._removeFileById(siteId, item.fileId);
+            }));
         });
     };
 
