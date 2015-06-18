@@ -21,16 +21,18 @@ angular.module('mm.addons.grades')
  * @ngdoc controller
  * @name mmaGradesTableCtrl
  */
-.controller('mmaGradesTableCtrl', function($scope, $stateParams, $translate, $mmUtil, $mmaGrades) {
+.controller('mmaGradesTableCtrl', function($scope, $stateParams, $mmUtil, $mmaGrades, $mmSite) {
 
     var course = $stateParams.course || {},
-        courseid = course.id;
+        courseid = course.id,
+        userid = $stateParams.userid || $mmSite.getUserId();
 
     function fetchGrades(refresh) {
-        return $mmaGrades.getGradesTable(courseid, refresh).then(function(table) {
+        return $mmaGrades.getGradesTable(courseid, userid, refresh).then(function(table) {
             $scope.gradesTable = table;
         }, function(message) {
             $mmUtil.showErrorModal(message);
+            $scope.errormessage = message;
         });
     }
     fetchGrades().finally(function() {
