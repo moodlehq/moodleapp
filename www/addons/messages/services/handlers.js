@@ -43,7 +43,7 @@ angular.module('mm.addons.messages')
             return $mmaMessages.isPluginEnabled();
         };
 
-        self.isEnabledForUser = function(user) {
+        self.isEnabledForUser = function(user, courseId) {
             return user.id != $mmSite.getUserId();
         };
 
@@ -54,7 +54,7 @@ angular.module('mm.addons.messages')
          * @ngdoc controller
          * @name $mmaMessagesHandlers#blockContact:controller
          */
-        self.getController = function(user) {
+        self.getController = function(user, courseid) {
 
             return function($scope, $rootScope) {
                 var disabled = false;
@@ -120,11 +120,11 @@ angular.module('mm.addons.messages')
             return $mmaMessages.isPluginEnabled();
         };
 
-        self.isEnabledForUser = function(user) {
+        self.isEnabledForUser = function(user, courseId) {
             return user.id != $mmSite.getUserId();
         };
 
-        self.getController = function(user) {
+        self.getController = function(user, courseid) {
 
             /**
              * Block contact handler controller.
@@ -197,11 +197,11 @@ angular.module('mm.addons.messages')
             return $mmaMessages.isPluginEnabled();
         };
 
-        self.isEnabledForUser = function(user) {
+        self.isEnabledForUser = function(user, courseId) {
             return user.id != $mmSite.getUserId();
         };
 
-        self.getController = function(user) {
+        self.getController = function(user, courseid) {
 
             /**
              * Send message handler controller.

@@ -1,0 +1,42 @@
+<ion-modal-view class="product edit create">
+    <form name="itemEdit" ng-submit="addNote()">
+
+        <ion-header-bar class="bar-header">
+            <h1 class="title">{{ 'mma.notes.addnewnote' | translate }}</h1>
+            <a class="button" ng-click="closeModal()">{{ 'mm.core.cancel' | translate }}</a>
+        </ion-header-bar>
+
+        <ion-content has-bouncing="true">
+
+            <div class="row">
+                <div class="col">
+                    <label class="item item-input item-select">
+                        <div class="input-label">
+                          {{ 'mma.notes.publishstate' | translate }}
+                        </div>
+                        <select ng-model="note.publishstate" name="publishstate">
+                            <option value="personal">{{ 'mma.notes.personalnotes' | translate }}</option>
+                            <option value="course">{{ 'mma.notes.coursenotes' | translate }}</option>
+                            <option value="site">{{ 'mma.notes.sitenotes' | translate }}</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col">
+                    <label class="item item-input text">
+                        <textarea placeholder="{{ 'mma.notes.note' | translate }}" rows="5" ng-model="note.text" name="text" lose-focus-on-return required="required"></textarea>
+                    </label>
+                </div>
+            </div>
+
+            <div class="padding">
+                <button type="submit" class="button button-block" ng-disabled="processing || !note.text.length || note.text.length < 2">
+                    {{ 'mma.notes.addnewnote' | translate }}
+                </button>
+            </div>
+
+        </ion-content>
+    </form>
+</ion-modal-view>
