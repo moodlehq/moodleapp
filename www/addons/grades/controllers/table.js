@@ -35,7 +35,14 @@ angular.module('mm.addons.grades')
             $scope.errormessage = message;
         });
     }
-    fetchGrades().finally(function() {
+    fetchGrades().then(function() {
+        // Add log in Moodle.
+        $mmSite.write('gradereport_user_view_grade_report', {
+            courseid: courseid,
+            userid: userid
+        });
+    })
+    .finally(function() {
         $scope.gradesLoaded = true;
     });
 
