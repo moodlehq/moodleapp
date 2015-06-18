@@ -22,8 +22,10 @@ angular.module('mm.core.course')
  * @name mmCourseSectionCtrl
  */
 .controller('mmCourseSectionCtrl', function($mmCourseDelegate, $mmCourse, $mmUtil, $scope, $stateParams, $translate, $mmSite) {
-    var courseid = $stateParams.courseid,
-        sectionid = $stateParams.sectionid,
+
+    // Default values are course 1 (front page) and all sections.
+    var courseid = $stateParams.courseid || 1,
+        sectionid = $stateParams.sectionid || -1,
         sections = [];
 
     if (sectionid < 0) {
