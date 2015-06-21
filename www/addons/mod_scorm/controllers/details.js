@@ -21,7 +21,9 @@ angular.module('mm.addons.mod_scorm')
         scorm ;
 
     $scope.title = module.name;
-    $scope.description = module.description;
+    $scope.description = $stateParams.module.description;
+    $scope.newdes = $scope.description.replace(/<\/?[^>]+(>|$)/g, '');
+    console.log($stateParams.module.description);
     $scope.moduleurl = module.url;
     $scope.courseid = courseid;
 
