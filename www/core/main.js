@@ -105,24 +105,39 @@ angular.module('mm.core', ['pascalprecht.translate'])
                 state: null,
                 params: null
             },
-            controller: function($scope, $state, $stateParams, $mmSite, $mmSitesManager) {
+            controller: function($scope, $state, $stateParams, $mmSite, $mmSitesManager, $ionicHistory) {
+
+                function goToSitesList() {
+                    $ionicHistory.nextViewOptions({
+                        disableBack: true
+                    });
+                    $state.go('mm_login.sites');
+                }
+
+                function loadSiteAndGo() {
+                    $mmSitesManager.loadSite($stateParams.siteid).then(function() {
+                        $state.go($stateParams.state, $stateParams.params);
+                    }, function() {
+                        // Site doesn't exist.
+                        goToSitesList();
+                    });
+                }
+
                 $scope.$on('$ionicView.enter', function() {
                     if ($mmSite.isLoggedIn()) {
                         if ($stateParams.siteid && $stateParams.siteid != $mmSite.getId()) {
                             // Notification belongs to a different site. Change site.
                             $mmSitesManager.logout().then(function() {
-                                $mmSitesManager.loadSite($stateParams.siteid).then(function() {
-                                    $state.go($stateParams.state, $stateParams.params);
-                                });
+                                loadSiteAndGo();
                             });
                         } else {
                             $state.go($stateParams.state, $stateParams.params);
                         }
                     } else {
                         if ($stateParams.siteid) {
-                            $mmSitesManager.loadSite($stateParams.siteid).then(function() {
-                                $state.go($stateParams.state, $stateParams.params);
-                            });
+                            loadSiteAndGo();
+                        } else {
+                            goToSitesList();
                         }
                     }
                 });
