@@ -76,6 +76,5 @@ angular.module('mm.addons.mod_forum', [])
             }
         }
 
-        return undefined;
     });
 });
