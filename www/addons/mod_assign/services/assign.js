@@ -166,7 +166,7 @@ angular.module('mm.addons.mod_assign')
         var promises = [];
 
         angular.forEach(submissions, function(submission) {
-            var promise = $mmUser.getProfile(submission.userid, courseid);
+            var promise = $mmUser.getProfile(submission.userid, courseid, true);
             promises.push(promise);
             promise.then(function(user) {
                 submission.userfullname = user.fullname;
