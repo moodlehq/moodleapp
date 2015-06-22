@@ -21,7 +21,7 @@ angular.module('mm.addons.participants')
  * @ngdoc service
  * @name $mmaParticipants
  */
-.factory('$mmaParticipants', function($log, $mmSite, mmaParticipantsListLimit) {
+.factory('$mmaParticipants', function($log, $mmSite, $mmUser, mmaParticipantsListLimit) {
 
     $log = $log.getInstance('$mmaParticipants');
 
@@ -72,6 +72,7 @@ angular.module('mm.addons.participants')
 
         return $mmSite.read('core_enrol_get_enrolled_users', data, preSets).then(function(users) {
             var canLoadMore = users.length >= limitNumber;
+            $mmUser.storeUsers(users);
             return {participants: users, canLoadMore: canLoadMore};
         });
     };

@@ -21,7 +21,7 @@ angular.module('mm.addons.messages')
  * @ngdoc service
  * @name $mmaMessages
  */
-.factory('$mmaMessages', function($mmSite, $log, $q) {
+.factory('$mmaMessages', function($mmSite, $log, $q, $mmUser) {
     $log = $log.getInstance('$mmaMessages');
 
     var self = {};
@@ -72,10 +72,12 @@ angular.module('mm.addons.messages')
         return self.getContacts().then(function(contacts) {
             return self.getBlockedContacts().then(function(blocked) {
                 contacts.blocked = blocked.users;
+                storeUsersFromAllContacts(contacts);
                 return contacts;
             }, function() {
                 // The WS for blocked contacts might not be available yet, but we still want the contacts.
                 contacts.blocked = [];
+                storeUsersFromAllContacts(contacts);
                 return contacts;
             });
         });
@@ -326,6 +328,7 @@ angular.module('mm.addons.messages')
                         }
                     });
 
+                    storeUsersFromDiscussions(discussions);
                     return discussions;
                 });
             });
@@ -631,6 +634,7 @@ angular.module('mm.addons.messages')
             if (limit && contacts.length > limit) {
                 contacts = contacts.splice(0, limit);
             }
+            $mmUser.storeUsers(contacts);
             return contacts;
         });
     };
@@ -675,6 +679,28 @@ angular.module('mm.addons.messages')
             return a >= b ? 1 : -1;
         });
     };
+
+    /**
+     * Store user data from contacts in local DB.
+     *
+     * @param {Object[]} contactTypes List of contacts grouped in types.
+     */
+    function storeUsersFromAllContacts(contactTypes) {
+        angular.forEach(contactTypes, function(contacts) {
+            $mmUser.storeUsers(contacts);
+        });
+    }
+
+    /**
+     * Store user data from discussions in local DB.
+     *
+     * @param {Object[]} discussions List of discussions.
+     */
+    function storeUsersFromDiscussions(discussions) {
+        angular.forEach(discussions, function(discussion, userid) {
+            $mmUser.storeUser(userid, discussion.fullname, discussion.profileimageurl);
+        });
+    }
 
     /**
      * Unblock a user.
