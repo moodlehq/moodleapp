@@ -48,6 +48,7 @@ angular.module('mm.core')
             return;
         }
 
+        text = $interpolate(text)(scope); // "Evaluate" scope variables.
         text = text.trim();
 
         // Apply format text function.
@@ -108,13 +109,12 @@ angular.module('mm.core')
                 var matches = content.match(extractVariableRegex);
                 if (matches && typeof matches[1] == 'string') {
                     var variable = matches[1].trim();
-                    scope.$watch(variable, function(newValue) {
-                        treatContents(scope, element, attrs, newValue);
+                    scope.$watch(variable, function() {
+                        treatContents(scope, element, attrs, content);
                     });
                 }
             } else {
-                var text = $interpolate(content)(scope); // "Evaluate" scope variables.
-                treatContents(scope, element, attrs, text);
+                treatContents(scope, element, attrs, content);
             }
         }
     };
