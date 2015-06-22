@@ -27,16 +27,18 @@ angular.module('mm.addons.grades', [])
             }
         },
         params: {
-            course: null
+            course: null,
+            userid: null
         }
     });
 
 })
-.run(function($mmCoursesDelegate, $translate, $mmSite, $mmaGrades) {
+.run(function($mmCoursesDelegate, $translate, $mmSite, $mmaGrades, $mmUserDelegate, $mmaGradesHandlers) {
+    // Register plugin on course list.
     $translate('mma.grades.grades').then(function(pluginName) {
         $mmCoursesDelegate.registerPlugin('mmaGrades', function() {
 
-            if ($mmSite.wsAvailable('gradereport_user_get_grades_table')) {
+            if ($mmaGrades.isPluginEnabled()) {
                 return {
                     icon: 'ion-stats-bars',
                     state: 'site.grades',
@@ -47,4 +49,7 @@ angular.module('mm.addons.grades', [])
             return undefined;
         });
     });
+
+    // Register plugin on user profile.
+    $mmUserDelegate.registerPlugin('mmaGrades:viewGrades', $mmaGradesHandlers.viewGrades);
 });

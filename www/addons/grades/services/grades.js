@@ -186,29 +186,36 @@ angular.module('mm.addons.grades')
     };
 
     /**
+     * Returns whether or not the plugin is enabled for the current site.
+     *
+     * @module mm.addons.grades
+     * @ngdoc method
+     * @name $mmaGrades#isPluginEnabled
+     * @return {Boolean} True if plugin is enabled, false otherwise.
+     */
+    self.isPluginEnabled = function() {
+        return $mmSite.wsAvailable('gradereport_user_get_grades_table');
+    };
+
+    /**
      * Get the grades for a certain course.
      * For now we only support gradereport_user_get_grades_table. It returns the complete grades table.
      *
      * @module mm.addons.grades
      * @ngdoc method
      * @name $mmaGrades#getGradesTable
-     * @param {String} courseid ID of the course to get the grades from.
+     * @param {Number} courseid ID of the course to get the grades from.
+     * @param {Number} userid   ID of the user to get the grades from.
      * @param {Boolean} refresh True when we should not get the value from the cache.
      * @return {Promise}        Promise to be resolved when the grades table is retrieved.
      */
-    self.getGradesTable = function(courseid, refresh) {
+    self.getGradesTable = function(courseid, userid, refresh) {
 
-        $log.debug('Get grades for course '+courseid);
-
-        var siteinfo = $mmSite.getInfo();
-        if (typeof(siteinfo) === 'undefined' || typeof(siteinfo.userid) === 'undefined') {
-            $log.debug('Siteinfo not defined, reject.');
-            return $q.reject();
-        }
+        $log.debug('Get grades for course ' + courseid + ' and user ' + userid);
 
         var data = {
-                'courseid' : courseid,
-                'userid'   : siteinfo.userid
+                courseid : courseid,
+                userid   : userid
             },
             presets = {};
         if (refresh) {
