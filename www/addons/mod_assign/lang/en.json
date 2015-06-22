@@ -1,0 +1,11 @@
+{
+    "addsubmission": "Add submission",
+    "allowsubmissionsfromdate": "Allow submissions from",
+    "attemptnumber": "Attempt number",
+    "cutoffdate": "Cut-off date",
+    "duedate": "Due date",
+    "duedateno": "No due date",
+    "submissions": "Submissions",
+    "userwithid": "User with Id {{id}}",
+    "viewsubmission": "View submission"
+}

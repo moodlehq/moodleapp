@@ -101,14 +101,54 @@ angular.module('mm.core.user')
      * @module mm.core.user
      * @ngdoc method
      * @name $mmUser#getProfile
-     * @param  {Number} userid   User's ID.
-     * @param  {Number} courseid Optional - Course ID to get course profile, undefined or 0 to get site profile.
-     * @return {Promise}         Promise to be resolved with the user data.
+     * @param  {Number} userid      User's ID.
+     * @param  {Number} [courseid]  Course ID to get course profile, undefined or 0 to get site profile.
+     * @param  {Boolean} forceLocal True to retrieve the user data from local DB, false to retrieve it from WS.
+     * @return {Promise}            Promise resolved with the user data.
      */
-    self.getProfile = function(userid, courseid) {
+    self.getProfile = function(userid, courseid, forceLocal) {
 
-        var deferred = $q.defer(),
-            wsName,
+        var deferred = $q.defer();
+
+        if (forceLocal) {
+            self.getUserFromLocal(userid).then(deferred.resolve, function() {
+                self.getUserFromWS(userid, courseid).then(deferred.resolve, deferred.reject);
+            });
+        } else {
+            self.getUserFromWS(userid, courseid).then(deferred.resolve, function() {
+                self.getUserFromLocal(userid).then(deferred.resolve, deferred.reject);
+            });
+        }
+
+        return deferred.promise;
+    };
+
+    /**
+     * Get user basic information from local DB.
+     *
+     * @module mm.core.user
+     * @ngdoc method
+     * @name $mmUser#getUserFromLocal
+     * @param  {Number} id User ID.
+     * @return {Promise}   Promise resolve when the user is retrieved.
+     */
+    self.getUserFromLocal = function(id) {
+        var db = $mmSite.getDb();
+        return db.get(mmCoreUsersStore, parseInt(id));
+    };
+
+    /**
+     * Get user profile from WS.
+     *
+     * @module mm.core.user
+     * @ngdoc method
+     * @name $mmUser#getUserFromWS
+     * @param  {Number} id         User ID.
+     * @param  {Number} [courseid] Course ID to get course profile, undefined or 0 to get site profile.
+     * @return {Promise}           Promise resolve when the user is retrieved.
+     */
+    self.getUserFromWS = function(userid, courseid) {
+        var wsName,
             data;
 
         // Determine WS and data to use.
@@ -135,46 +175,19 @@ angular.module('mm.core.user')
             }
         }
 
-        $mmSite.read(wsName, data).then(function(users) {
+        return $mmSite.read(wsName, data).then(function(users) {
             if (users.length == 0) {
-                // Couldn't retrieve user. Try to get data from local DB.
-                self.getUserFromLocal(userid).then(deferred.resolve, function() {
-                    $mmLang.translateErrorAndReject(deferred, 'mm.user.invaliduser');
-                });
-                return;
+                return $q.reject();
             }
 
-            $mmUtil.getCountries().then(function(countries) {
-
+            return $mmUtil.getCountries().then(function(countries) {
                 var user = users.shift();
-
-                if (user.country && typeof(countries) !== 'undefined'
-                                 && typeof(countries[user.country]) !== "undefined") {
+                if (user.country && typeof countries != 'undefined' && typeof countries[user.country] != 'undefined') {
                     user.country = countries[user.country];
                 }
-
-                deferred.resolve(user);
-
-            });
-        }, function() {
-            // WS call failed. Try to get data from local DB.
-            self.getUserFromLocal(userid).then(deferred.resolve, function() {
-                $mmLang.translateErrorAndReject(deferred, 'mm.user.invaliduser');
+                return user;
             });
         });
-
-        return deferred.promise;
-    };
-
-    /**
-     * Get user basic information from local DB.
-     *
-     * @param  {Number} id User ID.
-     * @return {Promise}   Promise resolve when the user is retrieved.
-     */
-    self.getUserFromLocal = function(id) {
-        var db = $mmSite.getDb();
-        return db.get(mmCoreUsersStore, parseInt(id));
     };
 
     /**

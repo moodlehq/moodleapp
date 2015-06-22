@@ -12,39 +12,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.addons.mod_forum', [])
+angular.module('mm.addons.mod_assign', ['mm.core'])
 
-.constant('mmaModForumDiscPerPage', 10) // Max of discussions per page.
-.constant('mmaModForumComponent', 'mmaModForum')
+.constant('mmaModAssignComponent', 'mmaModAssign')
+.constant('mmaModAssignSubmissionComponent', 'mmaModAssignSubmission')
 
 .config(function($stateProvider) {
 
     $stateProvider
 
-    .state('site.mod_forum', {
-        url: '/mod_forum',
+    .state('site.mod_assign', {
+        url: '/mod_assign',
         params: {
             module: null,
             courseid: null
         },
         views: {
             'site': {
-                controller: 'mmaModForumDiscussionsCtrl',
-                templateUrl: 'addons/mod_forum/templates/discussions.html'
+                controller: 'mmaModAssignIndexCtrl',
+                templateUrl: 'addons/mod_assign/templates/index.html'
             }
         }
     })
 
-    .state('site.mod_forum-discussion', {
-        url: '/mod_forum-discussion',
+    .state('site.mod_assign-submission', {
+        url: '/mod_assign-submission',
         params: {
-            discussionid: null,
-            courseid: null
+            submission: null
         },
         views: {
             'site': {
-                controller: 'mmaModForumDiscussionCtrl',
-                templateUrl: 'addons/mod_forum/templates/discussion.html'
+                controller: 'mmaModAssignSubmissionCtrl',
+                templateUrl: 'addons/mod_assign/templates/submission.html'
             }
         }
     });
@@ -52,24 +51,24 @@ angular.module('mm.addons.mod_forum', [])
 })
 
 .config(function($mmCourseDelegateProvider) {
-    $mmCourseDelegateProvider.registerContentHandler('mmaModForum', 'forum', '$mmaModForumCourseContentHandler');
+    $mmCourseDelegateProvider.registerContentHandler('mmaModAssign', 'assign', '$mmaModAssignCourseContentHandler');
 })
 
-.run(function($mmaModForum, $mmModuleActionsDelegate, $translate) {
+.run(function($mmaModAssign, $mmModuleActionsDelegate, $translate) {
 
     // Add actions to notifications. Forum will only add 1 action: view discussion.
-    $mmModuleActionsDelegate.registerModuleHandler('mmaModForum', function(url, courseid) {
+    $mmModuleActionsDelegate.registerModuleHandler('mmaModAssign', function(url, courseid) {
 
-        if (courseid && url.indexOf('/mod/forum/') > -1 && $mmaModForum.isPluginEnabled()) {
-            var d = url.match(/discuss\.php\?d=([^#]*)/);
-            if (d && typeof d[1] != 'undefined') {
+        if (courseid && url.indexOf('/mod/assign/') > -1 && $mmaModAssign.isPluginEnabled()) {
+            var matches = url.match(/view\.php\?id=(\d*)/); // Get assignment ID.
+            if (matches && typeof matches[1] != 'undefined') {
                 var action = {
                     message: $translate.instant('mm.core.view'),
                     icon: 'ion-eye',
-                    state: 'site.mod_forum-discussion',
+                    state: 'site.mod_assign',
                     stateParams: {
                         courseid: courseid,
-                        discussionid: d[1]
+                        module: {id: matches[1]}
                     }
                 };
                 return [action]; // Delegate expects an array of actions, a handler can define more than one action.
