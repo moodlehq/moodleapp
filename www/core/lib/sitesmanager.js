@@ -272,7 +272,7 @@ angular.module('mm.core')
 
         candidateSite.fetchSiteInfo().then(function(infos) {
             if (isValidMoodleVersion(infos.functions)) {
-                var siteid = self.createSiteID(siteurl, infos.username);
+                var siteid = self.createSiteID(infos.siteurl, infos.username);
                 // Add site to sites list.
                 self.addSite(siteid, siteurl, token, infos);
                 // Turn candidate site into current site.
