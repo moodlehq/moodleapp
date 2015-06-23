@@ -27,6 +27,8 @@
     "karma-jasmine": "^0.3.5"
   },
   "cordovaPlugins": [
+    "org.apache.cordova.device",
+    "org.apache.cordova.console",
     "org.apache.cordova.globalization",
     "org.apache.cordova.file",
     "org.apache.cordova.inappbrowser",
@@ -34,10 +36,17 @@
     "org.apache.cordova.network-information",
     "org.apache.cordova.camera",
     "org.apache.cordova.media-capture",
+    "org.apache.cordova.splashscreen",
+    "com.phonegap.plugin.statusbar",
     "de.appplant.cordova.plugin.local-notification",
-    "org.apache.cordova.device"
+    "com.phonegap.plugins.pushplugin",
+    "net.tunts.webintent",
+    "nl.x-services.plugins.launchmyapp",
+    "com.ionic.keyboard",
+    "ch.ti8m.documenthandler"
   ],
   "cordovaPlatforms": [
-    "android"
+    "android",
+    "ios"
   ]
 }
