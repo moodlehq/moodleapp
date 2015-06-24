@@ -1,0 +1,15 @@
+{
+    "authenticating": "مصادقة",
+    "cancel": "إلغاء",
+    "help": "مساعدة",
+    "invalidaccount": "يرجى مراجعة تفاصيل تسجيل الدخول الخاصة بك أو الطلب من مسؤول موقع الويب الخاص بك للتحقق من تكوين موقع.",
+    "invalidmoodleversion": "نسخة موودل غير صالحة. الحد الأدنى للنسخة المطلوبة هو:",
+    "invalidsite": "رابط عنوان الموقع غير صالح.",
+    "login": "دخول",
+    "password": "كلمة المرور",
+    "passwordrequired": "كلمة المرور مطلوبة",
+    "siteurl": "رابط الموقع",
+    "siteurlrequired": "رابط الموقع مطلوب ..مثل  <i>http:\/\/www.yourmoodlesite.abc أو https:\/\/www.yourmoodlesite.efg<\/i>",
+    "username": "اسم المستخدم",
+    "usernamerequired": "اسم المستخدم مطلوب"
+}

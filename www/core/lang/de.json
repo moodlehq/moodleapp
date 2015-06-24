@@ -1,0 +1,18 @@
+{
+    "cancel": "Abbrechen",
+    "cannotconnect": "Keine Verbindung: Stellen Sie sicher, dass die URL richtig ist und dass mindestens Moodle 2.4 benutzt wird.",
+    "course": "Kurs",
+    "error": "Fehler",
+    "loading": "Wird geladen...",
+    "lostconnection": "Verbindung unterbrochen. Ihr Token ist jetzt ungültig.",
+    "networkerrormsg": "Kein Netzwerk oder Fehler",
+    "numdays": "{$a} Tage",
+    "numhours": "{$a} Stunden",
+    "numminutes": "{$a} Minuten",
+    "nummonths": "{$a} Monate",
+    "numseconds": "{$a} Sekunden",
+    "numyears": "{$a} Jahre",
+    "search": "Suchen",
+    "unexpectederror": "Unbekannter Fehler! Beenden Sie die App und versuchen Sie es dann noch einmal.",
+    "view": "Anzeigen"
+}

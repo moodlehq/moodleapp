@@ -1,0 +1,14 @@
+{
+    "about": "Ismertetés",
+    "cacheexpirationtime": "Gyorsítótár lejárata (ms)",
+    "deletesitefiles": "Biztosan törli a portálról a letöltött fájlokat?",
+    "development": "Fejlesztés",
+    "enabledebugging": "Hibakeresés bekapcsolása",
+    "estimatedfreespace": "Becsült szabad tárhely",
+    "general": "Általános",
+    "language": "Nyelv",
+    "license": "Engedély",
+    "settings": "Beállítások",
+    "spaceusage": "Tárhelyhasználat",
+    "total": "Összes"
+}

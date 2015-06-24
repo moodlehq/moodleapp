@@ -1,0 +1,18 @@
+{
+    "cancel": "キャンセル",
+    "cannotconnect": "接続できません：正しいURLを入力しているか、サイトのMoodleが2.4以降であることを確認してください。",
+    "course": "コース",
+    "error": "エラー",
+    "loading": "読込中",
+    "lostconnection": "あなたのトークンが無効になったため、再接続に必要な情報がサーバにはありません。",
+    "networkerrormsg": "ネットワークが無効もしくは機能していません",
+    "numdays": "{$a} 日",
+    "numhours": "{$a} 時間",
+    "numminutes": "{$a} 分",
+    "nummonths": "{$a} ヶ月",
+    "numseconds": "{$a} 秒",
+    "numyears": "{$a} 年",
+    "search": "検索",
+    "unexpectederror": "不明なエラー。アプリを閉じて再起動してみてください。",
+    "view": "表示"
+}

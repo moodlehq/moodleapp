@@ -1,0 +1,16 @@
+{
+    "confirmuploadfile": "Möchten Sie '{$a}' wirklich hochladen?",
+    "errorcapturingaudio": "Fehler bei der Audioaufnahme",
+    "errorcapturingvideo": "Fehler bei der Videoaufnahme",
+    "errorreadingfile": "Fehler beim Lesen der Datei '{$a}'",
+    "file": "Datei",
+    "fileuploaded": "Datei hochgeladen",
+    "myfiles": "Meine Dateien",
+    "readingfile": "Datei wird gelesen",
+    "sitefiles": "Dateien",
+    "success": "erfolgreich",
+    "uploadafile": "Datei hochladen",
+    "uploadfiles": "Dateien hochladen",
+    "uploading": "Wird hochgeladen...",
+    "video": "Video"
+}

@@ -1,0 +1,14 @@
+{
+    "about": "O aplikacji",
+    "cacheexpirationtime": "Czas wygasania pamięci podręcznej (milisekundy)",
+    "deletesitefiles": "Czy na pewno chcesz usunąć pliki pobrane z tej strony?",
+    "development": "Rozwój",
+    "enabledebugging": "Włącz debugowanie",
+    "estimatedfreespace": "Szacowana wolna przestrzeń",
+    "general": "Ogólne",
+    "language": "Język",
+    "license": "Licencja",
+    "settings": "Ustawienia",
+    "spaceusage": "Użyta przestrzeń",
+    "total": "Suma"
+}

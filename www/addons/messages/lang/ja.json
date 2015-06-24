@@ -1,0 +1,11 @@
+{
+    "addcontact": "コンタクトに追加",
+    "blockcontact": "コンタクトをブロック",
+    "contacts": "コンタクト",
+    "messages": "メッセージ",
+    "nomessages": "未読メッセージはありません。",
+    "removecontact": "コンタクトを削除",
+    "send": "送信",
+    "sendmessage": "メッセージ送信",
+    "unblockcontact": "コンタクトのブロックを解除"
+}

@@ -1,0 +1,16 @@
+{
+    "confirmuploadfile": "{$a}をアップロードしようとしています。続けますか？",
+    "errorcapturingaudio": "Fout bij het opnemen van audio",
+    "errorcapturingvideo": "Fout bij opnemen video",
+    "errorreadingfile": "Fout bij het lezen van bestand \"{$a}\"",
+    "file": "Bestand",
+    "fileuploaded": "Bestand geüploaded",
+    "myfiles": "Mijn bestanden",
+    "readingfile": "ファイル読み取り",
+    "sitefiles": "Sitebestanden",
+    "success": "Succes",
+    "uploadafile": "Upload een bestand",
+    "uploadfiles": "Kan bestanden uploaden",
+    "uploading": "Uploaden...",
+    "video": "Video"
+}

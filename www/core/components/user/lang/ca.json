@@ -1,0 +1,15 @@
+{
+    "address": "Adreça",
+    "city": "Ciutat",
+    "contact": "Contacte",
+    "country": "País",
+    "description": "Descripció",
+    "details": "Detalls",
+    "email": "Correu electrònic",
+    "interests": "Interessos",
+    "phone1": "Telèfon",
+    "phone2": "Mòbil",
+    "roles": "Rols",
+    "student": "Estudiant",
+    "webpage": "Pàgina web"
+}

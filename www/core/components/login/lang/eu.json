@@ -1,0 +1,19 @@
+{
+    "authenticating": "Egiaztatzen",
+    "cancel": "Utzi",
+    "help": "Laguntza",
+    "invalidaccount": "Zure erabiltzaile eta pasahitza egiaztatu itzazu edo zure guneko administratzaileari guneko ezarpenak egiaztatzeko eskatu.",
+    "invalidmoodleversion": "Moodle bertsio baliogabea. Gutxieneko bertsioa hurrengoa da:",
+    "invalidsite": "Guneko URLa ez da baliozkoa",
+    "login": "Sartu",
+    "logininsiterequired": "Gunean web-nabigatzaile baten bidez sartu behar zara.",
+    "mobileservicesnotenabled": "Mobile zerbitzuak gaitu gabe daude zure gunean. Mesedez zure Moodle gunearen administratzailearen harremanetan jarri zaitez mobile sarbidea gaitu behar dela uste baduzu.",
+    "password": "Pasahitza",
+    "passwordrequired": "Pasahitza behar da",
+    "siteinmaintenance": "Zure gunea mantenu-moduan dago",
+    "siteurl": "Gunearen URLa",
+    "siteurlrequired": "Gunearen URLa behar da <i>http:\/\/www.zuremoodlegunea.abc edo https:\/\/www.zuremoodlegunea.efg<\/i> adibidez",
+    "username": "Erabiltzaile-izena",
+    "usernamerequired": "Erabiltzaile-izena behar da",
+    "webservicesnotenabled": "Web zerbitzuak gaitu gabe daude zure gunean. Mesedez zure Moodle gunearen administratzailearen harremanetan jarri zaitez mobile sarbidea gaitu behar dela uste baduzu."
+}

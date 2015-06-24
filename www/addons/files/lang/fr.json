@@ -1,0 +1,16 @@
+{
+    "confirmuploadfile": "Vous allez déposer {$a}. Voulez-vous vraiment continuer ?",
+    "errorcapturingaudio": "Erreur d'enregistrement audio",
+    "errorcapturingvideo": "Erreur lors de la capture vidéo",
+    "errorreadingfile": "Erreur de lecture du fichier « {$a} »",
+    "file": "Fichier",
+    "fileuploaded": "Fichier envoyé",
+    "myfiles": "Mes fichiers",
+    "readingfile": "Lecture du fichier",
+    "sitefiles": "Fichiers du site",
+    "success": "Succès",
+    "uploadafile": "Déposer un fichier",
+    "uploadfiles": "Autoriser le dépôt de fichiers",
+    "uploading": "Envoi",
+    "video": "Vidéo"
+}

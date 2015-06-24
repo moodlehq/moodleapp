@@ -1,0 +1,19 @@
+{
+    "authenticating": "Authenticeren",
+    "cancel": "Annuleer",
+    "help": "Help",
+    "invalidaccount": "Controleer je logingegevens of vraag je site-beheerder om de site-configuratie te controleren.",
+    "invalidmoodleversion": "Ongeldige Moodleversie. De vereiste minimumversie is:",
+    "invalidsite": "Deze site-URL is niet geldig.",
+    "login": "Login",
+    "logininsiterequired": "Je dient via een browser in te loggen op je Moodle site",
+    "mobileservicesnotenabled": "Mobiele diensten zijn niet geactiveerd voor jou Moodle site. Neem contact op met de sitebeheerder.",
+    "password": "Wachtwoord",
+    "passwordrequired": "Wachtwoord vereist",
+    "siteinmaintenance": "Je Moodle site staat in onderhoudsmodus",
+    "siteurl": "Site URL",
+    "siteurlrequired": "De site URL is vereist, bijvoorbeeld <i>http:\/\/www.jouwmoodlesite.abc of https:\/\/www.jouwmoodlesite.efg<\/i>",
+    "username": "Gebruikersnaam",
+    "usernamerequired": "Gebruikersnaam vereist",
+    "webservicesnotenabled": "Web services zijn niet geactiveerd op jouw Moodle site. Neem contact op met de sitebeheerder."
+}

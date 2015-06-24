@@ -1,0 +1,14 @@
+{
+    "errorcapturingaudio": "S'ha produït un error en capturar l'àudio",
+    "errorcapturingvideo": "S'ha produït un error en capturar el vídeo",
+    "errorreadingfile": "S'ha produït un error en llegir el fitxer \"{$a}\"",
+    "file": "Fitxer",
+    "fileuploaded": "S'ha penjat el fitxer",
+    "myfiles": "Els meus fitxers",
+    "sitefiles": "Fitxers del lloc",
+    "success": "Èxit",
+    "uploadafile": "Penja un fitxer",
+    "uploadfiles": "Es poden penjar fitxers",
+    "uploading": "S'està penjant.",
+    "video": "Vídeo"
+}

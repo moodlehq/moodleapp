@@ -1,0 +1,14 @@
+{
+    "about": "Over",
+    "cacheexpirationtime": "Cache verlooptijd (milliseconden)",
+    "deletesitefiles": "Weet je zeker dat je deze site en gedownloade bestanden ervan wil verwijderen?",
+    "development": "Ontwikkeling",
+    "enabledebugging": "Foutopsporing inschakelen",
+    "estimatedfreespace": "Geschatte vrije ruimte",
+    "general": "Algemeen",
+    "language": "Taal",
+    "license": "Licentie",
+    "settings": "Instellingen",
+    "spaceusage": "Gebruikte ruimte",
+    "total": "Totaal"
+}

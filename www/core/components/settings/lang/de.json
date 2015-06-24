@@ -1,0 +1,14 @@
+{
+    "about": "Über Moodle Mobile",
+    "cacheexpirationtime": "Cache-Dauer (Millisekunden)",
+    "deletesitefiles": "Möchten Sie wirklich alle von dieser Website geladenen Dateien löschen?",
+    "development": "Entwicklung",
+    "enabledebugging": "Debugging",
+    "estimatedfreespace": "Verfügbarer Platz",
+    "general": "Allgemein",
+    "language": "Sprache",
+    "license": "Lizenz",
+    "settings": "Einstellungen",
+    "spaceusage": "Speicherplatz",
+    "total": "Gesamt"
+}

@@ -1,0 +1,14 @@
+{
+    "about": "Honi buruz",
+    "cacheexpirationtime": "Cache-aren iraungitze denbora (milisegundotan)",
+    "deletesitefiles": "Ziur gune honetatik jaitsitako fitxategiak ezabatu nahi dituzula?",
+    "development": "Garapena",
+    "enabledebugging": "Gaitu arazketa",
+    "estimatedfreespace": "Estimatutako leku librea",
+    "general": "Orokorra",
+    "language": "Hizkuntza",
+    "license": "Lizentzia",
+    "settings": "Ezarpenak",
+    "spaceusage": "Lekuaren erabilera",
+    "total": "Denera"
+}

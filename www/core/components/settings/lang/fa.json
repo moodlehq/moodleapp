@@ -1,0 +1,14 @@
+{
+    "about": "درباره",
+    "cacheexpirationtime": "زمان اعتبار کشها (miliseconds)",
+    "deletesitefiles": "آیا از حذف کلیه فایلهای این سایت مطمئنید؟",
+    "development": "توسعه",
+    "enabledebugging": "فعالسازی اشکالزدایی",
+    "estimatedfreespace": "فضای آزاد تخمینی",
+    "general": "عمومی",
+    "language": "زبان",
+    "license": "اجازه‌نامه",
+    "settings": "تنظیمات",
+    "spaceusage": "فضای مورد استفاده",
+    "total": "مجموع"
+}

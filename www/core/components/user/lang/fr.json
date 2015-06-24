@@ -1,0 +1,15 @@
+{
+    "address": "Adresse",
+    "city": "Ville",
+    "contact": "Contact",
+    "country": "Pays",
+    "description": "Description",
+    "details": "Détails",
+    "email": "Courriel",
+    "interests": "Centres d'intérêt",
+    "phone1": "Tél.",
+    "phone2": "Mobile",
+    "roles": "Rôles",
+    "student": "Participants",
+    "webpage": "Page Web"
+}

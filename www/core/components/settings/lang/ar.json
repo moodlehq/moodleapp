@@ -1,0 +1,14 @@
+{
+    "about": "حول",
+    "cacheexpirationtime": "وقت انتهاء صلاحية ذاكرة التخزين المؤقت (بالميلي ثانية)",
+    "deletesitefiles": "هل أنت متأكد أنك تريد حذف الملفات التي تم تحميلها من هذا الموقع؟",
+    "development": "التطوير",
+    "enabledebugging": "تمكين التصحيح",
+    "estimatedfreespace": "تقدير المساحة الحرة",
+    "general": "العام",
+    "language": "اللغة",
+    "license": "الترخيص",
+    "settings": "الإعدادات",
+    "spaceusage": "المساحة المستخدمة",
+    "total": "المجموع"
+}

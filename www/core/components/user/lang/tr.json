@@ -1,0 +1,15 @@
+{
+    "address": "Adres",
+    "city": "Şehir",
+    "contact": "Kişi",
+    "country": "Ülke",
+    "description": "Açıklama",
+    "details": "Detaylar",
+    "email": "E-posta gönder",
+    "interests": "İlgi alanları",
+    "phone1": "Telefon",
+    "phone2": "Mobil",
+    "roles": "Roller",
+    "student": "Öğrenci",
+    "webpage": "Web sayfası"
+}

@@ -1,0 +1,15 @@
+{
+    "address": "Адрес",
+    "city": "Град",
+    "contact": "Контакти",
+    "country": "Страна",
+    "description": "Описание",
+    "details": "Подробности",
+    "email": "Имейл",
+    "interests": "Интереси",
+    "phone1": "Телефон",
+    "phone2": "Мобилен",
+    "roles": "Роли",
+    "student": "طالب",
+    "webpage": "Уеб страница"
+}

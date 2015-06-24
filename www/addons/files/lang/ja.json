@@ -1,0 +1,16 @@
+{
+    "confirmuploadfile": "{$a}をアップロードしようとしています。続けますか？",
+    "errorcapturingaudio": "音声キャプチャーのエラー",
+    "errorcapturingvideo": "ビデオキャプチャーのエラー",
+    "errorreadingfile": "ファイル\"{$a}\"の読み取りエラー",
+    "file": "ファイル",
+    "fileuploaded": "アップロードしたファイル",
+    "myfiles": "マイファイル",
+    "readingfile": "ファイル読み取り",
+    "sitefiles": "サイトファイル",
+    "success": "成功",
+    "uploadafile": "ファイルをアップロードする",
+    "uploadfiles": "ファイルをアップロードできる",
+    "uploading": "アップロード中",
+    "video": "ビデオ"
+}

@@ -1,0 +1,19 @@
+{
+    "authenticating": "بررسی مجوز",
+    "cancel": "انصراف",
+    "help": "راهنما",
+    "invalidaccount": "لطفا اطلاعات ورودخود را بررسی نمایید",
+    "invalidmoodleversion": "این نسخه از برنامه سایت قابلیت اتصال به موبایل ندارد",
+    "invalidsite": "نشانی سایت معتبر نیست",
+    "login": "ورود به سایت",
+    "logininsiterequired": "لازم است به سایت از طریق مرورگر متصل گردید",
+    "mobileservicesnotenabled": "سرویس دسترسی موبایل در سایت شما فعال نیست",
+    "password": "گذرواژه",
+    "passwordrequired": "گذرواژه مورد نیاز است",
+    "siteinmaintenance": "سایت شما در حالت نگهداشت می باشد",
+    "siteurl": "نشانی سایت",
+    "siteurlrequired": "نشانی سایت لازم است. مثال: <i>http:\/\/www.yourmoodlesite.abc یا https:\/\/www.yourmoodlesite.efg<\/i>",
+    "username": "نام کاربری",
+    "usernamerequired": "نام کاربر لازم است",
+    "webservicesnotenabled": "وب سرویس سایت اشکال دارد.با مدیر سایت هماهنگ نمایید"
+}

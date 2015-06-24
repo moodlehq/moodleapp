@@ -1,0 +1,19 @@
+{
+    "authenticating": "Us esteu autenticant",
+    "cancel": "Cancel·la",
+    "help": "Ajuda",
+    "invalidaccount": "Verifiqueu el vostre nom d'usuari\/ària i contrasenya o demaneu a l'administració de Moodle que comprovi la configuració del lloc.",
+    "invalidmoodleversion": "La versió de Moodle no és vàlida. Versió mínima requerida:",
+    "invalidsite": "L'URL del lloc no és vàlid.",
+    "login": "Entrada",
+    "logininsiterequired": "Heu d'entrar al lloc a través d'una finestra del navegador",
+    "mobileservicesnotenabled": "El lloc Moodle no té habilitats els serveis mòbils. Contacteu amb l'administració del vostre Moodle si penseu que haurien d'estar habilitats.",
+    "password": "Contrasenya",
+    "passwordrequired": "Contrasenya obligatòria",
+    "siteinmaintenance": "El vostre lloc està en mode de manteniment",
+    "siteurl": "URL del lloc",
+    "siteurlrequired": "L'URL del lloc és obligatori, p. ex. <i>http:\/\/www.elvostremoodle.abc o https:\/\/www.elvostremoodle.efg<\/i>",
+    "username": "Nom d'usuari\/ària",
+    "usernamerequired": "El nom d'usuari\/ària és necessari",
+    "webservicesnotenabled": "Els serveis web no estan habilitats al vostre lloc. Contacteu amb l'administració del vostre lloc Moodle si penseu que s'haurien d'habilitar."
+}

@@ -1,0 +1,16 @@
+{
+    "confirmuploadfile": "{$a} igotzear zaude. Ziur al zaude aurrera egin nahi duzula?",
+    "errorcapturingaudio": "Errorea audioa kapturatzean",
+    "errorcapturingvideo": "Errorea bideoa kapturatzean",
+    "errorreadingfile": "Errorea \"{$a}\" fitxategia irakurtzean",
+    "file": "Fitxategia",
+    "fileuploaded": "Fitxategia igo da",
+    "myfiles": "Nire fitxategiak",
+    "readingfile": "Fitxategia irakurtzen",
+    "sitefiles": "Guneko fitxategiak",
+    "success": "Ondo!",
+    "uploadafile": "Fitxategia igo",
+    "uploadfiles": "Puede subir archivos",
+    "uploading": "Igotzen",
+    "video": "Bideoa"
+}

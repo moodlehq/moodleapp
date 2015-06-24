@@ -1,0 +1,13 @@
+{
+    "errorcapturingaudio": "Грешка при прихващане на звук",
+    "errorcapturingvideo": "Грешка при прихващане на видео",
+    "errorreadingfile": "خطاء في قراءة ملف \"{$a}\"",
+    "file": "Файл",
+    "fileuploaded": "Файлът е качен",
+    "myfiles": "Моите файлове",
+    "sitefiles": "Файлове от сайта",
+    "success": "Успешно",
+    "uploadafile": "Качване на файл",
+    "uploading": "Качване",
+    "video": "Видео"
+}

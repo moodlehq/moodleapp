@@ -1,0 +1,19 @@
+{
+    "authenticating": "Hitelesítés",
+    "cancel": "Mégse",
+    "help": "Súgó",
+    "invalidaccount": "Ellenőrizze belépési adatait vagy ellenőriztesse a rendszergazdával a portál beállításait.",
+    "invalidmoodleversion": "Érvénytelen Moodle-verzió. A minimális verziószám:",
+    "invalidsite": "A portál-URL nem érvényes.",
+    "login": "Belépés",
+    "logininsiterequired": "A portálra böngészőablakban kell bejelentkeznie.",
+    "mobileservicesnotenabled": "Portálján a mobil szolgáltatások nincsenek engedélyezve. A mobil elérhetőség bekapcsolásához forduljon a rendszergazdához.",
+    "password": "Jelszó",
+    "passwordrequired": "Jelszó szükséges",
+    "siteinmaintenance": "A portálja karbantartási üzemmódban van.",
+    "siteurl": "Portál-URL",
+    "siteurlrequired": "Portál-URL-t meg kell adni, vagyis <i>http:\/\/www.yourmoodlesite.abc vagy https:\/\/www.yourmoodlesite.efg<\/i>",
+    "username": "Felhasználónév",
+    "usernamerequired": "Felhasználónevet kell megadni",
+    "webservicesnotenabled": "A webszolgáltatások nincsenek engedélyezve a portálján. A mobil elérhetőség bekapcsolásához forduljon a rendszergazdához."
+}

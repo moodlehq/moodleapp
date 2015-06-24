@@ -1,0 +1,18 @@
+{
+    "cancel": "Cancelar",
+    "cannotconnect": "No se puede conectar: Verifique que la URL es correcta y que el sitio Moodle usa la versión 2.4 o posterior.",
+    "course": "Curso",
+    "error": "Error",
+    "loading": "Cargando",
+    "lostconnection": "Hemos perdido la conexión, necesita reconectar. Su token ya no es válido",
+    "networkerrormsg": "Conexión no disponible o sin funcionar.",
+    "numdays": "{$a} días",
+    "numhours": "{$a} horas",
+    "numminutes": "{$a} minutos",
+    "nummonths": "{$a} meses",
+    "numseconds": "{$a} segundos",
+    "numyears": "{$a} años",
+    "search": "Buscar",
+    "unexpectederror": "Error inesperado. Por favor cierre y vuelva a abrir la aplicación para intentarlo de nuevo",
+    "view": "Ver"
+}

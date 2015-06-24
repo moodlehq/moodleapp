@@ -1,0 +1,15 @@
+{
+    "address": "Adress",
+    "city": "Stad",
+    "contact": "Kontakt",
+    "country": "Land",
+    "description": "Beskrivning",
+    "details": "Detaljer",
+    "email": "Skicka",
+    "interests": "Intressen",
+    "phone1": "Telefon",
+    "phone2": "Mobil",
+    "roles": "Roller",
+    "student": "Student\/elev\/deltagare\/lärande",
+    "webpage": "Webbsida"
+}

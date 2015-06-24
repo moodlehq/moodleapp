@@ -1,0 +1,16 @@
+{
+    "confirmuploadfile": "Chcesz wysłać plik {$a}. Czy na pewno chcesz kontynuować?",
+    "errorcapturingaudio": "Ошибка захвата звука",
+    "errorcapturingvideo": "Ошибка захвата видео",
+    "errorreadingfile": "Ошибка чтения файла «{$a}»",
+    "file": "Файл",
+    "fileuploaded": "Файл загружен",
+    "myfiles": "Мои файлы",
+    "readingfile": "Odczytywanie pliku",
+    "sitefiles": "Файлы сайта",
+    "success": "Успешно",
+    "uploadafile": "Загрузить файл",
+    "uploadfiles": "Можно загружать файлы",
+    "uploading": "Загрузка",
+    "video": "Видео"
+}
