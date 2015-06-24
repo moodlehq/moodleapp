@@ -1,6 +1,7 @@
 {
     "authenticating": "Egiaztatzen",
     "cancel": "Utzi",
+    "connect": "Konektatu",
     "help": "Laguntza",
     "invalidaccount": "Zure erabiltzaile eta pasahitza egiaztatu itzazu edo zure guneko administratzaileari guneko ezarpenak egiaztatzeko eskatu.",
     "invalidmoodleversion": "Moodle bertsio baliogabea. Gutxieneko bertsioa hurrengoa da:",

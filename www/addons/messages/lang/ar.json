@@ -1,6 +1,7 @@
 {
     "addcontact": "أضف كجهة اتصال",
     "blockcontact": "أحجب عنوان  الأتصال",
+    "contactlistempty": "قائمة اتصالك فارغة",
     "contacts": "عناوين اتصال",
     "messages": "رسائل",
     "nomessages": "لا يوجد رساله\/رسائل جديدة",

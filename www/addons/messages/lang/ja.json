@@ -1,6 +1,8 @@
 {
     "addcontact": "コンタクトに追加",
     "blockcontact": "コンタクトをブロック",
+    "contactlistempty": "コンタクトリストは空です。",
+    "contactname": "連絡先",
     "contacts": "コンタクト",
     "messages": "メッセージ",
     "nomessages": "未読メッセージはありません。",

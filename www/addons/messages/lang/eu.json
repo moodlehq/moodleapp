@@ -1,6 +1,8 @@
 {
     "addcontact": "Gehitu kontaktu gisa",
     "blockcontact": "Blokeatu kontaktua",
+    "contactlistempty": "Kontaktu-zerrenda hutsik",
+    "contactname": "Kontakturako izena",
     "contacts": "Kontaktuak",
     "messages": "Mezuak",
     "nomessages": "Ez duzu mezurik",

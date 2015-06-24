@@ -1,6 +1,8 @@
 {
     "addcontact": "הוסף לרשימת אנשי קשר",
     "blockcontact": "חסום את איש הקשר.",
+    "contactlistempty": "רשימת אנשי הקשר שלך ריקה",
+    "contactname": "שם איש הקשר",
     "contacts": "אנשי קשר",
     "messages": "מסרים",
     "nomessages": "אין מסרים ממתינים",

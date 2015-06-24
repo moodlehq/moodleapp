@@ -1,6 +1,7 @@
 {
     "authenticating": "認証中",
     "cancel": "キャンセル",
+    "connect": "接続",
     "help": "ヘルプ",
     "invalidaccount": "あなたがログインするのに必要な情報を再確認し、サイト管理者にサイトの設定と合致しているか確認するよう依頼してください。",
     "invalidmoodleversion": "Moodleのバージョンが古すぎます。少なくともこれより新しいMoodleである必要があります：",

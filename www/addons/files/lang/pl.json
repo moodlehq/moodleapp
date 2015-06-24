@@ -1,5 +1,6 @@
 {
     "confirmuploadfile": "Chcesz wysłać plik {$a}. Czy na pewno chcesz kontynuować?",
+    "downloading": "Pobieranie ...",
     "errorcapturingaudio": "Błąd poczas nagrywania dźwięku",
     "errorcapturingvideo": "Błąd podczas przechwytywania wideo",
     "errorreadingfile": "Błąd podczas odczytu pliku \"{$a}\"",

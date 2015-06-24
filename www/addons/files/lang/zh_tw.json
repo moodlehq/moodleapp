@@ -1,5 +1,6 @@
 {
     "confirmuploadfile": "Chcesz wysłać plik {$a}. Czy na pewno chcesz kontynuować?",
+    "downloading": "下載中....",
     "errorcapturingaudio": "錄製聲音時發生錯誤",
     "errorcapturingvideo": "錄製影片時發生錯誤",
     "errorreadingfile": "讀取檔案 \"{$a}\" 時發生錯誤",

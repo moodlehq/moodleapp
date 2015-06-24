@@ -13,6 +13,10 @@
     "numseconds": "{$a} segundu",
     "numyears": "{$a} urte",
     "search": "Bilatu",
+    "sizeb": "byte",
+    "sizegb": "GB",
+    "sizekb": "KB",
+    "sizemb": "MB",
     "unexpectederror": "Ezusteko errorea. Mesedez aplikazioa itxi eta berriz ireki eta saiatu berriro",
     "view": "Ikuspegia"
 }

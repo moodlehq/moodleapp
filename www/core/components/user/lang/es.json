@@ -7,6 +7,8 @@
     "details": "Detalles",
     "email": "Email",
     "interests": "Intereses",
+    "invaliduser": "Usuario no válido",
+    "manager": "Gestor",
     "phone1": "Teléfono",
     "phone2": "Móvil",
     "roles": "Roles",

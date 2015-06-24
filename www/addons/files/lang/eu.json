@@ -1,5 +1,6 @@
 {
     "confirmuploadfile": "{$a} igotzear zaude. Ziur al zaude aurrera egin nahi duzula?",
+    "downloading": "Jaisten...",
     "errorcapturingaudio": "Errorea audioa kapturatzean",
     "errorcapturingvideo": "Errorea bideoa kapturatzean",
     "errorreadingfile": "Errorea \"{$a}\" fitxategia irakurtzean",

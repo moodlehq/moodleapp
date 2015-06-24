@@ -1,6 +1,7 @@
 {
     "authenticating": "Authenticeren",
     "cancel": "Annuleer",
+    "connect": "Verbind",
     "help": "Help",
     "invalidaccount": "Controleer je logingegevens of vraag je site-beheerder om de site-configuratie te controleren.",
     "invalidmoodleversion": "Ongeldige Moodleversie. De vereiste minimumversie is:",

@@ -13,6 +13,10 @@
     "numseconds": "{$a} secondes",
     "numyears": "{$a} ans",
     "search": "Rechercher",
+    "sizeb": "octets",
+    "sizegb": "Go",
+    "sizekb": "Ko",
+    "sizemb": "Mo",
     "unexpectederror": "Erreur inattendue. Veuillez fermer et rouvrir l'app pour continuer",
     "view": "Consulter"
 }

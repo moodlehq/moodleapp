@@ -1,5 +1,6 @@
 {
     "confirmuploadfile": "Vous allez déposer {$a}. Voulez-vous vraiment continuer ?",
+    "downloading": "Letöltés...",
     "errorcapturingaudio": "Hiba a hang rögzítélse közben",
     "errorcapturingvideo": "Nem sikerült videofelvételt készíteni",
     "errorreadingfile": "Hiba a(z) \"{$a}\" állomány olvasása közben",

@@ -7,6 +7,8 @@
     "details": "Detaily",
     "email": "E-mail",
     "interests": "Zájmy",
+    "invaliduser": "Neplatný uživatel",
+    "manager": "Manažer",
     "phone1": "Telefon",
     "phone2": "Mobil",
     "roles": "Role",

@@ -1,6 +1,8 @@
 {
     "addcontact": "Lägg till kontakt",
     "blockcontact": "Blockera kontakt",
+    "contactlistempty": "Din kontaktlista är tom.",
+    "contactname": "Namn för kontakt",
     "contacts": "Kontakter",
     "messages": "Meddelanden",
     "nomessages": "Inga avvaktande meddelanden",

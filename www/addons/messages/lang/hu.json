@@ -1,6 +1,8 @@
 {
     "addcontact": "Hozzáadás kapcsolatként",
     "blockcontact": "Kapcsolat zárolása",
+    "contactlistempty": "Kapcsolatainak jegyzéke jelenleg üres.",
+    "contactname": "Név a kapcsolattartáshoz",
     "contacts": "Kapcsolatok",
     "messages": "Üzenetek",
     "nomessages": "Nem várakozik üzenet",

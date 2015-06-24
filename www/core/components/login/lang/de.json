@@ -1,6 +1,7 @@
 {
     "authenticating": "Wird authentifiziert...",
     "cancel": "Abbrechen",
+    "connect": "Verbinden",
     "help": "Hilfe",
     "invalidaccount": "Prüfen Sie Ihre Anmeldedaten oder wenden Sie sich an den Administrator.",
     "invalidmoodleversion": "Notwendig ist mindestens die Moodle-Version:",

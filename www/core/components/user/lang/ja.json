@@ -7,6 +7,8 @@
     "details": "詳細",
     "email": "Email",
     "interests": "興味があること",
+    "invaliduser": "無効なユーザです。",
+    "manager": "マネージャ",
     "phone1": "電話",
     "phone2": "携帯電話",
     "roles": "ロール",

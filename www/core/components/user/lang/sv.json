@@ -7,6 +7,8 @@
     "details": "Detaljer",
     "email": "Skicka",
     "interests": "Intressen",
+    "invaliduser": "Ogiltig användare",
+    "manager": "Administratör",
     "phone1": "Telefon",
     "phone2": "Mobil",
     "roles": "Roller",

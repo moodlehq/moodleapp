@@ -1,6 +1,7 @@
 {
     "authenticating": "Autenticação",
     "cancel": "Cancelar",
+    "connect": "Conectar",
     "help": "Ajuda",
     "invalidaccount": "Por favor, verifique os detalhes de seu Usuário ou peça ao administrador do site para verificar a configuração do site.",
     "invalidmoodleversion": "Versão do Moodle inválida. A versão mínima requerida é:",

@@ -1,5 +1,6 @@
 {
     "confirmuploadfile": "Chystáte nahrát {$a}. Jste si jisti, že chcete pokračovat?",
+    "downloading": "Stahování ...",
     "errorcapturingaudio": "Chyba snímání zvuku",
     "errorcapturingvideo": "Chyba snímání videa",
     "errorreadingfile": "Chyba při čtení souboru \"{$a}\"",

@@ -1,5 +1,6 @@
 {
     "confirmuploadfile": "{$a}をアップロードしようとしています。続けますか？",
+    "downloading": "ダウンロード中 ...",
     "errorcapturingaudio": "音声キャプチャーのエラー",
     "errorcapturingvideo": "ビデオキャプチャーのエラー",
     "errorreadingfile": "ファイル\"{$a}\"の読み取りエラー",

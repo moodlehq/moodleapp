@@ -13,6 +13,10 @@
     "numseconds": "{$a} secondi",
     "numyears": "{$a} anni",
     "search": "Cerca",
+    "sizeb": "bytes",
+    "sizegb": "GB",
+    "sizekb": "KB",
+    "sizemb": "MB",
     "unexpectederror": "Si è verificato un errore inatteso. Riprova chiudendo e riaprendo l'applicazione",
     "view": "Visualizza"
 }

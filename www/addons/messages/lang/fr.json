@@ -1,6 +1,8 @@
 {
     "addcontact": "Ajouter un contact",
     "blockcontact": "Bloquer le contact",
+    "contactlistempty": "Liste de contacts vide",
+    "contactname": "Nom de contact",
     "contacts": "Contacts",
     "messages": "Messages",
     "nomessages": "Aucun message personnel en attente",
