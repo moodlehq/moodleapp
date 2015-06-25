@@ -1,0 +1,15 @@
+{
+    "address": "アドレス",
+    "city": "市町村",
+    "contact": "コンタクト",
+    "country": "国",
+    "description": "説明",
+    "details": "詳細",
+    "email": "Email",
+    "interests": "興味があること",
+    "phone1": "電話",
+    "phone2": "携帯電話",
+    "roles": "ロール",
+    "student": "学生",
+    "webpage": "ウェブページ"
+}

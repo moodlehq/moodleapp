@@ -1,0 +1,16 @@
+{
+    "confirmuploadfile": "Vous allez déposer {$a}. Voulez-vous vraiment continuer ?",
+    "errorcapturingaudio": "Si è verificato un errore durante la registrazione dell'audio",
+    "errorcapturingvideo": "Si è verificato un errore durante l'acquisizione del video",
+    "errorreadingfile": "Si è verificato un errore leggendo il file \"{$a}\"",
+    "file": "File",
+    "fileuploaded": "File caricato",
+    "myfiles": "I miei file",
+    "readingfile": "Lecture du fichier",
+    "sitefiles": "File del sito",
+    "success": "Operazione eseguita con successo",
+    "uploadafile": "Carica un file sul server",
+    "uploadfiles": "Caricamento file consentito",
+    "uploading": "Caricamento",
+    "video": "Video"
+}

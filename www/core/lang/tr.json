@@ -1,0 +1,18 @@
+{
+    "cancel": "Vazgeç",
+    "cannotconnect": "Bağlantı kurulamıyor: Doğru adres girdiğinizden ve sitenizin Moodle 2.4 ve sonrası sürüme sahip olduğundan emin olun.",
+    "course": "Kurs",
+    "error": "Hata",
+    "loading": "Yükleniyor",
+    "lostconnection": "Bağlantınızı kaybettik, yeniden bağlanmanız gerekiyor. Verileriniz artık geçerli değil.",
+    "networkerrormsg": "Ağ etkin değil ya da çalışmıyor.",
+    "numdays": "{$a} gün",
+    "numhours": "{$a} saat",
+    "numminutes": "{$a} dakika",
+    "nummonths": "{$a} ay",
+    "numseconds": "{$a} saniye",
+    "numyears": "{$a} yıl",
+    "search": "Ara",
+    "unexpectederror": "Beklenmeyen hata. Lütfen uygulamanızı yeniden açın ve tekrar deneyin",
+    "view": "Görünüm"
+}

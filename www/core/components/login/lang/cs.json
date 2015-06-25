@@ -1,0 +1,19 @@
+{
+    "authenticating": "Autentizace",
+    "cancel": "Zrušit",
+    "help": "Nápověda",
+    "invalidaccount": "Zkontrolujte si prosím své přihlašovací údaje nebo se obraťte na správce webu, aby zkontroloval nastavení.",
+    "invalidmoodleversion": "Neplatná verze Moodle. Minimální potřebná verze je:",
+    "invalidsite": "Adresa URL stránky je chybná",
+    "login": "Přihlásit se",
+    "logininsiterequired": "Váš Moodlu vás nutí k přihlášení pomocí prohlížeče. Nová instance prohlížeče otevře přesměrování na vaše stránky Moodle.",
+    "mobileservicesnotenabled": "Na vašem webu nejsou povoleny mobilní služby. Pokud si myslíte, že by měl být povolen mobilní přístup, obraťte se prosím na správce Moodlu.",
+    "password": "Heslo",
+    "passwordrequired": "Je požadováno heslo",
+    "siteinmaintenance": "Váš web je v režimu údržby",
+    "siteurl": "URL adresa stránky",
+    "siteurlrequired": "Je požadováno URL webu, tj. <i> http:\/\/www.yourmoodlesite.abc nebo https:\/\/www.yourmoodlesite.efg <\/ i>",
+    "username": "Uživatelské jméno",
+    "usernamerequired": "Požadováno uživatelské jméno",
+    "webservicesnotenabled": "Na vašem webu nejsou povoleny webové služby. Pokud si myslíte, že by měl být povolen mobilní přístup, obraťte se prosím na správce Moodlu."
+}

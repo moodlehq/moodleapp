@@ -1,0 +1,15 @@
+{
+    "address": "Adresa",
+    "city": "Město",
+    "contact": "Kontakt",
+    "country": "Země",
+    "description": "Popis",
+    "details": "Detaily",
+    "email": "E-mail",
+    "interests": "Zájmy",
+    "phone1": "Telefon",
+    "phone2": "Mobil",
+    "roles": "Role",
+    "student": "Student",
+    "webpage": "Webová stránka"
+}

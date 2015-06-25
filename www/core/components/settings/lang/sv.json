@@ -1,0 +1,14 @@
+{
+    "about": "Om",
+    "cacheexpirationtime": "Cache utgångs tid (millisekunder)",
+    "deletesitefiles": "Är du säker på att du vill ta bort de nedladdade filerna från den här webbplatsen?",
+    "development": "Utveckling",
+    "enabledebugging": "Aktivera felsökning",
+    "estimatedfreespace": "Beräknad ledigt utrymme",
+    "general": "Generell",
+    "language": "Språk",
+    "license": "Licens",
+    "settings": "Inställningar",
+    "spaceusage": "Utrymmesanvändning",
+    "total": "Total"
+}

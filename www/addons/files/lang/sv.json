@@ -1,0 +1,16 @@
+{
+    "confirmuploadfile": "Chcesz wysłać plik {$a}. Czy na pewno chcesz kontynuować?",
+    "errorcapturingaudio": "Fel med att spela in ljud",
+    "errorcapturingvideo": "Fel vid inspelning av video",
+    "errorreadingfile": "Fel i samband med läsningen av filen  \"{$a}\"",
+    "file": "Fil",
+    "fileuploaded": "Fil laddade upp",
+    "myfiles": "Mina filer",
+    "readingfile": "Odczytywanie pliku",
+    "sitefiles": "webbplats filer",
+    "success": "Framgång",
+    "uploadafile": "Ladda upp en fil",
+    "uploadfiles": "Можно загружать файлы",
+    "uploading": "Uppladdning",
+    "video": "Video"
+}

@@ -1,0 +1,14 @@
+{
+    "about": "À propos",
+    "cacheexpirationtime": "Durée d'échéance du cache (ms)",
+    "deletesitefiles": "Voulez-vous vraiment supprimer les fichiers téléchargés depuis ce site ?",
+    "development": "Développement",
+    "enabledebugging": "Activer débogage",
+    "estimatedfreespace": "Espace libre estimé",
+    "general": "Général",
+    "language": "Langue",
+    "license": "Licence",
+    "settings": "Réglages",
+    "spaceusage": "Espace utilisé",
+    "total": "Total"
+}

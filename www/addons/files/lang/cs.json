@@ -1,0 +1,16 @@
+{
+    "confirmuploadfile": "Chystáte nahrát {$a}. Jste si jisti, že chcete pokračovat?",
+    "errorcapturingaudio": "Chyba snímání zvuku",
+    "errorcapturingvideo": "Chyba snímání videa",
+    "errorreadingfile": "Chyba při čtení souboru \"{$a}\"",
+    "file": "Soubor",
+    "fileuploaded": "Soubor nahrán",
+    "myfiles": "Moje soubory",
+    "readingfile": "Čtení souboru",
+    "sitefiles": "Soubory stránek",
+    "success": "Úspěch",
+    "uploadafile": "Vložit soubor",
+    "uploadfiles": "Es poden penjar fitxers",
+    "uploading": "Nahrávání",
+    "video": "Video"
+}

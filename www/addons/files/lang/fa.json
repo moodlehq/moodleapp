@@ -1,0 +1,16 @@
+{
+    "confirmuploadfile": "{$a} igotzear zaude. Ziur al zaude aurrera egin nahi duzula?",
+    "errorcapturingaudio": "خطا در ضبط صدا",
+    "errorcapturingvideo": "خطا در ضبط ویدئو",
+    "errorreadingfile": "Errorea \"{$a}\" fitxategia irakurtzean",
+    "file": "فایل",
+    "fileuploaded": "فایل آپلود شده",
+    "myfiles": "فایلهای من",
+    "readingfile": "Fitxategia irakurtzen",
+    "sitefiles": "فایلهای سایت",
+    "success": "موفق",
+    "uploadafile": "قرار دادن یک فایل در سایت",
+    "uploadfiles": "Puede subir archivos",
+    "uploading": "درحال بارگذاری",
+    "video": "ویدئو"
+}

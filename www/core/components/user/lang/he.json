@@ -1,0 +1,15 @@
+{
+    "address": "כתובת",
+    "city": "עיר",
+    "contact": "צור קשר",
+    "country": "ארץ",
+    "description": "תיאור",
+    "details": "פרטים",
+    "email": "דואר אלקטרוני",
+    "interests": "תחומי עניין",
+    "phone1": "טלפון",
+    "phone2": "סלולרי",
+    "roles": "תפקידים",
+    "student": "סטודנט",
+    "webpage": "דף בית באינטרנט"
+}

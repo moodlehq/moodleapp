@@ -1,0 +1,19 @@
+{
+    "authenticating": "Autentisera",
+    "cancel": "Avbryt",
+    "help": "Hjälp",
+    "invalidaccount": "Kontrollera dina inloggningsuppgifter stämmer eller be webbplatsadministratören att kontrollera webbplatsens konfiguration",
+    "invalidmoodleversion": "Ogiltig Moodle version. Lägsta version som krävs är",
+    "invalidsite": "Den webbadress är ogiltig.",
+    "login": "Logga in",
+    "logininsiterequired": "Du måste logga in på webbplatsen via en webbläsare",
+    "mobileservicesnotenabled": "Mobila tjänster är inte aktiverade på din sida. Vänligen kontakta din Moodleadministrator om du tycker att mobil åtkomst ska aktiveras.",
+    "password": "Lösenord",
+    "passwordrequired": "Lösenord krävs",
+    "siteinmaintenance": "Din webbplats är i underhållsläge",
+    "siteurl": "Webbadress",
+    "siteurlrequired": "Site URL krävs, dvs <i> http:\/\/www.yourmoodlesite.abc eller https:\/\/www.yourmoodlesite.efg <\/ i>",
+    "username": "Användarnamn",
+    "usernamerequired": "Användarnamn krävs",
+    "webservicesnotenabled": "Web Services är inte aktiverat i din webbplats. Vänligen kontakta din Moodleadministrator om du tycker att mobil åtkomst ska aktiveras."
+}

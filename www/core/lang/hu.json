@@ -1,0 +1,18 @@
+{
+    "cancel": "Mégse",
+    "cannotconnect": "Sikertelen kapcsolódás: ellenőrizze, jó-e az URL és a portál legalább 2.4-es Moodle-t használ-e.",
+    "course": "Kurzus",
+    "error": "Hiba",
+    "loading": "Betöltés",
+    "lostconnection": "A kapcsolat megszakadt, kacsolódjon újból. Jele érvénytelen.",
+    "networkerrormsg": "A hálózat nincs bekapcsolva vagy nem működik.",
+    "numdays": "{$a} nap",
+    "numhours": "{$a} óra",
+    "numminutes": "{$a} perc",
+    "nummonths": "{$a} hónap",
+    "numseconds": "{$a} másodperc",
+    "numyears": "{$a} év",
+    "search": "Keresés",
+    "unexpectederror": "Váratlan hiba. Zárja be és nyissa meg újból az alkalmazást.",
+    "view": "Nézet"
+}

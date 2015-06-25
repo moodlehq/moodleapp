@@ -1,0 +1,18 @@
+{
+    "cancel": "Avbryt",
+    "cannotconnect": "Kan inte ansluta: Kontrollera att webbadressen är korrekt och att din webbplats använder Moodle 2.4 eller senare",
+    "course": "Kurs",
+    "error": "Fel",
+    "loading": "Loading",
+    "lostconnection": "Vi förlorade anslutningen. Du måste  ansluta igen. Din token är nu ogiltigt.",
+    "networkerrormsg": "Nätverket är inte aktiverat eller fungerar inte",
+    "numdays": "{$a} dagar",
+    "numhours": "{$a} timmar",
+    "numminutes": "{$a} minuter",
+    "nummonths": "{$a} månader",
+    "numseconds": "{$a} sekunder",
+    "numyears": "{$a} år",
+    "search": "Sök",
+    "unexpectederror": "Oväntad fel. Stäng och öppna programmet igen för ett nytt försök.",
+    "view": "Visa"
+}

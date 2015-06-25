@@ -1,0 +1,19 @@
+{
+    "authenticating": "認証中",
+    "cancel": "キャンセル",
+    "help": "ヘルプ",
+    "invalidaccount": "あなたがログインするのに必要な情報を再確認し、サイト管理者にサイトの設定と合致しているか確認するよう依頼してください。",
+    "invalidmoodleversion": "Moodleのバージョンが古すぎます。少なくともこれより新しいMoodleである必要があります：",
+    "invalidsite": "サイトURLが正しくありません。",
+    "login": "ログイン",
+    "logininsiterequired": "ブラウザウインドウからサイトにログインする必要があります。",
+    "mobileservicesnotenabled": "あなたのサイトではモバイルサービスが有効になっていません。モバイルアクセスが必要と思うなら、あなたのMoodleサイト管理者にその相談をしてください。",
+    "password": "パスワード",
+    "passwordrequired": "パスワードがありません",
+    "siteinmaintenance": "このサイトはメンテナンス中です",
+    "siteurl": "サイトURL",
+    "siteurlrequired": "サイトURLがありません。書き方は、例えば次の通りです：<i>http:\/\/www.yourmoodlesite.abc あるいは https:\/\/www.yourmoodlesite.efg<\/i>",
+    "username": "ユーザー名",
+    "usernamerequired": "ユーザー名がありません",
+    "webservicesnotenabled": "あなたのサイトでWebサービスが有効になっていません。モバイルアクセスが必要と思うなら、あなたのMoodleサイト管理者に相談してください。"
+}

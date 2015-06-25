@@ -1,0 +1,19 @@
+{
+    "authenticating": "Authentification",
+    "cancel": "Annuler",
+    "help": "Aide",
+    "invalidaccount": "Veuillez vérifier vos données de connexion ou demander à l'administrateur de votre site de vérifier sa configuration.",
+    "invalidmoodleversion": "Version de Moodle non valide. La version minimale requise est :",
+    "invalidsite": "Cette URL n'est pas valide.",
+    "login": "Connexion",
+    "logininsiterequired": "Vous devez vous connecter au moyen d'un navigateur.",
+    "mobileservicesnotenabled": "Les Services Moodle ne sont pas activés sur votre site. Veuillez contacter l'administrateur de votre site si vous pensez qu'ils devraient être activés.",
+    "password": "Mot de passe",
+    "passwordrequired": "Mot de passe requis",
+    "siteinmaintenance": "Votre site est en mode de maintenance",
+    "siteurl": "URL du site",
+    "siteurlrequired": "URL du site requis, p. ex. <i>http:\/\/www.votre_moodle.fr<\/i> ou <i>https:\/\/www.votre_moodle.fr<\/i>",
+    "username": "Nom d'utilisateur",
+    "usernamerequired": "Nom d'utilisateur requis",
+    "webservicesnotenabled": "Les Services web ne sont pas activés sur votre site. Veuillez contacter l'administrateur de votre site si vous pensez qu'ils devraient être activés."
+}

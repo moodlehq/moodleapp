@@ -1,0 +1,18 @@
+{
+    "cancel": "Annuler",
+    "cannotconnect": "Connexion impossible : vérifiez que l'URL a été saisie correctement et que votre site utilise Moodle 2.4 ou ultérieur.",
+    "course": "Cours",
+    "error": "Erreur",
+    "loading": "Chargement",
+    "lostconnection": "Connexion perdue. Vous devez vous reconnecter. Votre jeton n'est plus valide",
+    "networkerrormsg": "Réseau désactivé ou en panne.",
+    "numdays": "{$a} jours",
+    "numhours": "{$a} heures",
+    "numminutes": "{$a} minutes",
+    "nummonths": "{$a} mois",
+    "numseconds": "{$a} secondes",
+    "numyears": "{$a} ans",
+    "search": "Rechercher",
+    "unexpectederror": "Erreur inattendue. Veuillez fermer et rouvrir l'app pour continuer",
+    "view": "Consulter"
+}

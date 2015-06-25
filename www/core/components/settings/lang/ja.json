@@ -1,0 +1,14 @@
+{
+    "about": "本アプリについて",
+    "cacheexpirationtime": "キャッシュ有効期限（ミリ秒単位）",
+    "deletesitefiles": "本当にこのサイトからダウンロードしたファイルを消去しますか？",
+    "development": "開発",
+    "enabledebugging": "デバッグを有効にする",
+    "estimatedfreespace": "概算の空き容量",
+    "general": "一般",
+    "language": "言語",
+    "license": "ライセンス",
+    "settings": "設定",
+    "spaceusage": "保存領域使用量",
+    "total": "総計"
+}

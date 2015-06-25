@@ -1,0 +1,14 @@
+{
+    "about": "Sobre",
+    "cacheexpirationtime": "Temps de venciment de memòria cau (milisegons)",
+    "deletesitefiles": "Esteu segur que voleu esborrar els fitxers baixats d'aquest lloc?",
+    "development": "Desenvolupament",
+    "enabledebugging": "Habilita depuració",
+    "estimatedfreespace": "Espai lliure estimat",
+    "general": "General",
+    "language": "Idioma",
+    "license": "Llicència",
+    "settings": "Configuració",
+    "spaceusage": "Utilització de l'espai",
+    "total": "Total"
+}

@@ -1,0 +1,15 @@
+{
+    "address": "Adres",
+    "city": "Stad",
+    "contact": "Contact",
+    "country": "Land",
+    "description": "Beschrijving",
+    "details": "Details",
+    "email": "E-mail",
+    "interests": "Interesses",
+    "phone1": "Telefoon",
+    "phone2": "Mobiele telefoon",
+    "roles": "Rollen",
+    "student": "Leerling",
+    "webpage": "Website"
+}
