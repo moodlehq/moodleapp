@@ -26,6 +26,47 @@ angular.module('mm.addons.mod_resource')
     var self = {};
 
     /**
+     * Download all the content.
+     *
+     * @module mm.addons.mod_resource
+     * @ngdoc method
+     * @name $mmaModResource#downloadAllContent
+     * @param {Object} module The module object.
+     * @return {Object}       Where keys are resource filepaths, and values are relative local paths.
+     * @protected
+     */
+    self.downloadAllContent = function(module) {
+        var promises = [];
+
+        angular.forEach(module.contents, function(content) {
+            var url,
+                fullpath;
+            if (content.type !== 'file') {
+                return;
+            }
+
+            fullpath = content.filename;
+            if (content.filepath !== '/') {
+                fullpath = content.filepath.substr(1) + fullpath;
+            }
+
+            url = self._fixUrl(content.fileurl);
+            promises.push($mmFilepool.downloadUrl($mmSite.getId(), url, false, mmaModResourceComponent, module.id)
+            .then(function(internalUrl) {
+                return [fullpath, $mmFilepool.getFilePathByUrl($mmSite.getId(), url)];
+            }));
+        });
+
+        return $q.all(promises).then(function(files) {
+            var filePaths = {};
+            angular.forEach(files, function(file) {
+                filePaths[file[0]] = file[1];
+            });
+            return filePaths;
+        });
+    };
+
+    /**
      * Fixes the URL before use.
      *
      * This removes the revision when needed, and also fixes the plugin file URL.
@@ -123,6 +164,29 @@ angular.module('mm.addons.mod_resource')
             return prepareResult();
         }, function() {
             return prepareResult();
+        });
+    };
+
+    /**
+     * Prepare the view of the module in an iframe, and returns the src.
+     *
+     * @module mm.addons.mod_resource
+     * @ngdoc method
+     * @name $mmaModResource#getIframeSrc
+     * @param {Object} module The module object.
+     * @return {Promise}
+     */
+    self.getIframeSrc = function(module) {
+        var mainFile = module.contents[0],
+            mainFilePath;
+
+        mainFilePath = mainFile.filename;
+        if (mainFile.filepath !== '/') {
+            mainFilePath = mainFile.filepath.substr(1) + mainFilePath;
+        }
+
+        return self.downloadAllContent(module).then(function(filePaths) {
+            return $mmUtil.getIframeSrc(filePaths, mainFilePath);
         });
     };
 
@@ -226,6 +290,29 @@ angular.module('mm.addons.mod_resource')
      */
     self.invalidateContent = function(moduleId) {
         return $mmFilepool.invalidateFilesByComponent($mmSite.getId(), mmaModResourceComponent, moduleId);
+    };
+
+    /**
+     * Whether the resource has to be displayed in an iframe.
+     *
+     * @module mm.addons.mod_resource
+     * @ngdoc method
+     * @name $mmaModResource#isDisplayedInIframe
+     * @param {Object} module The module object.
+     * @return {String}
+     */
+    self.isDisplayedInIframe = function(module) {
+        var inline = self.isDisplayedInline(module),
+            iframe = false;
+
+        if (inline && $mmFS.isAvailable()) {
+            angular.forEach(module.contents, function(file) {
+                var ext = $mmUtil.getFileExtension(file.filename);
+                iframe = iframe || (ext == 'js' || ext == 'swf' || ext == 'css');
+            });
+        }
+
+        return iframe;
     };
 
     /**

@@ -32,18 +32,25 @@ angular.module('mm.addons.mod_resource')
     $scope.component = mmaModResourceComponent;
     $scope.componentId = module.id;
     $scope.externalUrl = module.url;
-    $scope.inlineContent = false;
-    $scope.externalContent = false;
+    $scope.mode = false;
     $scope.loaded = false;
 
     function fetchContent() {
         if (module.contents) {
-            if ($mmaModResource.isDisplayedInline(module)) {
+            if ($mmaModResource.isDisplayedInIframe(module)) {
+                $scope.mode = 'iframe';
+                $mmaModResource.getIframeSrc(module).then(function(src) {
+                    $scope.src = src;
+                    $mmaModResource.logView(module.instance);
+                }).catch(function() {
+                    $mmUtil.showErrorModal('mma.mod_resource.errorwhileloadingthecontent', true);
+                }).finally(function() {
+                    $scope.loaded = true;
+                });
+            } else if ($mmaModResource.isDisplayedInline(module)) {
                 $mmaModResource.getResourceHtml(module.contents, module.id).then(function(content) {
-                    $scope.externalContent = false;
-                    $scope.inlineContent = true;
+                    $scope.mode = 'inline';
                     $scope.content = content;
-
                     $mmaModResource.logView(module.instance);
                 }).catch(function() {
                     $mmUtil.showErrorModal('mma.mod_resource.errorwhileloadingthecontent', true);
@@ -53,8 +60,7 @@ angular.module('mm.addons.mod_resource')
 
             } else {
                 $scope.loaded = true;
-                $scope.externalContent = true;
-                $scope.inlineContent = false;
+                $scope.mode = 'external';
 
                 $scope.open = function() {
                     var modal = $mmUtil.showModalLoading('mm.core.downloading', true);
@@ -73,7 +79,6 @@ angular.module('mm.addons.mod_resource')
             $mmUtil.showErrorModal('mma.mod_resource.errorwhileloadingthecontent', true);
         }
     }
-
 
     // Event sent by the directive mmaModResourceHtmlLink when we click an HTML link.
     $scope.$on('mmaModResourceHtmlLinkClicked', function(e, target) {
