@@ -24,6 +24,7 @@ angular.module('mm.core')
 .directive('mmBrowser', function($mmUtil) {
     return {
         restrict: 'A',
+        priority: 100,
         link: function(scope, element, attrs) {
             element.on('click', function(event) {
                 var href = element[0].getAttribute('href');
