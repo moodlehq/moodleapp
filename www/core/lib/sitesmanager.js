@@ -151,6 +151,8 @@ angular.module('mm.core')
 
         var deferred = $q.defer();
 
+        delete services[siteurl]; // Delete service stored.
+
         $mmConfig.get('wsextservice').then(function(service) {
 
             $http.post(siteurl + '/local/mobile/check.php', {service: service} )
@@ -724,6 +726,21 @@ angular.module('mm.core')
                 });
             });
         });
+    };
+
+    /**
+     * Updates a site's info.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#updateSiteInfoByUrl
+     * @param {String} siteurl  Site's URL.
+     * @param {String} username Username.
+     * @return {Promise}        A promise to be resolved when the site is updated.
+     */
+    self.updateSiteInfoByUrl = function(siteurl, username) {
+        var siteid = self.createSiteID(siteurl, username);
+        return self.updateSiteInfo(siteid);
     };
 
     return self;
