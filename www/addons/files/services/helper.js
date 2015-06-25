@@ -229,12 +229,13 @@ angular.module('mm.addons.files')
      * @module mm.addons.files
      * @ngdoc method
      * @name $mmaFilesHelper#uploadGenericFile
-     * @param  {String} uri  File URI.
-     * @param  {String} name File name.
-     * @param  {String} type File type.
-     * @return {Promise}    Promise resolved when the file is uploaded.
+     * @param  {String} uri      File URI.
+     * @param  {String} name     File name.
+     * @param  {String} type     File type.
+     * @param  {String} [siteid] Id of the site to upload the file to. If not defined, use current site.
+     * @return {Promise}         Promise resolved when the file is uploaded.
      */
-    self.uploadGenericFile = function(uri, name, type) {
+    self.uploadGenericFile = function(uri, name, type, siteid) {
         var deferred = $q.defer();
 
         if (!$mmApp.isOnline()) {
@@ -244,7 +245,7 @@ angular.module('mm.addons.files')
 
         var modal = $mmUtil.showModalLoading('mma.files.uploading', true);
 
-        $mmaFiles.uploadGenericFile(uri, name, type).then(deferred.resolve, function(error) {
+        $mmaFiles.uploadGenericFile(uri, name, type, siteid).then(deferred.resolve, function(error) {
             $log.error('Error uploading file: '+JSON.stringify(error));
             $mmLang.translateErrorAndReject(deferred, 'mma.files.errorwhileuploading');
         }).finally(function() {
@@ -253,6 +254,42 @@ angular.module('mm.addons.files')
 
         return deferred.promise;
     };
+
+    /**
+     * Convenience function to upload a file on a certain site, showing a confirm if needed.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFilesHelper#showConfirmAndUploadInSite
+     * @param  {String} fileEntry FileEntry of the file to upload.
+     * @param  {String} [siteid]  Id of the site to upload the file to. If not defined, use current site.
+     * @return {Promise}          Promise resolved when the file is uploaded.
+     */
+    self.showConfirmAndUploadInSite = function(fileEntry, siteid) {
+        return $mmFS.getFileObjectFromFileEntry(fileEntry).then(function(file) {
+            return self.confirmUploadFile(file.size).then(function() {
+                return self.uploadGenericFile(fileEntry.toURL(), file.name, file.type, siteid).then(function() {
+                    // Invalidate my files root dir so the list is refreshed when the user goes in.
+                    return $mmaFiles.invalidateDirectory('my', undefined, siteid).finally(function() {
+                        $mmUtil.showModal('mma.files.success', 'mma.files.fileuploaded');
+                    });
+                }, function(err) {
+                    if (err) {
+                        $mmUtil.showErrorModal(err);
+                    }
+                    return $q.reject();
+                });
+            }, function(err) {
+                if (err) {
+                    $mmUtil.showErrorModal(err);
+                }
+                return $q.reject();
+            });
+        }, function() {
+            $mmUtil.showErrorModal('mma.files.errorreadingfile', true);
+            return $q.reject();
+        });
+    }
 
     /**
      * Treat a capture image or browse album error.

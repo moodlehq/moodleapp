@@ -8,7 +8,7 @@
         <ion-item class="item item-thumbnail-left item-remove-animate" ng-click="login($index)">
           <ion-delete-button class="ion-minus-circled" ng-click='onItemDelete($event, $index)'></ion-delete-button>
             <img ng-src="{{site.avatar}}" mm-external-content siteid="site.id">
-            <h2><mm-format-text clean="true" watch="true">{{site.fullname}}</mm-format-text></h2>
+            <h2>{{site.fullname}}</h2>
             <p><mm-format-text clean="true" watch="true">{{site.sitename}}</mm-format-text></p>
             <p>{{site.siteurl}}</p>
         </a>
