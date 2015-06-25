@@ -28,8 +28,7 @@ angular.module('mm.core.courses')
 
     var plugins = {},
         self = {},
-        data,
-        controllers = [];
+        data;
 
     /**
      * Register a plugin to show in the course.
@@ -65,12 +64,10 @@ angular.module('mm.core.courses')
      * @return {Object} Registered plugins data.
      */
     self.getData = function() {
-        if (typeof(data) == 'undefined') {
-            data = {};
-            angular.forEach(plugins, function(callback, plugin) {
-                self.updatePluginData(plugin);
-            });
-        }
+        data = {};
+        angular.forEach(plugins, function(callback, plugin) {
+            self.updatePluginData(plugin);
+        });
         return data;
     };
 

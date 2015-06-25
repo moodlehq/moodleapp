@@ -45,7 +45,7 @@ angular.module('mm.addons.messages', [])
 
 })
 
-.run(function($mmSideMenuDelegate, $translate, $mmaMessages, $mmUserDelegate, $mmaMessagesHandlers) {
+.run(function($mmSideMenuDelegate, $translate, $mmaMessages, $mmUserDelegate, $mmaMessagesHandlers, $mmEvents, mmCoreEventLogin) {
     var strings = [
         'mma.messages.messages'
     ];
@@ -72,6 +72,11 @@ angular.module('mm.addons.messages', [])
         $mmUserDelegate.registerPlugin('mmaMessages:addContact', $mmaMessagesHandlers.addContact);
         $mmUserDelegate.registerPlugin('mmaMessages:blockContact', $mmaMessagesHandlers.blockContact);
 
+    });
+
+    // Invalidate messaging enabled WS calls.
+    $mmEvents.on(mmCoreEventLogin, function() {
+        $mmaMessages.invalidateEnabledCache();
     });
 
 });
