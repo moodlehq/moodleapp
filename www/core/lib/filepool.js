@@ -742,6 +742,23 @@ angular.module('mm.core')
     };
 
     /**
+     * Get the path to a file from its URL.
+     *
+     * This does not check if the file exists or not.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#getFilePathByUrl
+     * @param {String} siteId  The site ID.
+     * @param {String} fileUrl The file URL.
+     * @return {String} The path to the file relative to storage root.
+     */
+    self.getFilePathByUrl = function(siteId, fileUrl) {
+        var fileId = self._getFileIdByUrl(fileUrl);
+        return self._getFilePath(siteId, fileId);
+    };
+
+    /**
      * Returns the file state: FILEDOWNLOADED, FILEDOWNLOADING or FILENOTDOWNLOADED.
      *
      * @module mm.core
