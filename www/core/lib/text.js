@@ -46,7 +46,7 @@ angular.module('mm.core')
             precision = 2;
         }
 
-        var keys = ['mm.core.bytes', 'mm.core.kb', 'mm.core.mb', 'mm.core.gb', 'mm.core.tb'];
+        var keys = ['mm.core.sizeb', 'mm.core.sizekb', 'mm.core.sizemb', 'mm.core.sizegb', 'mm.core.sizetb'];
         var units = $translate.instant(keys);
         var posttxt = 0;
         if (bytes >= 1024) {

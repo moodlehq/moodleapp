@@ -13,6 +13,10 @@
     "numseconds": "{$a} segons",
     "numyears": "{$a} anys",
     "search": "Cerca",
+    "sizeb": "bytes",
+    "sizegb": "GB",
+    "sizekb": "KB",
+    "sizemb": "MB",
     "unexpectederror": "S'ha produït un error inesperat. Tanqueu l'aplicació i torneu a obrir-la per a reintentar-ho.",
     "view": "Visualitza"
 }

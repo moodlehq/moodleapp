@@ -1,6 +1,8 @@
 {
     "addcontact": "Přidat kontakt",
     "blockcontact": "Blokovat kontakt",
+    "contactlistempty": "Váš seznam kontaktů je momentálně prázdný",
+    "contactname": "Jméno",
     "contacts": "Kontakty",
     "messages": "Zprávy",
     "nomessages": "Žádné nové zprávy",

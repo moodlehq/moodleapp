@@ -13,6 +13,10 @@
     "numseconds": "{$a} Sekunden",
     "numyears": "{$a} Jahre",
     "search": "Suchen",
+    "sizeb": "Bytes",
+    "sizegb": "GB",
+    "sizekb": "KB",
+    "sizemb": "MB",
     "unexpectederror": "Unbekannter Fehler! Beenden Sie die App und versuchen Sie es dann noch einmal.",
     "view": "Anzeigen"
 }

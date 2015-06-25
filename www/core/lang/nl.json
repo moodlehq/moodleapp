@@ -13,6 +13,10 @@
     "numseconds": "{$a} seconden",
     "numyears": "{$a} jaren",
     "search": "Zoek",
+    "sizeb": "bytes",
+    "sizegb": "GB",
+    "sizekb": "KB",
+    "sizemb": "MB",
     "unexpectederror": "Onverwachte fout. Sluit en heropen de applicatie om opnieuw te proberen.",
     "view": "Bekijk"
 }

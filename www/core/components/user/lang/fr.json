@@ -7,6 +7,8 @@
     "details": "Détails",
     "email": "Courriel",
     "interests": "Centres d'intérêt",
+    "invaliduser": "Utilisateur non valide",
+    "manager": "Gestionnaire",
     "phone1": "Tél.",
     "phone2": "Mobile",
     "roles": "Rôles",

@@ -1,6 +1,8 @@
 {
     "addcontact": "Добавяне на контакт",
     "blockcontact": "Блокиране на контакт",
+    "contactlistempty": "Вашият списък с контакти е празен",
+    "contactname": "Име за контакт",
     "contacts": "Контакти",
     "messages": "Съобщения",
     "nomessages": "Няма чакащи съобщения",

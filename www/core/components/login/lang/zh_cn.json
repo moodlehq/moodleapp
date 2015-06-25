@@ -1,6 +1,7 @@
 {
     "authenticating": "验证中",
     "cancel": "取消",
+    "connect": "连接",
     "help": "帮助",
     "invalidaccount": "请检查您的登录信息，或请您的网站管理员检查网站设置。",
     "invalidmoodleversion": "无效的Moodle版本。最低版本要求是：",

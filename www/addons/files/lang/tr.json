@@ -1,5 +1,6 @@
 {
     "confirmuploadfile": "Chcesz wysłać plik {$a}. Czy na pewno chcesz kontynuować?",
+    "downloading": "İndiriliyor...",
     "errorcapturingaudio": "Ses çalma hatası",
     "errorcapturingvideo": "Video oynatma hatası",
     "errorreadingfile": "\"{$a}\" dosyasını okurken hata oluştu",

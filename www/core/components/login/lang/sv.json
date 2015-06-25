@@ -1,6 +1,7 @@
 {
     "authenticating": "Autentisera",
     "cancel": "Avbryt",
+    "connect": "Anslut",
     "help": "Hjälp",
     "invalidaccount": "Kontrollera dina inloggningsuppgifter stämmer eller be webbplatsadministratören att kontrollera webbplatsens konfiguration",
     "invalidmoodleversion": "Ogiltig Moodle version. Lägsta version som krävs är",

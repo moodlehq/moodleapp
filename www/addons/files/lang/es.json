@@ -1,5 +1,6 @@
 {
     "confirmuploadfile": "Möchten Sie '{$a}' wirklich hochladen?",
+    "downloading": "Descargando...",
     "errorcapturingaudio": "Error capturando audio",
     "errorcapturingvideo": "Error grabando el vídeo",
     "errorreadingfile": "Error al leer el archivo  \"{$a}\"",

@@ -1,5 +1,6 @@
 {
     "confirmuploadfile": "Chcesz wysłać plik {$a}. Czy na pewno chcesz kontynuować?",
+    "downloading": "Laddar ner...",
     "errorcapturingaudio": "Fel med att spela in ljud",
     "errorcapturingvideo": "Fel vid inspelning av video",
     "errorreadingfile": "Fel i samband med läsningen av filen  \"{$a}\"",

@@ -13,6 +13,10 @@
     "numseconds": "{$a} שניות",
     "numyears": "{$a} שנים",
     "search": "חיפוש",
+    "sizeb": "בתים",
+    "sizegb": "GB",
+    "sizekb": "KB",
+    "sizemb": "MB",
     "unexpectederror": "שגיאה לא ידועה. אנא סגור ופתח את האפליקציה מחדש ונסה שוב",
     "view": "תצוגה"
 }

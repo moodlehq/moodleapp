@@ -1,6 +1,8 @@
 {
     "addcontact": "Добавить как контакт",
     "blockcontact": "Заблокировать контакт",
+    "contactlistempty": "Список собеседников пуст",
+    "contactname": "Имя контактного лица",
     "contacts": "Контакты",
     "messages": "Сообщения",
     "nomessages": "Нет новых сообщений",

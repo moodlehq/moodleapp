@@ -13,6 +13,10 @@
     "numseconds": "{$a}秒",
     "numyears": "{$a}年",
     "search": "搜索",
+    "sizeb": "字节",
+    "sizegb": "GB",
+    "sizekb": "KB",
+    "sizemb": "MB",
     "unexpectederror": "意外出错。请关闭并重新打开APP再试一次",
     "view": "浏览"
 }

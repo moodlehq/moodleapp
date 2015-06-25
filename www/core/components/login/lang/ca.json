@@ -1,6 +1,7 @@
 {
     "authenticating": "Us esteu autenticant",
     "cancel": "Cancel·la",
+    "connect": "Connecta",
     "help": "Ajuda",
     "invalidaccount": "Verifiqueu el vostre nom d'usuari\/ària i contrasenya o demaneu a l'administració de Moodle que comprovi la configuració del lloc.",
     "invalidmoodleversion": "La versió de Moodle no és vàlida. Versió mínima requerida:",

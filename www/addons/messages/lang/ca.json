@@ -1,6 +1,8 @@
 {
     "addcontact": "Afegeix com a contacte",
     "blockcontact": "Bloca contacte",
+    "contactlistempty": "La vostra llista de contactes és buida",
+    "contactname": "Nom",
     "contacts": "Contactes",
     "messages": "Missatges",
     "nomessages": "No teniu missatges pendents",

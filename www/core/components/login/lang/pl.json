@@ -1,6 +1,7 @@
 {
     "authenticating": "Uwierzytlanie",
     "cancel": "Anuluj",
+    "connect": "Połącz",
     "help": "Pomoc",
     "invalidaccount": "Sprawdź swoje dane logowania lub zapytaj administratora strony aby sprawdzić konfigurację strony.",
     "invalidmoodleversion": "Nieprawidłowa wersja Moodle. Minimalna wymagana wersja to: ",

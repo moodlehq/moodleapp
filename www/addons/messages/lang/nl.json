@@ -1,6 +1,8 @@
 {
     "addcontact": "Voeg contact toe",
     "blockcontact": "Blokkeer contact",
+    "contactlistempty": "Contactpersonen is leeg",
+    "contactname": "Contactnaam",
     "contacts": "Contacten",
     "messages": "Berichten",
     "nomessages": "Geen ongelezen berichten",

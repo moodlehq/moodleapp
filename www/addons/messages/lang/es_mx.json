@@ -1,6 +1,8 @@
 {
     "addcontact": "Añadir como contacto",
     "blockcontact": "Bloquear contacto",
+    "contactlistempty": "La lista de contactos está vacía",
+    "contactname": "Nombre del contacto",
     "contacts": "Contactos",
     "messages": "mi Messenger",
     "nomessages": "No hay mensajes en espera",

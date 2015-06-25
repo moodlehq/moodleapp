@@ -1,6 +1,7 @@
 {
     "authenticating": "Hitelesítés",
     "cancel": "Mégse",
+    "connect": "Kapcsolódás",
     "help": "Súgó",
     "invalidaccount": "Ellenőrizze belépési adatait vagy ellenőriztesse a rendszergazdával a portál beállításait.",
     "invalidmoodleversion": "Érvénytelen Moodle-verzió. A minimális verziószám:",

@@ -1,5 +1,6 @@
 {
     "confirmuploadfile": "Vous allez déposer {$a}. Voulez-vous vraiment continuer ?",
+    "downloading": "מוריד...",
     "errorcapturingaudio": "שגיאה בקבלת האודיו",
     "errorcapturingvideo": "שגיאה בקבלת הוידאו",
     "errorreadingfile": "שגיאה בקריאת קובץ \"{$a}\"",

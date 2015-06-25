@@ -13,6 +13,10 @@
     "numseconds": "{$a} sekund",
     "numyears": "{$a} roků",
     "search": "Hledat",
+    "sizeb": "bytů",
+    "sizegb": "GB",
+    "sizekb": "KB",
+    "sizemb": "MB",
     "unexpectederror": "Neočekávaná chyba. Zavřete a znovu otevřete aplikaci a zkuste to znovu, prosím",
     "view": "Zobrazení"
 }

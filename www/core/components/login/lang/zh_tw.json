@@ -1,6 +1,7 @@
 {
     "authenticating": "認證中",
     "cancel": "取消",
+    "connect": "連結",
     "help": "協助",
     "invalidaccount": "請檢查您的登人資料或請您的網站管理員檢查網站設定。",
     "invalidmoodleversion": "無效的Moodle版本。至少需要的版本是：",

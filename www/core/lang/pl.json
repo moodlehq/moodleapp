@@ -13,6 +13,10 @@
     "numseconds": "{$a} sek.",
     "numyears": "{$a} lat",
     "search": "Wyszukaj",
+    "sizeb": "bajtów",
+    "sizegb": "GB",
+    "sizekb": "KB",
+    "sizemb": "MB",
     "unexpectederror": "Niespodziewany błąd. Zamknij i otwórz aplikację ponownie aby spróbować jeszcze raz",
     "view": "Widok"
 }

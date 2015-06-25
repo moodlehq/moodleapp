@@ -13,6 +13,10 @@
     "numseconds": "{$a} saniye",
     "numyears": "{$a} yıl",
     "search": "Ara",
+    "sizeb": "byte",
+    "sizegb": "GB",
+    "sizekb": "KB",
+    "sizemb": "MB",
     "unexpectederror": "Beklenmeyen hata. Lütfen uygulamanızı yeniden açın ve tekrar deneyin",
     "view": "Görünüm"
 }

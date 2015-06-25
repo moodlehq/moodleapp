@@ -13,6 +13,10 @@
     "numseconds": "{$a} 秒",
     "numyears": "{$a} 年",
     "search": "検索",
+    "sizeb": "バイト",
+    "sizegb": "GB",
+    "sizekb": "KB",
+    "sizemb": "MB",
     "unexpectederror": "不明なエラー。アプリを閉じて再起動してみてください。",
     "view": "表示"
 }

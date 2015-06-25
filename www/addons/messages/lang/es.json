@@ -1,6 +1,8 @@
 {
     "addcontact": "Añadir como contacto",
     "blockcontact": "Bloquear contacto",
+    "contactlistempty": "Lista de contactos vacía",
+    "contactname": "Nombre del contacto",
     "contacts": "Contactos",
     "messages": "Mensajes",
     "nomessages": "No hay mensajes en espera",

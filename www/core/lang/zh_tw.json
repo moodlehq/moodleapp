@@ -13,6 +13,10 @@
     "numseconds": "{$a}秒",
     "numyears": "{$a}年",
     "search": "搜尋",
+    "sizeb": "位元組",
+    "sizegb": "GB",
+    "sizekb": "KB",
+    "sizemb": "MB",
     "unexpectederror": "無法預期的錯誤。請關閉並重新開啟應用程式，再試一次。",
     "view": "瀏覽"
 }

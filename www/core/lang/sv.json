@@ -13,6 +13,10 @@
     "numseconds": "{$a} sekunder",
     "numyears": "{$a} år",
     "search": "Sök",
+    "sizeb": "bytes",
+    "sizegb": "Gb",
+    "sizekb": "Kb",
+    "sizemb": "Mb",
     "unexpectederror": "Oväntad fel. Stäng och öppna programmet igen för ett nytt försök.",
     "view": "Visa"
 }
