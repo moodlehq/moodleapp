@@ -89,7 +89,7 @@ angular.module('mm.addons.mod_resource')
      *
      * @module mm.addons.mod_resource
      * @ngdoc method
-     * @name $mmaModPage#getFileEventNames
+     * @name $mmaModResource#getFileEventNames
      * @param {Object} module The module object returned by WS.
      * @return {String[]} Array of $mmEvent names.
      */
@@ -178,9 +178,8 @@ angular.module('mm.addons.mod_resource')
      */
     self.getIframeSrc = function(module) {
         var mainFile = module.contents[0],
-            mainFilePath;
+            mainFilePath = mainFile.filename;
 
-        mainFilePath = mainFile.filename;
         if (mainFile.filepath !== '/') {
             mainFilePath = mainFile.filepath.substr(1) + mainFilePath;
         }
@@ -233,12 +232,10 @@ angular.module('mm.addons.mod_resource')
             var deferred;
             if ($mmFS.isAvailable()) {
                 // The file system is available.
-                return $mmFilepool.downloadUrl($mmSite.getId(), indexUrl, mmaModResourceComponent, moduleId);
+                return $mmFilepool.downloadUrl($mmSite.getId(), indexUrl, false, mmaModResourceComponent, moduleId);
             } else {
                 // We return the live URL.
-                deferred = $q.defer();
-                deferred.resolve(indexUrl);
-                return deferred.promise;
+                return $q.when(indexUrl);
             }
         })();
 
@@ -299,7 +296,7 @@ angular.module('mm.addons.mod_resource')
      * @ngdoc method
      * @name $mmaModResource#isDisplayedInIframe
      * @param {Object} module The module object.
-     * @return {String}
+     * @return {Boolean}
      */
     self.isDisplayedInIframe = function(module) {
         var inline = self.isDisplayedInline(module),
@@ -322,7 +319,7 @@ angular.module('mm.addons.mod_resource')
      * @ngdoc method
      * @name $mmaModResource#isDisplayedInline
      * @param {Object} module The module object.
-     * @return {String}
+     * @return {Boolean}
      */
     self.isDisplayedInline = function(module) {
         var ext = $mmUtil.getFileExtension(module.contents[0].filename);
@@ -362,7 +359,7 @@ angular.module('mm.addons.mod_resource')
 
         if ($mmFS.isAvailable()) {
             // The file system is available.
-            promise = $mmFilepool.downloadUrl($mmSite.getId(), url, mmaModResourceComponent, moduleId);
+            promise = $mmFilepool.downloadUrl($mmSite.getId(), url, false, mmaModResourceComponent, moduleId);
         } else {
             // We use the live URL.
             promise = $q.when(url);

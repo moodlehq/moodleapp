@@ -24,7 +24,7 @@ angular.module('mm.core')
 .directive('mmIframe', function($mmUtil) {
     return {
         restrict: 'E',
-        template: '<iframe class="mm-iframe" ng-src="{{src}}"></iframe>',
+        template: '<div class="iframe-wrapper"><iframe class="mm-iframe" ng-src="{{src}}"></iframe></div>',
         scope: {
             src: '='
         },

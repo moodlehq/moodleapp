@@ -17,11 +17,11 @@ angular.module('mm.addons.mod_resource')
 /**
  * Directive to open a link in external browser.
  *
- * @module mm.core
- * @ngdoc provider
- * @name mmBrowser
+ * @module mm.addons.mod_resource
+ * @ngdoc directive
+ * @name mmaModResourceHtmlLink
  */
-.directive('mmaModResourceHtmlLink', function($compile) {
+.directive('mmaModResourceHtmlLink', function() {
     return {
         restrict: 'A',
         priority: 99,   // Must be lower than mm-browser, or anything listening for a click event.

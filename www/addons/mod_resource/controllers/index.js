@@ -21,8 +21,7 @@ angular.module('mm.addons.mod_resource')
  * @ngdoc controller
  * @name mmaModResourceIndexCtrl
  */
-.controller('mmaModResourceIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModResource,
-        $translate, $log, mmaModResourceComponent) {
+.controller('mmaModResourceIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModResource, $log, mmaModResourceComponent) {
     $log = $log.getInstance('mmaModResourceIndexCtrl');
 
     var module = $stateParams.module || {};
@@ -82,7 +81,6 @@ angular.module('mm.addons.mod_resource')
 
     // Event sent by the directive mmaModResourceHtmlLink when we click an HTML link.
     $scope.$on('mmaModResourceHtmlLinkClicked', function(e, target) {
-        console.log(target);
         $scope.loaded = false;
         $mmaModResource.getResourceHtml(module.contents, module.id, target).then(function(content) {
             $scope.content = content;
@@ -94,12 +92,11 @@ angular.module('mm.addons.mod_resource')
     });
 
     $scope.doRefresh = function() {
-        showLoading = false;
         $mmaModResource.invalidateContent(module.id)
         .then(function() {
             return fetchContent();
         }).finally(function() {
-            $scope.$broadcast('scroll.refreshComplete');
+            $scope.loaded = true;
         });
     };
 

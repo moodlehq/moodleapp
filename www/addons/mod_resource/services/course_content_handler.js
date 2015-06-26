@@ -41,7 +41,7 @@ angular.module('mm.addons.mod_resource')
      *
      * @module mm.addons.mod_resource
      * @ngdoc method
-     * @name $mmaModResourceCourseContentHandler#isEnabled
+     * @name $mmaModResourceCourseContentHandler#getController
      * @param {Object} module The module info.
      * @return {Function}
      */
@@ -104,7 +104,7 @@ angular.module('mm.addons.mod_resource')
             };
 
             $scope.title = module.name;
-            $scope.icon = $mmCourse.getModuleIconSrc('page');
+            $scope.icon = $mmCourse.getModuleIconSrc('resource');
             $scope.action = function(e) {
                 $state.go('site.mod_resource', {module: module});
             };
