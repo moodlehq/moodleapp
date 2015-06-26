@@ -39,7 +39,8 @@ angular.module('mm.core')
  * @name $mmSitesManager
  */
 .factory('$mmSitesManager', function($http, $q, $mmSitesFactory, md5, $mmLang, $mmConfig, $mmApp, $mmWS, $mmUtil, $mmFS, $mmEvents,
-                                     mmCoreSitesStore, mmCoreCurrentSiteStore, mmCoreEventLogin, mmCoreEventLogout, $log) {
+            mmCoreSitesStore, mmCoreCurrentSiteStore, mmCoreEventLogin, mmCoreEventLogout, $log, mmCoreEventSiteUpdated,
+            mmCoreEventSiteAdded) {
 
     $log = $log.getInstance('$mmSitesManager');
 
@@ -281,6 +282,7 @@ angular.module('mm.core')
                 currentSite = candidateSite;
                 // Store session.
                 self.login(siteid);
+                $mmEvents.trigger(mmCoreEventSiteAdded);
                 deferred.resolve();
             } else {
                 $mmLang.translateErrorAndReject(deferred, 'mm.login.invalidmoodleversion');
@@ -391,7 +393,7 @@ angular.module('mm.core')
             currentSite = site;
             self.login(siteid);
             // Update site info. Resolve the promise even if the update fails.
-            self.updateSiteInfo(siteid).then(deferred.resolve, deferred.resolve);
+            self.updateSiteInfo(siteid).finally(deferred.resolve);
         }, deferred.reject);
 
         return deferred.promise;
@@ -723,6 +725,8 @@ angular.module('mm.core')
                     siteurl: site.getURL(),
                     token: site.getToken(),
                     infos: infos
+                }).finally(function() {
+                    $mmEvents.trigger(mmCoreEventSiteUpdated);
                 });
             });
         });
