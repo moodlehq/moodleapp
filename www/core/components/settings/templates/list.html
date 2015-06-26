@@ -11,7 +11,7 @@
                 {{ 'mm.settings.about' | translate }}
             </a>
             <a ng-repeat="plugin in plugins" class="item" ui-sref="{{plugin.state}}">
-                {{plugin.title}}
+                {{plugin.title | translate}}
             </a>
         </div>
     </ion-content>

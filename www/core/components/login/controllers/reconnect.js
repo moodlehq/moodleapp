@@ -21,8 +21,7 @@ angular.module('mm.core.login')
  * @ngdoc controller
  * @name mmLoginReconnectCtrl
  */
-.controller('mmLoginReconnectCtrl', function($scope, $state, $stateParams, $mmSitesManager, $mmSite, $mmUtil,
-            $translate, $ionicHistory) {
+.controller('mmLoginReconnectCtrl', function($scope, $state, $stateParams, $mmSitesManager, $mmSite, $mmUtil, $ionicHistory) {
 
     $scope.siteurl = $stateParams.siteurl;
     $scope.credentials = {

@@ -54,7 +54,7 @@ angular.module('mm.addons.mod_assign', ['mm.core'])
     $mmCourseDelegateProvider.registerContentHandler('mmaModAssign', 'assign', '$mmaModAssignCourseContentHandler');
 })
 
-.run(function($mmaModAssign, $mmModuleActionsDelegate, $translate) {
+.run(function($mmaModAssign, $mmModuleActionsDelegate) {
 
     // Add actions to notifications. Forum will only add 1 action: view discussion.
     $mmModuleActionsDelegate.registerModuleHandler('mmaModAssign', function(url, courseid) {
@@ -63,7 +63,7 @@ angular.module('mm.addons.mod_assign', ['mm.core'])
             var matches = url.match(/view\.php\?id=(\d*)/); // Get assignment ID.
             if (matches && typeof matches[1] != 'undefined') {
                 var action = {
-                    message: $translate.instant('mm.core.view'),
+                    message: 'mm.core.view',
                     icon: 'ion-eye',
                     state: 'site.mod_assign',
                     stateParams: {

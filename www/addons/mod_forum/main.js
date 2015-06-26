@@ -55,7 +55,7 @@ angular.module('mm.addons.mod_forum', [])
     $mmCourseDelegateProvider.registerContentHandler('mmaModForum', 'forum', '$mmaModForumCourseContentHandler');
 })
 
-.run(function($mmaModForum, $mmModuleActionsDelegate, $translate) {
+.run(function($mmaModForum, $mmModuleActionsDelegate) {
 
     // Add actions to notifications. Forum will only add 1 action: view discussion.
     $mmModuleActionsDelegate.registerModuleHandler('mmaModForum', function(url, courseid) {
@@ -64,7 +64,7 @@ angular.module('mm.addons.mod_forum', [])
             var d = url.match(/discuss\.php\?d=([^#]*)/);
             if (d && typeof d[1] != 'undefined') {
                 var action = {
-                    message: $translate.instant('mm.core.view'),
+                    message: 'mm.core.view',
                     icon: 'ion-eye',
                     state: 'site.mod_forum-discussion',
                     stateParams: {

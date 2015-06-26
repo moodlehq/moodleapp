@@ -19,7 +19,7 @@
                 </div>
                 <div class="item tabs tabs-icon-left" ng-show="hasPlugins">
                     <a ng-repeat="plugin in plugins" class="tab-item active" ui-sref="{{plugin.state}}({course: course})">
-                        <i class="icon {{plugin.icon}}"></i> {{plugin.title}}
+                        <i class="icon {{plugin.icon}}"></i> {{plugin.title | translate}}
                     </a>
                 </div>
             </div>

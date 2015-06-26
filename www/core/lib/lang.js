@@ -21,7 +21,7 @@ angular.module('mm.core')
  * @description
  * This service allows to add new languages strings.
  */
-.factory('$mmLang', function($translate, $translatePartialLoader, $mmConfig, $cordovaGlobalization) {
+.factory('$mmLang', function($translate, $translatePartialLoader, $mmConfig, $cordovaGlobalization, $q) {
 
     var self = {};
 
@@ -97,10 +97,12 @@ angular.module('mm.core')
      * @ngdoc method
      * @name $mmLang#changeCurrentLanguage
      * @param {String} language New language to use.
+     * @return {Promise}        Promise resolved when the change is finished.
      */
     self.changeCurrentLanguage = function(language) {
-        $translate.use(language);
-        $mmConfig.set('current_language', language);
+        var p1 = $translate.use(language),
+            p2 = $mmConfig.set('current_language', language);
+        return $q.all(p1, p2);
     };
 
     /**

@@ -21,8 +21,7 @@ angular.module('mm.addons.participants')
  * @ngdoc controller
  * @name mmaParticipantsListCtrl
  */
-.controller('mmaParticipantsListCtrl', function($scope, $state, $stateParams, $mmUtil, $mmaParticipants, $translate,
-            $ionicPlatform, $mmSite) {
+.controller('mmaParticipantsListCtrl', function($scope, $state, $stateParams, $mmUtil, $mmaParticipants, $ionicPlatform, $mmSite) {
     var course = $stateParams.course,
         courseid = course.id;
 

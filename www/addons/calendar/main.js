@@ -47,20 +47,18 @@ angular.module('mm.addons.calendar', [])
 
 })
 
-.run(function($mmSideMenuDelegate, $translate, $mmaCalendar, $mmLocalNotifications, $state, $ionicPlatform, $mmEvents,
+.run(function($mmSideMenuDelegate, $mmaCalendar, $mmLocalNotifications, $state, $ionicPlatform, $mmEvents,
         mmaCalendarComponent) {
     // Register plugin in side menu.
-    $translate('mma.calendar.calendarevents').then(function(strCalendar) {
-        $mmSideMenuDelegate.registerPlugin('mmaCalendar', function() {
-            if (!$mmaCalendar.isAvailable()) {
-                return undefined;
-            }
-            return {
-                icon: 'ion-calendar',
-                title: strCalendar,
-                state: 'site.calendar'
-            };
-        });
+    $mmSideMenuDelegate.registerPlugin('mmaCalendar', function() {
+        if (!$mmaCalendar.isAvailable()) {
+            return undefined;
+        }
+        return {
+            icon: 'ion-calendar',
+            title: 'mma.calendar.calendarevents',
+            state: 'site.calendar'
+        };
     });
 
     // Listen for notification clicks.

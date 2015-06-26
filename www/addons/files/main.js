@@ -74,22 +74,18 @@ angular.module('mm.addons.files', ['mm.core'])
 
 })
 
-.run(function($mmSideMenuDelegate, $translate, $q, $mmaFiles, $state, $mmSitesManager, $mmUtil, $mmaFilesHelper, $ionicPlatform) {
+.run(function($mmSideMenuDelegate, $q, $mmaFiles, $state, $mmSitesManager, $mmUtil, $mmaFilesHelper, $ionicPlatform) {
 
     // Register plugin in side menu.
-    var promises = [$translate('mma.files.myfiles')];
-    $q.all(promises).then(function(data) {
-        var strMyfiles = data[0];
-        $mmSideMenuDelegate.registerPlugin('mmaFiles', function() {
-            if (!$mmaFiles.isPluginEnabled()) {
-                return undefined;
-            }
-            return {
-                icon: 'ion-folder',
-                title: strMyfiles,
-                state: 'site.files'
-            };
-        });
+    $mmSideMenuDelegate.registerPlugin('mmaFiles', function() {
+        if (!$mmaFiles.isPluginEnabled()) {
+            return undefined;
+        }
+        return {
+            icon: 'ion-folder',
+            title: 'mma.files.myfiles',
+            state: 'site.files'
+        };
     });
 
     // Search for new files shared with the upload (to upload).

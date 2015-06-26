@@ -21,7 +21,7 @@ angular.module('mm.core.settings')
  * @ngdoc controller
  * @name mmSettingsGeneralCtrl
  */
-.controller('mmSettingsGeneralCtrl', function($scope, $mmConfig, $mmLang) {
+.controller('mmSettingsGeneralCtrl', function($scope, $mmConfig, $mmLang, $ionicHistory, $mmEvents, mmCoreEventLanguageChanged) {
 
     $mmConfig.get('languages').then(function(languages) {
         $scope.langs = languages;
@@ -32,6 +32,10 @@ angular.module('mm.core.settings')
     });
 
     $scope.languageChanged = function(newLang) {
-        $mmLang.changeCurrentLanguage(newLang);
+        $mmLang.changeCurrentLanguage(newLang).finally(function() {
+            // Clear cached views.
+            $ionicHistory.clearCache();
+            $mmEvents.trigger(mmCoreEventLanguageChanged);
+        });
     };
 });

@@ -31,18 +31,16 @@ angular.module('mm.addons.notifications', [])
     });
 
 })
-.run(function($mmSideMenuDelegate, $translate, $mmaNotifications) {
-    $translate('mma.notifications.notifications').then(function(pluginName) {
-        $mmSideMenuDelegate.registerPlugin('mmaNotifications', function() {
+.run(function($mmSideMenuDelegate, $mmaNotifications) {
+    $mmSideMenuDelegate.registerPlugin('mmaNotifications', function() {
 
-            if ($mmaNotifications.isPluginEnabled()) {
-                return {
-                    icon: 'ion-ios-bell',
-                    state: 'site.notifications',
-                    title: pluginName
-                };
-            }
+        if ($mmaNotifications.isPluginEnabled()) {
+            return {
+                icon: 'ion-ios-bell',
+                state: 'site.notifications',
+                title: 'mma.notifications.notifications'
+            };
+        }
 
-        });
     });
 });

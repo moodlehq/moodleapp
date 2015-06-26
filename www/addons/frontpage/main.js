@@ -14,27 +14,20 @@
 
 angular.module('mm.addons.frontpage', [])
 
-.run(function($mmSideMenuDelegate, $translate, $mmaFrontpage) {
-    var strings = [
-        'mma.frontpage.frontpage'
-    ];
+.run(function($mmSideMenuDelegate, $mmaFrontpage) {
 
-    $translate(strings).then(function(translations) {
+    $mmSideMenuDelegate.registerPlugin('mmaFrontpage', function() {
 
-        $mmSideMenuDelegate.registerPlugin('mmaFrontpage', function() {
+        if (!$mmaFrontpage.isPluginEnabled()) {
+            return;
+        }
 
-            if (!$mmaFrontpage.isPluginEnabled()) {
-                return;
-            }
-
-            return $mmaFrontpage.isFrontpageAvailable().then(function() {
-                return {
-                    icon: 'ion-home',
-                    state: 'site.mm_course-section',
-                    title: translations['mma.frontpage.frontpage']
-                };
-            });
-
+        return $mmaFrontpage.isFrontpageAvailable().then(function() {
+            return {
+                icon: 'ion-home',
+                state: 'site.mm_course-section',
+                title: 'mma.frontpage.frontpage'
+            };
         });
 
     });

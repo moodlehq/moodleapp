@@ -20,7 +20,7 @@
             <div class="item item-avatar">
                 <img ng-src="{{siteinfo.userpictureurl}}" alt="" mm-external-content>
                 <h2>{{siteinfo.fullname}}</h2>
-                <p><mm-format-text>{{siteinfo.sitename}}</mm-format-text></p>
+                <p><mm-format-text watch="true">{{siteinfo.sitename}}</mm-format-text></p>
             </div>
         </div>
         <ion-content class="has-side-menu-header">
@@ -29,7 +29,7 @@
                     <i class="icon ion-ionic"></i>{{ 'mm.sidemenu.mycourses' | translate}}
                 </a>
                 <a ng-repeat="plugin in plugins" menu-close class="item item-icon-left" ui-sref="{{plugin.state}}">
-                    <i class="icon {{plugin.icon}}"></i> {{plugin.title}}
+                    <i class="icon {{plugin.icon}}"></i> {{plugin.title | translate}}
                     <span ng-show="plugin.badge > 0" class="badge badge-positive">{{plugin.badge}}</span>
                 </a>
                 <a menu-close class="item item-icon-left" ng-href="{{siteinfo.siteurl}}" mm-browser>

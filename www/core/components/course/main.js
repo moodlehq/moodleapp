@@ -60,19 +60,17 @@ angular.module('mm.core.course', [])
 
 })
 
-.run(function($mmEvents, mmCoreEventLogin, $mmCourseDelegate, $mmCoursesDelegate, $translate) {
+.run(function($mmEvents, mmCoreEventLogin, $mmCourseDelegate, $mmCoursesDelegate) {
 
     $mmEvents.on(mmCoreEventLogin, function() {
         $mmCourseDelegate.updateContentHandlers();
     });
 
-    $translate('mm.course.contents').then(function(str) {
-        $mmCoursesDelegate.registerPlugin('mmCourse', function() {
-            return {
-                icon: 'ion-briefcase',
-                title: str,
-                state: 'site.mm_course'
-            };
-        });
+    $mmCoursesDelegate.registerPlugin('mmCourse', function() {
+        return {
+            icon: 'ion-briefcase',
+            title: 'mm.course.contents',
+            state: 'site.mm_course'
+        };
     });
 });
