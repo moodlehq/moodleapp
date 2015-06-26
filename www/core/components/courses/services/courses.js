@@ -14,13 +14,6 @@
 
 angular.module('mm.core.courses')
 
-.run(function($translate, mmCoursesFrontPage) {
-    $translate('mm.courses.frontpage').then(function(value) {
-        mmCoursesFrontPage.shortname = value;
-        mmCoursesFrontPage.fullname = value;
-    });
-})
-
 /**
  * Service to handle site courses.
  *
@@ -76,14 +69,7 @@ angular.module('mm.core.courses')
 
         return $mmSitesManager.getSite(siteid).then(function(site) {
             return site.read('core_enrol_get_users_courses', data, presets).then(function(courses) {
-                // TODO: For now we won't show front page in the course list because we cannot retrieve its summary.
-                // courses.unshift(mmCoursesFrontPage);
-
-                // TODO: MM._loadGroups(courses);
-
-                // TODO: Store courses in DB.
                 storeCoursesInMemory(courses);
-
                 return courses;
             });
         });

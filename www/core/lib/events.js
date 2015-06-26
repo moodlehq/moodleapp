@@ -17,6 +17,7 @@ angular.module('mm.core')
 .constant('mmCoreEventSessionExpired', 'session_expired')
 .constant('mmCoreEventLogin', 'login')
 .constant('mmCoreEventLogout', 'logout')
+.constant('mmCoreEventLanguageChanged', 'language_changed')
 
 /**
  * Service to send and listen to events.

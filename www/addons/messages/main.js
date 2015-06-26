@@ -45,34 +45,27 @@ angular.module('mm.addons.messages', [])
 
 })
 
-.run(function($mmSideMenuDelegate, $translate, $mmaMessages, $mmUserDelegate, $mmaMessagesHandlers, $mmEvents, mmCoreEventLogin) {
-    var strings = [
-        'mma.messages.messages'
-    ];
+.run(function($mmSideMenuDelegate, $mmaMessages, $mmUserDelegate, $mmaMessagesHandlers, $mmEvents, mmCoreEventLogin) {
 
-    $translate(strings).then(function(translations) {
+    $mmSideMenuDelegate.registerPlugin('mmaMessages', function() {
 
-        $mmSideMenuDelegate.registerPlugin('mmaMessages', function() {
+        if (!$mmaMessages.isPluginEnabled()) {
+            return;
+        }
 
-            if (!$mmaMessages.isPluginEnabled()) {
-                return;
-            }
-
-            return $mmaMessages.isMessagingEnabled().then(function() {
-                return {
-                    icon: 'ion-chatbox',
-                    state: 'site.messages',
-                    title: translations['mma.messages.messages']
-                };
-            });
-
+        return $mmaMessages.isMessagingEnabled().then(function() {
+            return {
+                icon: 'ion-chatbox',
+                state: 'site.messages',
+                title: 'mma.messages.messages'
+            };
         });
 
-        $mmUserDelegate.registerPlugin('mmaMessages:sendMessage', $mmaMessagesHandlers.sendMessage);
-        $mmUserDelegate.registerPlugin('mmaMessages:addContact', $mmaMessagesHandlers.addContact);
-        $mmUserDelegate.registerPlugin('mmaMessages:blockContact', $mmaMessagesHandlers.blockContact);
-
     });
+
+    $mmUserDelegate.registerPlugin('mmaMessages:sendMessage', $mmaMessagesHandlers.sendMessage);
+    $mmUserDelegate.registerPlugin('mmaMessages:addContact', $mmaMessagesHandlers.addContact);
+    $mmUserDelegate.registerPlugin('mmaMessages:blockContact', $mmaMessagesHandlers.blockContact);
 
     // Invalidate messaging enabled WS calls.
     $mmEvents.on(mmCoreEventLogin, function() {

@@ -21,7 +21,7 @@ angular.module('mm.core.user')
  * @ngdoc controller
  * @name mmaParticipantsProfileCtrl
  */
-.controller('mmUserProfileCtrl', function($scope, $state, $stateParams, $mmUtil, $mmUser, $translate, $mmUserDelegate, $mmSite) {
+.controller('mmUserProfileCtrl', function($scope, $state, $stateParams, $mmUtil, $mmUser, $mmUserDelegate, $mmSite) {
 
     var courseid = $stateParams.courseid,
         userid   = $stateParams.userid;

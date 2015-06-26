@@ -34,14 +34,12 @@ angular.module('mm.addons.participants', [])
 
 })
 
-.run(function($mmCoursesDelegate, $translate) {
-    $translate('mma.participants.participants').then(function(pluginName) {
-        $mmCoursesDelegate.registerPlugin('mmaParticipants', function() {
-            return {
-                icon: 'ion-person-stalker',
-                title: pluginName,
-                state: 'site.participants'
-            };
-        });
+.run(function($mmCoursesDelegate) {
+    $mmCoursesDelegate.registerPlugin('mmaParticipants', function() {
+        return {
+            icon: 'ion-person-stalker',
+            title: 'mma.participants.participants',
+            state: 'site.participants'
+        };
     });
 });

@@ -21,7 +21,8 @@ angular.module('mm.core.sidemenu')
  * @ngdoc controller
  * @name mmSideMenuCtrl
  */
-.controller('mmSideMenuCtrl', function($scope, $state, $mmSideMenuDelegate, $mmSitesManager, $mmSite, $mmConfig) {
+.controller('mmSideMenuCtrl', function($scope, $state, $mmSideMenuDelegate, $mmSitesManager, $mmSite, $mmConfig, $mmEvents,
+            $timeout, mmCoreEventLanguageChanged) {
     $scope.plugins = $mmSideMenuDelegate.getData();
     $scope.siteinfo = $mmSite.getInfo();
 
@@ -33,5 +34,13 @@ angular.module('mm.core.sidemenu')
 
     $mmSite.getDocsUrl().then(function(docsurl) {
         $scope.docsurl = docsurl;
+    });
+
+    $mmEvents.on(mmCoreEventLanguageChanged, function() {
+        // Update site info. We need to use $timeout to force a $digest and make $watch notice the variable change.
+        $scope.siteinfo = undefined;
+        $timeout(function() {
+            $scope.siteinfo = $mmSite.getInfo();
+        });
     });
 });
