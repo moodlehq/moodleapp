@@ -18,7 +18,7 @@ angular.module('mm.addons.mod_url')
  * URL service.
  *
  * @module mm.addons.mod_url
- * @ngdoc controller
+ * @ngdoc service
  * @name $mmaModUrl
  */
 .factory('$mmaModUrl', function($mmSite, $mmUtil) {

@@ -512,7 +512,7 @@ angular.module('mm.core')
             data.url = fileUrl;
 
             return self._addFileToPool(siteId, fileId, data).then(function() {
-                return fileEntry.toInternalURL();
+                return fileEntry.toURL();
             });
         });
     };

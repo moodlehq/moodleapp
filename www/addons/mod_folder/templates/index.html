@@ -1,0 +1,15 @@
+<ion-view>
+    <ion-nav-title>{{ title }}</ion-nav-title>
+    <ion-content padding="true">
+        <mm-course-mod-description description="description"></mm-course-mod-description>
+        <div class="list">
+            <div ng-repeat="file in contents">
+                <mm-file ng-if="file.type !== 'folder'" file="file"></mm-file>
+                <a ng-if="file.type === 'folder'" class="item item-text-wrap item-media" ui-sref="site.mod_folder({courseid: courseid, module: file, path: file.filepath})">
+                    <img ng-src="{{file.fileicon}}" />
+                    <p>{{file.name}}</p>
+                </a>
+            </div>
+        </div>
+    </ion-content>
+</ion-view>

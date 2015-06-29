@@ -12,24 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.addons.mod_url')
+angular.module('mm.addons.mod_folder')
 
 /**
- * Mod URL course content handler.
+ * Mod Folder course content handler.
  *
- * @module mm.addons.mod_url
+ * @module mm.addons.mod_folder
  * @ngdoc service
- * @name $mmaModUrlCourseContentHandler
+ * @name $mmaModFolderCourseContentHandler
  */
-.factory('$mmaModUrlCourseContentHandler', function($mmCourse, $mmaModUrl, $state) {
+.factory('$mmaModFolderCourseContentHandler', function($mmCourse, $mmaModFolder, $state) {
     var self = {};
 
     /**
      * Whether or not the module is enabled for the site.
      *
-     * @module mm.addons.mod_url
+     * @module mm.addons.mod_folder
      * @ngdoc method
-     * @name $mmaModUrlCourseContentHandler#isEnabled
+     * @name $mmaModFolderCourseContentHandler#isEnabled
      * @return {Boolean}
      */
     self.isEnabled = function() {
@@ -39,28 +39,20 @@ angular.module('mm.addons.mod_url')
     /**
      * Get the controller.
      *
-     * @module mm.addons.mod_url
+     * @module mm.addons.mod_folder
      * @ngdoc method
-     * @name $mmaModUrlCourseContentHandler#getController
-     * @param {Object} module The module info.
+     * @name $mmaModFolderCourseContentHandler#getController
+     * @param {Object} module   The module info.
+     * @param {Number} courseid Course ID.
      * @return {Function}
      */
-    self.getController = function(module) {
+    self.getController = function(module, courseid) {
         return function($scope) {
-            $scope.icon = $mmCourse.getModuleIconSrc('url');
+            $scope.icon = $mmCourse.getModuleIconSrc('folder');
             $scope.title = module.name;
             $scope.action = function(e) {
-                $state.go('site.mod_url', {module: module});
+                $state.go('site.mod_folder', {module: module, courseid: courseid});
             };
-
-            if (module.contents && module.contents[0] && module.contents[0].fileurl) {
-                $scope.buttons = [{
-                    icon: 'ion-link',
-                    action: function() {
-                        $mmaModUrl.open(module.instance, module.contents[0].fileurl);
-                    }
-                }];
-            }
         };
     };
 
