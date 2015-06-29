@@ -592,5 +592,21 @@ angular.module('mm.core')
         });
     };
 
+    /**
+     * Copy a file.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#copyFile
+     * @param {String} from   Path to the file to move.
+     * @param {String} to     New path of the file.
+     * @return {Promise}      Promise resolved when the entry is copied.
+     */
+    self.copyFile = function(from, to) {
+        return self.init().then(function() {
+            return $cordovaFile.copyFile(basePath, from, basePath, to);
+        });
+    };
+
     return self;
 });

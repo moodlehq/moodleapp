@@ -12,32 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.core')
+angular.module('mm.addons.mod_resource')
 
 /**
  * Directive to open a link in external browser.
  *
- * @module mm.core
- * @ngdoc provider
- * @name mmBrowser
+ * @module mm.addons.mod_resource
+ * @ngdoc directive
+ * @name mmaModResourceHtmlLink
  */
-.directive('mmBrowser', function($mmUtil) {
+.directive('mmaModResourceHtmlLink', function() {
     return {
         restrict: 'A',
-        priority: 100,
+        priority: 99,   // Must be lower than mm-browser, or anything listening for a click event.
         link: function(scope, element, attrs) {
             element.on('click', function(event) {
-                var href = element[0].getAttribute('href');
-                if (href) {
-                    event.preventDefault();
-                    if (href.indexOf('cdvfile://') === 0 || href.indexOf('file://') === 0) {
-                        // We have a local file.
-                        $mmUtil.openFile(href);
-                    } else {
-                        // It's an external link, we will open with browser.
-                        $mmUtil.openInBrowser(href);
-                    }
+                var href = element[0].getAttribute('data-href');
+                if (!href) {
+                    return;
                 }
+
+                // Prevent any other directive from catching the event.
+                event.stopImmediatePropagation();
+                event.preventDefault();
+
+                // Notify the scope which must handle this click, we do not support bubbling.
+                scope.$emit('mmaModResourceHtmlLinkClicked', href);
             });
         }
     };

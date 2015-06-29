@@ -64,7 +64,7 @@ angular.module('mm.core')
         return query.length ? query.substr(0, query.length - 1) : query;
     };
 
-    this.$get = function($ionicLoading, $ionicPopup, $translate, $http, $log, $q, $mmLang) {
+    this.$get = function($ionicLoading, $ionicPopup, $translate, $http, $log, $q, $mmLang, $mmFS) {
 
         $log = $log.getInstance('$mmUtil');
 
@@ -234,6 +234,44 @@ angular.module('mm.core')
                 url = url.replace('/pluginfile', '/webservice/pluginfile');
             }
             return url;
+        };
+
+        /**
+         * Get the SRC for to use an iframe.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#getIframeSrc
+         * @param  {Object} files List of files where the key is the path in the iframe,
+         *                        and the value the path to the local file.
+         * @param  {String} index The path of the index file in the iframe.
+         * @return {String}       Local URL to the iframe main page.
+         */
+        self.getIframeSrc = function(files, index) {
+            var iframeDir = 'iframe';
+            return $mmFS.getDir(iframeDir).then(function() {
+                return $mmFS.removeDir(iframeDir);
+            }).catch(function() {
+                // Never mind if the directory does not exist, or could not be removed.
+            }).then(function() {
+                return $mmFS.createDir(iframeDir);
+            }).then(function() {
+                var promises = [];
+                angular.forEach(files, function(localPath, iframePath) {
+                    var promise,
+                        path = iframeDir + '/' + iframePath;
+                    promise = $mmFS.createFile(path).then(function() {
+                        // We call createFile to ensure that the path exists.
+                        return $mmFS.copyFile(localPath, path);
+                    });
+                    promises.push(promise);
+                });
+                return $q.all(promises);
+            }).then(function() {
+                return $mmFS.getFile(iframeDir + '/' + index);
+            }).then(function(file) {
+                return file.toURL();
+            });
         };
 
         /**
