@@ -15,21 +15,21 @@
 angular.module('mm.core')
 
 /**
- * Directive to handle file attachments. The file is not downloaded automatically.
+ * Directive to handle a file (my files, attachments, etc.). The file is not downloaded automatically.
  *
  * @module mm.core
  * @ngdoc directive
- * @name mmAttachment
+ * @name mmFile
  * @description
- * Directive to handle file attachments. Shows the attachment name, icon (depending on mimetype) and a button
+ * Directive to handle files (my files, attachments, etc.). Shows the file name, icon (depending on mimetype) and a button
  * to download/refresh it.
  *
  * Required attributes:
- *     - attachment: Object with the following attributes:
+ *     - file: Object with the following attributes:
  *         - filename: Name of the file.
  *         - fileurl: File URL.
  */
-.directive('mmAttachment', function($q, $mmUtil, $mmFilepool, $mmSite, $mmApp, $mmEvents) {
+.directive('mmFile', function($q, $mmUtil, $mmFilepool, $mmSite, $mmApp, $mmEvents) {
 
     // Convenience function to get the file state and set scope variables based on it.
     function getState(scope, siteid, fileurl) {
@@ -61,14 +61,14 @@ angular.module('mm.core')
 
     return {
         restrict: 'E',
-        templateUrl: 'core/templates/attachment.html',
+        templateUrl: 'core/templates/file.html',
         scope: {
-            attachment: '='
+            file: '='
         },
         link: function(scope, element, attrs) {
-            var attachment = scope.attachment,
-                fileurl = $mmSite.fixPluginfileURL(attachment.fileurl),
-                filename = attachment.filename,
+            var file = scope.file,
+                fileurl = $mmSite.fixPluginfileURL(file.fileurl),
+                filename = file.filename,
                 siteid = $mmSite.getId(),
                 component = attrs.component,
                 componentid = attrs.componentId,

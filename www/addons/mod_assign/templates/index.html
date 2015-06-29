@@ -7,7 +7,7 @@
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="assignmentLoaded" on-refresh="refreshAssignment()"></ion-refresher>
         <mm-loading hide-until="assignmentLoaded">
             <mm-course-mod-description description="description" watch="true"></mm-course-mod-description>
-            <mm-attachment ng-repeat="attachment in assign.introattachments" attachment="attachment" component="{{assigncomponent}}" component-id="{{assign.id}}"></mm-attachment>
+            <mm-file ng-repeat="attachment in assign.introattachments" file="attachment" component="{{assigncomponent}}" component-id="{{assign.id}}"></mm-file>
             <div ng-if="assign.allowsubmissionsfromdate" class="item item-text-wrap">
                 <h2>{{ 'mma.mod_assign.allowsubmissionsfromdate' | translate }}</h2>
                 <p>{{ assign.allowsubmissionsfromdate * 1000 | date:'medium' }}</p>
@@ -34,7 +34,7 @@
                     <div class="item item-body">
                         <p>{{ 'mma.mod_assign.attemptnumber' | translate }}: {{submission.attemptnumber}}</p>
                         <a ui-sref="site.mod_assign-submission({submission: submission})" ng-if="submission.text" class="button button-block">{{ 'mma.mod_assign.viewsubmission' | translate }}</a>
-                        <mm-attachment ng-repeat="attachment in submission.attachments" attachment="attachment" component="{{submissioncomponent}}" component-id="{{submission.id}}"></mm-attachment>
+                        <mm-file ng-repeat="attachment in submission.attachments" file="attachment" component="{{submissioncomponent}}" component-id="{{submission.id}}"></mm-file>
                     </div>
                 </div>
             </div>
