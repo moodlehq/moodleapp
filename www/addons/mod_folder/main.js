@@ -23,6 +23,7 @@ angular.module('mm.addons.mod_folder', ['mm.core'])
       params: {
         module: null,
         courseid: null,
+        sectionid: null,
         path: null // For subfolders. Use the path instead of a boolean so Angular detects them as different states.
       },
       views: {

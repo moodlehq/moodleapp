@@ -87,16 +87,17 @@ angular.module('mm.core.course')
          * @module mm.core.course
          * @ngdoc method
          * @name $mmCourseDelegate#getContentHandlerControllerFor
-         * @param {String} handles The module to work on
-         * @param {Object} module The module data
-         * @param {Number} courseid The course ID.
+         * @param {String} handles   The module to work on
+         * @param {Object} module    The module data
+         * @param {Number} courseid  The course ID.
+         * @param {Number} sectionid The section ID.
          * @return {Object}
          */
-        self.getContentHandlerControllerFor = function(handles, module, courseid) {
+        self.getContentHandlerControllerFor = function(handles, module, courseid, sectionid) {
             if (typeof enabledHandlers[handles] !== 'undefined') {
-                return enabledHandlers[handles].getController(module, courseid);
+                return enabledHandlers[handles].getController(module, courseid, sectionid);
             }
-            return $mmCourseContentHandler.getController(module, courseid);
+            return $mmCourseContentHandler.getController(module, courseid, sectionid);
         };
 
         /**

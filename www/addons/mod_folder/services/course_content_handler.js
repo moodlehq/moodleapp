@@ -42,16 +42,17 @@ angular.module('mm.addons.mod_folder')
      * @module mm.addons.mod_folder
      * @ngdoc method
      * @name $mmaModFolderCourseContentHandler#getController
-     * @param {Object} module   The module info.
-     * @param {Number} courseid Course ID.
+     * @param {Object} module    The module info.
+     * @param {Number} courseid  Course ID.
+     * @param {Number} sectionid Section ID.
      * @return {Function}
      */
-    self.getController = function(module, courseid) {
+    self.getController = function(module, courseid, sectionid) {
         return function($scope) {
             $scope.icon = $mmCourse.getModuleIconSrc('folder');
             $scope.title = module.name;
             $scope.action = function(e) {
-                $state.go('site.mod_folder', {module: module, courseid: courseid});
+                $state.go('site.mod_folder', {module: module, courseid: courseid, sectionid: sectionid});
             };
         };
     };

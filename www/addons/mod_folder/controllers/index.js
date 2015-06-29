@@ -21,18 +21,64 @@ angular.module('mm.addons.mod_folder')
  * @ngdoc controller
  * @name mmaModFolderIndexCtrl
  */
-.controller('mmaModFolderIndexCtrl', function($scope, $stateParams, $mmaModFolder, $mmCourseDelegate, $mmSite) {
+.controller('mmaModFolderIndexCtrl', function($scope, $stateParams, $mmaModFolder, $mmSite, $mmCourse, $mmUtil) {
     var module = $stateParams.module || {},
-        courseid = $stateParams.courseid;
+        courseid = $stateParams.courseid,
+        sectionid = $stateParams.sectionid,
+        path = $stateParams.path;
 
-    $scope.title = module.name;
-    $scope.description = module.description;
-    if ($stateParams.path) {
-        $scope.contents = module.contents;
-    } else {
-        $scope.contents = $mmaModFolder.formatContents(module.contents);
-        $mmSite.write('mod_resource_view_resource', {
-            resourceid: module.instance
+    // Convenience function to set scope data using module.
+    function showModuleData(module) {
+        $scope.title = module.name;
+        $scope.description = module.description;
+        if (path) {
+            // Subfolder.
+            $scope.contents = module.contents;
+        } else {
+            $scope.contents = $mmaModFolder.formatContents(module.contents);
+            $scope.moduleurl = module.url;
+        }
+    }
+
+    // Convenience function to fetch folder data from Moodle.
+    function fetchFolder() {
+        return $mmCourse.getModule(courseid, module.id, sectionid).then(function(module) {
+            showModuleData(module);
+        }, function(error) {
+            if (error) {
+                $mmUtil.showErrorModal(error);
+            } else {
+                $mmUtil.showErrorModal('mm.core.unexpectederror', true);
+            }
+
+            if (!scp.title) {
+                // Error getting data from server. Use module param.
+                showModuleData(module);
+            }
         });
     }
+
+    if (path) {
+        // Subfolder. Use module param.
+        showModuleData(module);
+        $scope.folderLoaded = true;
+        $scope.canReload = false;
+    } else {
+        fetchFolder().then(function() {
+            $mmSite.write('mod_resource_view_resource', {
+                resourceid: module.instance
+            })
+        }).finally(function() {
+            $scope.folderLoaded = true;
+            $scope.canReload = true;
+        });
+    }
+
+    $scope.refreshFolder = function() {
+        $mmCourse.invalidateModule(module.id).finally(function() {
+            fetchFolder().finally(function() {
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+        });
+    };
 });
