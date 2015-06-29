@@ -34,18 +34,17 @@ angular.module('mm.core')
     // Convenience function to get the file state and set scope variables based on it.
     function getState(scope, siteid, fileurl) {
         return $mmFilepool.getFileStateByUrl(siteid, fileurl).then(function(state) {
-            scope.isDownloaded = state === $mmFilepool.FILEDOWNLOADED;
+            scope.isDownloaded = state === $mmFilepool.FILEDOWNLOADED || state === $mmFilepool.FILEOUTDATED;
             scope.isDownloading = state === $mmFilepool.FILEDOWNLOADING;
+            scope.showDownload = state === $mmFilepool.FILENOTDOWNLOADED || state === $mmFilepool.FILEOUTDATED;
         });
     }
 
     // Convenience function to download a file.
     function downloadFile(scope, siteid, fileurl, component, componentid) {
         scope.isDownloading = true;
-        return $mmFilepool.downloadUrl(siteid, fileurl, true).then(function(localUrl) {
-            $mmFilepool.addFileLinkByUrl(siteid, fileurl, component, componentid);
-            scope.isDownloading = false;
-            scope.isDownloaded = true;
+        return $mmFilepool.downloadUrl(siteid, fileurl, true, component, componentid).then(function(localUrl) {
+            getState(scope, siteid, fileurl); // Update state.
             return localUrl;
         }, function() {
             $mmUtil.showErrorModal('mm.core.errordownloadingfile', true);
@@ -66,9 +65,8 @@ angular.module('mm.core')
             file: '='
         },
         link: function(scope, element, attrs) {
-            var file = scope.file,
-                fileurl = $mmSite.fixPluginfileURL(file.fileurl),
-                filename = file.filename,
+            var fileurl = $mmSite.fixPluginfileURL(scope.file.fileurl),
+                filename = scope.file.filename,
                 siteid = $mmSite.getId(),
                 component = attrs.component,
                 componentid = attrs.componentId,
@@ -79,12 +77,9 @@ angular.module('mm.core')
             getState(scope, siteid, fileurl);
 
             var observer = $mmEvents.on(eventName, function(data) {
-                if (data.success) {
-                    scope.isDownloading = false;
-                    scope.isDownloaded = true;
-                } else {
+                getState(scope, siteid, fileurl);
+                if (!data.success) {
                     $mmUtil.showErrorModal('mm.core.errordownloadingfile', true);
-                    getState(scope, siteid, fileurl);
                 }
             });
 
