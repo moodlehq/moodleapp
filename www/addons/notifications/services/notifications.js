@@ -21,7 +21,7 @@ angular.module('mm.addons.notifications')
  * @ngdoc service
  * @name $mmaNotifications
  */
-.factory('$mmaNotifications', function($q, $log, $mmSite, mmaNotificationsListLimit) {
+.factory('$mmaNotifications', function($q, $log, $mmSite, $mmSitesManager, mmaNotificationsListLimit) {
 
     $log = $log.getInstance('$mmaNotifications');
 
@@ -48,7 +48,7 @@ angular.module('mm.addons.notifications')
     /**
      * Get cache key for notification list WS calls.
      *
-     * @return {String}          Cache key.
+     * @return {String} Cache key.
      */
     function getNotificationsCacheKey() {
         return 'mmaNotifications:list';
@@ -146,6 +146,23 @@ angular.module('mm.addons.notifications')
      */
     self.isPluginEnabled = function() {
         return $mmSite.wsAvailable('core_message_get_messages');
+    };
+
+    /**
+     * Check if plugin is available for a certain site.
+     *
+     * @module mm.addons.notifications
+     * @ngdoc method
+     * @name $mmaNotifications#isPluginEnabledForSite
+     * @param {String} siteid Site ID.
+     * @return {Promise}      Resolved when enabled, otherwise rejected.
+     */
+    self.isPluginEnabledForSite = function(siteid) {
+        return $mmSitesManager.getSite(siteid).then(function(site) {
+            if (!$mmSite.wsAvailable('core_message_get_messages')) {
+                return $q.reject();
+            }
+        });
     };
 
     return self;

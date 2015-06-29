@@ -1,4 +1,5 @@
 {
+    "app_id" : "com.moodle.moodlemobile2",
     "versionname" : "2.0",
     "cache_expiration_time" : 300000,
     "default_lang" : "en",

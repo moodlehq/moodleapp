@@ -572,6 +572,32 @@ angular.module('mm.core')
             return Math.round(new Date().getTime() / 1000);
         };
 
+        /**
+         * Return true if the param is false (bool), 0 (number) or "0" (string).
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#isFalseOrZero
+         * @param {Mixed} value Value to check.
+         * @return {Number}     True if value is false, 0 or "0".
+         */
+        self.isFalseOrZero = function(value) {
+            return typeof value != 'undefined' && (value === false || parseInt(value) === 0);
+        };
+
+        /**
+         * Return true if the param is true (bool), 1 (number) or "1" (string).
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#isTrueOrOne
+         * @param {Mixed} value Value to check.
+         * @return {Number}     True if value is true, 1 or "1".
+         */
+        self.isTrueOrOne = function(value) {
+            return typeof value != 'undefined' && (value === true || parseInt(value) === 1);
+        };
+
         return self;
     };
 });

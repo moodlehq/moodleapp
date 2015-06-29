@@ -15,6 +15,7 @@
 angular.module('mm.addons.messages', [])
 
 .constant('mmaMessagesPollInterval', 5000)
+.value('mmaMessagesIndexState', 'site.messages')
 
 .config(function($stateProvider) {
 
@@ -45,7 +46,8 @@ angular.module('mm.addons.messages', [])
 
 })
 
-.run(function($mmSideMenuDelegate, $mmaMessages, $mmUserDelegate, $mmaMessagesHandlers, $mmEvents, mmCoreEventLogin) {
+.run(function($mmSideMenuDelegate, $mmaMessages, $mmUserDelegate, $mmaMessagesHandlers, $mmEvents, $state, $injector, $mmUtil,
+            mmCoreEventLogin) {
 
     $mmSideMenuDelegate.registerPlugin('mmaMessages', function() {
 
@@ -71,5 +73,23 @@ angular.module('mm.addons.messages', [])
     $mmEvents.on(mmCoreEventLogin, function() {
         $mmaMessages.invalidateEnabledCache();
     });
+
+    // Register push notification clicks.
+    try {
+        // Use injector because the delegate belongs to an addon, so it might not exist.
+        var $mmPushNotificationsDelegate = $injector.get('$mmPushNotificationsDelegate');
+        $mmPushNotificationsDelegate.registerHandler('mmaMessages', function(notification) {
+            if ($mmUtil.isFalseOrZero(notification.notif)) {
+                $mmaMessages.isMessagingEnabledForSite(notification.site).then(function() {
+                    $mmaMessages.invalidateDiscussionsCache().finally(function() {
+                        $state.go('redirect', {siteid: notification.site, state: 'site.messages'});
+                    });
+                });
+                return true;
+            }
+        });
+    } catch(ex) {
+        $log.error('Cannot register push notifications handler: delegate not found');
+    }
 
 });
