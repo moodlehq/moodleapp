@@ -1,0 +1,25 @@
+<ion-view>
+    <ion-nav-title>{{ title }}</ion-nav-title>
+
+    <ion-content>
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="notesLoaded"
+                       on-refresh="refreshNotes()">
+        </ion-refresher>
+        <mm-loading hide-until="notesLoaded">
+            <div class="list">
+                <div class="card" ng-repeat="note in notes">
+                        <div class="item item-avatar">
+                            <img ng-if="note.userprofileimageurl" ng-src="{{note.userprofileimageurl}}" mm-external-content mm-user-link courseid="{{courseid}}" userid="{{note.userid}}">
+                            <img ng-if="!note.userprofileimageurl" src="img/user-avatar.png" alt="">
+                            <div class="item-note">{{note.lastmodified | mmDateDayOrTime}}</div>
+                            <p>{{note.userfullname}}</p>
+                        </div>
+                        <div class="item item-body">
+                            <p><mm-format-text watch="true" clean="true">{{note.content}}</mm-format-text></p>
+                        </div>
+                </div>
+                <div ng-if="notes.length == 0" class="item item-text-wrap">{{ 'mma.notes.nonotes' | translate }}</div>
+            </div>
+        </mm-loading>
+    </ion-content>
+</ion-view>

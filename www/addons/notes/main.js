@@ -14,8 +14,53 @@
 
 angular.module('mm.addons.notes', [])
 
-.run(function($mmUserDelegate, $mmaNotesHandlers) {
+.config(function($stateProvider) {
 
+    $stateProvider
+
+    .state('site.notes-types', {
+        url: '/notes-types',
+        views: {
+            'site': {
+                templateUrl: 'addons/notes/templates/types.html',
+                controller: 'mmaNotesTypesCtrl'
+            }
+        },
+        params: {
+            course: null
+        }
+    })
+
+    .state('site.notes-list', {
+        url: '/notes-list',
+        views: {
+            'site': {
+                templateUrl: 'addons/notes/templates/list.html',
+                controller: 'mmaNotesListCtrl'
+            }
+        },
+        params: {
+            courseid: null,
+            type: null
+        }
+    });
+})
+
+.run(function($mmUserDelegate, $mmaNotesHandlers, $mmCoursesDelegate, $mmaNotes) {
+
+    // Register plugin on course list.
+    $mmCoursesDelegate.registerPlugin('mmaNotes', function() {
+
+        if ($mmaNotes.isPluginViewNotesEnabled()) {
+            return {
+                icon: 'ion-ios-list',
+                state: 'site.notes-types',
+                title: 'mma.notes.notes'
+            };
+        }
+    });
+
+    // Register plugin on user profile.
     $mmUserDelegate.registerPlugin('mmaNotes:addNote', $mmaNotesHandlers.addNote);
 
 });
