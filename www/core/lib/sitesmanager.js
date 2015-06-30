@@ -273,17 +273,21 @@ angular.module('mm.core')
 
         candidateSite.fetchSiteInfo().then(function(infos) {
             if (isValidMoodleVersion(infos.functions)) {
-                var siteid = self.createSiteID(infos.siteurl, infos.username);
-                // Add site to sites list.
-                self.addSite(siteid, siteurl, token, infos);
-                // Turn candidate site into current site.
-                candidateSite.setId(siteid);
-                candidateSite.setInfo(infos);
-                currentSite = candidateSite;
-                // Store session.
-                self.login(siteid);
-                $mmEvents.trigger(mmCoreEventSiteAdded);
-                deferred.resolve();
+                if (typeof infos.downloadfiles == 'undefined' || infos.downloadfiles === 1) {
+                    var siteid = self.createSiteID(infos.siteurl, infos.username);
+                    // Add site to sites list.
+                    self.addSite(siteid, siteurl, token, infos);
+                    // Turn candidate site into current site.
+                    candidateSite.setId(siteid);
+                    candidateSite.setInfo(infos);
+                    currentSite = candidateSite;
+                    // Store session.
+                    self.login(siteid);
+                    $mmEvents.trigger(mmCoreEventSiteAdded);
+                    deferred.resolve();
+                } else {
+                    $mmLang.translateErrorAndReject(deferred, 'mm.login.cannotdownloadfiles');
+                }
             } else {
                 $mmLang.translateErrorAndReject(deferred, 'mm.login.invalidmoodleversion');
             }
@@ -390,10 +394,17 @@ angular.module('mm.core')
         var deferred = $q.defer();
 
         self.getSite(siteid).then(function(site) {
-            currentSite = site;
-            self.login(siteid);
             // Update site info. Resolve the promise even if the update fails.
-            self.updateSiteInfo(siteid).finally(deferred.resolve);
+            self.updateSiteInfo(siteid).finally(function() {
+                var infos = site.getInfo();
+                if (typeof infos.downloadfiles != 'undefined' && infos.downloadfiles !== 1) {
+                    $mmLang.translateErrorAndReject(deferred, 'mm.login.cannotdownloadfiles');
+                } else {
+                    currentSite = site;
+                    self.login(siteid);
+                    deferred.resolve();
+                }
+            });
         }, deferred.reject);
 
         return deferred.promise;
@@ -679,6 +690,8 @@ angular.module('mm.core')
             var siteid = current_site.siteid;
             $log.debug('Restore session in site '+siteid);
             return self.loadSite(siteid);
+        }, function() {
+            return $q.reject(); // Reject without params.
         });
     };
 

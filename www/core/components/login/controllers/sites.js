@@ -65,7 +65,8 @@ angular.module('mm.core.login')
             $state.go('site.mm_courses');
         }, function(error) {
             $log.error('Error loading site '+siteid);
-            $mmUtil.showErrorModal('mm.login.errorloadsite', true);
+            error = error || 'Error loading site.';
+            $mmUtil.showErrorModal(error);
         }).finally(function() {
             modal.dismiss();
         });
