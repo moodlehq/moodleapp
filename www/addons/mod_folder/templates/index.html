@@ -1,0 +1,24 @@
+<ion-view>
+    <ion-nav-title>{{ title }}</ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <a ng-if="moduleurl" class="button button-icon ion-ios-browsers-outline" ng-href="{{moduleurl}}" mm-browser ></a>
+    </ion-nav-buttons>
+    <ion-content padding="true">
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="canReload" on-refresh="refreshFolder()"></ion-refresher>
+        <mm-loading hide-until="folderLoaded">
+            <mm-course-mod-description description="description"></mm-course-mod-description>
+            <div class="list">
+                <div ng-repeat="file in contents">
+                    <mm-file ng-if="file.type !== 'folder'" file="file"></mm-file>
+                    <a ng-if="file.type === 'folder'" class="item item-text-wrap item-media" ui-sref="site.mod_folder({courseid: courseid, module: file, path: file.filepath})">
+                        <img ng-src="{{file.fileicon}}" />
+                        <p>{{file.name}}</p>
+                    </a>
+                </div>
+            </div>
+            <div ng-if="!contents || contents.length == 0">
+                <p>{{ 'mma.mod_folder.emptyfilelist' | translate}}</p>
+            </div>
+        </mm-loading>
+    </ion-content>
+</ion-view>

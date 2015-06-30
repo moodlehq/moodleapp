@@ -13,7 +13,7 @@
                 <div class="card" ng-repeat="discussion in discussions track by $index">
                     <a class="mma-forum-discussion-link" ui-sref="site.mod_forum-discussion({courseid: courseid, discussionid: discussion.discussion})">
                         <div class="item item-avatar">
-                            <img ng-if="discussion.userpictureurl" ng-src="{{discussion.userpictureurl}}" mm-external-content mm-user-link courseid="courseid" userid="discussion.userid">
+                            <img ng-if="discussion.userpictureurl" ng-src="{{discussion.userpictureurl}}" mm-external-content mm-user-link courseid="{{courseid}}" userid="{{discussion.userid}}">
                             <img ng-if="!discussion.userpictureurl" src="img/user-avatar.png" alt="">
                             <h2>{{discussion.subject}}</h2>
                             <div class="item-note">{{discussion.created | mmDateDayOrTime}}</div>

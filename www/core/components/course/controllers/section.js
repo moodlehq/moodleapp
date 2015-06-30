@@ -41,7 +41,8 @@ angular.module('mm.core.course')
             return $mmCourse.getSections(courseid, refresh).then(function(sections) {
                 angular.forEach(sections, function(section) {
                     angular.forEach(section.modules, function(module) {
-                        module._controller = $mmCourseDelegate.getContentHandlerControllerFor(module.modname, module, courseid);
+                        module._controller =
+                                $mmCourseDelegate.getContentHandlerControllerFor(module.modname, module, courseid, section.id);
                     });
                 });
 
@@ -57,7 +58,8 @@ angular.module('mm.core.course')
         } else {
             return $mmCourse.getSection(courseid, sectionid, refresh).then(function(section) {
                 angular.forEach(section.modules, function(module) {
-                    module._controller = $mmCourseDelegate.getContentHandlerControllerFor(module.modname, module, courseid);
+                    module._controller =
+                            $mmCourseDelegate.getContentHandlerControllerFor(module.modname, module, courseid, section.id);
                 });
 
                 $scope.sections = [section];

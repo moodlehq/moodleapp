@@ -21,12 +21,82 @@ angular.module('mm.core.course')
  * @ngdoc service
  * @name $mmCourse
  */
-.factory('$mmCourse', function($mmSite, $translate, $q) {
+.factory('$mmCourse', function($mmSite, $translate, $q, $log) {
+
+    $log = $log.getInstance('$mmCourse');
+
     var self = {},
         mods = ["assign", "assignment", "book", "chat", "choice", "data", "database", "date", "external-tool",
             "feedback", "file", "folder", "forum", "glossary", "ims", "imscp", "label", "lesson", "lti", "page", "quiz",
             "resource", "scorm", "survey", "url", "wiki", "workshop"
         ];
+
+    /**
+     * Gte a module from Moodle.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#getModule
+     * @param {Number} courseid    The course ID.
+     * @param {Number} moduleid    The module ID.
+     * @param {Number} [sectionid] The section ID.
+     * @return {Promise}
+     */
+    self.getModule = function(courseid, moduleid, sectionid) {
+
+        if (!moduleid) {
+            return $q.reject();
+        }
+
+        $log.debug('Getting module ' + moduleid + ' in course ' + courseid + ' and section ' +sectionid);
+
+        var params = {
+                courseid: courseid,
+                options: [
+                    {
+                        name: 'cmid',
+                        value: moduleid
+                    }
+                ]
+            },
+            preSets = {
+                cacheKey: getModuleCacheKey(moduleid)
+            };
+
+        if (sectionid) {
+            params.options.push({
+                name: 'sectionid',
+                value: sectionid
+            });
+        }
+
+        return $mmSite.read('core_course_get_contents', params, preSets).then(function(sections) {
+            var section,
+                module;
+
+            for (var i = 0; i < sections.length; i++) {
+                section = sections[i];
+                for (var j = 0; j < section.modules.length; j++) {
+                    module = section.modules[i];
+                    if (module.id === moduleid) {
+                        return module;
+                    }
+                }
+            }
+
+            return $q.reject();
+        });
+    };
+
+    /**
+     * Get cache key for module WS calls.
+     *
+     * @param {Number} moduleid Module ID.
+     * @return {String}         Cache key.
+     */
+    function getModuleCacheKey(moduleid) {
+        return 'mmCourse:module:' + moduleid;
+    }
 
     /**
      * Returns the source to a module icon.
@@ -98,6 +168,19 @@ angular.module('mm.core.course')
             courseid: courseid,
             options: []
         }, presets);
+    };
+
+    /**
+     * Invalidates module WS call.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#invalidateModule
+     * @param {Number} moduleid Module ID.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateModule = function(moduleid) {
+        return $mmSite.invalidateWsCacheForKey(getModuleCacheKey(moduleid));
     };
 
     /**

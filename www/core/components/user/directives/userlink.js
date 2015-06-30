@@ -24,15 +24,11 @@ angular.module('mm.core')
 .directive('mmUserLink', function($state, mmUserProfileState) {
     return {
         restrict: 'A',
-        scope: {
-            userid: '=',
-            courseid: '='
-        },
         link: function(scope, element, attrs) {
             element.on('click', function(event) {
                 event.preventDefault();
                 event.stopPropagation();
-                $state.go(mmUserProfileState, {courseid: scope.courseid, userid: scope.userid});
+                $state.go(mmUserProfileState, {courseid: attrs.courseid, userid: attrs.userid});
             });
         }
     };

@@ -15,37 +15,36 @@
 angular.module('mm.core')
 
 /**
- * Directive to handle file attachments. The file is not downloaded automatically.
+ * Directive to handle a file (my files, attachments, etc.). The file is not downloaded automatically.
  *
  * @module mm.core
  * @ngdoc directive
- * @name mmAttachment
+ * @name mmFile
  * @description
- * Directive to handle file attachments. Shows the attachment name, icon (depending on mimetype) and a button
+ * Directive to handle files (my files, attachments, etc.). Shows the file name, icon (depending on mimetype) and a button
  * to download/refresh it.
  *
  * Required attributes:
- *     - attachment: Object with the following attributes:
+ *     - file: Object with the following attributes:
  *         - filename: Name of the file.
  *         - fileurl: File URL.
  */
-.directive('mmAttachment', function($q, $mmUtil, $mmFilepool, $mmSite, $mmApp, $mmEvents) {
+.directive('mmFile', function($q, $mmUtil, $mmFilepool, $mmSite, $mmApp, $mmEvents) {
 
     // Convenience function to get the file state and set scope variables based on it.
     function getState(scope, siteid, fileurl) {
         return $mmFilepool.getFileStateByUrl(siteid, fileurl).then(function(state) {
-            scope.isDownloaded = state === $mmFilepool.FILEDOWNLOADED;
+            scope.isDownloaded = state === $mmFilepool.FILEDOWNLOADED || state === $mmFilepool.FILEOUTDATED;
             scope.isDownloading = state === $mmFilepool.FILEDOWNLOADING;
+            scope.showDownload = state === $mmFilepool.FILENOTDOWNLOADED || state === $mmFilepool.FILEOUTDATED;
         });
     }
 
     // Convenience function to download a file.
     function downloadFile(scope, siteid, fileurl, component, componentid) {
         scope.isDownloading = true;
-        return $mmFilepool.downloadUrl(siteid, fileurl, true).then(function(localUrl) {
-            $mmFilepool.addFileLinkByUrl(siteid, fileurl, component, componentid);
-            scope.isDownloading = false;
-            scope.isDownloaded = true;
+        return $mmFilepool.downloadUrl(siteid, fileurl, true, component, componentid).then(function(localUrl) {
+            getState(scope, siteid, fileurl); // Update state.
             return localUrl;
         }, function() {
             $mmUtil.showErrorModal('mm.core.errordownloadingfile', true);
@@ -61,14 +60,13 @@ angular.module('mm.core')
 
     return {
         restrict: 'E',
-        templateUrl: 'core/templates/attachment.html',
+        templateUrl: 'core/templates/file.html',
         scope: {
-            attachment: '='
+            file: '='
         },
         link: function(scope, element, attrs) {
-            var attachment = scope.attachment,
-                fileurl = $mmSite.fixPluginfileURL(attachment.fileurl),
-                filename = attachment.filename,
+            var fileurl = $mmSite.fixPluginfileURL(scope.file.fileurl),
+                filename = scope.file.filename,
                 siteid = $mmSite.getId(),
                 component = attrs.component,
                 componentid = attrs.componentId,
@@ -79,12 +77,9 @@ angular.module('mm.core')
             getState(scope, siteid, fileurl);
 
             var observer = $mmEvents.on(eventName, function(data) {
-                if (data.success) {
-                    scope.isDownloading = false;
-                    scope.isDownloaded = true;
-                } else {
+                getState(scope, siteid, fileurl);
+                if (!data.success) {
                     $mmUtil.showErrorModal('mm.core.errordownloadingfile', true);
-                    getState(scope, siteid, fileurl);
                 }
             });
 
