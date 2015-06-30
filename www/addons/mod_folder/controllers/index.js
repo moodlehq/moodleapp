@@ -65,8 +65,8 @@ angular.module('mm.addons.mod_folder')
         $scope.canReload = false;
     } else {
         fetchFolder().then(function() {
-            $mmSite.write('mod_resource_view_resource', {
-                resourceid: module.instance
+            $mmSite.write('mod_folder_view_folder', {
+                folderid: module.instance
             })
         }).finally(function() {
             $scope.folderLoaded = true;
