@@ -182,3 +182,14 @@ em {
   top: 8px;
   right: 16px;
 }
+
+// Extra attributes to ionic classes to force frames via directive 100% height.
+
+.scroll {
+  height: 100%;
+}
+
+.iframe-wrapper {
+  height: 100%;
+  width: 100%;
+}
