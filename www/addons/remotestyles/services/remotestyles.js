@@ -49,8 +49,13 @@ angular.module('mm.addons.remotestyles')
      * @return {Promise}      Promise resolved with the styles.
      */
     self.get = function(siteid) {
-        siteid = siteid || $mmSite.getId();
         var promise;
+
+        siteid = siteid || $mmSite.getId();
+        if (!siteid) {
+            return $q.reject();
+        }
+
 
         // Downloads a CSS file and remove old files if needed.
         function downloadFileAndRemoveOld(url) {
@@ -105,9 +110,14 @@ angular.module('mm.addons.remotestyles')
      * @name $mmaRemoteStyles#load
      */
     self.load = function() {
-        self.get().then(function(styles) {
-            remoteStylesEl.html(styles);
-        });
+        var siteid = $mmSite.getId();
+        if (siteid) {
+            self.get(siteid).then(function(styles) {
+                if (siteid === $mmSite.getId()) { // Make sure it hasn't logout while retrieving styles.
+                    remoteStylesEl.html(styles);
+                }
+            });
+        }
     };
 
     return self;
