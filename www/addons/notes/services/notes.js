@@ -21,7 +21,7 @@ angular.module('mm.addons.notes')
  * @ngdoc service
  * @name $mmaNotes
  */
-.factory('$mmaNotes', function($mmSite, $log, $q) {
+.factory('$mmaNotes', function($mmSite, $log, $q, $mmUser) {
     $log = $log.getInstance('$mmaNotes');
 
     var self = {};
@@ -50,17 +50,17 @@ angular.module('mm.addons.notes')
     };
 
     /**
-     * Returns whether or not the plugin is enabled for the current site.
+     * Returns whether or not the add note plugin is enabled for the current site.
      *
      * This method is called quite often and thus should only perform a quick
      * check, we should not be calling WS from here.
      *
      * @module mm.addons.notes
      * @ngdoc method
-     * @name $mmaNotes#isPluginEnabled
+     * @name $mmaNotes#isPluginAddNoteEnabled
      * @return {Boolean}
      */
-    self.isPluginEnabled = function() {
+    self.isPluginAddNoteEnabled = function() {
         var infos;
 
         if (!$mmSite.isLoggedIn()) {
@@ -72,6 +72,87 @@ angular.module('mm.addons.notes')
         }
 
         return true;
+    };
+
+    /**
+     * Returns whether or not the read notes plugin is enabled for the current site.
+     *
+     * This method is called quite often and thus should only perform a quick
+     * check, we should not be calling WS from here.
+     *
+     * @module mm.addons.notes
+     * @ngdoc method
+     * @name $mmaNotes#isPluginViewNotesEnabled
+     * @return {Boolean}
+     */
+    self.isPluginViewNotesEnabled = function() {
+        var infos;
+
+        if (!$mmSite.isLoggedIn()) {
+            return false;
+        } else if (!$mmSite.canUseAdvancedFeature('enablenotes')) {
+            return false;
+        } else if (!$mmSite.wsAvailable('core_notes_get_course_notes')) {
+            return false;
+        }
+
+        return true;
+    };
+
+    /**
+     * Get users notes for a certain site, course and personal notes.
+     *
+     * @module mm.addons.notes
+     * @ngdoc method
+     * @name $mmaNotes#getNotes
+     * @param {Number} courseid ID of the course to get the notes from.
+     * @param {Boolean} refresh True when we should not get the value from the cache.
+     * @return {Promise}        Promise to be resolved when the notes are retrieved.
+     */
+    self.getNotes = function(courseid, refresh) {
+
+        $log.debug('Get notes for course ' + courseid);
+
+        var data = {
+                courseid : courseid
+            },
+            presets = {};
+        if (refresh) {
+            presets.getFromCache = false;
+        }
+
+        return $mmSite.read('core_notes_get_course_notes', data, presets);
+    };
+
+    /**
+     * Get user data for notes since they only have userid.
+     *
+     * @module mm.addons.notes
+     * @ngdoc method
+     * @name $mmaNotes#getNotesUserData
+     * @param {Object[]} notes       Notes to get the data for.
+     * @param {Number}   courseid    ID of the course the notes belong to.
+     * @return {Promise}             Promise always resolved. Resolve param is the formatted notes.
+     */
+    self.getNotesUserData = function(notes, courseid) {
+        var promises = [];
+
+        angular.forEach(notes, function(note) {
+            var promise = $mmUser.getProfile(note.userid, courseid, true);
+            promises.push(promise);
+            promise.then(function(user) {
+                note.userfullname = user.fullname;
+                note.userprofileimageurl = user.profileimageurl;
+            }, function() {
+                // Error getting profile. Set default data.
+                return $translate('mma.notes.userwithid', {id: note.userid}).then(function(str) {
+                    note.userfullname = str;
+                });
+            });
+        });
+        return $q.all(promises).then(function() {
+            return notes;
+        });
     };
 
     return self;

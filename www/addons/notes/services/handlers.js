@@ -39,7 +39,7 @@ angular.module('mm.addons.notes')
         var self = {};
 
         self.isEnabled = function() {
-            return $mmaNotes.isPluginEnabled();
+            return $mmaNotes.isPluginAddNoteEnabled();
         };
 
         self.isEnabledForUser = function(user, courseId) {

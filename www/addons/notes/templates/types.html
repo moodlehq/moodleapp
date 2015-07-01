@@ -1,0 +1,23 @@
+<ion-view view-title="{{ 'mma.notes.notes' | translate }}">
+    <ion-content scroll="false" padding="false">
+        <div class="mm-split-pane">
+            <div class="mm-split-pane-menu">
+                <ion-content>
+                    <ion-list>
+                        <a class="item" ui-sref="{{getState()}}({courseid: courseid, type: 'site'})">
+                            {{ 'mma.notes.sitenotes' | translate }}
+                        </a>
+                        <a class="item" ui-sref="{{getState()}}({courseid: courseid, type: 'course'})">
+                            {{ 'mma.notes.coursenotes' | translate }}
+                        </a>
+                        <a class="item" ui-sref="{{getState()}}({courseid: courseid, type: 'personal'})">
+                            {{ 'mma.notes.personalnotes' | translate }}
+                        </a>
+                    </ion-list>
+                </ion-content>
+            </div>
+            <div ui-view="tablet" class="mm-split-pane-content">
+            </div>
+        </div>
+    </ion-content>
+</ion-view>
