@@ -778,6 +778,7 @@ angular.module('mm.core')
      * @return {String} The path to the file relative to storage root.
      */
     self.getFilePathByUrl = function(siteId, fileUrl) {
+        fileUrl = self._removeRevisionFromUrl(fileUrl);
         var fileId = self._getFileIdByUrl(fileUrl);
         return self._getFilePath(siteId, fileId);
     };

@@ -69,8 +69,6 @@ angular.module('mm.addons.mod_resource')
     /**
      * Fixes the URL before use.
      *
-     * This removes the revision when needed, and also fixes the plugin file URL.
-     *
      * @module mm.addons.mod_resource
      * @ngdoc method
      * @name $mmaModResource#_fixUrl
@@ -79,7 +77,6 @@ angular.module('mm.addons.mod_resource')
      * @protected
      */
     self._fixUrl = function(url) {
-        url = self._removeRevisionFromUrl(url);
         url = $mmSite.fixPluginfileURL(url);
         return url;
     };
@@ -113,6 +110,7 @@ angular.module('mm.addons.mod_resource')
      * Return those status in order of priority:
      * - $mmFilepool.FILENOTDOWNLOADED
      * - $mmFilepool.FILEDOWNLOADING
+     * - $mmFilepool.FILEOUTDATED
      * - $mmFilepool.FILEDOWNLOADED
      *
      * @module mm.addons.mod_resource
@@ -126,6 +124,7 @@ angular.module('mm.addons.mod_resource')
             eventNames = [],
             notDownloaded = 0,
             downloading = 0,
+            outdated = 0,
             downloaded = 0,
             fileCount = 0;
 
@@ -144,6 +143,8 @@ angular.module('mm.addons.mod_resource')
                     eventNames.push($mmFilepool.getFileEventNameByUrl($mmSite.getId(), url));
                 } else if (state == $mmFilepool.FILEDOWNLOADED) {
                     downloaded++;
+                } else if (state == $mmFilepool.FILEOUTDATED) {
+                    outdated++;
                 }
             }));
         });
@@ -154,6 +155,8 @@ angular.module('mm.addons.mod_resource')
                 status = $mmFilepool.FILENOTDOWNLOADED;
             } else if (downloading > 0) {
                 status = $mmFilepool.FILEDOWNLOADING;
+            } else if (outdated > 0) {
+                status = $mmFilepool.FILEOUTDATED;
             } else if (downloaded == fileCount) {
                 status = $mmFilepool.FILEDOWNLOADED;
             }
@@ -388,26 +391,6 @@ angular.module('mm.addons.mod_resource')
             url = self._fixUrl(content.fileurl);
             $mmFilepool.addToQueueByUrl($mmSite.getId(), url, mmaModResourceComponent, module.id);
         });
-    };
-
-    /**
-     * Removes the revision number from a file URL.
-     *
-     * @module mm.addons.mod_resource
-     * @ngdoc method
-     * @name $mmaModResource#_removeRevisionFromUrl
-     * @param {String} url The a page URL without the revision number.
-     * @return {string}
-     * @protected
-     * @description
-     * The revision is not used when serving the file Moodle, and because we are
-     * caching those files on our side, and by URL, it is better to ignore the
-     * revision number. If we keep the revision number, we'll end up missing the images
-     * at each revision of the module and filling up the filepool for no reason.
-     */
-    self._removeRevisionFromUrl = function(url) {
-        var revisionRegex = new RegExp('/mod_resource/content/[0-9]+/');
-        return url.replace(revisionRegex, '/mod_resource/content/0/');
     };
 
     return self;
