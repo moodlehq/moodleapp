@@ -61,7 +61,7 @@ angular.module('mm.addons.mod_page')
                         if (Object.keys(observers).length < 1) {
                             $scope.spinner = false;
                             downloadBtn.hidden = true;
-                            refreshBtn.hidden = false;
+                            refreshBtn.hidden = true;
                         }
                     });
                 });
@@ -117,7 +117,7 @@ angular.module('mm.addons.mod_page')
                 } else if (result.status == $mmFilepool.FILEDOWNLOADING) {
                     $scope.spinner = true;
                     addObservers(result.eventNames);
-                } else {
+                } else if (result.status == $mmFilepool.FILEOUTDATED) {
                     refreshBtn.hidden = false;
                 }
             });

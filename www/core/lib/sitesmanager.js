@@ -273,7 +273,7 @@ angular.module('mm.core')
 
         candidateSite.fetchSiteInfo().then(function(infos) {
             if (isValidMoodleVersion(infos.functions)) {
-                if (typeof infos.downloadfiles == 'undefined' || infos.downloadfiles === 1) {
+                if (isValidInfo()) {
                     var siteid = self.createSiteID(infos.siteurl, infos.username);
                     // Add site to sites list.
                     self.addSite(siteid, siteurl, token, infos);
@@ -357,7 +357,17 @@ angular.module('mm.core')
             }
         }
         return false;
-    };
+    }
+
+    /**
+     * Check if site info is valid (downloadfiles enabled).
+     *
+     * @param {Object} infos Site info.
+     * @return {Boolean}     True if the site info is valid, false otherwise.
+     */
+    function isValidInfo(infos) {
+        return typeof infos.downloadfiles == 'undefined' || infos.downloadfiles === 1;
+    }
 
     /**
      * Saves a site in local DB.
@@ -394,14 +404,15 @@ angular.module('mm.core')
         var deferred = $q.defer();
 
         self.getSite(siteid).then(function(site) {
+            currentSite = site;
+            self.login(siteid);
             // Update site info. Resolve the promise even if the update fails.
             self.updateSiteInfo(siteid).finally(function() {
                 var infos = site.getInfo();
-                if (typeof infos.downloadfiles != 'undefined' && infos.downloadfiles !== 1) {
+                if (!isValidInfo(infos)) {
                     $mmLang.translateErrorAndReject(deferred, 'mm.login.cannotdownloadfiles');
+                    self.logout();
                 } else {
-                    currentSite = site;
-                    self.login(siteid);
                     deferred.resolve();
                 }
             });
