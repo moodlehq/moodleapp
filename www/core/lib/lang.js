@@ -23,7 +23,8 @@ angular.module('mm.core')
  */
 .factory('$mmLang', function($translate, $translatePartialLoader, $mmConfig, $cordovaGlobalization, $q) {
 
-    var self = {};
+    var self = {},
+        currentLanguage; // Save current language in a variable to speed up the get function.
 
     /**
      * Register a folder to search language files into it.
@@ -46,6 +47,10 @@ angular.module('mm.core')
      * @return {[type]} [description]
      */
     self.getCurrentLanguage = function() {
+
+        if (typeof currentLanguage != 'undefined') {
+            return $q.when(currentLanguage);
+        }
 
         // Get default language from config.
         function getDefaultLanguage() {
@@ -87,6 +92,9 @@ angular.module('mm.core')
                 // Error getting locale. Use default language.
                 return getDefaultLanguage();
             }
+        }).then(function(language) {
+            currentLanguage = language; // Save it for later.
+            return language;
         });
     };
 
@@ -102,6 +110,7 @@ angular.module('mm.core')
     self.changeCurrentLanguage = function(language) {
         var p1 = $translate.use(language),
             p2 = $mmConfig.set('current_language', language);
+        currentLanguage = language;
         return $q.all(p1, p2);
     };
 
