@@ -63,8 +63,9 @@ angular.module('mm.addons.mod_imscp')
     };
 
     $scope.loadItem = function(itemId) {
-        $mmFS.getFile('iframe/' + itemId).then(function(file) {
-            $scope.src = file.toURL();
+        $mmaModImscp.getFileSrc(itemId).then(function(src) {
+            $scope.popover.hide();
+            $scope.src = src;
             $scope.previousItem = $mmaModImscp.getPreviousItem($scope.items, itemId);
             $scope.nextItem = $mmaModImscp.getNextItem($scope.items, itemId);
         });

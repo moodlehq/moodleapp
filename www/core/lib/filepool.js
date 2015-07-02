@@ -220,7 +220,6 @@ angular.module('mm.core')
      * a successful {@link $mmFilepool#downloadUrl}.
      */
     self.addFileLinkByUrl = function(siteId, fileUrl, component, componentId) {
-        fileUrl = self._removeRevisionFromUrl(fileUrl);
         var fileId = self._getFileIdByUrl(fileUrl);
         return self._addFileLink(siteId, fileId, component, componentId);
     };
@@ -289,7 +288,6 @@ angular.module('mm.core')
             revision;
 
         revision = self._getRevisionFromUrl(url);
-        url = self._removeRevisionFromUrl(url);
         fileId = self._getFileIdByUrl(url);
         priority = priority || 0;
 
@@ -455,7 +453,6 @@ angular.module('mm.core')
             revision;
 
         revision = self._getRevisionFromUrl(fileUrl);
-        fileUrl = self._removeRevisionFromUrl(fileUrl);
         fileId = self._getFileIdByUrl(fileUrl);
 
         if (!$mmFS.isAvailable()) {
@@ -578,7 +575,6 @@ angular.module('mm.core')
      * @return {String}        Event name.
      */
     self.getFileEventNameByUrl = function(siteId, fileUrl) {
-        fileUrl = self._removeRevisionFromUrl(fileUrl);
         var fileId = self._getFileIdByUrl(fileUrl);
         return self._getFileEventName(siteId, fileId);
     };
@@ -642,7 +638,7 @@ angular.module('mm.core')
      * @protected
      */
     self._getFileIdByUrl = function(fileUrl) {
-        var url = fileUrl,
+        var url = self._removeRevisionFromUrl(fileUrl),
             candidate,
             extension = '';
 
@@ -694,7 +690,6 @@ angular.module('mm.core')
             revision;
 
         revision = self._getRevisionFromUrl(fileUrl);
-        fileUrl = self._removeRevisionFromUrl(fileUrl);
         var fileId = self._getFileIdByUrl(fileUrl);
         return self._hasFileInPool(siteId, fileId).then(function(fileObject) {
             var response,
@@ -778,7 +773,6 @@ angular.module('mm.core')
      * @return {String} The path to the file relative to storage root.
      */
     self.getFilePathByUrl = function(siteId, fileUrl) {
-        fileUrl = self._removeRevisionFromUrl(fileUrl);
         var fileId = self._getFileIdByUrl(fileUrl);
         return self._getFilePath(siteId, fileId);
     };
@@ -798,7 +792,6 @@ angular.module('mm.core')
             revision;
 
         revision = self._getRevisionFromUrl(fileUrl);
-        fileUrl = self._removeRevisionFromUrl(fileUrl);
         fileId = self._getFileIdByUrl(fileUrl);
 
         return self._hasFileInQueue(siteId, fileId).then(function() {
@@ -865,7 +858,7 @@ angular.module('mm.core')
      *
      * @module mm.core
      * @ngdoc method
-     * @name $mmFilepool#_removeRevisionFromUrl
+     * @name $mmFilepool#_getRevisionFromUrl
      * @param {String} url URL to get the revision number.
      * @return {String}    Revision number.
      * @protected
@@ -964,7 +957,6 @@ angular.module('mm.core')
      * only if they do not have network access.
      */
     self.invalidateFileByUrl = function(siteId, fileUrl) {
-        fileUrl = self._removeRevisionFromUrl(fileUrl);
         var fileId = self._getFileIdByUrl(fileUrl);
         return getSiteDb(siteId).then(function(db) {
             return db.get(mmFilepoolStore, fileId).then(function(fileObject) {

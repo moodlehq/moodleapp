@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_imscp')
  * @ngdoc service
  * @name $mmaModImscp
  */
-.factory('$mmaModImscp', function($mmFilepool, $mmSite, $mmUtil, $mmFS, $http, $log, $q, mmaModImscpComponent) {
+.factory('$mmaModImscp', function($mmFilepool, $mmSite, $mmUtil, $mmFS, $log, $q, mmaModImscpComponent) {
     $log = $log.getInstance('$mmaModImscp');
     var self = {};
 
@@ -110,6 +110,21 @@ angular.module('mm.addons.mod_imscp')
         return next;
     };
 
+
+    /**
+     * Check if we should ommit the file download.
+     *
+     * @module mm.addons.mod_imscp
+     * @ngdoc method
+     * @name $mmaModImscp#checkSpecialFiles
+     * @param {String} fileName The file name
+     * @return {Boolean}        True if we should ommit the file
+     * @protected
+     */
+    self.checkSpecialFiles = function(fileName) {
+        return fileName == 'imsmanifest.xml';
+    };
+
     /**
      * Download all the content.
      *
@@ -131,7 +146,7 @@ angular.module('mm.addons.mod_imscp')
             }
 
             // Special case for IMSCP packages.
-            if (content.filename == 'imsmanifest.xml') {
+            if (self.checkSpecialFiles(content.filename)) {
                 return;
             }
 
@@ -172,6 +187,34 @@ angular.module('mm.addons.mod_imscp')
     };
 
     /**
+     * Returns a list of file event names.
+     *
+     * @module mm.addons.mod_imscp
+     * @ngdoc method
+     * @name $mmaModImscp#getFileEventNames
+     * @param {Object} module The module object returned by WS.
+     * @return {String[]} Array of $mmEvent names.
+     */
+    self.getFileEventNames = function(module) {
+        var eventNames = [];
+        angular.forEach(module.contents, function(content) {
+            var url;
+            if (content.type !== 'file') {
+                return;
+            }
+
+            // Special case for IMSCP packages.
+            if (self.checkSpecialFiles(content.filename)) {
+                return;
+            }
+
+            url = self._fixUrl(content.fileurl);
+            eventNames.push($mmFilepool.getFileEventNameByUrl($mmSite.getId(), url));
+        });
+        return eventNames;
+    };
+
+    /**
      * Check the status of the files.
      *
      * Return those status in order of priority:
@@ -200,6 +243,11 @@ angular.module('mm.addons.mod_imscp')
             if (content.type !== 'file') {
                 return;
             }
+
+            if (self.checkSpecialFiles(content.filename)) {
+                return;
+            }
+
             fileCount++;
             url = self._fixUrl(content.fileurl);
             promises.push($mmFilepool.getFileStateByUrl($mmSite.getId(), url).then(function(state) {
@@ -247,7 +295,7 @@ angular.module('mm.addons.mod_imscp')
      * @return {Promise}
      */
     self.getIframeSrc = function(module) {
-        var toc = JSON.parse(module.contents[0].content);
+        var toc = self.getToc(module.contents);
         var mainFilePath = toc[0].href;
 
         return self.downloadAllContent(module).then(function(filePaths) {
@@ -255,6 +303,12 @@ angular.module('mm.addons.mod_imscp')
         });
     };
 
+
+    self.getFileSrc = function(itemId) {
+        return $mmFS.getFile('iframe/' + itemId).then(function(file) {
+            return file.toURL();
+        });
+    };
 
     /**
      * Invalidate the prefetched content.
@@ -302,7 +356,7 @@ angular.module('mm.addons.mod_imscp')
                 return;
             }
             // Special case for IMSCP packages.
-            if (content.filename == 'imsmanifest.xml') {
+            if (self.checkSpecialFiles(content.filename)) {
                 return;
             }
             url = self._fixUrl(content.fileurl);

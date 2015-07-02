@@ -81,7 +81,7 @@ angular.module('mm.addons.mod_imscp')
                     downloadBtn.hidden = true;
                     refreshBtn.hidden = true;
                     $scope.spinner = true;
-
+                    addObservers($mmaModImscp.getFileEventNames(module));
                     $mmaModImscp.prefetchContent(module);
                 }
             };
@@ -98,6 +98,7 @@ angular.module('mm.addons.mod_imscp')
                     $scope.spinner = true;
 
                     $mmaModImscp.invalidateContent(module.id).then(function() {
+                        addObservers($mmaModImscp.getFileEventNames(module));
                         $mmaModImscp.prefetchContent(module);
                     });
                 }
