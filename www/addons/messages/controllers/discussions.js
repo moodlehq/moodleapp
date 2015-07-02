@@ -21,7 +21,7 @@ angular.module('mm.addons.messages')
  * @ngdoc controller
  * @name mmaMessagesDiscussionsCtrl
  */
-.controller('mmaMessagesDiscussionsCtrl', function($q, $state, $scope, $mmUtil, $mmaMessages) {
+.controller('mmaMessagesDiscussionsCtrl', function($q, $state, $scope, $mmUtil, $mmaMessages, $rootScope, mmCoreSplitViewLoad) {
     $scope.loaded = false;
 
     function fetchDiscussions() {
@@ -58,6 +58,9 @@ angular.module('mm.addons.messages')
 
     fetchDiscussions().finally(function() {
         $scope.loaded = true;
+        // Tell mm-split-view that it can load the first link now in tablets. We need to do it
+        // like this because the directive doesn't have access to $scope.loaded variable (because of tabs).
+        $rootScope.$broadcast(mmCoreSplitViewLoad);
     });
 });
 

@@ -22,8 +22,7 @@ angular.module('mm.core.settings', [])
         url: '/mm_settings',
         views: {
             'site': {
-                templateUrl: 'core/components/settings/templates/list.html',
-                controller: 'mmSettingsListCtrl'
+                templateUrl: 'core/components/settings/templates/list.html'
             }
         }
     })
