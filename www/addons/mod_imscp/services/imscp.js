@@ -26,6 +26,91 @@ angular.module('mm.addons.mod_imscp')
     var self = {};
 
     /**
+     * Get the IMSCP toc as an array.
+     *
+     * @module mm.addons.mod_imscp
+     * @ngdoc method
+     * @name $mmaModImscp#getToc
+     * @param  {array} contents The module contents.
+     * @return {Array}          The toc.
+     * @protected
+     */
+    self.getToc = function(contents) {
+        return JSON.parse(contents[0].content);
+    };
+
+    /**
+     * Get the imscp toc as an array of items (no nested) to build the navigation tree.
+     *
+     * @module mm.addons.mod_imscp
+     * @ngdoc method
+     * @name $mmaModImscp#createItemList
+     * @param  {array} contents The module contents.
+     * @return {Array}          The toc as a list.
+     * @protected
+     */
+    self.createItemList = function(contents) {
+        var items = [];
+        var toc = self.getToc(contents);
+        angular.forEach(toc, function(el) {
+            items.push({href: el.href, title: el.title, level: el.level});
+            angular.forEach(el.subitems, function(sel) {
+                items.push({href: sel.href, title: sel.title, level: sel.level});
+            });
+        });
+        return items;
+    };
+
+    /**
+     * Get the previous item to the given one.
+     *
+     * @module mm.addons.mod_imscp
+     * @ngdoc method
+     * @name $mmaModImscp#getPreviousItem
+     * @param  {array} items     The items list.
+     * @param  {String} itemId   The current item.
+     * @return {String}          The previous item id.
+     * @protected
+     */
+    self.getPreviousItem = function(items, itemId) {
+        var previous = '';
+
+        for (var i = 0, len = items.length; i < len; i++) {
+            if (items[i].href == itemId) {
+                break;
+            }
+            previous = items[i].href;
+        }
+
+        return previous;
+    };
+
+    /**
+     * Get the next item to the given one.
+     *
+     * @module mm.addons.mod_imscp
+     * @ngdoc method
+     * @name $mmaModImscp#getNextItem
+     * @param  {array} items     The items list.
+     * @param  {String} itemId   The current item.
+     * @return {String}           The next item id.
+     * @protected
+     */
+    self.getNextItem = function(items, itemId) {
+        var next = '';
+
+        for (var i = 0, len = items.length; i < len; i++) {
+            if (items[i].href == itemId) {
+                if (typeof items[i + 1] != 'undefined') {
+                    next = items[i + 1].href;
+                    break;
+                }
+            }
+        }
+        return next;
+    };
+
+    /**
      * Download all the content.
      *
      * @module mm.addons.mod_imscp
@@ -42,6 +127,11 @@ angular.module('mm.addons.mod_imscp')
             var url,
                 fullpath;
             if (content.type !== 'file') {
+                return;
+            }
+
+            // Special case for IMSCP packages.
+            if (content.filename == 'imsmanifest.xml') {
                 return;
             }
 
@@ -158,7 +248,7 @@ angular.module('mm.addons.mod_imscp')
      */
     self.getIframeSrc = function(module) {
         var toc = JSON.parse(module.contents[0].content);
-        var mainFile = toc[0].href;
+        var mainFilePath = toc[0].href;
 
         return self.downloadAllContent(module).then(function(filePaths) {
             return $mmUtil.getIframeSrc(filePaths, mainFilePath);
@@ -209,6 +299,10 @@ angular.module('mm.addons.mod_imscp')
         angular.forEach(module.contents, function(content) {
             var url;
             if (content.type !== 'file') {
+                return;
+            }
+            // Special case for IMSCP packages.
+            if (content.filename == 'imsmanifest.xml') {
                 return;
             }
             url = self._fixUrl(content.fileurl);

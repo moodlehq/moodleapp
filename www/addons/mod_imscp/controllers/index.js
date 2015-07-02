@@ -21,7 +21,8 @@ angular.module('mm.addons.mod_imscp')
  * @ngdoc controller
  * @name mmaModImscpIndexCtrl
  */
-.controller('mmaModImscpIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModImscp, $log, mmaModImscpComponent) {
+.controller('mmaModImscpIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModImscp, $log, mmaModImscpComponent,
+                                                $ionicPopover, $mmFS) {
     $log = $log.getInstance('mmaModImscpIndexCtrl');
 
     var module = $stateParams.module || {};
@@ -32,6 +33,10 @@ angular.module('mm.addons.mod_imscp')
     $scope.componentId = module.id;
     $scope.externalUrl = module.url;
     $scope.loaded = false;
+
+    $scope.items = $mmaModImscp.createItemList(module.contents);
+    $scope.previousItem = '';
+    $scope.nextItem = $mmaModImscp.getNextItem($scope.items, $scope.items[0].href);
 
     function fetchContent() {
         if (module.contents) {
@@ -56,6 +61,24 @@ angular.module('mm.addons.mod_imscp')
             $scope.loaded = true;
         });
     };
+
+    $scope.loadItem = function(itemId) {
+        $mmFS.getFile('iframe/' + itemId).then(function(file) {
+            $scope.src = file.toURL();
+            $scope.previousItem = $mmaModImscp.getPreviousItem($scope.items, itemId);
+            $scope.nextItem = $mmaModImscp.getNextItem($scope.items, itemId);
+        });
+    };
+
+    $scope.getNumberForPadding = function(n) {
+        return new Array(n);
+    };
+
+    $ionicPopover.fromTemplateUrl('addons/mod_imscp/templates/toc.html', {
+        scope: $scope,
+    }).then(function(popover) {
+        $scope.popover = popover;
+    });
 
     fetchContent();
 });
