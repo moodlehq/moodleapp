@@ -125,11 +125,15 @@ angular.module('mm.core.course')
             }
 
             // Checks if the content is enabled.
-            return promise.then(function() {
+            return promise.then(function(enabled) {
+                if (enabled) {
                     enabledHandlers[handles] = handlerInfo.instance;
-                }, function() {
-                    delete enabledHandlers[handles];
-                });
+                } else {
+                    return $q.reject();
+                }
+            }).catch(function() {
+                delete enabledHandlers[handles];
+            });
         };
 
         /**
