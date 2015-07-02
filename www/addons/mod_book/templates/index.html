@@ -1,0 +1,27 @@
+<ion-view>
+    <ion-nav-title>{{ title }}</ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <a ng-href="{{externalUrl}}" class="button button-icon ion-ios-browsers-outline" mm-browser></a>
+        <button class="button button-icon ion-more" ng-click="popover.show($event)">
+        </button>
+      </div>
+    </div>
+    </ion-nav-buttons>
+    <ion-content padding="true">
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" on-refresh="doRefresh()" ng-if="loaded"></ion-refresher>
+        <mm-loading hide-until="loaded">
+            <mm-course-mod-description description="description"></mm-course-mod-description>
+            <div>
+                <mm-format-text watch="true" component="{{ component }}" component-id="{{ componentId }}">{{ content }}</mm-format-text>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <i class="mma-book-arrows icon ion-arrow-left-b" ng-if="previousChapter > 0"  ng-click="loadChapter(previousChapter)"></i>
+                </div>
+                <div class="col text-right">
+                    <i class="mma-book-arrows icon ion-arrow-right-b" ng-if="nextChapter > 0" ng-click="loadChapter(nextChapter)"></i>
+                </div>
+            </div>
+        </mm-loading>
+    </ion-content>
+</ion-view>
