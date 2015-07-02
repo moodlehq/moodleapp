@@ -1,0 +1,11 @@
+<ion-popover-view>
+    <ion-content>
+        <div class="list">
+            <div ng-repeat="item in items">
+                <a class="item" ng-click="loadItem(item.href);">
+                    <span class="padding-left" ng-repeat="i in getNumberForPadding(item.level)"></span>{{item.title}}
+                </a>
+            </div>
+        </div>
+    </ion-content>
+</ion-popover-view>
