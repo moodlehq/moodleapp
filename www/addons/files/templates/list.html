@@ -4,6 +4,7 @@
         <button class="button button-icon ion-plus" ng-click="add()" ng-if="add"></button>
     </ion-nav-buttons>
     <ion-content>
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="filesLoaded" on-refresh="refreshFiles()"></ion-refresher>
         <mm-loading hide-until="filesLoaded">
             <div class="list">
                 <div ng-repeat="file in files">
@@ -11,10 +12,7 @@
                         <img ng-src="{{file.imgpath}}" alt="">
                         {{file.filename}}
                     </a>
-                    <a class="item item-media" ng-if="!file.isdir" ng-click="download(file)">
-                        <img ng-src="{{file.imgpath}}" alt="">
-                        {{file.filename}}
-                    </a>
+                    <mm-file ng-if="!file.isdir" file="file" component="{{component}}" component-id="{{file.contextid}}" always-refresh="true"></mm-file>
                 </div>
                 <div ng-if="count == 0" class="item">{{ 'mma.files.emptyfilelist' | translate }}</div>
             </div>

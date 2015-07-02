@@ -14,8 +14,8 @@
 
 angular.module('mm.addons.files')
 
-.controller('mmaFilesListController', function($q, $scope, $stateParams, $mmaFiles, $mmSite,
-        $translate, $mmUtil, $ionicHistory, mmaFilesUploadStateName, $state, $mmApp) {
+.controller('mmaFilesListController', function($q, $scope, $stateParams, $mmaFiles, $mmSite, $translate, $mmUtil,
+        $ionicHistory, mmaFilesUploadStateName, $state, $mmApp, mmaFilesMyComponent, mmaFilesSiteComponent) {
 
     var path = $stateParams.path,
         root = $stateParams.root,
@@ -26,11 +26,10 @@ angular.module('mm.addons.files')
 
     // We're loading the files.
     $scope.count = -1;
+    $scope.component = root === 'my' ? mmaFilesMyComponent : mmaFilesSiteComponent;
 
     // Convenience function that fetches the files and updates the scope.
     function fetchFiles(root, path) {
-        $scope.filesLoaded = false;
-
         if (!path) {
             // The path is unknown, the user must be requesting a root.
             if (root === 'site') {
@@ -61,7 +60,7 @@ angular.module('mm.addons.files')
             })();
         }
 
-        $q.all([promise, title]).then(function(data) {
+        return $q.all([promise, title]).then(function(data) {
             var files = data[0],
                 title = data[1];
 
@@ -70,17 +69,30 @@ angular.module('mm.addons.files')
             $scope.title = title;
         }, function() {
             $mmUtil.showErrorModal('mma.files.couldnotloadfiles', true);
-        }).finally(function() {
-            $scope.filesLoaded = true;
         });
     }
-    fetchFiles(root, path);
 
+    fetchFiles(root, path).finally(function() {
+        $scope.filesLoaded = true;
+    });
+
+    $scope.refreshFiles = function() {
+        $mmaFiles.invalidateDirectory(root, path).finally(function() {
+            fetchFiles(root, path).finally(function() {
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+        });
+    };
+
+    // Update list if we come from upload page (we don't know if user upoaded a file or not).
+    // List is invalidated in upload state after uploading a file.
     $scope.$on('$ionicView.enter', function(e) {
         var forwardView = $ionicHistory.forwardView();
         if (forwardView && forwardView.stateName === mmaFilesUploadStateName) {
-            // Update list if we come from upload page (we don't know if user upoaded a file or not).
-            fetchFiles(root, path);
+            $scope.filesLoaded = false;
+            fetchFiles(root, path).finally(function() {
+                $scope.filesLoaded = true;
+            });
         }
     });
 
