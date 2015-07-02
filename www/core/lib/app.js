@@ -33,7 +33,7 @@ angular.module('mm.core')
  *      });
  *  })
  */
-.provider('$mmApp', function() {
+.provider('$mmApp', function($stateProvider) {
 
     /** Define the app storage schema. */
     var DBNAME = 'MoodleMobile',
@@ -90,10 +90,26 @@ angular.module('mm.core')
         return exists;
     }
 
-    this.$get = function($mmDB, $cordovaNetwork, $q) {
+    this.$get = function($mmDB, $cordovaNetwork, $q, $log) {
+
+        $log = $log.getInstance('$mmApp');
 
         var db = $mmDB.getDB(DBNAME, dbschema, dboptions),
             self = {};
+
+        /**
+         * Create a new state in the UI-router.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#createState
+         * @param {String} name   State name.
+         * @param {Object} config State config.
+         */
+        self.createState = function(name, config) {
+            $log.debug('Adding new state: '+name);
+            $stateProvider.state(name, config);
+        };
 
         /**
          * Get the application global database.

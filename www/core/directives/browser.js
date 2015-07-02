@@ -18,7 +18,7 @@ angular.module('mm.core')
  * Directive to open a link in external browser.
  *
  * @module mm.core
- * @ngdoc provider
+ * @ngdoc directive
  * @name mmBrowser
  */
 .directive('mmBrowser', function($mmUtil) {
