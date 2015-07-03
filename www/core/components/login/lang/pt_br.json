@@ -1,0 +1,20 @@
+{
+    "authenticating": "Autenticação",
+    "cancel": "Cancelar",
+    "connect": "Conectar",
+    "help": "Ajuda",
+    "invalidaccount": "Por favor, verifique os detalhes de seu Usuário ou peça ao administrador do site para verificar a configuração do site.",
+    "invalidmoodleversion": "Versão do Moodle inválida. A versão mínima requerida é:",
+    "invalidsite": "A URL do siteé inválida.",
+    "login": "Acessar",
+    "logininsiterequired": "É preciso logar no site num navegador.",
+    "mobileservicesnotenabled": "Os serviços móveis não estão habilitados no seu Moodle. Por favor contate a administradora do seu Moodle se achar que o acesso móvel deveria estar habilitado",
+    "password": "Senha",
+    "passwordrequired": "Senha necessária",
+    "siteinmaintenance": "O site está em modo de manutenção",
+    "siteurl": "URL do site",
+    "siteurlrequired": "URL do site é obrigatória, por exemplo  <i>http:\/\/www.yourmoodlesite.abc ou https:\/\/www.yourmoodlesite.efg<\/i>",
+    "username": "Nome de Usuário",
+    "usernamerequired": "Nome de usuário exigido",
+    "webservicesnotenabled": "Web Services não estão ativados em seu site. Por favor, contate a administradora do seu Moodle se você achar que o acesso móvel deve ser ativado."
+}

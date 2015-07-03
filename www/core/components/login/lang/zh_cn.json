@@ -1,0 +1,20 @@
+{
+    "authenticating": "验证中",
+    "cancel": "取消",
+    "connect": "连接",
+    "help": "帮助",
+    "invalidaccount": "请检查您的登录信息，或请您的网站管理员检查网站设置。",
+    "invalidmoodleversion": "无效的Moodle版本。最低版本要求是：",
+    "invalidsite": "网站URL是无效的。",
+    "login": "登录",
+    "logininsiterequired": "您需要在浏览器窗口中登录该站点。",
+    "mobileservicesnotenabled": "您的站点没有启用移动服务，如果您觉得有必要开启移动接入功能，请与站点管理员联系。",
+    "password": "密码",
+    "passwordrequired": "需要密码",
+    "siteinmaintenance": "您的站点正使用维护模式",
+    "siteurl": "站点 URL",
+    "siteurlrequired": "需要填写站点URL，比如<i>http:\/\/www.yourmoodlesite.abc 或https:\/\/www.yourmoodlesite.efg<\/i>",
+    "username": "用户名",
+    "usernamerequired": "用户名必填",
+    "webservicesnotenabled": "您的站点未开启网络服务。如果您觉得应当启用移动接入功能，请与站点管理员联系。"
+}

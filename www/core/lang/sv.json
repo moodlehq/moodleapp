@@ -2,6 +2,7 @@
     "cancel": "Avbryt",
     "cannotconnect": "Kan inte ansluta: Kontrollera att webbadressen är korrekt och att din webbplats använder Moodle 2.4 eller senare",
     "course": "Kurs",
+    "downloading": "Laddar ner...",
     "error": "Fel",
     "loading": "Loading",
     "lostconnection": "Vi förlorade anslutningen. Du måste  ansluta igen. Din token är nu ogiltigt.",

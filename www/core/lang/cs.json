@@ -2,6 +2,7 @@
     "cancel": "Zrušit",
     "cannotconnect": "Nelze se připojit: Ověřte, zda je zadali správně adresu URL a že používáte Moodle 2.4 nebo novější.",
     "course": "Kurz",
+    "downloading": "Stahování ...",
     "error": "Chyba",
     "loading": "Nahrávání",
     "lostconnection": "Ztratili jsme spojení,  potřebujete se znovu připojit. Váš token je nyní neplatný",

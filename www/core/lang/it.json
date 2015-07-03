@@ -2,6 +2,7 @@
     "cancel": "Annulla",
     "cannotconnect": "Impossibile connettersi: verificare che l'URL sia corretto e che il sito usi Moodle 2.4 o versioni successive.",
     "course": "Corso",
+    "downloading": "Scaricamento in corso...",
     "error": "Errore",
     "loading": "Caricamento in corso",
     "lostconnection": "La connessione è stata perduta. Il tuo token non è più valido.",

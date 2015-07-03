@@ -1,9 +1,12 @@
 {
+    "chooseaccountuploadfile": "Vyberte účet, pod kterým nahrajete soubor",
     "confirmuploadfile": "Chystáte nahrát {$a}. Jste si jisti, že chcete pokračovat?",
     "downloading": "Stahování ...",
+    "emptyfilelist": "Žádný soubor k zobrazení",
     "errorcapturingaudio": "Chyba snímání zvuku",
     "errorcapturingvideo": "Chyba snímání videa",
     "errorreadingfile": "Chyba při čtení souboru \"{$a}\"",
+    "errorreceivefilenosites": "Nejsou uloženy žádné stránky. Než se pokusíte nahrát soubor, přidejte prosím stránku.",
     "file": "Soubor",
     "fileuploaded": "Soubor nahrán",
     "myfiles": "Moje soubory",
@@ -11,7 +14,6 @@
     "sitefiles": "Soubory stránek",
     "success": "Úspěch",
     "uploadafile": "Vložit soubor",
-    "uploadfiles": "Es poden penjar fitxers",
     "uploading": "Nahrávání",
     "video": "Video"
 }

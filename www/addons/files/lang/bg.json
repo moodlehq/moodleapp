@@ -1,7 +1,6 @@
 {
     "errorcapturingaudio": "Грешка при прихващане на звук",
     "errorcapturingvideo": "Грешка при прихващане на видео",
-    "errorreadingfile": "خطاء في قراءة ملف \"{$a}\"",
     "file": "Файл",
     "fileuploaded": "Файлът е качен",
     "myfiles": "Моите файлове",

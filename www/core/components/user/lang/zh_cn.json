@@ -1,0 +1,17 @@
+{
+    "address": "地址",
+    "city": "城市",
+    "contact": "联系方式",
+    "country": "国家",
+    "description": "描述",
+    "details": "详情",
+    "email": "Email",
+    "interests": "兴趣",
+    "invaliduser": "无效的用户",
+    "manager": "管理员",
+    "phone1": "电话",
+    "phone2": "手机",
+    "roles": "角色",
+    "student": "学生",
+    "webpage": "网页"
+}

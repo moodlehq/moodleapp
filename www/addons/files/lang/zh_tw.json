@@ -1,0 +1,16 @@
+{
+    "downloading": "下載中....",
+    "emptyfilelist": "沒有可以顯示的檔案",
+    "errorcapturingaudio": "錄製聲音時發生錯誤",
+    "errorcapturingvideo": "錄製影片時發生錯誤",
+    "errorreadingfile": "讀取檔案 \"{$a}\" 時發生錯誤",
+    "file": "檔案",
+    "fileuploaded": "檔案已上傳",
+    "myfiles": "我的檔案",
+    "sitefiles": "網站公用檔案",
+    "success": "成功",
+    "uploadafile": "上傳一個檔案",
+    "uploadfiles": "可以上傳檔案",
+    "uploading": "上傳中",
+    "video": "錄製影片"
+}

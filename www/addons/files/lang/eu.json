@@ -1,9 +1,12 @@
 {
+    "chooseaccountuploadfile": "Aukeratu kontu bat fitxategia bertara igotzeko",
     "confirmuploadfile": "{$a} igotzear zaude. Ziur al zaude aurrera egin nahi duzula?",
     "downloading": "Jaisten...",
+    "emptyfilelist": "Ez dago erakusteko fitxategirik",
     "errorcapturingaudio": "Errorea audioa kapturatzean",
     "errorcapturingvideo": "Errorea bideoa kapturatzean",
     "errorreadingfile": "Errorea \"{$a}\" fitxategia irakurtzean",
+    "errorreceivefilenosites": "Ez dago gordetako gunerik. Mesedez gehitu gune bat fitxategia igotzen saiatu baino lehen.",
     "file": "Fitxategia",
     "fileuploaded": "Fitxategia igo da",
     "myfiles": "Nire fitxategiak",
@@ -11,7 +14,6 @@
     "sitefiles": "Guneko fitxategiak",
     "success": "Ondo!",
     "uploadafile": "Fitxategia igo",
-    "uploadfiles": "Puede subir archivos",
     "uploading": "Igotzen",
     "video": "Bideoa"
 }

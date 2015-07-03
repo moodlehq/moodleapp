@@ -1,0 +1,23 @@
+{
+    "cancel": "Cancelar",
+    "cannotconnect": "Não é possível conectar-se: Verifique se digitou a URL corretamente e se seu site usa o Moodle 2.4 ou posterior.",
+    "course": "Curso",
+    "downloading": "Baixando arquivo",
+    "error": "Erro",
+    "loading": "Carregando",
+    "lostconnection": "Perdemos conexão. Você precisa se reconectar. Seu token agora está inválido.",
+    "networkerrormsg": "Rede não habilitada ou não está funcionado",
+    "numdays": "{$a} dias",
+    "numhours": "{$a} horas",
+    "numminutes": "{$a} minutos",
+    "nummonths": "{$a} meses",
+    "numseconds": "{$a} segundos",
+    "numyears": "{$a} anos",
+    "search": "Buscar",
+    "sizeb": "bytes",
+    "sizegb": "Gb",
+    "sizekb": "Kb",
+    "sizemb": "Mb",
+    "unexpectederror": "Erro inesperado. Por favor, feche e abra novamente o aplicativo para tentar novamente",
+    "view": "Ver"
+}

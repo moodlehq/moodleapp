@@ -1,0 +1,17 @@
+{
+    "address": "Dirección",
+    "city": "Ciudad",
+    "contact": "Contacto",
+    "country": "País",
+    "description": "Descripción",
+    "details": "Detalles",
+    "email": "Email",
+    "interests": "Intereses",
+    "invaliduser": "Usuario no válido",
+    "manager": "Mánager",
+    "phone1": "Teléfono",
+    "phone2": "Móvil",
+    "roles": "Roles",
+    "student": "Estudiante",
+    "webpage": "Página web"
+}

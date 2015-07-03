@@ -2,6 +2,7 @@
     "cancel": "Annuler",
     "cannotconnect": "Connexion impossible : vérifiez que l'URL a été saisie correctement et que votre site utilise Moodle 2.4 ou ultérieur.",
     "course": "Cours",
+    "downloading": "Téléchargement...",
     "error": "Erreur",
     "loading": "Chargement",
     "lostconnection": "Connexion perdue. Vous devez vous reconnecter. Votre jeton n'est plus valide",

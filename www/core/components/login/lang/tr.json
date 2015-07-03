@@ -1,7 +1,6 @@
 {
     "authenticating": "Kimlik doğrulanıyor",
     "cancel": "Vazgeç",
-    "connect": "Anslut",
     "help": "Yardım",
     "invalidaccount": "Lütfen giriş bilgileriniz kontrol ediniz veya Site ayarlarını kontrol etmesi için yöneticinize başvurun.",
     "invalidmoodleversion": "Geçersiz Moodle sürümü. Sitenizin Sürümünün şundan aşağı olmaması gerekir:",

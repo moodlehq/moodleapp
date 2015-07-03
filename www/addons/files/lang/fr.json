@@ -1,9 +1,12 @@
 {
+    "chooseaccountuploadfile": "Sélectionnez un compte vers lequel déposer le fichier",
     "confirmuploadfile": "Vous allez déposer {$a}. Voulez-vous vraiment continuer ?",
     "downloading": "Téléchargement...",
+    "emptyfilelist": "Il n'y a pas de fichier à afficher",
     "errorcapturingaudio": "Erreur d'enregistrement audio",
     "errorcapturingvideo": "Erreur lors de la capture vidéo",
     "errorreadingfile": "Erreur de lecture du fichier « {$a} »",
+    "errorreceivefilenosites": "Aucun site enregistré. Veuillez ajouter un site avant de déposer un fichier.",
     "file": "Fichier",
     "fileuploaded": "Fichier envoyé",
     "myfiles": "Mes fichiers",

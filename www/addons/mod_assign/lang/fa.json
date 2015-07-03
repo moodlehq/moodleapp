@@ -1,10 +1,6 @@
 {
     "addsubmission": "اضافه کردن تکلیف",
-    "allowsubmissionsfromdate": "Baimendu bidalketak hemendik",
-    "attemptnumber": "Saiakera-kopurua",
-    "cutoffdate": "Itxiera-data",
     "duedate": "مهلت تحویل",
     "duedateno": "بدون موعد",
-    "submissions": "تکالیف تحویل داده شده",
-    "viewsubmission": "Ikusi bidalketa"
+    "submissions": "تکالیف تحویل داده شده"
 }

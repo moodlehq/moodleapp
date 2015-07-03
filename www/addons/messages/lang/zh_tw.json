@@ -1,0 +1,13 @@
+{
+    "addcontact": "加入通訊錄",
+    "blockcontact": "封鎖聯絡人",
+    "contactlistempty": "您的通訊錄是空的",
+    "contactname": "聯絡人姓名",
+    "contacts": "通訊錄",
+    "messages": "我的簡訊",
+    "nomessages": "沒有待處理的簡訊",
+    "removecontact": "刪除聯絡人",
+    "send": "傳送",
+    "sendmessage": "傳送訊息",
+    "unblockcontact": "不再封鎖聯絡"
+}

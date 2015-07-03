@@ -1,5 +1,4 @@
 {
-    "confirmuploadfile": "Chcesz wysłać plik {$a}. Czy na pewno chcesz kontynuować?",
     "downloading": "Laddar ner...",
     "errorcapturingaudio": "Fel med att spela in ljud",
     "errorcapturingvideo": "Fel vid inspelning av video",
@@ -7,11 +6,9 @@
     "file": "Fil",
     "fileuploaded": "Fil laddade upp",
     "myfiles": "Mina filer",
-    "readingfile": "Odczytywanie pliku",
     "sitefiles": "webbplats filer",
     "success": "Framgång",
     "uploadafile": "Ladda upp en fil",
-    "uploadfiles": "Можно загружать файлы",
     "uploading": "Uppladdning",
     "video": "Video"
 }
