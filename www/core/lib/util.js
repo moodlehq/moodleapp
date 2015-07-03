@@ -260,10 +260,7 @@ angular.module('mm.core')
                 angular.forEach(files, function(localPath, iframePath) {
                     var promise,
                         path = iframeDir + '/' + iframePath;
-                    promise = $mmFS.createFile(path).then(function() {
-                        // We call createFile to ensure that the path exists.
-                        return $mmFS.copyFile(localPath, path);
-                    });
+                    promise = $mmFS.copyFile(localPath, path);
                     promises.push(promise);
                 });
                 return $q.all(promises);

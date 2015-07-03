@@ -604,8 +604,44 @@ angular.module('mm.core')
      */
     self.copyFile = function(from, to) {
         return self.init().then(function() {
-            return $cordovaFile.copyFile(basePath, from, basePath, to);
+            // Check if to contains a directory.
+            var toFile = self.getFileAndDirectoryFromPath(to);
+            if (toFile.directory == '') {
+                return $cordovaFile.copyFile(basePath, from, basePath, to);
+            } else {
+                // Ensure directory is created.
+                return self.createDir(toFile.directory).then(function() {
+                    return $cordovaFile.copyFile(basePath, from, basePath, to);
+                });
+            }
         });
+    };
+
+    /**
+     * Extract the file name and directory from a given path.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#getFileAndDirectoryFromPath
+     * @param {String} path   Path to be extracted.
+     * @return {Object}       Plain object containing the file name and directory.
+     * @description
+     * file.pdf         -> directory: '', name: 'file.pdf'
+     * /file.pdf        -> directory: '', name: 'file.pdf'
+     * path/file.pdf    -> directory: 'path', name: 'file.pdf'
+     * path/            -> directory: 'path', name: ''
+     * path             -> directory: '', name: 'path'
+     */
+    self.getFileAndDirectoryFromPath = function(path) {
+        var file = {
+            directory: '',
+            name: ''
+        };
+
+        file.directory = path.substring(0, path.lastIndexOf('/') );
+        file.name = path.substr(path.lastIndexOf('/') + 1);
+
+        return file;
     };
 
     return self;
