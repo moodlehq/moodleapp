@@ -3,6 +3,7 @@
     "cancel": "Annuler",
     "connect": "Connecter",
     "help": "Aide",
+    "helpmelogin": "<p>Il existe plusieurs milliers de sites Moodle dans le monde. Cette app vous permet de vous connecter aux sites Moodle qui ont explicitement activé l'accès via l'app mobile.<\/p><p>Si vous ne pouvez pas vous connecter à votre site Moodle, veuillez contacter son administrateur local et lui demander de lire <a href=\"http:\/\/docs.moodle.org\/en\/Mobile_app\" target=\"_blank\">http:\/\/docs.moodle.org\/en\/Mobile_app<\/a><\/p><p>Pour tester l'app dans un Moodle de démonstration, tapez <i>teacher<\/i> ou <i>student<\/i> dans le champ <i>Nom d'utilisateur<\/i> et tapoter le bouton <b>Ajouter<\/b>.<\/p>",
     "invalidaccount": "Veuillez vérifier vos données de connexion ou demander à l'administrateur de votre site de vérifier sa configuration.",
     "invalidmoodleversion": "Version de Moodle non valide. La version minimale requise est :",
     "invalidsite": "Cette URL n'est pas valide.",

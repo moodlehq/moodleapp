@@ -1,0 +1,23 @@
+{
+    "cancel": "取消",
+    "cannotconnect": "無法連接：請確認您輸入之網址正確，且您的位置使用的是Moodle2.4版或更新版本。",
+    "course": "課程",
+    "downloading": "下載中....",
+    "error": "錯誤",
+    "loading": "載入中",
+    "lostconnection": "我們已斷了線，您需重新連線。您的口令目前是無效的。",
+    "networkerrormsg": "網路未啟用或未運作。",
+    "numdays": "{$a}日",
+    "numhours": "{$a}小時",
+    "numminutes": "{$a}分",
+    "nummonths": "{$a}月",
+    "numseconds": "{$a}秒",
+    "numyears": "{$a}年",
+    "search": "搜尋",
+    "sizeb": "位元組",
+    "sizegb": "GB",
+    "sizekb": "KB",
+    "sizemb": "MB",
+    "unexpectederror": "無法預期的錯誤。請關閉並重新開啟應用程式，再試一次。",
+    "view": "瀏覽"
+}

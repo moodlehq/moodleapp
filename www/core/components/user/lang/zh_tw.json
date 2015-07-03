@@ -1,0 +1,17 @@
+{
+    "address": "住址",
+    "city": "城市",
+    "contact": "連絡人",
+    "country": "國家",
+    "description": "描述",
+    "details": "明細",
+    "email": "電子郵件",
+    "interests": "興趣",
+    "invaliduser": "無效的用戶",
+    "manager": "管理員",
+    "phone1": "電話",
+    "phone2": "行動",
+    "roles": "角色",
+    "student": "學生",
+    "webpage": "網頁"
+}

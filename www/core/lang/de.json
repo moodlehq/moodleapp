@@ -2,6 +2,7 @@
     "cancel": "Abbrechen",
     "cannotconnect": "Keine Verbindung: Stellen Sie sicher, dass die URL richtig ist und dass mindestens Moodle 2.4 benutzt wird.",
     "course": "Kurs",
+    "downloading": "Wird heruntergeladen...",
     "error": "Fehler",
     "loading": "Wird geladen...",
     "lostconnection": "Verbindung unterbrochen. Ihr Token ist jetzt ungültig.",

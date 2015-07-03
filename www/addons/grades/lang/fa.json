@@ -1,14 +1,9 @@
 {
     "average": "میانگین",
-    "contributiontocoursetotal": "Ikastarora guztira egindako ekarpena",
     "feedback": "بازخورد",
     "grade": "نمره",
     "grades": "نمرات",
     "itemname": "نام مورد",
-    "lettergrade": "Letren bidezko kalifikazioa",
     "percentage": "درصد",
-    "range": "محدوده",
-    "rank": "Sailkapena",
-    "viewgrades": "Ikusi kalifikazioak",
-    "weight": "Pisua"
+    "range": "محدوده"
 }

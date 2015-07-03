@@ -3,6 +3,7 @@
     "cancel": "Anuluj",
     "connect": "Połącz",
     "help": "Pomoc",
+    "helpmelogin": "<p>Są tysiące stron Moodle na całym świecie. Ta aplikacja pozwala połączyć sie ze stronami Moodle które włączyły możliwość dostępu z aplikacji mobilnej.<\/p><p>Jeśli nie możesz się połączyć do swojej strony Moodle, musisz skontaktować się z administratorem strone tam gdzie zamierzasz się połączyć i zaproponować przeczytanie <a href=\"http:\/\/docs.moodle.org\/en\/Mobile_app\" target=\"_blank\">http:\/\/docs.moodle.org\/en\/Mobile_app<\/a><\/p><p>Aby przetestować aplikację w wersji demonstracyjnej Moodle wpisz <i>teacher<\/i> or <i>student<\/i> w polu <i>URL strony<\/i> i wciśnij przycisk <b>Dodaj<\/b>.<\/p>",
     "invalidaccount": "Sprawdź swoje dane logowania lub zapytaj administratora strony aby sprawdzić konfigurację strony.",
     "invalidmoodleversion": "Nieprawidłowa wersja Moodle. Minimalna wymagana wersja to: ",
     "invalidsite": "Adres strony jest nieprawidłowy.",

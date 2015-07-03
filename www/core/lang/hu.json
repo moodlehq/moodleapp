@@ -2,6 +2,7 @@
     "cancel": "Mégse",
     "cannotconnect": "Sikertelen kapcsolódás: ellenőrizze, jó-e az URL és a portál legalább 2.4-es Moodle-t használ-e.",
     "course": "Kurzus",
+    "downloading": "Letöltés...",
     "error": "Hiba",
     "loading": "Betöltés",
     "lostconnection": "A kapcsolat megszakadt, kacsolódjon újból. Jele érvénytelen.",

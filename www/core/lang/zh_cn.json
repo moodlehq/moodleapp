@@ -1,0 +1,23 @@
+{
+    "cancel": "取消",
+    "cannotconnect": "无法连接：请确认您已经正确输入网址，并且您的网站使用了Moodle 2.4或更高版本。",
+    "course": "课程",
+    "downloading": "正在下载...",
+    "error": "错误",
+    "loading": "载入中",
+    "lostconnection": "我们失去了连接，因此您需要重新连接。您现在的令牌是无效的。",
+    "networkerrormsg": "网络未启用或不工作。",
+    "numdays": "{$a}天",
+    "numhours": "{$a}小时",
+    "numminutes": "{$a}分钟",
+    "nummonths": "{$a}个月",
+    "numseconds": "{$a}秒",
+    "numyears": "{$a}年",
+    "search": "搜索",
+    "sizeb": "字节",
+    "sizegb": "GB",
+    "sizekb": "KB",
+    "sizemb": "MB",
+    "unexpectederror": "意外出错。请关闭并重新打开APP再试一次",
+    "view": "浏览"
+}

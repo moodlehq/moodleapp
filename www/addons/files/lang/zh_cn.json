@@ -1,0 +1,16 @@
+{
+    "downloading": "正在下载...",
+    "emptyfilelist": "没有可显示的文件",
+    "errorcapturingaudio": "捕捉音频时出错",
+    "errorcapturingvideo": "捕捉视频时出错",
+    "errorreadingfile": "在读取文件“{$a}”时发生错误",
+    "file": "文件",
+    "fileuploaded": "文件已上传",
+    "myfiles": "我的文件",
+    "sitefiles": "站点文件",
+    "success": "成功",
+    "uploadafile": "上传一个文件",
+    "uploadfiles": "可以上传文件",
+    "uploading": "上传中",
+    "video": "视频"
+}

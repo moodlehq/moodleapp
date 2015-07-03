@@ -1,0 +1,16 @@
+{
+    "downloading": "Descargando...",
+    "emptyfilelist": "No hay archivos que mostrar",
+    "errorcapturingaudio": "Error capturando audio",
+    "errorcapturingvideo": "Error al capturar video",
+    "errorreadingfile": "Error al leer el archivo  \"{$a}\"",
+    "file": "Archivo",
+    "fileuploaded": "Archivo subido",
+    "myfiles": "Mis archivos",
+    "sitefiles": "Archivos del sitio",
+    "success": "Éxito",
+    "uploadafile": "Subir un archivo",
+    "uploadfiles": "Puede subir archivos",
+    "uploading": "Subiendo",
+    "video": "Video"
+}

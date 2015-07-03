@@ -1,9 +1,12 @@
 {
+    "chooseaccountuploadfile": "Nutzerkonto für Dateiupload wählen",
     "confirmuploadfile": "Möchten Sie '{$a}' wirklich hochladen?",
     "downloading": "Wird heruntergeladen...",
+    "emptyfilelist": "Es liegen keine Dateien vor",
     "errorcapturingaudio": "Fehler bei der Audioaufnahme",
     "errorcapturingvideo": "Fehler bei der Videoaufnahme",
     "errorreadingfile": "Fehler beim Lesen der Datei '{$a}'",
+    "errorreceivefilenosites": "Keine Websites gespeichert. Bitte wählen Sie eine Website und laden Sie die Datei dann hoch.",
     "file": "Datei",
     "fileuploaded": "Datei hochgeladen",
     "myfiles": "Meine Dateien",

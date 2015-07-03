@@ -2,6 +2,7 @@
     "cancel": "Vazgeç",
     "cannotconnect": "Bağlantı kurulamıyor: Doğru adres girdiğinizden ve sitenizin Moodle 2.4 ve sonrası sürüme sahip olduğundan emin olun.",
     "course": "Kurs",
+    "downloading": "İndiriliyor...",
     "error": "Hata",
     "loading": "Yükleniyor",
     "lostconnection": "Bağlantınızı kaybettik, yeniden bağlanmanız gerekiyor. Verileriniz artık geçerli değil.",

@@ -1,5 +1,4 @@
 {
-    "confirmuploadfile": "Chcesz wysłać plik {$a}. Czy na pewno chcesz kontynuować?",
     "downloading": "İndiriliyor...",
     "errorcapturingaudio": "Ses çalma hatası",
     "errorcapturingvideo": "Video oynatma hatası",
@@ -7,7 +6,6 @@
     "file": "Dosya",
     "fileuploaded": "Dosya yüklendi",
     "myfiles": "Dosyalarım",
-    "readingfile": "Odczytywanie pliku",
     "sitefiles": "Site dosyaları",
     "success": "Başarılı",
     "uploadafile": "Bir dosya yükle",

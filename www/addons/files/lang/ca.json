@@ -1,5 +1,6 @@
 {
     "downloading": "Baixant...",
+    "emptyfilelist": "No hi ha fitxers per mostrar",
     "errorcapturingaudio": "S'ha produït un error en capturar l'àudio",
     "errorcapturingvideo": "S'ha produït un error en capturar el vídeo",
     "errorreadingfile": "S'ha produït un error en llegir el fitxer \"{$a}\"",

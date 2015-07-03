@@ -2,6 +2,7 @@
     "cancel": "Utzi",
     "cannotconnect": "Ezin izan da konektatu. URLa ondo idatzi duzula eta zure Moodle-ak 2.4 edo goragoko bertsioa erabiltzen duela egiaztatu ezazu.",
     "course": "Ikastaroa",
+    "downloading": "Jaisten...",
     "error": "Errorea",
     "loading": "Kargatzen",
     "lostconnection": "Konexioa galdu dugu eta berriz konektatu behar zara. Zure token-a orain ez da baliozkoa",
