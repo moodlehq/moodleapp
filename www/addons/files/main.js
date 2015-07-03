@@ -16,6 +16,8 @@ angular.module('mm.addons.files', ['mm.core'])
 
 .constant('mmaFilesUploadStateName', 'site.files-upload')
 .constant('mmaFilesSharedFilesStore', 'shared_files')
+.constant('mmaFilesMyComponent', 'mmaFilesMy')
+.constant('mmaFilesSiteComponent', 'mmaFilesSite')
 
 .config(function($stateProvider, mmaFilesUploadStateName) {
 
