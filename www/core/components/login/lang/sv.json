@@ -3,6 +3,7 @@
     "cancel": "Avbryt",
     "connect": "Anslut",
     "help": "Hjälp",
+    "helpmelogin": "<p> För att logga in måste du kontrollera att: <\/ p> 1. Moodle webbplats är version 2.4 eller högre <br \/> 2. Moodle administratören har aktiverat Mobil åtkomst <br... \/> <br \/> <p> För att testa appen på en Moodle demo site skriv <i> lärare <\/ i> eller <i> elev <\/ i> i <i>  i fält för Användarnamn <\/ i>och klicka på <b> Lägg till knapp <\/ b>. <\/ p> <a href='http:\/\/docs.moodle.org\/en\/Mobile_app' target='_blank'> Besök Moodle webbplats för mer detaljerad Moodle information och hjälp. <\/ a> <\/ p>",
     "invalidaccount": "Kontrollera dina inloggningsuppgifter stämmer eller be webbplatsadministratören att kontrollera webbplatsens konfiguration",
     "invalidmoodleversion": "Ogiltig Moodle version. Lägsta version som krävs är",
     "invalidsite": "Den webbadress är ogiltig.",

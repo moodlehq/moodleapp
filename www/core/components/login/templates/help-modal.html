@@ -4,9 +4,6 @@
         <button class="button button-icon ion-close-round" ng-click="closeHelp()"></button>
     </ion-header-bar>
     <ion-content class="padding">
-        <p>{{ 'mm.login.helpmeloginintro' | translate}}</p>
-        <p>{{ 'mm.login.helpmeloginmid' | translate}}</p>
-        <p><a ng-href="{{docsurl}}" mm-browser>{{docsurl}}</a></p>
-        <p translate="mm.login.helpmeloginend"></p> <!-- We use directive to handle HTML tags -->
+        <mm-format-text>{{ 'mm.login.helpmelogin' | translate}}</mm-format-text>
     </ion-content>
 </ion-modal-view>

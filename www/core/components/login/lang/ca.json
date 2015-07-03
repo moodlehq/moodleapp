@@ -3,6 +3,7 @@
     "cancel": "Cancel·la",
     "connect": "Connecta",
     "help": "Ajuda",
+    "helpmelogin": "<p>Hi ha milers de llocs Moodle al món. Aquesta aplicació, només funciona amb els llocs Moodle que tenen habilitat els serveis web per als dispositius mòbils. <\/p><p>Si no podeu conecctar al vostre Moodle, contacteu amb l'administrador\/a i per tal que revisi la documentació <a href=\"http:\/\/docs.moodle.org\/en\/Mobile_app\" target=\"_blank\">http:\/\/docs.moodle.org\/en\/Mobile_app<\/a><\/p><p>Per provar l'aplicaicó a un Moodle de demostració accediu amb <i>teacher<\/i> o <i>student<\/i> a <i>URL del lloc<\/i> i feu clic a <b>Afegeix<\/b>.<\/p>",
     "invalidaccount": "Verifiqueu el vostre nom d'usuari\/ària i contrasenya o demaneu a l'administració de Moodle que comprovi la configuració del lloc.",
     "invalidmoodleversion": "La versió de Moodle no és vàlida. Versió mínima requerida:",
     "invalidsite": "L'URL del lloc no és vàlid.",
