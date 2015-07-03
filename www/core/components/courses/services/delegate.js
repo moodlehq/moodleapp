@@ -26,49 +26,92 @@ angular.module('mm.core.courses')
 
     $log = $log.getInstance('$mmCoursesDelegate');
 
-    var plugins = {},
-        self = {},
-        data;
+    var self = {},
+        plugins = {},
+        data = [];
+
+    /**
+     * Add plugin data to the data array.
+     *
+     * @param {String} name       Plugin name,
+     * @param {Number} priority   Plugin priority.
+     * @param {Object} pluginData Plugin data.
+     */
+    function addToData(name, priority, pluginData) {
+        var found = false;
+        for (var i = 0; i < data.length && !found; i++) {
+            if (data[i].name === name) {
+                found = true;
+                data.priority = priority;
+                data.data = pluginData;
+            }
+        }
+        if (!found) {
+            data.push({
+                name: name,
+                priority: priority,
+                data: pluginData
+            });
+        }
+    }
+
+    /**
+     * Get the data of the registered plugins.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCoursesDelegate#getData
+     * @return {Object} Registered plugins data.
+     */
+    self.getData = function() {
+        data = [];
+        angular.forEach(plugins, function(value, name) {
+            self.updatePluginData(name);
+        });
+        return data;
+    };
 
     /**
      * Register a plugin to show in the course.
      *
-     * @param  {String}   name     Name of the plugin.
-     * @param  {Function} callback Function to call to get the plugin data. This function should return an object with:
-     *                                 -icon: Icon to show next to the plugin name.
-     *                                 -title: Plugin name to be displayed.
-     *                                 -state: sref to the plugin's main state (i.e. site.grades).
-     *                             If the plugin should not be shown (disabled, etc.) this function should return undefined.
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCoursesDelegate#registerPlugin
+     * @param  {String}   name      Name of the plugin.
+     * @param  {Function} callback  Function to call to get the plugin data. This function should return an object with:
+     *                                  -icon: Icon to show next to the plugin name.
+     *                                  -title: Plugin name to be displayed.
+     *                                  -state: sref to the plugin's main state (i.e. site.grades).
+     *                              If the plugin should not be shown (disabled, etc.) this function should return undefined.
+     * @param {Number} [priority=0] Plugin's priority to determine order to be shown. Higher priority means showing it first.
      */
-    self.registerPlugin = function(name, callback) {
-        $log.debug("Register plugin '"+name+"' in course.");
-        plugins[name] = callback;
+    self.registerPlugin = function(name, callback, priority) {
+        if (typeof priority != 'number') {
+            priority = 0;
+        }
+        $log.debug("Register plugin '"+name+"' in course with priority "+priority);
+        plugins[name] = {callback: callback, priority: priority};
     };
 
     /**
      * Update the plugin data stored in the delegate.
      *
-     * @param  {String}   name     Name of the plugin.
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCoursesDelegate#updatePluginData
+     * @param  {String} name Name of the plugin.
      */
     self.updatePluginData = function(name) {
         $log.debug("Update plugin '"+name+"' data in course.");
-        var pluginData = plugins[name]();
-        if (typeof(pluginData) !== 'undefined') {
-            data[name] = pluginData;
+        var pluginData = plugins[name].callback();
+        if (typeof pluginData === 'object' && typeof pluginData.then === 'function') {
+            // Promise, we only care when it is resolved.
+            pluginData.then(function(finalData) {
+                addToData(name, plugins[name].priority, finalData);
+            });
+        } else if (typeof(pluginData) !== 'undefined') {
+            addToData(name, plugins[name].priority, pluginData);
         }
-    };
-
-    /**
-     * Get the data of the registered plugins.
-     *
-     * @return {Object} Registered plugins data.
-     */
-    self.getData = function() {
-        data = {};
-        angular.forEach(plugins, function(callback, plugin) {
-            self.updatePluginData(plugin);
-        });
-        return data;
     };
 
     return self;

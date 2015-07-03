@@ -21,7 +21,7 @@ angular.module('mm.core.settings')
  * @ngdoc controller
  * @name mmSettingsListCtrl
  */
-.controller('mmSettingsListCtrl', function($scope, $mmSettingsDelegate) {
+.controller('mmSettingsListCtrl', function($scope) {
 
     // Get setting ui-sref depending on Mobile or Tablet.
     // @todo Adapt to tablet split view when it is implemented.
@@ -29,6 +29,4 @@ angular.module('mm.core.settings')
         return 'site.mm_settings-' + name;
     };
 
-    var plugins = $mmSettingsDelegate.getData();
-    $scope.plugins = plugins;
 });

@@ -15,7 +15,10 @@
 angular.module('mm.addons.messages', [])
 
 .constant('mmaMessagesPollInterval', 5000)
-.value('mmaMessagesIndexState', 'site.messages')
+.value('mmaMessagesPriority', 600)
+.value('mmaMessagesSendMessagePriority', 1000)
+.value('mmaMessagesAddContactPriority', 800)
+.value('mmaMessagesBlockContactPriority', 600)
 
 .config(function($stateProvider) {
 
@@ -47,7 +50,8 @@ angular.module('mm.addons.messages', [])
 })
 
 .run(function($mmSideMenuDelegate, $mmaMessages, $mmUserDelegate, $mmaMessagesHandlers, $mmEvents, $state, $mmAddonManager,
-            $mmUtil, mmCoreEventLogin) {
+            $mmUtil, mmCoreEventLogin, mmaMessagesPriority, mmaMessagesSendMessagePriority, mmaMessagesAddContactPriority,
+            mmaMessagesBlockContactPriority) {
 
     $mmSideMenuDelegate.registerPlugin('mmaMessages', function() {
 
@@ -63,11 +67,11 @@ angular.module('mm.addons.messages', [])
             };
         });
 
-    });
+    }, mmaMessagesPriority);
 
-    $mmUserDelegate.registerPlugin('mmaMessages:sendMessage', $mmaMessagesHandlers.sendMessage);
-    $mmUserDelegate.registerPlugin('mmaMessages:addContact', $mmaMessagesHandlers.addContact);
-    $mmUserDelegate.registerPlugin('mmaMessages:blockContact', $mmaMessagesHandlers.blockContact);
+    $mmUserDelegate.registerPlugin('mmaMessages:sendMessage', $mmaMessagesHandlers.sendMessage, mmaMessagesSendMessagePriority);
+    $mmUserDelegate.registerPlugin('mmaMessages:addContact', $mmaMessagesHandlers.addContact, mmaMessagesAddContactPriority);
+    $mmUserDelegate.registerPlugin('mmaMessages:blockContact', $mmaMessagesHandlers.blockContact, mmaMessagesBlockContactPriority);
 
     // Invalidate messaging enabled WS calls.
     $mmEvents.on(mmCoreEventLogin, function() {

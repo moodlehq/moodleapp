@@ -26,50 +26,34 @@ angular.module('mm.core.sidemenu')
 
     $log = $log.getInstance('$mmSideMenuDelegate');
 
-    var plugins = {},
-        self = {},
-        data,
-        controllers = [];
+    var self = {},
+        plugins = {},
+        data = [];
 
     /**
-     * Register a plugin to show in the side menu.
+     * Add plugin data to the data array.
      *
-     * @module mm.core.sidemenu
-     * @ngdoc method
-     * @name $mmSideMenuDelegate#registerPlugin
-     * @param  {String}   name     Name of the plugin.
-     * @param  {Function} callback Function to call to get the plugin data. This function should return an object with:
-     *                                 -icon: Icon to show in the menu item.
-     *                                 -title: Plugin name to be displayed.
-     *                                 -state: sref to the plugin's main state (i.e. site.messages).
-     *                                 -badge: Number to show next to the plugin (like new notifications number). Optional.
-     *                             If the plugin should not be shown (disabled, etc.) this function should return undefined.
+     * @param {String} name       Plugin name,
+     * @param {Number} priority   Plugin priority.
+     * @param {Object} pluginData Plugin data.
      */
-    self.registerPlugin = function(name, callback) {
-        $log.debug("Register plugin '"+name+"' in side menu.");
-        plugins[name] = callback;
-    };
-
-    /**
-     * Update the plugin data stored in the delegate.
-     *
-     * @module mm.core.sidemenu
-     * @ngdoc method
-     * @name $mmSideMenuDelegate#updatePluginData
-     * @param  {String}   name     Name of the plugin.
-     */
-    self.updatePluginData = function(name) {
-        $log.debug("Update plugin '"+name+"' data in side menu.");
-        var pluginData = plugins[name]();
-        if (typeof pluginData === 'object' && typeof pluginData.then === 'function') {
-            // Promise, we only care when it is resolved.
-            pluginData.then(function(finalData) {
-                data[name] = finalData;
-            });
-        } else if (typeof(pluginData) !== 'undefined') {
-            data[name] = pluginData;
+    function addToData(name, priority, pluginData) {
+        var found = false;
+        for (var i = 0; i < data.length && !found; i++) {
+            if (data[i].name === name) {
+                found = true;
+                data.priority = priority;
+                data.data = pluginData;
+            }
         }
-    };
+        if (!found) {
+            data.push({
+                name: name,
+                priority: priority,
+                data: pluginData
+            });
+        }
+    }
 
     /**
      * Get the data of the registered plugins.
@@ -80,11 +64,55 @@ angular.module('mm.core.sidemenu')
      * @return {Object} Registered plugins data.
      */
     self.getData = function() {
-        data = {};
-        angular.forEach(plugins, function(callback, plugin) {
-            self.updatePluginData(plugin);
+        data = [];
+        angular.forEach(plugins, function(value, name) {
+            self.updatePluginData(name);
         });
         return data;
+    };
+
+    /**
+     * Register a plugin to show in the side menu.
+     *
+     * @module mm.core.sidemenu
+     * @ngdoc method
+     * @name $mmSideMenuDelegate#registerPlugin
+     * @param  {String}   name     Name of the plugin.
+     * @param  {Function} callback  Function to call to get the plugin data. This function should return an object with:
+     *                                  -icon: Icon to show in the menu item.
+     *                                  -title: Plugin name to be displayed.
+     *                                  -state: sref to the plugin's main state (i.e. site.messages).
+     *                                  -badge: Number to show next to the plugin (like new notifications number). Optional.
+     *                              If the plugin should not be shown (disabled, etc.) this function should return undefined.
+     * @param {Number} [priority=0] Plugin's priority to determine order to be shown. Higher priority means showing it first.
+     */
+    self.registerPlugin = function(name, callback, priority) {
+        if (typeof priority != 'number') {
+            priority = 0;
+        }
+        $log.debug("Register plugin '"+name+"' in side menu with priority "+priority);
+        plugins[name] = {callback: callback, priority: priority};
+    };
+
+    /**
+     * Update the plugin data stored in the delegate.
+     *
+     * @module mm.core.sidemenu
+     * @ngdoc method
+     * @name $mmSideMenuDelegate#updatePluginData
+     * @param {String} name Name of the plugin.
+     */
+    self.updatePluginData = function(name) {
+        $log.debug("Update plugin '"+name+"' data in side menu.");
+        var pluginData = plugins[name].callback();
+        if (typeof pluginData === 'object' && typeof pluginData.then === 'function') {
+            // Promise, we only care when it is resolved.
+            pluginData.then(function(finalData) {
+                addToData(name, plugins[name].priority, finalData);
+            });
+        } else if (typeof(pluginData) !== 'undefined') {
+            addToData(name, plugins[name].priority, pluginData);
+        }
     };
 
     return self;
