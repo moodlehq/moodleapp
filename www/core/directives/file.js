@@ -25,12 +25,12 @@ angular.module('mm.core')
  * to download/refresh it.
  *
  * Attributes:
- * @param {Object} file                   Required. Object with the following attributes:
- *                                            'filename': Name of the file.
- *                                            'fileurl' or 'url': File URL.
- * @param {String} [component]            Component the file belongs to.
- * @param {Number} [componentId]          Component ID.
- * @param {Boolean} [alwaysRefresh=false] True if refreshs icon should be always shown, false otherwise.
+ * @param {Object} file            Required. Object with the following attributes:
+ *                                     'filename': Name of the file.
+ *                                     'fileurl' or 'url': File URL.
+ * @param {String} [component]     Component the file belongs to.
+ * @param {Number} [componentId]   Component ID.
+ * @param {Boolean} [timemodified] If set, the value will be used to check if the file is outdated.
  */
 .directive('mmFile', function($q, $mmUtil, $mmFilepool, $mmSite, $mmApp, $mmEvents) {
 
@@ -40,18 +40,14 @@ angular.module('mm.core')
      * @param  {Object} scope          Directive's scope.
      * @param  {String} siteid         Site ID.
      * @param  {String} fileurl        File URL.
-     * @param  {Boolean} alwaysRefresh True if refresh button should be always shown, false if it should be shown if outdated.
+     * @param  {Number} [timemodified] File's timemodified.
      * @return {Void}
      */
-    function getState(scope, siteid, fileurl, alwaysRefresh) {
-        return $mmFilepool.getFileStateByUrl(siteid, fileurl).then(function(state) {
+    function getState(scope, siteid, fileurl, timemodified) {
+        return $mmFilepool.getFileStateByUrl(siteid, fileurl, timemodified).then(function(state) {
             scope.isDownloaded = state === $mmFilepool.FILEDOWNLOADED || state === $mmFilepool.FILEOUTDATED;
             scope.isDownloading = state === $mmFilepool.FILEDOWNLOADING;
-            if (alwaysRefresh) {
-                scope.showDownload = true;
-            } else {
-                scope.showDownload = state === $mmFilepool.FILENOTDOWNLOADED || state === $mmFilepool.FILEOUTDATED;
-            }
+            scope.showDownload = state === $mmFilepool.FILENOTDOWNLOADED || state === $mmFilepool.FILEOUTDATED;
         });
     }
 
@@ -63,17 +59,17 @@ angular.module('mm.core')
      * @param  {String} fileurl        File URL.
      * @param  {String} component      Component the file belongs to.
      * @param  {Number} componentid    Component ID.
-     * @param  {Boolean} alwaysRefresh True if refresh button should be always shown, false if it should be shown if outdated.
+     * @param  {Number} [timemodified] File's timemodified.
      * @return {Promise}               Promise resolved when file is downloaded.
      */
-    function downloadFile(scope, siteid, fileurl, component, componentid, alwaysRefresh) {
+    function downloadFile(scope, siteid, fileurl, component, componentid, timemodified) {
         scope.isDownloading = true;
-        return $mmFilepool.downloadUrl(siteid, fileurl, true, component, componentid).then(function(localUrl) {
-            getState(scope, siteid, fileurl, alwaysRefresh); // Update state.
+        return $mmFilepool.downloadUrl(siteid, fileurl, true, component, componentid, timemodified).then(function(localUrl) {
+            getState(scope, siteid, fileurl, timemodified); // Update state.
             return localUrl;
         }, function() {
             $mmUtil.showErrorModal('mm.core.errordownloadingfile', true);
-            return getState(scope, siteid, fileurl, alwaysRefresh).then(function() {
+            return getState(scope, siteid, fileurl, timemodified).then(function() {
                 if (scope.isDownloaded) {
                     return localUrl;
                 } else {
@@ -92,19 +88,19 @@ angular.module('mm.core')
         link: function(scope, element, attrs) {
             var fileurl = scope.file.fileurl || scope.file.url,
                 filename = scope.file.filename,
+                timemodified = attrs.timemodified || 0,
                 siteid = $mmSite.getId(),
                 component = attrs.component,
                 componentid = attrs.componentId,
-                alwaysRefresh = attrs.alwaysRefresh,
                 observer;
 
             scope.filename = filename;
             scope.fileicon = $mmUtil.getFileIcon(filename);
-            getState(scope, siteid, fileurl, alwaysRefresh);
+            getState(scope, siteid, fileurl, timemodified);
 
             $mmFilepool.getFileEventNameByUrl(siteid, fileurl).then(function(eventName) {
                 observer = $mmEvents.on(eventName, function(data) {
-                    getState(scope, siteid, fileurl, alwaysRefresh);
+                    getState(scope, siteid, fileurl, timemodified);
                     if (!data.success) {
                         $mmUtil.showErrorModal('mm.core.errordownloadingfile', true);
                     }
@@ -126,14 +122,14 @@ angular.module('mm.core')
 
                 if (openAfterDownload) {
                     // File needs to be opened now. If file needs to be downloaded, skip the queue.
-                    downloadFile(scope, siteid, fileurl, component, componentid, alwaysRefresh).then(function(localUrl) {
+                    downloadFile(scope, siteid, fileurl, component, componentid, timemodified).then(function(localUrl) {
                         $mmUtil.openFile(localUrl);
                     });
                 } else {
                     // File doesn't need to be opened, add it to queue.
                     $mmFilepool.invalidateFileByUrl(siteid, fileurl).finally(function() {
                         scope.isDownloading = true;
-                        $mmFilepool.addToQueueByUrl(siteid, fileurl, component, componentid);
+                        $mmFilepool.addToQueueByUrl(siteid, fileurl, component, componentid, timemodified);
                     });
                 }
             }
