@@ -12,7 +12,7 @@
                         <img ng-src="{{file.imgpath}}" alt="">
                         {{file.filename}}
                     </a>
-                    <mm-file ng-if="!file.isdir" file="file" component="{{component}}" component-id="{{file.contextid}}" always-refresh="true"></mm-file>
+                    <mm-file ng-if="!file.isdir" file="file" component="{{component}}" component-id="{{file.contextid}}" timemodified="{{file.timemodified}}"></mm-file>
                 </div>
                 <div ng-if="count == 0" class="item">{{ 'mma.files.emptyfilelist' | translate }}</div>
             </div>
