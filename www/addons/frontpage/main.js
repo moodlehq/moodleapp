@@ -14,7 +14,9 @@
 
 angular.module('mm.addons.frontpage', [])
 
-.run(function($mmSideMenuDelegate, $mmaFrontpage) {
+.value('mmaFrontpagePriority', 1000)
+
+.run(function($mmSideMenuDelegate, $mmaFrontpage, mmaFrontpagePriority) {
 
     $mmSideMenuDelegate.registerPlugin('mmaFrontpage', function() {
 
@@ -30,6 +32,6 @@ angular.module('mm.addons.frontpage', [])
             };
         });
 
-    });
+    }, mmaFrontpagePriority);
 
 });

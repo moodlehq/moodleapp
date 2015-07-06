@@ -42,7 +42,6 @@ angular.module('mm.core.courses')
         $scope.coursesLoaded = true;
     });
 
-    $scope.hasPlugins = Object.keys(plugins).length;
     $scope.plugins = plugins;
 
     $scope.refreshCourses = function() {

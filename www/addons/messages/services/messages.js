@@ -21,7 +21,7 @@ angular.module('mm.addons.messages')
  * @ngdoc service
  * @name $mmaMessages
  */
-.factory('$mmaMessages', function($mmSite, $mmSitesManager, $log, $q, $mmUser, mmaMessagesIndexState) {
+.factory('$mmaMessages', function($mmSite, $mmSitesManager, $log, $q, $mmUser) {
     $log = $log.getInstance('$mmaMessages');
 
     var self = {};
@@ -346,18 +346,6 @@ angular.module('mm.addons.messages')
                 });
             });
         });
-    };
-
-    /**
-     * Get the name of the messages index state.
-     *
-     * @module mm.addons.messages
-     * @ngdoc method
-     * @name $mmaMessages#getIndexState
-     * @return {String} State name.
-     */
-    self.getIndexState = function() {
-        return mmaMessagesIndexState;
     };
 
     /**

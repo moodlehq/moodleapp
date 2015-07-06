@@ -28,9 +28,9 @@
                 <a menu-close class="item item-icon-left" ui-sref="site.mm_courses">
                     <i class="icon ion-ionic"></i>{{ 'mm.sidemenu.mycourses' | translate}}
                 </a>
-                <a ng-repeat="plugin in plugins" menu-close class="item item-icon-left" ui-sref="{{plugin.state}}">
-                    <i class="icon {{plugin.icon}}"></i> {{plugin.title | translate}}
-                    <span ng-show="plugin.badge > 0" class="badge badge-positive">{{plugin.badge}}</span>
+                <a ng-repeat="plugin in plugins | orderBy:'-priority'" menu-close class="item item-icon-left" ui-sref="{{plugin.data.state}}">
+                    <i class="icon {{plugin.data.icon}}"></i> {{plugin.data.title | translate}}
+                    <span ng-show="plugin.data.badge > 0" class="badge badge-positive">{{plugin.data.badge}}</span>
                 </a>
                 <a menu-close class="item item-icon-left" ng-href="{{siteinfo.siteurl}}" mm-browser>
                     <i class="icon ion-earth"></i>{{ 'mm.sidemenu.website' | translate}}

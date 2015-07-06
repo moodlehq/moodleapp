@@ -14,6 +14,8 @@
 
 angular.module('mm.core.course', [])
 
+.value('mmCoreCoursePriority', 800)
+
 .config(function($stateProvider) {
 
     $stateProvider
@@ -60,7 +62,7 @@ angular.module('mm.core.course', [])
 
 })
 
-.run(function($mmEvents, mmCoreEventLogin, $mmCourseDelegate, $mmCoursesDelegate) {
+.run(function($mmEvents, mmCoreEventLogin, $mmCourseDelegate, $mmCoursesDelegate, mmCoreCoursePriority) {
 
     $mmEvents.on(mmCoreEventLogin, function() {
         $mmCourseDelegate.updateContentHandlers();
@@ -72,5 +74,5 @@ angular.module('mm.core.course', [])
             title: 'mm.course.contents',
             state: 'site.mm_course'
         };
-    });
+    }, mmCoreCoursePriority);
 });

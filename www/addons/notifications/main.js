@@ -15,6 +15,7 @@
 angular.module('mm.addons.notifications', [])
 
 .constant('mmaNotificationsListLimit', 20) // Max of notifications to retrieve in each WS call.
+.value('mmaNotificationsPriority', 800)
 
 .config(function($stateProvider) {
 
@@ -32,7 +33,8 @@ angular.module('mm.addons.notifications', [])
 
 })
 
-.run(function($log, $mmSideMenuDelegate, $mmaNotifications, $mmPushNotificationsDelegate, $mmUtil, $state, $mmAddonManager) {
+.run(function($log, $mmSideMenuDelegate, $mmaNotifications, $mmPushNotificationsDelegate, $mmUtil, $state, $mmAddonManager,
+            mmaNotificationsPriority) {
     $log = $log.getInstance('mmaNotifications');
 
     $mmSideMenuDelegate.registerPlugin('mmaNotifications', function() {
@@ -43,7 +45,7 @@ angular.module('mm.addons.notifications', [])
                 title: 'mma.notifications.notifications'
             };
         }
-    });
+    }, mmaNotificationsPriority);
 
     // Register push notification clicks.
     var $mmPushNotificationsDelegate = $mmAddonManager.get('$mmPushNotificationsDelegate');

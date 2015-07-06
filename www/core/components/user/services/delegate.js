@@ -26,30 +26,46 @@ angular.module('mm.core.user')
 
     $log = $log.getInstance('$mmUserDelegate');
 
-    var handlers = {},
-        self = {},
-        controllers = {};
-
+    var self = {},
+        plugins = {},
+        controllers = [];
     /**
-     * Register a plugin to show in the user profile.
+     * Add plugin controller to the controllers array.
      *
-     * @module mm.core.user
-     * @ngdoc method
-     * @name $mmUserDelegate#registerPlugin
-     * @param  {String}   name     Name of the plugin.
-     * @param  {Object}   handler  Object defining the following methods:
-     *                             - isEnabled (Boolean) Whether or not the handler is enabled on a site level.
-     *                             - isEnabledForUser(user) (Boolean) Whether or not the handler is to be used for the user.
-     *                             - getController(user) (Function) Returns the function that will act as controller.
-     *                                                              See core/components/user/templates/profile.html for the list
-     *                                                              of scope variables expected.
-     *
-     * @todo Support promises in isEnabled/isEnabledForUser.
+     * @param {String} name       Plugin name,
+     * @param {Number} priority   Plugin priority.
+     * @param {Object} controller Plugin controller.
      */
-    self.registerPlugin = function(name, handler) {
-        $log.debug("Register plugin '" + name + "' in profile.");
-        handlers[name] = handler();
-    };
+    function addToControllers(name, priority, controller) {
+        var found = false;
+        for (var i = 0; i < controllers.length && !found; i++) {
+            if (controllers[i].name === name) {
+                found = true;
+                controllers.priority = priority;
+                controllers.controller = controller;
+            }
+        }
+        if (!found) {
+            controllers.push({
+                name: name,
+                priority: priority,
+                controller: controller
+            });
+        }
+    }
+    /**
+     * Remove plugin controller from the controllers array.
+     *
+     * @param {String} name Plugin name,
+     */
+    function removeFromControllers(name) {
+        for (var i = 0; i < controllers.length; i++) {
+            if (controllers[i].name === name) {
+                delete controllers[i];
+                return;
+            }
+        }
+    }
 
     /**
      * Get the data of the registered plugins.
@@ -62,22 +78,44 @@ angular.module('mm.core.user')
      * @return {Object} Registered plugins data.
      */
     self.getData = function(user, courseid) {
-        controllers = {};
+        controllers = [];
 
-        angular.forEach(handlers, function(handler, name) {
-
-            if (!handler.isEnabled()) {
-                delete controllers[name];
-                return;
-            } else if (!handler.isEnabledForUser(user, courseid)) {
-                delete controllers[name];
-                return;
+        angular.forEach(plugins, function(plugin, name) {
+            if (plugin.handler.isEnabled() && plugin.handler.isEnabledForUser(user, courseid)) {
+                controllers.push({
+                    name: name,
+                    priority: plugin.priority,
+                    controller: plugin.handler.getController(user, courseid)
+                });
             }
-
-            controllers[name] = handler.getController(user, courseid);
         });
 
         return controllers;
+    };
+
+    /**
+     * Register a plugin to show in the user profile.
+     *
+     * @module mm.core.user
+     * @ngdoc method
+     * @name $mmUserDelegate#registerPlugin
+     * @param  {String}   name      Name of the plugin.
+     * @param  {Object}   handler   Object defining the following methods:
+     *                              - isEnabled (Boolean) Whether or not the handler is enabled on a site level.
+     *                              - isEnabledForUser(user) (Boolean) Whether or not the handler is to be used for the user.
+     *                              - getController(user) (Function) Returns the function that will act as controller.
+     *                                                               See core/components/user/templates/profile.html for the list
+     *                                                               of scope variables expected.
+     * @param {Number} [priority=0] Plugin's priority to determine order to be shown. Higher priority means showing it first.
+     *
+     * @todo Support promises in isEnabled/isEnabledForUser.
+     */
+    self.registerPlugin = function(name, handler, priority) {
+        if (typeof priority != 'number') {
+            priority = 0;
+        }
+        $log.debug("Register plugin '"+name+"' in profile with priority "+priority);
+        plugins[name] = {handler: handler(), priority: priority};
     };
 
     return self;
