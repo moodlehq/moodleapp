@@ -96,22 +96,6 @@ angular.module('mm.addons.files')
         }
     });
 
-    // Downloading a file.
-    $scope.download = function(file) {
-        if (!$mmSite.canDownloadFiles()) {
-            return false;
-        }
-
-        var modal = $mmUtil.showModalLoading('mma.files.downloading', true);
-        $mmaFiles.getFile(file).then(function(fileEntry) {
-            $mmUtil.openFile(fileEntry.toURL());
-        }, function() {
-            $mmUtil.showErrorModal('mma.files.errorwhiledownloading', true);
-        }).finally(function() {
-            modal.dismiss();
-        });
-    };
-
     // When we are in the root of the private files we can add more files.
     if (showUpload) {
 

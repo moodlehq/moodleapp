@@ -90,23 +90,25 @@ angular.module('mm.core')
             file: '='
         },
         link: function(scope, element, attrs) {
-            var fileurl = $mmSite.fixPluginfileURL(scope.file.fileurl || scope.file.url),
+            var fileurl = scope.file.fileurl || scope.file.url,
                 filename = scope.file.filename,
                 siteid = $mmSite.getId(),
                 component = attrs.component,
                 componentid = attrs.componentId,
                 alwaysRefresh = attrs.alwaysRefresh,
-                eventName = $mmFilepool.getFileEventNameByUrl(siteid, fileurl);
+                observer;
 
             scope.filename = filename;
             scope.fileicon = $mmUtil.getFileIcon(filename);
             getState(scope, siteid, fileurl, alwaysRefresh);
 
-            var observer = $mmEvents.on(eventName, function(data) {
-                getState(scope, siteid, fileurl, alwaysRefresh);
-                if (!data.success) {
-                    $mmUtil.showErrorModal('mm.core.errordownloadingfile', true);
-                }
+            $mmFilepool.getFileEventNameByUrl(siteid, fileurl).then(function(eventName) {
+                observer = $mmEvents.on(eventName, function(data) {
+                    getState(scope, siteid, fileurl, alwaysRefresh);
+                    if (!data.success) {
+                        $mmUtil.showErrorModal('mm.core.errordownloadingfile', true);
+                    }
+                });
             });
 
             scope.download = function(e, openAfterDownload) {
@@ -137,7 +139,9 @@ angular.module('mm.core')
             }
 
             scope.$on('$destroy', function() {
-                observer.off();
+                if (observer && observer.off) {
+                    observer.off();
+                }
             });
         }
     };

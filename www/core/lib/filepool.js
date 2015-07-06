@@ -220,8 +220,10 @@ angular.module('mm.core')
      * a successful {@link $mmFilepool#downloadUrl}.
      */
     self.addFileLinkByUrl = function(siteId, fileUrl, component, componentId) {
-        var fileId = self._getFileIdByUrl(fileUrl);
-        return self._addFileLink(siteId, fileId, component, componentId);
+        return self._fixPluginfileURL(siteId, fileUrl).then(function(fileUrl) {
+            var fileId = self._getFileIdByUrl(fileUrl);
+            return self._addFileLink(siteId, fileId, component, componentId);
+        });
     };
 
     /**
@@ -274,98 +276,101 @@ angular.module('mm.core')
      * @ngdoc method
      * @name $mmFilepool#addToQueueByUrl
      * @param {String} siteId The site ID.
-     * @param {String} url The absolute URL to the file.
+     * @param {String} fileUrl The absolute URL to the file.
      * @param {String} [component] The component to link the file to.
      * @param {Number} [componentId] An ID to use in conjunction with the component (optional).
      * @param {Number} [priority=0] The priority this file should get in the queue (range 0-999).
      * @return {Promise} Resolved on success. The returned value can be inconsistent, do not use.
      */
-    self.addToQueueByUrl = function(siteId, url, component, componentId, priority) {
+    self.addToQueueByUrl = function(siteId, fileUrl, component, componentId, priority) {
         var db = $mmApp.getDB(),
             fileId,
             now = new Date(),
             link,
             revision;
 
-        revision = self._getRevisionFromUrl(url);
-        fileId = self._getFileIdByUrl(url);
-        priority = priority || 0;
+        return self._fixPluginfileURL(siteId, fileUrl).then(function(fileUrl) {
 
-        // Set up the component.
-        if (typeof component !== 'undefined') {
-            link = {
-                component: component,
-                componentId: componentId
-            };
-        }
+            revision = self._getRevisionFromUrl(fileUrl);
+            fileId = self._getFileIdByUrl(fileUrl);
+            priority = priority || 0;
 
-        return db.get(mmFilepoolQueueStore, [siteId, fileId]).then(function(fileObject) {
-            var foundLink = false,
-                update = false;
-
-            if (fileObject) {
-                // We already have the file in queue, we update the priority and links.
-                if (fileObject.priority < priority) {
-                    update = true;
-                    fileObject.priority = priority;
-                }
-                if (revision && fileObject.revision != revision) {
-                    update = true;
-                    fileObject.revision = revision;
-                }
-
-                if (link) {
-                    // We need to add the new link if it does not exist yet.
-                    angular.forEach(fileObject.links, function(fileLink) {
-                        if (fileLink.component == link.component && fileLink.componentId == link.componentId) {
-                            foundLink = true;
-                        }
-                    });
-                    if (!foundLink) {
-                        update = true;
-                        fileObject.links.push(link);
-                    }
-                }
-
-                if (update) {
-                    // Update only when required.
-                    $log.debug('Updating file ' + fileId + ' which is already in queue');
-                    return db.insert(mmFilepoolQueueStore, fileObject);
-                }
-
-                var response = (function() {
-                    // Return a resolved promise containing the keyPath such as db.insert() does it.
-                    var deferred = $q.defer();
-                    deferred.resolve([fileObject.siteId, fileObject.fileId]);
-                    return deferred.promise;
-                })();
-
-                $log.debug('File ' + fileId + ' already in queue and does not require update');
-                return response;
-            } else {
-                return addToQueue();
+            // Set up the component.
+            if (typeof component !== 'undefined') {
+                link = {
+                    component: component,
+                    componentId: componentId
+                };
             }
-        }, function() {
-            // Unsure why we could not get the record, let's add to the queue anyway.
-            return addToQueue();
-        });
 
-        function addToQueue() {
-            $log.debug('Adding ' + fileId + ' to the queue');
-            return db.insert(mmFilepoolQueueStore, {
-                siteId: siteId,
-                fileId: fileId,
-                added: now.getTime(),
-                priority: priority,
-                url: url,
-                revision: revision,
-                links: link ? [link] : []
-            }).then(function(result) {
-                // Check if the queue is running.
-                self.checkQueueProcessing();
-                return result;
+            return db.get(mmFilepoolQueueStore, [siteId, fileId]).then(function(fileObject) {
+                var foundLink = false,
+                    update = false;
+
+                if (fileObject) {
+                    // We already have the file in queue, we update the priority and links.
+                    if (fileObject.priority < priority) {
+                        update = true;
+                        fileObject.priority = priority;
+                    }
+                    if (revision && fileObject.revision != revision) {
+                        update = true;
+                        fileObject.revision = revision;
+                    }
+
+                    if (link) {
+                        // We need to add the new link if it does not exist yet.
+                        angular.forEach(fileObject.links, function(fileLink) {
+                            if (fileLink.component == link.component && fileLink.componentId == link.componentId) {
+                                foundLink = true;
+                            }
+                        });
+                        if (!foundLink) {
+                            update = true;
+                            fileObject.links.push(link);
+                        }
+                    }
+
+                    if (update) {
+                        // Update only when required.
+                        $log.debug('Updating file ' + fileId + ' which is already in queue');
+                        return db.insert(mmFilepoolQueueStore, fileObject);
+                    }
+
+                    var response = (function() {
+                        // Return a resolved promise containing the keyPath such as db.insert() does it.
+                        var deferred = $q.defer();
+                        deferred.resolve([fileObject.siteId, fileObject.fileId]);
+                        return deferred.promise;
+                    })();
+
+                    $log.debug('File ' + fileId + ' already in queue and does not require update');
+                    return response;
+                } else {
+                    return addToQueue();
+                }
+            }, function() {
+                // Unsure why we could not get the record, let's add to the queue anyway.
+                return addToQueue();
             });
-        }
+
+            function addToQueue() {
+                $log.debug('Adding ' + fileId + ' to the queue');
+                return db.insert(mmFilepoolQueueStore, {
+                    siteId: siteId,
+                    fileId: fileId,
+                    added: now.getTime(),
+                    priority: priority,
+                    url: fileUrl,
+                    revision: revision,
+                    links: link ? [link] : []
+                }).then(function(result) {
+                    // Check if the queue is running.
+                    self.checkQueueProcessing();
+                    return result;
+                });
+            }
+        });
     };
 
     /**
@@ -452,43 +457,45 @@ angular.module('mm.core')
             promise,
             revision;
 
-        revision = self._getRevisionFromUrl(fileUrl);
-        fileId = self._getFileIdByUrl(fileUrl);
+        return self._fixPluginfileURL(siteId, fileUrl).then(function(fileUrl) {
+            revision = self._getRevisionFromUrl(fileUrl);
+            fileId = self._getFileIdByUrl(fileUrl);
 
-        if (!$mmFS.isAvailable()) {
-            return $q.reject();
-        }
-
-        promise = self._hasFileInPool(siteId, fileId).then(function(fileObject) {
-
-            if (typeof fileObject === 'undefined') {
-                // We do not have the file, download and add to pool.
-                return self._downloadForPoolByUrl(siteId, fileUrl, revision);
-
-            } else if ((fileObject.stale || revision > fileObject.revision) && $mmApp.isOnline() && !ignoreStale) {
-                // The file is outdated, force the download and update it.
-                return self._downloadForPoolByUrl(siteId, fileUrl, revision, fileObject);
+            if (!$mmFS.isAvailable()) {
+                return $q.reject();
             }
 
-            // Everything is fine, return the file on disk.
-            return self._getInternalUrlById(siteId, fileId).then(function(response) {
-                return response;
+            promise = self._hasFileInPool(siteId, fileId).then(function(fileObject) {
+
+                if (typeof fileObject === 'undefined') {
+                    // We do not have the file, download and add to pool.
+                    return self._downloadForPoolByUrl(siteId, fileUrl, revision);
+
+                } else if ((fileObject.stale || revision > fileObject.revision) && $mmApp.isOnline() && !ignoreStale) {
+                    // The file is outdated, force the download and update it.
+                    return self._downloadForPoolByUrl(siteId, fileUrl, revision, fileObject);
+                }
+
+                // Everything is fine, return the file on disk.
+                return self._getInternalUrlById(siteId, fileId).then(function(response) {
+                    return response;
+                }, function() {
+                    // The file was not found in the pool, weird.
+                    return self._downloadForPoolByUrl(siteId, fileUrl, revision, fileObject);
+                });
+
             }, function() {
-                // The file was not found in the pool, weird.
-                return self._downloadForPoolByUrl(siteId, fileUrl, revision, fileObject);
+
+                // The file is not in the pool just yet.
+                return self._downloadForPoolByUrl(siteId, fileUrl, revision);
             });
 
-        }, function() {
-
-            // The file is not in the pool just yet.
-            return self._downloadForPoolByUrl(siteId, fileUrl, revision);
-        });
-
-        return promise.then(function(response) {
-            if (typeof component !== 'undefined') {
-                self._addFileLink(siteId, fileId, component, componentId);
-            }
-            return response;
+            return promise.then(function(response) {
+                if (typeof component !== 'undefined') {
+                    self._addFileLink(siteId, fileId, component, componentId);
+                }
+                return response;
+            });
         });
     };
 
@@ -550,6 +557,23 @@ angular.module('mm.core')
     };
 
     /**
+     * Add the wstoken url and points to the correct script.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#_fixPluginfileURL
+     * @param {String} siteId  The site ID.
+     * @param {String} fileUrl The file URL.
+     * @return {Promise}       Resolved with fixed URL on success, rejected otherwise.
+     * @protected
+     */
+    self._fixPluginfileURL = function(siteId, fileUrl) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.fixPluginfileURL(fileUrl);
+        });
+    };
+
+    /**
      * Get the name of the event used to notify download events ($mmEvents).
      *
      * @module mm.core
@@ -572,11 +596,13 @@ angular.module('mm.core')
      * @name $mmFilepool#getFileEventNameByUrl
      * @param {String} siteId  The site ID.
      * @param {String} fileUrl The absolute URL to the file.
-     * @return {String}        Event name.
+     * @return {Promise}       Promise resolved with event name.
      */
     self.getFileEventNameByUrl = function(siteId, fileUrl) {
-        var fileId = self._getFileIdByUrl(fileUrl);
-        return self._getFileEventName(siteId, fileId);
+        return self._fixPluginfileURL(siteId, fileUrl).then(function(fileUrl) {
+            var fileId = self._getFileIdByUrl(fileUrl);
+            return self._getFileEventName(siteId, fileId);
+        });
     };
 
     /**
@@ -634,7 +660,7 @@ angular.module('mm.core')
      * @ngdoc method
      * @name $mmFilepool#_getFileIdByUrl
      * @param {String} fileUrl The absolute URL to the file.
-     * @return {String} The file ID.
+     * @return {Promise} The file ID.
      * @protected
      */
     self._getFileIdByUrl = function(fileUrl) {
@@ -689,57 +715,59 @@ angular.module('mm.core')
         var fileId,
             revision;
 
-        revision = self._getRevisionFromUrl(fileUrl);
-        var fileId = self._getFileIdByUrl(fileUrl);
-        return self._hasFileInPool(siteId, fileId).then(function(fileObject) {
-            var response,
-                addToQueue = false,
-                fn;
+        return self._fixPluginfileURL(siteId, fileUrl).then(function(fileUrl) {
+            revision = self._getRevisionFromUrl(fileUrl);
+            var fileId = self._getFileIdByUrl(fileUrl);
+            return self._hasFileInPool(siteId, fileId).then(function(fileObject) {
+                var response,
+                    addToQueue = false,
+                    fn;
 
-            if (typeof fileObject === 'undefined') {
-                // We do not have the file, add it to the queue, and return real URL.
-                self.addToQueueByUrl(siteId, fileUrl, component, componentId);
-                response = fileUrl;
-
-            } else if ((fileObject.stale || revision > fileObject.revision) && $mmApp.isOnline()) {
-                // The file is outdated, we add to the queue and return real URL.
-                self.addToQueueByUrl(siteId, fileUrl, component, componentId);
-                response = fileUrl;
-
-            } else {
-                // We found the file entry, now look for the file on disk.
-
-                if (mode === 'src') {
-                    fn = self._getInternalSrcById;
-                } else {
-                    fn = self._getInternalUrlById;
-                }
-
-                response = fn(siteId, fileId).then(function(internalUrl) {
-                    // Perfect, the file is on disk.
-                    // For the time being we assume that the component link already exists.
-                    return internalUrl;
-                }, function() {
-                    // We have a problem here, we could not retrieve the file though we thought
-                    // we had it, we will delete the entries associated with that ID.
-                    $log.debug('File ' + fileId + ' not found on disk');
-                    self._removeFileById(siteId, fileId);
+                if (typeof fileObject === 'undefined') {
+                    // We do not have the file, add it to the queue, and return real URL.
                     self.addToQueueByUrl(siteId, fileUrl, component, componentId);
+                    response = fileUrl;
 
-                    if ($mmApp.isOnline()) {
-                        // We still have a chance to serve the right content.
-                        return fileUrl;
+                } else if ((fileObject.stale || revision > fileObject.revision) && $mmApp.isOnline()) {
+                    // The file is outdated, we add to the queue and return real URL.
+                    self.addToQueueByUrl(siteId, fileUrl, component, componentId);
+                    response = fileUrl;
+
+                } else {
+                    // We found the file entry, now look for the file on disk.
+
+                    if (mode === 'src') {
+                        fn = self._getInternalSrcById;
+                    } else {
+                        fn = self._getInternalUrlById;
                     }
 
-                    return $q.reject();
-                });
-            }
+                    response = fn(siteId, fileId).then(function(internalUrl) {
+                        // Perfect, the file is on disk.
+                        // For the time being we assume that the component link already exists.
+                        return internalUrl;
+                    }, function() {
+                        // We have a problem here, we could not retrieve the file though we thought
+                        // we had it, we will delete the entries associated with that ID.
+                        $log.debug('File ' + fileId + ' not found on disk');
+                        self._removeFileById(siteId, fileId);
+                        self.addToQueueByUrl(siteId, fileUrl, component, componentId);
 
-            return response;
-        }, function() {
-            // We do not have the file in store yet.
-            self.addToQueueByUrl(siteId, fileUrl, component, componentId);
-            return fileUrl;
+                        if ($mmApp.isOnline()) {
+                            // We still have a chance to serve the right content.
+                            return fileUrl;
+                        }
+
+                        return $q.reject();
+                    });
+                }
+
+                return response;
+            }, function() {
+                // We do not have the file in store yet.
+                self.addToQueueByUrl(siteId, fileUrl, component, componentId);
+                return fileUrl;
+            });
         });
     };
 
@@ -770,11 +798,13 @@ angular.module('mm.core')
      * @name $mmFilepool#getFilePathByUrl
      * @param {String} siteId  The site ID.
      * @param {String} fileUrl The file URL.
-     * @return {String} The path to the file relative to storage root.
+     * @return {Promise} Promise resolved with the path to the file relative to storage root.
      */
     self.getFilePathByUrl = function(siteId, fileUrl) {
-        var fileId = self._getFileIdByUrl(fileUrl);
-        return self._getFilePath(siteId, fileId);
+        return self._fixPluginfileURL(siteId, fileUrl).then(function(fileUrl) {
+            var fileId = self._getFileIdByUrl(fileUrl);
+            return self._getFilePath(siteId, fileId);
+        });
     };
 
     /**
@@ -791,20 +821,22 @@ angular.module('mm.core')
         var fileId,
             revision;
 
-        revision = self._getRevisionFromUrl(fileUrl);
-        fileId = self._getFileIdByUrl(fileUrl);
+        return self._fixPluginfileURL(siteId, fileUrl).then(function(fileUrl) {
+            revision = self._getRevisionFromUrl(fileUrl);
+            fileId = self._getFileIdByUrl(fileUrl);
 
-        return self._hasFileInQueue(siteId, fileId).then(function() {
-            return self.FILEDOWNLOADING;
-        }, function() {
-            return self._hasFileInPool(siteId, fileId).then(function(fileObject) {
-                if (fileObject.stale || revision > fileObject.revision) {
-                    return self.FILEOUTDATED;
-                } else {
-                    return self.FILEDOWNLOADED;
-                }
+            return self._hasFileInQueue(siteId, fileId).then(function() {
+                return self.FILEDOWNLOADING;
             }, function() {
-                return self.FILENOTDOWNLOADED;
+                return self._hasFileInPool(siteId, fileId).then(function(fileObject) {
+                    if (fileObject.stale || revision > fileObject.revision) {
+                        return self.FILEOUTDATED;
+                    } else {
+                        return self.FILEDOWNLOADED;
+                    }
+                }, function() {
+                    return self.FILENOTDOWNLOADED;
+                });
             });
         });
     };
@@ -957,15 +989,17 @@ angular.module('mm.core')
      * only if they do not have network access.
      */
     self.invalidateFileByUrl = function(siteId, fileUrl) {
-        var fileId = self._getFileIdByUrl(fileUrl);
-        return getSiteDb(siteId).then(function(db) {
-            return db.get(mmFilepoolStore, fileId).then(function(fileObject) {
-                if (!fileObject) {
-                    // Nothing to do, we do not have the file in store.
-                    return;
-                }
-                fileObject.stale = true;
-                return db.insert(mmFilepoolStore, fileObject);
+        return self._fixPluginfileURL(siteId, fileUrl).then(function(fileUrl) {
+            var fileId = self._getFileIdByUrl(fileUrl);
+            return getSiteDb(siteId).then(function(db) {
+                return db.get(mmFilepoolStore, fileId).then(function(fileObject) {
+                    if (!fileObject) {
+                        // Nothing to do, we do not have the file in store.
+                        return;
+                    }
+                    fileObject.stale = true;
+                    return db.insert(mmFilepoolStore, fileObject);
+                });
             });
         });
     };

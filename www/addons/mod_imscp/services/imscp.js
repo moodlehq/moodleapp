@@ -155,10 +155,12 @@ angular.module('mm.addons.mod_imscp')
                 fullpath = content.filepath.substr(1) + fullpath;
             }
 
-            url = self._fixUrl(content.fileurl);
+            url = content.fileurl;
             promises.push($mmFilepool.downloadUrl($mmSite.getId(), url, false, mmaModImscpComponent, module.id)
             .then(function(internalUrl) {
-                return [fullpath, $mmFilepool.getFilePathByUrl($mmSite.getId(), url)];
+                return $mmFilepool.getFilePathByUrl($mmSite.getId(), url).then(function(filePath) {
+                    return [fullpath, filePath];
+                });
             }));
         });
 
@@ -172,33 +174,18 @@ angular.module('mm.addons.mod_imscp')
     };
 
     /**
-     * Fixes the URL before use.
-     *
-     * @module mm.addons.mod_imscp
-     * @ngdoc method
-     * @name $mmaModImscp#_fixUrl
-     * @param  {String} url The URL to be fixed.
-     * @return {String}     The fixed URL.
-     * @protected
-     */
-    self._fixUrl = function(url) {
-        url = $mmSite.fixPluginfileURL(url);
-        return url;
-    };
-
-    /**
      * Returns a list of file event names.
      *
      * @module mm.addons.mod_imscp
      * @ngdoc method
      * @name $mmaModImscp#getFileEventNames
      * @param {Object} module The module object returned by WS.
-     * @return {String[]} Array of $mmEvent names.
+     * @return {Promise} Promise resolved with array of $mmEvent names.
      */
     self.getFileEventNames = function(module) {
-        var eventNames = [];
+        var promises = [];
         angular.forEach(module.contents, function(content) {
-            var url;
+            var url = content.fileurl;
             if (content.type !== 'file') {
                 return;
             }
@@ -208,10 +195,11 @@ angular.module('mm.addons.mod_imscp')
                 return;
             }
 
-            url = self._fixUrl(content.fileurl);
-            eventNames.push($mmFilepool.getFileEventNameByUrl($mmSite.getId(), url));
+            promises.push($mmFilepool.getFileEventNameByUrl($mmSite.getId(), url));
         });
-        return eventNames;
+        return $q.all(promises).then(function(eventNames) {
+            return eventNames;
+        });
     };
 
     /**
@@ -249,13 +237,15 @@ angular.module('mm.addons.mod_imscp')
             }
 
             fileCount++;
-            url = self._fixUrl(content.fileurl);
+            url = content.fileurl;
             promises.push($mmFilepool.getFileStateByUrl($mmSite.getId(), url).then(function(state) {
                 if (state == $mmFilepool.FILENOTDOWNLOADED) {
                     notDownloaded++;
                 } else if (state == $mmFilepool.FILEDOWNLOADING) {
                     downloading++;
-                    eventNames.push($mmFilepool.getFileEventNameByUrl($mmSite.getId(), url));
+                    return $mmFilepool.getFileEventNameByUrl($mmSite.getId(), url).then(function(eventName) {
+                        eventNames.push(eventName);
+                    });
                 } else if (state == $mmFilepool.FILEDOWNLOADED) {
                     downloaded++;
                 } else if (state == $mmFilepool.FILEOUTDATED) {
@@ -359,7 +349,7 @@ angular.module('mm.addons.mod_imscp')
             if (self.checkSpecialFiles(content.filename)) {
                 return;
             }
-            url = self._fixUrl(content.fileurl);
+            url = content.fileurl;
             $mmFilepool.addToQueueByUrl($mmSite.getId(), url, mmaModImscpComponent, module.id);
         });
     };

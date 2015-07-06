@@ -134,53 +134,6 @@ angular.module('mm.addons.files')
     };
 
     /**
-     * Get a file.
-     *
-     * @module mm.addons.files
-     * @ngdoc method
-     * @name $mmaFiles#getFile
-     * @param  {Object} A file object typically returned from $mmaFiles#getFiles()
-     * @return {FileEntry}
-     */
-    self.getFile = function(file) {
-        var deferred = $q.defer(),
-            downloadURL = $mmSite.fixPluginfileURL(file.url),
-            siteId = $mmSite.getId(),
-            linkId = file.linkId,
-            filename = $mmFS.normalizeFileName(file.filename),
-            directory = siteId + "/files/" + linkId,
-            filePath = directory + "/" + filename;
-
-        $log.debug("Starting download of Moodle file: " + downloadURL);
-        $mmFS.createDir(directory).then(function() {
-            $log.debug("Downloading Moodle file to " + filePath + " from URL: " + downloadURL);
-
-            $mmWS.downloadFile(downloadURL, filePath).then(function(fileEntry) {
-                $log.debug("Download of content finished " + fileEntry.toURL() + " URL: " + downloadURL);
-
-                // TODO Caching.
-                // var uniqueId = siteId + "-" + hex_md5(url);
-                // var file = {
-                //     id: uniqueId,
-                //     url: url,
-                //     site: siteId,
-                //     localpath: fullpath
-                // };
-                // MM.db.insert("files", file);
-                deferred.resolve(fileEntry);
-            }, function() {
-                $log.error('Error downloading from URL: ' + downloadURL);
-                deferred.reject();
-            });
-        }, function() {
-            $log.error('Error while creating the directory ' + directory);
-            deferred.reject();
-        });
-
-        return deferred.promise;
-    };
-
-    /**
      * Get the list of files.
      *
      * @module mm.addons.files
