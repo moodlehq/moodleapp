@@ -381,7 +381,7 @@ angular.module('mm.core')
      * @param {Object} infos   Site's info.
      */
     self.addSite = function(id, siteurl, token, infos) {
-        db.insert(mmCoreSitesStore, {
+        return db.insert(mmCoreSitesStore, {
             id: id,
             siteurl: siteurl,
             token: token,
