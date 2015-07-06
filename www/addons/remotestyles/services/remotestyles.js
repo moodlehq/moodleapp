@@ -56,7 +56,6 @@ angular.module('mm.addons.remotestyles')
             return $q.reject();
         }
 
-
         // Downloads a CSS file and remove old files if needed.
         function downloadFileAndRemoveOld(url) {
             return $mmFilepool.getFileStateByUrl(siteid, url).then(function(state) {
