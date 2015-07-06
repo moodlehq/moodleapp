@@ -23,22 +23,8 @@ angular.module('mm.addons.mod_page')
  */
 .factory('$mmaModPage', function($mmFilepool, $mmSite, $mmFS, $http, $log, $q, mmaModPageComponent) {
     $log = $log.getInstance('$mmaModPage');
-    var self = {};
 
-    /**
-     * Fixes the URL before use.
-     *
-     * @module mm.addons.mod_page
-     * @ngdoc method
-     * @name $mmaModPage#_fixUrl
-     * @param  {String} url The URL to be fixed.
-     * @return {String}     The fixed URL.
-     * @protected
-     */
-    self._fixUrl = function(url) {
-        url = $mmSite.fixPluginfileURL(url);
-        return url;
-    };
+    var self = {};
 
     /**
      * Returns a list of file event names.
@@ -47,19 +33,20 @@ angular.module('mm.addons.mod_page')
      * @ngdoc method
      * @name $mmaModPage#getFileEventNames
      * @param {Object} module The module object returned by WS.
-     * @return {String[]} Array of $mmEvent names.
+     * @return {Promise} Promise resolved with array of $mmEvent names.
      */
     self.getFileEventNames = function(module) {
-        var eventNames = [];
+        var promises = [];
         angular.forEach(module.contents, function(content) {
-            var url;
+            var url = content.fileurl;
             if (content.type !== 'file') {
                 return;
             }
-            url = self._fixUrl(content.fileurl);
-            eventNames.push($mmFilepool.getFileEventNameByUrl($mmSite.getId(), url));
+            promises.push($mmFilepool.getFileEventNameByUrl($mmSite.getId(), url));
         });
-        return eventNames;
+        return $q.all(promises).then(function(eventNames) {
+            return eventNames;
+        });
     };
 
     /**
@@ -92,13 +79,15 @@ angular.module('mm.addons.mod_page')
                 return;
             }
             fileCount++;
-            url = self._fixUrl(content.fileurl);
+            url = content.fileurl;
             promises.push($mmFilepool.getFileStateByUrl($mmSite.getId(), url).then(function(state) {
                 if (state == $mmFilepool.FILENOTDOWNLOADED) {
                     notDownloaded++;
                 } else if (state == $mmFilepool.FILEDOWNLOADING) {
                     downloading++;
-                    eventNames.push($mmFilepool.getFileEventNameByUrl($mmSite.getId(), url));
+                    return $mmFilepool.getFileEventNameByUrl($mmSite.getId(), url).then(function(eventName) {
+                        eventNames.push(eventName);
+                    });
                 } else if (state == $mmFilepool.FILEDOWNLOADED) {
                     downloaded++;
                 } else if (state == $mmFilepool.FILEOUTDATED) {
@@ -147,7 +136,7 @@ angular.module('mm.addons.mod_page')
         // Extract the information about paths from the module contents.
         angular.forEach(contents, function(content) {
             var key,
-                url = self._fixUrl(content.fileurl);
+                url = content.fileurl;
 
             if (self._isMainPage(content)) {
                 // This seems to be the most reliable way to spot the index page.
@@ -175,7 +164,7 @@ angular.module('mm.addons.mod_page')
             } else {
                 // We return the live URL.
                 deferred = $q.defer();
-                deferred.resolve(indexUrl);
+                deferred.resolve($mmSite.fixPluginfileURL(indexUrl));
                 return deferred.promise;
             }
         })();
@@ -256,7 +245,7 @@ angular.module('mm.addons.mod_page')
             if (content.type !== 'file') {
                 return;
             }
-            url = self._fixUrl(content.fileurl);
+            url = content.fileurl;
             $mmFilepool.addToQueueByUrl($mmSite.getId(), url, mmaModPageComponent, module.id);
         });
     };

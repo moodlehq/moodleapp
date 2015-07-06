@@ -80,8 +80,10 @@ angular.module('mm.addons.mod_page')
                     refreshBtn.hidden = true;
                     $scope.spinner = true;
 
-                    addObservers($mmaModPage.getFileEventNames(module));
-                    $mmaModPage.prefetchContent(module);
+                    $mmaModPage.getFileEventNames(module).then(function(eventNames) {
+                        addObservers(eventNames);
+                        $mmaModPage.prefetchContent(module);
+                    });
                 }
             };
 
@@ -97,8 +99,10 @@ angular.module('mm.addons.mod_page')
                     $scope.spinner = true;
 
                     $mmaModPage.invalidateContent(module.id).then(function() {
-                        addObservers($mmaModPage.getFileEventNames(module));
-                        $mmaModPage.prefetchContent(module);
+                        $mmaModPage.getFileEventNames(module).then(function(eventNames) {
+                            addObservers(eventNames);
+                            $mmaModPage.prefetchContent(module);
+                        });
                     });
                 }
             };

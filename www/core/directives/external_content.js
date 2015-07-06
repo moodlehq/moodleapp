@@ -43,19 +43,15 @@ angular.module('mm.core')
 
         // Get the webservice pluginfile URL, we ignore failures here.
         $mmSitesManager.getSite(siteId).then(function(site) {
-            var pluginfileURL = $mmUtil.fixPluginfileURL(url, site.token),
-                fn;
+            var fn;
 
-            if (!pluginfileURL) {
-                $log.debug('Ignoring invalid pluginfile URL');
-                return;
-            } else if (targetAttr === 'src') {
+            if (targetAttr === 'src') {
                 fn = $mmFilepool.getSrcByUrl;
             } else {
                 fn = $mmFilepool.getUrlByUrl;
             }
 
-            fn(siteId, pluginfileURL, component, componentId).then(function(finalUrl) {
+            fn(siteId, url, component, componentId).then(function(finalUrl) {
                 $log.debug('Using URL ' + finalUrl + ' for ' + url);
                 dom.setAttribute(targetAttr, finalUrl);
             });
