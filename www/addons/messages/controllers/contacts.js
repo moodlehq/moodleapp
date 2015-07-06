@@ -21,7 +21,7 @@ angular.module('mm.addons.messages')
  * @ngdoc controller
  * @name mmaMessagesContactsCtrl
  */
-.controller('mmaMessagesContactsCtrl', function($q, $scope, $mmaMessages, $mmSite, $mmUtil) {
+.controller('mmaMessagesContactsCtrl', function($q, $scope, $mmaMessages, $mmSite, $mmUtil, mmUserProfileState) {
 
     var currentUserId = $mmSite.getUserId();
 
@@ -32,6 +32,7 @@ angular.module('mm.addons.messages')
     $scope.formData = {
         searchString: ''
     };
+    $scope.userStateName = mmUserProfileState;
 
     $scope.refresh = function() {
         $mmaMessages.invalidateAllContactsCache(currentUserId).then(function() {

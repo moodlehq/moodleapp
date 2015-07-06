@@ -2,7 +2,7 @@
     <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="loaded" on-refresh="refresh()"></ion-refresher>
     <mm-loading hide-until="loaded">
         <ion-list>
-            <a class="item item-avatar" ng-repeat="disc in discussions | orderBy:'message.timecreated':true track by $index" ng-click="goToDiscussion(disc)">
+            <a class="item item-avatar" ng-repeat="disc in discussions | orderBy:'message.timecreated':true track by $index" mm-split-view-link="site.messages-discussion({userId: disc.message.user, userFullname: disc.fullname})">
 
                 <img ng-src="{{disc.profileimageurl}}" alt="" role="presentation" mm-external-content ng-if="disc.profileimageurl">
                 <img src="img/user-avatar.png" alt="" role="presentation" ng-if="!disc.profileimageurl">

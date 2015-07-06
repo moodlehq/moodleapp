@@ -18,7 +18,7 @@ angular.module('mm.core')
  * Directive to show a loading spinner and message while data is being loaded.
  *
  * @module mm.core
- * @ngdoc provider
+ * @ngdoc directive
  * @name mmLoading
  * @description
  * Usage:
@@ -32,31 +32,15 @@ angular.module('mm.core')
 .directive('mmLoading', function($translate) {
 
     /**
-     * Find 'mm-loading-container' and 'mm-loading-content' divs and place them inside obj.loading and obj.content.
+     * Set message to '.mm-loading-message' element.
      *
-     * @param  {Object} element DOM element to find the divs in.
-     * @param  {Object} obj     Object where to place the results.
+     * @param {Object} el      DOM element to search '.mm-loading-message' in.
+     * @param {String} message Message to show.
      */
-    function findLoadingAndContent(element, obj) {
-        // Seems jqLite doesn't allow selecting by class. Let's search the divs manually.
-        var divs = element.find('div');
-        for (var i = 0; i < divs.length && (typeof(obj.loading) == 'undefined' || typeof(obj.content) == 'undefined'); i++) {
-            var className = divs[i].className;
-            if (className.indexOf('mm-loading-container') > -1) {
-                obj.loading = angular.element(divs[i]);
-            } else if(className.indexOf('mm-loading-content') > -1) {
-                obj.content = angular.element(divs[i]);
-            }
-        }
-    }
-
-    function setMessage(element, message) {
-        var p = element.find('p');
-        for (var i = 0; i < p.length; i++) {
-            var className = p[i].className;
-            if (className.indexOf('mm-loading-message') > -1) {
-                p[i].innerHTML = message;
-            }
+    function setMessage(el, message) {
+        var messageEl = angular.element(el.querySelector('.mm-loading-message'));
+        if (messageEl) {
+            messageEl.html(message);
         }
     }
 
@@ -65,26 +49,29 @@ angular.module('mm.core')
         templateUrl: 'core/templates/loading.html',
         transclude: true,
         link: function(scope, element, attrs) {
-            var children = {}; // Use an object to store loading and content divs so it can be passed by reference.
+            var el = element[0],
+                loading,
+                content;
 
             if (attrs.message) {
-                setMessage(element, attrs.message);
+                setMessage(el, attrs.message);
             } else {
                 // Default loading message.
                 $translate('mm.core.loading').then(function(loadingString) {
-                    setMessage(element, loadingString);
+                    setMessage(el, loadingString);
                 });
             }
 
             if (attrs.hideUntil) {
-                findLoadingAndContent(element, children);
+                loading = angular.element(el.querySelector('.mm-loading-container'));
+                content = angular.element(el.querySelector('.mm-loading-content'));
                 scope.$watch(attrs.hideUntil, function(newValue) {
                     if (newValue) {
-                        children.loading.addClass('hide');
-                        children.content.removeClass('hide');
+                        loading.addClass('hide');
+                        content.removeClass('hide');
                     } else {
-                        children.content.addClass('hide');
-                        children.loading.removeClass('hide');
+                        content.addClass('hide');
+                        loading.removeClass('hide');
                     }
                 });
             }

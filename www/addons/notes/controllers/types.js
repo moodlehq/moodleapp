@@ -24,11 +24,5 @@ angular.module('mm.addons.notes')
 .controller('mmaNotesTypesCtrl', function($scope, $stateParams) {
     var course = $stateParams.course,
         courseid = course.id;
-
     $scope.courseid = courseid;
-
-    $scope.getState = function() {
-        return 'site.notes-list';
-    };
-
 });

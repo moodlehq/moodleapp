@@ -183,6 +183,11 @@ em {
   right: 16px;
 }
 
+.mm-split-item-selected, .mm-split-item-selected .item {
+  border-color: #ccc;
+  background-color: #D9D9D9;
+}
+
 // Extra attributes to ionic classes to force frames via directive 100% height.
 
 .scroll {

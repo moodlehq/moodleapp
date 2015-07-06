@@ -43,10 +43,6 @@ angular.module('mm.core.course')
         });
     }
 
-    $scope.getState = function() {
-        return 'site.mm_course-section';
-    };
-
     $scope.doRefresh = function() {
         loadSections(true).finally(function() {
             $scope.$broadcast('scroll.refreshComplete');
