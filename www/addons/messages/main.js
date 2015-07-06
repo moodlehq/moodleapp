@@ -46,8 +46,8 @@ angular.module('mm.addons.messages', [])
 
 })
 
-.run(function($mmSideMenuDelegate, $mmaMessages, $mmUserDelegate, $mmaMessagesHandlers, $mmEvents, $state, $injector, $mmUtil,
-            mmCoreEventLogin) {
+.run(function($mmSideMenuDelegate, $mmaMessages, $mmUserDelegate, $mmaMessagesHandlers, $mmEvents, $state, $mmAddonManager,
+            $mmUtil, mmCoreEventLogin) {
 
     $mmSideMenuDelegate.registerPlugin('mmaMessages', function() {
 
@@ -75,9 +75,8 @@ angular.module('mm.addons.messages', [])
     });
 
     // Register push notification clicks.
-    try {
-        // Use injector because the delegate belongs to an addon, so it might not exist.
-        var $mmPushNotificationsDelegate = $injector.get('$mmPushNotificationsDelegate');
+    var $mmPushNotificationsDelegate = $mmAddonManager.get('$mmPushNotificationsDelegate');
+    if ($mmPushNotificationsDelegate) {
         $mmPushNotificationsDelegate.registerHandler('mmaMessages', function(notification) {
             if ($mmUtil.isFalseOrZero(notification.notif)) {
                 $mmaMessages.isMessagingEnabledForSite(notification.site).then(function() {
@@ -88,8 +87,6 @@ angular.module('mm.addons.messages', [])
                 return true;
             }
         });
-    } catch(ex) {
-        $log.error('Cannot register push notifications handler: delegate not found');
     }
 
 });
