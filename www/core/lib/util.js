@@ -237,41 +237,6 @@ angular.module('mm.core')
         };
 
         /**
-         * Get the SRC for to use an iframe.
-         *
-         * @module mm.core
-         * @ngdoc method
-         * @name $mmUtil#getIframeSrc
-         * @param  {Object} files List of files where the key is the path in the iframe,
-         *                        and the value the path to the local file.
-         * @param  {String} index The path of the index file in the iframe.
-         * @return {String}       Local URL to the iframe main page.
-         */
-        self.getIframeSrc = function(files, index) {
-            var iframeDir = 'iframe';
-            return $mmFS.getDir(iframeDir).then(function() {
-                return $mmFS.removeDir(iframeDir);
-            }).catch(function() {
-                // Never mind if the directory does not exist, or could not be removed.
-            }).then(function() {
-                return $mmFS.createDir(iframeDir);
-            }).then(function() {
-                var promises = [];
-                angular.forEach(files, function(localPath, iframePath) {
-                    var promise,
-                        path = iframeDir + '/' + iframePath;
-                    promise = $mmFS.copyFile(localPath, path);
-                    promises.push(promise);
-                });
-                return $q.all(promises);
-            }).then(function() {
-                return $mmFS.getFile(iframeDir + '/' + index);
-            }).then(function(file) {
-                return file.toURL();
-            });
-        };
-
-        /**
          * Open a file using platform specific method.
          *
          * node-webkit: Using the default application configured.

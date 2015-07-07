@@ -26,45 +26,40 @@ angular.module('mm.addons.mod_resource')
     var self = {};
 
     /**
-     * Download all the content.
+     * Download all the content. All the files are downloaded inside a folder in filepool, keeping their folder structure.
      *
      * @module mm.addons.mod_resource
      * @ngdoc method
      * @name $mmaModResource#downloadAllContent
      * @param {Object} module The module object.
-     * @return {Object}       Where keys are resource filepaths, and values are relative local paths.
-     * @protected
+     * @return {Promise}      Promise resolved when content is downloaded. Data returned is not reliable.
      */
     self.downloadAllContent = function(module) {
-        var promises = [];
+        var promises = [],
+            siteId = $mmSite.getId();
 
-        angular.forEach(module.contents, function(content) {
-            var url,
-                fullpath;
-            if (content.type !== 'file') {
-                return;
-            }
+        // Get path of the module folder in filepool.
+        return $mmFilepool.getFilePathByUrl(siteId, module.url).then(function(dirPath) {
+            angular.forEach(module.contents, function(content) {
+                var fullpath,
+                    url,
+                    modified;
+                if (content.type !== 'file') {
+                    return;
+                }
 
-            fullpath = content.filename;
-            if (content.filepath !== '/') {
-                fullpath = content.filepath.substr(1) + fullpath;
-            }
+                url = content.fileurl;
+                modified = content.timemodified;
+                fullpath = content.filename;
+                if (content.filepath !== '/') {
+                    fullpath = content.filepath.substr(1) + fullpath;
+                }
+                fullpath = $mmFS.concatenatePaths(dirPath, fullpath);
 
-            url = content.fileurl;
-            promises.push($mmFilepool.downloadUrl($mmSite.getId(), url, false, mmaModResourceComponent, module.id)
-            .then(function(internalUrl) {
-                return $mmFilepool.getFilePathByUrl($mmSite.getId(), url).then(function(filePath) {
-                    return [fullpath, filePath];
-                });
-            }));
-        });
-
-        return $q.all(promises).then(function(files) {
-            var filePaths = {};
-            angular.forEach(files, function(file) {
-                filePaths[file[0]] = file[1];
+                promises.push($mmFilepool.downloadUrl(siteId, url, false, mmaModResourceComponent, module.id, modified, fullpath));
             });
-            return filePaths;
+
+            return $q.all(promises);
         });
     };
 
@@ -161,13 +156,13 @@ angular.module('mm.addons.mod_resource')
     };
 
     /**
-     * Prepare the view of the module in an iframe, and returns the src.
+     * Download all the files needed and returns the src of the iframe.
      *
      * @module mm.addons.mod_resource
      * @ngdoc method
      * @name $mmaModResource#getIframeSrc
      * @param {Object} module The module object.
-     * @return {Promise}
+     * @return {Promise}      Promise resolved with the iframe src.
      */
     self.getIframeSrc = function(module) {
         var mainFile = module.contents[0],
@@ -177,8 +172,10 @@ angular.module('mm.addons.mod_resource')
             mainFilePath = mainFile.filepath.substr(1) + mainFilePath;
         }
 
-        return self.downloadAllContent(module).then(function(filePaths) {
-            return $mmUtil.getIframeSrc(filePaths, mainFilePath);
+        return self.downloadAllContent(module).then(function() {
+            return $mmFilepool.getDirectoryUrlByUrl($mmSite.getId(), module.url).then(function(dirPath) {
+                return $mmFS.concatenatePaths(dirPath, mainFilePath);
+            });
         });
     };
 
@@ -292,17 +289,18 @@ angular.module('mm.addons.mod_resource')
      * @return {Boolean}
      */
     self.isDisplayedInIframe = function(module) {
-        var inline = self.isDisplayedInline(module),
-            iframe = false;
+        var inline = self.isDisplayedInline(module);
 
         if (inline && $mmFS.isAvailable()) {
-            angular.forEach(module.contents, function(file) {
-                var ext = $mmUtil.getFileExtension(file.filename);
-                iframe = iframe || (ext == 'js' || ext == 'swf' || ext == 'css');
-            });
+            for (var i = 0; i < module.contents.length; i++) {
+                var ext = $mmUtil.getFileExtension(module.contents[i].filename);
+                if (ext == 'js' || ext == 'swf' || ext == 'css') {
+                    return true;
+                }
+            }
         }
 
-        return iframe;
+        return false;
     };
 
     /**
@@ -373,14 +371,40 @@ angular.module('mm.addons.mod_resource')
      * @return {Void}
      */
     self.prefetchContent = function(module) {
-        angular.forEach(module.contents, function(content) {
-            var url;
-            if (content.type !== 'file') {
-                return;
-            }
-            url = content.fileurl;
-            $mmFilepool.addToQueueByUrl($mmSite.getId(), url, mmaModResourceComponent, module.id);
-        });
+        if (self.isDisplayedInIframe(module)) {
+            // Files need to be downloaded inside a folder in filepool, keeping their folder structure.
+            var siteId = $mmSite.getId();
+            // Get path of the module folder in filepool.
+            $mmFilepool.getFilePathByUrl(siteId, module.url).then(function(dirPath) {
+                angular.forEach(module.contents, function(content) {
+                    var fullpath,
+                        url,
+                        modified;
+                    if (content.type !== 'file') {
+                        return;
+                    }
+                    url = content.fileurl;
+                    modified = content.timemodified;
+                    fullpath = content.filename;
+                    if (content.filepath !== '/') {
+                        fullpath = content.filepath.substr(1) + fullpath;
+                    }
+                    fullpath = $mmFS.concatenatePaths(dirPath, fullpath);
+
+                    $mmFilepool.addToQueueByUrl(siteId, url, mmaModResourceComponent, module.id, modified, fullpath);
+                });
+            });
+        } else {
+            // Usual filepool download, without folders.
+            angular.forEach(module.contents, function(content) {
+                var url;
+                if (content.type !== 'file') {
+                    return;
+                }
+                url = content.fileurl;
+                $mmFilepool.addToQueueByUrl($mmSite.getId(), url, mmaModResourceComponent, module.id);
+            });
+        }
     };
 
     return self;
