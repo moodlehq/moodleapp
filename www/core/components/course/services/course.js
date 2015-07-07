@@ -14,6 +14,18 @@
 
 angular.module('mm.core.course')
 
+.constant('mmCoreCourseModulesStore', 'course_modules')
+
+.config(function($mmSitesFactoryProvider, mmCoreCourseModulesStore) {
+    var stores = [
+        {
+            name: mmCoreCourseModulesStore,
+            keyPath: 'id'
+        }
+    ];
+    $mmSitesFactoryProvider.registerStores(stores);
+})
+
 /**
  * Factory containing course related methods.
  *
@@ -21,7 +33,7 @@ angular.module('mm.core.course')
  * @ngdoc service
  * @name $mmCourse
  */
-.factory('$mmCourse', function($mmSite, $translate, $q, $log) {
+.factory('$mmCourse', function($mmSite, $mmSitesManager, $translate, $q, $log, $mmFilepool, mmCoreCourseModulesStore) {
 
     $log = $log.getInstance('$mmCourse');
 
@@ -32,7 +44,7 @@ angular.module('mm.core.course')
         ];
 
     /**
-     * Gte a module from Moodle.
+     * Get a module from Moodle.
      *
      * @module mm.core.course
      * @ngdoc method
@@ -116,6 +128,62 @@ angular.module('mm.core.course')
     };
 
     /**
+     * Get a module status.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#getModuleStatus
+     * @param {String} siteId           Site ID.
+     * @param {Number} id               Module ID.
+     * @param {Number} [revision=0]     Module's revision.
+     * @param {Number} [timemodified=0] Module's timemodified.
+     * @return {Promise}                Promise resolved with the status.
+     */
+    self.getModuleStatus = function(siteId, id, revision, timemodified) {
+        revision = revision || 0;
+        timemodified = timemodified || 0;
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var db = site.getDb();
+            return db.get(mmCoreCourseModulesStore, id).then(function(module) {
+                if (module.status === $mmFilepool.FILEDOWNLOADED) {
+                    if (revision > module.revision || timemodified > module.timemodified) {
+                        // File is outdated. Let's change its status.
+                        module.status = $mmFilepool.FILEOUTDATED;
+                        db.insert(mmCoreCourseModulesStore, module);
+                    }
+                }
+                return module.status;
+            }, function() {
+                return $mmFilepool.FILENOTDOWNLOADED;
+            });
+        });
+    };
+
+    /**
+     * Get module revision number from contents.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#getRevisionFromContents
+     * @param {Object[]} contents Module contents.
+     * @return {Number}           Module revision.
+     */
+    self.getRevisionFromContents = function(contents) {
+        if (contents && contents.length) {
+            for (var i = 0; i < contents.length; i++) {
+                var file = contents[i];
+                if (file.fileurl) {
+                    var revision = $mmFilepool.getRevisionFromUrl(file.fileurl);
+                    if (typeof revision !== 'undefined') {
+                        return revision;
+                    }
+                }
+            }
+        }
+        return 0;
+    };
+
+    /**
      * Return a specific section.
      *
      * @module mm.core.course
@@ -171,6 +239,27 @@ angular.module('mm.core.course')
     };
 
     /**
+     * Get module timemodified from contents.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#getTimemodifiedFromContents
+     * @param {Object[]} contents Module contents.
+     * @return {Number}           Module timemodified.
+     */
+    self.getTimemodifiedFromContents = function(contents) {
+        if (contents && contents.length) {
+            for (var i = 0; i < contents.length; i++) {
+                var file = contents[i];
+                if (file.timemodified) {
+                    return file.timemodified;
+                }
+            }
+        }
+        return 0;
+    };
+
+    /**
      * Invalidates module WS call.
      *
      * @module mm.core.course
@@ -181,6 +270,60 @@ angular.module('mm.core.course')
      */
     self.invalidateModule = function(moduleid) {
         return $mmSite.invalidateWsCacheForKey(getModuleCacheKey(moduleid));
+    };
+
+    /**
+     * Check if a module is outdated.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#isModuleOutdated
+     * @param {String} siteId           Site ID.
+     * @param {Number} id               Module ID.
+     * @param {Number} [revision=0]     Module's revision.
+     * @param {Number} [timemodified=0] Module's timemodified.
+     * @return {Promise}                Promise resolved with boolean: true if module is outdated, false otherwise.
+     */
+    self.isModuleOutdated = function(siteId, id, revision, timemodified) {
+        revision = revision || 0;
+        timemodified = timemodified || 0;
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var db = site.getDb();
+            return db.get(mmCoreCourseModulesStore, id).then(function(module) {
+                return revision > module.revision || timemodified > module.timemodified;
+            }, function() {
+                return false;
+            });
+        });
+    };
+
+    /**
+     * Store module status.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#storeModuleStatus
+     * @param {String} siteId           Site ID.
+     * @param {Number} id               Module ID.
+     * @param {String} status           New module status.
+     * @param {Number} [revision=0]     Module's revision.
+     * @param {Number} [timemodified=0] Module's timemodified.
+     * @return {Promise}                Promise resolved when status is stored.
+     */
+    self.storeModuleStatus = function(siteId, id, status, revision, timemodified) {
+        $log.debug('Set status \'' + status + '\' for module ' + id);
+        revision = revision || 0;
+        timemodified = timemodified || 0;
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var db = site.getDb();
+            return db.insert(mmCoreCourseModulesStore, {
+                id: id,
+                status: status,
+                revision: revision,
+                timemodified: timemodified,
+                updated: new Date().getTime()
+            });
+        });
     };
 
     /**

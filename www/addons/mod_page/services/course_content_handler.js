@@ -21,7 +21,8 @@ angular.module('mm.addons.mod_page')
  * @ngdoc service
  * @name $mmaModPageCourseContentHandler
  */
-.factory('$mmaModPageCourseContentHandler', function($mmCourse, $mmaModPage, $mmFilepool, $mmEvents, $state) {
+.factory('$mmaModPageCourseContentHandler', function($mmCourse, $mmaModPage, $mmFilepool, $mmEvents, $state, $mmSite,
+            mmCoreEventQueueEmpty) {
     var self = {};
 
     /**
@@ -49,7 +50,27 @@ angular.module('mm.addons.mod_page')
         return function($scope) {
             var downloadBtn,
                 refreshBtn,
-                observers = {};
+                observers = {},
+                queueObserver,
+                siteid = $mmSite.getId(),
+                revision = $mmCourse.getRevisionFromContents(module.contents),
+                timemodified = $mmCourse.getTimemodifiedFromContents(module.contents);
+
+            // Add queue observer to clear observers when filepool queue is empty. Needed because sometimes when "restoring"
+            // downloading the spinner was shown forever, probably because a file download finished before observer was set.
+            function addQueueObserver() {
+                queueObserver = $mmEvents.on(mmCoreEventQueueEmpty, function() {
+                    // Queue is empty. Clear observers.
+                    if (queueObserver) {
+                        queueObserver.off();
+                    }
+                    if (Object.keys(observers).length) {
+                        clearObservers();
+                        setDownloaded();
+                    }
+                    delete queueObserver;
+                });
+            }
 
             function addObservers(eventNames) {
                 angular.forEach(eventNames, function(e) {
@@ -59,12 +80,25 @@ angular.module('mm.addons.mod_page')
                             delete observers[e];
                         }
                         if (Object.keys(observers).length < 1) {
-                            $scope.spinner = false;
-                            downloadBtn.hidden = true;
-                            refreshBtn.hidden = true;
+                            setDownloaded();
                         }
                     });
                 });
+            }
+
+            function clearObservers() {
+                angular.forEach(observers, function(observer) {
+                    observer.off();
+                });
+                observers = {};
+            }
+
+            function setDownloaded() {
+                $scope.spinner = false;
+                downloadBtn.hidden = true;
+                refreshBtn.hidden = true;
+                // Store module as downloaded.
+                $mmCourse.storeModuleStatus(siteid, module.id, $mmFilepool.FILEDOWNLOADED, revision, timemodified);
             }
 
             downloadBtn = {
@@ -83,6 +117,9 @@ angular.module('mm.addons.mod_page')
                     $mmaModPage.getFileEventNames(module).then(function(eventNames) {
                         addObservers(eventNames);
                         $mmaModPage.prefetchContent(module);
+                        // Store module as dowloading.
+                        $mmCourse.storeModuleStatus(siteid, module.id, $mmFilepool.FILEDOWNLOADING, revision, timemodified);
+                        addQueueObserver();
                     });
                 }
             };
@@ -102,6 +139,9 @@ angular.module('mm.addons.mod_page')
                         $mmaModPage.getFileEventNames(module).then(function(eventNames) {
                             addObservers(eventNames);
                             $mmaModPage.prefetchContent(module);
+                            // Store module as dowloading.
+                            $mmCourse.storeModuleStatus(siteid, module.id, $mmFilepool.FILEDOWNLOADING, revision, timemodified);
+                            addQueueObserver();
                         });
                     });
                 }
@@ -115,21 +155,37 @@ angular.module('mm.addons.mod_page')
             $scope.buttons = [downloadBtn, refreshBtn];
             $scope.spinner = false;
 
-            $mmaModPage.getFilesStatus(module).then(function(result) {
-                if (result.status == $mmFilepool.FILENOTDOWNLOADED) {
+            $mmCourse.getModuleStatus(siteid, module.id, revision, timemodified).then(function(status) {
+                if (status == $mmFilepool.FILENOTDOWNLOADED) {
                     downloadBtn.hidden = false;
-                } else if (result.status == $mmFilepool.FILEDOWNLOADING) {
+                } else if (status == $mmFilepool.FILEDOWNLOADING) {
                     $scope.spinner = true;
-                    addObservers(result.eventNames);
-                } else if (result.status == $mmFilepool.FILEOUTDATED) {
+                    $mmaModPage.getDownloadedFilesEventNames(module).then(function(eventNames) {
+                        if (eventNames.length) {
+                            addObservers(eventNames);
+                            addQueueObserver();
+                        } else {
+                            // No files being downloaded. Set state to 'downloaded' or 'outdated'.
+                            $mmCourse.isModuleOutdated(siteid, module.id, revision, timemodified).then(function(outdated) {
+                                $scope.spinner = false;
+                                var status;
+                                if (outdated) {
+                                    status = $mmFilepool.FILEOUTDATED;
+                                    downloadBtn.hidden = false;
+                                } else {
+                                    status = $mmFilepool.FILEDOWNLOADED;
+                                }
+                                $mmCourse.storeModuleStatus(siteid, module.id, status, revision, timemodified);
+                            });
+                        }
+                    });
+                } else if (status == $mmFilepool.FILEOUTDATED) {
                     refreshBtn.hidden = false;
                 }
             });
 
             $scope.$on('$destroy', function() {
-                angular.forEach(observers, function(observer) {
-                    observer.off();
-                });
+                clearObservers();
             });
         };
     };

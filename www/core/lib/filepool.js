@@ -138,7 +138,7 @@ angular.module('mm.core')
  * {@link $mmFilepool#_getFileIdByUrl}.
  */
 .factory('$mmFilepool', function($q, $log, $timeout, $mmApp, $mmFS, $mmWS, $mmSitesManager, $mmEvents, md5, mmFilepoolStore,
-        mmFilepoolLinksStore, mmFilepoolQueueStore, mmFilepoolFolder, mmFilepoolQueueProcessInterval) {
+        mmFilepoolLinksStore, mmFilepoolQueueStore, mmFilepoolFolder, mmFilepoolQueueProcessInterval, mmCoreEventQueueEmpty) {
 
     $log = $log.getInstance('$mmFilepool');
 
@@ -290,7 +290,7 @@ angular.module('mm.core')
         return self._fixPluginfileURL(siteId, fileUrl).then(function(fileUrl) {
 
             timemodified = timemodified || 0;
-            revision = self._getRevisionFromUrl(fileUrl);
+            revision = self.getRevisionFromUrl(fileUrl);
             fileId = self._getFileIdByUrl(fileUrl);
             priority = priority || 0;
 
@@ -470,7 +470,7 @@ angular.module('mm.core')
         if ($mmFS.isAvailable()) {
             return self._fixPluginfileURL(siteId, fileUrl).then(function(fileUrl) {
                 timemodified = timemodified || 0;
-                revision = self._getRevisionFromUrl(fileUrl);
+                revision = self.getRevisionFromUrl(fileUrl);
                 fileId = self._getFileIdByUrl(fileUrl);
 
                 return self._hasFileInPool(siteId, fileId).then(function(fileObject) {
@@ -759,7 +759,7 @@ angular.module('mm.core')
 
         return self._fixPluginfileURL(siteId, fileUrl).then(function(fileUrl) {
             timemodified = timemodified || 0;
-            revision = self._getRevisionFromUrl(fileUrl);
+            revision = self.getRevisionFromUrl(fileUrl);
             var fileId = self._getFileIdByUrl(fileUrl);
             return self._hasFileInPool(siteId, fileId).then(function(fileObject) {
                 var response,
@@ -867,7 +867,7 @@ angular.module('mm.core')
 
         return self._fixPluginfileURL(siteId, fileUrl).then(function(fileUrl) {
             timemodified = timemodified || 0;
-            revision = self._getRevisionFromUrl(fileUrl);
+            revision = self.getRevisionFromUrl(fileUrl);
             fileId = self._getFileIdByUrl(fileUrl);
 
             return self._hasFileInQueue(siteId, fileId).then(function() {
@@ -960,7 +960,7 @@ angular.module('mm.core')
      * @return {String}    Revision number.
      * @protected
      */
-    self._getRevisionFromUrl = function(url) {
+    self.getRevisionFromUrl = function(url) {
         var matches = url.match(revisionRegex);
         if (matches && typeof matches[1] != 'undefined') {
             return parseInt(matches[1]);
@@ -1115,6 +1115,23 @@ angular.module('mm.core')
     };
 
     /**
+     * Check if a file is downloading.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#isFileDownloadingByUrl
+     * @param {String} siteId           The site ID.
+     * @param {String} fileUrl          File URL.
+     * @param {Promise}                 Promise resolved if file is downloading, false otherwise.
+     */
+    self.isFileDownloadingByUrl = function(siteId, fileUrl) {
+        return self._fixPluginfileURL(siteId, fileUrl).then(function(fileUrl) {
+            fileId = self._getFileIdByUrl(fileUrl);
+            return self._hasFileInQueue(siteId, fileId);
+        });
+    };
+
+    /**
      * Check if a file is outdated.
      *
      * @module mm.core
@@ -1198,6 +1215,7 @@ angular.module('mm.core')
 
             } else if (error === ERR_QUEUE_IS_EMPTY) {
                 $log.debug('Queue is empty, pausing queue processing.');
+                $mmEvents.trigger(mmCoreEventQueueEmpty);
             }
 
             queueState = QUEUE_PAUSED;

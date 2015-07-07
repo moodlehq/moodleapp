@@ -172,6 +172,47 @@ angular.module('mm.addons.mod_imscp')
     };
 
     /**
+     * Get event names of files being downloaded.
+     *
+     * @module mm.addons.mod_imscp
+     * @ngdoc method
+     * @name $mmaModImscp#getDownloadedFilesEventNames
+     * @param {Object} module The module object returned by WS.
+     * @return {Promise} Resolved with an array of event names.
+     */
+    self.getDownloadedFilesEventNames = function(module) {
+        var promises = [],
+            eventNames = [],
+            notDownloaded = 0,
+            downloading = 0,
+            outdated = 0,
+            downloaded = 0,
+            fileCount = 0,
+            siteid = $mmSite.getId();
+
+        angular.forEach(module.contents, function(content) {
+            var url = content.fileurl;
+            if (content.type !== 'file') {
+                return;
+            }
+            if (self.checkSpecialFiles(content.filename)) {
+                return;
+            }
+            promises.push($mmFilepool.isFileDownloadingByUrl(siteid, url).then(function() {
+                return $mmFilepool.getFileEventNameByUrl(siteid, url).then(function(eventName) {
+                    eventNames.push(eventName);
+                });
+            }, function() {
+                // Ignore fails.
+            }));
+        });
+
+        return $q.all(promises).then(function() {
+            return eventNames;
+        });
+    };
+
+    /**
      * Returns a list of file event names.
      *
      * @module mm.addons.mod_imscp
@@ -197,79 +238,6 @@ angular.module('mm.addons.mod_imscp')
         });
         return $q.all(promises).then(function(eventNames) {
             return eventNames;
-        });
-    };
-
-    /**
-     * Check the status of the files.
-     *
-     * Return those status in order of priority:
-     * - $mmFilepool.FILENOTDOWNLOADED
-     * - $mmFilepool.FILEDOWNLOADING
-     * - $mmFilepool.FILEOUTDATED
-     * - $mmFilepool.FILEDOWNLOADED
-     *
-     * @module mm.addons.mod_imscp
-     * @ngdoc method
-     * @name $mmaModPage#getFilesStatus
-     * @param {Object} module The module object returned by WS.
-     * @return {Promise} Resolved with an object containing the status and a list of event to observe.
-     */
-    self.getFilesStatus = function(module) {
-        var promises = [],
-            eventNames = [],
-            notDownloaded = 0,
-            downloading = 0,
-            outdated = 0,
-            downloaded = 0,
-            fileCount = 0;
-
-        angular.forEach(module.contents, function(content) {
-            var url;
-            if (content.type !== 'file') {
-                return;
-            }
-
-            if (self.checkSpecialFiles(content.filename)) {
-                return;
-            }
-
-            fileCount++;
-            url = content.fileurl;
-            promises.push($mmFilepool.getFileStateByUrl($mmSite.getId(), url).then(function(state) {
-                if (state == $mmFilepool.FILENOTDOWNLOADED) {
-                    notDownloaded++;
-                } else if (state == $mmFilepool.FILEDOWNLOADING) {
-                    downloading++;
-                    return $mmFilepool.getFileEventNameByUrl($mmSite.getId(), url).then(function(eventName) {
-                        eventNames.push(eventName);
-                    });
-                } else if (state == $mmFilepool.FILEDOWNLOADED) {
-                    downloaded++;
-                } else if (state == $mmFilepool.FILEOUTDATED) {
-                    outdated++;
-                }
-            }));
-        });
-
-        function prepareResult() {
-            var status = $mmFilepool.FILENOTDOWNLOADED;
-            if (notDownloaded > 0) {
-                status = $mmFilepool.FILENOTDOWNLOADED;
-            } else if (downloading > 0) {
-                status = $mmFilepool.FILEDOWNLOADING;
-            } else if (outdated > 0) {
-                status = $mmFilepool.FILEOUTDATED;
-            } else if (downloaded == fileCount) {
-                status = $mmFilepool.FILEDOWNLOADED;
-            }
-            return {status: status, eventNames: eventNames};
-        }
-
-        return $q.all(promises).then(function() {
-            return prepareResult();
-        }, function() {
-            return prepareResult();
         });
     };
 
