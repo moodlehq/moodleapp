@@ -21,7 +21,7 @@ angular.module('mm.core.login')
  * @ngdoc controller
  * @name mmLoginSitesCtrl
  */
-.controller('mmLoginSitesCtrl', function($scope, $state, $mmSitesManager, $log, $translate, $mmUtil) {
+.controller('mmLoginSitesCtrl', function($scope, $state, $mmSitesManager, $log, $translate, $mmUtil, $ionicHistory) {
 
     $log = $log.getInstance('mmLoginSitesCtrl');
 
@@ -62,6 +62,7 @@ angular.module('mm.core.login')
             modal = $mmUtil.showModalLoading();
 
         $mmSitesManager.loadSite(siteid).then(function() {
+            $ionicHistory.nextViewOptions({disableBack: true});
             $state.go('site.mm_courses');
         }, function(error) {
             $log.error('Error loading site '+siteid);

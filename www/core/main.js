@@ -49,19 +49,14 @@ angular.module('mm.core', ['pascalprecht.translate'])
             },
             controller: function($scope, $state, $stateParams, $mmSite, $mmSitesManager, $ionicHistory) {
 
-                function goToSitesList() {
-                    $ionicHistory.nextViewOptions({
-                        disableBack: true
-                    });
-                    $state.go('mm_login.sites');
-                }
+                $ionicHistory.nextViewOptions({disableBack: true});
 
                 function loadSiteAndGo() {
                     $mmSitesManager.loadSite($stateParams.siteid).then(function() {
                         $state.go($stateParams.state, $stateParams.params);
                     }, function() {
                         // Site doesn't exist.
-                        goToSitesList();
+                        $state.go('mm_login.sites');
                     });
                 }
 
@@ -79,7 +74,7 @@ angular.module('mm.core', ['pascalprecht.translate'])
                         if ($stateParams.siteid) {
                             loadSiteAndGo();
                         } else {
-                            goToSitesList();
+                            $state.go('mm_login.sites');
                         }
                     }
                 });
