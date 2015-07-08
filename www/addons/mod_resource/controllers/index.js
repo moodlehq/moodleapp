@@ -47,16 +47,17 @@ angular.module('mm.addons.mod_resource')
                     $scope.loaded = true;
                 });
             } else if ($mmaModResource.isDisplayedInline(module)) {
-                $mmaModResource.getResourceHtml(module.contents, module.id).then(function(content) {
-                    $scope.mode = 'inline';
-                    $scope.content = content;
-                    $mmaModResource.logView(module.instance);
-                }).catch(function() {
-                    $mmUtil.showErrorModal('mma.mod_resource.errorwhileloadingthecontent', true);
-                }).finally(function() {
-                    $scope.loaded = true;
+                $mmaModResource.downloadAllContent(module).finally(function() { // Ignore errors. @todo MOBILE-1096
+                    $mmaModResource.getResourceHtml(module.contents, module.id).then(function(content) {
+                        $scope.mode = 'inline';
+                        $scope.content = content;
+                        $mmaModResource.logView(module.instance);
+                    }).catch(function() {
+                        $mmUtil.showErrorModal('mma.mod_resource.errorwhileloadingthecontent', true);
+                    }).finally(function() {
+                        $scope.loaded = true;
+                    });
                 });
-
             } else {
                 $scope.loaded = true;
                 $scope.mode = 'external';

@@ -505,6 +505,7 @@ angular.module('mm.core')
                     if (typeof component !== 'undefined') {
                         self._addFileLink(siteId, fileId, component, componentId);
                     }
+                    self._notifyFileDownloaded(siteId, fileId);
                     return response;
                 });
             });

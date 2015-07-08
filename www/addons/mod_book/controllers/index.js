@@ -42,12 +42,16 @@ angular.module('mm.addons.mod_book')
 
     function fetchContent() {
         // Show first chapter.
-        return $mmaModBook.getChapterContent(module.contents, firstChapter, module.id).then(function(content) {
-            $scope.content = content;
-        }).catch(function() {
-            $mmUtil.showErrorModal('mma.mod_book.errorchapter');
+        return $mmaModBook.downloadAllContent(module).catch(function(err) {
+            // Ignore download errors. @todo MOBILE-1096
         }).finally(function() {
-            $scope.loaded = true;
+            return $mmaModBook.getChapterContent(module.contents, firstChapter, module.id).then(function(content) {
+                $scope.content = content;
+            }).catch(function() {
+                $mmUtil.showErrorModal('mma.mod_book.errorchapter');
+            }).finally(function() {
+                $scope.loaded = true;
+            });
         });
     }
 
