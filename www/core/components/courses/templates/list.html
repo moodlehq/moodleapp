@@ -15,7 +15,7 @@
                     <mm-format-text watch="true">{{course.fullname}}</mm-format-text>
                 </a>
                 <div class="item item-text-wrap" ng-show="course.summary">
-                    <p><mm-format-text watch="true">{{course.summary}}</mm-format-text></p>
+                    <p><mm-format-text watch="true" shorten="150" expand-on-click="true">{{course.summary}}</mm-format-text></p>
                 </div>
                 <div class="item tabs tabs-icon-left" ng-show="plugins.length">
                     <a ng-repeat="plugin in plugins | orderBy:'-priority'" class="tab-item active" ui-sref="{{plugin.data.state}}({course: course})">
