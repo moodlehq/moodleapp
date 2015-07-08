@@ -74,20 +74,24 @@ angular.module('mm.addons.mod_book')
                 });
             }
 
+            // Add observers to monitor file downloads.
             function addObservers(eventNames) {
                 angular.forEach(eventNames, function(e) {
-                    observers[e] = $mmEvents.on(e, function(data) {
-                        if (data.success && typeof observers[e] !== 'undefined') {
-                            observers[e].off();
-                            delete observers[e];
-                        }
-                        if (Object.keys(observers).length < 1) {
-                            setDownloaded();
-                        }
-                    });
+                    if (typeof observers[e] == 'undefined') {
+                        observers[e] = $mmEvents.on(e, function(data) {
+                            if (data.success && typeof observers[e] !== 'undefined') {
+                                observers[e].off();
+                                delete observers[e];
+                            }
+                            if (Object.keys(observers).length < 1) {
+                                setDownloaded();
+                            }
+                        });
+                    }
                 });
             }
 
+            // Disable file download observers.
             function clearObservers() {
                 angular.forEach(observers, function(observer) {
                     observer.off();
@@ -95,12 +99,20 @@ angular.module('mm.addons.mod_book')
                 observers = {};
             }
 
+            // Set module as 'downloaded', hiding icons and storing its state.
             function setDownloaded() {
                 $scope.spinner = false;
                 downloadBtn.hidden = true;
                 refreshBtn.hidden = false; // Always show refresh button because revision and timemodified are not reliable.
                 // Store module as downloaded.
                 $mmCourse.storeModuleStatus(siteid, module.id, $mmFilepool.FILEDOWNLOADED, revision, timemodified);
+            }
+
+            // Show downloading spinner and hide other icons.
+            function showDownloading() {
+                downloadBtn.hidden = true;
+                refreshBtn.hidden = true;
+                $scope.spinner = true;
             }
 
             downloadBtn = {
@@ -112,9 +124,7 @@ angular.module('mm.addons.mod_book')
                     e.preventDefault();
                     e.stopPropagation();
 
-                    downloadBtn.hidden = true;
-                    refreshBtn.hidden = true;
-                    $scope.spinner = true;
+                    showDownloading();
 
                     $mmaModBook.getFileEventNames(module).then(function(eventNames) {
                         addObservers(eventNames);
@@ -133,9 +143,7 @@ angular.module('mm.addons.mod_book')
                     e.preventDefault();
                     e.stopPropagation();
 
-                    downloadBtn.hidden = true;
-                    refreshBtn.hidden = true;
-                    $scope.spinner = true;
+                    showDownloading();
 
                     $mmaModBook.invalidateContent(module.id).then(function() {
                         $mmaModBook.getFileEventNames(module).then(function(eventNames) {
@@ -152,6 +160,12 @@ angular.module('mm.addons.mod_book')
             $scope.title = module.name;
             $scope.icon = $mmCourse.getModuleIconSrc('book');
             $scope.action = function(e) {
+                // Refresh or download icon shown. Let's add observers to monitor download.
+                $mmaModBook.getFileEventNames(module).then(function(eventNames) {
+                    addObservers(eventNames);
+                });
+                $mmCourse.storeModuleStatus(siteid, module.id, $mmFilepool.FILEDOWNLOADING, revision, timemodified);
+                showDownloading();
                 $state.go('site.mod_book', {module: module});
             };
             $scope.buttons = [downloadBtn, refreshBtn];
@@ -167,18 +181,8 @@ angular.module('mm.addons.mod_book')
                             addObservers(eventNames);
                             addQueueObserver();
                         } else {
-                            // No files being downloaded. Set state to 'downloaded' or 'outdated'.
-                            $mmCourse.isModuleOutdated(siteid, module.id, revision, timemodified).then(function(outdated) {
-                                $scope.spinner = false;
-                                var status;
-                                if (outdated) {
-                                    status = $mmFilepool.FILEOUTDATED;
-                                    downloadBtn.hidden = false;
-                                } else {
-                                    status = $mmFilepool.FILEDOWNLOADED;
-                                }
-                                $mmCourse.storeModuleStatus(siteid, module.id, status, revision, timemodified);
-                            });
+                            // No files being downloaded. Set state to 'downloaded' because 'outdated' is not reliable in book.
+                            setDownloaded();
                         }
                     });
                 } else {
