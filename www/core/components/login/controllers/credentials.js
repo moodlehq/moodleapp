@@ -21,7 +21,7 @@ angular.module('mm.core.login')
  * @ngdoc controller
  * @name mmLoginCredentialsCtrl
  */
-.controller('mmLoginCredentialsCtrl', function($scope, $state, $stateParams, $mmSitesManager, $mmUtil) {
+.controller('mmLoginCredentialsCtrl', function($scope, $state, $stateParams, $mmSitesManager, $mmUtil, $ionicHistory) {
 
     $scope.siteurl = $stateParams.siteurl;
     $scope.credentials = {};
@@ -48,6 +48,7 @@ angular.module('mm.core.login')
         $mmSitesManager.getUserToken(siteurl, username, password).then(function(token) {
             $mmSitesManager.newSite(siteurl, token).then(function() {
                 delete $scope.credentials; // Delete username and password from the scope.
+                $ionicHistory.nextViewOptions({disableBack: true});
                 $state.go('site.mm_courses');
             }, function(error) {
                 $mmUtil.showErrorModal(error);

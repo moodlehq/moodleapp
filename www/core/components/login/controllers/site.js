@@ -21,7 +21,7 @@ angular.module('mm.core.login')
  * @ngdoc controller
  * @name mmLoginSiteCtrl
  */
-.controller('mmLoginSiteCtrl', function($scope, $state, $mmSitesManager, $mmUtil, $translate,
+.controller('mmLoginSiteCtrl', function($scope, $state, $mmSitesManager, $mmUtil, $translate, $ionicHistory,
         $ionicModal, $mmLoginHelper) {
 
     $scope.siteurl = '';
@@ -56,6 +56,7 @@ angular.module('mm.core.login')
 
             $mmSitesManager.getUserToken(sitedata.url, sitedata.username, sitedata.password).then(function(token) {
                 $mmSitesManager.newSite(sitedata.url, token).then(function() {
+                    $ionicHistory.nextViewOptions({disableBack: true});
                     $state.go('site.mm_courses');
                 }, function(error) {
                     $mmUtil.showErrorModal(error);

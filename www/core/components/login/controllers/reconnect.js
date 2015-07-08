@@ -60,6 +60,7 @@ angular.module('mm.core.login')
                 // Update site info too because functions might have changed (e.g. unisntall local_mobile).
                 $mmSitesManager.updateSiteInfoByUrl(siteurl, username).finally(function() {
                     delete $scope.credentials; // Delete password from the scope.
+                    $ionicHistory.nextViewOptions({disableBack: true});
                     $state.go('site.mm_courses');
                 });
             }, function(error) {
