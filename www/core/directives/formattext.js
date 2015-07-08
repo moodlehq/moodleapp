@@ -29,30 +29,75 @@ angular.module('mm.core')
  *     -clean: True if all HTML tags should be removed, false otherwise.
  *     -singleline: True if new lines should be removed (all the text in a single line). Only valid if clean is true.
  *     -shorten: Number of characters to shorten the text.
+ *     -expand-on-click: Indicate if contents should be expanded on click (undo shorten). Only applied if "shorten" is set.
  *     -watch: True if the variable used inside the directive should be watched for changes. If the variable data is retrieved
  *             asynchronously, this value must be set to true, or the directive should be inside a ng-if, ng-repeat or similar.
  */
-.directive('mmFormatText', function($interpolate, $mmText, $compile) {
+.directive('mmFormatText', function($interpolate, $mmText, $compile, $q) {
 
     var extractVariableRegex = new RegExp('{{([^|]+)(|.*)?}}', 'i');
 
-    function treatContents(scope, element, attrs, text) {
+    /**
+     * Format contents and render.
+     *
+     * @param  {Object} scope   Directive scope.
+     * @param  {Object} element Directive root DOM element.
+     * @param  {Object} attrs   Directive attributes.
+     * @param  {String} text    Directive contents.
+     * @return {Promise}        Promise resolved with the formatted text.
+     */
+    function formatAndRenderContents(scope, element, attrs, text) {
+        // If expandOnClick is set we won't shorten the text on interpolateAndFormat, we'll do it later.
+        var shorten = attrs.expandOnClick ? 0 : attrs.shorten;
+
+        interpolateAndFormat(scope, element, attrs, text, shorten).then(function(fullText) {
+            if (attrs.shorten && attrs.expandOnClick) {
+                var shortened = $mmText.shortenText($mmText.cleanTags(fullText, false), parseInt(attrs.shorten)),
+                    expanded = false;
+
+                element.on('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    expanded = !expanded;
+                    element.html( expanded ? fullText : shortened);
+                    if (expanded) {
+                        $compile(element.contents())(scope);
+                    }
+                });
+
+                renderText(scope, element, shortened, attrs.afterRender);
+            } else {
+                renderText(scope, element, fullText, attrs.afterRender);
+            }
+        });
+    }
+
+    /**
+     * Interpolate contents, apply formatText and set sub-directives.
+     *
+     * @param  {Object} scope     Directive scope.
+     * @param  {Object} element   Directive root DOM element.
+     * @param  {Object} attrs     Directive attributes.
+     * @param  {String} text      Directive contents.
+     * @param  {Number} [shorten] Number of characters to shorten contents to. If not defined, don't shorten the text.
+     * @return {Promise}          Promise resolved with the formatted text.
+     */
+    function interpolateAndFormat(scope, element, attrs, text, shorten) {
 
         var siteId = scope.siteid,
             component = attrs.component,
-            componentId = attrs.componentId,
-            afterRender = attrs.afterRender;
+            componentId = attrs.componentId;
 
         if (typeof text == 'undefined') {
             element.removeClass('hide');
-            return;
+            return $q.reject();
         }
 
         text = $interpolate(text)(scope); // "Evaluate" scope variables.
         text = text.trim();
 
         // Apply format text function.
-        $mmText.formatText(text, attrs.clean, attrs.singleline, attrs.shorten).then(function(formatted) {
+        return $mmText.formatText(text, attrs.clean, attrs.singleline, shorten).then(function(formatted) {
 
             // Convert the content into DOM.
             var dom = angular.element('<div>').html(formatted);
@@ -86,19 +131,31 @@ angular.module('mm.core')
                 }
             });
 
-            // Send for display, and compile.
-            element.html(dom.html());
-            element.removeClass('hide');
-            $compile(element.contents())(scope);
-            // Call the after render function.
-            if (afterRender && scope[afterRender]) {
-                scope[afterRender](scope);
-            }
+            return dom.html();
         });
     }
 
+    /**
+     * Render some text on the directive's element, compile it and call afterRender.
+     *
+     * @param  {Object} scope         Directive scope.
+     * @param  {Object} element       Directive root DOM element.
+     * @param  {String} text          Directive contents.
+     * @param  {String} [afterRender] Scope function to call once the content is renderered.
+     * @return {Void}
+     */
+    function renderText(scope, element, text, afterRender) {
+        element.html(text);
+        element.removeClass('hide');
+        $compile(element.contents())(scope);
+        // Call the after render function.
+        if (afterRender && scope[afterRender]) {
+            scope[afterRender](scope);
+        }
+    }
+
     return {
-        restrict: 'E', // Restrict to <mm-format-text></mm-format-text>.
+        restrict: 'E',
         scope: true,
         link: function(scope, element, attrs) {
             element.addClass('hide'); // Hide contents until they're treated.
@@ -110,11 +167,11 @@ angular.module('mm.core')
                 if (matches && typeof matches[1] == 'string') {
                     var variable = matches[1].trim();
                     scope.$watch(variable, function() {
-                        treatContents(scope, element, attrs, content);
+                        formatAndRenderContents(scope, element, attrs, content);
                     });
                 }
             } else {
-                treatContents(scope, element, attrs, content);
+                formatAndRenderContents(scope, element, attrs, content);
             }
         }
     };
