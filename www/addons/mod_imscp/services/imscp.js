@@ -23,7 +23,9 @@ angular.module('mm.addons.mod_imscp')
  */
 .factory('$mmaModImscp', function($mmFilepool, $mmSite, $mmUtil, $mmFS, $log, $q, mmaModImscpComponent) {
     $log = $log.getInstance('$mmaModImscp');
-    var self = {};
+
+    var self = {},
+        currentDirPath; // Directory path of the current IMSCP.
 
     /**
      * Get the IMSCP toc as an array.
@@ -126,50 +128,87 @@ angular.module('mm.addons.mod_imscp')
     };
 
     /**
-     * Download all the content.
+     * Download all the content. All the files are downloaded inside a folder in filepool, keeping their folder structure.
      *
      * @module mm.addons.mod_imscp
      * @ngdoc method
      * @name $mmaModImscp#downloadAllContent
      * @param {Object} module The module object.
-     * @return {Object}       Where keys are imscp filepaths, and values are relative local paths.
-     * @protected
+     * @return {Promise}      Promise resolved when content is downloaded. Data returned is not reliable.
      */
     self.downloadAllContent = function(module) {
-        var promises = [];
+        var promises = [],
+            siteId = $mmSite.getId();
+
+        // Get path of the module folder in filepool.
+        return $mmFilepool.getFilePathByUrl(siteId, module.url).then(function(dirPath) {
+            angular.forEach(module.contents, function(content) {
+                var fullpath,
+                    url,
+                    modified;
+
+                if (content.type !== 'file') {
+                    return;
+                }
+
+                // Special case for IMSCP packages.
+                if (self.checkSpecialFiles(content.filename)) {
+                    return;
+                }
+
+                url = content.fileurl;
+                modified = content.timemodified;
+                fullpath = content.filename;
+                if (content.filepath !== '/') {
+                    fullpath = content.filepath.substr(1) + fullpath;
+                }
+                fullpath = $mmFS.concatenatePaths(dirPath, fullpath);
+
+                promises.push($mmFilepool.downloadUrl(siteId, url, false, mmaModImscpComponent, module.id, modified, fullpath));
+            });
+
+            return $q.all(promises);
+        });
+    };
+
+    /**
+     * Get event names of files being downloaded.
+     *
+     * @module mm.addons.mod_imscp
+     * @ngdoc method
+     * @name $mmaModImscp#getDownloadedFilesEventNames
+     * @param {Object} module The module object returned by WS.
+     * @return {Promise} Resolved with an array of event names.
+     */
+    self.getDownloadedFilesEventNames = function(module) {
+        var promises = [],
+            eventNames = [],
+            notDownloaded = 0,
+            downloading = 0,
+            outdated = 0,
+            downloaded = 0,
+            fileCount = 0,
+            siteid = $mmSite.getId();
 
         angular.forEach(module.contents, function(content) {
-            var url,
-                fullpath;
+            var url = content.fileurl;
             if (content.type !== 'file') {
                 return;
             }
-
-            // Special case for IMSCP packages.
             if (self.checkSpecialFiles(content.filename)) {
                 return;
             }
-
-            fullpath = content.filename;
-            if (content.filepath !== '/') {
-                fullpath = content.filepath.substr(1) + fullpath;
-            }
-
-            url = content.fileurl;
-            promises.push($mmFilepool.downloadUrl($mmSite.getId(), url, false, mmaModImscpComponent, module.id)
-            .then(function(internalUrl) {
-                return $mmFilepool.getFilePathByUrl($mmSite.getId(), url).then(function(filePath) {
-                    return [fullpath, filePath];
+            promises.push($mmFilepool.isFileDownloadingByUrl(siteid, url).then(function() {
+                return $mmFilepool.getFileEventNameByUrl(siteid, url).then(function(eventName) {
+                    eventNames.push(eventName);
                 });
+            }, function() {
+                // Ignore fails.
             }));
         });
 
-        return $q.all(promises).then(function(files) {
-            var filePaths = {};
-            angular.forEach(files, function(file) {
-                filePaths[file[0]] = file[1];
-            });
-            return filePaths;
+        return $q.all(promises).then(function() {
+            return eventNames;
         });
     };
 
@@ -203,101 +242,38 @@ angular.module('mm.addons.mod_imscp')
     };
 
     /**
-     * Check the status of the files.
-     *
-     * Return those status in order of priority:
-     * - $mmFilepool.FILENOTDOWNLOADED
-     * - $mmFilepool.FILEDOWNLOADING
-     * - $mmFilepool.FILEOUTDATED
-     * - $mmFilepool.FILEDOWNLOADED
-     *
-     * @module mm.addons.mod_imscp
-     * @ngdoc method
-     * @name $mmaModPage#getFilesStatus
-     * @param {Object} module The module object returned by WS.
-     * @return {Promise} Resolved with an object containing the status and a list of event to observe.
-     */
-    self.getFilesStatus = function(module) {
-        var promises = [],
-            eventNames = [],
-            notDownloaded = 0,
-            downloading = 0,
-            outdated = 0,
-            downloaded = 0,
-            fileCount = 0;
-
-        angular.forEach(module.contents, function(content) {
-            var url;
-            if (content.type !== 'file') {
-                return;
-            }
-
-            if (self.checkSpecialFiles(content.filename)) {
-                return;
-            }
-
-            fileCount++;
-            url = content.fileurl;
-            promises.push($mmFilepool.getFileStateByUrl($mmSite.getId(), url).then(function(state) {
-                if (state == $mmFilepool.FILENOTDOWNLOADED) {
-                    notDownloaded++;
-                } else if (state == $mmFilepool.FILEDOWNLOADING) {
-                    downloading++;
-                    return $mmFilepool.getFileEventNameByUrl($mmSite.getId(), url).then(function(eventName) {
-                        eventNames.push(eventName);
-                    });
-                } else if (state == $mmFilepool.FILEDOWNLOADED) {
-                    downloaded++;
-                } else if (state == $mmFilepool.FILEOUTDATED) {
-                    outdated++;
-                }
-            }));
-        });
-
-        function prepareResult() {
-            var status = $mmFilepool.FILENOTDOWNLOADED;
-            if (notDownloaded > 0) {
-                status = $mmFilepool.FILENOTDOWNLOADED;
-            } else if (downloading > 0) {
-                status = $mmFilepool.FILEDOWNLOADING;
-            } else if (outdated > 0) {
-                status = $mmFilepool.FILEOUTDATED;
-            } else if (downloaded == fileCount) {
-                status = $mmFilepool.FILEDOWNLOADED;
-            }
-            return {status: status, eventNames: eventNames};
-        }
-
-        return $q.all(promises).then(function() {
-            return prepareResult();
-        }, function() {
-            return prepareResult();
-        });
-    };
-
-    /**
-     * Prepare the view of the module in an iframe, and returns the src.
+     * Download all the files needed and returns the src of the iframe.
      *
      * @module mm.addons.mod_imscp
      * @ngdoc method
      * @name $mmaModImscp#getIframeSrc
      * @param {Object} module The module object.
-     * @return {Promise}
+     * @return {Promise}      Promise resolved with the iframe src.
      */
     self.getIframeSrc = function(module) {
         var toc = self.getToc(module.contents);
         var mainFilePath = toc[0].href;
 
-        return self.downloadAllContent(module).then(function(filePaths) {
-            return $mmUtil.getIframeSrc(filePaths, mainFilePath);
+        return self.downloadAllContent(module).then(function() {
+            return $mmFilepool.getDirectoryUrlByUrl($mmSite.getId(), module.url).then(function(dirPath) {
+                currentDirPath = dirPath;
+                return $mmFS.concatenatePaths(dirPath, mainFilePath);
+            });
         });
     };
 
-
-    self.getFileSrc = function(itemId) {
-        return $mmFS.getFile('iframe/' + itemId).then(function(file) {
-            return file.toURL();
-        });
+    /**
+     * Get src of a imscp item.
+     *
+     * @module mm.addons.mod_imscp
+     * @ngdoc method
+     * @name $mmaModImscp#getFileSrc
+     * @param {String} moduleurl The module url.
+     * @param {String} itemId    Item to get the src.
+     * @return {String}          Item src.
+     */
+    self.getFileSrc = function(moduleurl, itemId) {
+        return $mmFS.concatenatePaths(currentDirPath, itemId);
     };
 
     /**
@@ -331,7 +307,7 @@ angular.module('mm.addons.mod_imscp')
     };
 
     /**
-     * Prefetch the content.
+     * Prefetch the content. All the files are downloaded inside a folder in filepool, keeping their folder structure.
      *
      * @module mm.addons.mod_imscp
      * @ngdoc method
@@ -340,17 +316,30 @@ angular.module('mm.addons.mod_imscp')
      * @return {Void}
      */
     self.prefetchContent = function(module) {
-        angular.forEach(module.contents, function(content) {
-            var url;
-            if (content.type !== 'file') {
-                return;
-            }
-            // Special case for IMSCP packages.
-            if (self.checkSpecialFiles(content.filename)) {
-                return;
-            }
-            url = content.fileurl;
-            $mmFilepool.addToQueueByUrl($mmSite.getId(), url, mmaModImscpComponent, module.id);
+        var siteId = $mmSite.getId();
+        // Get path of the module folder in filepool.
+        $mmFilepool.getFilePathByUrl(siteId, module.url).then(function(dirPath) {
+            angular.forEach(module.contents, function(content) {
+                var fullpath,
+                    url,
+                    modified;
+                if (content.type !== 'file') {
+                    return;
+                }
+                // Special case for IMSCP packages.
+                if (self.checkSpecialFiles(content.filename)) {
+                    return;
+                }
+                url = content.fileurl;
+                modified = content.timemodified;
+                fullpath = content.filename;
+                if (content.filepath !== '/') {
+                    fullpath = content.filepath.substr(1) + fullpath;
+                }
+                fullpath = $mmFS.concatenatePaths(dirPath, fullpath);
+
+                $mmFilepool.addToQueueByUrl(siteId, url, mmaModImscpComponent, module.id, modified, fullpath);
+            });
         });
     };
 

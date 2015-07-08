@@ -28,6 +28,8 @@ angular.module('mm.core.course')
         sectionid = $stateParams.sectionid || -1,
         sections = [];
 
+    $scope.sections = []; // Reset scope.sections, otherwise an error is shown in console with tablet view.
+
     if (sectionid < 0) {
         // Special scenario, we want all sections.
         $translate('mm.course.allsections').then(function(str) {

@@ -33,7 +33,7 @@ angular.module('mm.core')
             iframe.on('load', function() {
                 angular.forEach(iframe.contents().find('a'), function(el) {
                     var href = el.getAttribute('href');
-                    if (href.indexOf('http') === 0) {
+                    if (href && href.indexOf('http') === 0) { // Check that href is not null.
                         angular.element(el).on('click', function(e) {
                             $mmUtil.openInBrowser(href);
                             e.preventDefault();

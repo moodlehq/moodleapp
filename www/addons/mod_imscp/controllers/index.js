@@ -63,12 +63,10 @@ angular.module('mm.addons.mod_imscp')
     };
 
     $scope.loadItem = function(itemId) {
-        $mmaModImscp.getFileSrc(itemId).then(function(src) {
-            $scope.popover.hide();
-            $scope.src = src;
-            $scope.previousItem = $mmaModImscp.getPreviousItem($scope.items, itemId);
-            $scope.nextItem = $mmaModImscp.getNextItem($scope.items, itemId);
-        });
+        $scope.popover.hide();
+        $scope.src = $mmaModImscp.getFileSrc(module.url, itemId);
+        $scope.previousItem = $mmaModImscp.getPreviousItem($scope.items, itemId);
+        $scope.nextItem = $mmaModImscp.getNextItem($scope.items, itemId);
     };
 
     $scope.getNumberForPadding = function(n) {

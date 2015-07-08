@@ -644,5 +644,28 @@ angular.module('mm.core')
         return file;
     };
 
+    /**
+     * Concatenate two paths, adding a slash between them if needed.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#concatenatePaths
+     * @param {String} leftPath  Left path.
+     * @param {String} rightPath Right path.
+     * @return {String}          Concatenated path.
+     */
+    self.concatenatePaths = function(leftPath, rightPath) {
+        var lastCharLeft = leftPath.slice(-1),
+            firstCharRight = rightPath.charAt(0);
+
+        if (lastCharLeft === '/' && firstCharRight === '/') {
+            return leftPath + rightPath.substr(1);
+        } else if(lastCharLeft !== '/' && firstCharRight !== '/') {
+            return leftPath + '/' + rightPath;
+        } else {
+            return leftPath + rightPath;
+        }
+    };
+
     return self;
 });
