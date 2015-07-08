@@ -43,7 +43,7 @@ angular.module('mm.addons.mod_book')
     function fetchContent() {
         // Show first chapter.
         return $mmaModBook.downloadAllContent(module).catch(function(err) {
-            // Ignore download errors. @todo MOBILE-1096
+            // Ignore download errors, they're already treated on $mmaModBookCourseContentHandler.
         }).finally(function() {
             return $mmaModBook.getChapterContent(module.contents, firstChapter, module.id).then(function(content) {
                 $scope.content = content;

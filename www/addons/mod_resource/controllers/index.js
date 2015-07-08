@@ -47,7 +47,8 @@ angular.module('mm.addons.mod_resource')
                     $scope.loaded = true;
                 });
             } else if ($mmaModResource.isDisplayedInline(module)) {
-                $mmaModResource.downloadAllContent(module).finally(function() { // Ignore errors. @todo MOBILE-1096
+                // Ignore errors, they're already treated on $mmaModResourceCourseContentHandler.
+                $mmaModResource.downloadAllContent(module).finally(function() {
                     $mmaModResource.getResourceHtml(module.contents, module.id).then(function(content) {
                         $scope.mode = 'inline';
                         $scope.content = content;

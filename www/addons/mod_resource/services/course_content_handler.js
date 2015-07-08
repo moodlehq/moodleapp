@@ -52,6 +52,7 @@ angular.module('mm.addons.mod_resource')
                 refreshBtn,
                 observers = {},
                 queueObserver,
+                previousState,
                 siteid = $mmSite.getId(),
                 revision = $mmCourse.getRevisionFromContents(module.contents),
                 timemodified = $mmCourse.getTimemodifiedFromContents(module.contents);
@@ -77,12 +78,28 @@ angular.module('mm.addons.mod_resource')
                 angular.forEach(eventNames, function(e) {
                     if (typeof observers[e] == 'undefined') {
                         observers[e] = $mmEvents.on(e, function(data) {
-                            if (data.success && typeof observers[e] !== 'undefined') {
-                                observers[e].off();
-                                delete observers[e];
-                            }
-                            if (Object.keys(observers).length < 1) {
-                                setDownloaded();
+                            if (data.success) {
+                                // Download success. Disable this observer and check if all files have been downloaded.
+                                if (typeof observers[e] !== 'undefined') {
+                                    observers[e].off();
+                                    delete observers[e];
+                                }
+                                if (Object.keys(observers).length < 1) {
+                                    setDownloaded();
+                                }
+                            } else if (data.success === false) {
+                                // A download failed. Clear observers, show error message and set previous state.
+                                clearObservers();
+                                $mmCourse.storeModuleStatus(siteid, module.id, previousState, revision, timemodified);
+                                $scope.spinner = false;
+                                if (previousState === $mmFilepool.FILENOTDOWNLOADED) {
+                                    downloadBtn.hidden = false;
+                                } else {
+                                    refreshBtn.hidden = false;
+                                }
+                                if (!$scope.$$destroyed) {
+                                    $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                                }
                             }
                         });
                     }
@@ -125,6 +142,7 @@ angular.module('mm.addons.mod_resource')
                     showDownloading();
 
                     $mmaModResource.getFileEventNames(module).then(function(eventNames) {
+                        previousState = $mmFilepool.FILENOTDOWNLOADED;
                         addObservers(eventNames);
                         $mmaModResource.prefetchContent(module);
                         // Store module as dowloading.
@@ -145,6 +163,7 @@ angular.module('mm.addons.mod_resource')
 
                     $mmaModResource.invalidateContent(module.id).then(function() {
                         $mmaModResource.getFileEventNames(module).then(function(eventNames) {
+                            previousState = $mmFilepool.mmFilepool.FILEOUTDATED;
                             addObservers(eventNames);
                             $mmaModResource.prefetchContent(module);
                             // Store module as dowloading.
@@ -165,56 +184,55 @@ angular.module('mm.addons.mod_resource')
             } else {
                 $scope.icon = $mmCourse.getModuleIconSrc('resource');
             }
+            $scope.buttons = [downloadBtn, refreshBtn];
+            $scope.spinner = false;
 
             $scope.action = function(e) {
                 if (!(downloadBtn.hidden && refreshBtn.hidden)) {
                     // Refresh or download icon shown. Let's add observers to monitor download.
+                    previousState = downloadBtn.hidden ? $mmFilepool.FILEOUTDATED : $mmFilepool.FILENOTDOWNLOADED;
                     $mmaModResource.getFileEventNames(module).then(function(eventNames) {
                         addObservers(eventNames);
                     });
-                    $mmCourse.storeModuleStatus(siteid, module.id, $mmFilepool.FILEDOWNLOADING, revision, timemodified);
                     // Only show downloading with mini sites, since all content is prefetched before being rendered.
                     // Other resources are only downloaded when the user clicks the "Open file" button.
                     if ($mmaModResource.isDisplayedInIframe(module) || $mmaModResource.isDisplayedInline(module)) {
+                        $mmCourse.storeModuleStatus(siteid, module.id, $mmFilepool.FILEDOWNLOADING, revision, timemodified);
                         showDownloading();
                     }
                 }
                 $state.go('site.mod_resource', {module: module});
             };
-            $scope.buttons = [downloadBtn, refreshBtn];
-            $scope.spinner = false;
 
+            // Check current status to decide which icon should be shown.
             $mmCourse.getModuleStatus(siteid, module.id, revision, timemodified).then(function(status) {
                 if (status == $mmFilepool.FILENOTDOWNLOADED) {
                     downloadBtn.hidden = false;
                 } else if (status == $mmFilepool.FILEDOWNLOADING) {
                     $scope.spinner = true;
-                    $mmaModResource.getDownloadedFilesEventNames(module).then(function(eventNames) {
+                    $mmaModResource.getDownloadingFilesEventNames(module).then(function(eventNames) {
                         if (eventNames.length) {
+                            $mmCourse.getModulePreviousStatus(siteid, module.id).then(function(previous) {
+                                previousState = previous;
+                            });
                             addObservers(eventNames);
                             addQueueObserver();
                         } else {
-                            // No files being downloaded. Set state to 'downloaded' or 'outdated'.
-                            $mmCourse.isModuleOutdated(siteid, module.id, revision, timemodified).then(function(outdated) {
+                            // Weird case, state downloading but no files being downloaded. Set state to previousState.
+                            $mmCourse.getModulePreviousStatus(siteid, module.id).then(function(previous) {
                                 $scope.spinner = false;
-                                var status;
-                                if (outdated) {
-                                    status = $mmFilepool.FILEOUTDATED;
+                                if (previous === $mmFilepool.FILENOTDOWNLOADED) {
+                                    downloadBtn.hidden = false;
+                                } else if (previous === $mmFilepool.FILEOUTDATED) {
                                     refreshBtn.hidden = false;
-                                } else {
-                                    status = $mmFilepool.FILEDOWNLOADED;
                                 }
-                                $mmCourse.storeModuleStatus(siteid, module.id, status, revision, timemodified);
+                                $mmCourse.storeModuleStatus(siteid, module.id, previous, revision, timemodified);
                             });
                         }
                     });
                 } else if (status == $mmFilepool.FILEOUTDATED) {
                     refreshBtn.hidden = false;
                 }
-            });
-
-            $scope.$on('$destroy', function() {
-                clearObservers();
             });
         };
     };
