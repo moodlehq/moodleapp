@@ -22,7 +22,7 @@ angular.module('mm.core.sidemenu')
  * @name mmSideMenuCtrl
  */
 .controller('mmSideMenuCtrl', function($scope, $state, $mmSideMenuDelegate, $mmSitesManager, $mmSite, $mmConfig, $mmEvents,
-            $timeout, mmCoreEventLanguageChanged) {
+            $timeout, mmCoreEventLanguageChanged, mmCoreEventSiteUpdated) {
     $scope.plugins = $mmSideMenuDelegate.getData();
     $scope.siteinfo = $mmSite.getInfo();
 
@@ -36,11 +36,27 @@ angular.module('mm.core.sidemenu')
         $scope.docsurl = docsurl;
     });
 
-    $mmEvents.on(mmCoreEventLanguageChanged, function() {
-        // Update site info. We need to use $timeout to force a $digest and make $watch notice the variable change.
+    function updateSiteInfo() {
+        // We need to use $timeout to force a $digest and make $watch notice the variable change.
         $scope.siteinfo = undefined;
         $timeout(function() {
             $scope.siteinfo = $mmSite.getInfo();
         });
+    }
+
+    var langObserver = $mmEvents.on(mmCoreEventLanguageChanged, updateSiteInfo);
+    var updateSiteObserver = $mmEvents.on(mmCoreEventSiteUpdated, function(siteid) {
+        if ($mmSite.getId() === siteid) {
+            updateSiteInfo();
+        }
+    });
+
+    $scope.$on('$destroy', function() {
+        if (langObserver && langObserver.off) {
+            langObserver.off();
+        }
+        if (updateSiteObserver && updateSiteObserver.off) {
+            updateSiteObserver.off();
+        }
     });
 });

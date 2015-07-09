@@ -16,10 +16,16 @@ angular.module('mm.addons.remotestyles', [])
 
 .constant('mmaRemoteStylesComponent', 'mmaRemoteStyles')
 
-.run(function($mmEvents, mmCoreEventLogin, mmCoreEventLogout, mmCoreEventSiteAdded, mmCoreEventSiteUpdated, $mmaRemoteStyles) {
+.run(function($mmEvents, mmCoreEventLogin, mmCoreEventLogout, mmCoreEventSiteAdded, mmCoreEventSiteUpdated, $mmaRemoteStyles,
+            $mmSite) {
 
     $mmEvents.on(mmCoreEventSiteAdded, $mmaRemoteStyles.load);
-    $mmEvents.on(mmCoreEventSiteUpdated, $mmaRemoteStyles.load);
+    $mmEvents.on(mmCoreEventSiteUpdated, function(siteid) {
+        // Load only if current site was updated.
+        if (siteid === $mmSite.getId()) {
+            $mmaRemoteStyles.load();
+        }
+    });
     $mmEvents.on(mmCoreEventLogin, $mmaRemoteStyles.load);
 
     // Remove added styles on logout.

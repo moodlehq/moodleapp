@@ -59,9 +59,9 @@ angular.module('mm.addons.remotestyles')
         // Downloads a CSS file and remove old files if needed.
         function downloadFileAndRemoveOld(url) {
             return $mmFilepool.getFileStateByUrl(siteid, url).then(function(state) {
-                return state === $mmFilepool.FILEDOWNLOADED;
+                return state !== $mmFilepool.FILENOTDOWNLOADED;
             }).catch(function() {
-                return true; // An error occurred while getting state. Don't delete downloaded file.
+                return true; // An error occurred while getting state (shouldn't happen). Don't delete downloaded file.
             }).then(function(isDownloaded) {
                 if (!isDownloaded) {
                     // File not downloaded, URL has changed or first time. Delete downloaded CSS files.

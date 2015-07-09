@@ -540,6 +540,25 @@ angular.module('mm.core')
         };
 
         /**
+         * Invalidates all the cache entries.
+         *
+         * @return {Promise} Promise resolved when the cache entries are invalidated.
+         */
+        Site.prototype.invalidateWsCache = function() {
+            var db = this.db;
+            if (!db) {
+                return $q.reject();
+            }
+
+            $log.debug('Invalidate all the cache for site: '+ this.id);
+            return db.getAll(mmCoreWSCacheStore).then(function(entries) {
+                if (entries && entries.length > 0) {
+                    return invalidateWsCacheEntries(db, entries);
+                }
+            });
+        };
+
+        /**
          * Invalidates all the cache entries with a certain key.
          *
          * @param  {String} key Key to search.

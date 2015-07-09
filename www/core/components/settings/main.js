@@ -55,6 +55,16 @@ angular.module('mm.core.settings', [])
                 controller: 'mmSettingsSpaceUsageCtrl'
             }
         }
+    })
+
+    .state('site.mm_settings-synchronization', {
+        url: '/mm_settings-synchronization',
+        views: {
+            'site': {
+                templateUrl: 'core/components/settings/templates/synchronization.html',
+                controller: 'mmSettingsSynchronizationCtrl'
+            }
+        }
     });
 
 });
