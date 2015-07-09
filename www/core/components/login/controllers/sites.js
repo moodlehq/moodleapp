@@ -21,7 +21,7 @@ angular.module('mm.core.login')
  * @ngdoc controller
  * @name mmLoginSitesCtrl
  */
-.controller('mmLoginSitesCtrl', function($scope, $state, $mmSitesManager, $log, $translate, $mmUtil, $ionicHistory) {
+.controller('mmLoginSitesCtrl', function($scope, $state, $mmSitesManager, $log, $translate, $mmUtil, $ionicHistory, $mmText) {
 
     $log = $log.getInstance('mmLoginSitesCtrl');
 
@@ -42,24 +42,26 @@ angular.module('mm.core.login')
         // problem on http://codepen.io/ionic/pen/JsHjf.
         e.stopPropagation();
 
-        var site = $scope.sites[index];
+        var site = $scope.sites[index],
+            sitename = site.sitename;
 
-        $mmUtil.showConfirm($translate('mm.login.confirmdeletesite', {sitename: site.sitename})).then(function() {
-            $mmSitesManager.deleteSite(site.id).then(function() {
-                $scope.sites.splice(index, 1);
-                $mmSitesManager.hasNoSites().then(function() {
-                    $state.go('mm_login.site');
+        $mmText.formatText(sitename).then(function(sitename) {
+            $mmUtil.showConfirm($translate('mm.login.confirmdeletesite', {sitename: sitename})).then(function() {
+                $mmSitesManager.deleteSite(site.id).then(function() {
+                    $scope.sites.splice(index, 1);
+                    $mmSitesManager.hasNoSites().then(function() {
+                        $state.go('mm_login.site');
+                    });
+                }, function(error) {
+                    $log.error('Delete site failed');
+                    $mmUtil.showErrorModal('mm.login.errordeletesite', true);
                 });
-            }, function(error) {
-                $log.error('Delete site failed');
-                $mmUtil.showErrorModal('mm.login.errordeletesite', true);
             });
         });
     };
 
-    $scope.login = function(index) {
-        var siteid = $scope.sites[index].id,
-            modal = $mmUtil.showModalLoading();
+    $scope.login = function(siteid) {
+        var modal = $mmUtil.showModalLoading();
 
         $mmSitesManager.loadSite(siteid).then(function() {
             $ionicHistory.nextViewOptions({disableBack: true});
