@@ -48,7 +48,7 @@ angular.module('mm.addons.mod_book')
             return $mmaModBook.getChapterContent(module.contents, firstChapter, module.id).then(function(content) {
                 $scope.content = content;
             }).catch(function() {
-                $mmUtil.showErrorModal('mma.mod_book.errorchapter');
+                $mmUtil.showErrorModal('mma.mod_book.errorchapter', true);
             }).finally(function() {
                 $scope.loaded = true;
             });

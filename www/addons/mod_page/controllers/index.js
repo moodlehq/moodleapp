@@ -37,7 +37,7 @@ angular.module('mm.addons.mod_page')
         return $mmaModPage.getPageHtml(module.contents, module.id).then(function(content) {
             $scope.content = content;
         }).catch(function() {
-            $mmUtil.showErrorModal('mma.mod_page.errorwhileloadingthepage');
+            $mmUtil.showErrorModal('mma.mod_page.errorwhileloadingthepage', true);
         }).finally(function() {
             $scope.loaded = true;
         });
