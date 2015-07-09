@@ -233,7 +233,7 @@ angular.module('mm.addons.mod_resource')
                         var href = decodeURIComponent(anchor.getAttribute('href')),
                             url = paths[href],
                             ext = $mmUtil.getFileExtension(href);
-                        if (typeof href !== 'undefined') {
+                        if (typeof url !== 'undefined') {
                             anchor.setAttribute('href', url);
                             if (ext == 'html' || ext == 'html') {
                                 anchor.setAttribute('mma-mod-resource-html-link', 1);
