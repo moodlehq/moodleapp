@@ -50,6 +50,7 @@ angular.module('mm.core.login')
                 $mmSitesManager.deleteSite(site.id).then(function() {
                     $scope.sites.splice(index, 1);
                     $mmSitesManager.hasNoSites().then(function() {
+                        $ionicHistory.nextViewOptions({disableBack: true});
                         $state.go('mm_login.site');
                     });
                 }, function(error) {

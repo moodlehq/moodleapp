@@ -51,14 +51,7 @@ angular.module('mm.core.login', [])
     .state('mm_login.site', {
         url: '/site',
         templateUrl: 'core/components/login/templates/site.html',
-        controller: 'mmLoginSiteCtrl',
-        onEnter: function($ionicNavBarDelegate, $ionicHistory, $mmSitesManager) {
-            // Don't show back button if there are no sites.
-            $mmSitesManager.hasNoSites().then(function() {
-                $ionicNavBarDelegate.showBackButton(false);
-                $ionicHistory.clearHistory();
-            });
-        }
+        controller: 'mmLoginSiteCtrl'
     })
 
     .state('mm_login.credentials', {
