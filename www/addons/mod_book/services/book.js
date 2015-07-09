@@ -56,11 +56,11 @@ angular.module('mm.addons.mod_book')
      *
      * @module mm.addons.mod_book
      * @ngdoc method
-     * @name $mmaModBook#getDownloadedFilesEventNames
+     * @name $mmaModBook#getDownloadingFilesEventNames
      * @param {Object} module The module object returned by WS.
      * @return {Promise} Resolved with an array of event names.
      */
-    self.getDownloadedFilesEventNames = function(module) {
+    self.getDownloadingFilesEventNames = function(module) {
         var promises = [],
             eventNames = [],
             notDownloaded = 0,

@@ -507,6 +507,9 @@ angular.module('mm.core')
                     }
                     self._notifyFileDownloaded(siteId, fileId);
                     return response;
+                }, function(err) {
+                    self._notifyFileDownloadError(siteId, fileId);
+                    return $q.reject(err);
                 });
             });
         } else {

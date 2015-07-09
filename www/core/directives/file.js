@@ -68,7 +68,7 @@ angular.module('mm.core')
             getState(scope, siteid, fileurl, timemodified); // Update state.
             return localUrl;
         }, function() {
-            $mmUtil.showErrorModal('mm.core.errordownloadingfile', true);
+            $mmUtil.showErrorModal('mm.core.errordownloading', true);
             return getState(scope, siteid, fileurl, timemodified).then(function() {
                 if (scope.isDownloaded) {
                     return localUrl;
@@ -102,7 +102,7 @@ angular.module('mm.core')
                 observer = $mmEvents.on(eventName, function(data) {
                     getState(scope, siteid, fileurl, timemodified);
                     if (!data.success) {
-                        $mmUtil.showErrorModal('mm.core.errordownloadingfile', true);
+                        $mmUtil.showErrorModal('mm.core.errordownloading', true);
                     }
                 });
             });

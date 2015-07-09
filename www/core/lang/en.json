@@ -6,7 +6,7 @@
     "downloading": "Downloading",
     "elementseparator": ", ",
     "error": "Error",
-    "errordownloadingfile": "Error downloading file.",
+    "errordownloading": "Error downloading file.",
     "humanreadablesize": "{{size}} {{unit}}",
     "loading": "Loading",
     "lostconnection": "Your authentication token is invalid or has expired, you will have to reconnect to the site.",
