@@ -83,7 +83,8 @@ angular.module('mm.core.login', [])
         cache: false,
         params: {
             siteurl: '',
-            username: ''
+            username: '',
+            infositeurl: ''
         }
     });
 
@@ -158,7 +159,7 @@ angular.module('mm.core.login', [])
                 } else {
                     var info = $mmSite.getInfo();
                     if (typeof(info) !== 'undefined' && typeof(info.username) !== 'undefined') {
-                        $state.go('mm_login.reconnect', {siteurl: siteurl, username: info.username});
+                        $state.go('mm_login.reconnect', {siteurl: siteurl, username: info.username, infositeurl: info.siteurl});
                     }
                 }
             });
