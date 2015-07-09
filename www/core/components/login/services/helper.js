@@ -137,8 +137,9 @@ angular.module('mm.core.login')
             // Retrieve username.
             var info = $mmSite.getInfo();
             if (typeof(info) !== 'undefined' && typeof(info.username) !== 'undefined') {
-
-                $mmSitesManager.updateSiteToken(siteurl, info.username, token).then(deferred.resolve, function() {
+                $mmSitesManager.updateSiteToken(info.siteurl, info.username, token).then(function() {
+                    $mmSitesManager.updateSiteInfoByUrl(info.siteurl, info.username).finally(deferred.resolve);
+                }, function() {
                     // Error updating token, return proper error message.
                     $mmLang.translateErrorAndReject(deferred, 'mm.login.errorupdatesite');
                 });

@@ -44,6 +44,29 @@ angular.module('mm.core.course')
         ];
 
     /**
+     * Clear all modules status in a site.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#clearAllModulesStatus
+     * @param {String} siteId Site ID.
+     * @return {Promise}      Promise resolved when all status are cleared.
+     */
+    self.clearAllModulesStatus = function(siteId) {
+        var promises = [];
+        $log.debug('Clear all module status for site ' + siteId);
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var db = site.getDb();
+            return db.getAll(mmCoreCourseModulesStore).then(function(entries) {
+                angular.forEach(entries, function(entry) {
+                    promises.push(db.remove(mmCoreCourseModulesStore, entry.id));
+                });
+                return $q.all(promises);
+            });
+        });
+    };
+
+    /**
      * Get a module from Moodle.
      *
      * @module mm.core.course

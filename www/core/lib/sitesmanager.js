@@ -675,7 +675,7 @@ angular.module('mm.core')
                     token: site.getToken(),
                     infos: infos
                 }).finally(function() {
-                    $mmEvents.trigger(mmCoreEventSiteUpdated);
+                    $mmEvents.trigger(mmCoreEventSiteUpdated, siteid);
                 });
             });
         });

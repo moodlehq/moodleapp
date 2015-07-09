@@ -540,6 +540,25 @@ angular.module('mm.core')
         };
 
         /**
+         * Invalidates all the cache entries.
+         *
+         * @return {Promise} Promise resolved when the cache entries are invalidated.
+         */
+        Site.prototype.invalidateWsCache = function() {
+            var db = this.db;
+            if (!db) {
+                return $q.reject();
+            }
+
+            $log.debug('Invalidate all the cache for site: '+ this.id);
+            return db.getAll(mmCoreWSCacheStore).then(function(entries) {
+                if (entries && entries.length > 0) {
+                    return invalidateWsCacheEntries(db, entries);
+                }
+            });
+        };
+
+        /**
          * Invalidates all the cache entries with a certain key.
          *
          * @param  {String} key Key to search.
@@ -606,15 +625,29 @@ angular.module('mm.core')
          * @return {Promise} Promise to be resolved when the DB is deleted.
          */
         Site.prototype.deleteFolder = function() {
-            var deferred = $q.defer();
             if ($mmFS.isAvailable()) {
                 var siteFolder = $mmFS.getSiteFolder(this.id);
                 // Ignore any errors, $mmFS.removeDir fails if folder doesn't exists.
-                $mmFS.removeDir(siteFolder).then(deferred.resolve, deferred.resolve);
+                return $mmFS.removeDir(siteFolder);
             } else {
-                deferred.resolve();
+                return $q.when();
             }
-            return deferred.promise;
+        };
+
+        /**
+         * Get space usage of the site.
+         *
+         * @return {Promise} Promise resolved with the site space usage (size).
+         */
+        Site.prototype.getSpaceUsage = function() {
+            if ($mmFS.isAvailable()) {
+                var siteFolderPath = $mmFS.getSiteFolder(this.id);
+                return $mmFS.getDirectorySize(siteFolderPath).catch(function() {
+                    return 0;
+                });
+            } else {
+                return $q.when(0);
+            }
         };
 
         /**

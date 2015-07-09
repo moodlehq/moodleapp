@@ -22,10 +22,9 @@ angular.module('mm.core.settings')
  * @name mmSettingsSpaceUsageCtrl
  * @todo When "mock site" is implemented we should have functions to calculate the site usage and delete its files.
  */
-.controller('mmSettingsSpaceUsageCtrl', function($log, $scope, $mmSitesManager, $mmFS, $q, $mmUtil, $translate) {
+.controller('mmSettingsSpaceUsageCtrl', function($log, $scope, $mmSitesManager, $mmFS, $q, $mmUtil, $translate,
+            $mmCourse, $mmText) {
     $log = $log.getInstance('mmSettingsSpaceUsageCtrl');
-
-    var fsAvailable = $mmFS.isAvailable();
 
     // Convenience function to calculate each site's usage, and the total usage.
     function calculateSizeUsage() {
@@ -33,18 +32,12 @@ angular.module('mm.core.settings')
             var promises = [];
             $scope.sites = sites;
 
-            angular.forEach(sites, function(site) {
-                var promise;
-                if (fsAvailable) {
-                    var siteFolderPath = $mmFS.getSiteFolder(site.id);
-                    promise = $mmFS.getDirectorySize(siteFolderPath).then(function(size) {
-                        site.spaceusage = size;
-                    }, function() {
-                        site.spaceusage = 0;
+            angular.forEach(sites, function(siteEntry) {
+                var promise = $mmSitesManager.getSite(siteEntry.id).then(function(site) {
+                    return site.getSpaceUsage().then(function(size) {
+                        siteEntry.spaceusage = size;
                     });
-                } else {
-                    site.spaceusage = 0;
-                }
+                });
                 promises.push(promise);
             });
 
@@ -65,8 +58,8 @@ angular.module('mm.core.settings')
 
     // Convenience function to calculate free space in the device.
     function calculateFreeSpace() {
-        if (fsAvailable) {
-            $mmFS.calculateFreeSpace().then(function(freespace) {
+        if ($mmFS.isAvailable()) {
+            return $mmFS.calculateFreeSpace().then(function(freespace) {
                 $scope.freespace = freespace;
             }, function() {
                 $scope.freespace = 0;
@@ -76,10 +69,22 @@ angular.module('mm.core.settings')
         }
     }
 
-    calculateSizeUsage().then(function() {
-        calculateTotalUsage();
+    function fetchData() {
+        var promises = [];
+        promises.push(calculateSizeUsage().then(calculateTotalUsage));
+        promises.push($q.when(calculateFreeSpace()));
+        return $q.all(promises);
+    }
+    fetchData().finally(function() {
+        $scope.sizeLoaded = true;
     });
-    calculateFreeSpace();
+
+    // Pull to refresh.
+    $scope.refresh = function() {
+        fetchData().finally(function() {
+            $scope.$broadcast('scroll.refreshComplete');
+        });
+    };
 
     // Convenience function to update site size, along with total usage and free space.
     function updateSiteUsage(site, newUsage) {
@@ -89,31 +94,34 @@ angular.module('mm.core.settings')
         $scope.freespace += oldUsage - newUsage;
     }
 
-    $scope.deleteSiteFiles = function(index) {
-        var site = $scope.sites[index];
-        if (site) {
-            var siteid = site.id;
-            var sitename = site.sitename;
+    $scope.deleteSiteFiles = function(siteData) {
+        if (siteData) {
+            var siteid = siteData.id,
+                sitename = siteData.sitename;
 
-            $translate('mm.settings.deletesitefilestitle').then(function(title) {
-                $mmUtil.showConfirm($translate('mm.settings.deletesitefiles', {sitename: sitename}), title).then(function() {
-                    var siteFolderPath = $mmFS.getSiteFolder(siteid);
-                    $mmFS.removeDir(siteFolderPath).then(function() {
-                        updateSiteUsage(site, 0);
-                    }, function(error) {
-                        if (error.code !== FileError.NOT_FOUND_ERR) {
+            $mmText.formatText(sitename).then(function(sitename) {
+                $translate('mm.settings.deletesitefilestitle').then(function(title) {
+                    return $mmUtil.showConfirm($translate('mm.settings.deletesitefiles', {sitename: sitename}), title);
+                }).then(function() {
+                    return $mmSitesManager.getSite(siteid);
+                }).then(function(site) {
+                    return site.deleteFolder().then(function() {
+                        $mmCourse.clearAllModulesStatus(siteid);
+                        updateSiteUsage(siteData, 0);
+                    }).catch(function(error) {
+                        if (error && error.code === FileError.NOT_FOUND_ERR) {
+                            // Not found, set size 0.
+                            $mmCourse.clearAllModulesStatus(siteid);
+                            updateSiteUsage(siteData, 0);
+                        } else {
                             // Error, recalculate the site usage.
                             $mmUtil.showErrorModal('mm.settings.errordeletesitefiles', true);
-                            return $mmFS.getDirectorySize(siteFolderPath).then(function(size) {
-                                updateSiteUsage(site, size);
+                            site.getSpaceUsage().then(function(size) {
+                                updateSiteUsage(siteData, size);
                             });
-                        } else {
-                            // Not found, set size 0.
-                            updateSiteUsage(site, 0);
                         }
                     });
                 });
-
             });
         }
     };
