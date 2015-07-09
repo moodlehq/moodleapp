@@ -301,6 +301,16 @@ angular.module('mm.core')
     /**
      * @module mm.core
      * @ngdoc method
+     * @name $mmSite#getSpaceUsage
+     * @return {Promise} Promise resolved with the site space usage (size).
+     * @description
+     *
+     * Get space usage of the site.
+     */
+
+    /**
+     * @module mm.core
+     * @ngdoc method
      * @name $mmSite#getDocsUrl
      * @param {String} [page]    Docs page to go to.
      * @return {Promise}         Promise resolved with the Moodle docs URL.
