@@ -46,7 +46,6 @@ angular.module('mm.core')
 
     var self = {},
         services = {},
-        db = $mmApp.getDB(),
         sessionRestored = false,
         currentSite,
         sites = {};
@@ -381,7 +380,7 @@ angular.module('mm.core')
      * @param {Object} infos   Site's info.
      */
     self.addSite = function(id, siteurl, token, infos) {
-        return db.insert(mmCoreSitesStore, {
+        return $mmApp.getDB().insert(mmCoreSitesStore, {
             id: id,
             siteurl: siteurl,
             token: token,
@@ -452,7 +451,7 @@ angular.module('mm.core')
         return self.getSite(siteid).then(function(site) {
             return site.deleteDB().then(function() {
                 delete sites[siteid];
-                return db.remove(mmCoreSitesStore, siteid).then(function() {
+                return $mmApp.getDB().remove(mmCoreSitesStore, siteid).then(function() {
                     return site.deleteFolder();
                 }, function() {
                     // DB remove shouldn't fail, but we'll go ahead even if it does.
@@ -471,7 +470,7 @@ angular.module('mm.core')
      * @return {Promise} Promise to be resolved if there are no sites, and rejected if there is at least one.
      */
     self.hasNoSites = function() {
-        return db.count(mmCoreSitesStore).then(function(count) {
+        return $mmApp.getDB().count(mmCoreSitesStore).then(function(count) {
             if (count > 0) {
                 return $q.reject();
             }
@@ -487,7 +486,7 @@ angular.module('mm.core')
      * @return {Promise} Promise to be resolved if there is at least one site, and rejected if there aren't.
      */
     self.hasSites = function() {
-        return db.count(mmCoreSitesStore).then(function(count) {
+        return $mmApp.getDB().count(mmCoreSitesStore).then(function(count) {
             if (count == 0) {
                 return $q.reject();
             }
@@ -504,21 +503,17 @@ angular.module('mm.core')
      * @return {Promise}
      */
     self.getSite = function(siteId) {
-        var deferred = $q.defer();
-
         if (currentSite && currentSite.getId() === siteId) {
-            deferred.resolve(currentSite);
+            return $q.when(currentSite);
         } else if (typeof sites[siteId] != 'undefined') {
-            deferred.resolve(sites[siteId]);
+            return $q.when(sites[siteId]);
         } else {
-            db.get(mmCoreSitesStore, siteId).then(function(site) {
+            return $mmApp.getDB().get(mmCoreSitesStore, siteId).then(function(site) {
                 var site = $mmSitesFactory.makeSite(siteId, site.siteurl, site.token, site.infos);
                 sites[siteId] = site;
-                deferred.resolve(site);
-            }, deferred.reject);
+                return site;
+            });
         }
-
-        return deferred.promise;
     };
 
     /**
@@ -545,7 +540,7 @@ angular.module('mm.core')
      * @return {Promise} Promise to be resolved when the sites are retrieved.
      */
     self.getSites = function() {
-        return db.getAll(mmCoreSitesStore).then(function(sites) {
+        return $mmApp.getDB().getAll(mmCoreSitesStore).then(function(sites) {
             var formattedSites = [];
             angular.forEach(sites, function(site) {
                 formattedSites.push({
@@ -569,7 +564,7 @@ angular.module('mm.core')
      * @return {Promise} Promise to be resolved when the sites IDs are retrieved.
      */
     self.getSitesIds = function() {
-        return db.getAll(mmCoreSitesStore).then(function(sites) {
+        return $mmApp.getDB().getAll(mmCoreSitesStore).then(function(sites) {
             var ids = [];
             angular.forEach(sites, function(site) {
                 ids.push(site.id);
@@ -585,13 +580,15 @@ angular.module('mm.core')
      * @ngdoc method
      * @name $mmSitesManager#login
      * @param  {String} siteid ID of the site the user is accessing.
+     * @return {Promise}       Promise resolved when current site is stored.
      */
     self.login = function(siteid) {
-        db.insert(mmCoreCurrentSiteStore, {
+        return $mmApp.getDB().insert(mmCoreCurrentSiteStore, {
             id: 1,
             siteid: siteid
+        }).then(function() {
+            $mmEvents.trigger(mmCoreEventLogin);
         });
-        $mmEvents.trigger(mmCoreEventLogin);
     };
 
     /**
@@ -605,7 +602,7 @@ angular.module('mm.core')
     self.logout = function() {
         currentSite = undefined;
         $mmEvents.trigger(mmCoreEventLogout);
-        return db.remove(mmCoreCurrentSiteStore, 1);
+        return $mmApp.getDB().remove(mmCoreCurrentSiteStore, 1);
     }
 
     /**
@@ -622,7 +619,7 @@ angular.module('mm.core')
         }
         sessionRestored = true;
 
-        return db.get(mmCoreCurrentSiteStore, 1).then(function(current_site) {
+        return $mmApp.getDB().get(mmCoreCurrentSiteStore, 1).then(function(current_site) {
             var siteid = current_site.siteid;
             $log.debug('Restore session in site '+siteid);
             return self.loadSite(siteid);
@@ -647,7 +644,7 @@ angular.module('mm.core')
         return self.getSite(siteid).then(function(site) {
             site.token = token;
 
-            return db.insert(mmCoreSitesStore, {
+            return $mmApp.getDB().insert(mmCoreSitesStore, {
                 id: siteid,
                 siteurl: site.getURL(),
                 token: token,
@@ -669,7 +666,7 @@ angular.module('mm.core')
         return self.getSite(siteid).then(function(site) {
             return site.fetchSiteInfo().then(function(infos) {
                 site.setInfo(infos);
-                return db.insert(mmCoreSitesStore, {
+                return $mmApp.getDB().insert(mmCoreSitesStore, {
                     id: siteid,
                     siteurl: site.getURL(),
                     token: site.getToken(),

@@ -23,7 +23,7 @@ angular.module('mm.core.login', [])
         abstract: true,
         templateUrl: 'core/components/login/templates/base.html',
         cache: false,   // Disable caching to force controller reload.
-        onEnter: function($ionicHistory, $state, $mmSitesManager, $mmSite) {
+        onEnter: function($ionicHistory) {
             // Ensure that there is no history stack when getting here.
             $ionicHistory.clearHistory();
         }
@@ -82,7 +82,7 @@ angular.module('mm.core.login', [])
     });
 
     // Default redirect to the login page.
-    $urlRouterProvider.otherwise(function($injector, $location) {
+    $urlRouterProvider.otherwise(function($injector) {
         var $state = $injector.get('$state');
         return $state.href('mm_login.init').replace('#', '');
     });
