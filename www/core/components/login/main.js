@@ -130,16 +130,14 @@ angular.module('mm.core.login', [])
     });
 
     // Function to handle session expired events.
-    function sessionExpired(data) {
+    function sessionExpired(siteid) {
 
         var siteurl = $mmSite.getURL();
 
         if (typeof(siteurl) !== 'undefined') {
 
-            if (typeof data != 'undefined') {
-                if (data.siteid !== $mmSite.getId()) {
-                    return; // Site that triggered the event is not current site.
-                }
+            if (siteid && siteid !== $mmSite.getId()) {
+                return; // Site that triggered the event is not current site.
             }
 
             // Check authentication method.

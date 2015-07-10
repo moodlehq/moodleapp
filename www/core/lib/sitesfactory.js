@@ -472,7 +472,7 @@ angular.module('mm.core')
                     if (error === mmCoreSessionExpired) {
                         // Session expired, trigger event.
                         $mmLang.translateErrorAndReject(deferred, 'mm.core.lostconnection');
-                        $mmEvents.trigger(mmCoreEventSessionExpired, {siteid: site.id});
+                        $mmEvents.trigger(mmCoreEventSessionExpired, site.id);
                     } else if (!emergencyCache) {
                         $log.debug('WS call ' + method + ' failed. Emergency cache is forbidden, rejecting.');
                         deferred.reject(error);
