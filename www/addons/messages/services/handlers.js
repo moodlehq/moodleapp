@@ -23,7 +23,7 @@ angular.module('mm.addons.messages')
  * @ngdoc service
  * @name $mmaMessagesHandlers
  */
-.factory('$mmaMessagesHandlers', function($q, $log, $mmaMessages, $mmSite, $state) {
+.factory('$mmaMessagesHandlers', function($q, $log, $mmaMessages, $mmSite, $state, $mmUtil) {
     $log = $log.getInstance('$mmaMessagesHandlers');
 
     var self = {};
@@ -86,6 +86,8 @@ angular.module('mm.addons.messages')
                         } else {
                             return $mmaMessages.addContact(user.id);
                         }
+                    }).catch(function(error) {
+                        $mmUtil.showErrorModal(error);
                     }).finally(function() {
                         $rootScope.$broadcast('mmaMessagesHandlers:addUpdated');
                         updateTitle().finally(function() {
@@ -166,6 +168,8 @@ angular.module('mm.addons.messages')
                         } else {
                             return $mmaMessages.blockContact(user.id);
                         }
+                    }).catch(function(error) {
+                        $mmUtil.showErrorModal(error);
                     }).finally(function() {
                         $rootScope.$broadcast('mmaMessagesHandlers:blockUpdated');
                         updateTitle().finally(function() {
