@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_forum')
  * @ngdoc controller
  * @name mmaModForumDiscussionCtrl
  */
-.controller('mmaModForumDiscussionCtrl', function($scope, $stateParams, $mmaModForum, $mmSite, $mmUtil, mmaModForumComponent) {
+.controller('mmaModForumDiscussionCtrl', function($q, $scope, $stateParams, $mmaModForum, $mmSite, $mmUtil, mmaModForumComponent) {
 
     var discussionid = $stateParams.discussionid,
         courseid = $stateParams.courseid;
@@ -36,6 +36,7 @@ angular.module('mm.addons.mod_forum')
             $scope.posts = posts;
         }, function(message) {
             $mmUtil.showErrorModal(message);
+            return $q.reject();
         });
     }
 
