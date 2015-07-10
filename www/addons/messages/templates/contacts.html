@@ -15,12 +15,12 @@
 
     <mm-loading hide-until="loaded">
         <ul class="list">
-            <li ng-repeat="contactType in contactTypes" ng-if="contacts[contactType] && contacts[contactType].length > 0">
+            <li ng-repeat="contactType in contactTypes" ng-if="contacts[contactType] && (contacts[contactType].length > 0 || contactType === searchType)">
 
                 <ion-item class="item-divider item-button-right">
                     <span class="item-note">{{ contacts[contactType].length }}</span>
                     {{ 'mma.messages.type_' + contactType | translate }}
-                    <button ng-if="contactType === 'search'" class="button button-clear mma-messages-clear-search" ng-click="clearSearch()">
+                    <button ng-if="contactType === searchType" class="button button-clear mma-messages-clear-search" ng-click="clearSearch()">
                         <i class="icon ion-close-round"></i>
                     </button>
                 </ion-item>
@@ -34,7 +34,8 @@
         </ul>
 
         <div ng-if="!hasContacts" class="padding">
-            <p>{{ 'mma.messages.contactlistempty' | translate}}</p>
+            <p ng-if="!contacts[searchType]">{{ 'mma.messages.contactlistempty' | translate}}</p>
+            <p ng-if="contacts[searchType]">{{ 'mma.messages.nousersfound' | translate}}</p>
         </div>
 
     </mm-loading>
