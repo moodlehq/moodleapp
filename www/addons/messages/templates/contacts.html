@@ -25,10 +25,9 @@
                     </button>
                 </ion-item>
 
-                <a class="item item-avatar"  ng-repeat="contact in contacts[contactType] | orderBy:'fullname' track by $index" mm-split-view-link="{{userStateName}}({userid: contact.id})" title="{{ contact.fullname }}">
-                    <img ng-src="{{ contact.profileimageurlsmall || contact.profileimageurl }}" alt="" role="presentation" mm-external-content ng-if="contact.profileimageurlsmall || contact.profileimageurl">
+                <a class="item item-avatar" ng-repeat="contact in contacts[contactType] | orderBy:'fullname' track by $index" mm-split-view-link="{{userStateName}}({userid: contact.id})" title="{{contact.fullname}}">
+                    <img ng-src="{{ contact.profileimageurl || contact.profileimageurlsmall }}" alt="" role="presentation" mm-external-content ng-if="contact.profileimageurl || contact.profileimageurlsmall">
                     <img src="img/user-avatar.png" alt="" role="presentation" ng-if="!(contact.profileimageurlsmall || contact.profileimageurl)">
-
                     <h2>{{ contact.fullname }}</h2>
                 </a>
             </li>
