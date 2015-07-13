@@ -19,103 +19,169 @@ angular.module('mm.core.user')
  * and notify an update in the data.
  *
  * @module mm.core.user
- * @ngdoc service
+ * @ngdoc provider
  * @name $mmUserDelegate
  */
-.factory('$mmUserDelegate', function($log, $mmSite) {
-
-    $log = $log.getInstance('$mmUserDelegate');
-
-    var self = {},
-        plugins = {},
-        controllers = [];
-    /**
-     * Add plugin controller to the controllers array.
-     *
-     * @param {String} name       Plugin name,
-     * @param {Number} priority   Plugin priority.
-     * @param {Object} controller Plugin controller.
-     */
-    function addToControllers(name, priority, controller) {
-        var found = false;
-        for (var i = 0; i < controllers.length && !found; i++) {
-            if (controllers[i].name === name) {
-                found = true;
-                controllers.priority = priority;
-                controllers.controller = controller;
-            }
-        }
-        if (!found) {
-            controllers.push({
-                name: name,
-                priority: priority,
-                controller: controller
-            });
-        }
-    }
-    /**
-     * Remove plugin controller from the controllers array.
-     *
-     * @param {String} name Plugin name,
-     */
-    function removeFromControllers(name) {
-        for (var i = 0; i < controllers.length; i++) {
-            if (controllers[i].name === name) {
-                delete controllers[i];
-                return;
-            }
-        }
-    }
+.provider('$mmUserDelegate', function() {
+    var profileHandlers = {},
+        self = {};
 
     /**
-     * Get the data of the registered plugins.
+     * Register a profile handler.
      *
      * @module mm.core.user
      * @ngdoc method
-     * @name $mmUserDelegate#getData
-     * @param {Object} user The user object.
-     * @param {Number} courseid The course id.
-     * @return {Object} Registered plugins data.
+     * @name $mmUserDelegateProvider#registerProfileHandler
+     * @param {String} component The addon's name, or addon and sub context (mmaMessages, mmaMessage:blockContact, ...)
+     * @param  {String} handler  Used to inject a factory which returns an object defining the following methods:
+     *                             - isEnabled (Boolean|Promise) Whether or not the handler is enabled on a site level.
+     *                                                           When using a promise, it should return a boolean.
+     *                             - isEnabledForUser (Boolean|Promise) Whether or not the handler is enabled for a user.
+     *                                                                  When using a promise, it should return a boolean.
+     *                             - getController(userid) (Function) Returns the function that will act as controller.
+     *                                                                See core/components/user/templates/profile.html
+     *                                                                for the list of scope variables expected.
+     *                           The string can either be 'factoryName' or 'factoryName.functionToCall'.
+     * @param {Number} [priority=100] Plugin priority.
      */
-    self.getData = function(user, courseid) {
-        controllers = [];
-
-        angular.forEach(plugins, function(plugin, name) {
-            if (plugin.handler.isEnabled() && plugin.handler.isEnabledForUser(user, courseid)) {
-                controllers.push({
-                    name: name,
-                    priority: plugin.priority,
-                    controller: plugin.handler.getController(user, courseid)
-                });
-            }
-        });
-
-        return controllers;
+    self.registerProfileHandler = function(component, handler, priority) {
+        if (typeof profileHandlers[component] !== 'undefined') {
+            console.log("$mmUserDelegateProvider: Handler '" + profileHandlers[component].component + "' already registered as profile handler");
+            return false;
+        }
+        console.log("$mmUserDelegateProvider: Registered component '" + component + "' as profile handler.");
+        profileHandlers[component] = {
+            component: component,
+            handler: handler,
+            instance: undefined,
+            priority: typeof priority === 'undefined' ? 100 : priority
+        };
+        return true;
     };
 
-    /**
-     * Register a plugin to show in the user profile.
-     *
-     * @module mm.core.user
-     * @ngdoc method
-     * @name $mmUserDelegate#registerPlugin
-     * @param  {String}   name      Name of the plugin.
-     * @param  {Object}   handler   Object defining the following methods:
-     *                              - isEnabled (Boolean) Whether or not the handler is enabled on a site level.
-     *                              - isEnabledForUser(user) (Boolean) Whether or not the handler is to be used for the user.
-     *                              - getController(user) (Function) Returns the function that will act as controller.
-     *                                                               See core/components/user/templates/profile.html for the list
-     *                                                               of scope variables expected.
-     * @param {Number} [priority=0] Plugin's priority to determine order to be shown. Higher priority means showing it first.
-     *
-     * @todo Support promises in isEnabled/isEnabledForUser.
-     */
-    self.registerPlugin = function(name, handler, priority) {
-        if (typeof priority != 'number') {
-            priority = 0;
-        }
-        $log.debug("Register plugin '"+name+"' in profile with priority "+priority);
-        plugins[name] = {handler: handler(), priority: priority};
+    self.$get = function($injector, $q, $log, $mmSite, $filter) {
+        var enabledProfileHandlers = {},
+            self = {};
+
+        $log = $log.getInstance('$mmUserDelegate');
+
+        /**
+         * Get the profile handlers for a user.
+         *
+         * @module mm.core.user
+         * @ngdoc method
+         * @name $mmUserDelegate#getProfileHandlersFor
+         * @param {Object} user The user object.
+         * @param {Number} courseId The course ID.
+         * @return {Promise} Resolved with an array of objects containing 'priority' and 'controller'.
+         */
+        self.getProfileHandlersFor = function(user, courseId) {
+            var handlers = [],
+                promises = [];
+
+            angular.forEach(enabledProfileHandlers, function(handler) {
+                var promise = $q.when(handler.instance.isEnabledForUser(user.id, courseId));
+
+                // Checks if the handler is enabled for the user.
+                promise.then(function(enabled) {
+                    if (enabled) {
+                        handlers.push({
+                            controller: handler.instance.getController(user, courseId),
+                            priority: handler.priority
+                        });
+                    } else {
+                        return $q.reject();
+                    }
+                }).catch(function() {
+                    // Nothing to do here, it is not enabled for this user.
+                });
+                promises.push(promise);
+            });
+
+            return $q.all(promises).then(function() {
+                return handlers;
+            }).catch(function() {
+                // Never fails.
+                return handlers;
+            });
+        };
+
+        /**
+         * Update the enabled profile handlers for the current site.
+         *
+         * @module mm.core.user
+         * @ngdoc method
+         * @name $mmUserDelegate#updateProfileHandler
+         * @param {String} component The component name.
+         * @param {Object} handlerInfo The handler details.
+         * @return {Promise} Resolved when enabled, rejected when not.
+         * @protected
+         */
+        self.updateProfileHandler = function(component, handlerInfo) {
+            var promise;
+
+            if (typeof handlerInfo.instance === 'undefined') {
+                var toInject = handlerInfo.handler.split('.'),
+                    factory = $injector.get(toInject[0]);
+
+                if (toInject.length > 1) {
+                    handlerInfo.instance = factory[toInject[1]]();
+                } else {
+                    handlerInfo.instance = factory;
+                }
+            }
+
+            if (!$mmSite.isLoggedIn()) {
+                promise = $q.reject();
+            } else {
+                promise = $q.when(handlerInfo.instance.isEnabled());
+            }
+
+            // Checks if the content is enabled.
+            return promise.then(function(enabled) {
+                if (enabled) {
+                    enabledProfileHandlers[component] = {
+                        instance: handlerInfo.instance,
+                        priority: handlerInfo.priority
+                    };
+                } else {
+                    return $q.reject();
+                }
+            }).catch(function() {
+                delete enabledProfileHandlers[component];
+            });
+        };
+
+        /**
+         * Update the profile handlers for the current site.
+         *
+         * @module mm.core.user
+         * @ngdoc method
+         * @name $mmUserDelegate#updateProfileHandlers
+         * @return {Promise} Resolved when done.
+         * @protected
+         */
+        self.updateProfileHandlers = function() {
+            var enabledProfileHandlers = {},
+                promises = [];
+
+            $log.debug('Updating profile handlers for current site.');
+
+            // Loop over all the profile handlers.
+            angular.forEach(profileHandlers, function(handlerInfo, component) {
+                promises.push(self.updateProfileHandler(component, handlerInfo));
+            });
+
+            return $q.all(promises).then(function() {
+                return true;
+            }, function() {
+                // Never reject.
+                return true;
+            });
+        };
+
+        return self;
+
     };
 
     return self;

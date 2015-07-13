@@ -14,10 +14,10 @@
 
 angular.module('mm.addons.grades', [])
 
-.value('mmaGradesPriority', 400)
-.value('mmaGradesViewGradesPriority', 400)
+.constant('mmaGradesPriority', 400)
+.constant('mmaGradesViewGradesPriority', 400)
 
-.config(function($stateProvider) {
+.config(function($stateProvider, $mmUserDelegateProvider, mmaGradesViewGradesPriority) {
 
     $stateProvider
 
@@ -35,9 +35,12 @@ angular.module('mm.addons.grades', [])
         }
     });
 
+
+    // Register plugin on user profile.
+    $mmUserDelegateProvider.registerProfileHandler('mmaGrades:viewGrades', '$mmaGradesHandlers.viewGrades', mmaGradesViewGradesPriority);
 })
-.run(function($mmCoursesDelegate, $mmSite, $mmaGrades, $mmUserDelegate, $mmaGradesHandlers, mmaGradesPriority,
-            mmaGradesViewGradesPriority) {
+
+.run(function($mmCoursesDelegate, $mmSite, $mmaGrades, $mmUserDelegate, $mmaGradesHandlers, mmaGradesPriority) {
     // Register plugin on course list.
     $mmCoursesDelegate.registerPlugin('mmaGrades', function() {
 
@@ -51,7 +54,4 @@ angular.module('mm.addons.grades', [])
 
         return undefined;
     }, mmaGradesPriority);
-
-    // Register plugin on user profile.
-    $mmUserDelegate.registerPlugin('mmaGrades:viewGrades', $mmaGradesHandlers.viewGrades, mmaGradesViewGradesPriority);
 });

@@ -45,7 +45,9 @@ angular.module('mm.core.user')
         $scope.hasContact = user.email || user.phone1 || user.phone2 || user.city || user.country || user.address;
         $scope.hasDetails = user.url || user.roles || user.interests;
 
-        $scope.plugins = $mmUserDelegate.getData(user, courseid);
+        $mmUserDelegate.getProfileHandlersFor(user, courseid).then(function(handlers) {
+            $scope.profileHandlers = handlers;
+        });
 
         // Add log in Moodle.
         $mmSite.write('core_user_view_user_profile', {

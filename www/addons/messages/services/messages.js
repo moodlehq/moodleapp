@@ -551,12 +551,12 @@ angular.module('mm.addons.messages')
      *
      * @module mm.addons.messages
      * @ngdoc method
-     * @name $mmaMessages#isMessagingEnabled
+     * @name $mmaMessages#_isMessagingEnabled
      * @return {Promise} Resolved when enabled, otherwise rejected.
+     * @protected
      */
-    self.isMessagingEnabled = function() {
-        var deferred,
-            enabled = $mmSite.canUseAdvancedFeature('messaging', 'unknown');
+    self._isMessagingEnabled = function() {
+        var enabled = $mmSite.canUseAdvancedFeature('messaging', 'unknown');
 
         if (enabled === 'unknown') {
             // On older version we cannot check other than calling a WS. If the request
@@ -571,13 +571,10 @@ angular.module('mm.addons.messages')
             });
         }
 
-        deferred = $q.defer();
         if (enabled) {
-            deferred.resolve();
-        } else {
-            deferred.reject();
+            return $q.when(true);
         }
-        return deferred.promise;
+        return $q.reject();
     };
 
    /**
@@ -613,26 +610,28 @@ angular.module('mm.addons.messages')
     /**
      * Returns whether or not the plugin is enabled for the current site.
      *
-     * This method is called quite often and thus should only perform a quick
-     * check, we should not be calling WS from here.
+     * Do not abuse this method.
      *
      * @module mm.addons.messages
      * @ngdoc method
      * @name $mmaMessages#isPluginEnabled
-     * @return {Boolean}
+     * @return {Promise} Rejected when not enabled.
      */
     self.isPluginEnabled = function() {
-        var infos;
+        var infos,
+            enabled = $q.when(true);
 
         if (!$mmSite.isLoggedIn()) {
-            return false;
+            enabled = $q.reject();
         } else if (!$mmSite.canUseAdvancedFeature('messaging')) {
-            return false;
+            enabled = $q.reject();
         } else if (!$mmSite.wsAvailable('core_message_get_messages')) {
-            return false;
+            enabled = $q.reject();
+        } else {
+            enabled = self._isMessagingEnabled();
         }
 
-        return true;
+        return enabled;
     };
 
     /**
@@ -714,7 +713,11 @@ angular.module('mm.addons.messages')
                     textformat: 1
                 }
             ]
-        }).then(function() {
+        }).then(function(response) {
+            if (response && response[0] && response[0].msgid === -1) {
+                // There was an error, and it should be translated already.
+                return $q.reject(response[0].errormessage);
+            }
             return self.invalidateDiscussionCache(to);
         });
     };

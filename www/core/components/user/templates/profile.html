@@ -88,7 +88,7 @@
                     <mm-format-text watch="true">{{user.description}}</mm-format-text>
                 </div>
 
-                <div ng-repeat="plugin in plugins | orderBy:'-priority'" ng-controller="plugin.controller">
+                <div ng-repeat="handler in profileHandlers | orderBy:'-priority'" ng-controller="handler.controller">
                     <a class="button button-block" ng-click="action($event)">
                         {{ title | translate }} <ion-spinner class="icon" ng-if="spinner"></ion-spinner>
                     </a>
