@@ -53,7 +53,7 @@ angular.module('mm.addons.messages', ['mm.core'])
     $mmUserDelegateProvider.registerProfileHandler('mmaMessages:blockContact', '$mmaMessagesHandlers.blockContact', mmaMessagesBlockContactPriority);
 })
 
-.run(function($mmSideMenuDelegate, $mmaMessages, $mmUserDelegate, $mmEvents, $state, $mmAddonManager,
+.run(function($mmSideMenuDelegate, $mmaMessages, $mmEvents, $state, $mmAddonManager,
             $mmUtil, mmCoreEventLogin, mmaMessagesPriority) {
 
     $mmSideMenuDelegate.registerPlugin('mmaMessages', function() {

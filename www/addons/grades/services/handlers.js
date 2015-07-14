@@ -26,6 +26,67 @@ angular.module('mm.addons.grades')
     var self = {};
 
     /**
+     * Course nav handler.
+     *
+     * @module mm.addons.grades
+     * @ngdoc method
+     * @name $mmaGradesHandlers#coursesNav
+     */
+    self.coursesNav = function() {
+
+        var self = {};
+
+        /**
+         * Check if handler is enabled.
+         *
+         * @return {Boolean} True if handler is enabled, false otherwise.
+         */
+        self.isEnabled = function() {
+            return $mmaGrades.isPluginEnabled();
+        };
+
+        /**
+         * Check if handler is enabled for this course.
+         *
+         * @param {Number} courseId Course ID.
+         * @return {Boolean}        True if handler is enabled, false otherwise.
+         */
+        self.isEnabledForCourse = function(courseId) {
+            return true;
+        };
+
+        /**
+         * Get the controller.
+         *
+         * @param {Number} courseId Course ID.
+         * @return {Object}         Controller.
+         */
+        self.getController = function(courseId) {
+
+            /**
+             * Courses nav handler controller.
+             *
+             * @module mm.addons.grades
+             * @ngdoc controller
+             * @name $mmaGradesHandlers#coursesNav:controller
+             */
+            return function($scope, $state) {
+                $scope.icon = 'ion-stats-bars';
+                $scope.title = 'mma.grades.grades';
+                $scope.action = function($event, course) {
+                    $event.preventDefault();
+                    $event.stopPropagation();
+                    $state.go('site.grades', {
+                        course: course
+                    });
+                };
+            };
+        };
+
+        return self;
+    };
+
+    /**
      * View grades handler.
      *
      * @module mm.addons.grades
