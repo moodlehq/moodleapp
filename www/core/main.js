@@ -96,12 +96,20 @@ angular.module('mm.core', ['pascalprecht.translate'])
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|geo|file):/);
 })
 
-.run(function($ionicPlatform, $ionicBody, $window) {
+.run(function($ionicPlatform, $ionicBody, $window, $mmEvents, mmCoreEventKeyboardShow, mmCoreEventKeyboardHide) {
     $ionicPlatform.ready(function() {
         var checkTablet = function() {
             $ionicBody.enableClass($ionicPlatform.isTablet(), 'tablet');
         };
         ionic.on('resize', checkTablet, $window);
         checkTablet();
+
+        // Listen for keyboard events. We don't use $cordovaKeyboard because it doesn't support keyboardHeight property.
+        $window.addEventListener('native.keyboardshow', function(e) {
+            $mmEvents.trigger(mmCoreEventKeyboardShow, e);
+        });
+        $window.addEventListener('native.keyboardhide', function(e) {
+            $mmEvents.trigger(mmCoreEventKeyboardHide, e);
+        });
     });
 });
