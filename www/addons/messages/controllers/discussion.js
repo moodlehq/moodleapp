@@ -21,9 +21,9 @@ angular.module('mm.addons.messages')
  * @ngdoc controller
  * @name mmaMessagesDiscussionCtrl
  */
-.controller('mmaMessagesDiscussionCtrl', function($scope, $stateParams, $mmApp, $mmaMessages, $mmSite, $timeout, $mmEvents,
-        $ionicScrollDelegate, mmUserProfileState, $mmUtil, mmaMessagesPollInterval, $interval, $log, $ionicHistory,
-        mmCoreEventKeyboardShow, mmCoreEventKeyboardHide, $window) {
+.controller('mmaMessagesDiscussionCtrl', function($scope, $stateParams, $mmApp, $mmaMessages, $mmSite, $timeout, $mmEvents, $window,
+        $ionicScrollDelegate, mmUserProfileState, $mmUtil, mmaMessagesPollInterval, $interval, $log, $ionicHistory, $ionicPlatform,
+        mmCoreEventKeyboardShow, mmCoreEventKeyboardHide, mmaMessagesDiscussionLoadedEvent, mmaMessagesDiscussionLeftEvent) {
 
     $log = $log.getInstance('mmaMessagesDiscussionCtrl');
 
@@ -235,6 +235,15 @@ angular.module('mm.addons.messages')
             });
         }
     }
+
+    if ($ionicPlatform.isTablet()) {
+        $mmEvents.trigger(mmaMessagesDiscussionLoadedEvent, userId);
+    }
+    $scope.$on('$destroy', function() {
+        if ($ionicPlatform.isTablet()) {
+            $mmEvents.trigger(mmaMessagesDiscussionLeftEvent);
+        }
+    });
 
 });
 

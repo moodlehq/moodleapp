@@ -1,6 +1,6 @@
 <ion-view view-title="{{ 'mma.messages.messages' | translate }}">
     <ion-nav-buttons side="secondary">
-        <!-- This state is not registered in the history when this directive is not set, weird. -->
+        <button ng-if="profileLink" class="button button-icon icon ion-person" mm-user-link userid="{{userId}}"></button>
     </ion-nav-buttons>
 
     <mm-split-view>
