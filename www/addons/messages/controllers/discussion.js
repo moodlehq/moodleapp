@@ -21,7 +21,7 @@ angular.module('mm.addons.messages')
  * @ngdoc controller
  * @name mmaMessagesDiscussionCtrl
  */
-.controller('mmaMessagesDiscussionCtrl', function($scope, $stateParams, $mmApp, $mmaMessages, $mmSite, $timeout,
+.controller('mmaMessagesDiscussionCtrl', function($scope, $stateParams, $mmApp, $mmaMessages, $mmSite, $timeout, $mmEvents,
         $ionicScrollDelegate, mmUserProfileState, $mmUtil, mmaMessagesPollInterval, $interval, $log, $ionicHistory) {
 
     $log = $log.getInstance('mmaMessagesDiscussionCtrl');
@@ -30,7 +30,8 @@ angular.module('mm.addons.messages')
         userFullname = $stateParams.userFullname,
         messagesBeingSent = 0,
         polling,
-        backView = $ionicHistory.backView();
+        backView = $ionicHistory.backView(),
+        lastMessage;
 
     $scope.loaded = false;
     $scope.messages = [];
@@ -97,6 +98,7 @@ angular.module('mm.addons.messages')
         messagesBeingSent++;
         $mmaMessages.sendMessage(userId, text).then(function() {
             message.sending = false;
+            notifyNewMessage();
         }, function(error) {
             if (typeof error === 'string') {
                 $mmUtil.showErrorModal(error);
@@ -121,6 +123,7 @@ angular.module('mm.addons.messages')
                 $scope.title = messages[0].userfromfullname || '';
             }
         }
+        notifyNewMessage();
     }, function(error) {
         if (typeof error === 'string') {
             $mmUtil.showErrorModal(error);
@@ -169,6 +172,7 @@ angular.module('mm.addons.messages')
                     return;
                 }
                 $scope.messages = $mmaMessages.sortMessages(messages);
+                notifyNewMessage();
             });
         }, mmaMessagesPollInterval);
     });
@@ -180,6 +184,18 @@ angular.module('mm.addons.messages')
             $interval.cancel(polling);
         }
     });
+
+    // Notify the last message found so discussions list controller can tell if last message should be updated.
+    function notifyNewMessage() {
+        var last = $scope.messages[$scope.messages.length - 1];
+        if (last && last.smallmessage !== lastMessage) {
+            lastMessage = last.smallmessage;
+            $mmEvents.trigger($mmaMessages.getDiscussionEventName(userId), {
+                message: lastMessage,
+                timecreated: last.timecreated
+            });
+        }
+    }
 
 });
 

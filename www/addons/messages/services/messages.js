@@ -21,7 +21,7 @@ angular.module('mm.addons.messages')
  * @ngdoc service
  * @name $mmaMessages
  */
-.factory('$mmaMessages', function($mmSite, $mmSitesManager, $log, $q, $mmUser) {
+.factory('$mmaMessages', function($mmSite, $mmSitesManager, $log, $q, $mmUser, mmaMessagesNewMessageEvent) {
     $log = $log.getInstance('$mmaMessages');
 
     var self = {};
@@ -194,6 +194,16 @@ angular.module('mm.addons.messages')
             };
         return $mmSite.read('core_message_get_contacts', undefined, presets);
     };
+
+    /**
+     * Get the name of the events of a discussion.
+     *
+     * @param  {Number} userid User ID of the discussion.
+     * @return {String}        Name of the event.
+     */
+    self.getDiscussionEventName = function(userid) {
+        return mmaMessagesNewMessageEvent + '_' + $mmSite.getUserId() + '_' + userid;
+    }
 
     /**
      * Return the current user's discussion with another user.

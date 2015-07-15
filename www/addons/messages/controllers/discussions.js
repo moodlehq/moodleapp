@@ -21,8 +21,34 @@ angular.module('mm.addons.messages')
  * @ngdoc controller
  * @name mmaMessagesDiscussionsCtrl
  */
-.controller('mmaMessagesDiscussionsCtrl', function($q, $state, $scope, $mmUtil, $mmaMessages, $rootScope, mmCoreSplitViewLoad) {
+.controller('mmaMessagesDiscussionsCtrl', function($q, $state, $scope, $mmUtil, $mmaMessages, $rootScope, $mmEvents,
+            mmCoreSplitViewLoad) {
+    var observers = [];
+
     $scope.loaded = false;
+
+    // Set observers to watch for new messages on discussions. If a user sees a new message in a discussion, we'll update
+    // the discussion's last message in discussions list.
+    function setObservers(discussions) {
+        clearObservers();
+
+        angular.forEach(discussions, function(discussion) {
+            observers.push($mmEvents.on($mmaMessages.getDiscussionEventName(discussion.message.user), function(data) {
+                if (data && data.timecreated > discussion.message.timecreated) {
+                    discussion.message.message = data.message;
+                }
+            }));
+        });
+    }
+
+    // Clear observers.
+    function clearObservers() {
+        angular.forEach(observers, function(observer) {
+            if (observer && observer.off) {
+                observer.off();
+            }
+        });
+    }
 
     function fetchDiscussions() {
         return $mmaMessages.getDiscussions().then(function(discussions) {
@@ -32,6 +58,7 @@ angular.module('mm.addons.messages')
                 array.push(v);
             });
             $scope.discussions = array;
+            setObservers(array);
         }, function(error) {
             if (typeof error === 'string') {
                 $mmUtil.showErrorModal(error);
@@ -49,18 +76,15 @@ angular.module('mm.addons.messages')
         });
     };
 
-    $scope.goToDiscussion = function(discussion) {
-        $state.go('site.messages-discussion', {
-            userId: discussion.message.user,
-            userFullname: discussion.fullname
-        });
-    };
-
     fetchDiscussions().finally(function() {
         $scope.loaded = true;
         // Tell mm-split-view that it can load the first link now in tablets. We need to do it
         // like this because the directive doesn't have access to $scope.loaded variable (because of tabs).
         $rootScope.$broadcast(mmCoreSplitViewLoad);
+    });
+
+    $scope.$on('$destroy', function() {
+        clearObservers();
     });
 });
 
