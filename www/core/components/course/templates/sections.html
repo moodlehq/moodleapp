@@ -6,7 +6,7 @@
             <mm-loading hide-until="sectionsLoaded">
                 <ul class="list">
                     <li ng-repeat="section in sections">
-                        <a class="item" mm-split-view-link="site.mm_course-section({courseid: courseid, sectionid: section.id})" title="{{section.name}}">
+                        <a class="item" mm-split-view-link="site.mm_course-section({courseid: courseid, coursecompletion: coursecompletion, sectionid: section.id})" title="{{section.name}}">
                             {{section.name}}
                         </a>
                     </li>
