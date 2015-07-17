@@ -1,9 +1,9 @@
 <ion-view>
     <ion-nav-title>{{ title }}</ion-nav-title>
-    <ion-content>
+    <ion-content delegate-handle="mmSectionScroll">
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="sectionLoaded" on-refresh="doRefresh()">
         </ion-refresher>
-        <mm-loading hide-until="sectionLoaded">
+        <mm-loading hide-until="sectionLoaded" loading-padding-top="loadingPaddingTop">
 
             <section class="card" ng-if="summary">
                 <!-- Only displayed when 1 section per page. -->
@@ -22,7 +22,7 @@
                     <mm-format-text>{{ section.summary }}</mm-format-text>
                 </div>
 
-                <a class="item item-text-wrap" ng-click="action($event)" ng-class="{'item-button-right': buttons && buttons.length > 0, 'item-media': icon}" ng-repeat="module in section.modules" ng-controller="module._controller" title="{{ title }}">
+                <a class="item item-text-wrap" ng-repeat="module in section.modules" ng-click="action($event)" ng-class="{'item-button-right': buttons && buttons.length > 0, 'item-media': icon, 'item-completion': module.completionstatus}" ng-controller="module._controller" title="{{ title }}">
 
                     <img ng-src="{{ icon }}" alt="" role="presentation" ng-if="icon">
                     <mm-format-text watch="true">{{ title }}</mm-format-text>
@@ -32,6 +32,8 @@
                     </button>
 
                     <ion-spinner ng-if="spinner"></ion-spinner>
+
+                    <mm-completion ng-if="module.completionstatus" completion="module.completionstatus" module-name="title" after-change="completionChanged"></mm-completion>
                 </a>
 
                 <!-- When there is nothing in the section. -->

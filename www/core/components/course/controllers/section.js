@@ -21,7 +21,8 @@ angular.module('mm.core.course')
  * @ngdoc controller
  * @name mmCourseSectionCtrl
  */
-.controller('mmCourseSectionCtrl', function($mmCourseDelegate, $mmCourse, $mmUtil, $scope, $stateParams, $translate, $mmSite) {
+.controller('mmCourseSectionCtrl', function($mmCourseDelegate, $mmCourse, $mmUtil, $scope, $stateParams, $translate, $mmSite,
+            $mmEvents, $ionicScrollDelegate, mmCoreEventCompletionModuleViewed) {
 
     // Default values are course 1 (front page) and all sections.
     var courseid = $stateParams.courseid || 1,
@@ -38,21 +39,45 @@ angular.module('mm.core.course')
         $scope.summary = null;
     }
 
-    function loadContent(sectionid, refresh) {
-        if (sectionid < 0) {
-            return $mmCourse.getSections(courseid, refresh).then(function(sections) {
+    // Convenience function to fetch section(s).
+    function loadContent(sectionid) {
+        return $mmCourse.getActivitiesCompletionStatus(courseid).catch(function() {
+            return []; // If fail, return empty array (as if there was no completion).
+        }).then(function(statuses) {
+            var promise,
+                sectionnumber;
+
+            if (sectionid < 0) {
+                sectionnumber = 0;
+                promise = $mmCourse.getSections(courseid);
+            } else {
+                sectionnumber = sectionid;
+                promise = $mmCourse.getSection(courseid, sectionid).then(function(section) {
+                    $scope.title = section.name;
+                    $scope.summary = section.summary;
+                    return [section];
+                });
+            }
+
+            promise.then(function(sections) {
                 angular.forEach(sections, function(section) {
                     angular.forEach(section.modules, function(module) {
                         module._controller =
                                 $mmCourseDelegate.getContentHandlerControllerFor(module.modname, module, courseid, section.id);
+                        // Check if activity has completions and if it's marked.
+                        var status = statuses[module.id];
+                        if (typeof status != 'undefined') {
+                            module.completionstatus = status;
+                        }
                     });
                 });
 
                 $scope.sections = sections;
+
                 // Add log in Moodle.
                 $mmSite.write('core_course_view_course', {
                     courseid: courseid,
-                    sectionnumber: 0
+                    sectionnumber: sectionnumber
                 });
             }, function(error) {
                 if (error) {
@@ -61,38 +86,51 @@ angular.module('mm.core.course')
                     $mmUtil.showErrorModal('mm.course.couldnotloadsectioncontent', true);
                 }
             });
-        } else {
-            return $mmCourse.getSection(courseid, sectionid, refresh).then(function(section) {
-                angular.forEach(section.modules, function(module) {
-                    module._controller =
-                            $mmCourseDelegate.getContentHandlerControllerFor(module.modname, module, courseid, section.id);
-                });
-
-                $scope.sections = [section];
-                $scope.title = section.name;
-                $scope.summary = section.summary;
-                // Add log in Moodle.
-                $mmSite.write('core_course_view_course', {
-                    courseid: courseid,
-                    sectionnumber: sectionid
-                });
-            }, function(error) {
-                if (error) {
-                    $mmUtil.showErrorModal(error);
-                } else {
-                    $mmUtil.showErrorModal('mm.course.couldnotloadsectioncontent', true);
-                }
-            });
-        }
-    }
-
-    $scope.doRefresh = function() {
-        loadContent(sectionid, true).finally(function() {
-            $scope.$broadcast('scroll.refreshComplete');
         });
-    };
+    }
 
     loadContent(sectionid).finally(function() {
         $scope.sectionLoaded = true;
+    });
+
+    $scope.doRefresh = function() {
+        $mmCourse.invalidateSections(courseid).finally(function() {
+            loadContent(sectionid).finally(function() {
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+        });
+    };
+
+    // Refresh list after a completion change since there could be new activities or so.
+    function refreshAfterCompletionChange() {
+        var scrollView = $ionicScrollDelegate.$getByHandle('mmSectionScroll');
+        if (scrollView) {
+            $scope.loadingPaddingTop = scrollView.getScrollPosition().top;
+        }
+        $scope.sectionLoaded = false;
+        $scope.sections = [];
+        loadContent(sectionid).finally(function() {
+            $scope.sectionLoaded = true;
+            $scope.loadingPaddingTop = 0;
+        });
+    }
+
+    // Completion changed for at least one module. Invalidate data and re-load it.
+    $scope.completionChanged = function() {
+        $mmCourse.invalidateSections(courseid).finally(function() {
+            refreshAfterCompletionChange();
+        });
+    };
+
+    // Listen for viewed modules. If an automatic completion module is viewed, refresh the whole list.
+    var observer = $mmEvents.on(mmCoreEventCompletionModuleViewed, function(cid) {
+        if (cid === courseid) {
+            refreshAfterCompletionChange();
+        }
+    });
+    $scope.$on('$destroy', function() {
+        if (observer && observer.off) {
+            observer.off();
+        }
     });
 });

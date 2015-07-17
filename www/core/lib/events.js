@@ -23,6 +23,7 @@ angular.module('mm.core')
 .constant('mmCoreEventSiteAdded', 'site_added')
 .constant('mmCoreEventSiteUpdated', 'site_updated')
 .constant('mmCoreEventQueueEmpty', 'filepool_queue_empty')
+.constant('mmCoreEventCompletionModuleViewed', 'completion_module_viewed')
 
 /**
  * Service to send and listen to events.

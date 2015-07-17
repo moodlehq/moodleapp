@@ -33,7 +33,8 @@ angular.module('mm.core.course')
  * @ngdoc service
  * @name $mmCourse
  */
-.factory('$mmCourse', function($mmSite, $mmSitesManager, $translate, $q, $log, $mmFilepool, mmCoreCourseModulesStore) {
+.factory('$mmCourse', function($mmSite, $mmSitesManager, $translate, $q, $log, $mmFilepool, $mmEvents,
+            mmCoreCourseModulesStore, mmCoreEventCompletionModuleViewed) {
 
     $log = $log.getInstance('$mmCourse');
 
@@ -42,6 +43,24 @@ angular.module('mm.core.course')
             "feedback", "file", "folder", "forum", "glossary", "ims", "imscp", "label", "lesson", "lti", "page", "quiz",
             "resource", "scorm", "survey", "url", "wiki", "workshop"
         ];
+
+    /**
+     * Check if module completion could have changed. If it could have, trigger event. This function must be used,
+     * for example, after calling a "module_view" WS since it can change the module completion.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#checkModuleCompletion
+     * @param {Number} courseId   Course ID.
+     * @param {Object} completion Completion status of the module.
+     */
+    self.checkModuleCompletion = function(courseId, completion) {
+        if (completion && completion.tracking === 2 && completion.state === 0) {
+            self.invalidateSections(courseId).finally(function() {
+                $mmEvents.trigger(mmCoreEventCompletionModuleViewed, courseId);
+            });
+        }
+    };
 
     /**
      * Clear all modules status in a site.
@@ -65,6 +84,52 @@ angular.module('mm.core.course')
             });
         });
     };
+
+    /**
+     * Get completion status of all the activities in a course for a certain user.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#getActivitiesCompletionStatus
+     * @param  {Number} courseid Course ID.
+     * @param  {Number} [userid] User ID. If not defined, current user.
+     * @return {Promise}         Promise resolved with the completion statuses: object where the key is module ID.
+     */
+    self.getActivitiesCompletionStatus = function(courseid, userid) {
+        userid = userid || $mmSite.getUserId();
+
+        $log.debug('Getting completion status for user ' + userid + ' in course ' + courseid);
+
+        var params = {
+                courseid: courseid,
+                userid: userid
+            },
+            preSets = {
+                cacheKey: getActivitiesCompletionCacheKey(courseid, userid)
+            };
+
+        return $mmSite.read('core_completion_get_activities_completion_status', params, preSets).then(function(data) {
+            if (data && data.statuses) {
+                var formattedStatuses = {};
+                angular.forEach(data.statuses, function(status) {
+                    formattedStatuses[status.cmid] = status;
+                });
+                return formattedStatuses;
+            }
+            return $q.reject();
+        });
+    };
+
+    /**
+     * Get cache key for activities completion WS calls.
+     *
+     * @param  {Number} courseid Course ID.
+     * @param  {Number} userid   User ID.
+     * @return {String}          Cache key.
+     */
+    function getActivitiesCompletionCacheKey(courseid, userid) {
+        return 'mmCourse:activitiescompletion:' + courseid + ':' + userid;
+    }
 
     /**
      * Get a module from Moodle.
@@ -235,10 +300,9 @@ angular.module('mm.core.course')
      * @name $mmCourse#getSection
      * @param {Number} courseid The course ID.
      * @param {Number} sectionid The section ID.
-     * @param {Boolean} refresh True when we should not get the value from the cache.
      * @return {Promise} The reject contains the error message, else contains the section.
      */
-    self.getSection = function(courseid, sectionid, refresh) {
+    self.getSection = function(courseid, sectionid) {
         var deferred = $q.defer();
 
         if (sectionid < 0) {
@@ -246,7 +310,7 @@ angular.module('mm.core.course')
             return deferred.promise;
         }
 
-        self.getSections(courseid, refresh).then(function(sections) {
+        self.getSections(courseid).then(function(sections) {
             for (var i = 0; i < sections.length; i++) {
                 if (sections[i].id == sectionid) {
                     deferred.resolve(sections[i]);
@@ -268,19 +332,27 @@ angular.module('mm.core.course')
      * @ngdoc method
      * @name $mmCourse#getSections
      * @param {Number} courseid The course ID.
-     * @param {Boolean} refresh True when we should not get the value from the cache.
      * @return {Promise} The reject contains the error message, else contains the sections.
      */
-    self.getSections = function(courseid, refresh) {
-        var presets = {};
-        if (refresh) {
-            presets.getFromCache = false;
-        }
+    self.getSections = function(courseid) {
+        var presets = {
+            cacheKey: getSectionsCacheKey(courseid)
+        };
         return $mmSite.read('core_course_get_contents', {
             courseid: courseid,
             options: []
         }, presets);
     };
+
+    /**
+     * Get cache key for section WS call.
+     *
+     * @param  {Number} courseid Course ID.
+     * @return {String}          Cache key.
+     */
+    function getSectionsCacheKey(courseid) {
+        return 'mmCourse:sections:' + courseid;
+    }
 
     /**
      * Get module timemodified from contents.
@@ -315,6 +387,24 @@ angular.module('mm.core.course')
     self.invalidateModule = function(moduleid) {
         return $mmSite.invalidateWsCacheForKey(getModuleCacheKey(moduleid));
     };
+
+    /**
+     * Invalidates sections WS call.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#invalidateSections
+     * @param {Number} courseid  Course ID.
+     * @param  {Number} [userid] User ID. If not defined, current user.
+     * @return {Promise}         Promise resolved when the data is invalidated.
+     */
+    self.invalidateSections = function(courseid, userid) {
+        userid = userid || $mmSite.getUserId();
+
+        var p1 = $mmSite.invalidateWsCacheForKey(getSectionsCacheKey(courseid)),
+            p2 = $mmSite.invalidateWsCacheForKey(getActivitiesCompletionCacheKey(courseid, userid));
+        return $q.all([p1, p2]);
+    }
 
     /**
      * Check if a module is outdated.
