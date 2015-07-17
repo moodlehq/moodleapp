@@ -21,11 +21,12 @@ angular.module('mm.addons.mod_book')
  * @ngdoc controller
  * @name mmaModBookIndexCtrl
  */
-.controller('mmaModBookIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModBook, $mmSite, $log, mmaModBookComponent,
-            $ionicPopover, $mmApp) {
+.controller('mmaModBookIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModBook, $log, mmaModBookComponent,
+            $ionicPopover, $mmApp, $q, $mmCourse) {
     $log = $log.getInstance('mmaModBookIndexCtrl');
 
-    var module = $stateParams.module || {};
+    var module = $stateParams.module || {},
+        courseid = $stateParams.courseid;
 
     $scope.title = module.name;
     $scope.description = module.description;
@@ -56,6 +57,7 @@ angular.module('mm.addons.mod_book')
                 }
             }).catch(function() {
                 $mmUtil.showErrorModal('mma.mod_book.errorchapter', true);
+                return $q.reject();
             }).finally(function() {
                 $scope.loaded = true;
             });
@@ -94,10 +96,8 @@ angular.module('mm.addons.mod_book')
 
 
     fetchContent().then(function() {
-        if (module.instance) {
-            $mmSite.write('mod_book_view_book', {
-                urlid: module.instance
-            });
-        }
+        $mmaModBook.logView(module.instance).then(function() {
+            $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
+        });
     });
 });

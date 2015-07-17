@@ -60,12 +60,9 @@ angular.module('mm.addons.mod_chat')
     }
 
     fetchChatData().then(function() {
-        if (chat.id) {
-            var params = {
-                chatid: chat.id
-            };
-            //$mmCourse.logModuleView('mod_chat_view_chat', params, courseid, module.completionstatus);
-        }
+        $mmaModChat.logView(chat.id).then(function() {
+            $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
+        });
     }).finally(function() {
         $scope.chatLoaded = true;
     });

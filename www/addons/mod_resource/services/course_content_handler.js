@@ -43,10 +43,11 @@ angular.module('mm.addons.mod_resource')
      * @module mm.addons.mod_resource
      * @ngdoc method
      * @name $mmaModResourceCourseContentHandler#getController
-     * @param {Object} module The module info.
+     * @param {Object} module   The module info.
+     * @param {Number} courseid The course ID.
      * @return {Function}
      */
-    self.getController = function(module) {
+    self.getController = function(module, courseid) {
         return function($scope) {
             var downloadBtn,
                 refreshBtn,
@@ -202,7 +203,7 @@ angular.module('mm.addons.mod_resource')
                         showDownloading();
                     }
                 }
-                $state.go('site.mod_resource', {module: module});
+                $state.go('site.mod_resource', {module: module, courseid: courseid});
             };
 
             // Check current status to decide which icon should be shown.

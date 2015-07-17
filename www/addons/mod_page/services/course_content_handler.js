@@ -44,9 +44,10 @@ angular.module('mm.addons.mod_page')
      * @ngdoc method
      * @name $mmaModPageCourseContentHandler#isEnabled
      * @param {Object} module The module info.
+     * @param {Number} courseid The course ID.
      * @return {Function}
      */
-    self.getController = function(module) {
+    self.getController = function(module, courseid) {
         return function($scope) {
             var downloadBtn,
                 refreshBtn,
@@ -190,7 +191,7 @@ angular.module('mm.addons.mod_page')
                     $mmCourse.storeModuleStatus(siteid, module.id, $mmFilepool.FILEDOWNLOADING, revision, timemodified);
                     showDownloading();
                 }
-                $state.go('site.mod_page', {module: module});
+                $state.go('site.mod_page', {module: module, courseid: courseid});
             };
 
             // Check current status to decide which icon should be shown.

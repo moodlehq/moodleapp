@@ -290,20 +290,22 @@ angular.module('mm.addons.mod_imscp')
     };
 
     /**
-     * Report the imscp as being viewed.
+     * Report a IMSCP as being viewed.
      *
      * @module mm.addons.mod_imscp
      * @ngdoc method
      * @name $mmaModImscp#logView
-     * @param {Number} instanceId The instance ID of the module.
-     * @return {Void}
+     * @param {String} id Module ID.
+     * @return {Promise}  Promise resolved when the WS call is successful.
      */
-    self.logView = function(instanceId) {
-        if (instanceId) {
-            $mmSite.write('mod_imscp_view_imscp', {
-                imscpid: instanceId
-            });
+    self.logView = function(id) {
+        if (id) {
+            var params = {
+                imscpid: id
+            };
+            return $mmSite.write('mod_imscp_view_imscp', params);
         }
+        return $q.reject();
     };
 
     /**

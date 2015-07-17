@@ -23,7 +23,8 @@ angular.module('mm.addons.mod_resource', ['mm.core'])
     .state('site.mod_resource', {
       url: '/mod_resource',
       params: {
-        module: null
+        module: null,
+        courseid: null
       },
       views: {
         'site': {

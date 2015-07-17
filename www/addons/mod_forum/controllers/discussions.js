@@ -21,7 +21,8 @@ angular.module('mm.addons.mod_forum')
  * @ngdoc controller
  * @name mmaModForumDiscussionsCtrl
  */
-.controller('mmaModForumDiscussionsCtrl', function($q, $scope, $stateParams, $mmaModForum, $mmSite, $mmUtil, mmUserProfileState) {
+.controller('mmaModForumDiscussionsCtrl', function($q, $scope, $stateParams, $mmaModForum, $mmCourse, $mmUtil,
+            mmUserProfileState) {
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
         forum,
@@ -46,6 +47,7 @@ angular.module('mm.addons.mod_forum')
                 return fetchDiscussions(refresh);
             } else {
                 $mmUtil.showErrorModal('mma.mod_forum.errorgetforum', true);
+                return $q.reject();
             }
         }, function(message) {
             $mmUtil.showErrorModal(message);
@@ -89,9 +91,8 @@ angular.module('mm.addons.mod_forum')
     }
 
     fetchForumDataAndDiscussions().then(function() {
-        // Add log in Moodle.
-        $mmSite.write('mod_forum_view_forum', {
-            forumid: forum.id
+        $mmaModForum.logView(forum.id).then(function() {
+            $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
         });
     }).finally(function() {
         $scope.discussionsLoaded = true;

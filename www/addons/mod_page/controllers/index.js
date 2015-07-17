@@ -21,11 +21,12 @@ angular.module('mm.addons.mod_page')
  * @ngdoc controller
  * @name mmaModPageIndexCtrl
  */
-.controller('mmaModPageIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModPage, $mmSite, $log, $mmApp,
+.controller('mmaModPageIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModPage, $mmCourse, $q, $log, $mmApp,
             mmaModPageComponent) {
     $log = $log.getInstance('mmaModPageIndexCtrl');
 
-    var module = $stateParams.module || {};
+    var module = $stateParams.module || {},
+        courseid = $stateParams.courseid;
 
     $scope.title = module.name;
     $scope.description = module.description;
@@ -40,7 +41,7 @@ angular.module('mm.addons.mod_page')
         return $mmaModPage.downloadAllContent(module).catch(function(err) {
             // Mark download as failed but go on since the main files could have been downloaded.
             downloadFailed = true;
-        }).finally(function() {
+        }).then(function() {
             return $mmaModPage.getPageHtml(module.contents, module.id).then(function(content) {
                 $scope.content = content;
 
@@ -50,6 +51,7 @@ angular.module('mm.addons.mod_page')
                 }
             }).catch(function() {
                 $mmUtil.showErrorModal('mma.mod_page.errorwhileloadingthepage', true);
+                return $q.reject();
             }).finally(function() {
                 $scope.loaded = true;
             });
@@ -65,10 +67,8 @@ angular.module('mm.addons.mod_page')
     };
 
     fetchContent().then(function() {
-        if (module.instance) {
-            $mmSite.write('mod_page_view_page', {
-                urlid: module.instance
-            });
-        }
+        $mmaModPage.logView(module.instance).then(function() {
+            $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
+        });
     });
 });

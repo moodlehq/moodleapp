@@ -25,23 +25,33 @@ angular.module('mm.addons.mod_url')
     var self = {};
 
     /**
+     * Report a URL as being viewed.
+     *
+     * @module mm.addons.mod_url
+     * @ngdoc method
+     * @name $mmaModUrl#logView
+     * @param {String} id Module ID.
+     * @return {Promise}  Promise resolved when the WS call is successful.
+     */
+    self.logView = function(id) {
+        if (id) {
+            var params = {
+                urlid: id
+            };
+            return $mmSite.write('mod_url_view_url', params);
+        }
+        return $q.reject();
+    };
+
+    /**
      * Opens a URL.
      *
      * @module mm.addons.mod_url
      * @ngdoc method
      * @name $mmaModUrl#open
-     * @param {Number} instanceId The URL module instance ID.
      * @param {String} url The URL to go to.
      */
-    self.open = function(instanceId, url) {
-
-        if (instanceId) {
-            // Older instances might not have declared instanceId.
-            $mmSite.write('mod_url_view_url', {
-                urlid: instanceId
-            });
-        }
-
+    self.open = function(url) {
         $mmUtil.openInBrowser(url);
     };
 
