@@ -34,8 +34,10 @@ angular.module('mm.addons.mod_chat')
     $scope.loaded = false;
     $scope.title = title;
     $scope.currentUserId = $mmSite.getUserId();
+    $scope.currentUserBeep = 'beep ' + $scope.currentUserId;
     $scope.messages = [];
     $scope.chatUsers = [];
+    $scope.newMessage = '';
     chatLastTime = 0;
 
     // Chat users modal.
@@ -57,6 +59,16 @@ angular.module('mm.addons.mod_chat')
             $scope.chatUsers = data.users;
             $scope.usersLoaded = true;
         });
+    };
+
+    $scope.talkTo = function(user) {
+        $scope.newMessage = "To " + user + ": ";
+        $scope.modal.hide();
+    };
+
+    $scope.beepTo = function(userId) {
+        $scope.sendMessage('', userId);
+        $scope.modal.hide();
     };
 
     $scope.isAppOffline = function() {
@@ -85,18 +97,20 @@ angular.module('mm.addons.mod_chat')
         }
     };
 
-    $scope.sendMessage = function(text) {
+    $scope.sendMessage = function(text, beep) {
         var message;
+        beep = beep || '';
+
         if (!$mmApp.isOnline()) {
             // Silent error, the view should prevent this.
             return;
-        } else if (!text.trim()) {
+        } else if (beep == '' && !text.trim()) {
             // Silent error.
             return;
         }
         text = text.replace(/(?:\r\n|\r|\n)/g, '<br />');
 
-        $mmaModChat.sendMessage($scope.chatsid, text, '').then(function() {
+        $mmaModChat.sendMessage($scope.chatsid, text, beep).then(function() {
             $scope.newMessage = '';
         }, function(error) {
             if (typeof error === 'string') {

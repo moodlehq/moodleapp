@@ -1,4 +1,5 @@
 {
+    "beep": "Beep",
     "currentusers": "Current users",
     "enterchat": "Click here to enter the chat now",
     "entermessage": "Enter your message",
@@ -7,5 +8,6 @@
     "messageexit": "{{$a}} has left this chat",
     "nomessages": "No messages yet",
     "send": "Send",
-    "sessionstart": "The next chat session will start in {{$a}}"
+    "sessionstart": "The next chat session will start in {{$a}}",
+    "talk": "Talk"
 }
