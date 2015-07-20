@@ -23,12 +23,16 @@ angular.module('mm.core.courses')
  */
 .controller('mmCoursesListCtrl', function($scope, $state, $mmCourses, $mmCoursesDelegate, $mmUtil) {
 
-    var plugins = $mmCoursesDelegate.getData();
-
     // Convenience function to fetch courses.
     function fetchCourses(refresh) {
         return $mmCourses.getUserCourses(refresh).then(function(courses) {
             $scope.courses = courses;
+            angular.forEach(courses, function(course) {
+                course._handlers = [];
+                $mmCoursesDelegate.getNavHandlersFor(course.id).then(function(handlers) {
+                    course._handlers = handlers;
+                });
+            });
             $scope.filterText = ''; // Filter value MUST be set after courses are shown.
         }, function(error) {
             if (typeof error != 'undefined' && error != '') {
@@ -36,13 +40,11 @@ angular.module('mm.core.courses')
             } else {
                 $mmUtil.showErrorModal('mm.courses.errorloadcourses', true);
             }
-        })
+        });
     }
     fetchCourses().finally(function() {
         $scope.coursesLoaded = true;
     });
-
-    $scope.plugins = plugins;
 
     $scope.refreshCourses = function() {
         fetchCourses(true).finally(function() {

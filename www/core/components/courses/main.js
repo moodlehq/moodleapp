@@ -37,4 +37,10 @@ angular.module('mm.core.courses', [])
         }
     });
 
+})
+
+.run(function($mmEvents, mmCoreEventLogin, $mmCoursesDelegate) {
+    $mmEvents.on(mmCoreEventLogin, function() {
+        $mmCoursesDelegate.updateNavHandlers();
+    });
 });

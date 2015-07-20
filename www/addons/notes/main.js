@@ -17,7 +17,7 @@ angular.module('mm.addons.notes', [])
 .constant('mmaNotesPriority', 200)
 .constant('mmaNotesAddNotePriority', 200)
 
-.config(function($stateProvider, $mmUserDelegateProvider, mmaNotesAddNotePriority) {
+.config(function($stateProvider, $mmUserDelegateProvider, $mmCoursesDelegateProvider, mmaNotesPriority, mmaNotesAddNotePriority) {
 
     $stateProvider
 
@@ -50,20 +50,7 @@ angular.module('mm.addons.notes', [])
 
     // Register plugin on user profile.
     $mmUserDelegateProvider.registerProfileHandler('mmaNotes:addNote', '$mmaNotesHandlers.addNote', mmaNotesAddNotePriority);
-})
 
-.run(function($mmUserDelegate, $mmaNotesHandlers, $mmCoursesDelegate, $mmaNotes, mmaNotesPriority, mmaNotesAddNotePriority) {
-
-    // Register plugin on course list.
-    $mmCoursesDelegate.registerPlugin('mmaNotes', function() {
-
-        if ($mmaNotes.isPluginViewNotesEnabled()) {
-            return {
-                icon: 'ion-ios-list',
-                state: 'site.notes-types',
-                title: 'mma.notes.notes'
-            };
-        }
-    }, mmaNotesPriority);
-
+    // Register courses handler.
+    $mmCoursesDelegateProvider.registerNavHandler('mmaNotes', '$mmaNotesHandlers.coursesNav', mmaNotesPriority);
 });

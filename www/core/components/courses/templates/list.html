@@ -17,9 +17,9 @@
                 <div class="item item-text-wrap" ng-show="course.summary">
                     <p><mm-format-text watch="true" shorten="150" expand-on-click="true">{{course.summary}}</mm-format-text></p>
                 </div>
-                <div class="item tabs tabs-icon-left" ng-show="plugins.length">
-                    <a ng-repeat="plugin in plugins | orderBy:'-priority'" class="tab-item active" ui-sref="{{plugin.data.state}}({course: course})">
-                        <i class="icon {{plugin.data.icon}}"></i> {{plugin.data.title | translate}}
+                <div class="item tabs tabs-icon-left" ng-show="course._handlers.length">
+                    <a ng-repeat="handler in course._handlers | orderBy:'-priority'" ng-controller="handler.controller" ng-click="action($event, course)" class="tab-item active">
+                        <i class="icon {{icon}}"></i> {{title | translate}}
                     </a>
                 </div>
             </div>

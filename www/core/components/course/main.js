@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.core.course', [])
+angular.module('mm.core.course', ['mm.core.courses'])
 
-.value('mmCoreCoursePriority', 800)
+.constant('mmCoreCoursePriority', 800)
 
-.config(function($stateProvider) {
+.config(function($stateProvider, $mmCoursesDelegateProvider, mmCoreCoursePriority) {
 
     $stateProvider
 
@@ -60,19 +60,13 @@ angular.module('mm.core.course', [])
         }
     });
 
+    $mmCoursesDelegateProvider.registerNavHandler('mmCourse', '$mmCourseCoursesNavHandler', mmCoreCoursePriority);
 })
 
-.run(function($mmEvents, mmCoreEventLogin, $mmCourseDelegate, $mmCoursesDelegate, mmCoreCoursePriority) {
+.run(function($mmEvents, mmCoreEventLogin, $mmCourseDelegate) {
 
     $mmEvents.on(mmCoreEventLogin, function() {
         $mmCourseDelegate.updateContentHandlers();
     });
 
-    $mmCoursesDelegate.registerPlugin('mmCourse', function() {
-        return {
-            icon: 'ion-briefcase',
-            title: 'mm.course.contents',
-            state: 'site.mm_course'
-        };
-    }, mmCoreCoursePriority);
 });
