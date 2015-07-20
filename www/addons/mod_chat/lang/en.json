@@ -1,0 +1,4 @@
+{
+    "enterchat": "Click here to enter the chat now",
+    "sessionstart": "The next chat session will start in {{$a}}"
+}
