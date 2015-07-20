@@ -139,8 +139,7 @@ angular.module('mm.addons.mod_chat')
 
     self.getChatUsers = function(chatsid) {
         var params = {
-            chatsid: chatsid,
-            chatlasttime: lasttime
+            chatsid: chatsid
         };
         var preSets = {
             getFromCache: false

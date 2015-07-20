@@ -6,7 +6,7 @@
     <ion-content padding="true">
         <mm-loading hide-until="usersLoaded">
             <div class="list">
-                <div ng-repeat="user in users">
+                <div ng-repeat="user in chatUsers">
                     <div class="item item-avatar">
                         <img ng-src="{{user.profileimageurl}}" alt="" mm-external-content>
                         <mm-format-text>{{user.fullname}}</mm-format-text>

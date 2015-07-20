@@ -35,6 +35,7 @@ angular.module('mm.addons.mod_chat')
     $scope.title = title;
     $scope.currentUserId = $mmSite.getUserId();
     $scope.messages = [];
+    $scope.chatUsers = [];
     chatLastTime = 0;
 
     // Chat users modal.
@@ -52,6 +53,10 @@ angular.module('mm.addons.mod_chat')
     $scope.showChatUsers = function() {
         $scope.usersLoaded = false;
         $scope.modal.show();
+        $mmaModChat.getChatUsers($scope.chatsid).then(function(data) {
+            $scope.chatUsers = data.users;
+            $scope.usersLoaded = true;
+        });
     };
 
     $scope.isAppOffline = function() {
