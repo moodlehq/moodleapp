@@ -14,10 +14,10 @@
 
 angular.module('mm.addons.notes', [])
 
-.value('mmaNotesPriority', 200)
-.value('mmaNotesAddNotePriority', 200)
+.constant('mmaNotesPriority', 200)
+.constant('mmaNotesAddNotePriority', 200)
 
-.config(function($stateProvider) {
+.config(function($stateProvider, $mmUserDelegateProvider, mmaNotesAddNotePriority) {
 
     $stateProvider
 
@@ -47,6 +47,9 @@ angular.module('mm.addons.notes', [])
             type: null
         }
     });
+
+    // Register plugin on user profile.
+    $mmUserDelegateProvider.registerProfileHandler('mmaNotes:addNote', '$mmaNotesHandlers.addNote', mmaNotesAddNotePriority);
 })
 
 .run(function($mmUserDelegate, $mmaNotesHandlers, $mmCoursesDelegate, $mmaNotes, mmaNotesPriority, mmaNotesAddNotePriority) {
@@ -62,8 +65,5 @@ angular.module('mm.addons.notes', [])
             };
         }
     }, mmaNotesPriority);
-
-    // Register plugin on user profile.
-    $mmUserDelegate.registerPlugin('mmaNotes:addNote', $mmaNotesHandlers.addNote, mmaNotesAddNotePriority);
 
 });
