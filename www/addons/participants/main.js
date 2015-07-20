@@ -33,6 +33,6 @@ angular.module('mm.addons.participants', [])
             }
         });
 
-    $mmCoursesDelegateProvider.registerNavHandler('mmaParticipants', '$mmaParticipantsHandlers.coursesNav', mmaParticipantsPriority);
+    $mmCoursesDelegateProvider.registerNavHandler('mmaParticipants', '$mmaParticipantsCoursesNavHandler', mmaParticipantsPriority);
 
 });
