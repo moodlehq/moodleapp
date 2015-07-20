@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_chat')
  * @ngdoc service
  * @name $mmaModChat
  */
-.factory('$mmaModChat', function($q, $mmSite) {
+.factory('$mmaModChat', function($q, $mmSite, $mmUser) {
     var self = {};
 
 
@@ -106,6 +106,35 @@ angular.module('mm.addons.mod_chat')
         };
 
         return $mmSite.read('mod_chat_get_chat_latest_messages', params, preSets);
+    };
+
+    /**
+     * Get user data for messages since they only have userid.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaModChat#getMessagesUserData
+     * @param {Object[]} messages    Messages to get the data for.
+     * @param {Number}   courseid    ID of the course the messages belong to.
+     * @return {Promise}             Promise always resolved. Resolve param is the formatted messages.
+     */
+    self.getMessagesUserData = function(messages, courseid) {
+        var promises = [];
+
+        angular.forEach(messages, function(message) {
+            var promise = $mmUser.getProfile(message.userid, courseid, true);
+            promises.push(promise);
+            promise.then(function(user) {
+                message.userfullname = user.fullname;
+                message.userprofileimageurl = user.profileimageurl;
+            }, function() {
+                // Error getting profile. Set default data.
+                message.userfullname = message.userid;
+            });
+        });
+        return $q.all(promises).then(function() {
+            return messages;
+        });
     };
 
     self.getChatUsers = function(chatsid) {

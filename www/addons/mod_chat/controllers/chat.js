@@ -27,6 +27,7 @@ angular.module('mm.addons.mod_chat')
     $log = $log.getInstance('mmaModChatChatCtrl');
 
     var chatId = $stateParams.chatid,
+        courseId = $stateParams.courseid,
         title = $stateParams.title,
         polling;
 
@@ -106,7 +107,9 @@ angular.module('mm.addons.mod_chat')
         $mmaModChat.getLatestMessages(data.chatsid, 0).then(function(messagesInfo) {
             $scope.chatsid = data.chatsid;
             chatLastTime = messagesInfo.chatnewlasttime;
-            $scope.messages = $scope.messages.concat(messagesInfo.messages);
+            $mmaModChat.getMessagesUserData(messagesInfo.messages, courseId).then(function(messages) {
+                $scope.messages = $scope.messages.concat(messages);
+            });
         });
     }, function(error) {
         if (typeof error === 'string') {
@@ -146,7 +149,9 @@ angular.module('mm.addons.mod_chat')
 
             $mmaModChat.getLatestMessages($scope.chatsid, chatLastTime).then(function(data) {
                 chatLastTime = data.chatnewlasttime;
-                $scope.messages = $scope.messages.concat(data.messages);
+                $mmaModChat.getMessagesUserData(data.messages, courseId).then(function(messages) {
+                    $scope.messages = $scope.messages.concat(messages);
+                });
             });
 
         }, mmaChatPollInterval);

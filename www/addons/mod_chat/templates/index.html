@@ -13,7 +13,7 @@
                 <p>{{ 'mma.mod_chat.sessionstart' | translate:{$a: chatScheduled} }}</p>
             </div>
 
-            <a class="button button-block" ui-sref="site.mod_chat-chat({chatid: chatId, title: title})">{{ 'mma.mod_chat.enterchat' | translate }}</a>
+            <a class="button button-block" ui-sref="site.mod_chat-chat({chatid: chatId, title: title, courseid: courseid})">{{ 'mma.mod_chat.enterchat' | translate }}</a>
         </mm-loading>
     </ion-content>
 </ion-view>
