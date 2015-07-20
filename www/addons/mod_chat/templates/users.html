@@ -1,0 +1,18 @@
+<ion-modal-view>
+    <ion-header-bar>
+      <h1 class="title">{{ 'mma.mod_chat.currentusers' | translate }}</h1>
+      <button class="button button-icon ion-close-round" ng-click="closeModal()"></button>
+    </ion-header-bar>
+    <ion-content padding="true">
+        <mm-loading hide-until="usersLoaded">
+            <div class="list">
+                <div ng-repeat="user in users">
+                    <div class="item item-avatar">
+                        <img ng-src="{{user.profileimageurl}}" alt="" mm-external-content>
+                        <mm-format-text>{{user.fullname}}</mm-format-text>
+                    </div>
+                </div>
+            </div>
+        </mm-loading>
+    </ion-content>
+</ion-modal-view>

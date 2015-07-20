@@ -78,5 +78,47 @@ angular.module('mm.addons.mod_chat')
         });
     };
 
+    self.loginUser = function(chatId) {
+        var params = {
+            chatid: chatId
+        };
+
+        return $mmSite.write('mod_chat_login_user', params);
+    };
+
+    self.sendMessage = function(chatsid, message, beep) {
+        var params = {
+            chatsid: chatsid,
+            messagetext: message,
+            beepid: beep
+        };
+
+        return $mmSite.write('mod_chat_send_chat_message', params);
+    };
+
+    self.getLatestMessages = function(chatsid, lasttime) {
+        var params = {
+            chatsid: chatsid,
+            chatlasttime: lasttime
+        };
+        var preSets = {
+            getFromCache: false
+        };
+
+        return $mmSite.read('mod_chat_get_chat_latest_messages', params, preSets);
+    };
+
+    self.getChatUsers = function(chatsid) {
+        var params = {
+            chatsid: chatsid,
+            chatlasttime: lasttime
+        };
+        var preSets = {
+            getFromCache: false
+        };
+
+        return $mmSite.read('mod_chat_get_chat_users', params, preSets);
+    };
+
     return self;
 });

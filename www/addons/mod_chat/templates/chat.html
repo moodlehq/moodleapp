@@ -1,0 +1,43 @@
+<ion-view>
+    <ion-nav-title>{{ title }}</ion-nav-title>
+
+    <ion-nav-buttons side="secondary">
+        <button class="button button-icon icon ion-person-stalker" ng-click="showChatUsers()"></button>
+    </ion-nav-buttons>
+
+    <ion-content class="padding" delegate-handle="mmaChatScroll">
+        <mm-loading hide-until="loaded">
+            <div ng-repeat="message in messages track by $index">
+
+                <p ng-if="showDate(messages[$index], messages[$index - 1])" class="mma-chat-date"><span>{{ message.timestamp * 1000 | date:"EEE, d MMM" }}</span></p>
+
+                <div class='item item-message item-text-wrap' ng-class='{"item-message-mine": message.userid == currentUserId}'>
+
+                    <mm-format-text after-render="scrollAfterRender" watch="true">{{ message.message }}</mm-format-text>
+                    <ion-spinner ng-if="message.sending"></ion-spinner>
+                    <span class="item-note">{{ message.timestamp * 1000 | date:"h:mma" }}</span>
+
+                </div>
+
+                <div class="clearfix"></div>
+            </div>
+
+            <div ng-if="!messages || messages.length <= 0">
+                <p>{{ 'mma.mod_chat.nomessages' | translate}}</p>
+            </div>
+        </mm-loading>
+    </ion-content>
+
+</ion-view>
+
+<ion-footer-bar>
+    <p class="mma-chat-footer-note" ng-if="isAppOffline()">{{ 'mma.mod_chat.mustbeonlinetosendmessages' | translate }}</p>
+    <form  ng-if="!isAppOffline()" ng-submit="sendMessage(newMessage); newMessage = '';" style="width: 100%">
+        <div class="mma-chat-input-inset item-input-inset">
+            <label class="item-input-wrapper">
+                <input type="text" placeholder="{{ 'mma.mod_chat.entermessage' | translate }}" ng-model="newMessage" style="width: 100%;">
+            </label>
+            <button type="submit" class="button button-clear" ng-disabled="!newMessage">{{ 'mma.mod_chat.send' | translate}}</button>
+        </div>
+    </form>
+</ion-footer-bar>
