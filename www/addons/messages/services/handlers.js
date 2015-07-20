@@ -66,6 +66,9 @@ angular.module('mm.addons.messages')
                         } else {
                             $scope.title = 'mma.messages.addcontact';
                         }
+                    }).catch(function() {
+                        // This fails for some reason, let's just hide the button.
+                        $scope.hidden = true;
                     });
                 }
 
@@ -143,6 +146,9 @@ angular.module('mm.addons.messages')
                         } else {
                             $scope.title = 'mma.messages.blockcontact';
                         }
+                    }).catch(function() {
+                        // This fails for some reason, let's just hide the button.
+                        $scope.hidden = true;
                     });
                 }
 
