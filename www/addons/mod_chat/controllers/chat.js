@@ -48,10 +48,12 @@ angular.module('mm.addons.mod_chat')
         $scope.modal = m;
     });
 
+    // Close the chat users modal.
     $scope.closeModal = function(){
         $scope.modal.hide();
     };
 
+    // Display the chat users modal.
     $scope.showChatUsers = function() {
         $scope.usersLoaded = false;
         $scope.modal.show();
@@ -61,20 +63,24 @@ angular.module('mm.addons.mod_chat')
         });
     };
 
+    // Add To "user":
     $scope.talkTo = function(user) {
         $scope.newMessage = "To " + user + ": ";
         $scope.modal.hide();
     };
 
+    // Beep a user.
     $scope.beepTo = function(userId) {
         $scope.sendMessage('', userId);
         $scope.modal.hide();
     };
 
+    // Check is the app is offline.
     $scope.isAppOffline = function() {
         return !$mmApp.isOnline();
     };
 
+    // Check if the date should be displayed between messages (when the day changes at midnight for example).
     $scope.showDate = function(message, prevMessage) {
         if (!prevMessage) {
             return true;
@@ -97,6 +103,7 @@ angular.module('mm.addons.mod_chat')
         }
     };
 
+    // Send a message to the chat.
     $scope.sendMessage = function(text, beep) {
         var message;
         beep = beep || '';
@@ -104,7 +111,7 @@ angular.module('mm.addons.mod_chat')
         if (!$mmApp.isOnline()) {
             // Silent error, the view should prevent this.
             return;
-        } else if (beep == '' && !text.trim()) {
+        } else if (beep === '' && !text.trim()) {
             // Silent error.
             return;
         }
@@ -140,7 +147,7 @@ angular.module('mm.addons.mod_chat')
         $scope.loaded = true;
     });
 
-
+    // Scroll to the bottom.
     $scope.scrollAfterRender = function(scope) {
         if (scope.$last === true) {
             // Need a timeout to leave time to the view to be rendered.

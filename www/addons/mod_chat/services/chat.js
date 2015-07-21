@@ -78,6 +78,15 @@ angular.module('mm.addons.mod_chat')
         });
     };
 
+    /**
+     * Get a chat.
+     *
+     * @module mm.addons.mod_chat
+     * @ngdoc method
+     * @name $mmaModChat#loginUser
+     * @param {Number} chatId   Chat instance ID.
+     * @return {Promise}        Promise resolved when the WS is executed.
+     */
     self.loginUser = function(chatId) {
         var params = {
             chatid: chatId
@@ -86,6 +95,17 @@ angular.module('mm.addons.mod_chat')
         return $mmSite.write('mod_chat_login_user', params);
     };
 
+    /**
+     * Send a message to a chat.
+     *
+     * @module mm.addons.mod_chat
+     * @ngdoc method
+     * @name $mmaModChat#sendMessage
+     * @param {Number} chatsid  Chat sessiond ID.
+     * @param {String} message  Message text.
+     * @param {Number} beep     Beep user ID.
+     * @return {Promise}        Promise resolved when the WS is executed.
+     */
     self.sendMessage = function(chatsid, message, beep) {
         var params = {
             chatsid: chatsid,
@@ -96,6 +116,16 @@ angular.module('mm.addons.mod_chat')
         return $mmSite.write('mod_chat_send_chat_message', params);
     };
 
+    /**
+     * Get the latest messages from a chat.
+     *
+     * @module mm.addons.mod_chat
+     * @ngdoc method
+     * @name $mmaModChat#getLatestMessages
+     * @param {Number} chatsid  Chat sessiond ID.
+     * @param {Number} lasttime Last time when messages were retrieved.
+     * @return {Promise}        Promise resolved when the WS is executed.
+     */
     self.getLatestMessages = function(chatsid, lasttime) {
         var params = {
             chatsid: chatsid,
@@ -137,6 +167,15 @@ angular.module('mm.addons.mod_chat')
         });
     };
 
+    /**
+     * Get the actives users of a current chat.
+     *
+     * @module mm.addons.mod_chat
+     * @ngdoc method
+     * @name $mmaModChat#getChatUsers
+     * @param {Number} chatsid  Chat sessiond ID.
+     * @return {Promise}        Promise resolved when the WS is executed.
+     */
     self.getChatUsers = function(chatsid) {
         var params = {
             chatsid: chatsid
