@@ -9,30 +9,32 @@
             </ion-refresher>
             <mm-loading hide-until="discussionsLoaded">
                 <mm-course-mod-description watch="true" description="description" note="'mma.mod_forum.numdiscussions' | translate:{numdiscussions: forum.numdiscussions}" ></mm-course-mod-description>
-                <div class="list">
-                    <div class="card" ng-repeat="discussion in discussions track by $index">
+                <ul class="list">
+                    <li class="card" ng-repeat="discussion in discussions track by $index">
                         <a class="mma-forum-discussion-link" mm-split-view-link="site.mod_forum-discussion({courseid: courseid, discussionid: discussion.discussion})">
-                            <div class="item item-avatar">
-                                <img ng-if="discussion.userpictureurl" ng-src="{{discussion.userpictureurl}}" mm-external-content mm-split-view-link="{{userStateName}}({courseid: courseid, userid: discussion.userid})">
-                                <img ng-if="!discussion.userpictureurl" src="img/user-avatar.png" alt="">
-                                <h2>{{discussion.subject}}</h2>
-                                <div class="item-note">{{discussion.created | mmDateDayOrTime}}</div>
-                                <p>{{discussion.userfullname}}</p>
-                            </div>
-                            <div class="item item-body">
-                                <p><mm-format-text watch="true" clean="true" shorten="150">{{discussion.message}}</mm-format-text></p>
-                                <span class="item-note text-right">
-                                    <span><i class="icon ion-ios-chatboxes-outline"></i> {{ 'mma.mod_forum.numreplies' | translate:{numreplies: discussion.numreplies} }}</span>
-                                    <span ng-if="discussion.timemodified > discussion.created">
-                                        <br />
-                                        <i class="icon ion-clock"></i> {{discussion.timemodified | mmTimeAgo}}
+                            <article>
+                                <div class="item item-avatar">
+                                    <img ng-if="discussion.userpictureurl" ng-src="{{discussion.userpictureurl}}" mm-external-content mm-split-view-link="{{userStateName}}({courseid: courseid, userid: discussion.userid})">
+                                    <img ng-if="!discussion.userpictureurl" src="img/user-avatar.png" alt="">
+                                    <h2><summary>{{discussion.subject}}</summary></h2>
+                                    <div class="item-note">{{discussion.created | mmDateDayOrTime}}</div>
+                                    <p>{{discussion.userfullname}}</p>
+                                </div>
+                                <div class="item item-body">
+                                    <p><mm-format-text watch="true" clean="true" shorten="150">{{discussion.message}}</mm-format-text></p>
+                                    <span class="item-note text-right">
+                                        <span><i class="icon ion-ios-chatboxes-outline"></i> {{ 'mma.mod_forum.numreplies' | translate:{numreplies: discussion.numreplies} }}</span>
+                                        <span ng-if="discussion.timemodified > discussion.created">
+                                            <br />
+                                            <i class="icon ion-clock"></i> {{discussion.timemodified | mmTimeAgo}}
+                                        </span>
                                     </span>
-                                </span>
-                            </div>
+                                </div>
+                            </article>
                         </a>
-                    </div>
-                    <div ng-if="count == 0" class="item item-text-wrap">{{ 'mma.mod_forum.forumnodiscussionsyet' | translate }}</div>
-                </div>
+                    </li>
+                    <li ng-if="count == 0" class="item item-text-wrap">{{ 'mma.mod_forum.forumnodiscussionsyet' | translate }}</li>
+                </ul>
                 <ion-infinite-scroll ng-if="canLoadMore"
                         immediate-check="false"
                         on-infinite="loadMoreDiscussions()" >

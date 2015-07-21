@@ -6,16 +6,16 @@
     <ion-content>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="filesLoaded" on-refresh="refreshFiles()"></ion-refresher>
         <mm-loading hide-until="filesLoaded">
-            <div class="list">
-                <div ng-repeat="file in files">
+            <ul class="list">
+                <li ng-repeat="file in files">
                     <a ui-sref="site.files-list({path: file.link, title: file.filename})" class="item item-media" ng-if="file.isdir">
                         <img ng-src="{{file.imgpath}}" alt="">
                         {{file.filename}}
                     </a>
                     <mm-file ng-if="!file.isdir" file="file" component="{{component}}" component-id="{{file.contextid}}" timemodified="{{file.timemodified}}"></mm-file>
-                </div>
-                <div ng-if="count == 0" class="item">{{ 'mma.files.emptyfilelist' | translate }}</div>
-            </div>
+                </li>
+                <li ng-if="count == 0" class="item">{{ 'mma.files.emptyfilelist' | translate }}</li>
+            </ul>
         </mm-loading>
     </ion-content>
 </ion-view>

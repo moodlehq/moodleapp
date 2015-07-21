@@ -2,24 +2,24 @@
     <ion-content>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="sizeLoaded" on-refresh="refresh()"></ion-refresher>
         <mm-loading hide-until="sizeLoaded">
-            <ion-list>
-                <ion-item ng-repeat="site in sites" class="item-button-right">
+            <ul>
+                <li ng-repeat="site in sites" class="item item-button-right">
                     <span class="item-note">{{ site.spaceusage | mmBytesToSize }}</span>
                     <h2><mm-format-text>{{site.sitename}}</mm-format-text></h2>
                     <p>{{site.fullname}}</p>
                     <button class="button button-icon" ng-click="deleteSiteFiles(site)" ng-show="site.spaceusage > '0'">
                         <i class="icon ion-trash-a positive"></i>
                     </button>
-                </ion-item>
-                <ion-item class="item-divider">
+                </li>
+                <li class="item item-divider">
                     <span class="item-note">{{ totalusage | mmBytesToSize }}</span>
                     <p>{{ 'mm.settings.total' | translate }}</p>
-                </ion-item>
-                <ion-item class="item-divider">
+                </li>
+                <li class="item item-divider">
                     <span class="item-note">{{ freespace | mmBytesToSize }}</span>
                     <p>{{ 'mm.settings.estimatedfreespace' | translate }}</p>
-                </ion-item>
-            </ion-list>
+                </li>
+            </ul>
         </mm-loading>
     </ion-content>
 </ion-view>

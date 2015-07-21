@@ -1,28 +1,28 @@
 <ion-view view-title="{{'mma.files.myfiles' | translate}}">
     <ion-content padding="true">
-        <div ng-if="canAccessFiles">
-            <div class="list card" ng-if="showPrivateFiles">
-                <a ui-sref="site.files-list({root: 'my'})" class="item item-icon-right">
+        <section ng-if="canAccessFiles">
+            <section class="list card" ng-if="showPrivateFiles">
+                <a ui-sref="site.files-list({root: 'my'})" class="item item-icon-right" title="{{ 'mma.files.myprivatefiles' | translate }}">
                     <i class="icon ion-ios-arrow-right"></i>
                     {{ 'mma.files.myprivatefiles' | translate }}
                 </a>
                 <div class="item item-text-wrap"><p>{{ 'mma.files.myprivatefilesdesc' | translate }}</p></div>
-            </div>
+            </section>
 
-            <div class="list card">
-                <a ui-sref="site.files-list({root: 'site'})" class="item item-icon-right">
+            <section class="list card">
+                <a ui-sref="site.files-list({root: 'site'})" class="item item-icon-right" title="{{ 'mma.files.sitefiles' | translate }}">
                     <i class="icon ion-ios-arrow-right"></i>
                     {{ 'mma.files.sitefiles' | translate }}
                 </a>
                 <div class="item item-text-wrap"><p>{{ 'mma.files.sitefilesdesc' | translate }}</p></div>
-            </div>
+            </section>
 
             <div class="list card" ng-if="!canDownload">
                 <div class="item item-text-wrap"><p>{{ 'mma.files.admindisableddownload' | translate }}</p></div>
             </div>
-        </div>
+        </section>
 
-        <div ng-if="showUpload">
+        <section ng-if="showUpload">
             <div class="card">
                 <h2 class="item-body">{{ 'mma.files.uploadfiles' | translate }}</h2>
                 <p class="item-body">{{ 'mma.files.clicktoupload' | translate }}</p>
@@ -30,6 +30,6 @@
             <a class="button button-block" ng-click="add()">
                 <i class="icon ion-plus"></i> {{ 'mma.files.uploadafile' | translate }}
             </a>
-        </div>
+        </section>
     </ion-content>
 </ion-view>

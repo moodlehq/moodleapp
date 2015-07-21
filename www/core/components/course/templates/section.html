@@ -5,14 +5,14 @@
         </ion-refresher>
         <mm-loading hide-until="sectionLoaded">
 
-            <div class="card" ng-if="summary">
+            <section class="card" ng-if="summary">
                 <!-- Only displayed when 1 section per page. -->
                 <div class="item item-text-wrap">
-                    <mm-format-text>{{ summary }}</mm-format-text>
+                    <article><mm-format-text>{{ summary }}</mm-format-text></article>
                 </div>
-            </div>
+            </section>
 
-            <div class="card" ng-repeat="section in sections">
+            <section class="card" ng-repeat="section in sections">
                 <!-- Title and summary are displayed when multiple sections per page. -->
                 <div class="item item-divider" ng-if="sections.length > 1">
                     {{ section.name }}
@@ -22,7 +22,7 @@
                     <mm-format-text>{{ section.summary }}</mm-format-text>
                 </div>
 
-                <a class="item item-text-wrap" ng-click="action($event)" ng-class="{'item-button-right': buttons && buttons.length > 0, 'item-media': icon}" ng-repeat="module in section.modules" ng-controller="module._controller">
+                <a class="item item-text-wrap" ng-click="action($event)" ng-class="{'item-button-right': buttons && buttons.length > 0, 'item-media': icon}" ng-repeat="module in section.modules" ng-controller="module._controller" title="{{ title }}">
 
                     <img ng-src="{{ icon }}" alt="" role="presentation" ng-if="icon">
                     <mm-format-text watch="true">{{ title }}</mm-format-text>
@@ -38,7 +38,7 @@
                 <div class="item item-text-wrap" ng-if="section.modules.length < 1">
                     {{ 'mm.course.nocontentavailable' | translate }}
                 </div>
-            </div>
+            </section>
         </mm-loading>
     </ion-content>
 </ion-view>

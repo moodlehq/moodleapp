@@ -10,19 +10,23 @@
                     <input type="text" placeholder="{{ 'mm.courses.filter' | translate}}" ng-model="filterText">
                 </label>
             </div>
-            <div class="list card" ng-repeat="course in courses | filter:{fullname: filterText}">
-                <a class="item" ui-sref="site.mm_course({course: course})">
+            <section ng-repeat="course in courses | filter:{fullname: filterText}" class="list card">
+                <a class="item" ui-sref="site.mm_course({course: course})" title="{{course.fullname}}">
                     <mm-format-text watch="true">{{course.fullname}}</mm-format-text>
                 </a>
                 <div class="item item-text-wrap" ng-show="course.summary">
-                    <p><mm-format-text watch="true" shorten="150" expand-on-click="true">{{course.summary}}</mm-format-text></p>
+                    <p>
+                        <summary>
+                            <mm-format-text watch="true" shorten="150" expand-on-click="true">{{course.summary}}</mm-format-text>
+                        </summary>
+                    </p>
                 </div>
                 <div class="item tabs tabs-icon-left" ng-show="course._handlers.length">
-                    <a ng-repeat="handler in course._handlers | orderBy:'-priority'" ng-controller="handler.controller" ng-click="action($event, course)" class="tab-item active">
+                    <a ng-repeat="handler in course._handlers | orderBy:'-priority'" ng-controller="handler.controller" ng-click="action($event, course)" class="tab-item active" title="{{title | translate}}">
                         <i class="icon {{icon}}"></i> {{title | translate}}
                     </a>
                 </div>
-            </div>
+            </section>
         </mm-loading>
     </ion-content>
 </ion-view>

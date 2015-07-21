@@ -1,20 +1,28 @@
 <ion-view view-title="{{ 'mm.settings.settings' | translate }}">
     <mm-split-view>
         <ion-content>
-            <div class="list">
-                <a class="item" mm-split-view-link="site.mm_settings-general">
-                    {{ 'mm.settings.language' | translate }}
-                </a>
-                <a class="item" mm-split-view-link="site.mm_settings-spaceusage">
-                    {{ 'mm.settings.spaceusage' | translate }}
-                </a>
-                <a class="item" mm-split-view-link="site.mm_settings-synchronization">
-                    {{ 'mm.settings.synchronization' | translate }}
-                </a>
-                <a class="item" mm-split-view-link="site.mm_settings-about">
-                    {{ 'mm.settings.about' | translate }}
-                </a>
-            </div>
+            <ul class="list">
+                <li>
+                    <a class="item" mm-split-view-link="site.mm_settings-general" title="{{ 'mm.settings.language' | translate }}">
+                        {{ 'mm.settings.language' | translate }}
+                    </a>
+                </li>
+                <li>
+                    <a class="item" mm-split-view-link="site.mm_settings-spaceusage" title="{{ 'mm.settings.spaceusage' | translate }}">
+                        {{ 'mm.settings.spaceusage' | translate }}
+                    </a>
+                </li>
+                <li>
+                    <a class="item" mm-split-view-link="site.mm_settings-synchronization" title="{{ 'mm.settings.synchronization' | translate }}">
+                        {{ 'mm.settings.synchronization' | translate }}
+                    </a>
+                </li>
+                <li>
+                    <a class="item" mm-split-view-link="site.mm_settings-about" title="{{ 'mm.settings.about' | translate }}">
+                        {{ 'mm.settings.about' | translate }}
+                    </a>
+                </li>
+            </ul>
         </ion-content>
     </mm-split-view>
 </ion-view>
