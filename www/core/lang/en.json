@@ -58,6 +58,7 @@
     "nummonths": "{{$a}} months",
     "numseconds": "{{$a}} seconds",
     "numyears": "{{$a}} years",
+    "percentagenumber": "{{number}}%",
     "pulltorefresh": "Pull to refresh",
     "search": "Search",
     "sec" : "sec",
