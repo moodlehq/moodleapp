@@ -14,7 +14,7 @@
 
 // Dependencies will be automatically added here, the following line must declare ionic as first dependency
 // and should not be split into multiple lines, see gulpfile.js.
-angular.module('mm', ['ionic', 'ngCordova', 'angular-md5', 'pascalprecht.translate'])
+angular.module('mm', ['ionic', 'ngCordova', 'angular-md5', 'pascalprecht.translate', 'ngAria'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
