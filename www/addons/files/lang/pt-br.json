@@ -1,6 +1,7 @@
 {
     "confirmuploadfile": "Chcesz wysłać plik {$a}. Czy na pewno chcesz kontynuować?",
     "downloading": "Baixando arquivo",
+    "emptyfilelist": "Não há arquivos para exibir",
     "errorcapturingaudio": "Erro ao capturar áudio",
     "errorcapturingvideo": "Erro ao capturar  vídeo",
     "errorreadingfile": "Erro na leitura do arquivo \"{$a}\"",

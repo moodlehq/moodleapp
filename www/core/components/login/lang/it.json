@@ -3,7 +3,7 @@
     "cancel": "Annulla",
     "connect": "Connetti",
     "help": "Aiuto",
-    "helpmelogin": "<p>Esistono diverse migliaia di siti Moodle al mondo. Queta app può collegarsi solamente in quei siti dove è stato configurato l'accesso Mobile app.<\/p><p>Se non riesci a collegarti al sito Moodle desiderato devi contattare l'amministratore di quel sito e chiedergli di documentarsi su <a href=\"http:\/\/docs.moodle.org\/en\/Mobile_app\" target=\"_blank\">http:\/\/docs.moodle.org\/en\/Mobile_app<\/a><\/p><p>Per provare l'applicazione su un sito Moodle demo inserire <i>teacher<\/i> oppure <i>student<\/i> nel campo <i>Username<\/i> e fare click sul pulsante <b>Aggiungi<\/b>.<\/p>",
+    "helpmelogin": "<p>Esistono diverse migliaia di siti Moodle al mondo. Queta app può collegarsi solamente in quei siti dove è stato configurato l'accesso Mobile app.</p><p>Se non riesci a collegarti al sito Moodle desiderato devi contattare l'amministratore di quel sito e chiedergli di documentarsi su <a href=\"http://docs.moodle.org/en/Mobile_app\" target=\"_blank\">http://docs.moodle.org/en/Mobile_app</a></p><p>Per provare l'applicazione su un sito Moodle demo inserire <i>teacher</i> oppure <i>student</i> nel campo <i>Username</i> e fare click sul pulsante <b>Aggiungi</b>.</p>",
     "invalidaccount": "Verificare le proprie credenziali o chiedere all'amministratore del sito di controllare la configurazione del sito.",
     "invalidmoodleversion": "Versione di Moodle non valida. La versione minima richiesta:",
     "invalidsite": "L'URL del sito non è valida",
@@ -14,7 +14,7 @@
     "passwordrequired": "Password necessaria",
     "siteinmaintenance": "Il sito è in modalità manutenzione",
     "siteurl": "URL del sito",
-    "siteurlrequired": "L'URL del sito è obbligatoria. Esempio:<i>http:\/\/www.yourmoodlesite.abc or https:\/\/www.yourmoodlesite.efg<\/i>",
+    "siteurlrequired": "L'URL del sito è obbligatoria. Esempio:<i>http://www.yourmoodlesite.abc or https://www.yourmoodlesite.efg</i>",
     "username": "Username",
     "usernamerequired": "Username obbligatorio",
     "webservicesnotenabled": "Nel sito non sono stati abilitati i web service. Per favore contatta l'amministratore del sito per verificare la configurazione."

@@ -3,7 +3,7 @@
     "cancel": "Zrušit",
     "connect": "Spojit",
     "help": "Nápověda",
-    "helpmelogin": "<p> Pro přihlášení, prosím ověřte, že: <\/p> 1. Tato stránka Moodle je verze 2.4 nebo vyšší. <br \/>\n2.Správce webu Moodle umožnil mobilní přístup. <br \/> <br \/> <p> Chcete-li otestovat aplikaci  na demo stránkách Moodle typu<i> učitel<\/ i> nebo <i> student <\/ i> v poli <i> Username<\/ i> a klikněte na tlačítko Přidat <b> <\/ b>. <\/ p> <a href = 'http:\/\/docs.moodle.org\/en\/Mobile_app' target = '_blank \"> Pro podrobnější informace a pomoc navštivte stránky dokumentace Moodle. <\/a> <\/p>",
+    "helpmelogin": "<p> Pro přihlášení, prosím ověřte, že: </p> 1. Tato stránka Moodle je verze 2.4 nebo vyšší. <br />\n2.Správce webu Moodle umožnil mobilní přístup. <br /> <br /> <p> Chcete-li otestovat aplikaci  na demo stránkách Moodle typu<i> učitel</ i> nebo <i> student </ i> v poli <i> Username</ i> a klikněte na tlačítko Přidat <b> </ b>. </ p> <a href = 'http://docs.moodle.org/en/Mobile_app' target = '_blank \"> Pro podrobnější informace a pomoc navštivte stránky dokumentace Moodle. </a> </p>",
     "invalidaccount": "Zkontrolujte si prosím své přihlašovací údaje nebo se obraťte na správce webu, aby zkontroloval nastavení.",
     "invalidmoodleversion": "Neplatná verze Moodle. Minimální potřebná verze je:",
     "invalidsite": "Adresa URL stránky je chybná",
@@ -14,7 +14,7 @@
     "passwordrequired": "Je požadováno heslo",
     "siteinmaintenance": "Váš web je v režimu údržby",
     "siteurl": "URL adresa stránky",
-    "siteurlrequired": "Je požadováno URL webu, tj. <i> http:\/\/www.yourmoodlesite.abc nebo https:\/\/www.yourmoodlesite.efg <\/ i>",
+    "siteurlrequired": "Je požadováno URL webu, tj. <i> http://www.yourmoodlesite.abc nebo https://www.yourmoodlesite.efg </ i>",
     "username": "Uživatelské jméno",
     "usernamerequired": "Požadováno uživatelské jméno",
     "webservicesnotenabled": "Na vašem webu nejsou povoleny webové služby. Pokud si myslíte, že by měl být povolen mobilní přístup, obraťte se prosím na správce Moodlu."

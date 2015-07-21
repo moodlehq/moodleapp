@@ -1,0 +1,13 @@
+{
+    "beep": "bip",
+    "currentusers": "Usuaris actuals",
+    "enterchat": "Feu clic aquí per entrar al xat",
+    "entermessage": "Escriviu el vostre missatge",
+    "messagebeepsyou": "{{$a}} t'acaba de fer bip!",
+    "messageenter": "{{$a}} acaba d'entrar en aquest xat",
+    "messageexit": "{{$a}} ha abandonat aquest xat",
+    "nomessages": "No hi ha missatges encara",
+    "send": "Envia",
+    "sessionstart": "La sessió de xat començarà en: {{$a}}",
+    "talk": "Parla"
+}

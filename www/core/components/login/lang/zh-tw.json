@@ -13,7 +13,7 @@
     "passwordrequired": "需要密碼",
     "siteinmaintenance": "您的網站處於維護模式",
     "siteurl": "網站網址",
-    "siteurlrequired": "需要網站網址，例如<i>http:\/\/www.yourmoodle.tw<\/i>",
+    "siteurlrequired": "需要網站網址，例如<i>http://www.yourmoodle.tw</i>",
     "username": "帳號",
     "usernamerequired": "需要帳號",
     "webservicesnotenabled": "您的網站沒有啟用Web服務。如果您想用行動裝置連線，請聯繫您的Moodle網站管理員。"

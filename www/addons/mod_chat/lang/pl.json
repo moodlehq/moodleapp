@@ -1,0 +1,13 @@
+{
+    "beep": "rozmawia",
+    "currentusers": "Bieżący użytkownicy",
+    "enterchat": "Naciśnij tu, aby wejść na czat",
+    "entermessage": "Wprowadź wiadomość",
+    "messagebeepsyou": "{{$a}} właśnie do Ciebie napisał",
+    "messageenter": "{{$a}} właśnie wszedł na czat",
+    "messageexit": "{{$a}} opuścił czat",
+    "nomessages": "Brak wiadomości",
+    "send": "Wyślij",
+    "sessionstart": "Sesja czatu rozpocznie się za:  {$ a}",
+    "talk": "Dyskusja"
+}

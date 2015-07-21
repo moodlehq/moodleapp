@@ -1,0 +1,13 @@
+{
+    "beep": "prozvonit",
+    "currentusers": "Stávající uživatelé",
+    "enterchat": "Klikněte zde pro vstup do chatu",
+    "entermessage": "Vložte svou zprávu",
+    "messagebeepsyou": "{{$a}} vás prozvání!",
+    "messageenter": "{{$a}} právě vstoupil(a) do tohoto chatu",
+    "messageexit": "{{$a}} opustil(a) tento chat",
+    "nomessages": "Zatím žádné zprávy",
+    "send": "Odeslat",
+    "sessionstart": "Chatování začne v {{$a}}",
+    "talk": "Diskuse"
+}

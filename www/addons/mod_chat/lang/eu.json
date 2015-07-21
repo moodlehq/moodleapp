@@ -1,0 +1,13 @@
+{
+    "beep": "Abisua",
+    "currentusers": "Oraingo erabiltzaileak",
+    "enterchat": "Sakatu hemen txat-gelara sartzeko",
+    "entermessage": "Idatzi zure mezua",
+    "messagebeepsyou": "{{$a}}-(e)k dio: Aizu! Hemen nago!",
+    "messageenter": "{{$a}} oraintxe sartu da gelan",
+    "messageexit": "{{$a}} irten egin da gelatik",
+    "nomessages": "Ez dago mezurik oraindik",
+    "send": "Bidali",
+    "sessionstart": "Txat-saioa gutxi barru hasiko da: {{$a}}",
+    "talk": "Hitz egin"
+}

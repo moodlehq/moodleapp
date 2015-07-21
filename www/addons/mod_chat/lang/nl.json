@@ -1,0 +1,13 @@
+{
+    "beep": "Piep",
+    "currentusers": "Huidige gebruikers",
+    "enterchat": "Klik hier om de chat nu binnen te gaan",
+    "entermessage": "Geef je bericht",
+    "messagebeepsyou": "{{$a}} heeft je net gepiept!",
+    "messageenter": "{{$a}} is net deze chat binnen gekomen",
+    "messageexit": "{{$a}} heeft deze chat verlaten",
+    "nomessages": "Nog geen berichten",
+    "send": "Stuur",
+    "sessionstart": "Chatsessie zal starten binnen: {{$a}}",
+    "talk": "Spreek"
+}

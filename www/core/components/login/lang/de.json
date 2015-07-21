@@ -3,7 +3,7 @@
     "cancel": "Abbrechen",
     "connect": "Verbinden",
     "help": "Hilfe",
-    "helpmelogin": "<p>Diese App kann sich nur mit Moodle-Websites verbinden, für die der mobile Zugriff aktiviert wurde.<\/p>\n<p>Wenn Sie sich mit der App nicht verbinden können, kontaktieren Sie den Administrator der Website. <a href='http:\/\/docs.moodle.org\/de\/Mobile_App' target='_blank'>http:\/\/docs.moodle.org\/de\/Mobile_App<\/a>.<\/p>\n<p>Um die App mit einer Demo-Website zu testen, tragen Sie bitte <i>teacher<\/i> oder <i>student<\/i> in das Feld <i>URL der Website<\/i> ein und klicken Sie auf <b>Hinzufügen<\/b>.<\/p>",
+    "helpmelogin": "<p>Diese App kann sich nur mit Moodle-Websites verbinden, für die der mobile Zugriff aktiviert wurde.</p>\n<p>Wenn Sie sich mit der App nicht verbinden können, kontaktieren Sie den Administrator der Website. <a href='http://docs.moodle.org/de/Mobile_App' target='_blank'>http://docs.moodle.org/de/Mobile_App</a>.</p>\n<p>Um die App mit einer Demo-Website zu testen, tragen Sie bitte <i>teacher</i> oder <i>student</i> in das Feld <i>URL der Website</i> ein und klicken Sie auf <b>Hinzufügen</b>.</p>",
     "invalidaccount": "Prüfen Sie Ihre Anmeldedaten oder wenden Sie sich an den Administrator.",
     "invalidmoodleversion": "Notwendig ist mindestens die Moodle-Version:",
     "invalidsite": "Die URL der Website ist falsch.",
@@ -14,7 +14,7 @@
     "passwordrequired": "Kennwort notwendig",
     "siteinmaintenance": "Die Website ist im Wartungsmodus.",
     "siteurl": "URL der Website",
-    "siteurlrequired": "Die URL der Website ist notwendig, z.B. https:\/\/meinmoodle.de",
+    "siteurlrequired": "Die URL der Website ist notwendig, z.B. https://meinmoodle.de",
     "username": "Anmeldename",
     "usernamerequired": "Anmeldename notwendig",
     "webservicesnotenabled": "Webservices sind für diese Website nicht aktiviert. Bitte sprechen Sie mit Ihrem Administrator, wenn Sie den mobilen Zugriff aktiviert haben möchten."

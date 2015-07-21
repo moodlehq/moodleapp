@@ -1,0 +1,11 @@
+{
+    "beep": "biip",
+    "currentusers": "Aktif kullanıcılar",
+    "enterchat": "Şimdi sohbete katıl",
+    "messagebeepsyou": "{{$a}} size sesleniyor!",
+    "messageenter": "{{$a}} odaya girdi",
+    "messageexit": "{{$a}} odadan ayrıldı",
+    "nomessages": "Henüz mesaj yok",
+    "send": "Gönder",
+    "talk": "Sohbet et"
+}

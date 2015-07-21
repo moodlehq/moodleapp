@@ -1,6 +1,7 @@
 {
     "confirmuploadfile": "Möchten Sie '{$a}' wirklich hochladen?",
     "downloading": "Descargando...",
+    "emptyfilelist": "No hay archivos que mostrar",
     "errorcapturingaudio": "Error capturando audio",
     "errorcapturingvideo": "Error al capturar video",
     "errorreadingfile": "Error al leer el archivo  \"{$a}\"",
