@@ -14,8 +14,8 @@
     </form>
 
     <mm-loading hide-until="loaded">
-        <ion-list>
-            <div ng-repeat="contactType in contactTypes" ng-if="contacts[contactType] && contacts[contactType].length > 0">
+        <ul class="list">
+            <li ng-repeat="contactType in contactTypes" ng-if="contacts[contactType] && contacts[contactType].length > 0">
 
                 <ion-item class="item-divider item-button-right">
                     <span class="item-note">{{ contacts[contactType].length }}</span>
@@ -25,14 +25,14 @@
                     </button>
                 </ion-item>
 
-                <a class="item item-avatar"  ng-repeat="contact in contacts[contactType] | orderBy:'fullname' track by $index" mm-split-view-link="{{userStateName}}({userid: contact.id})">
+                <a class="item item-avatar"  ng-repeat="contact in contacts[contactType] | orderBy:'fullname' track by $index" mm-split-view-link="{{userStateName}}({userid: contact.id})" title="{{ contact.fullname }}">
                     <img ng-src="{{ contact.profileimageurlsmall || contact.profileimageurl }}" alt="" role="presentation" mm-external-content ng-if="contact.profileimageurlsmall || contact.profileimageurl">
                     <img src="img/user-avatar.png" alt="" role="presentation" ng-if="!(contact.profileimageurlsmall || contact.profileimageurl)">
 
                     <h2>{{ contact.fullname }}</h2>
                 </a>
-            </div>
-        </ion-list>
+            </li>
+        </ul>
 
         <div ng-if="!hasContacts" class="padding">
             <p>{{ 'mma.messages.contactlistempty' | translate}}</p>

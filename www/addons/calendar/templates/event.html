@@ -6,24 +6,26 @@
                        on-refresh="refreshEvent()">
         </ion-refresher>
         <mm-loading hide-until="eventLoaded">
-            <ul class="list card">
-                <li class="item item-text-wrap">
-                    {{event.start}}<span ng-if="event.start != event.end"> - {{event.end}}</span>
-                </li>
-                <li class="item item-text-wrap">
-                    <h2><mm-format-text watch="true">{{event.name}}</mm-format-text></h2>
-                </li>
-                <li class="item item-text-wrap" ng-if="coursename">
-                    <h3>{{ 'mm.core.course' | translate}}</h3>
-                    <p><mm-format-text watch="true">{{coursename}}</mm-format-text></p>
-                </li>
-                <li class="item item-text-wrap item-media" ng-if="event.moduleicon">
-                    <img ng-src="{{event.moduleicon}}"> {{event.modulename}}
-                </li>
-                <li class="item item-text-wrap" ng-if="event.description">
-                    <mm-format-text watch="true">{{event.description}}</mm-format-text>
-                </li>
-            </ul>
+            <article>
+                <ul class="list card">
+                    <li class="item item-text-wrap">
+                        {{event.start}}<span ng-if="event.start != event.end"> - {{event.end}}</span>
+                    </li>
+                    <li class="item item-text-wrap">
+                        <h2><mm-format-text watch="true">{{event.name}}</mm-format-text></h2>
+                    </li>
+                    <li class="item item-text-wrap" ng-if="coursename">
+                        <h3>{{ 'mm.core.course' | translate}}</h3>
+                        <p><mm-format-text watch="true">{{coursename}}</mm-format-text></p>
+                    </li>
+                    <li class="item item-text-wrap item-media" ng-if="event.moduleicon">
+                        <img ng-src="{{event.moduleicon}}"> {{event.modulename}}
+                    </li>
+                    <li class="item item-text-wrap" ng-if="event.description">
+                        <mm-format-text watch="true">{{event.description}}</mm-format-text>
+                    </li>
+                </ul>
+            </article>
             <div class="card" ng-if="notificationsEnabled">
                 <div class="item item-select">
                     {{ 'mma.calendar.notifications' | translate }}

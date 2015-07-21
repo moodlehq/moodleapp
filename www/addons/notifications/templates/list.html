@@ -3,7 +3,7 @@
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="notificationsLoaded" on-refresh="refreshNotifications()">
         </ion-refresher>
         <mm-loading hide-until="notificationsLoaded">
-            <div class="card" ng-repeat="notification in notifications track by $index">
+            <article class="card" ng-repeat="notification in notifications track by $index">
                 <div class="item">
                     <h2>{{notification.userfromfullname}}</h2>
                     <p>{{notification.timecreated | mmDateDayOrTime}}</p>
@@ -12,7 +12,7 @@
                     <p><mm-format-text watch="true">{{ notification.mobiletext | mmCreateLinks | mmaNotificationsFormat }}</mm-format-text></p>
                 </div>
                 <mma-notifications-actions contexturl="notification.contexturl" courseid="notification.courseid"></mma-notifications-actions>
-            </div>
+            </article>
 
             <ion-infinite-scroll ng-if="canLoadMore"
                     immediate-check="false"
