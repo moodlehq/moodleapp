@@ -146,10 +146,10 @@ angular.module('mm.addons.messages')
         }
     };
 
-    // Set up the polling on a view enter, this allows for the user to go back and resume the polling.
-    $scope.$on('$ionicView.enter', function() {
-        // Strange case, we already have the polling in place.
+    // Set a polling to get new messages every certain time.
+    function setPolling() {
         if (polling) {
+            // We already have the polling in place.
             return;
         }
 
@@ -177,15 +177,36 @@ angular.module('mm.addons.messages')
                 notifyNewMessage();
             });
         }, mmaMessagesPollInterval);
-    });
+    }
 
-    // Removing the polling as we leave the page.
-    $scope.$on('$ionicView.leave', function(e) {
+    // Unset polling.
+    function unsetPolling() {
         if (polling) {
             $log.debug('Cancelling polling for conversation with user ' + userId);
             $interval.cancel(polling);
+            polling = undefined;
         }
-    });
+    }
+
+    if ($ionicPlatform.isTablet()) {
+        // Listen for events to set/unset the polling in tablet. We use angular events because we cannot use ionic events
+        // (we use ui-view). The behavior is the same, since scope is destroyed on tablet view when navigating to subviews.
+        $scope.$on('$viewContentLoaded', function(){
+            setPolling();
+        });
+        $scope.$on('$destroy', function(){
+            unsetPolling();
+        });
+    } else {
+        // Listen for events to set/unset the polling in phones. We can use ionic events.
+        $scope.$on('$ionicView.enter', function() {
+            setPolling();
+        });
+        $scope.$on('$ionicView.leave', function(e) {
+            unsetPolling();
+        });
+
+    }
 
     // Notify the last message found so discussions list controller can tell if last message should be updated.
     function notifyNewMessage() {
