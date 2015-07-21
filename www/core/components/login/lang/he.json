@@ -3,7 +3,7 @@
     "cancel": "ביטול",
     "connect": "חיבור",
     "help": "עזרה",
-    "helpmelogin": "<p>קיימים אלפים רבים של אתרי מוודל ברחבי העולם. אפליקציה זו יכולה להתחבר רק לאתרים בהם .הופעלה גישה לאפליקצית מובייל<\/p><p>אם אין באפרותך להתחבר לאתר המוודל שלך, עליך לפנות למנהל האתר הדרוש ולבקש מהם לקרוא <a href=\"http:\/\/docs.moodle.org\/en\/Mobile_app\" target=\"_blank\">http:\/\/docs.moodle.org\/en\/Mobile_app<\/a><\/p><p>בכדי לבדוק את האפליקציה באתר דמו של מוודל, יש להזין <i>teacher<\/i> או <i>student<\/i> בשדה <i>כתובת אתר<\/i> וללחוץ על <b>כפתור הוסף<\/b>.<\/p>",
+    "helpmelogin": "<p>קיימים אלפים רבים של אתרי מוודל ברחבי העולם. אפליקציה זו יכולה להתחבר רק לאתרים בהם .הופעלה גישה לאפליקצית מובייל</p><p>אם אין באפרותך להתחבר לאתר המוודל שלך, עליך לפנות למנהל האתר הדרוש ולבקש מהם לקרוא <a href=\"http://docs.moodle.org/en/Mobile_app\" target=\"_blank\">http://docs.moodle.org/en/Mobile_app</a></p><p>בכדי לבדוק את האפליקציה באתר דמו של מוודל, יש להזין <i>teacher</i> או <i>student</i> בשדה <i>כתובת אתר</i> וללחוץ על <b>כפתור הוסף</b>.</p>",
     "invalidaccount": "אנא בדוק את פרטי ההתחברות שלך או פנה למנהל האתר לבדיקת תצורת האתר.",
     "invalidmoodleversion": "גרסת מוודל לא תקינה. הגרסה המינימלית הדרושה היא:",
     "invalidsite": "כתובת האתר אינה תקינה.",
@@ -14,7 +14,7 @@
     "passwordrequired": "דרושה סיסמה",
     "siteinmaintenance": "האתר נמצא במצב תחזוקה",
     "siteurl": "כתובת אתר",
-    "siteurlrequired": "דרושה כתובת אתר, לדוגמה:<i>http:\/\/www.yourmoodlesite.abc או https:\/\/www.yourmoodlesite.efg<\/i>",
+    "siteurlrequired": "דרושה כתובת אתר, לדוגמה:<i>http://www.yourmoodlesite.abc או https://www.yourmoodlesite.efg</i>",
     "username": "שם משתמש",
     "usernamerequired": "דרוש שם משתמש",
     "webservicesnotenabled": "Web Services לא מאופשרים באתר זה. אנא פנה למנהל האתר באם רצונך לשנות זאת"

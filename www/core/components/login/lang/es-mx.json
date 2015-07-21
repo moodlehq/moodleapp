@@ -13,7 +13,7 @@
     "passwordrequired": "Contraseña obligatoria",
     "siteinmaintenance": "Su sitio está en modo de mantenimiento",
     "siteurl": "URL del sitio",
-    "siteurlrequired": "La URL del sitio es obligatoria, por ejemplo <i>http:\/\/www.yourmoodlesite.es o  https:\/\/www.yourmoodlesite.org<\/i>",
+    "siteurlrequired": "La URL del sitio es obligatoria, por ejemplo <i>http://www.yourmoodlesite.es o  https://www.yourmoodlesite.org</i>",
     "username": "Nombre de usuario",
     "usernamerequired": "Nombre de usuario obligatorio",
     "webservicesnotenabled": "Los servicios web no están habilitados en su sitio. Por favor, contacte a su administrador del sitio Moodle si Usted piensa que se debería habilitar el acceso por dispositivos móviles."

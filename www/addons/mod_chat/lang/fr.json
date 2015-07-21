@@ -1,0 +1,13 @@
+{
+    "beep": "Bip",
+    "currentusers": "Utilisateurs en ligne",
+    "enterchat": "Cliquer ici pour participer au chat",
+    "entermessage": "Saisissez votre message",
+    "messagebeepsyou": "{{$a}} vient de vous biper !",
+    "messageenter": "{{$a}} vient d'entrer",
+    "messageexit": "{{$a}} a quitté ce chat",
+    "nomessages": "Pas encore de messages",
+    "send": "Envoyer",
+    "sessionstart": "La prochaine session de chat commencera dans {{$a}}",
+    "talk": "Parler"
+}

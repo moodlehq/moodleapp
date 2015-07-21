@@ -58,7 +58,7 @@ angular.module('mm.core')
             }
         }
 
-        return $translate.instant('mm.core.'+stringName, {number: interval});
+        return $translate.instant('mm.core.'+stringName, {'$a': interval});
     };
 
 });

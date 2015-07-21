@@ -1,0 +1,13 @@
+{
+    "beep": "Hangjelzés",
+    "currentusers": "Mostani felhasználók",
+    "enterchat": "Kattintson ide a csevegésbe való bekapcsolódáshoz",
+    "entermessage": "Írja be az üzenetet",
+    "messagebeepsyou": "{{$a}} most csöngetett Önnek!",
+    "messageenter": "{{$a}} most lépett be a csevegésbe",
+    "messageexit": "{{$a}} most lépett ki a csevegésből",
+    "nomessages": "Még nincs üzenet",
+    "send": "Elküld",
+    "sessionstart": "A csevegés kezdete: {{$a}}",
+    "talk": "Beszéljen"
+}

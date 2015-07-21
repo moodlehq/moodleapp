@@ -13,7 +13,7 @@
     "passwordrequired": "Senha necessária",
     "siteinmaintenance": "O site está em modo de manutenção",
     "siteurl": "URL do site",
-    "siteurlrequired": "URL do site é obrigatória, por exemplo  <i>http:\/\/www.yourmoodlesite.abc ou https:\/\/www.yourmoodlesite.efg<\/i>",
+    "siteurlrequired": "URL do site é obrigatória, por exemplo  <i>http://www.yourmoodlesite.abc ou https://www.yourmoodlesite.efg</i>",
     "username": "Nome de Usuário",
     "usernamerequired": "Nome de usuário exigido",
     "webservicesnotenabled": "Web Services não estão ativados em seu site. Por favor, contate a administradora do seu Moodle se você achar que o acesso móvel deve ser ativado."

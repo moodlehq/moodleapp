@@ -2,7 +2,7 @@
     "authenticating": "Kimlik doğrulanıyor",
     "cancel": "Vazgeç",
     "help": "Yardım",
-    "helpmelogin": "<p>Dünyada binlerce Moodle Sitesi var. Bu uygulama sadece Moodle App girişine izin verilmiş olan Moodle Sitelerinde çalışır<\/><p> Eğer moodle sitenizle bağlantı kuramıyorsanız, Moodle yöneticinize başvurun nereyle bağlantı kuramıyorsanız, yöneticizle iletişime geçin ve şu linkteki açıklamaları okumasını isteyin <a href=\"http:\/\/docs.moodle.org\/en\/Mobile_app\" target=\"_blank\">http:\/\/docs.moodle.org\/en\/Mobile_app<\/a><\/p><p> Deneme yapmak için Moodle demo sitesinde ilgili alanlara <i>öğretmen<\/i> veya <i>öğrenci<\/i>içinde <i>Site URL<\/i> seçeneklerini girin ve ekle butonuna tıklayın",
+    "helpmelogin": "<p>Dünyada binlerce Moodle Sitesi var. Bu uygulama sadece Moodle App girişine izin verilmiş olan Moodle Sitelerinde çalışır</><p> Eğer moodle sitenizle bağlantı kuramıyorsanız, Moodle yöneticinize başvurun nereyle bağlantı kuramıyorsanız, yöneticizle iletişime geçin ve şu linkteki açıklamaları okumasını isteyin <a href=\"http://docs.moodle.org/en/Mobile_app\" target=\"_blank\">http://docs.moodle.org/en/Mobile_app</a></p><p> Deneme yapmak için Moodle demo sitesinde ilgili alanlara <i>öğretmen</i> veya <i>öğrenci</i>içinde <i>Site URL</i> seçeneklerini girin ve ekle butonuna tıklayın",
     "invalidaccount": "Lütfen giriş bilgileriniz kontrol ediniz veya Site ayarlarını kontrol etmesi için yöneticinize başvurun.",
     "invalidmoodleversion": "Geçersiz Moodle sürümü. Sitenizin Sürümünün şundan aşağı olmaması gerekir:",
     "invalidsite": "Bu site adresi geçersizdir.",
@@ -13,7 +13,7 @@
     "passwordrequired": "Şifre zorunludur",
     "siteinmaintenance": "Siteniz bakım modunda",
     "siteurl": "Sİte Adresi",
-    "siteurlrequired": "Site adresi gereklidir, örneğin  <i>http:\/\/www.yourmoodlesite.abc veya  https:\/\/www.yourmoodlesite.efg<\/i> gibi",
+    "siteurlrequired": "Site adresi gereklidir, örneğin  <i>http://www.yourmoodlesite.abc veya  https://www.yourmoodlesite.efg</i> gibi",
     "username": "Kullanıcadı",
     "usernamerequired": "Kullanıcı adı gerekiyor",
     "webservicesnotenabled": "Sitenizin Web Hizmetleri ektin değildir. Mobil erişimin etkin olduğunu düşünüyrosanız. Moodle site yöneticinize başvurun."

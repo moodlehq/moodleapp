@@ -1,0 +1,13 @@
+{
+    "beep": "ビープ",
+    "currentusers": "現在のユーザ",
+    "enterchat": "チャットルームに入室する",
+    "entermessage": "あなたのメッセージを入力してください。",
+    "messagebeepsyou": "{{$a}} があなたにビープしました!",
+    "messageenter": "{{$a}} が入室しました。",
+    "messageexit": "{{$a}} が退室しました。",
+    "nomessages": "メッセージがありません。",
+    "send": "送信",
+    "sessionstart": "次のチャットセッションは {{$a}} に開始されます。",
+    "talk": "会話"
+}

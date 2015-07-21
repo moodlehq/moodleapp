@@ -3,7 +3,7 @@
     "cancel": "キャンセル",
     "connect": "接続",
     "help": "ヘルプ",
-    "helpmelogin": "<p>世界中に無数のMoodleサイトが存在しますが、本アプリはモバイルアプリからのアクセスを有効にした特別なMoodleサイトでなければ接続できません。<\/p><p>あなたのMoodleサイトにアプリから接続できず、それをできるようにしてもらいたいときには、Moodleサイトの管理ユーザに<a href=\"http:\/\/docs.moodle.org\/en\/Mobile_app\" target=\"_blank\">http:\/\/docs.moodle.org\/en\/Mobile_app<\/a>を読むよう依頼してみてください。<\/p><p>Moodleでもサイトでアプリをテストするには、<em>サイトURL<\/em>の欄に<i>teacher<\/i>あるいは<i>student<\/i>を入力し、<b>追加<\/b>ボタンを押してください。<\/p>",
+    "helpmelogin": "<p>世界中に無数のMoodleサイトが存在しますが、本アプリはモバイルアプリからのアクセスを有効にした特別なMoodleサイトでなければ接続できません。</p><p>あなたのMoodleサイトにアプリから接続できず、それをできるようにしてもらいたいときには、Moodleサイトの管理ユーザに<a href=\"http://docs.moodle.org/en/Mobile_app\" target=\"_blank\">http://docs.moodle.org/en/Mobile_app</a>を読むよう依頼してみてください。</p><p>Moodleでもサイトでアプリをテストするには、<em>サイトURL</em>の欄に<i>teacher</i>あるいは<i>student</i>を入力し、<b>追加</b>ボタンを押してください。</p>",
     "invalidaccount": "あなたがログインするのに必要な情報を再確認し、サイト管理者にサイトの設定と合致しているか確認するよう依頼してください。",
     "invalidmoodleversion": "Moodleのバージョンが古すぎます。少なくともこれより新しいMoodleである必要があります：",
     "invalidsite": "サイトURLが正しくありません。",
@@ -14,7 +14,7 @@
     "passwordrequired": "パスワードがありません",
     "siteinmaintenance": "このサイトはメンテナンス中です",
     "siteurl": "サイトURL",
-    "siteurlrequired": "サイトURLがありません。書き方は、例えば次の通りです：<i>http:\/\/www.yourmoodlesite.abc あるいは https:\/\/www.yourmoodlesite.efg<\/i>",
+    "siteurlrequired": "サイトURLがありません。書き方は、例えば次の通りです：<i>http://www.yourmoodlesite.abc あるいは https://www.yourmoodlesite.efg</i>",
     "username": "ユーザー名",
     "usernamerequired": "ユーザー名がありません",
     "webservicesnotenabled": "あなたのサイトでWebサービスが有効になっていません。モバイルアクセスが必要と思うなら、あなたのMoodleサイト管理者に相談してください。"

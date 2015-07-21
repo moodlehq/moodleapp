@@ -1,0 +1,13 @@
+{
+    "beep": "呼叫",
+    "currentusers": "当前用户",
+    "enterchat": "进入聊天室",
+    "entermessage": "输入您的信息",
+    "messagebeepsyou": "{{$a}}刚刚呼叫您！",
+    "messageenter": "{{$a}}刚刚进入聊天室",
+    "messageexit": "{{$a}}已退出聊天室",
+    "nomessages": "无消息",
+    "send": "发送",
+    "sessionstart": "聊天会话开始时间：{{$a}}",
+    "talk": "交谈"
+}
