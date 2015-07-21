@@ -76,7 +76,7 @@ angular.module('mm.addons.mod_imscp')
             }
 
             // Add observers to monitor file downloads.
-            function addObservers(eventNames) {
+            function addObservers(eventNames, isOpeningModule) {
                 angular.forEach(eventNames, function(e) {
                     if (typeof observers[e] == 'undefined') {
                         observers[e] = $mmEvents.on(e, function(data) {
@@ -99,7 +99,8 @@ angular.module('mm.addons.mod_imscp')
                                 } else {
                                     refreshBtn.hidden = false;
                                 }
-                                if (!$scope.$$destroyed) {
+                                // Don't show error message if state left or the module is being opened.
+                                if (!$scope.$$destroyed && !isOpeningModule) {
                                     $mmUtil.showErrorModal('mm.core.errordownloading', true);
                                 }
                             }
@@ -145,7 +146,7 @@ angular.module('mm.addons.mod_imscp')
 
                     $mmaModImscp.getFileEventNames(module).then(function(eventNames) {
                         previousState = $mmFilepool.FILENOTDOWNLOADED;
-                        addObservers(eventNames);
+                        addObservers(eventNames, false);
                         $mmaModImscp.prefetchContent(module);
                         // Store module as dowloading.
                         $mmCourse.storeModuleStatus(siteid, module.id, $mmFilepool.FILEDOWNLOADING, revision, timemodified);
@@ -166,7 +167,7 @@ angular.module('mm.addons.mod_imscp')
                     $mmaModImscp.invalidateContent(module.id).then(function() {
                         $mmaModImscp.getFileEventNames(module).then(function(eventNames) {
                             previousState = $mmFilepool.mmFilepool.FILEOUTDATED;
-                            addObservers(eventNames);
+                            addObservers(eventNames, false);
                             $mmaModImscp.prefetchContent(module);
                             // Store module as dowloading.
                             $mmCourse.storeModuleStatus(siteid, module.id, $mmFilepool.FILEDOWNLOADING, revision, timemodified);
@@ -186,7 +187,7 @@ angular.module('mm.addons.mod_imscp')
                     // Refresh or download icon shown. Let's add observers to monitor download.
                     previousState = downloadBtn.hidden ? $mmFilepool.FILEOUTDATED : $mmFilepool.FILENOTDOWNLOADED;
                     $mmaModImscp.getFileEventNames(module).then(function(eventNames) {
-                        addObservers(eventNames);
+                        addObservers(eventNames, true);
                     });
                     $mmCourse.storeModuleStatus(siteid, module.id, $mmFilepool.FILEDOWNLOADING, revision, timemodified);
                     showDownloading();
@@ -205,7 +206,7 @@ angular.module('mm.addons.mod_imscp')
                             $mmCourse.getModulePreviousStatus(siteid, module.id).then(function(previous) {
                                 previousState = previous;
                             });
-                            addObservers(eventNames);
+                            addObservers(eventNames, false);
                             addQueueObserver();
                         } else {
                             // Weird case, state downloading but no files being downloaded. Set state to previousState.

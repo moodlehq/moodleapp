@@ -21,7 +21,8 @@ angular.module('mm.addons.mod_resource')
  * @ngdoc controller
  * @name mmaModResourceIndexCtrl
  */
-.controller('mmaModResourceIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModResource, $log, mmaModResourceComponent) {
+.controller('mmaModResourceIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModResource, $log, $mmApp,
+            mmaModResourceComponent) {
     $log = $log.getInstance('mmaModResourceIndexCtrl');
 
     var module = $stateParams.module || {};
@@ -47,12 +48,20 @@ angular.module('mm.addons.mod_resource')
                     $scope.loaded = true;
                 });
             } else if ($mmaModResource.isDisplayedInline(module)) {
-                // Ignore errors, they're already treated on $mmaModResourceCourseContentHandler.
-                $mmaModResource.downloadAllContent(module).finally(function() {
+                var downloadFailed = false;
+                $mmaModResource.downloadAllContent(module).catch(function(err) {
+                    // Mark download as failed but go on since the main files could have been downloaded.
+                    downloadFailed = true;
+                }).finally(function() {
                     $mmaModResource.getResourceHtml(module.contents, module.id).then(function(content) {
                         $scope.mode = 'inline';
                         $scope.content = content;
                         $mmaModResource.logView(module.instance);
+
+                        if (downloadFailed && $mmApp.isOnline()) {
+                            // We could load the main file but the download failed. Show error message.
+                            $mmUtil.showErrorModal('mm.core.errordownloadingsomefiles', true);
+                        }
                     }).catch(function() {
                         $mmUtil.showErrorModal('mma.mod_resource.errorwhileloadingthecontent', true);
                     }).finally(function() {

@@ -9,6 +9,7 @@
     "elementseparator": ", ",
     "error": "Error",
     "errordownloading": "Error downloading file.",
+    "errordownloadingsomefiles": "Error downloading module files. Some files might be missing.",
     "hour" : "hour",
     "hours" : "hours",
     "humanreadablesize": "{{size}} {{unit}}",
