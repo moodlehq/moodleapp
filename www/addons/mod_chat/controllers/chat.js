@@ -19,7 +19,7 @@ angular.module('mm.addons.mod_chat')
  *
  * @module mm.addons.mod_chat
  * @ngdoc controller
- * @name mmaMessagesChatCtrl
+ * @name mmaModChatChatCtrl
  */
 .controller('mmaModChatChatCtrl', function($scope, $stateParams, $mmApp, $mmaModChat, $log, $ionicModal, $mmUtil,
                                             $ionicScrollDelegate, $timeout, $mmSite, $interval, mmaChatPollInterval) {
@@ -37,7 +37,11 @@ angular.module('mm.addons.mod_chat')
     $scope.currentUserBeep = 'beep ' + $scope.currentUserId;
     $scope.messages = [];
     $scope.chatUsers = [];
-    $scope.newMessage = '';
+
+    // We use an object because it works better with forms.
+    $scope.newMessage = {
+        text: ''
+    };
     chatLastTime = 0;
 
     // Chat users modal.
@@ -65,7 +69,7 @@ angular.module('mm.addons.mod_chat')
 
     // Add To "user":
     $scope.talkTo = function(user) {
-        $scope.newMessage = "To " + user + ": ";
+        $scope.newMessage.text = "To " + user + ": ";
         $scope.modal.hide();
     };
 
@@ -118,7 +122,9 @@ angular.module('mm.addons.mod_chat')
         text = text.replace(/(?:\r\n|\r|\n)/g, '<br />');
 
         $mmaModChat.sendMessage($scope.chatsid, text, beep).then(function() {
-            $scope.newMessage = '';
+            if (beep === '') {
+                $scope.newMessage.text = '';
+            }
         }, function(error) {
             if (typeof error === 'string') {
                 $mmUtil.showErrorModal(error);
@@ -130,14 +136,14 @@ angular.module('mm.addons.mod_chat')
 
     // Login the user.
     $mmaModChat.loginUser(chatId).then(function(data) {
-        $mmaModChat.getLatestMessages(data.chatsid, 0).then(function(messagesInfo) {
+        return $mmaModChat.getLatestMessages(data.chatsid, 0).then(function(messagesInfo) {
             $scope.chatsid = data.chatsid;
             chatLastTime = messagesInfo.chatnewlasttime;
-            $mmaModChat.getMessagesUserData(messagesInfo.messages, courseId).then(function(messages) {
+            return $mmaModChat.getMessagesUserData(messagesInfo.messages, courseId).then(function(messages) {
                 $scope.messages = $scope.messages.concat(messages);
             });
         });
-    }, function(error) {
+    }).catch(function(error) {
         if (typeof error === 'string') {
             $mmUtil.showErrorModal(error);
         } else {
@@ -178,6 +184,13 @@ angular.module('mm.addons.mod_chat')
                 $mmaModChat.getMessagesUserData(data.messages, courseId).then(function(messages) {
                     $scope.messages = $scope.messages.concat(messages);
                 });
+            }, function(error) {
+                $interval.cancel(polling);
+                if (typeof error === 'string') {
+                    $mmUtil.showErrorModal(error);
+                } else {
+                    $mmUtil.showErrorModal('mm.core.error', true);
+                }
             });
 
         }, mmaChatPollInterval);

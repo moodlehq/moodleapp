@@ -14,9 +14,6 @@
 
 angular.module('mm.core')
 
-.constant('mmaNotesPriority', 200)
-.constant('mmaNotesAddNotePriority', 200)
-
 /**
  * Provider with some 'util' functionalities.
  *

@@ -6,6 +6,7 @@
     "messagebeepsyou": "{{$a}} has just beeped you!",
     "messageenter": "{{$a}} has just entered this chat",
     "messageexit": "{{$a}} has left this chat",
+    "mustbeonlinetosendmessages": "You must be online to send messages",
     "nomessages": "No messages yet",
     "send": "Send",
     "sessionstart": "The next chat session will start in {{$a}}",

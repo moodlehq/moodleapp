@@ -5,13 +5,13 @@
     </ion-header-bar>
     <ion-content padding="true">
         <mm-loading hide-until="usersLoaded">
-            <div ng-repeat="user in chatUsers">
-                <div class="list card">
+            <ul class="list">
+                <li ng-repeat="user in chatUsers" class="card">
                     <div class="item item-avatar">
                         <img ng-src="{{user.profileimageurl}}" alt="" mm-external-content>
                         <mm-format-text>{{user.fullname}}</mm-format-text>
                     </div>
-                    <div class="item tabs tabs-secondary tabs-icon-left" ng-if="currentUserId != user.id">
+                    <div class="item tabs tabs-secondary tabs-icon-left" ng-if="currentUserId != user.id && !isAppOffline()">
                         <a class="tab-item" href="#" ng-click="talkTo(user.fullname)">
                             <i class="icon ion-chatbox"></i>
                             {{ 'mma.mod_chat.talk' | translate}}
@@ -21,8 +21,8 @@
                             {{ 'mma.mod_chat.beep' | translate}}
                         </a>
                     </div>
-                </div>
-            </div>
+                </li>
+            </ul>
         </mm-loading>
     </ion-content>
 </ion-modal-view>
