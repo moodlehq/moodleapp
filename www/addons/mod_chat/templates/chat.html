@@ -1,0 +1,59 @@
+<ion-view>
+    <ion-nav-title>{{ title }}</ion-nav-title>
+
+    <ion-nav-buttons side="secondary">
+        <button ng-if="loaded" class="button button-icon icon ion-person-stalker" ng-click="showChatUsers()"></button>
+    </ion-nav-buttons>
+
+    <ion-content class="padding" delegate-handle="mmaChatScroll">
+        <mm-loading hide-until="loaded">
+            <div class="list">
+                <div ng-repeat="message in messages track by $index">
+
+                    <p ng-if="showDate(messages[$index], messages[$index - 1])" class="mma-chat-notice">
+                        <span>{{ message.timestamp * 1000 | date:"EEE, d MMM" }}</span>
+                    </p>
+
+                    <p ng-if="message.system && message.message == 'enter'" class="mma-chat-notice">
+                        <span>{{ message.timestamp * 1000 | date:"h:mma" }} {{ 'mma.mod_chat.messageenter' | translate:{$a: message.userfullname} }}</span>
+                    </p>
+
+                    <p ng-if="message.system && message.message == 'exit'" class="mma-chat-notice">
+                        <span>{{ message.timestamp * 1000 | date:"h:mma" }} {{ 'mma.mod_chat.messageexit' | translate:{$a: message.userfullname} }}</span>
+                    </p>
+
+                    <p ng-if="message.message == currentUserBeep" class="mma-chat-notice">
+                        <span>{{ 'mma.mod_chat.messagebeepsyou' | translate:{$a: message.userfullname} }}</span>
+                    </p>
+
+                    <article ng-if="!message.system && message.message.substr(0, 4) != 'beep'" class="item item-avatar" href="#">
+                        <img ng-if="message.userprofileimageurl" ng-src="{{message.userprofileimageurl}}" mm-external-content>
+                        <img ng-if="!message.userprofileimageurl" src="img/user-avatar.png" alt="">
+                        <h2>{{ message.userfullname }}</h2>
+
+                        <mm-format-text after-render="scrollAfterRender" watch="true">{{ message.message }}</mm-format-text>
+
+                        <span class="item-note">{{ message.timestamp * 1000 | date:"h:mma" }}</span>
+                    </article>
+                </div>
+            </div>
+
+            <div ng-if="!messages || messages.length <= 0">
+                <p>{{ 'mma.mod_chat.nomessages' | translate}}</p>
+            </div>
+        </mm-loading>
+    </ion-content>
+
+</ion-view>
+
+<ion-footer-bar>
+    <p class="mma-chat-footer-note" ng-if="isAppOffline()">{{ 'mma.mod_chat.mustbeonlinetosendmessages' | translate }}</p>
+    <form  ng-if="!isAppOffline()" ng-submit="sendMessage(newMessage.text);" style="width: 100%">
+        <div class="mma-chat-input-inset item-input-inset">
+            <label class="item-input-wrapper">
+                <input type="text" placeholder="{{ 'mma.mod_chat.entermessage' | translate }}" ng-model="newMessage.text" style="width: 100%;">
+            </label>
+            <button type="submit" class="button button-clear" ng-disabled="!newMessage.text">{{ 'mma.mod_chat.send' | translate}}</button>
+        </div>
+    </form>
+</ion-footer-bar>

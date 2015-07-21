@@ -21,7 +21,7 @@ angular.module('mm.core')
  * @ngdoc provider
  * @name $mmUtil
  */
-.provider('$mmUtil', function() {
+.provider('$mmUtil', function(mmCoreSecondsYear, mmCoreSecondsDay, mmCoreSecondsHour, mmCoreSecondsMinute) {
 
     var self = this; // Use 'self' to be coherent with the rest of services.
 
@@ -559,6 +559,79 @@ angular.module('mm.core')
          */
         self.isTrueOrOne = function(value) {
             return typeof value != 'undefined' && (value === true || parseInt(value) === 1);
+        };
+
+        /**
+         * Returns hours, minutes and seconds in a human readable format
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#formatTime
+         * @param  {Integer} seconds A number of seconds
+         * @return {String}         Human readable seconds formatted
+         */
+        self.formatTime = function(seconds) {
+            var langKeys = ['mm.core.day', 'mm.core.days', 'mm.core.hour', 'mm.core.hours', 'mm.core.min', 'mm.core.mins',
+                            'mm.core.sec', 'mm.core.secs', 'mm.core.year', 'mm.core.years', 'mm.core.now'];
+
+            return $translate(langKeys).then(function(translations) {
+
+                totalSecs = Math.abs(seconds);
+
+                var years     = Math.floor(totalSecs / mmCoreSecondsYear);
+                var remainder = totalSecs - (years * mmCoreSecondsYear);
+                var days      = Math.floor(remainder / mmCoreSecondsDay);
+                remainder = totalSecs - (days * mmCoreSecondsDay);
+                var hours     = Math.floor(remainder / mmCoreSecondsHour);
+                remainder = remainder - (hours * mmCoreSecondsHour);
+                var mins      = Math.floor(remainder / mmCoreSecondsMinute);
+                var secs      = remainder - (mins * mmCoreSecondsMinute);
+
+                var ss = (secs == 1)  ? translations['mm.core.sec']  : translations['mm.core.secs'];
+                var sm = (mins == 1)  ? translations['mm.core.min']  : translations['mm.core.mins'];
+                var sh = (hours == 1) ? translations['mm.core.hour'] : translations['mm.core.hours'];
+                var sd = (days == 1)  ? translations['mm.core.day']  : translations['mm.core.days'];
+                var sy = (years == 1) ? translations['mm.core.year'] : translations['mm.core.years'];
+
+                var oyears = '',
+                    odays = '',
+                    ohours = '',
+                    omins = '',
+                    osecs = '';
+
+                if (years) {
+                    oyears  = years + ' ' + sy;
+                }
+                if (days) {
+                    odays  = days + ' ' + sd;
+                }
+                if (hours) {
+                    ohours = hours + ' ' + sh;
+                }
+                if (mins) {
+                    omins  = mins + ' ' + sm;
+                }
+                if (secs) {
+                    osecs  = secs + ' ' + ss;
+                }
+
+                if (years) {
+                    return oyears + ' ' + odays;
+                }
+                if (days) {
+                    return odays + ' ' + ohours;
+                }
+                if (hours) {
+                    return ohours + ' ' + omins;
+                }
+                if (mins) {
+                    return omins + ' ' + osecs;
+                }
+                if (secs) {
+                    return osecs;
+                }
+                return translations('mm.core.now');
+            });
         };
 
         return self;
