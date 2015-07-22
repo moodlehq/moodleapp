@@ -1,0 +1,14 @@
+{
+    "choiceoptions": "Keuze-opties",
+    "expired": "Sorry, deze activiteit is afgesloten op {{$a}} en is niet meer beschikbaar",
+    "full": "(volledig)",
+    "noresultsviewable": "De resultaten zijn nu niet zichtbaar.",
+    "notopenyet": "Deze activiteit is niet beschikbaar tot {{$a}}",
+    "numberofuser": "Het aantal gebruikers",
+    "numberofuserinpercentage": "Het aantal gebruikers als percentage",
+    "responses": "Antwoorden",
+    "responsesresultgraphheader": "Grafiek tonen",
+    "savemychoice": "Bewaar mijn antwoord",
+    "userchoosethisoption": "Gebruiker koos deze optie",
+    "yourselection": "Jouw selectie"
+}

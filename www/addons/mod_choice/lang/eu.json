@@ -1,0 +1,14 @@
+{
+    "choiceoptions": "Kontsultaren aukerak",
+    "expired": "Barkatu, jarduera hau {{$a}}(e)an itxi zen eta dagoeneko ez dago eskuragarri.",
+    "full": "(Beteta)",
+    "noresultsviewable": "Emaitzak ezin dira orain ikusi",
+    "notopenyet": "Barkatu, baina jarduera hau ez dago erabiltzeko moduan {{$a}} arte.",
+    "numberofuser": "Partaide-kopurua",
+    "numberofuserinpercentage": "Partaide-kopurua ehunekotan",
+    "responses": "Erantzunak",
+    "responsesresultgraphheader": "Erakutsi grafikoa",
+    "savemychoice": "Gorde nire aukera",
+    "userchoosethisoption": "Erabiltzaileak hau aukeratu du",
+    "yourselection": "Zure aukera"
+}

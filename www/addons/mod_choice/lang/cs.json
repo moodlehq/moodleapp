@@ -1,0 +1,14 @@
+{
+    "choiceoptions": "Možné odpovědi na anketu",
+    "expired": "Je nám líto, tato činnost byla uzavřena {{$a}} a není nadále dostupná",
+    "full": "(Obsazeno)",
+    "noresultsviewable": "Výsledky nejsou momentálně k dispozici",
+    "notopenyet": "Je mi líto, tato činnost není až do {{$a}} dostupná",
+    "numberofuser": "Počet uživatelů",
+    "numberofuserinpercentage": "Počet uživatelů v procentech",
+    "responses": "Odpovědi",
+    "responsesresultgraphheader": "Graf",
+    "savemychoice": "Uložit mou volbu",
+    "userchoosethisoption": "Vybraná volba",
+    "yourselection": "Vaše volba"
+}

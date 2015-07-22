@@ -1,0 +1,14 @@
+{
+    "choiceoptions": "Options du sondage",
+    "expired": "Désolé, cette activité s'est terminée le {{$a}} et n'est plus disponible",
+    "full": "(complet)",
+    "noresultsviewable": "Les résultats ne sont actuellement pas visibles.",
+    "notopenyet": "Désolé, cette activité ne sera disponible que le {{$a}}",
+    "numberofuser": "Nombre de participants",
+    "numberofuserinpercentage": "Pourcentage de participants",
+    "responses": "Réponses",
+    "responsesresultgraphheader": "Affichage graphique",
+    "savemychoice": "Enregistrer mon choix",
+    "userchoosethisoption": "Les utilisateurs ont choisi cette option",
+    "yourselection": "Votre choix"
+}

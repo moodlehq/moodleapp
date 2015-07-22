@@ -1,0 +1,14 @@
+{
+    "choiceoptions": "Választási lehetőségek",
+    "expired": "Ez a tevékenység {{$a}} időpontban lezárult és már nem érhető el",
+    "full": "(Betelt)",
+    "noresultsviewable": "Az eredmények jelenleg nem tekinthetők meg.",
+    "notopenyet": "Ez a tevékenység {{$a}} időpontig nem elérhető",
+    "numberofuser": "Résztvevők száma",
+    "numberofuserinpercentage": "Résztvevők száma százalékban",
+    "responses": "Tanuló által adott válaszok",
+    "responsesresultgraphheader": "Gráfmegjelenítés",
+    "savemychoice": "Válaszlehetőségem mentése",
+    "userchoosethisoption": "Felhasználó általi választás",
+    "yourselection": "Az Ön választása"
+}

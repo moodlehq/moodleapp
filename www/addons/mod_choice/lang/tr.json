@@ -1,0 +1,9 @@
+{
+    "expired": "Üzgünüz, bu etkinlik {{$a}} tarihinde kapandı ve bu etkinliğe artık ulaşılamaz",
+    "full": "(Dolu)",
+    "noresultsviewable": "Sonuçlar şu anda görüntülenmemektedir.",
+    "notopenyet": "Üzgünüz, bu etkinliğe {{$a}} tarihine kadar ulaşılamaz",
+    "responses": "Yanıtlar",
+    "savemychoice": "Seçeneğimi kaydet",
+    "yourselection": "Seçiminiz"
+}
