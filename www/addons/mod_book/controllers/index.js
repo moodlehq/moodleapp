@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_book')
  * @name mmaModBookIndexCtrl
  */
 .controller('mmaModBookIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModBook, $mmSite, $log, mmaModBookComponent,
-                                            $ionicPopover) {
+            $ionicPopover, $mmApp) {
     $log = $log.getInstance('mmaModBookIndexCtrl');
 
     var module = $stateParams.module || {};
@@ -41,14 +41,21 @@ angular.module('mm.addons.mod_book')
 
 
     function fetchContent() {
-        // Show first chapter.
+        var downloadFailed = false;
         return $mmaModBook.downloadAllContent(module).catch(function(err) {
-            // Ignore download errors, they're already treated on $mmaModBookCourseContentHandler.
+            // Mark download as failed but go on since the main files could have been downloaded.
+            downloadFailed = true;
         }).finally(function() {
+            // Show first chapter.
             return $mmaModBook.getChapterContent(module.contents, firstChapter, module.id).then(function(content) {
                 $scope.content = content;
+
+                if (downloadFailed && $mmApp.isOnline()) {
+                    // We could load the main file but the download failed. Show error message.
+                    $mmUtil.showErrorModal('mm.core.errordownloadingsomefiles', true);
+                }
             }).catch(function() {
-                $mmUtil.showErrorModal('mma.mod_book.errorchapter');
+                $mmUtil.showErrorModal('mma.mod_book.errorchapter', true);
             }).finally(function() {
                 $scope.loaded = true;
             });

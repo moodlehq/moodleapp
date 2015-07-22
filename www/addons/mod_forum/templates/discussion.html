@@ -5,7 +5,7 @@
                        on-refresh="refreshPosts()">
         </ion-refresher>
         <mm-loading hide-until="discussionLoaded">
-            <article class="card">
+            <article class="card" ng-if="discussion">
                 <div class="item item-avatar">
                     <img ng-if="discussion.userpictureurl" ng-src="{{discussion.userpictureurl}}" mm-external-content mm-user-link courseid="{{courseid}}" userid="{{discussion.userid}}">
                     <img ng-if="!discussion.userpictureurl" src="img/user-avatar.png" alt="">

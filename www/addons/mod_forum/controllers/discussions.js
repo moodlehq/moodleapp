@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_forum')
  * @ngdoc controller
  * @name mmaModForumDiscussionsCtrl
  */
-.controller('mmaModForumDiscussionsCtrl', function($scope, $stateParams, $mmaModForum, $mmSite, $mmUtil, mmUserProfileState) {
+.controller('mmaModForumDiscussionsCtrl', function($q, $scope, $stateParams, $mmaModForum, $mmSite, $mmUtil, mmUserProfileState) {
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
         forum,
@@ -47,6 +47,9 @@ angular.module('mm.addons.mod_forum')
             } else {
                 $mmUtil.showErrorModal('mma.mod_forum.errorgetforum', true);
             }
+        }, function(message) {
+            $mmUtil.showErrorModal(message);
+            return $q.reject();
         });
     }
 
@@ -71,6 +74,7 @@ angular.module('mm.addons.mod_forum')
 
         }, function(message) {
             $mmUtil.showErrorModal(message);
+            return $q.reject();
         });
     }
 

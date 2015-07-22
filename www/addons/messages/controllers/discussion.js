@@ -21,8 +21,9 @@ angular.module('mm.addons.messages')
  * @ngdoc controller
  * @name mmaMessagesDiscussionCtrl
  */
-.controller('mmaMessagesDiscussionCtrl', function($scope, $stateParams, $mmApp, $mmaMessages, $mmSite, $timeout,
-        $ionicScrollDelegate, mmUserProfileState, $mmUtil, mmaMessagesPollInterval, $interval, $log, $ionicHistory) {
+.controller('mmaMessagesDiscussionCtrl', function($scope, $stateParams, $mmApp, $mmaMessages, $mmSite, $timeout, $mmEvents,
+        $ionicScrollDelegate, mmUserProfileState, $mmUtil, mmaMessagesPollInterval, $interval, $log, $ionicHistory,
+        mmCoreEventKeyboardShow, mmCoreEventKeyboardHide, $window) {
 
     $log = $log.getInstance('mmaMessagesDiscussionCtrl');
 
@@ -30,7 +31,9 @@ angular.module('mm.addons.messages')
         userFullname = $stateParams.userFullname,
         messagesBeingSent = 0,
         polling,
-        backView = $ionicHistory.backView();
+        backView = $ionicHistory.backView(),
+        lastMessage,
+        scrollView = $ionicScrollDelegate.$getByHandle('mmaMessagesScroll');
 
     $scope.loaded = false;
     $scope.messages = [];
@@ -97,6 +100,7 @@ angular.module('mm.addons.messages')
         messagesBeingSent++;
         $mmaMessages.sendMessage(userId, text).then(function() {
             message.sending = false;
+            notifyNewMessage();
         }, function(error) {
             if (typeof error === 'string') {
                 $mmUtil.showErrorModal(error);
@@ -121,6 +125,7 @@ angular.module('mm.addons.messages')
                 $scope.title = messages[0].userfromfullname || '';
             }
         }
+        notifyNewMessage();
     }, function(error) {
         if (typeof error === 'string') {
             $mmUtil.showErrorModal(error);
@@ -135,8 +140,8 @@ angular.module('mm.addons.messages')
         if (scope.$last === true) {
             // Need a timeout to leave time to the view to be rendered.
             $timeout(function() {
-                var scrollView = $ionicScrollDelegate.$getByHandle('mmaMessagesScroll');
                 scrollView.scrollBottom();
+                setScrollWithKeyboard();
             });
         }
     };
@@ -169,6 +174,7 @@ angular.module('mm.addons.messages')
                     return;
                 }
                 $scope.messages = $mmaMessages.sortMessages(messages);
+                notifyNewMessage();
             });
         }, mmaMessagesPollInterval);
     });
@@ -180,6 +186,55 @@ angular.module('mm.addons.messages')
             $interval.cancel(polling);
         }
     });
+
+    // Notify the last message found so discussions list controller can tell if last message should be updated.
+    function notifyNewMessage() {
+        var last = $scope.messages[$scope.messages.length - 1];
+        if (last && last.smallmessage !== lastMessage) {
+            lastMessage = last.smallmessage;
+            $mmEvents.trigger($mmaMessages.getDiscussionEventName(userId), {
+                message: lastMessage,
+                timecreated: last.timecreated
+            });
+        }
+    }
+
+    // Scroll when keyboard is hide/shown to keep the user scroll. This is only needed for Android.
+    function setScrollWithKeyboard() {
+        if (ionic.Platform.isAndroid()) {
+            $timeout(function() { // Use a $timeout to wait for scroll to correctly measure height.
+                var obsShow,
+                    obsHide,
+                    keyboardHeight,
+                    maxInitialScroll = scrollView.getScrollView().__contentHeight - scrollView.getScrollView().__clientHeight;
+
+                obsShow = $mmEvents.on(mmCoreEventKeyboardShow, function(e) {
+                    // Try to calculate keyboard height ourselves since e.keyboardHeight is not reliable.
+                    var heightDifference = $window.outerHeight - $window.innerHeight,
+                        newKeyboardHeight = heightDifference > 50 ? heightDifference : e.keyboardHeight;
+                    if (newKeyboardHeight) {
+                        keyboardHeight = newKeyboardHeight;
+                        scrollView.scrollBy(0, newKeyboardHeight);
+                    }
+                });
+
+                obsHide = $mmEvents.on(mmCoreEventKeyboardHide, function(e) {
+                    if (scrollView.getScrollPosition().top >= maxInitialScroll) {
+                        // scrollBy(0,0) would automatically reset at maxInitialScroll. We need to apply the difference
+                        // from there to scroll to the right point.
+                        scrollView.scrollBy(0, scrollView.getScrollPosition().top - keyboardHeight - maxInitialScroll);
+                    } else {
+                        scrollView.scrollBy(0, - keyboardHeight);
+                    }
+                });
+
+                $scope.$on('$destroy', function() {
+                    obsShow && obsShow.off && obsShow.off();
+                    obsHide && obsHide.off && obsHide.off();
+                });
+            });
+        }
+    }
 
 });
 

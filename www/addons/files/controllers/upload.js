@@ -37,7 +37,7 @@ angular.module('mm.addons.files')
     // Function called when a file is uploaded.
     function successUploading() {
         $mmaFiles.invalidateDirectory(root, path).finally(function() {
-            $mmUtil.showModal('mma.files.success', 'mma.files.fileuploaded');
+            $mmUtil.showModal('mm.core.success', 'mma.files.fileuploaded');
             $ionicHistory.goBack();
         });
     }

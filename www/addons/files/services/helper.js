@@ -271,7 +271,7 @@ angular.module('mm.addons.files')
                 return self.uploadGenericFile(fileEntry.toURL(), file.name, file.type, siteid).then(function() {
                     // Invalidate my files root dir so the list is refreshed when the user goes in.
                     return $mmaFiles.invalidateDirectory('my', undefined, siteid).finally(function() {
-                        $mmUtil.showModal('mma.files.success', 'mma.files.fileuploaded');
+                        $mmUtil.showModal('mm.core.success', 'mma.files.fileuploaded');
                     });
                 }, function(err) {
                     if (err) {

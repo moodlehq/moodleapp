@@ -31,23 +31,26 @@ angular.module('mm.addons.notifications')
     // Convenience function to get notifications. Get unread notifications first.
     function fetchNotifications(refresh) {
 
-        var limitFrom = refresh ? 0: unreadCount;
-        return $mmaNotifications.getUnreadNotifications(limitFrom, mmaNotificationsListLimit).then(function(unread) {
-            if (refresh) {
-                unreadCount = unread.length;
-                readCount = 0;
-                $scope.notifications = unread;
-            } else {
-                unreadCount += unread.length;
-                $scope.notifications = $scope.notifications.concat(unread);
-            }
+        if (refresh) {
+            readCount = 0;
+            unreadCount = 0;
+        }
+
+        return $mmaNotifications.getUnreadNotifications(unreadCount, mmaNotificationsListLimit).then(function(unread) {
+            // Don't add the unread notifications to $scope.notifications yet. If there are no unread notifications
+            // that causes that the "There are no notifications" message is shown in pull to refresh.
+            unreadCount += unread.length;
 
             if (unread.length < mmaNotificationsListLimit) {
                 // Limit not reached. Get read notifications until reach the limit.
                 var readLimit = mmaNotificationsListLimit - unread.length;
                 return $mmaNotifications.getReadNotifications(readCount, readLimit).then(function(read) {
                     readCount += read.length;
-                    $scope.notifications = $scope.notifications.concat(read);
+                    if (refresh) {
+                        $scope.notifications = unread.concat(read);
+                    } else {
+                        $scope.notifications = $scope.notifications.concat(unread).concat(read);
+                    }
                     $scope.canLoadMore = read.length >= readLimit;
                 }, function() {
                     if (unread.length == 0) {
@@ -55,6 +58,11 @@ angular.module('mm.addons.notifications')
                     }
                 });
             } else {
+                if (refresh) {
+                    $scope.notifications = unread;
+                } else {
+                    $scope.notifications = $scope.notifications.concat(unread);
+                }
                 $scope.canLoadMore = true;
             }
         }, function() {

@@ -138,7 +138,8 @@ em {
 // Spinners.
 .button-block {
   .spinner {
-    float: right;
+    position: absolute;
+    right: $button-padding;
     padding-top: floor(($button-height + ($button-border-width * 2) + 1 - 28) / 2);
     line-height: 28px;
   }

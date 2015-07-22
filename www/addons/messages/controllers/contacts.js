@@ -27,6 +27,7 @@ angular.module('mm.addons.messages')
 
     $scope.loaded = false;
     $scope.contactTypes = ['online', 'offline', 'blocked', 'strangers', 'search'];
+    $scope.searchType = 'search';
     $scope.hasContacts = false;
     $scope.canSearch = $mmaMessages.isSearchEnabled();
     $scope.formData = {

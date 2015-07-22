@@ -100,9 +100,7 @@ angular.module('mm.core')
                 $log.info('WS: Data number of elements '+ data.length);
             }
 
-            // We pass back a clone of the original object, this may
-            // prevent errors if in the callback the object is modified.
-            deferred.resolve(angular.copy(data));
+            deferred.resolve(data);
 
         }, function(error) {
             $mmLang.translateErrorAndReject(deferred, 'mm.core.cannotconnect');

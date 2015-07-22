@@ -467,12 +467,14 @@ angular.module('mm.core')
                         saveToCache(site, method, data, response, cacheKey);
                     }
 
-                    deferred.resolve(response);
+                    // We pass back a clone of the original object, this may
+                    // prevent errors if in the callback the object is modified.
+                    deferred.resolve(angular.copy(response));
                 }, function(error) {
                     if (error === mmCoreSessionExpired) {
                         // Session expired, trigger event.
                         $mmLang.translateErrorAndReject(deferred, 'mm.core.lostconnection');
-                        $mmEvents.trigger(mmCoreEventSessionExpired, {siteid: site.id});
+                        $mmEvents.trigger(mmCoreEventSessionExpired, site.id);
                     } else if (!emergencyCache) {
                         $log.debug('WS call ' + method + ' failed. Emergency cache is forbidden, rejecting.');
                         deferred.reject(error);

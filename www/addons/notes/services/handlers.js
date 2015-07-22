@@ -73,20 +73,18 @@ angular.module('mm.addons.notes')
                 };
 
                 $scope.addNote = function(){
+                    var loadingModal = $mmUtil.showModalLoading('mm.core.sending', true);
                     // Freeze the add note button.
                     $scope.processing = true;
 
                     $mmaNotes.addNote(user.id, courseid, $scope.note.publishstate, $scope.note.text).then(function() {
-                        $translate('mma.notes.eventnotecreated').then(function(str) {
-                            $ionicLoading.show({
-                                template: str,
-                                duration: 2000
-                            });
-                        });
+                        $mmUtil.showModal('mm.core.success', 'mma.notes.eventnotecreated');
+                        $scope.closeModal();
                     }, function(error) {
                         $mmUtil.showErrorModal(error);
+                        $scope.processing = false;
                     }).finally(function() {
-                        $scope.closeModal();
+                        loadingModal.dismiss();
                     });
                 };
 

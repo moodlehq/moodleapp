@@ -74,7 +74,7 @@ angular.module('mm.addons.mod_page')
             }
 
             // Add observers to monitor file downloads.
-            function addObservers(eventNames) {
+            function addObservers(eventNames, isOpeningModule) {
                 angular.forEach(eventNames, function(e) {
                     if (typeof observers[e] == 'undefined') {
                         observers[e] = $mmEvents.on(e, function(data) {
@@ -97,7 +97,8 @@ angular.module('mm.addons.mod_page')
                                 } else {
                                     refreshBtn.hidden = false;
                                 }
-                                if (!$scope.$$destroyed) {
+                                // Don't show error message if state left or the module is being opened.
+                                if (!$scope.$$destroyed && !isOpeningModule) {
                                     $mmUtil.showErrorModal('mm.core.errordownloading', true);
                                 }
                             }
@@ -143,7 +144,7 @@ angular.module('mm.addons.mod_page')
 
                     $mmaModPage.getFileEventNames(module).then(function(eventNames) {
                         previousState = $mmFilepool.FILENOTDOWNLOADED;
-                        addObservers(eventNames);
+                        addObservers(eventNames, false);
                         $mmaModPage.prefetchContent(module);
                         // Store module as dowloading.
                         $mmCourse.storeModuleStatus(siteid, module.id, $mmFilepool.FILEDOWNLOADING, revision, timemodified);
@@ -164,7 +165,7 @@ angular.module('mm.addons.mod_page')
                     $mmaModPage.invalidateContent(module.id).then(function() {
                         $mmaModPage.getFileEventNames(module).then(function(eventNames) {
                             previousState = $mmFilepool.mmFilepool.FILEOUTDATED;
-                            addObservers(eventNames);
+                            addObservers(eventNames, false);
                             $mmaModPage.prefetchContent(module);
                             // Store module as dowloading.
                             $mmCourse.storeModuleStatus(siteid, module.id, $mmFilepool.FILEDOWNLOADING, revision, timemodified);
@@ -184,7 +185,7 @@ angular.module('mm.addons.mod_page')
                     // Refresh or download icon shown. Let's add observers to monitor download.
                     previousState = downloadBtn.hidden ? $mmFilepool.FILEOUTDATED : $mmFilepool.FILENOTDOWNLOADED;
                     $mmaModPage.getFileEventNames(module).then(function(eventNames) {
-                        addObservers(eventNames);
+                        addObservers(eventNames, true);
                     });
                     $mmCourse.storeModuleStatus(siteid, module.id, $mmFilepool.FILEDOWNLOADING, revision, timemodified);
                     showDownloading();
@@ -203,7 +204,7 @@ angular.module('mm.addons.mod_page')
                             $mmCourse.getModulePreviousStatus(siteid, module.id).then(function(previous) {
                                 previousState = previous;
                             });
-                            addObservers(eventNames);
+                            addObservers(eventNames, false);
                             addQueueObserver();
                         } else {
                             // Weird case, state downloading but no files being downloaded. Set state to previousState.
