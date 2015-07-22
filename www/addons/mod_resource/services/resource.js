@@ -305,15 +305,17 @@ angular.module('mm.addons.mod_resource')
      * @module mm.addons.mod_resource
      * @ngdoc method
      * @name $mmaModResource#logView
-     * @param {Number} instanceId The instance ID of the module.
-     * @return {Void}
+     * @param {String} id Module ID.
+     * @return {Promise}  Promise resolved when the WS call is successful.
      */
-    self.logView = function(instanceId) {
-        if (instanceId) {
-            $mmSite.write('mod_resource_view_resource', {
-                resourceid: instanceId
-            });
+    self.logView = function(id) {
+        if (id) {
+            var params = {
+                resourceid: id
+            };
+            return $mmSite.write('mod_resource_view_resource', params);
         }
+        return $q.reject();
     };
 
     /**

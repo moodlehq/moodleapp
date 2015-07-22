@@ -303,6 +303,25 @@ angular.module('mm.addons.mod_book')
     };
 
     /**
+     * Report a book as being viewed.
+     *
+     * @module mm.addons.mod_book
+     * @ngdoc method
+     * @name $mmaModBook#logView
+     * @param {String} id Module ID.
+     * @return {Promise}  Promise resolved when the WS call is successful.
+     */
+    self.logView = function(id) {
+        if (id) {
+            var params = {
+                urlid: id
+            };
+            return $mmSite.write('mod_book_view_book', params);
+        }
+        return $q.reject();
+    };
+
+    /**
      * Prefetch the content.
      *
      * @module mm.addons.mod_book

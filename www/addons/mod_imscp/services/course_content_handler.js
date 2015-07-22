@@ -45,10 +45,11 @@ angular.module('mm.addons.mod_imscp')
      * @module mm.addons.mod_imscp
      * @ngdoc method
      * @name $mmaModImscpCourseContentHandler#getController
-     * @param {Object} module The module info.
+     * @param {Object} module   The module info.
+     * @param {Number} courseid The course ID.
      * @return {Function}
      */
-    self.getController = function(module) {
+    self.getController = function(module, courseid) {
         return function($scope) {
             var downloadBtn,
                 refreshBtn,
@@ -192,7 +193,7 @@ angular.module('mm.addons.mod_imscp')
                     $mmCourse.storeModuleStatus(siteid, module.id, $mmFilepool.FILEDOWNLOADING, revision, timemodified);
                     showDownloading();
                 }
-                $state.go('site.mod_imscp', {module: module});
+                $state.go('site.mod_imscp', {module: module, courseid: courseid});
             };
 
             // Check current status to decide which icon should be shown.

@@ -43,21 +43,27 @@ angular.module('mm.addons.mod_url')
      * @ngdoc method
      * @name $mmaModUrlCourseContentHandler#getController
      * @param {Object} module The module info.
+     * @param {Number} courseid The course ID.
      * @return {Function}
      */
-    self.getController = function(module) {
+    self.getController = function(module, courseid) {
         return function($scope) {
             $scope.icon = $mmCourse.getModuleIconSrc('url');
             $scope.title = module.name;
             $scope.action = function(e) {
-                $state.go('site.mod_url', {module: module});
+                $state.go('site.mod_url', {module: module, courseid: courseid});
             };
 
             if (module.contents && module.contents[0] && module.contents[0].fileurl) {
                 $scope.buttons = [{
                     icon: 'ion-link',
-                    action: function() {
-                        $mmaModUrl.open(module.instance, module.contents[0].fileurl);
+                    action: function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        $mmaModUrl.logView(module.instance).then(function() {
+                            $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
+                        });
+                        $mmaModUrl.open(module.contents[0].fileurl);
                     }
                 }];
             }

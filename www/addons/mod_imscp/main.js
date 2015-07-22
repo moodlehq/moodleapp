@@ -23,7 +23,8 @@ angular.module('mm.addons.mod_imscp', ['mm.core'])
     .state('site.mod_imscp', {
       url: '/mod_imscp',
       params: {
-        module: null
+        module: null,
+        courseid: null
       },
       views: {
         'site': {

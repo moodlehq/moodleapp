@@ -37,7 +37,7 @@ angular.module('mm.core.course', ['mm.core.courses'])
         url: '/mm_course-section',
         params: {
             sectionid: null,
-            courseid: null,
+            courseid: null
         },
         views: {
             'site': {

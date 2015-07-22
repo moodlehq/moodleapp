@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_label')
  * @ngdoc service
  * @name $mmaModLabelCourseContentHandler
  */
-.factory('$mmaModLabelCourseContentHandler', function($mmCourse, $mmText, $translate, $state) {
+.factory('$mmaModLabelCourseContentHandler', function($mmText, $translate, $state) {
     var self = {};
 
     /**

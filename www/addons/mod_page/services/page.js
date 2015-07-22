@@ -226,6 +226,25 @@ angular.module('mm.addons.mod_page')
     };
 
     /**
+     * Report a page as being viewed.
+     *
+     * @module mm.addons.mod_page
+     * @ngdoc method
+     * @name $mmaModPage#logView
+     * @param {String} id Module ID.
+     * @return {Promise}  Promise resolved when the WS call is successful.
+     */
+    self.logView = function(id) {
+        if (id) {
+            var params = {
+                urlid: id
+            };
+            return $mmSite.write('mod_page_view_page', params);
+        }
+        return $q.reject();
+    };
+
+    /**
      * Prefetch the content.
      *
      * @module mm.addons.mod_page

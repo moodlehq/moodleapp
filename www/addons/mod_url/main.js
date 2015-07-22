@@ -21,7 +21,8 @@ angular.module('mm.addons.mod_url', ['mm.core'])
     .state('site.mod_url', {
       url: '/mod_url',
       params: {
-        module: null
+        module: null,
+        courseid: null
       },
       views: {
         'site': {

@@ -23,7 +23,8 @@ angular.module('mm.addons.mod_page', ['mm.core'])
     .state('site.mod_page', {
       url: '/mod_page',
       params: {
-        module: null
+        module: null,
+        courseid: null
       },
       views: {
         'site': {

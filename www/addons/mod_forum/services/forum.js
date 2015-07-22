@@ -217,6 +217,25 @@ angular.module('mm.addons.mod_forum')
     };
 
     /**
+     * Report a forum as being viewed.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#logView
+     * @param {String} id Module ID.
+     * @return {Promise}  Promise resolved when the WS call is successful.
+     */
+    self.logView = function(id) {
+        if (id) {
+            var params = {
+                forumid: id
+            };
+            return $mmSite.write('mod_forum_view_forum', params);
+        }
+        return $q.reject();
+    };
+
+    /**
      * Store the users data from a discussions/posts list.
      *
      * @param {Object[]} list Array of posts or discussions.

@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_folder')
  * @ngdoc controller
  * @name mmaModFolderIndexCtrl
  */
-.controller('mmaModFolderIndexCtrl', function($scope, $stateParams, $mmaModFolder, $mmSite, $mmCourse, $mmUtil) {
+.controller('mmaModFolderIndexCtrl', function($scope, $stateParams, $mmaModFolder, $mmCourse, $mmUtil, $q) {
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
         sectionid = $stateParams.sectionid,
@@ -51,10 +51,11 @@ angular.module('mm.addons.mod_folder')
                 $mmUtil.showErrorModal('mm.core.unexpectederror', true);
             }
 
-            if (!scp.title) {
+            if (!$scope.title) {
                 // Error getting data from server. Use module param.
                 showModuleData(module);
             }
+            return $q.reject();
         });
     }
 
@@ -65,9 +66,9 @@ angular.module('mm.addons.mod_folder')
         $scope.canReload = false;
     } else {
         fetchFolder().then(function() {
-            $mmSite.write('mod_folder_view_folder', {
-                folderid: module.instance
-            })
+            $mmaModFolder.logView(module.instance).then(function() {
+                $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
+            });
         }).finally(function() {
             $scope.folderLoaded = true;
             $scope.canReload = true;

@@ -23,7 +23,8 @@ angular.module('mm.addons.mod_book', ['mm.core'])
     .state('site.mod_book', {
       url: '/mod_book',
       params: {
-        module: null
+        module: null,
+        courseid: null
       },
       views: {
         'site': {

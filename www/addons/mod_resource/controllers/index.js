@@ -21,11 +21,12 @@ angular.module('mm.addons.mod_resource')
  * @ngdoc controller
  * @name mmaModResourceIndexCtrl
  */
-.controller('mmaModResourceIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModResource, $log, $mmApp,
+.controller('mmaModResourceIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModResource, $log, $mmApp, $mmCourse,
             mmaModResourceComponent) {
     $log = $log.getInstance('mmaModResourceIndexCtrl');
 
-    var module = $stateParams.module || {};
+    var module = $stateParams.module || {},
+        courseid = $stateParams.courseid;
 
     $scope.title = module.name;
     $scope.description = module.description;
@@ -41,7 +42,9 @@ angular.module('mm.addons.mod_resource')
                 $scope.mode = 'iframe';
                 $mmaModResource.getIframeSrc(module).then(function(src) {
                     $scope.src = src;
-                    $mmaModResource.logView(module.instance);
+                    $mmaModResource.logView(module.instance).then(function() {
+                        $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
+                    });
                 }).catch(function() {
                     $mmUtil.showErrorModal('mma.mod_resource.errorwhileloadingthecontent', true);
                 }).finally(function() {
@@ -56,7 +59,9 @@ angular.module('mm.addons.mod_resource')
                     $mmaModResource.getResourceHtml(module.contents, module.id).then(function(content) {
                         $scope.mode = 'inline';
                         $scope.content = content;
-                        $mmaModResource.logView(module.instance);
+                        $mmaModResource.logView(module.instance).then(function() {
+                            $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
+                        });
 
                         if (downloadFailed && $mmApp.isOnline()) {
                             // We could load the main file but the download failed. Show error message.
@@ -76,7 +81,9 @@ angular.module('mm.addons.mod_resource')
                     var modal = $mmUtil.showModalLoading('mm.core.downloading', true);
 
                     $mmaModResource.openFile(module.contents, module.id).then(function() {
-                        $mmaModResource.logView(module.instance);
+                        $mmaModResource.logView(module.instance).then(function() {
+                            $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
+                        });
                     }).catch(function() {
                         modal.dismiss();
                         $mmUtil.showErrorModal('mma.mod_resource.errorwhileloadingthecontent', true);

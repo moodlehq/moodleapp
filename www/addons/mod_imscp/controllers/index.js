@@ -22,10 +22,11 @@ angular.module('mm.addons.mod_imscp')
  * @name mmaModImscpIndexCtrl
  */
 .controller('mmaModImscpIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModImscp, $log, mmaModImscpComponent,
-                                                $ionicPopover, $mmFS) {
+            $ionicPopover, $mmFS, $q, $mmCourse) {
     $log = $log.getInstance('mmaModImscpIndexCtrl');
 
-    var module = $stateParams.module || {};
+    var module = $stateParams.module || {},
+        courseid = $stateParams.courseid;
 
     $scope.title = module.name;
     $scope.description = module.description;
@@ -40,22 +41,22 @@ angular.module('mm.addons.mod_imscp')
 
     function fetchContent() {
         if (module.contents) {
-            $mmaModImscp.getIframeSrc(module).then(function(src) {
+            return $mmaModImscp.getIframeSrc(module).then(function(src) {
                 $scope.src = src;
-                $mmaModImscp.logView(module.instance);
             }).catch(function() {
                 $mmUtil.showErrorModal('mma.mod_imscp.deploymenterror', true);
+                return $q.reject();
             }).finally(function() {
                 $scope.loaded = true;
             });
         } else {
             $mmUtil.showErrorModal('mma.mod_imscp.deploymenterror', true);
+            return $q.reject();
         }
     }
 
     $scope.doRefresh = function() {
-        $mmaModImscp.invalidateContent(module.id)
-        .then(function() {
+        $mmaModImscp.invalidateContent(module.id).then(function() {
             return fetchContent();
         }).finally(function() {
             $scope.loaded = true;
@@ -79,5 +80,9 @@ angular.module('mm.addons.mod_imscp')
         $scope.popover = popover;
     });
 
-    fetchContent();
+    fetchContent().then(function() {
+        $mmaModImscp.logView(module.instance).then(function() {
+            $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
+        });
+    });
 });

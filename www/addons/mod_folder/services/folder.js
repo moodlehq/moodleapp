@@ -94,5 +94,24 @@ angular.module('mm.addons.mod_folder')
         return folders.concat(files);
     };
 
+    /**
+     * Report a folder as being viewed.
+     *
+     * @module mm.addons.mod_folder
+     * @ngdoc method
+     * @name $mmaModFolder#logView
+     * @param {String} id Module ID.
+     * @return {Promise}  Promise resolved when the WS call is successful.
+     */
+    self.logView = function(id) {
+        if (id) {
+            var params = {
+                folderid: id
+            };
+            return $mmSite.write('mod_folder_view_folder', params);
+        }
+        return $q.reject();
+    };
+
     return self;
 });

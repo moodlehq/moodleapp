@@ -96,6 +96,25 @@ angular.module('mm.addons.mod_chat')
     };
 
     /**
+     * Report a chat as being viewed.
+     *
+     * @module mm.addons.mod_chat
+     * @ngdoc method
+     * @name $mmaModChat#logView
+     * @param {String} id Module ID.
+     * @return {Promise}  Promise resolved when the WS call is successful.
+     */
+    self.logView = function(id) {
+        if (id) {
+            var params = {
+                chatid: id
+            };
+            return $mmSite.write('mod_chat_view_chat', params);
+        }
+        return $q.reject();
+    };
+
+    /**
      * Send a message to a chat.
      *
      * @module mm.addons.mod_chat

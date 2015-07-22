@@ -30,6 +30,9 @@ $item-message-note-text: #999 !default;
 $item-message-note-font-size: $font-size-small !default;
 $item-message-mine-bg: rgba(17, 193, 243, .1) !default;
 
+// Completion
+$completion-img-width: 24px !default;
+
 /**
  * Styles revert.
  */
@@ -175,9 +178,10 @@ em {
 .mm-loading-container {
     width: 100%;
     text-align: center;
+    margin-top: 10px;
 }
 
-// Algin ion-spinner right
+// Align ion-spinner right
 .spinner-right {
   position: absolute;
   top: 8px;
@@ -187,6 +191,24 @@ em {
 .mm-split-item-selected, .mm-split-item-selected .item {
   border-color: #ccc;
   background-color: #D9D9D9;
+}
+
+.item.item-text-wrap.item-completion { // Add .item and .item-text-wrap to give more priority to the rule, otherwise it's overridden by Ionic styles.
+  padding-right: $item-icon-font-size + ($button-border-width * 2) + $item-padding * 3 + $completion-img-width;
+}
+
+.mm-completion-container {
+  // Based on .item-checkbox .checkbox and .item-checkbox.item-checkbox-right
+  position: absolute;
+  top: 50%;
+  right: $item-padding / 2;
+  margin-right: $item-icon-font-size + ($button-border-width * 2) + ($item-padding * 2);
+  margin-top: ($completion-img-width / 2) * -1;
+
+  img {
+    float: right;
+    width: $completion-img-width;
+  }
 }
 
 // Extra attributes to ionic classes to force frames via directive 100% height.
