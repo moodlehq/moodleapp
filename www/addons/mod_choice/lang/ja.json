@@ -1,0 +1,14 @@
+{
+    "choiceoptions": "投票オプション",
+    "expired": "申し訳ございません、この活動は {{$a}} に終了しているため、これ以上利用することはできません。",
+    "full": "(上限到達)",
+    "noresultsviewable": "現在、投票結果は閲覧できません。",
+    "notopenyet": "申し訳ございません、この活動は {{$a}} まで利用することができません。",
+    "numberofuser": "参加者数",
+    "numberofuserinpercentage": "参加者数 (%)",
+    "responses": "投票結果",
+    "responsesresultgraphheader": "グラフ表示",
+    "savemychoice": "私の投票を保存する",
+    "userchoosethisoption": "このオプションを選択したユーザ",
+    "yourselection": "あなたの投票"
+}

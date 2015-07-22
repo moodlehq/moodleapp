@@ -6,6 +6,7 @@
     "contacts": "コンタクト",
     "messages": "メッセージ",
     "nomessages": "未読メッセージはありません。",
+    "nousersfound": "ユーザは見つかりませんでした。",
     "removecontact": "コンタクトを削除",
     "send": "送信",
     "sendmessage": "メッセージ送信",

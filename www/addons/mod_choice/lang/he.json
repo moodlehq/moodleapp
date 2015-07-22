@@ -1,0 +1,14 @@
+{
+    "choiceoptions": "אפשרויות שאלת־סקר",
+    "expired": "מצטערים, פעילות זו נסגרה על {{$a}} והיא איננה זמינה יותר",
+    "full": "(מלא)",
+    "noresultsviewable": "כרגע לא ניתן לצפות בתוצאות.",
+    "notopenyet": "לצערנו, פעילות זו אינה זמינה עד {{$a}}",
+    "numberofuser": "מספר המשתתפים",
+    "numberofuserinpercentage": "מספר  המשתתפים באחוזים",
+    "responses": "תשובות",
+    "responsesresultgraphheader": "תצוגה גרפית",
+    "savemychoice": "שמירת הבחירה שלי",
+    "userchoosethisoption": "המשתמש בוחר את אפשרות זו",
+    "yourselection": "הבחירה שלך"
+}

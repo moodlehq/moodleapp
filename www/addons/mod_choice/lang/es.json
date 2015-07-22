@@ -1,0 +1,14 @@
+{
+    "choiceoptions": "Opciones de la Consulta",
+    "expired": "Lo sentimos, esta actividad se cerró el {{$a}} y ya no está disponible",
+    "full": "(Lleno)",
+    "noresultsviewable": "Los resultados no pueden verse en este momento.",
+    "notopenyet": "Lo sentimos, esta actividad no estará disponible hasta {{$a}}",
+    "numberofuser": "Número de participantes",
+    "numberofuserinpercentage": "Porcentaje de participantes",
+    "responses": "Respuestas",
+    "responsesresultgraphheader": "Vista de gráfica",
+    "savemychoice": "Guardar mi elección",
+    "userchoosethisoption": "El usuario elegió esta opción",
+    "yourselection": "Su elección"
+}

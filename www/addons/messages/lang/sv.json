@@ -6,6 +6,7 @@
     "contacts": "Kontakter",
     "messages": "Meddelanden",
     "nomessages": "Inga avvaktande meddelanden",
+    "nousersfound": "Det gick inte att hitta några användare",
     "removecontact": "Ta bort kontakt",
     "send": "Sänd",
     "sendmessage": "Skicka ett meddelande",

@@ -1,0 +1,14 @@
+{
+    "choiceoptions": "Варианты ответа",
+    "expired": "Извините эта активность закрыта {{$a}} и более недоступна",
+    "full": "(Заполнено)",
+    "noresultsviewable": "Вы не можете в данный момент просматривать результаты опроса.",
+    "notopenyet": "Извините, данное действие недоступно до {{$a}}",
+    "numberofuser": "Количество пользователей",
+    "numberofuserinpercentage": "Процент пользователей",
+    "responses": "Ответы",
+    "responsesresultgraphheader": "Отображать график",
+    "savemychoice": "Сохранить мой выбор",
+    "userchoosethisoption": "Пользователи, выбравшие этот вариант",
+    "yourselection": "Ваш выбор"
+}

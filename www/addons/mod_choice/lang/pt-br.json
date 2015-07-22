@@ -1,0 +1,14 @@
+{
+    "choiceoptions": "Opções de escolha",
+    "expired": "Esta atividade está encerrada desde {{$a}}",
+    "full": "(Cheio)",
+    "noresultsviewable": "Não é possível visualizar os resultados neste momento.",
+    "notopenyet": "Esta atividade será acessível a partir de {{$a}}",
+    "numberofuser": "Número de usuários",
+    "numberofuserinpercentage": "Percentual de participantes",
+    "responses": "Respostas",
+    "responsesresultgraphheader": "Visualização do gráfico",
+    "savemychoice": "Gravar a minha resposta",
+    "userchoosethisoption": "Usuários que escolheram esta opção",
+    "yourselection": "A sua escolha"
+}

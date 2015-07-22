@@ -1,0 +1,14 @@
+{
+    "choiceoptions": "Abstimmoptionen",
+    "expired": "Diese Abstimmung ist seit {{$a}} beendet. Eine Auswahl ist nicht mehr möglich.",
+    "full": "(Nicht verfügbar)",
+    "noresultsviewable": "Ergebnisse sind aktuell nicht sichtbar.",
+    "notopenyet": "Aktivität ist ab {{$a}} verfügbar",
+    "numberofuser": "Teilnehmerzahl",
+    "numberofuserinpercentage": "Prozent der Teilnehmer/innen",
+    "responses": "Stimmabgaben",
+    "responsesresultgraphheader": "Grafische Darstellung",
+    "savemychoice": "Meine Auswahl speichern",
+    "userchoosethisoption": "Teilnehmer/innen mit dieser Auswahl",
+    "yourselection": "Ihre Auswahl"
+}
