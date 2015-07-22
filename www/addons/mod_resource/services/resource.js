@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_resource')
  * @ngdoc service
  * @name $mmaModResource
  */
-.factory('$mmaModResource', function($mmFilepool, $mmSite, $mmUtil, $mmFS, $http, $log, $q, mmaModResourceComponent) {
+.factory('$mmaModResource', function($mmFilepool, $mmSite, $mmUtil, $mmFS, $http, $log, $q, $sce, $mmApp, mmaModResourceComponent) {
     $log = $log.getInstance('$mmaModResource');
     var self = {};
 
@@ -154,10 +154,15 @@ angular.module('mm.addons.mod_resource')
             mainFilePath = mainFile.filepath.substr(1) + mainFilePath;
         }
 
-        return self.downloadAllContent(module).then(function() {
-            return $mmFilepool.getDirectoryUrlByUrl($mmSite.getId(), module.url).then(function(dirPath) {
-                return $mmFS.concatenatePaths(dirPath, mainFilePath);
-            });
+        return $mmFilepool.getDirectoryUrlByUrl($mmSite.getId(), module.url).then(function(dirPath) {
+            return $mmFS.concatenatePaths(dirPath, mainFilePath);
+        }, function() {
+            // Error getting directory, there was an error downloading or we're in browser. Return online URL.
+            if ($mmApp.isOnline() && mainFile.fileurl) {
+                // This URL is going to be injected in an iframe, we need this to make it work.
+                return $sce.trustAsResourceUrl($mmSite.fixPluginfileURL(mainFile.fileurl));
+            }
+            return $q.reject();
         });
     };
 

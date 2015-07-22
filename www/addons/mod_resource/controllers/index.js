@@ -40,15 +40,25 @@ angular.module('mm.addons.mod_resource')
         if (module.contents) {
             if ($mmaModResource.isDisplayedInIframe(module)) {
                 $scope.mode = 'iframe';
-                $mmaModResource.getIframeSrc(module).then(function(src) {
-                    $scope.src = src;
-                    $mmaModResource.logView(module.instance).then(function() {
-                        $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
-                    });
-                }).catch(function() {
-                    $mmUtil.showErrorModal('mma.mod_resource.errorwhileloadingthecontent', true);
+                var downloadFailed = false;
+                return $mmaModResource.downloadAllContent(module).catch(function(err) {
+                    // Mark download as failed but go on since the main files could have been downloaded.
+                    downloadFailed = true;
                 }).finally(function() {
-                    $scope.loaded = true;
+                    $mmaModResource.getIframeSrc(module).then(function(src) {
+                        $scope.src = src;
+                        $mmaModResource.logView(module.instance).then(function() {
+                            $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
+                        });
+                        if (downloadFailed && $mmApp.isOnline()) {
+                            // We could load the main file but the download failed. Show error message.
+                            $mmUtil.showErrorModal('mm.core.errordownloadingsomefiles', true);
+                        }
+                    }).catch(function() {
+                        $mmUtil.showErrorModal('mma.mod_resource.errorwhileloadingthecontent', true);
+                    }).finally(function() {
+                        $scope.loaded = true;
+                    });
                 });
             } else if ($mmaModResource.isDisplayedInline(module)) {
                 var downloadFailed = false;
