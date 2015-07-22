@@ -22,12 +22,13 @@ angular.module('mm.core.course')
  * @name mmCourseSectionCtrl
  */
 .controller('mmCourseSectionCtrl', function($mmCourseDelegate, $mmCourse, $mmUtil, $scope, $stateParams, $translate, $mmSite,
-            $mmEvents, $ionicScrollDelegate, mmCoreEventCompletionModuleViewed) {
+            $mmEvents, $ionicScrollDelegate, $mmCourses, $q, mmCoreEventCompletionModuleViewed) {
 
     // Default values are course 1 (front page) and all sections.
     var courseid = $stateParams.courseid || 1,
         sectionid = $stateParams.sectionid || -1,
-        sections = [];
+        sections = [],
+        course = $mmCourses.getStoredCourse(courseid);
 
     $scope.sections = []; // Reset scope.sections, otherwise an error is shown in console with tablet view.
 
@@ -41,9 +42,16 @@ angular.module('mm.core.course')
 
     // Convenience function to fetch section(s).
     function loadContent(sectionid) {
-        return $mmCourse.getActivitiesCompletionStatus(courseid).catch(function() {
-            return []; // If fail, return empty array (as if there was no completion).
-        }).then(function(statuses) {
+        var promise;
+        if (course && course.enablecompletion === false) {
+            promise = $q.when([]); // Completion not enabled, return empty array.
+        } else {
+            promise = $mmCourse.getActivitiesCompletionStatus(courseid).catch(function() {
+                return []; // If fail, return empty array (as if there was no completion).
+            })
+        }
+
+        return promise.then(function(statuses) {
             var promise,
                 sectionnumber;
 
