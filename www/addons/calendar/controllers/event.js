@@ -50,11 +50,12 @@ angular.module('mm.addons.calendar')
                 $scope.coursename = course.fullname;
             }
 
-        }, function(err) {
-            if (err) {
-                $log.error(err);
+        }, function(error) {
+            if (error) {
+                $mmUtil.showErrorModal(error);
+            } else {
+                $mmUtil.showErrorModal('mma.calendar.errorloadevent', true);
             }
-            $mmUtil.showErrorModal('mma.calendar.errorloadevent', true);
         });
     }
 

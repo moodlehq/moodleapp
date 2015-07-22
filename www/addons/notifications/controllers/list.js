@@ -52,9 +52,14 @@ angular.module('mm.addons.notifications')
                         $scope.notifications = $scope.notifications.concat(unread).concat(read);
                     }
                     $scope.canLoadMore = read.length >= readLimit;
-                }, function() {
+                }, function(error) {
                     if (unread.length == 0) {
-                        $mmUtil.showErrorModal('mma.notifications.errorgetnotifications', true);
+                        if (error) {
+                            $mmUtil.showErrorModal(error);
+                        } else {
+                            $mmUtil.showErrorModal('mma.notifications.errorgetnotifications', true);
+                        }
+                        $scope.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
                     }
                 });
             } else {
@@ -65,9 +70,13 @@ angular.module('mm.addons.notifications')
                 }
                 $scope.canLoadMore = true;
             }
-        }, function() {
-            $mmUtil.showErrorModal('mma.notifications.errorgetnotifications', true);
-            $scope.canLoadMore = false;
+        }, function(error) {
+            if (error) {
+                $mmUtil.showErrorModal(error);
+            } else {
+                $mmUtil.showErrorModal('mma.notifications.errorgetnotifications', true);
+            }
+            $scope.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
         });
     }
     fetchNotifications().finally(function() {

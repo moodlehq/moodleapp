@@ -41,6 +41,7 @@ angular.module('mm.addons.participants')
             $scope.canLoadMore = data.canLoadMore;
         }, function(message) {
             $mmUtil.showErrorModal(message);
+            $scope.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
         });
     }
 
