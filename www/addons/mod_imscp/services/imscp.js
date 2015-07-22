@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_imscp')
  * @ngdoc service
  * @name $mmaModImscp
  */
-.factory('$mmaModImscp', function($mmFilepool, $mmSite, $mmUtil, $mmFS, $log, $q, mmaModImscpComponent) {
+.factory('$mmaModImscp', function($mmFilepool, $mmSite, $mmUtil, $mmFS, $log, $q, $sce, $mmApp, mmaModImscpComponent) {
     $log = $log.getInstance('$mmaModImscp');
 
     var self = {},
@@ -242,6 +242,29 @@ angular.module('mm.addons.mod_imscp')
     };
 
     /**
+     * Given a filepath, get a certain fileurl from module contents.
+     *
+     * @param {Object[]} contents     Module contents.
+     * @param {String} targetFilepath Filepath of the searched file.
+     * @return {String}               Fileurl.
+     * @protected
+     */
+    self._getFileUrlFromContents = function(contents, targetFilepath) {
+        var indexUrl;
+        angular.forEach(contents, function(content) {
+            if (content.type == 'file' && !indexUrl) {
+                var filepath = $mmFS.concatenatePaths(content.filepath, content.filename),
+                    filepathalt = filepath.charAt(0) === '/' ? filepath.substr(1) : '/' + filepath;
+                // Check if it's main file.
+                if (filepath === targetFilepath || filepathalt === targetFilepath) {
+                    indexUrl = content.fileurl;
+                }
+            }
+        });
+        return indexUrl;
+    };
+
+    /**
      * Download all the files needed and returns the src of the iframe.
      *
      * @module mm.addons.mod_imscp
@@ -254,11 +277,19 @@ angular.module('mm.addons.mod_imscp')
         var toc = self.getToc(module.contents);
         var mainFilePath = toc[0].href;
 
-        return self.downloadAllContent(module).then(function() {
-            return $mmFilepool.getDirectoryUrlByUrl($mmSite.getId(), module.url).then(function(dirPath) {
-                currentDirPath = dirPath;
-                return $mmFS.concatenatePaths(dirPath, mainFilePath);
-            });
+        return $mmFilepool.getDirectoryUrlByUrl($mmSite.getId(), module.url).then(function(dirPath) {
+            currentDirPath = dirPath;
+            return $mmFS.concatenatePaths(dirPath, mainFilePath);
+        }, function() {
+            // Error getting directory, there was an error downloading or we're in browser. Return online URL if connected.
+            if ($mmApp.isOnline()) {
+                var indexUrl = self._getFileUrlFromContents(module.contents, mainFilePath);
+                if (indexUrl) {
+                    // This URL is going to be injected in an iframe, we need this to make it work.
+                    return $sce.trustAsResourceUrl($mmSite.fixPluginfileURL(indexUrl));
+                }
+            }
+            return $q.reject();
         });
     };
 
@@ -268,12 +299,24 @@ angular.module('mm.addons.mod_imscp')
      * @module mm.addons.mod_imscp
      * @ngdoc method
      * @name $mmaModImscp#getFileSrc
-     * @param {String} moduleurl The module url.
+     * @param {Object} module    The module object.
      * @param {String} itemId    Item to get the src.
      * @return {String}          Item src.
      */
-    self.getFileSrc = function(moduleurl, itemId) {
-        return $mmFS.concatenatePaths(currentDirPath, itemId);
+    self.getFileSrc = function(module, itemId) {
+        if (currentDirPath) {
+            // IMSCP successfully loaded.
+            return $mmFS.concatenatePaths(currentDirPath, itemId);
+        } else {
+            // Error loading IMSCP. Let's get online URL.
+            if ($mmApp.isOnline()) {
+                var indexUrl = self._getFileUrlFromContents(module.contents, itemId);
+                if (indexUrl) {
+                    // This URL is going to be injected in an iframe, we need this to make it work.
+                    return $sce.trustAsResourceUrl($mmSite.fixPluginfileURL(indexUrl));
+                }
+            }
+        }
     };
 
     /**
