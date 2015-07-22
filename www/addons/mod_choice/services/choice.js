@@ -21,7 +21,8 @@ angular.module('mm.addons.mod_choice')
  * @ngdoc service
  * @name $mmaModChoice
  */
-.factory('$mmaModChoice', function($q, $mmSite, $mmCourse) {
+.factory('$mmaModChoice', function($q, $mmSite, $mmCourse, mmaModChoiceResultsAfterAnswer, mmaModChoiceResultsAfterClose,
+            mmaModChoiceResultsAlways) {
     var self = {};
 
     /**
@@ -36,9 +37,9 @@ angular.module('mm.addons.mod_choice')
      */
     self.canStudentSeeResults = function(choice, hasAnswered) {
         var now = new Date().getTime();
-        return  choice.showresults === 3 ||
-                choice.showresults === 2 && choice.timeclose !== 0 && choice.timeclose <= now ||
-                choice.showresults === 1 && hasAnswered;
+        return  choice.showresults === mmaModChoiceResultsAlways ||
+                choice.showresults === mmaModChoiceResultsAfterClose && choice.timeclose !== 0 && choice.timeclose <= now ||
+                choice.showresults === mmaModChoiceResultsAfterAnswer && hasAnswered;
     };
 
     /**
@@ -54,21 +55,21 @@ angular.module('mm.addons.mod_choice')
     /**
      * Get cache key for choice options WS calls.
      *
-     * @param {Number} cmid Course module ID.
+     * @param {Number} choiceid Choice ID.
      * @return {String}     Cache key.
      */
-    function getChoiceOptionsCacheKey(cmid) {
-        return 'mmaModChoice:options:' + cmid;
+    function getChoiceOptionsCacheKey(choiceid) {
+        return 'mmaModChoice:options:' + choiceid;
     }
 
     /**
      * Get cache key for choice results WS calls.
      *
-     * @param {Number} cmid Course module ID.
+     * @param {Number} choiceid Choice ID.
      * @return {String}     Cache key.
      */
-    function getChoiceResultsCacheKey(cmid) {
-        return 'mmaModChoice:results:' + cmid;
+    function getChoiceResultsCacheKey(choiceid) {
+        return 'mmaModChoice:results:' + choiceid;
     }
 
     /**
@@ -126,15 +127,15 @@ angular.module('mm.addons.mod_choice')
      * @module mm.addons.mod_choice
      * @ngdoc method
      * @name $mmaModChoice#getOptions
-     * @param {Number} cmid Course module ID.
-     * @return {Promise}    Promise resolved with choice options.
+     * @param {Number} choiceid Choice ID.
+     * @return {Promise}        Promise resolved with choice options.
      */
-    self.getOptions = function(cmid) {
+    self.getOptions = function(choiceid) {
         var params = {
-                choiceinstanceid: cmid
+                choiceid: choiceid
             },
             preSets = {
-                cacheKey: getChoiceOptionsCacheKey(cmid)
+                cacheKey: getChoiceOptionsCacheKey(choiceid)
             };
 
         return $mmSite.read('mod_choice_get_choice_options', params, preSets).then(function(response) {
@@ -151,15 +152,15 @@ angular.module('mm.addons.mod_choice')
      * @module mm.addons.mod_choice
      * @ngdoc method
      * @name $mmaModChoice#getResults
-     * @param {Number} cmid Course module ID.
-     * @return {Promise}    Promise resolved with choice results.
+     * @param {Number} choiceid Choice ID.
+     * @return {Promise}        Promise resolved with choice results.
      */
-    self.getResults = function(cmid) {
+    self.getResults = function(choiceid) {
         var params = {
-                choiceinstanceid: cmid
+                choiceid: choiceid
             },
             preSets = {
-                cacheKey: getChoiceResultsCacheKey(cmid)
+                cacheKey: getChoiceResultsCacheKey(choiceid)
             };
 
         return $mmSite.read('mod_choice_get_choice_results', params, preSets).then(function(response) {
@@ -189,11 +190,11 @@ angular.module('mm.addons.mod_choice')
      * @module mm.addons.mod_choice
      * @ngdoc method
      * @name $mmaModChoice#invalidateOptions
-     * @param {Number} cmid Course module ID.
-     * @return {Promise}    Promise resolved when the data is invalidated.
+     * @param {Number} choiceid Choice ID.
+     * @return {Promise}        Promise resolved when the data is invalidated.
      */
-    self.invalidateOptions = function(cmid) {
-        return $mmSite.invalidateWsCacheForKey(getChoiceOptionsCacheKey(cmid));
+    self.invalidateOptions = function(choiceid) {
+        return $mmSite.invalidateWsCacheForKey(getChoiceOptionsCacheKey(choiceid));
     };
 
     /**
@@ -202,11 +203,11 @@ angular.module('mm.addons.mod_choice')
      * @module mm.addons.mod_choice
      * @ngdoc method
      * @name $mmaModChoice#invalidateResults
-     * @param {Number} cmid Course module ID.
-     * @return {Promise}    Promise resolved when the data is invalidated.
+     * @param {Number} choiceid Choice ID.
+     * @return {Promise}        Promise resolved when the data is invalidated.
      */
-    self.invalidateResults = function(cmid) {
-        return $mmSite.invalidateWsCacheForKey(getChoiceResultsCacheKey(cmid));
+    self.invalidateResults = function(choiceid) {
+        return $mmSite.invalidateWsCacheForKey(getChoiceResultsCacheKey(choiceid));
     };
 
     /**
@@ -215,7 +216,7 @@ angular.module('mm.addons.mod_choice')
      * @module mm.addons.mod_choice
      * @ngdoc method
      * @name $mmaModChoice#logView
-     * @param {String} id Module ID.
+     * @param {String} id Choice ID.
      * @return {Promise}  Promise resolved when the WS call is successful.
      */
     self.logView = function(id) {
@@ -234,13 +235,13 @@ angular.module('mm.addons.mod_choice')
      * @module mm.addons.mod_choice
      * @ngdoc method
      * @name $mmaModChoice#submitResponse
-     * @param {Number}   cmid      Course module ID.
+     * @param {Number} choiceid    Choice ID.
      * @param {Number[]} responses IDs of selected options.
      * @return {Promise}           Promise resolved when results are successfully submitted.
      */
-    self.submitResponse = function(cmid, responses) {
+    self.submitResponse = function(choiceid, responses) {
         var params = {
-            choiceinstanceid: cmid,
+            choiceid: choiceid,
             responses: responses
         };
         return $mmSite.write('mod_choice_submit_choice_response', params);

@@ -14,6 +14,11 @@
 
 angular.module('mm.addons.mod_choice', [])
 
+.constant('mmaModChoiceResultsNot', 0)
+.constant('mmaModChoiceResultsAfterAnswer', 1)
+.constant('mmaModChoiceResultsAfterClose', 2)
+.constant('mmaModChoiceResultsAlways', 3)
+
 .config(function($stateProvider) {
 
     $stateProvider

@@ -63,7 +63,7 @@ angular.module('mm.addons.mod_choice')
 
     // Convenience function to get choice options.
     function fetchOptions() {
-        return $mmaModChoice.getOptions(module.id).then(function(options) {
+        return $mmaModChoice.getOptions(choice.id).then(function(options) {
             $scope.selectedOption = {id: -1}; // Single choice model.
             angular.forEach(options, function(option) {
                 if (option.checked) {
@@ -80,7 +80,7 @@ angular.module('mm.addons.mod_choice')
 
     // Convenience function to get choice results.
     function fetchResults() {
-        return $mmaModChoice.getResults(module.id).then(function(results) {
+        return $mmaModChoice.getResults(choice.id).then(function(results) {
             var hasVotes = false;
             angular.forEach(results, function(result) {
                 if (result.numberofuser > 0) {
@@ -96,8 +96,8 @@ angular.module('mm.addons.mod_choice')
     // Convenience function to refresh all the data.
     function refreshAllData() {
         var p1 = $mmaModChoice.invalidateChoiceData(courseid),
-            p2 = $mmaModChoice.invalidateOptions(module.id),
-            p3 = $mmaModChoice.invalidateResults(module.id);
+            p2 = $mmaModChoice.invalidateOptions(choice.id),
+            p3 = $mmaModChoice.invalidateResults(choice.id);
 
         return $q.all(p1, p2, p3).finally(function() {
             return fetchChoiceData();
@@ -126,7 +126,7 @@ angular.module('mm.addons.mod_choice')
         }
 
         var modal = $mmUtil.showModalLoading('mm.core.sending', true);
-        $mmaModChoice.submitResponse(module.id, responses).then(function() {
+        $mmaModChoice.submitResponse(choice.id, responses).then(function() {
             // Success! Let's refresh the data.
             refreshAllData().finally(function() {
                 modal.dismiss();
