@@ -38,6 +38,7 @@ angular.module('mm.addons.mod_chat', [])
         url: '/mod_chat-chat',
         params: {
             chatid: null,
+            courseid: null,
             title: null
         },
         views: {

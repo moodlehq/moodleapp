@@ -205,4 +205,3 @@ angular.module('mm.addons.mod_chat')
     });
 
 });
-
