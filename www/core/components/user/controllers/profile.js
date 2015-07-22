@@ -56,6 +56,9 @@ angular.module('mm.core.user')
         });
     }, function(message) {
         $scope.user = false;
+        if (message) {
+            $mmUtil.showErrorMessage(message);
+        }
     }).finally(function() {
         $scope.userLoaded = true;
     });

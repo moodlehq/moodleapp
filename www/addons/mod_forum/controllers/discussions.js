@@ -49,6 +49,7 @@ angular.module('mm.addons.mod_forum')
             }
         }, function(message) {
             $mmUtil.showErrorModal(message);
+            $scope.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
             return $q.reject();
         });
     }
@@ -74,6 +75,7 @@ angular.module('mm.addons.mod_forum')
 
         }, function(message) {
             $mmUtil.showErrorModal(message);
+            $scope.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
             return $q.reject();
         });
     }

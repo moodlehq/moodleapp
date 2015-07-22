@@ -39,7 +39,11 @@ angular.module('mm.core.course')
                 $scope.sections = result;
             });
         }, function(error) {
-            $mmUtil.showErrorModal('mm.course.couldnotloadsections', true);
+            if (error) {
+                $mmUtil.showErrorModal(error);
+            } else {
+                $mmUtil.showErrorModal('mm.course.couldnotloadsections', true);
+            }
         });
     }
 

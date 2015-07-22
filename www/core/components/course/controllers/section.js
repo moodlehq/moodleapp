@@ -54,8 +54,12 @@ angular.module('mm.core.course')
                     courseid: courseid,
                     sectionnumber: 0
                 });
-            }, function() {
-                $mmUtil.showErrorModal('mm.course.couldnotloadsectioncontent', true);
+            }, function(error) {
+                if (error) {
+                    $mmUtil.showErrorModal(error);
+                } else {
+                    $mmUtil.showErrorModal('mm.course.couldnotloadsectioncontent', true);
+                }
             });
         } else {
             return $mmCourse.getSection(courseid, sectionid, refresh).then(function(section) {
@@ -72,8 +76,12 @@ angular.module('mm.core.course')
                     courseid: courseid,
                     sectionnumber: sectionid
                 });
-            }, function() {
-                $mmUtil.showErrorModal('mm.course.couldnotloadsectioncontent', true);
+            }, function(error) {
+                if (error) {
+                    $mmUtil.showErrorModal(error);
+                } else {
+                    $mmUtil.showErrorModal('mm.course.couldnotloadsectioncontent', true);
+                }
             });
         }
     }
