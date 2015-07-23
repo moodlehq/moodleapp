@@ -1,4 +1,7 @@
 {
+    "calendarevents": "Kalendergebeurenissen",
+    "errorloadevent": "Fout bij het laden van de gebeurtenis.",
+    "errorloadevents": "Fout bij het laden van de gebeurtenissen.",
     "noevents": "Er zijn geen gebeurtenissen",
     "notifications": "Meldingen"
 }

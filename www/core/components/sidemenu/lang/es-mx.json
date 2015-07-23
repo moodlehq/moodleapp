@@ -1,4 +1,5 @@
 {
+    "appsettings": "Configuraciones del App",
     "help": "Ayuda",
     "logout": "Salir",
     "mycourses": "Mis cursos",

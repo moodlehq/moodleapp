@@ -5,13 +5,16 @@
     "country": "Land",
     "description": "Beschreibung",
     "details": "Details",
+    "detailsnotavailable": "Die Nutzerdetails für diese Person sind für Sie nicht verfügbar.",
+    "editingteacher": "Trainer/in",
     "email": "E-Mail",
-    "interests": "Persönliche Interessen",
+    "interests": "Interessen",
     "invaliduser": "Ungültige Nutzer/in",
     "manager": "Manager/in",
     "phone1": "Telefon",
     "phone2": "Mobil",
     "roles": "Rollen",
     "student": "Teilnehmer/in",
-    "webpage": "Webseite"
+    "teacher": "Trainer/in ohne Bearbeitungsrecht",
+    "webpage": "Website"
 }

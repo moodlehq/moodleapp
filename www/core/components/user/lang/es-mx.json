@@ -5,13 +5,16 @@
     "country": "País",
     "description": "Descripción",
     "details": "Detalles",
+    "detailsnotavailable": "Los detalles de este usuario no están disponible spara Usted.",
+    "editingteacher": "Profesor",
     "email": "Email",
     "interests": "Intereses",
-    "invaliduser": "Usuario no válido",
+    "invaliduser": "Usuario inválido.",
     "manager": "Mánager",
     "phone1": "Teléfono",
     "phone2": "Móvil",
     "roles": "Roles",
     "student": "Estudiante",
-    "webpage": "Página web"
+    "teacher": "Profesor sin derechos de edición",
+    "webpage": "Página Web"
 }

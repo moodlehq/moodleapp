@@ -12,6 +12,7 @@
     "days": "dagar",
     "downloading": "Laddar ner...",
     "error": "Fel",
+    "errordownloading": "Fel vid nedladdning av fil",
     "hour": "timme",
     "hours": "timmar",
     "loading": "Loading",

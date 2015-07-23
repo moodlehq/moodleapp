@@ -1,4 +1,7 @@
 {
-    "noevents": "Keine Events",
+    "calendarevents": "Termine",
+    "errorloadevent": "Fehler beim Laden des Termins",
+    "errorloadevents": "Fehler beim Laden der Termine",
+    "noevents": "Keine Termine",
     "notifications": "Mitteilungen"
 }

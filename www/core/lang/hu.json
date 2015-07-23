@@ -12,6 +12,7 @@
     "days": "nap",
     "downloading": "Letöltés...",
     "error": "Hiba",
+    "errordownloading": "Nem sikerült letölteni az állományt.",
     "hour": "óra",
     "hours": "óra",
     "loading": "Betöltés",

@@ -1,4 +1,12 @@
 {
+    "activitynotyetviewable": "Questa attività o risorsa non è visualizzabile nell'app.",
+    "activitynotyetviewablegothere": "Questa attività o risorsa non è visualizzabile nell'app, fai click sul pulsante sotto per accedervi tramite browser.",
+    "allsections": "Tutte le sezioni",
     "contents": "Contenuti",
-    "showall": "Visualizza tutto"
+    "couldnotloadsectioncontent": "Non è stato possibile caricare il contenuto della sezione, per favore riprova più tardi.",
+    "couldnotloadsections": "Non è stato possibile caricare le sezioni, per favore riprova più tardi.",
+    "gotothesite": "Vai al sito",
+    "nocontentavailable": "Non sono presenti contenuti.",
+    "showall": "Visualizza tutto",
+    "whoops": "Oops!"
 }

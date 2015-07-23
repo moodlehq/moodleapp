@@ -5,13 +5,16 @@
     "country": "Pays",
     "description": "Description",
     "details": "Détails",
+    "detailsnotavailable": "Vous n'avez pas accès aux informations de cet utilisateur.",
+    "editingteacher": "Enseignant",
     "email": "Courriel",
-    "interests": "Centres d'intérêt",
-    "invaliduser": "Utilisateur non valide",
+    "interests": "Intérêts",
+    "invaliduser": "Utilisateur non valide.",
     "manager": "Gestionnaire",
     "phone1": "Tél.",
     "phone2": "Mobile",
     "roles": "Rôles",
-    "student": "Participants",
-    "webpage": "Page Web"
+    "student": "Étudiant",
+    "teacher": "Enseignant non-éditeur",
+    "webpage": "Page web"
 }

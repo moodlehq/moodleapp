@@ -1,4 +1,12 @@
 {
+    "activitynotyetviewable": "Aktivität oder Material ist in der App bisher nicht anzeigbar.",
+    "activitynotyetviewablegothere": "Aktivität oder Material ist in der App bisher nicht anzeigbar. Klicken Sie die Taste für den Zugriff im Browser.",
+    "allsections": "Alle Abschnitte",
     "contents": "Inhalte",
-    "showall": "Alles anzeigen"
+    "couldnotloadsectioncontent": "Die Abschnittsinhalte konnten nicht geladen werden. Versuchen Sie es später nochmal.",
+    "couldnotloadsections": "Die Abschnitte konnten nicht geladen werden. Versuchen Sie es später nochmal.",
+    "gotothesite": "Zur Website",
+    "nocontentavailable": "Aktuell sind keine Inhalte verfügbar.",
+    "showall": "Alles anzeigen",
+    "whoops": "Uups!"
 }

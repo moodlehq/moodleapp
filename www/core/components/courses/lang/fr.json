@@ -1,4 +1,5 @@
 {
+    "errorloadcourses": "Une erreur est survenue lors du chargement des cours.",
     "filter": "Filtre",
     "frontpage": "Page d'accueil",
     "mycourses": "Mes cours"
