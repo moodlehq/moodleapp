@@ -21,8 +21,8 @@ angular.module('mm.addons.mod_chat')
  * @ngdoc controller
  * @name mmaModChatChatCtrl
  */
-.controller('mmaModChatChatCtrl', function($scope, $stateParams, $mmApp, $mmaModChat, $log, $ionicModal, $mmUtil,
-                                            $ionicScrollDelegate, $timeout, $mmSite, $interval, mmaChatPollInterval) {
+.controller('mmaModChatChatCtrl', function($scope, $stateParams, $mmApp, $mmaModChat, $log, $ionicModal, $mmUtil, $ionicHistory,
+            $ionicScrollDelegate, $timeout, $mmSite, $interval, mmaChatPollInterval) {
 
     $log = $log.getInstance('mmaModChatChatCtrl');
 
@@ -63,6 +63,8 @@ angular.module('mm.addons.mod_chat')
         $scope.modal.show();
         $mmaModChat.getChatUsers($scope.chatsid).then(function(data) {
             $scope.chatUsers = data.users;
+        }).catch(showError)
+        .finally(function() {
             $scope.usersLoaded = true;
         });
     };
@@ -83,6 +85,15 @@ angular.module('mm.addons.mod_chat')
     $scope.isAppOffline = function() {
         return !$mmApp.isOnline();
     };
+
+    // Show error modal.
+    function showError(error) {
+        if (typeof error === 'string') {
+            $mmUtil.showErrorModal(error);
+        } else {
+            $mmUtil.showErrorModal(defaultMessage, 'mm.core.error');
+        }
+    }
 
     // Check if the date should be displayed between messages (when the day changes at midnight for example).
     $scope.showDate = function(message, prevMessage) {
@@ -126,11 +137,7 @@ angular.module('mm.addons.mod_chat')
                 $scope.newMessage.text = '';
             }
         }, function(error) {
-            if (typeof error === 'string') {
-                $mmUtil.showErrorModal(error);
-            } else {
-                $mmUtil.showErrorModal('mm.core.error', true);
-            }
+            showError(error);
         });
     };
 
@@ -142,13 +149,10 @@ angular.module('mm.addons.mod_chat')
             return $mmaModChat.getMessagesUserData(messagesInfo.messages, courseId).then(function(messages) {
                 $scope.messages = $scope.messages.concat(messages);
             });
-        });
-    }).catch(function(error) {
-        if (typeof error === 'string') {
-            $mmUtil.showErrorModal(error);
-        } else {
-            $mmUtil.showErrorModal('mm.core.error', true);
-        }
+        }).catch(showError);
+    }, function(error) {
+        showError(error);
+        $ionicHistory.goBack();
     }).finally(function() {
         $scope.loaded = true;
     });
@@ -186,11 +190,7 @@ angular.module('mm.addons.mod_chat')
                 });
             }, function(error) {
                 $interval.cancel(polling);
-                if (typeof error === 'string') {
-                    $mmUtil.showErrorModal(error);
-                } else {
-                    $mmUtil.showErrorModal('mm.core.error', true);
-                }
+                showError(error);
             });
 
         }, mmaChatPollInterval);

@@ -68,7 +68,6 @@ angular.module('mm.core')
             getState(scope, siteid, fileurl, timemodified); // Update state.
             return localUrl;
         }, function() {
-            $mmUtil.showErrorModal('mm.core.errordownloading', true);
             return getState(scope, siteid, fileurl, timemodified).then(function() {
                 if (scope.isDownloaded) {
                     return localUrl;

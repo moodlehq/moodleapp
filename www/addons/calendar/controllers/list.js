@@ -81,6 +81,7 @@ angular.module('mm.addons.calendar')
             } else {
                 $mmUtil.showErrorModal('mma.calendar.errorloadevents', true);
             }
+            $scope.eventsLoaded = true;
         });
     }
 

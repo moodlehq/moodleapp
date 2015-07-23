@@ -51,7 +51,7 @@
                 <div class="row" ng-repeat="result in results">
                     <p class="col"><b><mm-format-text watch="true">{{ result.text }}</mm-format-text></b></p>
                     <p class="col">{{ result.numberofuser }}</p>
-                    <p class="col">{{ 'mm.core.percentagenumber' | translate:{number: result.percentageamount} }}</p>
+                    <p class="col">{{ 'mm.core.percentagenumber' | translate:{$a: result.percentageamount} }}</p>
                     <div class="col text-left">
                         <img ng-if="!choice.publish" class="mma-mod_choice-graph-horizontal" src="addons/mod_choice/img/row.png" alt="{{ 'mma.mod_choice.responsesresultgraphdescription' | translate:{number: result.percentageamount, text: result.text} }}" ng-style="{'width': result.percentageamount+'%'}">
                         <a ng-if="choice.publish" class="padding mma-mod_choice-user" ng-repeat="user in result.userresponses" mm-user-link courseid="{{courseid}}" userid="{{user.userid}}" title="{{user.fullname}}">

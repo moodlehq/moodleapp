@@ -80,7 +80,7 @@ angular.module('mm.core.user')
                 promises = [];
 
             angular.forEach(enabledProfileHandlers, function(handler) {
-                var promise = $q.when(handler.instance.isEnabledForUser(user.id, courseId));
+                var promise = $q.when(handler.instance.isEnabledForUser(user, courseId));
 
                 // Checks if the handler is enabled for the user.
                 promise.then(function(enabled) {

@@ -128,15 +128,15 @@ angular.module('mm.addons.mod_choice')
         var modal = $mmUtil.showModalLoading('mm.core.sending', true);
         $mmaModChoice.submitResponse(choice.id, responses).then(function() {
             // Success! Let's refresh the data.
-            refreshAllData().finally(function() {
-                modal.dismiss();
-            });
+            return refreshAllData();
         }).catch(function(message) {
             if (message) {
                 $mmUtil.showErrorModal(message);
             } else {
                 $mmUtil.showErrorModal('mma.mod_choice.cannotsubmit', true);
             }
+        }).finally(function() {
+            modal.dismiss();
         });
     };
 

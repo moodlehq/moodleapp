@@ -227,16 +227,19 @@ angular.module('mm.addons.messages')
                 var obsShow,
                     obsHide,
                     keyboardHeight,
-                    maxInitialScroll = scrollView.getScrollView().__contentHeight - scrollView.getScrollView().__clientHeight;
+                    maxInitialScroll = scrollView.getScrollView().__contentHeight - scrollView.getScrollView().__clientHeight,
+                    initialHeight = $window.innerHeight;
 
                 obsShow = $mmEvents.on(mmCoreEventKeyboardShow, function(e) {
-                    // Try to calculate keyboard height ourselves since e.keyboardHeight is not reliable.
-                    var heightDifference = $window.outerHeight - $window.innerHeight,
-                        newKeyboardHeight = heightDifference > 50 ? heightDifference : e.keyboardHeight;
-                    if (newKeyboardHeight) {
-                        keyboardHeight = newKeyboardHeight;
-                        scrollView.scrollBy(0, newKeyboardHeight);
-                    }
+                    $timeout(function() {
+                        // Try to calculate keyboard height ourselves since e.keyboardHeight is not reliable.
+                        var heightDifference = initialHeight - $window.innerHeight,
+                            newKeyboardHeight = heightDifference > 50 ? heightDifference : e.keyboardHeight;
+                        if (newKeyboardHeight) {
+                            keyboardHeight = newKeyboardHeight;
+                            scrollView.scrollBy(0, newKeyboardHeight);
+                        }
+                    });
                 });
 
                 obsHide = $mmEvents.on(mmCoreEventKeyboardHide, function(e) {
