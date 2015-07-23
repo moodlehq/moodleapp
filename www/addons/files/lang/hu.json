@@ -1,8 +1,8 @@
 {
     "downloading": "Letöltés...",
     "emptyfilelist": "Nincs megjeleníthető állomány",
-    "errorcapturingaudio": "Hiba a hang rögzítélse közben",
-    "errorcapturingvideo": "Nem sikerült videofelvételt készíteni",
+    "errorcapturingaudio": "Hiba a hang rögzítélse közben.",
+    "errorcapturingvideo": "Nem sikerült videofelvételt készíteni.",
     "errorreadingfile": "Hiba a(z) \"{$a}\" állomány olvasása közben",
     "file": "Állomány",
     "fileuploaded": "Fájl feltöltve",

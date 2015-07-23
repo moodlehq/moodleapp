@@ -4,11 +4,11 @@
     "feedback": "Retroalimentación",
     "grade": "Calificación",
     "grades": "Calificaciones",
-    "itemname": "Nombre del ítem",
-    "lettergrade": "Calificación por letra",
+    "itemname": "Ítem de calificación",
+    "lettergrade": "Letra de calificación",
     "percentage": "Porcentaje",
     "range": "Rango",
-    "rank": "Rango",
+    "rank": "Rankeo",
     "viewgrades": "Ver calificaciones",
-    "weight": "Peso"
+    "weight": "Ponderación"
 }

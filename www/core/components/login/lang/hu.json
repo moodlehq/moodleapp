@@ -5,7 +5,7 @@
     "help": "Súgó",
     "helpmelogin": "<p>Több ezer Moodle-portál üzemel szerte a világban. Ez az alkalmazás csak azokhoz a portálokhoz képes kapcsolódni, amelyek lehetővé teszik ezt a mobil alkalmazás számára.</p><p>Ha gondot okoz a kapcsolódás, forduljon a Moodle azon rendszergazdájához, aki az adott portált üzemelteti, és kérje meg, hogy olvassa el a <a href=\"http://docs.moodle.org/en/Mobile_app\" target=\"_blank\">http://docs.moodle.org/en/Mobile_app</a> weboldalon lévő információt</p><p>Az alkalmazás demó üzemmódú Moodle-portálon való teszteléséhez a <i>Site URL</i> mezőbe írja be a <i>teacher</i> vagy <i>student</i> szót, és kattintson az <b>Add button</b> gombra.</p>",
     "invalidaccount": "Ellenőrizze belépési adatait vagy ellenőriztesse a rendszergazdával a portál beállításait.",
-    "invalidmoodleversion": "Érvénytelen Moodle-verzió. A minimális verziószám:",
+    "invalidmoodleversion": "Érvénytelen Moodle-verzió. A minimális verziószám a 2.4.",
     "invalidsite": "A portál-URL nem érvényes.",
     "login": "Belépés",
     "logininsiterequired": "A portálra böngészőablakban kell bejelentkeznie.",

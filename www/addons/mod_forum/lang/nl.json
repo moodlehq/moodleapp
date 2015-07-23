@@ -1,3 +1,6 @@
 {
-    "forumnodiscussionsyet": "Er zijn nog geen discussies in dit forum"
+    "errorgetforum": "Fout bij het ophalen van forumgegevens",
+    "forumnodiscussionsyet": "Er zijn nog geen discussies in dit forum",
+    "numdiscussions": "{{numdiscussions}} discussies",
+    "numreplies": "{{numreplies}} antwoorden"
 }

@@ -5,13 +5,16 @@
     "country": "Land",
     "description": "Beschrijving",
     "details": "Details",
+    "detailsnotavailable": "Je kunt de details voor deze gebruiker niet bekijken.",
+    "editingteacher": "Leraar",
     "email": "E-mail",
     "interests": "Interesses",
-    "invaliduser": "Ongeldige gebruiker",
-    "manager": "Beheerder",
+    "invaliduser": "Ongeldige gebuiker",
+    "manager": "Manager",
     "phone1": "Telefoon",
     "phone2": "Mobiele telefoon",
     "roles": "Rollen",
     "student": "Leerling",
-    "webpage": "Website"
+    "teacher": "Leraar zonder bewerken",
+    "webpage": "Webpagina"
 }

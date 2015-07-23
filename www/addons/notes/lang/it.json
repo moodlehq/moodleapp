@@ -1,8 +1,10 @@
 {
-    "addnewnote": "Aggiungi una annotazione",
-    "coursenotes": "Annotazioni corso",
-    "eventnotecreated": "Creata nota",
+    "addnewnote": "Aggiungi annotazione",
+    "coursenotes": "Annotazioni del corso",
+    "eventnotecreated": "Creata annotazione",
+    "nonotes": "Non sono presenti annotazioni di questo tipo.",
     "note": "Annotazione",
+    "notes": "Annotazioni",
     "personalnotes": "Annotazioni personali",
     "publishstate": "Contesto",
     "sitenotes": "Annotazioni del sito"

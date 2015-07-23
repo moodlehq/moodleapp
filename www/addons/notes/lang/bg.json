@@ -1,7 +1,10 @@
 {
     "addnewnote": "Добавяне на нова бележка",
-    "coursenotes": "Бележки за курс",
+    "coursenotes": "Бележки на курса",
+    "eventnotecreated": "Бележката създадена",
+    "nonotes": "Все още няма бележки от този тип.",
     "note": "Бележка",
+    "notes": "Бележки",
     "personalnotes": "Лични бележки",
     "publishstate": "Контекст",
     "sitenotes": "Бележки за сайта"

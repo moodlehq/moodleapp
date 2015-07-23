@@ -1,9 +1,11 @@
 {
-    "addnewnote": "Neue Anmerkung hinzufügen",
-    "coursenotes": "Anmerkungen nur für Trainer/innen im Kurs sichtbar",
-    "eventnotecreated": "Hinweis angelegt",
-    "note": "Anmerkung",
-    "personalnotes": "Persönliche Anmerkungen",
+    "addnewnote": "Neuen Hinweis hinzufügen",
+    "coursenotes": "Kurshinweise",
+    "eventnotecreated": "Hinweise angelegt",
+    "nonotes": "Keine Notizen dieses Types",
+    "note": "Notiz",
+    "notes": "Notizen",
+    "personalnotes": "Meine Notizen",
     "publishstate": "Kontext",
-    "sitenotes": "Anmerkungen für alle Trainer/innen sichtbar (kursübergreifend)"
+    "sitenotes": "Website-Notizen"
 }

@@ -1,10 +1,11 @@
 {
     "addsubmission": "Aggiungi consegna",
-    "allowsubmissionsfromdate": "Inizio consegne",
-    "attemptnumber": "Numero tentativo",
+    "allowsubmissionsfromdate": "Consenti consegne da",
+    "attemptnumber": "Tentativo numero",
     "cutoffdate": "Data limite",
-    "duedate": "Termine consegne",
-    "duedateno": "Senza termine consegne",
+    "duedate": "Scadenza",
+    "duedateno": "Senza scadenza",
     "submissions": "Consegne",
-    "viewsubmission": "Visualizza consegne"
+    "userwithid": "Utente con id {{id}}",
+    "viewsubmission": "Visualizza consegna"
 }
