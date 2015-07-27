@@ -22,7 +22,7 @@ angular.module('mm.core', ['pascalprecht.translate'])
 
 
 .config(function($stateProvider, $provide, $ionicConfigProvider, $httpProvider, $mmUtilProvider,
-        $mmLogProvider, $compileProvider) {
+        $mmLogProvider, $compileProvider, $mmInitDelegateProvider) {
 
     // Set tabs to bottom on Android.
     $ionicConfigProvider.platform.android.tabs.position('bottom');
@@ -94,9 +94,16 @@ angular.module('mm.core', ['pascalprecht.translate'])
 
     // Set our own safe protocols, otherwise geo:// is marked as unsafe.
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|geo|file):/);
+
+    // Register the core init process.
+    $mmInitDelegateProvider.registerProcess('mmAppInit', '$mmApp.initProcess');
 })
 
-.run(function($ionicPlatform, $ionicBody, $window, $mmEvents, mmCoreEventKeyboardShow, mmCoreEventKeyboardHide) {
+.run(function($ionicPlatform, $ionicBody, $window, $mmEvents, $mmInitDelegate, mmCoreEventKeyboardShow, mmCoreEventKeyboardHide) {
+    // Execute all the init processes.
+    $mmInitDelegate.executeInitProcesses();
+
+    // When the platform is ready.
     $ionicPlatform.ready(function() {
         var checkTablet = function() {
             $ionicBody.enableClass($ionicPlatform.isTablet(), 'tablet');
