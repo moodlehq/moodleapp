@@ -14,7 +14,7 @@
 
 angular.module('mm.core.login', [])
 
-.config(function($stateProvider, $urlRouterProvider) {
+.config(function($stateProvider, $urlRouterProvider, $mmInitDelegateProvider, mmInitDelegateMaxAddonPriority) {
 
     $stateProvider
 
@@ -87,6 +87,8 @@ angular.module('mm.core.login', [])
         return $state.href('mm_login.init').replace('#', '');
     });
 
+    // Restore the session.
+    $mmInitDelegateProvider.registerProcess('mmLogin', '$mmSitesManager.restoreSession', mmInitDelegateMaxAddonPriority + 200);
 })
 
 .run(function($log, $state, $mmUtil, $translate, $mmSitesManager, $rootScope, $mmSite, $mmURLDelegate, $ionicHistory,

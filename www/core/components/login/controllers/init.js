@@ -21,8 +21,7 @@ angular.module('mm.core.login')
  * @ngdoc controller
  * @name mmLoginInitCtrl
  */
-.controller('mmLoginInitCtrl', function($log, $ionicHistory, $state, $mmSitesManager, $mmSite, $mmEvents, $mmUtil,
-            $mmUpdateManager) {
+.controller('mmLoginInitCtrl', function($log, $ionicHistory, $state, $mmSitesManager, $mmSite, $mmEvents, $mmUtil, $mmApp) {
 
     $log = $log.getInstance('mmLoginInitCtrl');
 
@@ -32,28 +31,20 @@ angular.module('mm.core.login')
         disableBack: true
     });
 
-    $mmUpdateManager.check().catch(function() {
-        $log.error('Error applying update.')
-    }).finally(function() {
-        $mmSitesManager.restoreSession().then(function() {}, function(error) {
-            if (error) {
-                $mmUtil.showErrorModal(error);
-            }
-        }).finally(function() {
-            if ($mmSite.isLoggedIn()) {
-                $state.go('site.mm_courses').then(function() {
-                    $mmEvents.triggerUnique('initialized'); // @todo: Replace with "app ready" when it is implemented.
-                });
-            } else {
-                $mmSitesManager.hasSites().then(function() {
-                    return $state.go('mm_login.sites');
-                }, function() {
-                    return $state.go('mm_login.site');
-                }).finally(function() {
-                    $mmEvents.triggerUnique('initialized'); // @todo: Replace with "app ready" when it is implemented.
-                });
-            }
-        });
+    $mmApp.ready().then(function() {
+        if ($mmSite.isLoggedIn()) {
+            $state.go('site.mm_courses').then(function() {
+                $mmEvents.triggerUnique('initialized'); // @todo: Replace with "app ready" when it is implemented.
+            });
+        } else {
+            $mmSitesManager.hasSites().then(function() {
+                return $state.go('mm_login.sites');
+            }, function() {
+                return $state.go('mm_login.site');
+            }).finally(function() {
+                $mmEvents.triggerUnique('initialized'); // @todo: Replace with "app ready" when it is implemented.
+            });
+        }
     });
 
 });
