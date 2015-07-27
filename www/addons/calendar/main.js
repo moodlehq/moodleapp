@@ -48,7 +48,7 @@ angular.module('mm.addons.calendar', [])
 
 })
 
-.run(function($mmSideMenuDelegate, $mmaCalendar, $mmLocalNotifications, $state, $ionicPlatform, $mmEvents,
+.run(function($mmSideMenuDelegate, $mmaCalendar, $mmLocalNotifications, $state, $ionicPlatform, $mmApp,
         mmaCalendarComponent, mmaCalendarPriority) {
     // Register plugin in side menu.
     $mmSideMenuDelegate.registerPlugin('mmaCalendar', function() {
@@ -65,10 +65,7 @@ angular.module('mm.addons.calendar', [])
     // Listen for notification clicks.
     $mmLocalNotifications.registerClick(mmaCalendarComponent, function(data) {
         if (data.eventid) {
-            var observer = $mmEvents.on('initialized', function() {
-                if (observer && observer.off) {
-                    observer.off();
-                }
+            $mmApp.ready().then(function() {
                 $state.go('redirect', {siteid: data.siteid, state: 'site.calendar', params: {eventid: data.eventid}});
             });
         }
