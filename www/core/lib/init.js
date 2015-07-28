@@ -44,6 +44,15 @@ angular.module('mm.core')
     /**
      * Registers an initialisation process.
      *
+     * @description
+     * Init processes can be used to add initialisation logic to the app. Anything that should
+     * block the user interface while some processes are done should be an init process. When defining
+     * an init process make sure you do not set a priority higher than mmInitDelegateMaxAddonPriority
+     * in your addons. This is to make sure that your process does not happen before some essential
+     * other core processes such as the upgrade, and restoring the user session.
+     *
+     * An init process should never change state or prompt user interaction.
+     *
      * @module mm.core
      * @ngdoc method
      * @name $mmInitDelegateProvider#registerProcess

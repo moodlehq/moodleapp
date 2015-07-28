@@ -190,6 +190,21 @@ angular.module('mm.core')
         };
 
         /**
+         * Instantly returns if the app is ready.
+         *
+         * To be notified when the app is ready, refer to {@link $mmApp#ready}.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#ready
+         * @return {Boolean} True when it is, false when not.
+         */
+        self.isReady = function() {
+            var promise = $injector.get('$mmInitDelegate').ready();
+            return promise.$$state.status === 1;
+        };
+
+        /**
          * Resolves when the app is ready.
          *
          * @module mm.core
