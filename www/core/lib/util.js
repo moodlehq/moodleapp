@@ -127,11 +127,14 @@ angular.module('mm.core')
          * @ngdoc method
          * @name $mmUtil#resolveObject
          * @param  {Mixed} object String, object or function.
+         * @param  {Boolean} [instantiate=false] When true, if the object resolved is a function, instantiates it.
          * @return {Object} The reference to the object resolved.
          */
-        self.resolveObject = function(object) {
+        self.resolveObject = function(object, instantiate) {
             var toInject,
                 resolved;
+
+            instantiate = angular.isUndefined(instantiate) ? false : instantiate;
 
             if (angular.isFunction(object) || angular.isObject(object)) {
                 resolved = object;
@@ -143,6 +146,10 @@ angular.module('mm.core')
                 if (toInject.length > 1) {
                     resolved = resolved[toInject[1]];
                 }
+            }
+
+            if (angular.isFunction(resolved) && instantiate) {
+                resolved = resolved();
             }
 
             if (typeof resolved === 'undefined') {
