@@ -106,25 +106,25 @@ angular.module('mm.addons.pushnotifications')
      * @param {Object} data Notification data.
      */
     self.onMessageReceived = function(data) {
-        // Clean HTML from message.
-        if (data.message) {
-            data.message = $mmText.cleanTags(data.message, true);
-        }
-
         if ($mmUtil.isTrueOrOne(data.foreground)) {
             // If the app is in foreground when the notification is received, it's not shown. Let's show it ourselves.
             if ($mmLocalNotifications.isAvailable()) {
-                var localNotif = {
-                        id: 1,
-                        title: data.title,
-                        message: data.message,
-                        at: new Date(),
-                        data: {
-                            notif: data.notif,
-                            site: data.site
-                        }
-                    };
-                $mmLocalNotifications.schedule(localNotif, mmaPushNotificationsComponent, data.site);
+                // Apply formatText to title and message.
+                $mmText.formatText(data.title, true, true).then(function(formattedTitle) {
+                    $mmText.formatText(data.message, true, true).then(function(formattedMessage) {
+                        var localNotif = {
+                                id: 1,
+                                title: formattedTitle,
+                                message: formattedMessage,
+                                at: new Date(),
+                                data: {
+                                    notif: data.notif,
+                                    site: data.site
+                                }
+                            };
+                        $mmLocalNotifications.schedule(localNotif, mmaPushNotificationsComponent, data.site);
+                    });
+                });
             }
         } else {
             self.notificationClicked(data);
