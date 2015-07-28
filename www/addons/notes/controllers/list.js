@@ -30,7 +30,7 @@ angular.module('mm.addons.notes')
     $scope.type = type;
 
     $translate('mma.notes.' + type + 'notes').then(function(string) {
-        $scope.title = $translate.instant(string);
+        $scope.title = string;
     });
 
     function fetchNotes(refresh) {

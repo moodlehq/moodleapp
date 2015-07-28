@@ -1,0 +1,20 @@
+{
+    "complete": "Complete",
+    "completecourse": "Complete course",
+    "completed": "Completed",
+    "completiondate": "Completion date",
+    "criteria": "Criteria",
+    "criteriagroup": "Criteria group",
+    "criteriarequiredall": "All criteria below are required",
+    "criteriarequiredany": "Any criteria below are required",
+    "coursecompletion": "Course completion",
+    "inprogress": "In progress",
+    "manualselfcompletion": "Manual self completion",
+    "notyetstarted": "Not yet started",
+    "pending": "Pending",
+    "requirement": "Requirement",
+    "required": "Required",
+    "requiredcriteria": "Required criteria",
+    "status": "Status",
+    "viewcoursereport": "View course report"
+}
