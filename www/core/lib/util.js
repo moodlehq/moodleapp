@@ -64,7 +64,7 @@ angular.module('mm.core')
         return query.length ? query.substr(0, query.length - 1) : query;
     };
 
-    this.$get = function($ionicLoading, $ionicPopup, $translate, $http, $log, $q, $mmLang, $mmFS) {
+    this.$get = function($ionicLoading, $ionicPopup, $injector, $translate, $http, $log, $q, $mmLang, $mmFS) {
 
         $log = $log.getInstance('$mmUtil');
 
@@ -106,6 +106,56 @@ angular.module('mm.core')
             url = url.replace(/\/$/, "");
 
             return url;
+        };
+
+        /**
+         * Resolves an object.
+         *
+         * @description
+         * This is used to resolve what a callback should be when attached to a delegate.
+         * For instance, if the object attached is a function, it is returned as is, but
+         * we also support complex definition of objects. If we receive a string we will parse
+         * it and to inject its service using $injector from Angular.
+         *
+         * Examples:
+         * - (Function): returns the same function.
+         * - (Object): returns the same object.
+         * - '$mmSomething': Injects and returns $mmSomething.
+         * - '$mmSomething.method': Injectes and returns a reference to the function 'method'.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#resolveObject
+         * @param  {Mixed} object String, object or function.
+         * @param  {Boolean} [instantiate=false] When true, if the object resolved is a function, instantiates it.
+         * @return {Object} The reference to the object resolved.
+         */
+        self.resolveObject = function(object, instantiate) {
+            var toInject,
+                resolved;
+
+            instantiate = angular.isUndefined(instantiate) ? false : instantiate;
+
+            if (angular.isFunction(object) || angular.isObject(object)) {
+                resolved = object;
+
+            } else if (angular.isString(object)) {
+                toInject = object.split('.');
+                resolved = $injector.get(toInject[0]);
+
+                if (toInject.length > 1) {
+                    resolved = resolved[toInject[1]];
+                }
+            }
+
+            if (angular.isFunction(resolved) && instantiate) {
+                resolved = resolved();
+            }
+
+            if (typeof resolved === 'undefined') {
+                throw new Error('Unexpected argument passed passed');
+            }
+            return resolved;
         };
 
         /**

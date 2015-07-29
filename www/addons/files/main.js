@@ -96,15 +96,17 @@ angular.module('mm.addons.files', ['mm.core'])
     if (ionic.Platform.isIOS()) {
         // In iOS we need to manually check if there are new files in the app Inbox folder.
         function searchToUpload() {
-            $mmaFiles.checkIOSNewFiles().then(function(fileEntry) {
-                $mmSitesManager.getSites().then(function(sites) {
-                    if (sites.length == 0) {
-                        $mmUtil.showErrorModal('mma.files.errorreceivefilenosites', true);
-                    } else if (sites.length == 1) {
-                        $mmaFilesHelper.showConfirmAndUploadInSite(fileEntry, sites[0].id);
-                    } else {
-                        $state.go('site.files-choose-site', {file: fileEntry});
-                    }
+            $mmApp.ready().then(function() {
+                $mmaFiles.checkIOSNewFiles().then(function(fileEntry) {
+                    $mmSitesManager.getSites().then(function(sites) {
+                        if (sites.length == 0) {
+                            $mmUtil.showErrorModal('mma.files.errorreceivefilenosites', true);
+                        } else if (sites.length == 1) {
+                            $mmaFilesHelper.showConfirmAndUploadInSite(fileEntry, sites[0].id);
+                        } else {
+                            $state.go('site.files-choose-site', {file: fileEntry});
+                        }
+                    });
                 });
             });
         }

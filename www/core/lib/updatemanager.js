@@ -56,6 +56,8 @@ angular.module('mm.core')
 
                 return $q.all(promises).then(function() {
                     return $mmConfig.set(mmCoreVersionApplied, versionCode);
+                }).catch(function() {
+                    $log.error('Error applying update from ' + versionApplied + ' to ' + versionCode);
                 });
             });
         });
