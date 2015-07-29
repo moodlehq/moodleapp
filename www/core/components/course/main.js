@@ -63,10 +63,7 @@ angular.module('mm.core.course', ['mm.core.courses'])
     $mmCoursesDelegateProvider.registerNavHandler('mmCourse', '$mmCourseCoursesNavHandler', mmCoreCoursePriority);
 })
 
-.run(function($mmEvents, mmCoreEventLogin, $mmCourseDelegate) {
-
-    $mmEvents.on(mmCoreEventLogin, function() {
-        $mmCourseDelegate.updateContentHandlers();
-    });
-
+.run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, $mmCourseDelegate) {
+    $mmEvents.on(mmCoreEventLogin, $mmCourseDelegate.updateContentHandlers);
+    $mmEvents.on(mmCoreEventSiteUpdated, $mmCourseDelegate.updateContentHandlers);
 });
