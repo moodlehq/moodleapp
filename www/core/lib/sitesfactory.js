@@ -433,7 +433,7 @@ angular.module('mm.core')
                     method = mmCoreWSPrefix + method;
                 } else {
                     $log.error("WS function '" + method + "' is not available, even in compatibility mode.");
-                    $mmLang.translateErrorAndReject(deferred, 'mm.core.wsfunctionnotavailable');
+                    $mmLang.translateAndRejectDeferred(deferred, 'mm.core.wsfunctionnotavailable');
                     return deferred.promise;
                 }
             }
@@ -471,7 +471,7 @@ angular.module('mm.core')
                 }, function(error) {
                     if (error === mmCoreSessionExpired) {
                         // Session expired, trigger event.
-                        $mmLang.translateErrorAndReject(deferred, 'mm.core.lostconnection');
+                        $mmLang.translateAndRejectDeferred(deferred, 'mm.core.lostconnection');
                         $mmEvents.trigger(mmCoreEventSessionExpired, site.id);
                     } else if (typeof preSets.emergencyCache !== 'undefined' && !preSets.emergencyCache) {
                         $log.debug('WS call ' + method + ' failed. Emergency cache is forbidden, rejecting.');
