@@ -40,6 +40,18 @@ angular.module('mm.core.user')
     var self = {};
 
     /**
+     * Store user basic information in local DB to be retrieved if the WS call fails.
+     *
+     * @param  {Number} id User ID.
+     * @return {Promise}   Promise resolve when the user is deleted.
+     */
+    self.deleteStoredUser = function(id) {
+        var db = $mmSite.getDb();
+        self.invalidateUserCache(id); // Invalidate WS calls.
+        return db.remove(mmCoreUsersStore, parseInt(id));
+    };
+
+    /**
      * Formats a user address, concatenating address, city and country.
      *
      * @module mm.core.user

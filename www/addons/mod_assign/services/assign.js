@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc controller
  * @name $mmaModAssign
  */
-.factory('$mmaModAssign', function($mmSite, $q, $mmUser, $translate) {
+.factory('$mmaModAssign', function($mmSite, $q, $mmUser) {
     var self = {};
 
     /**
@@ -136,7 +136,6 @@ angular.module('mm.addons.mod_assign')
 
         return $mmSite.read('mod_assign_get_submissions', params, preSets).then(function(response) {
             // Check if we can view submissions, with enough permissions.
-            var canviewsubmissions;
             if (response.warnings.length > 0 && response.warnings[0].warningcode == 1) {
                 return {canviewsubmissions: false};
             } else {
@@ -166,23 +165,18 @@ angular.module('mm.addons.mod_assign')
         var promises = [];
 
         angular.forEach(submissions, function(submission) {
-            var promise = $mmUser.getProfile(submission.userid, courseid, true);
-            promises.push(promise);
-            promise.then(function(user) {
+            var promise = $mmUser.getProfile(submission.userid, courseid, true).then(function(user) {
                 submission.userfullname = user.fullname;
                 submission.userprofileimageurl = user.profileimageurl;
             }, function() {
-                // Error getting profile. Set default data.
-                submission.userprofileimageurl = 'img/user-avatar.png';
-                return $translate('mma.mod_assign.userwithid', {id: submission.userid}).then(function(str) {
-                    submission.userfullname = str;
-                });
+                // Error getting profile, resolve promise without adding any extra data.
             });
+            promises.push(promise);
         });
         return $q.all(promises).then(function() {
             return submissions;
         });
-    }
+    };
 
     /**
      * Check if assignments plugin is enabled.

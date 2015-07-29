@@ -24,6 +24,7 @@ angular.module('mm.core')
 .constant('mmCoreEventSiteUpdated', 'site_updated')
 .constant('mmCoreEventQueueEmpty', 'filepool_queue_empty')
 .constant('mmCoreEventCompletionModuleViewed', 'completion_module_viewed')
+.constant('mmCoreEventUserDeleted', 'user_deleted')
 
 /**
  * Service to send and listen to events.

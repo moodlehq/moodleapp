@@ -15,7 +15,7 @@
                             <article>
                                 <div class="item item-avatar">
                                     <img ng-if="discussion.userpictureurl" ng-src="{{discussion.userpictureurl}}" mm-external-content mm-split-view-link="{{userStateName}}({courseid: courseid, userid: discussion.userid})">
-                                    <img ng-if="!discussion.userpictureurl" src="img/user-avatar.png" alt="">
+                                    <img ng-if="!discussion.userpictureurl" src="img/user-avatar.png" alt="" role="presentation">
                                     <h2><summary>{{discussion.subject}}</summary></h2>
                                     <div class="item-note">{{discussion.created | mmDateDayOrTime}}</div>
                                     <p>{{discussion.userfullname}}</p>

@@ -115,8 +115,8 @@ angular.module('mm.core')
         return exists;
     }
 
-    this.$get = function($http, $q, $mmWS, $mmDB, $mmConfig, $log, md5, $mmApp, $mmLang, $mmUtil, $mmFS,
-        mmCoreWSCacheStore, mmCoreWSPrefix, mmCoreSessionExpired, $mmEvents, mmCoreEventSessionExpired) {
+    this.$get = function($http, $q, $mmWS, $mmDB, $mmConfig, $log, md5, $mmApp, $mmLang, $mmUtil, $mmFS, mmCoreWSCacheStore,
+            mmCoreWSPrefix, mmCoreSessionExpired, $mmEvents, mmCoreEventSessionExpired, mmCoreUserDeleted, mmCoreEventUserDeleted) {
 
         $log = $log.getInstance('$mmSite');
 
@@ -473,6 +473,10 @@ angular.module('mm.core')
                         // Session expired, trigger event.
                         $mmLang.translateAndRejectDeferred(deferred, 'mm.core.lostconnection');
                         $mmEvents.trigger(mmCoreEventSessionExpired, site.id);
+                    } else if (error === mmCoreUserDeleted) {
+                        // User deleted, trigger event.
+                        $mmLang.translateErrorAndReject(deferred, 'mm.core.userdeleted');
+                        $mmEvents.trigger(mmCoreEventUserDeleted, {siteid: site.id, params: data});
                     } else if (typeof preSets.emergencyCache !== 'undefined' && !preSets.emergencyCache) {
                         $log.debug('WS call ' + method + ' failed. Emergency cache is forbidden, rejecting.');
                         deferred.reject(error);
