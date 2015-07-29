@@ -43,7 +43,7 @@ angular.module('mm.core.login')
      */
     self.isSSOLoginNeeded = function(code) {
         return code == mmLoginSSOCode;
-    }
+    };
 
     /**
      * Open a browser to perform SSO login.

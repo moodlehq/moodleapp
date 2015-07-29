@@ -40,7 +40,7 @@ angular.module('mm.core')
  */
 .factory('$mmSitesManager', function($http, $q, $mmSitesFactory, md5, $mmLang, $mmConfig, $mmApp, $mmUtil, $mmEvents,
             mmCoreSitesStore, mmCoreCurrentSiteStore, mmCoreEventLogin, mmCoreEventLogout, $log, mmCoreEventSiteUpdated,
-            mmCoreEventSiteAdded) {
+            mmCoreEventSiteAdded, mmCoreEventSessionExpired) {
 
     $log = $log.getInstance('$mmSitesManager');
 
@@ -100,8 +100,11 @@ angular.module('mm.core')
             siteurl = siteurl.replace(/^http(s)?\:\/\//i, protocol);
 
             return self.siteExists(siteurl).then(function() {
-                return checkMobileLocalPlugin(siteurl).then(function(code) {
-                    return {siteurl: siteurl, code: code};
+                // Create a temporary site to check if local_mobile is installed.
+                var temporarySite = $mmSitesFactory.makeSite(undefined, siteurl);
+                return temporarySite.checkLocalMobilePlugin(siteurl).then(function(data) {
+                    services[siteurl] = data.service; // No need to store it in DB.
+                    return {siteurl: siteurl, code: data.code};
                 });
             }, function() {
                 // Site doesn't exist.
@@ -128,58 +131,6 @@ angular.module('mm.core')
     self.siteExists = function(siteurl) {
         return $http.head(siteurl + '/login/token.php', {timeout: 15000});
     };
-
-    /**
-     * Check if the local_mobile plugin is installed in the Moodle site.
-     * This plugin provide extended services.
-     *
-     * @param  {String} siteurl The Moodle SiteURL.
-     * @return {Promise}        Promise to be resolved if the local_mobile plugin is installed. The promise is resolved
-     *                          with an authentication code to identify the authentication method to use.
-     */
-    function checkMobileLocalPlugin(siteurl) {
-
-        delete services[siteurl]; // Delete service stored.
-
-        return $mmConfig.get('wsextservice').then(function(service) {
-
-            return $http.post(siteurl + '/local/mobile/check.php', {service: service}).then(function(response) {
-                var data = response.data;
-
-                if (typeof data == 'undefined' || typeof data.code == "undefined") {
-                    return $mmLang.translateAndReject('mm.core.unexpectederror');
-                }
-
-                var code = parseInt(data.code, 10);
-                if (data.error) {
-                    switch (code) {
-                        case 1:
-                            // Site in maintenance mode.
-                            return $mmLang.translateAndReject('mm.login.siteinmaintenance');
-                        case 2:
-                            // Web services not enabled.
-                            return $mmLang.translateAndReject('mm.login.webservicesnotenabled');
-                        case 3:
-                            // Extended service not enabled, but the official is enabled.
-                            return 0;
-                        case 4:
-                            // Neither extended or official services enabled.
-                            return $mmLang.translateAndReject('mm.login.mobileservicesnotenabled');
-                        default:
-                            return $mmLang.translateAndReject('mm.core.unexpectederror');
-                    }
-                } else {
-                    services[siteurl] = service; // No need to store it in DB.
-                    return code;
-                }
-            }, function() {
-                return 0;
-            });
-
-        }, function() {
-            return 0;
-        });
-    }
 
     /**
      * Gets a user token from the server.
@@ -373,13 +324,20 @@ angular.module('mm.core')
         return self.getSite(siteid).then(function(site) {
             currentSite = site;
             self.login(siteid);
-            // Update site info. Resolve the promise even if the update fails.
-            return self.updateSiteInfo(siteid).finally(function() {
-                var infos = site.getInfo();
-                if (!isValidInfo(infos)) {
-                    self.logout();
-                    return $mmLang.translateAndReject('mm.login.cannotdownloadfiles');
-                }
+
+            // Check if local_mobile was installed to Moodle.
+            return site.checkIfLocalMobileInstalledAndNotUsed().then(function() {
+                // Local mobile was added. Throw invalid session to force reconnect and create a new token.
+                $mmEvents.trigger(mmCoreEventSessionExpired, siteid);
+            }, function() {
+                // Update site info. Resolve the promise even if the update fails.
+                return self.updateSiteInfo(siteid).finally(function() {
+                    var infos = site.getInfo();
+                    if (!isValidInfo(infos)) {
+                        self.logout();
+                        return $mmLang.translateAndReject('mm.login.cannotdownloadfiles');
+                    }
+                });
             });
         });
     };
