@@ -259,7 +259,7 @@ angular.module('mm.core.user')
         var promises = [];
 
         angular.forEach(users, function(user) {
-            promises.push( self.storeUser(user.id, user.fullname, user.profileimageurl) );
+            promises.push(self.storeUser(user.id, user.fullname, user.profileimageurl));
         });
 
         return $q.all(promises);

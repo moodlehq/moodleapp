@@ -99,7 +99,7 @@ angular.module('mm.addons.mod_choice')
             p2 = $mmaModChoice.invalidateOptions(choice.id),
             p3 = $mmaModChoice.invalidateResults(choice.id);
 
-        return $q.all(p1, p2, p3).finally(function() {
+        return $q.all([p1, p2, p3]).finally(function() {
             return fetchChoiceData();
         });
     }
