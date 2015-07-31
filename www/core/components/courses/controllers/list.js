@@ -21,7 +21,7 @@ angular.module('mm.core.courses')
  * @ngdoc controller
  * @name mmCoursesListCtrl
  */
-.controller('mmCoursesListCtrl', function($scope, $state, $mmCourses, $mmCoursesDelegate, $mmUtil) {
+.controller('mmCoursesListCtrl', function($scope, $mmCourses, $mmCoursesDelegate, $mmUtil) {
 
     // Convenience function to fetch courses.
     function fetchCourses(refresh) {
@@ -35,7 +35,7 @@ angular.module('mm.core.courses')
             });
             $scope.filterText = ''; // Filter value MUST be set after courses are shown.
         }, function(error) {
-            if (typeof error != 'undefined' && error != '') {
+            if (typeof error != 'undefined' && error !== '') {
                 $mmUtil.showErrorModal(error);
             } else {
                 $mmUtil.showErrorModal('mm.courses.errorloadcourses', true);
