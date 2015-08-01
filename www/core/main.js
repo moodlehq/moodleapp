@@ -22,7 +22,7 @@ angular.module('mm.core', ['pascalprecht.translate'])
 
 
 .config(function($stateProvider, $provide, $ionicConfigProvider, $httpProvider, $mmUtilProvider,
-        $mmLogProvider, $compileProvider, $mmInitDelegateProvider, mmInitDelegateMaxAddonPriority) {
+        $mmLogProvider, $compileProvider) {
 
     // Set tabs to bottom on Android.
     $ionicConfigProvider.platform.android.tabs.position('bottom');
@@ -94,19 +94,9 @@ angular.module('mm.core', ['pascalprecht.translate'])
 
     // Set our own safe protocols, otherwise geo:// is marked as unsafe.
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|geo|file):/);
-
-    // Register the core init process, this should be the very first thing.
-    $mmInitDelegateProvider.registerProcess('mmAppInit', '$mmApp.initProcess', mmInitDelegateMaxAddonPriority + 400, true);
-
-    // Register upgrade check process, this should happen almost before everything else.
-    $mmInitDelegateProvider.registerProcess('mmUpdateManager', '$mmUpdateManager.check', mmInitDelegateMaxAddonPriority + 300, true);
 })
 
-.run(function($ionicPlatform, $ionicBody, $window, $mmEvents, $mmInitDelegate, mmCoreEventKeyboardShow, mmCoreEventKeyboardHide) {
-    // Execute all the init processes.
-    $mmInitDelegate.executeInitProcesses();
-
-    // When the platform is ready.
+.run(function($ionicPlatform, $ionicBody, $window, $mmEvents, mmCoreEventKeyboardShow, mmCoreEventKeyboardHide) {
     $ionicPlatform.ready(function() {
         var checkTablet = function() {
             $ionicBody.enableClass($ionicPlatform.isTablet(), 'tablet');

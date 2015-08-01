@@ -33,8 +33,7 @@ angular.module('mm.core.user')
      * @ngdoc method
      * @name $mmUserDelegateProvider#registerProfileHandler
      * @param {String} component The addon's name, or addon and sub context (mmaMessages, mmaMessage:blockContact, ...)
-     * @param {String|Object|Function} handler Must be resolved to an object defining the following functions. Or to a function
-     *                          returning an object defining these functions. See {@link $mmUtil#resolveObject}.
+     * @param  {String} handler  Used to inject a factory which returns an object defining the following methods:
      *                             - isEnabled (Boolean|Promise) Whether or not the handler is enabled on a site level.
      *                                                           When using a promise, it should return a boolean.
      *                             - isEnabledForUser (Boolean|Promise) Whether or not the handler is enabled for a user.
@@ -60,7 +59,7 @@ angular.module('mm.core.user')
         return true;
     };
 
-    self.$get = function($q, $log, $mmSite, $mmUtil) {
+    self.$get = function($injector, $q, $log, $mmSite, $filter) {
         var enabledProfileHandlers = {},
             self = {};
 
@@ -122,7 +121,14 @@ angular.module('mm.core.user')
             var promise;
 
             if (typeof handlerInfo.instance === 'undefined') {
-                handlerInfo.instance = $mmUtil.resolveObject(handlerInfo.handler, true);
+                var toInject = handlerInfo.handler.split('.'),
+                    factory = $injector.get(toInject[0]);
+
+                if (toInject.length > 1) {
+                    handlerInfo.instance = factory[toInject[1]]();
+                } else {
+                    handlerInfo.instance = factory;
+                }
             }
 
             if (!$mmSite.isLoggedIn()) {

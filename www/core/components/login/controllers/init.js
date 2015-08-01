@@ -21,27 +21,39 @@ angular.module('mm.core.login')
  * @ngdoc controller
  * @name mmLoginInitCtrl
  */
-.controller('mmLoginInitCtrl', function($log, $ionicHistory, $state, $mmSitesManager, $mmSite, $mmApp) {
+.controller('mmLoginInitCtrl', function($log, $ionicHistory, $state, $mmSitesManager, $mmSite, $mmEvents, $mmUtil,
+            $mmUpdateManager) {
 
     $log = $log.getInstance('mmLoginInitCtrl');
 
-    $mmApp.ready().then(function() {
+    // Disable animation and back button for the next transition.
+    $ionicHistory.nextViewOptions({
+        disableAnimate: true,
+        disableBack: true
+    });
 
-        // Disable animation and back button for the next transition.
-        $ionicHistory.nextViewOptions({
-            disableAnimate: true,
-            disableBack: true
+    $mmUpdateManager.check().catch(function() {
+        $log.error('Error applying update.')
+    }).finally(function() {
+        $mmSitesManager.restoreSession().then(function() {}, function(error) {
+            if (error) {
+                $mmUtil.showErrorModal(error);
+            }
+        }).finally(function() {
+            if ($mmSite.isLoggedIn()) {
+                $state.go('site.mm_courses').then(function() {
+                    $mmEvents.triggerUnique('initialized'); // @todo: Replace with "app ready" when it is implemented.
+                });
+            } else {
+                $mmSitesManager.hasSites().then(function() {
+                    return $state.go('mm_login.sites');
+                }, function() {
+                    return $state.go('mm_login.site');
+                }).finally(function() {
+                    $mmEvents.triggerUnique('initialized'); // @todo: Replace with "app ready" when it is implemented.
+                });
+            }
         });
-
-        if ($mmSite.isLoggedIn()) {
-            $state.go('site.mm_courses');
-        } else {
-            $mmSitesManager.hasSites().then(function() {
-                return $state.go('mm_login.sites');
-            }, function() {
-                return $state.go('mm_login.site');
-            });
-        }
     });
 
 });

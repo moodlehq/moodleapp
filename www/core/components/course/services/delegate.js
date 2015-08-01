@@ -51,8 +51,7 @@ angular.module('mm.core.course')
      * @param {String} addon The addon's name (mmaLabel, mmaForum, ...)
      * @param {String} handles The module this handler handles, e.g. forum, label. This value will be compared with
      *                         the value contained in module.modname from the Webservice core_course_get_contents.
-     * @param {String|Object|Function} handler Must be resolved to an object defining the following functions. Or to a function
-     *                           returning an object defining these functions. See {@link $mmUtil#resolveObject}.
+     * @param  {Function} handler  Returns an object defining the following methods:
      *                             - isEnabled (Boolean) Whether or not the handler is enabled on a site level.
      *                             - getController(module, courseid) (Function) Returns the function that will act as controller.
      *                                                                See core/components/course/templates/section.html
@@ -72,7 +71,7 @@ angular.module('mm.core.course')
         return true;
     };
 
-    self.$get = function($q, $log, $mmSite, $mmUtil, $mmCourseContentHandler) {
+    self.$get = function($injector, $q, $log, $mmSite, $mmCourseContentHandler) {
         var enabledHandlers = {},
             self = {};
 
@@ -116,7 +115,7 @@ angular.module('mm.core.course')
             var promise;
 
             if (typeof handlerInfo.instance === 'undefined') {
-                handlerInfo.instance = $mmUtil.resolveObject(handlerInfo.handler, true);
+                handlerInfo.instance = $injector.get(handlerInfo.handler);
             }
 
             if (!$mmSite.isLoggedIn()) {
