@@ -37,10 +37,6 @@ angular.module('mm.core.user', [])
 })
 
 .run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, $mmUserDelegate) {
-    $mmEvents.on(mmCoreEventLogin, function() {
-        $mmUserDelegate.updateProfileHandlers();
-    });
-    $mmEvents.on(mmCoreEventSiteUpdated, function() {
-        $mmUserDelegate.updateProfileHandlers();
-    });
+    $mmEvents.on(mmCoreEventLogin, $mmUserDelegate.updateProfileHandlers);
+    $mmEvents.on(mmCoreEventSiteUpdated, $mmUserDelegate.updateProfileHandlers);
 });

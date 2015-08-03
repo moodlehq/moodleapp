@@ -115,15 +115,32 @@ angular.module('mm.core')
     };
 
     /**
+     * Translates an error message and returns a rejected promise with the translated message.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmLang#translateAndReject
+     * @param  {String} errorkey Key of the message to show.
+     * @return {Promise}         Rejected promise.
+     */
+    self.translateAndReject = function(errorkey) {
+        return $translate(errorkey).then(function(errorMessage) {
+            return $q.reject(errorMessage);
+        }, function() {
+            return $q.reject(errorkey);
+        });
+    };
+
+    /**
      * Translates an error message and rejects a deferred with the translated message.
      *
      * @module mm.core
      * @ngdoc method
-     * @name $mmLang#translateErrorAndReject
+     * @name $mmLang#translateAndRejectDeferred
      * @param  {Object} deferred Deferred object to reject.
      * @param  {String} errorkey Key of the message to show.
      */
-    self.translateErrorAndReject = function(deferred, errorkey) {
+    self.translateAndRejectDeferred = function(deferred, errorkey) {
         $translate(errorkey).then(function(errorMessage) {
             deferred.reject(errorMessage);
         }, function() {

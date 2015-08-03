@@ -433,7 +433,7 @@ angular.module('mm.core')
                     method = mmCoreWSPrefix + method;
                 } else {
                     $log.error("WS function '" + method + "' is not available, even in compatibility mode.");
-                    $mmLang.translateErrorAndReject(deferred, 'mm.core.wsfunctionnotavailable');
+                    $mmLang.translateAndRejectDeferred(deferred, 'mm.core.wsfunctionnotavailable');
                     return deferred.promise;
                 }
             }
@@ -471,7 +471,7 @@ angular.module('mm.core')
                 }, function(error) {
                     if (error === mmCoreSessionExpired) {
                         // Session expired, trigger event.
-                        $mmLang.translateErrorAndReject(deferred, 'mm.core.lostconnection');
+                        $mmLang.translateAndRejectDeferred(deferred, 'mm.core.lostconnection');
                         $mmEvents.trigger(mmCoreEventSessionExpired, site.id);
                     } else if (typeof preSets.emergencyCache !== 'undefined' && !preSets.emergencyCache) {
                         $log.debug('WS call ' + method + ' failed. Emergency cache is forbidden, rejecting.');
@@ -659,6 +659,84 @@ angular.module('mm.core')
         Site.prototype.getDocsUrl = function(page) {
             var release = this.infos.release ? this.infos.release : undefined;
             return $mmUtil.getDocsUrl(release, page);
+        };
+
+        /**
+         * Check if the local_mobile plugin is installed in the Moodle site.
+         * This plugin provide extended services.
+         *
+         * @return {Promise} Promise resolved when the check is done. Resolve params:
+         *                           - {Number} code Code to identify the authentication method to use.
+         *                           - {String} [service] If defined, name of the service to use.
+         */
+        Site.prototype.checkLocalMobilePlugin = function() {
+            var siteurl = this.siteurl;
+
+            return $mmConfig.get('wsextservice').then(function(service) {
+
+                return $http.post(siteurl + '/local/mobile/check.php', {service: service}).then(function(response) {
+                    var data = response.data;
+
+                    if (typeof data == 'undefined' || typeof data.code == 'undefined') {
+                        return $mmLang.translateAndReject('mm.core.unexpectederror');
+                    }
+
+                    var code = parseInt(data.code, 10);
+                    if (data.error) {
+                        switch (code) {
+                            case 1:
+                                // Site in maintenance mode.
+                                return $mmLang.translateAndReject('mm.login.siteinmaintenance');
+                            case 2:
+                                // Web services not enabled.
+                                return $mmLang.translateAndReject('mm.login.webservicesnotenabled');
+                            case 3:
+                                // Extended service not enabled, but the official is enabled.
+                                return 0;
+                            case 4:
+                                // Neither extended or official services enabled.
+                                return $mmLang.translateAndReject('mm.login.mobileservicesnotenabled');
+                            default:
+                                return $mmLang.translateAndReject('mm.core.unexpectederror');
+                        }
+                    } else {
+                        return {code: code, service: service};
+                    }
+                }, function() {
+                    return {code: 0};
+                });
+
+            }, function() {
+                return {code: 0};
+            });
+        };
+
+        /**
+         * Check if local_mobile has been installed in Moodle but the app is not using it.
+         *
+         * @return {Promise} Promise resolved it local_mobile was added, rejected otherwise.
+         */
+        Site.prototype.checkIfLocalMobileInstalledAndNotUsed = function() {
+            var appUsesLocalMobile = false;
+            angular.forEach(this.infos.functions, function(func) {
+                if (func.name.indexOf(mmCoreWSPrefix) != -1) {
+                    appUsesLocalMobile = true;
+                }
+            });
+
+            if (appUsesLocalMobile) {
+                // App already uses local_mobile, it wasn't added.
+                console.log('APP ALREADY USES LOCAL MOBILE');
+                return $q.reject();
+            }
+
+            return this.checkLocalMobilePlugin().then(function(data) {
+                if (typeof data.service == 'undefined') {
+                    // local_mobile NOT installed. Reject.
+                    return $q.reject();
+                }
+                return data;
+            });
         };
 
         /**
