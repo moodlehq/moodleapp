@@ -15,6 +15,7 @@ var through = require('through');
 var path = require('path');
 var File = gutil.File;
 var gulpSlash = require('gulp-slash');
+var ngAnnotate = require('gulp-ng-annotate');
 
 var license = '' +
   '// (C) Copyright 2015 Martin Dougiamas\n' +
@@ -111,6 +112,7 @@ gulp.task('build', function() {
     // Remove comments, remove empty lines, concat and add license.
     .pipe(stripComments())
     .pipe(removeEmptyLines())
+    .pipe(ngAnnotate()) // This step fixes DI declarations for FirefoxOS.
     .pipe(concat('mm.bundle.js'))
     .pipe(insert.prepend(license))
 
