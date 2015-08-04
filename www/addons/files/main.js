@@ -77,8 +77,8 @@ angular.module('mm.addons.files', ['mm.core'])
 
 })
 
-.run(function($mmSideMenuDelegate, $q, $mmaFiles, $state, $mmSitesManager, $mmUtil, $mmaFilesHelper, $ionicPlatform,
-            mmaFilesPriority) {
+.run(function($mmSideMenuDelegate, $mmaFiles, $state, $mmSitesManager, $mmUtil, $mmaFilesHelper, $ionicPlatform,
+            mmaFilesPriority, $mmApp) {
 
     // Register plugin in side menu.
     $mmSideMenuDelegate.registerPlugin('mmaFiles', function() {
