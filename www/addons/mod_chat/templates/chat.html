@@ -7,40 +7,42 @@
 
     <ion-content class="padding" delegate-handle="mmaChatScroll">
         <mm-loading hide-until="loaded">
-            <div class="list">
-                <div ng-repeat="message in messages track by $index">
+            <section class="mma-chat-discussion-container" aria-live="polite">
+                <div class="list">
+                    <div ng-repeat="message in messages track by $index">
 
-                    <p ng-if="showDate(messages[$index], messages[$index - 1])" class="mma-chat-notice">
-                        <span>{{ message.timestamp * 1000 | date:"EEE, d MMM" }}</span>
-                    </p>
+                        <p ng-if="showDate(messages[$index], messages[$index - 1])" class="mma-chat-notice">
+                            <span>{{ message.timestamp * 1000 | date:"EEE, d MMM" }}</span>
+                        </p>
 
-                    <p ng-if="message.system && message.message == 'enter'" class="mma-chat-notice">
-                        <span>{{ message.timestamp * 1000 | date:"h:mma" }} {{ 'mma.mod_chat.messageenter' | translate:{$a: message.userfullname} }}</span>
-                    </p>
+                        <p ng-if="message.system && message.message == 'enter'" class="mma-chat-notice">
+                            <span>{{ message.timestamp * 1000 | date:"h:mma" }} {{ 'mma.mod_chat.messageenter' | translate:{$a: message.userfullname} }}</span>
+                        </p>
 
-                    <p ng-if="message.system && message.message == 'exit'" class="mma-chat-notice">
-                        <span>{{ message.timestamp * 1000 | date:"h:mma" }} {{ 'mma.mod_chat.messageexit' | translate:{$a: message.userfullname} }}</span>
-                    </p>
+                        <p ng-if="message.system && message.message == 'exit'" class="mma-chat-notice">
+                            <span>{{ message.timestamp * 1000 | date:"h:mma" }} {{ 'mma.mod_chat.messageexit' | translate:{$a: message.userfullname} }}</span>
+                        </p>
 
-                    <p ng-if="message.message == currentUserBeep" class="mma-chat-notice">
-                        <span>{{ 'mma.mod_chat.messagebeepsyou' | translate:{$a: message.userfullname} }}</span>
-                    </p>
+                        <p ng-if="message.message == currentUserBeep" class="mma-chat-notice">
+                            <span>{{ 'mma.mod_chat.messagebeepsyou' | translate:{$a: message.userfullname} }}</span>
+                        </p>
 
-                    <article ng-if="!message.system && message.message.substr(0, 4) != 'beep'" class="item item-avatar" href="#">
-                        <img ng-if="message.userprofileimageurl" ng-src="{{message.userprofileimageurl}}" mm-external-content>
-                        <img ng-if="!message.userprofileimageurl" src="img/user-avatar.png" alt="">
-                        <h2>{{ message.userfullname }}</h2>
+                        <article ng-if="!message.system && message.message.substr(0, 4) != 'beep'" class="item item-avatar" href="#">
+                            <img ng-if="message.userprofileimageurl" ng-src="{{message.userprofileimageurl}}" mm-external-content>
+                            <img ng-if="!message.userprofileimageurl" src="img/user-avatar.png" alt="">
+                            <h2>{{ message.userfullname }}</h2>
 
-                        <mm-format-text after-render="scrollAfterRender" watch="true">{{ message.message }}</mm-format-text>
+                            <mm-format-text after-render="scrollAfterRender" watch="true">{{ message.message }}</mm-format-text>
 
-                        <span class="item-note">{{ message.timestamp * 1000 | date:"h:mma" }}</span>
-                    </article>
+                            <span class="item-note">{{ message.timestamp * 1000 | date:"h:mma" }}</span>
+                        </article>
+                    </div>
                 </div>
-            </div>
 
-            <div ng-if="!messages || messages.length <= 0">
-                <p>{{ 'mma.mod_chat.nomessages' | translate}}</p>
-            </div>
+                <div ng-if="!messages || messages.length <= 0">
+                    <p>{{ 'mma.mod_chat.nomessages' | translate}}</p>
+                </div>
+            </section>
         </mm-loading>
     </ion-content>
 
