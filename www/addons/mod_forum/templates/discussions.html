@@ -1,7 +1,7 @@
 <ion-view>
     <ion-nav-title>{{ title }}</ion-nav-title>
     <ion-nav-buttons side="secondary">
-        <a class="button button-icon ion-ios-browsers-outline" ng-href="{{moduleurl}}" mm-browser ></a>
+        <a class="button button-icon ion-ios-browsers-outline" ng-href="{{moduleurl}}" mm-browser aria-label="{{ 'mm.core.openinbrowser' | translate }}"></a>
     </ion-nav-buttons>
     <mm-split-view load-when="discussionsLoaded">
         <ion-content>

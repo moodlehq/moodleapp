@@ -27,7 +27,7 @@
                     <img ng-src="{{ icon }}" alt="" role="presentation" ng-if="icon">
                     <mm-format-text watch="true">{{ title }}</mm-format-text>
 
-                    <button ng-repeat="button in buttons" ng-hide="button.hidden" ng-click="button.action($event)" class="button button-icon">
+                    <button ng-repeat="button in buttons" ng-hide="button.hidden" ng-click="button.action($event)" class="button button-icon" aria-label="{{ button.label | translate }}">
                         <i class="icon positive" ng-class="{'{{button.icon}}': button.icon}"></i>
                     </button>
 
