@@ -9,7 +9,7 @@
             <ul class="list">
                 <li ng-repeat="file in files">
                     <a ui-sref="site.files-list({path: file.link, title: file.filename})" class="item item-media" ng-if="file.isdir">
-                        <img ng-src="{{file.imgpath}}" alt="">
+                        <img ng-src="{{file.imgpath}}" alt="" role="presentation">
                         {{file.filename}}
                     </a>
                     <mm-file ng-if="!file.isdir" file="file" component="{{component}}" component-id="{{file.contextid}}" timemodified="{{file.timemodified}}"></mm-file>
