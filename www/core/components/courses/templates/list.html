@@ -12,7 +12,7 @@
             </div>
             <section ng-repeat="course in courses | filter:{fullname: filterText}" class="list card">
                 <a class="item" ui-sref="site.mm_course({course: course})" title="{{course.fullname}}">
-                    <mm-format-text watch="true">{{course.fullname}}</mm-format-text>
+                    <h2><mm-format-text watch="true">{{course.fullname}}</mm-format-text></h2>
                 </a>
                 <div class="item item-text-wrap" ng-show="course.summary">
                     <p>

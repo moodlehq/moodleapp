@@ -54,6 +54,12 @@ em {
   }
 }
 
+// Define an alternative way to set a heading in an item without using a heading tag.
+// This is done for accessibility reasons when a heading is semantically incorrect.
+.item .item-heading {
+  @extend h2;
+}
+
 // Media item, ideal for icons.
 .item-media {
   @extend .item-avatar;

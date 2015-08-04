@@ -8,7 +8,7 @@
                     <img ng-src="{{disc.profileimageurl}}" alt="" role="presentation" mm-external-content>
 
                     <span class="item-note" ng-if="disc.message.timecreated > 0">{{disc.message.timecreated | mmDateDayOrTime}}</span>
-                    <h2>{{disc.fullname}}</h2>
+                    <p class="item-heading">{{disc.fullname}}</p>
                     <p><mm-format-text watch="true" clean="true" singleline="true">{{disc.message.message | mmaMessagesFormat}}</mm-format-text></p>
                 </a>
             </li>
