@@ -32,8 +32,7 @@ angular.module('mm.core.courses')
      * @ngdoc method
      * @name $mmCoursesDelegate#registerNavHandler
      * @param {String} addon The addon's name (mmaLabel, mmaForum, ...)
-     * @param {String|Object|Function} handler Must be resolved to an object defining the following functions. Or to a function
-     *                           returning an object defining these functions. See {@link $mmUtil#resolveObject}.
+     * @param  {Function} handler  Returns an object defining the following methods:
      *                             - isEnabled (Boolean|Promise) Whether or not the handler is enabled on a site level.
      *                                                           When using a promise, it should return a boolean.
      *                             - isEnabledForCourse(courseid) (Boolean|Promise) Whether or not the handler is enabled on a course level.
@@ -57,7 +56,7 @@ angular.module('mm.core.courses')
         return true;
     };
 
-    self.$get = function($mmUtil, $q, $log, $mmSite) {
+    self.$get = function($injector, $q, $log, $mmSite) {
         var enabledNavHandlers = {},
             self = {};
 
@@ -118,7 +117,14 @@ angular.module('mm.core.courses')
             var promise;
 
             if (typeof handlerInfo.instance === 'undefined') {
-                handlerInfo.instance = $mmUtil.resolveObject(handlerInfo.handler, true);
+                var toInject = handlerInfo.handler.split('.'),
+                    factory = $injector.get(toInject[0]);
+
+                if (toInject.length > 1) {
+                    handlerInfo.instance = factory[toInject[1]]();
+                } else {
+                    handlerInfo.instance = factory;
+                }
             }
 
             if (!$mmSite.isLoggedIn()) {

@@ -22,7 +22,7 @@ angular.module('mm.addons.pushnotifications')
  * @name $mmaPushNotifications
  */
 .factory('$mmaPushNotifications', function($mmSite, $log, $cordovaPush, $mmConfig, $mmText, $q, $cordovaDevice, $mmEvents, $mmUtil,
-            $mmApp, $mmLocalNotifications, $mmPushNotificationsDelegate, mmaPushNotificationsComponent) {
+            $state, $mmLocalNotifications, $mmPushNotificationsDelegate, mmaPushNotificationsComponent) {
     $log = $log.getInstance('$mmaPushNotifications');
 
     var self = {},
@@ -51,7 +51,10 @@ angular.module('mm.addons.pushnotifications')
      * @param {Object} data Notification data.
      */
     self.notificationClicked = function(data) {
-        $mmApp.ready().then(function() {
+        var observer = $mmEvents.on('initialized', function() {
+            if (observer && observer.off) {
+                observer.off();
+            }
             $mmPushNotificationsDelegate.clicked(data);
         });
     };

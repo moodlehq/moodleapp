@@ -14,7 +14,7 @@
 
 angular.module('mm.core.login', [])
 
-.config(function($stateProvider, $urlRouterProvider, $mmInitDelegateProvider, mmInitDelegateMaxAddonPriority) {
+.config(function($stateProvider, $urlRouterProvider) {
 
     $stateProvider
 
@@ -87,12 +87,10 @@ angular.module('mm.core.login', [])
         return $state.href('mm_login.init').replace('#', '');
     });
 
-    // Restore the session.
-    $mmInitDelegateProvider.registerProcess('mmLogin', '$mmSitesManager.restoreSession', mmInitDelegateMaxAddonPriority + 200);
 })
 
 .run(function($log, $state, $mmUtil, $translate, $mmSitesManager, $rootScope, $mmSite, $mmURLDelegate, $ionicHistory,
-                $mmEvents, $mmLoginHelper, mmCoreEventSessionExpired, $mmApp) {
+                $mmEvents, $mmLoginHelper, mmCoreEventSessionExpired) {
 
     $log = $log.getInstance('mmLogin');
 
@@ -104,14 +102,6 @@ angular.module('mm.core.login', [])
 
     // Redirect depending on user session.
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
-
-        // Prevent state changes while the app is not ready.
-        if (!$mmApp.isReady() && toState.name !== 'mm_login.init') {
-            event.preventDefault();
-            $state.transitionTo('mm_login.init');
-            $log.warn('Forbidding state change to \'' + toState.name + '\'. App is not ready yet.');
-            return;
-        }
 
         if (toState.name.substr(0, 8) === 'redirect') {
             return;
