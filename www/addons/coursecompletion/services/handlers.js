@@ -12,29 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.addons.notes')
+angular.module('mm.addons.coursecompletion')
 
 /**
- * Notes handlers factory.
+ * Course completion handlers factory.
  *
  * This factory holds the different handlers used for delegates.
  *
- * @module mm.addons.notes
+ * @module mm.addons.coursecompletion
  * @ngdoc service
- * @name $mmaNotesHandlers
+ * @name $mmaCourseCompletionHandlers
  */
-.factory('$mmaNotesHandlers', function($mmaNotes, $mmSite, $translate, $ionicLoading, $ionicModal, $mmUtil) {
+.factory('$mmaCourseCompletionHandlers', function($mmaCourseCompletion, $mmSite, $state) {
 
     var self = {};
 
     /**
-     * Add a note handler.
+     * View user completion handler.
      *
-     * @module mm.addons.notes
+     * @module mm.addons.coursecompletion
      * @ngdoc method
-     * @name $mmaNotesHandlers#addNote
+     * @name $mmaCourseCompletionHandlers#viewCompletion
      */
-    self.addNote = function() {
+    self.viewCompletion = function() {
 
         var self = {};
 
@@ -44,7 +44,7 @@ angular.module('mm.addons.notes')
          * @return {Boolean} True if handler is enabled, false otherwise.
          */
         self.isEnabled = function() {
-            return $mmaNotes.isPluginAddNoteEnabled();
+            return $mmaCourseCompletion.isPluginViewEnabled();
         };
 
         /**
@@ -55,8 +55,7 @@ angular.module('mm.addons.notes')
          * @return {Boolean}        True if handler is enabled, false otherwise.
          */
         self.isEnabledForUser = function(user, courseId) {
-            // Active course required.
-            return courseId && user.id != $mmSite.getUserId();
+            return $mmaCourseCompletion.isPluginViewEnabledForCourse(courseId);
         };
 
         /**
@@ -66,58 +65,27 @@ angular.module('mm.addons.notes')
          * @param {Number} courseId Course ID.
          * @return {Object}         Controller.
          */
-        self.getController = function(user, courseid) {
+        self.getController = function(user, courseId) {
 
             /**
-             * Add note handler controller.
+             * View course completion handler controller.
              *
-             * @module mm.addons.notes
+             * @module mm.addons.coursecompletion
              * @ngdoc controller
-             * @name $mmaNotesHandlers#addNote:controller
+             * @name $mmaCourseCompletionHandlers#viewCompletion:controller
              */
             return function($scope) {
 
                 // Button title.
-                $scope.title = 'mma.notes.addnewnote';
-
-                $ionicModal.fromTemplateUrl('addons/notes/templates/add.html', {
-                    scope: $scope,
-                    animation: 'slide-in-up'
-                }).then(function(m) {
-                    $scope.modal = m;
-                });
-
-                $scope.closeModal = function(){
-                    $scope.modal.hide();
-                };
-
-                $scope.addNote = function(){
-                    var loadingModal = $mmUtil.showModalLoading('mm.core.sending', true);
-                    // Freeze the add note button.
-                    $scope.processing = true;
-
-                    $mmaNotes.addNote(user.id, courseid, $scope.note.publishstate, $scope.note.text).then(function() {
-                        $mmUtil.showModal('mm.core.success', 'mma.notes.eventnotecreated');
-                        $scope.closeModal();
-                    }, function(error) {
-                        $mmUtil.showErrorModal(error);
-                        $scope.processing = false;
-                    }).finally(function() {
-                        loadingModal.dismiss();
-                    });
-                };
+                $scope.title = 'mma.coursecompletion.viewcoursereport';
 
                 $scope.action = function($event) {
                     $event.preventDefault();
                     $event.stopPropagation();
-
-                    $scope.note = {
-                        publishstate: 'personal',
-                        text: ''
-                    };
-                    $scope.processing = false;
-
-                    $scope.modal.show();
+                    $state.go('site.course-completion', {
+                        userid: user.id,
+                        course: {id: courseId}
+                    });
 
                 };
             };
@@ -130,9 +98,9 @@ angular.module('mm.addons.notes')
     /**
      * Course nav handler.
      *
-     * @module mm.addons.notes
+     * @module mm.addons.coursecompletion
      * @ngdoc method
-     * @name $mmaNotesHandlers#coursesNav
+     * @name $mmaCourseCompletionHandlers#coursesNav
      */
     self.coursesNav = function() {
 
@@ -144,7 +112,7 @@ angular.module('mm.addons.notes')
          * @return {Boolean} True if handler is enabled, false otherwise.
          */
         self.isEnabled = function() {
-            return $mmaNotes.isPluginViewNotesEnabled();
+            return $mmaCourseCompletion.isPluginViewEnabled();
         };
 
         /**
@@ -154,7 +122,7 @@ angular.module('mm.addons.notes')
          * @return {Boolean}        True if handler is enabled, false otherwise.
          */
         self.isEnabledForCourse = function(courseId) {
-            return true;
+            return $mmaCourseCompletion.isPluginViewEnabledForCourse(courseId);
         };
 
         /**
@@ -168,17 +136,17 @@ angular.module('mm.addons.notes')
             /**
              * Courses nav handler controller.
              *
-             * @module mm.addons.notes
+             * @module mm.addons.coursecompletion
              * @ngdoc controller
-             * @name $mmaNotesHandlers#coursesNav:controller
+             * @name $mmaCourseCompletionHandlers#coursesNav:controller
              */
             return function($scope, $state) {
-                $scope.icon = 'ion-ios-list';
-                $scope.title = 'mma.notes.notes';
+                $scope.icon = 'ion-android-checkbox-outline';
+                $scope.title = 'mma.coursecompletion.coursecompletion';
                 $scope.action = function($event, course) {
                     $event.preventDefault();
                     $event.stopPropagation();
-                    $state.go('site.notes-types', {
+                    $state.go('site.course-completion', {
                         course: course
                     });
                 };

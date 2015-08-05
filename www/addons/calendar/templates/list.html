@@ -10,7 +10,7 @@
                         <a class="item item-media item-text-wrap" mm-split-view-link="site.calendar-event({id: event.id})" title="{{event.name}}">
                             <img ng-src="{{event.icon}}">
                             <h2><mm-format-text watch="true">{{event.name}}</mm-format-text></h2>
-                            <p>{{event.start}}</p>
+                            <p>{{ event.timestart | mmToLocaleString }}</p>
                         </a>
                     </li>
                 </ul>
