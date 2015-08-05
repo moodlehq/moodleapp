@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.addons.notes')
+angular.module('mm.addons.coursecompletion')
 
 /**
  * Course completion factory.
@@ -54,27 +54,6 @@ angular.module('mm.addons.notes')
         });
 
         return selfCompletionActive && !alreadyMarked;
-    };
-
-    /**
-     * Format completion criteria timecompletion, turning them into human readable dates.
-     *
-     * @module mm.addons.coursecompletion
-     * @ngdoc method
-     * @name $mmaCourseCompletion#formatCriteriaDates
-     * @param {Object} completion Course completion.
-     * @return {Promise}          Promise resolved with the formatted completion.
-     */
-    self.formatCriteriaDates = function(completion) {
-        var formattedCompletion = angular.copy(completion);
-        angular.forEach(formattedCompletion.completions, function(criteria) {
-            if (criteria.timecompleted) {
-                criteria.timecompletedformatted = new Date(parseInt(criteria.timecompleted) * 1000).toLocaleString();
-            } else {
-                criteria.timecompletedformatted = '';
-            }
-        });
-        return formattedCompletion;
     };
 
     /**

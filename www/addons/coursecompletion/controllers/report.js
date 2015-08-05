@@ -32,7 +32,6 @@ angular.module('mm.addons.coursecompletion')
     function fetchCompletion() {
         return $mmaCourseCompletion.getCompletion(course.id, userid).then(function(completion) {
 
-            completion = $mmaCourseCompletion.formatCriteriaDates(completion);
             completion.statusText = $mmaCourseCompletion.getCompletedStatusText(completion);
 
             $scope.completion = completion;

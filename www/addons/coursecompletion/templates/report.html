@@ -40,7 +40,7 @@
                     <p class="col col-20"><mm-format-text watch="true" clean="true">{{ criteria.details.requirement }}</mm-format-text></p>
                     <p class="col col-10">{{ criteria.details.status }}</p>
                     <p class="col col-10">{{ criteria.status }}</p>
-                    <p class="col col-20">{{ criteria.timecompletedformatted }}</p>
+                    <p class="col col-20">{{ criteria.timecompleted | mmToLocaleString }}</p>
                 </div>
             </ul>
             <ul class="list card" ng-if="showSelfComplete">

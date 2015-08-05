@@ -129,8 +129,6 @@ angular.module('mm.addons.calendar')
             e.moduleicon = icon;
         }
         e.icon = icon;
-        e.start = new Date(e.timestart * 1000).toLocaleString();
-        e.end = new Date((e.timestart + e.timeduration) * 1000).toLocaleString();
     };
 
     /**
