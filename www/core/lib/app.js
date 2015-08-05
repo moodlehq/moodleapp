@@ -94,7 +94,7 @@ angular.module('mm.core')
 
         $log = $log.getInstance('$mmApp');
 
-        var db = $mmDB.getDB(DBNAME, dbschema, dboptions),
+        var db,
             self = {};
 
         /**
@@ -116,6 +116,10 @@ angular.module('mm.core')
          * @return {Object} App's DB.
          */
         self.getDB = function() {
+            if (typeof db == 'undefined') {
+                db = $mmDB.getDB(DBNAME, dbschema, dboptions);
+            }
+
             return db;
         };
 
