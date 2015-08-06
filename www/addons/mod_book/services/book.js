@@ -283,6 +283,13 @@ angular.module('mm.addons.mod_book')
                             img.setAttribute('src', src);
                         }
                     });
+                    // We do the same for links.
+                    angular.forEach(html.find('a'), function(anchor) {
+                        var href = paths[decodeURIComponent(anchor.getAttribute('href'))];
+                        if (typeof href !== 'undefined') {
+                            anchor.setAttribute('href', href);
+                        }
+                    });
                     return html.html();
                 }
             });
