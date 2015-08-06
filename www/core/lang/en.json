@@ -1,6 +1,6 @@
 {
     "cancel": "Cancel",
-    "cannotconnect": "Cannot connect: Verify that your have typed correctly the URL and that your site uses Moodle 2.4 or later.",
+    "cannotconnect": "Cannot connect: Verify that you have typed correctly the URL and that your site uses Moodle 2.4 or later.",
     "clearsearch": "Clear search",
     "completion-alt-auto-fail": "Completed: {{$a}} (did not achieve pass grade)",
     "completion-alt-auto-n": "Not completed: {{$a}}",
@@ -64,6 +64,7 @@
     "sec" : "sec",
     "secs" : "secs",
     "sending": "Sending",
+    "serverconnection": "Error connecting to the server",
     "sizeb": "bytes",
     "sizegb": "GB",
     "sizekb": "KB",
