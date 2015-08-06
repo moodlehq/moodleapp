@@ -71,6 +71,7 @@
     "sizetb": "TB",
     "success": "Success!",
     "unexpectederror": "Unexepected error. Please close and reopen the application to try again",
+    "userdeleted": "This user account has been deleted",
     "view": "View",
     "wsfunctionnotavailable": "The webservice function is not available.",
     "year" : "year",

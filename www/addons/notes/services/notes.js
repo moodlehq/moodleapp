@@ -21,7 +21,7 @@ angular.module('mm.addons.notes')
  * @ngdoc service
  * @name $mmaNotes
  */
-.factory('$mmaNotes', function($mmSite, $log, $q, $mmUser) {
+.factory('$mmaNotes', function($mmSite, $log, $q, $mmUser, $translate) {
     $log = $log.getInstance('$mmaNotes');
 
     var self = {};
@@ -138,9 +138,7 @@ angular.module('mm.addons.notes')
         var promises = [];
 
         angular.forEach(notes, function(note) {
-            var promise = $mmUser.getProfile(note.userid, courseid, true);
-            promises.push(promise);
-            promise.then(function(user) {
+            var promise = $mmUser.getProfile(note.userid, courseid, true).then(function(user) {
                 note.userfullname = user.fullname;
                 note.userprofileimageurl = user.profileimageurl;
             }, function() {
@@ -149,6 +147,7 @@ angular.module('mm.addons.notes')
                     note.userfullname = str;
                 });
             });
+            promises.push(promise);
         });
         return $q.all(promises).then(function() {
             return notes;

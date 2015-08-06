@@ -171,15 +171,14 @@ angular.module('mm.addons.mod_chat')
         var promises = [];
 
         angular.forEach(messages, function(message) {
-            var promise = $mmUser.getProfile(message.userid, courseid, true);
-            promises.push(promise);
-            promise.then(function(user) {
+            var promise = $mmUser.getProfile(message.userid, courseid, true).then(function(user) {
                 message.userfullname = user.fullname;
                 message.userprofileimageurl = user.profileimageurl;
             }, function() {
                 // Error getting profile. Set default data.
                 message.userfullname = message.userid;
             });
+            promises.push(promise);
         });
         return $q.all(promises).then(function() {
             return messages;

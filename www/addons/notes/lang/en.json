@@ -7,5 +7,6 @@
     "notes": "Notes",
     "personalnotes": "Personal notes",
     "publishstate": "Context",
-    "sitenotes": "Site notes"
+    "sitenotes": "Site notes",
+    "userwithid": "User with Id {{id}}"
 }

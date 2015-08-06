@@ -77,10 +77,8 @@ angular.module('mm.core.courses')
                 promises = [];
 
             angular.forEach(enabledNavHandlers, function(handler) {
-                var promise = $q.when(handler.instance.isEnabledForCourse(courseId));
-
                 // Checks if the handler is enabled for the user.
-                promise.then(function(enabled) {
+                var promise = $q.when(handler.instance.isEnabledForCourse(courseId)).then(function(enabled) {
                     if (enabled) {
                         handlers.push({
                             controller: handler.instance.getController(courseId),
@@ -152,8 +150,7 @@ angular.module('mm.core.courses')
          * @protected
          */
         self.updateNavHandlers = function() {
-            var promises = [],
-                enabledNavHandlers = {};
+            var promises = [];
 
             $log.debug('Updating navigation handlers for current site.');
 

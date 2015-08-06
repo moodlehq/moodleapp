@@ -111,7 +111,7 @@ angular.module('mm.core')
         var p1 = $translate.use(language),
             p2 = $mmConfig.set('current_language', language);
         currentLanguage = language;
-        return $q.all(p1, p2);
+        return $q.all([p1, p2]);
     };
 
     /**

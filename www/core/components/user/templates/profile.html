@@ -1,6 +1,7 @@
 <ion-view>
     <ion-nav-title>{{title}}</ion-nav-title>
     <ion-content padding="true">
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="userLoaded" on-refresh="refreshUser()"></ion-refresher>
         <mm-loading hide-until="userLoaded">
             <div class="list" ng-if="user">
                 <div class="item item-avatar">

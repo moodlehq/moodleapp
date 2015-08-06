@@ -63,11 +63,6 @@ angular.module('mm.addons.mod_page')
     self.getDownloadingFilesEventNames = function(module) {
         var promises = [],
             eventNames = [],
-            notDownloaded = 0,
-            downloading = 0,
-            outdated = 0,
-            downloaded = 0,
-            fileCount = 0,
             siteid = $mmSite.getId();
 
         angular.forEach(module.contents, function(content) {

@@ -21,7 +21,7 @@ angular.module('mm.core.user')
  * @ngdoc controller
  * @name mmaParticipantsProfileCtrl
  */
-.controller('mmUserProfileCtrl', function($scope, $state, $stateParams, $mmUtil, $mmUser, $mmUserDelegate, $mmSite) {
+.controller('mmUserProfileCtrl', function($scope, $stateParams, $mmUtil, $mmUser, $mmUserDelegate, $mmSite, $q) {
 
     var courseid = $stateParams.courseid,
         userid   = $stateParams.userid;
@@ -29,38 +29,51 @@ angular.module('mm.core.user')
     $scope.isAndroid = ionic.Platform.isAndroid();
     $scope.plugins = [];
 
-    $mmUser.getProfile(userid, courseid).then(function(user) {
+    function fetchUserData() {
+        return $mmUser.getProfile(userid, courseid).then(function(user) {
 
-        user.address = $mmUser.formatAddress(user.address, user.city, user.country);
-        if (user.address) {
-            user.encodedAddress = encodeURIComponent(user.address);
-        }
+            user.address = $mmUser.formatAddress(user.address, user.city, user.country);
+            if (user.address) {
+                user.encodedAddress = encodeURIComponent(user.address);
+            }
 
-        $mmUser.formatRoleList(user.roles).then(function(roles) {
-            user.roles = roles;
+            $mmUser.formatRoleList(user.roles).then(function(roles) {
+                user.roles = roles;
+            });
+
+            $scope.user = user;
+            $scope.title = user.fullname;
+            $scope.hasContact = user.email || user.phone1 || user.phone2 || user.city || user.country || user.address;
+            $scope.hasDetails = user.url || user.roles || user.interests;
+
+            $mmUserDelegate.getProfileHandlersFor(user, courseid).then(function(handlers) {
+                $scope.profileHandlers = handlers;
+            });
+        }, function(message) {
+            $scope.user = false;
+            if (message) {
+                $mmUtil.showErrorMessage(message);
+            }
+            return $q.reject();
         });
+    }
 
-        $scope.user = user;
-        $scope.title = user.fullname;
-        $scope.hasContact = user.email || user.phone1 || user.phone2 || user.city || user.country || user.address;
-        $scope.hasDetails = user.url || user.roles || user.interests;
-
-        $mmUserDelegate.getProfileHandlersFor(user, courseid).then(function(handlers) {
-            $scope.profileHandlers = handlers;
-        });
-
+    fetchUserData().then(function() {
         // Add log in Moodle.
         $mmSite.write('core_user_view_user_profile', {
             userid: userid,
             courseid: courseid
         });
-    }, function(message) {
-        $scope.user = false;
-        if (message) {
-            $mmUtil.showErrorMessage(message);
-        }
     }).finally(function() {
         $scope.userLoaded = true;
     });
+
+    $scope.refreshUser = function() {
+        $mmUser.invalidateUserCache(userid).finally(function() {
+            fetchUserData().finally(function() {
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+        });
+    };
 
 });
