@@ -129,7 +129,8 @@ angular.module('mm.core')
      * @return {Promise}        A promise to be resolved if the site exists.
      */
     self.siteExists = function(siteurl) {
-        return $http.head(siteurl + '/login/token.php', {timeout: 15000});
+        // We pass fake parameters to make CORS work (without params, the script stops before allowing CORS).
+        return $http.head(siteurl + '/login/token.php?username=a&password=b&service=c', {timeout: 15000});
     };
 
     /**
