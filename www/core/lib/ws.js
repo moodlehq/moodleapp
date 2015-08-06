@@ -71,7 +71,7 @@ angular.module('mm.core')
             }
 
             if (!data) {
-                return $mmLang.translateAndReject('mm.core.cannotconnect');
+                return $mmLang.translateAndReject('mm.core.serverconnection');
             }
 
             if (typeof(data.exception) !== 'undefined') {
@@ -97,7 +97,7 @@ angular.module('mm.core')
             return data;
 
         }, function() {
-            return $mmLang.translateAndReject('mm.core.cannotconnect');
+            return $mmLang.translateAndReject('mm.core.serverconnection');
         });
     };
 
