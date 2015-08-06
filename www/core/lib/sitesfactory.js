@@ -730,7 +730,6 @@ angular.module('mm.core')
 
             if (appUsesLocalMobile) {
                 // App already uses local_mobile, it wasn't added.
-                console.log('APP ALREADY USES LOCAL MOBILE');
                 return $q.reject();
             }
 
