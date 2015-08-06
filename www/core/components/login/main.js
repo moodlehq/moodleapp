@@ -152,6 +152,11 @@ angular.module('mm.core.login', [])
 
             // Check authentication method.
             $mmSitesManager.checkSite(siteurl).then(function(result) {
+
+                if (result.warning) {
+                    $mmUtil.showErrorModal(result.warning, true, 4000);
+                }
+
                 if ($mmLoginHelper.isSSOLoginNeeded(result.code)) {
                     // SSO. User needs to authenticate in a browser.
                     $mmUtil.showConfirm($translate('mm.login.reconnectssodescription')).then(function() {

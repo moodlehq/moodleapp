@@ -15,6 +15,7 @@
     "invalidaccount": "Please check your login details or ask your site administrator to check the site configuration.",
     "invalidmoodleversion": "Invalid Moodle version. The minium version required is 2.4.",
     "invalidsite": "The site URL is invalid.",
+    "localmobileunexpectedresponse": "Moodle Mobile Additional Features check returned an unexpected response, you will be authenticated using the standard Mobile service.",
     "login": "Login",
     "loginbutton": "Login!",
     "logininsiterequired": "You need to log in to the site in a browser window.",

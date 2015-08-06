@@ -80,10 +80,9 @@ angular.module('mm.core')
      * @param {String} siteurl  URL of the site to check.
      * @param {String} protocol Protocol to use. If not defined, use https.
      * @return {Promise}        A promise to be resolved when the site is checked. Resolve params:
-     *                            {
-     *                                code: Authentication code.
-     *                                siteurl: Site url to use (might have changed during the process).
-     *                            }
+     *                            {Number} code      Code to identify the authentication method to use.
+     *                            {String} siteurl   Site url to use (might have changed during the process).
+     *                            {String} [warning] Code of the warning message to show to the user.
      */
     self.checkSite = function(siteurl, protocol) {
 
@@ -104,7 +103,7 @@ angular.module('mm.core')
                 var temporarySite = $mmSitesFactory.makeSite(undefined, siteurl);
                 return temporarySite.checkLocalMobilePlugin(siteurl).then(function(data) {
                     services[siteurl] = data.service; // No need to store it in DB.
-                    return {siteurl: siteurl, code: data.code};
+                    return {siteurl: siteurl, code: data.code, warning: data.warning};
                 });
             }, function() {
                 // Site doesn't exist.

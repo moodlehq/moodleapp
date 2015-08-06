@@ -672,6 +672,7 @@ angular.module('mm.core')
          * @return {Promise} Promise resolved when the check is done. Resolve params:
          *                           - {Number} code Code to identify the authentication method to use.
          *                           - {String} [service] If defined, name of the service to use.
+         *                           - {String} [warning] If defined, code of the warning message.
          */
         Site.prototype.checkLocalMobilePlugin = function() {
             var siteurl = this.siteurl;
@@ -682,7 +683,8 @@ angular.module('mm.core')
                     var data = response.data;
 
                     if (typeof data == 'undefined' || typeof data.code == 'undefined') {
-                        return $mmLang.translateAndReject('mm.core.unexpectederror');
+                        // local_mobile returned something we didn't expect. Let's assume it's not installed.
+                        return {code: 0, warning: 'mm.login.localmobileunexpectedresponse'};
                     }
 
                     var code = parseInt(data.code, 10);
@@ -696,7 +698,7 @@ angular.module('mm.core')
                                 return $mmLang.translateAndReject('mm.login.webservicesnotenabled');
                             case 3:
                                 // Extended service not enabled, but the official is enabled.
-                                return 0;
+                                return {code: 0};
                             case 4:
                                 // Neither extended or official services enabled.
                                 return $mmLang.translateAndReject('mm.login.mobileservicesnotenabled');
