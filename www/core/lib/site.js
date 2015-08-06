@@ -326,6 +326,7 @@ angular.module('mm.core')
      * @return {Promise} Promise resolved when the check is done. Resolve params:
      *                           - {Number} code Code to identify the authentication method to use.
      *                           - {String} [service] If defined, name of the service to use.
+     *                           - {String} [warning] If defined, code of the warning message.
      * @description
      *
      * Check if the local_mobile plugin is installed in the Moodle site.
