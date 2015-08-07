@@ -21,9 +21,10 @@ angular.module('mm.core.sidemenu')
  * @ngdoc controller
  * @name mmSideMenuCtrl
  */
-.controller('mmSideMenuCtrl', function($scope, $state, $mmSideMenuDelegate, $mmSitesManager, $mmSite, $mmConfig, $mmEvents,
+.controller('mmSideMenuCtrl', function($scope, $state, $mmSideMenuDelegate, $mmSitesManager, $mmSite, $mmEvents,
             $timeout, mmCoreEventLanguageChanged, mmCoreEventSiteUpdated) {
-    $scope.plugins = $mmSideMenuDelegate.getData();
+
+    $scope.handlers = $mmSideMenuDelegate.getNavHandlers();
     $scope.siteinfo = $mmSite.getInfo();
 
     $scope.logout = function() {
@@ -48,6 +49,7 @@ angular.module('mm.core.sidemenu')
     var updateSiteObserver = $mmEvents.on(mmCoreEventSiteUpdated, function(siteid) {
         if ($mmSite.getId() === siteid) {
             updateSiteInfo();
+            $scope.handlers = $mmSideMenuDelegate.getNavHandlers();
         }
     });
 

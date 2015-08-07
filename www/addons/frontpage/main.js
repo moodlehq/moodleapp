@@ -14,24 +14,9 @@
 
 angular.module('mm.addons.frontpage', [])
 
-.value('mmaFrontpagePriority', 1000)
+.constant('mmaFrontpagePriority', 1000)
 
-.run(function($mmSideMenuDelegate, $mmaFrontpage, mmaFrontpagePriority) {
-
-    $mmSideMenuDelegate.registerPlugin('mmaFrontpage', function() {
-
-        if (!$mmaFrontpage.isPluginEnabled()) {
-            return;
-        }
-
-        return $mmaFrontpage.isFrontpageAvailable().then(function() {
-            return {
-                icon: 'ion-home',
-                state: 'site.mm_course-section',
-                title: 'mma.frontpage.frontpage'
-            };
-        });
-
-    }, mmaFrontpagePriority);
-
+.config(function($mmSideMenuDelegateProvider, mmaFrontpagePriority) {
+    // Register side menu addon.
+    $mmSideMenuDelegateProvider.registerNavHandler('mmaFrontpage', '$mmaFrontPageHandlers.sideMenuNav', mmaFrontpagePriority);
 });
