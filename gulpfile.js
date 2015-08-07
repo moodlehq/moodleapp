@@ -90,7 +90,10 @@ gulp.task('watch', function() {
   gulp.watch(paths.sass.core, ['sass']);
   gulp.watch(paths.sass.custom, ['sass']);
   gulp.watch(paths.js, ['build']);
-  gulp.watch(paths.lang, ['lang']);
+  var langsPaths = paths.lang.map(function(path) {
+    return path + '*.json';
+  });
+  gulp.watch(langsPaths, ['lang']);
 });
 
 gulp.task('build', function() {
