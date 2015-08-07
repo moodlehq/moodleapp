@@ -42,6 +42,12 @@ angular.module('mm.core.sidemenu')
         $scope.siteinfo = undefined;
         $timeout(function() {
             $scope.siteinfo = $mmSite.getInfo();
+
+            // Update docs URL, maybe the Moodle release has changed.
+            $mmSite.getDocsUrl().then(function(docsurl) {
+                $scope.docsurl = docsurl;
+            });
+            $scope.handlers = $mmSideMenuDelegate.getNavHandlers();
         });
     }
 
@@ -49,7 +55,6 @@ angular.module('mm.core.sidemenu')
     var updateSiteObserver = $mmEvents.on(mmCoreEventSiteUpdated, function(siteid) {
         if ($mmSite.getId() === siteid) {
             updateSiteInfo();
-            $scope.handlers = $mmSideMenuDelegate.getNavHandlers();
         }
     });
 

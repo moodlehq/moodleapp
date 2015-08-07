@@ -1,7 +1,7 @@
 <ion-view view-title="{{'mma.files.myfiles' | translate}}">
     <ion-content padding="true">
-        <section ng-if="canAccessFiles">
-            <section class="list card" ng-if="showPrivateFiles">
+        <section ng-if="canAccessFiles()">
+            <section class="list card" ng-if="showPrivateFiles()">
                 <a ui-sref="site.files-list({root: 'my'})" class="item item-icon-right" title="{{ 'mma.files.myprivatefiles' | translate }}">
                     <i class="icon ion-ios-arrow-right"></i>
                     {{ 'mma.files.myprivatefiles' | translate }}
@@ -17,12 +17,12 @@
                 <div class="item item-text-wrap"><p>{{ 'mma.files.sitefilesdesc' | translate }}</p></div>
             </section>
 
-            <div class="list card" ng-if="!canDownload">
+            <div class="list card" ng-if="!canDownload()">
                 <div class="item item-text-wrap"><p>{{ 'mma.files.admindisableddownload' | translate }}</p></div>
             </div>
         </section>
 
-        <section ng-if="showUpload">
+        <section ng-if="showUpload()">
             <div class="card">
                 <h2 class="item-body">{{ 'mma.files.uploadfiles' | translate }}</h2>
                 <p class="item-body">{{ 'mma.files.clicktoupload' | translate }}</p>

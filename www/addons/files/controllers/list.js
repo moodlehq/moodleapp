@@ -20,9 +20,7 @@ angular.module('mm.addons.files')
     var path = $stateParams.path,
         root = $stateParams.root,
         title,
-        promise,
-        siteInfos = $mmSite.getInfo(),
-        showUpload = (root === 'my' && !path && $mmSite.canUploadFiles());
+        promise;
 
     // We're loading the files.
     $scope.count = -1;
@@ -96,16 +94,16 @@ angular.module('mm.addons.files')
         }
     });
 
+    $scope.showUpload = function() {
+        return (root === 'my' && !path && $mmSite.canUploadFiles());
+    };
+
     // When we are in the root of the private files we can add more files.
-    if (showUpload) {
-
-        $scope.add = function() {
-            if (!$mmApp.isOnline()) {
-                $mmUtil.showErrorModal('mma.files.errormustbeonlinetoupload', true);
-            } else {
-                $state.go('site.files-upload', {root: root, path: path});
-            }
-        };
-
-    }
+    $scope.add = function() {
+        if (!$mmApp.isOnline()) {
+            $mmUtil.showErrorModal('mma.files.errormustbeonlinetoupload', true);
+        } else {
+            $state.go('site.files-upload', {root: root, path: path});
+        }
+    };
 });

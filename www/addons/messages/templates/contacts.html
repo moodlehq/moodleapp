@@ -1,7 +1,7 @@
 <ion-content class="has-tabs">
     <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="loaded" on-refresh="refresh()"></ion-refresher>
 
-    <form ng-if="canSearch" ng-submit="search(formData.searchString);">
+    <form ng-if="canSearch()" ng-submit="search(formData.searchString);">
         <div class="list">
             <div class="item item-input-inset">
                 <label class="item-input-wrapper">

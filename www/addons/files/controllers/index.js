@@ -14,25 +14,24 @@
 
 angular.module('mm.addons.files')
 
-.controller('mmaFilesIndexController', function($scope, $mmaFiles, $mmSite, $mmUtil, $mmaFilesHelper, $mmApp) {
-    var canAccessFiles = $mmaFiles.canAccessFiles(),
-        canAccessMyFiles = $mmSite.canAccessMyFiles(),
-        canUploadFiles = $mmSite.canUploadFiles(),
-        canDownloadFiles = $mmSite.canDownloadFiles();
+.controller('mmaFilesIndexController', function($scope, $mmaFiles, $mmSite, $mmUtil, $mmApp) {
 
-    $scope.canAccessFiles = canAccessFiles;
-    $scope.showPrivateFiles = canAccessFiles && canAccessMyFiles;
-    // Show upload in this page if user can upload but he can't see the My Files option.
-    $scope.showUpload = !canAccessFiles && canAccessMyFiles && canUploadFiles;
-    $scope.canDownload = canDownloadFiles;
+    $scope.canAccessFiles = $mmaFiles.canAccessFiles;
+    $scope.showPrivateFiles = function() {
+        return $mmaFiles.canAccessFiles() && $mmSite.canAccessMyFiles();
+    };
+    $scope.showUpload = function() {
+        // Show upload in this page if user can upload but he can't see the My Files option.
+        return !$mmaFiles.canAccessFiles() && $mmSite.canAccessMyFiles() && $mmSite.canUploadFiles();
+    };
+    $scope.canDownload = $mmSite.canDownloadFiles;
 
-    if ($scope.showUpload) {
-        $scope.add = function() {
-            if (!$mmApp.isOnline()) {
-                $mmUtil.showErrorModal('mma.files.errormustbeonlinetoupload', true);
-            } else {
-                $state.go('site.files-upload');
-            }
-        };
-    }
+    $scope.add = function() {
+        if (!$mmApp.isOnline()) {
+            $mmUtil.showErrorModal('mma.files.errormustbeonlinetoupload', true);
+        } else {
+            $state.go('site.files-upload');
+        }
+    };
+
 });
