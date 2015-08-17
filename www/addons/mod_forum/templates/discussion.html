@@ -7,8 +7,8 @@
         <mm-loading hide-until="discussionLoaded">
             <article class="card" ng-if="discussion">
                 <div class="item item-avatar">
-                    <img ng-if="discussion.userpictureurl" ng-src="{{discussion.userpictureurl}}" mm-external-content mm-user-link courseid="{{courseid}}" userid="{{discussion.userid}}">
-                    <img ng-if="!discussion.userpictureurl" src="img/user-avatar.png" alt="">
+                    <img ng-if="discussion.userpictureurl" ng-src="{{discussion.userpictureurl}}" mm-external-content mm-user-link courseid="{{courseid}}" userid="{{discussion.userid}}" alt="" role="presentation">
+                    <img ng-if="!discussion.userpictureurl" src="img/user-avatar.png"  alt="" role="presentation">
                     <h2>{{discussion.subject}}</h2>
                     <div class="item-note">{{discussion.modified | mmDateDayOrTime}}</div>
                     <p>{{discussion.userfullname}}</p>
@@ -22,8 +22,8 @@
                 <article ng-repeat="post in posts track by $index">
                     <div class="item item-divider" ng-if="$index > 0"></div>
                     <div class="item item-avatar">
-                        <img ng-if="post.userpictureurl" ng-src="{{post.userpictureurl}}" mm-external-content mm-user-link courseid="{{courseid}}" userid="{{post.userid}}">
-                        <img ng-if="!post.userpictureurl" src="img/user-avatar.png" alt="">
+                        <img ng-if="post.userpictureurl" ng-src="{{post.userpictureurl}}" mm-external-content mm-user-link courseid="{{courseid}}" userid="{{post.userid}}" alt="" role="presentation">
+                        <img ng-if="!post.userpictureurl" src="img/user-avatar.png"  alt="" role="presentation">
                         <p>{{post.userfullname}}</p>
                         <div class="item-note">{{post.modified | mmDateDayOrTime}}</div>
                         <p>{{post.subject}}</p>

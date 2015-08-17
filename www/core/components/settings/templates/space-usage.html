@@ -7,7 +7,7 @@
                     <span class="item-note">{{ site.spaceusage | mmBytesToSize }}</span>
                     <h2><mm-format-text>{{site.sitename}}</mm-format-text></h2>
                     <p>{{site.fullname}}</p>
-                    <button class="button button-icon" ng-click="deleteSiteFiles(site)" ng-show="site.spaceusage > '0'">
+                    <button class="button button-icon" ng-click="deleteSiteFiles(site)" ng-show="site.spaceusage > '0'" aria-label="{{ 'mm.settings.deletesitefilestitle' | translate }}">
                         <i class="icon ion-trash-a positive"></i>
                     </button>
                 </li>

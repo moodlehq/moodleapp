@@ -2,9 +2,9 @@
     <ion-content>
         <ul class="list">
             <li ng-repeat="site in sites" class="item item-button-right">
-                <h2><mm-format-text>{{site.sitename}}</mm-format-text></h2>
+                <p class="item-heading"><mm-format-text>{{site.sitename}}</mm-format-text></p>
                 <p>{{site.fullname}}</p>
-                <button class="button button-icon" ng-click="synchronize(site)" title="{{site.sitename}}">
+                <button class="button button-icon" ng-click="synchronize(site)" title="{{site.sitename}}" aria-label="{{ 'mm.settings.synchronizenow' | translate }}">
                     <i class="icon ion-android-sync positive"></i>
                 </button>
             </li>

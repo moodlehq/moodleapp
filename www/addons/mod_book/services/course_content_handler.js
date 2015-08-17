@@ -138,6 +138,7 @@ angular.module('mm.addons.mod_book')
             downloadBtn = {
                 hidden: true,
                 icon: 'ion-ios-cloud-download',
+                label: 'mm.core.download',
                 action: function(e) {
                     var eventNames;
 
@@ -159,6 +160,7 @@ angular.module('mm.addons.mod_book')
 
             refreshBtn = {
                 icon: 'ion-android-refresh',
+                label: 'mm.core.refresh',
                 hidden: true,
                 action: function(e) {
                     e.preventDefault();

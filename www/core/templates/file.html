@@ -1,7 +1,7 @@
 <a class="item item-text-wrap item-button-right item-media" ng-click="download($event, true)">
-    <img ng-src="{{fileicon}}" />
+    <img ng-src="{{fileicon}}" alt="" role="presentation" />
     <p>{{filename}}</p>
-    <button class="button button-icon" ng-click="download($event)" ng-if="!isDownloading && showDownload">
+    <button class="button button-icon" ng-click="download($event)" ng-if="!isDownloading && showDownload" aria-label="{{ 'mm.core.download' | translate }}">
         <i class="icon" ng-class="isDownloaded ? 'ion-android-refresh' : 'ion-ios-cloud-download'"></i>
     </button>
     <ion-spinner class="spinner-right" ng-if="isDownloading"></ion-spinner>
