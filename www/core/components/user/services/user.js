@@ -205,14 +205,12 @@ angular.module('mm.core.user')
                 return $q.reject();
             }
 
-            return $mmUtil.getCountries().then(function(countries) {
-                var user = users.shift();
-                if (user.country && typeof countries != 'undefined' && typeof countries[user.country] != 'undefined') {
-                    user.country = countries[user.country];
-                }
-                self.storeUser(user.id, user.fullname, user.profileimageurl);
-                return user;
-            });
+            var user = users.shift();
+            if (user.country) {
+                user.country = $mmUtil.getCountryName(user.country);
+            }
+            self.storeUser(user.id, user.fullname, user.profileimageurl);
+            return user;
         });
     };
 
