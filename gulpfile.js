@@ -60,7 +60,8 @@ var paths = {
   lang: [
       './www/core/lang/',
       './www/core/components/**/lang/',
-      './www/addons/**/lang/'
+      './www/addons/**/lang/',
+      './www/core/assets/countries/'
     ]
 };
 
@@ -180,6 +181,10 @@ gulp.task('lang', function() {
         pluginName = pluginName.substr(0, pluginName.indexOf('/'));
         addProperties(merged, data[filepath], 'mma.'+pluginName+'.');
 
+      } else if (filepath.indexOf('core/assets/countries') == 0) {
+
+        addProperties(merged, data[filepath], 'mm.core.country-');
+
       }
 
     }
@@ -207,7 +212,7 @@ gulp.task('lang', function() {
   // Get filenames to know which languages are available.
   var filenames = getFilenames(paths.lang[0]);
 
-  filenames.forEach(function(filename, index) {
+  filenames.forEach(function(filename) {
 
     var language = filename.replace('.json', '');
 
