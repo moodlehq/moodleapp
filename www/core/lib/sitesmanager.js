@@ -38,7 +38,7 @@ angular.module('mm.core')
  * @ngdoc service
  * @name $mmSitesManager
  */
-.factory('$mmSitesManager', function($http, $q, $mmSitesFactory, md5, $mmLang, $mmConfig, $mmApp, $mmUtil, $mmEvents,
+.factory('$mmSitesManager', function($http, $q, $mmSitesFactory, md5, $mmLang, $mmConfig, $mmApp, $mmUtil, $mmEvents, $state,
             mmCoreSitesStore, mmCoreCurrentSiteStore, mmCoreEventLogin, mmCoreEventLogout, $log, mmCoreEventSiteUpdated,
             mmCoreEventSiteAdded, mmCoreEventSessionExpired) {
 
@@ -204,7 +204,8 @@ angular.module('mm.core')
 
         return candidateSite.fetchSiteInfo().then(function(infos) {
             if (isValidMoodleVersion(infos.functions)) {
-                if (isValidInfo(infos)) {
+                var validation = validateSiteInfo(infos);
+                if (validation === true) {
                     var siteid = self.createSiteID(infos.siteurl, infos.username);
                     // Add site to sites list.
                     self.addSite(siteid, siteurl, token, infos);
@@ -216,7 +217,7 @@ angular.module('mm.core')
                     self.login(siteid);
                     $mmEvents.trigger(mmCoreEventSiteAdded);
                 } else {
-                    return $mmLang.translateAndReject('mm.login.cannotdownloadfiles');
+                    return $mmLang.translateAndReject(validation);
                 }
             } else {
                 return $mmLang.translateAndReject('mm.login.invalidmoodleversion');
@@ -280,13 +281,16 @@ angular.module('mm.core')
     }
 
     /**
-     * Check if site info is valid (downloadfiles enabled).
+     * Check if site info is valid. If it's not, return error message.
      *
-     * @param {Object} infos Site info.
-     * @return {Boolean}     True if the site info is valid, false otherwise.
+     * @param {Object} infos    Site info.
+     * @return {String|Boolean} Error message to show if info is not valid, true if info is valid.
      */
-    function isValidInfo(infos) {
-        return typeof infos.downloadfiles == 'undefined' || infos.downloadfiles === 1;
+    function validateSiteInfo(infos) {
+        if (typeof infos.downloadfiles !== 'undefined' && infos.downloadfiles !== 1) {
+            return 'mm.login.cannotdownloadfiles';
+        }
+        return true;
     }
 
     /**
@@ -330,12 +334,15 @@ angular.module('mm.core')
                 // Local mobile was added. Throw invalid session to force reconnect and create a new token.
                 $mmEvents.trigger(mmCoreEventSessionExpired, siteid);
             }, function() {
-                // Update site info. Resolve the promise even if the update fails.
-                return self.updateSiteInfo(siteid).finally(function() {
-                    var infos = site.getInfo();
-                    if (!isValidInfo(infos)) {
+                // Update site info. We don't block the UI.
+                self.updateSiteInfo(siteid).finally(function() {
+                    var infos = site.getInfo(),
+                        validation = validateSiteInfo(infos);
+                    if (validation !== true) {
+                        // Site info is not valid. Logout the user and show an error message.
                         self.logout();
-                        return $mmLang.translateAndReject('mm.login.cannotdownloadfiles');
+                        $state.go('mm_login.sites');
+                        $mmUtil.showErrorModal(validation, true);
                     }
                 });
             });

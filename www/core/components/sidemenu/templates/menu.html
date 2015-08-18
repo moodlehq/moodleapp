@@ -33,10 +33,10 @@
                             <i class="icon ion-ionic"></i>{{ 'mm.sidemenu.mycourses' | translate}}
                         </a>
                     </li>
-                    <li ng-repeat="plugin in plugins | orderBy:'-priority'">
-                        <a menu-close class="item item-icon-left" ui-sref="{{plugin.data.state}}" title="{{plugin.data.title | translate}}">
-                            <i class="icon {{plugin.data.icon}}"></i> {{plugin.data.title | translate}}
-                            <span ng-show="plugin.data.badge > 0" class="badge badge-positive">{{plugin.data.badge}}</span>
+                    <li ng-repeat="handler in handlers | orderBy:'-priority'" ng-controller="handler.controller" >
+                        <a menu-close class="item item-icon-left" ui-sref="{{state}}" title="{{title | translate}}">
+                            <i class="icon {{icon}}"></i> {{title | translate}}
+                            <span ng-show="badge > 0" class="badge badge-positive">{{badge}}</span>
                         </a>
                     </li>
                     <a menu-close class="item item-icon-left" ng-href="{{siteinfo.siteurl}}" mm-browser title="{{ 'mm.sidemenu.website' | translate}}">

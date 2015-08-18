@@ -21,9 +21,10 @@ angular.module('mm.core.sidemenu')
  * @ngdoc controller
  * @name mmSideMenuCtrl
  */
-.controller('mmSideMenuCtrl', function($scope, $state, $mmSideMenuDelegate, $mmSitesManager, $mmSite, $mmConfig, $mmEvents,
+.controller('mmSideMenuCtrl', function($scope, $state, $mmSideMenuDelegate, $mmSitesManager, $mmSite, $mmEvents,
             $timeout, mmCoreEventLanguageChanged, mmCoreEventSiteUpdated) {
-    $scope.plugins = $mmSideMenuDelegate.getData();
+
+    $scope.handlers = $mmSideMenuDelegate.getNavHandlers();
     $scope.siteinfo = $mmSite.getInfo();
 
     $scope.logout = function() {
@@ -41,6 +42,12 @@ angular.module('mm.core.sidemenu')
         $scope.siteinfo = undefined;
         $timeout(function() {
             $scope.siteinfo = $mmSite.getInfo();
+
+            // Update docs URL, maybe the Moodle release has changed.
+            $mmSite.getDocsUrl().then(function(docsurl) {
+                $scope.docsurl = docsurl;
+            });
+            $scope.handlers = $mmSideMenuDelegate.getNavHandlers();
         });
     }
 

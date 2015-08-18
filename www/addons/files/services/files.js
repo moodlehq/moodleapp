@@ -252,7 +252,7 @@ angular.module('mm.addons.files')
         params.filearea = "private";
         params.contextid = -1;
         params.contextlevel = "user";
-        params.instanceid = $mmSite.getInfo().userid;
+        params.instanceid = $mmSite.getUserId();
         return params;
     }
 

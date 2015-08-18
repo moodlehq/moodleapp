@@ -23,8 +23,8 @@ angular.module('mm.addons.messages', ['mm.core'])
 .constant('mmaMessagesBlockContactPriority', 600)
 .constant('mmaMessagesNewMessageEvent', 'mma-messages_new_message')
 
-.config(function($stateProvider, $mmUserDelegateProvider, mmaMessagesSendMessagePriority, mmaMessagesAddContactPriority,
-            mmaMessagesBlockContactPriority) {
+.config(function($stateProvider, $mmUserDelegateProvider, $mmSideMenuDelegateProvider, mmaMessagesSendMessagePriority,
+            mmaMessagesAddContactPriority, mmaMessagesBlockContactPriority, mmaMessagesPriority) {
 
     $stateProvider
 
@@ -52,25 +52,16 @@ angular.module('mm.addons.messages', ['mm.core'])
         }
     });
 
+    // Register side menu addon.
+    $mmSideMenuDelegateProvider.registerNavHandler('mmaMessages', '$mmaMessagesHandlers.sideMenuNav', mmaMessagesPriority);
+
+    // Register user profile addons.
     $mmUserDelegateProvider.registerProfileHandler('mmaMessages:sendMessage', '$mmaMessagesHandlers.sendMessage', mmaMessagesSendMessagePriority);
     $mmUserDelegateProvider.registerProfileHandler('mmaMessages:addContact', '$mmaMessagesHandlers.addContact', mmaMessagesAddContactPriority);
     $mmUserDelegateProvider.registerProfileHandler('mmaMessages:blockContact', '$mmaMessagesHandlers.blockContact', mmaMessagesBlockContactPriority);
 })
 
-.run(function($mmSideMenuDelegate, $mmaMessages, $mmEvents, $state, $mmAddonManager,
-            $mmUtil, mmCoreEventLogin, mmaMessagesPriority) {
-
-    $mmSideMenuDelegate.registerPlugin('mmaMessages', function() {
-
-        return $mmaMessages.isPluginEnabled().then(function() {
-            return {
-                icon: 'ion-chatbox',
-                state: 'site.messages',
-                title: 'mma.messages.messages'
-            };
-        });
-
-    }, mmaMessagesPriority);
+.run(function($mmaMessages, $mmEvents, $state, $mmAddonManager, $mmUtil, mmCoreEventLogin) {
 
     // Invalidate messaging enabled WS calls.
     $mmEvents.on(mmCoreEventLogin, function() {
