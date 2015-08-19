@@ -29,7 +29,17 @@ window.onerror = function(msg, url, lineNumber) {
                                       '&osversion=' + window.device.version + '&cordova=' + window.device.cordova;
             }
             if (window.location) {
-                reportUrl = reportUrl + '&localurl=' + window.location.href;
+                reportUrl = reportUrl + '&localurl=' + encodeURIComponent(window.location.href);
+            }
+            if (navigator.userAgent) {
+                reportUrl = reportUrl + '&useragent=' + encodeURIComponent(navigator.userAgent);
+            }
+            if (ydn.db.Storage) {
+                // Detect Storage type by default.
+                var db = new ydn.db.Storage('test', {}, {});
+                if (db && db.getType) {
+                    reportUrl = reportUrl + '&storage=' + encodeURIComponent(db.getType());
+                }
             }
 
             window.open(reportUrl, '_system');
