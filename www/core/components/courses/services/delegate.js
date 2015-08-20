@@ -59,9 +59,22 @@ angular.module('mm.core.courses')
 
     self.$get = function($mmUtil, $q, $log, $mmSite) {
         var enabledNavHandlers = {},
+            coursesHandlers = {},
             self = {};
 
         $log = $log.getInstance('$mmCoursesDelegate');
+
+        /**
+         * Clear all courses handlers.
+         *
+         * @module mm.core.courses
+         * @ngdoc method
+         * @name $mmCoursesDelegate#clearCoursesHandlers
+         * @protected
+         */
+        self.clearCoursesHandlers = function() {
+            coursesHandlers = {};
+        };
 
         /**
          * Get the handlers for a course.
@@ -70,35 +83,14 @@ angular.module('mm.core.courses')
          * @ngdoc method
          * @name $mmCoursesDelegate#getNavHandlersFor
          * @param {Number} courseId The course ID.
-         * @return {Promise} Resolved with an array of objects containing 'priority' and 'controller'.
+         * @return {Array}          Array of objects containing 'priority' and 'controller'.
          */
         self.getNavHandlersFor = function(courseId) {
-            var handlers = [],
-                promises = [];
-
-            angular.forEach(enabledNavHandlers, function(handler) {
-                // Checks if the handler is enabled for the user.
-                var promise = $q.when(handler.instance.isEnabledForCourse(courseId)).then(function(enabled) {
-                    if (enabled) {
-                        handlers.push({
-                            controller: handler.instance.getController(courseId),
-                            priority: handler.priority
-                        });
-                    } else {
-                        return $q.reject();
-                    }
-                }).catch(function() {
-                    // Nothing to do here, it is not enabled for this user.
-                });
-                promises.push(promise);
-            });
-
-            return $q.all(promises).then(function() {
-                return handlers;
-            }).catch(function() {
-                // Never fails.
-                return handlers;
-            });
+            if (typeof(coursesHandlers[courseId]) == 'undefined') {
+                coursesHandlers[courseId] = [];
+                self.updateNavHandlersForCourse(courseId);
+            }
+            return coursesHandlers[courseId];
         };
 
         /**
@@ -163,6 +155,51 @@ angular.module('mm.core.courses')
                 return true;
             }, function() {
                 // Never reject.
+                return true;
+            }).finally(function() {
+                // Update handlers for all courses.
+                angular.forEach(coursesHandlers, function(handler, courseId) {
+                    self.updateNavHandlersForCourse(courseId);
+                });
+            });
+        };
+
+        /**
+         * Update the handlers for a certain course.
+         *
+         * @module mm.core.courses
+         * @ngdoc method
+         * @name $mmCoursesDelegate#updateNavHandlersForCourse
+         * @param {Number} courseId The course ID.
+         * @return {Promise}        Resolved when updated.
+         * @protected
+         */
+        self.updateNavHandlersForCourse = function(courseId) {
+            var promises = [];
+
+            $mmUtil.emptyArray(coursesHandlers[courseId]);
+
+            angular.forEach(enabledNavHandlers, function(handler) {
+                // Checks if the handler is enabled for the user.
+                var promise = $q.when(handler.instance.isEnabledForCourse(courseId)).then(function(enabled) {
+                    if (enabled) {
+                        coursesHandlers[courseId].push({
+                            controller: handler.instance.getController(courseId),
+                            priority: handler.priority
+                        });
+                    } else {
+                        return $q.reject();
+                    }
+                }).catch(function() {
+                    // Nothing to do here, it is not enabled for this user.
+                });
+                promises.push(promise);
+            });
+
+            return $q.all(promises).then(function() {
+                return true;
+            }).catch(function() {
+                // Never fails.
                 return true;
             });
         };
