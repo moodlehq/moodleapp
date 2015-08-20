@@ -684,6 +684,18 @@ angular.module('mm.core')
             });
         };
 
+        /**
+         * Empties an array without losing its reference.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#emptyArray
+         * @param  {Array} array Array to empty.
+         */
+        self.emptyArray = function(array) {
+            array.length = 0; // Empty array without losing its reference.
+        };
+
         return self;
     };
 });
