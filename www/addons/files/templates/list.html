@@ -1,7 +1,7 @@
 <ion-view>
     <ion-nav-title>{{title}}</ion-nav-title>
     <ion-nav-buttons side="secondary">
-        <button class="button button-icon ion-plus" ng-click="add()" ng-if="add"></button>
+        <button class="button button-icon ion-plus" ng-click="add()" ng-if="showUpload()" aria-label="{{ 'mma.files.uploadafile' | translate }}"></button>
     </ion-nav-buttons>
     <ion-content>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="filesLoaded" on-refresh="refreshFiles()"></ion-refresher>
@@ -9,7 +9,7 @@
             <ul class="list">
                 <li ng-repeat="file in files">
                     <a ui-sref="site.files-list({path: file.link, title: file.filename})" class="item item-media" ng-if="file.isdir">
-                        <img ng-src="{{file.imgpath}}" alt="">
+                        <img ng-src="{{file.imgpath}}" alt="" role="presentation">
                         {{file.filename}}
                     </a>
                     <mm-file ng-if="!file.isdir" file="file" component="{{component}}" component-id="{{file.contextid}}" timemodified="{{file.timemodified}}"></mm-file>

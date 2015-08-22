@@ -81,10 +81,8 @@ angular.module('mm.core.user')
                 promises = [];
 
             angular.forEach(enabledProfileHandlers, function(handler) {
-                var promise = $q.when(handler.instance.isEnabledForUser(user, courseId));
-
                 // Checks if the handler is enabled for the user.
-                promise.then(function(enabled) {
+                var promise = $q.when(handler.instance.isEnabledForUser(user, courseId)).then(function(enabled) {
                     if (enabled) {
                         handlers.push({
                             controller: handler.instance.getController(user, courseId),
@@ -156,8 +154,7 @@ angular.module('mm.core.user')
          * @protected
          */
         self.updateProfileHandlers = function() {
-            var enabledProfileHandlers = {},
-                promises = [];
+            var promises = [];
 
             $log.debug('Updating profile handlers for current site.');
 

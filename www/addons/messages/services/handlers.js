@@ -23,7 +23,7 @@ angular.module('mm.addons.messages')
  * @ngdoc service
  * @name $mmaMessagesHandlers
  */
-.factory('$mmaMessagesHandlers', function($q, $log, $mmaMessages, $mmSite, $state, $mmUtil) {
+.factory('$mmaMessagesHandlers', function($log, $mmaMessages, $mmSite, $state, $mmUtil) {
     $log = $log.getInstance('$mmaMessagesHandlers');
 
     var self = {};
@@ -232,6 +232,50 @@ angular.module('mm.addons.messages')
                 };
             };
 
+        };
+
+        return self;
+    };
+
+    /**
+     * Side menu nav handler.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessagesHandlers#sideMenuNav
+     */
+    self.sideMenuNav = function() {
+
+        var self = {};
+
+        /**
+         * Check if handler is enabled.
+         *
+         * @return {Boolean} True if handler is enabled, false otherwise.
+         */
+        self.isEnabled = function() {
+            return $mmaMessages.isPluginEnabled();
+        };
+
+        /**
+         * Get the controller.
+         *
+         * @return {Object} Controller.
+         */
+        self.getController = function() {
+
+            /**
+             * Side menu nav handler controller.
+             *
+             * @module mm.addons.messages
+             * @ngdoc controller
+             * @name $mmaMessagesHandlers#sideMenuNav:controller
+             */
+            return function($scope) {
+                $scope.icon = 'ion-chatbox';
+                $scope.title = 'mma.messages.messages';
+                $scope.state = 'site.messages';
+            };
         };
 
         return self;

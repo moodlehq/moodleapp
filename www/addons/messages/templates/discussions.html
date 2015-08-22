@@ -3,13 +3,12 @@
     <mm-loading hide-until="loaded">
         <ul class="list">
             <li>
-                <a class="item item-avatar" ng-repeat="disc in discussions | orderBy:'message.timecreated':true track by $index" mm-split-view-link="site.messages-discussion({userId: disc.message.user, userFullname: disc.fullname})" title="{{disc.fullname}}">
+                <a class="item item-avatar" ng-repeat="disc in discussions | orderBy:'message.timecreated':true track by $index" ng-if="disc.profileimageurl" mm-split-view-link="site.messages-discussion({userId: disc.message.user, userFullname: disc.fullname})" title="{{disc.fullname}}">
 
-                    <img ng-src="{{disc.profileimageurl}}" alt="" role="presentation" mm-external-content ng-if="disc.profileimageurl">
-                    <img src="img/user-avatar.png" alt="" role="presentation" ng-if="!disc.profileimageurl">
+                    <img ng-src="{{disc.profileimageurl}}" alt="" role="presentation" mm-external-content>
 
                     <span class="item-note" ng-if="disc.message.timecreated > 0">{{disc.message.timecreated | mmDateDayOrTime}}</span>
-                    <h2>{{disc.fullname}}</h2>
+                    <p class="item-heading">{{disc.fullname}}</p>
                     <p><mm-format-text watch="true" clean="true" singleline="true">{{disc.message.message | mmaMessagesFormat}}</mm-format-text></p>
                 </a>
             </li>

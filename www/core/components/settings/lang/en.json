@@ -16,6 +16,7 @@
     "settings": "Settings",
     "spaceusage": "Space usage",
     "synchronization": "Synchronization",
+    "synchronizenow": "Synchronize now",
     "synchronizing": "Synchronizing",
     "syncsitesuccess": "Site data synchronized and all caches invalidated.",
     "total": "Total"

@@ -100,12 +100,11 @@ angular.module('mm.addons.calendar')
 
             angular.forEach(events, function(event) {
                 // Get the event notification time to prevent overriding it in DB.
-                var promise = self.getEventNotificationTime(event.id, siteid);
-                promises.push(promise);
-                promise.then(function(time) {
+                var promise = self.getEventNotificationTime(event.id, siteid).then(function(time) {
                     event.notificationtime = time;
                     return db.insert(mmaCalendarEventsStore, event);
                 });
+                promises.push(promise);
             });
 
             return $q.all(promises);
@@ -129,8 +128,6 @@ angular.module('mm.addons.calendar')
             e.moduleicon = icon;
         }
         e.icon = icon;
-        e.start = new Date(e.timestart * 1000).toLocaleString();
-        e.end = new Date((e.timestart + e.timeduration) * 1000).toLocaleString();
     };
 
     /**
@@ -326,12 +323,11 @@ angular.module('mm.addons.calendar')
 
                 var promises = [];
                 angular.forEach(siteids, function(siteid) {
-                    var promise = self.getEvents(undefined, undefined, false, siteid); // Get first events. We need to be able to mock site.
-                    promises.push(promise);
-
-                    promise.then(function(events) {
+                    // Get first events.
+                    var promise = self.getEvents(undefined, undefined, false, siteid).then(function(events) {
                         return self.scheduleEventsNotifications(events, siteid);
                     });
+                    promises.push(promise);
                 });
 
                 return $q.all(promises);
@@ -403,11 +399,10 @@ angular.module('mm.addons.calendar')
 
         if ($mmLocalNotifications.isAvailable()) {
             angular.forEach(events, function(e) {
-                var promise = self.getEventNotificationTime(e.id, siteid);
-                promises.push(promise);
-                promise.then(function(time) {
+                var promise = self.getEventNotificationTime(e.id, siteid).then(function(time) {
                     return self.scheduleEventNotification(e, time, siteid);
                 });
+                promises.push(promise);
             });
         }
 

@@ -64,12 +64,11 @@ angular.module('mm.core')
         return query.length ? query.substr(0, query.length - 1) : query;
     };
 
-    this.$get = function($ionicLoading, $ionicPopup, $injector, $translate, $http, $log, $q, $mmLang, $mmFS) {
+    this.$get = function($ionicLoading, $ionicPopup, $injector, $translate, $http, $log, $q, $mmLang, $mmFS, $timeout) {
 
         $log = $log.getInstance('$mmUtil');
 
-        var self = {}, // Use 'self' to be coherent with the rest of services.
-            countries;
+        var self = {}; // Use 'self' to be coherent with the rest of services.
 
         // // Loading all the mimetypes.
         var mimeTypes = {};
@@ -448,8 +447,10 @@ angular.module('mm.core')
          * @name $mmUtil#showErrorModal
          * @param {String} errorMessage    Message to show.
          * @param {Boolean} needsTranslate True if the errorMessage is a $translate key, false otherwise.
+         * @param {Number} [autocloseTime] Number of milliseconds to wait to close the modal.
+         *                                 If not defined, modal won't be automatically closed.
          */
-        self.showErrorModal = function(errorMessage, needsTranslate) {
+        self.showErrorModal = function(errorMessage, needsTranslate, autocloseTime) {
             var errorKey = 'mm.core.error',
                 langKeys = [errorKey];
 
@@ -458,10 +459,18 @@ angular.module('mm.core')
             }
 
             $translate(langKeys).then(function(translations) {
-                $ionicPopup.alert({
+                var popup = $ionicPopup.alert({
                     title: translations[errorKey],
                     template: needsTranslate ? translations[errorMessage] : errorMessage
                 });
+
+                if (typeof autocloseTime != 'undefined' && !isNaN(parseInt(autocloseTime))) {
+                    $timeout(function() {
+                        popup.close();
+                    }, parseInt(autocloseTime));
+                } else {
+                    delete popup;
+                }
             });
         };
 
@@ -521,28 +530,19 @@ angular.module('mm.core')
         };
 
         /**
-         * Get the countries list.
+         * Get country name based on country code.
          *
          * @module mm.core
          * @ngdoc method
-         * @name $mmUtil#getCountries
-         * @return {Promise} Promise to be resolved when the list is retrieved.
+         * @name $mmUtil#getCountryName
+         * @param {String} code Country code (AF, ES, US, ...).
+         * @return {String}     Country name. If the country is not found, return the country code.
          */
-        self.getCountries = function() {
-            var deferred = $q.defer();
+        self.getCountryName = function(code) {
+            var countryKey = 'mm.core.country-' + code,
+                countryName = $translate.instant(countryKey);
 
-            if (typeof(countries) !== 'undefined') {
-                deferred.resolve(countries);
-            } else {
-                self.readJSONFile('core/assets/countries.json').then(function(data) {
-                    countries = data;
-                    deferred.resolve(countries);
-                }, function(){
-                    deferred.resolve();
-                });
-            }
-
-            return deferred.promise;
+            return countryName !== countryKey ? countryName : countryKey;
         };
 
         /**

@@ -17,9 +17,9 @@ angular.module('mm.addons.calendar', [])
 .constant('mmaCalendarDaysInterval', 30)
 .constant('mmaCalendarDefaultNotifTime', 60)
 .constant('mmaCalendarComponent', 'mmaCalendarEvents')
-.value('mmaCalendarPriority', 400)
+.constant('mmaCalendarPriority', 400)
 
-.config(function($stateProvider) {
+.config(function($stateProvider, $mmSideMenuDelegateProvider, mmaCalendarPriority) {
 
     $stateProvider
         .state('site.calendar', {
@@ -46,21 +46,12 @@ angular.module('mm.addons.calendar', [])
             }
         });
 
+    // Register side menu addon.
+    $mmSideMenuDelegateProvider.registerNavHandler('mmaCalendar', '$mmaCalendarHandlers.sideMenuNav', mmaCalendarPriority);
+
 })
 
-.run(function($mmSideMenuDelegate, $mmaCalendar, $mmLocalNotifications, $state, $ionicPlatform, $mmApp,
-        mmaCalendarComponent, mmaCalendarPriority) {
-    // Register plugin in side menu.
-    $mmSideMenuDelegate.registerPlugin('mmaCalendar', function() {
-        if (!$mmaCalendar.isAvailable()) {
-            return undefined;
-        }
-        return {
-            icon: 'ion-calendar',
-            title: 'mma.calendar.calendarevents',
-            state: 'site.calendar'
-        };
-    }, mmaCalendarPriority);
+.run(function($mmaCalendar, $mmLocalNotifications, $state, $ionicPlatform, $mmApp, mmaCalendarComponent) {
 
     // Listen for notification clicks.
     $mmLocalNotifications.registerClick(mmaCalendarComponent, function(data) {

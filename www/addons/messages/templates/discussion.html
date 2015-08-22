@@ -2,12 +2,12 @@
     <ion-nav-title>{{ title }}</ion-nav-title>
 
     <ion-nav-buttons side="secondary">
-        <button ng-if="profileLink" class="button button-icon icon ion-person" mm-user-link userid="{{userId}}"></button>
+        <button ng-if="profileLink" class="button button-icon icon ion-person" mm-user-link userid="{{userId}}" aria-label="{{ 'mm.core.viewprofile' | translate }}"></button>
     </ion-nav-buttons>
 
     <ion-content class="padding" delegate-handle="mmaMessagesScroll">
         <mm-loading hide-until="loaded">
-            <section class="mma-messages-discussion-container">
+            <section class="mma-messages-discussion-container" aria-live="polite">
                 <div ng-repeat="message in messages track by $index">
 
                     <p ng-if="showDate(messages[$index], messages[$index - 1])" class="mma-messages-date"><span>{{ message.timecreated * 1000 | date:"EEE, d MMM" }}</span></p>

@@ -57,6 +57,7 @@ angular.module('mm.addons.mod_url')
             if (module.contents && module.contents[0] && module.contents[0].fileurl) {
                 $scope.buttons = [{
                     icon: 'ion-link',
+                    label: 'mm.core.openinbrowser',
                     action: function(e) {
                         e.preventDefault();
                         e.stopPropagation();

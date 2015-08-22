@@ -319,6 +319,30 @@ angular.module('mm.core')
      * Returns the URL to the documentation of the app, based on Moodle version and current language.
      */
 
+    /**
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSite#checkLocalMobilePlugin
+     * @return {Promise} Promise resolved when the check is done. Resolve params:
+     *                           - {Number} code Code to identify the authentication method to use.
+     *                           - {String} [service] If defined, name of the service to use.
+     *                           - {String} [warning] If defined, code of the warning message.
+     * @description
+     *
+     * Check if the local_mobile plugin is installed in the Moodle site.
+     * This plugin provide extended services.
+     */
+
+    /**
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSite#checkLocalMobilePlugin
+     * @return {Promise} Promise resolved it local_mobile was added, rejected otherwise.
+     * @description
+     *
+     * Check if local_mobile has been installed in Moodle but the app is not using it.
+     */
+
     // Replicate all Site methods refined in $mmSitesFactory to be used with current site.
     angular.forEach(siteMethods, function(method) {
         self[method] = function() {

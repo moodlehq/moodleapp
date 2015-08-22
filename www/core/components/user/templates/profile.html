@@ -1,18 +1,19 @@
 <ion-view>
     <ion-nav-title>{{title}}</ion-nav-title>
     <ion-content padding="true">
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="userLoaded" on-refresh="refreshUser()"></ion-refresher>
         <mm-loading hide-until="userLoaded">
             <div class="list" ng-if="user">
                 <div class="item item-avatar">
-                    <img ng-if="user.profileimageurl" ng-src="{{user.profileimageurl}}" mm-external-content>
-                    <img ng-if="!user.profileimageurl" src="img/user-avatar.png" alt="">
+                    <img ng-if="user.profileimageurl" ng-src="{{user.profileimageurl}}" mm-external-content alt="" role="presentation">
+                    <img ng-if="!user.profileimageurl" src="img/user-avatar.png" alt="" role="presentation">
                     <h2><mm-format-text watch="true" clean="true">{{user.fullname}}</mm-format-text></h2>
                 </div>
                 <div class="item item-divider" ng-if="hasContact">
-                    {{ 'mm.user.contact' | translate}}
+                    <h2>{{ 'mm.user.contact' | translate}}</h2>
                 </div>
                 <div class="item" ng-if="user.email">
-                    <h2>{{ 'mm.user.email' | translate}}</h2>
+                    <p class="item-heading">{{ 'mm.user.email' | translate}}</p>
                     <p>
                         <a href="mailto:{{user.email}}" mm-browser>
                             <mm-format-text watch="true" clean="true">{{user.email}}</mm-format-text>
@@ -20,7 +21,7 @@
                     </p>
                 </div>
                 <div class="item" ng-if="user.phone1">
-                    <h2>{{ 'mm.user.phone1' | translate}}</h2>
+                    <p class="item-heading">{{ 'mm.user.phone1' | translate}}</p>
                     <p>
                         <a href="tel:{{user.phone1}}" mm-browser>
                             <mm-format-text watch="true" clean="true">{{user.phone1}}</mm-format-text>
@@ -28,7 +29,7 @@
                     </p>
                 </div>
                 <div class="item" ng-if="user.phone2">
-                    <h2>{{ 'mm.user.phone2' | translate}}</h2>
+                    <p class="item-heading">{{ 'mm.user.phone2' | translate}}</p>
                     <p>
                         <a href="tel:{{user.phone2}}" mm-browser>
                             <mm-format-text watch="true" clean="true">{{user.phone2}}</mm-format-text>
@@ -36,7 +37,7 @@
                     </p>
                 </div>
                 <div class="item" ng-if="user.address">
-                    <h2>{{ 'mm.user.address' | translate}}</h2>
+                    <p class="item-heading">{{ 'mm.user.address' | translate}}</p>
                     <p>
                         <a ng-if="isAndroid" href="geo:0,0?q={{user.encodedAddress}}" mm-browser>
                             <mm-format-text watch="true" clean="true">{{user.address}}</mm-format-text>
@@ -47,22 +48,22 @@
                     </p>
                 </div>
                 <div class="item" ng-if="user.city && !user.address">
-                    <h2>{{ 'mm.user.city' | translate}}</h2>
+                    <p class="item-heading">{{ 'mm.user.city' | translate}}</p>
                     <p>
                         <mm-format-text watch="true" clean="true">{{user.city}}</mm-format-text>
                     </p>
                 </div>
                 <div class="item" ng-if="user.country && !user.address">
-                    <h2>{{ 'mm.user.country' | translate}}</h2>
+                    <p class="item-heading">{{ 'mm.user.country' | translate}}</p>
                     <p>
                         <mm-format-text watch="true" clean="true">{{user.country}}</mm-format-text>
                     </p>
                 </div>
                 <div class="item item-divider" ng-if="hasDetails">
-                    {{ 'mm.user.details' | translate}}
+                    <h2>{{ 'mm.user.details' | translate}}</h2>
                 </div>
                 <div class="item" ng-if="user.url">
-                    <h2>{{ 'mm.user.webpage' | translate}}</h2>
+                    <p class="item-heading">{{ 'mm.user.webpage' | translate}}</p>
                     <p>
                         <a href="{{user.url}}" mm-browser>
                             <mm-format-text watch="true" clean="true">{{user.url}}</mm-format-text>
@@ -70,29 +71,29 @@
                     </p>
                 </div>
                 <div class="item" ng-if="user.roles">
-                    <h2>{{ 'mm.user.roles' | translate}}</h2>
+                    <p class="item-heading">{{ 'mm.user.roles' | translate}}</p>
                     <p>
                         <mm-format-text watch="true" clean="true">{{user.roles}}</mm-format-text>
                     </p>
                 </div>
                 <div class="item" ng-if="user.interests">
-                    <h2>{{ 'mm.user.interests' | translate}}</h2>
+                    <p class="item-heading">{{ 'mm.user.interests' | translate}}</p>
                     <p>
                         <mm-format-text watch="true" clean="true">{{user.interests}}</mm-format-text>
                     </p>
                 </div>
                 <div class="item item-divider" ng-if="user.description">
-                    {{ 'mm.user.description' | translate}}
+                    <h2>{{ 'mm.user.description' | translate}}</h2>
                 </div>
                 <div class="item item-text-wrap" ng-if="user.description">
                     <mm-format-text watch="true">{{user.description}}</mm-format-text>
                 </div>
 
-                <section ng-repeat="handler in profileHandlers | orderBy:'-priority'" ng-controller="handler.controller">
+                <div ng-repeat="handler in profileHandlers | orderBy:'-priority'" ng-controller="handler.controller">
                     <a class="button button-block" ng-click="action($event)" ng-hide="hidden" title="{{ title | translate }}">
                         {{ title | translate }} <ion-spinner class="icon" ng-if="spinner"></ion-spinner>
                     </a>
-                </section>
+                </div>
             </div>
 
             <div ng-if="!user">

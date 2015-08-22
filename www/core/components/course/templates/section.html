@@ -15,7 +15,7 @@
             <section class="card" ng-repeat="section in sections">
                 <!-- Title and summary are displayed when multiple sections per page. -->
                 <div class="item item-divider" ng-if="sections.length > 1">
-                    {{ section.name }}
+                    <h2>{{ section.name }}</h2>
                 </div>
 
                 <div class="item item-text-wrap" ng-if="sections.length > 1 && section.summary">
@@ -27,7 +27,7 @@
                     <img ng-src="{{ icon }}" alt="" role="presentation" ng-if="icon">
                     <mm-format-text watch="true">{{ title }}</mm-format-text>
 
-                    <button ng-repeat="button in buttons" ng-hide="button.hidden" ng-click="button.action($event)" class="button button-icon">
+                    <button ng-repeat="button in buttons" ng-hide="button.hidden" ng-click="button.action($event)" class="button button-icon" aria-label="{{ button.label | translate }}">
                         <i class="icon positive" ng-class="{'{{button.icon}}': button.icon}"></i>
                     </button>
 

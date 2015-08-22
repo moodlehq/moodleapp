@@ -14,6 +14,8 @@ var fs = require('fs');
 var through = require('through');
 var path = require('path');
 var File = gutil.File;
+var gulpSlash = require('gulp-slash');
+var ngAnnotate = require('gulp-ng-annotate');
 
 var license = '' +
   '// (C) Copyright 2015 Martin Dougiamas\n' +
@@ -58,7 +60,8 @@ var paths = {
   lang: [
       './www/core/lang/',
       './www/core/components/**/lang/',
-      './www/addons/**/lang/'
+      './www/addons/**/lang/',
+      './www/core/assets/countries/'
     ]
 };
 
@@ -88,7 +91,10 @@ gulp.task('watch', function() {
   gulp.watch(paths.sass.core, ['sass']);
   gulp.watch(paths.sass.custom, ['sass']);
   gulp.watch(paths.js, ['build']);
-  gulp.watch(paths.lang, ['lang']);
+  var langsPaths = paths.lang.map(function(path) {
+    return path + '*.json';
+  });
+  gulp.watch(langsPaths, ['lang']);
 });
 
 gulp.task('build', function() {
@@ -97,6 +103,7 @@ gulp.task('build', function() {
       pluginRegex = /addons\/([^\/]+)\/main.js/;
 
   gulp.src(paths.js)
+    .pipe(gulpSlash())
     .pipe(clipEmptyFiles())
     .pipe(tap(function(file, t) {
       if (componentRegex.test(file.path)) {
@@ -109,6 +116,7 @@ gulp.task('build', function() {
     // Remove comments, remove empty lines, concat and add license.
     .pipe(stripComments())
     .pipe(removeEmptyLines())
+    .pipe(ngAnnotate()) // This step fixes DI declarations for FirefoxOS.
     .pipe(concat('mm.bundle.js'))
     .pipe(insert.prepend(license))
 
@@ -173,6 +181,10 @@ gulp.task('lang', function() {
         pluginName = pluginName.substr(0, pluginName.indexOf('/'));
         addProperties(merged, data[filepath], 'mma.'+pluginName+'.');
 
+      } else if (filepath.indexOf('core/assets/countries') == 0) {
+
+        addProperties(merged, data[filepath], 'mm.core.country-');
+
       }
 
     }
@@ -200,7 +212,7 @@ gulp.task('lang', function() {
   // Get filenames to know which languages are available.
   var filenames = getFilenames(paths.lang[0]);
 
-  filenames.forEach(function(filename, index) {
+  filenames.forEach(function(filename) {
 
     var language = filename.replace('.json', '');
 
@@ -215,6 +227,7 @@ gulp.task('lang', function() {
     var firstFile = null;
 
     gulp.src(langpaths)
+      .pipe(gulpSlash())
       .pipe(clipEmptyFiles())
       .pipe(through(function(file) {
         if (!firstFile) {

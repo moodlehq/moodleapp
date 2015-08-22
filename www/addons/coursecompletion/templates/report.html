@@ -1,0 +1,54 @@
+<ion-view view-title="{{ 'mma.coursecompletion.coursecompletion' | translate }}">
+    <ion-content>
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="completionLoaded" on-refresh="refreshCompletion()">
+        </ion-refresher>
+        <mm-loading hide-until="completionLoaded">
+            <ul class="list card" ng-if="completion">
+                <li class="item item-text-wrap">
+                    <p class="item-heading">{{ 'mma.coursecompletion.status' | translate }}</p>
+                    <p>{{ completion.statusText | translate }}</p>
+                </li>
+                <li class="item item-text-wrap">
+                    <p class="item-heading">{{ 'mma.coursecompletion.required' | translate }}</p>
+                    <p ng-if="completion.aggregation === 1">{{ 'mma.coursecompletion.criteriarequiredall' | translate }}</p>
+                    <p ng-if="completion.aggregation === 2">{{ 'mma.coursecompletion.criteriarequiredany' | translate }}</p>
+                </li>
+            </ul>
+            <ul class="list card" ng-if="!isTablet && completion">
+                <li class="item item-divider">{{ 'mma.coursecompletion.requiredcriteria' | translate }}</li>
+                <div class="row item item-text-wrap" ng-repeat="criteria in completion.completions">
+                    <div class="col col-75">
+                        <p class="item-heading"><mm-format-text watch="true" clean="true">{{ criteria.details.criteria }}</mm-format-text></p>
+                        <p><mm-format-text watch="true" clean="true">{{ criteria.details.requirement }}</mm-format-text></p>
+                    </div>
+                    <p class="col col-25 text-right"><b>{{ criteria.status }}</b></p>
+                </div>
+            </ul>
+            <ul class="list card" ng-if="isTablet && completion">
+                <li class="item item-divider">{{ 'mma.coursecompletion.requiredcriteria' | translate }}</li>
+                <div class="row">
+                    <p class="col col-20"><b>{{ 'mma.coursecompletion.criteriagroup' | translate }}</b></p>
+                    <p class="col col-20"><b>{{ 'mma.coursecompletion.criteria' | translate }}</b></p>
+                    <p class="col col-20"><b>{{ 'mma.coursecompletion.requirement' | translate }}</b></p>
+                    <p class="col col-10"><b>{{ 'mma.coursecompletion.status' | translate }}</b></p>
+                    <p class="col col-10"><b>{{ 'mma.coursecompletion.complete' | translate }}</b></p>
+                    <p class="col col-20"><b>{{ 'mma.coursecompletion.completiondate' | translate }}</b></p>
+                </div>
+                <div class="row" ng-repeat="criteria in completion.completions">
+                    <p class="col col-20"><mm-format-text watch="true" clean="true">{{ criteria.title }}</mm-format-text></p>
+                    <p class="col col-20"><mm-format-text watch="true" clean="true">{{ criteria.details.criteria }}</mm-format-text></p>
+                    <p class="col col-20"><mm-format-text watch="true" clean="true">{{ criteria.details.requirement }}</mm-format-text></p>
+                    <p class="col col-10">{{ criteria.details.status }}</p>
+                    <p class="col col-10">{{ criteria.status }}</p>
+                    <p class="col col-20">{{ criteria.timecompleted | mmToLocaleString }}</p>
+                </div>
+            </ul>
+            <ul class="list card" ng-if="showSelfComplete">
+                <li class="item item-divider">{{ 'mma.coursecompletion.manualselfcompletion' | translate }}</li>
+                <li class="item">
+                    <button class="button button-block" ng-click="completeCourse()">{{ 'mma.coursecompletion.completecourse' | translate }}</button>
+                </li>
+            </ul>
+        </mm-loading>
+    </ion-content>
+</ion-view>

@@ -33,11 +33,23 @@ angular.module('mm.core.user')
  * @ngdoc service
  * @name $mmUser
  */
-.factory('$mmUser', function($log, $q, $mmSite, $mmLang, $mmUtil, $translate, mmCoreUsersStore) {
+.factory('$mmUser', function($log, $q, $mmSite, $mmUtil, $translate, mmCoreUsersStore) {
 
     $log = $log.getInstance('$mmUser');
 
     var self = {};
+
+    /**
+     * Store user basic information in local DB to be retrieved if the WS call fails.
+     *
+     * @param  {Number} id User ID.
+     * @return {Promise}   Promise resolve when the user is deleted.
+     */
+    self.deleteStoredUser = function(id) {
+        var db = $mmSite.getDb();
+        self.invalidateUserCache(id); // Invalidate WS calls.
+        return db.remove(mmCoreUsersStore, parseInt(id));
+    };
 
     /**
      * Formats a user address, concatenating address, city and country.
@@ -124,6 +136,16 @@ angular.module('mm.core.user')
     };
 
     /**
+     * Invalidates user WS calls.
+     *
+     * @param  {Number} userid User ID.
+     * @return {String}        Cache key.
+     */
+    function getUserCacheKey(userid) {
+        return 'mmUser:data:'+userid;
+    }
+
+    /**
      * Get user basic information from local DB.
      *
      * @module mm.core.user
@@ -149,13 +171,16 @@ angular.module('mm.core.user')
      */
     self.getUserFromWS = function(userid, courseid) {
         var wsName,
-            data;
+            data,
+            preSets ={
+                cacheKey: getUserCacheKey(userid)
+            };
 
         // Determine WS and data to use.
         if (courseid > 1) {
             $log.debug('Get participant with ID ' + userid + ' in course '+courseid);
             wsName = 'core_user_get_course_user_profiles';
-            var data = {
+            data = {
                 "userlist[0][userid]": userid,
                 "userlist[0][courseid]": courseid
             };
@@ -175,24 +200,39 @@ angular.module('mm.core.user')
             }
         }
 
-        return $mmSite.read(wsName, data).then(function(users) {
+        return $mmSite.read(wsName, data, preSets).then(function(users) {
             if (users.length == 0) {
                 return $q.reject();
             }
 
-            return $mmUtil.getCountries().then(function(countries) {
-                var user = users.shift();
-                if (user.country && typeof countries != 'undefined' && typeof countries[user.country] != 'undefined') {
-                    user.country = countries[user.country];
-                }
-                return user;
-            });
+            var user = users.shift();
+            if (user.country) {
+                user.country = $mmUtil.getCountryName(user.country);
+            }
+            self.storeUser(user.id, user.fullname, user.profileimageurl);
+            return user;
         });
+    };
+
+    /**
+     * Invalidates user WS calls.
+     *
+     * @module mm.core.user
+     * @ngdoc method
+     * @name $mmUser#invalidateUserCache
+     * @param  {Number} userid User ID.
+     * @return {Promise}       Promise resolved when the data is invalidated.
+     */
+    self.invalidateUserCache = function(userid) {
+        return $mmSite.invalidateWsCacheForKey(getUserCacheKey(userid));
     };
 
     /**
      * Store user basic information in local DB to be retrieved if the WS call fails.
      *
+     * @module mm.core.user
+     * @ngdoc method
+     * @name $mmUser#storeUser
      * @param  {Number} id       User ID.
      * @param  {String} fullname User full name.
      * @param  {String} avatar   User avatar URL.
@@ -217,7 +257,7 @@ angular.module('mm.core.user')
         var promises = [];
 
         angular.forEach(users, function(user) {
-            promises.push( self.storeUser(user.id, user.fullname, user.profileimageurl) );
+            promises.push(self.storeUser(user.id, user.fullname, user.profileimageurl));
         });
 
         return $q.all(promises);

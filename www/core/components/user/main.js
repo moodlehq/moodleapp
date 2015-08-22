@@ -36,11 +36,29 @@ angular.module('mm.core.user', [])
 
 })
 
-.run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, $mmUserDelegate) {
-    $mmEvents.on(mmCoreEventLogin, function() {
-        $mmUserDelegate.updateProfileHandlers();
-    });
-    $mmEvents.on(mmCoreEventSiteUpdated, function() {
-        $mmUserDelegate.updateProfileHandlers();
+.run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, $mmUserDelegate, $mmSite, mmCoreEventUserDeleted, $mmUser) {
+    $mmEvents.on(mmCoreEventLogin, $mmUserDelegate.updateProfileHandlers);
+    $mmEvents.on(mmCoreEventSiteUpdated, $mmUserDelegate.updateProfileHandlers);
+
+    $mmEvents.on(mmCoreEventUserDeleted, function(data) {
+        if (data.siteid && data.siteid === $mmSite.getId() && data.params) {
+            // Search for userid in params.
+            var params = data.params,
+                userid = 0;
+            if (params.userid) {
+                userid = params.userid;
+            } else if (params.userids) {
+                userid = params.userids[0];
+            } else if (params.field === 'id' && params.values && params.values.length) {
+                userid = params.values[0];
+            } else if (params.userlist && params.userlist.length) {
+                userid = params.userlist[0].userid;
+            }
+
+            userid = parseInt(userid);
+            if (userid > 0) {
+                $mmUser.deleteStoredUser(userid);
+            }
+        }
     });
 });

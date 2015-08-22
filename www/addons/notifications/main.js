@@ -15,9 +15,9 @@
 angular.module('mm.addons.notifications', [])
 
 .constant('mmaNotificationsListLimit', 20) // Max of notifications to retrieve in each WS call.
-.value('mmaNotificationsPriority', 800)
+.constant('mmaNotificationsPriority', 800)
 
-.config(function($stateProvider) {
+.config(function($stateProvider, $mmSideMenuDelegateProvider, mmaNotificationsPriority) {
 
     $stateProvider
 
@@ -31,21 +31,12 @@ angular.module('mm.addons.notifications', [])
         }
     });
 
+    // Register side menu addon.
+    $mmSideMenuDelegateProvider.registerNavHandler('mmaNotifications', '$mmaNotificationsHandlers.sideMenuNav', mmaNotificationsPriority);
 })
 
-.run(function($log, $mmSideMenuDelegate, $mmaNotifications, $mmPushNotificationsDelegate, $mmUtil, $state, $mmAddonManager,
-            mmaNotificationsPriority) {
+.run(function($log, $mmaNotifications, $mmUtil, $state, $mmAddonManager) {
     $log = $log.getInstance('mmaNotifications');
-
-    $mmSideMenuDelegate.registerPlugin('mmaNotifications', function() {
-        if ($mmaNotifications.isPluginEnabled()) {
-            return {
-                icon: 'ion-ios-bell',
-                state: 'site.notifications',
-                title: 'mma.notifications.notifications'
-            };
-        }
-    }, mmaNotificationsPriority);
 
     // Register push notification clicks.
     var $mmPushNotificationsDelegate = $mmAddonManager.get('$mmPushNotificationsDelegate');

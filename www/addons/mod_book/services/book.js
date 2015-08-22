@@ -63,11 +63,6 @@ angular.module('mm.addons.mod_book')
     self.getDownloadingFilesEventNames = function(module) {
         var promises = [],
             eventNames = [],
-            notDownloaded = 0,
-            downloading = 0,
-            outdated = 0,
-            downloaded = 0,
-            fileCount = 0,
             siteid = $mmSite.getId();
 
         angular.forEach(module.contents, function(content) {
@@ -281,6 +276,13 @@ angular.module('mm.addons.mod_book')
                         var src = paths[decodeURIComponent(img.getAttribute('src'))];
                         if (typeof src !== 'undefined') {
                             img.setAttribute('src', src);
+                        }
+                    });
+                    // We do the same for links.
+                    angular.forEach(html.find('a'), function(anchor) {
+                        var href = paths[decodeURIComponent(anchor.getAttribute('href'))];
+                        if (typeof href !== 'undefined') {
+                            anchor.setAttribute('href', href);
                         }
                     });
                     return html.html();

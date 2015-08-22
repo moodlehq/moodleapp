@@ -21,16 +21,18 @@
                 <h2>{{ 'mma.mod_assign.cutoffdate' | translate }}</h2>
                 <p>{{ assign.cutoffdate * 1000 | date:'medium' }}</p>
             </div>
-            <div ng-if="canviewsubmissions" class="card" >
+            <div ng-if="canviewsubmissions && submissions && submissions.length" class="card" >
                 <div class="item item-divider">{{ 'mma.mod_assign.submissions' | translate }}</div>
-                <div ng-repeat="submission in submissions track by $index">
+                <div ng-repeat="submission in submissions track by $index" ng-if="submission.userprofileimageurl"> <!-- Don't show deleted users -->
                     <div class="item item-divider" ng-if="$index > 0"></div>
-                    <a class="item item-avatar" ui-sref="{{getUserProfileStateName()}}({courseid: courseid, userid: submission.userid})" title="{{submission.userfullname}}">
-                        <img ng-src="{{submission.userprofileimageurl}}" mm-external-content>
+
+                    <a class="item item-avatar" mm-user-link userid="{{submission.userid}}" courseid="{{courseid}}" title="{{submission.userfullname}}">
+                        <img ng-src="{{submission.userprofileimageurl}}" mm-external-content alt="" role="presentation">
                         <p>{{submission.userfullname}}</p>
                         <div class="item-note">{{submission.status}}</div>
                         <p>{{submission.timemodified * 1000 | date:'medium'}}</p>
                     </a>
+
                     <div class="item item-body">
                         <p>{{ 'mma.mod_assign.attemptnumber' | translate }}: {{submission.attemptnumber}}</p>
                         <a ui-sref="site.mod_assign-submission({submission: submission})" ng-if="submission.text" class="button button-block">{{ 'mma.mod_assign.viewsubmission' | translate }}</a>

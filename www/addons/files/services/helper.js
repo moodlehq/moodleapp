@@ -52,7 +52,7 @@ angular.module('mm.addons.files')
                 // Success.
                 deferred.resolve();
             }, function() {
-                $mmLang.translateErrorAndReject(deferred, 'mma.files.errorwhileuploading');
+                $mmLang.translateAndRejectDeferred(deferred, 'mma.files.errorwhileuploading');
             }).finally(function() {
                 modal.dismiss();
             });
@@ -86,7 +86,7 @@ angular.module('mm.addons.files')
                 // Success.
                 deferred.resolve();
             }, function() {
-                $mmLang.translateErrorAndReject(deferred, 'mma.files.errorwhileuploading');
+                $mmLang.translateAndRejectDeferred(deferred, 'mma.files.errorwhileuploading');
             }).finally(function() {
                 modal.dismiss();
             });
@@ -117,7 +117,7 @@ angular.module('mm.addons.files')
                 // Success.
                 deferred.resolve();
             }, function() {
-                $mmLang.translateErrorAndReject(deferred, 'mma.files.errorwhileuploading');
+                $mmLang.translateAndRejectDeferred(deferred, 'mma.files.errorwhileuploading');
             }).finally(function() {
                 modal.dismiss();
             });
@@ -148,7 +148,7 @@ angular.module('mm.addons.files')
                 // Success.
                 deferred.resolve();
             }, function() {
-                $mmLang.translateErrorAndReject(deferred, 'mma.files.errorwhileuploading');
+                $mmLang.translateAndRejectDeferred(deferred, 'mma.files.errorwhileuploading');
             }).finally(function() {
                 modal.dismiss();
             });
@@ -171,9 +171,7 @@ angular.module('mm.addons.files')
      */
     self.confirmUploadFile = function(size) {
         if (!$mmApp.isOnline()) {
-            return $translate('mma.files.errormustbeonlinetoupload').then(function(errString) {
-                return $q.reject(errString);
-            });
+            return $mmLang.translateAndReject('mma.files.errormustbeonlinetoupload');
         }
 
         if ($mmApp.isNetworkAccessLimited() || size >= mmaFilesFileSizeWarning) {
@@ -210,13 +208,13 @@ angular.module('mm.addons.files')
                 self.uploadGenericFile(fileEntry.toURL(), file.name, file.type).then(deferred.resolve, deferred.reject);
             }, function(error) {
                 $log.error('Error writing file to upload: '+JSON.stringify(error));
-                $mmLang.translateErrorAndReject(deferred, 'mma.files.errorreadingfile');
+                $mmLang.translateAndRejectDeferred(deferred, 'mma.files.errorreadingfile');
                 modal.dismiss();
             });
 
         }, function(error) {
             $log.error('Error reading file to upload: '+JSON.stringify(error));
-            $mmLang.translateErrorAndReject(deferred, 'mma.files.errorreadingfile');
+            $mmLang.translateAndRejectDeferred(deferred, 'mma.files.errorreadingfile');
             modal.dismiss();
         });
 
@@ -239,7 +237,7 @@ angular.module('mm.addons.files')
         var deferred = $q.defer();
 
         if (!$mmApp.isOnline()) {
-            $mmLang.translateErrorAndReject(deferred, 'mma.files.errormustbeonlinetoupload');
+            $mmLang.translateAndRejectDeferred(deferred, 'mma.files.errormustbeonlinetoupload');
             return deferred.promise;
         }
 
@@ -247,7 +245,7 @@ angular.module('mm.addons.files')
 
         $mmaFiles.uploadGenericFile(uri, name, type, siteid).then(deferred.resolve, function(error) {
             $log.error('Error uploading file: '+JSON.stringify(error));
-            $mmLang.translateErrorAndReject(deferred, 'mma.files.errorwhileuploading');
+            $mmLang.translateAndRejectDeferred(deferred, 'mma.files.errorwhileuploading');
         }).finally(function() {
             modal.dismiss();
         });
@@ -310,7 +308,7 @@ angular.module('mm.addons.files')
                     deferred.reject();
                 }
             } else {
-                $mmLang.translateErrorAndReject(deferred, defaultMessage);
+                $mmLang.translateAndRejectDeferred(deferred, defaultMessage);
             }
         } else {
             deferred.reject();
@@ -331,15 +329,15 @@ angular.module('mm.addons.files')
                 $log.error('Error while recording audio/video: ' + error);
                 if (error.indexOf('No Activity found') > -1) {
                     // User doesn't have an app to do this.
-                    $mmLang.translateErrorAndReject(deferred, 'mma.files.errornoapp');
+                    $mmLang.translateAndRejectDeferred(deferred, 'mma.files.errornoapp');
                 } else {
-                    $mmLang.translateErrorAndReject(deferred, defaultMessage);
+                    $mmLang.translateAndRejectDeferred(deferred, defaultMessage);
                 }
             } else {
                 if (error.code != 3) {
                     // Error, not cancelled.
                     $log.error('Error while recording audio/video: ' + JSON.stringify(error));
-                    $mmLang.translateErrorAndReject(deferred, defaultMessage);
+                    $mmLang.translateAndRejectDeferred(deferred, defaultMessage);
                 } else {
                     $log.debug('Cancelled');
                     deferred.reject();

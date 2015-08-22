@@ -1,7 +1,7 @@
 <ion-content class="has-tabs">
     <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="loaded" on-refresh="refresh()"></ion-refresher>
 
-    <form ng-if="canSearch" ng-submit="search(formData.searchString);">
+    <form ng-if="canSearch()" ng-submit="search(formData.searchString);">
         <div class="list">
             <div class="item item-input-inset">
                 <label class="item-input-wrapper">
@@ -19,16 +19,15 @@
 
                 <ion-item class="item-divider item-button-right">
                     <span class="item-note">{{ contacts[contactType].length }}</span>
-                    {{ 'mma.messages.type_' + contactType | translate }}
-                    <button ng-if="contactType === searchType" class="button button-clear mma-messages-clear-search" ng-click="clearSearch()">
+                    <h2>{{ 'mma.messages.type_' + contactType | translate }}</h2>
+                    <button ng-if="contactType === searchType" class="button button-clear mma-messages-clear-search" ng-click="clearSearch()" aria-label="{{ 'mm.core.clearsearch' | translate }}">
                         <i class="icon ion-close-round"></i>
                     </button>
                 </ion-item>
 
-                <a class="item item-avatar" ng-repeat="contact in contacts[contactType] | orderBy:'fullname' track by $index" mm-split-view-link="{{userStateName}}({userid: contact.id})" title="{{contact.fullname}}">
-                    <img ng-src="{{ contact.profileimageurl || contact.profileimageurlsmall }}" alt="" role="presentation" mm-external-content ng-if="contact.profileimageurl || contact.profileimageurlsmall">
-                    <img src="img/user-avatar.png" alt="" role="presentation" ng-if="!(contact.profileimageurlsmall || contact.profileimageurl)">
-                    <h2>{{ contact.fullname }}</h2>
+                <a ng-repeat="contact in contacts[contactType] | orderBy:'fullname' track by $index" ng-if="contact.profileimageurl || contact.profileimageurlsmall" class="item item-avatar" mm-split-view-link="{{userStateName}}({userid: contact.id})" title="{{contact.fullname}}"> <!-- Don't show deleted users -->
+                    <img ng-src="{{ contact.profileimageurl || contact.profileimageurlsmall }}" alt="" role="presentation" mm-external-content >
+                    <p class="item-heading">{{ contact.fullname }}</p>
                 </a>
             </li>
         </ul>

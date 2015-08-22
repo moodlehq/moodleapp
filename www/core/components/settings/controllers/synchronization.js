@@ -21,7 +21,8 @@ angular.module('mm.core.settings')
  * @ngdoc controller
  * @name mmSettingsSynchronizationCtrl
  */
-.controller('mmSettingsSynchronizationCtrl', function($log, $scope, $mmSitesManager, $mmUtil, $mmFilepool) {
+.controller('mmSettingsSynchronizationCtrl', function($log, $scope, $mmSitesManager, $mmUtil, $mmFilepool, $mmEvents,
+            $mmLang, mmCoreEventSessionExpired) {
     $log = $log.getInstance('mmSettingsSynchronizationCtrl');
 
     $mmSitesManager.getSites().then(function(sites) {
@@ -35,7 +36,15 @@ angular.module('mm.core.settings')
             $mmFilepool.invalidateAllFiles(siteid).finally(function() {
                 $mmSitesManager.getSite(siteid).then(function(site) {
                     return site.invalidateWsCache().then(function() {
-                        return $mmSitesManager.updateSiteInfo(siteid);
+                        // Check if local_mobile was installed to Moodle.
+                        return site.checkIfLocalMobileInstalledAndNotUsed().then(function() {
+                            // Local mobile was added. Throw invalid session to force reconnect and create a new token.
+                            $mmEvents.trigger(mmCoreEventSessionExpired, siteid);
+                            return $mmLang.translateAndReject('mm.core.lostconnection');
+                        }, function() {
+                            // Update site info.
+                            return $mmSitesManager.updateSiteInfo(siteid);
+                        });
                     }).then(function() {
                         siteData.fullname = site.getInfo().fullname;
                         siteData.sitename = site.getInfo().sitename;

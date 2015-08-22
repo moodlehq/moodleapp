@@ -21,7 +21,8 @@ angular.module('mm.core')
  * @ngdoc service
  * @name $mmWS
  */
-.factory('$mmWS', function($http, $q, $log, $mmLang, $cordovaFileTransfer, $mmApp, $mmFS, mmCoreSessionExpired) {
+.factory('$mmWS', function($http, $q, $log, $mmLang, $cordovaFileTransfer, $mmApp, $mmFS, mmCoreSessionExpired,
+            mmCoreUserDeleted) {
 
     $log = $log.getInstance('$mmWS');
 
@@ -43,18 +44,15 @@ angular.module('mm.core')
      */
     self.call = function(method, data, preSets) {
 
-        var deferred = $q.defer(),
-            siteurl;
+        var siteurl;
 
         data = convertValuesToString(data);
 
-        if (typeof(preSets) === 'undefined' || preSets == null ||
-                typeof(preSets.wstoken) === 'undefined' || typeof(preSets.siteurl) === 'undefined') {
-            $mmLang.translateErrorAndReject(deferred, 'mm.core.unexpectederror');
-            return deferred.promise;
+        if (typeof preSets == 'undefined' || preSets === null ||
+                typeof preSets.wstoken == 'undefined' || typeof preSets.siteurl == 'undefined') {
+            return $mmLang.translateAndReject('mm.core.unexpectederror');
         } else if (!$mmApp.isOnline()) {
-            $mmLang.translateErrorAndReject(deferred, 'mm.core.networkerrormsg');
-            return deferred.promise;
+            return $mmLang.translateAndReject('mm.core.networkerrormsg');
         }
 
         data.wsfunction = method;
@@ -63,7 +61,7 @@ angular.module('mm.core')
 
         var ajaxData = data;
 
-        $http.post(siteurl, ajaxData).then(function(data) {
+        return $http.post(siteurl, ajaxData).then(function(data) {
             // Some moodle web services return null.
             // If the responseExpected value is set then so long as no data
             // is returned, we create a blank object.
@@ -74,24 +72,23 @@ angular.module('mm.core')
             }
 
             if (!data) {
-                $mmLang.translateErrorAndReject(deferred, 'mm.core.cannotconnect');
-                return;
+                return $mmLang.translateAndReject('mm.core.serverconnection');
             }
 
             if (typeof(data.exception) !== 'undefined') {
                 if (data.errorcode == 'invalidtoken' ||
                         (data.errorcode == 'accessexception' && data.message.indexOf('Invalid token - token expired') > -1)) {
                     $log.error("Critical error: " + JSON.stringify(data));
-                    deferred.reject(mmCoreSessionExpired);
+                    return $q.reject(mmCoreSessionExpired);
+                } else if (data.errorcode === 'userdeleted') {
+                    return $q.reject(mmCoreUserDeleted);
                 } else {
-                    deferred.reject(data.message);
+                    return $q.reject(data.message);
                 }
-                return;
             }
 
             if (typeof(data.debuginfo) != 'undefined') {
-                deferred.reject('Error. ' + data.message);
-                return;
+                return $q.reject('Error. ' + data.message);
             }
 
             $log.info('WS: Data received from WS ' + typeof(data));
@@ -100,13 +97,11 @@ angular.module('mm.core')
                 $log.info('WS: Data number of elements '+ data.length);
             }
 
-            deferred.resolve(data);
+            return data;
 
-        }, function(error) {
-            $mmLang.translateErrorAndReject(deferred, 'mm.core.cannotconnect');
+        }, function() {
+            return $mmLang.translateAndReject('mm.core.serverconnection');
         });
-
-        return deferred.promise;
     };
 
     /**
@@ -129,7 +124,7 @@ angular.module('mm.core')
             }
         }
         return result;
-    };
+    }
 
     /**
      * Downloads a file from Moodle using Cordova File API.
@@ -147,7 +142,7 @@ angular.module('mm.core')
             // Use a tmp path to download the file and then move it to final location. This is because if the download fails,
             // the local file is deleted.
             var tmpPath = basePath + path + '.tmp';
-            return $cordovaFileTransfer.download(url, tmpPath, { encodeURI: false }, true).then(function(result) {
+            return $cordovaFileTransfer.download(url, tmpPath, { encodeURI: false }, true).then(function() {
                 return $mmFS.moveFile(path + '.tmp', path).then(function(movedEntry) {
                     $log.debug('Success downloading file ' + url + ' to ' + path);
                     return movedEntry;

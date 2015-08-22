@@ -10,7 +10,7 @@
                 <article class="card" ng-repeat="note in notes">
                         <div class="item item-avatar">
                             <img ng-if="note.userprofileimageurl" ng-src="{{note.userprofileimageurl}}" mm-external-content mm-user-link courseid="{{courseid}}" userid="{{note.userid}}">
-                            <img ng-if="!note.userprofileimageurl" src="img/user-avatar.png" alt="">
+                            <img ng-if="!note.userprofileimageurl" src="img/user-avatar.png" alt="" role="presentation">
                             <div class="item-note">{{note.lastmodified | mmDateDayOrTime}}</div>
                             <p>{{note.userfullname}}</p>
                         </div>

@@ -19,101 +19,139 @@ angular.module('mm.core.sidemenu')
  * and notify an update in the data.
  *
  * @module mm.core.sidemenu
- * @ngdoc service
+ * @ngdoc provider
  * @name $mmSideMenuDelegate
  */
-.factory('$mmSideMenuDelegate', function($log) {
-
-    $log = $log.getInstance('$mmSideMenuDelegate');
-
-    var self = {},
-        plugins = {},
-        data = [];
+.provider('$mmSideMenuDelegate', function() {
+    var navHandlers = {},
+        self = {};
 
     /**
-     * Add plugin data to the data array.
+     * Register a navigation handler.
      *
-     * @param {String} name       Plugin name,
-     * @param {Number} priority   Plugin priority.
-     * @param {Object} pluginData Plugin data.
+     * @module mm.core.sidemenu
+     * @ngdoc method
+     * @name $mmSideMenuDelegateProvider#registerNavHandler
+     * @param {String} addon The addon's name (mmaFiles, mmaMessages, ...)
+     * @param {String|Object|Function} handler Must be resolved to an object defining the following functions. Or to a function
+     *                           returning an object defining these functions. See {@link $mmUtil#resolveObject}.
+     *                             - isEnabled (Boolean|Promise) Whether or not the handler is enabled on a site level.
+     *                                                           When using a promise, it should return a boolean.
+     *                             - getController (Object) Returns the object that will act as controller.
+     *                                                                See core/components/sidemenu/templates/menu.html
+     *                                                                for the list of scope variables expected.
      */
-    function addToData(name, priority, pluginData) {
-        var found = false;
-        for (var i = 0; i < data.length && !found; i++) {
-            if (data[i].name === name) {
-                found = true;
-                data.priority = priority;
-                data.data = pluginData;
+    self.registerNavHandler = function(addon, handler, priority) {
+        if (typeof navHandlers[addon] !== 'undefined') {
+            console.log("$mmSideMenuDelegateProvider: Addon '" + navHandlers[addon].addon + "' already registered as navigation handler");
+            return false;
+        }
+        console.log("$mmSideMenuDelegateProvider: Registered addon '" + addon + "' as navigation handler.");
+        navHandlers[addon] = {
+            addon: addon,
+            handler: handler,
+            instance: undefined,
+            priority: priority
+        };
+        return true;
+    };
+
+    self.$get = function($mmUtil, $q, $log, $mmSite) {
+        var enabledNavHandlers = {},
+            self = {};
+
+        $log = $log.getInstance('$mmSideMenuDelegate');
+
+        /**
+         * Get the handlers for the current site.
+         *
+         * @module mm.core.sidemenu
+         * @ngdoc method
+         * @name $mmSideMenuDelegate#getNavHandlers
+         * @return {Promise} Resolved with an array of objects containing 'priority' and 'controller'.
+         */
+        self.getNavHandlers = function() {
+            var handlers = [];
+
+            angular.forEach(enabledNavHandlers, function(handler) {
+                handlers.push({
+                    controller: handler.instance.getController(),
+                    priority: handler.priority
+                });
+            });
+
+            return handlers;
+        };
+
+        /**
+         * Update the handler for the current site.
+         *
+         * @module mm.core.sidemenu
+         * @ngdoc method
+         * @name $mmSideMenuDelegate#updateNavHandler
+         * @param {String} addon The addon.
+         * @param {Object} handlerInfo The handler details.
+         * @return {Promise} Resolved when enabled, rejected when not.
+         * @protected
+         */
+        self.updateNavHandler = function(addon, handlerInfo) {
+            var promise;
+
+            if (typeof handlerInfo.instance === 'undefined') {
+                handlerInfo.instance = $mmUtil.resolveObject(handlerInfo.handler, true);
             }
-        }
-        if (!found) {
-            data.push({
-                name: name,
-                priority: priority,
-                data: pluginData
+
+            if (!$mmSite.isLoggedIn()) {
+                promise = $q.reject();
+            } else {
+                promise = $q.when(handlerInfo.instance.isEnabled());
+            }
+
+            // Checks if the content is enabled.
+            return promise.then(function(enabled) {
+                if (enabled) {
+                    enabledNavHandlers[addon] = {
+                        instance: handlerInfo.instance,
+                        priority: handlerInfo.priority
+                    };
+                } else {
+                    return $q.reject();
+                }
+            }).catch(function() {
+                delete enabledNavHandlers[addon];
             });
-        }
-    }
+        };
 
-    /**
-     * Get the data of the registered plugins.
-     *
-     * @module mm.core.sidemenu
-     * @ngdoc method
-     * @name $mmSideMenuDelegate#getData
-     * @return {Object} Registered plugins data.
-     */
-    self.getData = function() {
-        data = [];
-        angular.forEach(plugins, function(value, name) {
-            self.updatePluginData(name);
-        });
-        return data;
-    };
+        /**
+         * Update the handlers for the current site.
+         *
+         * @module mm.core.sidemenu
+         * @ngdoc method
+         * @name $mmSideMenuDelegate#updateNavHandlers
+         * @return {Promise} Resolved when done.
+         * @protected
+         */
+        self.updateNavHandlers = function() {
+            var promises = [];
 
-    /**
-     * Register a plugin to show in the side menu.
-     *
-     * @module mm.core.sidemenu
-     * @ngdoc method
-     * @name $mmSideMenuDelegate#registerPlugin
-     * @param  {String}   name     Name of the plugin.
-     * @param  {Function} callback  Function to call to get the plugin data. This function should return an object with:
-     *                                  -icon: Icon to show in the menu item.
-     *                                  -title: Plugin name to be displayed.
-     *                                  -state: sref to the plugin's main state (i.e. site.messages).
-     *                                  -badge: Number to show next to the plugin (like new notifications number). Optional.
-     *                              If the plugin should not be shown (disabled, etc.) this function should return undefined.
-     * @param {Number} [priority=0] Plugin's priority to determine order to be shown. Higher priority means showing it first.
-     */
-    self.registerPlugin = function(name, callback, priority) {
-        if (typeof priority != 'number') {
-            priority = 0;
-        }
-        $log.debug("Register plugin '"+name+"' in side menu with priority "+priority);
-        plugins[name] = {callback: callback, priority: priority};
-    };
+            $log.debug('Updating navigation handlers for current site.');
 
-    /**
-     * Update the plugin data stored in the delegate.
-     *
-     * @module mm.core.sidemenu
-     * @ngdoc method
-     * @name $mmSideMenuDelegate#updatePluginData
-     * @param {String} name Name of the plugin.
-     */
-    self.updatePluginData = function(name) {
-        $log.debug("Update plugin '"+name+"' data in side menu.");
-        var pluginData = plugins[name].callback();
-        if (typeof pluginData === 'object' && typeof pluginData.then === 'function') {
-            // Promise, we only care when it is resolved.
-            pluginData.then(function(finalData) {
-                addToData(name, plugins[name].priority, finalData);
+            // Loop over all the content handlers.
+            angular.forEach(navHandlers, function(handlerInfo, addon) {
+                promises.push(self.updateNavHandler(addon, handlerInfo));
             });
-        } else if (typeof(pluginData) !== 'undefined') {
-            addToData(name, plugins[name].priority, pluginData);
-        }
+
+            return $q.all(promises).then(function() {
+                return true;
+            }, function() {
+                // Never reject.
+                return true;
+            });
+        };
+
+        return self;
     };
 
     return self;
+
 });

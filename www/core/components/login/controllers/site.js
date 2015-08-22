@@ -72,6 +72,10 @@ angular.module('mm.core.login')
             // Not a demo site.
             $mmSitesManager.checkSite(url).then(function(result) {
 
+                if (result.warning) {
+                    $mmUtil.showErrorModal(result.warning, true, 4000);
+                }
+
                 if ($mmLoginHelper.isSSOLoginNeeded(result.code)) {
                     // SSO. User needs to authenticate in a browser.
                     $mmUtil.showConfirm($translate('mm.login.logininsiterequired')).then(function() {

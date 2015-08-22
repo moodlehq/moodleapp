@@ -1,7 +1,7 @@
 <ion-modal-view>
     <ion-header-bar class="bar bar-header">
         <h1 class="title">{{ 'mm.login.help' | translate}}</h1>
-        <button class="button button-icon ion-close-round" ng-click="closeHelp()"></button>
+        <button class="button button-icon ion-close-round" ng-click="closeHelp()" aria-label="{{ 'mm.core.close' | translate }}"></button>
     </ion-header-bar>
     <ion-content class="padding">
         <mm-format-text>{{ 'mm.login.helpmelogin' | translate}}</mm-format-text>

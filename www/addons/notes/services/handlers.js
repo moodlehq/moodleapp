@@ -38,15 +38,34 @@ angular.module('mm.addons.notes')
 
         var self = {};
 
+        /**
+         * Check if handler is enabled.
+         *
+         * @return {Boolean} True if handler is enabled, false otherwise.
+         */
         self.isEnabled = function() {
             return $mmaNotes.isPluginAddNoteEnabled();
         };
 
+        /**
+         * Check if handler is enabled for this user in this context.
+         *
+         * @param {Object} user     User to check.
+         * @param {Number} courseId Course ID.
+         * @return {Boolean}        True if handler is enabled, false otherwise.
+         */
         self.isEnabledForUser = function(user, courseId) {
             // Active course required.
             return courseId && user.id != $mmSite.getUserId();
         };
 
+        /**
+         * Get the controller.
+         *
+         * @param {Object} user     Course ID.
+         * @param {Number} courseId Course ID.
+         * @return {Object}         Controller.
+         */
         self.getController = function(user, courseid) {
 
             /**

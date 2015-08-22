@@ -21,7 +21,7 @@ angular.module('mm.addons.messages')
  * @ngdoc controller
  * @name mmaMessagesContactsCtrl
  */
-.controller('mmaMessagesContactsCtrl', function($q, $scope, $mmaMessages, $mmSite, $mmUtil, mmUserProfileState) {
+.controller('mmaMessagesContactsCtrl', function($scope, $mmaMessages, $mmSite, $mmUtil, mmUserProfileState) {
 
     var currentUserId = $mmSite.getUserId();
 
@@ -29,7 +29,7 @@ angular.module('mm.addons.messages')
     $scope.contactTypes = ['online', 'offline', 'blocked', 'strangers', 'search'];
     $scope.searchType = 'search';
     $scope.hasContacts = false;
-    $scope.canSearch = $mmaMessages.isSearchEnabled();
+    $scope.canSearch = $mmaMessages.isSearchEnabled;
     $scope.formData = {
         searchString: ''
     };
@@ -74,7 +74,7 @@ angular.module('mm.addons.messages')
         fetchContacts().finally(function() {
             $scope.loaded = true;
         });
-    }
+    };
 
     function fetchContacts() {
         return $mmaMessages.getAllContacts().then(function(contacts) {

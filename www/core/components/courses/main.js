@@ -39,8 +39,7 @@ angular.module('mm.core.courses', [])
 
 })
 
-.run(function($mmEvents, mmCoreEventLogin, $mmCoursesDelegate) {
-    $mmEvents.on(mmCoreEventLogin, function() {
-        $mmCoursesDelegate.updateNavHandlers();
-    });
+.run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, $mmCoursesDelegate) {
+    $mmEvents.on(mmCoreEventLogin, $mmCoursesDelegate.updateNavHandlers);
+    $mmEvents.on(mmCoreEventSiteUpdated, $mmCoursesDelegate.updateNavHandlers);
 });

@@ -1,7 +1,7 @@
 <ion-modal-view>
     <ion-header-bar>
       <h1 class="title">{{ 'mma.mod_chat.currentusers' | translate }}</h1>
-      <button class="button button-icon ion-close-round" ng-click="closeModal()"></button>
+      <button class="button button-icon ion-close-round" ng-click="closeModal()" aria-label="{{ 'mm.core.close' | translate }}"></button>
     </ion-header-bar>
     <ion-content padding="true">
         <mm-loading hide-until="usersLoaded">

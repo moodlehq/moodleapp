@@ -21,7 +21,7 @@ angular.module('mm.addons.grades')
  * @ngdoc service
  * @name $mmaGradesHandlers
  */
-.factory('$mmaGradesHandlers', function($mmaGrades, $state) {
+.factory('$mmaGradesHandlers', function($mmaGrades, $state, $mmCourses) {
 
     var self = {};
 
@@ -52,6 +52,16 @@ angular.module('mm.addons.grades')
          * @return {Boolean}        True if handler is enabled, false otherwise.
          */
         self.isEnabledForCourse = function(courseId) {
+            if (!courseId) {
+                return false;
+            }
+
+            var course = $mmCourses.getStoredCourse(courseId);
+
+            if (course && typeof course.showgrades != 'undefined' && !course.showgrades) {
+                return false;
+            }
+
             return true;
         };
 
@@ -61,7 +71,7 @@ angular.module('mm.addons.grades')
          * @param {Number} courseId Course ID.
          * @return {Object}         Controller.
          */
-        self.getController = function(courseId) {
+        self.getController = function() {
 
             /**
              * Courses nav handler controller.
@@ -114,7 +124,17 @@ angular.module('mm.addons.grades')
          * @return {Boolean}        True if handler is enabled, false otherwise.
          */
         self.isEnabledForUser = function(user, courseId) {
-            return courseId;
+            if (!courseId) {
+                return false;
+            }
+
+            var course = $mmCourses.getStoredCourse(courseId);
+
+            if (course && typeof course.showgrades != 'undefined' && !course.showgrades) {
+                return false;
+            }
+
+            return true;
         };
 
         /**

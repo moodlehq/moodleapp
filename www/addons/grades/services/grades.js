@@ -170,11 +170,10 @@ angular.module('mm.addons.grades')
             promises = [];
 
         columns.forEach(function(column) {
-            var promise = $translate('mma.grades.'+column.name); // Add prefix.
-            promises.push(promise);
-            promise.then(function(translated) {
+            var promise = $translate('mma.grades.'+column.name).then(function(translated) {
                 column.name = translated;
             });
+            promises.push(promise);
         });
 
         return $q.all(promises).then(function() {
