@@ -58,6 +58,7 @@ angular.module('mm.core.sidemenu')
 
     self.$get = function($mmUtil, $q, $log, $mmSite) {
         var enabledNavHandlers = {},
+            currentSiteHandlers = [], // Handlers to return.
             self = {};
 
         $log = $log.getInstance('$mmSideMenuDelegate');
@@ -71,16 +72,7 @@ angular.module('mm.core.sidemenu')
          * @return {Promise} Resolved with an array of objects containing 'priority' and 'controller'.
          */
         self.getNavHandlers = function() {
-            var handlers = [];
-
-            angular.forEach(enabledNavHandlers, function(handler) {
-                handlers.push({
-                    controller: handler.instance.getController(),
-                    priority: handler.priority
-                });
-            });
-
-            return handlers;
+            return currentSiteHandlers;
         };
 
         /**
@@ -146,6 +138,16 @@ angular.module('mm.core.sidemenu')
             }, function() {
                 // Never reject.
                 return true;
+            }).finally(function() {
+
+                $mmUtil.emptyArray(currentSiteHandlers);
+
+                angular.forEach(enabledNavHandlers, function(handler) {
+                    currentSiteHandlers.push({
+                        controller: handler.instance.getController(),
+                        priority: handler.priority
+                    });
+                });
             });
         };
 
