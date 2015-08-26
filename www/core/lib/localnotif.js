@@ -77,7 +77,7 @@ angular.module('mm.core')
         var db = $mmApp.getDB();
 
         return db.get(store, id).then(function(entry) {
-            return entry.code;
+            return parseInt(entry.code);
         }, function() {
             // Site is not in the DB. Create a new ID for it.
             return db.query(store, undefined, 'code', true).then(function(entries) {
@@ -131,7 +131,8 @@ angular.module('mm.core')
     function getUniqueNotificationId(notificationid, component, siteid) {
         return getSiteCode(siteid).then(function(sitecode) {
             return getComponentCode(component).then(function(componentcode) {
-                return sitecode * 100000000 + componentcode * 10000000 + notificationid;
+                // We use the % operation to keep the number under Android's limit.
+                return (sitecode * 100000000 + componentcode * 10000000 + parseInt(notificationid)) % 2147483647;
             });
         });
     }
