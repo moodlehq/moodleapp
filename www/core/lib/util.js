@@ -542,7 +542,7 @@ angular.module('mm.core')
             var countryKey = 'mm.core.country-' + code,
                 countryName = $translate.instant(countryKey);
 
-            return countryName !== countryKey ? countryName : countryKey;
+            return countryName !== countryKey ? countryName : code;
         };
 
         /**
@@ -680,7 +680,7 @@ angular.module('mm.core')
                 if (secs) {
                     return osecs;
                 }
-                return translations('mm.core.now');
+                return translations['mm.core.now'];
             });
         };
 

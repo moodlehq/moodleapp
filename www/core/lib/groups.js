@@ -34,22 +34,22 @@ angular.module('mm.core')
      * @param {Object[]|Number[]} courses List of courses or course ids to get the groups from.
      * @param {Boolean} [refresh]         True when we should not get the value from the cache.
      * @param {String} [siteid]           Site to get the groups from. If not defined, use current site.
+     * @param {Number} [userid]           ID of the user. If not defined, use the userid related to siteid.
      * @return {Promise}                  Promise to be resolved when the groups are retrieved.
      */
-    self.getUserGroups = function(courses, refresh, siteid) {
-        var userid = $mmSite.getUserId(),
-            promises = [],
+    self.getUserGroups = function(courses, refresh, siteid, userid) {
+        var promises = [],
             groups = [],
             deferred = $q.defer();
 
         angular.forEach(courses, function(course) {
             var courseid;
-            if (typeof(course) == 'object') { // Param is array of courses.
+            if (typeof course == 'object') { // Param is array of courses.
                 courseid = course.id;
             } else { // Param is array of courseids.
                 courseid = course;
             }
-            var promise = self.getUserGroupsInCourse(userid, courseid, refresh, siteid);
+            var promise = self.getUserGroupsInCourse(courseid, refresh, siteid, userid);
             promises.push(promise);
             promise.then(function(response) {
                 if (response.groups && response.groups.length > 0) {
@@ -72,24 +72,24 @@ angular.module('mm.core')
      * @module mm.core.groups
      * @ngdoc method
      * @name $mmGroups#getUserGroupsInCourse
-     * @param {Number} userid     ID of the user.
      * @param {Number} courseid   ID of the course.
      * @param {Boolean} [refresh] True when we should not get the value from the cache.
      * @param {String} [siteid]   Site to get the groups from. If not defined, use current site.
+     * @param {Number} [userid]   ID of the user. If not defined, use ID related to siteid.
      * @return {Promise}        Promise to be resolved when the groups are retrieved.
      */
-    self.getUserGroupsInCourse = function(userid, courseid, refresh, siteid) {
+    self.getUserGroupsInCourse = function(courseid, refresh, siteid, userid) {
         siteid = siteid || $mmSite.getId();
 
-        var presets = {},
-            data = {
-                userid: userid,
-                courseid: courseid
-            };
-        if (refresh) {
-            presets.getFromCache = false;
-        }
         return $mmSitesManager.getSite(siteid).then(function(site) {
+            var presets = {},
+                data = {
+                    userid: userid || site.getUserId(),
+                    courseid: courseid
+                };
+            if (refresh) {
+                presets.getFromCache = false;
+            }
             return site.read('core_group_get_course_user_groups', data, presets);
         });
     };

@@ -53,6 +53,10 @@ angular.module('mm.core')
      * @return {Boolean}     True if available, false otherwise.
      */
     self.isAvailable = function(name) {
+        if (!name) {
+            return false;
+        }
+
         if (instances[name]) {
             return true;
         }

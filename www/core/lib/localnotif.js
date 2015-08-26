@@ -229,42 +229,14 @@ angular.module('mm.core')
     };
 
     /**
-     * Register an observer to be notified when a notification is clicked.
-     *
-     * @module mm.core
-     * @ngdoc method
-     * @name $mmLocalNotifications#registerClick
-     * @param {String} name       Observer's name. Must be unique.
-     * @param {Function} callback Function to call with the data received by the notification. This function should return
-     *                            true if it receives the data expected, so no more observers get notified.
-     */
-    self.registerClick = function(name, callback) {
-        $log.debug("Register observer '"+name+"' for notification click.");
-        observers[name] = callback;
-    };
-
-    /**
-     * Remove a notification from triggered store.
-     *
-     * @module mm.core
-     * @ngdoc method
-     * @name $mmLocalNotifications#removeTriggered
-     * @param {String} id Notification ID.
-     * @return {Promise}  Promise resolved when it is removed.
-     */
-    self.removeTriggered = function(id) {
-        return $mmApp.getDB().remove(mmCoreNotificationsTriggeredStore, id);
-    };
-
-    /**
      * Schedule a local notification.
      * @see https://github.com/katzer/cordova-plugin-local-notifications/wiki/04.-Scheduling
      *
      * @module mm.core
      * @ngdoc method
      * @name $mmLocalNotifications#schedule
-     * @param {Object} notification Notification to schedule. Its ID must be lower than 10000000 and it should be unique
-     *                              inside its component and site.
+     * @param {Object} notification Notification to schedule. Its ID should be lower than 10000000 and it should be unique inside
+     *                              its component and site. If the ID is higher than that number there might be collisions.
      * @param {String} component    Component triggering the notification. It is used to generate unique IDs.
      * @param {Number} [siteid]     Site ID. If not defined, use current site.
      * @return {Promise}            Promise resolved when the notification is scheduled.
