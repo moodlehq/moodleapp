@@ -129,7 +129,7 @@ angular.module('mm.core')
      */
     self.shortenText = function(text, length) {
         if (text.length > length) {
-            text = text.substr(0, length - 1);
+            text = text.substr(0, length);
 
             // Now, truncate at the last word boundary (if exists).
             var lastWordPos = text.lastIndexOf(' ');

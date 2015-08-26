@@ -382,6 +382,15 @@ angular.module('mm.core')
                     return callDBFunction(db, 'remove', store, id);
                 },
                 /**
+                 * Removes all entries from a store.
+                 *
+                 * @param {String} store Name of the store.
+                 * @return {Promise}     Promise resolved when the entries are deleted.
+                 */
+                removeAll: function(store) {
+                    return callDBFunction(db, 'clear', store);
+                },
+                /**
                  * Update records matching.
                  *
                  * @param {String} store Name of the store.
@@ -433,6 +442,14 @@ angular.module('mm.core')
                 close: function() {
                     db.close();
                     db = undefined;
+                },
+                /**
+                 * Call a callback once DB is ready.
+                 *
+                 * @param {Function} cb Callback to call.
+                 */
+                onReady: function(cb) {
+                    db.onReady(cb);
                 }
             };
         }
@@ -449,8 +466,21 @@ angular.module('mm.core')
      * @return {Promise}       Promise to be resolved when the site DB is deleted.
      */
     self.deleteDB = function(name) {
-        delete dbInstances[name];
-        return ydn.db.deleteDatabase(name);
+        var deferred = $q.defer();
+
+        function deleteDB() {
+            delete dbInstances[name];
+            $q.when(ydn.db.deleteDatabase(name)).then(deferred.resolve, deferred.reject);
+        }
+
+        if (typeof dbInstances[name] != 'undefined') {
+            // We have a DB instance. Wait for it to be ready before deleting the DB.
+            dbInstances[name].onReady(deleteDB);
+        } else {
+            deleteDB();
+        }
+
+        return deferred.promise;
     };
 
     return self;

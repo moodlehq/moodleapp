@@ -63,7 +63,11 @@ angular.module('mm.core')
         // We don't need to store the observer because the event won't be triggered again.
         if (uniqueEvents[eventName]) {
             callBack(uniqueEventsData[eventName]);
-            return;
+            // Return a fake observer to prevent errors.
+            return {
+                id: -1,
+                off: function() {}
+            };
         }
 
         var observerID;
