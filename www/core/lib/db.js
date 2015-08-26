@@ -294,6 +294,19 @@ angular.module('mm.core')
      */
     self.getDB = function(name, schema, options) {
         if (typeof dbInstances[name] === 'undefined') {
+
+            if (typeof IDBObjectStore == 'undefined' || typeof IDBObjectStore.prototype.count == 'undefined') {
+                // IndexedDB not implemented or not fully implemented (Galaxy S4 Mini). Use WebSQL.
+                if (typeof options.mechanisms == 'undefined') {
+                    options.mechanisms = ['websql', 'sqlite', 'localstorage', 'sessionstorage', 'userdata', 'memory'];
+                } else {
+                    var position = options.mechanisms.indexOf('indexeddb');
+                    if (position != -1) {
+                        options.mechanisms.splice(position, 1);
+                    }
+                }
+            }
+
             var db = new ydn.db.Storage(name, schema, options);
 
             dbInstances[name] = {
