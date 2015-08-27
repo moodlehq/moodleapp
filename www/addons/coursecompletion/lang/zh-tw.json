@@ -1,0 +1,17 @@
+{
+    "complete": "完全",
+    "completed": "已完成",
+    "coursecompletion": "課程進度",
+    "criteria": "規準",
+    "criteriagroup": "各種判斷條件",
+    "criteriarequiredall": "必須滿足以下所有條件",
+    "criteriarequiredany": "必須滿足以下任一條件",
+    "inprogress": "處理中",
+    "manualselfcompletion": "手動自我完成",
+    "notyetstarted": "尚未開始",
+    "pending": "等待中",
+    "required": "必須的",
+    "requiredcriteria": "必要條件",
+    "status": "狀態",
+    "viewcoursereport": "查看課程報告"
+}

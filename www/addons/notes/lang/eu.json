@@ -1,9 +1,11 @@
 {
-    "addnewnote": "Gehitu beste ohar bat",
-    "coursenotes": "Ikastaroaren oharrak",
-    "eventnotecreated": "Oharra sortu da",
+    "addnewnote": "Ohar berria gehitu",
+    "coursenotes": "Ikastaroko oharrak",
+    "eventnotecreated": "Oharra gehituta",
+    "nonotes": "Oraindik ez dago mota honetako oharrik.",
     "note": "Oharra",
-    "personalnotes": "Norberaren oharrak",
+    "notes": "Oharrak",
+    "personalnotes": "Ohar pertsonalak",
     "publishstate": "Testuingurua",
     "sitenotes": "Guneko oharrak"
 }

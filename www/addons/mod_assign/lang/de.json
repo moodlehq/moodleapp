@@ -5,7 +5,7 @@
     "cutoffdate": "Stichtag",
     "duedate": "Fälligkeitsdatum",
     "duedateno": "Kein Fälligkeitsdatum",
-    "submissions": "Einsendungen",
+    "submissions": "Abgaben",
     "userwithid": "Nutzer/in mit ID {{id}}",
-    "viewsubmission": "Einsendung anzeigen"
+    "viewsubmission": "Abgabe anzeigen"
 }

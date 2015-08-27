@@ -1,11 +1,11 @@
 {
-    "addnewnote": "Neuen Hinweis hinzufügen",
-    "coursenotes": "Kurshinweise",
-    "eventnotecreated": "Hinweise angelegt",
-    "nonotes": "Keine Notizen dieses Types",
-    "note": "Notiz",
-    "notes": "Notizen",
-    "personalnotes": "Meine Notizen",
+    "addnewnote": "Anmerkung hinzufügen",
+    "coursenotes": "Anmerkungen zum Kurs",
+    "eventnotecreated": "Anmerkung angelegt",
+    "nonotes": "Keine Anmerkungen",
+    "note": "Anmerkung",
+    "notes": "Anmerkungen",
+    "personalnotes": "Meine Anmerkungen",
     "publishstate": "Kontext",
-    "sitenotes": "Website-Notizen"
+    "sitenotes": "Anmerkungen zur Website"
 }

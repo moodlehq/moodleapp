@@ -1,9 +1,14 @@
 {
     "about": "Honi buruz",
+    "appname": "Moodle Mobile {{version}}",
     "cacheexpirationtime": "Cache-aren iraungitze denbora (milisegundotan)",
-    "deletesitefiles": "Ziur gune honetatik jaitsitako fitxategiak ezabatu nahi dituzula?",
+    "credits": "Kredituak",
+    "deletesitefiles": "Ziur zaude '{{sitename}}' gunetik jaitsitako fitxategiak ezabatu nahi dituzula?",
+    "deletesitefilestitle": "Ezabatu guneko fitxategiak",
     "development": "Garapena",
     "enabledebugging": "Gaitu arazketa",
+    "errordeletesitefiles": "Errorea fitxategiak ezabatzean.",
+    "errorsyncsite": "Errorea guneko datuak sinkronizatzean, mesedez egiaztatu zure interneterako konexioa eta saiatu berriz.",
     "estimatedfreespace": "Estimatutako leku librea",
     "general": "Orokorra",
     "language": "Hizkuntza",
@@ -11,5 +16,8 @@
     "settings": "Ezarpenak",
     "spaceusage": "Lekuaren erabilera",
     "success": "Ondo!",
-    "total": "Denera"
+    "synchronization": "Sinkronizazioa",
+    "synchronizing": "Sinkronizatzen",
+    "syncsitesuccess": "Guneko datuak sinkronizatu eta cache guztiak indargabetu dira.",
+    "total": "Guztira"
 }

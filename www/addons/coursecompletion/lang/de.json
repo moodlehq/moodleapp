@@ -1,0 +1,17 @@
+{
+    "complete": "Fertig",
+    "completed": "Abgeschlossen",
+    "coursecompletion": "Kursabschluss",
+    "criteria": "Kriterien",
+    "criteriagroup": "Kriteriengruppe",
+    "criteriarequiredall": "Alle nachfolgenden Kriterien sind notwendig",
+    "criteriarequiredany": "Eine der nachfolgenden Kriterien ist notwendig",
+    "inprogress": "In Bearbeitung",
+    "manualselfcompletion": "Manueller eigener Abschluss",
+    "notyetstarted": "Noch nicht begonnen",
+    "pending": "Unerledigt",
+    "required": "Erforderlich",
+    "requiredcriteria": "Notwendiges Kriterium",
+    "status": "Status",
+    "viewcoursereport": "Kursbericht ansehen"
+}

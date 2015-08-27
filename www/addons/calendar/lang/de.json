@@ -1,7 +1,7 @@
 {
-    "calendarevents": "Termine",
-    "errorloadevent": "Fehler beim Laden des Termins",
-    "errorloadevents": "Fehler beim Laden der Termine",
-    "noevents": "Keine Termine",
-    "notifications": "Mitteilungen"
+    "calendarevents": "Kalendereinträge",
+    "errorloadevent": "Fehler beim Laden des Kalendereintrags",
+    "errorloadevents": "Fehler beim Laden der Kalendereinträge",
+    "noevents": "Keine Kalendereinträge",
+    "notifications": "Nachrichten"
 }

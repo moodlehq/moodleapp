@@ -1,5 +1,5 @@
 {
-    "about": "Acerca",
+    "about": "Acerca de",
     "appname": "Moodle Mobile {{version}}",
     "cacheexpirationtime": "Tiempo de caducidad del caché (mili segundos)",
     "credits": "Créditos",
@@ -7,9 +7,9 @@
     "deletesitefilestitle": "Eliminar archivos del sitio",
     "development": "Desarrollo",
     "enabledebugging": "Activar modo depuración (debug)",
-    "errordeletesitefiles": "Error al eliminar archivos del sitio",
+    "errordeletesitefiles": "Error al eliminar archivos del sitio.",
     "errorsyncsite": "Error al sincronizarlos datos del sitio; por favor revise su conexión de Internet e inténtelo de nuevo.",
-    "estimatedfreespace": "Espacio libre (estimado)",
+    "estimatedfreespace": "Espacio libre estimado",
     "general": "General",
     "language": "Idioma",
     "license": "Licencia",

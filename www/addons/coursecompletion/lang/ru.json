@@ -1,0 +1,17 @@
+{
+    "complete": "Завершено",
+    "completed": "Выполнено",
+    "coursecompletion": "Окончание курса",
+    "criteria": "Критерии",
+    "criteriagroup": "Группа критериев",
+    "criteriarequiredall": "Требуются соответствие всем указанным ниже критериям",
+    "criteriarequiredany": "Требуется соответствие любому из указанных ниже критериев",
+    "inprogress": "В процессе",
+    "manualselfcompletion": "Пользователь может сам поставить отметку о выполнении",
+    "notyetstarted": "Еще не началось",
+    "pending": "Ожидается",
+    "required": "Необходимо заполнить",
+    "requiredcriteria": "Необходимые критерии",
+    "status": "Статус",
+    "viewcoursereport": "Просмотреть отчет по курсу"
+}

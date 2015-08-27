@@ -1,6 +1,6 @@
 {
-    "errorgetforum": "Error al obtener datos del foro",
-    "forumnodiscussionsyet": "Todavía no hay tópicos de discusión en este for.",
+    "errorgetforum": "Error al obtener datos del foro.",
+    "forumnodiscussionsyet": "Todavía no hay tópicos de discusión en este foro.",
     "numdiscussions": "{{numdiscussions}} discusiones",
     "numreplies": "{{numreplies}} respuestas"
 }

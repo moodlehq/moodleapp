@@ -1,0 +1,17 @@
+{
+    "complete": "كامل",
+    "completed": "تم",
+    "coursecompletion": "إكمال المقرر الدراسي",
+    "criteria": "معايير",
+    "criteriagroup": "مجموعة المعايير",
+    "criteriarequiredall": "كل المعايير في الأسفل مطلوبة",
+    "criteriarequiredany": "أي معيار في الأسفل مطلوب",
+    "inprogress": "جاري التقدم",
+    "manualselfcompletion": "إكمال يدوي ذاتي",
+    "notyetstarted": "لم يبدأ بعد",
+    "pending": "معلق",
+    "required": "مفروض",
+    "requiredcriteria": "المعايير المطلوبة",
+    "status": "الحالة",
+    "viewcoursereport": "عرض تقرير المقرر"
+}
