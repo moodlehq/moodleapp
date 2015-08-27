@@ -22,11 +22,12 @@ angular.module('mm.addons.mod_imscp')
  * @name mmaModImscpIndexCtrl
  */
 .controller('mmaModImscpIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModImscp, $log, mmaModImscpComponent,
-            $ionicPopover, $mmFS, $q, $mmCourse, $mmApp) {
+            $ionicPopover, $timeout, $q, $mmCourse, $mmApp) {
     $log = $log.getInstance('mmaModImscpIndexCtrl');
 
     var module = $stateParams.module || {},
-        courseid = $stateParams.courseid;
+        courseid = $stateParams.courseid,
+        currentItem;
 
     $scope.title = module.name;
     $scope.description = module.description;
@@ -36,18 +37,33 @@ angular.module('mm.addons.mod_imscp')
     $scope.loaded = false;
 
     $scope.items = $mmaModImscp.createItemList(module.contents);
-    $scope.previousItem = '';
-    $scope.nextItem = $mmaModImscp.getNextItem($scope.items, $scope.items[0].href);
+    currentItem = $scope.items[0].href;
+
+    function loadItem(itemId) {
+        currentItem = itemId;
+        $scope.previousItem = $mmaModImscp.getPreviousItem($scope.items, itemId);
+        $scope.nextItem = $mmaModImscp.getNextItem($scope.items, itemId);
+        var src = $mmaModImscp.getFileSrc(module, itemId);
+        if (src === $scope.src) {
+            // Re-loading same page. Set it to empty and then re-set the src in the next digest so it detects it has changed.
+            $scope.src = '';
+            $timeout(function() {
+                $scope.src = src;
+            });
+        } else {
+            $scope.src = src;
+        }
+    }
 
     function fetchContent() {
         if (module.contents) {
             var downloadFailed = false;
-            return $mmaModImscp.downloadAllContent(module).catch(function(err) {
+            return $mmaModImscp.downloadAllContent(module).catch(function() {
                 // Mark download as failed but go on since the main files could have been downloaded.
                 downloadFailed = true;
             }).finally(function() {
-                return $mmaModImscp.getIframeSrc(module).then(function(src) {
-                    $scope.src = src;
+                return $mmaModImscp.getIframeSrc(module).then(function() {
+                    loadItem(currentItem);
 
                     if (downloadFailed && $mmApp.isOnline()) {
                         // We could load the main file but the download failed. Show error message.
@@ -70,15 +86,13 @@ angular.module('mm.addons.mod_imscp')
         $mmaModImscp.invalidateContent(module.id).then(function() {
             return fetchContent();
         }).finally(function() {
-            $scope.loaded = true;
+            $scope.$broadcast('scroll.refreshComplete');
         });
     };
 
     $scope.loadItem = function(itemId) {
         $scope.popover.hide();
-        $scope.src = $mmaModImscp.getFileSrc(module, itemId);
-        $scope.previousItem = $mmaModImscp.getPreviousItem($scope.items, itemId);
-        $scope.nextItem = $mmaModImscp.getNextItem($scope.items, itemId);
+        loadItem(itemId);
     };
 
     $scope.getNumberForPadding = function(n) {
