@@ -35,7 +35,8 @@ angular.module('mm.core')
  */
 .directive('mmFormatText', function($interpolate, $mmText, $compile, $q) {
 
-    var extractVariableRegex = new RegExp('{{([^|]+)(|.*)?}}', 'i');
+    var extractVariableRegex = new RegExp('{{([^|]+)(|.*)?}}', 'i'),
+        tagsToIgnore = ['AUDIO', 'VIDEO', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'A'];
 
     /**
      * Format contents and render.
@@ -58,10 +59,13 @@ angular.module('mm.core')
                 element.on('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
-                    expanded = !expanded;
-                    element.html( expanded ? fullText : shortened);
-                    if (expanded) {
-                        $compile(element.contents())(scope);
+                    var target = e.target;
+                    if (tagsToIgnore.indexOf(target.tagName) === -1 || (target.tagName === 'A' && !target.getAttribute('href'))) {
+                        expanded = !expanded;
+                        element.html( expanded ? fullText : shortened);
+                        if (expanded) {
+                            $compile(element.contents())(scope);
+                        }
                     }
                 });
 
