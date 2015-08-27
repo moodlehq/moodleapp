@@ -1,10 +1,11 @@
 {
-    "addsubmission": "Adicionar tarefa",
-    "allowsubmissionsfromdate": "Permite envios a partir de",
+    "addsubmission": "Adicionar envio",
+    "allowsubmissionsfromdate": "Permitir envios de",
     "attemptnumber": "Número da tentativa",
     "cutoffdate": "Data limite",
     "duedate": "Data de entrega",
-    "duedateno": "Nenhuma data de entrega",
-    "submissions": "Tarefas enviadas",
-    "viewsubmission": "Ver envio"
+    "duedateno": "Não há data de entrega",
+    "submissions": "Envios",
+    "userwithid": "Usuário com id {{id}}",
+    "viewsubmission": "Ver envios"
 }

@@ -5,13 +5,16 @@
     "country": "Herrialdea",
     "description": "Deskribapena",
     "details": "Xehetasunak",
+    "detailsnotavailable": "Erabiltzaile honen xehetasunak ez daude zuretzat eskuragarri",
+    "editingteacher": "Irakaslea",
     "email": "E-posta",
-    "interests": "Interesguneak",
-    "invaliduser": "Erabiltzaile baliogabea",
+    "interests": "Interesak",
+    "invaliduser": "Erabiltzailea ez da zuzena.",
     "manager": "Kudeatzailea",
     "phone1": "Telefonoa",
-    "phone2": "Mobile",
+    "phone2": "Sakelekoa",
     "roles": "Rolak",
     "student": "Ikaslea",
-    "webpage": "Web-orria"
+    "teacher": "Edizio-baimenik gabeko irakaslea",
+    "webpage": "Web orria"
 }

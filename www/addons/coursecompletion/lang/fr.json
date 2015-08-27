@@ -1,0 +1,17 @@
+{
+    "complete": "Complet",
+    "completed": "Terminé",
+    "coursecompletion": "Achèvement de cours",
+    "criteria": "Critères",
+    "criteriagroup": "Groupe de critères",
+    "criteriarequiredall": "Tous les critères ci-dessous sont requis",
+    "criteriarequiredany": "Un des critères ci-dessous est requis",
+    "inprogress": "En cours",
+    "manualselfcompletion": "Auto-achèvement manuel",
+    "notyetstarted": "Pas encore commencé",
+    "pending": "En suspens",
+    "required": "Requis",
+    "requiredcriteria": "Critères requis",
+    "status": "Statut",
+    "viewcoursereport": "Consulter le rapport du cours"
+}

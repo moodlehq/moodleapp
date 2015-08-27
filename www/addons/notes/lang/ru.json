@@ -1,9 +1,11 @@
 {
-    "addnewnote": "Добавить заметку",
+    "addnewnote": "Добавить новую заметку",
     "coursenotes": "Заметки курса",
-    "eventnotecreated": "Создана заметка",
+    "eventnotecreated": "Заметка создана",
+    "nonotes": "Тут нет заметок такого типа",
     "note": "Заметка",
-    "personalnotes": "Персональные заметки",
+    "notes": "Заметки",
+    "personalnotes": "Личные заметки",
     "publishstate": "Контекст",
     "sitenotes": "Заметки сайта"
 }

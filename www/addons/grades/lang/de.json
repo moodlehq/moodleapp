@@ -1,10 +1,10 @@
 {
     "average": "Durchschnitt",
-    "contributiontocoursetotal": "Beitrag zum Kurs",
+    "contributiontocoursetotal": "Teilbewertung",
     "feedback": "Feedback",
     "grade": "Bewertung",
     "grades": "Bewertungen",
-    "itemname": "Bewertungselement",
+    "itemname": "Bewertungsaspekt",
     "lettergrade": "Buchstabenwertung",
     "percentage": "Prozentsatz",
     "range": "Bandbreite",

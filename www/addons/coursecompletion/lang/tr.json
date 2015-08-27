@@ -1,0 +1,17 @@
+{
+    "complete": "Tamamlanmış",
+    "completed": "Tamamlandı",
+    "coursecompletion": "Kurs tamamlama",
+    "criteria": "Ölçüt",
+    "criteriagroup": "Ölçüt Grubu",
+    "criteriarequiredall": "Aşağıdaki ölçütlerin tümü gereklidir",
+    "criteriarequiredany": "Aşağıdaki herhangi bir kriter gereklidir",
+    "inprogress": "Devam ediyor",
+    "manualselfcompletion": "Kendi kendine elle tamamlama",
+    "notyetstarted": "Henüz başlamadı",
+    "pending": "Bekliyor",
+    "required": "Gerekli",
+    "requiredcriteria": "Gerekli Ölçüt",
+    "status": "Durum",
+    "viewcoursereport": "Kurs raporunu görüntüle"
+}

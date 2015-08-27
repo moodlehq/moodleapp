@@ -1,0 +1,17 @@
+{
+    "complete": "Complet",
+    "completed": "Completat",
+    "coursecompletion": "Compleció del curs",
+    "criteria": "Criteris",
+    "criteriagroup": "Grup de criteris",
+    "criteriarequiredall": "Calen tots els criteris del dessota",
+    "criteriarequiredany": "Cal qualsevol dels criteris del dessota",
+    "inprogress": "En curs",
+    "manualselfcompletion": "Auto-compleció manual",
+    "notyetstarted": "No s'ha començat encara",
+    "pending": "Pendents",
+    "required": "Necessari",
+    "requiredcriteria": "Criteri requerit",
+    "status": "Estat",
+    "viewcoursereport": "Visualitza l'informe del curs"
+}

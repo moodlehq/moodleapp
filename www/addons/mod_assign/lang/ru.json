@@ -1,10 +1,11 @@
 {
     "addsubmission": "Добавить ответ на задание",
-    "allowsubmissionsfromdate": "Разрешить выполнение задания с",
+    "allowsubmissionsfromdate": "Разрешить ответы с",
     "attemptnumber": "Номер попытки",
-    "cutoffdate": "Запретить отправку с",
-    "duedate": "Последний срок сдачи",
-    "duedateno": "Срок сдачи не ограничен",
-    "submissions": "Ответы",
-    "viewsubmission": "Просмотр ответов"
+    "cutoffdate": "Предельный срок",
+    "duedate": "Срок",
+    "duedateno": "Срок не указан",
+    "submissions": "Ответы на задания",
+    "userwithid": "Пользователь с ID {{id}}",
+    "viewsubmission": "Просмотр ответа"
 }
