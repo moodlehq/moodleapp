@@ -351,10 +351,40 @@ angular.module('mm.addons.messages')
                         }
                     });
 
-                    storeUsersFromDiscussions(discussions);
-                    return discussions;
+                    return self.getDiscussionsUserImg(discussions).then(function(discussions) {
+                        storeUsersFromDiscussions(discussions);
+                        return discussions;
+                    });
                 });
             });
+        });
+    };
+
+    /**
+     * Get user images for all the discussions that don't have one already.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#getDiscussionsUserImg
+     * @param {Object[]} discussions List of discussions.
+     * @return {Promise}             Promise always resolved. Resolve param is the formatted discussions.
+     */
+    self.getDiscussionsUserImg = function(discussions) {
+        var promises = [];
+
+        angular.forEach(discussions, function(discussion) {
+            if (!discussion.profileimageurl) {
+                // We don't have the user image. Try to retrieve it.
+                var promise = $mmUser.getProfile(discussion.message.user, 1, true).then(function(user) {
+                    discussion.profileimageurl = user.profileimageurl;
+                }, function() {
+                    // Error getting profile, resolve promise without adding any extra data.
+                });
+                promises.push(promise);
+            }
+        });
+        return $q.all(promises).then(function() {
+            return discussions;
         });
     };
 
