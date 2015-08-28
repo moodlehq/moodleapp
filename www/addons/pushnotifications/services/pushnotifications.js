@@ -110,15 +110,16 @@ angular.module('mm.addons.pushnotifications')
                 $mmText.formatText(data.title, true, true).then(function(formattedTitle) {
                     $mmText.formatText(data.message, true, true).then(function(formattedMessage) {
                         var localNotif = {
-                                id: 1,
-                                title: formattedTitle,
-                                message: formattedMessage,
-                                at: new Date(),
-                                data: {
-                                    notif: data.notif,
-                                    site: data.site
-                                }
-                            };
+                            id: 1,
+                            title: formattedTitle,
+                            message: formattedMessage,
+                            at: new Date(),
+                            smallIcon: 'res://icon',
+                            data: {
+                                notif: data.notif,
+                                site: data.site
+                            }
+                        };
                         $mmLocalNotifications.schedule(localNotif, mmaPushNotificationsComponent, data.site);
                     });
                 });
