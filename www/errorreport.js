@@ -46,28 +46,31 @@ window.onerror = function(msg, url, lineNumber) {
         }
     }
 
-    // Use setTimeout to prevent the following error if the app crashes right at the start:
-    // "The connection to the server was unsuccessful. (file:///android_asset/www/index.html)"
-    setTimeout(function() {
-        if (typeof msg == "string") {
-            var sendError,
-                confirmmsg = 'Unexpected error, please accept to report the bug so we can work on fixing it ' +
-                                '(Internet connection required).';
+    if (msg.indexOf('Can\'t find variable: cordova') == -1) {
+        // Use setTimeout to prevent the following error if the app crashes right at the start:
+        // "The connection to the server was unsuccessful. (file:///android_asset/www/index.html)"
+        setTimeout(function() {
+            if (typeof msg == "string") {
+                var sendError,
+                    confirmmsg = 'Unexpected error, please accept to report the bug so we can work on fixing it ' +
+                                    '(Internet connection required).';
 
-            sendError = confirm(confirmmsg);
-            if (sendError) {
-                // Wait for device ready so we can retrieve device data. In most cases device will already be ready.
-                document.addEventListener('deviceready', reportError);
-                // Report error if device ready isn't fired after 5 seconds.
-                setTimeout(reportError, 5000);
+                sendError = confirm(confirmmsg);
+                if (sendError) {
+                    // Wait for device ready so we can retrieve device data. In most cases device will already be ready.
+                    document.addEventListener('deviceready', reportError);
+                    // Report error if device ready isn't fired after 5 seconds.
+                    setTimeout(reportError, 5000);
+                }
             }
-        }
 
-        // This may help debugging if we use logging apps in iOs or Android.
-        if (typeof console != "undefined" && typeof console.log == "function") {
-            console.log(msg);
-        }
-    }, 100);
+            // This may help debugging if we use logging apps in iOs or Android.
+            if (typeof console != "undefined" && typeof console.log == "function") {
+                console.log(msg);
+            }
+        }, 100);
+    }
+
     // Let default error handler run.
     return false;
 };
