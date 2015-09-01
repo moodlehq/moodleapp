@@ -19,7 +19,16 @@
 var errors = [];
 
 window.onerror = function(msg, url, lineNumber) {
-    var errorReported = false;
+    var errorReported = false,
+        reportedOnDBReady = false;
+
+    function getStorageAndReport(reportUrl, db) {
+        if (!reportedOnDBReady) {
+            reportedOnDBReady = true;
+            reportUrl = reportUrl + '&storage=' + encodeURIComponent(db.getType());
+            window.open(reportUrl, '_system');
+        }
+    }
 
     function reportError() {
         if (!errorReported) {
@@ -40,8 +49,14 @@ window.onerror = function(msg, url, lineNumber) {
             if (ydn.db.Storage) {
                 // Detect Storage type by default.
                 var db = new ydn.db.Storage('test', {}, {});
-                if (db && db.getType) {
-                    reportUrl = reportUrl + '&storage=' + encodeURIComponent(db.getType());
+                if (db && db.getType && db.onReady) {
+                    db.onReady(function() {
+                        getStorageAndReport(reportUrl, db);
+                    });
+                    setTimeout(function() {
+                        getStorageAndReport(reportUrl, db);
+                    }, 1000);
+                    return;
                 }
             }
 
