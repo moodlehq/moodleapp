@@ -36,6 +36,10 @@ angular.module('mm.addons.mod_imscp')
     $scope.externalUrl = module.url;
     $scope.loaded = false;
 
+    // Initialize empty previous/next to prevent showing arrows for an instant before they're hidden.
+    $scope.previousItem = '';
+    $scope.nextItem = '';
+
     $scope.items = $mmaModImscp.createItemList(module.contents);
     currentItem = $scope.items[0].href;
 

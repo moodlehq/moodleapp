@@ -1,3 +1,14 @@
-.mma-imscp-arrows {
-    font-size: 32px;
+
+.mma-imscp-container {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+}
+
+.mma-imscp-iframe-container {
+    flex: 1 1 auto;
+    position: relative;
+    .iframe-wrapper {
+      position: absolute;
+    }
 }
