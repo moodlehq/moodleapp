@@ -15,8 +15,20 @@
 // We use this code for handling unexpected errors.
 // Using JS confirm function we are sure that the user get notified in a Mobile device.
 // This script should be added at the begining of the index.html and it should only use native javascript functions.
+
+var errors = [];
+
 window.onerror = function(msg, url, lineNumber) {
-    var errorReported = false;
+    var errorReported = false,
+        reportedOnDBReady = false;
+
+    function getStorageAndReport(reportUrl, db) {
+        if (!reportedOnDBReady) {
+            reportedOnDBReady = true;
+            reportUrl = reportUrl + '&storage=' + encodeURIComponent(db.getType());
+            window.open(reportUrl, '_system');
+        }
+    }
 
     function reportError() {
         if (!errorReported) {
@@ -37,8 +49,14 @@ window.onerror = function(msg, url, lineNumber) {
             if (ydn.db.Storage) {
                 // Detect Storage type by default.
                 var db = new ydn.db.Storage('test', {}, {});
-                if (db && db.getType) {
-                    reportUrl = reportUrl + '&storage=' + encodeURIComponent(db.getType());
+                if (db && db.getType && db.onReady) {
+                    db.onReady(function() {
+                        getStorageAndReport(reportUrl, db);
+                    });
+                    setTimeout(function() {
+                        getStorageAndReport(reportUrl, db);
+                    }, 1000);
+                    return;
                 }
             }
 
@@ -46,7 +64,8 @@ window.onerror = function(msg, url, lineNumber) {
         }
     }
 
-    if (msg.indexOf('Can\'t find variable: cordova') == -1) {
+    if (msg.indexOf('Can\'t find variable: cordova') == -1 && errors.indexOf(msg) == -1) {
+        errors.push(msg);
         // Use setTimeout to prevent the following error if the app crashes right at the start:
         // "The connection to the server was unsuccessful. (file:///android_asset/www/index.html)"
         setTimeout(function() {
