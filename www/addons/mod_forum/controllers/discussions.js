@@ -40,8 +40,8 @@ angular.module('mm.addons.mod_forum')
             if (forumdata) {
                 forum = forumdata;
 
-                $scope.title = forum.name;
-                $scope.description = forum.intro;
+                $scope.title = forum.name || $scope.title;
+                $scope.description = forum.intro || $scope.description;
                 $scope.forum = forum;
 
                 return fetchDiscussions(refresh);
