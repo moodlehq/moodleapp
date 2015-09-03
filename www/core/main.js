@@ -93,8 +93,19 @@ angular.module('mm.core', ['pascalprecht.translate'])
         return angular.isObject(data) && String(data) !== '[object File]' ? $mmUtilProvider.param(data) : data;
     }];
 
-    // Set our own safe protocols, otherwise geo:// is marked as unsafe.
-    $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|geo|file):/);
+    // Add some protocols to safe protocols.
+    var list = $compileProvider.aHrefSanitizationWhitelist().source;
+
+    function addProtocolIfMissing(protocol) {
+        if (list.indexOf(protocol) == -1) {
+            list = list.replace('https?', 'https?|' + protocol);
+        }
+    }
+    addProtocolIfMissing('file');
+    addProtocolIfMissing('tel');
+    addProtocolIfMissing('mailto');
+    addProtocolIfMissing('geo');
+    $compileProvider.aHrefSanitizationWhitelist(list);
 
     // Register the core init process, this should be the very first thing.
     $mmInitDelegateProvider.registerProcess('mmAppInit', '$mmApp.initProcess', mmInitDelegateMaxAddonPriority + 400, true);
