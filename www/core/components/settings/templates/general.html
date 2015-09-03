@@ -5,7 +5,7 @@
                 <div class="input-label">
                     {{ 'mm.settings.language' | translate }}
                 </div>
-                <select class="mm-language-select" ng-model="selectedLanguage" ng-options="code as name for (code, name) in langs" ng-change="languageChanged(selectedLanguage)">
+                <select ng-model="selectedLanguage" ng-options="code as name for (code, name) in langs" ng-change="languageChanged(selectedLanguage)">
                 </select>
             </li>
         </ul>
