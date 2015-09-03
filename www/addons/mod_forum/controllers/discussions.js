@@ -107,7 +107,8 @@ angular.module('mm.addons.mod_forum')
 
     // Pull to refresh.
     $scope.refreshDiscussions = function() {
-        $mmaModForum.invalidateDiscussionsList(courseid, forum.id).finally(function() {
+        var promise = forum ? $mmaModForum.invalidateDiscussionsList(courseid, forum.id) : $q.when();
+        promise.finally(function() {
             fetchForumDataAndDiscussions(true).finally(function() {
                 $scope.$broadcast('scroll.refreshComplete');
             });
