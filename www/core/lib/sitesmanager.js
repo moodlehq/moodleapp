@@ -297,9 +297,7 @@ angular.module('mm.core')
      * @return {Object|Boolean} Object with error message to show and its params if info is not valid, true if info is valid.
      */
     function validateSiteInfo(infos) {
-        if (typeof infos.downloadfiles !== 'undefined' && infos.downloadfiles !== 1) {
-            return {error: 'mm.login.cannotdownloadfiles'};
-        } else if (!infos.firstname || !infos.lastname) {
+        if (!infos.firstname || !infos.lastname) {
             var moodleLink = '<a mm-browser href="' + infos.siteurl + '">' + infos.siteurl + '</a>';
             return {error: 'mm.core.requireduserdatamissing', params: {'$a': moodleLink}};
         }

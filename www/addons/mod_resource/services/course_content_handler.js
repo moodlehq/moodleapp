@@ -34,7 +34,7 @@ angular.module('mm.addons.mod_resource')
      * @return {Boolean}
      */
     self.isEnabled = function() {
-        return true;
+        return $mmSite.canDownloadFiles();
     };
 
     /**

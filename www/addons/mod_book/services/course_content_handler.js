@@ -36,7 +36,7 @@ angular.module('mm.addons.mod_book')
     self.isEnabled = function() {
         var version = $mmSite.getInfo().version;
         // Require Moodle 2.9.
-        return version && (parseInt(version) >= 2015051100);
+        return version && (parseInt(version) >= 2015051100) && $mmSite.canDownloadFiles();
     };
 
     /**

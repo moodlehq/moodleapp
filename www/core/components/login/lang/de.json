@@ -1,7 +1,6 @@
 {
     "authenticating": "Authentifizieren",
     "cancel": "Abbrechen",
-    "cannotdownloadfiles": "Das Herunterladen von Dateien ist für den mobilen Webservice deaktiviert. Die App funktioniert nicht ohne diese Option. Wenden Sie sich an den Administrator.",
     "confirmdeletesite": "Möchten Sie wirklich die Website '{{sitename}}' aus der Liste löschen?",
     "connect": "Verbinden!",
     "connecttomoodle": "Website verbinden",
