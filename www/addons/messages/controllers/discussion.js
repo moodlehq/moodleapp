@@ -61,21 +61,8 @@ angular.module('mm.addons.messages')
             return true;
         }
 
-        var prevDate = new Date(prevMessage.timecreated * 1000);
-        prevDate.setMilliseconds(0);
-        prevDate.setSeconds(0);
-        prevDate.setMinutes(0);
-        prevDate.setHours(1);
-
-        var d = new Date(message.timecreated * 1000);
-        d.setMilliseconds(0);
-        d.setSeconds(0);
-        d.setMinutes(0);
-        d.setHours(1);
-
-        if (d.getTime() != prevDate.getTime()) {
-            return true;
-        }
+        // Check if day has changed.
+        return !moment(message.timecreated * 1000).isSame(prevMessage.timecreated * 1000, 'day');
     };
 
     $scope.sendMessage = function(text) {

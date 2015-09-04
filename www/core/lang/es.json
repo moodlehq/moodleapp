@@ -10,6 +10,7 @@
     "course": "Curso",
     "day": "día",
     "days": "días",
+    "dfdayweekmonth": "ddd, D MMM",
     "downloading": "Descargando...",
     "error": "Error",
     "hour": "hora",
