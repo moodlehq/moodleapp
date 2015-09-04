@@ -163,7 +163,6 @@ angular.module('mm.core')
     $translatePartialLoaderProvider.addPart('build/lang');
 
     // Set fallback language.
-    $translateProvider.useSanitizeValueStrategy('sanitize');
     $translateProvider.fallbackLanguage('en');
     $translateProvider.preferredLanguage('en'); // Set English until we know which language to use.
 })
