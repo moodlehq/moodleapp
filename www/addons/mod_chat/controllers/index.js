@@ -35,8 +35,8 @@ angular.module('mm.addons.mod_chat')
     function fetchChatData(refresh) {
         return $mmaModChat.getChat(courseid, module.id, refresh).then(function(chatdata) {
             chat = chatdata;
-            $scope.title = chat.name;
-            $scope.description = chat.intro;
+            $scope.title = chat.name || $scope.title;
+            $scope.description = chat.intro || $scope.description;
             $scope.chatId = chat.id;
             $scope.chatScheduled = '';
 

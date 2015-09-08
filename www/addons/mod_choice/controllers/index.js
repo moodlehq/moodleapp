@@ -43,8 +43,8 @@ angular.module('mm.addons.mod_choice')
             choice.timeclose = parseInt(choice.timeclose) * 1000;
             choice.closeTimeReadable = new Date(choice.timeclose).toLocaleString();
 
-            $scope.title = choice.name;
-            $scope.description = choice.intro;
+            $scope.title = choice.name || $scope.title;
+            $scope.description = choice.intro || $scope.description;
             $scope.choice = choice;
 
             // We need fetchOptions to finish before calling fetchResults because it needs hasAnswered variable.
