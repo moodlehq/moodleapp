@@ -68,6 +68,7 @@
     "previous": "Previous",
     "pulltorefresh": "Pull to refresh",
     "refresh": "Refresh",
+    "requireduserdatamissing": "This user lacks some required profile data. Please, fill this data in your Moodle and try again.<br>{{$a}}",
     "search": "Search",
     "sec" : "sec",
     "secs" : "secs",

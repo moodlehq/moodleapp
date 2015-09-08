@@ -39,7 +39,7 @@ angular.module('mm.core')
  * @name $mmSitesManager
  */
 .factory('$mmSitesManager', function($http, $q, $mmSitesFactory, md5, $mmLang, $mmConfig, $mmApp, $mmUtil, $mmEvents, $state,
-            mmCoreSitesStore, mmCoreCurrentSiteStore, mmCoreEventLogin, mmCoreEventLogout, $log, mmCoreEventSiteUpdated,
+            $translate, mmCoreSitesStore, mmCoreCurrentSiteStore, mmCoreEventLogin, mmCoreEventLogout, $log, mmCoreEventSiteUpdated,
             mmCoreEventSiteAdded, mmCoreEventSessionExpired) {
 
     $log = $log.getInstance('$mmSitesManager');
@@ -217,7 +217,9 @@ angular.module('mm.core')
                     self.login(siteid);
                     $mmEvents.trigger(mmCoreEventSiteAdded);
                 } else {
-                    return $mmLang.translateAndReject(validation);
+                    return $translate(validation.error, validation.params).then(function(error) {
+                        return $q.reject(error);
+                    });
                 }
             } else {
                 return $mmLang.translateAndReject('mm.login.invalidmoodleversion');
@@ -284,11 +286,14 @@ angular.module('mm.core')
      * Check if site info is valid. If it's not, return error message.
      *
      * @param {Object} infos    Site info.
-     * @return {String|Boolean} Error message to show if info is not valid, true if info is valid.
+     * @return {Object|Boolean} Object with error message to show and its params if info is not valid, true if info is valid.
      */
     function validateSiteInfo(infos) {
         if (typeof infos.downloadfiles !== 'undefined' && infos.downloadfiles !== 1) {
-            return 'mm.login.cannotdownloadfiles';
+            return {error: 'mm.login.cannotdownloadfiles'};
+        } else if (!infos.firstname || !infos.lastname) {
+            var moodleLink = '<a mm-browser href="' + infos.siteurl + '">' + infos.siteurl + '</a>';
+            return {error: 'mm.core.requireduserdatamissing', params: {'$a': moodleLink}};
         }
         return true;
     }
@@ -342,7 +347,9 @@ angular.module('mm.core')
                         // Site info is not valid. Logout the user and show an error message.
                         self.logout();
                         $state.go('mm_login.sites');
-                        $mmUtil.showErrorModal(validation, true);
+                        $translate(validation.error, validation.params).then(function(error) {
+                            $mmUtil.showErrorModal(error);
+                        });
                     }
                 });
             });
