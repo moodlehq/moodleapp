@@ -40,8 +40,8 @@ angular.module('mm.addons.mod_forum')
             if (forumdata) {
                 forum = forumdata;
 
-                $scope.title = forum.name;
-                $scope.description = forum.intro;
+                $scope.title = forum.name || $scope.title;
+                $scope.description = forum.intro || $scope.description;
                 $scope.forum = forum;
 
                 return fetchDiscussions(refresh);
@@ -107,7 +107,8 @@ angular.module('mm.addons.mod_forum')
 
     // Pull to refresh.
     $scope.refreshDiscussions = function() {
-        $mmaModForum.invalidateDiscussionsList(courseid, forum.id).finally(function() {
+        var promise = forum ? $mmaModForum.invalidateDiscussionsList(courseid, forum.id) : $q.when();
+        promise.finally(function() {
             fetchForumDataAndDiscussions(true).finally(function() {
                 $scope.$broadcast('scroll.refreshComplete');
             });

@@ -11,17 +11,11 @@
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" on-refresh="doRefresh()" ng-if="loaded"></ion-refresher>
         <mm-loading hide-until="loaded">
             <mm-course-mod-description description="description"></mm-course-mod-description>
+            <mma-mod-book-arrows previous="previousChapter" next="nextChapter" action="loadChapter"></mma-mod-book-arrows>
             <div>
                 <mm-format-text watch="true" component="{{ component }}" component-id="{{ componentId }}">{{ content }}</mm-format-text>
             </div>
-            <div class="row">
-                <div class="col">
-                    <i class="mma-book-arrows icon ion-arrow-left-b" ng-if="previousChapter > 0"  ng-click="loadChapter(previousChapter)"></i>
-                </div>
-                <div class="col text-right">
-                    <i class="mma-book-arrows icon ion-arrow-right-b" ng-if="nextChapter > 0" ng-click="loadChapter(nextChapter)"></i>
-                </div>
-            </div>
+            <mma-mod-book-arrows previous="previousChapter" next="nextChapter" action="loadChapter"></mma-mod-book-arrows>
         </mm-loading>
     </ion-content>
 </ion-view>

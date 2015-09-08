@@ -1434,7 +1434,7 @@ angular.module('mm.core')
                     return db.remove(mmFilepoolLinksStore, [entry.fileId, entry.component, entry.componentId]);
                 }));
             });
-            p3 = $mmFS.removeFile(self._getFilePath(siteId, fileId));
+            p3 = $mmFS.isAvailable() ? $mmFS.removeFile(self._getFilePath(siteId, fileId)) : $q.when();
             return $q.all([p1, p2, p3]);
         });
     };

@@ -159,7 +159,7 @@ angular.module('mm.addons.notifications')
      */
     self.isPluginEnabledForSite = function(siteid) {
         return $mmSitesManager.getSite(siteid).then(function(site) {
-            if (!$mmSite.wsAvailable('core_message_get_messages')) {
+            if (!site.wsAvailable('core_message_get_messages')) {
                 return $q.reject();
             }
         });

@@ -1,6 +1,6 @@
 {
     "errorgetforum": "Fehler beim Forum",
-    "forumnodiscussionsyet": "Keine Diskussionsthemen im Forum",
+    "forumnodiscussionsyet": "Keine Themen im Forum",
     "numdiscussions": "{{numdiscussions}} Themen",
     "numreplies": "{{numreplies}} Antworten"
 }

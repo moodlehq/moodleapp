@@ -177,7 +177,7 @@ angular.module('mm.core.course')
             for (var i = 0; i < sections.length; i++) {
                 section = sections[i];
                 for (var j = 0; j < section.modules.length; j++) {
-                    module = section.modules[i];
+                    module = section.modules[j];
                     if (module.id === moduleid) {
                         return module;
                     }

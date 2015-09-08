@@ -39,7 +39,7 @@ angular.module('mm.core')
  * @name $mmSitesManager
  */
 .factory('$mmSitesManager', function($http, $q, $mmSitesFactory, md5, $mmLang, $mmConfig, $mmApp, $mmUtil, $mmEvents, $state,
-            mmCoreSitesStore, mmCoreCurrentSiteStore, mmCoreEventLogin, mmCoreEventLogout, $log, mmCoreEventSiteUpdated,
+            $translate, mmCoreSitesStore, mmCoreCurrentSiteStore, mmCoreEventLogin, mmCoreEventLogout, $log, mmCoreEventSiteUpdated,
             mmCoreEventSiteAdded, mmCoreEventSessionExpired) {
 
     $log = $log.getInstance('$mmSitesManager');
@@ -141,13 +141,22 @@ angular.module('mm.core')
      * @param {String} siteurl   The site url.
      * @param {String} username  User name.
      * @param {String} password  Password.
+     * @param {String} [service] Service to use. If not defined, it will be searched in memory.
      * @param {Boolean} retry    We are retrying with a prefixed URL.
      * @return {Promise}         A promise to be resolved when the token is retrieved.
      */
-    self.getUserToken = function(siteurl, username, password, retry) {
+    self.getUserToken = function(siteurl, username, password, service, retry) {
         retry = retry || false;
 
-        return determineService(siteurl).then(function(service) {
+        var promise;
+
+        if (service) {
+            promise = $q.when(service);
+        } else {
+            promise = determineService(siteurl);
+        }
+
+        return promise.then(function(service) {
 
             var loginurl = siteurl + '/login/token.php';
             var data = {
@@ -170,9 +179,8 @@ angular.module('mm.core')
                             if (!retry && data.errorcode == "requirecorrectaccess") {
                                 siteurl = siteurl.replace("https://", "https://www.");
                                 siteurl = siteurl.replace("http://", "http://www.");
-                                logindata.siteurl = siteurl;
 
-                                return self.getUserToken(siteurl, username, password, true);
+                                return self.getUserToken(siteurl, username, password, service, true);
                             } else {
                                 return $q.reject(data.error);
                             }
@@ -217,7 +225,9 @@ angular.module('mm.core')
                     self.login(siteid);
                     $mmEvents.trigger(mmCoreEventSiteAdded);
                 } else {
-                    return $mmLang.translateAndReject(validation);
+                    return $translate(validation.error, validation.params).then(function(error) {
+                        return $q.reject(error);
+                    });
                 }
             } else {
                 return $mmLang.translateAndReject('mm.login.invalidmoodleversion');
@@ -284,11 +294,14 @@ angular.module('mm.core')
      * Check if site info is valid. If it's not, return error message.
      *
      * @param {Object} infos    Site info.
-     * @return {String|Boolean} Error message to show if info is not valid, true if info is valid.
+     * @return {Object|Boolean} Object with error message to show and its params if info is not valid, true if info is valid.
      */
     function validateSiteInfo(infos) {
         if (typeof infos.downloadfiles !== 'undefined' && infos.downloadfiles !== 1) {
-            return 'mm.login.cannotdownloadfiles';
+            return {error: 'mm.login.cannotdownloadfiles'};
+        } else if (!infos.firstname || !infos.lastname) {
+            var moodleLink = '<a mm-browser href="' + infos.siteurl + '">' + infos.siteurl + '</a>';
+            return {error: 'mm.core.requireduserdatamissing', params: {'$a': moodleLink}};
         }
         return true;
     }
@@ -342,7 +355,9 @@ angular.module('mm.core')
                         // Site info is not valid. Logout the user and show an error message.
                         self.logout();
                         $state.go('mm_login.sites');
-                        $mmUtil.showErrorModal(validation, true);
+                        $translate(validation.error, validation.params).then(function(error) {
+                            $mmUtil.showErrorModal(error);
+                        });
                     }
                 });
             });

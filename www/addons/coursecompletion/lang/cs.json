@@ -1,0 +1,17 @@
+{
+    "complete": "Podrobný",
+    "completed": "Splněno",
+    "coursecompletion": "Absolvování kurzu",
+    "criteria": "Podmínky",
+    "criteriagroup": "Skupina podmínek",
+    "criteriarequiredall": "Všechny podmínky jsou požadovány",
+    "criteriarequiredany": "Libovolná podmínka je požadována",
+    "inprogress": "Probíhá",
+    "manualselfcompletion": "Ručně nastavené absolvování kurzu samotným studentem",
+    "notyetstarted": "Zatím nezačalo",
+    "pending": "Čeká",
+    "required": "Vyžadováno",
+    "requiredcriteria": "Požadovaná kriteria",
+    "status": "Stav",
+    "viewcoursereport": "Zobrazit přehled kurzu"
+}

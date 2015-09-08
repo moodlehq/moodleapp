@@ -36,8 +36,8 @@ angular.module('mm.addons.mod_assign')
     function fetchAssignment(refresh) {
         // Get assignment data.
         return $mmaModAssign.getAssignment(courseid, module.id, refresh).then(function(assign) {
-            $scope.title = assign.name;
-            $scope.description = assign.intro;
+            $scope.title = assign.name || $scope.title;
+            $scope.description = assign.intro || $scope.description;
             $scope.assign = assign;
 
             // Get assignment submissions.

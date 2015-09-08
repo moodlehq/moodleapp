@@ -19,7 +19,7 @@
     "loginbutton": "Login!",
     "logininsiterequired": "Je dient via een browser in te loggen op je Moodle site",
     "mobileservicesnotenabled": "Mobiele diensten zijn niet geactiveerd voor jou Moodle site. Neem contact op met de sitebeheerder.",
-    "newsitedescription": "Geef de URL van je Moodle site. Merk op dat die geconfigureerd zijn om niet met deze app te werken.",
+    "newsitedescription": "Geef de URL van je Moodle site. Merk op dat die misschien niet geconfigureerd is om met deze app te werken.",
     "notloggedin": "Je moet ingelogd zijn.",
     "password": "Wachtwoord",
     "passwordrequired": "Wachtwoord vereist",

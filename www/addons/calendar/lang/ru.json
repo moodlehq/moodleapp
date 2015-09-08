@@ -1,4 +1,7 @@
 {
+    "calendarevents": "События календаря",
+    "errorloadevent": "Ошибка при загрузке события",
+    "errorloadevents": "Ошибка при загрузке событий",
     "noevents": "Нет событий",
     "notifications": "Уведомления"
 }

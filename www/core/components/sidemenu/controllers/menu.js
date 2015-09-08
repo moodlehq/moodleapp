@@ -47,7 +47,6 @@ angular.module('mm.core.sidemenu')
             $mmSite.getDocsUrl().then(function(docsurl) {
                 $scope.docsurl = docsurl;
             });
-            $scope.handlers = $mmSideMenuDelegate.getNavHandlers();
         });
     }
 

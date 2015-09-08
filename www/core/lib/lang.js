@@ -33,9 +33,11 @@ angular.module('mm.core')
      * @ngdoc method
      * @name $mmLang#registerLanguageFolder
      * @param  {String} path Path of the folder to use.
+     * @return {Promise}     Promise resolved when file is loaded.
      */
     self.registerLanguageFolder = function(path) {
         $translatePartialLoader.addPart(path);
+        return $translate.refresh();
     };
 
     /**

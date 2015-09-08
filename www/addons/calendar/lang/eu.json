@@ -1,4 +1,7 @@
 {
+    "calendarevents": "Egutegiko gertakariak",
+    "errorloadevent": "Errorea gertakaria kargatzean.",
+    "errorloadevents": "Errorea gertakariak kargatzean.",
     "noevents": "Ez dago ekitaldirik",
     "notifications": "Jakinarazpenak"
 }

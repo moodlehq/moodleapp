@@ -542,7 +542,7 @@ angular.module('mm.core')
             var countryKey = 'mm.core.country-' + code,
                 countryName = $translate.instant(countryKey);
 
-            return countryName !== countryKey ? countryName : countryKey;
+            return countryName !== countryKey ? countryName : code;
         };
 
         /**
@@ -680,8 +680,20 @@ angular.module('mm.core')
                 if (secs) {
                     return osecs;
                 }
-                return translations('mm.core.now');
+                return translations['mm.core.now'];
             });
+        };
+
+        /**
+         * Empties an array without losing its reference.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#emptyArray
+         * @param  {Array} array Array to empty.
+         */
+        self.emptyArray = function(array) {
+            array.length = 0; // Empty array without losing its reference.
         };
 
         return self;

@@ -47,7 +47,9 @@ angular.module('mm.addons.frontpage')
          */
         self.isEnabled = function() {
             if ($mmaFrontpage.isPluginEnabled()) {
-                return $mmaFrontpage.isPluginEnabled();
+                return $mmaFrontpage.isFrontpageAvailable().then(function() {
+                    return true;
+                });
             }
             return false;
         };

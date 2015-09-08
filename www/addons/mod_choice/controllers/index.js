@@ -43,8 +43,8 @@ angular.module('mm.addons.mod_choice')
             choice.timeclose = parseInt(choice.timeclose) * 1000;
             choice.closeTimeReadable = new Date(choice.timeclose).toLocaleString();
 
-            $scope.title = choice.name;
-            $scope.description = choice.intro;
+            $scope.title = choice.name || $scope.title;
+            $scope.description = choice.intro || $scope.description;
             $scope.choice = choice;
 
             // We need fetchOptions to finish before calling fetchResults because it needs hasAnswered variable.
@@ -96,8 +96,8 @@ angular.module('mm.addons.mod_choice')
     // Convenience function to refresh all the data.
     function refreshAllData() {
         var p1 = $mmaModChoice.invalidateChoiceData(courseid),
-            p2 = $mmaModChoice.invalidateOptions(choice.id),
-            p3 = $mmaModChoice.invalidateResults(choice.id);
+            p2 = choice ? $mmaModChoice.invalidateOptions(choice.id) : $q.when(),
+            p3 = choice ? $mmaModChoice.invalidateResults(choice.id) : $q.when();
 
         return $q.all([p1, p2, p3]).finally(function() {
             return fetchChoiceData();

@@ -1,0 +1,17 @@
+{
+    "complete": "詳細",
+    "completed": "完了",
+    "coursecompletion": "コース完了",
+    "criteria": "クライテリア",
+    "criteriagroup": "クライテリアグループ",
+    "criteriarequiredall": "下記のクライテリアすべてが必須である",
+    "criteriarequiredany": "下記いくつかのクライテリアが必須である",
+    "inprogress": "進行中",
+    "manualselfcompletion": "手動による自己完了",
+    "notyetstarted": "未開始",
+    "pending": "保留",
+    "required": "必須",
+    "requiredcriteria": "必須クライテリア",
+    "status": "状態",
+    "viewcoursereport": "コースレポートを表示する"
+}
