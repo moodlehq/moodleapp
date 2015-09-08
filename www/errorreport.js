@@ -16,7 +16,26 @@
 // Using JS confirm function we are sure that the user get notified in a Mobile device.
 // This script should be added at the begining of the index.html and it should only use native javascript functions.
 
-var errors = [];
+var errors = [],
+    ignoredErrors = [
+        'Can\'t find variable: cordova',
+        'Uncaught DataError: Failed to execute \'put\' on \'IDBObjectStore\''
+    ];
+
+/**
+ * Check if an error message should be ignored.
+ *
+ * @param  {String} message Error message.
+ * @return {Boolean}        True if it should be ignored, false otherwise.
+ */
+function shouldIgnore(message) {
+    for (var i = 0; i < ignoredErrors.length; i++) {
+        if (message.indexOf(ignoredErrors[i]) != -1) {
+            return true;
+        }
+    }
+    return false;
+}
 
 window.onerror = function(msg, url, lineNumber) {
     var errorReported = false,
@@ -64,7 +83,7 @@ window.onerror = function(msg, url, lineNumber) {
         }
     }
 
-    if (msg.indexOf('Can\'t find variable: cordova') == -1 && errors.indexOf(msg) == -1) {
+    if (!shouldIgnore(msg) && errors.indexOf(msg) == -1) {
         errors.push(msg);
         // Use setTimeout to prevent the following error if the app crashes right at the start:
         // "The connection to the server was unsuccessful. (file:///android_asset/www/index.html)"
