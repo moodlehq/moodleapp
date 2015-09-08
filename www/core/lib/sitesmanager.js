@@ -141,13 +141,22 @@ angular.module('mm.core')
      * @param {String} siteurl   The site url.
      * @param {String} username  User name.
      * @param {String} password  Password.
+     * @param {String} [service] Service to use. If not defined, it will be searched in memory.
      * @param {Boolean} retry    We are retrying with a prefixed URL.
      * @return {Promise}         A promise to be resolved when the token is retrieved.
      */
-    self.getUserToken = function(siteurl, username, password, retry) {
+    self.getUserToken = function(siteurl, username, password, service, retry) {
         retry = retry || false;
 
-        return determineService(siteurl).then(function(service) {
+        var promise;
+
+        if (service) {
+            promise = $q.when(service);
+        } else {
+            promise = determineService(siteurl);
+        }
+
+        return promise.then(function(service) {
 
             var loginurl = siteurl + '/login/token.php';
             var data = {
@@ -170,9 +179,8 @@ angular.module('mm.core')
                             if (!retry && data.errorcode == "requirecorrectaccess") {
                                 siteurl = siteurl.replace("https://", "https://www.");
                                 siteurl = siteurl.replace("http://", "http://www.");
-                                logindata.siteurl = siteurl;
 
-                                return self.getUserToken(siteurl, username, password, true);
+                                return self.getUserToken(siteurl, username, password, service, true);
                             } else {
                                 return $q.reject(data.error);
                             }
