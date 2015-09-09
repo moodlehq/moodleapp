@@ -266,12 +266,18 @@ angular.module('mm.core')
      * @ngdoc method
      * @name $mmLocalNotifications#trigger
      * @param {Object} notification Triggered notification.
+     * @return {Promise}            Promise resolved when stored, rejected otherwise.
      */
     self.trigger = function(notification) {
-        $mmApp.getDB().insert(mmCoreNotificationsTriggeredStore, {
-            id: parseInt(notification.id),
-            at: parseInt(notification.at)
-        });
+        var id = parseInt(notification.id);
+        if (!isNaN(id)) {
+            return $mmApp.getDB().insert(mmCoreNotificationsTriggeredStore, {
+                id: id,
+                at: parseInt(notification.at)
+            });
+        } else {
+            return $q.reject();
+        }
     };
 
     return self;

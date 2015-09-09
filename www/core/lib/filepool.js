@@ -188,6 +188,10 @@ angular.module('mm.core')
      * @protected
      */
     self._addFileLink = function(siteId, fileId, component, componentId) {
+        if (!component) {
+            return $q.reject();
+        }
+
         componentId = self._fixComponentId(componentId);
         return getSiteDb(siteId).then(function(db) {
             return db.insert(mmFilepoolLinksStore, {
@@ -572,10 +576,11 @@ angular.module('mm.core')
      * @protected
      */
     self._fixComponentId = function(componentId) {
-        if (!componentId) {
+        var id = parseInt(componentId, 10);
+        if (isNaN(id)) {
             return -1;
         }
-        return parseInt(componentId, 10);
+        return id;
     };
 
     /**
