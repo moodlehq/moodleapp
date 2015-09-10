@@ -20,17 +20,30 @@ var errors = [],
     ignoredErrors = [
         'Can\'t find variable: cordova',
         'Uncaught DataError: Failed to execute \'put\' on \'IDBObjectStore\''
+    ],
+    ignoredFiles = [
+        'ydn.db/jsc/ydn.db-dev.js',
+        'www/cordova.js',
+        'lib/ionic/js/ionic.bundle.min.js',
+        'lib/ionic/js/ionic.bundle.js'
     ];
 
 /**
- * Check if an error message should be ignored.
+ * Check if an error should be ignored.
  *
  * @param  {String} message Error message.
+ * @param  {String} file    File where the error occurred.
  * @return {Boolean}        True if it should be ignored, false otherwise.
  */
-function shouldIgnore(message) {
+function shouldIgnore(message, file) {
     for (var i = 0; i < ignoredErrors.length; i++) {
         if (message.indexOf(ignoredErrors[i]) != -1) {
+            return true;
+        }
+    }
+    var filepath = file.replace(/\\/g, '/');
+    for (i = 0; i < ignoredFiles.length; i++) {
+        if (filepath.indexOf(ignoredFiles[i]) != -1) {
             return true;
         }
     }
@@ -83,7 +96,7 @@ window.onerror = function(msg, url, lineNumber) {
         }
     }
 
-    if (!shouldIgnore(msg) && errors.indexOf(msg) == -1) {
+    if (!shouldIgnore(msg, url) && errors.indexOf(msg) == -1) {
         errors.push(msg);
         // Use setTimeout to prevent the following error if the app crashes right at the start:
         // "The connection to the server was unsuccessful. (file:///android_asset/www/index.html)"
