@@ -21,7 +21,7 @@ angular.module('mm.core.login')
  * @ngdoc controller
  * @name mmLoginSiteCtrl
  */
-.controller('mmLoginSiteCtrl', function($scope, $state, $mmSitesManager, $mmUtil, $translate, $ionicHistory,
+.controller('mmLoginSiteCtrl', function($scope, $state, $mmSitesManager, $mmUtil, $translate, $ionicHistory, $mmApp,
         $ionicModal, $mmLoginHelper) {
 
     $scope.siteurl = '';
@@ -44,6 +44,8 @@ angular.module('mm.core.login')
     };
 
     $scope.connect = function(url) {
+
+        $mmApp.closeKeyboard();
 
         if (!url) {
             $mmUtil.showErrorModal('mm.login.siteurlrequired', true);

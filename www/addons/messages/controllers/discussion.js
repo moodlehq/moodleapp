@@ -102,6 +102,11 @@ angular.module('mm.addons.messages')
             message.sending = false;
             notifyNewMessage();
         }, function(error) {
+
+            // Only close the keyboard if an error happens, we want the user to be able to send multiple
+            // messages withoutthe keyboard being closed.
+            $mmApp.closeKeyboard();
+
             if (typeof error === 'string') {
                 $mmUtil.showErrorModal(error);
             } else {

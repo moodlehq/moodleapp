@@ -112,6 +112,19 @@ angular.module('mm.core')
         };
 
         /**
+         * Closes the keyboard if plugin is available.
+         *
+         * @return {Boolean} True if plugin is available, false otherwise.
+         */
+        self.closeKeyboard = function() {
+            if (cordova && cordova.plugins && cordova.plugins.Keyboard && cordova.plugins.Keyboard.close) {
+                cordova.plugins.Keyboard.close();
+                return true;
+            }
+            return false;
+        };
+
+        /**
          * Get the application global database.
          * @return {Object} App's DB.
          */
