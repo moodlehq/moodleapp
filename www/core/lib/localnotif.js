@@ -58,13 +58,17 @@ angular.module('mm.core')
  * @description
  * Provides methods to trigger notifications, listen clicks on them, etc.
  */
-.factory('$mmLocalNotifications', function($log, $mmSitesManager, $mmSite, $cordovaLocalNotification, $mmApp,
+.factory('$mmLocalNotifications', function($log, $mmSite, $cordovaLocalNotification, $mmApp, $q,
         mmCoreNotificationsSitesStore, mmCoreNotificationsComponentsStore, mmCoreNotificationsTriggeredStore) {
 
     $log = $log.getInstance('$mmLocalNotifications');
 
     var self = {},
-        observers = {};
+        observers = {},
+        codes = {}; // Store codes in memory to make getCode function faster.
+
+    // We need a queue to request unique codes, to handle simultaneous requests.
+    var codeRequestsQueue = {};
 
     /**
      * Get a code to create unique notifications. If there's no code assigned, create a new one.
@@ -74,19 +78,27 @@ angular.module('mm.core')
      * @return {Promise}      Promise resolved when the code is retrieved.
      */
     function getCode(store, id) {
-        var db = $mmApp.getDB();
+        var db = $mmApp.getDB(),
+            key = store + '#' + id;
+
+        if (typeof codes[key] != 'undefined') {
+            return $q.when(codes[key]);
+        }
 
         return db.get(store, id).then(function(entry) {
-            return parseInt(entry.code);
+            var code = parseInt(entry.code);
+            codes[key] = code;
+            return code;
         }, function() {
             // Site is not in the DB. Create a new ID for it.
             return db.query(store, undefined, 'code', true).then(function(entries) {
-                var newid = 0;
+                var newCode = 0;
                 if (entries.length > 0) {
-                    newid = parseInt(entries[0].code) + 1;
+                    newCode = parseInt(entries[0].code) + 1;
                 }
-                return db.insert(store, {id: id, code: newid}).then(function() {
-                    return newid;
+                return db.insert(store, {id: id, code: newCode}).then(function() {
+                    codes[key] = newCode;
+                    return newCode;
                 });
             });
         });
@@ -101,7 +113,7 @@ angular.module('mm.core')
      */
     function getSiteCode(siteid) {
         siteid = siteid || $mmSite.getId();
-        return getCode(mmCoreNotificationsSitesStore, siteid);
+        return requestCode(mmCoreNotificationsSitesStore, siteid);
     }
 
     /**
@@ -112,7 +124,7 @@ angular.module('mm.core')
      * @return {Promise}         Promise resolved when the component code is retrieved.
      */
     function getComponentCode(component) {
-        return getCode(mmCoreNotificationsComponentsStore, component);
+        return requestCode(mmCoreNotificationsComponentsStore, component);
     }
 
     /**
@@ -135,6 +147,74 @@ angular.module('mm.core')
                 return (sitecode * 100000000 + componentcode * 10000000 + parseInt(notificationid)) % 2147483647;
             });
         });
+    }
+
+    /**
+     * Process the next request in queue.
+     */
+    function processNextRequest() {
+        var nextKey = Object.keys(codeRequestsQueue)[0],
+            request,
+            promise;
+
+        if (typeof nextKey == 'undefined') {
+            // No more requests in queue, stop.
+            return;
+        }
+
+        request = codeRequestsQueue[nextKey];
+        // Check if request is valid.
+        if (angular.isObject(request) && typeof request.store != 'undefined' && typeof request.id != 'undefined') {
+            // Get the code and resolve/reject all the promises of this request.
+            promise = getCode(request.store, request.id).then(function(code) {
+                angular.forEach(request.promises, function(p) {
+                    p.resolve(code);
+                });
+            }, function(error) {
+                angular.forEach(request.promises, function(p) {
+                    p.reject(error);
+                });
+            });
+        } else {
+            promise = $q.when();
+        }
+
+        // Once this item is treated, remove it and process next.
+        promise.finally(function() {
+            delete codeRequestsQueue[nextKey];
+            processNextRequest();
+        });
+    }
+
+    /**
+     * Request a unique code. The request will be added to the queue and the queue is going to be started if it's paused.
+     *
+     * @param  {String} store Store to search in local DB.
+     * @param  {String} id    ID of the element to get its code.
+     * @return {Promise}      Promise resolved when the code is retrieved.
+     */
+    function requestCode(store, id) {
+        var deferred = $q.defer(),
+            key = store+'#'+id,
+            isQueueEmpty = Object.keys(codeRequestsQueue).length == 0;
+
+        if (typeof codeRequestsQueue[key] != 'undefined') {
+            // There's already a pending request for this store and ID, add the promise to it.
+            codeRequestsQueue[key].promises.push(deferred);
+        } else {
+            // Add a pending request to the queue.
+            codeRequestsQueue[key] = {
+                store: store,
+                id: id,
+                promises: [deferred]
+            };
+        }
+
+        if (isQueueEmpty) {
+            processNextRequest();
+        }
+
+        return deferred.promise;
     }
 
     /**

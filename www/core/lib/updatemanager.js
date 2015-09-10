@@ -25,7 +25,8 @@ angular.module('mm.core')
  * @description
  * This service handles processes that need to be run when updating the app, like migrate MM1 sites to MM2.
  */
-.factory('$mmUpdateManager', function($log, $q, $mmConfig, $mmSitesManager, $mmFS, mmCoreVersionApplied) {
+.factory('$mmUpdateManager', function($log, $q, $mmConfig, $mmSitesManager, $mmFS, $cordovaLocalNotification, $mmLocalNotifications,
+            mmCoreVersionApplied) {
 
     $log = $log.getInstance('$mmUpdateManager');
 
@@ -52,6 +53,10 @@ angular.module('mm.core')
                     // Ignore errors in clearAppFolder. We don't want to clear the folder
                     // everytime the app is opened if something goes wrong.
                     promises.push(clearAppFolder().catch(function() {}));
+                }
+
+                if (versionCode >= 2003 && versionApplied < 2003) {
+                    promises.push(cancelAndroidNotifications());
                 }
 
                 return $q.all(promises).then(function() {
@@ -133,6 +138,21 @@ angular.module('mm.core')
                 localStorage.clear();
             }
         });
+    }
+
+    /**
+     * Cancel all Android notifications. MM 2.0 was released with a bug in notifications ID (Android). These IDs were stored in
+     * SharedPreferences, cancel them all will clear the stored values. @see MOBILE-1148.
+     *
+     * @return {Promise} Promise resolved when the notifications are cancelled.
+     */
+    function cancelAndroidNotifications() {
+        if ($mmLocalNotifications.isAvailable() && ionic.Platform.isAndroid()) {
+            return $cordovaLocalNotification.cancelAll().catch(function() {
+                $log.error('Error cancelling Android notifications.');
+            });
+        }
+        return $q.when();
     }
 
     return self;
