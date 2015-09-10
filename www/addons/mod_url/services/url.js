@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_url')
  * @ngdoc service
  * @name $mmaModUrl
  */
-.factory('$mmaModUrl', function($mmSite, $mmUtil) {
+.factory('$mmaModUrl', function($mmSite, $mmUtil, $q) {
     var self = {};
 
     /**
