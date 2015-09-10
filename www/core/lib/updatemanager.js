@@ -100,6 +100,10 @@ angular.module('mm.core')
             sites = sites.split(',');
 
             angular.forEach(sites, function(siteid) {
+                if (!siteid) {
+                    return;
+                }
+
                 $log.debug('Migrating site from MoodleMobile 1: ' + siteid);
                 var site = localStorage.getItem('sites-'+siteid),
                     infos;

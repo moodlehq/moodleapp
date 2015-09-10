@@ -244,13 +244,13 @@ angular.module('mm.addons.mod_forum')
         var ids = [];
         angular.forEach(list, function(entry) {
             var id = parseInt(entry.userid);
-            if (ids.indexOf(id) === -1) {
+            if (!isNaN(id) && ids.indexOf(id) === -1) {
                 ids.push(id);
                 $mmUser.storeUser(id, entry.userfullname, entry.userpictureurl);
             }
             if (typeof entry.usermodified != 'undefined') {
                 id = parseInt(entry.usermodified);
-                if(ids.indexOf(id) === -1) {
+                if(!isNaN(id) && ids.indexOf(id) === -1) {
                     ids.push(id);
                     $mmUser.storeUser(id, entry.usermodifiedfullname, entry.usermodifiedpictureurl);
                 }
