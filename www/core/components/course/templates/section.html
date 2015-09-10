@@ -8,7 +8,7 @@
             <section class="card" ng-if="summary">
                 <!-- Only displayed when 1 section per page. -->
                 <div class="item item-text-wrap">
-                    <article><mm-format-text>{{ summary }}</mm-format-text></article>
+                    <article><mm-format-text class="mm-content-with-float">{{ summary }}</mm-format-text></article>
                 </div>
             </section>
 
@@ -19,7 +19,7 @@
                 </div>
 
                 <div class="item item-text-wrap" ng-if="sections.length > 1 && section.summary">
-                    <mm-format-text>{{ section.summary }}</mm-format-text>
+                    <mm-format-text class="mm-content-with-float">{{ section.summary }}</mm-format-text>
                 </div>
 
                 <a class="item item-text-wrap" ng-repeat="module in section.modules" ng-click="action($event)" ng-class="{'item-button-right': buttons && buttons.length > 0, 'item-media': icon, 'item-completion': module.completionstatus}" ng-controller="module._controller" title="{{ title }}">

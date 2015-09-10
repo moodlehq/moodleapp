@@ -14,7 +14,7 @@
                     <p>{{discussion.userfullname}}</p>
                 </div>
                 <div class="item item-body">
-                    <mm-format-text watch="true">{{discussion.message}}</mm-format-text>
+                    <mm-format-text class="mm-content-with-float" watch="true">{{discussion.message}}</mm-format-text>
                     <mm-file ng-repeat="attachment in discussion.attachments" file="attachment" component="{{component}}" component-id="{{discussion.id}}"></mm-file>
                 </div>
             </article>
@@ -29,7 +29,7 @@
                         <p>{{post.subject}}</p>
                     </div>
                     <div class="item item-body">
-                        <mm-format-text watch="true">{{post.message}}</mm-format-text>
+                        <mm-format-text class="mm-content-with-float" watch="true">{{post.message}}</mm-format-text>
                         <mm-file ng-repeat="attachment in post.attachments" file="attachment" component="{{component}}" component-id="{{post.id}}"></mm-file>
                     </div>
                 </article>

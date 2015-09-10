@@ -9,7 +9,7 @@
                     <p>{{notification.timecreated | mmDateDayOrTime}}</p>
                 </div>
                 <div class="item item-body">
-                    <p><mm-format-text watch="true">{{ notification.mobiletext | mmCreateLinks | mmaNotificationsFormat }}</mm-format-text></p>
+                    <p><mm-format-text class="mm-content-with-float" watch="true">{{ notification.mobiletext | mmCreateLinks | mmaNotificationsFormat }}</mm-format-text></p>
                 </div>
                 <mma-notifications-actions contexturl="notification.contexturl" courseid="notification.courseid"></mma-notifications-actions>
             </article>
