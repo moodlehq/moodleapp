@@ -137,6 +137,10 @@ angular.module('mm.addons.mod_chat')
                 $scope.newMessage.text = '';
             }
         }, function(error) {
+            // Only close the keyboard if an error happens, we want the user to be able to send multiple
+            // messages withoutthe keyboard being closed.
+            $mmApp.closeKeyboard();
+
             showError(error);
         });
     };

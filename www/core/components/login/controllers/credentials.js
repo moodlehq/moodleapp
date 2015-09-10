@@ -21,12 +21,14 @@ angular.module('mm.core.login')
  * @ngdoc controller
  * @name mmLoginCredentialsCtrl
  */
-.controller('mmLoginCredentialsCtrl', function($scope, $state, $stateParams, $mmSitesManager, $mmUtil, $ionicHistory) {
+.controller('mmLoginCredentialsCtrl', function($scope, $state, $stateParams, $mmSitesManager, $mmUtil, $ionicHistory, $mmApp) {
 
     $scope.siteurl = $stateParams.siteurl;
     $scope.credentials = {};
 
     $scope.login = function() {
+
+        $mmApp.closeKeyboard();
 
         // Get input data.
         var siteurl = $scope.siteurl,
