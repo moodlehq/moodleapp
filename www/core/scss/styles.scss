@@ -181,7 +181,7 @@ em {
 }
 
 // mm-format-text can have elements with float. These styles makes sure height is calculated right.
-mm-format-text {
+.mm-content-with-float {
   display: inline-block;
   width: 100%;
 }

@@ -86,7 +86,7 @@
                     <h2>{{ 'mm.user.description' | translate}}</h2>
                 </div>
                 <div class="item item-text-wrap" ng-if="user.description">
-                    <mm-format-text watch="true">{{user.description}}</mm-format-text>
+                    <mm-format-text class="mm-content-with-float" watch="true">{{user.description}}</mm-format-text>
                 </div>
 
                 <div ng-repeat="handler in profileHandlers | orderBy:'-priority'" ng-controller="handler.controller">
