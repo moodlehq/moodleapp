@@ -452,6 +452,14 @@ angular.module('mm.core')
                  */
                 onReady: function(cb) {
                     db.onReady(cb);
+                },
+                /**
+                 * Get storage type.
+                 *
+                 * @return {String} Storage type.
+                 */
+                getType: function() {
+                    return db.getType();
                 }
             };
         }
