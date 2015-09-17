@@ -103,11 +103,16 @@ angular.module('mm.core')
         // Apply format text function.
         return $mmText.formatText(text, attrs.clean, attrs.singleline, shorten).then(function(formatted) {
 
+            function addMediaAdaptClass(el) {
+                angular.element(el).addClass('mm-media-adapt-width');
+            }
+
             // Convert the content into DOM.
             var dom = angular.element('<div>').html(formatted);
 
             // Walk through the content to find images, and add our directive.
             angular.forEach(dom.find('img'), function(img) {
+                addMediaAdaptClass(img);
                 img.setAttribute('mm-external-content', '');
                 if (component) {
                     img.setAttribute('component', component);
@@ -134,6 +139,10 @@ angular.module('mm.core')
                     anchor.setAttribute('siteid', siteId);
                 }
             });
+
+            angular.forEach(dom.find('audio'), addMediaAdaptClass);
+            angular.forEach(dom.find('video'), addMediaAdaptClass);
+            angular.forEach(dom.find('iframe'), addMediaAdaptClass);
 
             return dom.html();
         });
