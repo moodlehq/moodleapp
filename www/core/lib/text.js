@@ -180,5 +180,23 @@ angular.module('mm.core')
         });
     };
 
+    /**
+     * Escape an HTML text. This implementation is based on PHP's htmlspecialchars.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#escapeHTML
+     * @param  {String} text Text to escape.
+     * @return {String}      Escaped text.
+     */
+    self.escapeHTML = function(text) {
+        return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    };
+
     return self;
 });
