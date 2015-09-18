@@ -40,12 +40,12 @@
     "org.apache.cordova.media-capture",
     "org.apache.cordova.splashscreen",
     "com.phonegap.plugin.statusbar",
-    "de.appplant.cordova.plugin.local-notification",
     "com.phonegap.plugins.pushplugin",
     "net.tunts.webintent",
     "nl.x-services.plugins.launchmyapp",
     "com.ionic.keyboard",
-    "ch.ti8m.documenthandler"
+    "ch.ti8m.documenthandler",
+    "cordova-plugin-local-notifications-mm"
   ],
   "cordovaPlatforms": [
     "android",
