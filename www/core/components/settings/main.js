@@ -14,6 +14,8 @@
 
 angular.module('mm.core.settings', [])
 
+.constant('mmCoreSettingsReportInBackground', 'mmCoreReportInBackground')
+
 .config(function($stateProvider) {
 
     $stateProvider

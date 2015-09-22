@@ -16,110 +16,143 @@
 // Using JS confirm function we are sure that the user get notified in a Mobile device.
 // This script should be added at the begining of the index.html and it should only use native javascript functions.
 
-var errors = [],
-    ignoredErrors = [
-        'Can\'t find variable: cordova',
-        'Uncaught DataError: Failed to execute \'put\' on \'IDBObjectStore\''
-    ],
-    ignoredFiles = [
-        'ydn.db/jsc/ydn.db-dev.js',
-        'www/cordova.js',
-        'lib/ionic/js/ionic.bundle.min.js',
-        'lib/ionic/js/ionic.bundle.js'
-    ];
+var appVersion = '2.2 (2003)',
+    reportInBackgroundName = 'mmCoreReportInBackground',
+    errors = [];
 
 /**
- * Check if an error should be ignored.
+ * Check if error should be reported in background. If setting is not set, a confirm modal will be shown.
  *
- * @param  {String} message Error message.
- * @param  {String} file    File where the error occurred.
- * @return {Boolean}        True if it should be ignored, false otherwise.
+ * @return {Boolean} True if should be reported in background, false otherwise.
  */
-function shouldIgnore(message, file) {
-    for (var i = 0; i < ignoredErrors.length; i++) {
-        if (message.indexOf(ignoredErrors[i]) != -1) {
-            return true;
+function shouldReportInBackground() {
+    var inBackground = false,
+        flag;
+
+    if (localStorage && localStorage.getItem && localStorage.setItem) {
+        flag = localStorage.getItem(reportInBackgroundName);
+        if (isNaN(parseInt(flag, 10))) {
+            // Flag not set. Show a confirm modal.
+            var confirmmsg = 'Do you want to report errors automatically? Reporting errors will help us fixing them. ' +
+                                'You can change this setting in App Settings.';
+            inBackground = confirm(confirmmsg);
+            localStorage.setItem(reportInBackgroundName, inBackground ? '1' : '0');
+        } else {
+            inBackground = flag === '1';
         }
     }
-    var filepath = file.replace(/\\/g, '/');
-    for (i = 0; i < ignoredFiles.length; i++) {
-        if (filepath.indexOf(ignoredFiles[i]) != -1) {
-            return true;
-        }
-    }
-    return false;
+
+    return inBackground;
 }
 
 window.onerror = function(msg, url, lineNumber) {
-    var errorReported = false,
-        reportedOnDBReady = false;
+    try {
+        var errorReported = false,
+            reportedOnDBReady = false,
+            reportInBackground = false;
 
-    function getStorageAndReport(reportUrl, db) {
-        if (!reportedOnDBReady) {
-            reportedOnDBReady = true;
-            reportUrl = reportUrl + '&storage=' + encodeURIComponent(db.getType());
-            window.open(reportUrl, '_system');
+        /**
+         * Add the storage type to the error report and send it.
+         *
+         * @param  {String} reportUrl URL to report the error.
+         * @param  {Object} db        DB.
+         */
+        function getStorageAndReport(reportUrl, db) {
+            if (!reportedOnDBReady) {
+                reportedOnDBReady = true;
+                reportUrl = reportUrl + '&storage=' + encodeURIComponent(db.getType());
+                sendError(reportUrl);
+            }
         }
-    }
 
-    function reportError() {
-        if (!errorReported) {
-            errorReported = true;
-            var reportUrl = 'http://prototype.moodle.net/mobile/feedback/mmfeedback.php?message=' + encodeURIComponent(msg) +
-                            '&file=' + encodeURIComponent(url) + '&line=' + lineNumber;
+        /**
+         * Gather the needed data to report an error and reports it.
+         */
+        function reportError() {
+            if (!errorReported) {
+                errorReported = true;
+                var reportUrl = 'http://prototype.moodle.net/mobile/feedback/mmfeedback.php?message=' + encodeURIComponent(msg) +
+                                '&file=' + encodeURIComponent(url) + '&line=' + encodeURIComponent(lineNumber) + '&appv=' +
+                                encodeURIComponent(appVersion) + '&bg=' + (reportInBackground ? 1 : 0);
 
-            if (window.device) {
-                reportUrl = reportUrl + '&platform=' + window.device.platform + '&model=' + encodeURIComponent(window.device.model) +
-                                      '&osversion=' + window.device.version + '&cordova=' + window.device.cordova;
-            }
-            if (window.location) {
-                reportUrl = reportUrl + '&localurl=' + encodeURIComponent(window.location.href);
-            }
-            if (navigator.userAgent) {
-                reportUrl = reportUrl + '&useragent=' + encodeURIComponent(navigator.userAgent);
-            }
-            if (ydn.db.Storage) {
-                // Detect Storage type by default.
-                var db = new ydn.db.Storage('test', {}, {});
-                if (db && db.getType && db.onReady) {
-                    db.onReady(function() {
-                        getStorageAndReport(reportUrl, db);
-                    });
-                    setTimeout(function() {
-                        getStorageAndReport(reportUrl, db);
-                    }, 1000);
-                    return;
+                if (window.device) {
+                    reportUrl = reportUrl + '&platform=' + encodeURIComponent(window.device.platform) +
+                                        '&model=' + encodeURIComponent(window.device.model) +
+                                        '&osversion=' + encodeURIComponent(window.device.version) +
+                                        '&cordova=' + encodeURIComponent(window.device.cordova);
                 }
-            }
+                if (window.location) {
+                    reportUrl = reportUrl + '&localurl=' + encodeURIComponent(window.location.href);
+                }
+                if (navigator.userAgent) {
+                    reportUrl = reportUrl + '&useragent=' + encodeURIComponent(navigator.userAgent);
+                }
+                if (typeof ydn != 'undefined' && ydn.db && ydn.db.Storage) {
+                    // Detect Storage type by default.
+                    var db = new ydn.db.Storage('test', {}, {});
+                    if (db && db.getType && db.onReady) {
+                        db.onReady(function() {
+                            getStorageAndReport(reportUrl, db);
+                        });
+                        setTimeout(function() {
+                            getStorageAndReport(reportUrl, db);
+                        }, 1000);
+                        return;
+                    }
+                }
 
-            window.open(reportUrl, '_system');
+                sendError(reportUrl);
+            }
         }
-    }
 
-    if (!shouldIgnore(msg, url) && errors.indexOf(msg) == -1) {
-        errors.push(msg);
-        // Use setTimeout to prevent the following error if the app crashes right at the start:
-        // "The connection to the server was unsuccessful. (file:///android_asset/www/index.html)"
-        setTimeout(function() {
-            if (typeof msg == "string") {
-                var sendError,
-                    confirmmsg = 'Unexpected error, please accept to report the bug so we can work on fixing it ' +
-                                    '(Internet connection required).';
+        /**
+         * Send error to the server.
+         *
+         * @param  {String} reportUrl URL to report the error.
+         */
+        function sendError(reportUrl) {
+            if (reportInBackground) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', reportUrl, true);
+                xhr.send();
+            } else {
+                window.open(reportUrl, '_system');
+            }
+        }
 
-                sendError = confirm(confirmmsg);
-                if (sendError) {
-                    // Wait for device ready so we can retrieve device data. In most cases device will already be ready.
-                    document.addEventListener('deviceready', reportError);
-                    // Report error if device ready isn't fired after 5 seconds.
-                    setTimeout(reportError, 5000);
+        if (errors.indexOf(msg) == -1) {
+            // Error hasn't happened yet.
+            errors.push(msg);
+            reportInBackground = shouldReportInBackground();
+
+            // Use setTimeout to prevent the following error if the app crashes right at the start:
+            // "The connection to the server was unsuccessful. (file:///android_asset/www/index.html)"
+            setTimeout(function() {
+                if (typeof msg == "string") {
+                    var send = true,
+                        confirmmsg = 'Unexpected error, please accept to report the bug so we can work on fixing it ' +
+                                        '(Internet connection required).';
+
+                    if (!reportInBackground) {
+                        send = confirm(confirmmsg);
+                    }
+
+                    if (send) {
+                        // Wait for device ready so we can retrieve device data. In most cases device will already be ready.
+                        document.addEventListener('deviceready', reportError);
+                        // Report error if device ready isn't fired after 5 seconds.
+                        setTimeout(reportError, 5000);
+                    }
                 }
-            }
 
-            // This may help debugging if we use logging apps in iOs or Android.
-            if (typeof console != "undefined" && typeof console.log == "function") {
-                console.log(msg);
-            }
-        }, 100);
+                // This may help debugging if we use logging apps in iOs or Android.
+                if (typeof console != "undefined" && typeof console.log == "function") {
+                    console.log(msg);
+                }
+            }, 100);
+        }
+    } catch(ex) {
+        // Something bad happened.
     }
 
     // Let default error handler run.

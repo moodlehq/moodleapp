@@ -29,6 +29,7 @@
     "navigatorlanguage": "Navigator language",
     "navigatoruseragent": "Navigator userAgent",
     "networkstatus": "Internet connection status",
+    "reportinbackground": "Report errors automatically",
     "settings": "Settings",
     "spaceusage": "Space usage",
     "storagetype": "Storage type",
