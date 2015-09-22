@@ -226,6 +226,13 @@ em {
   }
 }
 
+.mm-media-adapt-width {
+  max-width: 100%;
+}
+img.mm-media-adapt-width {
+  height: auto;
+}
+
 // Extra attributes to ionic classes to force frames via directive 100% height.
 
 .scroll {
