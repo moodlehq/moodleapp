@@ -10,6 +10,7 @@
     "course": "Curs",
     "day": "dia",
     "days": "dies",
+    "dfdayweekmonth": "ddd, D MMM",
     "downloading": "Baixant...",
     "error": "Error",
     "hour": "hora",

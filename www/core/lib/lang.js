@@ -112,6 +112,7 @@ angular.module('mm.core')
     self.changeCurrentLanguage = function(language) {
         var p1 = $translate.use(language),
             p2 = $mmConfig.set('current_language', language);
+        moment.locale(language);
         currentLanguage = language;
         return $q.all([p1, p2]);
     };
@@ -171,6 +172,7 @@ angular.module('mm.core')
     $ionicPlatform.ready(function() {
         $mmLang.getCurrentLanguage().then(function(language) {
             $translate.use(language);
+            moment.locale(language);
         });
     });
 });

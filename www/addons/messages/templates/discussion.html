@@ -10,13 +10,13 @@
             <section class="mma-messages-discussion-container" aria-live="polite">
                 <div ng-repeat="message in messages track by $index">
 
-                    <p ng-if="showDate(messages[$index], messages[$index - 1])" class="mma-messages-date"><span>{{ message.timecreated * 1000 | date:"EEE, d MMM" }}</span></p>
+                    <p ng-if="showDate(messages[$index], messages[$index - 1])" class="mma-messages-date"><span>{{ message.timecreated * 1000 | mmFormatDate:"dfdayweekmonth" }}</span></p>
 
                     <div class='item item-message item-text-wrap' ng-class='{"item-message-mine": message.useridfrom == currentUserId}'>
 
                         <mm-format-text after-render="scrollAfterRender" watch="true">{{ message.smallmessage | mmaMessagesFormat }}</mm-format-text>
                         <ion-spinner ng-if="message.sending"></ion-spinner>
-                        <span class="item-note">{{ message.timecreated * 1000 | date:"h:mma" }}</span>
+                        <span class="item-note">{{ message.timecreated * 1000 | mmFormatDate:"dftimedate" }}</span>
 
                     </div>
 

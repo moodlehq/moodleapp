@@ -10,16 +10,16 @@
             <mm-file ng-repeat="attachment in assign.introattachments" file="attachment" component="{{assigncomponent}}" component-id="{{assign.id}}"></mm-file>
             <div ng-if="assign.allowsubmissionsfromdate" class="item item-text-wrap">
                 <h2>{{ 'mma.mod_assign.allowsubmissionsfromdate' | translate }}</h2>
-                <p>{{ assign.allowsubmissionsfromdate * 1000 | date:'medium' }}</p>
+                <p>{{ assign.allowsubmissionsfromdate * 1000 | mmFormatDate:"dfmediumdate" }}</p>
             </div>
             <div class="item item-text-wrap" ng-if="assign.duedate">
                 <h2>{{ 'mma.mod_assign.duedate' | translate }}</h2>
-                <p ng-if="assign.duedate" >{{ assign.duedate * 1000 | date:'medium' }}</p>
+                <p ng-if="assign.duedate" >{{ assign.duedate * 1000 | mmFormatDate:"dfmediumdate" }}</p>
                 <p ng-if="!assign.duedate" >{{ 'mma.mod_assign.duedateno' | translate }}</p>
             </div>
             <div ng-if="assign.cutoffdate" class="item item-text-wrap">
                 <h2>{{ 'mma.mod_assign.cutoffdate' | translate }}</h2>
-                <p>{{ assign.cutoffdate * 1000 | date:'medium' }}</p>
+                <p>{{ assign.cutoffdate * 1000 | mmFormatDate:"dfmediumdate" }}</p>
             </div>
             <div ng-if="canviewsubmissions && submissions && submissions.length" class="card" >
                 <div class="item item-divider">{{ 'mma.mod_assign.submissions' | translate }}</div>
@@ -30,7 +30,7 @@
                         <img ng-src="{{submission.userprofileimageurl}}" mm-external-content alt="" role="presentation">
                         <p>{{submission.userfullname}}</p>
                         <div class="item-note">{{submission.status}}</div>
-                        <p>{{submission.timemodified * 1000 | date:'medium'}}</p>
+                        <p>{{ submission.timemodified * 1000 | mmFormatDate:"dfmediumdate" }}</p>
                     </a>
 
                     <div class="item item-body">
