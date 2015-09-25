@@ -43,6 +43,11 @@ angular.module('mm.core')
 
         // Get the webservice pluginfile URL, we ignore failures here.
         $mmSitesManager.getSite(siteId).then(function(site) {
+            if (!site.canDownloadFiles()) {
+                dom.remove(); // Remove element since it'll be broken.
+                return;
+            }
+
             var fn;
 
             if (targetAttr === 'src') {

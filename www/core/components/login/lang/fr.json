@@ -1,7 +1,6 @@
 {
     "authenticating": "Authentification",
     "cancel": "Annuler",
-    "cannotdownloadfiles": "Le téléchargement des fichiers est désactivé sur votre Moodle et l'app ne peut pas fonctionner si ce réglage est désactivé. Veuillez contacter l'administrateur de la plateforme.",
     "confirmdeletesite": "Voulez-vous vraiment supprimer la plateforme {{sitename}} ?",
     "connect": "Connecter !",
     "connecttomoodle": "Connexion à Moodle",

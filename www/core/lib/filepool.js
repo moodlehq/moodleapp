@@ -548,19 +548,26 @@ angular.module('mm.core')
             return $q.reject();
         }
 
-        return $mmWS.downloadFile(fileUrl, filePath).then(function(fileEntry) {
-            var now = new Date(),
-                data = poolFileObject || {};
+        return $mmSitesManager.getSite(siteId).then(function(site) {
 
-            data.downloaded = now.getTime();
-            data.stale = false;
-            data.url = fileUrl;
-            data.revision = revision;
-            data.timemodified = timemodified;
-            data.path = filePath;
+            if (!site.canDownloadFiles()) {
+                return $q.reject({drop: true});
+            }
 
-            return self._addFileToPool(siteId, fileId, data).then(function() {
-                return fileEntry.toURL();
+            return $mmWS.downloadFile(fileUrl, filePath).then(function(fileEntry) {
+                var now = new Date(),
+                    data = poolFileObject || {};
+
+                data.downloaded = now.getTime();
+                data.stale = false;
+                data.url = fileUrl;
+                data.revision = revision;
+                data.timemodified = timemodified;
+                data.path = filePath;
+
+                return self._addFileToPool(siteId, fileId, data).then(function() {
+                    return fileEntry.toURL();
+                });
             });
         });
     };
@@ -1378,6 +1385,8 @@ angular.module('mm.core')
                         // locking down the queue because of one file.
                         dropFromQueue = true;
                     }
+                } else if (typeof errorObject !== 'undefined' && errorObject.drop) {
+                    dropFromQueue = true;
                 }
 
                 if (dropFromQueue) {

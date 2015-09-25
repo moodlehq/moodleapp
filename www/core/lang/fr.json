@@ -1,6 +1,7 @@
 {
     "cancel": "Annuler",
     "cannotconnect": "Connexion impossible : vérifiez que l'URL a été saisie correctement et que votre site utilise Moodle 2.4 ou ultérieur.",
+    "cannotdownloadfiles": "Le téléchargement des fichiers est désactivé sur votre Moodle. Veuillez contacter l'administrateur de la plateforme.",
     "clearsearch": "Effacer la recherche",
     "completion-alt-auto-fail": "Terminé : {{$a}} (n'a pas atteint la note pour passer)",
     "completion-alt-auto-n": "Non terminé : {{$a}}",

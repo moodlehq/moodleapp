@@ -1,7 +1,6 @@
 {
     "authenticating": "Autenticazione in corso",
     "cancel": "Annulla",
-    "cannotdownloadfiles": "Lo scaricamento dei file è disabilitato nel servizio Mobile. l'app non può funzionare con questa impostazione disabilitata, per favore contatta l'amministratore dle sito.",
     "confirmdeletesite": "Sei sicuro di eliminare il sito {{sitename}}?",
     "connect": "Collegati!",
     "connecttomoodle": "Collegati a Moodle",

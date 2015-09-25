@@ -1,7 +1,6 @@
 {
     "authenticating": "Autenticando",
     "cancel": "Cancelar",
-    "cannotdownloadfiles": "La descarga de archivos está deshabilitada en su servicio Mobile, la app nop puede trabajar con esta configuración deshbilitada. Por favor contacte al administrador de su sitio.",
     "confirmdeletesite": "¿Está Usted seguro de querer eliminar el sitio {{sitename}}?",
     "connect": "¡Conectar!",
     "connecttomoodle": "Conectar a Moodle",
