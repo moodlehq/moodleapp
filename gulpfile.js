@@ -313,7 +313,7 @@ gulp.task('e2e-build', function() {
     .usage('gulp e2e-build --target <target> <options>')
     .option('target', {
       alias: 't',
-      choices: ['browser', 'android'],
+      choices: ['browser', 'android', 'ios'],
       describe: 'The target for the test suite'
     })
     .option('output', {
@@ -398,6 +398,29 @@ gulp.task('e2e-build', function() {
         default: 'http://127.0.0.1:4723/wd/hub',
         describe: 'The URL to the Web Driver'
       });
+
+  // Arguments for iOS.
+  } else if (argv.target == 'ios') {
+    yargs = yargs
+      .option('ipa', {
+        alias: 'i',
+        describe: 'The path to the .ipa'
+      })
+      .option('device', {
+        alias: 'd',
+        demand: true,
+        describe: 'The device UDID of the targetted device',
+      })
+      .option('version', {
+        alias: 'v',
+        demand: true,
+        describe: 'The iOS version of the targetted device (7.1.2, 8.0, ...)'
+      })
+      .option('webdriver', {
+        alias: 'w',
+        default: 'http://127.0.0.1:4723/wd/hub',
+        describe: 'The URL to the Web Driver'
+      });
   }
 
   argv = yargs.argv;
@@ -456,6 +479,22 @@ gulp.task('e2e-build', function() {
     config.capabilities.udid = argv.device;
     config.capabilities.autoWebview = true;
     config.capabilities.autoWebviewTimeout = 10000;
+
+  // iOS.
+  } else if (argv.target == 'ios') {
+    config.seleniumAddress = argv.webdriver;
+    if (argv.ipa.charAt(0) === '/' || argv.ipa.charAt(0) === '\\') {
+      config.capabilities.app = argv.ipa;
+    } else {
+      config.capabilities.app = path.join(__dirname, argv.ipa);
+    }
+    config.capabilities.browserName = 'iOS';
+    config.capabilities.platformName = 'iOS';
+    config.capabilities.platformVersion = String(argv.version);
+    config.capabilities.deviceName = 'iOS Device';
+    config.capabilities.udid = argv.device;
+    config.capabilities.autoWebview = true;
+    config.capabilities.autoWebviewTimeout = 10000;
   }
 
   // Prepend the onPrepare function.
@@ -471,7 +510,7 @@ gulp.task('e2e-build', function() {
     "global.ISIOS          = " + (argv.target == 'ios' ? 'true' : 'false') + ";\n" +
     "global.ISTABLET       = " + (argv.tablet ? 'true' : 'false') + ";\n" +
     "global.DEVICEURL      = " + (argv.url ? "'" + argv.url + "'" : undefined) + ";\n" +
-    "global.DEVICEVERSION  = " + (argv.version ? argv.version : 'undefined') + ";\n" +
+    "global.DEVICEVERSION  = " + (argv.version ? "'" + argv.version + "'" : 'undefined') + ";\n" +
     "global.SITEURL        = '" + (argv['site-url']) + "';\n" +
     "global.SITEVERSION    = " + (argv['site-version']) + ";\n" +
     "global.SITEHASLM      = " + (argv['site-has-local-mobile'] ? 'true' : 'false') + ";\n" +
