@@ -235,6 +235,10 @@ angular.module('mm.addons.messages')
                 });
 
                 obsHide = $mmEvents.on(mmCoreEventKeyboardHide, function(e) {
+                    if (!scrollView || !scrollView.getScrollPosition()) {
+                        return; // Can't get scroll position, stop.
+                    }
+
                     if (scrollView.getScrollPosition().top >= maxInitialScroll) {
                         // scrollBy(0,0) would automatically reset at maxInitialScroll. We need to apply the difference
                         // from there to scroll to the right point.
