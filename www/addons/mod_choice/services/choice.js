@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_choice')
  * @ngdoc service
  * @name $mmaModChoice
  */
-.factory('$mmaModChoice', function($q, $mmSite, $mmCourse, mmaModChoiceResultsAfterAnswer, mmaModChoiceResultsAfterClose,
+.factory('$mmaModChoice', function($q, $mmSite, mmaModChoiceResultsAfterAnswer, mmaModChoiceResultsAfterClose,
             mmaModChoiceResultsAlways) {
     var self = {};
 
@@ -40,6 +40,29 @@ angular.module('mm.addons.mod_choice')
         return  choice.showresults === mmaModChoiceResultsAlways ||
                 choice.showresults === mmaModChoiceResultsAfterClose && choice.timeclose !== 0 && choice.timeclose <= now ||
                 choice.showresults === mmaModChoiceResultsAfterAnswer && hasAnswered;
+    };
+
+    /**
+     * Delete responses from a choice.
+     *
+     * @module mm.addons.mod_choice
+     * @ngdoc method
+     * @name $mmaModChoice#deleteResponses
+     * @param {Number} choiceid      Choice ID.
+     * @param {Number[]} [responses] IDs of the answers. If not defined, delete all the answers of the current user.
+     * @return {Promise}             Promise resolved when the options are deleted.
+     */
+    self.deleteResponses = function(choiceid, responses) {
+        responses = responses || [];
+        var params = {
+            choiceid: choiceid,
+            responses: responses
+        };
+        return $mmSite.write('mod_choice_delete_choice_responses', params).then(function(response) {
+            if (!response || response.status === false) {
+                return $q.reject();
+            }
+        });
     };
 
     /**
@@ -71,6 +94,18 @@ angular.module('mm.addons.mod_choice')
     function getChoiceResultsCacheKey(choiceid) {
         return 'mmaModChoice:results:' + choiceid;
     }
+
+    /**
+     * Returns if current site supports deleting choice responses.
+     *
+     * @module mm.addons.mod_choice
+     * @ngdoc method
+     * @name $mmaModChoice#isDeleteResponsesEnabled
+     * @return {Boolean} True if supported, false otherwise.
+     */
+    self.isDeleteResponsesEnabled = function() {
+        return $mmSite.wsAvailable('mod_choice_delete_choice_responses');
+    };
 
     /**
      * Return whether or not the plugin is enabled. Plugin is enabled if the choice WS are available.

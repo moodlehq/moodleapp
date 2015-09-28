@@ -9,6 +9,7 @@
     "numberofuser": "Number of participants",
     "numberofuserinpercentage": "Percentage of participants",
     "previewonly": "This is just a preview of the available options for this activity. You will not be able to submit your choice until {{$a}}.",
+    "removemychoice": "Remove my choice",
     "responses": "Responses",
     "responsesresultgraphdescription": "{{number}}% of the users chose the option: {{text}}.",
     "responsesresultgraphheader": "Graph display",

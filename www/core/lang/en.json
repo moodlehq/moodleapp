@@ -1,5 +1,6 @@
 {
     "android": "Android",
+    "areyousure": "Are you sure?",
     "cancel": "Cancel",
     "cannotconnect": "Cannot connect: Verify that you have typed correctly the URL and that your site uses Moodle 2.4 or later.",
     "cannotdownloadfiles": "File downloading is disabled in your Mobile service. Please, contact your site administrator.",
