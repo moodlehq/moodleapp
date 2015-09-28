@@ -112,7 +112,7 @@ angular.module('mm.core.course')
     // Refresh list after a completion change since there could be new activities or so.
     function refreshAfterCompletionChange() {
         var scrollView = $ionicScrollDelegate.$getByHandle('mmSectionScroll');
-        if (scrollView) {
+        if (scrollView && scrollView.getScrollPosition()) {
             $scope.loadingPaddingTop = scrollView.getScrollPosition().top;
         }
         $scope.sectionLoaded = false;
