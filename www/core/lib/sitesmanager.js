@@ -39,8 +39,8 @@ angular.module('mm.core')
  * @name $mmSitesManager
  */
 .factory('$mmSitesManager', function($http, $q, $mmSitesFactory, md5, $mmLang, $mmConfig, $mmApp, $mmUtil, $mmEvents, $state,
-            $translate, mmCoreSitesStore, mmCoreCurrentSiteStore, mmCoreEventLogin, mmCoreEventLogout, $log, mmCoreEventSiteUpdated,
-            mmCoreEventSiteAdded, mmCoreEventSessionExpired) {
+            $translate, mmCoreSitesStore, mmCoreCurrentSiteStore, mmCoreEventLogin, mmCoreEventLogout, $log, $mmLocalNotifications,
+            mmCoreEventSiteUpdated, mmCoreEventSiteAdded, mmCoreEventSessionExpired, mmCoreEventSiteDeleted) {
 
     $log = $log.getInstance('$mmSitesManager');
 
@@ -398,6 +398,8 @@ angular.module('mm.core')
                 }, function() {
                     // DB remove shouldn't fail, but we'll go ahead even if it does.
                     return site.deleteFolder();
+                }).then(function() {
+                    $mmEvents.trigger(mmCoreEventSiteDeleted, site);
                 });
             });
         });
