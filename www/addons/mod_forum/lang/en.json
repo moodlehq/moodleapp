@@ -1,6 +1,13 @@
 {
+    "couldnotadd": "Could not add your post due to an unknown error",
+    "erroremptymessage": "Post message cannot be empty",
+    "erroremptysubject": "Post subject cannot be empty",
     "errorgetforum": "Error getting forum data.",
     "forumnodiscussionsyet": "There are no discussion topics yet in this forum.",
+    "message": "Message",
     "numdiscussions": "{{numdiscussions}} discussions",
-    "numreplies": "{{numreplies}} replies"
+    "numreplies": "{{numreplies}} replies",
+    "posttoforum": "Post to forum",
+    "reply": "Reply",
+    "subject": "Subject"
 }

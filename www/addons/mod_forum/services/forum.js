@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_forum')
  * @ngdoc controller
  * @name $mmaModForum
  */
-.factory('$mmaModForum', function($q, $mmSite, $mmUtil, $mmUser, mmaModForumDiscPerPage) {
+.factory('$mmaModForum', function($q, $mmSite, $mmUser, mmaModForumDiscPerPage) {
     var self = {};
 
     /**
@@ -217,6 +217,18 @@ angular.module('mm.addons.mod_forum')
     };
 
     /**
+     * Check if the current site allows replying to posts.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#isReplyPostEnabled
+     * @return {Boolean} True if enabled, false otherwise.
+     */
+    self.isReplyPostEnabled = function() {
+        return $mmSite.wsAvailable('mod_forum_add_discussion_post');
+    };
+
+    /**
      * Report a forum as being viewed.
      *
      * @module mm.addons.mod_forum
@@ -233,6 +245,33 @@ angular.module('mm.addons.mod_forum')
             return $mmSite.write('mod_forum_view_forum', params);
         }
         return $q.reject();
+    };
+
+    /**
+     * Reply to a certain post.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#replyPost
+     * @param {Number} postid  ID of the post being replied.
+     * @param {String} subject New post's subject.
+     * @param {String} message New post's message.
+     * @return {Promise}       Promise resolved when the post is created.
+     */
+    self.replyPost = function(postid, subject, message) {
+        var params = {
+            postid: postid,
+            subject: subject,
+            message: message
+        };
+
+        return $mmSite.write('mod_forum_add_discussion_post', params).then(function(response) {
+            if (!response || !response.postid) {
+                return $q.reject();
+            } else {
+                return response.postid;
+            }
+        });
     };
 
     /**
