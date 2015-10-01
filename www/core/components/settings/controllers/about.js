@@ -66,7 +66,7 @@ angular.module('mm.core.settings')
     $scope.networkstatus = $mmApp.isOnline() ? 'mm.core.online' : 'mm.core.offline';
     $scope.wificonnection = $mmApp.isNetworkAccessLimited() ? 'mm.core.no' : 'mm.core.yes';
     $scope.devicewebworkers = !!window.Worker && !!window.URL ? 'mm.core.yes' : 'mm.core.no';
-    $scope.device = $window.device;
+    $scope.device = ionic.Platform.device();
 
     if ($mmFS.isAvailable()) {
         $mmFS.getBasePath().then(function(basepath) {
