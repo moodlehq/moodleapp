@@ -55,6 +55,44 @@ angular.module('mm.addons.mod_forum')
     }
 
     /**
+     * Add a new discussion.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#addNewDiscussion
+     * @param {Number} forumid   Forum ID.
+     * @param {String} subject   New discussion's subject.
+     * @param {String} message   New discussion's message.
+     * @param {String} subscribe True if should subscribe to the discussion, false otherwise.
+     * @param {String} [groupid] Group this discussion belongs to.
+     * @return {Promise}         Promise resolved when the discussion is created.
+     */
+    self.addNewDiscussion = function(forumid, subject, message, subscribe, groupid) {
+        var params = {
+            forumid: forumid,
+            subject: subject,
+            message: message,
+            options: [
+                {
+                    name: 'discussionsubscribe',
+                    value: !!subscribe
+                }
+            ]
+        };
+        if (groupid) {
+            params.groupid = groupid;
+        }
+
+        return $mmSite.write('mod_forum_add_discussion', params).then(function(response) {
+            if (!response || !response.discussionid) {
+                return $q.reject();
+            } else {
+                return response.discussionid;
+            }
+        });
+    };
+
+    /**
      * Extract the starting post of a discussion from a list of posts. The post is removed from the array passed as a parameter.
      *
      * @module mm.addons.mod_forum
@@ -214,6 +252,20 @@ angular.module('mm.addons.mod_forum')
         return $mmSite.invalidateWsCacheForKey(getForumDataCacheKey(courseid)).then(function() {
             return $mmSite.invalidateWsCacheForKey(getDiscussionsListCacheKey(forumid));
         });
+    };
+
+    /**
+     * Check if the current site allows creating new discussions.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#isCreateDiscussionEnabled
+     * @return {Boolean} True if enabled, false otherwise.
+     */
+    self.isCreateDiscussionEnabled = function() {
+        return $mmSite.wsAvailable('core_group_get_activity_groupmode') &&
+                $mmSite.wsAvailable('core_group_get_activity_allowed_groups') &&
+                $mmSite.wsAvailable('mod_forum_add_discussion');
     };
 
     /**

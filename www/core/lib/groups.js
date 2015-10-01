@@ -25,6 +25,85 @@ angular.module('mm.core')
 
     $log = $log.getInstance('$mmGroups');
 
+    // Group mode constants.
+    self.NOGROUPS       = 0;
+    self.SEPARATEGROUPS = 1;
+    self.VISIBLEGROUPS  = 2;
+
+    /**
+     * Get the groups allowed in an activity.
+     *
+     * @module mm.core.groups
+     * @ngdoc method
+     * @name $mmGroups#getActivityAllowedGroups
+     * @param {Number} cmid     Course module ID.
+     * @param {Number} [userid] User ID. If not defined, use current user.
+     * @return {Promise}        Promise resolved when the groups are retrieved.
+     */
+    self.getActivityAllowedGroups = function(cmid, userid) {
+        userid = userid || $mmSite.getUserId();
+
+        var params = {
+                cmid: cmid,
+                userid: userid
+            },
+            preSets = {
+                cacheKey: getActivityAllowedGroupsCacheKey(cmid, userid)
+            };
+
+        return $mmSite.read('core_group_get_activity_allowed_groups', params, preSets).then(function(response) {
+            if (!response || !response.groups) {
+                return $q.reject();
+            }
+            return response.groups;
+        });
+    };
+
+    /**
+     * Get cache key for group mode WS calls.
+     *
+     * @param {Number} cmid Course module ID.
+     * @return {String}     Cache key.
+     */
+    function getActivityAllowedGroupsCacheKey(cmid, userid) {
+        return 'mmGroups:allowedgroups:' + cmid + ':' + userid;
+    }
+
+    /**
+     * Get the group mode of an activity.
+     *
+     * @module mm.core.groups
+     * @ngdoc method
+     * @name $mmGroups#getActivityGroupMode
+     * @param {Number} cmid Course module ID.
+     * @return {Promise}    Promise resolved when the group mode is retrieved.
+     */
+    self.getActivityGroupMode = function(cmid) {
+        var params = {
+                cmid: cmid
+            },
+            preSets = {
+                cacheKey: getActivityGroupModeCacheKey(cmid)
+            };
+
+        return $mmSite.read('core_group_get_activity_groupmode', params, preSets).then(function(response) {
+            if (!response || typeof response.groupmode == 'undefined') {
+                return $q.reject();
+            }
+            return response.groupmode;
+        });
+    };
+
+    /**
+     * Get cache key for group mode WS calls.
+     *
+     * @param {Number} cmid Course module ID.
+     * @return {String}     Cache key.
+     */
+    function getActivityGroupModeCacheKey(cmid) {
+        return 'mmGroups:groupmode:' + cmid;
+    }
+
     /**
      * Get user groups in courses.
      *
@@ -49,13 +128,10 @@ angular.module('mm.core')
             } else { // Param is array of courseids.
                 courseid = course;
             }
-            var promise = self.getUserGroupsInCourse(courseid, refresh, siteid, userid);
-            promises.push(promise);
-            promise.then(function(response) {
-                if (response.groups && response.groups.length > 0) {
-                    groups = groups.concat(response.groups);
-                }
+            var promise = self.getUserGroupsInCourse(courseid, refresh, siteid, userid).then(function(coursegroups) {
+                groups = groups.concat(coursegroups);
             });
+            promises.push(promise);
         });
 
         $q.all(promises).finally(function() {
@@ -90,8 +166,42 @@ angular.module('mm.core')
             if (refresh) {
                 presets.getFromCache = false;
             }
-            return site.read('core_group_get_course_user_groups', data, presets);
+            return site.read('core_group_get_course_user_groups', data, presets).then(function(response) {
+                if (response && response.groups) {
+                    return response.groups;
+                } else {
+                    return $q.reject();
+                }
+            });
         });
+    };
+
+    /**
+     * Invalidates activity allowed groups.
+     *
+     * @module mm.core.groups
+     * @ngdoc method
+     * @name $mmGroups#invalidateActivityAllowedGroups
+     * @param {Number} cmid     Course module ID.
+     * @param {Number} [userid] User ID. If not defined, use current user.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateActivityAllowedGroups = function(cmid, userid) {
+        userid = userid || $mmSite.getUserId();
+        return $mmSite.invalidateWsCacheForKey(getActivityAllowedGroupsCacheKey(cmid, userid));
+    };
+
+    /**
+     * Invalidates activity group mode.
+     *
+     * @module mm.core.groups
+     * @ngdoc method
+     * @name $mmGroups#invalidateActivityGroupMode
+     * @param {Number} cmid Course module ID.
+     * @return {Promise}    Promise resolved when the data is invalidated.
+     */
+    self.invalidateActivityGroupMode = function(cmid) {
+        return $mmSite.invalidateWsCacheForKey(getActivityGroupModeCacheKey(cmid));
     };
 
     return self;
