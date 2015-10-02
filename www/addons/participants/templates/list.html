@@ -1,5 +1,5 @@
 <ion-view view-title="{{ 'mma.participants.participants' | translate }}">
-    <mm-split-view load-when="participantsLoaded">
+    <mm-split-view load-when="participantsLoaded" component="mmaParticipantsList">
         <ion-content>
             <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="participantsLoaded" on-refresh="refreshParticipants()">
             </ion-refresher>
