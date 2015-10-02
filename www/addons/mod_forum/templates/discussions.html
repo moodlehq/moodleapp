@@ -28,6 +28,10 @@
                                 <div class="item item-body">
                                     <p><mm-format-text watch="true" clean="true" shorten="150">{{discussion.message}}</mm-format-text></p>
                                     <span class="item-note text-right">
+                                        <span ng-if="discussion.groupname">
+                                            <i class="icon ion-ios-people"></i> {{ discussion.groupname }}
+                                            <br />
+                                        </span>
                                         <span><i class="icon ion-ios-chatboxes-outline"></i> {{ 'mma.mod_forum.numreplies' | translate:{numreplies: discussion.numreplies} }}</span>
                                         <span ng-if="discussion.timemodified > discussion.created">
                                             <br />

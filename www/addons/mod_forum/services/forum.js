@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_forum')
  * @ngdoc controller
  * @name $mmaModForum
  */
-.factory('$mmaModForum', function($q, $mmSite, $mmUser, mmaModForumDiscPerPage) {
+.factory('$mmaModForum', function($q, $mmSite, $mmUser, $mmGroups, $translate, mmaModForumDiscPerPage) {
     var self = {};
 
     /**
@@ -132,6 +132,41 @@ angular.module('mm.addons.mod_forum')
         return  $mmSite.wsAvailable('mod_forum_get_forums_by_courses') &&
                 $mmSite.wsAvailable('mod_forum_get_forum_discussions_paginated') &&
                 $mmSite.wsAvailable('mod_forum_get_forum_discussion_posts');
+    };
+
+    /**
+     * Format discussions, setting groupname if the discussion group is valid.
+     *
+     * @param  {Number} cmid          Forum cmid.
+     * @param  {Object[]} discussions List of discussions to format.
+     * @return {Promise}              Promise resolved with the formatted discussions.
+     */
+    self.formatDiscussionsGroups = function(cmid, discussions) {
+        discussions = angular.copy(discussions);
+        return $translate('mm.core.allparticipants').then(function(strAllParts) {
+            return $mmGroups.getActivityAllowedGroups(cmid).then(function(forumgroups) {
+                // Turn groups into an object where each group is identified by id.
+                var groups = {};
+                angular.forEach(forumgroups, function(fg) {
+                    groups[fg.id] = fg;
+                });
+
+                // Format discussions.
+                angular.forEach(discussions, function(disc) {
+                    if (disc.groupid === -1) {
+                        disc.groupname = strAllParts;
+                    } else {
+                        var group = groups[disc.groupid];
+                        if (group) {
+                            disc.groupname = group.name;
+                        }
+                    }
+                });
+                return discussions;
+            });
+        }).catch(function() {
+            return discussions;
+        });
     };
 
     /**
