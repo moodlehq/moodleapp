@@ -91,6 +91,8 @@ angular.module('mm.core')
 
         if (siteurl.indexOf('://localhost') == -1 && !$mmUtil.isValidURL(siteurl)) {
             return $mmLang.translateAndReject('mm.login.invalidsite');
+        } else if (!$mmApp.isOnline()) {
+            return $mmLang.translateAndReject('mm.core.networkerrormsg');
         } else {
 
             protocol = protocol || "https://";
@@ -147,6 +149,10 @@ angular.module('mm.core')
      */
     self.getUserToken = function(siteurl, username, password, service, retry) {
         retry = retry || false;
+
+        if (!$mmApp.isOnline()) {
+            return $mmLang.translateAndReject('mm.core.networkerrormsg');
+        }
 
         var promise;
 
