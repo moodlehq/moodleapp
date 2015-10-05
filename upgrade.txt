@@ -1,0 +1,35 @@
+This files describes API changes in the Moodle Mobile app,
+information provided here is intended especially for developers.
+
+=== 2.3 ===
+
+ * MomentJS installed. Please run:
+    bower update
+ * Notifications from a site not shown once a site is deleted.
+ * Error reporting removed in development version.
+ * Now using npm Cordova plugins when possible. Please run:
+    ionic state restore
+    ionic plugin add https://github.com/Tunts/WebIntent https://github.com/ti8m/DocumentHandler cordova-plugin-customurlscheme --variable URL_SCHEME=moodlemobile
+ * Added a hook to allow requests without SSL on iOS9: hooks/after_prepare/020_add_ios_transport_security.js. Please give the hook executable permissions and run:
+    npm install
+ * New event mmaModForumNewDiscussionEvent triggered when a forum discussion is created using the app.
+ * New event mmCoreEventSiteDeleted triggered when a site is deleted.
+
+=== 2.2 ===
+
+ * Upgrade to Cordova 5.2.
+ * Ionic updated to v1.1. Please run:
+    bower update
+ * Now using a fork of local notifications plugin: cordova-plugin-local-notifications-mm. Please run:
+    ionic state restore
+ * Added an angular script to make the app work on iOS9.
+ * $mmGroups#getUserGroups now accepts 'userid' parameter to retrieve groups from any user.
+
+=== 2.1 ===
+
+ * Ionic updated to v1.0.1. Please run:
+    bower update
+ * Added gulp-slash and gulp-ng-annotate to npm dependencies. Please run:
+    npm install
+ * Included error reporting feature.
+ * New event mmCoreEventUserDeleted triggered when we detect that a user has been deleted.
