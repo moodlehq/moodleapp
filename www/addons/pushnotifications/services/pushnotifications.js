@@ -212,14 +212,14 @@ angular.module('mm.addons.pushnotifications')
     self.registerDeviceOnMoodle = function() {
         $log.debug('Register device on Moodle.');
 
-        if (!$mmSite.isLoggedIn() || !pushID) {
+        if (!$mmSite.isLoggedIn() || !pushID || !$mmApp.isDevice()) {
             return $q.reject();
         }
 
         return $mmConfig.get('app_id').then(function(appid) {
             var data = {
                 appid:      appid,
-                name:       window.device.name || '',
+                name:       ionic.Platform.device().name || '',
                 model:      $cordovaDevice.getModel(),
                 platform:   $cordovaDevice.getPlatform(),
                 version:    $cordovaDevice.getVersion(),
@@ -241,7 +241,7 @@ angular.module('mm.addons.pushnotifications')
      */
     self.unregisterDeviceOnMoodle = function(site) {
 
-        if (!site) {
+        if (!site || !$mmApp.isDevice()) {
             return $q.reject();
         }
 
