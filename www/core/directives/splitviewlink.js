@@ -93,8 +93,7 @@ angular.module('mm.core')
                 stateName,
                 stateParams,
                 stateParamsString,
-                tabletStateName,
-                component = splitViewController.getComponent();
+                tabletStateName;
 
             if (sref) {
                 matches = sref.match(srefRegex);
@@ -117,7 +116,7 @@ angular.module('mm.core')
                         if ($ionicPlatform.isTablet()) {
                             if (!$state.get(tabletStateName)) {
                                 // State doesn't exists. Let's create it.
-                                if (!createTabletState(stateName, tabletStateName, component)) {
+                                if (!createTabletState(stateName, tabletStateName, splitViewController.getComponent())) {
                                     return;
                                 }
                             }
