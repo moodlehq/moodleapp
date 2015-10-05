@@ -21,18 +21,22 @@ angular.module('mm.addons.mod_forum')
  * @ngdoc controller
  * @name mmaModForumDiscussionsCtrl
  */
-.controller('mmaModForumDiscussionsCtrl', function($q, $scope, $stateParams, $mmaModForum, $mmCourse, $mmUtil,
-            mmUserProfileState) {
+.controller('mmaModForumDiscussionsCtrl', function($q, $scope, $stateParams, $mmaModForum, $mmCourse, $mmUtil, $mmGroups,
+            $mmEvents, $ionicScrollDelegate, $ionicPlatform, mmUserProfileState, mmaModForumNewDiscussionEvent) {
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
         forum,
-        page = 0;
+        page = 0,
+        scrollView = $ionicScrollDelegate.$getByHandle('mmaModForumDiscussionsScroll'),
+        shouldScrollTop = false,
+        usesGroups = false;
 
     $scope.title = module.name;
     $scope.description = module.description;
     $scope.moduleurl = module.url;
     $scope.courseid = courseid;
     $scope.userStateName = mmUserProfileState;
+    $scope.isCreateEnabled = $mmaModForum.isCreateDiscussionEnabled();
 
     // Convenience function to get forum data and discussions.
     function fetchForumDataAndDiscussions(refresh) {
@@ -44,7 +48,11 @@ angular.module('mm.addons.mod_forum')
                 $scope.description = forum.intro || $scope.description;
                 $scope.forum = forum;
 
-                return fetchDiscussions(refresh);
+                return $mmGroups.getActivityGroupMode(forum.cmid).then(function(mode) {
+                    usesGroups = mode === $mmGroups.SEPARATEGROUPS || mode === $mmGroups.VISIBLEGROUPS;
+                }).finally(function() {
+                    return fetchDiscussions(refresh);
+                });
             } else {
                 $mmUtil.showErrorModal('mma.mod_forum.errorgetforum', true);
                 return $q.reject();
@@ -63,18 +71,21 @@ angular.module('mm.addons.mod_forum')
         }
 
         return $mmaModForum.getDiscussions(forum.id, page).then(function(response) {
-            if (page == 0) {
-                $scope.discussions = response.discussions;
-            } else {
-                $scope.discussions = $scope.discussions.concat(response.discussions);
-            }
+            var promise = usesGroups ?
+                    $mmaModForum.formatDiscussionsGroups(forum.cmid, response.discussions) : $q.when(response.discussions);
+            return promise.then(function(discussions) {
+                if (page == 0) {
+                    $scope.discussions = discussions;
+                } else {
+                    $scope.discussions = $scope.discussions.concat(discussions);
+                }
 
-            $scope.count = $scope.discussions.length;
-            $scope.canLoadMore = response.canLoadMore;
-            page++;
+                $scope.count = $scope.discussions.length;
+                $scope.canLoadMore = response.canLoadMore;
+                page++;
 
-            preFetchDiscussionsPosts(response.discussions);
-
+                preFetchDiscussionsPosts(discussions);
+            });
         }, function(message) {
             $mmUtil.showErrorModal(message);
             $scope.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
@@ -87,6 +98,18 @@ angular.module('mm.addons.mod_forum')
         angular.forEach(discussions, function(discussion) {
             var discussionid = discussion.discussion;
             $mmaModForum.getDiscussionPosts(discussionid);
+        });
+    }
+
+    // Refresh forum data and discussions list.
+    function refreshData() {
+        var promises = [];
+        if (forum) {
+            promises.push($mmaModForum.invalidateDiscussionsList(courseid, forum.id));
+            promises.push($mmGroups.invalidateActivityGroupMode(forum.cmid));
+        }
+        return $q.all(promises).finally(function() {
+            return fetchForumDataAndDiscussions(true);
         });
     }
 
@@ -107,11 +130,38 @@ angular.module('mm.addons.mod_forum')
 
     // Pull to refresh.
     $scope.refreshDiscussions = function() {
-        var promise = forum ? $mmaModForum.invalidateDiscussionsList(courseid, forum.id) : $q.when();
-        promise.finally(function() {
-            fetchForumDataAndDiscussions(true).finally(function() {
-                $scope.$broadcast('scroll.refreshComplete');
-            });
+        refreshData().finally(function() {
+            $scope.$broadcast('scroll.refreshComplete');
         });
     };
+
+    // Listen for discussions added. When a discussion is added, we reload the data.
+    var obsNewDisc = $mmEvents.on(mmaModForumNewDiscussionEvent, function(data) {
+        if ((forum && forum.id === data.forumid) || data.cmid === module.id) {
+            if ($ionicPlatform.isTablet()) {
+                scrollView.scrollTop();
+            } else {
+                // We can't scroll top inmediately because the scroll is not seen.
+                shouldScrollTop = true;
+            }
+            $scope.discussionsLoaded = false;
+            refreshData().finally(function() {
+                $scope.discussionsLoaded = true;
+            });
+        }
+    });
+
+    // Scroll top if needed.
+    $scope.$on('$ionicView.enter', function() {
+        if (shouldScrollTop) {
+            shouldScrollTop = false;
+            scrollView.scrollTop();
+        }
+    });
+
+    $scope.$on('$destroy', function(){
+        if (obsNewDisc && obsNewDisc.off) {
+            obsNewDisc.off();
+        }
+    });
 });

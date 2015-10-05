@@ -1,0 +1,34 @@
+<div class="item item-divider" ng-if="showdivider"></div>
+<div class="item item-avatar">
+    <img ng-if="post.userpictureurl" ng-src="{{post.userpictureurl}}" mm-external-content mm-user-link courseid="{{courseid}}" userid="{{post.userid}}" alt="" role="presentation">
+    <img ng-if="!post.userpictureurl" src="img/user-avatar.png"  alt="" role="presentation">
+    <h2 ng-if="titleimportant">{{title}}</h2>
+    <p ng-if="!titleimportant">{{title}}</p>
+    <div class="item-note">{{post.modified | mmDateDayOrTime}}</div>
+    <p>{{subject}}</p>
+</div>
+<div class="item item-body">
+    <mm-format-text class="mm-content-with-float" watch="true">{{post.message}}</mm-format-text>
+    <mm-file ng-repeat="attachment in post.attachments" file="attachment" component="{{component}}" component-id="{{post.id}}"></mm-file>
+</div>
+<div class="item tabs tabs-icon-left mma-forum-align-right" ng-if="isReplyEnabled && post.canreply">
+    <a class="tab-item" title="{{ 'mma.mod_forum.reply' | translate }}" ng-click="showReply()" role="button" aria-controls="mma-forum-reply-form-{{post.id}}" aria-expanded="{{ newpost.replyingto === post.id }}">
+        <i class="icon ion-reply"></i> {{ 'mma.mod_forum.reply' | translate }}
+    </a>
+</div>
+<div id="mma-forum-reply-form-{{post.id}}" class="item" ng-show="newpost.replyingto === post.id">
+    <form class="list mma-forum-border">
+        <label class="item item-input item-stacked-label">
+            <span class="input-label">{{ 'mma.mod_forum.subject' | translate }}</span>
+            <input type="text" placeholder="{{ 'mma.mod_forum.subject' | translate }}" ng-model="newpost.subject">
+        </label>
+        <label class="item item-input item-stacked-label">
+            <span class="input-label">{{ 'mma.mod_forum.message' | translate }}</span>
+            <textarea class="mma-forum-textarea" placeholder="{{ 'mma.mod_forum.message' | translate }}" ng-model="newpost.message" aria-multiline="true"></textarea>
+        </label>
+        <div class="item button-bar">
+            <button class="button" ng-click="reply()" ng-disabled="newpost.subject == '' || newpost.message == ''">{{ 'mma.mod_forum.posttoforum' | translate }}</button>
+            <button class="button" ng-click="cancel()">{{ 'mm.core.cancel' | translate }}</button>
+        </div>
+    </form>
+</div>

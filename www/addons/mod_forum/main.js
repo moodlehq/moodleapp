@@ -16,6 +16,7 @@ angular.module('mm.addons.mod_forum', [])
 
 .constant('mmaModForumDiscPerPage', 10) // Max of discussions per page.
 .constant('mmaModForumComponent', 'mmaModForum')
+.constant('mmaModForumNewDiscussionEvent', 'mma-mod_forum_new_discussion')
 
 .config(function($stateProvider) {
 
@@ -45,6 +46,21 @@ angular.module('mm.addons.mod_forum', [])
             'site': {
                 controller: 'mmaModForumDiscussionCtrl',
                 templateUrl: 'addons/mod_forum/templates/discussion.html'
+            }
+        }
+    })
+
+    .state('site.mod_forum-newdiscussion', {
+        url: '/mod_forum-newdiscussion',
+        params: {
+            courseid: null,
+            forumid: null,
+            cmid: null
+        },
+        views: {
+            'site': {
+                controller: 'mmaModForumNewDiscussionCtrl',
+                templateUrl: 'addons/mod_forum/templates/newdiscussion.html'
             }
         }
     });

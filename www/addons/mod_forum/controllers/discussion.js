@@ -21,13 +21,20 @@ angular.module('mm.addons.mod_forum')
  * @ngdoc controller
  * @name mmaModForumDiscussionCtrl
  */
-.controller('mmaModForumDiscussionCtrl', function($q, $scope, $stateParams, $mmaModForum, $mmSite, $mmUtil, mmaModForumComponent) {
+.controller('mmaModForumDiscussionCtrl', function($q, $scope, $stateParams, $mmaModForum, $mmSite, $mmUtil, $ionicScrollDelegate,
+            mmaModForumComponent) {
 
     var discussionid = $stateParams.discussionid,
-        courseid = $stateParams.courseid;
+        courseid = $stateParams.courseid,
+        scrollView = $ionicScrollDelegate.$getByHandle('mmaModForumPostsScroll');
 
     $scope.component = mmaModForumComponent;
     $scope.courseid = courseid;
+    $scope.newpost = {
+        replyingto: undefined,
+        subject: '',
+        message: ''
+    };
 
     // Convenience function to get forum discussions.
     function fetchPosts() {
@@ -37,6 +44,13 @@ angular.module('mm.addons.mod_forum')
         }, function(message) {
             $mmUtil.showErrorModal(message);
             return $q.reject();
+        });
+    }
+
+    // Refresh posts.
+    function refreshPosts() {
+        return $mmaModForum.invalidateDiscussionPosts(discussionid).finally(function() {
+            return fetchPosts();
         });
     }
 
@@ -51,10 +65,22 @@ angular.module('mm.addons.mod_forum')
 
     // Pull to refresh.
     $scope.refreshPosts = function() {
-        $mmaModForum.invalidateDiscussionPosts(discussionid).finally(function() {
-            fetchPosts().finally(function() {
-                $scope.$broadcast('scroll.refreshComplete');
-            });
+        refreshPosts().finally(function() {
+            $scope.$broadcast('scroll.refreshComplete');
+        });
+    };
+
+    // New post added.
+    $scope.newPostAdded = function() {
+        scrollView.scrollTop();
+
+        $scope.newpost.replyingto = undefined;
+        $scope.newpost.subject = '';
+        $scope.newpost.message = '';
+
+        $scope.discussionLoaded = false;
+        refreshPosts().finally(function() {
+            $scope.discussionLoaded = true;
         });
     };
 });
