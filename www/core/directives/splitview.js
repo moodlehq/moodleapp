@@ -37,6 +37,8 @@ angular.module('mm.core')
  *
  * @param {String} [loadWhen]  Name of a scope variable. When that variable is set to true, the first mm-split-view-link
  *                             found will be loaded in the contents pane. If not set, try to load it right at the start.
+ *
+ * @param {String} component   Component. In tablet, the new view will be named after the component.
  */
 .directive('mmSplitView', function($log, $state, $ionicPlatform, $timeout, mmCoreSplitViewLoad) {
 
@@ -61,13 +63,23 @@ angular.module('mm.core')
         var self = this,
             element,
             menuState,
-            linkToLoad;
+            linkToLoad,
+            component;
 
         /**
          * Clears links marked as selected.
          */
         this.clearMarkedLinks = function() {
             angular.element(element.querySelectorAll('[mm-split-view-link]')).removeClass('mm-split-item-selected');
+        };
+
+        /**
+         * Get component.
+         *
+         * @return {String} Component.
+         */
+        this.getComponent = function() {
+            return component;
         };
 
         /**
@@ -101,6 +113,15 @@ angular.module('mm.core')
                     }
                 }
             }
+        };
+
+        /**
+         * Set component.
+         *
+         * @param {String} cmp Component.
+         */
+        this.setComponent = function(cmp) {
+            component = cmp;
         };
 
         /**
@@ -140,8 +161,12 @@ angular.module('mm.core')
             var el = element[0],
                 menu = angular.element(el.querySelector('.mm-split-pane-menu')),
                 menuState = $state.current.name,
-                menuWidth = attrs.menuWidth;
+                menuWidth = attrs.menuWidth,
+                component = attrs.component || 'tablet';
 
+            scope.component = component;
+
+            controller.setComponent(component);
             controller.setElement(el);
             controller.setMenuState(menuState);
 
