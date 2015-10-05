@@ -39,7 +39,7 @@ angular.module('mm.core')
  * @name $mmSitesManager
  */
 .factory('$mmSitesManager', function($http, $q, $mmSitesFactory, md5, $mmLang, $mmConfig, $mmApp, $mmUtil, $mmEvents, $state,
-            $translate, mmCoreSitesStore, mmCoreCurrentSiteStore, mmCoreEventLogin, mmCoreEventLogout, $log, $mmLocalNotifications,
+            $translate, mmCoreSitesStore, mmCoreCurrentSiteStore, mmCoreEventLogin, mmCoreEventLogout, $log,
             mmCoreEventSiteUpdated, mmCoreEventSiteAdded, mmCoreEventSessionExpired, mmCoreEventSiteDeleted) {
 
     $log = $log.getInstance('$mmSitesManager');
