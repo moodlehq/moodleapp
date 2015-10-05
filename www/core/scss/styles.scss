@@ -233,6 +233,23 @@ img.mm-media-adapt-width {
   height: auto;
 }
 
+.mm-adapted-img-container {
+  position: relative;
+}
+.mm-image-viewer-icon {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  color: black;
+  font-size: 20px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, .5);
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  line-height: 30px;
+}
+
 // Extra attributes to ionic classes to force frames via directive 100% height.
 
 .scroll {
