@@ -39,9 +39,23 @@ angular.module('mm.addons.mod_forum')
         return $mmGroups.getActivityGroupMode(cmid).then(function(mode) {
             if (mode === $mmGroups.SEPARATEGROUPS || mode === $mmGroups.VISIBLEGROUPS) {
                 return $mmGroups.getActivityAllowedGroups(cmid).then(function(forumgroups) {
-                    // We need to check which of the returned groups the user belongs to.
-                    return $mmGroups.getUserGroupsInCourse(courseid, refresh).then(function(usergroups) {
-                        forumgroups = filterGroups(forumgroups, usergroups);
+                    var promise;
+                    if (mode === $mmGroups.VISIBLEGROUPS) {
+                        // We need to check which of the returned groups the user belongs to.
+                        promise = $mmGroups.getUserGroupsInCourse(courseid, refresh).then(function(usergroups) {
+                            if (usergroups.length === 0) {
+                                // User doesn't belong to any group, probably a teacher. Let's return all groups,
+                                // if the user can't post to some of them it will be filtered by add discussion WS.
+                                return forumgroups;
+                            }
+                            return filterGroups(forumgroups, usergroups);
+                        });
+                    } else {
+                        // WS already filters groups, no need to do it ourselves.
+                        promise = $q.when(forumgroups);
+                    }
+
+                    return promise.then(function(forumgroups) {
                         if (forumgroups.length > 0) {
                             $scope.groups = forumgroups;
                             $scope.newdiscussion.groupid = forumgroups[0].id;
