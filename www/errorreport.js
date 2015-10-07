@@ -16,7 +16,7 @@
 // Using JS confirm function we are sure that the user get notified in a Mobile device.
 // This script should be added at the begining of the index.html and it should only use native javascript functions.
 
-var appVersion = '2.2 (2003)',
+var appVersion = '2.3 (2004)',
     reportInBackgroundName = 'mmCoreReportInBackground',
     errors = [];
 
