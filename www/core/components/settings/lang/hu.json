@@ -1,6 +1,7 @@
 {
     "about": "Ismertetés",
     "cacheexpirationtime": "Gyorsítótár lejárata (ms)",
+    "currentlanguage": "Aktuális nyelv",
     "deletesitefiles": "Biztosan törli a portálról a letöltött fájlokat?",
     "development": "Fejlesztés",
     "enabledebugging": "Hibakeresés bekapcsolása",

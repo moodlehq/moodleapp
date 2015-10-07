@@ -3,6 +3,7 @@
     "appname": "Moodle Mobile {{version}}",
     "cacheexpirationtime": "Speicherdauer im Cache (Millisekunden)",
     "credits": "Dank",
+    "currentlanguage": "Eingestellte Sprache",
     "deletesitefiles": "Möchten Sie wirklich alle von der Website '{{sitename}}' herunter geladenen Dateien löschen?",
     "deletesitefilestitle": "Website-Dateien löschen",
     "development": "Entwicklung",

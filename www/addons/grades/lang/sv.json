@@ -1,5 +1,6 @@
 {
-    "average": "Medelvärde",
+    "average": "Genomsnitt",
+    "contributiontocoursetotal": "Bidrag till kurs totalt",
     "feedback": "Feedback",
     "grade": "Betyg",
     "grades": "Betyg",
@@ -8,6 +9,6 @@
     "percentage": "Procentandel",
     "range": "Omfång",
     "rank": "Ranking",
-    "viewgrades": "Visa betyg/omdömen",
-    "weight": "vikt"
+    "viewgrades": "Visa betyg",
+    "weight": "Viktning"
 }

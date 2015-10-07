@@ -1,6 +1,7 @@
 {
     "about": "关于",
     "cacheexpirationtime": "缓存过期时间（毫秒）",
+    "currentlanguage": "当前语言",
     "deletesitefiles": "您确定要删除从本站下载的文件？",
     "development": "开发",
     "enabledebugging": "启用调试功能",

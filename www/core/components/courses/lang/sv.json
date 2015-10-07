@@ -1,5 +1,6 @@
 {
+    "errorloadcourses": "Ett fel uppstod vid inläsning av kursen",
     "filter": "Filter",
-    "frontpage": "Ingångssida",
+    "frontpage": "Ingångssidan",
     "mycourses": "Mina kurser"
 }

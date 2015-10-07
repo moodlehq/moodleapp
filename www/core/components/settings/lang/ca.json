@@ -1,9 +1,13 @@
 {
-    "about": "Sobre",
+    "about": "Quant a",
+    "appname": "Moodle Mobile {{version}}",
     "cacheexpirationtime": "Temps de venciment de memòria cau (milisegons)",
+    "credits": "Crèdits",
+    "currentlanguage": "Idioma actual",
     "deletesitefiles": "Esteu segur que voleu esborrar els fitxers baixats d'aquest lloc?",
+    "deletesitefilestitle": "Elimina els fitxers del lloc",
     "development": "Desenvolupament",
-    "enabledebugging": "Habilita depuració",
+    "enabledebugging": "Habilita la depuració",
     "estimatedfreespace": "Espai lliure estimat",
     "general": "General",
     "language": "Idioma",
@@ -11,5 +15,6 @@
     "settings": "Configuració",
     "spaceusage": "Utilització de l'espai",
     "success": "Èxit",
+    "synchronization": "Sincronització",
     "total": "Total"
 }

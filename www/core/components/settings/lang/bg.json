@@ -2,6 +2,7 @@
     "about": "Относно",
     "appname": "Moodle Мобайл {{version}}",
     "cacheexpirationtime": "Продължителност на кеша (милисекунди)",
+    "currentlanguage": "Текущ език",
     "deletesitefiles": "Сигурни ли сте, че искате да изтриете изтеглените от този сайт файлове?",
     "development": "Разработка",
     "enabledebugging": "Позволяване на диагностициране",

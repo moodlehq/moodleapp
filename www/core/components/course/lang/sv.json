@@ -1,4 +1,12 @@
 {
+    "activitynotyetviewable": "Denna aktivitet eller resurs kan ännu inte visas i appen.",
+    "activitynotyetviewablegothere": "Denna aktivitet eller resurs kan ännu inte visas i appen, klicka på knappen nedan för att komma åt den via ordinarie webbsidan",
+    "allsections": "Alla sekioner",
     "contents": "Innehåll",
-    "showall": "Visa alla"
+    "couldnotloadsectioncontent": "Det gick inte att läsa sektionens innehåll. Vänligen försök igen senare.",
+    "couldnotloadsections": "Det gick inte att läsa sektionen. Vänligen försök igen senare.",
+    "gotothesite": "Gå till webbplatsen",
+    "nocontentavailable": "Inget innehåll tillgängligt för tillfället.",
+    "showall": "Visa alla",
+    "whoops": "Hoppsan!"
 }
