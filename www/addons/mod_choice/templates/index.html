@@ -34,6 +34,9 @@
                 <div class="item" ng-if="canEdit">
                     <button class="button button-block" ng-click="save()" ng-disabled="(!choice.allowmultiple && selectedOption.id == -1) || (choice.allowmultiple && (options | filter:{checked: true}).length == 0)">{{ 'mma.mod_choice.savemychoice' | translate }}</button>
                 </div>
+                <div class="item" ng-if="canDelete">
+                    <button class="button button-block" ng-click="delete()">{{ 'mma.mod_choice.removemychoice' | translate }}</button>
+                </div>
             </section>
 
             <!-- Choice results -->
