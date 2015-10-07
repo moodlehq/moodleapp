@@ -1,5 +1,6 @@
 {
-    "filter": "Filtrar",
-    "frontpage": "Página principal",
+    "errorloadcourses": "Um erro ocorreu enquanto os cursos estavam sendo carregados.",
+    "filter": "Filtro",
+    "frontpage": "Primeira página",
     "mycourses": "Meus cursos"
 }

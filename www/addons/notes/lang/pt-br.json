@@ -2,8 +2,10 @@
     "addnewnote": "Escrever uma nova anotação",
     "coursenotes": "Anotações do Curso",
     "eventnotecreated": "Anotação criada",
-    "note": "Anotação",
-    "personalnotes": "Anotações individuais",
-    "publishstate": "Estado",
-    "sitenotes": "Anotações do site"
+    "nonotes": "Não há mais notas desse típo",
+    "note": "Nota",
+    "notes": "Notas",
+    "personalnotes": "Notas pessoais",
+    "publishstate": "Contexto",
+    "sitenotes": "Notas do site"
 }
