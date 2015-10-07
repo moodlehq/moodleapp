@@ -1,6 +1,7 @@
 {
     "about": "حول",
     "cacheexpirationtime": "وقت انتهاء صلاحية ذاكرة التخزين المؤقت (بالميلي ثانية)",
+    "currentlanguage": "اللغة الحالية",
     "deletesitefiles": "هل أنت متأكد أنك تريد حذف الملفات التي تم تحميلها من هذا الموقع؟",
     "development": "التطوير",
     "enabledebugging": "تمكين التصحيح",

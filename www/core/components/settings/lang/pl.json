@@ -1,6 +1,7 @@
 {
     "about": "O aplikacji",
     "cacheexpirationtime": "Czas wygasania pamięci podręcznej (milisekundy)",
+    "currentlanguage": "Aktualny język",
     "deletesitefiles": "Czy na pewno chcesz usunąć pliki pobrane z tej strony?",
     "development": "Rozwój",
     "enabledebugging": "Włącz debugowanie",

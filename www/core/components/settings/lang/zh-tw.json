@@ -1,6 +1,7 @@
 {
     "about": "關於",
     "cacheexpirationtime": "快取到期時間(毫秒)",
+    "currentlanguage": "選定語言",
     "deletesitefiles": "您確定您想由此位置刪除已下載檔案?",
     "development": "開發",
     "enabledebugging": "啟用除錯",

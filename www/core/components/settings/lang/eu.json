@@ -3,6 +3,7 @@
     "appname": "Moodle Mobile {{version}}",
     "cacheexpirationtime": "Cache-aren iraungitze denbora (milisegundotan)",
     "credits": "Kredituak",
+    "currentlanguage": "Oraingo hizkuntza",
     "deletesitefiles": "Ziur zaude '{{sitename}}' gunetik jaitsitako fitxategiak ezabatu nahi dituzula?",
     "deletesitefilestitle": "Ezabatu guneko fitxategiak",
     "development": "Garapena",

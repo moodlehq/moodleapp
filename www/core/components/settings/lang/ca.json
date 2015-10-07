@@ -1,6 +1,7 @@
 {
     "about": "Sobre",
     "cacheexpirationtime": "Temps de venciment de memòria cau (milisegons)",
+    "currentlanguage": "Idioma actual",
     "deletesitefiles": "Esteu segur que voleu esborrar els fitxers baixats d'aquest lloc?",
     "development": "Desenvolupament",
     "enabledebugging": "Habilita depuració",
