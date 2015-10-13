@@ -190,6 +190,12 @@ angular.module('mm.core')
      * @return {String}      Escaped text.
      */
     self.escapeHTML = function(text) {
+        if (typeof text == 'undefined' || text === null || (typeof text == 'number' && isNaN(text))) {
+            return '';
+        } else if (typeof text != 'string') {
+            return '' + text;
+        }
+
         return text
             .replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")
