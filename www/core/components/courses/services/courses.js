@@ -21,7 +21,7 @@ angular.module('mm.core.courses')
  * @ngdoc service
  * @name $mmCourses
  */
-.factory('$mmCourses', function($q, $mmSite, $mmSitesManager, mmCoursesFrontPage) {
+.factory('$mmCourses', function($q, $mmSite, $mmSitesManager) {
 
     var self = {},
         currentCourses = {};
@@ -55,21 +55,23 @@ angular.module('mm.core.courses')
     self.getUserCourses = function(refresh, siteid) {
         siteid = siteid || $mmSite.getId();
 
-        var userid = $mmSite.getUserId(),
-            presets = {},
-            data = {userid: userid};
-
-        if (typeof userid === 'undefined') {
-            return $q.reject();
-        }
-
-        if (refresh) {
-            presets.getFromCache = false;
-        }
-
         return $mmSitesManager.getSite(siteid).then(function(site) {
+
+            var userid = site.getUserId(),
+                presets = {},
+                data = {userid: userid};
+
+            if (typeof userid === 'undefined') {
+                return $q.reject();
+            }
+
+            if (refresh) {
+                presets.getFromCache = false;
+            }
             return site.read('core_enrol_get_users_courses', data, presets).then(function(courses) {
-                storeCoursesInMemory(courses);
+                if (siteid === $mmSite.getId()) { // Only store courses if we're getting current site courses.
+                    storeCoursesInMemory(courses);
+                }
                 return courses;
             });
         });

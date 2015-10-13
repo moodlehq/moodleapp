@@ -1,7 +1,6 @@
 {
     "authenticating": "Authenticeren",
     "cancel": "Annuleer",
-    "cannotdownloadfiles": "Het downloaden van bestanden is uitgeschakeld in je mobiele service. De app kan niet werken met deze instelling uitgeschakeld. Contacteer je Moodle sitebeheerder.",
     "confirmdeletesite": "Weet je zeker dat je de site {{sitename}} wil verwijderen?",
     "connect": "Verbinden!",
     "connecttomoodle": "Verbinden met Moodle",

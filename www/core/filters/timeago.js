@@ -21,44 +21,10 @@ angular.module('mm.core')
  * @ngdoc filter
  * @name mmTimeAgo
  */
-.filter('mmTimeAgo', function($translate) {
+.filter('mmTimeAgo', function() {
 
     return function(timestamp) {
-        // Convert to javascript timestamp (millisecs)
-        timestamp *= 1000;
-        var seconds = Math.floor((new Date() - timestamp) / 1000);
-
-        var stringName;
-
-        var interval = Math.floor(seconds / 31536000);
-        if (interval >= 1) {
-            stringName = 'numyears';
-        } else {
-            interval = Math.floor(seconds / 2592000);
-            if (interval >= 1) {
-                stringName = 'nummonths';
-            } else {
-                interval = Math.floor(seconds / 86400);
-                if (interval >= 1) {
-                    stringName = 'numdays';
-                } else {
-                    interval = Math.floor(seconds / 3600);
-                    if (interval >= 1) {
-                        stringName = 'numhours';
-                    } else {
-                        interval = Math.floor(seconds / 60);
-                        if (interval >= 1) {
-                            stringName = 'numminutes';
-                        } else {
-                            interval = seconds;
-                            stringName = 'numseconds';
-                        }
-                    }
-                }
-            }
-        }
-
-        return $translate.instant('mm.core.'+stringName, {'$a': interval});
+        return moment(timestamp * 1000).fromNow(true);
     };
 
 });

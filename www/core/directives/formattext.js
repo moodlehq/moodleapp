@@ -33,7 +33,7 @@ angular.module('mm.core')
  *     -watch: True if the variable used inside the directive should be watched for changes. If the variable data is retrieved
  *             asynchronously, this value must be set to true, or the directive should be inside a ng-if, ng-repeat or similar.
  */
-.directive('mmFormatText', function($interpolate, $mmText, $compile, $q) {
+.directive('mmFormatText', function($interpolate, $mmText, $compile, $q, $translate) {
 
     var extractVariableRegex = new RegExp('{{([^|]+)(|.*)?}}', 'i'),
         tagsToIgnore = ['AUDIO', 'VIDEO', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'A'];
@@ -103,24 +103,18 @@ angular.module('mm.core')
         // Apply format text function.
         return $mmText.formatText(text, attrs.clean, attrs.singleline, shorten).then(function(formatted) {
 
+            var el = element[0],
+                elWidth = el.offsetWidth || el.width || el.clientWidth;
+
+            function addMediaAdaptClass(el) {
+                angular.element(el).addClass('mm-media-adapt-width');
+            }
+
             // Convert the content into DOM.
             var dom = angular.element('<div>').html(formatted);
 
-            // Walk through the content to find images, and add our directive.
-            angular.forEach(dom.find('img'), function(img) {
-                img.setAttribute('mm-external-content', '');
-                if (component) {
-                    img.setAttribute('component', component);
-                    if (componentId) {
-                        img.setAttribute('component-id', componentId);
-                    }
-                }
-                if (siteId) {
-                    img.setAttribute('siteid', siteId);
-                }
-            });
-
             // Walk through the content to find the links and add our directive to it.
+            // Important: We need to look for links first because in 'img' we add new links without mm-browser.
             angular.forEach(dom.find('a'), function(anchor) {
                 anchor.setAttribute('mm-external-content', '');
                 anchor.setAttribute('mm-browser', '');
@@ -134,6 +128,38 @@ angular.module('mm.core')
                     anchor.setAttribute('siteid', siteId);
                 }
             });
+
+            // Walk through the content to find images, and add our directive.
+            angular.forEach(dom.find('img'), function(img) {
+                addMediaAdaptClass(img);
+                img.setAttribute('mm-external-content', '');
+                if (component) {
+                    img.setAttribute('component', component);
+                    if (componentId) {
+                        img.setAttribute('component-id', componentId);
+                    }
+                }
+                if (siteId) {
+                    img.setAttribute('siteid', siteId);
+                }
+                // Check if image width has been adapted. If so, add an icon to view the image at full size.
+                var imgWidth = img.offsetWidth || img.width || img.clientWidth;
+                if (imgWidth > elWidth) {
+                    // Wrap the image in a new div with position relative.
+                    var div = angular.element('<div class="mm-adapted-img-container"></div>'),
+                        jqImg = angular.element(img),
+                        label = $mmText.escapeHTML($translate.instant('mm.core.openfullimage')),
+                        imgSrc = $mmText.escapeHTML(img.getAttribute('src'));
+                    img.style.float = ''; // Disable float since image will fill the whole width.
+                    jqImg.wrap(div);
+                    jqImg.after('<a href="#" class="mm-image-viewer-icon" mm-image-viewer img="' + imgSrc +
+                                    '" aria-label="' + label + '"><i class="icon ion-ios-search-strong"></i></a>');
+                }
+            });
+
+            angular.forEach(dom.find('audio'), addMediaAdaptClass);
+            angular.forEach(dom.find('video'), addMediaAdaptClass);
+            angular.forEach(dom.find('iframe'), addMediaAdaptClass);
 
             return dom.html();
         });

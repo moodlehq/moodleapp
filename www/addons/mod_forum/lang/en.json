@@ -1,6 +1,20 @@
 {
+    "addanewdiscussion": "Add a new discussion topic",
+    "cannotadddiscussion": "Adding discussions to this forum requires group membership.",
+    "cannotadddiscussionall": "You do not have permission to add a new discussion topic for all participants.",
+    "cannotcreatediscussion": "Could not create new discussion",
+    "couldnotadd": "Could not add your post due to an unknown error",
+    "discussionsubscription": "Discussion subscription",
+    "erroremptymessage": "Post message cannot be empty",
+    "erroremptysubject": "Post subject cannot be empty",
     "errorgetforum": "Error getting forum data.",
+    "errorgetgroups": "Error getting group settings.",
     "forumnodiscussionsyet": "There are no discussion topics yet in this forum.",
+    "group": "Group",
+    "message": "Message",
     "numdiscussions": "{{numdiscussions}} discussions",
-    "numreplies": "{{numreplies}} replies"
+    "numreplies": "{{numreplies}} replies",
+    "posttoforum": "Post to forum",
+    "reply": "Reply",
+    "subject": "Subject"
 }

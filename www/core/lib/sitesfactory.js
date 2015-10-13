@@ -131,7 +131,6 @@ angular.module('mm.core')
             "core_grade_get_definitions": "core_grading_get_definitions",
             "moodle_course_create_courses": "core_course_create_courses",
             "moodle_course_get_courses": "core_course_get_courses",
-            "moodle_enrol_get_enrolled_users": "core_enrol_get_enrolled_users",
             "moodle_enrol_get_users_courses": "core_enrol_get_users_courses",
             "moodle_file_get_files": "core_files_get_files",
             "moodle_file_upload": "core_files_upload",

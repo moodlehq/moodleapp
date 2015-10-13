@@ -3,17 +3,22 @@
     <ion-nav-buttons side="secondary">
         <a class="button button-icon ion-ios-browsers-outline" ng-href="{{moduleurl}}" mm-browser aria-label="{{ 'mm.core.openinbrowser' | translate }}"></a>
     </ion-nav-buttons>
-    <mm-split-view load-when="discussionsLoaded">
-        <ion-content>
+    <mm-split-view load-when="discussionsLoaded" component="mmaModForumDiscussionsList">
+        <ion-content delegate-handle="mmaModForumDiscussionsScroll">
             <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="discussionsLoaded" on-refresh="refreshDiscussions()">
             </ion-refresher>
             <mm-loading hide-until="discussionsLoaded">
                 <mm-course-mod-description watch="true" description="description" note="'mma.mod_forum.numdiscussions' | translate:{numdiscussions: forum.numdiscussions}" ></mm-course-mod-description>
-                <ul class="list">
+                <ul class="list" ng-if="forum">
+                    <li class="item" ng-if="isCreateEnabled && forum.cancreatediscussions">
+                        <button class="button button-block" mm-split-view-link="site.mod_forum-newdiscussion({forumid: forum.id, cmid: forum.cmid, courseid: courseid})">
+                            {{ 'mma.mod_forum.addanewdiscussion' | translate }}
+                        </button>
+                    </li>
                     <li class="card" ng-repeat="discussion in discussions track by $index">
                         <a class="mma-forum-discussion-link" mm-split-view-link="site.mod_forum-discussion({courseid: courseid, discussionid: discussion.discussion})">
                             <article>
-                                <div class="item item-avatar">
+                                <div class="item item-avatar item-text-wrap">
                                     <img ng-if="discussion.userpictureurl" ng-src="{{discussion.userpictureurl}}" mm-external-content mm-split-view-link="{{userStateName}}({courseid: courseid, userid: discussion.userid})" alt="" role="presentation">
                                     <img ng-if="!discussion.userpictureurl" src="img/user-avatar.png" alt="" role="presentation">
                                     <h2><summary>{{discussion.subject}}</summary></h2>
@@ -23,6 +28,10 @@
                                 <div class="item item-body">
                                     <p><mm-format-text watch="true" clean="true" shorten="150">{{discussion.message}}</mm-format-text></p>
                                     <span class="item-note text-right">
+                                        <span ng-if="discussion.groupname">
+                                            <i class="icon ion-ios-people"></i> {{ discussion.groupname }}
+                                            <br />
+                                        </span>
                                         <span><i class="icon ion-ios-chatboxes-outline"></i> {{ 'mma.mod_forum.numreplies' | translate:{numreplies: discussion.numreplies} }}</span>
                                         <span ng-if="discussion.timemodified > discussion.created">
                                             <br />

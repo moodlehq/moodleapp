@@ -41,9 +41,10 @@ angular.module('mm.core')
      *
      * @param  {String} stateName       Name of the state to copy.
      * @param  {String} tabletStateName Name of the new state.
+     * @param  {String} newViewName     Name of the new view.
      * @return {Boolean}                True if success, false otherwise.
      */
-    function createTabletState(stateName, tabletStateName) {
+    function createTabletState(stateName, tabletStateName, newViewName) {
         var targetState = $state.get(stateName),
             newConfig,
             viewName;
@@ -53,7 +54,7 @@ angular.module('mm.core')
 
             // Change first view name to 'tablet' so it's loaded in the split-view content pane.
             viewName = Object.keys(newConfig.views)[0];
-            newConfig.views.tablet = newConfig.views[viewName];
+            newConfig.views[newViewName] = newConfig.views[viewName];
             delete newConfig.views[viewName];
             delete newConfig['name'];
 
@@ -115,7 +116,7 @@ angular.module('mm.core')
                         if ($ionicPlatform.isTablet()) {
                             if (!$state.get(tabletStateName)) {
                                 // State doesn't exists. Let's create it.
-                                if (!createTabletState(stateName, tabletStateName)) {
+                                if (!createTabletState(stateName, tabletStateName, splitViewController.getComponent())) {
                                     return;
                                 }
                             }

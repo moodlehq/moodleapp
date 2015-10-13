@@ -3,7 +3,7 @@
         <button ng-if="profileLink" class="button button-icon icon ion-person" mm-user-link userid="{{userId}}"></button>
     </ion-nav-buttons>
 
-    <mm-split-view>
+    <mm-split-view component="mmaMessagesIndex">
         <ion-tabs class="tabs-icon-top">
             <ion-tab title="{{ 'mma.messages.messages' | translate }}" icon="ion-chatbox">
                 <ion-pane ng-controller="mmaMessagesDiscussionsCtrl">

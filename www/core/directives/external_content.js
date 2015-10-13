@@ -36,13 +36,18 @@ angular.module('mm.core')
 
     function handleExternalContent(siteId, dom, targetAttr, url, component, componentId) {
 
-        if (!url || !$mmUtil.isPluginFileUrl(url)) {
-            $log.debug('Ignoring non-pluginfile URL: ' + url);
+        if (!url || !$mmUtil.isDownloadableUrl(url)) {
+            $log.debug('Ignoring non-downloadable URL: ' + url);
             return;
         }
 
         // Get the webservice pluginfile URL, we ignore failures here.
         $mmSitesManager.getSite(siteId).then(function(site) {
+            if (!site.canDownloadFiles() && $mmUtil.isPluginFileUrl(url)) {
+                dom.remove(); // Remove element since it'll be broken.
+                return;
+            }
+
             var fn;
 
             if (targetAttr === 'src') {

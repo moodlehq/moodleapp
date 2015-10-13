@@ -58,13 +58,17 @@ angular.module('mm.core')
  * @description
  * Provides methods to trigger notifications, listen clicks on them, etc.
  */
-.factory('$mmLocalNotifications', function($log, $mmSitesManager, $mmSite, $cordovaLocalNotification, $mmApp,
+.factory('$mmLocalNotifications', function($log, $cordovaLocalNotification, $mmApp, $q,
         mmCoreNotificationsSitesStore, mmCoreNotificationsComponentsStore, mmCoreNotificationsTriggeredStore) {
 
     $log = $log.getInstance('$mmLocalNotifications');
 
     var self = {},
-        observers = {};
+        observers = {},
+        codes = {}; // Store codes in memory to make getCode function faster.
+
+    // We need a queue to request unique codes, to handle simultaneous requests.
+    var codeRequestsQueue = {};
 
     /**
      * Get a code to create unique notifications. If there's no code assigned, create a new one.
@@ -74,19 +78,27 @@ angular.module('mm.core')
      * @return {Promise}      Promise resolved when the code is retrieved.
      */
     function getCode(store, id) {
-        var db = $mmApp.getDB();
+        var db = $mmApp.getDB(),
+            key = store + '#' + id;
+
+        if (typeof codes[key] != 'undefined') {
+            return $q.when(codes[key]);
+        }
 
         return db.get(store, id).then(function(entry) {
-            return parseInt(entry.code);
+            var code = parseInt(entry.code);
+            codes[key] = code;
+            return code;
         }, function() {
             // Site is not in the DB. Create a new ID for it.
             return db.query(store, undefined, 'code', true).then(function(entries) {
-                var newid = 0;
+                var newCode = 0;
                 if (entries.length > 0) {
-                    newid = parseInt(entries[0].code) + 1;
+                    newCode = parseInt(entries[0].code) + 1;
                 }
-                return db.insert(store, {id: id, code: newid}).then(function() {
-                    return newid;
+                return db.insert(store, {id: id, code: newCode}).then(function() {
+                    codes[key] = newCode;
+                    return newCode;
                 });
             });
         });
@@ -96,12 +108,11 @@ angular.module('mm.core')
      * Get a site code to be used.
      * If it's the first time this site is used to send notifications, create a new code for it.
      *
-     * @param  {String} [siteid] Site ID. If not defined, use current site.
+     * @param  {String} siteid   Site ID.
      * @return {Promise}         Promise resolved when the site code is retrieved.
      */
     function getSiteCode(siteid) {
-        siteid = siteid || $mmSite.getId();
-        return getCode(mmCoreNotificationsSitesStore, siteid);
+        return requestCode(mmCoreNotificationsSitesStore, siteid);
     }
 
     /**
@@ -112,7 +123,7 @@ angular.module('mm.core')
      * @return {Promise}         Promise resolved when the component code is retrieved.
      */
     function getComponentCode(component) {
-        return getCode(mmCoreNotificationsComponentsStore, component);
+        return requestCode(mmCoreNotificationsComponentsStore, component);
     }
 
     /**
@@ -125,16 +136,88 @@ angular.module('mm.core')
      *
      * @param  {Number} notificationid Notification ID.
      * @param {String} component       Component triggering the notification.
-     * @param  {Number} [siteid]       Site ID. If not defined, use current site.
+     * @param  {String} siteid         Site ID.
      * @return {Promise}               Promise resolved when the notification ID is generated.
      */
     function getUniqueNotificationId(notificationid, component, siteid) {
+        if (!siteid || !component) {
+            return $q.reject();
+        }
+
         return getSiteCode(siteid).then(function(sitecode) {
             return getComponentCode(component).then(function(componentcode) {
                 // We use the % operation to keep the number under Android's limit.
                 return (sitecode * 100000000 + componentcode * 10000000 + parseInt(notificationid)) % 2147483647;
             });
         });
+    }
+
+    /**
+     * Process the next request in queue.
+     */
+    function processNextRequest() {
+        var nextKey = Object.keys(codeRequestsQueue)[0],
+            request,
+            promise;
+
+        if (typeof nextKey == 'undefined') {
+            // No more requests in queue, stop.
+            return;
+        }
+
+        request = codeRequestsQueue[nextKey];
+        // Check if request is valid.
+        if (angular.isObject(request) && typeof request.store != 'undefined' && typeof request.id != 'undefined') {
+            // Get the code and resolve/reject all the promises of this request.
+            promise = getCode(request.store, request.id).then(function(code) {
+                angular.forEach(request.promises, function(p) {
+                    p.resolve(code);
+                });
+            }, function(error) {
+                angular.forEach(request.promises, function(p) {
+                    p.reject(error);
+                });
+            });
+        } else {
+            promise = $q.when();
+        }
+
+        // Once this item is treated, remove it and process next.
+        promise.finally(function() {
+            delete codeRequestsQueue[nextKey];
+            processNextRequest();
+        });
+    }
+
+    /**
+     * Request a unique code. The request will be added to the queue and the queue is going to be started if it's paused.
+     *
+     * @param  {String} store Store to search in local DB.
+     * @param  {String} id    ID of the element to get its code.
+     * @return {Promise}      Promise resolved when the code is retrieved.
+     */
+    function requestCode(store, id) {
+        var deferred = $q.defer(),
+            key = store+'#'+id,
+            isQueueEmpty = Object.keys(codeRequestsQueue).length == 0;
+
+        if (typeof codeRequestsQueue[key] != 'undefined') {
+            // There's already a pending request for this store and ID, add the promise to it.
+            codeRequestsQueue[key].promises.push(deferred);
+        } else {
+            // Add a pending request to the queue.
+            codeRequestsQueue[key] = {
+                store: store,
+                id: id,
+                promises: [deferred]
+            };
+        }
+
+        if (isQueueEmpty) {
+            processNextRequest();
+        }
+
+        return deferred.promise;
     }
 
     /**
@@ -145,12 +228,46 @@ angular.module('mm.core')
      * @name $mmLocalNotifications#cancel
      * @param {Number} id        Notification id.
      * @param {String} component Component of the notification.
-     * @param {Number} [siteid]  Site ID. If not defined, use current site.
+     * @param {String} siteid    Site ID.
      * @return {Promise}         Promise resolved when the notification is cancelled.
      */
     self.cancel = function(id, component, siteid) {
         return getUniqueNotificationId(id, component, siteid).then(function(uniqueId) {
             return $cordovaLocalNotification.cancel(uniqueId);
+        });
+    };
+
+    /**
+     * Cancel all the scheduled notifications belonging to a certain site.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmLocalNotifications#cancelSiteNotifications
+     * @param {String} siteid Site ID.
+     * @return {Promise} Promise resolved when the notifications are cancelled.
+     */
+    self.cancelSiteNotifications = function(siteid) {
+
+        if (!self.isAvailable()) {
+            return $q.when();
+        } else if (!siteid) {
+            return $q.reject();
+        }
+
+        return $cordovaLocalNotification.getAllScheduled().then(function(scheduled) {
+            var ids = [];
+
+            angular.forEach(scheduled, function(notif) {
+                if (typeof notif.data == 'string') {
+                    notif.data = JSON.parse(notif.data);
+                }
+
+                if (typeof notif.data == 'object' && notif.data.siteid === siteid) {
+                    ids.push(notif.id);
+                }
+            });
+
+            return $cordovaLocalNotification.cancel(ids);
         });
     };
 
@@ -239,7 +356,7 @@ angular.module('mm.core')
      * @param {Object} notification Notification to schedule. Its ID should be lower than 10000000 and it should be unique inside
      *                              its component and site. If the ID is higher than that number there might be collisions.
      * @param {String} component    Component triggering the notification. It is used to generate unique IDs.
-     * @param {Number} [siteid]     Site ID. If not defined, use current site.
+     * @param {String} siteid       Site ID.
      * @return {Promise}            Promise resolved when the notification is scheduled.
      */
     self.schedule = function(notification, component, siteid) {
@@ -247,6 +364,7 @@ angular.module('mm.core')
             notification.id = uniqueId;
             notification.data = notification.data || {};
             notification.data.component = component;
+            notification.data.siteid = siteid;
 
             return self.isTriggered(notification).then(function(triggered) {
                 if (!triggered) {
@@ -266,18 +384,24 @@ angular.module('mm.core')
      * @ngdoc method
      * @name $mmLocalNotifications#trigger
      * @param {Object} notification Triggered notification.
+     * @return {Promise}            Promise resolved when stored, rejected otherwise.
      */
     self.trigger = function(notification) {
-        $mmApp.getDB().insert(mmCoreNotificationsTriggeredStore, {
-            id: parseInt(notification.id),
-            at: parseInt(notification.at)
-        });
+        var id = parseInt(notification.id);
+        if (!isNaN(id)) {
+            return $mmApp.getDB().insert(mmCoreNotificationsTriggeredStore, {
+                id: id,
+                at: parseInt(notification.at)
+            });
+        } else {
+            return $q.reject();
+        }
     };
 
     return self;
 })
 
-.run(function($rootScope, $log, $mmLocalNotifications, $cordovaLocalNotification) { window.cln = $cordovaLocalNotification;
+.run(function($rootScope, $log, $mmLocalNotifications, $mmEvents, mmCoreEventSiteDeleted) {
     $log = $log.getInstance('$mmLocalNotifications');
 
     $rootScope.$on('$cordovaLocalNotification:trigger', function(e, notification, state) {
@@ -289,6 +413,12 @@ angular.module('mm.core')
             $log.debug('Notification clicked: '+notification.data);
             var data = JSON.parse(notification.data);
             $mmLocalNotifications.notifyClick(data);
+        }
+    });
+
+    $mmEvents.on(mmCoreEventSiteDeleted, function(site) {
+        if (site) {
+            $mmLocalNotifications.cancelSiteNotifications(site.id);
         }
     });
 });

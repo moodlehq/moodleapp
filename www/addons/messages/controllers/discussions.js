@@ -36,6 +36,7 @@ angular.module('mm.addons.messages')
             observers.push($mmEvents.on($mmaMessages.getDiscussionEventName(discussion.message.user), function(data) {
                 if (data && data.timecreated > discussion.message.timecreated) {
                     discussion.message.message = data.message;
+                    discussion.message.timecreated = data.timecreated;
                 }
             }));
         });

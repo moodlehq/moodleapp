@@ -1,6 +1,7 @@
 {
     "about": "אודות",
     "cacheexpirationtime": "זמן תפוגה לזיכרון מטמון (באלפיות השניה)",
+    "currentlanguage": "שפה נוכחית",
     "deletesitefiles": "האם אתה בטוח שברצונך למחוק את כל הקבצים שהורדו מאתר זה?",
     "development": "פיתוח",
     "enabledebugging": "הפעל ניפוי שגיאות",

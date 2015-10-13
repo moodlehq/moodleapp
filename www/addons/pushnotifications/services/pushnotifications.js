@@ -21,8 +21,8 @@ angular.module('mm.addons.pushnotifications')
  * @ngdoc service
  * @name $mmaPushNotifications
  */
-.factory('$mmaPushNotifications', function($mmSite, $log, $cordovaPush, $mmConfig, $mmText, $q, $cordovaDevice, $mmEvents, $mmUtil,
-            $mmApp, $mmLocalNotifications, $mmPushNotificationsDelegate, mmaPushNotificationsComponent) {
+.factory('$mmaPushNotifications', function($mmSite, $log, $cordovaPush, $mmConfig, $mmText, $q, $cordovaDevice, $mmUtil,
+            $mmApp, $mmLocalNotifications, $mmPushNotificationsDelegate, $mmSitesManager, mmaPushNotificationsComponent) {
     $log = $log.getInstance('$mmaPushNotifications');
 
     var self = {},
@@ -103,30 +103,40 @@ angular.module('mm.addons.pushnotifications')
      * @param {Object} data Notification data.
      */
     self.onMessageReceived = function(data) {
-        if ($mmUtil.isTrueOrOne(data.foreground)) {
-            // If the app is in foreground when the notification is received, it's not shown. Let's show it ourselves.
-            if ($mmLocalNotifications.isAvailable()) {
-                // Apply formatText to title and message.
-                $mmText.formatText(data.title, true, true).then(function(formattedTitle) {
-                    $mmText.formatText(data.message, true, true).then(function(formattedMessage) {
-                        var localNotif = {
-                            id: 1,
-                            title: formattedTitle,
-                            message: formattedMessage,
-                            at: new Date(),
-                            smallIcon: 'res://icon',
-                            data: {
-                                notif: data.notif,
-                                site: data.site
-                            }
-                        };
-                        $mmLocalNotifications.schedule(localNotif, mmaPushNotificationsComponent, data.site);
-                    });
-                });
-            }
+        var promise;
+
+        if (data && data.site) {
+            promise = $mmSitesManager.getSite(data.site); // Check if site exists.
         } else {
-            self.notificationClicked(data);
+            promise = $q.when(); // No site specified, resolve.
         }
+
+        promise.then(function() {
+            if ($mmUtil.isTrueOrOne(data.foreground)) {
+                // If the app is in foreground when the notification is received, it's not shown. Let's show it ourselves.
+                if ($mmLocalNotifications.isAvailable()) {
+                    // Apply formatText to title and message.
+                    $mmText.formatText(data.title, true, true).then(function(formattedTitle) {
+                        $mmText.formatText(data.message, true, true).then(function(formattedMessage) {
+                            var localNotif = {
+                                id: 1,
+                                title: formattedTitle,
+                                message: formattedMessage,
+                                at: new Date(),
+                                smallIcon: 'res://icon',
+                                data: {
+                                    notif: data.notif,
+                                    site: data.site
+                                }
+                            };
+                            $mmLocalNotifications.schedule(localNotif, mmaPushNotificationsComponent, data.site);
+                        });
+                    });
+                }
+            } else {
+                self.notificationClicked(data);
+            }
+        });
     };
 
     /**
@@ -202,14 +212,14 @@ angular.module('mm.addons.pushnotifications')
     self.registerDeviceOnMoodle = function() {
         $log.debug('Register device on Moodle.');
 
-        if (!$mmSite.isLoggedIn() || !pushID) {
+        if (!$mmSite.isLoggedIn() || !pushID || !$mmApp.isDevice()) {
             return $q.reject();
         }
 
         return $mmConfig.get('app_id').then(function(appid) {
             var data = {
                 appid:      appid,
-                name:       window.device.name || '',
+                name:       ionic.Platform.device().name || '',
                 model:      $cordovaDevice.getModel(),
                 platform:   $cordovaDevice.getPlatform(),
                 version:    $cordovaDevice.getVersion(),
@@ -218,7 +228,36 @@ angular.module('mm.addons.pushnotifications')
             };
             return $mmSite.write('core_user_add_user_device', data);
         });
+    };
 
+    /**
+     * Unregisters a device from a certain Moodle site.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmaPushNotifications#unregisterDeviceOnMoodle
+     * @param {Object} site Site to unregister from.
+     * @return {Promise}    Promise resolved when device is unregistered.
+     */
+    self.unregisterDeviceOnMoodle = function(site) {
+
+        if (!site || !$mmApp.isDevice()) {
+            return $q.reject();
+        }
+
+        $log.debug('Unregister device on Moodle: ' + site.id);
+
+        return $mmConfig.get('app_id').then(function(appid) {
+            var data = {
+                appid:      appid,
+                uuid:       $cordovaDevice.getUUID()
+            };
+            return site.write('core_user_remove_user_device', data).then(function(response) {
+                if (!response || !response.removed) {
+                    return $q.reject();
+                }
+            });
+        });
     };
 
     return self;

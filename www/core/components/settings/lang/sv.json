@@ -1,16 +1,21 @@
 {
     "about": "Om",
+    "appname": "Moodle Mobile {{version}}",
     "cacheexpirationtime": "Cache utgångs tid (millisekunder)",
+    "currentlanguage": "Nuvarande språk",
     "deletesitefiles": "Är du säker på att du vill ta bort de nedladdade filerna från den här webbplatsen?",
+    "deletesitefilestitle": "Ta bort platsfiler",
     "development": "Utveckling",
     "enabledebugging": "Aktivera felsökning",
+    "errorsyncsite": "Fel vid synkronisering. Kontrollera din Internetanslutning och försök igen",
     "estimatedfreespace": "Beräknad ledigt utrymme",
     "general": "Generell",
     "language": "Språk",
     "license": "Licens",
     "settings": "Inställningar",
     "spaceusage": "Utrymmesanvändning",
-    "success": "Framgång",
+    "success": "Framgång!",
     "synchronization": "Synkronisering",
+    "synchronizing": "Synkronisera",
     "total": "Total"
 }

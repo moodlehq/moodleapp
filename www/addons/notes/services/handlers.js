@@ -23,7 +23,7 @@ angular.module('mm.addons.notes')
  * @ngdoc service
  * @name $mmaNotesHandlers
  */
-.factory('$mmaNotesHandlers', function($mmaNotes, $mmSite, $translate, $ionicLoading, $ionicModal, $mmUtil) {
+.factory('$mmaNotesHandlers', function($mmaNotes, $mmSite, $mmApp, $ionicModal, $mmUtil) {
 
     var self = {};
 
@@ -92,6 +92,9 @@ angular.module('mm.addons.notes')
                 };
 
                 $scope.addNote = function(){
+
+                    $mmApp.closeKeyboard();
+
                     var loadingModal = $mmUtil.showModalLoading('mm.core.sending', true);
                     // Freeze the add note button.
                     $scope.processing = true;

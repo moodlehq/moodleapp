@@ -797,7 +797,9 @@ angular.module('mm.addons.messages')
      */
     function storeUsersFromDiscussions(discussions) {
         angular.forEach(discussions, function(discussion, userid) {
-            $mmUser.storeUser(userid, discussion.fullname, discussion.profileimageurl);
+            if (typeof userid != 'undefined' && !isNaN(parseInt(userid))) {
+                $mmUser.storeUser(userid, discussion.fullname, discussion.profileimageurl);
+            }
         });
     }
 

@@ -1,4 +1,7 @@
 {
+    "calendarevents": "Esdeveniments del calendari",
+    "errorloadevent": "Error en carregar l'esdeveniment",
+    "errorloadevents": "Error en carregar esdeveniments",
     "noevents": "No hi ha cap esdeveniment",
     "notifications": "Notificacions"
 }

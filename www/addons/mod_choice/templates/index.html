@@ -27,14 +27,15 @@
                     <p><mm-format-text watch="true">{{option.text}}</mm-format-text> <span ng-if="choice.limitanswers && option.countanswers >= option.maxanswers">{{ 'mma.mod_choice.full' | translate }}</span></p>
                 </li>
                 <label ng-if="!choice.allowmultiple" ng-repeat="option in options" class="item item-radio">
-                    <input type="radio" name="choiceoption" ng-value="option.id" ng-model="selectedOption.id" ng-disabled="option.disabled || !canEdit">
-                    <div class="item-content">
+                    <ion-radio-fix ng-model="selectedOption.id" ng-value="option.id" ng-disabled="option.disabled || !canEdit">
                         <p><mm-format-text watch="true">{{option.text}}</mm-format-text> <span ng-if="choice.limitanswers && option.countanswers >= option.maxanswers">{{ 'mma.mod_choice.full' | translate }}</span></p>
-                    </div>
-                    <i class="radio-icon ion-checkmark"></i>
+                    </ion-radio-fix>
                 </label>
                 <div class="item" ng-if="canEdit">
                     <button class="button button-block" ng-click="save()" ng-disabled="(!choice.allowmultiple && selectedOption.id == -1) || (choice.allowmultiple && (options | filter:{checked: true}).length == 0)">{{ 'mma.mod_choice.savemychoice' | translate }}</button>
+                </div>
+                <div class="item" ng-if="canDelete">
+                    <button class="button button-block" ng-click="delete()">{{ 'mma.mod_choice.removemychoice' | translate }}</button>
                 </div>
             </section>
 

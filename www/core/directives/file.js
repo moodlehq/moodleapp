@@ -45,9 +45,10 @@ angular.module('mm.core')
      */
     function getState(scope, siteid, fileurl, timemodified) {
         return $mmFilepool.getFileStateByUrl(siteid, fileurl, timemodified).then(function(state) {
+            var canDownload = $mmSite.canDownloadFiles();
             scope.isDownloaded = state === $mmFilepool.FILEDOWNLOADED || state === $mmFilepool.FILEOUTDATED;
-            scope.isDownloading = state === $mmFilepool.FILEDOWNLOADING;
-            scope.showDownload = state === $mmFilepool.FILENOTDOWNLOADED || state === $mmFilepool.FILEOUTDATED;
+            scope.isDownloading = canDownload && state === $mmFilepool.FILEDOWNLOADING;
+            scope.showDownload = canDownload && (state === $mmFilepool.FILENOTDOWNLOADED || state === $mmFilepool.FILEOUTDATED);
         });
     }
 
@@ -63,6 +64,11 @@ angular.module('mm.core')
      * @return {Promise}               Promise resolved when file is downloaded.
      */
     function downloadFile(scope, siteid, fileurl, component, componentid, timemodified) {
+        if (!$mmSite.canDownloadFiles()) {
+            $mmUtil.showErrorModal('mm.core.cannotdownloadfiles', true);
+            return $q.reject();
+        }
+
         scope.isDownloading = true;
         return $mmFilepool.downloadUrl(siteid, fileurl, true, component, componentid, timemodified).then(function(localUrl) {
             getState(scope, siteid, fileurl, timemodified); // Update state.

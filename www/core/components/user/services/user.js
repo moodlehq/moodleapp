@@ -257,7 +257,11 @@ angular.module('mm.core.user')
         var promises = [];
 
         angular.forEach(users, function(user) {
-            promises.push(self.storeUser(user.id, user.fullname, user.profileimageurl));
+            var userid = user.id || user.userid,
+                img = user.profileimageurl || user.profileimgurl;
+            if (typeof userid != 'undefined') {
+                promises.push(self.storeUser(userid, user.fullname, img));
+            }
         });
 
         return $q.all(promises);

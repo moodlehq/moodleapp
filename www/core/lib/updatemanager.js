@@ -25,11 +25,14 @@ angular.module('mm.core')
  * @description
  * This service handles processes that need to be run when updating the app, like migrate MM1 sites to MM2.
  */
-.factory('$mmUpdateManager', function($log, $q, $mmConfig, $mmSitesManager, $mmFS, mmCoreVersionApplied) {
+.factory('$mmUpdateManager', function($log, $q, $mmConfig, $mmSitesManager, $mmFS, $cordovaLocalNotification, $mmLocalNotifications,
+            $mmApp, $mmEvents, mmCoreSitesStore, mmCoreVersionApplied, mmCoreEventSiteAdded, mmCoreEventSiteUpdated,
+            mmCoreEventSiteDeleted) {
 
     $log = $log.getInstance('$mmUpdateManager');
 
-    var self = {};
+    var self = {},
+        sitesFilePath = 'migration/sites.json';
 
     /**
      * Check if the app has been updated and performs the needed processes.
@@ -52,6 +55,14 @@ angular.module('mm.core')
                     // Ignore errors in clearAppFolder. We don't want to clear the folder
                     // everytime the app is opened if something goes wrong.
                     promises.push(clearAppFolder().catch(function() {}));
+                }
+
+                if (versionCode >= 2003 && versionApplied < 2003) {
+                    promises.push(cancelAndroidNotifications());
+                }
+
+                if (versionCode >= 2003) {
+                    setStoreSitesInFile();
                 }
 
                 return $q.all(promises).then(function() {
@@ -100,6 +111,10 @@ angular.module('mm.core')
             sites = sites.split(',');
 
             angular.forEach(sites, function(siteid) {
+                if (!siteid) {
+                    return;
+                }
+
                 $log.debug('Migrating site from MoodleMobile 1: ' + siteid);
                 var site = localStorage.getItem('sites-'+siteid),
                     infos;
@@ -129,6 +144,85 @@ angular.module('mm.core')
                 localStorage.clear();
             }
         });
+    }
+
+    /**
+     * Cancel all Android notifications. MM 2.0 was released with a bug in notifications ID (Android). These IDs were stored in
+     * SharedPreferences, cancel them all will clear the stored values. @see MOBILE-1148.
+     *
+     * @return {Promise} Promise resolved when the notifications are cancelled.
+     */
+    function cancelAndroidNotifications() {
+        if ($mmLocalNotifications.isAvailable() && ionic.Platform.isAndroid()) {
+            return $cordovaLocalNotification.cancelAll().catch(function() {
+                $log.error('Error cancelling Android notifications.');
+            });
+        }
+        return $q.when();
+    }
+
+    /**
+     * Sets the events to store the sites in a file.
+     */
+    function setStoreSitesInFile() {
+        $mmEvents.on(mmCoreEventSiteAdded, storeSitesInFile);
+        $mmEvents.on(mmCoreEventSiteUpdated, storeSitesInFile);
+        $mmEvents.on(mmCoreEventSiteDeleted, storeSitesInFile);
+        storeSitesInFile();
+    }
+
+    /**
+     * Get sites stored in a file. It'll be used to migrate to Crosswalk if users skipped SQLite migration version.
+     *
+     * @return {Promise} Promise resolved with sites are retrieved. Resolve param is the sites list.
+     */
+    function getSitesStoredInFile() {
+        if ($mmFS.isAvailable()) {
+            return $mmFS.readFile(sitesFilePath).then(function(sites) {
+                try {
+                    sites = JSON.parse(sites);
+                } catch (ex) {
+                    sites = [];
+                }
+                return sites;
+            }).catch(function() {
+                // Error reading, probably file doesn't exist. Return empty list.
+                return [];
+            });
+        } else {
+            return $q.when([]);
+        }
+    }
+
+    /**
+     * Store sites in a file. It'll be used to migrate to Crosswalk if users skipped SQLite migration version.
+     *
+     * @return {Promise} Promise resolved when file is written.
+     */
+    function storeSitesInFile() {
+        if ($mmFS.isAvailable()) {
+            return $mmApp.getDB().getAll(mmCoreSitesStore).then(function(sites) {
+                angular.forEach(sites, function(site) {
+                    site.token = 'private'; // Remove the token, we don't want it written in a file.
+                });
+                return $mmFS.writeFile(sitesFilePath, JSON.stringify(sites));
+            });
+        } else {
+            return $q.when();
+        }
+    }
+
+    /**
+     * Delete file with sites stored.
+     *
+     * @return {Promise} Promise resolved when file is deleted.
+     */
+    function deleteSitesFile() {
+        if ($mmFS.isAvailable()) {
+            return $mmFS.removeFile(sitesFilePath);
+        } else {
+            return $q.when();
+        }
     }
 
     return self;

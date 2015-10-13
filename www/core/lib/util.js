@@ -214,13 +214,55 @@ angular.module('mm.core')
         };
 
         /**
+         * Returns if a URL is downloadable: plugin file OR theme/image.php OR gravatar.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#isDownloadableUrl
+         * @param  {String}  url The URL to test.
+         * @return {Boolean}     True when the URL is downloadable.
+         */
+        self.isDownloadableUrl = function(url) {
+            return self.isPluginFileUrl(url) || self.isThemeImageUrl(url) || self.isGravatarUrl(url);
+        };
+
+        /**
+         * Returns if a URL is a gravatar URL.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#isGravatarUrl
+         * @param  {String}  url The URL to test.
+         * @return {Boolean}     True when the URL is a gravatar URL.
+         */
+        self.isGravatarUrl = function(url) {
+            return url && url.indexOf('gravatar.com/avatar') !== -1;
+        };
+
+        /**
          * Returns if a URL is a pluginfile URL.
          *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#isPluginFileUrl
          * @param  {String}  url The URL to test.
          * @return {Boolean}     True when the URL is a pluginfile URL.
          */
         self.isPluginFileUrl = function(url) {
-            return url && (url.indexOf('/pluginfile.php') !== -1);
+            return url && url.indexOf('/pluginfile.php') !== -1;
+        };
+
+        /**
+         * Returns if a URL is a theme image URL.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#isThemeImageUrl
+         * @param  {String}  url The URL to test.
+         * @return {Boolean}     True when the URL is a theme image URL.
+         */
+        self.isThemeImageUrl = function(url) {
+            return url && url.indexOf('/theme/image.php') !== -1;
         };
 
         /**
@@ -271,7 +313,7 @@ angular.module('mm.core')
             }
 
             // In which way the server is serving the files? Are we using slash parameters?
-            if (url.indexOf('?file=') != -1 || url.indexOf('?forcedownload=') != -1) {
+            if (url.indexOf('?file=') != -1 || url.indexOf('?forcedownload=') != -1 || url.indexOf('?rev=') != -1) {
                 url += '&';
             } else {
                 url += '?';

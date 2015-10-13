@@ -46,7 +46,7 @@ angular.module('mm.core')
         var enhancedLogFn = function() {
             if (isEnabled) {
                 var args = Array.prototype.slice.call(arguments),
-                    now  = new Date().toLocaleString();
+                    now  = moment().format('l LTS');
 
                 args[0] = now + ' ' + className + ': ' + args[0]; // Prepend timestamp and className to the original message.
                 logFn.apply(null, args);

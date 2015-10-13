@@ -3,6 +3,7 @@
     "appname": "Moodle Mobile {{version}}",
     "cacheexpirationtime": "Cache verlooptijd (milliseconden)",
     "credits": "Credits",
+    "currentlanguage": "Huidige taal",
     "deletesitefiles": "Weet je zeker dat je deze site en gedownloade bestanden ervan wil verwijderen?",
     "deletesitefilestitle": "Verwijder site-bestanden",
     "development": "Ontwikkeling",

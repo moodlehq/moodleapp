@@ -50,27 +50,49 @@ angular.module('mm.addons.participants')
      */
     self.getParticipants = function(courseid, limitFrom, limitNumber) {
 
-        if (typeof(limitFrom) === 'undefined') {
+        if (typeof limitFrom == 'undefined') {
             limitFrom = 0;
         }
-        if (typeof(limitNumber) === 'undefined') {
+        if (typeof limitNumber == 'undefined') {
             limitNumber = mmaParticipantsListLimit;
         }
 
         $log.debug('Get participants for course ' + courseid + ' starting at ' + limitFrom);
 
-        var data = {
-            "courseid" : courseid,
-            "options[0][name]" : "limitfrom",
-            "options[0][value]": limitFrom,
-            "options[1][name]" : "limitnumber",
-            "options[1][value]": limitNumber,
-        };
-        var preSets = {
-            cacheKey: getParticipantsListCacheKey(courseid)
-        };
+        var wsName,
+            data = {
+                courseid: courseid
+            }, preSets = {
+                cacheKey: getParticipantsListCacheKey(courseid)
+            };
 
-        return $mmSite.read('core_enrol_get_enrolled_users', data, preSets).then(function(users) {
+        if ($mmSite.wsAvailable('core_enrol_get_enrolled_users')) {
+            wsName = 'core_enrol_get_enrolled_users';
+            data.options = [
+                {
+                    name: 'limitfrom',
+                    value: limitFrom
+                }, {
+                    name: 'limitnumber',
+                    value: limitNumber
+                }
+            ];
+        } else {
+            wsName = 'moodle_enrol_get_enrolled_users';
+            limitNumber = 9999999999; // Set a big limitNumber so canLoadMore is always false (WS not paginated).
+        }
+
+        return $mmSite.read(wsName, data, preSets).then(function(users) {
+            // Format user data, moodle_enrol_get_enrolled_users returns some attributes with a different name.
+            angular.forEach(users, function(user) {
+                if (typeof user.id == 'undefined' && typeof user.userid != 'undefined') {
+                    user.id = user.userid;
+                }
+                if (typeof user.profileimageurl == 'undefined' && typeof user.profileimgurl != 'undefined') {
+                    user.profileimageurl = user.profileimgurl;
+                }
+            });
+
             var canLoadMore = users.length >= limitNumber;
             $mmUser.storeUsers(users);
             return {participants: users, canLoadMore: canLoadMore};

@@ -1,8 +1,11 @@
 {
     "addnewnote": "Lägg till en ny anteckning",
-    "coursenotes": "Anteckningar för kurs",
+    "coursenotes": "Kurs anteckningar",
+    "eventnotecreated": "Anteckning skapade",
+    "nonotes": "Det finns inga anteckningar av denna typ ännu",
     "note": "Anteckning",
+    "notes": "Anteckningar",
     "personalnotes": "Personliga anteckningar",
     "publishstate": "Sammanhang",
-    "sitenotes": "Anteckningar på webbplatsnivå"
+    "sitenotes": "Webbplats anteckningar"
 }

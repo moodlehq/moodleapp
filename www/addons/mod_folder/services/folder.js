@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_folder')
  * @ngdoc service
  * @name $mmaModFolder
  */
-.factory('$mmaModFolder', function($mmSite, $mmUtil, $mmCourse) {
+.factory('$mmaModFolder', function($mmSite, $mmUtil, $mmCourse, $q) {
     var self = {};
 
     /**

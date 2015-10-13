@@ -12,15 +12,15 @@
                     <div ng-repeat="message in messages track by $index">
 
                         <p ng-if="showDate(messages[$index], messages[$index - 1])" class="mma-chat-notice">
-                            <span>{{ message.timestamp * 1000 | date:"EEE, d MMM" }}</span>
+                            <span>{{ message.timestamp * 1000 | mmFormatDate:"dfdayweekmonth" }}</span>
                         </p>
 
                         <p ng-if="message.system && message.message == 'enter'" class="mma-chat-notice">
-                            <span>{{ message.timestamp * 1000 | date:"h:mma" }} {{ 'mma.mod_chat.messageenter' | translate:{$a: message.userfullname} }}</span>
+                            <span>{{ message.timestamp * 1000 | mmFormatDate:"dftimedate" }} {{ 'mma.mod_chat.messageenter' | translate:{$a: message.userfullname} }}</span>
                         </p>
 
                         <p ng-if="message.system && message.message == 'exit'" class="mma-chat-notice">
-                            <span>{{ message.timestamp * 1000 | date:"h:mma" }} {{ 'mma.mod_chat.messageexit' | translate:{$a: message.userfullname} }}</span>
+                            <span>{{ message.timestamp * 1000 | mmFormatDate:"dftimedate" }} {{ 'mma.mod_chat.messageexit' | translate:{$a: message.userfullname} }}</span>
                         </p>
 
                         <p ng-if="message.message == currentUserBeep" class="mma-chat-notice">
@@ -34,7 +34,7 @@
 
                             <mm-format-text after-render="scrollAfterRender" watch="true">{{ message.message }}</mm-format-text>
 
-                            <span class="item-note">{{ message.timestamp * 1000 | date:"h:mma" }}</span>
+                            <span class="item-note">{{ message.timestamp * 1000 | mmFormatDate:"dftimedate" }}</span>
                         </article>
                     </div>
                 </div>

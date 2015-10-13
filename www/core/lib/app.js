@@ -112,6 +112,19 @@ angular.module('mm.core')
         };
 
         /**
+         * Closes the keyboard if plugin is available.
+         *
+         * @return {Boolean} True if plugin is available, false otherwise.
+         */
+        self.closeKeyboard = function() {
+            if (typeof cordova != 'undefined' && cordova.plugins && cordova.plugins.Keyboard && cordova.plugins.Keyboard.close) {
+                cordova.plugins.Keyboard.close();
+                return true;
+            }
+            return false;
+        };
+
+        /**
          * Get the application global database.
          * @return {Object} App's DB.
          */
@@ -155,6 +168,18 @@ angular.module('mm.core')
          */
         self.initProcess = function() {
             return $ionicPlatform.ready();
+        };
+
+        /**
+         * Checks if the app is running in a real device with cordova-plugin-device installed.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#isDevice
+         * @return {Bool} True if device is defined, false otherwise.
+         */
+        self.isDevice = function() {
+            return !!window.device;
         };
 
         /**
