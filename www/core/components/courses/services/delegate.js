@@ -83,10 +83,11 @@ angular.module('mm.core.courses')
          * @ngdoc method
          * @name $mmCoursesDelegate#getNavHandlersFor
          * @param {Number} courseId The course ID.
+         * @param {Boolean} refresh True if it should refresh the list.
          * @return {Array}          Array of objects containing 'priority' and 'controller'.
          */
-        self.getNavHandlersFor = function(courseId) {
-            if (typeof(coursesHandlers[courseId]) == 'undefined') {
+        self.getNavHandlersFor = function(courseId, refresh) {
+            if (typeof(coursesHandlers[courseId]) == 'undefined' || refresh) {
                 coursesHandlers[courseId] = [];
                 self.updateNavHandlersForCourse(courseId);
             }
