@@ -39,7 +39,7 @@ angular.module('mm.core')
  * @name $mmSitesManager
  */
 .factory('$mmSitesManager', function($http, $q, $mmSitesFactory, md5, $mmLang, $mmConfig, $mmApp, $mmUtil, $mmEvents, $state,
-            $translate, mmCoreSitesStore, mmCoreCurrentSiteStore, mmCoreEventLogin, mmCoreEventLogout, $log,
+            $translate, mmCoreSitesStore, mmCoreCurrentSiteStore, mmCoreEventLogin, mmCoreEventLogout, $log, mmCoreWSPrefix,
             mmCoreEventSiteUpdated, mmCoreEventSiteAdded, mmCoreEventSessionExpired, mmCoreEventSiteDeleted) {
 
     $log = $log.getInstance('$mmSitesManager');
@@ -217,7 +217,7 @@ angular.module('mm.core')
         var candidateSite = $mmSitesFactory.makeSite(undefined, siteurl, token);
 
         return candidateSite.fetchSiteInfo().then(function(infos) {
-            if (isValidMoodleVersion(infos.functions)) {
+            if (isValidMoodleVersion(infos)) {
                 var validation = validateSiteInfo(infos);
                 if (validation === true) {
                     var siteid = self.createSiteID(infos.siteurl, infos.username);
@@ -281,19 +281,44 @@ angular.module('mm.core')
     }
 
     /**
-     * Check for the minimum required version. We check for WebServices present, not for Moodle version.
-     * This may allow some hacks like using local plugins for adding missing functions in previous versions.
+     * Check for the minimum required version (Moodle 2.4).
      *
      * @param {Array} sitefunctions List of functions of the Moodle site.
      * @return {Boolean}            True if the moodle version is valid, false otherwise.
      */
-    function isValidMoodleVersion(sitefunctions) {
-        for(var i = 0; i < sitefunctions.length; i++) {
-            if (sitefunctions[i].name.indexOf("component_strings") > -1) {
-                return true;
+    function isValidMoodleVersion(infos) {
+        if (!infos) {
+            return false;
+        }
+
+        var minVersion = 2012120300, // Moodle 2.4 version.
+            minRelease = "2.4";
+
+        // Try to validate by version.
+        if (infos.version) {
+            var version = parseInt(infos.version);
+            if (!isNaN(version)) {
+                return version >= minVersion;
             }
         }
-        return false;
+
+        // We couldn't validate by version number. Let's try to validate by release number.
+        if (infos.release) {
+            var matches = infos.release.match(/^([\d|\.]*)/);
+            if (matches && matches.length > 1) {
+                return matches[1] >= minRelease;
+            }
+        }
+
+        // Couldn't validate by release either. Check if it uses local_mobile plugin.
+        var appUsesLocalMobile = false;
+        angular.forEach(infos.functions, function(func) {
+            if (func.name.indexOf(mmCoreWSPrefix) != -1) {
+                appUsesLocalMobile = true;
+            }
+        });
+
+        return appUsesLocalMobile;
     }
 
     /**
