@@ -194,7 +194,12 @@ angular.module('mm.core')
          * Note that a browser is always considered being online.
          */
         self.isOnline = function() {
-            return typeof navigator.connection === 'undefined' || $cordovaNetwork.isOnline();
+            var online = typeof navigator.connection === 'undefined' || $cordovaNetwork.isOnline();
+            // Double check we are not online because we cannot rely 100% in Cordova APIs.
+            if (!online && navigator.onLine) {
+                online = true;
+            }
+            return online;
         };
 
         /*
