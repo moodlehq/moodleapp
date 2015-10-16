@@ -14,6 +14,8 @@
 
 angular.module('mm.addons.mod_lti', [])
 
+.constant('mmaModLtiComponent', 'mmaModLti')
+
 .config(function($stateProvider) {
 
     $stateProvider

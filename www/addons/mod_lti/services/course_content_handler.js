@@ -21,7 +21,8 @@ angular.module('mm.addons.mod_lti')
  * @ngdoc service
  * @name $mmaModLtiCourseContentHandler
  */
-.factory('$mmaModLtiCourseContentHandler', function($mmCourse, $mmaModLti, $state) {
+.factory('$mmaModLtiCourseContentHandler', function($mmCourse, $mmaModLti, $state, $mmSite, $mmFilepool, $mmApp, $mmUtil,
+            mmaModLtiComponent) {
     var self = {};
 
     /**
@@ -49,10 +50,60 @@ angular.module('mm.addons.mod_lti')
     self.getController = function(module, courseid) {
         return function($scope) {
             $scope.title = module.name;
-            $scope.icon = $mmCourse.getModuleIconSrc('lti');
+            $scope.icon = $mmCourse.getModuleIconSrc('lti'); // Get LTI default icon for now.
             $scope.action = function() {
                 $state.go('site.mod_lti', {module: module, courseid: courseid});
             };
+
+            // Get LTI data.
+            var promise = $mmaModLti.getLti(courseid, module.id);
+
+            // Handle custom icons.
+            promise.then(function(ltidata) {
+                var icon = ltidata.secureicon || ltidata.icon;
+                if (icon) {
+                    $mmFilepool.downloadUrl($mmSite.getId(), icon, false, mmaModLtiComponent, module.id).then(function(url) {
+                        $scope.icon = url;
+                    }).catch(function() {
+                        // Error downloading. If we're online we'll set the online url.
+                        if ($mmApp.isOnline()) {
+                            $scope.icon = icon;
+                        }
+                    });
+                }
+            });
+
+            // Button to launch the LTI.
+            $scope.buttons = [{
+                icon: 'ion-link',
+                label: 'mma.mod_lti.launchactivity',
+                action: function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    var modal = $mmUtil.showModalLoading('mm.core.loading', true);
+                    // Get LTI and launch data.
+                    promise.then(function(ltidata) {
+                        return $mmaModLti.getLtiLaunchData(ltidata.id).then(function(launchdata) {
+                            // "View" LTI.
+                            $mmaModLti.logView(ltidata.id).then(function() {
+                                $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
+                            });
+
+                            // Launch LTI.
+                            return $mmaModLti.launch(launchdata.endpoint, launchdata.parameters);
+                        });
+                    }).catch(function(message) {
+                        if (message) {
+                            $mmUtil.showErrorModal(message);
+                        } else {
+                            $mmUtil.showErrorModal('mma.mod_lti.errorgetlti', true);
+                        }
+                    }).finally(function() {
+                        modal.dismiss();
+                    });
+                }
+            }];
         };
     };
 

@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_lti')
  * @ngdoc service
  * @name $mmaModLti
  */
-.factory('$mmaModLti', function($q, $mmSite, $mmFS, $mmText) {
+.factory('$mmaModLti', function($q, $mmSite, $mmFS, $mmText, $mmUtil, $mmLang) {
     var self = {},
         launcherFileName = 'lti_launcher.html';
 
@@ -43,7 +43,9 @@ angular.module('mm.addons.mod_lti')
      * @module mm.addons.mod_lti
      * @ngdoc method
      * @name $mmaModLti#generateLauncher
-     * @return {Promise} Promise resolved with the file URL.
+     * @param {String} url      Launch URL.
+     * @param {Object[]} params Launch params.
+     * @return {Promise}        Promise resolved with the file URL.
      */
     self.generateLauncher = function(url, params) {
 
@@ -52,7 +54,7 @@ angular.module('mm.addons.mod_lti')
         }
 
         // Generate a form with the params.
-        var text = '<form action="' + $mmText.escapeHTML(url) + '" name="ltiLaunchForm" ' +
+        var text = '<form action="' + url + '" name="ltiLaunchForm" ' +
                     'method="post" encType="application/x-www-form-urlencoded">\n';
         angular.forEach(params, function(p) {
             if (p.name == 'ext_submit') {
@@ -190,6 +192,27 @@ angular.module('mm.addons.mod_lti')
     self.isPluginEnabled = function() {
         return  $mmSite.wsAvailable('mod_lti_get_ltis_by_courses') &&
                 $mmSite.wsAvailable('mod_lti_get_tool_launch_data');
+    };
+
+    /**
+     * Launch LTI.
+     *
+     * @module mm.addons.mod_lti
+     * @ngdoc method
+     * @name $mmaModLti#launch
+     * @param {String} url      Launch URL.
+     * @param {Object[]} params Launch params.
+     * @return {Promise}  Promise resolved when the WS call is successful.
+     */
+    self.launch = function(url, params) {
+        if (!$mmUtil.isValidURL(url)) {
+            return $mmLang.translateAndReject('mma.mod_lti.errorinvalidlaunchurl');
+        }
+
+        // Generate launcher and open it.
+        return self.generateLauncher(url, params).then(function(url) {
+            $mmUtil.openInApp(url);
+        });
     };
 
     /**

@@ -39,7 +39,7 @@ angular.module('mm.addons.mod_lti')
                 lti.launchdata = launchdata;
                 $scope.title = lti.name || $scope.title;
                 $scope.description = lti.intro || $scope.description;
-                $scope.url = launchdata.endpoint;
+                $scope.isValidUrl = $mmUtil.isValidURL(launchdata.endpoint);
             });
         }).catch(function(message) {
             if (message) {
@@ -79,9 +79,11 @@ angular.module('mm.addons.mod_lti')
             $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
         });
 
-        // Generate launcher and open it.
-        $mmaModLti.generateLauncher(lti.launchdata.endpoint, lti.launchdata.parameters).then(function(url) {
-            $mmUtil.openInApp(url);
+        // Launch LTI.
+        $mmaModLti.launch(lti.launchdata.endpoint, lti.launchdata.parameters).catch(function(message) {
+            if (message) {
+                $mmUtil.showErrorModal(message);
+            }
         });
     };
 });
