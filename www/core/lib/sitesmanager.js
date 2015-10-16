@@ -131,7 +131,7 @@ angular.module('mm.core')
      */
     self.siteExists = function(siteurl) {
         // We pass fake parameters to make CORS work (without params, the script stops before allowing CORS).
-        return $http.head(siteurl + '/login/token.php?username=a&password=b&service=c', {timeout: 30000});
+        return $http.get(siteurl + '/login/token.php?username=a&password=b&service=c', {timeout: 30000});
     };
 
     /**
