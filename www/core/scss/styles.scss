@@ -60,6 +60,16 @@ em {
   @extend h2;
 }
 
+// More options fro grids.
+.col-60 {
+  @include flex(0, 0, 60%);
+  max-width: 60%;
+}
+.col-40 {
+  @include flex(0, 0, 40%);
+  max-width: 40%;
+}
+
 // Media item, ideal for icons.
 .item-media {
   @extend .item-avatar;
