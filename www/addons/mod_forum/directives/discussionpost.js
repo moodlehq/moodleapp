@@ -20,6 +20,19 @@ angular.module('mm.addons.mod_forum')
  * @module mm.addons.mod_forum
  * @ngdoc directive
  * @name mmaForumDiscussionPost
+ * @description
+ * This directive will show a forum post if the right data is supplied. Attributes:
+ *
+ * @param {Object} post             Post.
+ * @param {Number} courseid         Post's course ID.
+ * @param {String} title            Post's title.
+ * @param {String} subject          Post's subject.
+ * @param {String} component        Component this post belong to.
+ * @param {Object} newpost          Object with the new post data. Usually shared between posts.
+ * @param {Boolean} showdivider     True if it should have a list divider before the post.
+ * @param {Boolean} titleimportant  True if title should be "important" (bold).
+ * @oaram {Function} [postadded]    Function to call when a new post is added.
+ * @param {String} [defaultsubject] Default subject to set to new posts.
  */
 .directive('mmaModForumDiscussionPost', function($mmaModForum, $mmUtil, $translate, $q) {
     return {
@@ -33,7 +46,8 @@ angular.module('mm.addons.mod_forum')
             newpost: '=',
             showdivider: '=?',
             titleimportant: '=?',
-            postadded: '&?'
+            postadded: '&?',
+            defaultsubject: '=?'
         },
         templateUrl: 'addons/mod_forum/templates/discussionpost.html',
         transclude: true,
@@ -85,7 +99,7 @@ angular.module('mm.addons.mod_forum')
 
                 promise.then(function() {
                     scope.newpost.replyingto = undefined;
-                    scope.newpost.subject = '';
+                    scope.newpost.subject = scope.defaultsubject || '';
                     scope.newpost.message = '';
                 });
             };
