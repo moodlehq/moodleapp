@@ -432,6 +432,21 @@ angular.module('mm.core')
         };
 
         /**
+         * Open a URL using InAppBrowser.
+         *
+         * Do not use for files, refer to {@link $mmUtil#openFile}.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#openInApp
+         * @param  {String} url The URL to open.
+         * @return {Void}
+         */
+        self.openInApp = function(url) {
+            window.open(url, '_blank');
+        };
+
+        /**
          * Displays a loading modal window.
          *
          * @module mm.core
