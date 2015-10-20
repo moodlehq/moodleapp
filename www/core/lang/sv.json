@@ -1,6 +1,8 @@
 {
+    "allparticipants": "Alla deltagare",
     "cancel": "Avbryt",
     "cannotconnect": "Kan inte ansluta: Kontrollera att webbadressen är korrekt och att din webbplats använder Moodle 2.4 eller senare",
+    "choose": "Välj",
     "clearsearch": "Rensa sökning",
     "completion-alt-auto-fail": "Fullföljd (uppnådde inte godkänt resultat)",
     "completion-alt-auto-n": "Inte avslutad: {{$a}}",

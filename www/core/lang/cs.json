@@ -1,6 +1,9 @@
 {
+    "allparticipants": "Všichni účastníci",
+    "areyousure": "Opravdu?",
     "cancel": "Zrušit",
     "cannotconnect": "Nelze se připojit: Ověřte, zda je zadali správně adresu URL a že používáte Moodle 2.4 nebo novější.",
+    "choose": "Vybrat",
     "completion-alt-auto-fail": "Splněno; ale nedosáhlo se potřebné známky",
     "completion-alt-auto-n": "Nesplněno",
     "completion-alt-auto-pass": "Splněno; dosáhlo se potřebné známky",

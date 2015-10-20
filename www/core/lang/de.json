@@ -1,7 +1,10 @@
 {
+    "allparticipants": "Alle Teilnehmer/innen",
+    "areyousure": "Sind Sie sicher?",
     "cancel": "Abbrechen",
     "cannotconnect": "Die Verbindung ist nicht möglich. Prüfen Sie, ob die URL richtig ist und dass mindestens Moodle 2.4 verwendet wird.",
     "cannotdownloadfiles": "Das Herunterladen von Dateien ist für den mobilen Webservice deaktiviert. Wenden Sie sich an den Administrator.",
+    "choose": "Auswahl",
     "clearsearch": "Suche löschen",
     "completion-alt-auto-fail": "Abgeschlossen: {{$a}} (ohne Erfolg)",
     "completion-alt-auto-n": "Nicht abgeschlossen: {{$a}}",

@@ -1,6 +1,9 @@
 {
+    "allparticipants": "Tots els participants",
+    "areyousure": "Segur que voleu tirar endavant aquesta acció?",
     "cancel": "Cancel·la",
     "cannotconnect": "No s'ha pogut connectar. Comproveu que l'URL és correcte i que el lloc Moodle utilitza la versió 2.4 o posterior.",
+    "choose": "Tria",
     "clearsearch": "Neteja la cerca",
     "completion-alt-auto-fail": "Completat: {{$a}} (no han aconseguit assolir la qualificació)",
     "completion-alt-auto-n": "Incomplet: {{$a}}",

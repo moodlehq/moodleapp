@@ -1,6 +1,9 @@
 {
+    "allparticipants": "Todos os participantes",
+    "areyousure": "Você tem certeza?",
     "cancel": "Cancelar",
     "cannotconnect": "Não é possível conectar-se: Verifique se digitou a URL corretamente e se seu site usa o Moodle 2.4 ou posterior.",
+    "choose": "Escolher",
     "clearsearch": "Limpar busca",
     "completion-alt-auto-fail": "Concluído: {{$a}} (não obteve nota para aprovação)",
     "completion-alt-auto-n": "Não concluído(s): {{$a}}",

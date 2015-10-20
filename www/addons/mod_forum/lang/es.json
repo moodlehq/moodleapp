@@ -1,3 +1,16 @@
 {
-    "forumnodiscussionsyet": "No existen temas de discusión en este foro"
+    "addanewdiscussion": "Añadir un nuevo tema de discusión",
+    "cannotadddiscussion": "Para añadir debates a este foro hay que ser miembro de un grupo.",
+    "cannotadddiscussionall": "No tiene permiso para añadir un nuevo tema de discusión para todos los participantes.",
+    "cannotcreatediscussion": "No se pudo crear un debate nuevo",
+    "couldnotadd": "No se puede colocar su mensaje debido a un problema desconocido.",
+    "erroremptymessage": "El mensaje no puede estar vacío",
+    "erroremptysubject": "El asunto del mensaje no puede estar vacío.",
+    "forumnodiscussionsyet": "No existen temas de discusión en este foro",
+    "group": "Grupo",
+    "message": "Cuerpo del mensaje",
+    "posttoforum": "Enviar al foro",
+    "re": "Re:",
+    "reply": "Responder",
+    "subject": "Asunto del mensaje"
 }

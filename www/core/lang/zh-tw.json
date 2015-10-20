@@ -1,6 +1,9 @@
 {
+    "allparticipants": "所有參與者",
+    "areyousure": "你確定嗎？",
     "cancel": "取消",
     "cannotconnect": "無法連接：請確認您輸入之網址正確，且您的位置使用的是Moodle2.4版或更新版本。",
+    "choose": "選擇",
     "completion-alt-auto-fail": "已完成：{{$a}} (不及格)",
     "completion-alt-auto-n": "尚未完成：{{$a}}",
     "completion-alt-auto-pass": "已經完成：{{$a}} (及格)",

@@ -1,3 +1,16 @@
 {
-    "forumnodiscussionsyet": "V tomto diskusním fóru nejsou žádná témata"
+    "addanewdiscussion": "Přidat nové téma diskuse",
+    "cannotadddiscussion": "Abyste mohli přidávat diskuse do tohoto fóra, musíte být členy skupiny.",
+    "cannotadddiscussionall": "Nemáte oprávnění vkládat téma diskuse pro všechny účastníky.",
+    "cannotcreatediscussion": "Nelze vytvořit novou diskusi",
+    "couldnotadd": "Neznámá chyba! Nemohu přidat váš příspěvek.",
+    "erroremptymessage": "Text příspěvku nemůže být prázdný",
+    "erroremptysubject": "Předmět příspěvku nemůže být prázdný",
+    "forumnodiscussionsyet": "V tomto diskusním fóru nejsou žádná témata",
+    "group": "Skupina",
+    "message": "Zpráva",
+    "posttoforum": "Poslat do fóra",
+    "re": "Re:",
+    "reply": "Odpovědět",
+    "subject": "Předmět zprávy"
 }

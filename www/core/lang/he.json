@@ -1,6 +1,9 @@
 {
+    "allparticipants": "כל המשתתפים",
+    "areyousure": "האם אתה בטוח?",
     "cancel": "ביטול",
     "cannotconnect": "אין אפשרות להתחבר: אנא ודא כי הזנת נכון את כתובת האתר ושהאתר הוא בגרסה 2.4 ומעלה.",
+    "choose": "בחירה",
     "completion-alt-auto-fail": "הושלם: {{$a}} (לא השיג ציון עובר)",
     "completion-alt-auto-n": "לא הושלם: {{$a}}",
     "completion-alt-auto-pass": "הושלם: {{$a}} (השיג ציון עובר)",
