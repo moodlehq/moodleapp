@@ -1,0 +1,51 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <button class="button button-icon ion-funnel" ng-click="pickMode($event)" aria-label="{{ 'mma.mod_glossary.browsemode' | translate }}"></button>
+        <a ng-href="{{externalUrl}}" class="button button-icon ion-ios-browsers-outline" mm-browser></a>
+    </ion-nav-buttons>
+
+    <mm-split-view load-when="loaded" component="mmaModGlossaryEntryList">
+
+        <ion-content padding="true" delegate-handle="mmaModGlossaryIndex">
+
+            <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="loaded" on-refresh="refreshEntries()"></ion-refresher>
+
+            <mm-course-mod-description description="description"></mm-course-mod-description>
+
+            <form ng-if="isSearch" ng-submit="search(searchData.searchQuery);">
+                <div class="list">
+                    <div class="item-input-inset">
+                        <label class="item-input-wrapper">
+                            <i class="icon ion-search placeholder-icon"></i>
+                            <input type="text" placeholder="{{ 'mma.mod_glossary.searchquery' | translate}}" ng-model="searchData.searchQuery">
+                        </label>
+                        <button type="submit" class="button button-clear" ng-disabled="!searchData.searchQuery || searchData.searchQuery.length < 2">{{ 'mm.core.search' | translate}}</button>
+                    </div>
+                </div>
+            </form>
+
+            <mm-loading hide-until="loaded">
+                <div class="list" ng-if="entries && entries.length > 0">
+                    <div ng-repeat="entry in entries track by trackBy(entry)">
+
+                        <div class="item item-divider" ng-if="showDivider(entries[$index], entries[$index - 1])">
+                            <h2>{{getDivider(entries[$index])}}</h2>
+                        </div>
+
+                        <a class="item" mm-split-view-link="site.mod_glossary-entry({entry: {{ entry }}, courseid: {{ courseid }}})">
+                            <p>{{entry.concept}}</p>
+                        </a>
+                    </div>
+                </div>
+
+                <div ng-if="showNoEntries" class="padding">
+                    <p>{{ 'mma.mod_glossary.noentriesfound' | translate }}</p>
+                </div>
+
+                <ion-infinite-scroll ng-if="canLoadMore" immediate-check="false" on-infinite="loadMoreEntries()"></ion-infinite-scroll>
+
+            </mm-loading>
+        </ion-content>
+    </mm-split-view>
+</ion-view>

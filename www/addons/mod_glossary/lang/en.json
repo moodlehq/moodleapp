@@ -1,0 +1,14 @@
+{
+    "browsemode": "Browse entries",
+    "byalphabet": "Alphabetically",
+    "byauthor": "Group by author",
+    "bynewestfirst": "Newest first",
+    "byrecentlyupdated": "Recently updated",
+    "bysearch": "Search",
+    "entrypendingapproval": "This entry is pending approval.",
+    "errorloadingentries": "An error occured while loading entries.",
+    "errorloadingentry": "An error occured while loading the entry.",
+    "errorloadingglossary": "An error occured while loading the glossary.",
+    "noentriesfound": "No entries were found.",
+    "searchquery": "Search query"
+}
