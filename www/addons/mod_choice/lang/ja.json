@@ -6,6 +6,7 @@
     "notopenyet": "申し訳ございません、この活動は {{$a}} まで利用することができません。",
     "numberofuser": "参加者数",
     "numberofuserinpercentage": "参加者数 (%)",
+    "removemychoice": "私の投票を削除する",
     "responses": "投票結果",
     "responsesresultgraphheader": "グラフ表示",
     "savemychoice": "私の投票を保存する",

@@ -1,6 +1,19 @@
 {
+    "addanewdiscussion": "Lägg till ett nytt diskussionsämne",
+    "cannotadddiscussion": "För att lägga till diskussionsämnen till det här forumet krävs det att man är medlem av en grupp.",
+    "cannotadddiscussionall": "Du har inte tillstånd att lägga till ett nytt diskussionsämne för alla deltagare. ",
+    "cannotcreatediscussion": "Det gick inte att skapa en ny diskussion",
+    "couldnotadd": "Det gick inte att lägga till Ditt inlägg på grund av okänt fel.",
+    "erroremptymessage": "Meddelandet i inlägget kan inte vara tomt",
+    "erroremptysubject": "Ämnesrubriken för inlägget kan inte vara tom.",
     "errorgetforum": "Fel att få forum innehåll",
     "forumnodiscussionsyet": "Det finns inga diskussionsämnen ännu i detta forum.",
+    "group": "Grupp",
+    "message": "Meddelandets brödtext",
     "numdiscussions": "{{numdiscussions}} diskussioner",
-    "numreplies": "{{numreplies}} svar"
+    "numreplies": "{{numreplies}} svar",
+    "posttoforum": "Publicera inlägget i forumet",
+    "re": "Svar:",
+    "reply": "Svar",
+    "subject": "Meddelanderubrik"
 }

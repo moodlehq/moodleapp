@@ -1,7 +1,10 @@
 {
+    "allparticipants": "Partaide guztiak",
+    "areyousure": "Ziur al zaude?",
     "cancel": "Utzi",
     "cannotconnect": "Ezin izan da konektatu. URLa ondo idatzi duzula eta zure Moodle-ak 2.4 edo goragoko bertsioa erabiltzen duela egiaztatu ezazu.",
     "cannotdownloadfiles": "Fitxategiak jaistea ezgaituta dago zure Mobile zerbitzuan. Mesedez zure gune kudeatzailean harremanetan jarri zaitez.",
+    "choose": "Aukeratu",
     "clearsearch": "Bilaketa garbia",
     "completion-alt-auto-fail": "Osatuta: {{$a}} (ez dute gutxieneko kalifikazioa lortu)",
     "completion-alt-auto-n": "Osatu gabea: {{$a}}",

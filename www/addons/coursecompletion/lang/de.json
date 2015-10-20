@@ -1,17 +1,20 @@
 {
-    "complete": "Fertig",
+    "complete": "Abschließen",
+    "completecourse": "Kurs abschließen",
     "completed": "Abgeschlossen",
+    "completiondate": "Abschlussdatum",
     "coursecompletion": "Kursabschluss",
     "criteria": "Kriterien",
     "criteriagroup": "Kriteriengruppe",
     "criteriarequiredall": "Alle nachfolgenden Kriterien sind notwendig",
-    "criteriarequiredany": "Eine der nachfolgenden Kriterien ist notwendig",
-    "inprogress": "In Bearbeitung",
-    "manualselfcompletion": "Manueller eigener Abschluss",
-    "notyetstarted": "Noch nicht begonnen",
+    "criteriarequiredany": "Eines der nachfolgenden Kriterien ist notwendig",
+    "inprogress": "In Arbeit",
+    "manualselfcompletion": "Manueller Selbstabschluss",
+    "notyetstarted": "Nicht begonnen",
     "pending": "Unerledigt",
-    "required": "Erforderlich",
-    "requiredcriteria": "Notwendiges Kriterium",
+    "required": "Notwendig",
+    "requiredcriteria": "Notwendige Kriterien",
+    "requirement": "Anforderung",
     "status": "Status",
-    "viewcoursereport": "Kursbericht ansehen"
+    "viewcoursereport": "Kursbericht anzeigen"
 }

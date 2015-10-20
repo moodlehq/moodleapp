@@ -1,0 +1,15 @@
+{
+    "addanewdiscussion": "Új vitatéma hozzáadása",
+    "cannotadddiscussion": "Ahhoz, hogy hozzáadhasson vitát, ezen a fórumon csoporttagságra van szükség.",
+    "cannotadddiscussionall": "Ön nem adhat hozzá új vitatémát az összes résztvevő számára.",
+    "cannotcreatediscussion": "Nem sikerült új vitát létrehozni.",
+    "couldnotadd": "Ismeretlen hiba miatt a hozzászólást nem lehetett hozzáadni",
+    "erroremptymessage": "A hozzászólás szövege nem lehet üres.",
+    "erroremptysubject": "A hozzászólás tárgya nem lehet üres.",
+    "group": "Csoport",
+    "message": "Üzenet törzsszövege",
+    "posttoforum": "Hozzászólás a fórumhoz",
+    "re": "Tárgy:",
+    "reply": "Válasz",
+    "subject": "Üzenet tárgya"
+}

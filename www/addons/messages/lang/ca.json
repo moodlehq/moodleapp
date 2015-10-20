@@ -1,10 +1,11 @@
 {
     "addcontact": "Afegeix com a contacte",
     "blockcontact": "Bloca contacte",
-    "contactlistempty": "La vostra llista de contactes és buida",
+    "contactlistempty": "La llista de contactes està buida",
     "contactname": "Nom del contacte",
     "contacts": "Contactes",
     "errorwhileretrievingcontacts": "S'ha produït un error en recuperar els contactes del servidor.",
+    "errorwhileretrievingmessages": "S'ha produït un error descarregant els missatges.",
     "messagenotsent": "El missatge no s'ha enviat. Si us plau, intenteu-ho més tard",
     "messages": "Missatges",
     "mustbeonlinetosendmessages": "Heu de tenir connexió a la xarxa per a enviar missatges",

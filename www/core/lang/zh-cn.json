@@ -1,6 +1,9 @@
 {
+    "allparticipants": "所有成员",
+    "areyousure": "你确定吗？",
     "cancel": "取消",
     "cannotconnect": "无法连接：请确认您已经正确输入网址，并且您的网站使用了Moodle 2.4或更高版本。",
+    "choose": "选择",
     "completion-alt-auto-fail": "已完成：{{$a}}（未及格）",
     "completion-alt-auto-n": "未完成：{{$a}}",
     "completion-alt-auto-pass": "已完成：{{$a}}（及格）",

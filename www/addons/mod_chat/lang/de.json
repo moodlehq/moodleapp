@@ -1,13 +1,14 @@
 {
     "beep": "Beep",
-    "currentusers": "Aktuelle Nutzer/innen",
-    "enterchat": "Chat betreten",
-    "entermessage": "Schreiben Sie Ihre Nachricht.",
-    "messagebeepsyou": "{{$a}} hat Sie angepiepst!",
-    "messageenter": "{{$a}} hat den Chat gerade betreten",
+    "currentusers": "Aktuell online",
+    "enterchat": "Klicken Sie hier, um den Chat zu betreten",
+    "entermessage": "Nachricht eingeben",
+    "messagebeepsyou": "{{$a}} hat Ihnen ein Beep gesendet!",
+    "messageenter": "{{$a}} hat den Chat betreten",
     "messageexit": "{{$a}} hat den Chat verlassen",
-    "nomessages": "Bisher keine Mitteilungen",
+    "mustbeonlinetosendmessages": "Sie müssen online sein, um Nachrichten zu senden",
+    "nomessages": "Keine Nachrichten",
     "send": "Senden",
-    "sessionstart": "Nächster Chat läuft in: {{$a}}",
+    "sessionstart": "Der nächste Chat beginnt in {{$a}}",
     "talk": "Sprechen"
 }

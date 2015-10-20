@@ -1,6 +1,19 @@
 {
+    "addanewdiscussion": "Neues Thema hinzufügen",
+    "cannotadddiscussion": "Nur Gruppenmitglieder dürfen Beiträge zum Forum hinzufügen.",
+    "cannotadddiscussionall": "Sie dürfen kein neues Diskussionsthema für alle Teilnehmer/innen hinzufügen.",
+    "cannotcreatediscussion": "Das neue Thema wurde leider nicht gespeichert.",
+    "couldnotadd": "Der Beitrag wurde wegen eines Fehlers nicht hinzugefügt.",
+    "erroremptymessage": "Die Mitteilung darf nicht leer sein.",
+    "erroremptysubject": "Der Betreff darf nicht leer sein.",
     "errorgetforum": "Fehler beim Forum",
     "forumnodiscussionsyet": "Keine Themen im Forum",
+    "group": "Gruppe",
+    "message": "Mitteilung",
     "numdiscussions": "{{numdiscussions}} Themen",
-    "numreplies": "{{numreplies}} Antworten"
+    "numreplies": "{{numreplies}} Antworten",
+    "posttoforum": "Beitrag absenden",
+    "re": "Re:",
+    "reply": "Antworten",
+    "subject": "Betreff"
 }

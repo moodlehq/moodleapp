@@ -1,3 +1,14 @@
 {
-    "forumnodiscussionsyet": "Bu forum da henuz hiç tartışma başlığı yok"
+    "addanewdiscussion": "Yeni tartışma konusu ekle",
+    "cannotadddiscussion": "Bu foruma tartışma ekleme, grup üyeliği gerektirir.",
+    "cannotadddiscussionall": "Tüm katılımcılar için yeni bir tartışma konusu ekleme izniniz yok.",
+    "cannotcreatediscussion": "Yeni tartışma oluşturulamadı",
+    "couldnotadd": "Bilinmeyen bir nedenle mesajınız eklenemedi",
+    "forumnodiscussionsyet": "Bu forum da henuz hiç tartışma başlığı yok",
+    "group": "Grup",
+    "message": "Mesaj gövdesi",
+    "posttoforum": "Foruma gönder",
+    "re": "Ynt:",
+    "reply": "Yanıtla",
+    "subject": "Mesaj konusu"
 }

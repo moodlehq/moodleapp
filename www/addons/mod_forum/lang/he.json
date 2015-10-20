@@ -1,0 +1,15 @@
+{
+    "addanewdiscussion": "הוספת נושא חדש לדיון",
+    "cannotadddiscussion": "על מנת שתוכל להוסיף דיונים לפורום עלייך להיות חבר בקבוצה.",
+    "cannotadddiscussionall": "אין לך הרשאה להוסיף נושא דיון חדש עבור כל המשתתפים.",
+    "cannotcreatediscussion": "כשלון ביצירת דיון חדש.",
+    "couldnotadd": "ההודעה שלך לא פורסמה עקב תקלה בלתי מזוהה",
+    "erroremptymessage": "הודעת הפרסום איננה יכולה להיות ריקה",
+    "erroremptysubject": "הנושא הפרסום אינו יכול להיות ריק",
+    "group": "קבוצה",
+    "message": "גוף ההודעה",
+    "posttoforum": "שליחת הודעה לפורום",
+    "re": "תשובה ל:",
+    "reply": "תגובה",
+    "subject": "נושא ההודעה"
+}

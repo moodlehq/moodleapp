@@ -1,6 +1,9 @@
 {
+    "allparticipants": "Összes résztvevő",
+    "areyousure": "Biztos?",
     "cancel": "Mégse",
     "cannotconnect": "Sikertelen kapcsolódás: ellenőrizze, jó-e az URL és a portál legalább 2.4-es Moodle-t használ-e.",
+    "choose": "Választás",
     "completion-alt-auto-fail": "Teljesítve: {{$a}}  (a teljesítési pontszámot nem érte el)",
     "completion-alt-auto-n": "Nincs teljesítve:  {{$a}}",
     "completion-alt-auto-pass": "Teljesítve: {{$a}} (a teljesítési pontszámot elérte)",

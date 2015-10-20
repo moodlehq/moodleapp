@@ -1,6 +1,19 @@
 {
+    "addanewdiscussion": "Mezua idatzi",
+    "cannotadddiscussion": "Foro honetan eztabaidak gehitzeko talde bateko kide izan behar da",
+    "cannotadddiscussionall": "Ez duzu baimenik partaide guztientzako eztabaida-gai berririk gehitzeko.",
+    "cannotcreatediscussion": "Ezin da eztabaida sortu",
+    "couldnotadd": "Ezin izan da zure mezua gehitu; errore bat gertatu da nonbait.",
+    "erroremptymessage": "Mezua ezin da hutsik egon",
+    "erroremptysubject": "Mezuaren gaia ezin da hutsik egon",
     "errorgetforum": "Errorea foroko datuak jasotzean.",
     "forumnodiscussionsyet": "Oraindik ez dago elkarrizketarik foro honetan.",
+    "group": "Taldea",
+    "message": "Mezuren gurputza",
     "numdiscussions": "{{numdiscussions}} elkarrizketa",
-    "numreplies": "{{numreplies}} erantzun"
+    "numreplies": "{{numreplies}} erantzun",
+    "posttoforum": "Mezua forora bidali",
+    "re": "Er:",
+    "reply": "Erantzun",
+    "subject": "Mezuaren gaia"
 }

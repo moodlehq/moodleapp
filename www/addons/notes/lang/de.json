@@ -7,5 +7,6 @@
     "notes": "Anmerkungen",
     "personalnotes": "Meine Anmerkungen",
     "publishstate": "Kontext",
-    "sitenotes": "Anmerkungen zur Website"
+    "sitenotes": "Anmerkungen zur Website",
+    "userwithid": "Nutzer/in mit ID {{id}}"
 }

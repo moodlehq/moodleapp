@@ -1,3 +1,16 @@
 {
-    "forumnodiscussionsyet": "Brak tematów dyskusji na tym forum"
+    "addanewdiscussion": "Dodaj nowy temat dyskusji",
+    "cannotadddiscussion": "Musisz być członkiem grupy aby dodać dyskusję do tego forum",
+    "cannotadddiscussionall": "Nie masz uprawnień, aby dodać nową dyskusję dla wszystkich uczestników.",
+    "cannotcreatediscussion": "Nie można utworzyć nowego wątku",
+    "couldnotadd": "Nie można dodać twojego wpisu z powodu nieznanego błędu",
+    "erroremptymessage": "Wiadomość nie może być pusta",
+    "erroremptysubject": "Tytuł wpisu nie może być pusty.",
+    "forumnodiscussionsyet": "Brak tematów dyskusji na tym forum",
+    "group": "Grupa",
+    "message": "Treść wiadomości",
+    "posttoforum": "Wyślij wpis na forum",
+    "re": "Odp:",
+    "reply": "Odpowiedz",
+    "subject": "Temat wiadomości"
 }
