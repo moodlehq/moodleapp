@@ -8,13 +8,17 @@
     "deletesitefilestitle": "Elimina els fitxers del lloc",
     "development": "Desenvolupament",
     "enabledebugging": "Habilita la depuració",
+    "errordeletesitefiles": "S'ha produït un error eliminant els fitxers del lloc.",
+    "errorsyncsite": "S'ha produït un error sincronitzant les dades del lloc, comproveu la vostra connexió a internet i torneu-ho provar.",
     "estimatedfreespace": "Espai lliure estimat",
     "general": "General",
     "language": "Idioma",
     "license": "Llicència",
     "settings": "Configuració",
     "spaceusage": "Utilització de l'espai",
-    "success": "Èxit",
+    "success": "Èxit!",
     "synchronization": "Sincronització",
+    "synchronizing": "S'està sincronitzant",
+    "syncsitesuccess": "S'han invalidat totes les dades sincronitzades i les memòries cau",
     "total": "Total"
 }

@@ -5,6 +5,8 @@
     "country": "País",
     "description": "Descripció",
     "details": "Detalls",
+    "detailsnotavailable": "No tens accés als detalls d'aquest usuari.",
+    "editingteacher": "Professor",
     "email": "Correu electrònic",
     "interests": "Interessos",
     "invaliduser": "L'usuari no és vàlid",

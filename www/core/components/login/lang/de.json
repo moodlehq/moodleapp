@@ -1,6 +1,7 @@
 {
     "authenticating": "Authentifizieren",
     "cancel": "Abbrechen",
+    "cannotdownloadfiles": "Das Herunterladen von Dateien ist für den mobilen Webservice deaktiviert. Die App funktioniert nicht ohne diese Option. Wenden Sie sich an den Administrator.",
     "confirmdeletesite": "Möchten Sie wirklich die Website '{{sitename}}' aus der Liste löschen?",
     "connect": "Verbinden!",
     "connecttomoodle": "Website verbinden",
@@ -14,6 +15,7 @@
     "invalidaccount": "Prüfen Sie Ihre Anmeldedaten oder wenden Sie sich an den Administrator.",
     "invalidmoodleversion": "Falsche Version. Notwendig ist mindestens Moodle 2.4.",
     "invalidsite": "Die URL der Website ist ungültig.",
+    "localmobileunexpectedresponse": "Der Verbindungsversuch mit dem Plugin 'Moodle Mobile - Zusatzfeatures' ist fehlgeschlagen. Sie werden über den standardmäßigen mobilen Webservices authentifiziert.",
     "login": "Login",
     "loginbutton": "Login!",
     "logininsiterequired": "Sie müssen sich für diese Website im Browser anmelden.",
