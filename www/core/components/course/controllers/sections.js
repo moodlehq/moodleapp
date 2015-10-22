@@ -28,8 +28,8 @@ angular.module('mm.core.course')
     $scope.courseid = courseid;
     $scope.fullname = course.fullname;
 
-    function loadSections(refresh) {
-        return $mmCourse.getSections(courseid, refresh).then(function(sections) {
+    function loadSections() {
+        return $mmCourse.getSections(courseid).then(function(sections) {
             $translate('mm.course.showall').then(function(str) {
                 // Adding fake first section.
                 var result = [{
@@ -48,8 +48,10 @@ angular.module('mm.core.course')
     }
 
     $scope.doRefresh = function() {
-        loadSections(true).finally(function() {
-            $scope.$broadcast('scroll.refreshComplete');
+        $mmCourse.invalidateSections(courseid).finally(function() {
+            loadSections().finally(function() {
+                $scope.$broadcast('scroll.refreshComplete');
+            });
         });
     };
 
