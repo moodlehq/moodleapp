@@ -116,7 +116,8 @@ angular.module('mm.core')
     }
 
     this.$get = function($http, $q, $mmWS, $mmDB, $mmConfig, $log, md5, $mmApp, $mmLang, $mmUtil, $mmFS, mmCoreWSCacheStore,
-            mmCoreWSPrefix, mmCoreSessionExpired, $mmEvents, mmCoreEventSessionExpired, mmCoreUserDeleted, mmCoreEventUserDeleted) {
+            mmCoreWSPrefix, mmCoreSessionExpired, $mmEvents, mmCoreEventSessionExpired, mmCoreUserDeleted, mmCoreEventUserDeleted,
+            $mmText) {
 
         $log = $log.getInstance('$mmSite');
 
@@ -668,20 +669,29 @@ angular.module('mm.core')
          * Check if the local_mobile plugin is installed in the Moodle site.
          * This plugin provide extended services.
          *
-         * @return {Promise} Promise resolved when the check is done. Resolve params:
-         *                           - {Number} code Code to identify the authentication method to use.
-         *                           - {String} [service] If defined, name of the service to use.
-         *                           - {String} [warning] If defined, code of the warning message.
+         * @param {Boolean} retrying True if we're retrying the check.
+         * @return {Promise}         Promise resolved when the check is done. Resolve params:
+         *                                   - {Number} code Code to identify the authentication method to use.
+         *                                   - {String} [service] If defined, name of the service to use.
+         *                                   - {String} [warning] If defined, code of the warning message.
          */
-        Site.prototype.checkLocalMobilePlugin = function() {
-            var siteurl = this.siteurl;
+        Site.prototype.checkLocalMobilePlugin = function(retrying) {
+            var siteurl = this.siteurl,
+                self = this;
 
             return $mmConfig.get('wsextservice').then(function(service) {
 
                 return $http.post(siteurl + '/local/mobile/check.php', {service: service}).then(function(response) {
                     var data = response.data;
 
-                    if (typeof data == 'undefined' || typeof data.code == 'undefined') {
+                    if (typeof data != 'undefined' && data.errorcode === 'requirecorrectaccess') {
+                        if (!retrying) {
+                            self.siteurl = $mmText.addOrRemoveWWW(siteurl);
+                            return self.checkLocalMobilePlugin(true);
+                        } else {
+                            return $q.reject(data.error);
+                        }
+                    } else if (typeof data == 'undefined' || typeof data.code == 'undefined') {
                         // local_mobile returned something we didn't expect. Let's assume it's not installed.
                         return {code: 0, warning: 'mm.login.localmobileunexpectedresponse'};
                     }
