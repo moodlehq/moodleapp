@@ -23,6 +23,8 @@ angular.module('mm.core.courses')
  */
 .controller('mmCoursesListCtrl', function($scope, $mmCourses, $mmCoursesDelegate, $mmUtil) {
 
+    $scope.searchEnabled = $mmCourses.isSearchCoursesAvailable();
+
     // Convenience function to fetch courses.
     function fetchCourses(refresh) {
         return $mmCourses.getUserCourses().then(function(courses) {

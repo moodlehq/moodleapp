@@ -21,7 +21,9 @@ angular.module('mm.core.courses')
  * @ngdoc service
  * @name $mmCourses
  */
-.factory('$mmCourses', function($q, $mmSite, $mmSitesManager) {
+.factory('$mmCourses', function($q, $mmSite, $log, $mmSitesManager, mmCoursesSearchPerPage) {
+
+    $log = $log.getInstance('$mmCourses');
 
     var self = {},
         currentCourses = {};
@@ -36,6 +38,76 @@ angular.module('mm.core.courses')
     self.clearCurrentCourses = function() {
         currentCourses = {};
     };
+
+    /**
+     * Get course.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#getCourse
+     * @param {Number} id       ID of the course to get.
+     * @param {String} [siteid] Site to get the courses from. If not defined, use current site.
+     * @return {Promise}        Promise to be resolved when the courses are retrieved.
+     */
+    self.getCourse = function(id, siteid) {
+        return self.getCourses([id], siteid).then(function(courses) {
+            if (courses && courses.length > 0) {
+                return courses[0];
+            }
+            return $q.reject();
+        });
+    };
+
+    /**
+     * Get courses.
+     * Warning: if the user doesn't have permissions to view some of the courses passed the WS call will fail.
+     * The user must be able to view ALL the courses passed.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#getCourses
+     * @param {Number[]} ids    List of IDs of the courses to get.
+     * @param {String} [siteid] Site to get the courses from. If not defined, use current site.
+     * @return {Promise}        Promise to be resolved when the courses are retrieved.
+     */
+    self.getCourses = function(ids, siteid) {
+        siteid = siteid || $mmSite.getId();
+
+        if (!angular.isArray(ids)) {
+            return $q.reject();
+        } else if (ids.length === 0) {
+            return $q.when([]);
+        }
+
+        return $mmSitesManager.getSite(siteid).then(function(site) {
+
+            var data = {
+                    options: {
+                        ids: ids
+                    }
+                },
+                preSets = {
+                    cacheKey: getCoursesCacheKey(ids)
+                };
+
+            return site.read('core_course_get_courses', data, preSets).then(function(courses) {
+                if (typeof courses != 'object' && !angular.isArray(courses)) {
+                    return $q.reject();
+                }
+                return courses;
+            });
+        });
+    };
+
+    /**
+     * Get cache key for get courses WS call.
+     *
+     * @param  {Number[]} ids Courses IDs.
+     * @return {String}       Cache key.
+     */
+    function getCoursesCacheKey(ids) {
+        return 'mmCourses:course:' + JSON.stringify(ids);
+    }
 
     /**
      * DEPRECATED: this function will be removed in a future version. Please use $mmCourses#getUserCourse.
@@ -132,6 +204,36 @@ angular.module('mm.core.courses')
     }
 
     /**
+     * Invalidates get course WS call.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#invalidateCourse
+     * @param  {Number} id Course ID.
+     * @return {Promise}   Promise resolved when the data is invalidated.
+     */
+    self.invalidateCourse = function(id, siteid) {
+        return self.invalidateCourses([id], siteid);
+    };
+
+    /**
+     * Invalidates get courses WS call.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#invalidateCourses
+     * @param  {Number[]} ids   Courses IDs.
+     * @param {String} [siteid] Site ID to invalidate. If not defined, use current site.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateCourses = function(ids, siteid) {
+        siteid = siteid || $mmSite.getId();
+        return $mmSitesManager.getSite(siteid).then(function(site) {
+            return site.invalidateWsCacheForKey(getCoursesCacheKey(ids));
+        });
+    };
+
+    /**
      * Invalidates get user courses WS call.
      *
      * @module mm.core.courses
@@ -144,6 +246,62 @@ angular.module('mm.core.courses')
         siteid = siteid || $mmSite.getId();
         return $mmSitesManager.getSite(siteid).then(function(site) {
             return site.invalidateWsCacheForKey(getUserCoursesCacheKey());
+        });
+    };
+
+    /**
+     * Check if search courses feature is available in the current site.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#isSearchCoursesAvailable
+     * @return {Boolean} True if is available, false otherwise.
+     */
+    self.isSearchCoursesAvailable = function() {
+        return $mmSite.wsAvailable('core_course_search_courses');
+    };
+
+    /**
+     * Check if self enrolment is available.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#isSelfEnrolmentEnabled
+     * @return {Boolean} True if self enrolment is available, false otherwise.
+     */
+    self.isSelfEnrolmentEnabled = function() {
+        return $mmSite.wsAvailable('enrol_self_enrol_user');
+    };
+
+    /**
+     * Search courses.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#search
+     * @param {String} text      Text to search.
+     * @param {Number} [page]    Page to get. Defaults to 0.
+     * @param {Number} [perpage] Number of courses per page. Defaults to mmCoursesSearchPerPage.
+     * @return {Promise}         Promise resolved with the courses and the total of matches.
+     */
+    self.search = function(text, page, perpage) {
+        page = page || 0;
+        perpage = perpage || mmCoursesSearchPerPage;
+
+        var params = {
+                criterianame: 'search',
+                criteriavalue: text,
+                page: page,
+                perpage: perpage
+            }, preSets = {
+                getFromCache: false
+            };
+
+        return $mmSite.read('core_course_search_courses', params, preSets).then(function(response) {
+            if (typeof response == 'object') {
+                return {total: response.total, courses: response.courses};
+            }
+            return $q.reject();
         });
     };
 

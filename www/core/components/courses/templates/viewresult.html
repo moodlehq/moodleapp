@@ -1,0 +1,34 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-content padding="true">
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" on-refresh="doRefresh()" ng-if="courseLoaded"></ion-refresher>
+        <mm-loading hide-until="courseLoaded">
+            <div ng-if="course" class="list card">
+                <div class="item item-divider">
+                    <h2><mm-format-text watch="true">{{course.fullname}}</mm-format-text></h2>
+                </div>
+                <div class="item" ng-if="course.categoryname">
+                    <p class="item-heading">{{ 'mm.core.category' | translate }}</p>
+                    <p><mm-format-text watch="true">{{course.categoryname}}</mm-format-text></p>
+                </div>
+                <div class="item" ng-if="course.contacts && course.contacts.length" mm-user-link userid="{{course.contacts[0].id}}" aria-label="{{ 'mm.core.viewprofile' | translate }}">
+                    <p class="item-heading">{{ 'mm.user.editingteacher' | translate }}</p>
+                    <p><mm-format-text watch="true">{{course.contacts[0].fullname}}</mm-format-text></p>
+                </div>
+                <div class="item item-text-wrap" ng-if="course.summary">
+                    <p>
+                        <summary>
+                            <mm-format-text class="mm-content-with-float" watch="true" shorten="150" expand-on-click="true">{{course.summary}}</mm-format-text>
+                        </summary>
+                    </p>
+                </div>
+                <mm-file ng-repeat="file in course.overviewfiles" file="file" component="{{component}}" component-id="{{course.id}}"></mm-file>
+                <div class="item tabs tabs-icon-left" ng-show="course._handlers.length">
+                    <a ng-repeat="handler in course._handlers | orderBy:'-priority'" ng-controller="handler.controller" ng-click="action($event, course)" class="tab-item active" title="{{title | translate}}">
+                        <i class="icon {{icon}}"></i> {{title | translate}}
+                    </a>
+                </div>
+            </div>
+        </mm-loading>
+    </ion-content>
+</ion-view>

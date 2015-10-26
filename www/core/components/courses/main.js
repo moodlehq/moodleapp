@@ -14,14 +14,8 @@
 
 angular.module('mm.core.courses', [])
 
-.value('mmCoursesFrontPage', {
-    'id': 1,
-    'shortname': '',
-    'fullname': '',
-    'enrolledusercount': 0,
-    'idnumber': '',
-    'visible': 1
-})
+.constant('mmCoursesSearchComponent', 'mmCoursesSearch')
+.constant('mmCoursesSearchPerPage', 20) // Max of courses per page when searching courses.
 
 .config(function($stateProvider) {
 
@@ -33,6 +27,29 @@ angular.module('mm.core.courses', [])
             'site': {
                 templateUrl: 'core/components/courses/templates/list.html',
                 controller: 'mmCoursesListCtrl'
+            }
+        }
+    })
+
+    .state('site.mm_searchcourses', {
+        url: '/mm_searchcourses',
+        views: {
+            'site': {
+                templateUrl: 'core/components/courses/templates/search.html',
+                controller: 'mmCoursesSearchCtrl'
+            }
+        }
+    })
+
+    .state('site.mm_viewresult', {
+        url: '/mm_viewresult',
+        params: {
+            course: null
+        },
+        views: {
+            'site': {
+                templateUrl: 'core/components/courses/templates/viewresult.html',
+                controller: 'mmCoursesViewResultCtrl'
             }
         }
     });

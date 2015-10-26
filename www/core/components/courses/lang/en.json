@@ -1,6 +1,11 @@
 {
-    "errorloadcourses": "An error occurred while loading courses.",
-    "filter": "Filter",
-    "frontpage": "Front page",
-    "mycourses": "My courses"
+	"errorloadcourses": "An error occurred while loading courses.",
+	"errorsearching": "An error occured while searching.",
+	"filtermycourses": "Filter my courses",
+	"frontpage": "Front page",
+	"mycourses": "My courses",
+	"nosearchresults": "There were no results from your search",
+	"search": "Search",
+	"searchcourses": "Search courses",
+	"totalcoursesearchresults": "Total courses: {{$a}}"
 }
