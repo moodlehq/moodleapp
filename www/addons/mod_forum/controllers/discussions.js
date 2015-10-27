@@ -104,8 +104,9 @@ angular.module('mm.addons.mod_forum')
     // Refresh forum data and discussions list.
     function refreshData() {
         var promises = [];
+        promises.push($mmaModForum.invalidateForumData(courseid));
         if (forum) {
-            promises.push($mmaModForum.invalidateDiscussionsList(courseid, forum.id));
+            promises.push($mmaModForum.invalidateDiscussionsList(forum.id));
             promises.push($mmGroups.invalidateActivityGroupMode(forum.cmid));
         }
         return $q.all(promises).finally(function() {
