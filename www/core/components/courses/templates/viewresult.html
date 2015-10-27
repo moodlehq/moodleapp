@@ -12,8 +12,8 @@
                     <p><mm-format-text watch="true">{{course.categoryname}}</mm-format-text></p>
                 </div>
                 <div class="item" ng-if="course.contacts && course.contacts.length" mm-user-link userid="{{course.contacts[0].id}}" aria-label="{{ 'mm.core.viewprofile' | translate }}">
-                    <p class="item-heading">{{ 'mm.user.editingteacher' | translate }}</p>
-                    <p><mm-format-text watch="true">{{course.contacts[0].fullname}}</mm-format-text></p>
+                    <p class="item-heading">{{ 'mm.core.teachers' | translate }}</p>
+                    <p ng-repeat="contact in course.contacts">{{contact.fullname}}</p>
                 </div>
                 <div class="item item-text-wrap" ng-if="course.summary">
                     <p>
@@ -23,6 +23,16 @@
                     </p>
                 </div>
                 <mm-file ng-repeat="file in course.overviewfiles" file="file" component="{{component}}" component-id="{{course.id}}"></mm-file>
+                <form class="item" ng-if="selfEnrolEnabled && !isEnrolled">
+                    <label id="mm-courses-enrol-password" ng-if="showPassword" class="item item-input item-stacked-label">
+                        <span class="input-label">{{ 'mm.courses.password' | translate }}</span>
+                        <input type="password" placeholder="{{ 'mm.courses.password' | translate }}" ng-model="enroldata.password">
+                    </label>
+                    <button class="button button-block" ng-click="enrol(enroldata.password)" aria-controls="mm-courses-enrol-password" aria-expanded="showPassword">{{ 'mm.courses.enrolme' | translate }}</button>
+                </form>
+                <div class="item" ng-if="!selfEnrolEnabled && !isEnrolled">
+                    <p>{{ 'mm.courses.notenrollable' | translate }}</p>
+                </div>
                 <div class="item tabs tabs-icon-left" ng-show="course._handlers.length">
                     <a ng-repeat="handler in course._handlers | orderBy:'-priority'" ng-controller="handler.controller" ng-click="action($event, course)" class="tab-item active" title="{{title | translate}}">
                         <i class="icon {{icon}}"></i> {{title | translate}}

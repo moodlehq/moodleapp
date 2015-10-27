@@ -16,6 +16,7 @@ angular.module('mm.core.courses', [])
 
 .constant('mmCoursesSearchComponent', 'mmCoursesSearch')
 .constant('mmCoursesSearchPerPage', 20) // Max of courses per page when searching courses.
+.constant('mmCoursesEnrolInvalidKey', 'mmCoursesEnrolInvalidKey')
 
 .config(function($stateProvider) {
 

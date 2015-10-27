@@ -21,7 +21,7 @@ angular.module('mm.core.courses')
  * @ngdoc service
  * @name $mmCourses
  */
-.factory('$mmCourses', function($q, $mmSite, $log, $mmSitesManager, mmCoursesSearchPerPage) {
+.factory('$mmCourses', function($q, $mmSite, $log, $mmSitesManager, mmCoursesSearchPerPage, mmCoursesEnrolInvalidKey) {
 
     $log = $log.getInstance('$mmCourses');
 
@@ -300,6 +300,48 @@ angular.module('mm.core.courses')
         return $mmSite.read('core_course_search_courses', params, preSets).then(function(response) {
             if (typeof response == 'object') {
                 return {total: response.total, courses: response.courses};
+            }
+            return $q.reject();
+        });
+    };
+
+    /**
+     * Self enrol current user in a certain course.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#selfEnrol
+     * @param {String} courseid Course ID.
+     * @param {String} password Password to use.
+     * @return {Promise}        Promise resolved if the user is enrolled. If the password is invalid,
+     *                          the promise is rejected with an object with code = mmCoursesEnrolInvalidKey.
+     */
+    self.selfEnrol = function(courseid, password) {
+        if (typeof password == 'undefined') {
+            password = '';
+        }
+
+        var params = {
+            courseid: courseid,
+            password: password
+        };
+
+        return $mmSite.write('enrol_self_enrol_user', params).then(function(response) {
+            if (response) {
+                if (response.status) {
+                    return true;
+                } else if (response.warnings && response.warnings.length) {
+                    var message;
+                    angular.forEach(response.warnings, function(warning) {
+                        if (warning.warningcode == '2' || warning.warningcode == '4') { // Invalid password warnings.
+                            message = warning.message;
+                        }
+                    });
+
+                    if (message) {
+                        return $q.reject({code: mmCoursesEnrolInvalidKey, message: message});
+                    }
+                }
             }
             return $q.reject();
         });
