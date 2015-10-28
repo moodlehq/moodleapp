@@ -41,6 +41,7 @@ angular.module('mm.core')
      *                    - wstoken string The Webservice token.
      *                    - wsfunctions array List of functions available on the site.
      *                    - responseExpected boolean Defaults to true. Set to false when the expected response is null.
+     *                    - typeExpected string Defaults to 'object'. Use it when you expect a type that's not an object|array.
      */
     self.call = function(method, data, preSets) {
 
@@ -54,6 +55,8 @@ angular.module('mm.core')
         } else if (!$mmApp.isOnline()) {
             return $mmLang.translateAndReject('mm.core.networkerrormsg');
         }
+
+        preSets.typeExpected = preSets.typeExpected || 'object';
 
         data.wsfunction = method;
         data.wstoken = preSets.wstoken;
@@ -73,6 +76,9 @@ angular.module('mm.core')
 
             if (!data) {
                 return $mmLang.translateAndReject('mm.core.serverconnection');
+            } else if (typeof data != preSets.typeExpected) {
+                $log.warn('Response of type "' + typeof data + '" received, expecting "' + preSets.typeExpected + '"');
+                return $mmLang.translateAndReject('mm.core.errorinvalidresponse');
             }
 
             if (typeof(data.exception) !== 'undefined') {
