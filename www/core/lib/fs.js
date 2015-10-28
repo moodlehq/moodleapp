@@ -565,6 +565,30 @@ angular.module('mm.core')
     };
 
     /**
+     * Get the base path where the application files are stored in the format to be used for downloads.
+     * iOS: Internal URL (cdvfile://).
+     * Others: basePath (file://)
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#getBasePathToDownload
+     * @return {Promise} Promise to be resolved when the base path is retrieved.
+     */
+    self.getBasePathToDownload = function() {
+        return self.init().then(function() {
+            if (ionic.Platform.isIOS()) {
+                // In iOS we want the internal URL (cdvfile://localhost/persistent/...).
+                return $cordovaFile.checkDir(basePath, '').then(function(dirEntry) {
+                    return dirEntry.toInternalURL();
+                });
+            } else {
+                // In the other platforms we use the basePath as it is (file://...).
+                return basePath;
+            }
+        });
+    };
+
+    /**
      * Get temporary directory path.
      *
      * @module mm.core

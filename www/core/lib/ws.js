@@ -138,7 +138,7 @@ angular.module('mm.core')
     self.downloadFile = function(url, path, background) {
         $log.debug('Downloading file ' + url);
 
-        return $mmFS.getBasePath().then(function(basePath) {
+        return $mmFS.getBasePathToDownload().then(function(basePath) {
             // Use a tmp path to download the file and then move it to final location. This is because if the download fails,
             // the local file is deleted.
             var tmpPath = basePath + path + '.tmp';
