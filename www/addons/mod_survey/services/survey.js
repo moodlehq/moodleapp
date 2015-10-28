@@ -290,7 +290,11 @@ angular.module('mm.addons.mod_survey')
             surveyid: surveyid,
             answers: answers
         };
-        return $mmSite.write('mod_survey_submit_answers', params);
+        return $mmSite.write('mod_survey_submit_answers', params).then(function(response) {
+            if (!response.status) {
+                return $q.reject();
+            }
+        });
     };
 
     return self;

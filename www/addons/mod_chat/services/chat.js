@@ -92,7 +92,12 @@ angular.module('mm.addons.mod_chat')
             chatid: chatId
         };
 
-        return $mmSite.write('mod_chat_login_user', params);
+        return $mmSite.write('mod_chat_login_user', params).then(function(response) {
+            if (response.chatsid) {
+                return response.chatsid;
+            }
+            return $q.reject();
+        });
     };
 
     /**
@@ -132,7 +137,12 @@ angular.module('mm.addons.mod_chat')
             beepid: beep
         };
 
-        return $mmSite.write('mod_chat_send_chat_message', params);
+        return $mmSite.write('mod_chat_send_chat_message', params).then(function(response) {
+            if (response.messageid) {
+                return response.messageid;
+            }
+            return $q.reject();
+        });
     };
 
     /**
