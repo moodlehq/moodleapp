@@ -18,7 +18,8 @@
 
 var appVersion = '2.4 (2005)',
     reportInBackgroundName = 'mmCoreReportInBackground',
-    errors = [];
+    errors = [],
+    ignoredFiles = ['www/index.html#/site/mod_page', 'www/index.html#/site/mod_resource'];
 
 /**
  * Check if error should be reported in background. If setting is not set, a confirm modal will be shown.
@@ -120,7 +121,21 @@ window.onerror = function(msg, url, lineNumber) {
             }
         }
 
-        if (errors.indexOf(msg) == -1) {
+        /**
+         * Check if an error should be ignored.
+         *
+         * @return {Boolean} True if error should be ignored, false otherwise.
+         */
+        function shouldBeIgnored() {
+            for (var i = 0; i < ignoredFiles.length; i++) {
+                if (url.indexOf(ignoredFiles[i]) > -1) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        if (errors.indexOf(msg) == -1 && !shouldBeIgnored()) {
             // Error hasn't happened yet.
             errors.push(msg);
             reportInBackground = shouldReportInBackground();
@@ -144,12 +159,12 @@ window.onerror = function(msg, url, lineNumber) {
                         setTimeout(reportError, 5000);
                     }
                 }
-
-                // This may help debugging if we use logging apps in iOs or Android.
-                if (typeof console != "undefined" && typeof console.log == "function") {
-                    console.log(msg);
-                }
             }, 100);
+        }
+
+        // This may help debugging if we use logging apps in iOs or Android.
+        if (typeof console != "undefined" && typeof console.log == "function") {
+            console.log(msg);
         }
     } catch(ex) {
         // Something bad happened.
