@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc controller
  * @name mmaModAssignIndexCtrl
  */
-.controller('mmaModAssignIndexCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil,
+.controller('mmaModAssignIndexCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $translate,
         mmaModAssignComponent, mmaModAssignSubmissionComponent) {
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid;

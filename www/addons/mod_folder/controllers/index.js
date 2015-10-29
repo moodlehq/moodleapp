@@ -48,7 +48,7 @@ angular.module('mm.addons.mod_folder')
             if (error) {
                 $mmUtil.showErrorModal(error);
             } else {
-                $mmUtil.showErrorModal('mm.core.unexpectederror', true);
+                $mmUtil.showErrorModal('mma.mod_folder.errorwhilegettingfolder', true);
             }
 
             if (!$scope.title) {

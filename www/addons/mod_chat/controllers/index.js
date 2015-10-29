@@ -53,7 +53,7 @@ angular.module('mm.addons.mod_chat')
             if (error) {
                 $mmUtil.showErrorModal(error);
             } else {
-                $mmUtil.showErrorModal('mm.core.error', true);
+                $mmUtil.showErrorModal('mma.mod_chat.errorwhilegettingchatdata', true);
             }
             return $q.reject();
         });

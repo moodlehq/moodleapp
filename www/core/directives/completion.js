@@ -31,7 +31,7 @@ angular.module('mm.core')
  * @param {String} after-change  Name of a scope function to call when completion changes.
  * @param {String} module-name   Name of the module this completion refers to.
  */
-.directive('mmCompletion', function($mmSite, $mmUtil, $mmText, $translate) {
+.directive('mmCompletion', function($mmSite, $mmUtil, $mmText, $translate, $q) {
 
     // Set image and description to show as completion icon.
     function showStatus(scope) {
@@ -93,13 +93,19 @@ angular.module('mm.core')
                             completed: scope.completion.state === 1 ? 0 : 1
                         };
 
-                    $mmSite.write('core_completion_update_activity_completion_status_manually', params).then(function() {
+                    $mmSite.write('core_completion_update_activity_completion_status_manually', params).then(function(response) {
+                        if (!response.status) {
+                            return $q.reject();
+                        }
+
                         if (angular.isFunction(scope.afterChange)) {
                             scope.afterChange();
                         }
                     }).catch(function(error) {
                         if (error) {
                             $mmUtil.showErrorModal(error);
+                        } else {
+                            $mmUtil.showErrorModal('mm.core.errorchangecompletion', true);
                         }
                     }).finally(function() {
                         modal.dismiss();
