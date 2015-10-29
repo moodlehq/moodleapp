@@ -21,7 +21,7 @@ angular.module('mm.core')
  * @ngdoc service
  * @name $mmWS
  */
-.factory('$mmWS', function($http, $q, $log, $mmLang, $cordovaFileTransfer, $mmApp, $mmFS, mmCoreSessionExpired,
+.factory('$mmWS', function($http, $q, $log, $mmLang, $cordovaFileTransfer, $mmApp, $mmFS, $mmText, mmCoreSessionExpired,
             mmCoreUserDeleted) {
 
     $log = $log.getInstance('$mmWS');
@@ -65,6 +65,19 @@ angular.module('mm.core')
         var ajaxData = data;
 
         return $http.post(siteurl, ajaxData).then(function(data) {
+
+            // Temporary check to report weird usages.
+            if (data && data.headers('Content-Type').indexOf('application/json') == -1 && typeof window.onerror == 'function') {
+                var message = 'Warning: response of type "' + data.headers('Content-Type') + '" received';
+                if (data.data) {
+                    // Attach part of the message. We will remove HTML tags and multiple spaces.
+                    var extra = typeof data.data == 'string' ? data.data : JSON.stringify(data.data);
+                    extra = $mmText.cleanTags(extra, true).replace(/ +(?= )/g,'').substr(0, 60);
+                    message = message + '\n' + extra + '...';
+                }
+                window.onerror(message, '$mmWS', 1);
+            }
+
             // Some moodle web services return null.
             // If the responseExpected value is set then so long as no data
             // is returned, we create a blank object.
