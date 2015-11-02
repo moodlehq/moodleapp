@@ -33,7 +33,7 @@ angular.module('mm.core')
 .directive('mmSplitViewLink', function($log, $ionicPlatform, $state, $mmApp) {
     $log = $log.getInstance('mmSplitViewLink');
 
-    var srefRegex = new RegExp(/([^\(]*)(\(([^\)]*)\))?/);
+    var srefRegex = new RegExp(/([^\(]*)(\((.*)\))?$/);
 
     /**
      * Create a new state for tablet view (split-view). The state created will be exactly the same as the target state
