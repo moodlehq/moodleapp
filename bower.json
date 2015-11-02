@@ -6,7 +6,7 @@
     "ydn.db": ">=1.0.3",
     "ngCordova": ">=0.1.12-alpha",
     "angular-mocks": "1.4.3",
-    "angular-md5": ">=0.1.7",
+    "angular-md5": "0.1.8",
     "angular-translate": ">=2.7.0",
     "angular-translate-loader-partial": ">=2.7.0",
     "angular-aria": "1.4.3",
