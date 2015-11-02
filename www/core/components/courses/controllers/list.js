@@ -25,7 +25,7 @@ angular.module('mm.core.courses')
 
     // Convenience function to fetch courses.
     function fetchCourses(refresh) {
-        return $mmCourses.getUserCourses(refresh).then(function(courses) {
+        return $mmCourses.getUserCourses().then(function(courses) {
             $scope.courses = courses;
             angular.forEach(courses, function(course) {
                 course._handlers = $mmCoursesDelegate.getNavHandlersFor(course.id, refresh);
@@ -44,8 +44,10 @@ angular.module('mm.core.courses')
     });
 
     $scope.refreshCourses = function() {
-        fetchCourses(true).finally(function() {
-            $scope.$broadcast('scroll.refreshComplete');
+        $mmCourses.invalidateUserCourses().finally(function() {
+            fetchCourses(true).finally(function() {
+                $scope.$broadcast('scroll.refreshComplete');
+            });
         });
     };
 });

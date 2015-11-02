@@ -26,9 +26,7 @@ angular.module('mm.core.course')
 
     // Default values are course 1 (front page) and all sections.
     var courseid = $stateParams.courseid || 1,
-        sectionid = $stateParams.sectionid || -1,
-        sections = [],
-        course = $mmCourses.getStoredCourse(courseid);
+        sectionid = $stateParams.sectionid || -1;
 
     $scope.sections = []; // Reset scope.sections, otherwise an error is shown in console with tablet view.
 
@@ -42,57 +40,61 @@ angular.module('mm.core.course')
 
     // Convenience function to fetch section(s).
     function loadContent(sectionid) {
-        var promise;
-        if (course && course.enablecompletion === false) {
-            promise = $q.when([]); // Completion not enabled, return empty array.
-        } else {
-            promise = $mmCourse.getActivitiesCompletionStatus(courseid).catch(function() {
-                return []; // If fail, return empty array (as if there was no completion).
-            })
-        }
-
-        return promise.then(function(statuses) {
-            var promise,
-                sectionnumber;
-
-            if (sectionid < 0) {
-                sectionnumber = 0;
-                promise = $mmCourse.getSections(courseid);
+        return $mmCourses.getUserCourse(courseid, true).catch(function() {
+            // User not enrolled in the course or an error occurred, ignore the error.
+        }).then(function(course) {
+            var promise;
+            if (course && course.enablecompletion === false) {
+                promise = $q.when([]); // Completion not enabled, return empty array.
             } else {
-                sectionnumber = sectionid;
-                promise = $mmCourse.getSection(courseid, sectionid).then(function(section) {
-                    $scope.title = section.name;
-                    $scope.summary = section.summary;
-                    return [section];
+                promise = $mmCourse.getActivitiesCompletionStatus(courseid).catch(function() {
+                    return []; // If fail, return empty array (as if there was no completion).
                 });
             }
 
-            promise.then(function(sections) {
-                angular.forEach(sections, function(section) {
-                    angular.forEach(section.modules, function(module) {
-                        module._controller =
-                                $mmCourseDelegate.getContentHandlerControllerFor(module.modname, module, courseid, section.id);
-                        // Check if activity has completions and if it's marked.
-                        var status = statuses[module.id];
-                        if (typeof status != 'undefined') {
-                            module.completionstatus = status;
-                        }
-                    });
-                });
+            return promise.then(function(statuses) {
+                var promise,
+                    sectionnumber;
 
-                $scope.sections = sections;
-
-                // Add log in Moodle.
-                $mmSite.write('core_course_view_course', {
-                    courseid: courseid,
-                    sectionnumber: sectionnumber
-                });
-            }, function(error) {
-                if (error) {
-                    $mmUtil.showErrorModal(error);
+                if (sectionid < 0) {
+                    sectionnumber = 0;
+                    promise = $mmCourse.getSections(courseid);
                 } else {
-                    $mmUtil.showErrorModal('mm.course.couldnotloadsectioncontent', true);
+                    sectionnumber = sectionid;
+                    promise = $mmCourse.getSection(courseid, sectionid).then(function(section) {
+                        $scope.title = section.name;
+                        $scope.summary = section.summary;
+                        return [section];
+                    });
                 }
+
+                promise.then(function(sections) {
+                    angular.forEach(sections, function(section) {
+                        angular.forEach(section.modules, function(module) {
+                            module._controller =
+                                    $mmCourseDelegate.getContentHandlerControllerFor(module.modname, module, courseid, section.id);
+                            // Check if activity has completions and if it's marked.
+                            var status = statuses[module.id];
+                            if (typeof status != 'undefined') {
+                                module.completionstatus = status;
+                            }
+                        });
+                    });
+
+                    $scope.sections = sections;
+
+                    // Add log in Moodle.
+                    $mmSite.write('core_course_view_course', {
+                        courseid: courseid,
+                        sectionnumber: sectionnumber
+                    });
+                }, function(error) {
+                    if (error) {
+                        $mmUtil.showErrorModal(error);
+                    } else {
+                        $mmUtil.showErrorModal('mm.course.couldnotloadsectioncontent', true);
+                    }
+                });
             });
         });
     }
