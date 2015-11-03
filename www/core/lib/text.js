@@ -204,5 +204,27 @@ angular.module('mm.core')
             .replace(/'/g, "&#039;");
     };
 
+    /**
+     * Add or remove 'www' from a URL. The url needs to have http or https protocol.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#addOrRemoveWWW
+     * @param {String} url URL to modify.
+     * @return             Modified URL.
+     */
+    self.addOrRemoveWWW = function(url) {
+        if (typeof url == 'string') {
+            if (url.match(/http(s)?:\/\/www\./)) {
+                // Already has www. Remove it.
+                url = url.replace('www.', '');
+            } else {
+                url = url.replace('https://', 'https://www.');
+                url = url.replace('http://', 'http://www.');
+            }
+        }
+        return url;
+    };
+
     return self;
 });
