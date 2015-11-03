@@ -22,7 +22,7 @@ angular.module('mm.core.courses')
  * @name mmCoursesViewResultCtrl
  */
 .controller('mmCoursesViewResultCtrl', function($scope, $stateParams, $mmCourses, $mmCoursesDelegate, $mmUtil, $translate, $q,
-            $ionicModal, mmCoursesSearchComponent, mmCoursesEnrolInvalidKey) {
+            $ionicModal, $mmEvents, $mmSite, mmCoursesSearchComponent, mmCoursesEnrolInvalidKey, mmCoursesEventMyCoursesUpdated) {
 
     var course = $stateParams.course || {},
         selfEnrolWSAvailable = $mmCourses.isSelfEnrolmentEnabled();
@@ -112,10 +112,13 @@ angular.module('mm.core.courses')
                 var modal = $mmUtil.showModalLoading('mm.core.loading', true);
 
                 $mmCourses.selfEnrol(course.id, password).then(function() {
-                    // Remove self enrol button and refresh the data.
+                    // Close modal and refresh data.
                     $scope.closeModal();
                     $scope.isEnrolled = true;
-                    refreshData();
+                    refreshData().finally(function() {
+                        // My courses have been updated, trigger event.
+                        $mmEvents.trigger(mmCoursesEventMyCoursesUpdated, $mmSite.getId());
+                    });
                 }).catch(function(error) {
                     if (error) {
                         if (error.code === mmCoursesEnrolInvalidKey) {
