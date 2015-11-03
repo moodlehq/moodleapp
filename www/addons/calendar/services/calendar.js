@@ -253,7 +253,7 @@ angular.module('mm.addons.calendar')
             "options[timeend]": end
         };
 
-        return $mmCourses.getUserCourses(refresh, siteid).then(function(courses) {
+        return $mmCourses.getUserCourses(false, siteid).then(function(courses) {
             courses.push({id: 1}); // Add front page.
             angular.forEach(courses, function(course, index) {
                 data["events[courseids][" + index + "]"] = course.id;
@@ -290,7 +290,9 @@ angular.module('mm.addons.calendar')
      * @return {Promise} Promise resolved when the list is invalidated.
      */
     self.invalidateEventsList = function() {
-        return $mmSite.invalidateWsCacheForKeyStartingWith(getEventsCommonCacheKey());
+        var p1 = $mmCourses.invalidateUserCourses(),
+            p2 = $mmSite.invalidateWsCacheForKeyStartingWith(getEventsCommonCacheKey());
+        return $q.all([p1, p2]);
     };
 
     /**

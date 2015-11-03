@@ -1,6 +1,17 @@
 {
-    "errorloadcourses": "An error occurred while loading courses.",
-    "filter": "Filter",
-    "frontpage": "Front page",
-    "mycourses": "My courses"
+	"confirmselfenrol": "Are you sure you want to enrol yourself in this course?",
+	"enrolme": "Enrol me",
+	"errorloadcourses": "An error occurred while loading courses.",
+	"errorsearching": "An error occurred while searching.",
+	"errorselfenrol": "An error occurred while self enroling.",
+	"filtermycourses": "Filter my courses",
+	"frontpage": "Front page",
+	"mycourses": "My courses",
+	"nosearchresults": "There were no results from your search",
+	"notenrollable": "You can not enrol yourself in this course.",
+	"password": "Enrolment key",
+	"search": "Search",
+	"searchcourses": "Search courses",
+	"selfenrolment": "Self-enrolment",
+	"totalcoursesearchresults": "Total courses: {{$a}}"
 }
