@@ -56,8 +56,8 @@ angular.module('mm.core.login')
 
         $mmSitesManager.getDemoSiteData(url).then(function(sitedata) {
 
-            $mmSitesManager.getUserToken(sitedata.url, sitedata.username, sitedata.password).then(function(token) {
-                $mmSitesManager.newSite(sitedata.url, token).then(function() {
+            $mmSitesManager.getUserToken(sitedata.url, sitedata.username, sitedata.password).then(function(data) {
+                $mmSitesManager.newSite(data.siteurl, data.token).then(function() {
                     $ionicHistory.nextViewOptions({disableBack: true});
                     $state.go('site.mm_courses');
                 }, function(error) {

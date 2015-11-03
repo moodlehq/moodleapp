@@ -146,7 +146,8 @@ angular.module('mm.core')
      * @param {String} password  Password.
      * @param {String} [service] Service to use. If not defined, it will be searched in memory.
      * @param {Boolean} retry    We are retrying with a prefixed URL.
-     * @return {Promise}         A promise to be resolved when the token is retrieved.
+     * @return {Promise}         A promise to be resolved when the token is retrieved. If success, returns an object
+     *                           with the token and the siteurl to use.
      */
     self.getUserToken = function(siteurl, username, password, service, retry) {
         retry = retry || false;
@@ -179,7 +180,7 @@ angular.module('mm.core')
                     return $mmLang.translateAndReject('mm.core.cannotconnect');
                 } else {
                     if (typeof data.token != 'undefined') {
-                        return data.token;
+                        return {token: data.token, siteurl: siteurl};
                     } else {
                         if (typeof data.error != 'undefined') {
                             // We only allow one retry (to avoid loops).
