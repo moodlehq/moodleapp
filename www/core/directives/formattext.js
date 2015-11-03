@@ -56,6 +56,23 @@ angular.module('mm.core')
                 var shortened = $mmText.shortenText($mmText.cleanTags(fullText, false), parseInt(attrs.shorten)),
                     expanded = false;
 
+                if (shortened.trim() === '') {
+                    // The content could have images or media that were removed with shortenText. Check if that's the case.
+                    var hasContent = false,
+                        meaningfulTags = ['img', 'video', 'audio'];
+
+                    angular.forEach(meaningfulTags, function(tag) {
+                        if (fullText.indexOf('<'+tag) > -1) {
+                            hasContent = true;
+                        }
+                    });
+
+                    if (hasContent) {
+                        // The content has meaningful tags. Show a placeholder to expand the content.
+                        shortened = $translate.instant('mm.core.clicktohideshow');
+                    }
+                }
+
                 element.on('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
