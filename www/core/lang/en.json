@@ -32,6 +32,8 @@
     "errordownloading": "Error downloading file.",
     "errordownloadingsomefiles": "Error downloading module files. Some files might be missing.",
     "errorinvalidresponse": "Invalid response received. Please contact your Moodle site administrator if the error persists.",
+    "erroropenfilenoapp": "Error opening the file: no app found to open this kind of file.",
+    "erroropenfilenoextension": "Error opening the file: the file doesn't have extension.",
     "help" : "Help",
     "hour" : "hour",
     "hours" : "hours",

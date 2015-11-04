@@ -33,7 +33,9 @@ angular.module('mm.core')
                     event.stopPropagation();
                     if (href.indexOf('cdvfile://') === 0 || href.indexOf('file://') === 0) {
                         // We have a local file.
-                        $mmUtil.openFile(href);
+                        $mmUtil.openFile(href).catch(function(error) {
+                            $mmUtil.showErrorModal(error);
+                        });
                     } else {
                         // It's an external link, we will open with browser.
                         $mmUtil.openInBrowser(href);
