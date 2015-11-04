@@ -341,7 +341,7 @@ angular.module('mm.addons.mod_resource')
         }
 
         return promise.then(function(localUrl) {
-            $mmUtil.openFile(localUrl);
+            return $mmUtil.openFile(localUrl);
         });
     };
 

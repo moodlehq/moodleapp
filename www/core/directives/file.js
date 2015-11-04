@@ -128,7 +128,9 @@ angular.module('mm.core')
                 if (openAfterDownload) {
                     // File needs to be opened now. If file needs to be downloaded, skip the queue.
                     downloadFile(scope, siteid, fileurl, component, componentid, timemodified).then(function(localUrl) {
-                        $mmUtil.openFile(localUrl);
+                        $mmUtil.openFile(localUrl).catch(function(error) {
+                            $mmUtil.showErrorModal(error);
+                        });
                     });
                 } else {
                     // File doesn't need to be opened, add it to queue.
