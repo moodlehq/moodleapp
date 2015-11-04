@@ -1,6 +1,6 @@
-<div class="mm-loading-container">
+<div class="mm-loading-container" ng-if="!hideUntil">
     <ion-spinner></ion-spinner>
     <p class="mm-loading-message">{{message}}</p>
 </div>
-<div class="mm-loading-content hide" ng-transclude>
+<div class="mm-loading-content" ng-if="hideUntil" ng-transclude>
 </div>
