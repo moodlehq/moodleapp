@@ -314,7 +314,7 @@ angular.module('mm.addons.calendar')
      *
      * @module mm.addons.calendar
      * @ngdoc method
-     * @name $mmaCalendar#scheduleEventsNotifications
+     * @name $mmaCalendar#scheduleAllSitesEventsNotifications
      * @param  {Object[]} events Events to schedule.
      * @return {Promise}         Promise resolved when all the notifications have been scheduled.
      */
@@ -360,6 +360,12 @@ angular.module('mm.addons.calendar')
             if (time === 0) {
                 return $mmLocalNotifications.cancel(event.id, mmaCalendarComponent, siteid); // Cancel if it was scheduled.
             } else {
+                var timeend = (event.timestart + event.timeduration) * 1000;
+                if (timeend <= new Date().getTime()) {
+                    // The event has finished already, don't schedule it.
+                    return $q.when();
+                }
+
                 var dateTriggered = new Date((event.timestart - (time * 60)) * 1000),
                     startDate = new Date(event.timestart * 1000),
                     notification = {
@@ -377,9 +383,7 @@ angular.module('mm.addons.calendar')
                 return $mmLocalNotifications.schedule(notification, mmaCalendarComponent, siteid);
             }
         } else {
-            var deferred = $q.defer();
-            deferred.resolve();
-            return deferred.promise;
+            return $q.when();
         }
     };
 
