@@ -133,9 +133,9 @@ angular.module('mm.addons.mod_chat')
     };
 
     // Login the user.
-    $mmaModChat.loginUser(chatId).then(function(data) {
-        return $mmaModChat.getLatestMessages(data.chatsid, 0).then(function(messagesInfo) {
-            $scope.chatsid = data.chatsid;
+    $mmaModChat.loginUser(chatId).then(function(chatsid) {
+        return $mmaModChat.getLatestMessages(chatsid, 0).then(function(messagesInfo) {
+            $scope.chatsid = chatsid;
             chatLastTime = messagesInfo.chatnewlasttime;
             return $mmaModChat.getMessagesUserData(messagesInfo.messages, courseId).then(function(messages) {
                 $scope.messages = $scope.messages.concat(messages);
