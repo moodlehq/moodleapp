@@ -4,8 +4,10 @@
     "cancel": "Utzi",
     "cannotconnect": "Ezin izan da konektatu. URLa ondo idatzi duzula eta zure Moodle-ak 2.4 edo goragoko bertsioa erabiltzen duela egiaztatu ezazu.",
     "cannotdownloadfiles": "Fitxategiak jaistea ezgaituta dago zure Mobile zerbitzuan. Mesedez zure gune kudeatzailean harremanetan jarri zaitez.",
+    "category": "Kategoria",
     "choose": "Aukeratu",
     "clearsearch": "Bilaketa garbia",
+    "clicktohideshow": "Sakatu zabaltzeko edo tolesteko",
     "completion-alt-auto-fail": "Osatuta: {{$a}} (ez dute gutxieneko kalifikazioa lortu)",
     "completion-alt-auto-n": "Osatu gabea: {{$a}}",
     "completion-alt-auto-pass": "Osatuta: {{$a}} (gutxieneko kalifikazioa lortu dute)",
@@ -287,6 +289,7 @@
     "pulltorefresh": "Tiratu freskatzeko",
     "refresh": "Freskatu",
     "search": "Bilatu",
+    "searching": "Bilatzen hemen:",
     "sec": "seg",
     "secs": "segundu",
     "sending": "Bidaltzen",
@@ -296,6 +299,7 @@
     "sizemb": "MB",
     "sizetb": "TB",
     "success": "Ondo!",
+    "teachers": "Irakasleak",
     "unexpectederror": "Ezusteko errorea. Mesedez ireki eta berriz ireki app-a eta berriz saiatu",
     "userdeleted": "Erabiltzaile-kontu hau ezabatu da",
     "view": "Ikusi",
@@ -303,9 +307,5 @@
     "wsfunctionnotavailable": "Web-zerbitzu funtzioa ez dago eskuragarri.",
     "year": "urtea",
     "years": "urte",
-    "yes": "Bai",
-    "category": "Kategoria",
-    "clicktohideshow": "Sakatu zabaltzeko edo tolesteko",
-    "teachers": "Irakasleak",
-    "searching": "Bilatzen hemen:"
+    "yes": "Bai"
 }

@@ -1,10 +1,10 @@
 {
+    "enrolme": "Koppla mig",
     "errorloadcourses": "Ett fel uppstod vid inläsning av kursen",
     "filter": "Filter",
     "frontpage": "Ingångssidan",
     "mycourses": "Mina kurser",
     "password": "Lösenord",
     "search": "Sök",
-    "searchcourses": "Sök kurser",
-    "enrolme": "Koppla mig"
+    "searchcourses": "Sök kurser"
 }

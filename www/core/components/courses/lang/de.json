@@ -1,10 +1,15 @@
 {
+    "enrolme": "Selbst einschreiben",
     "errorloadcourses": "Fehler beim Laden der Kurse",
+    "errorsearching": "Fehler beim Suchen",
+    "errorselfenrol": "Fehler bei der Selbsteinschreibung",
     "filter": "Filter",
+    "filtermycourses": "Meine Kurse filtern",
     "frontpage": "Startseite",
     "mycourses": "Meine Kurse",
-    "password": "Kennwort",
+    "nosearchresults": "Keine Suchergebnisse",
+    "password": "Einschreibeschlüssel",
     "search": "Suchen",
     "searchcourses": "Kurse suchen",
-    "enrolme": "Einschreiben"
+    "totalcoursesearchresults": "Alle Kurse: {{$a}}"
 }

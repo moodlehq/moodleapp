@@ -1,10 +1,10 @@
 {
+    "enrolme": "M'inscrire",
     "errorloadcourses": "Une erreur est survenue lors du chargement des cours.",
     "filter": "Filtre",
     "frontpage": "Page d'accueil",
     "mycourses": "Mes cours",
     "password": "Mot de passe",
     "search": "Rechercher",
-    "searchcourses": "Rechercher des cours",
-    "enrolme": "M'inscrire"
+    "searchcourses": "Rechercher des cours"
 }

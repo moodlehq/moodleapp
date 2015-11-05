@@ -7,5 +7,6 @@
     "notes": "Заметки",
     "personalnotes": "Личные заметки",
     "publishstate": "Контекст",
-    "sitenotes": "Заметки сайта"
+    "sitenotes": "Заметки сайта",
+    "userwithid": "Пользователя с ID {{id}}"
 }

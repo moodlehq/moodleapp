@@ -1,6 +1,6 @@
 {
     "beep": "Bip",
-    "currentusers": "Utilisateurs en ligne",
+    "currentusers": "Utilisateurs actuels",
     "enterchat": "Cliquer ici pour participer au chat",
     "entermessage": "Saisissez votre message",
     "messagebeepsyou": "{{$a}} vient de vous biper !",

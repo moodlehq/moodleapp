@@ -1,10 +1,11 @@
 {
     "addsubmission": "הוספת הגשה",
-    "allowsubmissionsfromdate": "אפשר הגשות מ",
-    "attemptnumber": "נסיון מספר",
-    "cutoffdate": "מועד הגשה סופי",
-    "duedate": "עד לתאריך",
-    "duedateno": "אין תאריך הגשה",
+    "allowsubmissionsfromdate": "אפשרו הגשות מתאריך",
+    "attemptnumber": "ניסיון מספר",
+    "cutoffdate": "תאריך נעילה סופי",
+    "duedate": "תאריך יעד",
+    "duedateno": "אין תאריך יעד",
     "submissions": "הגשות",
+    "userwithid": "משתמש עם מספר-זיהוי {{id}}",
     "viewsubmission": "צפיה בהגשה"
 }
