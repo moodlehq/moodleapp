@@ -140,6 +140,11 @@ angular.module('mm.core.courses')
      */
     self.getUserCourse = function(id, preferCache, siteid) {
         siteid = siteid || $mmSite.getId();
+
+        if (!id) {
+            return $q.reject();
+        }
+
         if (typeof preferCache == 'undefined') {
             preferCache = false;
         }
@@ -147,7 +152,7 @@ angular.module('mm.core.courses')
         return self.getUserCourses(preferCache, siteid).then(function(courses) {
             var course;
             angular.forEach(courses, function(c) {
-                if (c.id === id) {
+                if (c.id == id) {
                     course = c;
                 }
             });

@@ -160,7 +160,7 @@ angular.module('mm.core.courses')
             }).finally(function() {
                 // Update handlers for all courses.
                 angular.forEach(coursesHandlers, function(handler, courseId) {
-                    self.updateNavHandlersForCourse(courseId);
+                    self.updateNavHandlersForCourse(parseInt(courseId));
                 });
             });
         };
