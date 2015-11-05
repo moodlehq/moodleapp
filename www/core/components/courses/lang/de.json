@@ -2,5 +2,9 @@
     "errorloadcourses": "Fehler beim Laden der Kurse",
     "filter": "Filter",
     "frontpage": "Startseite",
-    "mycourses": "Meine Kurse"
+    "mycourses": "Meine Kurse",
+    "password": "Kennwort",
+    "search": "Suchen",
+    "searchcourses": "Kurse suchen",
+    "enrolme": "Einschreiben"
 }

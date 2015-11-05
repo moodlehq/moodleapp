@@ -334,5 +334,9 @@
     "wsfunctionnotavailable": "Webbtjänstfunktion är inte tillgänglig.",
     "year": "år",
     "years": "år",
-    "yes": "Ja"
+    "yes": "Ja",
+    "category": "Kategori",
+    "clicktohideshow": "Klicka för att expandera eller fälla ihop",
+    "teachers": "Distanslärare/<br />handledare/<br />coacher",
+    "searching": "Söker i..."
 }

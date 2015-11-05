@@ -303,5 +303,9 @@
     "wsfunctionnotavailable": "Web-zerbitzu funtzioa ez dago eskuragarri.",
     "year": "urtea",
     "years": "urte",
-    "yes": "Bai"
+    "yes": "Bai",
+    "category": "Kategoria",
+    "clicktohideshow": "Sakatu zabaltzeko edo tolesteko",
+    "teachers": "Irakasleak",
+    "searching": "Bilatzen hemen:"
 }

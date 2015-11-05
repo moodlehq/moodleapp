@@ -2,5 +2,9 @@
     "errorloadcourses": "При загрузке курсов произошла ошибка.",
     "filter": "Фильтр",
     "frontpage": "Главная страница",
-    "mycourses": "Мои курсы"
+    "mycourses": "Мои курсы",
+    "password": "Пароль",
+    "search": "Найти",
+    "searchcourses": "Поиск курса",
+    "enrolme": "Записаться на курс"
 }

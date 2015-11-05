@@ -336,5 +336,9 @@
     "wsfunctionnotavailable": "De webservice is niet beschikbaar",
     "year": "Jaar",
     "years": "Jaren",
-    "yes": "Ja"
+    "yes": "Ja",
+    "category": "Categorie",
+    "clicktohideshow": "Klik om te vergroten of te verkleinen",
+    "teachers": "leraren",
+    "searching": "Zoeken in ..."
 }

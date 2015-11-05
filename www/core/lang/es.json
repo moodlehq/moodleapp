@@ -302,5 +302,9 @@
     "viewprofile": "Ver perfil",
     "year": "año",
     "years": "años",
-    "yes": "Sí"
+    "yes": "Sí",
+    "category": "Categoría",
+    "clicktohideshow": "Clic para expandir o colapsar",
+    "teachers": "Profesores",
+    "searching": "Buscando en..."
 }

@@ -1,5 +1,9 @@
 {
     "filter": "Filtr",
     "frontpage": "Strona startowa",
-    "mycourses": "Moje kursy"
+    "mycourses": "Moje kursy",
+    "password": "Hasło",
+    "search": "Wyszukaj",
+    "searchcourses": "Przeszukaj kursy",
+    "enrolme": "Zapisz mnie"
 }

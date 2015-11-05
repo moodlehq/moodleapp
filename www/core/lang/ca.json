@@ -335,5 +335,9 @@
     "viewprofile": "Mostra el perfil",
     "year": "any",
     "years": "anys",
-    "yes": "Sí"
+    "yes": "Sí",
+    "category": "Categoria",
+    "clicktohideshow": "Feu clic per ampliar o reduir",
+    "teachers": "Professors",
+    "searching": "S'està cercant en..."
 }

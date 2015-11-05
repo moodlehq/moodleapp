@@ -1,5 +1,9 @@
 {
     "filter": "מסנן",
     "frontpage": "העמוד הראשי",
-    "mycourses": "הקורסים שלי"
+    "mycourses": "הקורסים שלי",
+    "password": "סיסמה",
+    "search": "חיפוש",
+    "searchcourses": "חיפוש קורסים",
+    "enrolme": "רשום אותי"
 }

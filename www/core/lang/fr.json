@@ -336,5 +336,9 @@
     "wsfunctionnotavailable": "La fonction webservice n'est pas disponible",
     "year": "année",
     "years": "années",
-    "yes": "Oui"
+    "yes": "Oui",
+    "category": "Catégorie",
+    "clicktohideshow": "Cliquer pour déplier ou replier",
+    "teachers": "Enseignants",
+    "searching": "Recherche dans..."
 }

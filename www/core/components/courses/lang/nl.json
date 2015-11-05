@@ -2,5 +2,9 @@
     "errorloadcourses": "Er is een fout opgetreden tijdens het laden van de cursussen.",
     "filter": "Filter",
     "frontpage": "Startpagina",
-    "mycourses": "Mijn cursussen"
+    "mycourses": "Mijn cursussen",
+    "password": "Wachtwoord",
+    "search": "Zoek",
+    "searchcourses": "Zoek cursussen",
+    "enrolme": "Laat me in de cursus"
 }

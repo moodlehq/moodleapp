@@ -300,5 +300,9 @@
     "viewprofile": "查看个人资料",
     "year": "年",
     "years": "年",
-    "yes": "是"
+    "yes": "是",
+    "category": "课程分类",
+    "clicktohideshow": "点击来展开或折叠",
+    "teachers": "教师",
+    "searching": "搜索"
 }

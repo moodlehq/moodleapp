@@ -1,5 +1,9 @@
 {
     "filter": "Szűrő",
     "frontpage": "Kezdőoldal",
-    "mycourses": "Kurzusaim"
+    "mycourses": "Kurzusaim",
+    "password": "Jelszó",
+    "search": "Keresés",
+    "searchcourses": "Kurzusok keresése",
+    "enrolme": "Iratkoztasson be"
 }

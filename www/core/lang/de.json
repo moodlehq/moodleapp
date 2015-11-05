@@ -261,7 +261,7 @@
     "country-ZA": "Südafrika",
     "country-ZM": "Sambia",
     "country-ZW": "Simbabwe",
-    "country-ZZ": "Unbekannte oder falsche Region",
+    "country-ZZ": "Unbekannte oder ungültige Region",
     "course": "Kurs",
     "day": "Tag",
     "days": "Tage",
@@ -355,5 +355,9 @@
     "wsfunctionnotavailable": "Die Webservice-Funktion ist nicht verfügbar.",
     "year": "Jahr",
     "years": "Jahre",
-    "yes": "Ja"
+    "yes": "Ja",
+    "category": "Kursbereich",
+    "clicktohideshow": "Zum Erweitern oder Zusammenfassen klicken",
+    "teachers": "Trainer/innen",
+    "searching": "Suche in ..."
 }
