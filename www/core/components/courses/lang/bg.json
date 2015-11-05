@@ -1,6 +1,10 @@
 {
+    "enrolme": "Запишете ме",
     "errorloadcourses": "Грешка при зареждането на курсовете.",
     "filter": "Филтър",
     "frontpage": "Заглавна страница",
-    "mycourses": "Моите курсове"
+    "mycourses": "Моите курсове",
+    "password": "Парола",
+    "search": "Търсене",
+    "searchcourses": "Търсене на курсове"
 }

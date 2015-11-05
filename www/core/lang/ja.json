@@ -301,5 +301,9 @@
     "viewprofile": "プロファイルを表示する",
     "year": "年",
     "years": "年",
-    "yes": "Yes"
+    "yes": "Yes",
+    "category": "カテゴリ",
+    "clicktohideshow": "展開または折りたたむには、ここをクリックしてください。",
+    "teachers": "教師",
+    "searching": "検索 ..."
 }

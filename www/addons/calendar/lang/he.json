@@ -1,3 +1,7 @@
 {
+    "calendarevents": "אירועי לוח שנה",
+    "errorloadevent": "שגיאה בטעינת האירוע.",
+    "errorloadevents": "שגיאה בטעינת האירועים.",
+    "noevents": "אין אירועים",
     "notifications": "התראות"
 }

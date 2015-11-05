@@ -1,13 +1,19 @@
 {
-    "beep": "Сигнал",
+    "beep": "Звуковой сигнал",
     "currentusers": "Текущие пользователи",
-    "enterchat": "Войти в чат",
+    "enterchat": "Нажмите здесь для входа в чат",
     "entermessage": "Введите свое сообщение",
-    "messagebeepsyou": "{{$a}} отправил Вам сигнал!",
-    "messageenter": "{{$a}} появился в чате",
-    "messageexit": "{{$a}} ушел из чата",
-    "nomessages": "Нет ни одного сообщения",
+    "errorwhileconnecting": "Ошибка при подключении к чату",
+    "errorwhilegettingchatdata": "Ошибка при получении данных из чата",
+    "errorwhilegettingchatusers": "Ошибка при получении пользователей чата",
+    "errorwhileretrievingmessages": "Ошибка при получении сообщения от сервера",
+    "errorwhilesendingmessage": "Ошибка при отправке сообщения",
+    "messagebeepsyou": "Вам только что позвонили - {{$a}}",
+    "messageenter": "{{$a}} только что вошел в этот чат",
+    "messageexit": "{{$a}} покинул этот чат",
+    "mustbeonlinetosendmessages": "Вы должны быть онлайн, чтобы отправлять сообщения",
+    "nomessages": "Сообщений пока нет",
     "send": "Отправить",
-    "sessionstart": "Следующий сеанс чата начнется в: {{$a}}",
-    "talk": "Разговор"
+    "sessionstart": "Следующая чат-сессия начнется в  {{$a}}",
+    "talk": "Говорить"
 }

@@ -1,5 +1,9 @@
 {
     "filter": "Filtr",
     "frontpage": "Titulní stránka",
-    "mycourses": "Moje kurzy"
+    "mycourses": "Moje kurzy",
+    "password": "Heslo",
+    "search": "Hledat",
+    "searchcourses": "Vyhledat kurzy",
+    "enrolme": "Zapsat se do kurzu"
 }

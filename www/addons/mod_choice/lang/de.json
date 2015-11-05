@@ -9,7 +9,7 @@
     "numberofuser": "Anzahl der Teilnehmer/innen",
     "numberofuserinpercentage": "Prozent der Teilnehmer/innen",
     "previewonly": "Die Vorschau zeigt die verfügbaren Optionen der Abstimmung. Sie können Ihre Auswahl aber nicht vor {{$a}} abgeben.",
-    "removemychoice": "Meine Auswahl löschen",
+    "removemychoice": "Meine Auswahl entfernen",
     "responses": "Antworten",
     "responsesresultgraphdescription": "{{number}}% haben die Option gewählt: {{text}}.",
     "responsesresultgraphheader": "Grafische Anzeige",

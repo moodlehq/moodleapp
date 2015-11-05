@@ -1,7 +1,10 @@
 {
-    "clicktocontinue": "Klicken Sie hier, um weiterzumachen",
-    "ifoundthat": "Dies findet statt:",
-    "ipreferthat": "Ich bevorzuge es so:",
-    "responses": "Stimmabgaben",
-    "results": "Ergebnisse"
+    "cannotsubmitsurvey": "Fehler beim Übermitteln der Umfragedaten. Versuchen Sie es nochmal",
+    "clicktocontinue": "Weiter",
+    "errorgetsurvey": "Fehler beim Empfangen der Umfragedaten",
+    "ifoundthat": "Ich habe herausgefunden",
+    "ipreferthat": "Ich bevorzuge",
+    "responses": "Antworten",
+    "results": "Ergebnisse",
+    "surveycompletednograph": "Sie haben die Umfrage abgeschlossen"
 }
