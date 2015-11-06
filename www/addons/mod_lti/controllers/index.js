@@ -31,7 +31,7 @@ angular.module('mm.addons.mod_lti')
     $scope.courseid = courseid;
 
     // Convenience function to get LTI data.
-    function fetchLTI() {
+    function fetchLTI(refresh) {
         return $mmaModLti.getLti(courseid, module.id).then(function(ltidata) {
             lti = ltidata;
 
@@ -42,6 +42,11 @@ angular.module('mm.addons.mod_lti')
                 $scope.isValidUrl = $mmUtil.isValidURL(launchdata.endpoint);
             });
         }).catch(function(message) {
+            if (!refresh) {
+                // Some call failed, retry without using cache since it might be a new activity.
+                return refreshAllData();
+            }
+
             if (message) {
                 $mmUtil.showErrorModal(message);
             } else {
@@ -57,7 +62,7 @@ angular.module('mm.addons.mod_lti')
             p2 = lti ? $mmaModLti.invalidateLtiLaunchData(lti.id) : $q.when();
 
         return $q.all([p1, p2]).finally(function() {
-            return fetchLTI();
+            return fetchLTI(true);
         });
     }
 

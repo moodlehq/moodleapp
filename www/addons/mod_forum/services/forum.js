@@ -194,7 +194,10 @@ angular.module('mm.addons.mod_forum')
                     currentForum = forum;
                 }
             });
-            return currentForum;
+            if (currentForum) {
+                return currentForum;
+            }
+            return $q.reject();
         });
     };
 

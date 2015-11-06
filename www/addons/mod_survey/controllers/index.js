@@ -36,7 +36,7 @@ angular.module('mm.addons.mod_survey')
     $scope.isTablet = $ionicPlatform.isTablet();
 
     // Convenience function to get survey data.
-    function fetchSurveyData() {
+    function fetchSurveyData(refresh) {
         return $mmaModSurvey.getSurvey(courseid, module.id).then(function(surveydata) {
             survey = surveydata;
 
@@ -48,6 +48,11 @@ angular.module('mm.addons.mod_survey')
                 return fetchQuestions();
             }
         }).catch(function(message) {
+            if (!refresh) {
+                // Some call failed, retry without using cache since it might be a new activity.
+                return refreshAllData();
+            }
+
             if (message) {
                 $mmUtil.showErrorModal(message);
             } else {
@@ -80,7 +85,7 @@ angular.module('mm.addons.mod_survey')
             p2 = survey ? $mmaModSurvey.invalidateQuestions(survey.id) : $q.when();
 
         return $q.all([p1, p2]).finally(function() {
-            return fetchSurveyData();
+            return fetchSurveyData(true);
         });
     }
 
