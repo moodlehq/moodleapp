@@ -232,7 +232,7 @@ angular.module('mm.addons.mod_page')
     self.logView = function(id) {
         if (id) {
             var params = {
-                urlid: id
+                pageid: id
             };
             return $mmSite.write('mod_page_view_page', params);
         }
