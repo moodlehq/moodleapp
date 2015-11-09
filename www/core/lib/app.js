@@ -239,6 +239,19 @@ angular.module('mm.core')
         };
 
         /**
+         * Open the keyboard if plugin is available.
+         *
+         * @return {Boolean} True if plugin is available, false otherwise.
+         */
+        self.openKeyboard = function() {
+            if (typeof cordova != 'undefined' && cordova.plugins && cordova.plugins.Keyboard && cordova.plugins.Keyboard.show) {
+                cordova.plugins.Keyboard.show();
+                return true;
+            }
+            return false;
+        };
+
+        /**
          * Resolves when the app is ready.
          *
          * @module mm.core

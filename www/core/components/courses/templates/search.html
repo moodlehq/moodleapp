@@ -3,7 +3,7 @@
         <form class="list">
             <label class="item item-input">
                 <i class="icon ion-search placeholder-icon"></i>
-                <input type="text" placeholder="{{ 'mm.courses.search' | translate}}" ng-model="searchText">
+                <input type="text" placeholder="{{ 'mm.courses.search' | translate}}" ng-model="searchText" mm-auto-focus>
             </label>
             <button class="button button-block" ng-click="search(searchText)" ng-disabled="searchText.length < 3">
                 {{ 'mm.courses.search' | translate }}
