@@ -1,6 +1,21 @@
 {
-    "errorgetforum": "Fehler beim Forum",
+    "addanewdiscussion": "Neues Thema hinzufügen",
+    "cannotadddiscussion": "Um Themen hinzufügen zu können, müssen Sie Mitglied in einer Gruppe sein.",
+    "cannotadddiscussionall": "Sie haben keine Berechtigung, ein neues Thema für alle Teilnehmer/innen hinzuzufügen.",
+    "cannotcreatediscussion": "Das neue Thema konnte nicht hinzugefügt werden",
+    "couldnotadd": "Die Nachricht konnte aufgrund eines Fehlers nicht hinzugefügt werden",
+    "discussionsubscription": "Themenabonnement",
+    "erroremptymessage": "Der Nachrichtentext darf nicht leer sein.",
+    "erroremptysubject": "Der Nachrichtenbetreff darf nicht leer sein.",
+    "errorgetforum": "Fehler beim Emfang der Forumsdaten",
+    "errorgetgroups": "Fehler beim Lesen der Gruppenenstellungen",
     "forumnodiscussionsyet": "Keine Themen im Forum",
+    "group": "Gruppe",
+    "message": "Nachricht",
     "numdiscussions": "{{numdiscussions}} Themen",
-    "numreplies": "{{numreplies}} Antworten"
+    "numreplies": "{{numreplies}} Antworten",
+    "posttoforum": "Nachricht senden",
+    "re": "Re:",
+    "reply": "Antworten",
+    "subject": "Betreff"
 }

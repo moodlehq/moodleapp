@@ -169,20 +169,19 @@ angular.module('mm.addons.coursecompletion')
      * @ngdoc method
      * @name $mmaCourseCompletion#isPluginViewEnabledForCourse
      * @param {Number} courseId Course ID.
-     * @return {Boolean}        True if plugin enabled, false otherwise.
+     * @return {Promise}        Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
     self.isPluginViewEnabledForCourse = function(courseId) {
         if (!courseId) {
-            return false;
+            return $q.reject();
         }
 
-        var course = $mmCourses.getStoredCourse(courseId);
-
-        if (course && typeof course.enablecompletion != 'undefined' && !course.enablecompletion) {
-            return  false;
-        }
-
-        return true;
+        return $mmCourses.getUserCourse(courseId, true).then(function(course) {
+            if (course && typeof course.enablecompletion != 'undefined' && !course.enablecompletion) {
+                return false;
+            }
+            return true;
+        });
     };
 
     /**

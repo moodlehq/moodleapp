@@ -1,3 +1,16 @@
 {
-    "forumnodiscussionsyet": "このフォーラムにはまだディスカッショントピックがありません"
+    "addanewdiscussion": "ディスカッショントピックを追加する",
+    "cannotadddiscussion": "このフォーラムにディスカッションを追加するにはグループのメンバーである必要があります。",
+    "cannotadddiscussionall": "あなたには、すべての参加者に対する新しいディスカッショントピックを追加するパーミッションがありません。",
+    "cannotcreatediscussion": "新しいディスカッションを作成できませんでした。",
+    "couldnotadd": "エラーのため投稿できませんでした。",
+    "erroremptymessage": "投稿メッセージを空にすることはできません。",
+    "erroremptysubject": "件名を空にすることはできません。",
+    "forumnodiscussionsyet": "このフォーラムにはまだディスカッショントピックがありません",
+    "group": "グループ",
+    "message": "メッセージ本文",
+    "posttoforum": "フォーラムに投稿する",
+    "re": "Re:",
+    "reply": "返信",
+    "subject": "メッセージ件名"
 }

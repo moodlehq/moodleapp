@@ -13,7 +13,7 @@
             <form>
                 <label class="item item-input item-stacked-label">
                     <span class="input-label">{{ 'mm.login.password' | translate }}</span>
-                    <input type="password" placeholder="{{ 'mm.login.password' | translate }}" ng-model="credentials.password">
+                    <input type="password" placeholder="{{ 'mm.login.password' | translate }}" ng-model="credentials.password" mm-auto-focus>
                 </label>
                 <div class="item">
                     <button class="button button-block" ng-click="login()">{{ 'mm.login.loginbutton' | translate }}</button>

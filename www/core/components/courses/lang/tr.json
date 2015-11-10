@@ -1,5 +1,9 @@
 {
     "filter": "Filtre",
     "frontpage": "Ön sayfa",
-    "mycourses": "Derslerim"
+    "mycourses": "Derslerim",
+    "password": "Şifre",
+    "search": "Ara",
+    "searchcourses": "Dersleri ara",
+    "enrolme": "Beni kaydet"
 }

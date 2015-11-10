@@ -21,7 +21,7 @@ angular.module('mm.addons.grades')
  * @ngdoc service
  * @name $mmaGradesHandlers
  */
-.factory('$mmaGradesHandlers', function($mmaGrades, $state, $mmCourses) {
+.factory('$mmaGradesHandlers', function($mmaGrades, $state) {
 
     var self = {};
 
@@ -49,20 +49,10 @@ angular.module('mm.addons.grades')
          * Check if handler is enabled for this course.
          *
          * @param {Number} courseId Course ID.
-         * @return {Boolean}        True if handler is enabled, false otherwise.
+         * @return {Promise}        Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
          */
         self.isEnabledForCourse = function(courseId) {
-            if (!courseId) {
-                return false;
-            }
-
-            var course = $mmCourses.getStoredCourse(courseId);
-
-            if (course && typeof course.showgrades != 'undefined' && !course.showgrades) {
-                return false;
-            }
-
-            return true;
+            return $mmaGrades.isPluginEnabledForCourse(courseId);
         };
 
         /**
@@ -121,20 +111,10 @@ angular.module('mm.addons.grades')
          *
          * @param {Object} user     User to check.
          * @param {Number} courseId Course ID.
-         * @return {Boolean}        True if handler is enabled, false otherwise.
+         * @return {Promise}        Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
          */
         self.isEnabledForUser = function(user, courseId) {
-            if (!courseId) {
-                return false;
-            }
-
-            var course = $mmCourses.getStoredCourse(courseId);
-
-            if (course && typeof course.showgrades != 'undefined' && !course.showgrades) {
-                return false;
-            }
-
-            return true;
+            return $mmaGrades.isPluginEnabledForCourse(courseId);
         };
 
         /**

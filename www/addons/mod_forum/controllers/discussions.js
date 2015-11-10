@@ -41,24 +41,28 @@ angular.module('mm.addons.mod_forum')
     // Convenience function to get forum data and discussions.
     function fetchForumDataAndDiscussions(refresh) {
         return $mmaModForum.getForum(courseid, module.id).then(function(forumdata) {
-            if (forumdata) {
-                forum = forumdata;
+            forum = forumdata;
 
-                $scope.title = forum.name || $scope.title;
-                $scope.description = forum.intro || $scope.description;
-                $scope.forum = forum;
+            $scope.title = forum.name || $scope.title;
+            $scope.description = forum.intro || $scope.description;
+            $scope.forum = forum;
 
-                return $mmGroups.getActivityGroupMode(forum.cmid).then(function(mode) {
-                    usesGroups = mode === $mmGroups.SEPARATEGROUPS || mode === $mmGroups.VISIBLEGROUPS;
-                }).finally(function() {
-                    return fetchDiscussions(refresh);
-                });
+            return $mmGroups.getActivityGroupMode(forum.cmid).then(function(mode) {
+                usesGroups = mode === $mmGroups.SEPARATEGROUPS || mode === $mmGroups.VISIBLEGROUPS;
+            }).finally(function() {
+                return fetchDiscussions(refresh);
+            });
+        }, function(message) {
+            if (!refresh) {
+                // Get forum failed, retry without using cache since it might be a new activity.
+                return refreshData();
+            }
+
+            if (message) {
+                $mmUtil.showErrorModal(message);
             } else {
                 $mmUtil.showErrorModal('mma.mod_forum.errorgetforum', true);
-                return $q.reject();
             }
-        }, function(message) {
-            $mmUtil.showErrorModal(message);
             $scope.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
             return $q.reject();
         });
@@ -104,8 +108,9 @@ angular.module('mm.addons.mod_forum')
     // Refresh forum data and discussions list.
     function refreshData() {
         var promises = [];
+        promises.push($mmaModForum.invalidateForumData(courseid));
         if (forum) {
-            promises.push($mmaModForum.invalidateDiscussionsList(courseid, forum.id));
+            promises.push($mmaModForum.invalidateDiscussionsList(forum.id));
             promises.push($mmGroups.invalidateActivityGroupMode(forum.cmid));
         }
         return $q.all(promises).finally(function() {

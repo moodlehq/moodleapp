@@ -1,7 +1,9 @@
 {
-    "complete": "Complet",
+    "complete": "Terminer",
+    "completecourse": "Terminer le cours",
     "completed": "Terminé",
-    "coursecompletion": "Achèvement de cours",
+    "completiondate": "Date d'achèvement",
+    "coursecompletion": "Achèvement du cours",
     "criteria": "Critères",
     "criteriagroup": "Groupe de critères",
     "criteriarequiredall": "Tous les critères ci-dessous sont requis",
@@ -9,9 +11,10 @@
     "inprogress": "En cours",
     "manualselfcompletion": "Auto-achèvement manuel",
     "notyetstarted": "Pas encore commencé",
-    "pending": "En suspens",
+    "pending": "En attente",
     "required": "Requis",
     "requiredcriteria": "Critères requis",
+    "requirement": "Condition",
     "status": "Statut",
-    "viewcoursereport": "Consulter le rapport du cours"
+    "viewcoursereport": "Afficher le rapport du cours"
 }

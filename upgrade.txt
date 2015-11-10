@@ -1,6 +1,12 @@
 This files describes API changes in the Moodle Mobile app,
 information provided here is intended especially for developers.
 
+=== 2.5 ===
+
+ * $mmCourses#getStoredCourse function has been deprecated. New function $mmCourses#getUserCourse function should be used instead.
+ * $mmCourses#getUserCourses parameters have changed, now the first parameter is 'preferCache' instead of 'refresh'. The new function $mmCourses#invalidateUserCourses needs to be used to refresh the list.
+ * $mmSitesManager#getUserToken now returns an object with 'siteurl' and 'token' instead of just returning the token.
+
 === 2.3 ===
 
  * MomentJS installed. Please run:

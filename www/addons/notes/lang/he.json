@@ -1,9 +1,12 @@
 {
-    "addnewnote": "הוספת הערה חדשה",
-    "coursenotes": "הערות על הסטודנט הזמינות לכל המורים בקורס ",
+    "addnewnote": "הוספת הערה",
+    "coursenotes": "הערות קורס",
     "eventnotecreated": "הערה נוצרה",
+    "nonotes": "עדיין לא קיימות הערות מסוג זה",
     "note": "הערה",
-    "personalnotes": "הערות על הסטודנט הזמינות לך בלבד",
-    "publishstate": "הקשר",
-    "sitenotes": "הערות על הסטודנט הזמינות לכל המורים במערכת"
+    "notes": "הערות",
+    "personalnotes": "הערות אישיות",
+    "publishstate": "תוכן",
+    "sitenotes": "הערות אתר",
+    "userwithid": "משתמש עם מספר-זיהוי {{id}}"
 }

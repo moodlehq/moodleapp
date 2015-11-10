@@ -46,8 +46,9 @@ angular.module('mm.addons.calendar')
 
             if (e.courseid > 1) {
                 // It's a course event, retrieve the course name.
-                var course = $mmCourses.getStoredCourse(e.courseid);
-                $scope.coursename = course.fullname;
+                $mmCourses.getUserCourse(e.courseid, true).then(function(course) {
+                    $scope.coursename = course.fullname;
+                });
             }
 
         }, function(error) {

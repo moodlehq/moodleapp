@@ -34,7 +34,7 @@ angular.module('mm.addons.mod_choice')
     $scope.courseid = courseid;
 
     // Convenience function to get choice data.
-    function fetchChoiceData() {
+    function fetchChoiceData(refresh) {
         $scope.now = new Date().getTime();
         return $mmaModChoice.getChoice(courseid, module.id).then(function(choicedata) {
             choice = choicedata;
@@ -52,6 +52,11 @@ angular.module('mm.addons.mod_choice')
                 return fetchResults();
             });
         }).catch(function(message) {
+            if (!refresh) {
+                // Some call failed, retry without using cache since it might be a new activity.
+                return refreshAllData();
+            }
+
             if (message) {
                 $mmUtil.showErrorModal(message);
             } else {
@@ -113,7 +118,7 @@ angular.module('mm.addons.mod_choice')
             p3 = choice ? $mmaModChoice.invalidateResults(choice.id) : $q.when();
 
         return $q.all([p1, p2, p3]).finally(function() {
-            return fetchChoiceData();
+            return fetchChoiceData(true);
         });
     }
 

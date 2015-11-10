@@ -194,7 +194,10 @@ angular.module('mm.addons.mod_forum')
                     currentForum = forum;
                 }
             });
-            return currentForum;
+            if (currentForum) {
+                return currentForum;
+            }
+            return $q.reject();
         });
     };
 
@@ -274,19 +277,29 @@ angular.module('mm.addons.mod_forum')
     };
 
     /**
-     * Invalidates forum data and discussion list.
+     * Invalidates discussion list.
      *
      * @module mm.addons.mod_forum
      * @ngdoc method
      * @name $mmaModForum#invalidateDiscussionsList
-     * @param {Number} courseid Course ID.
      * @param  {Number} forumid Forum ID.
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
-    self.invalidateDiscussionsList = function(courseid, forumid) {
-        return $mmSite.invalidateWsCacheForKey(getForumDataCacheKey(courseid)).then(function() {
-            return $mmSite.invalidateWsCacheForKey(getDiscussionsListCacheKey(forumid));
-        });
+    self.invalidateDiscussionsList = function(forumid) {
+        return $mmSite.invalidateWsCacheForKey(getDiscussionsListCacheKey(forumid));
+    };
+
+    /**
+     * Invalidates forum data.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#invalidateForumData
+     * @param {Number} courseid Course ID.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateForumData = function(courseid) {
+        return $mmSite.invalidateWsCacheForKey(getForumDataCacheKey(courseid));
     };
 
     /**

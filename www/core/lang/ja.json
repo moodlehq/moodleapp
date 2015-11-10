@@ -1,6 +1,9 @@
 {
+    "allparticipants": "すべての参加者",
+    "areyousure": "本当によろしいですか?",
     "cancel": "キャンセル",
     "cannotconnect": "接続できません：正しいURLを入力しているか、サイトのMoodleが2.4以降であることを確認してください。",
+    "choose": "選択",
     "completion-alt-auto-fail": "完了: {{$a}} (合格点未到達)",
     "completion-alt-auto-n": "未完了: {{$a}}",
     "completion-alt-auto-pass": "完了: {{$a}} (合格点到達)",
@@ -298,5 +301,9 @@
     "viewprofile": "プロファイルを表示する",
     "year": "年",
     "years": "年",
-    "yes": "Yes"
+    "yes": "Yes",
+    "category": "カテゴリ",
+    "clicktohideshow": "展開または折りたたむには、ここをクリックしてください。",
+    "teachers": "教師",
+    "searching": "検索 ..."
 }

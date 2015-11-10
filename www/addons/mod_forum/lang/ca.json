@@ -1,3 +1,19 @@
 {
-    "forumnodiscussionsyet": "Encara no hi ha temes de debat en aquest fòrum"
+    "addanewdiscussion": "Afegeix un nou tema de debat",
+    "cannotadddiscussion": "Afegir debats en aquest fòrum requereix pertànyer al grup.",
+    "cannotadddiscussionall": "No teniu permís per a afegir un nou tema de debat per a tots els participants.",
+    "cannotcreatediscussion": "No s'ha pogut obrir un nou debat",
+    "couldnotadd": "Un error desconegut ha impedit afegir el vostre missatge",
+    "erroremptymessage": "El missatge no pot estar buit",
+    "erroremptysubject": "La casella «Assumpte» no pot estar buida",
+    "errorgetforum": "S'ha produït un error descarregant les dades del fòrum.",
+    "forumnodiscussionsyet": "Encara no hi ha temes de debat en aquest fòrum",
+    "group": "Grup",
+    "message": "Cos del missatge",
+    "numdiscussions": "{{numdiscussions}} discussions",
+    "numreplies": "{{numreplies}} respostes",
+    "posttoforum": "Envia al fòrum",
+    "re": "Re:",
+    "reply": "Contesta",
+    "subject": "Assumpte del missatge"
 }

@@ -50,10 +50,15 @@ angular.module('mm.addons.mod_chat')
             }
 
         }, function(error) {
+            if (!refresh) {
+                // Get chat failed, retry without using cache since it might be a new activity.
+                return fetchChatData(true);
+            }
+
             if (error) {
                 $mmUtil.showErrorModal(error);
             } else {
-                $mmUtil.showErrorModal('mm.core.error', true);
+                $mmUtil.showErrorModal('mma.mod_chat.errorwhilegettingchatdata', true);
             }
             return $q.reject();
         });

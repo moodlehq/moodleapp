@@ -1,5 +1,10 @@
 {
+    "enrolme": "רשום אותי",
+    "errorloadcourses": "התרחשה שגיאה בזמן טעינת הקורסים.",
     "filter": "מסנן",
-    "frontpage": "העמוד הראשי",
-    "mycourses": "הקורסים שלי"
+    "frontpage": "עמוד ראשי",
+    "mycourses": "הקורסים שלי",
+    "password": "סיסמה",
+    "search": "חיפוש",
+    "searchcourses": "חיפוש קורסים"
 }

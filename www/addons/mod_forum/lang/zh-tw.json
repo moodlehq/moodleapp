@@ -1,3 +1,16 @@
 {
-    "forumnodiscussionsyet": "這個討論區還沒有討論主題"
+    "addanewdiscussion": "新增一個討論主題",
+    "cannotadddiscussion": "必須是群組成員才能在此討論區添加議題",
+    "cannotadddiscussionall": "您沒有權限新增討論主題給所有參與者。",
+    "cannotcreatediscussion": "不能建立新的議題",
+    "couldnotadd": "由於不明錯誤， 無法新增您的貼文",
+    "erroremptymessage": "貼文的訊息不能是空白",
+    "erroremptysubject": "貼文的主旨不能是空白",
+    "forumnodiscussionsyet": "這個討論區還沒有討論主題",
+    "group": "分組",
+    "message": "訊息主文",
+    "posttoforum": "貼文到討論區中",
+    "re": "回應:",
+    "reply": "回應",
+    "subject": "訊息主旨"
 }

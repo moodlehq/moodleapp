@@ -6,5 +6,6 @@
     "duedate": "Data de venciment",
     "duedateno": "Sense data de venciment",
     "submissions": "Trameses",
+    "userwithid": "Usuari amb Id {{id}}",
     "viewsubmission": "Visualitza la tramesa"
 }

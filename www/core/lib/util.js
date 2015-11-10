@@ -341,6 +341,7 @@ angular.module('mm.core')
          * @return {Void}
          */
         self.openFile = function(path) {
+            var deferred = $q.defer();
 
             if (false) {
                 // TODO Restore node-webkit support.
@@ -349,6 +350,7 @@ angular.module('mm.core')
                 // We use the node-webkit shell for open the file (pdf, doc) using the default application configured in the os.
                 // var gui = require('nw.gui');
                 // gui.Shell.openItem(path);
+                deferred.resolve();
 
             } else if (window.plugins) {
                 var extension = self.getFileExtension(path),
@@ -362,21 +364,27 @@ angular.module('mm.core')
                     var iParams = {
                         action: "android.intent.action.VIEW",
                         url: path,
-                        type: mimetype.type
+                        type: mimetype ? mimetype.type : undefined
                     };
 
                     window.plugins.webintent.startActivity(
                         iParams,
                         function() {
                             $log.debug('Intent launched');
+                            deferred.resolve();
                         },
                         function() {
-                            $log.debug('Intent launching failed');
+                            $log.debug('Intent launching failed.');
                             $log.debug('action: ' + iParams.action);
                             $log.debug('url: ' + iParams.url);
                             $log.debug('type: ' + iParams.type);
-                            // This may work in cordova 2.4 and onwards.
-                            window.open(path, '_system');
+
+                            if (!extension || extension.indexOf('/') > -1 || extension.indexOf('\\') > -1) {
+                                // Extension not found.
+                                $mmLang.translateAndRejectDeferred(deferred, 'mm.core.erroropenfilenoextension');
+                            } else {
+                                $mmLang.translateAndRejectDeferred(deferred, 'mm.core.erroropenfilenoapp');
+                            }
                         }
                     );
 
@@ -394,6 +402,7 @@ angular.module('mm.core')
                         handleDocumentWithURL(
                             function() {
                                 $log.debug('File opened with handleDocumentWithURL' + path);
+                                deferred.resolve();
                             },
                             function(error) {
                                 $log.debug('Error opening with handleDocumentWithURL' + path);
@@ -401,19 +410,24 @@ angular.module('mm.core')
                                     $log.error('No app that handles this file type.');
                                 }
                                 self.openInBrowser(path);
+                                deferred.resolve();
                             },
                             path
                         );
-                    });
+                    }, deferred.reject);
                 } else {
                     // Last try, launch the file with the browser.
                     self.openInBrowser(path);
+                    deferred.resolve();
                 }
             } else {
                 // Changing _blank for _system may work in cordova 2.4 and onwards.
                 $log.debug('Opening external file using window.open()');
                 window.open(path, '_blank');
+                deferred.resolve();
             }
+
+            return deferred.promise;
         };
 
         /**
@@ -429,6 +443,21 @@ angular.module('mm.core')
          */
         self.openInBrowser = function(url) {
             window.open(url, '_system');
+        };
+
+        /**
+         * Open a URL using InAppBrowser.
+         *
+         * Do not use for files, refer to {@link $mmUtil#openFile}.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#openInApp
+         * @param  {String} url The URL to open.
+         * @return {Void}
+         */
+        self.openInApp = function(url) {
+            window.open(url, '_blank');
         };
 
         /**

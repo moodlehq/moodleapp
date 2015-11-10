@@ -47,8 +47,8 @@ angular.module('mm.core.login')
         var modal = $mmUtil.showModalLoading();
 
         // Start the authentication process.
-        $mmSitesManager.getUserToken(siteurl, username, password).then(function(token) {
-            $mmSitesManager.newSite(siteurl, token).then(function() {
+        $mmSitesManager.getUserToken(siteurl, username, password).then(function(data) {
+            $mmSitesManager.newSite(data.siteurl, data.token).then(function() {
                 delete $scope.credentials; // Delete username and password from the scope.
                 $ionicHistory.nextViewOptions({disableBack: true});
                 $state.go('site.mm_courses');

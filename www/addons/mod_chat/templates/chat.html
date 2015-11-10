@@ -1,5 +1,5 @@
 <ion-view>
-    <ion-nav-title>{{ title }}</ion-nav-title>
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
 
     <ion-nav-buttons side="secondary">
         <button ng-if="loaded" class="button button-icon icon ion-person-stalker" ng-click="showChatUsers()"></button>

@@ -20,5 +20,6 @@
     "synchronization": "Synchronisation",
     "synchronizing": "Synchronisation en cours",
     "syncsitesuccess": "Données de site synchronisées et tous les caches vidés.",
-    "total": "Total"
+    "total": "Total",
+    "wificonnection": "Connexion WiFi"
 }

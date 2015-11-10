@@ -1,5 +1,9 @@
 {
+    "enrolme": "Matricularme",
     "filter": "Filtro",
     "frontpage": "Página Principal",
-    "mycourses": "Mis cursos"
+    "mycourses": "Mis cursos",
+    "password": "Contraseña",
+    "search": "Buscar",
+    "searchcourses": "Buscar cursos"
 }

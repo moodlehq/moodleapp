@@ -190,12 +190,40 @@ angular.module('mm.core')
      * @return {String}      Escaped text.
      */
     self.escapeHTML = function(text) {
+        if (typeof text == 'undefined' || text === null || (typeof text == 'number' && isNaN(text))) {
+            return '';
+        } else if (typeof text != 'string') {
+            return '' + text;
+        }
+
         return text
             .replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
+    };
+
+    /**
+     * Add or remove 'www' from a URL. The url needs to have http or https protocol.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#addOrRemoveWWW
+     * @param {String} url URL to modify.
+     * @return             Modified URL.
+     */
+    self.addOrRemoveWWW = function(url) {
+        if (typeof url == 'string') {
+            if (url.match(/http(s)?:\/\/www\./)) {
+                // Already has www. Remove it.
+                url = url.replace('www.', '');
+            } else {
+                url = url.replace('https://', 'https://www.');
+                url = url.replace('http://', 'http://www.');
+            }
+        }
+        return url;
     };
 
     return self;

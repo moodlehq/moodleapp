@@ -1,5 +1,9 @@
 {
     "filter": "فلتر",
     "frontpage": "الصفحة الرئيسية",
-    "mycourses": "مقرراتي"
+    "mycourses": "مقرراتي",
+    "password": "كلمة المرور",
+    "search": "بحث",
+    "searchcourses": "بحث مقررات دراسية",
+    "enrolme": "سجلني"
 }

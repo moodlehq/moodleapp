@@ -169,7 +169,7 @@ angular.module('mm.addons.mod_imscp')
 
                     $mmaModImscp.invalidateContent(module.id).then(function() {
                         $mmaModImscp.getFileEventNames(module).then(function(eventNames) {
-                            previousState = $mmFilepool.mmFilepool.FILEOUTDATED;
+                            previousState = $mmFilepool.FILEOUTDATED;
                             addObservers(eventNames, false);
                             $mmaModImscp.prefetchContent(module);
                             // Store module as dowloading.

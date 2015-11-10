@@ -194,7 +194,12 @@ angular.module('mm.core')
          * Note that a browser is always considered being online.
          */
         self.isOnline = function() {
-            return typeof navigator.connection === 'undefined' || $cordovaNetwork.isOnline();
+            var online = typeof navigator.connection === 'undefined' || $cordovaNetwork.isOnline();
+            // Double check we are not online because we cannot rely 100% in Cordova APIs.
+            if (!online && navigator.onLine) {
+                online = true;
+            }
+            return online;
         };
 
         /*
@@ -231,6 +236,19 @@ angular.module('mm.core')
         self.isReady = function() {
             var promise = $injector.get('$mmInitDelegate').ready();
             return promise.$$state.status === 1;
+        };
+
+        /**
+         * Open the keyboard if plugin is available.
+         *
+         * @return {Boolean} True if plugin is available, false otherwise.
+         */
+        self.openKeyboard = function() {
+            if (typeof cordova != 'undefined' && cordova.plugins && cordova.plugins.Keyboard && cordova.plugins.Keyboard.show) {
+                cordova.plugins.Keyboard.show();
+                return true;
+            }
+            return false;
         };
 
         /**

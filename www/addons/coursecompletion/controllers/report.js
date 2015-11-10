@@ -38,7 +38,11 @@ angular.module('mm.addons.coursecompletion')
             $scope.showSelfComplete = $mmaCourseCompletion.isSelfCompletionAvailable() &&
                                         $mmaCourseCompletion.canMarkSelfCompleted(userid, completion);
         }).catch(function(message) {
-            $mmUtil.showErrorModal(message);
+            if (message) {
+                $mmUtil.showErrorModal(message);
+            } else {
+                $mmUtil.showErrorModal('mma.coursecompletion.couldnotloadreport', true);
+            }
         });
     }
 

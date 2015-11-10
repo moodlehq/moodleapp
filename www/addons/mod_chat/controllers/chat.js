@@ -63,8 +63,9 @@ angular.module('mm.addons.mod_chat')
         $scope.modal.show();
         $mmaModChat.getChatUsers($scope.chatsid).then(function(data) {
             $scope.chatUsers = data.users;
-        }).catch(showError)
-        .finally(function() {
+        }).catch(function(error) {
+            showError(error, 'mma.mod_chat.errorwhilegettingchatusers');
+        }).finally(function() {
             $scope.usersLoaded = true;
         });
     };
@@ -87,11 +88,11 @@ angular.module('mm.addons.mod_chat')
     };
 
     // Show error modal.
-    function showError(error) {
+    function showError(error, defaultMessage) {
         if (typeof error === 'string') {
             $mmUtil.showErrorModal(error);
         } else {
-            $mmUtil.showErrorModal(defaultMessage, 'mm.core.error');
+            $mmUtil.showErrorModal(defaultMessage, true);
         }
     }
 
@@ -107,7 +108,6 @@ angular.module('mm.addons.mod_chat')
 
     // Send a message to the chat.
     $scope.sendMessage = function(text, beep) {
-        var message;
         beep = beep || '';
 
         if (!$mmApp.isOnline()) {
@@ -128,21 +128,23 @@ angular.module('mm.addons.mod_chat')
             // messages withoutthe keyboard being closed.
             $mmApp.closeKeyboard();
 
-            showError(error);
+            showError(error, 'mma.mod_chat.errorwhilesendingmessage');
         });
     };
 
     // Login the user.
-    $mmaModChat.loginUser(chatId).then(function(data) {
-        return $mmaModChat.getLatestMessages(data.chatsid, 0).then(function(messagesInfo) {
-            $scope.chatsid = data.chatsid;
+    $mmaModChat.loginUser(chatId).then(function(chatsid) {
+        return $mmaModChat.getLatestMessages(chatsid, 0).then(function(messagesInfo) {
+            $scope.chatsid = chatsid;
             chatLastTime = messagesInfo.chatnewlasttime;
             return $mmaModChat.getMessagesUserData(messagesInfo.messages, courseId).then(function(messages) {
                 $scope.messages = $scope.messages.concat(messages);
             });
-        }).catch(showError);
+        }).catch(function(message) {
+            showError(message, 'mma.mod_chat.errorwhileretrievingmessages');
+        });
     }, function(error) {
-        showError(error);
+        showError(error, 'mma.mod_chat.errorwhileconnecting');
         $ionicHistory.goBack();
     }).finally(function() {
         $scope.loaded = true;
@@ -181,7 +183,7 @@ angular.module('mm.addons.mod_chat')
                 });
             }, function(error) {
                 $interval.cancel(polling);
-                showError(error);
+                showError(error, 'mma.mod_chat.errorwhileretrievingmessages');
             });
 
         }, mmaChatPollInterval);

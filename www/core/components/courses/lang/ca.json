@@ -1,5 +1,10 @@
 {
+    "enrolme": "Inscriu-me",
+    "errorloadcourses": "S'ha produït un error carregant els cursos.",
     "filter": "Filtre",
     "frontpage": "Pàgina principal",
-    "mycourses": "Els meus cursos"
+    "mycourses": "Els meus cursos",
+    "password": "Contrasenya",
+    "search": "Cerca",
+    "searchcourses": "Cerca cursos"
 }

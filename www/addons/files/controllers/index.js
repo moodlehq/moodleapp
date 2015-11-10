@@ -14,7 +14,7 @@
 
 angular.module('mm.addons.files')
 
-.controller('mmaFilesIndexController', function($scope, $mmaFiles, $mmSite, $mmUtil, $mmApp) {
+.controller('mmaFilesIndexController', function($scope, $mmaFiles, $mmSite, $mmUtil, $mmApp, $state) {
 
     $scope.canAccessFiles = $mmaFiles.canAccessFiles;
     $scope.showPrivateFiles = function() {

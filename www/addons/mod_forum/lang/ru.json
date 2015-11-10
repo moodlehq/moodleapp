@@ -1,6 +1,21 @@
 {
+    "addanewdiscussion": "Добавить новую тему на форуме",
+    "cannotadddiscussion": "Добавление обсуждения в этом форуме требует членства в группе",
+    "cannotadddiscussionall": "Вы не имеете права добавить новую тему на форуме для всех участников.",
+    "cannotcreatediscussion": "Не удалось создать новое обсуждение",
+    "couldnotadd": "Не удалось добавить ваше сообщение из-за неизвестной ошибки",
+    "discussionsubscription": "Обсуждение подписки",
+    "erroremptymessage": "Сообщение не может быть пустым",
+    "erroremptysubject": "Заголовок сообщения не может быть пустым",
     "errorgetforum": "Ошибка при получении данных форума",
+    "errorgetgroups": "Ошибка получения параметров группы",
     "forumnodiscussionsyet": "В этом форуме ещё нет тем для обсуждения",
+    "group": "Группа",
+    "message": "Сообщение",
     "numdiscussions": "Обсуждений - {{numdiscussions}}",
-    "numreplies": "Ответов - {{numreplies}}"
+    "numreplies": "Ответов - {{numreplies}}",
+    "posttoforum": "Написать на форуме",
+    "re": "Re:",
+    "reply": "Ответ",
+    "subject": "Тема"
 }

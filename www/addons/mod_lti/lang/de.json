@@ -1,0 +1,6 @@
+{
+    "errorgetlti": "Fehler beim Empfangen der Moduldaten",
+    "errorinvalidlaunchurl": "Die Start-URL ist falsch.",
+    "launch_url": "Start-URL",
+    "launchactivity": "Aktivität starten"
+}

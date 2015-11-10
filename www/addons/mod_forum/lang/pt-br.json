@@ -1,6 +1,19 @@
 {
+    "addanewdiscussion": "Acrescentar um novo tópico de discussão",
+    "cannotadddiscussion": "Apenas os participantes inscritos nos grupos podem escrever mensagens neste fórum",
+    "cannotadddiscussionall": "Você não tem permissão para abrir um novo tópico de discussão para todos os participantes.",
+    "cannotcreatediscussion": "Não foi possível criar uma nova discussão",
+    "couldnotadd": "Não foi possível publicar a sua mensagem. Infelizmente a causa do erro não foi identificada.",
+    "erroremptymessage": "A mensagem não pode ser vazia.",
+    "erroremptysubject": "O assunto da mensagem não pode ser vazio",
     "errorgetforum": "Erro ao buscar dados de fórum.",
     "forumnodiscussionsyet": "Não existem tópicos neste fórum ainda",
+    "group": "Grupo",
+    "message": "Corpo da mensagem",
     "numdiscussions": "{{numdiscussions}} discussões",
-    "numreplies": "{{numreplies}} respostas"
+    "numreplies": "{{numreplies}} respostas",
+    "posttoforum": "Enviar mensagem ao fórum",
+    "re": "Re:",
+    "reply": "Responder",
+    "subject": "Assunto da mensagem"
 }

@@ -29,7 +29,7 @@ angular.module('mm.core.login')
         $scope.sites = sites;
         $scope.data = {
             hasSites: sites.length > 0,
-            showDetele: false
+            showDelete: false
         };
     });
 

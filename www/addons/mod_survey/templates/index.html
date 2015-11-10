@@ -1,0 +1,76 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <a class="button button-icon ion-ios-browsers-outline" ng-href="{{moduleurl}}" mm-browser ></a>
+    </ion-nav-buttons>
+    <ion-content delegate-handle="mmaModSurveyScroll">
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="surveyLoaded" on-refresh="refreshSurvey()"></ion-refresher>
+        <mm-loading hide-until="surveyLoaded">
+            <mm-course-mod-description description="description" watch="true"></mm-course-mod-description>
+
+            <!-- Survey already done -->
+            <section class="card padding" ng-if="survey.surveydone">
+                <p class="padding">{{ 'mma.mod_survey.surveycompletednograph' | translate }}</p>
+                <a class="button button-block" ng-href="{{moduleurl}}" mm-browser>{{ 'mma.mod_survey.results' | translate }}</a>
+            </section>
+
+            <!-- Survey questions -->
+            <section class="card padding" ng-if="!survey.surveydone && questions && questions.length">
+                <div ng-repeat="question in questions">
+                    <!-- Parent question (Category header) -->
+                    <div ng-if="question.multi && question.multi.length" ng-class="{'mma-mod_survey-padding-top': !$first}">
+                        <h2>{{ question.text }}</h2>
+                        <div class="row" ng-if="isTablet">
+                            <div class="col col-50">{{ 'mma.mod_survey.responses' | translate }}</div>
+                            <div class="col text-center" ng-repeat="option in question.options">
+                                {{ option }}
+                            </div>
+                        </div>
+                        <div class="row" ng-class="{'mma-mod_survey-darkbg': $even}">
+                            <div class="col">{{ question.intro }}</div>
+                        </div>
+                    </div>
+                    <!-- Subquestion -->
+                    <div ng-if="question.parent !== 0" ng-class="{'mma-mod_survey-darkbg': $even}">
+                        <div class="row">
+                            <div id="mma-mod_survey-{{question.name}}" class="col" ng-class="{'col-50': isTablet, 'col-60': !isTablet}"><strong>{{question.num}}</strong> {{ question.text }}</div>
+                            <!-- Tablet view: radio buttons -->
+                            <div ng-if="isTablet" class="col text-center" ng-repeat="option in question.options track by $index">
+                                <input type="radio" name="{{question.name}}" ng-model="answers[question.name]" ng-value="$index + 1" aria-labelledby="mma-mod_survey-{{question.name}}">
+                            </div>
+                            <!-- Phone view: select -->
+                            <div ng-if="!isTablet" class="col-40 text-center item-select">
+                                <select class="mma-mod_survey-select" ng-model="answers[question.name]" ng-options="question.options.indexOf(o)+1 as o for o in question.options" aria-labelledby="mma-mod_survey-{{question.name}}">
+                                    <option class="mma-mod_survey-defaultoption" value="" disabled selected>{{ 'mm.core.choose' | translate }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Single question (don't belong to a category) -->
+                    <div ng-if="question.multi && question.multi.length == 0 && question.parent === 0" class="mma-mod_survey-padding-top">
+                        <div ng-if="isTablet || question.type > 0" class="row">
+                            <div id="mma-mod_survey-{{question.name}}" class="col" ng-class="{'col-50': isTablet, 'col-60': !isTablet}"><strong>{{question.num}}</strong> {{ question.text }}</div>
+                            <div class="text-center" ng-class="{'item-select': question.type > 0, 'col-50': isTablet, 'col-40': !isTablet, 'item-input item-stacked-label': question.type == 0}">
+                                <textarea ng-if="question.type === 0" ng-model="answers[question.name]" class="mma-mod_survey-textarea no-resize" aria-labelledby="mma-mod_survey-{{question.name}}" aria-multiline="true"></textarea>
+                                <select class="mma-mod_survey-select" ng-if="question.type > 0" ng-model="answers[question.name]" ng-options="i as o for (i,o) in question.options" aria-labelledby="mma-mod_survey-{{question.name}}">
+                                </select>
+                            </div>
+                        </div>
+                        <div ng-if="!isTablet && question.type === 0">
+                            <div class="row">
+                                <div id="mma-mod_survey-{{question.name}}" class="col"><strong>{{question.num}}</strong> {{ question.text }}</div>
+                            </div>
+                            <div class="row text-center item-input item-stacked-label">
+                                <textarea ng-model="answers[question.name]" class="mma-mod_survey-textarea no-resize" aria-labelledby="mma-mod_survey-{{question.name}}" aria-multiline="true"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <button class="button button-block" ng-click="submit()" ng-disabled="!isValidResponse()">{{ 'mma.mod_survey.clicktocontinue' | translate }}</button>
+                </div>
+            </section>
+
+        </mm-loading>
+    </ion-content>
+</ion-view>

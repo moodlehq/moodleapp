@@ -1,6 +1,10 @@
 {
+    "enrolme": "Iscrivimi",
     "errorloadcourses": "Si è verificato un errore durante il caricamento dei corsi.",
     "filter": "Filtro",
     "frontpage": "Pagina home",
-    "mycourses": "I miei corsi"
+    "mycourses": "I miei corsi",
+    "password": "Password",
+    "search": "Cerca",
+    "searchcourses": "Cerca corsi"
 }

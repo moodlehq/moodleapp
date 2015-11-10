@@ -5,13 +5,16 @@
     "country": "ארץ",
     "description": "תיאור",
     "details": "פרטים",
+    "detailsnotavailable": "פרטי משתמש זה אינם זמינים לך.",
+    "editingteacher": "מרצה",
     "email": "דואר אלקטרוני",
     "interests": "תחומי עניין",
-    "invaliduser": "משתמש שגוי",
-    "manager": "מנהל/ת",
+    "invaliduser": "משתמש לא תקף.",
+    "manager": "מנהל",
     "phone1": "טלפון",
     "phone2": "סלולרי",
     "roles": "תפקידים",
     "student": "סטודנט",
-    "webpage": "דף בית באינטרנט"
+    "teacher": "עוזר/ת הוראה",
+    "webpage": "עמוד אינטרנט"
 }

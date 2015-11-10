@@ -1,6 +1,10 @@
 {
+    "enrolme": "Matrikula nazazu",
     "errorloadcourses": "Errore bat gertatu da ikastaroak kargatzean.",
     "filter": "Iragazkia",
     "frontpage": "Hasiera-orria",
-    "mycourses": "Nire ikastaroak"
+    "mycourses": "Nire ikastaroak",
+    "password": "Pasahitza",
+    "search": "Bilatu",
+    "searchcourses": "Bilatu Ikastaroak"
 }

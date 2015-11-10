@@ -316,7 +316,7 @@ angular.module('mm.addons.mod_book')
     self.logView = function(id) {
         if (id) {
             var params = {
-                urlid: id
+                bookid: id
             };
             return $mmSite.write('mod_book_view_book', params);
         }

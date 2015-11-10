@@ -1,0 +1,21 @@
+{
+    "addanewdiscussion": "הוספת נושא לדיון חדש",
+    "cannotadddiscussion": "בכדי להוסיף דיונים בפורום זה, נדרש רישום לקבוצה.",
+    "cannotadddiscussionall": "אין לך הרשאה להוסיף נושא דיון חדש לכל המשתתפים.",
+    "cannotcreatediscussion": "אין אפשרות ליצירת דיון חדש",
+    "couldnotadd": "לא ניתן להוסיף את הודעתך בעקבות שגיאה לא ידועה",
+    "discussionsubscription": "מנוי לדיון (לקבלת עדכונים)",
+    "erroremptymessage": "תוכן ההודעה אינו יכול להיות ריק",
+    "erroremptysubject": "נושא ההודעה אינו יכול להיות ריק",
+    "errorgetforum": "שגיאה בטעינת מידע הפורום.",
+    "errorgetgroups": "שגיאה בטעינת הגדרות קבוצה.",
+    "forumnodiscussionsyet": "עדיין לא קיימים נושאי דיונים בפורום זה.",
+    "group": "קבוצה",
+    "message": "הודעה",
+    "numdiscussions": "{{numdiscussions}} דיונים",
+    "numreplies": "{{numreplies}} תגובות",
+    "posttoforum": "פירסום בפורום",
+    "re": "תשובה ל:",
+    "reply": "תגובה",
+    "subject": "נושא"
+}

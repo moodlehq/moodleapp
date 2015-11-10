@@ -49,25 +49,12 @@ angular.module('mm.core')
         },
         link: function(scope, element, attrs) {
             var el = element[0],
-                loading = angular.element(el.querySelector('.mm-loading-container')),
-                content = angular.element(el.querySelector('.mm-loading-content'));
+                loading = angular.element(el.querySelector('.mm-loading-container'));
 
             if (!attrs.message) {
                 // Default loading message.
                 $translate('mm.core.loading').then(function(loadingString) {
                     scope.message = loadingString;
-                });
-            }
-
-            if (attrs.hideUntil) {
-                scope.$watch('hideUntil', function(newValue) {
-                    if (newValue) {
-                        loading.addClass('hide');
-                        content.removeClass('hide');
-                    } else {
-                        content.addClass('hide');
-                        loading.removeClass('hide');
-                    }
                 });
             }
 
