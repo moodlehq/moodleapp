@@ -415,6 +415,21 @@ angular.module('mm.core')
     };
 
     /**
+     * Clears the filepool. Use it only when all the files from a site are deleted.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#clearFilepool
+     * @param  {String} siteId ID of the site to clear.
+     * @return {Promise}       Promise resolved when the filepool is cleared.
+     */
+    self.clearFilepool = function(siteId) {
+        return getSiteDb(siteId).then(function(db) {
+            return db.removeAll(mmFilepoolStore);
+        });
+    };
+
+    /**
      * Returns whether a component has files in the pool.
      *
      * @module mm.core
