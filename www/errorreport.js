@@ -19,7 +19,7 @@
 var appVersion = '2.5 (2006)',
     reportInBackgroundName = 'mmCoreReportInBackground',
     errors = [],
-    ignoredFiles = ['www/index.html#/site/mod_page', 'www/index.html#/site/mod_resource'];
+    ignoredFiles = ['www/index.html#/site/mod_page', 'www/index.html#/site/mod_resource', 'www/index.html#/site/mm_course-section'];
 
 /**
  * Check if error should be reported in background. If setting is not set, a confirm modal will be shown.
