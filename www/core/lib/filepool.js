@@ -14,7 +14,7 @@
 
 angular.module('mm.core')
 
-.constant('mmFilepoolQueueProcessInterval', 300)
+.constant('mmFilepoolQueueProcessInterval', 0)
 .constant('mmFilepoolFolder', 'filepool')
 .constant('mmFilepoolStore', 'filepool')
 .constant('mmFilepoolQueueStore', 'files_queue')
@@ -150,7 +150,8 @@ angular.module('mm.core')
             tokenRegex,
             new RegExp('(\\?|&)forcedownload=[0-1]')
         ],
-        revisionRegex = new RegExp('/content/([0-9]+)/');
+        revisionRegex = new RegExp('/content/([0-9]+)/'),
+        queueDeferreds = {}; // To handle file downloads using the queue.
 
     // Queue status codes.
     var QUEUE_RUNNING = 'mmFilepool:QUEUE_RUNNING',
@@ -289,7 +290,12 @@ angular.module('mm.core')
             fileId,
             now = new Date(),
             link,
-            revision;
+            revision,
+            queueDeferred;
+
+        if (!$mmFS.isAvailable()) {
+            return $q.reject();
+        }
 
         return self._fixPluginfileURL(siteId, fileUrl).then(function(fileUrl) {
 
@@ -305,6 +311,10 @@ angular.module('mm.core')
                     componentId: componentId
                 };
             }
+
+            // Retrieve the queue deferred now if it exists to prevent errors if file is removed from queue
+            // while we're checking if the file is in queue.
+            queueDeferred = self._getQueueDeferred(siteId, fileId, false);
 
             return db.get(mmFilepoolQueueStore, [siteId, fileId]).then(function(fileObject) {
                 var foundLink = false,
@@ -345,18 +355,19 @@ angular.module('mm.core')
                     if (update) {
                         // Update only when required.
                         $log.debug('Updating file ' + fileId + ' which is already in queue');
-                        return db.insert(mmFilepoolQueueStore, fileObject);
+                        return db.insert(mmFilepoolQueueStore, fileObject).then(function() {
+                            return self._getQueuePromise(siteId, fileId);
+                        });
                     }
 
-                    var response = (function() {
-                        // Return a resolved promise containing the keyPath such as db.insert() does it.
-                        var deferred = $q.defer();
-                        deferred.resolve([fileObject.siteId, fileObject.fileId]);
-                        return deferred.promise;
-                    })();
-
                     $log.debug('File ' + fileId + ' already in queue and does not require update');
-                    return response;
+                    if (queueDeferred) {
+                        // If we were able to retrieve the queue deferred before we use that one, since the file download
+                        // might have finished now and the deferred wouldn't be in the array anymore.
+                        return queueDeferred.promise;
+                    } else {
+                        return self._getQueuePromise(siteId, fileId);
+                    }
                 } else {
                     return addToQueue();
                 }
@@ -377,10 +388,10 @@ angular.module('mm.core')
                     timemodified: timemodified,
                     path: filePath,
                     links: link ? [link] : []
-                }).then(function(result) {
+                }).then(function() {
                     // Check if the queue is running.
                     self.checkQueueProcessing();
-                    return result;
+                    return self._getQueuePromise(siteId, fileId);
                 });
             }
         });
@@ -652,6 +663,54 @@ angular.module('mm.core')
             var fileId = self._getFileIdByUrl(fileUrl);
             return self._getFileEventName(siteId, fileId);
         });
+    };
+
+    /**
+     * Get the deferred object for a file in the queue.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#_getQueueDeferred
+     * @param {String} siteId         The site ID.
+     * @param {String} fileId         The file ID.
+     * @param {Boolean} [create=true] True if it should create a new deferred if it doesn't exist.
+     * @return {Object}               Deferred.
+     * @protected
+     */
+    self._getQueueDeferred = function(siteId, fileId, create) {
+        if (typeof create == 'undefined') {
+            create = true;
+        }
+
+        if (!queueDeferreds[siteId]) {
+            if (!create) {
+                return;
+            }
+            queueDeferreds[siteId] = {};
+        }
+        if (!queueDeferreds[siteId][fileId]) {
+            if (!create) {
+                return;
+            }
+            queueDeferreds[siteId][fileId] = $q.defer();
+        }
+        return queueDeferreds[siteId][fileId];
+    };
+
+    /**
+     * Get the promise for a file in the queue.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#_getQueuePromise
+     * @param {String} siteId         The site ID.
+     * @param {String} fileId         The file ID.
+     * @param {Boolean} [create=true] True if it should create a new promise if it doesn't exist.
+     * @return {Promise}              Promise.
+     * @protected
+     */
+    self._getQueuePromise = function(siteId, fileId, create) {
+        return self._getQueueDeferred(siteId, fileId, create).promise;
     };
 
     /**
@@ -1242,7 +1301,6 @@ angular.module('mm.core')
      */
     self._processQueue = function() {
         var deferred = $q.defer(),
-            now = new Date(),
             promise;
 
         if (queueState !== QUEUE_RUNNING) {
@@ -1322,9 +1380,11 @@ angular.module('mm.core')
             return db.get(mmFilepoolStore, fileId).then(function(fileObject) {
                 if (fileObject && !self._isFileOutdated(fileObject, revision, timemodified)) {
                     // We have the file, it is not stale, we can update links and remove from queue.
-                    self._addFileLinks(siteId, fileId, links);
-                    self._removeFromQueue(siteId, fileId);
                     $log.debug('Queued file already in store, ignoring...');
+                    self._addFileLinks(siteId, fileId, links);
+                    self._removeFromQueue(siteId, fileId).finally(function() {
+                        self._treatQueueDeferred(siteId, fileId, true);
+                    });
                     self._notifyFileDownloaded(siteId, fileId);
                     return;
                 }
@@ -1334,6 +1394,13 @@ angular.module('mm.core')
                 // The file does not exist, download it.
                 return download(siteId, fileUrl, undefined, links);
             });
+        }, function() {
+            // Couldn't get site DB, site was probably deleted.
+            $log.debug('Item dropped from queue due to site DB not retrieved: ' + fileUrl);
+            return self._removeFromQueue(siteId, fileId).catch(function() {}).finally(function() {
+                self._treatQueueDeferred(siteId, fileId, false);
+                self._notifyFileDownloadError(siteId, fileId);
+            });
         });
 
         /**
@@ -1341,20 +1408,18 @@ angular.module('mm.core')
          */
         function download(siteId, fileUrl, fileObject, links) {
             return self._downloadForPoolByUrl(siteId, fileUrl, revision, timemodified, filePath, fileObject).then(function() {
-                var promise,
-                    deferred;
+                var promise;
 
                 // Success, we add links and remove from queue.
                 self._addFileLinks(siteId, fileId, links);
                 promise = self._removeFromQueue(siteId, fileId);
 
+                self._treatQueueDeferred(siteId, fileId, true);
                 self._notifyFileDownloaded(siteId, fileId);
 
                 // Wait for the item to be removed from queue before resolving the promise.
                 // If the item could not be removed from queue we still resolve the promise.
-                deferred = $q.defer();
-                promise.then(deferred.resolve, deferred.resolve);
-                return deferred.promise;
+                return promise.catch(function() {});
 
             }, function(errorObject) {
                 // Whoops, we have an error...
@@ -1405,20 +1470,19 @@ angular.module('mm.core')
                 }
 
                 if (dropFromQueue) {
-                    var deferred,
-                        promise;
+                    var promise;
 
                     $log.debug('Item dropped from queue due to error: ' + fileUrl);
                     promise = self._removeFromQueue(siteId, fileId);
 
                     // Consider this as a silent error, never reject the promise here.
-                    deferred = $q.defer();
-                    promise.then(deferred.resolve, deferred.resolve).finally(function() {
+                    return promise.catch(function() {}).finally(function() {
+                        self._treatQueueDeferred(siteId, fileId, false);
                         self._notifyFileDownloadError(siteId, fileId);
                     });
-                    return deferred.promise;
                 } else {
                     // We considered the file as legit but did not get it, failure.
+                    self._treatQueueDeferred(siteId, fileId, false);
                     self._notifyFileDownloadError(siteId, fileId);
                     return $q.reject();
                 }
@@ -1510,6 +1574,29 @@ angular.module('mm.core')
      */
     self._removeRevisionFromUrl = function(url) {
         return url.replace(revisionRegex, '/content/0/');
+    };
+
+    /**
+     * Resolves or rejects a queue deferred and removes it from the list.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#_treatQueueDeferred
+     * @param {String} siteId   The site ID.
+     * @param {String} fileId   The file ID.
+     * @param {Boolean} resolve True if promise should be resolved, false if it should be rejected.
+     * @return {Object}         Deferred.
+     * @protected
+     */
+    self._treatQueueDeferred = function(siteId, fileId, resolve) {
+        if (queueDeferreds[siteId] && queueDeferreds[siteId][fileId]) {
+            if (resolve) {
+                queueDeferreds[siteId][fileId].resolve();
+            } else {
+                queueDeferreds[siteId][fileId].reject();
+            }
+            delete queueDeferreds[siteId][fileId];
+        }
     };
 
     return self;
