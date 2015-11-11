@@ -57,7 +57,7 @@ angular.module('mm.addons.grades')
             maxDepth = table.tables[0]['maxdepth'];
             for (var el in tabledata) {
                 // This is a typical row.
-                if (typeof(tabledata[el]["leader"]) === "undefined") {
+                if (!angular.isArray(tabledata[el]) && typeof(tabledata[el]["leader"]) === "undefined") {
                     for (var col in tabledata[el]) {
                         returnedColumns.push(col);
                     }
