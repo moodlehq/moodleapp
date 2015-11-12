@@ -21,9 +21,108 @@ angular.module('mm.addons.mod_resource')
  * @ngdoc service
  * @name $mmaModResource
  */
-.factory('$mmaModResource', function($mmFilepool, $mmSite, $mmUtil, $mmFS, $http, $log, $q, $sce, $mmApp, mmaModResourceComponent) {
+.factory('$mmaModResource', function($mmFilepool, $mmSite, $mmUtil, $mmFS, $http, $log, $q, $sce, $mmApp, $mmCourse,
+            mmaModResourceComponent, mmCoreDownloading, mmCoreDownloaded) {
     $log = $log.getInstance('$mmaModResource');
-    var self = {};
+
+    var self = {},
+        downloadPromises = {}; // To handle downloads.
+
+    /**
+     * Downloads or prefetches all the content.
+     *
+     * @param {Object} module    The module object.
+     * @param {Boolean} prefetch True if prefetching, false otherwise.
+     * @return {Promise}         Promise resolved when all content is downloaded. Data returned is not reliable.
+     */
+    function downloadOrPrefetch(module, prefetch) {
+
+        var siteid = $mmSite.getId();
+        if (downloadPromises[siteid] && downloadPromises[siteid][module.id]) {
+            // There's already a download ongoing for this module, return the promise.
+            return downloadPromises[siteid][module.id];
+        } else if (!downloadPromises[siteid]) {
+            downloadPromises[siteid] = {};
+        }
+
+        var revision = $mmCourse.getRevisionFromContents(module.contents),
+            timemod = $mmCourse.getTimemodifiedFromContents(module.contents),
+            dwnPromise,
+            deleted = false;
+
+        // Set module as downloading.
+        dwnPromise = $mmCourse.storeModuleStatus(siteid, module.id, mmCoreDownloading, revision, timemod).then(function() {
+            var promise,
+                promises = [];
+
+            if (self.isDisplayedInIframe(module)) {
+                // Get path of the module folder in filepool.
+                promise = $mmFilepool.getFilePathByUrl(siteid, module.url).then(function(dirPath) {
+
+                    angular.forEach(module.contents, function(content) {
+                        var fullpath = content.filename,
+                            url = content.fileurl,
+                            modified = content.timemodified;
+
+                        if (!self.isFileDownloadable(content)) {
+                            return;
+                        }
+
+                        if (content.filepath !== '/') {
+                            fullpath = content.filepath.substr(1) + fullpath;
+                        }
+                        fullpath = $mmFS.concatenatePaths(dirPath, fullpath);
+
+                        if (prefetch) {
+                            promises.push($mmFilepool.addToQueueByUrl(siteid, url, mmaModResourceComponent,
+                                                                    module.id, modified, fullpath));
+                        } else {
+                            promises.push($mmFilepool.downloadUrl(siteid, url, false, mmaModResourceComponent,
+                                                                    module.id, modified, fullpath));
+                        }
+                    });
+
+                    return $q.all(promises);
+                });
+            } else {
+                // Usual filepool download, without folders.
+                angular.forEach(module.contents, function(content) {
+                    var url = content.fileurl,
+                        modified = content.timemodified;
+                    if (!self.isFileDownloadable(content)) {
+                        return;
+                    }
+
+                    if (prefetch) {
+                        promises.push($mmFilepool.addToQueueByUrl(siteid, url, mmaModResourceComponent, module.id, modified));
+                    } else {
+                        promises.push($mmFilepool.downloadUrl(siteid, url, false, mmaModResourceComponent, module.id, modified));
+                    }
+                });
+
+                promise = $q.all(promises);
+            }
+
+            return promise.then(function() {
+                // Success downloading, store module as downloaded.
+                return $mmCourse.storeModuleStatus(siteid, module.id, mmCoreDownloaded, revision, timemod);
+            }).catch(function() {
+                // Error downloading, go back to previous status and reject the promise.
+                return $mmCourse.setModulePreviousStatus(siteid, module.id).then(function() {
+                    return $q.reject();
+                });
+            });
+        }).finally(function() {
+            // Download finished, delete the promise.
+            delete downloadPromises[siteid][module.id];
+            deleted = true;
+        });
+
+        if (!deleted) { // In case promise was finished immediately.
+            downloadPromises[siteid][module.id] = dwnPromise;
+        }
+        return dwnPromise;
+    }
 
     /**
      * Download all the content. All the files are downloaded inside a folder in filepool, keeping their folder structure.
@@ -35,45 +134,7 @@ angular.module('mm.addons.mod_resource')
      * @return {Promise}      Promise resolved when content is downloaded. Data returned is not reliable.
      */
     self.downloadAllContent = function(module) {
-        var promises = [],
-            siteId = $mmSite.getId();
-
-        if (self.isDisplayedInIframe(module)) {
-            // Get path of the module folder in filepool.
-            return $mmFilepool.getFilePathByUrl(siteId, module.url).then(function(dirPath) {
-                angular.forEach(module.contents, function(content) {
-                    var fullpath,
-                        url,
-                        modified;
-                    if (content.type !== 'file') {
-                        return;
-                    }
-
-                    url = content.fileurl;
-                    modified = content.timemodified;
-                    fullpath = content.filename;
-                    if (content.filepath !== '/') {
-                        fullpath = content.filepath.substr(1) + fullpath;
-                    }
-                    fullpath = $mmFS.concatenatePaths(dirPath, fullpath);
-
-                    promises.push($mmFilepool.downloadUrl(siteId, url, false, mmaModResourceComponent, module.id, modified, fullpath));
-                });
-
-                return $q.all(promises);
-            });
-        } else {
-            // Usual filepool download, without folders.
-            angular.forEach(module.contents, function(content) {
-                var url = content.fileurl,
-                    modified = content.timemodified;
-                if (content.type !== 'file') {
-                    return;
-                }
-                promises.push($mmFilepool.downloadUrl(siteId, url, false, mmaModResourceComponent, module.id, modified));
-            });
-            return $q.all(promises);
-        }
+        return downloadOrPrefetch(module, false);
     };
 
     /**
@@ -92,7 +153,7 @@ angular.module('mm.addons.mod_resource')
 
         angular.forEach(module.contents, function(content) {
             var url = content.fileurl;
-            if (content.type !== 'file') {
+            if (!self.isFileDownloadable(content)) {
                 return;
             }
             promises.push($mmFilepool.isFileDownloadingByUrl(siteid, url).then(function() {
@@ -110,6 +171,22 @@ angular.module('mm.addons.mod_resource')
     };
 
     /**
+     * Get a download promise. If the promise is not set, return undefined.
+     *
+     * @module mm.addons.mod_resource
+     * @ngdoc method
+     * @name $mmaModResource#getDownloadPromise
+     * @param  {String} siteId   Site ID.
+     * @param  {Number} moduleId Module ID.
+     * @return {Promise}         Download promise or undefined.
+     */
+    self.getDownloadPromise = function(siteId, moduleId) {
+        if (downloadPromises[siteId] && downloadPromises[siteId][moduleId]) {
+            return downloadPromises[siteId][moduleId];
+        }
+    };
+
+    /**
      * Returns a list of file event names.
      *
      * @module mm.addons.mod_resource
@@ -122,7 +199,7 @@ angular.module('mm.addons.mod_resource')
         var promises = [];
         angular.forEach(module.contents, function(content) {
             var url = content.fileurl;
-            if (content.type !== 'file') {
+            if (!self.isFileDownloadable(content)) {
                 return;
             }
             promises.push($mmFilepool.getFileEventNameByUrl($mmSite.getId(), url));
@@ -300,6 +377,19 @@ angular.module('mm.addons.mod_resource')
     };
 
     /**
+     * Check if a file is downloadable. The file param must have a 'type' attribute like in core_course_get_contents response.
+     *
+     * @module mm.addons.mod_resource
+     * @ngdoc method
+     * @name $mmaModResource#isFileDownloadable
+     * @param {Object} file File to check.
+     * @return {Boolean}    True if downloadable, false otherwise.
+     */
+    self.isFileDownloadable = function(file) {
+        return file.type === 'file';
+    };
+
+    /**
      * Report the resource as being viewed.
      *
      * @module mm.addons.mod_resource
@@ -352,43 +442,10 @@ angular.module('mm.addons.mod_resource')
      * @ngdoc method
      * @name $mmaModResource#prefetchContent
      * @param {Object} module The module object returned by WS.
-     * @return {Void}
+     * @return {Promise}      Promise resolved when content is downloaded. Data returned is not reliable.
      */
     self.prefetchContent = function(module) {
-        if (self.isDisplayedInIframe(module)) {
-            // Files need to be downloaded inside a folder in filepool, keeping their folder structure.
-            var siteId = $mmSite.getId();
-            // Get path of the module folder in filepool.
-            $mmFilepool.getFilePathByUrl(siteId, module.url).then(function(dirPath) {
-                angular.forEach(module.contents, function(content) {
-                    var fullpath,
-                        url,
-                        modified;
-                    if (content.type !== 'file') {
-                        return;
-                    }
-                    url = content.fileurl;
-                    modified = content.timemodified;
-                    fullpath = content.filename;
-                    if (content.filepath !== '/') {
-                        fullpath = content.filepath.substr(1) + fullpath;
-                    }
-                    fullpath = $mmFS.concatenatePaths(dirPath, fullpath);
-
-                    $mmFilepool.addToQueueByUrl(siteId, url, mmaModResourceComponent, module.id, modified, fullpath);
-                });
-            });
-        } else {
-            // Usual filepool download, without folders.
-            angular.forEach(module.contents, function(content) {
-                var url;
-                if (content.type !== 'file') {
-                    return;
-                }
-                url = content.fileurl;
-                $mmFilepool.addToQueueByUrl($mmSite.getId(), url, mmaModResourceComponent, module.id);
-            });
-        }
+        return downloadOrPrefetch(module, true);
     };
 
     return self;

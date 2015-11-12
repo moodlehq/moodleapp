@@ -33,8 +33,9 @@ angular.module('mm.core.course')
  * @ngdoc service
  * @name $mmCourse
  */
-.factory('$mmCourse', function($mmSite, $mmSitesManager, $translate, $q, $log, $mmFilepool, $mmEvents,
-            mmCoreCourseModulesStore, mmCoreEventCompletionModuleViewed) {
+.factory('$mmCourse', function($mmSite, $mmSitesManager, $translate, $q, $log, $mmFilepool, $mmEvents, mmCoreCourseModulesStore,
+            mmCoreEventCompletionModuleViewed, mmCoreDownloaded, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated,
+            mmCoreNotDownloadable, mmCoreCourseModuleStatusChanged) {
 
     $log = $log.getInstance('$mmCourse');
 
@@ -78,11 +79,56 @@ angular.module('mm.core.course')
             var db = site.getDb();
             return db.getAll(mmCoreCourseModulesStore).then(function(entries) {
                 angular.forEach(entries, function(entry) {
-                    promises.push(db.remove(mmCoreCourseModulesStore, entry.id));
+                    promises.push(db.remove(mmCoreCourseModulesStore, entry.id).then(function() {
+                        // Trigger module status changed, setting it as not downloaded.
+                        $mmEvents.trigger(mmCoreCourseModuleStatusChanged,
+                            {siteid: siteId, moduleid: entry.id, status: mmCoreNotDownloaded});
+                    }));
                 });
                 return $q.all(promises);
             });
         });
+    };
+
+    /**
+     * Given the current status of a list of modules and the status of one of the modules,
+     * determine the new status for the list of modules. The status of a list of modules is:
+     *     - mmCoreNotDownloadable if there are no downloadable modules.
+     *     - mmCoreNotDownloaded if at least 1 module has status mmCoreNotDownloaded.
+     *     - mmCoreDownloaded if ALL the downloadable modules have status mmCoreDownloaded.
+     *     - mmCoreDownloading if ALL the downloadable modules have status mmCoreDownloading or mmCoreDownloaded,
+     *                                     with at least 1 module with mmCoreDownloading.
+     *     - mmCoreOutdaded if ALL the downloadable modules have status mmCoreOutdaded or mmCoreDownloaded or
+     *                                     mmCoreDownloading, with at least 1 module with mmCoreOutdaded.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#determineModulesStatus
+     * @param {String} current       Current status of the list of modules
+     * @param {String} modulestatus  Status of one of the modules.
+     * @return {String}              New status for the list of modules;
+     */
+    self.determineModulesStatus = function(current, modulestatus) {
+        if (!current) {
+            current = mmCoreNotDownloadable;
+        }
+
+        if (modulestatus === mmCoreNotDownloaded) {
+            // If 1 module is not downloaded the status of the whole list will always be not downloaded.
+            return mmCoreNotDownloaded;
+        } else if (modulestatus === mmCoreDownloaded && current === mmCoreNotDownloadable) {
+            // If all modules are downloaded or not downloadable with at least 1 downloaded, status will be downloaded.
+            return mmCoreDownloaded;
+        } else if (modulestatus === mmCoreDownloading && (current === mmCoreNotDownloadable || current === mmCoreDownloaded)) {
+            // If all modules are downloading/downloaded/notdownloadable with at least 1 downloading, status will be downloading.
+            return mmCoreDownloading;
+        } else if (modulestatus === mmCoreOutdaded && status !== mmCoreNotDownloaded) {
+            // If there are no modules notdownloaded and there is at least 1 outdated, status will be outdated.
+            return mmCoreOutdaded;
+        }
+
+        // Status remains the same.
+        return current;
     };
 
     /**
@@ -229,9 +275,9 @@ angular.module('mm.core.course')
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var db = site.getDb();
             return db.get(mmCoreCourseModulesStore, id).then(function(module) {
-                return module.previous || $mmFilepool.FILENOTDOWNLOADED;
+                return module.previous || mmCoreNotDownloaded;
             }, function() {
-                return $mmFilepool.FILENOTDOWNLOADED;
+                return mmCoreNotDownloaded;
             });
         });
     };
@@ -254,16 +300,20 @@ angular.module('mm.core.course')
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var db = site.getDb();
             return db.get(mmCoreCourseModulesStore, id).then(function(module) {
-                if (module.status === $mmFilepool.FILEDOWNLOADED) {
+                if (module.status === mmCoreDownloaded) {
                     if (revision > module.revision || timemodified > module.timemodified) {
                         // File is outdated. Let's change its status.
-                        module.status = $mmFilepool.FILEOUTDATED;
-                        db.insert(mmCoreCourseModulesStore, module);
+                        module.status = mmCoreOutdaded;
+                        module.updated = new Date().getTime();
+                        db.insert(mmCoreCourseModulesStore, module).then(function() {
+                            $mmEvents.trigger(mmCoreCourseModuleStatusChanged,
+                                {siteid: siteId, moduleid: id, status: mmCoreOutdated});
+                        });
                     }
                 }
                 return module.status;
             }, function() {
-                return $mmFilepool.FILENOTDOWNLOADED;
+                return mmCoreNotDownloaded;
             });
         });
     };
@@ -404,7 +454,7 @@ angular.module('mm.core.course')
         var p1 = $mmSite.invalidateWsCacheForKey(getSectionsCacheKey(courseid)),
             p2 = $mmSite.invalidateWsCacheForKey(getActivitiesCompletionCacheKey(courseid, userid));
         return $q.all([p1, p2]);
-    }
+    };
 
     /**
      * Check if a module is outdated.
@@ -427,6 +477,35 @@ angular.module('mm.core.course')
                 return revision > module.revision || timemodified > module.timemodified;
             }, function() {
                 return false;
+            });
+        });
+    };
+
+    /**
+     * Change the module status, setting it to the previous status.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#setModulePreviousStatus
+     * @param {String} siteId Site ID.
+     * @param {Number} id     Module ID.
+     * @return {Promise}      Promise resolved when the status is changed. Resolve param: new status.
+     */
+    self.setModulePreviousStatus = function(siteId, id) {
+        $log.debug('Set previous status for module ' + id);
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var db = site.getDb();
+
+            // Get current stored data, we'll only update 'status' and 'updated' fields.
+            return db.get(mmCoreCourseModulesStore, id).then(function(module) {
+                module.status = module.previous || mmCoreNotDownloaded;
+                module.updated = new Date().getTime();
+                $log.debug('Set status \'' + module.status + '\' for module ' + id);
+
+                return db.insert(mmCoreCourseModulesStore, module).then(function() {
+                    $mmEvents.trigger(mmCoreCourseModuleStatusChanged, {siteid: siteId, moduleid: id, status: module.status});
+                    return module.status;
+                });
             });
         });
     };
@@ -464,6 +543,9 @@ angular.module('mm.core.course')
                     revision: revision,
                     timemodified: timemodified,
                     updated: new Date().getTime()
+                }).then(function(result) {
+                    $mmEvents.trigger(mmCoreCourseModuleStatusChanged, {siteid: siteId, moduleid: id, status: status});
+                    return result;
                 });
             });
         });

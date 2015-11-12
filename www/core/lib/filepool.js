@@ -138,7 +138,8 @@ angular.module('mm.core')
  * {@link $mmFilepool#_getFileIdByUrl}.
  */
 .factory('$mmFilepool', function($q, $log, $timeout, $mmApp, $mmFS, $mmWS, $mmSitesManager, $mmEvents, md5, mmFilepoolStore,
-        mmFilepoolLinksStore, mmFilepoolQueueStore, mmFilepoolFolder, mmFilepoolQueueProcessInterval, mmCoreEventQueueEmpty) {
+        mmFilepoolLinksStore, mmFilepoolQueueStore, mmFilepoolFolder, mmFilepoolQueueProcessInterval, mmCoreEventQueueEmpty,
+        mmCoreDownloaded, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated) {
 
     $log = $log.getInstance('$mmFilepool');
 
@@ -162,7 +163,10 @@ angular.module('mm.core')
         ERR_FS_OR_NETWORK_UNAVAILABLE = 'mmFilepoolError:ERR_FS_OR_NETWORK_UNAVAILABLE',
         ERR_QUEUE_ON_PAUSE = 'mmFilepoolError:ERR_QUEUE_ON_PAUSE';
 
-    // File states and events.
+    /**
+     * Files states. Deprecated, please use core constants instead: mmCoreDownloaded, mmCoreDownloading, ...
+     * @deprecated since version 2.6
+     */
     self.FILEDOWNLOADED = 'downloaded';
     self.FILEDOWNLOADING = 'downloading';
     self.FILENOTDOWNLOADED = 'notdownloaded';
@@ -941,7 +945,7 @@ angular.module('mm.core')
     };
 
     /**
-     * Returns the file state: FILEDOWNLOADED, FILEDOWNLOADING, FILENOTDOWNLOADED or FILEOUTDATED.
+     * Returns the file state: mmCoreDownloaded, mmCoreDownloading, mmCoreNotDownloaded or mmCoreOutdated.
      *
      * @module mm.core
      * @ngdoc method
@@ -961,16 +965,16 @@ angular.module('mm.core')
             fileId = self._getFileIdByUrl(fileUrl);
 
             return self._hasFileInQueue(siteId, fileId).then(function() {
-                return self.FILEDOWNLOADING;
+                return mmCoreDownloading;
             }, function() {
                 return self._hasFileInPool(siteId, fileId).then(function(fileObject) {
                     if (self._isFileOutdated(fileObject, revision, timemodified)) {
-                        return self.FILEOUTDATED;
+                        return mmCoreOutdated;
                     } else {
-                        return self.FILEDOWNLOADED;
+                        return mmCoreDownloaded;
                     }
                 }, function() {
-                    return self.FILENOTDOWNLOADED;
+                    return mmCoreNotDownloaded;
                 });
             });
         });

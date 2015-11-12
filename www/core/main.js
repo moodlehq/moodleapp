@@ -21,6 +21,13 @@ angular.module('mm.core', ['pascalprecht.translate'])
 .constant('mmCoreSecondsHour', 3600)
 .constant('mmCoreSecondsMinute', 60)
 
+// States for downloading files/modules.
+.constant('mmCoreDownloaded', 'downloaded')
+.constant('mmCoreDownloading', 'downloading')
+.constant('mmCoreNotDownloaded', 'notdownloaded')
+.constant('mmCoreOutdated', 'outdated')
+.constant('mmCoreNotDownloadable', 'notdownloadable')
+
 
 .config(function($stateProvider, $provide, $ionicConfigProvider, $httpProvider, $mmUtilProvider,
         $mmLogProvider, $compileProvider, $mmInitDelegateProvider, mmInitDelegateMaxAddonPriority) {
