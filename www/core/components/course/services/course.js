@@ -98,8 +98,8 @@ angular.module('mm.core.course')
      *     - mmCoreDownloaded if ALL the downloadable modules have status mmCoreDownloaded.
      *     - mmCoreDownloading if ALL the downloadable modules have status mmCoreDownloading or mmCoreDownloaded,
      *                                     with at least 1 module with mmCoreDownloading.
-     *     - mmCoreOutdaded if ALL the downloadable modules have status mmCoreOutdaded or mmCoreDownloaded or
-     *                                     mmCoreDownloading, with at least 1 module with mmCoreOutdaded.
+     *     - mmCoreOutdated if ALL the downloadable modules have status mmCoreOutdated or mmCoreDownloaded or
+     *                                     mmCoreDownloading, with at least 1 module with mmCoreOutdated.
      *
      * @module mm.core.course
      * @ngdoc method
@@ -122,9 +122,9 @@ angular.module('mm.core.course')
         } else if (modulestatus === mmCoreDownloading && (current === mmCoreNotDownloadable || current === mmCoreDownloaded)) {
             // If all modules are downloading/downloaded/notdownloadable with at least 1 downloading, status will be downloading.
             return mmCoreDownloading;
-        } else if (modulestatus === mmCoreOutdaded && status !== mmCoreNotDownloaded) {
+        } else if (modulestatus === mmCoreOutdated && status !== mmCoreNotDownloaded) {
             // If there are no modules notdownloaded and there is at least 1 outdated, status will be outdated.
-            return mmCoreOutdaded;
+            return mmCoreOutdated;
         }
 
         // Status remains the same.
@@ -303,7 +303,7 @@ angular.module('mm.core.course')
                 if (module.status === mmCoreDownloaded) {
                     if (revision > module.revision || timemodified > module.timemodified) {
                         // File is outdated. Let's change its status.
-                        module.status = mmCoreOutdaded;
+                        module.status = mmCoreOutdated;
                         module.updated = new Date().getTime();
                         db.insert(mmCoreCourseModulesStore, module).then(function() {
                             $mmEvents.trigger(mmCoreCourseModuleStatusChanged,

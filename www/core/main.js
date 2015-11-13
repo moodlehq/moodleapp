@@ -28,6 +28,8 @@ angular.module('mm.core', ['pascalprecht.translate'])
 .constant('mmCoreOutdated', 'outdated')
 .constant('mmCoreNotDownloadable', 'notdownloadable')
 
+.constant('mmCoreWifiDownloadThreshold', 104857600) // 100MB.
+.constant('mmCoreDownloadThreshold', 10485760) // 10MB.
 
 .config(function($stateProvider, $provide, $ionicConfigProvider, $httpProvider, $mmUtilProvider,
         $mmLogProvider, $compileProvider, $mmInitDelegateProvider, mmInitDelegateMaxAddonPriority) {
