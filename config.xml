@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.moodle.moodlemobile" version="2.5" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>Moodle Mobile</name>
-  <description>Official Moodle Mobile app</description>
-  <author href="http://moodle.com" email="juan@moodle.com">Juan Leyva</author>
+<widget id="com.stansfield.elpapp" version="2.5.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <name>E-Learning Portal</name>
+  <description>Stansfield College's E-Learning Portal App</description>
+  <author href="http://www.stansfield.edu.sg" email="webmaster@stansfield.edu.sg">Veshant Chettiar</author>
   <content src="index.html"/>
   <access origin="*"/>
 
