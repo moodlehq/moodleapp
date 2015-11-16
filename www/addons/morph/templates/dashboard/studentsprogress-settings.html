@@ -1,0 +1,35 @@
+<ion-view view-title="Currencies">
+  <ion-nav-buttons side="primary">
+    <button class="button" ng-click="state.reordering = !state.reordering">Reorder</button>
+  </ion-nav-buttons>
+  <ion-content>
+     <div ng-controller="mmaTopNotifications">
+          <ng-include src="'addons/morph/templates/topnotifications.html'"></ng-include>
+        </div>
+    <ion-list >
+     <ion-item class="item-divider">Compare student with</ion-item>
+      <ion-radio ng-model="defaultcomparison" ng-value="'average'">Average student</ion-radio>
+      <ion-radio ng-model="defaultcomparison" ng-value="'best'">Best student</ion-radio>
+      <ion-radio ng-model="defaultcomparison" ng-value="'worst'">Worst student</ion-radio>
+      <div class="item item-divider">Days to consider <span class="badge badge-dark">{{settings.days - 1}}</span></div>
+      <div class="item range range-positive">
+        2 <input type="range" name="days" ng-model="settings.days" min="2" max="8" value="8"> 8
+      </div>
+ <ion-item class="item-divider">Students actions to consider</ion-item>
+   	<ion-item class="item-toggle" ng-repeat="setting in settings">
+    	{{setting.title}}
+    	 <label class="toggle toggle-balanced">
+        <input type="checkbox" ng-model="setting.selected">
+          <div class="track">
+            <div class="handle"></div>
+          </div>
+        </label>
+        <ion-reorder-button class="ion-navicon" on-reorder="move(setting, $fromIndex, $toIndex)"></ion-reorder-button>
+    	</ion-item>
+      
+      
+      
+      
+    </ion-list>
+  </ion-content>
+</ion-view>

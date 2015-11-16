@@ -1,0 +1,22 @@
+<ion-view view-title="Students progress" id="studentsprogress-view">
+		<ion-content>
+		   <div ng-controller="mmaTopNotifications">
+          <ng-include src="'addons/morph/templates/topnotifications.html'"></ng-include>
+        </div>
+			 <ion-list>
+      <ion-item ng-repeat="student in students | filter:{selected:true}"  ui-sref="site.morph-dashboard-student_details({student: student})"  id="studentname-{{$index}}">
+     {{student.name}}  {{student.lastname}} 
+        <span class="price" ng-if="student.ticker.last == student.ticker['24h_avg']" >
+          {{student.ticker.last || '0.00'}}<br />0.00
+        </span>
+        <span class="price negative" ng-if="student.ticker.last < student.ticker['24h_avg']">
+          {{student.ticker.last}}<br /><span class="icon ion-arrow-down-b"></span> {{student.ticker['24h_avg'] - student.ticker.last | number:2}}
+        </span>
+        <span class="price positive" ng-if="student.ticker.last > student.ticker['24h_avg']">
+          {{student.ticker.last}}<br /><span class="icon ion-arrow-up-b"></span> {{student.ticker.last - student.ticker['24h_avg'] | number:2}}
+        </span>
+      </ion-item>
+    </ion-list>
+    
+		</ion-content>
+</ion-view>

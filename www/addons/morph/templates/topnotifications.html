@@ -1,0 +1,24 @@
+<!--ion-view-->
+  <!--ion-content-->
+  <div id="notificationarea"   class="topnotificationarea" ng-if="hasNotifications()">
+ 	<ion-list >
+        <ion-item click-for-options ng-if="!expanded"    item="item"  ng-class="'alert-'+lastTopNotification.alerttype">
+         {{lastTopNotification.content}}
+           <ion-option-button class="icon ion-eye alert-button" 
+                             ng-click="viewItem(0)">
+          </ion-option-button>
+          <ion-option-button class="icon ion-close-circled alert-button" 
+                             ng-click="dismissNotification(0)">
+          </ion-option-button>
+          <ion-option-button class="icon ion-arrow-down-a alert-button"
+                             ng-click="toggleExpanded()">
+          </ion-option-button>         
+        </ion-item>
+          <ion-item click-for-options ng-if="expanded" ng-repeat="notification in notifications"   item="notification"  ng-class="'alert-'+notification.alerttype">
+         {{notification.content}}
+          <ion-option-button class="icon ion-close-circled alert-button" 
+                             ng-click="dismissNotification($index)">
+          </ion-option-button>
+        </ion-item>
+      </ion-list>
+</div>

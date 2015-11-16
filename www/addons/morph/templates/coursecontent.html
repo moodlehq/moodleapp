@@ -1,0 +1,23 @@
+<ion-view>
+     <ion-nav-title><mm-format-text watch="true">{{fullname}}</mm-format-text></ion-nav-title>
+    <ion-content>
+       <div ng-controller="mmaTopNotifications">
+          <ng-include src="'addons/morph/templates/topnotifications.html'"></ng-include>
+        </div>
+    <div class="card">
+          <div class="item item-text-wrap">
+              <mm-format-text>This is the standard version of the course content.</mm-format-text>
+           </div>
+     </div>    
+     <mm-loading hide-until="sectionsLoaded">
+      <ion-list>
+                    <!--a ng-repeat="section in sections" class="item" mm-split-view-link="site.morph_course-section({courseid: courseid, sectionid: section.id})">
+                        {{section.name}}
+                    </a-->
+                      <a ng-repeat="section in sections" class="item" ng-click="navigateToCourseSection(courseid, section.id)"  nav-clear>
+                        {{section.name}}
+                    </a>
+                </ion-list> 
+                  </mm-loading>
+    </ion-content>
+</ion-view>
