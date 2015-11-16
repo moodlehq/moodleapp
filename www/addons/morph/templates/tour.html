@@ -1,0 +1,17 @@
+<ion-view view-title="Quick tour" id="tour-view" cache-view="false">
+  <ion-nav-buttons side="right">
+    <button class="button button-clear"  ng-click="skipTour()" nav-clear>Skip</button>
+  </ion-nav-buttons>
+  <ion-content>
+  <mm-loading hide-until="componentsInitialized">
+  <ion-slide-box show-pager="true"  on-slide-changed="reportSlideChanged($index)" ng-if="componentsInitialized" does-continue="true">
+    <!--ion-slide-box show-pager="true"-->
+    <ion-slide ng-repeat="page in tourPages">
+     <p>{{page.description}}</p>
+    <img ng-src="{{page.imagesrc}}">
+     </ion-slide>
+ 
+  </ion-slide-box>
+   </mm-loading>
+</ion-content>
+</ion-view>

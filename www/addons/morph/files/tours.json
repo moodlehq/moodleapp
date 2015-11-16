@@ -1,0 +1,36 @@
+[{
+	"id":1,
+	"title":"Explore personalized content",
+   "description":"1.To help you better understand this course, MORPH personalized the content to better fit your need.",
+   "imagesrc":"addons/morph/images/courses.png"
+},
+{
+"id":2,
+   "title":"Use your dashboard efficiently.",
+   "description":"2.Use dashboard to learn more about how well you performed during the course.",
+    "imagesrc":"addons/morph/images/courses.png"
+},
+{
+"id":3,
+   "title":"Learn about your performance.",
+   "description":"3.Navigate to the 'student performances' in order to discover which topics you missed to achive.",
+    "imagesrc":"addons/morph/images/courses.png"
+},{
+"id":4,
+	"prototype":"courseanalytics",
+   "title":"Use your course analytics.",
+   "description":"4.Use dashboard to learn more about how well you performed during the course.",
+    "imagesrc":"addons/morph/images/courses.png"
+},{
+"id":5,
+	"prototype":"dashboard",
+   "title":"Use your dashboard efficiently.",
+   "description":"5.Use dashboard to learn more about how well you performed during the course.",
+    "imagesrc":"addons/morph/images/courses.png"
+},{
+"id":6,
+	"prototype":"adaptedcontent",
+   "title":"Use your adapted content.",
+   "description":"6.Use dashboard to learn more about how well you performed during the course.",
+    "imagesrc":"addons/morph/images/courses.png"
+}]

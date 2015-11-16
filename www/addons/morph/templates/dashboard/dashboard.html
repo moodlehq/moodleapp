@@ -1,0 +1,49 @@
+<ion-view view-title="Dashboard">
+    <!--ion-nav-buttons side="secondary">
+        <a class="button button-icon ion-ios-browsers-outline" ng-href="navigation link" mm-browser aria-label="{{ 'mm.core.openinbrowser' | translate }}"></a>
+    </ion-nav-buttons-->
+    <!--ion-nav-back-button class="button-clear">
+        <i class="icon ion-ios-arrow-left"></i> Back
+      </ion-nav-back-button-->
+ 
+    <!--header class="bar bar-header bar-stable">
+      <h1 class="title">Left side menu</h1>
+    </header-->
+     <ion-content>
+         <div ng-controller="mmaTopNotifications">
+          <ng-include src="'addons/morph/templates/topnotifications.html'"></ng-include>
+        </div>
+     <ion-list>
+     <ion-item  ui-sref="site.morph-dashboard-wmc_progress({courseid: courseid})" id="tour-step-1" >
+          Working memory capacity progress throght the course
+        </ion-item>
+        <ion-item ui-sref="site.morph-dashboard-student_learning_styles({courseid: courseid})">
+          Student learning styles
+        </ion-item>
+        <ion-item ui-sref="site.morph-dashboard-learning_styles({courseid: courseid})">
+          Overview of identified learning styles in class
+        </ion-item>
+        <ion-item  ui-sref="site.morph-dashboard-wmc_capacity({courseid: courseid})" >
+          Working memory capacity for individual students
+        </ion-item>
+         <ion-item   ui-sref="site.morph-dashboard-studentsprogress({courseid: courseid})" >
+          Students progress in this week
+        </ion-item>
+      </ion-list>
+           <walkthrough
+            id="dashboard1"
+            walkthrough-type="transparency"
+            focus-element-id="tour-step-1"
+            icon="single_tap"
+            tip-icon-location="TOP"
+            main-caption="Select one of the prototypes available on dashboard"
+            icon-padding-left="-20"
+            icon-padding-top="30"
+             use-button=true
+              has-glow=true
+            is-active="true">
+            </walkthrough>
+       </ion-content>
+
+
+</ion-view>

@@ -1,0 +1,179 @@
+ .walkthrough-hole-glow {
+    position: absolute;
+    outline: none;
+     border: 2px solid #cbe1f6 !important;
+    box-shadow: 0 0 36px #cbe1f6 !important;
+    /*border: 2px solid #FFFF66 !important;
+    box-shadow: 0 0 36px #FFFF66 !important;*/
+    -webkit-appearance: none;
+    box-sizing: border-box;
+}
+
+.walkthrough-background {
+    position:absolute;
+    top:0;
+    bottom: 0;
+    left:0;
+    right:0;
+    background-color: initial;
+    text-align: center;
+    -webkit-transition: height 0s ease-out .2s, opacity .2s ease-out;
+    -moz-transition: height 0s ease-out .2s, opacity .2s ease-out;
+    -o-transition: height 0s ease-out .2s, opacity .2s ease-out;
+    transition: height 0s ease-out .2s, opacity .2s ease-out;
+    opacity:0;
+    height: 0;
+    overflow: hidden;
+    z-index: 1000;
+}
+
+.walkthrough-hole {
+    position: absolute;
+    -moz-box-shadow: 0 0 0 1997px rgba(0, 0, 0, .8);
+    -webkit-box-shadow: 0 0 0 1997px rgba(0, 0, 0, .8);
+    box-shadow: 0 0 0 1997px rgba(0, 0, 0, .8);
+    -webkit-appearance: none;
+}
+
+.walkthrough-element.walkthrough-text{
+    margin-top: 10%;
+    width: 70%;
+    color: #fff;
+    text-align: center;
+}
+
+.walkthrough-element.walkthrough-done-button{
+    position:absolute;
+    bottom: 30px;
+    height: 30px;
+    width: 80px;
+    display: inline-block;
+    right: 30px;
+    margin: 0 auto;
+}
+
+.walkthrough-button-positive{
+    border-color: #0c63ee;
+    background-color: #387ef5;
+    color: #fff;
+}
+
+.walkthrough-button-gray{
+    border-color: white;
+    background-color: lightgray;
+    color: black;
+}
+
+.walkthrough-button-positive:hover {
+    color: #fff;
+    text-decoration: none;
+}
+
+.walkthrough-button-positive.active {
+    border-color: #0c63ee;
+    background-color: #0c63ee;
+    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.walkthrough-element.walkthrough-icon {
+    height: 200px;
+}
+
+.walkthrough-element.walkthrough-arrow{
+    color: #ffffff;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.walkthrough-element{
+    z-index: 1001;
+    position:relative;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.walkthrough-background.walkthrough-active{
+    -webkit-transition: opacity .2s ease-out;
+    -moz-transition: opacity .2s ease-out;
+    -o-transition: opacity .2s ease-out;
+    transition: opacity .2s ease-out;
+
+    opacity:1;
+    height: 100%;
+}
+
+.walkthrough-transclude{
+    position: relative;
+    z-index: 1001;
+}
+
+.walkthrough-hole-round{
+    border-radius: 200px;
+}
+
+.walkthrough-tip-top{
+    top: 25px;
+    position: absolute;
+    width: 100%;
+}
+
+.walkthrough-tip-bottom{
+    bottom: 190px;
+    position: absolute;
+    width: 100%;
+}
+
+.walkthrough-tip-text-box {
+    top: 128px;
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    border: 2px solid;
+    border-radius: 35px;
+    padding: 14px;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.walkthrough-tip-icon-image-front{
+    z-index: 1002;
+}
+
+.walkthrough-tip-icon-image-back{
+    z-index: 999;
+}
+
+.walkthrough-tip-icon-text-box{
+    height: 142px;
+    right: 5%;
+    position: absolute;
+}
+
+.walkthrough-tip-done-button-text-box{
+    top: 109px;
+    position: absolute;
+    z-index: 1002;
+    right: -8px;
+    background-color: transparent;
+    border: 0;
+}
+
+.walkthrough-tip-button-image-text-box{
+    width: 42px;
+    height: 42px;
+}
+
+.walkthrough-tip-text-box-color-black {
+    border-color: #ffffff;
+    background-color: #000000;
+    color: #ffffff;
+}
+
+.walkthrough-tip-text-box-color-white {
+    border-color: #000000;
+    background-color: #ffffff;
+
+}
