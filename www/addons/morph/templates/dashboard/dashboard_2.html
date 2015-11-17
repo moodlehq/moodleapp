@@ -1,0 +1,34 @@
+<ion-view view-title="Dashboard">
+    <!--ion-nav-buttons side="secondary">
+        <a class="button button-icon ion-ios-browsers-outline" ng-href="navigation link" mm-browser aria-label="{{ 'mm.core.openinbrowser' | translate }}"></a>
+    </ion-nav-buttons-->
+    <!--ion-nav-back-button class="button-clear">
+        <i class="icon ion-ios-arrow-left"></i> Back
+      </ion-nav-back-button-->
+ 
+    <!--header class="bar bar-header bar-stable">
+      <h1 class="title">Left side menu</h1>
+    </header-->
+     <ion-content>
+     <ion-list>
+        <ion-item menu-close mm-split-view-link="site.morph-dashboard-wmc_progress({courseid: courseid})">
+          Working memory capacity progress throght the course
+        </ion-item>
+        <ion-item menu-close mm-split-view-link="site.morph-dashboard-student_learning_styles({courseid: courseid})">
+          Identified Learning Styles for Peter Davis
+        </ion-item>
+        <ion-item menu-close mm-split-view-link="site.morph-dashboard-learning_styles({courseid: courseid})">
+          Overview of identified learning styles in class
+        </ion-item>
+        <ion-item menu-close   mm-split-view-link="site.morph-dashboard-wmc_capacity({courseid: courseid})" >
+          Working memory capacity for individual students
+        </ion-item>
+         <ion-item menu-close   mm-split-view-link="site.morph-dashboard-studentsprogress({courseid: courseid})" >
+          Students progress in this week
+        </ion-item>
+
+      </ion-list>
+       </ion-content>
+ 
+ 
+</ion-view>

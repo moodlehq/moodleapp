@@ -1,0 +1,73 @@
+<ion-view view-title="{{ 'mma.morph.morphtitle' | translate }}">
+<ion-nav-buttons side="right">
+    <button class="button button-icon" ng-click="showOptions()"><span class="icon ion-more"></span></button>
+  </ion-nav-buttons>
+	<ion-content>
+	   <div ng-controller="mmaTopNotifications">
+          <ng-include src="'addons/morph/templates/topnotifications.html'"></ng-include>
+        </div>
+	<ion-scroll direction="y" paging="true" ng-style="{width: getWidth(), height: getHeight()}">
+	<div class="scroll-page center" ng-style="{width: getWidth(), height: getHeight()}">
+          <div class="bar bar-stable bar-header">
+            <div class="h1 title" >
+            	Students learning styles
+             </div>
+             <!--div class="buttons">
+            	<button class="button button-stable pull-right" ng-click="state.reordering = !state.reordering">Reorder</button>
+            </div-->
+            	
+          </div>
+          <div class="has-header">
+          <div class="padding">
+          	Learning styles are presented here as numeric values discovered for each week.</div> 
+            <div class="row">
+            	<div class="col col-50">Learning style</div>
+         
+              <div class="col">Week 1</div>
+              <div class="col">Week 2</div>
+            </div>
+            <div class="row" ng-repeat="style in tableData">
+              <div class="col col-50">{{style.title}}</div>
+         
+              <div class="col">{{style.value | number:0}}</div>
+              <div class="col">{{style.value2 | number:0}}</div>
+            </div>
+          </div>
+   
+        </div>
+          <walkthrough
+            id="studentlearningstyles1"
+            walkthrough-type="transparency"
+            focus-element-id="tour-step-1a"
+            icon="swipe_up"
+            is-round="true"
+            main-caption="Swipe up to see diagram"
+             caption-on-bottom=true
+            icon-padding-left="0"
+            icon-padding-top="20"
+             has-glow=true
+            is-active="true">
+            </walkthrough>
+     <div class="scroll-page" ng-style="{width: getWidth(), height: getHeight()}">
+	 <div ng-style="{height: getTotalHeight()}">
+        <div class="scroll-page center" ng-style="{width: getWidth(), height: getHeight()}">
+        	  <div class="bar bar-stable">
+            <h1 class="title">Students learning styles chart</h1>
+           
+          </div>
+		<div  class="has-header">
+			 <!--div class="item"-->
+				<!--h2 class="primary">Student learning styles</h2-->
+				<!--h3 class="secondary">Student learning styles</h3-->
+				 <p class="padding">This chart gives an overview of all learning styles identified withing class.</p>
+			<!--/div-->
+			<!--div class="item"-->
+				<canvas id="radar" class="chart chart-radar"
+				chart-data="data" chart-labels="labels"></canvas>
+			<!--/div-->
+		</div>
+		</div>
+		</div>
+	</ion-scroll>
+	</ion-content>
+</ion-view>

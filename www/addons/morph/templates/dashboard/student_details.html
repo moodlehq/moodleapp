@@ -1,0 +1,17 @@
+<ion-view view-title="Detail for {{student.name}} {{student.lastname}}">
+  <ion-content>
+     <div ng-controller="mmaTopNotifications">
+          <ng-include src="'addons/morph/templates/topnotifications.html'"></ng-include>
+        </div>
+    <ion-list>
+      <ion-item>Last activity <span class="badge badge-stable">{{student.ticker.last}}</span></ion-item>
+      <ion-item> Points <span class="badge badge-balanced">{{student.ticker.ask}}</span></ion-item>
+      <ion-item>Bid <span class="badge badge-assertive">{{student.ticker.bid}}</span></ion-item>
+      <ion-item>24h Average <span class="badge badge-dark">{{student.ticker['24h_avg']}}</span></ion-item>
+      <ion-item ui-sref="tabs.history({student: student.code})" class="item-icon-right">View History <span class="icon ion-arrow-right-b"></span></ion-item>
+    </ion-list>
+  </ion-content>
+  <ion-footer-bar class="bar-dark">
+    <h1 class="title">Updated {{student.ticker.timestamp | date:'mediumTime'}}</h1>
+  </ion-footer-bar>
+</ion-view>

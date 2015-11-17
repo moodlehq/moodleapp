@@ -1,0 +1,14 @@
+<ion-modal-view>
+  <ion-header-bar class="bar-dark">
+    <h1 class="title">Select student to display data for</h1>
+    <button class="button button-clear" ng-click="hideModal()">Close</button>
+  </ion-header-bar>
+  <ion-content>
+    <div class="list">
+      <div class="item" collection-repeat="student in students" ng-click="selectStudent(student.id)">
+      	
+        {{student.name}} {{student.lastname}}
+      </div>
+    </div>
+  </ion-content>
+</ion-modal-view>

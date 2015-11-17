@@ -1,0 +1,23 @@
+<ion-view view-title="Student activity chart" >
+  <ion-content>
+     <div ng-controller="mmaTopNotifications">
+          <ng-include src="'addons/morph/templates/topnotifications.html'"></ng-include>
+        </div>
+  <div class="list list-inset">
+      <label class="item item-input item-select">
+        <div class="input-label">
+          Select student
+        </div>
+        <select ng-change="changeStudent()" ng-model="history.student">
+          <option ng-repeat="student in students | filter:{selected:true}" value="{{student.code}}" ng-selected="history.studentid == student.code">{{student.name}}  {{student.lastname}}</option>
+        </select>
+      </label>
+    </div>
+    <div class="item">
+     	<canvas id="line" class="chart chart-line" chart-data="data"
+  chart-labels="labels" chart-legend="true" chart-series="series" 
+  chart-click="onClick" >
+</canvas> 
+</div>
+  </ion-content>
+</ion-view>

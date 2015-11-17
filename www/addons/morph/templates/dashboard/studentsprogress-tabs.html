@@ -1,0 +1,60 @@
+<ion-view>
+     <ion-nav-title><mm-format-text watch="true">{{fullname}}</mm-format-text></ion-nav-title>
+    <ion-content>
+       <div ng-controller="mmaTopNotifications">
+          <ng-include src="'addons/morph/templates/topnotifications.html'"></ng-include>
+        </div>
+<ion-tabs class="tabs-icon-top">
+
+ <ion-tab title="Overview" icon="ion-ios-list-outline">
+     <ion-pane ng-controller="mmaMessagesDiscussionsCtrl">
+          <ng-include src="'addons/morph/templates/dashboard/studentsprogress.html'"></ng-include>
+     </ion-pane>
+</ion-tab>
+ <ion-tab title="Charts" icon="ion-ios-pulse"  id="charts-tip">
+     <ion-pane ng-controller="mmaDashboardWMCStudentChartCtrl">
+          <ng-include src="'addons/morph/templates/dashboard/studentsprogress-charts.html'"></ng-include>
+     </ion-pane>
+</ion-tab>
+ <ion-tab title="Settings" icon="ion-ios-gear-outline">
+ <ion-pane ng-controller="mmaDashboardWMCSettingsCtrl">
+      <ng-include src="'addons/morph/templates/dashboard/studentsprogress-settings.html'"></ng-include>
+         
+     </ion-pane>
+     
+</ion-tab>
+
+
+</ion-tabs>
+     </ion-content>
+</ion-view>
+ <walkthrough
+            id="studentprogress1"
+            walkthrough-type="transparency"
+            focus-element-id="studentname-1"
+            icon="single_tap"
+            main-caption="Select students to display details"
+            icon-padding-left="40"
+            icon-padding-top="10"
+            next-button=true
+            caption-on-bottom=true
+            on-walkthrough-hide="onWalkthroughHideFunction" 
+            on-walkthrough-show="onWalkthroughShowFunction" 
+            has-glow=true
+            is-active="studentprogress1"></walkthrough>
+             <walkthrough
+            id="studentprogress2"
+            walkthrough-type="transparency"
+            focus-element-id="charts-tip"
+            icon="single_tap"
+            text-padding-top=150
+            main-caption="Displays performance charts for individual student compared with average performance"
+             force-caption-location="BOTTTOM"
+            icon-padding-left=40daewoo
+                        icon-padding-top=0
+            focus-padding-left=150
+            focus-padding-width=80
+            use-button=true
+             has-glow=true
+           is-active="studentprogress2">
+            </walkthrough>

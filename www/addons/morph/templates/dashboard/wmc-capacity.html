@@ -1,0 +1,28 @@
+<ion-view view-title="{{ 'mma.morph.morphtitle' | translate }}">
+    <!--ion-nav-buttons side="secondary">
+        <a class="button button-icon ion-ios-browsers-outline" ng-href="navigation link" mm-browser aria-label="{{ 'mm.core.openinbrowser' | translate }}"></a>
+    </ion-nav-buttons>
+     <ion-side-menu side="left"-->
+    <!--header class="bar bar-header bar-stable">
+      <h1 class="title">Left</h1>
+    </header-->
+     <ion-content>
+        <div ng-controller="mmaTopNotifications">
+          <ng-include src="'addons/morph/templates/topnotifications.html'"></ng-include>
+        </div>
+      <div class="list card">
+     	<div class="item">
+     		<h2>WMC capacity</h2>
+     		<p>This chart displays average students progress over the time</p>
+     		</div>
+				<div class="item">
+     	<canvas id="line" class="chart chart-line" chart-data="data"
+  chart-labels="labels" chart-legend="true" chart-series="series"
+  chart-click="onClick" >
+</canvas> 
+</div>
+     </div>
+       </ion-content>
+<!--/ion-side-menu>
+</ion-side-menus-->
+</ion-view>

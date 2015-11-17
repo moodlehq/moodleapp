@@ -1,0 +1,23 @@
+<ion-view view-title="{{ 'mma.morph.morphtitle' | translate }}"  cache-view="false">
+<ion-nav-bar  class="bar-content">
+  <ion-nav-back-button ng-click="navigateBack()">
+    <i></i> Back
+  </ion-nav-back-button>
+  </ion-nav-bar>
+    <mm-split-view load-when="componentsInitialized">
+        <ion-content>   
+         
+           <ul class="list">
+           	<li><a class="item"  ng-if="isSubmenuAvailableInCourse('adaptedcontent')"  ng-click="navigateToAdaptedContent()" nav-clear>
+                    {{ 'mma.morph.adaptedcontent' | translate }}
+                </a></li>
+             <li><a class="item"  ng-if="!isSubmenuAvailableInCourse('adaptedcontent')" ng-click="navigateToCourseContent()" nav-clear>
+                    {{ 'mma.morph.content' | translate }}
+                </a></li>
+             <li><a class="item" ng-if="isSubmenuAvailableInCourse('dashboard')"   ng-click="navigateToDashboard()" nav-clear>
+                    {{ 'mma.morph.dashboard' | translate }}
+                </a></li>        
+            </ul>
+        </ion-content>
+    </mm-split-view>
+</ion-view>

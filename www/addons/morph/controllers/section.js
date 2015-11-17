@@ -1,0 +1,76 @@
+angular.module('mm.core.course')
+
+/**
+ * Section view controller.
+ *
+ * @module mm.core.course
+ * @ngdoc controller
+ * @name mmCourseSectionCtrl
+ */
+.controller('mmMorphSectionCtrl', function($mmCourseDelegate, $mmCourse, $mmUtil, $scope, $stateParams, $translate, $mmSite) {
+
+    // Default values are course 1 (front page) and all sections.
+    var courseid = $stateParams.courseid || 1,
+        sectionid = $stateParams.sectionid || -1,
+        sections = [];
+
+    $scope.sections = []; // Reset scope.sections, otherwise an error is shown in console with tablet view.
+
+    if (sectionid < 0) {
+        // Special scenario, we want all sections.
+        $translate('mm.course.allsections').then(function(str) {
+            $scope.title = str;
+        });
+        $scope.summary = null;
+    }
+
+    function loadContent(sectionid, refresh) {
+        if (sectionid < 0) {
+            return $mmCourse.getSections(courseid, refresh).then(function(sections) {
+                angular.forEach(sections, function(section) {
+                       angular.forEach(section.modules, function(module) {
+                        module._controller =
+                                $mmCourseDelegate.getContentHandlerControllerFor(module.modname, module, courseid, section.id);
+                    });
+                });
+
+                $scope.sections = sections;
+                // Add log in Moodle.
+                $mmSite.write('core_course_view_course', {
+                    courseid: courseid,
+                    sectionnumber: 0
+                });
+            }, function() {
+                $mmUtil.showErrorModal('mm.course.couldnotloadsectioncontent', true);
+            });
+        } else {
+            return $mmCourse.getSection(courseid, sectionid, refresh).then(function(section) {
+                angular.forEach(section.modules, function(module) {
+                    module._controller =
+                            $mmCourseDelegate.getContentHandlerControllerFor(module.modname, module, courseid, section.id);
+                });
+
+                $scope.sections = [section];
+                $scope.title = section.name;
+                $scope.summary = section.summary;
+                // Add log in Moodle.
+                $mmSite.write('core_course_view_course', {
+                    courseid: courseid,
+                    sectionnumber: sectionid
+                });
+            }, function() {
+                $mmUtil.showErrorModal('mm.course.couldnotloadsectioncontent', true);
+            });
+        }
+    }
+
+    $scope.doRefresh = function() {
+        loadContent(sectionid, true).finally(function() {
+            $scope.$broadcast('scroll.refreshComplete');
+        });
+    };
+
+    loadContent(sectionid).finally(function() {
+        $scope.sectionLoaded = true;
+    });
+});

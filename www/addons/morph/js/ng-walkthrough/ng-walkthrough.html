@@ -1,0 +1,31 @@
+<div class="walkthrough-background" ng-class="{'walkthrough-active': isActive}" ng-click="onCloseClicked($event)" on-touch="onCloseTouched($event)">
+    <div ng-show="walkthroughType=='transparency'">
+        <div class="walkthrough-transclude" ng-transclude></div>
+        <div class="walkthrough-non-transclude-template" ng-show="!hasTransclude">
+            <pre class="walkthrough-element walkthrough-text" ng-bind="mainCaption">
+            </pre>
+            <img class="walkthrough-element walkthrough-icon" ng-show="icon && icon!='arrow'" ng-src="{{walkthroughIcon}}">
+            <div class="walkthrough-element walkthrough-arrow" ng-show="icon=='arrow'"></div>
+            <button class="walkthrough-element walkthrough-button-gray walkthrough-done-button" type="button" ng-if="useButton && !nextButton" ng-click="onCloseClicked($event)" on-touch="onCloseTouched($event)">
+                {{buttonCaption}}
+            </button>
+                        <button class="walkthrough-element walkthrough-button-gray walkthrough-done-button" type="button" ng-if="nextButton" ng-click="onNextClicked($event)" on-touch="onCloseTouched($event)">
+                {{nextButtonCaption}}
+            </button>
+        </div>
+    </div>
+    <div ng-show="walkthroughType=='tip'" ng-class="{'walkthrough-tip-top': tipLocation=='TOP', 'walkthrough-tip-bottom': tipLocation=='BOTTOM'}">
+        <img class="walkthrough-element walkthrough-tip-icon-text-box" ng-class="{'walkthrough-tip-icon-image-front': tipIconLocation=='FRONT', 'walkthrough-tip-icon-image-back': tipIconLocation=='BACK'}" ng-show="icon!='arrow'" ng-src="{{icon}}" alt="icon">
+        <button class="walkthrough-done-button walkthrough-tip-done-button-text-box" type="button" ng-if="useButton" ng-click="onCloseClicked($event)" on-touch="onCloseTouched($event)">
+            <img class="walkthrough-tip-button-image-text-box" ng-src="{{closeIcon}}" alt="x">
+        </button>
+
+        <pre class="walkthrough-element walkthrough-tip-text-box" ng-class="{'walkthrough-tip-text-box-color-black': tipColor=='BLACK', 'walkthrough-tip-text-box-color-white': tipColor=='WHITE'}" ng-bind="mainCaption">
+        </pre>
+    </div>
+    <!-- Always show as this gives us the gray background -->
+    <div ng-show="walkthroughType=='transparency' || focusElementId" class="walkthrough-hole" ng-class="{'walkthrough-hole-round': isRound}">
+    </div>
+    <div ng-show="hasGlow && focusElementId" class="walkthrough-hole walkthrough-hole-glow" ng-class="{'walkthrough-hole-round': isRound}">
+    </div>
+</div>

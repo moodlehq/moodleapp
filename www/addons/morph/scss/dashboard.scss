@@ -1,0 +1,54 @@
+#studentsprogress-view  .item .price {
+  font-weight: bold;
+  font-size: 13px;
+  color: #fff;
+  position: absolute;
+  background: #666;
+  right: 15px;
+  height: 42px;
+  top: 5px;
+  width: 80px;
+  text-align: center;
+  padding: 6px;
+  line-height: 1.2em;
+}
+#studentsprogress-view  .item .price.positive {
+  background: #66cc33;
+}
+#studentsprogress-view  .item .price.negative {
+  background: #ef4e3a;
+}
+
+.scroll-page .icon:before {
+  padding-right: 5px;
+}
+.scroll-page .row + .row {
+  margin-top: 0;
+  padding-top: 5px;
+}
+.scroll-page .row:nth-of-type(odd) {
+  background: #fafafa;
+}
+.scroll-page .row:nth-of-type(even) {
+  background: #f3f3f3;
+}
+.scroll-page .wind-icon {
+  display: inline-block;
+}
+.scroll-page.center {
+  text-align: center;
+}
+.scroll-page .primary {
+  margin: 0;
+  font-size: 100px;
+  font-weight: lighter;
+  padding-left: 30px;
+}
+.scroll-page .secondary {
+  margin: 0;
+  font-size: 150px;
+  font-weight: lighter;
+}
+.scroll-page .has-header {
+  position: relative;
+}
