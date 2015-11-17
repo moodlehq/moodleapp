@@ -60,9 +60,23 @@ angular.module('mm.core.courses')
     self.$get = function($mmUtil, $q, $log, $mmSite) {
         var enabledNavHandlers = {},
             coursesHandlers = {},
-            self = {};
+            self = {},
+            loaded = {};
 
         $log = $log.getInstance('$mmCoursesDelegate');
+
+        /**
+         * Check if addons are loaded for a certain course.
+         *
+         * @module mm.core.courses
+         * @ngdoc method
+         * @name $mmCoursesDelegate#areNavHandlersLoadedFor
+         * @param {Number} courseId The course ID.
+         * @return {Boolean} True if addons are loaded, false otherwise.
+         */
+        self.areNavHandlersLoadedFor = function(courseId) {
+            return loaded[courseId];
+        };
 
         /**
          * Clear all courses handlers.
@@ -74,6 +88,7 @@ angular.module('mm.core.courses')
          */
         self.clearCoursesHandlers = function() {
             coursesHandlers = {};
+            loaded = {};
         };
 
         /**
@@ -207,6 +222,7 @@ angular.module('mm.core.courses')
                         priority: handler.priority
                     });
                 });
+                loaded[courseId] = true;
             });
         };
 

@@ -25,6 +25,7 @@ angular.module('mm.core.courses')
             mmCoursesEventMyCoursesUpdated) {
 
     $scope.searchEnabled = $mmCourses.isSearchCoursesAvailable();
+    $scope.areNavHandlersLoadedFor = $mmCoursesDelegate.areNavHandlersLoadedFor;
 
     // Convenience function to fetch courses.
     function fetchCourses(refresh) {
