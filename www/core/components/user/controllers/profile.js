@@ -46,8 +46,11 @@ angular.module('mm.core.user')
             $scope.hasContact = user.email || user.phone1 || user.phone2 || user.city || user.country || user.address;
             $scope.hasDetails = user.url || user.roles || user.interests;
 
+            $scope.isLoadingHandlers = true;
             $mmUserDelegate.getProfileHandlersFor(user, courseid).then(function(handlers) {
                 $scope.profileHandlers = handlers;
+            }).finally(function() {
+                $scope.isLoadingHandlers = false;
             });
         }, function(message) {
             $scope.user = false;

@@ -59,9 +59,35 @@ angular.module('mm.core.sidemenu')
     self.$get = function($mmUtil, $q, $log, $mmSite) {
         var enabledNavHandlers = {},
             currentSiteHandlers = [], // Handlers to return.
-            self = {};
+            self = {},
+            loaded = false; // If site handlers have been loaded.
 
         $log = $log.getInstance('$mmSideMenuDelegate');
+
+        /**
+         * Check if addons are loaded.
+         *
+         * @module mm.core.sidemenu
+         * @ngdoc method
+         * @name $mmSideMenuDelegate#areNavHandlersLoaded
+         * @return {Boolean} True if addons are loaded, false otherwise.
+         */
+        self.areNavHandlersLoaded = function() {
+            return loaded;
+        };
+
+        /**
+         * Clear current site nav handlers. Reserved for core use.
+         *
+         * @module mm.core.sidemenu
+         * @ngdoc method
+         * @name $mmSideMenuDelegate#clearSiteHandlers
+         * @return {Void}
+         */
+        self.clearSiteHandlers = function() {
+            loaded = false;
+            $mmUtil.emptyArray(currentSiteHandlers);
+        };
 
         /**
          * Get the handlers for the current site.
@@ -148,6 +174,8 @@ angular.module('mm.core.sidemenu')
                         priority: handler.priority
                     });
                 });
+
+                loaded = true;
             });
         };
 

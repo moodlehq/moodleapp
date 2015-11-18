@@ -25,6 +25,7 @@ angular.module('mm.core.sidemenu')
             $timeout, mmCoreEventLanguageChanged, mmCoreEventSiteUpdated) {
 
     $scope.handlers = $mmSideMenuDelegate.getNavHandlers();
+    $scope.areNavHandlersLoaded = $mmSideMenuDelegate.areNavHandlersLoaded;
     $scope.siteinfo = $mmSite.getInfo();
 
     $scope.logout = function() {
