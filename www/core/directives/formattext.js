@@ -30,10 +30,11 @@ angular.module('mm.core')
  *     -singleline: True if new lines should be removed (all the text in a single line). Only valid if clean is true.
  *     -shorten: Number of characters to shorten the text.
  *     -expand-on-click: Indicate if contents should be expanded on click (undo shorten). Only applied if "shorten" is set.
+ *     -fullview-on-click: Indicate if should open a new state with the full contents on click. Only applied if "shorten" is set.
  *     -watch: True if the variable used inside the directive should be watched for changes. If the variable data is retrieved
  *             asynchronously, this value must be set to true, or the directive should be inside a ng-if, ng-repeat or similar.
  */
-.directive('mmFormatText', function($interpolate, $mmText, $compile, $q, $translate) {
+.directive('mmFormatText', function($interpolate, $mmText, $compile, $translate, $state) {
 
     var extractVariableRegex = new RegExp('{{([^|]+)(|.*)?}}', 'i'),
         tagsToIgnore = ['AUDIO', 'VIDEO', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'A'];
@@ -45,14 +46,23 @@ angular.module('mm.core')
      * @param  {Object} element Directive root DOM element.
      * @param  {Object} attrs   Directive attributes.
      * @param  {String} text    Directive contents.
-     * @return {Promise}        Promise resolved with the formatted text.
+     * @return {Void}
      */
     function formatAndRenderContents(scope, element, attrs, text) {
-        // If expandOnClick is set we won't shorten the text on interpolateAndFormat, we'll do it later.
-        var shorten = attrs.expandOnClick ? 0 : attrs.shorten;
 
-        interpolateAndFormat(scope, element, attrs, text, shorten).then(function(fullText) {
-            if (attrs.shorten && attrs.expandOnClick) {
+        if (typeof text == 'undefined') {
+            element.removeClass('hide');
+            return;
+        }
+
+        // If expandOnClick or fullviewOnClick are set we won't shorten the text on formatContents, we'll do it later.
+        var shorten = (attrs.expandOnClick || attrs.fullviewOnClick) ? 0 : attrs.shorten;
+
+        text = $interpolate(text)(scope); // "Evaluate" scope variables.
+        text = text.trim();
+
+        formatContents(scope, element, attrs, text, shorten).then(function(fullText) {
+            if (attrs.shorten && (attrs.expandOnClick || attrs.fullviewOnClick)) {
                 var shortened = $mmText.shortenText($mmText.cleanTags(fullText, false), parseInt(attrs.shorten)),
                     expanded = false;
 
@@ -69,7 +79,7 @@ angular.module('mm.core')
 
                     if (hasContent) {
                         // The content has meaningful tags. Show a placeholder to expand the content.
-                        shortened = $translate.instant('mm.core.clicktohideshow');
+                        shortened = $translate.instant(attrs.expandOnClick ? 'mm.core.clicktohideshow' : 'mm.core.clicktoseefull');
                     }
                 }
 
@@ -78,10 +88,19 @@ angular.module('mm.core')
                     e.stopPropagation();
                     var target = e.target;
                     if (tagsToIgnore.indexOf(target.tagName) === -1 || (target.tagName === 'A' && !target.getAttribute('href'))) {
-                        expanded = !expanded;
-                        element.html( expanded ? fullText : shortened);
-                        if (expanded) {
-                            $compile(element.contents())(scope);
+                        if (attrs.expandOnClick) {
+                            // Expand/collapse.
+                            expanded = !expanded;
+                            element.html( expanded ? fullText : shortened);
+                            if (expanded) {
+                                $compile(element.contents())(scope);
+                            }
+                        } else {
+                            // Open a new state with the interpolated contents.
+                            $state.go('site.mm_textviewer', {
+                                title: $translate.instant('mm.core.description'),
+                                content: text
+                            });
                         }
                     }
                 });
@@ -94,7 +113,7 @@ angular.module('mm.core')
     }
 
     /**
-     * Interpolate contents, apply formatText and set sub-directives.
+     * Apply formatText and set sub-directives.
      *
      * @param  {Object} scope     Directive scope.
      * @param  {Object} element   Directive root DOM element.
@@ -103,19 +122,11 @@ angular.module('mm.core')
      * @param  {Number} [shorten] Number of characters to shorten contents to. If not defined, don't shorten the text.
      * @return {Promise}          Promise resolved with the formatted text.
      */
-    function interpolateAndFormat(scope, element, attrs, text, shorten) {
+    function formatContents(scope, element, attrs, text, shorten) {
 
         var siteId = scope.siteid,
             component = attrs.component,
             componentId = attrs.componentId;
-
-        if (typeof text == 'undefined') {
-            element.removeClass('hide');
-            return $q.reject();
-        }
-
-        text = $interpolate(text)(scope); // "Evaluate" scope variables.
-        text = text.trim();
 
         // Apply format text function.
         return $mmText.formatText(text, attrs.clean, attrs.singleline, shorten).then(function(formatted) {

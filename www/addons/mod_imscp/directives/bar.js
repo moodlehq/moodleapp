@@ -28,7 +28,7 @@ angular.module('mm.addons.mod_imscp')
  * @param {String}   next     ID of the next item.
  * @param {Function} action   Function to call when an arrow is clicked. Will receive as a param the itemId to load.
  */
-.directive('mmaModImscpBar', function($ionicModal) {
+.directive('mmaModImscpBar', function($state, $translate) {
     return {
         restrict: 'E',
         scope: {
@@ -39,20 +39,12 @@ angular.module('mm.addons.mod_imscp')
         },
         templateUrl: 'addons/mod_imscp/templates/bar.html',
         link: function(scope) {
-            $ionicModal.fromTemplateUrl('addons/mod_imscp/templates/description.html', {
-                scope: scope,
-                animation: 'slide-in-up'
-            }).then(function(modal) {
-                scope.showDescription = function() {
-                    modal.show();
-                };
-                scope.closeDescription = function() {
-                    modal.hide();
-                };
-                scope.$on('$destroy', function() {
-                    modal.remove();
+            scope.showDescription = function() {
+                $state.go('site.mm_textviewer', {
+                    title: $translate.instant('mm.core.description'),
+                    content: scope.description
                 });
-            });
+            };
         }
     };
 });

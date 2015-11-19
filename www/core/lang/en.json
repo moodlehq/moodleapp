@@ -9,6 +9,7 @@
     "choose": "Choose",
     "clearsearch": "Clear search",
     "clicktohideshow": "Click to expand or collapse",
+    "clicktoseefull": "Click to see full contents.",
     "close": "Close",
     "completion-alt-auto-fail": "Completed: {{$a}} (did not achieve pass grade)",
     "completion-alt-auto-n": "Not completed: {{$a}}",
