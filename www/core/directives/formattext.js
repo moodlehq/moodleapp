@@ -28,7 +28,10 @@ angular.module('mm.core')
  *     -after-render: Scope function to call once the content is renderered. Passes the current scope as argument.
  *     -clean: True if all HTML tags should be removed, false otherwise.
  *     -singleline: True if new lines should be removed (all the text in a single line). Only valid if clean is true.
- *     -shorten: Number of characters to shorten the text.
+ *     -shorten: To shorten the text. If a number is supplied, it will shorten the text to that number of characters.
+ *               If a percentage is supplied the number of characters to short will be the percentage of element's width.
+ *               E.g. 50% of an element with 1000px width = 500 characters.
+ *               If the element has no width it'll use 100 characters. If the attribute is empty it'll use 30% width.
  *     -expand-on-click: Indicate if contents should be expanded on click (undo shorten). Only applied if "shorten" is set.
  *     -fullview-on-click: Indicate if should open a new state with the full contents on click. Only applied if "shorten" is set.
  *     -watch: True if the variable used inside the directive should be watched for changes. If the variable data is retrieved
@@ -38,6 +41,44 @@ angular.module('mm.core')
 
     var extractVariableRegex = new RegExp('{{([^|]+)(|.*)?}}', 'i'),
         tagsToIgnore = ['AUDIO', 'VIDEO', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'A'];
+
+    /**
+     * Returns the number of characters to shorten the text. If the text shouldn't be shortened, returns undefined.
+     *
+     * @param  {Object} element   Directive root DOM element.
+     * @param  {String} [shorten] Shorten attribute. Can be undefined or a string: empty, number or a percentage.
+     * @return {Number}           Number of characters to shorten the text to. Undefined if it shouldn't shorten.
+     */
+    function calculateShorten(element, shorten) {
+        var multiplier;
+
+        if (typeof shorten == 'string' && shorten.indexOf('%') > -1) {
+            // It's a percentage. Extract the multiplier.
+            multiplier = parseInt(shorten.replace(/%/g, '').trim()) / 100;
+            if (isNaN(multiplier)) {
+                multiplier = 0.3;
+            }
+        } else if (typeof shorten != 'undefined' && shorten === '') {
+            // Not defined, use default value.
+            multiplier = 0.3;
+        } else {
+            var number = parseInt(shorten);
+            if (isNaN(number)) {
+                return; // Return undefined so it's not shortened.
+            } else {
+                return number;
+            }
+        }
+
+        var el = element[0],
+            elWidth = el.offsetWidth || el.width || el.clientWidth;
+        if (!elWidth) {
+            // Cannot calculate element's width, use default value.
+            return 100;
+        } else {
+            return Math.round(elWidth * multiplier);
+        }
+    }
 
     /**
      * Format contents and render.
@@ -54,6 +95,8 @@ angular.module('mm.core')
             element.removeClass('hide');
             return;
         }
+
+        attrs.shorten = calculateShorten(element, attrs.shorten);
 
         // If expandOnClick or fullviewOnClick are set we won't shorten the text on formatContents, we'll do it later.
         var shorten = (attrs.expandOnClick || attrs.fullviewOnClick) ? 0 : attrs.shorten;
