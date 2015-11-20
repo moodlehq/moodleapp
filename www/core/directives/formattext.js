@@ -28,15 +28,57 @@ angular.module('mm.core')
  *     -after-render: Scope function to call once the content is renderered. Passes the current scope as argument.
  *     -clean: True if all HTML tags should be removed, false otherwise.
  *     -singleline: True if new lines should be removed (all the text in a single line). Only valid if clean is true.
- *     -shorten: Number of characters to shorten the text.
+ *     -shorten: To shorten the text. If a number is supplied, it will shorten the text to that number of characters.
+ *               If a percentage is supplied the number of characters to short will be the percentage of element's width.
+ *               E.g. 50% of an element with 1000px width = 500 characters.
+ *               If the element has no width it'll use 100 characters. If the attribute is empty it'll use 30% width.
  *     -expand-on-click: Indicate if contents should be expanded on click (undo shorten). Only applied if "shorten" is set.
+ *     -fullview-on-click: Indicate if should open a new state with the full contents on click. Only applied if "shorten" is set.
  *     -watch: True if the variable used inside the directive should be watched for changes. If the variable data is retrieved
  *             asynchronously, this value must be set to true, or the directive should be inside a ng-if, ng-repeat or similar.
  */
-.directive('mmFormatText', function($interpolate, $mmText, $compile, $q, $translate) {
+.directive('mmFormatText', function($interpolate, $mmText, $compile, $translate, $state) {
 
     var extractVariableRegex = new RegExp('{{([^|]+)(|.*)?}}', 'i'),
         tagsToIgnore = ['AUDIO', 'VIDEO', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'A'];
+
+    /**
+     * Returns the number of characters to shorten the text. If the text shouldn't be shortened, returns undefined.
+     *
+     * @param  {Object} element   Directive root DOM element.
+     * @param  {String} [shorten] Shorten attribute. Can be undefined or a string: empty, number or a percentage.
+     * @return {Number}           Number of characters to shorten the text to. Undefined if it shouldn't shorten.
+     */
+    function calculateShorten(element, shorten) {
+        var multiplier;
+
+        if (typeof shorten == 'string' && shorten.indexOf('%') > -1) {
+            // It's a percentage. Extract the multiplier.
+            multiplier = parseInt(shorten.replace(/%/g, '').trim()) / 100;
+            if (isNaN(multiplier)) {
+                multiplier = 0.3;
+            }
+        } else if (typeof shorten != 'undefined' && shorten === '') {
+            // Not defined, use default value.
+            multiplier = 0.3;
+        } else {
+            var number = parseInt(shorten);
+            if (isNaN(number)) {
+                return; // Return undefined so it's not shortened.
+            } else {
+                return number;
+            }
+        }
+
+        var el = element[0],
+            elWidth = el.offsetWidth || el.width || el.clientWidth;
+        if (!elWidth) {
+            // Cannot calculate element's width, use default value.
+            return 100;
+        } else {
+            return Math.round(elWidth * multiplier);
+        }
+    }
 
     /**
      * Format contents and render.
@@ -45,14 +87,25 @@ angular.module('mm.core')
      * @param  {Object} element Directive root DOM element.
      * @param  {Object} attrs   Directive attributes.
      * @param  {String} text    Directive contents.
-     * @return {Promise}        Promise resolved with the formatted text.
+     * @return {Void}
      */
     function formatAndRenderContents(scope, element, attrs, text) {
-        // If expandOnClick is set we won't shorten the text on interpolateAndFormat, we'll do it later.
-        var shorten = attrs.expandOnClick ? 0 : attrs.shorten;
 
-        interpolateAndFormat(scope, element, attrs, text, shorten).then(function(fullText) {
-            if (attrs.shorten && attrs.expandOnClick) {
+        if (typeof text == 'undefined') {
+            element.removeClass('hide');
+            return;
+        }
+
+        attrs.shorten = calculateShorten(element, attrs.shorten);
+
+        // If expandOnClick or fullviewOnClick are set we won't shorten the text on formatContents, we'll do it later.
+        var shorten = (attrs.expandOnClick || attrs.fullviewOnClick) ? 0 : attrs.shorten;
+
+        text = $interpolate(text)(scope); // "Evaluate" scope variables.
+        text = text.trim();
+
+        formatContents(scope, element, attrs, text, shorten).then(function(fullText) {
+            if (attrs.shorten && (attrs.expandOnClick || attrs.fullviewOnClick)) {
                 var shortened = $mmText.shortenText($mmText.cleanTags(fullText, false), parseInt(attrs.shorten)),
                     expanded = false;
 
@@ -69,7 +122,7 @@ angular.module('mm.core')
 
                     if (hasContent) {
                         // The content has meaningful tags. Show a placeholder to expand the content.
-                        shortened = $translate.instant('mm.core.clicktohideshow');
+                        shortened = $translate.instant(attrs.expandOnClick ? 'mm.core.clicktohideshow' : 'mm.core.clicktoseefull');
                     }
                 }
 
@@ -78,10 +131,19 @@ angular.module('mm.core')
                     e.stopPropagation();
                     var target = e.target;
                     if (tagsToIgnore.indexOf(target.tagName) === -1 || (target.tagName === 'A' && !target.getAttribute('href'))) {
-                        expanded = !expanded;
-                        element.html( expanded ? fullText : shortened);
-                        if (expanded) {
-                            $compile(element.contents())(scope);
+                        if (attrs.expandOnClick) {
+                            // Expand/collapse.
+                            expanded = !expanded;
+                            element.html( expanded ? fullText : shortened);
+                            if (expanded) {
+                                $compile(element.contents())(scope);
+                            }
+                        } else {
+                            // Open a new state with the interpolated contents.
+                            $state.go('site.mm_textviewer', {
+                                title: $translate.instant('mm.core.description'),
+                                content: text
+                            });
                         }
                     }
                 });
@@ -94,7 +156,7 @@ angular.module('mm.core')
     }
 
     /**
-     * Interpolate contents, apply formatText and set sub-directives.
+     * Apply formatText and set sub-directives.
      *
      * @param  {Object} scope     Directive scope.
      * @param  {Object} element   Directive root DOM element.
@@ -103,19 +165,11 @@ angular.module('mm.core')
      * @param  {Number} [shorten] Number of characters to shorten contents to. If not defined, don't shorten the text.
      * @return {Promise}          Promise resolved with the formatted text.
      */
-    function interpolateAndFormat(scope, element, attrs, text, shorten) {
+    function formatContents(scope, element, attrs, text, shorten) {
 
         var siteId = scope.siteid,
             component = attrs.component,
             componentId = attrs.componentId;
-
-        if (typeof text == 'undefined') {
-            element.removeClass('hide');
-            return $q.reject();
-        }
-
-        text = $interpolate(text)(scope); // "Evaluate" scope variables.
-        text = text.trim();
 
         // Apply format text function.
         return $mmText.formatText(text, attrs.clean, attrs.singleline, shorten).then(function(formatted) {
