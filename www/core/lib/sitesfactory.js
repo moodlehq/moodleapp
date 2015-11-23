@@ -475,7 +475,7 @@ angular.module('mm.core')
                         $mmEvents.trigger(mmCoreEventSessionExpired, site.id);
                     } else if (error === mmCoreUserDeleted) {
                         // User deleted, trigger event.
-                        $mmLang.translateErrorAndReject(deferred, 'mm.core.userdeleted');
+                        $mmLang.translateAndRejectDeferred(deferred, 'mm.core.userdeleted');
                         $mmEvents.trigger(mmCoreEventUserDeleted, {siteid: site.id, params: data});
                     } else if (typeof preSets.emergencyCache !== 'undefined' && !preSets.emergencyCache) {
                         $log.debug('WS call ' + method + ' failed. Emergency cache is forbidden, rejecting.');
