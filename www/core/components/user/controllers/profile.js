@@ -21,7 +21,7 @@ angular.module('mm.core.user')
  * @ngdoc controller
  * @name mmaParticipantsProfileCtrl
  */
-.controller('mmUserProfileCtrl', function($scope, $stateParams, $mmUtil, $mmUser, $mmUserDelegate, $mmSite, $q) {
+.controller('mmUserProfileCtrl', function($scope, $stateParams, $mmUtil, $mmUser, $mmUserDelegate, $mmSite, $q, $translate) {
 
     var courseid = $stateParams.courseid,
         userid   = $stateParams.userid;
@@ -63,9 +63,11 @@ angular.module('mm.core.user')
 
     fetchUserData().then(function() {
         // Add log in Moodle.
-        $mmSite.write('core_user_view_user_profile', {
+        return $mmSite.write('core_user_view_user_profile', {
             userid: userid,
             courseid: courseid
+        }).catch(function(error) {
+            $scope.isDeleted = error === $translate.instant('mm.core.userdeleted');
         });
     }).finally(function() {
         $scope.userLoaded = true;

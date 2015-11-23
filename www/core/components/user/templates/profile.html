@@ -3,7 +3,7 @@
     <ion-content padding="true">
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="userLoaded" on-refresh="refreshUser()"></ion-refresher>
         <mm-loading hide-until="userLoaded">
-            <div class="list" ng-if="user">
+            <div class="list" ng-if="user && !isDeleted">
                 <div class="item item-avatar">
                     <img ng-if="user.profileimageurl" ng-src="{{user.profileimageurl}}" mm-external-content alt="" role="presentation">
                     <img ng-if="!user.profileimageurl" src="img/user-avatar.png" alt="" role="presentation">
@@ -99,8 +99,12 @@
                 </div>
             </div>
 
-            <div ng-if="!user">
+            <div ng-if="!user && !isDeleted">
                 {{ 'mm.user.detailsnotavailable' | translate }}
+            </div>
+
+            <div ng-if="isDeleted">
+                {{ 'mm.core.userdeleted' | translate }}
             </div>
         </mm-loading>
     </ion-content>
