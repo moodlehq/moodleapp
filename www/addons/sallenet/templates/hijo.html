@@ -1,0 +1,24 @@
+<ion-view>
+	<ion-nav-title><mm-format-text watch="true">{{title}}</mm-format-text></ion-nav-title>
+	<ion-content padding="true">
+		<ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="loaded" on-refresh="refreshHijos()"></ion-refresher>
+		<section ng-repeat="hijo in hijos">
+			<a ui-sref="site.sallenet-horario({id: hijo.id,id_moodle:hijo.id_moodle,nombre: hijo.nombre})" class="item item-icon-right" title="{{ 'mma.sallenet.horario' | translate }}">
+				<i class="icon ion-ios-arrow-right"></i>
+				{{ 'mma.sallenet.horario' | translate }}
+			</a>
+			<a ui-sref="site.sallenet-incidencias({id_hijo: hijo.id,id_moodle:hijo.id_moodle,nombre: hijo.nombre})" class="item item-icon-right" title="{{ 'mma.sallenet.incidencias' | translate }}">
+				<i class="icon ion-ios-arrow-right"></i>
+				{{ 'mma.sallenet.incidencias' | translate }}
+			</a>
+			<a ng-repeat="mat in hijo.matriculas" ui-sref="site.sallenet-grades({userid: hijo.id_moodle ,course: {id:mat.id_moodle} })" class="item item-icon-right" title="{{ 'mma.sallenet.calificaciones' | translate }}">
+				<i class="icon ion-ios-arrow-right"></i>
+				{{ 'mma.sallenet.calificaciones' | translate }} {{mat.nombre}}
+			</a>
+			
+		</section>
+		<div class="padding" ng-if="!hijos || hijos.length <= 0">
+        	<p>{{ 'mma.sallenet.notieneshijos' | translate}}</p>
+		</div>
+	</ion-content>
+</ion-view>

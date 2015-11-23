@@ -1,0 +1,36 @@
+<ion-view>
+	<ion-nav-title><mm-format-text watch="true">{{title}}</mm-format-text></ion-nav-title>
+	<ion-content>
+		<ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="loaded" on-refresh="refreshEventos()"></ion-refresher>
+		<mm-loading hide-until="loaded">
+			<div class="list card" ng-if="1 || ev.ahora < ev.inicio"  ng-repeat="ev in eventos">
+				<div class="item ">
+					<h2>{{ ev.nombre }}</h2>
+					<p>{{ev.inicio | mmaSallenetFecha }}: {{ev.inicio | mmaSallenetHora }}-{{ev.fin | mmaSallenetHora }}</p>
+				</div>
+				<div class="item item-body" ng-if="ev.tarea||ev.planificacion||profesor||alumno">
+					<p ng-if="ev.tarea||profesor"><b>{{ 'mma.sallenet.tareas' | translate }}: </b><i class='ion-edit' ng-if='profesor' ng-click='setInformacionEventos(ev.id,1,ev.tarea)'></i>{{ ev.tarea }} </p>
+					<p ng-if="ev.planificacion||profesor"><b>{{ 'mma.sallenet.planificacion' | translate }}: </b><i class='ion-edit' ng-if='profesor' ng-click='setInformacionEventos(ev.id,0,ev.planificacion)'></i>{{ ev.planificacion }}</p>
+					<p ng-if="(profesor||alumno)"><b>{{ 'mma.sallenet.notas' | translate }}: </b><i class='ion-edit' ng-if='(profesor||alumno)' ng-click='setInformacionEventos(ev.id,2,ev.notas)'></i>{{ ev.notas }}</p>
+				</div>
+				<div class="item tabs tabs-secondary tabs-icon-left" ng-if="profesor">
+					<a class="tab-item" ui-sref="site.mm_course({course: {id: ev.courseid , fullname: ev.nombre}})">
+						<i class='icon icon ion-briefcase'></i>
+						{{ 'mma.sallenet.contenido' | translate }}
+					</a>
+					<a class="tab-item" ui-sref="site.sallenet-distribucion({id_clase: ev.id_clase,nombre: ev.nombre, id_evento:ev.id})" >
+						<i class='icon ion-clock'></i>
+						{{ 'mma.sallenet.distribucion' | translate }}
+					</a>
+					<a class="tab-item" ui-sref="site.sallenet-listaclase({id_clase: ev.id_clase, nombre: ev.nombre})">
+						<i class='icon ion-ios-list-outline'></i>
+						{{ 'mma.sallenet.incidencias' | translate }}
+					</a>
+				</div>
+			</div>
+	        <div ng-if="!eventos || eventos.length <= 0" class="padding">
+	        	<p>{{ 'mma.sallenet.nohayeventos' | translate }}</p>
+	        </div>
+		</mm-loading>
+	</ion-content>
+</ion-view>

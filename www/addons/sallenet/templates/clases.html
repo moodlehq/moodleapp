@@ -1,0 +1,24 @@
+<ion-view>
+	<ion-nav-title><mm-format-text watch="true">{{'mma.sallenet.lista-clases' | translate }}</mm-format-text></ion-nav-title>
+	<ion-content >
+		<ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="loaded" on-refresh="refreshClases()"></ion-refresher>
+		<mm-loading hide-until="loaded">
+			<section class='list card' ng-repeat="clase in clases">
+	        	<a class='item' title="{{clase.nombre}}">
+					<h2>{{clase.nombre}}</h2>
+				</a>
+	       		<div class='item-text-wrap'>
+	       			<div class='item tabs tabs-icon-left'>
+	       				<a class="tab-item active" ui-sref="site.mm_course({course: {id: clase.courseid , fullname: clase.nombre}})"><i class='icon icon ion-briefcase'></i>{{ 'mma.sallenet.contenido' | translate }}</a>
+	       				<a class="tab-item active" ui-sref="site.sallenet-listaclase({id_clase: clase.id, nombre: clase.nombre})"><i class='icon ion-ios-list-outline'></i>{{ 'mma.sallenet.lista_clase' | translate }}</a>
+	       				<!-- <a class="tab-item active" ui-sref="site.sallenet-distribucion({id_clase: clase.id, nombre: clase.nombre})"><i class='icon ion-clock'></i>{{ 'mma.sallenet.distribucion' | translate }}</a> -->
+	       				<a class="tab-item active" ui-sref="site.sallenet-horario({id: userid,id_moodle:id_moodle,nombre:nombre,profesor:profesor,id_clase:clase.id})"><i class='icon ion-ios-grid-view'></i>{{ 'mma.sallenet.proximasclases' | translate }}</a>
+	       			</div>
+	       		</div>
+	        </section>
+	        <div ng-if="!clases || clases.length <= 0" class="padding">
+	        	<p>{{ 'mma.sallenet.nohayclases' | translate }}</p>
+	        </div>
+		</mm-loading>
+	</ion-content>
+</ion-view>

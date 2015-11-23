@@ -1,0 +1,18 @@
+<ion-view>
+	<ion-nav-title>{{ title }}</ion-nav-title>
+	<ion-content class="padding">
+		<ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="loaded" on-refresh="refreshListaClase()"></ion-refresher>
+		<mm-loading hide-until="loaded">
+	        <ul class="list">
+	        	<li>
+	        		<a class="item" ng-repeat="alumno in alumnos" title={{alumno.fullname}}">
+	        			<p class="item-heading">{{alumno.num}} .- {{alumno.fullname}}</p>
+	        		</a>
+	        	</li>
+	        </ul>
+	        <div ng-if="!alumnos || alumnos.length <= 0" class="padding">
+	        	<p>{{ 'mma.sallenet.nohayalumnos' | translate }}</p>
+	        </div>
+		</mm-loading>
+	</ion-content>
+</ion-view>
