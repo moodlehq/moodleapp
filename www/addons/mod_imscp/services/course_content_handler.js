@@ -21,8 +21,9 @@ angular.module('mm.addons.mod_imscp')
  * @ngdoc service
  * @name $mmaModImscpCourseContentHandler
  */
-.factory('$mmaModImscpCourseContentHandler', function($mmCourse, $mmaModImscp, $mmEvents, $state, $mmSite, $mmUtil,
-            $mmaModImscpPrefetchHandler, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated, mmCoreCourseModuleStatusChanged) {
+.factory('$mmaModImscpCourseContentHandler', function($mmCourse, $mmaModImscp, $mmEvents, $state, $mmSite, $mmUtil, $mmFilepool,
+            $mmCoursePrefetchDelegate, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated, mmCoreEventPackageStatusChanged,
+            mmaModImscpComponent) {
 
     var self = {};
 
@@ -52,8 +53,8 @@ angular.module('mm.addons.mod_imscp')
         return function($scope) {
             var downloadBtn,
                 refreshBtn,
-                revision = $mmCourse.getRevisionFromContents(module.contents),
-                timemodified = $mmCourse.getTimemodifiedFromContents(module.contents);
+                revision = $mmFilepool.getRevisionFromFileList(module.contents),
+                timemodified = $mmFilepool.getTimemodifiedFromFileList(module.contents);
 
             downloadBtn = {
                 hidden: true,
@@ -104,14 +105,14 @@ angular.module('mm.addons.mod_imscp')
             }
 
             // Listen for changes on this module status.
-            var statusObserver = $mmEvents.on(mmCoreCourseModuleStatusChanged, function(data) {
-                if (data.siteid === $mmSite.getId() && data.moduleid === module.id) {
+            var statusObserver = $mmEvents.on(mmCoreEventPackageStatusChanged, function(data) {
+                if (data.siteid === $mmSite.getId() && data.componentId === module.id && data.component === mmaModImscpComponent) {
                     showStatus(data.status);
                 }
             });
 
             // Get current status to decide which icon should be shown.
-            $mmaModImscpPrefetchHandler.getStatus(module, revision, timemodified).then(showStatus);
+            $mmCoursePrefetchDelegate.getModuleStatus(module, revision, timemodified).then(showStatus);
 
             $scope.$on('$destroy', function() {
                 statusObserver && statusObserver.off && statusObserver.off();

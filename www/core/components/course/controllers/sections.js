@@ -22,7 +22,7 @@ angular.module('mm.core.course')
  * @name mmCourseSectionsCtrl
  */
 .controller('mmCourseSectionsCtrl', function($mmCourse, $mmUtil, $scope, $stateParams, $translate, $mmCourseHelper, $mmEvents,
-            $mmSite, $mmCoursePrefetchDelegate, mmCoreCourseAllSectionsId, mmCoreCourseSectionStatusChanged) {
+            $mmSite, $mmCoursePrefetchDelegate, mmCoreCourseAllSectionsId, mmCoreEventSectionStatusChanged) {
     var course = $stateParams.course,
         courseid = course.id;
 
@@ -103,7 +103,7 @@ angular.module('mm.core.course')
     });
 
     // Listen for section status changes.
-    var statusObserver = $mmEvents.on(mmCoreCourseSectionStatusChanged, function(data) {
+    var statusObserver = $mmEvents.on(mmCoreEventSectionStatusChanged, function(data) {
         if ($scope.sections && $scope.sections.length && data.siteid === $mmSite.getId() && !$scope.$$destroyed && data.sectionid) {
             // Check if the affected section is being downloaded. If so, we don't update section status
             // because it'll already be updated when the download finishes.

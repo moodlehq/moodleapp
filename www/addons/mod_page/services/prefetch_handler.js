@@ -21,52 +21,29 @@ angular.module('mm.addons.mod_page')
  * @ngdoc service
  * @name $mmaModPagePrefetchHandler
  */
-.factory('$mmaModPagePrefetchHandler', function($mmaModPage, $mmCourse, $mmSite, mmCoreDownloading) {
+.factory('$mmaModPagePrefetchHandler', function($mmaModPage, $mmSite, mmaModPageComponent) {
 
     var self = {};
 
+    self.component = mmaModPageComponent;
+
     /**
-     * Determine the status of a module based on the current status detected.
+     * Get the download size of a module.
      *
      * @module mm.addons.mod_page
      * @ngdoc method
-     * @name $mmaModPagePrefetchHandler#determineStatus
-     * @param {Object} module             Module.
-     * @param {String} status             Current status.
-     * @param {Boolean} restoreDownloads  True if it should restore downloads if needed.
-     * @return {String}                   Module status.
+     * @name $mmaModPagePrefetchHandler#getDownloadSize
+     * @param {Object} module Module to get the size.
+     * @return {Number}       Size.
      */
-    self.determineStatus = function(module, status, restoreDownloads) {
-        if (status == mmCoreDownloading && restoreDownloads) {
-            var siteid = $mmSite.getId();
-            // Check if the download is being handled.
-            if (!$mmaModPage.getDownloadPromise(siteid, module.id)) {
-                // Not handled, the app was probably restarted or something weird happened.
-                // Re-start download (files already on queue or already downloaded will be skipped).
-                $mmaModPage.prefetchContent(module);
+    self.getDownloadSize = function(module) {
+        var size = 0;
+        angular.forEach(module.contents, function(content) {
+            if ($mmaModPage.isFileDownloadable(content) && content.filesize) {
+                size = size + content.filesize;
             }
-        }
-        return status;
-    };
-
-    /**
-     * Get the module status.
-     *
-     * @module mm.addons.mod_page
-     * @ngdoc method
-     * @name $mmaModPagePrefetchHandler#getStatus
-     * @param  {Object} module        Module.
-     * @param {Number} [revision]     Module's revision. If not defined, it will be calculated using module data.
-     * @param {Number} [timemodified] Module's timemodified. If not defined, it will be calculated using module data.
-     * @return {Promise}              Promise resolved with the status.
-     */
-    self.getStatus = function(module, revision, timemodified) {
-        revision = revision || $mmCourse.getRevisionFromContents(module.contents);
-        timemodified = timemodified || $mmCourse.getTimemodifiedFromContents(module.contents);
-
-        return $mmCourse.getModuleStatus($mmSite.getId(), module.id, revision, timemodified).then(function(status) {
-            return self.determineStatus(module, status, true);
         });
+        return size;
     };
 
     /**
@@ -79,20 +56,6 @@ angular.module('mm.addons.mod_page')
      */
     self.isEnabled = function() {
         return $mmSite.canDownloadFiles();
-    };
-
-    /**
-     * Whether or not a file belonging to a mod_page is downloadable.
-     * The file param must have a 'type' attribute like in core_course_get_contents response.
-     *
-     * @module mm.addons.mod_page
-     * @ngdoc method
-     * @name $mmaModPagePrefetchHandler#isFileDownloadable
-     * @param {Object} file File to check.
-     * @return {Boolean}    True if downloadable, false otherwise.
-     */
-    self.isFileDownloadable = function(file) {
-        return $mmaModPage.isFileDownloadable(file);
     };
 
     /**

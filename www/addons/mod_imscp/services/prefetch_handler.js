@@ -21,52 +21,29 @@ angular.module('mm.addons.mod_imscp')
  * @ngdoc service
  * @name $mmaModImscpPrefetchHandler
  */
-.factory('$mmaModImscpPrefetchHandler', function($mmaModImscp, $mmCourse, $mmSite, mmCoreDownloading) {
+.factory('$mmaModImscpPrefetchHandler', function($mmaModImscp, mmaModImscpComponent) {
 
     var self = {};
 
+    self.component = mmaModImscpComponent;
+
     /**
-     * Determine the status of a module based on the current status detected.
+     * Get the download size of a module.
      *
      * @module mm.addons.mod_imscp
      * @ngdoc method
-     * @name $mmaModImscpPrefetchHandler#determineStatus
-     * @param {Object} module             Module.
-     * @param {String} status             Current status.
-     * @param {Boolean} restoreDownloads  True if it should restore downloads if needed.
-     * @return {String}                   Module status.
+     * @name $mmaModImscpPrefetchHandler#getDownloadSize
+     * @param {Object} module Module to get the size.
+     * @return {Number}       Size.
      */
-    self.determineStatus = function(module, status, restoreDownloads) {
-        if (status == mmCoreDownloading && restoreDownloads) {
-            var siteid = $mmSite.getId();
-            // Check if the download is being handled.
-            if (!$mmaModImscp.getDownloadPromise(siteid, module.id)) {
-                // Not handled, the app was probably restarted or something weird happened.
-                // Re-start download (files already on queue or already downloaded will be skipped).
-                $mmaModImscp.prefetchContent(module);
+    self.getDownloadSize = function(module) {
+        var size = 0;
+        angular.forEach(module.contents, function(content) {
+            if ($mmaModImscp.isFileDownloadable(content) && content.filesize) {
+                size = size + content.filesize;
             }
-        }
-        return status;
-    };
-
-    /**
-     * Get the module status.
-     *
-     * @module mm.addons.mod_imscp
-     * @ngdoc method
-     * @name $mmaModImscpPrefetchHandler#getStatus
-     * @param  {Object} module        Module.
-     * @param {Number} [revision]     Module's revision. If not defined, it will be calculated using module data.
-     * @param {Number} [timemodified] Module's timemodified. If not defined, it will be calculated using module data.
-     * @return {Promise}              Promise resolved with the status.
-     */
-    self.getStatus = function(module, revision, timemodified) {
-        revision = revision || $mmCourse.getRevisionFromContents(module.contents);
-        timemodified = timemodified || $mmCourse.getTimemodifiedFromContents(module.contents);
-
-        return $mmCourse.getModuleStatus($mmSite.getId(), module.id, revision, timemodified).then(function(status) {
-            return self.determineStatus(module, status, true);
         });
+        return size;
     };
 
     /**
@@ -79,20 +56,6 @@ angular.module('mm.addons.mod_imscp')
      */
     self.isEnabled = function() {
         return $mmaModImscp.isPluginEnabled();
-    };
-
-    /**
-     * Whether or not a file belonging to a mod_imscp is downloadable.
-     * The file param must have 'type' and 'filename' attributes like in core_course_get_contents response.
-     *
-     * @module mm.addons.mod_imscp
-     * @ngdoc method
-     * @name $mmaModImscpPrefetchHandler#isFileDownloadable
-     * @param {Object} file File to check.
-     * @return {Boolean}    True if downloadable, false otherwise.
-     */
-    self.isFileDownloadable = function(file) {
-        return $mmaModImscp.isFileDownloadable(file);
     };
 
     /**

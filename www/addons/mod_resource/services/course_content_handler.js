@@ -22,8 +22,8 @@ angular.module('mm.addons.mod_resource')
  * @name $mmaModResourceCourseContentHandler
  */
 .factory('$mmaModResourceCourseContentHandler', function($mmCourse, $mmaModResource, $mmEvents, $state, $mmSite, $mmUtil,
-            $mmaModResourcePrefetchHandler, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated,
-            mmCoreCourseModuleStatusChanged) {
+            $mmCoursePrefetchDelegate, $mmFilepool, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated,
+            mmCoreEventPackageStatusChanged, mmaModResourceComponent) {
 
     var self = {};
 
@@ -53,8 +53,8 @@ angular.module('mm.addons.mod_resource')
         return function($scope) {
             var downloadBtn,
                 refreshBtn,
-                revision = $mmCourse.getRevisionFromContents(module.contents),
-                timemodified = $mmCourse.getTimemodifiedFromContents(module.contents);
+                revision = $mmFilepool.getRevisionFromFileList(module.contents),
+                timemodified = $mmFilepool.getTimemodifiedFromFileList(module.contents);
 
             downloadBtn = {
                 hidden: true,
@@ -113,14 +113,15 @@ angular.module('mm.addons.mod_resource')
             }
 
             // Listen for changes on this module status.
-            var statusObserver = $mmEvents.on(mmCoreCourseModuleStatusChanged, function(data) {
-                if (data.siteid === $mmSite.getId() && data.moduleid === module.id) {
+            var statusObserver = $mmEvents.on(mmCoreEventPackageStatusChanged, function(data) {
+                if (data.siteid === $mmSite.getId() && data.componentId === module.id &&
+                        data.component === mmaModResourceComponent) {
                     showStatus(data.status);
                 }
             });
 
             // Get current status to decide which icon should be shown.
-            $mmaModResourcePrefetchHandler.getStatus(module, revision, timemodified).then(showStatus);
+            $mmCoursePrefetchDelegate.getModuleStatus(module, revision, timemodified).then(showStatus);
 
             $scope.$on('$destroy', function() {
                 statusObserver && statusObserver.off && statusObserver.off();

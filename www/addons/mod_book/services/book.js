@@ -21,73 +21,10 @@ angular.module('mm.addons.mod_book')
  * @ngdoc service
  * @name $mmaModBook
  */
-.factory('$mmaModBook', function($mmFilepool, $mmSite, $mmFS, $http, $log, $q, $mmCourse, mmaModBookComponent,
-            mmCoreDownloading, mmCoreDownloaded) {
+.factory('$mmaModBook', function($mmFilepool, $mmSite, $mmFS, $http, $log, $q, mmaModBookComponent) {
     $log = $log.getInstance('$mmaModBook');
 
-    var self = {},
-        downloadPromises = {}; // To handle downloads.
-
-    /**
-     * Downloads or prefetches all the content.
-     *
-     * @param {Object} module    The module object.
-     * @param {Boolean} prefetch True if prefetching, false otherwise.
-     * @return {Promise}         Promise resolved when all content is downloaded. Data returned is not reliable.
-     */
-    function downloadOrPrefetch(module, prefetch) {
-
-        var siteid = $mmSite.getId();
-        if (downloadPromises[siteid] && downloadPromises[siteid][module.id]) {
-            // There's already a download ongoing for this module, return the promise.
-            return downloadPromises[siteid][module.id];
-        } else if (!downloadPromises[siteid]) {
-            downloadPromises[siteid] = {};
-        }
-
-        var revision = $mmCourse.getRevisionFromContents(module.contents),
-            timemod = $mmCourse.getTimemodifiedFromContents(module.contents),
-            dwnPromise,
-            deleted = false;
-
-        // Set module as downloading.
-        dwnPromise = $mmCourse.storeModuleStatus(siteid, module.id, mmCoreDownloading, revision, timemod).then(function() {
-            var promises = [];
-
-            angular.forEach(module.contents, function(content) {
-                var url = content.fileurl,
-                    filetimemodified = content.timemodified;
-                if (!self.isFileDownloadable(content)) {
-                    return;
-                }
-
-                if (prefetch) {
-                    promises.push($mmFilepool.addToQueueByUrl(siteid, url, mmaModBookComponent, module.id, filetimemodified));
-                } else {
-                    promises.push($mmFilepool.downloadUrl(siteid, url, false, mmaModBookComponent, module.id, filetimemodified));
-                }
-            });
-
-            return $q.all(promises).then(function() {
-                // Success prefetching, store module as downloaded.
-                return $mmCourse.storeModuleStatus(siteid, module.id, mmCoreDownloaded, revision, timemod);
-            }).catch(function() {
-                // Error downloading, go back to previous status and reject the promise.
-                return $mmCourse.setModulePreviousStatus(siteid, module.id).then(function() {
-                    return $q.reject();
-                });
-            });
-        }).finally(function() {
-            // Download finished, delete the promise.
-            delete downloadPromises[siteid][module.id];
-            deleted = true;
-        });
-
-        if (!deleted) { // In case promise was finished immediately.
-            downloadPromises[siteid][module.id] = dwnPromise;
-        }
-        return dwnPromise;
-    }
+    var self = {};
 
     /**
      * Download all the content.
@@ -99,7 +36,8 @@ angular.module('mm.addons.mod_book')
      * @return {Promise}      Promise resolved when all content is downloaded. Data returned is not reliable.
      */
     self.downloadAllContent = function(module) {
-        return downloadOrPrefetch(module, false);
+        var files = self.getDownloadableFiles(module);
+        return $mmFilepool.downloadPackage($mmSite.getId(), files, mmaModBookComponent, module.id);
     };
 
     /**
@@ -136,22 +74,6 @@ angular.module('mm.addons.mod_book')
     };
 
     /**
-     * Get a download promise. If the promise is not set, return undefined.
-     *
-     * @module mm.addons.mod_book
-     * @ngdoc method
-     * @name $mmaModBook#getDownloadPromise
-     * @param  {String} siteId   Site ID.
-     * @param  {Number} moduleId Module ID.
-     * @return {Promise}         Download promise or undefined.
-     */
-    self.getDownloadPromise = function(siteId, moduleId) {
-        if (downloadPromises[siteId] && downloadPromises[siteId][moduleId]) {
-            return downloadPromises[siteId][moduleId];
-        }
-    };
-
-    /**
      * Returns a list of file event names.
      *
      * @module mm.addons.mod_book
@@ -174,6 +96,26 @@ angular.module('mm.addons.mod_book')
         });
     };
 
+    /**
+     * Returns a list of files that can be downloaded.
+     *
+     * @module mm.addons.mod_book
+     * @ngdoc method
+     * @name $mmaModBook#getDownloadableFiles
+     * @param {Object} module The module object returned by WS.
+     * @return {Object[]}     List of files.
+     */
+    self.getDownloadableFiles = function(module) {
+        var files = [];
+
+        angular.forEach(module.contents, function(content) {
+            if (self.isFileDownloadable(content)) {
+                files.push(content);
+            }
+        });
+
+        return files;
+    };
 
     /**
      * Get the book toc as an array.
@@ -427,7 +369,8 @@ angular.module('mm.addons.mod_book')
      * @return {Promise}      Promise resolved when all content is downloaded. Data returned is not reliable.
      */
     self.prefetchContent = function(module) {
-        return downloadOrPrefetch(module, true);
+        var files = self.getDownloadableFiles(module);
+        return $mmFilepool.prefetchPackage($mmSite.getId(), files, mmaModBookComponent, module.id);
     };
 
     return self;

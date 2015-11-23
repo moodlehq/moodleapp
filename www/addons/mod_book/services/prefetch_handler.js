@@ -21,10 +21,11 @@ angular.module('mm.addons.mod_book')
  * @ngdoc service
  * @name $mmaModBookPrefetchHandler
  */
-.factory('$mmaModBookPrefetchHandler', function($mmaModBook, $mmCourse, $mmSite, mmCoreDownloading, mmCoreDownloaded,
-            mmCoreOutdated) {
+.factory('$mmaModBookPrefetchHandler', function($mmaModBook, mmCoreDownloaded, mmCoreOutdated, mmaModBookComponent) {
 
     var self = {};
+
+    self.component = mmaModBookComponent;
 
     /**
      * Determine the status of a module based on the current status detected.
@@ -32,22 +33,11 @@ angular.module('mm.addons.mod_book')
      * @module mm.addons.mod_book
      * @ngdoc method
      * @name $mmaModBookPrefetchHandler#determineStatus
-     * @param {Object} module             Module.
-     * @param {String} status             Current status.
-     * @param {Boolean} restoreDownloads  True if it should restore downloads if needed.
-     * @return {String}                   Module status.
+     * @param {String} status Current status.
+     * @return {String}       Status to show.
      */
-    self.determineStatus = function(module, status, restoreDownloads) {
-        if (status == mmCoreDownloading && restoreDownloads) {
-            var siteid = $mmSite.getId();
-            // Check if the download is being handled.
-            if (!$mmaModBook.getDownloadPromise(siteid, module.id)) {
-                // Not handled, the app was probably restarted or something weird happened.
-                // Re-start download (files already on queue or already downloaded will be skipped).
-                $mmaModBook.prefetchContent(module);
-            }
-            return status;
-        } else if (status === mmCoreDownloaded) {
+    self.determineStatus = function(status) {
+        if (status === mmCoreDownloaded) {
             // Books are always treated as outdated since revision and timemodified aren't reliable.
             return mmCoreOutdated;
         } else {
@@ -56,23 +46,22 @@ angular.module('mm.addons.mod_book')
     };
 
     /**
-     * Get the module status.
+     * Get the download size of a module.
      *
      * @module mm.addons.mod_book
      * @ngdoc method
-     * @name $mmaModBookPrefetchHandler#getStatus
-     * @param  {Object} module        Module.
-     * @param {Number} [revision]     Module's revision. If not defined, it will be calculated using module data.
-     * @param {Number} [timemodified] Module's timemodified. If not defined, it will be calculated using module data.
-     * @return {Promise}              Promise resolved with the status.
+     * @name $mmaModBookPrefetchHandler#getDownloadSize
+     * @param {Object} module Module to get the size.
+     * @return {Number}       Size.
      */
-    self.getStatus = function(module, revision, timemodified) {
-        revision = revision || $mmCourse.getRevisionFromContents(module.contents);
-        timemodified = timemodified || $mmCourse.getTimemodifiedFromContents(module.contents);
-
-        return $mmCourse.getModuleStatus($mmSite.getId(), module.id, revision, timemodified).then(function(status) {
-            return self.determineStatus(module, status, true);
+    self.getDownloadSize = function(module) {
+        var size = 0;
+        angular.forEach(module.contents, function(content) {
+            if ($mmaModBook.isFileDownloadable(content) && content.filesize) {
+                size = size + content.filesize;
+            }
         });
+        return size;
     };
 
     /**
@@ -85,20 +74,6 @@ angular.module('mm.addons.mod_book')
      */
     self.isEnabled = function() {
         return $mmaModBook.isPluginEnabled();
-    };
-
-    /**
-     * Whether or not a file belonging to a mod_book is downloadable.
-     * The file param must have a 'type' attribute like in core_course_get_contents response.
-     *
-     * @module mm.addons.mod_book
-     * @ngdoc method
-     * @name $mmaModBookPrefetchHandler#isFileDownloadable
-     * @param {Object} file File to check.
-     * @return {Boolean}    True if downloadable, false otherwise.
-     */
-    self.isFileDownloadable = function(file) {
-        return $mmaModBook.isFileDownloadable(file);
     };
 
     /**

@@ -21,8 +21,9 @@ angular.module('mm.core.course')
  * @ngdoc service
  * @name $mmCourseHelper
  */
-.factory('$mmCourseHelper', function($q, $mmCoursePrefetchDelegate, $mmApp, $mmCourse, $mmUtil, $translate, $mmText, mmCoreNotDownloaded,
-            mmCoreOutdated, mmCoreDownloading, mmCoreWifiDownloadThreshold, mmCoreDownloadThreshold, mmCoreCourseAllSectionsId) {
+.factory('$mmCourseHelper', function($q, $mmCoursePrefetchDelegate, $mmApp, $mmFilepool, $mmUtil, $translate, $mmText,
+            mmCoreNotDownloaded, mmCoreOutdated, mmCoreDownloading, mmCoreWifiDownloadThreshold, mmCoreDownloadThreshold,
+            mmCoreCourseAllSectionsId) {
 
     var self = {};
 
@@ -62,7 +63,7 @@ angular.module('mm.core.course')
                     }
 
                     // Calculate "All sections" status.
-                    allsectionsstatus = $mmCourse.determineModulesStatus(allsectionsstatus, result.status);
+                    allsectionsstatus = $mmFilepool.determinePackagesStatus(allsectionsstatus, result.status);
 
                     // Set this section data.
                     section.showDownload = result.status === mmCoreNotDownloaded;
