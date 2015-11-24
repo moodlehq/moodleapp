@@ -51,7 +51,7 @@ angular.module('mm.core.login')
             $mmSitesManager.newSite(data.siteurl, data.token).then(function() {
                 delete $scope.credentials; // Delete username and password from the scope.
                 $ionicHistory.nextViewOptions({disableBack: true});
-                $state.go('site.mm_courses');
+                $state.go('site.sallenet');
             }, function(error) {
                 $mmUtil.showErrorModal(error);
             }).finally(function() {

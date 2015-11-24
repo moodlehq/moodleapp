@@ -59,7 +59,7 @@ angular.module('mm.core.login')
             $mmSitesManager.getUserToken(sitedata.url, sitedata.username, sitedata.password).then(function(data) {
                 $mmSitesManager.newSite(data.siteurl, data.token).then(function() {
                     $ionicHistory.nextViewOptions({disableBack: true});
-                    $state.go('site.mm_courses');
+                    $state.go('site.sallenet');
                 }, function(error) {
                     $mmUtil.showErrorModal(error);
                 }).finally(function() {
