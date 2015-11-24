@@ -1,0 +1,24 @@
+<ion-view view-title="{{ 'mma.grades.grades' | translate }}">
+    <ion-content>
+        <!-- ion-refresher needs to be direct child of ion-content to work with native scrolling -->
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="gradesLoaded && gradesTable" on-refresh="refreshGrades()">
+        </ion-refresher>
+        <mm-loading hide-until="gradesLoaded">
+            <div ng-if="gradesTable" class="card">
+                <table cellspacing="0" cellpadding="0" class="mma-grades-table">
+                    <thead>
+                        <th ng-repeat="column in gradesTable.columns track by $index" id="{{column.id}}" class="header" colspan="{{column.width}}">
+                            {{column.name | translate}}
+                        </th>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="myrow in gradesTable.rows track by $index" ng-bind-html="myrow"></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div ng-if="!gradesTable" class="padding">
+                <p>{{errormessage}}</p>
+            </div>
+        </mm-loading>
+    </ion-content>
+</ion-view>

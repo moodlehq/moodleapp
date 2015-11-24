@@ -63,7 +63,7 @@ angular.module('mm.core.login')
                 $mmSitesManager.updateSiteInfoByUrl(infositeurl, username).finally(function() {
                     delete $scope.credentials; // Delete password from the scope.
                     $ionicHistory.nextViewOptions({disableBack: true});
-                    $state.go('site.mm_courses');
+                    $state.go('site.sallenet');
                 });
             }, function(error) {
                 // Site deleted? Go back to login page.

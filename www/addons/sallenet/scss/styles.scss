@@ -1,0 +1,23 @@
+input.mma-sallenet-picker {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 100%;
+  min-height: 100%;
+  opacity: 0;
+  outline: none;
+}
+#herramientas { padding: 0.5em; float:left;position:absolute;z-index:3; }
+#herramientas h3 { text-align: center; font-size:1em; margin: 0; }
+.draggable { height: 100px; padding: 5px; float: left; margin: 0px ; font-size: .9em;z-index:1; }
+.ui-widget-header p, .ui-widget-content p { margin: 0; }
+.pupitre {border: 1px solid;float: left; }
+.seleccionado {background-color:green;}
+.cabecera_bloqueada{color:white;background-color:#2d6ca2;padding:3px;margin:3px;font-size:10px;overflow:hide;height:15px;}
+.cabecera_desbloqueada{color:white;background-color:red;padding:3px;margin:3px;font-size:10px;overflow:hide;height:15px;}
+
+.mma-sallenet-input-inset {
+    padding-top: 0;
+    padding-left: 0;
+    padding-bottom: 0;
+}

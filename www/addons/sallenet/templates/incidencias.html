@@ -1,0 +1,35 @@
+<ion-view>
+	<ion-nav-title><mm-format-text watch="true">{{title}}</mm-format-text></ion-nav-title>
+	<ion-content class="has-tabs">
+		<ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="loaded" on-refresh="refreshIncidencias()"></ion-refresher>
+		<mm-loading hide-until="loaded">
+			<article class="card" ng-repeat="inc in incidencias">
+				<div class="item">
+					<h2>{{ inc.tipo }}</h2>
+					<p>{{ inc.fecha }} {{ inc.hora }}</p>
+				</div>
+				<div class="item item-body">
+					<p>{{ inc.profesor }} - {{ inc.asignatura }}: {{ inc.observacion }}</p>
+				</div>
+				<div ng-if="inc.puede_editar && isAppOnLine()">
+					<div ng-if="inc.justificacion" class="item item-body">
+						<hr />
+						<p>{{ inc.justificacion }}</p>
+					</div>
+					<form ng-if="inc.id_asis>0" ng-submit="justifica(inc.id_asis,justificacion); justificacion='';" style="width: 100%">
+						<div class="mma-sallenet-input-inset item-input-inset">
+							<label class="item-input-wrapper">
+								<input type="text" value="hola" ng-model="justificacion" style="width: 100%" />
+							</label>
+							<button type="submit" class="button button-clear" ng-disabled="!justificacion">{{ 'mma.sallenet.justificar ' | translate }}</button>
+						</div>
+					</form>
+				</div>
+				<p class="" ng-if="!isAppOnLine()">{{ 'mma.sallenet.parajustificarcontectate' | translate }}</p>
+			</article>
+	        <div ng-if="!incidencias || incidencias.length <= 0" class="padding">
+	        	<p>{{ 'mma.sallenet.nohayeventos' | translate }}</p>
+	        </div>
+		</mm-loading>
+	</ion-content>
+</ion-view>

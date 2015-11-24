@@ -1,0 +1,44 @@
+<ion-view>
+    <ion-nav-title>{{ title }}</ion-nav-title>
+ 	
+    <ion-content class="padding">
+    	<ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="loaded" on-refresh="refreshDistribucion()"></ion-refresher>
+        <mm-loading hide-until="loaded">
+            <div ng-repeat="pupitre in pupitres" id="pupitre_{{ pupitre.id }}" class="pupitre ui-widget-header" style="height: {{ pupitre.height  }}px; width: {{ pupitre.width * proporcion }}px;top:{{ pupitre.top - alto_min }}px;left:{{ ( pupitre.left - retroceso ) * proporcion }}px;position:absolute; ">
+           		<h4 class="cabecera_bloqueada">Pupitre {{ pupitre.id }}</h4>
+           		<div ng-repeat="alumno in pupitre.alumnos" id='al_{{ alumno.id }}' ng-click="seleccionar( alumno.id );" class="draggable" ng-class="{'seleccionado': seleccionados[alumno.id] }" style='width: {{ancho_foto}}px; border:0.1em solid;padding:2px;text-align:center;top:{{alumno.top}}px;left:{{ alumno.left * proporcion }}px;position:absolute;'>
+           			<h4 class="cabecera_bloqueada">{{alumno.nombre}}</h4>
+           			<img ng-src="{{alumno.profileimageurl}}" style="width:80%" alt="" role="presentation" mm-external-content ng-if="alumno.profileimageurl">
+                    <img src="img/user-avatar.png" alt="" style="width:80%" role="presentation" ng-if="!alumno.profileimageurl">
+                    <div class='badge badge-assertive' style='position:absolute;top:95px;left:0px;' ng-if="alumno.incidencia">{{ alumno.incidencia }}</div>
+           		</div>
+            </div>
+            <div ng-repeat="alumno in alumnos" id='al_{{ alumno.id }}' ng-click="seleccionar( alumno.id );" ng-class="{'seleccionado': seleccionados[alumno.id] }" class="draggable" style='width: {{ancho_foto}}px; border:0.1em solid;padding:2px;text-align:center;top:{{alumno.top - alto_min }}px;left:{{ (alumno.left - retroceso ) * proporcion }}px;position:absolute;'>
+         		<h4 class="cabecera_bloqueada">{{alumno.nombre}}</h4>
+         		<img ng-src="{{alumno.profileimageurl}}" style="width:80%" alt="" role="presentation" mm-external-content ng-if="alumno.profileimageurl">
+                <img src="img/user-avatar.png" alt="" style="width:80%" role="presentation" ng-if="!alumno.profileimageurl">
+                <div class='badge badge-assertive' style='position:absolute;top:95px;left:0px;' ng-if="alumno.incidencia">{{ alumno.incidencia }}</div>
+         	</div>
+        </mm-loading>
+    </ion-content>
+</ion-view>
+
+<ion-footer-bar ng-if="( id_evento > 0 )">
+	<div class='item tabs tabs-icon-left' ng-if="isAppOnLine()">
+		Asistencia
+		<a ng-repeat="item in items_asistencia" class="tab-item active">
+			<button style='background-color:{{item.color}}' ng-click="setIncidencia(id_evento,item.id,1,'',item.abreviatura);">{{ item.abreviatura }}</button>
+		</a>
+		<a class="tab-item active">
+			<button ng-click='setIncidencia(id_evento,-232,1,"","");'>{{ 'mma.sallenet.borra' | translate }}</button>
+		</a>
+		Actitud
+		<a ng-repeat="item in items_actitud" class="tab-item active">
+			<button style='background-color:{{item.color}}' ng-click="setIncidencia(id_evento,item.id,2,'',item.abreviatura);">{{ item.abreviatura }}</button>
+		</a>
+		<a class="tab-item active">
+			<button ng-click='setIncidencia(id_evento,-232,2,"","");'>{{ 'mma.sallenet.borra' | translate }}</button>
+		</a>
+	</div>
+	<h2 ng-if="!isAppOnLine();">{{ 'mma.sallenet.paraestablecerincidenciascontectate' | translate }}</h2>
+</ion-footer-bar>

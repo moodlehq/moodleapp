@@ -1,0 +1,54 @@
+<ion-view view-title="{{'mma.sallenet.sallenet-titulo' | translate}}">
+	<ion-content padding="true">
+		<ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="loaded" on-refresh="refreshSallenet()"></ion-refresher>
+		<h2 style='text-align:center;'>Bienvenido {{nombre}}</h2>
+		<section class='list card' ng-if='ispadre'>
+			<a class='item' title="{{'mma.sallenet.mypadre' | translate}}">
+				<h2>{{'mma.sallenet.mypadre' | translate}}</h2>
+			</a>
+			<div class='item item-text-wrap'>
+				<div class='item tabs tabs-icon-left'>
+					<a ng-repeat='hijo in hijos' ui-sref="site.sallenet-hijo({id_hijo:hijo.id,id_moodle:hijo.id_moodle,nombre:hijo.nombre})" class="tab-item active">
+						<img ng-src="{{hijo.profileimageurl}}" style="height:100%" alt="" role="presentation" mm-external-content ng-if="hijo.profileimageurl">
+						<img src="img/user-avatar.png" alt="" style="height:100%" role="presentation" ng-if="!hijo.profileimageurl">
+						{{hijo.nombre}}
+					</a> 
+				</div>
+			</div>
+		</section>
+		<section class='list card' ng-if='isprofesor'>
+			<a class='item' title="{{'mma.sallenet.myprofesor' | translate}}">
+				<h2>{{'mma.sallenet.myprofesor' | translate}}</h2>
+			</a>
+			<div class='item-text-wrap'>
+				<div class='item tabs tabs-icon-left'>
+					<a class="tab-item active" ui-sref="site.sallenet-horario({id: id,id_moodle:id_moodle,nombre:nombre,profesor:1})">
+						<i class='icon ion-clock'></i>
+						{{ 'mma.sallenet.horario' | translate }}
+					</a> 
+					<a class="tab-item active" ui-sref="site.sallenet-clases">
+						<i class='icon ion-calendar'></i>
+						{{ 'mma.sallenet.misclases' | translate }}
+					</a>
+				</div>
+			</div>
+		</section>
+		<section class='list card' ng-if='isalumno'>
+			<a class='item' title="{{'mma.sallenet.myalumno' | translate}}">
+				<h2>{{'mma.sallenet.myalumno' | translate}}</h2>
+			</a>
+			<div class='item item-text-wrap'>
+				<div class='item tabs tabs-icon-left'>
+					<a class="tab-item active" ui-sref="site.sallenet-horario({id: id,id_moodle:id_moodle,nombre:nombre,profesor:0,alumno:1})">
+						<i class='icon ion-clock'></i>
+						{{ 'mma.sallenet.horario' | translate }}
+					</a> 
+					<a class="tab-item active" ui-sref="site.sallenet-incidencias({id_hijo: id,id_moodle:id_moodle,nombre: nombre})">
+						<i class='icon ion-calendar'></i>
+						{{ 'mma.sallenet.incidencias' | translate }}
+					</a>  
+				</div>
+			</div>
+		</section>
+	</ion-content>
+</ion-view>
