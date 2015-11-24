@@ -27,7 +27,7 @@ angular.module('mm.addons.sallenet')
 
     var course = $stateParams.course || {},
         courseid = course.id,
-        userid = $stateParams.userid || $mmSite.getUserId();
+        userid = $stateParams.userid || 0;
 
     function fetchGrades(refresh) {
         return $mmaSallenet.getGradesTable(courseid, userid, refresh).then(function(table) {
