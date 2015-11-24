@@ -150,7 +150,8 @@ angular.module('mm.addons.mod_resource')
         }
 
         return $mmFilepool.getDirectoryUrlByUrl($mmSite.getId(), module.url).then(function(dirPath) {
-            return $mmFS.concatenatePaths(dirPath, mainFilePath);
+            // This URL is going to be injected in an iframe, we need trustAsResourceUrl to make it work in a browser.
+            return $sce.trustAsResourceUrl($mmFS.concatenatePaths(dirPath, mainFilePath));
         }, function() {
             // Error getting directory, there was an error downloading or we're in browser. Return online URL.
             if ($mmApp.isOnline() && mainFile.fileurl) {

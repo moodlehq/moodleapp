@@ -30,13 +30,27 @@ angular.module('mm.core')
 
     var self = {},
         initialized = false,
-        basePath = '';
+        basePath = '',
+        isHTMLAPI = false;
 
     // Formats to read a file.
     self.FORMATTEXT         = 0;
     self.FORMATDATAURL      = 1;
     self.FORMATBINARYSTRING = 2;
     self.FORMATARRAYBUFFER  = 3;
+
+    /**
+     * Sets basePath to use with HTML API. Reserved for core use.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#setHTMLBasePath
+     * @param {String} path Base path to use.
+     */
+    self.setHTMLBasePath = function(path) {
+        isHTMLAPI = true;
+        basePath = path;
+    };
 
     /**
      * Initialize basePath based on the OS if it's not initialized already.
@@ -61,7 +75,7 @@ angular.module('mm.core')
                 basePath = cordova.file.externalApplicationStorageDirectory;
             } else if (ionic.Platform.isIOS()) {
                 basePath = cordova.file.documentsDirectory;
-            } else {
+            } else if (!self.isAvailable() || basePath === '') {
                 $log.error('Error getting device OS.');
                 deferred.reject();
                 return;
@@ -81,7 +95,7 @@ angular.module('mm.core')
      * @return {Boolean} True when cordova is initialised.
      */
     self.isAvailable = function() {
-        return (typeof cordova !== 'undefined' && typeof cordova.file !== 'undefined');
+        return typeof window.resolveLocalFileSystemURL !== 'undefined' && typeof FileTransfer !== 'undefined';
     };
 
     /**
@@ -357,7 +371,7 @@ angular.module('mm.core')
      * @return {Promise} Promise resolved with the estimated free space in bytes.
      */
     self.calculateFreeSpace = function() {
-        if (ionic.Platform.isIOS()) {
+        if (ionic.Platform.isIOS() || isHTMLAPI) {
             // getFreeDiskSpace doesn't work on iOS. See https://tracker.moodle.org/browse/MOBILE-956.
             // Ugly fix: request a file system instance with a minimum size until we get an error.
 
@@ -510,6 +524,10 @@ angular.module('mm.core')
         return self.init().then(function() {
             // Create file (and parent folders) to prevent errors.
             return self.createFile(path).then(function(fileEntry) {
+                if (isHTMLAPI && typeof data == 'string') {
+                    // We need to write Blobs.
+                    data = new Blob([data], {type: 'text/plain'});
+                }
                 return $cordovaFile.writeFile(basePath, path, data, true).then(function() {
                     return fileEntry;
                 });
@@ -612,7 +630,28 @@ angular.module('mm.core')
      */
     self.moveFile = function(originalPath, newPath) {
         return self.init().then(function() {
-            return $cordovaFile.moveFile(basePath, originalPath, basePath, newPath);
+            if (isHTMLAPI) {
+                // In Cordova API we need to calculate the longest matching path to make it work.
+                // $cordovaFile.moveFile('a/', 'b/c.ext', 'a/', 'b/d.ext') doesn't work.
+                // cordovaFile.moveFile('a/b/', 'c.ext', 'a/b/', 'd.ext') works.
+                var commonPath = basePath,
+                    dirsA = originalPath.split('/'),
+                    dirsB = newPath.split('/');
+
+                angular.forEach(dirsA, function(dir, index) {
+                    if (dirsB[index] === dir) {
+                        // Found a common folder, add it to common path and remove it from each specific path.
+                        dir = dir + '/';
+                        commonPath = self.concatenatePaths(commonPath, dir);
+                        originalPath = originalPath.replace(dir, '');
+                        newPath = newPath.replace(dir, '');
+                    }
+                });
+
+                return $cordovaFile.moveFile(commonPath, originalPath, commonPath, newPath);
+            } else {
+                return $cordovaFile.moveFile(basePath, originalPath, basePath, newPath);
+            }
         });
     };
 
@@ -689,6 +728,23 @@ angular.module('mm.core')
         } else {
             return leftPath + rightPath;
         }
+    };
+
+    /**
+     * Get the internal URL of a file.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#getInternalURL
+     * @param  {Object} fileEntry File Entry.
+     * @return {String}           Internal URL.
+     */
+    self.getInternalURL = function(fileEntry) {
+        if (isHTMLAPI) {
+            // HTML API doesn't implement toInternalURL.
+            return fileEntry.toURL();
+        }
+        return fileEntry.toInternalURL();
     };
 
     return self;

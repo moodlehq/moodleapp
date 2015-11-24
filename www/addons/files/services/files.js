@@ -24,7 +24,7 @@ angular.module('mm.addons.files')
     $mmAppProvider.registerStores(stores);
 })
 
-.factory('$mmaFiles', function($mmSite, $mmUtil, $mmFS, $mmWS, $q, $timeout, $log, $mmSitesManager, $mmApp, md5,
+.factory('$mmaFiles', function($mmSite, $mmFS, $q, $timeout, $log, $mmSitesManager, $mmApp, md5,
             mmaFilesSharedFilesStore) {
 
     $log = $log.getInstance('$mmaFiles');
