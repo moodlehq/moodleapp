@@ -15,6 +15,7 @@
 angular.module('mm.core.course', ['mm.core.courses'])
 
 .constant('mmCoreCoursePriority', 800)
+.constant('mmCoreCourseAllSectionsId', -1)
 
 .config(function($stateProvider, $mmCoursesDelegateProvider, mmCoreCoursePriority) {
 

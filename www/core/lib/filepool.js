@@ -14,13 +14,15 @@
 
 angular.module('mm.core')
 
-.constant('mmFilepoolQueueProcessInterval', 300)
+.constant('mmFilepoolQueueProcessInterval', 0)
 .constant('mmFilepoolFolder', 'filepool')
 .constant('mmFilepoolStore', 'filepool')
 .constant('mmFilepoolQueueStore', 'files_queue')
 .constant('mmFilepoolLinksStore', 'files_links')
+.constant('mmFilepoolPackagesStore', 'filepool_packages')
 
-.config(function($mmAppProvider, $mmSitesFactoryProvider, mmFilepoolStore, mmFilepoolLinksStore, mmFilepoolQueueStore) {
+.config(function($mmAppProvider, $mmSitesFactoryProvider, mmFilepoolStore, mmFilepoolLinksStore, mmFilepoolQueueStore,
+            mmFilepoolPackagesStore) {
     var siteStores = [
         {
             // File store.
@@ -60,6 +62,32 @@ angular.module('mm.core')
                 }
             ]
         },
+        {
+            // Packages store.
+            //
+            // Each entry should contain:
+            // - id: The package ID. See {@link $mmFilepool#getPackageId}
+            // - component: Package's component.
+            // - componentId: Package's componentId.
+            // - status: The package status: mmCoreDownloaded, mmCoreDownloading, etc.
+            // - previous: (optional) The package previous status.
+            // - revision: The package revision.
+            // - timemodified: The package timemodified.
+            // - updated: When was the entry updated for the last time.
+            name: mmFilepoolPackagesStore,
+            keyPath: 'id',
+            indexes: [
+                {
+                    name: 'component',
+                },
+                {
+                    name: 'componentId',
+                },
+                {
+                    name: 'status',
+                }
+            ]
+        }
     ];
     var appStores = [
         {
@@ -138,7 +166,9 @@ angular.module('mm.core')
  * {@link $mmFilepool#_getFileIdByUrl}.
  */
 .factory('$mmFilepool', function($q, $log, $timeout, $mmApp, $mmFS, $mmWS, $mmSitesManager, $mmEvents, md5, mmFilepoolStore,
-        mmFilepoolLinksStore, mmFilepoolQueueStore, mmFilepoolFolder, mmFilepoolQueueProcessInterval, mmCoreEventQueueEmpty) {
+        mmFilepoolLinksStore, mmFilepoolQueueStore, mmFilepoolFolder, mmFilepoolQueueProcessInterval, mmCoreEventQueueEmpty,
+        mmCoreDownloaded, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated, mmCoreNotDownloadable, mmFilepoolPackagesStore,
+        mmCoreEventPackageStatusChanged) {
 
     $log = $log.getInstance('$mmFilepool');
 
@@ -150,7 +180,9 @@ angular.module('mm.core')
             tokenRegex,
             new RegExp('(\\?|&)forcedownload=[0-1]')
         ],
-        revisionRegex = new RegExp('/content/([0-9]+)/');
+        revisionRegex = new RegExp('/content/([0-9]+)/'),
+        queueDeferreds = {}, // To handle file downloads using the queue.
+        packagesPromises = {};
 
     // Queue status codes.
     var QUEUE_RUNNING = 'mmFilepool:QUEUE_RUNNING',
@@ -161,7 +193,10 @@ angular.module('mm.core')
         ERR_FS_OR_NETWORK_UNAVAILABLE = 'mmFilepoolError:ERR_FS_OR_NETWORK_UNAVAILABLE',
         ERR_QUEUE_ON_PAUSE = 'mmFilepoolError:ERR_QUEUE_ON_PAUSE';
 
-    // File states and events.
+    /**
+     * Files states. Deprecated, please use core constants instead: mmCoreDownloaded, mmCoreDownloading, ...
+     * @deprecated since version 2.6
+     */
     self.FILEDOWNLOADED = 'downloaded';
     self.FILEDOWNLOADING = 'downloading';
     self.FILENOTDOWNLOADED = 'notdownloaded';
@@ -289,7 +324,12 @@ angular.module('mm.core')
             fileId,
             now = new Date(),
             link,
-            revision;
+            revision,
+            queueDeferred;
+
+        if (!$mmFS.isAvailable()) {
+            return $q.reject();
+        }
 
         return self._fixPluginfileURL(siteId, fileUrl).then(function(fileUrl) {
 
@@ -305,6 +345,10 @@ angular.module('mm.core')
                     componentId: componentId
                 };
             }
+
+            // Retrieve the queue deferred now if it exists to prevent errors if file is removed from queue
+            // while we're checking if the file is in queue.
+            queueDeferred = self._getQueueDeferred(siteId, fileId, false);
 
             return db.get(mmFilepoolQueueStore, [siteId, fileId]).then(function(fileObject) {
                 var foundLink = false,
@@ -345,18 +389,19 @@ angular.module('mm.core')
                     if (update) {
                         // Update only when required.
                         $log.debug('Updating file ' + fileId + ' which is already in queue');
-                        return db.insert(mmFilepoolQueueStore, fileObject);
+                        return db.insert(mmFilepoolQueueStore, fileObject).then(function() {
+                            return self._getQueuePromise(siteId, fileId);
+                        });
                     }
 
-                    var response = (function() {
-                        // Return a resolved promise containing the keyPath such as db.insert() does it.
-                        var deferred = $q.defer();
-                        deferred.resolve([fileObject.siteId, fileObject.fileId]);
-                        return deferred.promise;
-                    })();
-
                     $log.debug('File ' + fileId + ' already in queue and does not require update');
-                    return response;
+                    if (queueDeferred) {
+                        // If we were able to retrieve the queue deferred before we use that one, since the file download
+                        // might have finished now and the deferred wouldn't be in the array anymore.
+                        return queueDeferred.promise;
+                    } else {
+                        return self._getQueuePromise(siteId, fileId);
+                    }
                 } else {
                     return addToQueue();
                 }
@@ -377,10 +422,10 @@ angular.module('mm.core')
                     timemodified: timemodified,
                     path: filePath,
                     links: link ? [link] : []
-                }).then(function(result) {
+                }).then(function() {
                     // Check if the queue is running.
                     self.checkQueueProcessing();
-                    return result;
+                    return self._getQueuePromise(siteId, fileId);
                 });
             }
         });
@@ -412,6 +457,32 @@ angular.module('mm.core')
 
         queueState = QUEUE_RUNNING;
         self._processQueue();
+    };
+
+    /**
+     * Clear all packages status in a site.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#clearAllPackagesStatus
+     * @param {String} siteId Site ID.
+     * @return {Promise}      Promise resolved when all status are cleared.
+     */
+    self.clearAllPackagesStatus = function(siteId) {
+        var promises = [];
+        $log.debug('Clear all packages status for site ' + siteId);
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var db = site.getDb();
+            return db.getAll(mmFilepoolPackagesStore).then(function(entries) {
+                angular.forEach(entries, function(entry) {
+                    promises.push(db.remove(mmFilepoolPackagesStore, entry.id).then(function() {
+                        // Trigger module status changed, setting it as not downloaded.
+                        self._triggerPackageStatusChanged(siteId, entry.component, entry.componentId, mmCoreNotDownloaded);
+                    }));
+                });
+                return $q.all(promises);
+            });
+        });
     };
 
     /**
@@ -455,6 +526,141 @@ angular.module('mm.core')
                 return $q.reject();
             });
         });
+    };
+
+    /**
+     * Given the current status of a list of packages and the status of one of the packages,
+     * determine the new status for the list of packages. The status of a list of packages is:
+     *     - mmCoreNotDownloadable if there are no downloadable packages.
+     *     - mmCoreNotDownloaded if at least 1 package has status mmCoreNotDownloaded.
+     *     - mmCoreDownloaded if ALL the downloadable packages have status mmCoreDownloaded.
+     *     - mmCoreDownloading if ALL the downloadable packages have status mmCoreDownloading or mmCoreDownloaded,
+     *                                     with at least 1 package with mmCoreDownloading.
+     *     - mmCoreOutdated if ALL the downloadable packages have status mmCoreOutdated or mmCoreDownloaded or
+     *                                     mmCoreDownloading, with at least 1 package with mmCoreOutdated.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#determinePackagesStatus
+     * @param {String} current       Current status of the list of packages.
+     * @param {String} packagestatus Status of one of the packages.
+     * @return {String}              New status for the list of packages;
+     */
+    self.determinePackagesStatus = function(current, packagestatus) {
+        if (!current) {
+            current = mmCoreNotDownloadable;
+        }
+
+        if (packagestatus === mmCoreNotDownloaded) {
+            // If 1 package is not downloaded the status of the whole list will always be not downloaded.
+            return mmCoreNotDownloaded;
+        } else if (packagestatus === mmCoreDownloaded && current === mmCoreNotDownloadable) {
+            // If all packages are downloaded or not downloadable with at least 1 downloaded, status will be downloaded.
+            return mmCoreDownloaded;
+        } else if (packagestatus === mmCoreDownloading && (current === mmCoreNotDownloadable || current === mmCoreDownloaded)) {
+            // If all packages are downloading/downloaded/notdownloadable with at least 1 downloading, status will be downloading.
+            return mmCoreDownloading;
+        } else if (packagestatus === mmCoreOutdated && current !== mmCoreNotDownloaded) {
+            // If there are no packages notdownloaded and there is at least 1 outdated, status will be outdated.
+            return mmCoreOutdated;
+        }
+
+        // Status remains the same.
+        return current;
+    };
+
+    /**
+     * Downloads or prefetches a list of files.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#_downloadOrPrefetchPackage
+     * @param {String} siteId        The site ID.
+     * @param  {Object[]} fileList   List of files to download.
+     * @param  {Boolean} prefetch    True if should prefetch the contents (queue), false if they should be downloaded right now.
+     * @param {String} component     The component to link the file to.
+     * @param {Number} [componentId] An ID to use in conjunction with the component.
+     * @param {String} [dirPath]     Name of the directory where to store the files (inside filepool dir). If not defined, store
+     *                               the files directly inside the filepool folder.
+     * @return {Promise}             Promise resolved when all files are downloaded.
+     * @protected
+     */
+    self._downloadOrPrefetchPackage = function(siteId, fileList, prefetch, component, componentId, dirPath) {
+
+        var packageId = self.getPackageId(component, componentId);
+
+        if (packagesPromises[siteId] && packagesPromises[siteId][packageId]) {
+            // There's already a download ongoing for this package, return the promise.
+            return packagesPromises[siteId][packageId];
+        } else if (!packagesPromises[siteId]) {
+            packagesPromises[siteId] = {};
+        }
+
+        var revision = self.getRevisionFromFileList(fileList),
+            timemod = self.getTimemodifiedFromFileList(fileList),
+            dwnPromise,
+            deleted = false;
+
+        // Set package as downloading.
+        dwnPromise = self.storePackageStatus(siteId, component, componentId, mmCoreDownloading, revision, timemod).then(function() {
+            var promises = [];
+
+            angular.forEach(fileList, function(file) {
+                var path;
+
+                if (dirPath) {
+                    // Calculate the path to the file.
+                    path = file.filename;
+                    if (file.filepath !== '/') {
+                        path = file.filepath.substr(1) + path;
+                    }
+                    path = $mmFS.concatenatePaths(dirPath, path);
+                }
+
+                if (prefetch) {
+                    promises.push(self.addToQueueByUrl(siteId, file.fileurl, component, componentId, file.timemodified, path));
+                } else {
+                    promises.push(self.downloadUrl(siteId, file.fileurl, false, component, componentId, file.timemodified, path));
+                }
+            });
+
+            return $q.all(promises).then(function() {
+                // Success prefetching, store package as downloaded.
+                return self.storePackageStatus(siteId, component, componentId, mmCoreDownloaded, revision, timemod);
+            }).catch(function() {
+                // Error downloading, go back to previous status and reject the promise.
+                return self.setPackagePreviousStatus(siteId, component, componentId).then(function() {
+                    return $q.reject();
+                });
+            });
+        }).finally(function() {
+            // Download finished, delete the promise.
+            delete packagesPromises[siteId][packageId];
+            deleted = true;
+        });
+
+        if (!deleted) { // In case promise was finished immediately.
+            packagesPromises[siteId][packageId] = dwnPromise;
+        }
+        return dwnPromise;
+    };
+
+    /**
+     * Downloads a list of files.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#downloadPackage
+     * @param {String} siteId      The site ID.
+     * @param  {Object[]} fileList List of files to download.
+     * @param {String} component   The component to link the file to.
+     * @param {Number} componentId An ID to identify the download. Must be unique.
+     * @param {String} [dirPath]   Name of the directory where to store the files (inside filepool dir). If not defined, store
+     *                             the files directly inside the filepool folder.
+     * @return {Promise}           Promise resolved when all files are downloaded.
+     */
+    self.downloadPackage = function(siteId, fileList, component, componentId, dirPath) {
+        return self._downloadOrPrefetchPackage(siteId, fileList, false, component, componentId, dirPath);
     };
 
     /**
@@ -652,6 +858,149 @@ angular.module('mm.core')
             var fileId = self._getFileIdByUrl(fileUrl);
             return self._getFileEventName(siteId, fileId);
         });
+    };
+
+    /**
+     * Get a download promise. If the promise is not set, return undefined.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#getPackageDownloadPromise
+     * @param {String} siteId        Site ID.
+     * @param {String} component     The component of the package.
+     * @param {Number} [componentId] An ID to use in conjunction with the component.
+     * @return {String}             Download promise or undefined.
+     */
+    self.getPackageDownloadPromise = function(siteId, component, componentId) {
+        var packageId = self.getPackageId(component, componentId);
+        if (packagesPromises[siteId] && packagesPromises[siteId][packageId]) {
+            return packagesPromises[siteId][packageId];
+        }
+    };
+
+    /**
+     * Get the ID of a package.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#getPackageId
+     * @param {String} component     Package's component.
+     * @param {Number} [componentId] An ID to use in conjunction with the component.
+     * @return {String}              Package ID.
+     */
+    self.getPackageId = function(component, componentId) {
+        return md5.createHash(component + '#' + self._fixComponentId(componentId));
+    };
+
+    /**
+     * Get a package previous status.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#getPackagePreviousStatus
+     * @param {String} siteId           Site ID.
+     * @param {String} component        Package's component.
+     * @param {Number} [componentId]    An ID to use in conjunction with the component.
+     * @return {Promise}                Promise resolved with the status.
+     */
+    self.getPackagePreviousStatus = function(siteId, component, componentId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var db = site.getDb(),
+                packageId = self.getPackageId(component, componentId);
+            return db.get(mmFilepoolPackagesStore, packageId).then(function(entry) {
+                return entry.previous || mmCoreNotDownloaded;
+            }, function() {
+                return mmCoreNotDownloaded;
+            });
+        });
+    };
+
+    /**
+     * Get a package status.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#getPackageStatus
+     * @param {String} siteId           Site ID.
+     * @param {String} component        Package's component.
+     * @param {Number} [componentId]    An ID to use in conjunction with the component.
+     * @param {Number} [revision=0]     Package's revision.
+     * @param {Number} [timemodified=0] Package's timemodified.
+     * @return {Promise}                Promise resolved with the status.
+     */
+    self.getPackageStatus = function(siteId, component, componentId, revision, timemodified) {
+        revision = revision || 0;
+        timemodified = timemodified || 0;
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var db = site.getDb(),
+                packageId = self.getPackageId(component, componentId);
+
+            // Get status.
+            return db.get(mmFilepoolPackagesStore, packageId).then(function(entry) {
+                if (entry.status === mmCoreDownloaded) {
+                    if (revision > entry.revision || timemodified > entry.timemodified) {
+                        // File is outdated. Let's change its status.
+                        entry.status = mmCoreOutdated;
+                        entry.updated = new Date().getTime();
+                        db.insert(mmFilepoolPackagesStore, entry).then(function() {
+                            // Success inserting, trigger event.
+                            self._triggerPackageStatusChanged(siteId, component, componentId, mmCoreOutdated);
+                        });
+                    }
+                }
+                return entry.status;
+            }, function() {
+                return mmCoreNotDownloaded;
+            });
+        });
+    };
+
+    /**
+     * Get the deferred object for a file in the queue.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#_getQueueDeferred
+     * @param {String} siteId         The site ID.
+     * @param {String} fileId         The file ID.
+     * @param {Boolean} [create=true] True if it should create a new deferred if it doesn't exist.
+     * @return {Object}               Deferred.
+     * @protected
+     */
+    self._getQueueDeferred = function(siteId, fileId, create) {
+        if (typeof create == 'undefined') {
+            create = true;
+        }
+
+        if (!queueDeferreds[siteId]) {
+            if (!create) {
+                return;
+            }
+            queueDeferreds[siteId] = {};
+        }
+        if (!queueDeferreds[siteId][fileId]) {
+            if (!create) {
+                return;
+            }
+            queueDeferreds[siteId][fileId] = $q.defer();
+        }
+        return queueDeferreds[siteId][fileId];
+    };
+
+    /**
+     * Get the promise for a file in the queue.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#_getQueuePromise
+     * @param {String} siteId         The site ID.
+     * @param {String} fileId         The file ID.
+     * @param {Boolean} [create=true] True if it should create a new promise if it doesn't exist.
+     * @return {Promise}              Promise.
+     * @protected
+     */
+    self._getQueuePromise = function(siteId, fileId, create) {
+        return self._getQueueDeferred(siteId, fileId, create).promise;
     };
 
     /**
@@ -882,7 +1231,7 @@ angular.module('mm.core')
     };
 
     /**
-     * Returns the file state: FILEDOWNLOADED, FILEDOWNLOADING, FILENOTDOWNLOADED or FILEOUTDATED.
+     * Returns the file state: mmCoreDownloaded, mmCoreDownloading, mmCoreNotDownloaded or mmCoreOutdated.
      *
      * @module mm.core
      * @ngdoc method
@@ -902,16 +1251,16 @@ angular.module('mm.core')
             fileId = self._getFileIdByUrl(fileUrl);
 
             return self._hasFileInQueue(siteId, fileId).then(function() {
-                return self.FILEDOWNLOADING;
+                return mmCoreDownloading;
             }, function() {
                 return self._hasFileInPool(siteId, fileId).then(function(fileObject) {
                     if (self._isFileOutdated(fileObject, revision, timemodified)) {
-                        return self.FILEOUTDATED;
+                        return mmCoreOutdated;
                     } else {
-                        return self.FILEDOWNLOADED;
+                        return mmCoreDownloaded;
                     }
                 }, function() {
-                    return self.FILENOTDOWNLOADED;
+                    return mmCoreNotDownloaded;
                 });
             });
         });
@@ -982,6 +1331,30 @@ angular.module('mm.core')
     };
 
     /**
+     * Get package revision number from a list of files.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#getRevisionFromFileList
+     * @param {Object[]} files Package files.
+     * @return {Number}        Package revision.
+     */
+    self.getRevisionFromFileList = function(files) {
+        if (files && files.length) {
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                if (file.fileurl) {
+                    var revision = self.getRevisionFromUrl(file.fileurl);
+                    if (typeof revision !== 'undefined') {
+                        return revision;
+                    }
+                }
+            }
+        }
+        return 0;
+    };
+
+    /**
      * Get the revision number from a file URL.
      *
      * @module mm.core
@@ -1018,6 +1391,27 @@ angular.module('mm.core')
      */
     self.getSrcByUrl = function(siteId, fileUrl, component, componentId, timemodified) {
         return self._getFileUrlByUrl(siteId, fileUrl, 'src', component, componentId, timemodified);
+    };
+
+    /**
+     * Get package timemodified from a list of files.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#getTimemodifiedFromFileList
+     * @param {Object[]} files Package files.
+     * @return {Number}        Package time modified.
+     */
+    self.getTimemodifiedFromFileList = function(files) {
+        if (files && files.length) {
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                if (file.timemodified) {
+                    return file.timemodified;
+                }
+            }
+        }
+        return 0;
     };
 
     /**
@@ -1228,6 +1622,24 @@ angular.module('mm.core')
     };
 
     /**
+     * Prefetches a list of files.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#prefetchPackage
+     * @param {String} siteId      The site ID.
+     * @param  {Object[]} fileList List of files to download.
+     * @param {String} component   The component to link the file to.
+     * @param {Number} componentId An ID to identify the download. Must be unique.
+     * @param {String} [dirPath]   Name of the directory where to store the files (inside filepool dir). If not defined, store
+     *                             the files directly inside the filepool folder.
+     * @return {Promise}           Promise resolved when all files are downloaded.
+     */
+    self.prefetchPackage = function(siteId, fileList, component, componentId, dirPath) {
+        return self._downloadOrPrefetchPackage(siteId, fileList, true, component, componentId, dirPath);
+    };
+
+    /**
      * Process the queue.
      *
      * @module mm.core
@@ -1242,7 +1654,6 @@ angular.module('mm.core')
      */
     self._processQueue = function() {
         var deferred = $q.defer(),
-            now = new Date(),
             promise;
 
         if (queueState !== QUEUE_RUNNING) {
@@ -1322,9 +1733,11 @@ angular.module('mm.core')
             return db.get(mmFilepoolStore, fileId).then(function(fileObject) {
                 if (fileObject && !self._isFileOutdated(fileObject, revision, timemodified)) {
                     // We have the file, it is not stale, we can update links and remove from queue.
-                    self._addFileLinks(siteId, fileId, links);
-                    self._removeFromQueue(siteId, fileId);
                     $log.debug('Queued file already in store, ignoring...');
+                    self._addFileLinks(siteId, fileId, links);
+                    self._removeFromQueue(siteId, fileId).finally(function() {
+                        self._treatQueueDeferred(siteId, fileId, true);
+                    });
                     self._notifyFileDownloaded(siteId, fileId);
                     return;
                 }
@@ -1334,6 +1747,13 @@ angular.module('mm.core')
                 // The file does not exist, download it.
                 return download(siteId, fileUrl, undefined, links);
             });
+        }, function() {
+            // Couldn't get site DB, site was probably deleted.
+            $log.debug('Item dropped from queue due to site DB not retrieved: ' + fileUrl);
+            return self._removeFromQueue(siteId, fileId).catch(function() {}).finally(function() {
+                self._treatQueueDeferred(siteId, fileId, false);
+                self._notifyFileDownloadError(siteId, fileId);
+            });
         });
 
         /**
@@ -1341,20 +1761,18 @@ angular.module('mm.core')
          */
         function download(siteId, fileUrl, fileObject, links) {
             return self._downloadForPoolByUrl(siteId, fileUrl, revision, timemodified, filePath, fileObject).then(function() {
-                var promise,
-                    deferred;
+                var promise;
 
                 // Success, we add links and remove from queue.
                 self._addFileLinks(siteId, fileId, links);
                 promise = self._removeFromQueue(siteId, fileId);
 
+                self._treatQueueDeferred(siteId, fileId, true);
                 self._notifyFileDownloaded(siteId, fileId);
 
                 // Wait for the item to be removed from queue before resolving the promise.
                 // If the item could not be removed from queue we still resolve the promise.
-                deferred = $q.defer();
-                promise.then(deferred.resolve, deferred.resolve);
-                return deferred.promise;
+                return promise.catch(function() {});
 
             }, function(errorObject) {
                 // Whoops, we have an error...
@@ -1405,20 +1823,19 @@ angular.module('mm.core')
                 }
 
                 if (dropFromQueue) {
-                    var deferred,
-                        promise;
+                    var promise;
 
                     $log.debug('Item dropped from queue due to error: ' + fileUrl);
                     promise = self._removeFromQueue(siteId, fileId);
 
                     // Consider this as a silent error, never reject the promise here.
-                    deferred = $q.defer();
-                    promise.then(deferred.resolve, deferred.resolve).finally(function() {
+                    return promise.catch(function() {}).finally(function() {
+                        self._treatQueueDeferred(siteId, fileId, false);
                         self._notifyFileDownloadError(siteId, fileId);
                     });
-                    return deferred.promise;
                 } else {
                     // We considered the file as legit but did not get it, failure.
+                    self._treatQueueDeferred(siteId, fileId, false);
                     self._notifyFileDownloadError(siteId, fileId);
                     return $q.reject();
                 }
@@ -1510,6 +1927,131 @@ angular.module('mm.core')
      */
     self._removeRevisionFromUrl = function(url) {
         return url.replace(revisionRegex, '/content/0/');
+    };
+
+    /**
+     * Change the package status, setting it to the previous status.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#setPackagePreviousStatus
+     * @param {String} siteId        Site ID.
+     * @param {String} component     Package's component.
+     * @param {Number} [componentId] An ID to use in conjunction with the component.
+     * @return {Promise}             Promise resolved when the status is changed. Resolve param: new status.
+     */
+    self.setPackagePreviousStatus = function(siteId, component, componentId) {
+        $log.debug('Set previous status for package ' + component + ' ' + componentId);
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var db = site.getDb(),
+                packageId = self.getPackageId(component, componentId);
+
+            // Get current stored data, we'll only update 'status' and 'updated' fields.
+            return db.get(mmFilepoolPackagesStore, packageId).then(function(entry) {
+                entry.status = entry.previous || mmCoreNotDownloaded;
+                entry.updated = new Date().getTime();
+                $log.debug('Set status \'' + entry.status + '\' for package ' + component + ' ' + componentId);
+
+                return db.insert(mmFilepoolPackagesStore, entry).then(function() {
+                    // Success updating, trigger event.
+                    self._triggerPackageStatusChanged(siteId, component, componentId, entry.status);
+                    return entry.status;
+                });
+            });
+        });
+    };
+
+    /**
+     * Store package status.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#storePackageStatus
+     * @param {String} siteId           Site ID.
+     * @param {String} component        Package's component.
+     * @param {Number} [componentId]    An ID to use in conjunction with the component.
+     * @param {String} status           New package status.
+     * @param {Number} [revision=0]     Package's revision.
+     * @param {Number} [timemodified=0] Package's timemodified.
+     * @return {Promise}                Promise resolved when status is stored.
+     */
+    self.storePackageStatus = function(siteId, component, componentId, status, revision, timemodified) {
+        $log.debug('Set status \'' + status + '\' for package ' + component + ' ' + componentId);
+        revision = revision || 0;
+        timemodified = timemodified || 0;
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var db = site.getDb(),
+                packageId = self.getPackageId(component, componentId);
+
+            // Search current status to set it as previous status.
+            return db.get(mmFilepoolPackagesStore, packageId).then(function(entry) {
+                return entry.status;
+            }, function() {
+                return undefined; // No previous status.
+            }).then(function(previousStatus) {
+                return db.insert(mmFilepoolPackagesStore, {
+                    id: packageId,
+                    component: component,
+                    componentId: componentId,
+                    status: status,
+                    previous: previousStatus,
+                    revision: revision,
+                    timemodified: timemodified,
+                    updated: new Date().getTime()
+                }).then(function(result) {
+                    // Success inserting, trigger event.
+                    self._triggerPackageStatusChanged(siteId, component, componentId, status);
+                    return result;
+                });
+            });
+        });
+    };
+
+    /**
+     * Resolves or rejects a queue deferred and removes it from the list.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#_treatQueueDeferred
+     * @param {String} siteId   The site ID.
+     * @param {String} fileId   The file ID.
+     * @param {Boolean} resolve True if promise should be resolved, false if it should be rejected.
+     * @return {Object}         Deferred.
+     * @protected
+     */
+    self._treatQueueDeferred = function(siteId, fileId, resolve) {
+        if (queueDeferreds[siteId] && queueDeferreds[siteId][fileId]) {
+            if (resolve) {
+                queueDeferreds[siteId][fileId].resolve();
+            } else {
+                queueDeferreds[siteId][fileId].reject();
+            }
+            delete queueDeferreds[siteId][fileId];
+        }
+    };
+
+    /**
+     * Trigger mmCoreEventPackageStatusChanged with the right data.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#_triggerPackageStatusChanged
+     * @param {String} siteId        Site ID.
+     * @param {String} component     Package's component.
+     * @param {Number} [componentId] An ID to use in conjunction with the component.
+     * @param {String} status        New package status.
+     * @return {Void}
+     * @protected
+     */
+    self._triggerPackageStatusChanged = function(siteId, component, componentId, status) {
+        var data = {
+            siteid: siteId,
+            component: component,
+            componentId: componentId,
+            status: status
+        };
+        $mmEvents.trigger(mmCoreEventPackageStatusChanged, data);
     };
 
     return self;

@@ -27,7 +27,8 @@ angular.module('mm.core')
  */
 .factory('$mmUpdateManager', function($log, $q, $mmConfig, $mmSitesManager, $mmFS, $cordovaLocalNotification, $mmLocalNotifications,
             $mmApp, $mmEvents, mmCoreSitesStore, mmCoreVersionApplied, mmCoreEventSiteAdded, mmCoreEventSiteUpdated,
-            mmCoreEventSiteDeleted) {
+            mmCoreEventSiteDeleted, $injector, $mmFilepool, mmCoreCourseModulesStore, mmFilepoolLinksStore,
+            mmFilepoolPackagesStore) {
 
     $log = $log.getInstance('$mmUpdateManager');
 
@@ -63,6 +64,10 @@ angular.module('mm.core')
 
                 if (versionCode >= 2003) {
                     setStoreSitesInFile();
+                }
+
+                if (versionCode >= 2007 && versionApplied < 2007) {
+                    promises.push(migrateModulesStatus());
                 }
 
                 return $q.all(promises).then(function() {
@@ -223,6 +228,97 @@ angular.module('mm.core')
         } else {
             return $q.when();
         }
+    }
+
+    /**
+     * Migrate mmCoreCourseModulesStore to mmFilepoolPackagesStore.
+     *
+     * @return {Promise} Promise resolved when the migration is finished.
+     */
+    function migrateModulesStatus() {
+        var components = [];
+        components.push($injector.get('mmaModBookComponent'));
+        components.push($injector.get('mmaModImscpComponent'));
+        components.push($injector.get('mmaModPageComponent'));
+        components.push($injector.get('mmaModResourceComponent'));
+
+        return $mmSitesManager.getSitesIds().then(function(sites) {
+            var promises = [];
+            angular.forEach(sites, function(siteId) {
+                promises.push(migrateSiteModulesStatus(siteId, components));
+            });
+            return $q.all(promises);
+        });
+    }
+
+    /**
+     * Migrates the modules status from a certain site.
+     *
+     * @param {String} siteId       Site ID.
+     * @param {String[]} components Components to check.
+     * @return {Promise}            Promise resolved when the site migration is finished.
+     */
+    function migrateSiteModulesStatus(siteId, components) {
+        $log.debug('Migrate site modules status from site ' + siteId);
+
+        return $mmSitesManager.getSiteDb(siteId).then(function(db) {
+            return db.getAll(mmCoreCourseModulesStore).then(function(entries) {
+                var promises = [];
+
+                angular.forEach(entries, function(entry) {
+                    if (!parseInt(entry.id)) {
+                        return; // The id is not a number, ignore it.
+                    }
+
+                    promises.push(determineComponent(db, entry.id, components).then(function(component) {
+                        if (component) {
+                            // Add a new entry in filepool store.
+                            // We don't use $mmFilepool#storePackageStatus because we want to keep previousStatus.
+                            entry.component = component;
+                            entry.componentId = entry.id;
+                            entry.id = $mmFilepool.getPackageId(component, entry.id);
+                            promises.push(db.insert(mmFilepoolPackagesStore, entry));
+                        }
+                    }));
+                });
+
+                return $q.all(promises).then(function() {
+                    // Success creating all the new entries. Let's remove the old ones.
+                    return db.removeAll(mmCoreCourseModulesStore).catch(function() {
+                        // Ignore errors.
+                    });
+                });
+            });
+        });
+    }
+
+    /**
+     * Determines the component of a module status entry.
+     *
+     * @param  {Object} db           Site database.
+     * @param  {Number} componentId  Component ID.
+     * @param  {String[]} components List of components to check.
+     * @return {Promise}             Promise resolved with the component or undefined if no component found.
+     */
+    function determineComponent(db, componentId, components) {
+        var promises = [],
+            component;
+
+        angular.forEach(components, function(c) {
+            if (c) {
+                promises.push(db.query(mmFilepoolLinksStore, ['componentAndId', '=', [c, componentId]]).then(function(items) {
+                    if (items.length) {
+                        component = c;
+                    }
+                }).catch(function() {
+                    // Never reject.
+                }));
+            }
+        });
+
+        return $q.all(promises).then(function() {
+            return component;
+        });
     }
 
     return self;

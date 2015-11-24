@@ -21,7 +21,8 @@ angular.module('mm.addons.remotestyles')
  * @ngdoc service
  * @name $mmaRemoteStyles
  */
-.factory('$mmaRemoteStyles', function($log, $q, $mmSite, $mmSitesManager, $mmFilepool, $http, $mmFS, mmaRemoteStylesComponent) {
+.factory('$mmaRemoteStyles', function($log, $q, $mmSite, $mmSitesManager, $mmFilepool, $http, $mmFS, mmaRemoteStylesComponent,
+            mmCoreNotDownloaded) {
 
     $log = $log.getInstance('$mmaRemoteStyles');
 
@@ -59,7 +60,7 @@ angular.module('mm.addons.remotestyles')
         // Downloads a CSS file and remove old files if needed.
         function downloadFileAndRemoveOld(url) {
             return $mmFilepool.getFileStateByUrl(siteid, url).then(function(state) {
-                return state !== $mmFilepool.FILENOTDOWNLOADED;
+                return state !== mmCoreNotDownloaded;
             }).catch(function() {
                 return true; // An error occurred while getting state (shouldn't happen). Don't delete downloaded file.
             }).then(function(isDownloaded) {

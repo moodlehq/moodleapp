@@ -21,6 +21,15 @@ angular.module('mm.core', ['pascalprecht.translate'])
 .constant('mmCoreSecondsHour', 3600)
 .constant('mmCoreSecondsMinute', 60)
 
+// States for downloading files/modules.
+.constant('mmCoreDownloaded', 'downloaded')
+.constant('mmCoreDownloading', 'downloading')
+.constant('mmCoreNotDownloaded', 'notdownloaded')
+.constant('mmCoreOutdated', 'outdated')
+.constant('mmCoreNotDownloadable', 'notdownloadable')
+
+.constant('mmCoreWifiDownloadThreshold', 104857600) // 100MB.
+.constant('mmCoreDownloadThreshold', 10485760) // 10MB.
 
 .config(function($stateProvider, $provide, $ionicConfigProvider, $httpProvider, $mmUtilProvider,
         $mmLogProvider, $compileProvider, $mmInitDelegateProvider, mmInitDelegateMaxAddonPriority) {

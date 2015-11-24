@@ -21,8 +21,10 @@ angular.module('mm.addons.mod_book')
  * @ngdoc service
  * @name $mmaModBookCourseContentHandler
  */
-.factory('$mmaModBookCourseContentHandler', function($mmCourse, $mmaModBook, $mmFilepool, $mmEvents, $state, $mmSite, $mmUtil,
-            mmCoreEventQueueEmpty) {
+.factory('$mmaModBookCourseContentHandler', function($mmCourse, $mmaModBook, $mmEvents, $state, $mmSite, $mmUtil, $mmFilepool,
+            $mmCoursePrefetchDelegate, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated, mmCoreDownloaded,
+            mmCoreEventPackageStatusChanged, mmaModBookComponent) {
+
     var self = {};
 
     /**
@@ -34,9 +36,7 @@ angular.module('mm.addons.mod_book')
      * @return {Boolean}
      */
     self.isEnabled = function() {
-        var version = $mmSite.getInfo().version;
-        // Require Moodle 2.9.
-        return version && (parseInt(version) >= 2015051100) && $mmSite.canDownloadFiles();
+        return $mmaModBook.isPluginEnabled();
     };
 
     /**
@@ -53,107 +53,18 @@ angular.module('mm.addons.mod_book')
         return function($scope) {
             var downloadBtn,
                 refreshBtn,
-                observers = {},
-                queueObserver,
-                previousState,
-                siteid = $mmSite.getId(),
-                revision = $mmCourse.getRevisionFromContents(module.contents),
-                timemodified = $mmCourse.getTimemodifiedFromContents(module.contents);
-
-            // Add queue observer to clear observers when filepool queue is empty. Needed because sometimes when "restoring"
-            // downloading the spinner was shown forever, probably because a file download finished before observer was set.
-            function addQueueObserver() {
-                queueObserver = $mmEvents.on(mmCoreEventQueueEmpty, function() {
-                    // Queue is empty. Clear observers.
-                    if (queueObserver) {
-                        queueObserver.off();
-                    }
-                    if (Object.keys(observers).length) {
-                        clearObservers();
-                        setDownloaded();
-                    }
-                    delete queueObserver;
-                });
-            }
-
-            // Add observers to monitor file downloads.
-            function addObservers(eventNames, isOpeningModule) {
-                angular.forEach(eventNames, function(e) {
-                    if (typeof observers[e] == 'undefined') {
-                        observers[e] = $mmEvents.on(e, function(data) {
-                            if (data.success) {
-                                // Download success. Disable this observer and check if all files have been downloaded.
-                                if (typeof observers[e] !== 'undefined') {
-                                    observers[e].off();
-                                    delete observers[e];
-                                }
-                                if (Object.keys(observers).length < 1) {
-                                    setDownloaded();
-                                }
-                            } else if (data.success === false) {
-                                // A download failed. Clear observers, show error message and set previous state.
-                                clearObservers();
-                                $scope.spinner = false;
-                                $mmCourse.storeModuleStatus(siteid, module.id, previousState, revision, timemodified);
-                                if (previousState === $mmFilepool.FILENOTDOWNLOADED) {
-                                    downloadBtn.hidden = false;
-                                } else {
-                                    refreshBtn.hidden = false;
-                                }
-                                // Don't show error message if state left or the module is being opened.
-                                if (!$scope.$$destroyed && !isOpeningModule) {
-                                    $mmUtil.showErrorModal('mm.core.errordownloading', true);
-                                }
-                            }
-
-                        });
-                    }
-                });
-            }
-
-            // Disable file download observers.
-            function clearObservers() {
-                angular.forEach(observers, function(observer) {
-                    observer.off();
-                });
-                observers = {};
-            }
-
-            // Set module as 'downloaded', hiding icons and storing its state.
-            function setDownloaded() {
-                $scope.spinner = false;
-                downloadBtn.hidden = true;
-                refreshBtn.hidden = false; // Always show refresh button because revision and timemodified are not reliable.
-                // Store module as downloaded.
-                $mmCourse.storeModuleStatus(siteid, module.id, $mmFilepool.FILEDOWNLOADED, revision, timemodified);
-            }
-
-            // Show downloading spinner and hide other icons.
-            function showDownloading() {
-                downloadBtn.hidden = true;
-                refreshBtn.hidden = true;
-                $scope.spinner = true;
-            }
+                revision = $mmFilepool.getRevisionFromFileList(module.contents),
+                timemodified = $mmFilepool.getTimemodifiedFromFileList(module.contents);
 
             downloadBtn = {
                 hidden: true,
                 icon: 'ion-ios-cloud-download',
                 label: 'mm.core.download',
                 action: function(e) {
-                    var eventNames;
-
                     e.preventDefault();
                     e.stopPropagation();
-
-                    showDownloading();
-
-                    $mmaModBook.getFileEventNames(module).then(function(eventNames) {
-                        previousState = $mmFilepool.FILENOTDOWNLOADED;
-                        addObservers(eventNames, false);
-                        $mmaModBook.prefetchContent(module);
-                        // Store module as dowloading.
-                        $mmCourse.storeModuleStatus(siteid, module.id, $mmFilepool.FILEDOWNLOADING, revision, timemodified);
-                        addQueueObserver();
+                    $mmaModBook.prefetchContent(module).catch(function() {
+                        $mmUtil.showErrorModal('mm.core.errordownloading', true);
                     });
                 }
             };
@@ -166,16 +77,9 @@ angular.module('mm.addons.mod_book')
                     e.preventDefault();
                     e.stopPropagation();
 
-                    showDownloading();
-
-                    $mmaModBook.invalidateContent(module.id).then(function() {
-                        $mmaModBook.getFileEventNames(module).then(function(eventNames) {
-                            previousState = $mmFilepool.FILEOUTDATED;
-                            addObservers(eventNames, false);
-                            $mmaModBook.prefetchContent(module);
-                            // Store module as dowloading.
-                            $mmCourse.storeModuleStatus(siteid, module.id, $mmFilepool.FILEDOWNLOADING, revision, timemodified);
-                            addQueueObserver();
+                    $mmaModBook.invalidateContent(module.id).finally(function() {
+                        $mmaModBook.prefetchContent(module).catch(function() {
+                            $mmUtil.showErrorModal('mm.core.errordownloading', true);
                         });
                     });
                 }
@@ -187,46 +91,33 @@ angular.module('mm.addons.mod_book')
             $scope.spinner = false;
 
             $scope.action = function(e) {
-                // Refresh or download icon shown. Let's add observers to monitor download.
-                previousState = downloadBtn.hidden ? $mmFilepool.FILEOUTDATED : $mmFilepool.FILENOTDOWNLOADED;
-                $mmaModBook.getFileEventNames(module).then(function(eventNames) {
-                    addObservers(eventNames, true);
-                });
-                $mmCourse.storeModuleStatus(siteid, module.id, $mmFilepool.FILEDOWNLOADING, revision, timemodified);
-                showDownloading();
+                e.preventDefault();
+                e.stopPropagation();
                 $state.go('site.mod_book', {module: module, courseid: courseid});
             };
 
-            // Check current status to decide which icon should be shown.
-            $mmCourse.getModuleStatus(siteid, module.id, revision, timemodified).then(function(status) {
-                if (status == $mmFilepool.FILENOTDOWNLOADED) {
-                    downloadBtn.hidden = false;
-                } else if (status == $mmFilepool.FILEDOWNLOADING) {
-                    $scope.spinner = true;
-                    $mmaModBook.getDownloadingFilesEventNames(module).then(function(eventNames) {
-                        if (eventNames.length) {
-                            $mmCourse.getModulePreviousStatus(siteid, module.id).then(function(previous) {
-                                previousState = previous;
-                            });
-                            addObservers(eventNames, false);
-                            addQueueObserver();
-                        } else {
-                            // Weird case, state downloading but no files being downloaded. Set state to previousState.
-                            $mmCourse.getModulePreviousStatus(siteid, module.id).then(function(previous) {
-                                $scope.spinner = false;
-                                if (previous === $mmFilepool.FILENOTDOWNLOADED) {
-                                    downloadBtn.hidden = false;
-                                } else {
-                                    refreshBtn.hidden = false;
-                                }
-                                $mmCourse.storeModuleStatus(siteid, module.id, previous, revision, timemodified);
-                            });
-                        }
-                    });
-                } else {
-                    // Show refresh button also if FILEDOWNLOADED because revision and timemodified are not reliable.
-                    refreshBtn.hidden = false;
+            // Show buttons according to module status.
+            function showStatus(status) {
+                if (status) {
+                    $scope.spinner = status === mmCoreDownloading;
+                    downloadBtn.hidden = status !== mmCoreNotDownloaded;
+                    // Always show refresh button if a book is downloaded because revision and timemodified aren't reliable.
+                    refreshBtn.hidden = status !== mmCoreOutdated && status !== mmCoreDownloaded;
                 }
+            }
+
+            // Listen for changes on this module status.
+            var statusObserver = $mmEvents.on(mmCoreEventPackageStatusChanged, function(data) {
+                if (data.siteid === $mmSite.getId() && data.componentId === module.id && data.component === mmaModBookComponent) {
+                    showStatus(data.status);
+                }
+            });
+
+            // Get current status to decide which icon should be shown.
+            $mmCoursePrefetchDelegate.getModuleStatus(module, revision, timemodified).then(showStatus);
+
+            $scope.$on('$destroy', function() {
+                statusObserver && statusObserver.off && statusObserver.off();
             });
         };
     };

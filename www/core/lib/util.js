@@ -767,6 +767,44 @@ angular.module('mm.core')
             array.length = 0; // Empty array without losing its reference.
         };
 
+        /**
+         * Similar to $q.all, but if a promise fails this function's promise won't be rejected until ALL promises have finished.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#allPromises
+         * @param  {Promise[]} promises Promises.
+         * @return {Promise}            Promise resolved if all promises are resolved and rejected if at least 1 promise fails.
+         */
+        self.allPromises = function(promises) {
+            if (!promises || !promises.length) {
+                return $q.when();
+            }
+
+            var count = 0,
+                failed = false,
+                deferred = $q.defer();
+
+            angular.forEach(promises, function(promise) {
+                promise.catch(function() {
+                    failed = true;
+                }).finally(function() {
+                    count++;
+
+                    if (count === promises.length) {
+                        // All promises have finished, reject/resolve.
+                        if (failed) {
+                            deferred.reject();
+                        } else {
+                            deferred.resolve();
+                        }
+                    }
+                });
+            });
+
+            return deferred.promise;
+        };
+
         return self;
     };
 });

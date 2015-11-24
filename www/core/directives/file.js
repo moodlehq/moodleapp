@@ -32,7 +32,8 @@ angular.module('mm.core')
  * @param {Number} [componentId]   Component ID.
  * @param {Boolean} [timemodified] If set, the value will be used to check if the file is outdated.
  */
-.directive('mmFile', function($q, $mmUtil, $mmFilepool, $mmSite, $mmApp, $mmEvents) {
+.directive('mmFile', function($q, $mmUtil, $mmFilepool, $mmSite, $mmApp, $mmEvents, mmCoreDownloaded, mmCoreDownloading,
+            mmCoreNotDownloaded, mmCoreOutdated) {
 
     /**
      * Convenience function to get the file state and set scope variables based on it.
@@ -46,9 +47,9 @@ angular.module('mm.core')
     function getState(scope, siteid, fileurl, timemodified) {
         return $mmFilepool.getFileStateByUrl(siteid, fileurl, timemodified).then(function(state) {
             var canDownload = $mmSite.canDownloadFiles();
-            scope.isDownloaded = state === $mmFilepool.FILEDOWNLOADED || state === $mmFilepool.FILEOUTDATED;
-            scope.isDownloading = canDownload && state === $mmFilepool.FILEDOWNLOADING;
-            scope.showDownload = canDownload && (state === $mmFilepool.FILENOTDOWNLOADED || state === $mmFilepool.FILEOUTDATED);
+            scope.isDownloaded = state === mmCoreDownloaded || state === mmCoreOutdated;
+            scope.isDownloading = canDownload && state === mmCoreDownloading;
+            scope.showDownload = canDownload && (state === mmCoreNotDownloaded || state === mmCoreOutdated);
         });
     }
 

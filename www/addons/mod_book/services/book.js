@@ -36,19 +36,8 @@ angular.module('mm.addons.mod_book')
      * @return {Promise}      Promise resolved when all content is downloaded. Data returned is not reliable.
      */
     self.downloadAllContent = function(module) {
-        var promises = [],
-            siteid = $mmSite.getId();
-
-        angular.forEach(module.contents, function(content) {
-            var url = content.fileurl,
-                timemodified = content.timemodified;
-            if (content.type !== 'file') {
-                return;
-            }
-            promises.push($mmFilepool.downloadUrl(siteid, url, false, mmaModBookComponent, module.id, timemodified));
-        });
-
-        return $q.all(promises);
+        var files = self.getDownloadableFiles(module);
+        return $mmFilepool.downloadPackage($mmSite.getId(), files, mmaModBookComponent, module.id);
     };
 
     /**
@@ -67,7 +56,7 @@ angular.module('mm.addons.mod_book')
 
         angular.forEach(module.contents, function(content) {
             var url = content.fileurl;
-            if (content.type !== 'file') {
+            if (!self.isFileDownloadable(content)) {
                 return;
             }
             promises.push($mmFilepool.isFileDownloadingByUrl(siteid, url).then(function() {
@@ -97,7 +86,7 @@ angular.module('mm.addons.mod_book')
         var promises = [];
         angular.forEach(module.contents, function(content) {
             var url = content.fileurl;
-            if (content.type !== 'file') {
+            if (!self.isFileDownloadable(content)) {
                 return;
             }
             promises.push($mmFilepool.getFileEventNameByUrl($mmSite.getId(), url));
@@ -107,6 +96,26 @@ angular.module('mm.addons.mod_book')
         });
     };
 
+    /**
+     * Returns a list of files that can be downloaded.
+     *
+     * @module mm.addons.mod_book
+     * @ngdoc method
+     * @name $mmaModBook#getDownloadableFiles
+     * @param {Object} module The module object returned by WS.
+     * @return {Object[]}     List of files.
+     */
+    self.getDownloadableFiles = function(module) {
+        var files = [];
+
+        angular.forEach(module.contents, function(content) {
+            if (self.isFileDownloadable(content)) {
+                files.push(content);
+            }
+        });
+
+        return files;
+    };
 
     /**
      * Get the book toc as an array.
@@ -228,7 +237,7 @@ angular.module('mm.addons.mod_book')
 
         // Extract the information about paths from the module contents.
         angular.forEach(contents, function(content) {
-            if (content.type == 'file') {
+            if (self.isFileDownloadable(content)) {
                 var key,
                     url = content.fileurl;
 
@@ -305,6 +314,33 @@ angular.module('mm.addons.mod_book')
     };
 
     /**
+     * Check if a file is downloadable. The file param must have a 'type' attribute like in core_course_get_contents response.
+     *
+     * @module mm.addons.mod_book
+     * @ngdoc method
+     * @name $mmaModBook#isFileDownloadable
+     * @param {Object} file File to check.
+     * @return {Boolean}    True if downloadable, false otherwise.
+     */
+    self.isFileDownloadable = function(file) {
+        return file.type === 'file';
+    };
+
+    /**
+     * Return whether or not the plugin is enabled.
+     *
+     * @module mm.addons.mod_book
+     * @ngdoc method
+     * @name $mmaModBook#isPluginEnabled
+     * @return {Boolean} True if plugin is enabled, false otherwise.
+     */
+    self.isPluginEnabled = function() {
+        var version = $mmSite.getInfo().version;
+        // Require Moodle 2.9.
+        return version && (parseInt(version) >= 2015051100) && $mmSite.canDownloadFiles();
+    };
+
+    /**
      * Report a book as being viewed.
      *
      * @module mm.addons.mod_book
@@ -330,17 +366,11 @@ angular.module('mm.addons.mod_book')
      * @ngdoc method
      * @name $mmaModBook#prefetchContent
      * @param {Object} module The module object returned by WS.
-     * @return {Void}
+     * @return {Promise}      Promise resolved when all content is downloaded. Data returned is not reliable.
      */
     self.prefetchContent = function(module) {
-        angular.forEach(module.contents, function(content) {
-            var url;
-            if (content.type !== 'file') {
-                return;
-            }
-            url = content.fileurl;
-            $mmFilepool.addToQueueByUrl($mmSite.getId(), url, mmaModBookComponent, module.id);
-        });
+        var files = self.getDownloadableFiles(module);
+        return $mmFilepool.prefetchPackage($mmSite.getId(), files, mmaModBookComponent, module.id);
     };
 
     return self;
