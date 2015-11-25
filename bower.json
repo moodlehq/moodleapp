@@ -2,7 +2,7 @@
   "name": "mm2",
   "private": "true",
   "devDependencies": {
-    "ionic": "driftyco/ionic-bower#v1.1.0",
+    "ionic": "driftyco/ionic-bower#v1.1.1",
     "ydn.db": ">=1.0.3",
     "ngCordova": ">=0.1.12-alpha",
     "angular-mocks": "1.4.3",
