@@ -36,8 +36,10 @@ angular.module('mm.addons.mod_book')
      * @return {Promise}      Promise resolved when all content is downloaded. Data returned is not reliable.
      */
     self.downloadAllContent = function(module) {
-        var files = self.getDownloadableFiles(module);
-        return $mmFilepool.downloadPackage($mmSite.getId(), files, mmaModBookComponent, module.id);
+        var files = self.getDownloadableFiles(module),
+            revision = $mmFilepool.getRevisionFromFileList(module.contents),
+            timemod = $mmFilepool.getTimemodifiedFromFileList(module.contents);
+        return $mmFilepool.downloadPackage($mmSite.getId(), files, mmaModBookComponent, module.id, revision, timemod);
     };
 
     /**
@@ -369,8 +371,10 @@ angular.module('mm.addons.mod_book')
      * @return {Promise}      Promise resolved when all content is downloaded. Data returned is not reliable.
      */
     self.prefetchContent = function(module) {
-        var files = self.getDownloadableFiles(module);
-        return $mmFilepool.prefetchPackage($mmSite.getId(), files, mmaModBookComponent, module.id);
+        var files = self.getDownloadableFiles(module),
+            revision = $mmFilepool.getRevisionFromFileList(module.contents),
+            timemod = $mmFilepool.getTimemodifiedFromFileList(module.contents);
+        return $mmFilepool.prefetchPackage($mmSite.getId(), files, mmaModBookComponent, module.id, revision, timemod);
     };
 
     return self;
