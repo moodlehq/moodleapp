@@ -21,7 +21,9 @@ angular.module('mm.addons.mod_folder')
  * @ngdoc service
  * @name $mmaModFolderCourseContentHandler
  */
-.factory('$mmaModFolderCourseContentHandler', function($mmCourse, $mmaModFolder, $state) {
+.factory('$mmaModFolderCourseContentHandler', function($mmCourse, $mmaModFolder, $mmEvents, $state, $mmSite, $mmUtil, $mmFilepool,
+            $mmCoursePrefetchDelegate, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated, mmCoreEventPackageStatusChanged,
+            mmaModFolderComponent) {
     var self = {};
 
     /**
@@ -49,11 +51,67 @@ angular.module('mm.addons.mod_folder')
      */
     self.getController = function(module, courseid, sectionid) {
         return function($scope) {
+            var downloadBtn,
+                refreshBtn,
+                revision = $mmFilepool.getRevisionFromFileList(module.contents),
+                timemodified = $mmFilepool.getTimemodifiedFromFileList(module.contents);
+
+            // Prefetch folder contents.
+            function prefetchFolder(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                $mmaModFolder.prefetchContent(module).catch(function() {
+                    $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                });
+            }
+
+            downloadBtn = {
+                hidden: true,
+                icon: 'ion-ios-cloud-download',
+                label: 'mm.core.download',
+                action: prefetchFolder
+            };
+
+            refreshBtn = {
+                hidden: true,
+                icon: 'ion-android-refresh',
+                label: 'mm.core.refresh',
+                action: prefetchFolder
+            };
+
             $scope.icon = $mmCourse.getModuleIconSrc('folder');
             $scope.title = module.name;
+            $scope.buttons = [downloadBtn, refreshBtn];
+            $scope.spinner = false;
+
             $scope.action = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
                 $state.go('site.mod_folder', {module: module, courseid: courseid, sectionid: sectionid});
             };
+
+            // Show buttons according to module status.
+            function showStatus(status) {
+                if (status) {
+                    $scope.spinner = status === mmCoreDownloading;
+                    downloadBtn.hidden = status !== mmCoreNotDownloaded;
+                    refreshBtn.hidden = status !== mmCoreOutdated;
+                }
+            }
+
+            // Listen for changes on this module status.
+            var statusObserver = $mmEvents.on(mmCoreEventPackageStatusChanged, function(data) {
+                if (data.siteid === $mmSite.getId() && data.componentId === module.id && data.component === mmaModFolderComponent) {
+                    showStatus(data.status);
+                }
+            });
+
+            // Get current status to decide which icon should be shown.
+            $mmCoursePrefetchDelegate.getModuleStatus(module, revision, timemodified).then(showStatus);
+
+            $scope.$on('$destroy', function() {
+                statusObserver && statusObserver.off && statusObserver.off();
+            });
         };
     };
 

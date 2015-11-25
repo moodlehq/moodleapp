@@ -170,6 +170,11 @@ angular.module('mm.core')
                 if (handler.getFiles) { // If the handler defines its own function to determine the files, use it.
                     files = handler.getFiles(module);
                 }
+
+                if (files.length === 0) { // No files, treat is as downloaded.
+                    return $q.when(mmCoreDownloaded);
+                }
+
                 revision = revision || $mmFilepool.getRevisionFromFileList(files);
                 timemodified = timemodified || $mmFilepool.getTimemodifiedFromFileList(files);
 
