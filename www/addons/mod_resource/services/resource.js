@@ -39,7 +39,9 @@ angular.module('mm.addons.mod_resource')
     self.downloadAllContent = function(module) {
         var files = self.getDownloadableFiles(module),
             siteid = $mmSite.getId(),
-            promise;
+            promise,
+            revision = $mmFilepool.getRevisionFromFileList(module.contents),
+            timemod = $mmFilepool.getTimemodifiedFromFileList(module.contents);
 
         if (self.isDisplayedInIframe(module)) {
             // Get path of the module folder in filepool.
@@ -49,7 +51,7 @@ angular.module('mm.addons.mod_resource')
         }
 
         return promise.then(function(dirPath) {
-            return $mmFilepool.downloadPackage(siteid, files, mmaModResourceComponent, module.id, dirPath);
+            return $mmFilepool.downloadPackage(siteid, files, mmaModResourceComponent, module.id, revision, timemod, dirPath);
         });
     };
 
@@ -368,7 +370,9 @@ angular.module('mm.addons.mod_resource')
     self.prefetchContent = function(module) {
         var files = self.getDownloadableFiles(module),
             siteid = $mmSite.getId(),
-            promise;
+            promise,
+            revision = $mmFilepool.getRevisionFromFileList(module.contents),
+            timemod = $mmFilepool.getTimemodifiedFromFileList(module.contents);
 
         if (self.isDisplayedInIframe(module)) {
             // Get path of the module folder in filepool.
@@ -378,7 +382,7 @@ angular.module('mm.addons.mod_resource')
         }
 
         return promise.then(function(dirPath) {
-            return $mmFilepool.prefetchPackage(siteid, files, mmaModResourceComponent, module.id, dirPath);
+            return $mmFilepool.prefetchPackage(siteid, files, mmaModResourceComponent, module.id, revision, timemod, dirPath);
         });
     };
 

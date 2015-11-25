@@ -137,9 +137,12 @@ angular.module('mm.addons.mod_imscp')
      * @return {Promise}      Promise resolved when content is downloaded. Data returned is not reliable.
      */
     self.downloadAllContent = function(module) {
-        var files = self.getDownloadableFiles(module);
+        var files = self.getDownloadableFiles(module),
+            revision = $mmFilepool.getRevisionFromFileList(module.contents),
+            timemod = $mmFilepool.getTimemodifiedFromFileList(module.contents);
+
         return $mmFilepool.getFilePathByUrl($mmSite.getId(), module.url).then(function(dirPath) {
-            return $mmFilepool.downloadPackage($mmSite.getId(), files, mmaModImscpComponent, module.id, dirPath);
+            return $mmFilepool.downloadPackage($mmSite.getId(), files, mmaModImscpComponent, module.id, revision, timemod, dirPath);
         });
     };
 
@@ -369,9 +372,12 @@ angular.module('mm.addons.mod_imscp')
      * @return {Promise}      Promise resolved when content is downloaded. Data returned is not reliable.
      */
     self.prefetchContent = function(module) {
-        var files = self.getDownloadableFiles(module);
+        var files = self.getDownloadableFiles(module),
+            revision = $mmFilepool.getRevisionFromFileList(module.contents),
+            timemod = $mmFilepool.getTimemodifiedFromFileList(module.contents);
+
         return $mmFilepool.getFilePathByUrl($mmSite.getId(), module.url).then(function(dirPath) {
-            return $mmFilepool.prefetchPackage($mmSite.getId(), files, mmaModImscpComponent, module.id, dirPath);
+            return $mmFilepool.prefetchPackage($mmSite.getId(), files, mmaModImscpComponent, module.id, revision, timemod, dirPath);
         });
     };
 

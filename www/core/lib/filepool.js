@@ -580,12 +580,14 @@ angular.module('mm.core')
      * @param  {Boolean} prefetch    True if should prefetch the contents (queue), false if they should be downloaded right now.
      * @param {String} component     The component to link the file to.
      * @param {Number} [componentId] An ID to use in conjunction with the component.
+     * @param {Number} [revision]    Package's revision. If not defined, it will be calculated using the list of files.
+     * @param {Number} [timemod]     Package's timemodified. If not defined, it will be calculated using the list of files.
      * @param {String} [dirPath]     Name of the directory where to store the files (inside filepool dir). If not defined, store
      *                               the files directly inside the filepool folder.
      * @return {Promise}             Promise resolved when all files are downloaded.
      * @protected
      */
-    self._downloadOrPrefetchPackage = function(siteId, fileList, prefetch, component, componentId, dirPath) {
+    self._downloadOrPrefetchPackage = function(siteId, fileList, prefetch, component, componentId, revision, timemod, dirPath) {
 
         var packageId = self.getPackageId(component, componentId);
 
@@ -596,9 +598,10 @@ angular.module('mm.core')
             packagesPromises[siteId] = {};
         }
 
-        var revision = self.getRevisionFromFileList(fileList),
-            timemod = self.getTimemodifiedFromFileList(fileList),
-            dwnPromise,
+        revision = revision || self.getRevisionFromFileList(fileList);
+        timemod = timemod || self.getTimemodifiedFromFileList(fileList);
+
+        var dwnPromise,
             deleted = false;
 
         // Set package as downloading.
@@ -651,16 +654,18 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmFilepool#downloadPackage
-     * @param {String} siteId      The site ID.
-     * @param  {Object[]} fileList List of files to download.
-     * @param {String} component   The component to link the file to.
-     * @param {Number} componentId An ID to identify the download. Must be unique.
-     * @param {String} [dirPath]   Name of the directory where to store the files (inside filepool dir). If not defined, store
-     *                             the files directly inside the filepool folder.
-     * @return {Promise}           Promise resolved when all files are downloaded.
+     * @param {String} siteId         The site ID.
+     * @param  {Object[]} fileList    List of files to download.
+     * @param {String} component      The component to link the file to.
+     * @param {Number} componentId    An ID to identify the download. Must be unique.
+     * @param {Number} [revision]     Package's revision. If not defined, it will be calculated using the list of files.
+     * @param {Number} [timemodified] Package's timemodified. If not defined, it will be calculated using the list of files.
+     * @param {String} [dirPath]      Name of the directory where to store the files (inside filepool dir). If not defined, store
+     *                                the files directly inside the filepool folder.
+     * @return {Promise}              Promise resolved when all files are downloaded.
      */
-    self.downloadPackage = function(siteId, fileList, component, componentId, dirPath) {
-        return self._downloadOrPrefetchPackage(siteId, fileList, false, component, componentId, dirPath);
+    self.downloadPackage = function(siteId, fileList, component, componentId, revision, timemodified, dirPath) {
+        return self._downloadOrPrefetchPackage(siteId, fileList, false, component, componentId, revision, timemodified, dirPath);
     };
 
     /**
@@ -1340,18 +1345,18 @@ angular.module('mm.core')
      * @return {Number}        Package revision.
      */
     self.getRevisionFromFileList = function(files) {
-        if (files && files.length) {
-            for (var i = 0; i < files.length; i++) {
-                var file = files[i];
-                if (file.fileurl) {
-                    var revision = self.getRevisionFromUrl(file.fileurl);
-                    if (typeof revision !== 'undefined') {
-                        return revision;
-                    }
+        var revision = 0;
+
+        angular.forEach(files, function(file) {
+            if (file.fileurl) {
+                var r = self.getRevisionFromUrl(file.fileurl);
+                if (r > revision) {
+                    revision = r;
                 }
             }
-        }
-        return 0;
+        });
+
+        return revision;
     };
 
     /**
@@ -1403,15 +1408,15 @@ angular.module('mm.core')
      * @return {Number}        Package time modified.
      */
     self.getTimemodifiedFromFileList = function(files) {
-        if (files && files.length) {
-            for (var i = 0; i < files.length; i++) {
-                var file = files[i];
-                if (file.timemodified) {
-                    return file.timemodified;
-                }
+        var timemod = 0;
+
+        angular.forEach(files, function(file) {
+            if (file.timemodified > timemod) {
+                timemod = file.timemodified;
             }
-        }
-        return 0;
+        });
+
+        return timemod;
     };
 
     /**
@@ -1627,16 +1632,18 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmFilepool#prefetchPackage
-     * @param {String} siteId      The site ID.
-     * @param  {Object[]} fileList List of files to download.
-     * @param {String} component   The component to link the file to.
-     * @param {Number} componentId An ID to identify the download. Must be unique.
-     * @param {String} [dirPath]   Name of the directory where to store the files (inside filepool dir). If not defined, store
-     *                             the files directly inside the filepool folder.
-     * @return {Promise}           Promise resolved when all files are downloaded.
+     * @param {String} siteId         The site ID.
+     * @param  {Object[]} fileList    List of files to download.
+     * @param {String} component      The component to link the file to.
+     * @param {Number} componentId    An ID to identify the download. Must be unique.
+     * @param {Number} [revision]     Package's revision. If not defined, it will be calculated using the list of files.
+     * @param {Number} [timemodified] Package's timemodified. If not defined, it will be calculated using the list of files.
+     * @param {String} [dirPath]      Name of the directory where to store the files (inside filepool dir). If not defined, store
+     *                                the files directly inside the filepool folder.
+     * @return {Promise}              Promise resolved when all files are downloaded.
      */
-    self.prefetchPackage = function(siteId, fileList, component, componentId, dirPath) {
-        return self._downloadOrPrefetchPackage(siteId, fileList, true, component, componentId, dirPath);
+    self.prefetchPackage = function(siteId, fileList, component, componentId, revision, timemodified, dirPath) {
+        return self._downloadOrPrefetchPackage(siteId, fileList, true, component, componentId, revision, timemodified, dirPath);
     };
 
     /**
