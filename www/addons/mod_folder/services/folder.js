@@ -20,14 +20,32 @@ angular.module('mm.addons.mod_folder')
  * @module mm.addons.mod_folder
  * @ngdoc service
  * @name $mmaModFolder
+ * @todo Adding a new file in a folder updates the revision of all the files, so they're all shown as outdated.
+ *       To ignore revision in folders we'll have to modify $mmCoursePrefetchDelegate, mm-file and $mmFilepool.
  */
-.factory('$mmaModFolder', function($mmSite, $mmUtil, $mmCourse, $q) {
+.factory('$mmaModFolder', function($mmSite, $mmCourse, $q, $mmFilepool, mmaModFolderComponent) {
     var self = {};
+
+    /**
+     * Download all the content.
+     *
+     * @module mm.addons.mod_folder
+     * @ngdoc method
+     * @name $mmaModFolder#downloadAllContent
+     * @param {Object} module The module object.
+     * @return {Promise}      Promise resolved when all content is downloaded. Data returned is not reliable.
+     */
+    self.downloadAllContent = function(module) {
+        var files = self.getDownloadableFiles(module),
+            revision = $mmFilepool.getRevisionFromFileList(module.contents),
+            timemod = $mmFilepool.getTimemodifiedFromFileList(module.contents);
+        return $mmFilepool.downloadPackage($mmSite.getId(), files, mmaModFolderComponent, module.id, revision, timemod);
+    };
 
     /**
      * Format folder contents, creating directory structure.
      *
-     * @module mm.addons.mod_url
+     * @module mm.addons.mod_folder
      * @ngdoc method
      * @name $mmaModFolder#formatContents
      * @param {Object[]} contents Folder contents.
@@ -95,6 +113,40 @@ angular.module('mm.addons.mod_folder')
     };
 
     /**
+     * Returns a list of files that can be downloaded.
+     *
+     * @module mm.addons.mod_folder
+     * @ngdoc method
+     * @name $mmaModFolder#getDownloadableFiles
+     * @param {Object} module The module object returned by WS.
+     * @return {Object[]}     List of files.
+     */
+    self.getDownloadableFiles = function(module) {
+        var files = [];
+
+        angular.forEach(module.contents, function(content) {
+            if (self.isFileDownloadable(content)) {
+                files.push(content);
+            }
+        });
+
+        return files;
+    };
+
+    /**
+     * Check if a file is downloadable. The file param must have a 'type' attribute like in core_course_get_contents response.
+     *
+     * @module mm.addons.mod_folder
+     * @ngdoc method
+     * @name $mmaModFolder#isFileDownloadable
+     * @param {Object} file File to check.
+     * @return {Boolean}    True if downloadable, false otherwise.
+     */
+    self.isFileDownloadable = function(file) {
+        return file.type === 'file';
+    };
+
+    /**
      * Report a folder as being viewed.
      *
      * @module mm.addons.mod_folder
@@ -111,6 +163,22 @@ angular.module('mm.addons.mod_folder')
             return $mmSite.write('mod_folder_view_folder', params);
         }
         return $q.reject();
+    };
+
+    /**
+     * Prefetch the content.
+     *
+     * @module mm.addons.mod_folder
+     * @ngdoc method
+     * @name $mmaModFolder#prefetchContent
+     * @param {Object} module The module object.
+     * @return {Promise}      Promise resolved when all content is downloaded. Data returned is not reliable.
+     */
+    self.prefetchContent = function(module) {
+        var files = self.getDownloadableFiles(module),
+            revision = $mmFilepool.getRevisionFromFileList(module.contents),
+            timemod = $mmFilepool.getTimemodifiedFromFileList(module.contents);
+        return $mmFilepool.prefetchPackage($mmSite.getId(), files, mmaModFolderComponent, module.id, revision, timemod);
     };
 
     return self;
