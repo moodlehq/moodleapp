@@ -1,6 +1,6 @@
 {
-    "app_id" : "com.moodle.moodlemobile",
-    "versioncode" : "2006",
+    "app_id" : "com.thinkjets.mobile",
+    "versioncode" : "2015",
     "versionname" : "2.5",
     "cache_expiration_time" : 300000,
     "default_lang" : "en",
