@@ -4,8 +4,10 @@
     "cancel": "Annulla",
     "cannotconnect": "Impossibile connettersi: verificare che l'URL sia corretto e che il sito usi Moodle 2.4 o versioni successive.",
     "cannotdownloadfiles": "Lo scaricamento dei file è disabilitato nel servizio Mobile. Per favore contatta l'amministratore del sito.",
+    "category": "Categoria",
     "choose": "Seleziona",
     "clearsearch": "Pulisci la ricerca",
+    "clicktohideshow": "Click per aprire e chiudere",
     "completion-alt-auto-fail": "Completato: {{$a}} (senza raggiungere la sufficienza)",
     "completion-alt-auto-n": "Non completata: {{$a}}",
     "completion-alt-auto-pass": "Completato: {{$a}} (raggiunta la sufficienza)",
@@ -319,6 +321,7 @@
     "pulltorefresh": "Trascina per aggiornare",
     "refresh": "Aggiorna",
     "search": "Cerca",
+    "searching": "Ricerca in ...",
     "sec": "secondo",
     "secs": "secondi",
     "sending": "Invio in corso",
@@ -328,6 +331,7 @@
     "sizemb": "MB",
     "sizetb": "TB",
     "success": "Operazione eseguita con successo",
+    "teachers": "Docenti",
     "unexpectederror": "Si è verificato un errore inatteso. Riprova chiudendo e riaprendo l'applicazione",
     "userdeleted": "Questo account è stato eliminato",
     "view": "Visualizza",
@@ -335,9 +339,5 @@
     "wsfunctionnotavailable": "La funzione webservice non è disponibile.",
     "year": "anno",
     "years": "anni",
-    "yes": "Sì",
-    "category": "Categoria",
-    "clicktohideshow": "Click per aprire e chiudere",
-    "teachers": "Docenti",
-    "searching": "Ricerca in ..."
+    "yes": "Sì"
 }
