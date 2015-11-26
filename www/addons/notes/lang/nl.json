@@ -7,5 +7,6 @@
     "notes": "Notities",
     "personalnotes": "Persoonlijke notities",
     "publishstate": "Context",
-    "sitenotes": "Site notities"
+    "sitenotes": "Site notities",
+    "userwithid": "Gebruiker met ID {{$a}}"
 }

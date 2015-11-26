@@ -1,7 +1,10 @@
 {
-    "clicktocontinue": "Klik hier om door te gaan",
+    "cannotsubmitsurvey": "Sorry, er was een probleem bij het insturen van je onderzoek. Probeer opnieuw.",
+    "clicktocontinue": "Klik hier om verder te gaan",
+    "errorgetsurvey": "Fout bij het ophalen van onderzoeksdata.",
     "ifoundthat": "Ik vond dat",
-    "ipreferthat": "Mijn voorkeur zou zijn",
+    "ipreferthat": "I verkies dat",
     "responses": "Antwoorden",
-    "results": "Resultaten"
+    "results": "Resultaten",
+    "surveycompletednograph": "Je hebt dit onderzoek voltooid."
 }

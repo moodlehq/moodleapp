@@ -15,6 +15,7 @@
     "invalidaccount": "Por favor, verifique sus datos de acceso, o consulte con el administrador para revisar la configuración del sitio.",
     "invalidmoodleversion": "Versión de Moodle inválida. La versión mínima requerida es 2.4",
     "invalidsite": "La URL del sitio es inválida.",
+    "localmobileunexpectedresponse": "La revisión de las características Adicionales de Moodle Mobile regresó una respuesta inesperada; Usted será autenticado usando el servicio Mobile estándar.",
     "login": "Ingreso",
     "loginbutton": "¡Ingreso!",
     "logininsiterequired": "Usted necesita ingresar al sitio con una ventana del navegador.",

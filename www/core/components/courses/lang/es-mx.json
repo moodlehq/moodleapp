@@ -1,10 +1,18 @@
 {
+    "confirmselfenrol": "¿Está Usted seguro de querer inscribirse a Usted mismo en este curso?",
     "enrolme": "Inscribirme",
     "errorloadcourses": "Ocurrió un error al cargar los cursos.",
+    "errorsearching": "Ocurrio un error al buscar.",
+    "errorselfenrol": "Ocurrio un error al auto-inscribir.",
     "filter": "Filtro",
+    "filtermycourses": "<<<filtrar mis cursos",
     "frontpage": "Portada",
     "mycourses": "Mis cursos",
-    "password": "Contraseña",
+    "nosearchresults": "No hubo resultados de su búsqueda",
+    "notenrollable": "Usted no puede inscribirse a Usted mismo en este curso.",
+    "password": "Clave de inscripción",
     "search": "Buscar",
-    "searchcourses": "Buscar cursos"
+    "searchcourses": "Buscar cursos",
+    "selfenrolment": "Auto-inscripción",
+    "totalcoursesearchresults": "Total de cursos: {{$a}}"
 }

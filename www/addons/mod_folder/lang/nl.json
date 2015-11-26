@@ -1,3 +1,4 @@
 {
-    "emptyfilelist": "Geen bestanden."
+    "emptyfilelist": "Geen bestanden.",
+    "errorwhilegettingfolder": "Fout bij het ophalen van de mapgegevens"
 }
