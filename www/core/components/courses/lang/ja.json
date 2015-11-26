@@ -1,9 +1,9 @@
 {
+    "enrolme": "私を登録する",
     "filter": "フィルタ",
     "frontpage": "フロントページ",
     "mycourses": "マイコース",
     "password": "パスワード",
     "search": "検索",
-    "searchcourses": "コースを検索する",
-    "enrolme": "私を登録する"
+    "searchcourses": "コースを検索する"
 }

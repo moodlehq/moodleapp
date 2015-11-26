@@ -1,13 +1,19 @@
 {
     "beep": "Bip",
-    "currentusers": "Usuarios",
-    "enterchat": "Entrar a la sala",
+    "currentusers": "Usuarios actuales",
+    "enterchat": "Haga click aquí para entrar ahora al chat",
     "entermessage": "Escriba su mensaje",
-    "messagebeepsyou": "{{$a}} le acaba de enviar un beep",
-    "messageenter": "{{$a}} entró a la sala",
-    "messageexit": "{{$a}} salió de la sala",
-    "nomessages": "Aún no hay mensajes",
+    "errorwhileconnecting": "Error al conectarse al chat",
+    "errorwhilegettingchatdata": "Error al obtener datos del chat.",
+    "errorwhilegettingchatusers": "Error al obtener usuarios del chat.",
+    "errorwhileretrievingmessages": "Error al obtener los mensajes del servidor.",
+    "errorwhilesendingmessage": "Error al enviar el mensaje.",
+    "messagebeepsyou": "¡{{$a}} recién te hizo 'bip'!",
+    "messageenter": "{{$a}} recién entró al chat",
+    "messageexit": "{{$a}} ha dejado este chat",
+    "mustbeonlinetosendmessages": "Usted debe de estar en-línea para enviar mensajes",
+    "nomessages": "Todavía sin mensajes",
     "send": "Enviar",
-    "sessionstart": "La siguiente sesión de chat comenzará en: {{$a}}",
-    "talk": "Charla"
+    "sessionstart": "La siguiente sesión de chat comenzará en {{$a}}",
+    "talk": "Hablar"
 }

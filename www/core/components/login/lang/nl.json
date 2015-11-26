@@ -15,6 +15,7 @@
     "invalidaccount": "Controleer je logingegevens of vraag je site-beheerder om de site-configuratie te controleren.",
     "invalidmoodleversion": "Ongeldige Moodleversie. De vereiste minimumversie is:",
     "invalidsite": "Deze site-URL is niet geldig.",
+    "localmobileunexpectedresponse": "Moodle Mobile Additional Features Check gaf een onverwacht antwoord. Je zult aanmelden via de standaard Mobile service.",
     "login": "Login",
     "loginbutton": "Login!",
     "logininsiterequired": "Je dient via een browser in te loggen op je Moodle site",

@@ -30,7 +30,7 @@
     "siteinmaintenance": "Zure gunea mantenu-moduan dago",
     "siteurl": "Gunearen URLa",
     "siteurlrequired": "Gunearen URLa behar da <i>http://www.zuremoodlegunea.abc edo https://www.zuremoodlegunea.efg</i> adibidez",
-    "username": "Erabiltzailea",
+    "username": "Erabiltzailea-izena",
     "usernamerequired": "Erabiltzailea behar da",
     "webservicesnotenabled": "Web zerbitzuak gaitu gabe daude zure gunean. Mesedez zure Moodle gunearen administratzailearen harremanetan jarri zaitez mobile sarbidea gaitu behar dela uste baduzu."
 }

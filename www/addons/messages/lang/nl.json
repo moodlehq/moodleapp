@@ -1,7 +1,7 @@
 {
     "addcontact": "Voeg contact toe",
     "blockcontact": "Blokkeer contact",
-    "contactlistempty": "Contactenlijst is leeg",
+    "contactlistempty": "De contactenlijst is leeg",
     "contactname": "Naam",
     "contacts": "Contacten",
     "errorwhileretrievingcontacts": "Fout bij het ophalen van contacten van de server.",

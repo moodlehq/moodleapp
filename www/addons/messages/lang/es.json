@@ -1,14 +1,14 @@
 {
     "addcontact": "Añadir como contacto",
     "blockcontact": "Bloquear contacto",
-    "contactlistempty": "La lista de contactos está vacía.",
+    "contactlistempty": "Lista de contactos vacía",
     "contactname": "Nombre del contacto",
     "contacts": "Contactos",
     "messages": "Mensajes",
     "mustbeonlinetosendmessages": "Debe conectarse para enviar mensajes",
     "newmessage": "Nuevo mensaje...",
-    "nomessages": "No hay mensajes.",
-    "nousersfound": "No se encontraron usuarios",
+    "nomessages": "No hay mensajes en espera",
+    "nousersfound": "No se encuentran usuarios",
     "removecontact": "Eliminar contacto",
     "send": "Enviar",
     "sendmessage": "Enviar un mensaje",
@@ -17,5 +17,5 @@
     "type_online": "En línea",
     "type_search": "Resultados de la búsqueda",
     "type_strangers": "Otros",
-    "unblockcontact": "Besbloquear el contacto"
+    "unblockcontact": "Desbloquear contacto"
 }

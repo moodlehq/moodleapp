@@ -1,6 +1,14 @@
 This files describes API changes in the Moodle Mobile app,
 information provided here is intended especially for developers.
 
+=== 2.6 ===
+
+ * Ionic updated to 1.1.1. Please run:
+    bower update
+ * $mmFilepool FILEDOWNLOADED, FILEDOWNLOADING, FILENOTDOWNLOADED and FILEOUTDATED have been deprecated. Please use mmCoreDownloaded, mmCoreDownloading, mmCoreNotDownloaded and mmCoreOutdated instead.
+ * mmCoreCourseModulesStore store has been deprecated. Please use mmFilepoolPackagesStore instead.
+ * The following functions from $mmCourse have been removed: clearAllModulesStatus, getModulePreviousStatus, getModuleStatus, getRevisionFromContents, getTimemodifiedFromContents, isModuleOutdated, storeModuleStatus, setModulePreviousStatus. The following functions have been added to $mmFilepool instead: clearAllPackagesStatus, getPackagePreviousStatus, getPackageStatus, getRevisionFromFileList, getTimemodifiedFromFileList, setPackagePreviousStatus and storePackageStatus.
+
 === 2.5 ===
 
  * $mmCourses#getStoredCourse function has been deprecated. New function $mmCourses#getUserCourse function should be used instead.

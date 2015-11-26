@@ -1,10 +1,18 @@
 {
-    "enrolme": "Laat me in de cursus",
+    "confirmselfenrol": "Weet je zeker dat je je wil aanmelden in deze cursus?",
+    "enrolme": "Meld me aan",
     "errorloadcourses": "Er is een fout opgetreden tijdens het laden van de cursussen.",
+    "errorsearching": "Er is een fout opgetreden tijdens het zoeken.",
+    "errorselfenrol": "Er is een fout opgetreden tijdens het zelf aanmelden.",
     "filter": "Filter",
+    "filtermycourses": "Filter mijn cursussen",
     "frontpage": "Startpagina",
     "mycourses": "Mijn cursussen",
-    "password": "Wachtwoord",
+    "nosearchresults": "Je zoekopdracht gaf geen resultaten",
+    "notenrollable": "Je kunt jezelf niet aanmelden in deze cursus.",
+    "password": "Aanmeldingssleutel",
     "search": "Zoek",
-    "searchcourses": "Zoek cursussen"
+    "searchcourses": "Zoek cursussen",
+    "selfenrolment": "Zelf aanmelden",
+    "totalcoursesearchresults": "Totaal aantal cursusen: {{$a}}"
 }
