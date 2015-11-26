@@ -31,6 +31,11 @@ angular.module('mm.core.course')
  * If the description is asynchronous you should set the attribute 'watch' to true.
  * This attribute is directly shared with mmFormatText which needs it.
  *
+ * You can add a note at the right side of the description by using the 'note' attribute.
+ *
+ * Module descriptions are shortened by default, allowing the user to see the full description by clicking in it.
+ * If you want the whole description to be shown you can use the 'showfull' attribute.
+ *
  * @example
  *
  * <mm-course-mod-description description="myDescription"></mm-course-mod-description>
@@ -43,6 +48,10 @@ angular.module('mm.core.course')
             if (attrs.watch) {
                 element.find('mm-format-text').attr('watch', attrs.watch);
             }
+
+            return function(scope) { // Link function.
+                scope.showfull = !!attrs.showfull;
+            };
         },
         restrict: 'E',
         scope: {
