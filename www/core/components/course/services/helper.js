@@ -28,6 +28,62 @@ angular.module('mm.core.course')
     var self = {};
 
     /**
+     * Calculate the status of a section.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourseHelper#calculateSectionStatus
+     * @param {Object[]} section          Section to calculate its status. Can't be "All sections".
+     * @param {Boolean} restoreDownloads  True if it should restore downloads. It will try to restore this section downloads.
+     * @param {Boolean} refresh           True if it shouldn't use module status cache (slower).
+     * @param {Promise[]} [dwnpromises]   If section download is restored, a promise will be added to this array. Required
+     *                                    if restoreDownloads=true.
+     * @return {Promise}         Promise resolved when the state is calculated.
+     */
+    self.calculateSectionStatus = function(section, restoreDownloads, refresh, dwnpromises) {
+
+        if (section.id !== mmCoreCourseAllSectionsId) {
+            // Get the status of this section.
+            return $mmCoursePrefetchDelegate.getModulesStatus(section.id, section.modules, refresh, restoreDownloads)
+                    .then(function(result) {
+
+                // Check if it's being downloaded. We can't trust status 100% because downloaded books are always outdated.
+                var downloadid = self.getSectionDownloadId(section);
+                if ($mmCoursePrefetchDelegate.isBeingDownloaded(downloadid)) {
+                    result.status = mmCoreDownloading;
+                }
+
+                // Set this section data.
+                section.showDownload = result.status === mmCoreNotDownloaded;
+                section.showRefresh = result.status === mmCoreOutdated;
+
+                if (result.status !== mmCoreDownloading) {
+                    section.isDownloading = false;
+                    section.total = 0;
+                } else if (!restoreDownloads) {
+                    // Set download data.
+                    section.count = 0;
+                    section.total = result[mmCoreOutdated].length + result[mmCoreNotDownloaded].length +
+                                    result[mmCoreDownloading].length;
+                    section.isDownloading = true;
+                } else {
+                    // Restore or re-start the prefetch.
+                    var promise = self.startOrRestorePrefetch(section, result).then(function() {
+                        // Re-calculate the status of this section once finished.
+                        return self.calculateSectionStatus(section);
+                    });
+                    if (dwnpromises) {
+                        dwnpromises.push(promise);
+                    }
+                }
+
+                return result;
+            });
+        }
+        return $q.reject();
+    };
+
+    /**
      * Calculate the status of a list of sections, setting attributes to determine the icons/data to be shown.
      *
      * @module mm.core.course
@@ -35,9 +91,7 @@ angular.module('mm.core.course')
      * @name $mmCourseHelper#calculateSectionsStatus
      * @param {Object[]} sections         Sections to calculate their status.
      * @param {Boolean} restoreDownloads  True if it should restore downloads. It will try to restore section downloads
-     *                                    and module downloads.
-     * @param {Boolean} refresh           True if it shouldn't use module status cache.
-     *                                    It's used only if refresh=false.
+     * @param {Boolean} refresh           True if it shouldn't use module status cache (slower).
      * @return {Promise}                  Promise resolved when the states are calculated. Returns an array of download promises
      *                                    with the restored downloads (only if restoreDownloads=true).
      */
@@ -53,38 +107,12 @@ angular.module('mm.core.course')
                 // "All sections" section status is calculated using the status of the rest of sections.
                 allsectionssection = section;
             } else {
-                var statuspromise = $mmCoursePrefetchDelegate.getModulesStatus(section.id, section.modules,
-                            refresh, restoreDownloads).then(function(result) {
-
-                    // Check if it's being downloaded. We can't trust status 100% because downloaded books are always outdated.
-                    var downloadid = self.getSectionDownloadId(section);
-                    if ($mmCoursePrefetchDelegate.isBeingDownloaded(downloadid)) {
-                        result.status = mmCoreDownloading;
-                    }
+                statuspromises.push(self.calculateSectionStatus(section, restoreDownloads, refresh, downloadpromises)
+                        .then(function(result) {
 
                     // Calculate "All sections" status.
                     allsectionsstatus = $mmFilepool.determinePackagesStatus(allsectionsstatus, result.status);
-
-                    // Set this section data.
-                    section.showDownload = result.status === mmCoreNotDownloaded;
-                    section.showRefresh = result.status === mmCoreOutdated;
-
-                    if (result.status !== mmCoreDownloading) {
-                        section.isDownloading = false;
-                        section.total = 0;
-                    } else if (restoreDownloads) {
-                        // Restore or re-start the prefetch.
-                        downloadpromises.push(self.startOrRestorePrefetch(section, result));
-                    } else {
-                        // Set download data.
-                        section.count = 0;
-                        section.total = result[mmCoreOutdated].length + result[mmCoreNotDownloaded].length +
-                                        result[mmCoreDownloading].length;
-                        section.isDownloading = true;
-                    }
-                });
-
-                statuspromises.push(statuspromise);
+                }));
             }
         });
 
@@ -176,7 +204,10 @@ angular.module('mm.core.course')
             section.isDownloading = true;
             angular.forEach(sections, function(s) {
                 if (s.id != mmCoreCourseAllSectionsId) {
-                    promises.push(self.prefetchSection(s, false, sections));
+                    promises.push(self.prefetchSection(s, false, sections).then(function() {
+                        // Calculate only the section that finished.
+                        return self.calculateSectionStatus(s);
+                    }));
                 }
             });
 
