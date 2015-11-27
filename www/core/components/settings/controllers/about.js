@@ -71,6 +71,7 @@ angular.module('mm.core.settings')
     if ($mmFS.isAvailable()) {
         $mmFS.getBasePath().then(function(basepath) {
             $scope.filesystemroot = basepath;
+            $scope.fsclickable = $mmFS.usesHTMLAPI();
         });
     }
 

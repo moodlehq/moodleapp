@@ -32,7 +32,7 @@ angular.module('mm.core')
  * @param {Number} [componentId]   Component ID.
  * @param {Boolean} [timemodified] If set, the value will be used to check if the file is outdated.
  */
-.directive('mmFile', function($q, $mmUtil, $mmFilepool, $mmSite, $mmApp, $mmEvents, mmCoreDownloaded, mmCoreDownloading,
+.directive('mmFile', function($q, $mmUtil, $mmFilepool, $mmSite, $mmApp, $mmEvents, $mmFS, mmCoreDownloaded, mmCoreDownloading,
             mmCoreNotDownloaded, mmCoreOutdated) {
 
     /**
@@ -101,7 +101,7 @@ angular.module('mm.core')
                 observer;
 
             scope.filename = filename;
-            scope.fileicon = $mmUtil.getFileIcon(filename);
+            scope.fileicon = $mmFS.getFileIcon(filename);
             getState(scope, siteid, fileurl, timemodified);
 
             $mmFilepool.getFileEventNameByUrl(siteid, fileurl).then(function(eventName) {

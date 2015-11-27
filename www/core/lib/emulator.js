@@ -78,7 +78,8 @@ angular.module('mm.core')
 
         // @todo: Implement FileTransfer.upload.
 
-        $window.webkitStorageInfo.requestQuota(PERSISTENT, 2500 * 1024 * 1024, function(granted) {
+        // Request 500MB.
+        $window.webkitStorageInfo.requestQuota(PERSISTENT, 500 * 1024 * 1024, function(granted) {
             $window.requestFileSystem(PERSISTENT, granted, function(entry) {
                 basePath = entry.root.toURL();
                 $mmFS.setHTMLBasePath(basePath);

@@ -24,14 +24,22 @@ angular.module('mm.core')
  * @description
  * This service handles the interaction with the FileSystem.
  */
-.factory('$mmFS', function($ionicPlatform, $cordovaFile, $log, $q, mmFsSitesFolder, mmFsTmpFolder) {
+.factory('$mmFS', function($ionicPlatform, $cordovaFile, $log, $q, $http, mmFsSitesFolder, mmFsTmpFolder) {
 
     $log = $log.getInstance('$mmFS');
 
     var self = {},
         initialized = false,
         basePath = '',
-        isHTMLAPI = false;
+        isHTMLAPI = false,
+        mimeTypes = {};
+
+    // Loading all the mimetypes.
+    $http.get('core/assets/mimetypes.json').then(function(response) {
+        mimeTypes = response.data;
+    }, function() {
+        // It failed, never mind...
+    });
 
     // Formats to read a file.
     self.FORMATTEXT         = 0;
@@ -50,6 +58,18 @@ angular.module('mm.core')
     self.setHTMLBasePath = function(path) {
         isHTMLAPI = true;
         basePath = path;
+    };
+
+    /**
+     * Checks if we're using HTML API.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#usesHTMLAPI
+     * @return {Boolean} True if uses HTML API, false otherwise.
+     */
+    self.usesHTMLAPI = function() {
+        return isHTMLAPI;
     };
 
     /**
@@ -526,7 +546,8 @@ angular.module('mm.core')
             return self.createFile(path).then(function(fileEntry) {
                 if (isHTMLAPI && typeof data == 'string') {
                     // We need to write Blobs.
-                    data = new Blob([data], {type: 'text/plain'});
+                    var type = self.getMimeType(self.getFileExtension(path));
+                    data = new Blob([data], {type: type || 'text/plain'});
                 }
                 return $cordovaFile.writeFile(basePath, path, data, true).then(function() {
                     return fileEntry;
@@ -638,15 +659,19 @@ angular.module('mm.core')
                     dirsA = originalPath.split('/'),
                     dirsB = newPath.split('/');
 
-                angular.forEach(dirsA, function(dir, index) {
-                    if (dirsB[index] === dir) {
+                for (var i = 0; i < dirsA.length; i++) {
+                    var dir = dirsA[i];
+                    if (dirsB[i] === dir) {
                         // Found a common folder, add it to common path and remove it from each specific path.
                         dir = dir + '/';
                         commonPath = self.concatenatePaths(commonPath, dir);
                         originalPath = originalPath.replace(dir, '');
                         newPath = newPath.replace(dir, '');
+                    } else {
+                        // Folder doesn't match, stop searching.
+                        break;
                     }
-                });
+                }
 
                 return $cordovaFile.moveFile(commonPath, originalPath, commonPath, newPath);
             } else {
@@ -745,6 +770,133 @@ angular.module('mm.core')
             return fileEntry.toURL();
         }
         return fileEntry.toInternalURL();
+    };
+
+    /**
+     * Get a file icon URL based on its file name.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmUtil#getFileIcon
+     * @param  {String} The name of the file.
+     * @return {String} The path to a file icon.
+     */
+    self.getFileIcon = function(filename) {
+        var ext = self.getFileExtension(filename),
+            icon;
+
+        if (ext && mimeTypes[ext] && mimeTypes[ext].icon) {
+            icon = mimeTypes[ext].icon + '-64.png';
+        } else {
+            icon = 'unknown-64.png';
+        }
+
+        return 'img/files/' + icon;
+    };
+
+    /**
+     * Get the folder icon URL.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmUtil#getFolderIcon
+     * @return {String} The path to a folder icon.
+     */
+    self.getFolderIcon = function() {
+        return 'img/files/folder-64.png';
+    };
+
+    /**
+     * Returns the file extension of a file.
+     *
+     * When the file does not have an extension, it returns undefined.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmUtil#getFileExtension
+     * @param  {string} filename The file name.
+     * @return {string}          The lowercased extension, or undefined.
+     */
+    self.getFileExtension = function(filename) {
+        var dot = filename.lastIndexOf("."),
+            ext;
+
+        if (dot > -1) {
+            ext = filename.substr(dot + 1).toLowerCase();
+        }
+
+        return ext;
+    };
+
+    /**
+     * Get the mimetype of an extension. Returns undefined if not found.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmUtil#allPromises
+     * @param  {String} extension Extension.
+     * @return {String}           Mimetype.
+     */
+    self.getMimeType = function(extension) {
+        if (mimeTypes[extension] && mimeTypes[extension].type) {
+            return mimeTypes[extension].type;
+        }
+    };
+
+    /**
+     * Remove the extension from a path (if any).
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#removeExtension
+     * @param  {String} path Path.
+     * @return {String}      Path without extension.
+     */
+    self.removeExtension = function(path) {
+        var index = path.lastIndexOf('.');
+        if (index > -1) {
+            return path.substr(0, index); // Remove extension.
+        }
+        return path;
+    };
+
+    /**
+     * Unzips a file.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#unzipFile
+     * @param  {String} path         Path to the ZIP file.
+     * @param  {String} [destFolder] Path to the destination folder. If not defined, a new folder will be created with the
+     *                               same location and name as the ZIP file (without extension).
+     * @return {Promise}             Promise resolved when the file is unzipped.
+     */
+    self.unzipFile = function(path, destFolder) {
+        // Read the zip file.
+        return self.readFile(path, self.FORMATARRAYBUFFER).then(function(data) {
+            if (isHTMLAPI) {
+                var zip = new JSZip(data),
+                    promises = [];
+
+                destFolder = destFolder || self.removeExtension(path);
+
+                angular.forEach(zip.files, function(file, name) {
+                    var filepath = self.concatenatePaths(destFolder, name),
+                        type;
+
+                    if (!file.dir) {
+                        // It's a file. Get the mimetype and write the file.
+                        type = self.getMimeType(self.getFileExtension(name));
+                        promises.push(self.writeFile(filepath, new Blob([file.asArrayBuffer()], {type: type})));
+                    } else {
+                        // It's a folder, create it if it doesn't exist.
+                        promises.push(self.createDir(filepath));
+                    }
+                });
+
+                return $q.all(promises);
+            }
+        });
     };
 
     return self;

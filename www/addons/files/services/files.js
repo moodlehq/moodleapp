@@ -178,9 +178,9 @@ angular.module('mm.addons.files')
                 }
 
                 if (entry.isdir) {
-                    entry.imgpath = $mmUtil.getFolderIcon();
+                    entry.imgpath = $mmFS.getFolderIcon();
                 } else {
-                    entry.imgpath = $mmUtil.getFileIcon(entry.filename);
+                    entry.imgpath = $mmFS.getFileIcon(entry.filename);
                 }
 
                 entry.link = JSON.stringify(entry.link);

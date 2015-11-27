@@ -233,7 +233,7 @@ angular.module('mm.addons.mod_resource')
                     angular.forEach(html.find('a'), function(anchor) {
                         var href = decodeURIComponent(anchor.getAttribute('href')),
                             url = paths[href],
-                            ext = $mmUtil.getFileExtension(href);
+                            ext = $mmFS.getFileExtension(href);
                         if (typeof url !== 'undefined') {
                             anchor.setAttribute('href', url);
                             if (ext == 'html' || ext == 'html') {
@@ -276,7 +276,7 @@ angular.module('mm.addons.mod_resource')
 
         if (inline && $mmFS.isAvailable()) {
             for (var i = 0; i < module.contents.length; i++) {
-                var ext = $mmUtil.getFileExtension(module.contents[i].filename);
+                var ext = $mmFS.getFileExtension(module.contents[i].filename);
                 if (ext == 'js' || ext == 'swf' || ext == 'css') {
                     return true;
                 }
@@ -296,7 +296,7 @@ angular.module('mm.addons.mod_resource')
      * @return {Boolean}
      */
     self.isDisplayedInline = function(module) {
-        var ext = $mmUtil.getFileExtension(module.contents[0].filename);
+        var ext = $mmFS.getFileExtension(module.contents[0].filename);
         return ext === 'htm' || ext === 'html';
     };
 
