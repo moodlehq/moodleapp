@@ -1997,19 +1997,26 @@ angular.module('mm.core')
             }, function() {
                 return undefined; // No previous status.
             }).then(function(previousStatus) {
-                return db.insert(mmFilepoolPackagesStore, {
-                    id: packageId,
-                    component: component,
-                    componentId: componentId,
-                    status: status,
-                    previous: previousStatus,
-                    revision: revision,
-                    timemodified: timemodified,
-                    updated: new Date().getTime()
-                }).then(function(result) {
+                var promise;
+                if (previousStatus === status) {
+                    // The package already has this status, no need to change it.
+                    promise = $q.when();
+                } else {
+                    promise = db.insert(mmFilepoolPackagesStore, {
+                        id: packageId,
+                        component: component,
+                        componentId: componentId,
+                        status: status,
+                        previous: previousStatus,
+                        revision: revision,
+                        timemodified: timemodified,
+                        updated: new Date().getTime()
+                    });
+                }
+
+                return promise.then(function() {
                     // Success inserting, trigger event.
                     self._triggerPackageStatusChanged(siteId, component, componentId, status);
-                    return result;
                 });
             });
         });
