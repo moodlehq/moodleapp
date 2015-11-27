@@ -15,6 +15,7 @@
     "password": "Contraseña",
     "passwordrequired": "Contraseña obligatoria",
     "reconnect": "Reconectar",
+    "siteaddress": "Dirección del sitio",
     "siteinmaintenance": "Su sitio está en modo mantenimiento",
     "siteurl": "URL del sitio",
     "siteurlrequired": "La URL del sitio es obligatoria, por ejemplo <i>http://www.yourmoodlesite.es o  https://www.yourmoodlesite.org</i>",
