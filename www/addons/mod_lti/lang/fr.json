@@ -1,0 +1,6 @@
+{
+    "errorgetlti": "Erreur lors de l'obtention des données du module.",
+    "errorinvalidlaunchurl": "L'URL de lancement n'est pas valide.",
+    "launch_url": "URL de lancement",
+    "launchactivity": "Lancer l'activité"
+}
