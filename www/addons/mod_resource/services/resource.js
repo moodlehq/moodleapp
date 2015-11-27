@@ -150,7 +150,8 @@ angular.module('mm.addons.mod_resource')
         }
 
         return $mmFilepool.getDirectoryUrlByUrl($mmSite.getId(), module.url).then(function(dirPath) {
-            return $mmFS.concatenatePaths(dirPath, mainFilePath);
+            // This URL is going to be injected in an iframe, we need trustAsResourceUrl to make it work in a browser.
+            return $sce.trustAsResourceUrl($mmFS.concatenatePaths(dirPath, mainFilePath));
         }, function() {
             // Error getting directory, there was an error downloading or we're in browser. Return online URL.
             if ($mmApp.isOnline() && mainFile.fileurl) {
@@ -232,7 +233,7 @@ angular.module('mm.addons.mod_resource')
                     angular.forEach(html.find('a'), function(anchor) {
                         var href = decodeURIComponent(anchor.getAttribute('href')),
                             url = paths[href],
-                            ext = $mmUtil.getFileExtension(href);
+                            ext = $mmFS.getFileExtension(href);
                         if (typeof url !== 'undefined') {
                             anchor.setAttribute('href', url);
                             if (ext == 'html' || ext == 'html') {
@@ -275,7 +276,7 @@ angular.module('mm.addons.mod_resource')
 
         if (inline && $mmFS.isAvailable()) {
             for (var i = 0; i < module.contents.length; i++) {
-                var ext = $mmUtil.getFileExtension(module.contents[i].filename);
+                var ext = $mmFS.getFileExtension(module.contents[i].filename);
                 if (ext == 'js' || ext == 'swf' || ext == 'css') {
                     return true;
                 }
@@ -295,7 +296,7 @@ angular.module('mm.addons.mod_resource')
      * @return {Boolean}
      */
     self.isDisplayedInline = function(module) {
-        var ext = $mmUtil.getFileExtension(module.contents[0].filename);
+        var ext = $mmFS.getFileExtension(module.contents[0].filename);
         return ext === 'htm' || ext === 'html';
     };
 

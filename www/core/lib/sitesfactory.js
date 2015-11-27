@@ -631,8 +631,9 @@ angular.module('mm.core')
         Site.prototype.deleteFolder = function() {
             if ($mmFS.isAvailable()) {
                 var siteFolder = $mmFS.getSiteFolder(this.id);
-                // Ignore any errors, $mmFS.removeDir fails if folder doesn't exists.
-                return $mmFS.removeDir(siteFolder);
+                return $mmFS.removeDir(siteFolder).catch(function() {
+                    // Ignore any errors, $mmFS.removeDir fails if folder doesn't exists.
+                });
             } else {
                 return $q.when();
             }

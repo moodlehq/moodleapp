@@ -1,6 +1,12 @@
 This files describes API changes in the Moodle Mobile app,
 information provided here is intended especially for developers.
 
+=== 2.7 ===
+
+ * JSzip installed. Please run:
+    bower update
+ * The following functions have been moved from $mmUtil to $mmFS: getFileIcon, getFolderIcon and getFileExtension.
+
 === 2.6 ===
 
  * Ionic updated to 1.1.1. Please run:

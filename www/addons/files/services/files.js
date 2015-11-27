@@ -24,7 +24,7 @@ angular.module('mm.addons.files')
     $mmAppProvider.registerStores(stores);
 })
 
-.factory('$mmaFiles', function($mmSite, $mmUtil, $mmFS, $mmWS, $q, $timeout, $log, $mmSitesManager, $mmApp, md5,
+.factory('$mmaFiles', function($mmSite, $mmFS, $q, $timeout, $log, $mmSitesManager, $mmApp, md5,
             mmaFilesSharedFilesStore) {
 
     $log = $log.getInstance('$mmaFiles');
@@ -178,9 +178,9 @@ angular.module('mm.addons.files')
                 }
 
                 if (entry.isdir) {
-                    entry.imgpath = $mmUtil.getFolderIcon();
+                    entry.imgpath = $mmFS.getFolderIcon();
                 } else {
-                    entry.imgpath = $mmUtil.getFileIcon(entry.filename);
+                    entry.imgpath = $mmFS.getFileIcon(entry.filename);
                 }
 
                 entry.link = JSON.stringify(entry.link);

@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_resource')
  * @name $mmaModResourceCourseContentHandler
  */
 .factory('$mmaModResourceCourseContentHandler', function($mmCourse, $mmaModResource, $mmEvents, $state, $mmSite, $mmUtil,
-            $mmCoursePrefetchDelegate, $mmFilepool, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated,
+            $mmCoursePrefetchDelegate, $mmFilepool, $mmFS, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated,
             mmCoreEventPackageStatusChanged, mmaModResourceComponent) {
 
     var self = {};
@@ -87,10 +87,10 @@ angular.module('mm.addons.mod_resource')
             $scope.title = module.name;
 
             var filename = module.contents[0].filename;
-            var extension = $mmUtil.getFileExtension(filename);
+            var extension = $mmFS.getFileExtension(filename);
 
             if (module.contents.length == 1 || (extension != "html" && extension != "htm")) {
-                $scope.icon = $mmUtil.getFileIcon(filename);
+                $scope.icon = $mmFS.getFileIcon(filename);
             } else {
                 $scope.icon = $mmCourse.getModuleIconSrc('resource');
             }

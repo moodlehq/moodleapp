@@ -1289,7 +1289,7 @@ angular.module('mm.core')
             return $mmFS.getFile(self._getFilePath(siteId, fileId)).then(function(fileEntry) {
                 // We use toInternalURL so images are loaded in iOS8 using img HTML tags,
                 // with toURL the OS is unable to find the image files.
-                return fileEntry.toInternalURL();
+                return $mmFS.getInternalURL(fileEntry);
             });
         }
         return $q.reject();

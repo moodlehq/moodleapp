@@ -262,7 +262,8 @@ angular.module('mm.addons.mod_imscp')
 
         return $mmFilepool.getDirectoryUrlByUrl($mmSite.getId(), module.url).then(function(dirPath) {
             currentDirPath = dirPath;
-            return $mmFS.concatenatePaths(dirPath, mainFilePath);
+            // This URL is going to be injected in an iframe, we need trustAsResourceUrl to make it work in a browser.
+            return $sce.trustAsResourceUrl($mmFS.concatenatePaths(dirPath, mainFilePath));
         }, function() {
             // Error getting directory, there was an error downloading or we're in browser. Return online URL if connected.
             if ($mmApp.isOnline()) {
@@ -289,7 +290,8 @@ angular.module('mm.addons.mod_imscp')
     self.getFileSrc = function(module, itemId) {
         if (currentDirPath) {
             // IMSCP successfully loaded.
-            return $mmFS.concatenatePaths(currentDirPath, itemId);
+            // This URL is going to be injected in an iframe, we need trustAsResourceUrl to make it work in a browser.
+            return $sce.trustAsResourceUrl($mmFS.concatenatePaths(currentDirPath, itemId));
         } else {
             // Error loading IMSCP. Let's get online URL.
             if ($mmApp.isOnline()) {
