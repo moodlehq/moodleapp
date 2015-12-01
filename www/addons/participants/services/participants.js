@@ -72,9 +72,14 @@ angular.module('mm.addons.participants')
                 {
                     name: 'limitfrom',
                     value: limitFrom
-                }, {
+                },
+                {
                     name: 'limitnumber',
                     value: limitNumber
+                },
+                {
+                    name: 'sortby',
+                    value: 'siteorder'
                 }
             ];
         } else {
