@@ -1,0 +1,17 @@
+
+$mma-mod-scorm-level-margin:		25px !default;
+$mma-mod-scorm-warning-color:		#c00 !default;
+
+@for $i from 1 through 15 {
+  .mma-scorm-level-#{$i} {
+    margin-left: 25px * $i
+  }
+}
+
+.mma-mod-scorm-checkbox-padding {
+  padding: 5px 10px;
+}
+
+.mma-mod-scorm-warning {
+	color: $mma-mod-scorm-warning-color;
+}
