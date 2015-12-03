@@ -8,6 +8,7 @@
 	"completed": "Completed",
 	"contents": "Contents",
 	"enter": "Enter",
+	"errordownloadscorm": "Error downloading SCORM: \"{{name}}\".",
 	"errorgetscorm": "Error getting SCORM data.",
 	"errorinvalidversion": "Sorry, the application only supports SCORM 1.2.",
 	"errornotdownloadable": "The download of SCORM packages is disabled in your Moodle site. Please contact your Moodle site administrator.",
@@ -33,5 +34,7 @@
 	"notattempted": "Not attempted",
 	"organizations": "Organisations",
 	"passed": "Passed",
+	"scormstatusnotdownloaded": "This SCORM is not downloaded. It will be automatically downloaded when you open it.",
+	"scormstatusoutdated": "This SCORM has been modified since the last download. It will be automatically downloaded when you open it.",
 	"suspended": "Suspended"
 }

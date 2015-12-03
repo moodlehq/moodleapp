@@ -1,6 +1,14 @@
 This files describes API changes in the Moodle Mobile app,
 information provided here is intended especially for developers.
 
+=== 2.8 ===
+
+ * The parameters of the following $mmCoursePrefetchDelegate's functions have changed, now they also require a courseid: getDownloadSize, getModuleStatus, prefetchAll and getModulesStatus.
+ * New Phonegap plugin installed. Please run:
+    ionic plugin add cordova-plugin-zip
+        or
+    ionic state restore
+
 === 2.7 ===
 
  * JSzip installed. Please run:

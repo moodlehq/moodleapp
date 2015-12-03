@@ -21,9 +21,11 @@ angular.module('mm.addons.mod_scorm')
  * @ngdoc service
  * @name $mmaModScorm
  */
-.factory('$mmaModScorm', function($mmSite, $q, $translate) {
+.factory('$mmaModScorm', function($mmSite, $q, $translate, $mmLang, $mmFilepool, $mmFS, $mmWS,
+            mmaModScormComponent, mmCoreNotDownloaded) {
     var self = {},
-        statuses = ['notattempted', 'passed', 'completed', 'failed', 'incomplete', 'browsed', 'suspend'];
+        statuses = ['notattempted', 'passed', 'completed', 'failed', 'incomplete', 'browsed', 'suspend'],
+        downloadPromises = {}; // Store download promises to be able to restore them.
 
     // Constants.
     self.GRADESCOES     = 0;
@@ -74,6 +76,23 @@ angular.module('mm.addons.mod_scorm')
     };
 
     /**
+     * Calculates the size of a SCORM.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScorm#calculateScormSize
+     * @param {Object} scorm SCORM.
+     * @return {Promise}     Promise resolved with the SCORM size.
+     */
+    self.calculateScormSize = function(scorm) {
+        if (scorm.packagesize) {
+            return $q.when(scorm.packagesize);
+        }
+
+        return $mmWS.getRemoteFileSize(self.getPackageUrl(scorm));
+    };
+
+    /**
      * Count the attempts left for the given scorm.
      *
      * @module mm.addons.mod_scorm
@@ -95,6 +114,98 @@ angular.module('mm.addons.mod_scorm')
         return scorm.maxattempt - attemptscount;
     };
 
+    /**
+     * Download and unzips the SCORM package.
+     * @see $mmaModScorm#_downloadOrPrefetch
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScorm#download
+     * @param {Object} scorm SCORM object returned by $mmaModScorm#getScorm.
+     * @return {Promise}     Promise resolved when the package is downloaded and unzipped.
+     */
+    self.download = function(scorm) {
+        return self._downloadOrPrefetch(scorm, false);
+    };
+
+    /**
+     * Downloads/Prefetches and unzips the SCORM package.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScorm#_downloadOrPrefetch
+     * @param {Object} scorm     SCORM object returned by $mmaModScorm#getScorm.
+     * @param {Boolean} prefetch True if prefetch, false otherwise.
+     * @return {Promise}         Promise resolved when the package is downloaded and unzipped. It will call notify in these cases:
+     *                                   -File download in progress. Notify object will have these properties:
+     *                                       packageDownload {Boolean} Always true.
+     *                                       loaded {Number} Number of bytes of the package loaded.
+     *                                       fileProgress {Object} FileTransfer's notify param for the current file.
+     *                                   -Download or unzip starting. Notify object will have these properties:
+     *                                       message {String} Message code related to the starting operation.
+     *                                   -File unzip in progress. Notify object will have these properties:
+     *                                       loaded {Number} Number of bytes unzipped.
+     *                                       total {Number} Total of bytes of the ZIP file.
+     * @protected
+     */
+    self._downloadOrPrefetch = function(scorm, prefetch) {
+        var result = self.isScormSupported(scorm),
+            siteid = $mmSite.getId();
+        if (result !== true) {
+            return $mmLang.translateAndReject(result);
+        }
+
+        if (downloadPromises[siteid] && downloadPromises[siteid][scorm.id]) {
+            // There's already a download ongoing for this package, return the promise.
+            return downloadPromises[siteid][scorm.id];
+        } else if (!downloadPromises[siteid]) {
+            downloadPromises[siteid] = {};
+        }
+
+        var files = self.getScormFileList(scorm),
+            revision = scorm.sha1hash, // We use sha1hash instead of revision number.
+            dirPath,
+            deferred = $q.defer(), // We use a deferred to be able to notify.
+            fn = prefetch ? $mmFilepool.prefetchPackage : $mmFilepool.downloadPackage;
+
+        downloadPromises[siteid][scorm.id] = deferred.promise; // Store promise to be able to restore it later.
+
+        // Get the folder where the unzipped files will be.
+        self.getScormFolder(scorm.moduleurl).then(function(path) {
+            dirPath = path;
+            // Download the ZIP file to the filepool.
+            // Using undefined for success & fail will pass the success/failure to the parent promise.
+            deferred.notify({message: 'mm.core.downloading'});
+            return fn(siteid, files, mmaModScormComponent, scorm.coursemodule, revision, 0)
+                                                        .then(undefined, undefined, deferred.notify);
+        }).then(function() {
+            // Remove the destination folder to prevent having old unused files.
+            return $mmFS.removeDir(dirPath).catch(function() {
+                // Ignore errors, it might have failed because the folder doesn't exist.
+            });
+        }).then(function() {
+            // Get the ZIP file path.
+            return $mmFilepool.getFilePathByUrl(siteid, self.getPackageUrl(scorm));
+        }).then(function(zippath) {
+            // Unzip and delete the zip when finished.
+            deferred.notify({message: 'mm.core.unzipping'});
+            return $mmFS.unzipFile(zippath, dirPath).then(function() {
+                return $mmFilepool.removeFileByUrl(siteid, self.getPackageUrl(scorm)).catch(function() {
+                    // Ignore errors.
+                });
+            }, function(error) {
+                // Error unzipping. Set status as not downloaded and reject.
+                return $mmFilepool.storePackageStatus(siteid, mmaModScormComponent, scorm.coursemodule,
+                                            mmCoreNotDownloaded, revision, 0).then(function() {
+                    return $q.reject(error);
+                });
+            }, deferred.notify);
+        }).then(deferred.resolve, deferred.reject).finally(function() {
+            delete downloadPromises[siteid][scorm.id]; // Delete stored promise.
+        });
+
+        return deferred.promise;
+    };
 
     /**
      * This is a little language parser for AICC_SCRIPT.
@@ -387,6 +498,9 @@ angular.module('mm.addons.mod_scorm')
     /**
      * Get the organization Toc object
      *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScorm#getOrganizationToc
      * @param  {Number} scormid      SCORM ID.
      * @param  {String} organization Organization identifier.
      * @param  {Number} attempt      The attempt number (to populate SCO track data).
@@ -448,6 +562,25 @@ angular.module('mm.addons.mod_scorm')
     };
 
     /**
+     * Get the package URL of a given SCORM.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScorm#getPackageUrl
+     * @param  {Object} scorm SCORM.
+     * @return {String}       Package URL.
+     */
+    self.getPackageUrl = function(scorm) {
+        if (scorm.packageurl) {
+            return scorm.packageurl;
+        }
+        if (scorm.reference) {
+            return scorm.reference;
+        }
+        return '';
+    };
+
+    /**
      * Get cache key for get SCORM scoes WS calls.
      *
      * @param  {Number} scormid      SCORM ID.
@@ -495,6 +628,44 @@ angular.module('mm.addons.mod_scorm')
             }
             return $q.reject();
         });
+    };
+
+    /**
+     * Get the path to the folder where a SCORM is downloaded.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScorm#getScormFolder
+     * @param  {String} moduleurl Module URL (returned by get_course_contents).
+     * @return {Promise}          Promise resolved with the folder path.
+     */
+    self.getScormFolder = function(moduleurl) {
+        return $mmFilepool.getFilePathByUrl($mmSite.getId(), moduleurl);
+    };
+
+    /**
+     * Gets a list of files to downlaod for a SCORM, using a format similar to module.contents from get_course_contents.
+     * It will only return one file: the ZIP package.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScorm#getScormFileList
+     * @param  {Object} scorm SCORM.
+     * @return {Object[]}     File list.
+     */
+    self.getScormFileList = function(scorm) {
+        var files = [];
+        if (self.isScormSupported(scorm) === true && !scorm.warningmessage) {
+            files.push({
+                fileurl: self.getPackageUrl(scorm),
+                filepath: '/',
+                filename: scorm.reference,
+                filesize: scorm.packagesize,
+                type: 'file',
+                timemodified: 0
+            });
+        }
+        return files;
     };
 
     /**
@@ -558,11 +729,12 @@ angular.module('mm.addons.mod_scorm')
      * @module mm.addons.mod_scorm
      * @ngdoc method
      * @name $mmaModScorm#getScorm
-     * @param {Number} courseid Course ID.
-     * @param {Number} cmid     Course module ID.
-     * @return {Promise}        Promise resolved when the SCORM is retrieved.
+     * @param {Number} courseid  Course ID.
+     * @param {Number} cmid      Course module ID.
+     * @parma {String} moduleurl Module UR:
+     * @return {Promise}         Promise resolved when the SCORM is retrieved.
      */
-    self.getScorm = function(courseid, cmid) {
+    self.getScorm = function(courseid, cmid, moduleurl) {
         var params = {
                 courseids: [courseid]
             },
@@ -587,6 +759,7 @@ angular.module('mm.addons.mod_scorm')
                             }
                         });
                     }
+                    currentScorm.moduleurl = moduleurl;
                     return currentScorm;
                 }
             }
@@ -722,6 +895,19 @@ angular.module('mm.addons.mod_scorm')
      */
     self.invalidateAttemptCount = function(scormid, userid) {
         return $mmSite.invalidateWsCacheForKey(getAttemptCountCacheKey(scormid, userid));
+    };
+
+    /**
+     * Invalidate the prefetched content.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScorm#invalidateContent
+     * @param {Object} moduleId The module ID.
+     * @return {Promise}
+     */
+    self.invalidateContent = function(moduleId) {
+        return $mmFilepool.invalidateFilesByComponent($mmSite.getId(), mmaModScormComponent, moduleId);
     };
 
     /**
@@ -868,6 +1054,27 @@ angular.module('mm.addons.mod_scorm')
     };
 
     /**
+     * Check if a SCORM is supported in the app. If it's not, returns the error code to show.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScorm#isScormSupported
+     * @param {Object} scorm    SCORM to check.
+     * @return {Boolean|String} True if SCORM is supported, string with error code otherwise.
+     */
+    self.isScormSupported = function(scorm) {
+        if (!self.isScormValidVersion(scorm)) {
+            return 'mma.mod_scorm.errorinvalidversion';
+        } else if (!self.isScormDownloadable(scorm)) {
+            return 'mma.mod_scorm.errornotdownloadable';
+        } else if (!self.isValidPackageUrl(self.getPackageUrl(scorm))) {
+            return 'mma.mod_scorm.errorpackagefile';
+        }
+
+        return true;
+    };
+
+    /**
      * Check if it's a valid SCORM 1.2.
      *
      * @module mm.addons.mod_scorm
@@ -916,6 +1123,20 @@ angular.module('mm.addons.mod_scorm')
             return $mmSite.write('mod_scorm_view_scorm', params);
         }
         return $q.reject();
+    };
+
+    /**
+     * Prefetches and unzips the SCORM package.
+     * @see $mmaModScorm#_downloadOrPrefetch
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScorm#prefetch
+     * @param {Object} scorm SCORM object returned by $mmaModScorm#getScorm.
+     * @return {Promise}     Promise resolved when the package is prefetched and unzipped.
+     */
+    self.prefetch = function(scorm) {
+        return self._downloadOrPrefetch(scorm, true);
     };
 
     return self;
