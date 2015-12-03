@@ -76,6 +76,42 @@ angular.module('mm.core')
             });
         };
 
+        // Cordova ZIP plugin.
+        $window.zip = {
+            unzip: function(source, destination, callback, progressCallback) {
+                // Remove basePath from the source and destination.
+                source = source.replace(basePath, '');
+                destination = destination.replace(basePath, '');
+
+                $mmFS.readFile(source, $mmFS.FORMATARRAYBUFFER).then(function(data) {
+                    var zip = new JSZip(data),
+                        promises = [];
+
+                    angular.forEach(zip.files, function(file, name) {
+                        var filepath = $mmFS.concatenatePaths(destination, name),
+                            type;
+
+                        if (!file.dir) {
+                            // It's a file. Get the mimetype and write the file.
+                            type = $mmFS.getMimeType($mmFS.getFileExtension(name));
+                            promises.push($mmFS.writeFile(filepath, new Blob([file.asArrayBuffer()], {type: type})));
+                        } else {
+                            // It's a folder, create it if it doesn't exist.
+                            promises.push($mmFS.createDir(filepath));
+                        }
+                    });
+
+                    return $q.all(promises).then(function() {
+                        // Success.
+                        callback(0);
+                    });
+                }).catch(function() {
+                    // Error.
+                    callback(-1);
+                });
+            }
+        };
+
         // @todo: Implement FileTransfer.upload.
 
         // Request 500MB.

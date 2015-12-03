@@ -205,6 +205,27 @@ angular.module('mm.core')
         return deferred.promise;
     };
 
+    /*
+     * Perform a HEAD request to get the size of a remote file.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmWS#getRemoteFileSize
+     * @param {Object} uri File URI.
+     * @return {Promise}   Promise resolved with the size or -1 if failure.
+     */
+    self.getRemoteFileSize = function(url) {
+        return $http.head(url).then(function(data) {
+            var size = parseInt(data.headers('Content-Length'), 10);
+            if (size) {
+                return size;
+            }
+            return -1;
+        }).catch(function() {
+            return -1;
+        });
+    };
+
     return self;
 
 });

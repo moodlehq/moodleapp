@@ -118,7 +118,7 @@ angular.module('mm.addons.mod_book')
             });
 
             // Get current status to decide which icon should be shown.
-            $mmCoursePrefetchDelegate.getModuleStatus(module, revision, timemodified).then(showStatus);
+            $mmCoursePrefetchDelegate.getModuleStatus(module, courseid, revision, timemodified).then(showStatus);
 
             $scope.$on('$destroy', function() {
                 statusObserver && statusObserver.off && statusObserver.off();

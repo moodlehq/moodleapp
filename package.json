@@ -46,7 +46,8 @@
     "cordova-plugin-customurlscheme",
     "ionic-plugin-keyboard",
     "ch.ti8m.documenthandler",
-    "cordova-plugin-local-notifications-mm"
+    "cordova-plugin-local-notifications-mm",
+    "cordova-plugin-zip"
   ],
   "cordovaPlatforms": [
     "android",
