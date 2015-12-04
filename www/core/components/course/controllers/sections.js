@@ -22,7 +22,8 @@ angular.module('mm.core.course')
  * @name mmCourseSectionsCtrl
  */
 .controller('mmCourseSectionsCtrl', function($mmCourse, $mmUtil, $scope, $stateParams, $translate, $mmCourseHelper, $mmEvents,
-            $mmSite, $mmCoursePrefetchDelegate, mmCoreCourseAllSectionsId, mmCoreEventSectionStatusChanged) {
+            $mmSite, $mmCoursePrefetchDelegate, $ionicHistory, $ionicPlatform, mmCoreCourseAllSectionsId,
+            mmCoreEventSectionStatusChanged) {
     var course = $stateParams.course,
         courseid = course.id;
 
@@ -68,11 +69,23 @@ angular.module('mm.core.course')
         });
     }
 
-    function prefetch(section) {
+    // Prefetch a section. The second parameter indicates if the prefetch was started manually (true)
+    // or it was automatically started because all modules are being downloaded (false).
+    function prefetch(section, manual) {
         $mmCourseHelper.prefetch(section, $scope.sections).catch(function() {
-            if (!$scope.$$destroyed) {
-                $mmUtil.showErrorModal('mm.course.errordownloadingsection', true);
+            // Don't show error message if scope is destroyed or it's an automatic download but we aren't in this state.
+            if ($scope.$$destroyed) {
+                return;
             }
+
+            var current = $ionicHistory.currentStateName(),
+                isCurrent = ($ionicPlatform.isTablet() && current == 'site.mm_course.mm_course-section') ||
+                            (!$ionicPlatform.isTablet() && current == 'site.mm_course');
+            if (!manual && !isCurrent) {
+                return;
+            }
+
+            $mmUtil.showErrorModal('mm.course.errordownloadingsection', true);
         }).finally(function() {
             if (!$scope.$$destroyed) {
                 // Recalculate the status.
@@ -94,7 +107,7 @@ angular.module('mm.core.course')
         e.stopPropagation();
 
         $mmCourseHelper.confirmDownloadSize(section, $scope.sections).then(function() {
-            prefetch(section);
+            prefetch(section, true);
         });
     };
 
@@ -123,7 +136,7 @@ angular.module('mm.core.course')
                     var downloadid = $mmCourseHelper.getSectionDownloadId(section);
                     if (section.isDownloading && !$mmCoursePrefetchDelegate.isBeingDownloaded(downloadid)) {
                         // All the modules are now downloading, set a download all promise.
-                        prefetch(section);
+                        prefetch(section, false);
                     }
                 }
             });
