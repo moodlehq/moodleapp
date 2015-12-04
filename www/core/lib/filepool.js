@@ -182,7 +182,8 @@ angular.module('mm.core')
         ],
         revisionRegex = new RegExp('/content/([0-9]+)/'),
         queueDeferreds = {}, // To handle file downloads using the queue.
-        packagesPromises = {};
+        packagesPromises = {}, // To prevent downloading packages twice at the same time.
+        filePromises = {}; // To prevent downloading files twice at the same time.
 
     // Queue status codes.
     var QUEUE_RUNNING = 'mmFilepool:QUEUE_RUNNING',
@@ -774,7 +775,18 @@ angular.module('mm.core')
             return $q.reject();
         }
 
-        return $mmSitesManager.getSite(siteId).then(function(site) {
+        var downloadId = self.getFileDownloadId(fileUrl, filePath),
+            deleted = false,
+            promise;
+
+        if (filePromises[siteId] && filePromises[siteId][downloadId]) {
+            // There's already a download ongoing for this file in this location, return the promise.
+            return filePromises[siteId][downloadId];
+        } else if (!filePromises[siteId]) {
+            filePromises[siteId] = {};
+        }
+
+        promise = $mmSitesManager.getSite(siteId).then(function(site) {
 
             if (!site.canDownloadFiles()) {
                 return $q.reject({drop: true});
@@ -795,7 +807,16 @@ angular.module('mm.core')
                     return fileEntry.toURL();
                 });
             });
+        }).finally(function() {
+            // Download finished, delete the promise.
+            delete filePromises[siteId][downloadId];
+            deleted = true;
         });
+
+        if (!deleted) { // In case promise was finished immediately.
+            filePromises[siteId][downloadId] = promise;
+        }
+        return promise;
     };
 
     /**
@@ -831,6 +852,21 @@ angular.module('mm.core')
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.fixPluginfileURL(fileUrl);
         });
+    };
+
+    /**
+     * Get the ID of a file download. Used to keep track of filePromises.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#getFileDownloadId
+     * @param {String} fileUrl  The file URL.
+     * @param {String} filePath The file destination path.
+     * @return {String}         File download ID.
+     * @protected
+     */
+    self.getFileDownloadId = function(fileUrl, filePath) {
+        return md5.createHash(fileUrl + '###' + filePath);
     };
 
     /**
