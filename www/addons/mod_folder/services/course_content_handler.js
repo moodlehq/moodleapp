@@ -61,7 +61,9 @@ angular.module('mm.addons.mod_folder')
                 e.preventDefault();
                 e.stopPropagation();
                 $mmaModFolder.prefetchContent(module).catch(function() {
-                    $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                    if (!$scope.$$destroyed) {
+                        $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                    }
                 });
             }
 

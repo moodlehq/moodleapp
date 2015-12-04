@@ -64,7 +64,9 @@ angular.module('mm.addons.mod_resource')
                     e.preventDefault();
                     e.stopPropagation();
                     $mmaModResource.prefetchContent(module).catch(function() {
-                        $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                        if (!$scope.$$destroyed) {
+                            $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                        }
                     });
                 }
             };
@@ -78,7 +80,9 @@ angular.module('mm.addons.mod_resource')
                     e.stopPropagation();
                     $mmaModResource.invalidateContent(module.id).finally(function() {
                         $mmaModResource.prefetchContent(module).catch(function() {
-                            $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                            if (!$scope.$$destroyed) {
+                                $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                            }
                         });
                     });
                 }
