@@ -30,7 +30,8 @@ var license = '' +
   '// distributed under the License is distributed on an "AS IS" BASIS,\n' +
   '// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n' +
   '// See the License for the specific language governing permissions and\n' +
-  '// limitations under the License.\n\n';
+  '// limitations under the License.\n\n',
+  buildFile = 'mm.bundle.js';
 
 var paths = {
   build: './www/build',
@@ -58,20 +59,21 @@ var paths = {
     ]
   },
   lang: [
-      './www/core/lang/',
-      './www/core/components/**/lang/',
-      './www/addons/**/lang/',
-      './www/core/assets/countries/'
-    ]
+    './www/core/lang/',
+    './www/core/components/**/lang/',
+    './www/addons/**/lang/',
+    './www/core/assets/countries/'
+  ],
+  config: './www/config.json'
 };
 
-gulp.task('default', ['build', 'sass', 'lang']);
+gulp.task('default', ['build', 'sass', 'lang', 'config']);
 
 gulp.task('sass-build', function(done) {
-   gulp.src(paths.sass.core)
-      .pipe(concat('mm.bundle.scss'))
-      .pipe(gulp.dest(paths.build))
-      .on('end', done);
+  gulp.src(paths.sass.core)
+    .pipe(concat('mm.bundle.scss'))
+    .pipe(gulp.dest(paths.build))
+    .on('end', done);
 });
 
 gulp.task('sass', ['sass-build'], function(done) {
@@ -90,14 +92,15 @@ gulp.task('sass', ['sass-build'], function(done) {
 gulp.task('watch', function() {
   gulp.watch(paths.sass.core, ['sass']);
   gulp.watch(paths.sass.custom, ['sass']);
-  gulp.watch(paths.js, ['build']);
+  gulp.watch(paths.js, ['build', 'config']);
   var langsPaths = paths.lang.map(function(path) {
     return path + '*.json';
   });
   gulp.watch(langsPaths, ['lang']);
+  gulp.watch(paths.config, ['config']);
 });
 
-gulp.task('build', function() {
+gulp.task('build', function(done) {
   var dependencies = ["'mm.core'"],
       componentRegex = /core\/components\/([^\/]+)\/main.js/,
       pluginRegex = /addons\/([^\/]+)\/main.js/;
@@ -117,7 +120,7 @@ gulp.task('build', function() {
     .pipe(stripComments())
     .pipe(removeEmptyLines())
     .pipe(ngAnnotate()) // This step fixes DI declarations for FirefoxOS.
-    .pipe(concat('mm.bundle.js'))
+    .pipe(concat(buildFile))
     .pipe(insert.prepend(license))
 
     // Add dependencies, this assumes that the mm module is declared on one line.
@@ -126,7 +129,8 @@ gulp.task('build', function() {
         "angular.module('mm', ['ionic'",
         "angular.module('mm', ['ionic', " + dependencies.join(', '));
     }))
-    .pipe(gulp.dest(paths.build));
+    .pipe(gulp.dest(paths.build))
+    .on('end', done);
 });
 
 gulp.task('lang', function() {
@@ -254,4 +258,24 @@ gulp.task('lang', function() {
       .pipe(gulp.dest(paths.build + '/lang'));
 
   });
+});
+
+// Convert config.json into an AngularJS constant and append it to build file.
+gulp.task('config', ['build'], function(done) {
+  var source = [paths.build + '/' + buildFile, paths.config],
+    configName = paths.config.substr(paths.config.lastIndexOf('/') + 1);
+
+  gulp.src(source)
+    .pipe(through(function(file) {
+      if (file.path.indexOf(configName) > -1) {
+        // It's config.json, let's convert it to an AngularJS constant.
+        var contents = "angular.module('mm.core')\n\n" +
+                       ".constant('mmCoreConfigConstants', " + file.contents.toString() + ");";
+        file.contents = new Buffer(contents);
+      }
+      this.emit('data', file);
+    }))
+    .pipe(concat(buildFile))
+    .pipe(gulp.dest(paths.build))
+    .on('end', done);
 });
