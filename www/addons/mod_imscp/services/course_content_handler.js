@@ -64,7 +64,9 @@ angular.module('mm.addons.mod_imscp')
                     e.preventDefault();
                     e.stopPropagation();
                     $mmaModImscp.prefetchContent(module).catch(function() {
-                        $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                        if (!$scope.$$destroyed) {
+                            $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                        }
                     });
                 }
             };
@@ -78,7 +80,9 @@ angular.module('mm.addons.mod_imscp')
                     e.stopPropagation();
                     $mmaModImscp.invalidateContent(module.id).then(function() {
                         $mmaModImscp.prefetchContent(module).catch(function() {
-                            $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                            if (!$scope.$$destroyed) {
+                                $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                            }
                         });
                     });
                 }
@@ -112,7 +116,7 @@ angular.module('mm.addons.mod_imscp')
             });
 
             // Get current status to decide which icon should be shown.
-            $mmCoursePrefetchDelegate.getModuleStatus(module, revision, timemodified).then(showStatus);
+            $mmCoursePrefetchDelegate.getModuleStatus(module, courseid, revision, timemodified).then(showStatus);
 
             $scope.$on('$destroy', function() {
                 statusObserver && statusObserver.off && statusObserver.off();

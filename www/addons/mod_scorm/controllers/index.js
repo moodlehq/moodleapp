@@ -21,10 +21,15 @@ angular.module('mm.addons.mod_scorm')
  * @ngdoc controller
  * @name mmaModScormIndexCtrl
  */
-.controller('mmaModScormIndexCtrl', function($scope, $stateParams, $mmaModScorm, $mmUtil, $q, $mmCourse, $ionicScrollDelegate) {
+.controller('mmaModScormIndexCtrl', function($scope, $stateParams, $mmaModScorm, $mmUtil, $q, $mmCourse, $ionicScrollDelegate,
+            $mmCoursePrefetchDelegate, $mmaModScormHelper, $mmEvents, $mmSite, mmCoreOutdated, mmCoreNotDownloaded,
+            mmCoreDownloading, mmaModScormComponent, mmCoreEventPackageStatusChanged) {
+
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
-        scorm;
+        scorm,
+        statusObserver,
+        currentStatus;
 
     $scope.title = module.name;
     $scope.description = module.description;
@@ -41,21 +46,18 @@ angular.module('mm.addons.mod_scorm')
 
     // Convenience function to get SCORM data.
     function fetchScormData(refresh) {
-        return $mmaModScorm.getScorm(courseid, module.id).then(function(scormdata) {
+        return $mmaModScorm.getScorm(courseid, module.id, module.url).then(function(scormdata) {
             scorm = scormdata;
 
             $scope.title = scorm.name || $scope.title;
             $scope.description = scorm.intro || $scope.description;
             $scope.scorm = scorm;
 
-            if (!$mmaModScorm.isScormValidVersion(scorm)) {
-                $scope.errorMessage = 'mma.mod_scorm.errorinvalidversion';
-            } else if (!$mmaModScorm.isScormDownloadable(scorm)) {
-                $scope.errorMessage = 'mma.mod_scorm.errornotdownloadable';
-            } else if (!$mmaModScorm.isValidPackageUrl(scorm.packageurl)) {
-                $scope.errorMessage = 'mma.mod_scorm.errorpackagefile';
-            } else {
+            var result = $mmaModScorm.isScormSupported(scorm);
+            if (result === true) {
                 $scope.errorMessage = '';
+            } else {
+                $scope.errorMessage = result;
             }
 
             if (scorm.warningmessage) {
@@ -82,6 +84,17 @@ angular.module('mm.addons.mod_scorm')
                     if (scorm.displaycoursestructure) {
                         promises.push(fetchStructure());
                     }
+
+                    if (!scorm.packagesize && $scope.errorMessage === '') {
+                        // SCORM is supported but we don't have package size. Try to calculate it.
+                        promises.push($mmaModScorm.calculateScormSize(scorm).then(function(size) {
+                            scorm.packagesize = size;
+                        }));
+                    }
+
+                    // Handle status. We don't add getStatus to promises because it should be fast.
+                    setStatusListener();
+                    getStatus().then(showStatus);
 
                     return $q.all(promises);
 
@@ -180,6 +193,44 @@ angular.module('mm.addons.mod_scorm')
         });
     }
 
+    // Get status of the SCORM.
+    function getStatus() {
+        return $mmCoursePrefetchDelegate.getModuleStatus(module, courseid, scorm.sha1hash, 0);
+    }
+
+    // Set a listener to monitor changes on this SCORM status to show a message to the user.
+    function setStatusListener() {
+        if (typeof statusObserver !== 'undefined') {
+            return; // Already set.
+        }
+
+        // Listen for changes on this module status to show a message to the user.
+        statusObserver = $mmEvents.on(mmCoreEventPackageStatusChanged, function(data) {
+            if (data.siteid === $mmSite.getId() && data.componentId === scorm.coursemodule &&
+                    data.component === mmaModScormComponent) {
+                showStatus(data.status);
+            }
+        });
+    }
+
+    // Showing or hide a status message depending on the SCORM status.
+    function showStatus(status) {
+        currentStatus = status;
+
+        if (status == mmCoreOutdated) {
+            $scope.statusMessage = 'mma.mod_scorm.scormstatusoutdated';
+        } else if (status == mmCoreNotDownloaded) {
+            $scope.statusMessage = 'mma.mod_scorm.scormstatusnotdownloaded';
+        } else if (status == mmCoreDownloading) {
+            if (!$scope.downloading) {
+                // It's being downloaded right now but the view isn't tracking it. "Restore" the download.
+                downloadScormPackage(true);
+            }
+        } else {
+            $scope.statusMessage = '';
+        }
+    }
+
     // Refreshes data.
     function refreshData() {
         var promises = [];
@@ -193,6 +244,41 @@ angular.module('mm.addons.mod_scorm')
         });
     }
 
+    // Download a SCORM package or restores an ongoing download.
+    function downloadScormPackage() {
+        $scope.downloading = true;
+        return $mmaModScorm.download(scorm).then(undefined, undefined, function(progress) {
+
+            if (!progress) {
+                return;
+            }
+
+            if (progress.packageDownload) { // Downloading package.
+                if (scorm.packagesize) {
+                    $scope.percentage = (parseFloat(progress.loaded / scorm.packagesize) * 100).toFixed(1);
+                }
+            } else if (progress.message) { // Show a message.
+                $scope.progressMessage = progress.message;
+            } else if (progress.loaded && progress.total) { // Unzipping package.
+                $scope.percentage = (parseFloat(progress.loaded / progress.total) * 100).toFixed(1);
+            } else {
+                $scope.percentage = undefined;
+            }
+
+        }).finally(function() {
+            $scope.progressMessage = undefined;
+            $scope.percentage = undefined;
+            $scope.downloading = false;
+        });
+    }
+
+    // Open a SCORM package.
+    function openScorm() {
+        // @todo Open SCORM.
+        alert('@todo: Open SCORM');
+    }
+
+    // Fetch the SCORM data.
     fetchScormData().then(function() {
         $mmaModScorm.logView(scorm.id).then(function() {
             $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
@@ -213,4 +299,32 @@ angular.module('mm.addons.mod_scorm')
             $scope.$broadcast('scroll.refreshComplete');
         });
     };
+
+    // Open a SCORM. It will download the SCORM package if it's not downloaded or it has changed.
+    $scope.open = function() {
+
+        if (currentStatus == mmCoreOutdated || currentStatus == mmCoreNotDownloaded) {
+            // SCORM needs to be downloaded.
+            $mmaModScormHelper.confirmDownload(scorm).then(function() {
+                // Invalidate file if SCORM is outdated.
+                var promise = currentStatus == mmCoreOutdated ? $mmaModScorm.invalidateContent(scorm.coursemodule) : $q.when();
+                promise.finally(function() {
+                    downloadScormPackage().then(function() {
+                        // Success downloading, open scorm.
+                        openScorm();
+                    }).catch(function() {
+                        if (!$scope.$$destroyed) {
+                            $mmaModScormHelper.showDownloadError(scorm);
+                        }
+                    });
+                });
+            });
+        } else {
+            openScorm();
+        }
+    };
+
+    $scope.$on('$destroy', function() {
+        statusObserver && statusObserver.off && statusObserver.off();
+    });
 });

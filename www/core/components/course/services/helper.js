@@ -34,17 +34,18 @@ angular.module('mm.core.course')
      * @ngdoc method
      * @name $mmCourseHelper#calculateSectionStatus
      * @param {Object[]} section          Section to calculate its status. Can't be "All sections".
+     * @param  {Number} courseid          Course ID the section belongs to.
      * @param {Boolean} restoreDownloads  True if it should restore downloads. It will try to restore this section downloads.
      * @param {Boolean} refresh           True if it shouldn't use module status cache (slower).
      * @param {Promise[]} [dwnpromises]   If section download is restored, a promise will be added to this array. Required
      *                                    if restoreDownloads=true.
      * @return {Promise}         Promise resolved when the state is calculated.
      */
-    self.calculateSectionStatus = function(section, restoreDownloads, refresh, dwnpromises) {
+    self.calculateSectionStatus = function(section, courseid, restoreDownloads, refresh, dwnpromises) {
 
         if (section.id !== mmCoreCourseAllSectionsId) {
             // Get the status of this section.
-            return $mmCoursePrefetchDelegate.getModulesStatus(section.id, section.modules, refresh, restoreDownloads)
+            return $mmCoursePrefetchDelegate.getModulesStatus(section.id, section.modules, courseid, refresh, restoreDownloads)
                     .then(function(result) {
 
                 // Check if it's being downloaded. We can't trust status 100% because downloaded books are always outdated.
@@ -68,9 +69,9 @@ angular.module('mm.core.course')
                     section.isDownloading = true;
                 } else {
                     // Restore or re-start the prefetch.
-                    var promise = self.startOrRestorePrefetch(section, result).then(function() {
+                    var promise = self.startOrRestorePrefetch(section, result, courseid).then(function() {
                         // Re-calculate the status of this section once finished.
-                        return self.calculateSectionStatus(section);
+                        return self.calculateSectionStatus(section, courseid);
                     });
                     if (dwnpromises) {
                         dwnpromises.push(promise);
@@ -90,12 +91,13 @@ angular.module('mm.core.course')
      * @ngdoc method
      * @name $mmCourseHelper#calculateSectionsStatus
      * @param {Object[]} sections         Sections to calculate their status.
+     * @param  {Number} courseid          Course ID the sections belong to.
      * @param {Boolean} restoreDownloads  True if it should restore downloads. It will try to restore section downloads
      * @param {Boolean} refresh           True if it shouldn't use module status cache (slower).
      * @return {Promise}                  Promise resolved when the states are calculated. Returns an array of download promises
      *                                    with the restored downloads (only if restoreDownloads=true).
      */
-    self.calculateSectionsStatus = function(sections, restoreDownloads, refresh) {
+    self.calculateSectionsStatus = function(sections, courseid, restoreDownloads, refresh) {
 
         var allsectionssection,
             allsectionsstatus,
@@ -107,7 +109,7 @@ angular.module('mm.core.course')
                 // "All sections" section status is calculated using the status of the rest of sections.
                 allsectionssection = section;
             } else {
-                statuspromises.push(self.calculateSectionStatus(section, restoreDownloads, refresh, downloadpromises)
+                statuspromises.push(self.calculateSectionStatus(section, courseid, restoreDownloads, refresh, downloadpromises)
                         .then(function(result) {
 
                     // Calculate "All sections" status.
@@ -133,22 +135,23 @@ angular.module('mm.core.course')
      * @module mm.core.course
      * @ngdoc method
      * @name $mmCourseHelper#confirmDownloadSize
+     * @param {Number} courseid   Course ID the section belongs to.
      * @param {Object} section    Section.
      * @param {Object[]} sections List of sections. Used when downloading all the sections.
      * @return {Promise}          Promise resolved if the user confirms or there's no need to confirm.
      */
-    self.confirmDownloadSize = function(section, sections) {
+    self.confirmDownloadSize = function(courseid, section, sections) {
         var sizePromise;
 
         // Calculate the size of the download.
         if (section.id != mmCoreCourseAllSectionsId) {
-            sizePromise = $mmCoursePrefetchDelegate.getDownloadSize(section.modules);
+            sizePromise = $mmCoursePrefetchDelegate.getDownloadSize(section.modules, courseid);
         } else {
             var promises = [],
                 size = 0;
             angular.forEach(sections, function(s) {
                 if (s.id != mmCoreCourseAllSectionsId) {
-                    promises.push($mmCoursePrefetchDelegate.getDownloadSize(s.modules).then(function(sectionsize) {
+                    promises.push($mmCoursePrefetchDelegate.getDownloadSize(s.modules, courseid).then(function(sectionsize) {
                         size = size + sectionsize;
                     }));
                 }
@@ -159,11 +162,8 @@ angular.module('mm.core.course')
         }
 
         return sizePromise.then(function(size) {
-            // Check if we need to show the confirm modal.
-            if (size >= mmCoreWifiDownloadThreshold || ($mmApp.isNetworkAccessLimited() && size >= mmCoreDownloadThreshold)) {
-                var readableSize = $mmText.bytesToSize(size, 2);
-                return $mmUtil.showConfirm($translate('mm.course.confirmdownloadsection', {size: readableSize}));
-            }
+            // Show confirm modal if needed.
+            return $mmUtil.confirmDownloadSize(size);
         });
     };
 
@@ -187,15 +187,16 @@ angular.module('mm.core.course')
      * @module mm.core.course
      * @ngdoc method
      * @name $mmCourseHelper#prefetch
-     * @param {Object} section            Section.
-     * @param {Object[]} sections         List of sections. Used when downloading all the sections.
-     * @return {promise}                  Promise resolved when the prefetch is finished.
+     * @param  {Object} section    Section.
+     * @param  {Number} courseid   Course ID the section belongs to.
+     * @param  {Object[]} sections List of sections. Used when downloading all the sections.
+     * @return {promise}           Promise resolved when the prefetch is finished.
      */
-    self.prefetch = function(section, sections) {
+    self.prefetch = function(section, courseid, sections) {
 
         if (section.id != mmCoreCourseAllSectionsId) {
             // Download only this section.
-            return self.prefetchSection(section, true, sections);
+            return self.prefetchSection(section, courseid, true, sections);
         } else {
             // Download all the sections except "All sections".
             // In case of a failure, we want that ALL promises have finished before rejecting the promise.
@@ -204,9 +205,9 @@ angular.module('mm.core.course')
             section.isDownloading = true;
             angular.forEach(sections, function(s) {
                 if (s.id != mmCoreCourseAllSectionsId) {
-                    promises.push(self.prefetchSection(s, false, sections).then(function() {
+                    promises.push(self.prefetchSection(s, courseid, false, sections).then(function() {
                         // Calculate only the section that finished.
-                        return self.calculateSectionStatus(s);
+                        return self.calculateSectionStatus(s, courseid);
                     }));
                 }
             });
@@ -223,11 +224,12 @@ angular.module('mm.core.course')
      * @ngdoc method
      * @name $mmCourseHelper#prefetchSection
      * @param  {Object} section         Section to prefetch.
+     * @param  {Number} courseid        Course ID the section belongs to.
      * @param  {Boolean} singleDownload True if user is only downloading this section, false if user is downloading all sections.
      * @param {Object[]} [sections]     List of sections. Used only if singleDownload is true.
      * @return {Promise}                Promise resolved when the section is prefetched.
      */
-    self.prefetchSection = function(section, singleDownload, sections) {
+    self.prefetchSection = function(section, courseid, singleDownload, sections) {
 
         if (section.id == mmCoreCourseAllSectionsId) {
             return $q.when();
@@ -236,12 +238,12 @@ angular.module('mm.core.course')
         section.isDownloading = true;
 
         // Validate the section needs to be downloaded and calculate amount of modules that need to be downloaded.
-        return $mmCoursePrefetchDelegate.getModulesStatus(section.id, section.modules).then(function(result) {
+        return $mmCoursePrefetchDelegate.getModulesStatus(section.id, section.modules, courseid).then(function(result) {
             if (result.status === mmCoreNotDownloaded || result.status === mmCoreOutdated || result.status === mmCoreDownloading) {
-                var promise = self.startOrRestorePrefetch(section, result);
+                var promise = self.startOrRestorePrefetch(section, result, courseid);
                 if (singleDownload) {
                     // Re-calculate status to determine the right status for the "All sections" section.
-                    self.calculateSectionsStatus(sections, false);
+                    self.calculateSectionsStatus(sections, courseid, false);
                 }
                 return promise;
             }
@@ -263,7 +265,7 @@ angular.module('mm.core.course')
      * @param {Object} status  Result of $mmCoursePrefetchDelegate#getModulesStatus for this section.
      * @return {Promise}       Promise resolved when the section has been prefetched.
      */
-    self.startOrRestorePrefetch = function(section, status) {
+    self.startOrRestorePrefetch = function(section, status, courseid) {
 
         if (section.id == mmCoreCourseAllSectionsId) {
             return $q.when();
@@ -285,7 +287,7 @@ angular.module('mm.core.course')
 
         // We prefetch all the modules to prevent incoeherences in the download count
         // and also to download stale data that might not be marked as outdated.
-        return $mmCoursePrefetchDelegate.prefetchAll(downloadid, modules).then(function() {}, function() {
+        return $mmCoursePrefetchDelegate.prefetchAll(downloadid, modules, courseid).then(function() {}, function() {
             // Return a rejected promise so errors are handled outside of this function.
             return $q.reject();
         }, function(id) {

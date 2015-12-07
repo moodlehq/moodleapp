@@ -14,6 +14,8 @@
 
 angular.module('mm.addons.mod_scorm', ['mm.core'])
 
+.constant('mmaModScormComponent', 'mmaModScorm')
+
 .config(function($stateProvider) {
 
     $stateProvider
@@ -34,6 +36,7 @@ angular.module('mm.addons.mod_scorm', ['mm.core'])
 
 })
 
-.config(function($mmCourseDelegateProvider) {
+.config(function($mmCourseDelegateProvider, $mmCoursePrefetchDelegateProvider) {
     $mmCourseDelegateProvider.registerContentHandler('mmaModScorm', 'scorm', '$mmaModScormCourseContentHandler');
+    $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModScorm', 'scorm', '$mmaModScormPrefetchHandler');
 });

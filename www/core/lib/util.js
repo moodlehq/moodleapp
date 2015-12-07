@@ -64,7 +64,8 @@ angular.module('mm.core')
         return query.length ? query.substr(0, query.length - 1) : query;
     };
 
-    this.$get = function($ionicLoading, $ionicPopup, $injector, $translate, $http, $log, $q, $mmLang, $mmFS, $timeout) {
+    this.$get = function($ionicLoading, $ionicPopup, $injector, $translate, $http, $log, $q, $mmLang, $mmFS, $timeout, $mmApp,
+                $mmText, mmCoreWifiDownloadThreshold, mmCoreDownloadThreshold) {
 
         $log = $log.getInstance('$mmUtil');
 
@@ -735,6 +736,37 @@ angular.module('mm.core')
             });
 
             return deferred.promise;
+        };
+
+        /**
+         * If the download size is higher than a certain threshold shows a confirm dialog.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#confirmDownloadSize
+         * @param {Number} size                 Size to download (in bytes).
+         * @param {String} [message]            Code of the message to show. Default: 'mm.course.confirmdownload'.
+         * @param {String} [unknownsizemessage] Code of the message to show if size is unknown.
+         *                                      Default: 'mm.course.confirmdownloadunknownsize'.
+         * @param {Number} [wifiThreshold]      Threshold to show confirm in WiFi connection. Default: mmCoreWifiDownloadThreshold.
+         * @param {Number} [limitedThreshold]   Threshold to show confirm in limited connection. Default: mmCoreDownloadThreshold.
+         * @return {Promise}                   Promise resolved when the user confirms or if no confirm needed.
+         */
+        self.confirmDownloadSize = function(size, message, unknownsizemessage, wifiThreshold, limitedThreshold) {
+            wifiThreshold = typeof wifiThreshold == 'undefined' ? mmCoreWifiDownloadThreshold : wifiThreshold;
+            limitedThreshold = typeof limitedThreshold == 'undefined' ? mmCoreDownloadThreshold : limitedThreshold;
+            message = message || 'mm.course.confirmdownload';
+            unknownsizemessage = unknownsizemessage || 'mm.course.confirmdownloadunknownsize';
+
+            if (size <= 0) {
+                // Seems size was unable to be calculated. Show a warning.
+                return self.showConfirm($translate(unknownsizemessage));
+            }
+            else if (size >= wifiThreshold || ($mmApp.isNetworkAccessLimited() && size >= limitedThreshold)) {
+                var readableSize = $mmText.bytesToSize(size, 2);
+                return self.showConfirm($translate(message, {size: readableSize}));
+            }
+            return $q.when();
         };
 
         return self;
