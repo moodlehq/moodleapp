@@ -21,10 +21,51 @@ angular.module('mm.core.login')
  * @ngdoc controller
  * @name mmLoginCredentialsCtrl
  */
-.controller('mmLoginCredentialsCtrl', function($scope, $state, $stateParams, $mmSitesManager, $mmUtil, $ionicHistory, $mmApp) {
+.controller('mmLoginCredentialsCtrl', function($scope, $state, $stateParams, $mmSitesManager, $mmUtil, $ionicHistory, $mmApp,
+            $q, $mmLoginHelper, $translate) {
 
     $scope.siteurl = $stateParams.siteurl;
     $scope.credentials = {};
+
+    var siteChecked = false;
+
+    // Function to check if a site uses local_mobile, requires SSO login, etc.
+    // This should be used only if a fixed URL is set, otherwise this check is already performed in mmLoginSiteCtrl.
+    function checkSite(siteurl) {
+        var checkmodal = $mmUtil.showModalLoading();
+        return $mmSitesManager.checkSite(siteurl).then(function(result) {
+
+            siteChecked = true;
+            $scope.siteurl = result.siteurl;
+
+            if (result && result.warning) {
+                $mmUtil.showErrorModal(result.warning, true, 4000);
+            }
+
+            if ($mmLoginHelper.isSSOLoginNeeded(result.code)) {
+                // SSO. User needs to authenticate in a browser.
+                $scope.isBrowserSSO = true;
+                $mmUtil.showConfirm($translate('mm.login.logininsiterequired')).then(function() {
+                    $mmLoginHelper.openBrowserForSSOLogin(result.siteurl);
+                });
+            } else {
+                $scope.isBrowserSSO = false;
+            }
+
+        }).catch(function(error) {
+            $mmUtil.showErrorModal(error);
+            return $q.reject();
+        }).finally(function() {
+            checkmodal.dismiss();
+        });
+    }
+
+    if ($mmLoginHelper.isFixedUrlSet()) {
+        // Fixed URL, we need to check if it uses browser SSO login.
+        checkSite($scope.siteurl);
+    } else {
+        siteChecked = true;
+    }
 
     $scope.login = function() {
 
@@ -34,6 +75,19 @@ angular.module('mm.core.login')
         var siteurl = $scope.siteurl,
             username = $scope.credentials.username,
             password = $scope.credentials.password;
+
+        if (!siteChecked) {
+            // Site wasn't checked (it failed), let's check again.
+            return checkSite(siteurl).then(function() {
+                if (!$scope.isBrowserSSO) {
+                    // Site doesn't use browser SSO, throw app's login again.
+                    return $scope.login();
+                }
+            });
+        } else if ($scope.isBrowserSSO) {
+            // A previous check determined that browser SSO is needed. Let's check again, maybe site was updated.
+            return checkSite(siteurl);
+        }
 
         if (!username) {
             $mmUtil.showErrorModal('mm.login.usernamerequired', true);
@@ -47,19 +101,16 @@ angular.module('mm.core.login')
         var modal = $mmUtil.showModalLoading();
 
         // Start the authentication process.
-        $mmSitesManager.getUserToken(siteurl, username, password).then(function(data) {
-            $mmSitesManager.newSite(data.siteurl, data.token).then(function() {
+        return $mmSitesManager.getUserToken(siteurl, username, password).then(function(data) {
+            return $mmSitesManager.newSite(data.siteurl, data.token).then(function() {
                 delete $scope.credentials; // Delete username and password from the scope.
                 $ionicHistory.nextViewOptions({disableBack: true});
                 $state.go('site.mm_courses');
-            }, function(error) {
-                $mmUtil.showErrorModal(error);
-            }).finally(function() {
-                modal.dismiss();
             });
-        }, function(error) {
-            modal.dismiss();
+        }).catch(function(error) {
             $mmUtil.showErrorModal(error);
+        }).finally(function() {
+            modal.dismiss();
         });
     };
 
