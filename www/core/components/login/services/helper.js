@@ -26,11 +26,41 @@ angular.module('mm.core.login')
  * @name $mmLoginHelper
  */
 .factory('$mmLoginHelper', function($q, $log, $mmConfig, mmLoginSSOCode, mmLoginLaunchSiteURL, mmLoginLaunchPassport,
-            md5, $mmSite, $mmSitesManager, $mmLang, $mmUtil, mmCoreConfigConstants) {
+            md5, $mmSite, $mmSitesManager, $mmLang, $mmUtil, $state, mmCoreConfigConstants) {
 
     $log = $log.getInstance('$mmLoginHelper');
 
     var self = {};
+
+    /**
+     * Go to the view to add a new site.
+     * If a fixed URL is configured, go to credentials instead.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#goToAddSite
+     * @return {Promise} Promise resolved when the state changes.
+     */
+    self.goToAddSite = function() {
+        if (mmCoreConfigConstants.siteurl) {
+            // Fixed URL is set, go to credentials page.
+            return $state.go('mm_login.credentials', {siteurl: mmCoreConfigConstants.siteurl});
+        } else {
+            return $state.go('mm_login.site');
+        }
+    };
+
+    /**
+     * Check if the app is configured to use a fixed URL.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#isFixedUrlSet
+     * @return {Boolean} True if set, false otherwise.
+     */
+    self.isFixedUrlSet = function() {
+        return typeof mmCoreConfigConstants.siteurl != 'undefined';
+    };
 
     /**
      * Check if SSO login is needed based on code returned by the WS.
@@ -146,7 +176,7 @@ angular.module('mm.core.login')
         } else {
             return $mmSitesManager.newSite(siteurl, token);
         }
-    }
+    };
 
     return self;
 });

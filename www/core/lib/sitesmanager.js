@@ -256,13 +256,13 @@ angular.module('mm.core')
         // First http://
         siteurl = siteurl.replace("https://", "http://");
         if (services[siteurl]) {
-            return $q.when(services[siteurl]);
+            return services[siteurl];
         }
 
         // Now https://
         siteurl = siteurl.replace("http://", "https://");
         if (services[siteurl]) {
-            return $q.when(services[siteurl]);
+            return services[siteurl];
         }
 
         // Return default service.
