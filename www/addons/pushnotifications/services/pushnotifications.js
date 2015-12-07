@@ -21,7 +21,7 @@ angular.module('mm.addons.pushnotifications')
  * @ngdoc service
  * @name $mmaPushNotifications
  */
-.factory('$mmaPushNotifications', function($mmSite, $log, $cordovaPush, $mmConfig, $mmText, $q, $cordovaDevice, $mmUtil,
+.factory('$mmaPushNotifications', function($mmSite, $log, $cordovaPush, $mmText, $q, $cordovaDevice, $mmUtil, mmCoreConfigConstants,
             $mmApp, $mmLocalNotifications, $mmPushNotificationsDelegate, $mmSitesManager, mmaPushNotificationsComponent) {
     $log = $log.getInstance('$mmaPushNotifications');
 
@@ -194,11 +194,12 @@ angular.module('mm.addons.pushnotifications')
      * @protected
      */
     self._registerDeviceGCM = function() {
-        return $mmConfig.get('gcmpn').then(function(gcmpn) {
+        if (mmCoreConfigConstants.gcmpn) {
             return $cordovaPush.register({
-                senderID: gcmpn
+                senderID: mmCoreConfigConstants.gcmpn
             });
-        });
+        }
+        return $q.reject();
     };
 
     /**
@@ -216,18 +217,16 @@ angular.module('mm.addons.pushnotifications')
             return $q.reject();
         }
 
-        return $mmConfig.get('app_id').then(function(appid) {
-            var data = {
-                appid:      appid,
-                name:       ionic.Platform.device().name || '',
-                model:      $cordovaDevice.getModel(),
-                platform:   $cordovaDevice.getPlatform(),
-                version:    $cordovaDevice.getVersion(),
-                pushid:     pushID,
-                uuid:       $cordovaDevice.getUUID()
-            };
-            return $mmSite.write('core_user_add_user_device', data);
-        });
+        var data = {
+            appid:      mmCoreConfigConstants.app_id,
+            name:       ionic.Platform.device().name || '',
+            model:      $cordovaDevice.getModel(),
+            platform:   $cordovaDevice.getPlatform(),
+            version:    $cordovaDevice.getVersion(),
+            pushid:     pushID,
+            uuid:       $cordovaDevice.getUUID()
+        };
+        return $mmSite.write('core_user_add_user_device', data);
     };
 
     /**
@@ -247,16 +246,14 @@ angular.module('mm.addons.pushnotifications')
 
         $log.debug('Unregister device on Moodle: ' + site.id);
 
-        return $mmConfig.get('app_id').then(function(appid) {
-            var data = {
-                appid:      appid,
-                uuid:       $cordovaDevice.getUUID()
-            };
-            return site.write('core_user_remove_user_device', data).then(function(response) {
-                if (!response || !response.removed) {
-                    return $q.reject();
-                }
-            });
+        var data = {
+            appid: mmCoreConfigConstants.app_id,
+            uuid:  $cordovaDevice.getUUID()
+        };
+        return site.write('core_user_remove_user_device', data).then(function(response) {
+            if (!response || !response.removed) {
+                return $q.reject();
+            }
         });
     };
 

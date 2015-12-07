@@ -33,14 +33,14 @@ angular.module('mm.core.login')
             return;
         }
 
-        $mmSitesManager.getDemoSiteData(url).then(function() {
+        if ($mmSitesManager.getDemoSiteData(url)) {
             // Is demo site.
             $scope.isInvalidUrl = false;
-        }, function() {
+        } else {
             // formatURL adds the protocol if is missing.
             var formattedurl = $mmUtil.formatURL(url);
             $scope.isInvalidUrl = formattedurl.indexOf('://localhost') == -1 && !$mmUtil.isValidURL(formattedurl);
-        });
+        }
     };
 
     $scope.connect = function(url) {
@@ -52,10 +52,11 @@ angular.module('mm.core.login')
             return;
         }
 
-        var modal = $mmUtil.showModalLoading();
+        var modal = $mmUtil.showModalLoading(),
+            sitedata = $mmSitesManager.getDemoSiteData(url);
 
-        $mmSitesManager.getDemoSiteData(url).then(function(sitedata) {
-
+        if (sitedata) {
+            // It's a demo site.
             $mmSitesManager.getUserToken(sitedata.url, sitedata.username, sitedata.password).then(function(data) {
                 $mmSitesManager.newSite(data.siteurl, data.token).then(function() {
                     $ionicHistory.nextViewOptions({disableBack: true});
@@ -70,7 +71,7 @@ angular.module('mm.core.login')
                 $mmUtil.showErrorModal(error);
             });
 
-        }, function() {
+        } else {
             // Not a demo site.
             $mmSitesManager.checkSite(url).then(function(result) {
 
@@ -92,7 +93,7 @@ angular.module('mm.core.login')
             }).finally(function() {
                 modal.dismiss();
             });
-        });
+        }
     };
 
     // Get docs URL for help modal.

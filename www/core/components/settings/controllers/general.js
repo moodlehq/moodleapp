@@ -21,12 +21,10 @@ angular.module('mm.core.settings')
  * @ngdoc controller
  * @name mmSettingsGeneralCtrl
  */
-.controller('mmSettingsGeneralCtrl', function($scope, $mmConfig, $mmLang, $ionicHistory, $mmEvents, mmCoreEventLanguageChanged,
-            mmCoreSettingsReportInBackground) {
+.controller('mmSettingsGeneralCtrl', function($scope, $mmLang, $ionicHistory, $mmEvents, mmCoreEventLanguageChanged,
+            mmCoreSettingsReportInBackground, mmCoreConfigConstants) {
 
-    $mmConfig.get('languages').then(function(languages) {
-        $scope.langs = languages;
-    });
+    $scope.langs = mmCoreConfigConstants.languages;
 
     $mmLang.getCurrentLanguage().then(function(currentLanguage) {
         $scope.selectedLanguage = currentLanguage;
