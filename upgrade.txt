@@ -8,6 +8,7 @@ information provided here is intended especially for developers.
     ionic plugin add cordova-plugin-zip
         or
     ionic state restore
+ * mmaModImscpBar directive has been moved to core. Now it's named mmNavigationBar.
 
 === 2.7 ===
 
