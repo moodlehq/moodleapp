@@ -20,15 +20,25 @@ angular.module('mm.core')
  * @module mm.core
  * @ngdoc directive
  * @name mmIframe
+ * @description
+ * Accepts the following attributes:
+ *
+ * @param {String} src          The source of the iframe.
+ * @param {Mixed} [width=100%]  Width of the iframe. If not defined, use 100%.
+ * @param {Mixed} [height=100%] Height of the iframe. If not defined, use 100%.
  */
 .directive('mmIframe', function($mmUtil) {
+
     return {
         restrict: 'E',
-        template: '<div class="iframe-wrapper"><iframe class="mm-iframe" ng-src="{{src}}"></iframe></div>',
+        template: '<div class="iframe-wrapper"><iframe class="mm-iframe" ng-style="{\'width\': width, \'height\': height}" ng-src="{{src}}"></iframe></div>',
         scope: {
             src: '='
         },
         link: function(scope, element, attrs) {
+            scope.width = $mmUtil.formatPixelsSize(attrs.iframeWidth) || '100%';
+            scope.height = $mmUtil.formatPixelsSize(attrs.iframeHeight) || '100%';
+
             var iframe = angular.element(element.find('iframe')[0]);
             iframe.on('load', function() {
                 angular.forEach(iframe.contents().find('a'), function(el) {
@@ -41,6 +51,7 @@ angular.module('mm.core')
                     }
                 });
             });
+
         }
     };
 });
