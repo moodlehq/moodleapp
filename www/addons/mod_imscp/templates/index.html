@@ -9,7 +9,7 @@
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" on-refresh="doRefresh()" ng-if="loaded"></ion-refresher>
         <mm-loading hide-until="loaded">
             <div class="mma-imscp-container">
-                <mma-mod-imscp-bar previous="previousItem" next="nextItem" action="loadItem" description="description"></mma-mod-imscp-bar>
+                <mm-navigation-bar previous="previousItem" next="nextItem" action="loadItem" info="description" title="{{ 'mm.core.description' | translate }}"></mm-navigation-bar>
                 <mm-iframe src="src" class="mma-imscp-iframe-container"></mm-iframe>
             </div>
         </mm-loading>
