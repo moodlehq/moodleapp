@@ -35,6 +35,23 @@ angular.module('mm.addons.mod_scorm', ['mm.core'])
           templateUrl: 'addons/mod_scorm/templates/index.html'
         }
       }
+    })
+
+    .state('site.mod_scorm-player', {
+      url: '/mod_scorm-player',
+      params: {
+        scorm: null,
+        mode: null,
+        newAttempt: false,
+        organizationid: null,
+        scoid: null
+      },
+      views: {
+        'site': {
+          controller: 'mmaModScormPlayerCtrl',
+          templateUrl: 'addons/mod_scorm/templates/player.html'
+        }
+      }
     });
 
 })

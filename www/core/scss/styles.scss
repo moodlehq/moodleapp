@@ -33,6 +33,9 @@ $item-message-mine-bg: rgba(17, 193, 243, .1) !default;
 // Completion
 $completion-img-width: 24px !default;
 
+// Disabled items.
+$item-disabled-color: #999 !default;
+
 /**
  * Styles revert.
  */
@@ -120,6 +123,11 @@ em {
       height: 16px;
     }
   }
+}
+
+// Defines a "disabled" item.
+.item.item-disabled {
+  color: $item-disabled-color;
 }
 
 // Split pane.

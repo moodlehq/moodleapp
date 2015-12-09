@@ -53,6 +53,72 @@ angular.module('mm.addons.mod_scorm')
     };
 
     /**
+     * Given a TOC in array format (@see $mmaModScorm#formatTocToArray) and a scoId, return the next available SCO.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScormHelper#getNextScoFromToc
+     * @param  {Object[]} toc SCORM's TOC.
+     * @param  {Number} scoId SCO ID.
+     * @return {Object}       Next SCO.
+     */
+    self.getNextScoFromToc = function(toc, scoId) {
+        for (var i = 0, len = toc.length; i < len; i++) {
+            if (toc[i].id == scoId) {
+                // We found the current SCO. Now let's search the next visible SCO with fulfilled prerequisites.
+                for (var j = i + 1; j < len; j++) {
+                    if (toc[j].isvisible && toc[j].prereq) {
+                        return toc[j];
+                    }
+                }
+                break;
+            }
+        }
+    };
+
+    /**
+     * Given a TOC in array format (@see $mmaModScorm#formatTocToArray) and a scoId, return the previous available SCO.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScormHelper#getPreviousScoFromToc
+     * @param  {Object[]} toc SCORM's TOC.
+     * @param  {Number} scoId SCO ID.
+     * @return {Object}       Previous SCO.
+     */
+    self.getPreviousScoFromToc = function(toc, scoId) {
+        for (var i = 0, len = toc.length; i < len; i++) {
+            if (toc[i].id == scoId) {
+                // We found the current SCO. Now let's search the previous visible SCO with fulfilled prerequisites.
+                for (var j = i - 1; j >= 0; j--) {
+                    if (toc[j].isvisible && toc[j].prereq) {
+                        return toc[j];
+                    }
+                }
+                break;
+            }
+        }
+    };
+
+    /**
+     * Given a TOC in array format (@see $mmaModScorm#formatTocToArray) and a scoId, return the SCO.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScormHelper#getScoFromToc
+     * @param  {Object[]} toc SCORM's TOC.
+     * @param  {Number} scoId SCO ID.
+     * @return {Object}       SCO.
+     */
+    self.getScoFromToc = function(toc, scoId) {
+        for (var i = 0, len = toc.length; i < len; i++) {
+            if (toc[i].id == scoId) {
+                return toc[i];
+            }
+        }
+    };
+
+    /**
      * Show error because a SCORM download failed.
      *
      * @module mm.addons.mod_scorm
