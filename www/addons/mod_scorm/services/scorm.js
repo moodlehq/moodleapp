@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_scorm')
  * @ngdoc service
  * @name $mmaModScorm
  */
-.factory('$mmaModScorm', function($mmSite, $q, $translate, $mmLang, $mmFilepool, $mmFS, $mmWS,
+.factory('$mmaModScorm', function($mmSite, $q, $translate, $mmLang, $mmFilepool, $mmFS, $mmWS, $sce,
             mmaModScormComponent, mmCoreNotDownloaded) {
     var self = {},
         statuses = ['notattempted', 'passed', 'completed', 'failed', 'incomplete', 'browsed', 'suspend'],
@@ -112,6 +112,19 @@ angular.module('mm.addons.mod_scorm')
             return -1;
         }
         return scorm.maxattempt - attemptscount;
+    };
+
+    /**
+     * Check if TOC should be displayed in the player.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScorm#displayTocInPlayer
+     * @param {Object} scorm SCORM.
+     * @return {Boolean}     True if should display TOC, false otherwise.
+     */
+    self.displayTocInPlayer = function(scorm) {
+        return scorm.hidetoc !== 3;
     };
 
     /**
@@ -627,6 +640,23 @@ angular.module('mm.addons.mod_scorm')
                 return response.scoes;
             }
             return $q.reject();
+        });
+    };
+
+    /**
+     * Given a SCORM and a SCO, returns the full launch URL for the SCO.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScorm#getScoSrc
+     * @param  {Object} scorm SCORM.
+     * @param  {Object} sco   SCO.
+     * @return {Promise}      Promise resolved with the URL.
+     */
+    self.getScoSrc = function(scorm, sco) {
+        return $mmFilepool.getDirectoryUrlByUrl($mmSite.getId(), scorm.moduleurl).then(function(dirPath) {
+            // This URL is going to be injected in an iframe, we need trustAsResourceUrl to make it work in a browser.
+            return $sce.trustAsResourceUrl($mmFS.concatenatePaths(dirPath, sco.launch));
         });
     };
 

@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_scorm')
  * @name mmaModScormIndexCtrl
  */
 .controller('mmaModScormIndexCtrl', function($scope, $stateParams, $mmaModScorm, $mmUtil, $q, $mmCourse, $ionicScrollDelegate,
-            $mmCoursePrefetchDelegate, $mmaModScormHelper, $mmEvents, $mmSite, mmCoreOutdated, mmCoreNotDownloaded,
+            $mmCoursePrefetchDelegate, $mmaModScormHelper, $mmEvents, $mmSite, $state, mmCoreOutdated, mmCoreNotDownloaded,
             mmCoreDownloading, mmaModScormComponent, mmCoreEventPackageStatusChanged) {
 
     var module = $stateParams.module || {},
@@ -81,9 +81,7 @@ angular.module('mm.addons.mod_scorm')
                         promises.push(getReportedGrades());
                     }
 
-                    if (scorm.displaycoursestructure) {
-                        promises.push(fetchStructure());
-                    }
+                    promises.push(fetchStructure());
 
                     if (!scorm.packagesize && $scope.errorMessage === '') {
                         // SCORM is supported but we don't have package size. Try to calculate it.
@@ -173,6 +171,11 @@ angular.module('mm.addons.mod_scorm')
 
     // Load the TOC of a certain organization.
     function loadOrganizationToc(organizationid) {
+        if (!scorm.displaycoursestructure) {
+            // TOC is not displayed, no need to load it.
+            return $q.when();
+        }
+
         $scope.loadingToc = true;
         return $mmaModScorm.getOrganizationToc(scorm.id, organizationid, scorm.numattempts).then(function(toc) {
             $scope.toc = $mmaModScorm.formatTocToArray(toc);
@@ -273,9 +276,14 @@ angular.module('mm.addons.mod_scorm')
     }
 
     // Open a SCORM package.
-    function openScorm() {
-        // @todo Open SCORM.
-        alert('@todo: Open SCORM');
+    function openScorm(scoid) {
+        $state.go('site.mod_scorm-player', {
+            scorm: scorm,
+            mode: $scope.scormOptions.mode,
+            newAttempt: !!$scope.scormOptions.newAttempt,
+            organizationid: $scope.currentOrganization.identifier,
+            scoid: scoid
+        });
     }
 
     // Fetch the SCORM data.
@@ -301,7 +309,15 @@ angular.module('mm.addons.mod_scorm')
     };
 
     // Open a SCORM. It will download the SCORM package if it's not downloaded or it has changed.
-    $scope.open = function() {
+    // The scoid param indicates the SCO that needs to be loaded when the SCORM is opened. If not defined, load first SCO.
+    $scope.open = function(e, scoid) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if ($scope.downloading) {
+            // Scope is being downloaded, abort.
+            return;
+        }
 
         if (currentStatus == mmCoreOutdated || currentStatus == mmCoreNotDownloaded) {
             // SCORM needs to be downloaded.
@@ -310,8 +326,10 @@ angular.module('mm.addons.mod_scorm')
                 var promise = currentStatus == mmCoreOutdated ? $mmaModScorm.invalidateContent(scorm.coursemodule) : $q.when();
                 promise.finally(function() {
                     downloadScormPackage().then(function() {
-                        // Success downloading, open scorm.
-                        openScorm();
+                        // Success downloading, open scorm if user hasn't left the view.
+                        if (!$scope.$$destroyed) {
+                            openScorm(scoid);
+                        }
                     }).catch(function() {
                         if (!$scope.$$destroyed) {
                             $mmaModScormHelper.showDownloadError(scorm);
@@ -320,7 +338,7 @@ angular.module('mm.addons.mod_scorm')
                 });
             });
         } else {
-            openScorm();
+            openScorm(scoid);
         }
     };
 
