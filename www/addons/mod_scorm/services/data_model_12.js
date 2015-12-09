@@ -21,8 +21,8 @@ angular.module('mm.addons.mod_scorm')
  * @ngdoc service
  * @name $mmaModScormDataModel12
  */
-.factory('$mmaModScormDataModel12', function($mmaModScorm, $mmEvents, $window, mmaModScormLaunchNextSco, mmaModScormLaunchPrevSco,
-            mmaModScormUpdateToc) {
+.factory('$mmaModScormDataModel12', function($mmaModScorm, $mmEvents, $window, mmaModScormEventLaunchNextSco,
+            mmaModScormEventLaunchPrevSco, mmaModScormEventUpdateToc) {
     $log = $log.getInstance('$mmaModScorm');
 
     var self = {};
@@ -334,19 +334,19 @@ angular.module('mm.addons.mod_scorm')
                     result = StoreData(true);
                     if (getEl('nav.event') != '') {
                         if (getEl('nav.event') == 'continue') {
-                            $mmEvents.trigger(mmaModScormLaunchNextSco);
+                            $mmEvents.trigger(mmaModScormEventLaunchNextSco);
                         } else {
-                            $mmEvents.trigger(mmaModScormLaunchPrevSco);
+                            $mmEvents.trigger(mmaModScormEventLaunchPrevSco);
                         }
                     } else {
                         if (scorm.auto == '1') {
-                            $mmEvents.trigger(mmaModScormLaunchNextSco);
+                            $mmEvents.trigger(mmaModScormEventLaunchNextSco);
                         }
                     }
                     errorCode = (result) ? '0' : '101';
 
                     // Trigger TOC update.
-                    $mmEvents.trigger(mmaModScormUpdateToc);
+                    $mmEvents.trigger(mmaModScormEventUpdateToc);
                     return result;
                 } else {
                     errorCode = "301";
@@ -505,7 +505,7 @@ angular.module('mm.addons.mod_scorm')
                 if (Initialized) {
                     result = StoreData(false);
                     // Trigger TOC update.
-                    $mmEvents.trigger(mmaModScormUpdateToc);
+                    $mmEvents.trigger(mmaModScormEventUpdateToc);
 
                     errorCode = result ? '0' : '101';
                     return result;
