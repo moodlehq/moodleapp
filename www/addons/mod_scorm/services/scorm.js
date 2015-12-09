@@ -1139,5 +1139,31 @@ angular.module('mm.addons.mod_scorm')
         return self._downloadOrPrefetch(scorm, true);
     };
 
+    /**
+     * Saves a SCORM tracking record.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScorm#saveTracks
+     * @param  {Number} scoId    Sco ID.
+     * @param  {Number} attempt  Attempt number.
+     * @param  {Object[]} tracks Tracking data.
+     * @return {Promise}         Promise resolved when data is saved.
+     */
+    self.saveTracks = function(scoId, attempt, tracks) {
+        var params = {
+            scoid: scoId,
+            attempt: attempt,
+            tracks: tracks
+        };
+
+        return $mmSite.write('mod_scorm_insert_scorm_tracks', params).then(function(response) {
+            if (response && response.trackids) {
+                return response.trackids;
+            }
+            return $q.reject();
+        });
+    };
+
     return self;
 });

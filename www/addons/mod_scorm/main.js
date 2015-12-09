@@ -15,6 +15,9 @@
 angular.module('mm.addons.mod_scorm', ['mm.core'])
 
 .constant('mmaModScormComponent', 'mmaModScorm')
+.constant('mmaModScormEventLaunchNextSco', 'mma_mod_scorm_launch_next_sco')
+.constant('mmaModScormEventLaunchPrevSco', 'mma_mod_scorm_launch_prev_sco')
+.constant('mmaModScormEventUpdateToc', 'mma_mod_scorm_update_toc')
 
 .config(function($stateProvider) {
 
