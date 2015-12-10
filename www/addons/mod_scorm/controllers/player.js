@@ -21,7 +21,8 @@ angular.module('mm.addons.mod_scorm')
  * @ngdoc controller
  * @name mmaModScormPlayerCtrl
  */
-.controller('mmaModScormPlayerCtrl', function($scope, $stateParams, $mmaModScorm, $mmUtil, $ionicPopover, $mmaModScormHelper) {
+.controller('mmaModScormPlayerCtrl', function($scope, $stateParams, $mmaModScorm, $mmUtil, $ionicPopover, $mmaModScormHelper,
+            $mmEvents, $timeout, mmaModScormEventUpdateToc) {
 
     var scorm = $stateParams.scorm || {},
         mode = $stateParams.mode || 'normal',
@@ -33,37 +34,47 @@ angular.module('mm.addons.mod_scorm')
     $scope.title = scorm.name; // We use SCORM name at start, later we'll use the SCO title.
     $scope.description = scorm.intro;
     $scope.scorm = scorm;
+    $scope.loadingToc = true;
 
     // Fetch data needed to play the SCORM.
     function fetchData() {
         // Get current attempt number.
         return $mmaModScorm.getAttemptCount(scorm.id).then(function(numAttempts) {
             attempt = numAttempts;
+            return fetchToc();
+        }, showError);
+    }
 
-            return $mmaModScorm.isScormIncomplete(scorm, attempt).then(function(incomplete) {
-                scorm.incomplete = incomplete;
+    // Show error and reject.
+    function showError(message) {
+        if (message) {
+            $mmUtil.showErrorModal(message);
+        } else {
+            $mmUtil.showErrorModal('mma.mod_scorm.errorgetscorm', true);
+        }
+        return $q.reject();
+    }
 
-                // Get TOC.
-                return $mmaModScorm.getOrganizationToc(scorm.id, organizationId, attempt).then(function(toc) {
-                    $scope.toc = $mmaModScorm.formatTocToArray(toc);
-                    // Get images for each SCO.
-                    angular.forEach($scope.toc, function(sco) {
-                        sco.image = $mmaModScorm.getScoStatusIcon(sco, scorm.incomplete);
-                    });
-                    // Get current SCO if param is set.
-                    if ($stateParams.scoId > 0) {
-                        currentSco = $mmaModScormHelper.getScoFromToc($scope.toc, $stateParams.scoId);
-                    }
+    // Fetch TOC.
+    function fetchToc() {
+        $scope.loadingToc = true;
+        return $mmaModScorm.isScormIncomplete(scorm, attempt).then(function(incomplete) {
+            scorm.incomplete = incomplete;
+
+            // Get TOC.
+            return $mmaModScorm.getOrganizationToc(scorm.id, organizationId, attempt).then(function(toc) {
+                $scope.toc = $mmaModScorm.formatTocToArray(toc);
+                // Get images for each SCO.
+                angular.forEach($scope.toc, function(sco) {
+                    sco.image = $mmaModScorm.getScoStatusIcon(sco, scorm.incomplete);
                 });
+                // Get current SCO if param is set.
+                if ($stateParams.scoId > 0) {
+                    currentSco = $mmaModScormHelper.getScoFromToc($scope.toc, $stateParams.scoId);
+                }
             });
-        }).catch(function(message) {
-            if (message) {
-                $mmUtil.showErrorModal(message);
-            } else {
-                $mmUtil.showErrorModal('mma.mod_scorm.errorgetscorm', true);
-            }
-            return $q.reject();
-        }).finally(function() {
+        }).catch(showError)
+        .finally(function() {
             $scope.loadingToc = false;
         });
     }
@@ -120,4 +131,17 @@ angular.module('mm.addons.mod_scorm')
         $scope.popover.hide();
         loadSco(sco);
     };
+
+    // Listen for events to update the TOC.
+    var tocObserver = $mmEvents.on(mmaModScormEventUpdateToc, function(data) {
+        if (data.scormid === scorm.id) {
+            $mmaModScorm.invalidateAllScormData(scorm.id).finally(function() {
+                fetchToc();
+            });
+        }
+    });
+
+    $scope.$on('$destroy', function() {
+        tocObserver && tocObserver.off && tocObserver.off();
+    });
 });
