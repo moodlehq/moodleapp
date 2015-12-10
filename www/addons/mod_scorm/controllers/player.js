@@ -91,7 +91,7 @@ angular.module('mm.addons.mod_scorm')
         $scope.title = sco.title || scorm.name; // Try to use SCO title.
         calculateNextAndPreviousSco(sco.id);
         $mmaModScorm.getScoSrc(scorm, sco).then(function(src) {
-            if (src === $scope.src) {
+            if ($scope.src && src.toString() == $scope.src.toString()) {
                 // Re-loading same page. Set it to empty and then re-set the src in the next digest so it detects it has changed.
                 $scope.src = '';
                 $timeout(function() {
