@@ -18,17 +18,17 @@
 	                    <p ng-if="scorm.maxattempt == 0">{{ 'mm.core.unlimited' | translate }}</p>
 	                    <p ng-if="scorm.maxattempt > 0">{{ scorm.maxattempt }}</p>
 	                </div>
-		        	<div class="item" ng-if="scorm.numattempts >= 0">
+		        	<div class="item" ng-if="scorm.numAttempts >= 0">
 	                    <p class="item-heading">{{ 'mma.mod_scorm.noattemptsmade' | translate }}</p>
-	                    <p>{{ scorm.numattempts }}</p>
+	                    <p>{{ scorm.numAttempts }}</p>
 	                </div>
 	                <div class="item" ng-repeat="attempt in scorm.attempts | filter: filterAttempts track by $index">
 	                    <p class="item-heading">{{ 'mma.mod_scorm.gradeforattempt' | translate }} {{attempt.number}}</p>
 	                    <p>{{ attempt.grade }}</p>
 	                </div>
-		        	<div class="item" ng-if="scorm.grademethodreadable">
+		        	<div class="item" ng-if="scorm.grademethodReadable">
 	                    <p class="item-heading">{{ 'mma.mod_scorm.grademethod' | translate }}</p>
-	                    <p>{{ scorm.grademethodreadable }}</p>
+	                    <p>{{ scorm.grademethodReadable }}</p>
 	                </div>
 		        	<div class="item" ng-if="scorm.grade">
 	                    <p class="item-heading">{{ 'mma.mod_scorm.gradereported' | translate }}</p>
@@ -36,7 +36,7 @@
 	                </div>
 	            </div>
 	            <!-- TOC -->
-	            <div class="card" ng-if="scorm.displaycoursestructure">
+	            <div class="card" ng-if="scorm.displaycoursestructure || (organizations && organizations.length > 1)">
 	        		<div class="item item-divider">{{ 'mma.mod_scorm.contents' | translate }}</div>
 	        		<div ng-if="organizations && organizations.length > 1" class="item item-input item-select">
 	                    <div class="input-label" id="mma-scorm-organizationslabel">
@@ -45,16 +45,15 @@
 	                    <select ng-model="currentOrganization.identifier" ng-options="org.identifier as org.title for org in organizations" ng-change="loadOrg()" aria-labelledby="mma-scorm-organizationslabel">
 	                    </select>
 	                </div>
-	                <div class="item text-center" ng-if="loadingToc">
+	                <div class="item text-center" ng-if="scorm.displaycoursestructure && loadingToc">
 	                	<ion-spinner></ion-spinner>
 	                </div>
-	                <div class="item item-text-wrap" ng-if="!loadingToc">
+	                <div class="item item-text-wrap" ng-if="scorm.displaycoursestructure && !loadingToc">
 	                	<p>{{ currentOrganization.title }}</p>
 	                	<div ng-repeat="sco in toc track by sco.id" class="mma-scorm-level-{{sco.level}}">
 	                		<p ng-if="sco.isvisible">
 	                			<img ng-src="{{sco.image.url}}" alt="{{sco.image.description}}" />
-	                			<!-- TODO: Show links. Right now there's no difference based on prereq -->
-	                			<span ng-if="sco.prereq">{{ sco.title }}</span>
+	                			<a href="#" ng-if="sco.prereq" ng-click="open($event, sco.id)">{{ sco.title }}</a>
 	                			<span ng-if="!sco.prereq">{{ sco.title }}</span>
 	                		</p>
 	                	</div>
@@ -66,11 +65,11 @@
                     <a class="button button-block" ng-href="{{moduleUrl}}" mm-browser>{{ 'mm.core.openinbrowser' | translate }}</a>
                 </div>
                 <!-- Warning that you don't have any more attempts -->
-                <div class="card padding" ng-if="!errorMessage && scorm.attemptsleft <= 0">
+                <div class="card padding" ng-if="!errorMessage && scorm.attemptsLeft <= 0">
                 	<p class="mma-mod-scorm-warning">{{ 'mma.mod_scorm.exceededmaxattempts' | translate }}</p>
                 </div>
 	            <!-- Open SCORM in app form -->
-                <form class="card" ng-if="!errorMessage && (!scorm.lastattemptlock || scorm.attemptsleft > 0)" ng-submit="open()">
+                <form class="card" ng-if="!errorMessage && (!scorm.lastattemptlock || scorm.attemptsLeft > 0)" ng-submit="open($event)">
                		<!-- Open mode (Preview or Normal) -->
                 	<div class="item" ng-if="!scorm.hidebrowse">
                 		<p class="item-heading">{{ 'mma.mod_scorm.mode' | translate }}</p>
@@ -84,7 +83,7 @@
                 		</p>
                 	</div>
                		<!-- Force new attempt -->
-                	<div class="item item-checkbox item-checkbox-right" ng-if="!scorm.forcenewattempt && scorm.numattempts > 0 && !scorm.incomplete && scorm.attemptsleft > 0">
+                	<div class="item item-checkbox item-checkbox-right" ng-if="!scorm.forcenewattempt && scorm.numAttempts > 0 && !scorm.incomplete && scorm.attemptsLeft > 0">
 	                    <p class="item-heading">{{ 'mma.mod_scorm.newattempt' | translate }}</p>
 	                    <label class="checkbox">
 	                        <input type="checkbox" ng-model="scormOptions.newAttempt">

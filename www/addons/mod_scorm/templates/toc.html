@@ -1,0 +1,12 @@
+<ion-popover-view class="mma-scorm-popover">
+    <ion-content scroll="false">
+        <nav>
+            <ul class="list">
+                <a ng-repeat="sco in toc track by sco.id" class="item item-text-wrap mma-scorm-level-{{sco.level}} mma-scorm-popover-item" ng-if="sco.isvisible" ng-click="loadSco(sco)" ng-class='{"item-disabled": !sco.prereq}'>
+                    <img ng-src="{{sco.image.url}}" alt="{{sco.image.description}}" />
+                    <span>{{ sco.title }}</span>
+                </a>
+            </ul>
+        </nav>
+    </ion-content>
+</ion-popover-view>

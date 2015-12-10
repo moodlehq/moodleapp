@@ -769,6 +769,30 @@ angular.module('mm.core')
             return $q.when();
         };
 
+        /**
+         * Formats a size to be used as width/height of an element.
+         * If the size is already valid (like '500px' or '50%') it won't be modified.
+         * Returned size will have a format like '500px'.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#formatPixelsSize
+         * @param  {Mixed} size Size to format.
+         * @return {String}     Formatted size. If size is not valid, returns an empty string.
+         */
+        self.formatPixelsSize = function(size) {
+            if (typeof size == 'string' && (size.indexOf('px') > -1 || size.indexOf('%') > -1)) {
+                // It seems to be a valid size.
+                return size;
+            }
+
+            size = parseInt(size, 10);
+            if (!isNaN(size)) {
+                return size + 'px';
+            }
+            return '';
+        };
+
         return self;
     };
 });

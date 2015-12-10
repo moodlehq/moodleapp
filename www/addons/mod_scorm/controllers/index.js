@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_scorm')
  * @name mmaModScormIndexCtrl
  */
 .controller('mmaModScormIndexCtrl', function($scope, $stateParams, $mmaModScorm, $mmUtil, $q, $mmCourse, $ionicScrollDelegate,
-            $mmCoursePrefetchDelegate, $mmaModScormHelper, $mmEvents, $mmSite, mmCoreOutdated, mmCoreNotDownloaded,
+            $mmCoursePrefetchDelegate, $mmaModScormHelper, $mmEvents, $mmSite, $state, mmCoreOutdated, mmCoreNotDownloaded,
             mmCoreDownloading, mmaModScormComponent, mmCoreEventPackageStatusChanged) {
 
     var module = $stateParams.module || {},
@@ -46,8 +46,8 @@ angular.module('mm.addons.mod_scorm')
 
     // Convenience function to get SCORM data.
     function fetchScormData(refresh) {
-        return $mmaModScorm.getScorm(courseid, module.id, module.url).then(function(scormdata) {
-            scorm = scormdata;
+        return $mmaModScorm.getScorm(courseid, module.id, module.url).then(function(scormData) {
+            scorm = scormData;
 
             $scope.title = scorm.name || $scope.title;
             $scope.description = scorm.intro || $scope.description;
@@ -65,14 +65,14 @@ angular.module('mm.addons.mod_scorm')
             }
 
             // Get the number of attempts and check if SCORM is incomplete.
-            return $mmaModScorm.getAttemptCount(scorm.id).then(function(numattempts) {
-                return $mmaModScorm.isScormIncomplete(scorm, numattempts).then(function(incomplete) {
+            return $mmaModScorm.getAttemptCount(scorm.id).then(function(numAttempts) {
+                return $mmaModScorm.isScormIncomplete(scorm, numAttempts).then(function(incomplete) {
                     var promises = [];
 
                     scorm.incomplete = incomplete;
-                    scorm.numattempts = numattempts;
-                    scorm.grademethodreadable = $mmaModScorm.getScormGradeMethod(scorm);
-                    scorm.attemptsleft = $mmaModScorm.countAttemptsLeft(scorm, numattempts);
+                    scorm.numAttempts = numAttempts;
+                    scorm.grademethodReadable = $mmaModScorm.getScormGradeMethod(scorm);
+                    scorm.attemptsLeft = $mmaModScorm.countAttemptsLeft(scorm, numAttempts);
                     if (scorm.forceattempt && scorm.incomplete) {
                         $scope.scormOptions.newAttempt = true;
                     }
@@ -81,9 +81,7 @@ angular.module('mm.addons.mod_scorm')
                         promises.push(getReportedGrades());
                     }
 
-                    if (scorm.displaycoursestructure) {
-                        promises.push(fetchStructure());
-                    }
+                    promises.push(fetchStructure());
 
                     if (!scorm.packagesize && $scope.errorMessage === '') {
                         // SCORM is supported but we don't have package size. Try to calculate it.
@@ -125,11 +123,11 @@ angular.module('mm.addons.mod_scorm')
     // Get the grades of each attempt and the grade of the SCORM.
     function getReportedGrades() {
         // Get the number of finished attempts.
-        return $mmaModScorm.getAttemptCount(scorm.id, undefined, true).then(function(numattempts) {
+        return $mmaModScorm.getAttemptCount(scorm.id, undefined, true).then(function(numAttempts) {
             var promises = [];
             scorm.attempts = [];
             // Calculate the grade for each attempt.
-            for (var attempt = 1; attempt <= numattempts; attempt++) {
+            for (var attempt = 1; attempt <= numAttempts; attempt++) {
                 promises.push(getAttemptGrade(scorm, attempt));
             }
 
@@ -172,9 +170,14 @@ angular.module('mm.addons.mod_scorm')
     }
 
     // Load the TOC of a certain organization.
-    function loadOrganizationToc(organizationid) {
+    function loadOrganizationToc(organizationId) {
+        if (!scorm.displaycoursestructure) {
+            // TOC is not displayed, no need to load it.
+            return $q.when();
+        }
+
         $scope.loadingToc = true;
-        return $mmaModScorm.getOrganizationToc(scorm.id, organizationid, scorm.numattempts).then(function(toc) {
+        return $mmaModScorm.getOrganizationToc(scorm.id, organizationId, scorm.numAttempts).then(function(toc) {
             $scope.toc = $mmaModScorm.formatTocToArray(toc);
             // Get images for each SCO.
             angular.forEach($scope.toc, function(sco) {
@@ -182,7 +185,7 @@ angular.module('mm.addons.mod_scorm')
             });
             // Search organization title.
             angular.forEach($scope.organizations, function(org) {
-                if (org.identifier == organizationid) {
+                if (org.identifier == organizationId) {
                     $scope.currentOrganization.title = org.title;
                 }
             });
@@ -273,9 +276,14 @@ angular.module('mm.addons.mod_scorm')
     }
 
     // Open a SCORM package.
-    function openScorm() {
-        // @todo Open SCORM.
-        alert('@todo: Open SCORM');
+    function openScorm(scoId) {
+        $state.go('site.mod_scorm-player', {
+            scorm: scorm,
+            mode: $scope.scormOptions.mode,
+            newAttempt: !!$scope.scormOptions.newAttempt,
+            organizationId: $scope.currentOrganization.identifier,
+            scoId: scoId
+        });
     }
 
     // Fetch the SCORM data.
@@ -301,7 +309,15 @@ angular.module('mm.addons.mod_scorm')
     };
 
     // Open a SCORM. It will download the SCORM package if it's not downloaded or it has changed.
-    $scope.open = function() {
+    // The scoId param indicates the SCO that needs to be loaded when the SCORM is opened. If not defined, load first SCO.
+    $scope.open = function(e, scoId) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if ($scope.downloading) {
+            // Scope is being downloaded, abort.
+            return;
+        }
 
         if (currentStatus == mmCoreOutdated || currentStatus == mmCoreNotDownloaded) {
             // SCORM needs to be downloaded.
@@ -310,8 +326,10 @@ angular.module('mm.addons.mod_scorm')
                 var promise = currentStatus == mmCoreOutdated ? $mmaModScorm.invalidateContent(scorm.coursemodule) : $q.when();
                 promise.finally(function() {
                     downloadScormPackage().then(function() {
-                        // Success downloading, open scorm.
-                        openScorm();
+                        // Success downloading, open scorm if user hasn't left the view.
+                        if (!$scope.$$destroyed) {
+                            openScorm(scoId);
+                        }
                     }).catch(function() {
                         if (!$scope.$$destroyed) {
                             $mmaModScormHelper.showDownloadError(scorm);
@@ -320,7 +338,7 @@ angular.module('mm.addons.mod_scorm')
                 });
             });
         } else {
-            openScorm();
+            openScorm(scoId);
         }
     };
 

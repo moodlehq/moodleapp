@@ -41,6 +41,7 @@
     "humanreadablesize": "{{size}} {{unit}}",
     "image": "Image",
     "imageviewer": "Image viewer",
+    "info": "Info",
     "ios": "iOS",
     "loading": "Loading",
     "lostconnection": "Your authentication token is invalid or has expired, you will have to reconnect to the site.",
