@@ -23,7 +23,8 @@ angular.module('mm.core')
  */
 .provider('$mmUtil', function(mmCoreSecondsYear, mmCoreSecondsDay, mmCoreSecondsHour, mmCoreSecondsMinute) {
 
-    var self = this; // Use 'self' to be coherent with the rest of services.
+    var self = this, // Use 'self' to be coherent with the rest of services.
+        provider = this; // To access provider methods from the service.
 
     /**
      * Serialize an object to be used in a request.
@@ -791,6 +792,19 @@ angular.module('mm.core')
                 return size + 'px';
             }
             return '';
+        };
+
+        /**
+         * Serialize an object to be used in a request.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#param
+         * @param  {Object} obj Object to serialize.
+         * @return {String}     Serialization of the object.
+         */
+        self.param = function(obj) {
+            return provider.param(obj);
         };
 
         return self;
