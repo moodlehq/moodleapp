@@ -1195,5 +1195,36 @@ angular.module('mm.addons.mod_scorm')
         });
     };
 
+    /**
+     * Saves a SCORM tracking record using a synchronous call.
+     * Please use this function only if synchronous is a must. It's recommended to use $mmaModScorm#saveTracks.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScorm#saveTracksSync
+     * @param  {Number} scoId    Sco ID.
+     * @param  {Number} attempt  Attempt number.
+     * @param  {Object[]} tracks Tracking data.
+     * @return {Boolean}         True if success, false otherwise.
+     */
+    self.saveTracksSync = function(scoId, attempt, tracks) {
+        var params = {
+                scoid: scoId,
+                attempt: attempt,
+                tracks: tracks
+            },
+            preSets = {
+                siteurl: $mmSite.getURL(),
+                wstoken: $mmSite.getToken()
+            },
+            response;
+
+        response = $mmWS.syncCall('mod_scorm_insert_scorm_tracks', params, preSets);
+        if (response && !response.error && response.trackids) {
+            return true;
+        }
+        return false;
+    };
+
     return self;
 });
