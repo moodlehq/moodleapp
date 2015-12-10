@@ -23,11 +23,17 @@ angular.module('mm.addons.mod_scorm')
  */
 .factory('$mmaModScormDataModel12', function($mmaModScorm, $mmEvents, $window, mmaModScormEventLaunchNextSco,
             mmaModScormEventLaunchPrevSco, mmaModScormEventUpdateToc) {
-    $log = $log.getInstance('$mmaModScorm');
-
     var self = {};
 
-    function SCORMAPI (scorm, scoId, attempt, userData) {
+    /**
+     * Initialize the global SCORM API class.
+     *
+     * @param  {Object} scorm The SCORM object.
+     * @param  {Number} scoId The SCO id.
+     * @param  {Number} attempt The attempt number.
+     * @param  {Number} userData The user default data.
+     */
+    function SCORMAPI(scorm, scoId, attempt, userData) {
 
         // Contains all the current values for all the data model elements for each SCO.
         var currentUserData = {};
@@ -44,7 +50,7 @@ angular.module('mm.addons.mod_scorm')
         CMISInteger = '^-?([0-9]+)$';
         CMIDecimal = '^-?([0-9]{0,3})(\.[0-9]*)?$';
         CMIIdentifier = '^[\\u0021-\\u007E]{0,255}$';
-        CMIFeedback = CMIString256; // This must be redefined
+        CMIFeedback = CMIString256; // This must be redefined.
         CMIIndex = '[._](\\d+).';
 
         // Vocabulary Data Type Definition.
@@ -79,17 +85,8 @@ angular.module('mm.addons.mod_scorm')
         var defExtra = {};
 
         userData.forEach(function(sco) {
-            def[sco.scoid] = {};
-            defExtra[sco.scoid] = {};
-
-            sco.defaultdata.forEach(function(trackData) {
-                def[sco.scoid][trackData.element] = trackData['value'];
-            });
-
-            sco.userdata.forEach(function(trackData) {
-                defExtra[sco.scoid][trackData.element] = trackData['value'];
-            });
-
+            def[sco.scoid] = sco.defaultdata;
+            defExtra[sco.scoid] = sco.userdata;
         });
 
         // The SCORM 1.2 data model.
@@ -117,7 +114,7 @@ angular.module('mm.addons.mod_scorm')
                 'cmi.suspend_data':{'defaultvalue':def[scoid]['cmi.suspend_data'], 'format':CMIString4096, 'mod':'rw', 'writeerror':'405'},
                 'cmi.launch_data':{'defaultvalue':def[scoid]['cmi.launch_data'], 'mod':'r', 'writeerror':'403'},
                 'cmi.comments':{'defaultvalue':def[scoid]['cmi.comments'], 'format':CMIString4096, 'mod':'rw', 'writeerror':'405'},
-                // deprecated evaluation attributes
+                // Deprecated evaluation attributes.
                 'cmi.evaluation.comments._count':{'defaultvalue':'0', 'mod':'r', 'writeerror':'402'},
                 'cmi.evaluation.comments._children':{'defaultvalue':comments_children, 'mod':'r', 'writeerror':'402'},
                 'cmi.evaluation.comments.n.content':{'defaultvalue':'', 'pattern':CMIIndex, 'format':CMIString256, 'mod':'rw', 'writeerror':'405'},
@@ -179,6 +176,12 @@ angular.module('mm.addons.mod_scorm')
 
         // API helper methods.
 
+        /**
+         * Get the value of the given element from the non-persistent (current) user data.
+         *
+         * @param  {String} el The element
+         * @return {String}    The element value
+         */
         function getEl(el) {
             if (typeof currentUserData[this.scoId][el] != 'undefined') {
                 return currentUserData[this.scoId][el];
@@ -186,21 +189,39 @@ angular.module('mm.addons.mod_scorm')
             return '';
         }
 
+        /**
+         * Set the value of the given element in the non-persistent (current) user data.
+         *
+         * @param  {String} el The element
+         * @param  {String} value The value
+         */
         function setEl(el, value) {
             currentUserData[this.scoId][el] = value;
         }
 
+        /**
+         * Utility function for replacing dots with underscores (this is needed for sending the data via the WS).
+         *
+         * @param  {String} The string to be replaced
+         * @return {String  The string with the dots replaced
+         */
         function underscore(str) {
             str = String(str).replace(/.N/g,".");
             return str.replace(/\./g,"__");
         }
 
+        /**
+         * Utility function for cloning an object
+         *
+         * @param {Object} obj The object to  be cloned
+         * @return {Object} The object cloned
+         */
         function CloneObj(obj){
             if(obj == null || typeof(obj) != 'object') {
                 return obj;
             }
 
-            var temp = new obj.constructor(); // changed (twice)
+            var temp = new obj.constructor(); // Changed (twice).
             for(var key in obj) {
                 temp[key] = CloneObj(obj[key]);
             }
@@ -208,11 +229,20 @@ angular.module('mm.addons.mod_scorm')
             return temp;
         }
 
+        /**
+         * Utility function for calculating the total time spent in the SCO.
+         */
         function TotalTime() {
             total_time = AddTime(getEl('cmi.core.total_time'), getEl('cmi.core.session_time'));
             return {'element': underscore('cmi.core.total_time'), value: total_time};
         }
 
+        /**
+         * Persist the current user data (this is usually called by LMSCommit)
+         *
+         * @param {Bool} storetotaltime If true, we need to calculate the total time too
+         * @return {Bool} [description]
+         */
         function StoreData(storetotaltime) {
             if (storetotaltime) {
                 if (getEl('cmi.core.lesson_status') == 'not attempted') {
@@ -240,10 +270,13 @@ angular.module('mm.addons.mod_scorm')
                 tracks = CollectData();
             }
 
-            return $mmaModScorm.saveTracks(scorm, this.scoId, attempt, tracks);
+            return $mmaModScorm.saveTracksSync(this.scoId, attempt, tracks);
         }
 
-
+        /**
+         * Collect all the user tracking data that must be persisted in the system, this is usually called by LMSCommit().
+         *
+         */
         function CollectData() {
             var data = [];
             for (var element in currentUserData[this.scoId]) {
@@ -251,26 +284,26 @@ angular.module('mm.addons.mod_scorm')
                 if (element.substr(0, 3) == 'cmi') {
                     expression = new RegExp(CMIIndex,'g');
 
-                    // get the generic name for this element (e.g. convert 'cmi.interactions.1.id' to 'cmi.interactions.n.id')
+                    // Get the generic name for this element (e.g. convert 'cmi.interactions.1.id' to 'cmi.interactions.n.id')
                     elementmodel = String(element).replace(expression,'.n.');
 
-                    // ignore the session time element
+                    // Ignore the session time element.
                     if (element != "cmi.core.session_time") {
 
-                        // check if this specific element is not defined in the datamodel,
-                        // but the generic element name is
+                        // Check if this specific element is not defined in the datamodel,
+                        // but the generic element name is.
                         if (typeof datamodel[scoid][element] == "undefined" &&
                                 typeof datamodel[scoid][elementmodel] != "undefined") {
 
-                            // add this specific element to the data model (by cloning
-                            // the generic element) so we can track changes to it
+                            // Add this specific element to the data model (by cloning
+                            // the generic element) so we can track changes to it.
                             datamodel[scoid][element] = CloneObj(datamodel[scoid][elementmodel]);
                         }
 
-                        // check if the current element exists in the datamodel
+                        // Check if the current element exists in the datamodel.
                         if (typeof datamodel[scoid][element] != "undefined") {
 
-                            // make sure this is not a read only element
+                            // Make sure this is not a read only element.
                             if (datamodel[scoid][element].mod != 'r') {
 
                                 var el = {
@@ -278,21 +311,21 @@ angular.module('mm.addons.mod_scorm')
                                     'value': getEl(element)
                                 };
 
-                                // check if the element has a default value
+                                // Check if the element has a default value.
                                 if (typeof datamodel[scoid][element].defaultvalue != "undefined") {
 
-                                    // check if the default value is different from the current value
+                                    // Check if the default value is different from the current value.
                                     if (datamodel[scoid][element].defaultvalue != el['value'] ||
                                             typeof datamodel[scoid][element].defaultvalue != typeof(el['value'])) {
 
                                         data.push(el);
 
-                                        // update the element default to reflect the current committed value
+                                        // Update the element default to reflect the current committed value.
                                         datamodel[scoid][element].defaultvalue = el['value'];
                                     }
                                 } else {
                                     data.push(el);
-                                    // no default value for the element, so set it now
+                                    // No default value for the element, so set it now.
                                     datamodel[scoid][element].defaultvalue = el['value'];
                                 }
                             }
@@ -305,15 +338,15 @@ angular.module('mm.addons.mod_scorm')
         }
 
         // API methods now.
-        var Initialized = false;
+        var initialized = false;
         var errorCode;
         var timeout;
 
         this.LMSInitialize = function(param) {
             errorCode = "0";
             if (param == "") {
-                if (!Initialized) {
-                    Initialized = true;
+                if (!initialized) {
+                    initialized = true;
                     errorCode = "0";
                     return "true";
                 } else {
@@ -329,8 +362,8 @@ angular.module('mm.addons.mod_scorm')
         this.LMSFinish = function(param) {
             errorCode = "0";
             if (param == "") {
-                if (Initialized) {
-                    Initialized = false;
+                if (initialized) {
+                    initialized = false;
                     result = StoreData(true);
                     if (getEl('nav.event') != '') {
                         if (getEl('nav.event') == 'continue') {
@@ -359,7 +392,7 @@ angular.module('mm.addons.mod_scorm')
 
         this.LMSGetValue = function(element) {
             errorCode = "0";
-            if (Initialized) {
+            if (initialized) {
                 if (element != "") {
                     expression = new RegExp(CMIIndex,'g');
                     elementmodel = String(element).replace(expression,'.n.');
@@ -402,7 +435,7 @@ angular.module('mm.addons.mod_scorm')
 
         this.LMSSetValue = function(element, value) {
             errorCode = "0";
-            if (Initialized) {
+            if (initialized) {
                 if (element != "") {
                     expression = new RegExp(CMIIndex,'g');
                     elementmodel = String(element).replace(expression,'.n.');
@@ -412,7 +445,7 @@ angular.module('mm.addons.mod_scorm')
                             value = value + '';
                             matches = value.match(expression);
                             if (matches != null) {
-                                //Create dynamic data model element
+                                // Create dynamic data model element.
                                 if (element != elementmodel) {
 
                                     elementIndexes = element.split('.');
@@ -502,7 +535,7 @@ angular.module('mm.addons.mod_scorm')
             }
             errorCode = "0";
             if (param == "") {
-                if (Initialized) {
+                if (initialized) {
                     result = StoreData(false);
                     // Trigger TOC update.
                     $mmEvents.trigger(mmaModScormEventUpdateToc);
@@ -522,20 +555,21 @@ angular.module('mm.addons.mod_scorm')
             return errorCode;
         };
 
+        var errorString = [];
+        errorString["0"] = "No error";
+        errorString["101"] = "General exception";
+        errorString["201"] = "Invalid argument error";
+        errorString["202"] = "Element cannot have children";
+        errorString["203"] = "Element not an array - cannot have count";
+        errorString["301"] = "Not initialized";
+        errorString["401"] = "Not implemented error";
+        errorString["402"] = "Invalid set value, element is a keyword";
+        errorString["403"] = "Element is read only";
+        errorString["404"] = "Element is write only";
+        errorString["405"] = "Incorrect data type";
+
         this.LMSGetErrorString = function(param) {
             if (param != "") {
-                var errorString = [];
-                errorString["0"] = "No error";
-                errorString["101"] = "General exception";
-                errorString["201"] = "Invalid argument error";
-                errorString["202"] = "Element cannot have children";
-                errorString["203"] = "Element not an array - cannot have count";
-                errorString["301"] = "Not initialized";
-                errorString["401"] = "Not implemented error";
-                errorString["402"] = "Invalid set value, element is a keyword";
-                errorString["403"] = "Element is read only";
-                errorString["404"] = "Element is write only";
-                errorString["405"] = "Incorrect data type";
                 return errorString[param];
             } else {
                return "";
