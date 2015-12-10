@@ -40,8 +40,8 @@ angular.module('mm.addons.mod_scorm', ['mm.core'])
         scorm: null,
         mode: null,
         newAttempt: false,
-        organizationid: null,
-        scoid: null
+        organizationId: null,
+        scoId: null
       },
       views: {
         'site': {

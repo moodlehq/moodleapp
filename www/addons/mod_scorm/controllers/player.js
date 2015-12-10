@@ -26,7 +26,7 @@ angular.module('mm.addons.mod_scorm')
     var scorm = $stateParams.scorm || {},
         mode = $stateParams.mode || 'normal',
         newAttempt = $stateParams.newAttempt,
-        organizationid = $stateParams.organizationid,
+        organizationId = $stateParams.organizationId,
         currentSco,
         attempt;
 
@@ -37,22 +37,22 @@ angular.module('mm.addons.mod_scorm')
     // Fetch data needed to play the SCORM.
     function fetchData() {
         // Get current attempt number.
-        return $mmaModScorm.getAttemptCount(scorm.id).then(function(numattempts) {
-            attempt = numattempts;
+        return $mmaModScorm.getAttemptCount(scorm.id).then(function(numAttempts) {
+            attempt = numAttempts;
 
             return $mmaModScorm.isScormIncomplete(scorm, attempt).then(function(incomplete) {
                 scorm.incomplete = incomplete;
 
                 // Get TOC.
-                return $mmaModScorm.getOrganizationToc(scorm.id, organizationid, attempt).then(function(toc) {
+                return $mmaModScorm.getOrganizationToc(scorm.id, organizationId, attempt).then(function(toc) {
                     $scope.toc = $mmaModScorm.formatTocToArray(toc);
                     // Get images for each SCO.
                     angular.forEach($scope.toc, function(sco) {
                         sco.image = $mmaModScorm.getScoStatusIcon(sco, scorm.incomplete);
                     });
                     // Get current SCO if param is set.
-                    if ($stateParams.scoid > 0) {
-                        currentSco = $mmaModScormHelper.getScoFromToc($scope.toc, $stateParams.scoid);
+                    if ($stateParams.scoId > 0) {
+                        currentSco = $mmaModScormHelper.getScoFromToc($scope.toc, $stateParams.scoId);
                     }
                 });
             });
@@ -69,9 +69,9 @@ angular.module('mm.addons.mod_scorm')
     }
 
     // Calculate the next and previous SCO.
-    function calculateNextAndPreviousSco(scoid) {
-        $scope.previousSco = $mmaModScormHelper.getPreviousScoFromToc($scope.toc, scoid);
-        $scope.nextSco = $mmaModScormHelper.getNextScoFromToc($scope.toc, scoid);
+    function calculateNextAndPreviousSco(scoId) {
+        $scope.previousSco = $mmaModScormHelper.getPreviousScoFromToc($scope.toc, scoId);
+        $scope.nextSco = $mmaModScormHelper.getNextScoFromToc($scope.toc, scoId);
     }
 
     // Load a SCO.
