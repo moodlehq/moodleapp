@@ -48,7 +48,7 @@ angular.module('mm.addons.mod_imscp')
         $scope.previousItem = $mmaModImscp.getPreviousItem($scope.items, itemId);
         $scope.nextItem = $mmaModImscp.getNextItem($scope.items, itemId);
         var src = $mmaModImscp.getFileSrc(module, itemId);
-        if (src === $scope.src) {
+        if ($scope.src && src.toString() == $scope.src.toString()) {
             // Re-loading same page. Set it to empty and then re-set the src in the next digest so it detects it has changed.
             $scope.src = '';
             $timeout(function() {
