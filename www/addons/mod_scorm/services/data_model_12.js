@@ -200,17 +200,6 @@ angular.module('mm.addons.mod_scorm')
         }
 
         /**
-         * Utility function for replacing dots with underscores (this is needed for sending the data via the WS).
-         *
-         * @param  {String} The string to be replaced
-         * @return {String  The string with the dots replaced
-         */
-        function underscore(str) {
-            str = String(str).replace(/.N/g,".");
-            return str.replace(/\./g,"__");
-        }
-
-        /**
          * Utility function for cloning an object
          *
          * @param {Object} obj The object to  be cloned
@@ -234,7 +223,7 @@ angular.module('mm.addons.mod_scorm')
          */
         function TotalTime() {
             total_time = AddTime(getEl('cmi.core.total_time'), getEl('cmi.core.session_time'));
-            return {'element': underscore('cmi.core.total_time'), value: total_time};
+            return {'element': 'cmi.core.total_time', value: total_time};
         }
 
         /**
@@ -307,7 +296,7 @@ angular.module('mm.addons.mod_scorm')
                             if (datamodel[scoid][element].mod != 'r') {
 
                                 var el = {
-                                    'element': underscore(element),
+                                    'element': element,
                                     'value': getEl(element)
                                 };
 
