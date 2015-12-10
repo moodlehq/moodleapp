@@ -379,7 +379,11 @@ angular.module('mm.addons.mod_scorm')
                     errorCode = (result) ? '0' : '101';
 
                     // Trigger TOC update.
-                    $mmEvents.trigger(mmaModScormEventUpdateToc);
+                    $mmEvents.trigger(mmaModScormEventUpdateToc, {
+                        scormid: scorm.id,
+                        scoid: this.scoId,
+                        attempt: attempt
+                    });
                     return result;
                 } else {
                     errorCode = "301";
@@ -538,7 +542,11 @@ angular.module('mm.addons.mod_scorm')
                 if (initialized) {
                     result = StoreData(false);
                     // Trigger TOC update.
-                    $mmEvents.trigger(mmaModScormEventUpdateToc);
+                    $mmEvents.trigger(mmaModScormEventUpdateToc, {
+                        scormid: scorm.id,
+                        scoid: this.scoId,
+                        attempt: attempt
+                    });
 
                     errorCode = result ? '0' : '101';
                     return result;
