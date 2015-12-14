@@ -92,9 +92,22 @@ angular.module('mm.addons.mod_scorm')
                 angular.forEach($scope.toc, function(sco) {
                     sco.image = $mmaModScorm.getScoStatusIcon(sco, scorm.incomplete);
                 });
-                // Get current SCO if param is set.
+                // Determine current SCO if param is set.
                 if ($stateParams.scoId > 0) {
+                    // SCO set by parameter, get it from TOC.
                     currentSco = $mmaModScormHelper.getScoFromToc($scope.toc, $stateParams.scoId);
+                }
+
+                if (!currentSco) {
+                    // No SCO defined. Get the first valid one.
+                    return $mmaModScormHelper.getFirstSco(scorm.id, $scope.toc, organizationId, attempt).then(function(sco) {
+                        if (sco) {
+                            currentSco = sco;
+                        } else {
+                            // We couldn't find a SCO to load: they're all inactive or without launch URL.
+                            $scope.errorMessage = 'mma.mod_scorm.errornovalidsco';
+                        }
+                    });
                 }
             });
         }).catch(showError)
@@ -175,21 +188,19 @@ angular.module('mm.addons.mod_scorm')
 
     // Fetch the SCORM data.
     fetchData().then(function() {
-        if (!currentSco) {
-            currentSco = $scope.toc[0];
+        if (currentSco) {
+            // Set start time.
+            return setStartTime(currentSco.id).catch(showError).finally(function() {
+                // Load SCO.
+                loadSco(currentSco);
+            });
         }
-
-        // Set start time.
-        return setStartTime(currentSco.id).catch(showError).finally(function() {
-            // Load SCO.
-            loadSco(currentSco);
-        });
     }).finally(function() {
         $scope.loaded = true;
     });
 
     $scope.loadSco = function(sco) {
-        if (!sco.prereq || !sco.isvisible) {
+        if (!sco.prereq || !sco.isvisible || !sco.launch) {
             return;
         }
 
