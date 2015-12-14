@@ -45,7 +45,7 @@ angular.module('mm.addons.mod_scorm')
         return $mmaModScorm.getAttemptCount(scorm.id).then(function(numAttempts) {
             attempt = numAttempts;
             // Check if current attempt is incomplete.
-            return $mmaModScorm.isScormIncomplete(scorm, attempt).then(function(incomplete) {
+            return $mmaModScorm.isAttemptIncomplete(scorm, attempt).then(function(incomplete) {
                 // Determine mode and attempt to use.
                 var result = $mmaModScorm.determineAttemptAndMode(scorm, mode, attempt, newAttempt, incomplete);
                 mode = result.mode;
@@ -82,7 +82,7 @@ angular.module('mm.addons.mod_scorm')
         $scope.loadingToc = true;
         // We need to check incomplete again: attempt number might have changed in determineAttemptAndMode,
         // or attempt status might have changed due to an action in the current SCO.
-        return $mmaModScorm.isScormIncomplete(scorm, attempt).then(function(incomplete) {
+        return $mmaModScorm.isAttemptIncomplete(scorm, attempt).then(function(incomplete) {
             scorm.incomplete = incomplete;
 
             // Get TOC.

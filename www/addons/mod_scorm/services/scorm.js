@@ -1043,29 +1043,42 @@ angular.module('mm.addons.mod_scorm')
     };
 
     /**
-     * Check if the given SCORM is incomplete.
+     * Check if a SCORM's attempt is incomplete.
      *
      * @module mm.addons.mod_scorm
      * @ngdoc method
-     * @name $mmaModScorm#isScormIncomplete
+     * @name $mmaModScorm#isAttemptIncomplete
      * @param {Object} scorm   SCORM.
      * @param {Number} attempt Attempt.
      * @return {Promise}       Promise resolved with a boolean: true if incomplete, false otherwise.
      */
-    self.isScormIncomplete = function(scorm, attempt) {
+    self.isAttemptIncomplete = function(scorm, attempt) {
         return self.getScormUserData(scorm.id, attempt).then(function(data) {
-            var incomplete = false;
+            var trackData = {};
+            // Extract data for each SCO.
             angular.forEach(data, function(sco) {
-                if (!Object.keys(sco.userdata).length) {
-                    incomplete = true;
-                } else {
-                    if (self.isStatusIncomplete(sco.userdata.status)) {
-                        incomplete = true;
-                    }
-                }
+                trackData[sco.scoid] = sco.userdata;
             });
 
-            return incomplete;
+            return self.getScoes(scorm.id).then(function(scoes) {
+                var incomplete = false;
+
+                angular.forEach(scoes, function(sco) {
+                    var scodata = trackData[sco.id];
+                    if (!scodata) {
+                        incomplete = true;
+                    } else {
+                        // Ignore SCOes not visible or without launch URL. If isvisible is not set we treat it like visible.
+                        if ((scodata.isvisible || typeof scodata.isvisible == 'undefined') && sco.launch) {
+                            if (self.isStatusIncomplete(scodata.status)) {
+                                incomplete = true;
+                            }
+                        }
+                    }
+                });
+
+                return incomplete;
+            });
         });
     };
 
