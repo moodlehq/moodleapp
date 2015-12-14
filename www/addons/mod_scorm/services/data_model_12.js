@@ -32,7 +32,7 @@ angular.module('mm.addons.mod_scorm')
      * @param  {Number} scoId The SCO id.
      * @param  {Number} attempt The attempt number.
      * @param  {Number} userData The user default data.
-     * @param  {String} mode Mode: 'normal' or 'preview'.
+     * @param  {String} mode Mode. One of $mmaModScorm#MODE constants.
      */
     function SCORMAPI(scorm, scoId, attempt, userData, mode) {
 
@@ -187,7 +187,7 @@ angular.module('mm.addons.mod_scorm')
             }
 
             // Define mode and credit.
-            currentUserData[scoid]['cmi.core.credit'] = mode == 'normal' ? 'credit' : 'no-credit';
+            currentUserData[scoid]['cmi.core.credit'] = mode == $mmaModScorm.MODENORMAL ? 'credit' : 'no-credit';
             currentUserData[scoid]['cmi.core.lesson_mode'] = mode;
         }
 
@@ -312,7 +312,7 @@ angular.module('mm.addons.mod_scorm')
                 if (getEl('cmi.core.lesson_status') == 'not attempted') {
                     setEl('cmi.core.lesson_status', 'completed');
                 }
-                if (getEl('cmi.core.lesson_mode') == 'normal') {
+                if (getEl('cmi.core.lesson_mode') == $mmaModScorm.MODENORMAL) {
                     if (getEl('cmi.core.credit') == 'credit') {
                         if (getEl('cmi.student_data.mastery_score') !== '' && getEl('cmi.core.score.raw') !== '') {
                             if (parseFloat(getEl('cmi.core.score.raw')) >= parseFloat(getEl('cmi.student_data.mastery_score'))) {
@@ -323,7 +323,7 @@ angular.module('mm.addons.mod_scorm')
                         }
                     }
                 }
-                if (getEl('cmi.core.lesson_mode') == 'browse') {
+                if (getEl('cmi.core.lesson_mode') == $mmaModScorm.MODEBROWSE) {
                     if (datamodel[scoid]['cmi.core.lesson_status'].defaultvalue == '' && getEl('cmi.core.lesson_status') == 'not attempted') {
                         setEl('cmi.core.lesson_status', 'browsed');
                     }
@@ -680,12 +680,10 @@ angular.module('mm.addons.mod_scorm')
      * @param  {Number} scoId The SCO id.
      * @param  {Number} attempt The attempt number.
      * @param  {Number} userData The user default data.
-     * @param  {String} [mode] Mode: 'normal' or 'preview'. By default, 'normal'.
+     * @param  {String} [mode] Mode. One of $mmaModScorm#MODE constants. By default, MODENORMAL.
      */
     self.initAPI = function(scorm, scoId, attempt, userData, mode) {
-        if (mode != 'preview' && mode != 'normal') {
-            mode = 'normal';
-        }
+        mode = mode || $mmaModScorm.MODENORMAL;
         $window.API = new SCORMAPI(scorm, scoId, attempt, userData, mode);
     };
 

@@ -26,7 +26,7 @@ angular.module('mm.addons.mod_scorm')
             $mmaModScormDataModel12) {
 
     var scorm = $stateParams.scorm || {},
-        mode = $stateParams.mode || 'normal',
+        mode = $stateParams.mode || $mmaModScorm.MODENORMAL,
         newAttempt = $stateParams.newAttempt,
         organizationId = $stateParams.organizationId,
         currentSco,
@@ -44,15 +44,26 @@ angular.module('mm.addons.mod_scorm')
         // Get current attempt number.
         return $mmaModScorm.getAttemptCount(scorm.id).then(function(numAttempts) {
             attempt = numAttempts;
+            // Check if current attempt is incomplete.
+            return $mmaModScorm.isScormIncomplete(scorm, attempt).then(function(incomplete) {
+                // Determine mode and attempt to use.
+                var result = $mmaModScorm.determineAttemptAndMode(scorm, mode, attempt, newAttempt, incomplete);
+                mode = result.mode;
+                newAttempt = result.newAttempt;
+                attempt = result.attempt;
 
-            // Fetch TOC and get user data.
-            var promises = [];
-            promises.push(fetchToc());
-            promises.push($mmaModScorm.getScormUserData(scorm.id, attempt).then(function(data) {
-                userData = data;
-            }));
+                $scope.isBrowse = mode === $mmaModScorm.MODEBROWSE;
+                $scope.isReview = mode === $mmaModScorm.MODEREVIEW;
 
-            return $q.all(promises);
+                // Fetch TOC and get user data.
+                var promises = [];
+                promises.push(fetchToc());
+                promises.push($mmaModScorm.getScormUserData(scorm.id, attempt).then(function(data) {
+                    userData = data;
+                }));
+
+                return $q.all(promises);
+            });
         }, showError);
     }
 
@@ -69,6 +80,8 @@ angular.module('mm.addons.mod_scorm')
     // Fetch TOC.
     function fetchToc() {
         $scope.loadingToc = true;
+        // We need to check incomplete again: attempt number might have changed in determineAttemptAndMode,
+        // or attempt status might have changed due to an action in the current SCO.
         return $mmaModScorm.isScormIncomplete(scorm, attempt).then(function(incomplete) {
             scorm.incomplete = incomplete;
 

@@ -36,8 +36,11 @@ angular.module('mm.addons.mod_scorm')
     $scope.moduleUrl = module.url;
     $scope.currentOrganization = {};
     $scope.scormOptions = {
-        mode: 'normal'
+        mode: $mmaModScorm.MODENORMAL
     };
+
+    $scope.modenormal = $mmaModScorm.MODENORMAL;
+    $scope.modebrowse = $mmaModScorm.MODEBROWSE;
 
     // Function to filter attempts.
     $scope.filterAttempts = function(attempt) {
