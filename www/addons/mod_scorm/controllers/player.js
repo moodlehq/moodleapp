@@ -22,14 +22,17 @@ angular.module('mm.addons.mod_scorm')
  * @name mmaModScormPlayerCtrl
  */
 .controller('mmaModScormPlayerCtrl', function($scope, $stateParams, $mmaModScorm, $mmUtil, $ionicPopover, $mmaModScormHelper,
-            $mmEvents, $timeout, mmaModScormEventUpdateToc) {
+            $mmEvents, $timeout, $q, mmaModScormEventUpdateToc, mmaModScormEventLaunchNextSco, mmaModScormEventLaunchPrevSco,
+            $mmaModScormDataModel12) {
 
     var scorm = $stateParams.scorm || {},
-        mode = $stateParams.mode || 'normal',
+        mode = $stateParams.mode || $mmaModScorm.MODENORMAL,
         newAttempt = $stateParams.newAttempt,
         organizationId = $stateParams.organizationId,
         currentSco,
-        attempt;
+        attempt,
+        userData,
+        apiInitialized = false;
 
     $scope.title = scorm.name; // We use SCORM name at start, later we'll use the SCO title.
     $scope.description = scorm.intro;
@@ -41,7 +44,26 @@ angular.module('mm.addons.mod_scorm')
         // Get current attempt number.
         return $mmaModScorm.getAttemptCount(scorm.id).then(function(numAttempts) {
             attempt = numAttempts;
-            return fetchToc();
+            // Check if current attempt is incomplete.
+            return $mmaModScorm.isScormIncomplete(scorm, attempt).then(function(incomplete) {
+                // Determine mode and attempt to use.
+                var result = $mmaModScorm.determineAttemptAndMode(scorm, mode, attempt, newAttempt, incomplete);
+                mode = result.mode;
+                newAttempt = result.newAttempt;
+                attempt = result.attempt;
+
+                $scope.isBrowse = mode === $mmaModScorm.MODEBROWSE;
+                $scope.isReview = mode === $mmaModScorm.MODEREVIEW;
+
+                // Fetch TOC and get user data.
+                var promises = [];
+                promises.push(fetchToc());
+                promises.push($mmaModScorm.getScormUserData(scorm.id, attempt).then(function(data) {
+                    userData = data;
+                }));
+
+                return $q.all(promises);
+            });
         }, showError);
     }
 
@@ -58,6 +80,8 @@ angular.module('mm.addons.mod_scorm')
     // Fetch TOC.
     function fetchToc() {
         $scope.loadingToc = true;
+        // We need to check incomplete again: attempt number might have changed in determineAttemptAndMode,
+        // or attempt status might have changed due to an action in the current SCO.
         return $mmaModScorm.isScormIncomplete(scorm, attempt).then(function(incomplete) {
             scorm.incomplete = incomplete;
 
@@ -87,11 +111,19 @@ angular.module('mm.addons.mod_scorm')
 
     // Load a SCO.
     function loadSco(sco) {
+        // Setup API.
+        if (!apiInitialized) {
+            $mmaModScormDataModel12.initAPI(scorm, sco.id, attempt, userData, mode);
+            apiInitialized = true;
+        } else {
+            $mmaModScormDataModel12.loadSco(sco.id);
+        }
+
         currentSco = sco;
         $scope.title = sco.title || scorm.name; // Try to use SCO title.
         calculateNextAndPreviousSco(sco.id);
         $mmaModScorm.getScoSrc(scorm, sco).then(function(src) {
-            if (src === $scope.src) {
+            if ($scope.src && src.toString() == $scope.src.toString()) {
                 // Re-loading same page. Set it to empty and then re-set the src in the next digest so it detects it has changed.
                 $scope.src = '';
                 $timeout(function() {
@@ -100,6 +132,25 @@ angular.module('mm.addons.mod_scorm')
             } else {
                 $scope.src = src;
             }
+        });
+
+        if (sco.scormtype == 'asset') {
+            // Mark the asset as completed.
+            var tracks = [{
+                element: 'cmi.core.lesson_status',
+                value: 'completed'
+            }];
+            $mmaModScorm.saveTracks(sco.id, attempt, tracks).then(function() {
+                // Refresh TOC, some prerequisites might have changed.
+                refreshToc();
+            });
+        }
+    }
+
+    // Refresh the TOC.
+    function refreshToc() {
+        $mmaModScorm.invalidateAllScormData(scorm.id).finally(function() {
+            fetchToc();
         });
     }
 
@@ -118,6 +169,7 @@ angular.module('mm.addons.mod_scorm')
         if (!currentSco) {
             currentSco = $scope.toc[0];
         }
+        // Load SCO.
         loadSco(currentSco);
     }).finally(function() {
         $scope.loaded = true;
@@ -132,16 +184,28 @@ angular.module('mm.addons.mod_scorm')
         loadSco(sco);
     };
 
-    // Listen for events to update the TOC.
+    // Listen for events to update the TOC and navigate through SCOes.
     var tocObserver = $mmEvents.on(mmaModScormEventUpdateToc, function(data) {
         if (data.scormid === scorm.id) {
-            $mmaModScorm.invalidateAllScormData(scorm.id).finally(function() {
-                fetchToc();
-            });
+            refreshToc();
+        }
+    });
+
+    var launchNextObserver = $mmEvents.on(mmaModScormEventLaunchNextSco, function(data) {
+        if (data.scormid === scorm.id && $scope.nextSco) {
+            loadSco($scope.nextSco);
+        }
+    });
+
+    var launchPrevObserver = $mmEvents.on(mmaModScormEventLaunchPrevSco, function(data) {
+        if (data.scormid === scorm.id && $scope.previousSco) {
+            loadSco($scope.previousSco);
         }
     });
 
     $scope.$on('$destroy', function() {
         tocObserver && tocObserver.off && tocObserver.off();
+        launchNextObserver && launchNextObserver.off && launchNextObserver.off();
+        launchPrevObserver && launchPrevObserver.off && launchPrevObserver.off();
     });
 });

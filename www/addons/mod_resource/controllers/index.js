@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_resource')
  * @ngdoc controller
  * @name mmaModResourceIndexCtrl
  */
-.controller('mmaModResourceIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModResource, $log, $mmApp, $mmCourse,
+.controller('mmaModResourceIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModResource, $log, $mmApp, $mmCourse, $timeout,
             mmaModResourceComponent) {
     $log = $log.getInstance('mmaModResourceIndexCtrl');
 
@@ -46,7 +46,16 @@ angular.module('mm.addons.mod_resource')
                     downloadFailed = true;
                 }).finally(function() {
                     $mmaModResource.getIframeSrc(module).then(function(src) {
-                        $scope.src = src;
+                        if ($scope.src && src.toString() == $scope.src.toString()) {
+                            // Re-loading same page. Set it to empty and then re-set the src
+                            // in the next digest so it detects it has changed.
+                            $scope.src = '';
+                            $timeout(function() {
+                                $scope.src = src;
+                            });
+                        } else {
+                            $scope.src = src;
+                        }
                         $mmaModResource.logView(module.instance).then(function() {
                             $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
                         });

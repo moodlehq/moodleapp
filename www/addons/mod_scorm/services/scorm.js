@@ -38,6 +38,10 @@ angular.module('mm.addons.mod_scorm')
     self.FIRSTATTEMPT   = 2;
     self.LASTATTEMPT    = 3;
 
+    self.MODEBROWSE = 'browse';
+    self.MODENORMAL = 'normal';
+    self.MODEREVIEW = 'review';
+
     /**
      * Calculates the SCORM grade based on the grading method and the list of attempts scores.
      *
@@ -112,6 +116,65 @@ angular.module('mm.addons.mod_scorm')
             return -1;
         }
         return scorm.maxattempt - attemptscount;
+    };
+
+    /**
+     * Returns the mode and attempt number to use based on mode selected and SCORM data.
+     * This function is based on Moodle's scorm_check_mode.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScorm#determineAttemptAndMode
+     * @param {Object} scorm       SCORM.
+     * @param {String} mode        Selected mode.
+     * @param {Number} attempt     Current attempt.
+     * @param {Boolean} newAttempt True if should start a new attempt, false otherwise.
+     * @param {Boolean} incomplete True if current attempt is incomplete, false otherwise.
+     * @return {Object}            Object with properties: 'mode', 'attempt' and 'newAttempt'.
+     */
+    self.determineAttemptAndMode = function(scorm, mode, attempt, newAttempt, incomplete) {
+        if (mode == self.MODEBROWSE) {
+            if (scorm.hidebrowse) {
+                // Prevent Browse mode if hidebrowse is set.
+                mode = self.MODENORMAL;
+            } else {
+                // We don't need to check attempts as browse mode is set.
+                return {
+                    mode: mode,
+                    attempt: attempt,
+                    newAttempt: newAttempt
+                };
+            }
+        }
+
+        // Validate user request to start a new attempt.
+        if (incomplete) {
+            // The option to start a new attempt should never have been presented. Force false.
+            newAttempt = false;
+        } else if (scorm.forcenewattempt) {
+            // A new attempt should be forced for already completed attempts.
+            newAttempt = true;
+        }
+
+        if (newAttempt && (scorm.maxattempt == 0 || attempt < scorm.maxattempt)) {
+            // Create a new attempt. Force mode normal.
+            attempt++;
+            mode = self.MODENORMAL;
+        } else {
+            if (incomplete) {
+                // We can't review an incomplete attempt.
+                mode = self.MODENORMAL;
+            } else {
+                // We aren't starting a new attempt and the current one is complete, force review mode.
+                mode = self.MODEREVIEW;
+            }
+        }
+
+        return {
+            mode: mode,
+            attempt: attempt,
+            newAttempt: newAttempt
+        };
     };
 
     /**
@@ -1193,6 +1256,37 @@ angular.module('mm.addons.mod_scorm')
             }
             return $q.reject();
         });
+    };
+
+    /**
+     * Saves a SCORM tracking record using a synchronous call.
+     * Please use this function only if synchronous is a must. It's recommended to use $mmaModScorm#saveTracks.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScorm#saveTracksSync
+     * @param  {Number} scoId    Sco ID.
+     * @param  {Number} attempt  Attempt number.
+     * @param  {Object[]} tracks Tracking data.
+     * @return {Boolean}         True if success, false otherwise.
+     */
+    self.saveTracksSync = function(scoId, attempt, tracks) {
+        var params = {
+                scoid: scoId,
+                attempt: attempt,
+                tracks: tracks
+            },
+            preSets = {
+                siteurl: $mmSite.getURL(),
+                wstoken: $mmSite.getToken()
+            },
+            response;
+
+        response = $mmWS.syncCall('mod_scorm_insert_scorm_tracks', params, preSets);
+        if (response && !response.error && response.trackids) {
+            return true;
+        }
+        return false;
     };
 
     return self;

@@ -74,11 +74,11 @@
                 	<div class="item" ng-if="!scorm.hidebrowse">
                 		<p class="item-heading">{{ 'mma.mod_scorm.mode' | translate }}</p>
                 		<p class="mma-mod-scorm-checkbox-padding">
-                			<input type="radio" name="mode" ng-model="scormOptions.mode" value="browse" aria-labelledby="mma-mod_scorm-browse">
+                			<input type="radio" name="mode" ng-model="scormOptions.mode" value="{{modebrowse}}" aria-labelledby="mma-mod_scorm-browse">
                 			<span id="mma-mod_scorm-browse">{{ 'mma.mod_scorm.browse' | translate }}</span>
                 		</p>
                 		<p class="mma-mod-scorm-checkbox-padding">
-                			<input type="radio" name="mode" ng-model="scormOptions.mode" value="normal" aria-labelledby="mma-mod_scorm-normal">
+                			<input type="radio" name="mode" ng-model="scormOptions.mode" value="{{modenormal}}" aria-labelledby="mma-mod_scorm-normal">
                 			<span id="mma-mod_scorm-normal">{{ 'mma.mod_scorm.normal' | translate }}</span>
                 		</p>
                 	</div>

@@ -32,14 +32,16 @@ angular.module('mm.addons.mod_scorm')
      * @param  {Number} scoId The SCO id.
      * @param  {Number} attempt The attempt number.
      * @param  {Number} userData The user default data.
+     * @param  {String} mode Mode. One of $mmaModScorm#MODE constants.
      */
-    function SCORMAPI(scorm, scoId, attempt, userData) {
+    function SCORMAPI(scorm, scoId, attempt, userData, mode) {
 
         // Contains all the current values for all the data model elements for each SCO.
-        var currentUserData = {};
+        var currentUserData = {},
+            self = this;
 
         // Current SCO Id.
-        this.scoId = scoId;
+        self.scoId = scoId;
 
         // Standard Data Type Definition.
         CMIString256 = '^[\\u0000-\\uFFFF]{0,255}$';
@@ -92,7 +94,7 @@ angular.module('mm.addons.mod_scorm')
         // The SCORM 1.2 data model.
         // Set up data model for each sco.
         var datamodel = {};
-        for (var scoid in def){
+        for (var scoid in def) {
             datamodel[scoid] = {
                 'cmi._children':{'defaultvalue':cmi_children, 'mod':'r', 'writeerror':'402'},
                 'cmi._version':{'defaultvalue':'3.4', 'mod':'r', 'writeerror':'402'},
@@ -154,6 +156,17 @@ angular.module('mm.addons.mod_scorm')
                 'nav.event':{'defaultvalue':'', 'format':NAVEvent, 'mod':'w', 'readerror':'404', 'writeerror':'405'}
             };
 
+            currentUserData[scoid] = {};
+
+            // Load default values.
+            for (var element in datamodel[scoid]) {
+                if (element.match(/\.n\./) === null) {
+                    if (typeof datamodel[scoid][element].defaultvalue != 'undefined') {
+                        currentUserData[scoid][element] = datamodel[scoid][element].defaultvalue;
+                    }
+                }
+            }
+
             // Load initial user data for current SCO.
             for (var element in def[scoid]) {
                 if (element.match(/\.n\./) === null) {
@@ -172,6 +185,10 @@ angular.module('mm.addons.mod_scorm')
             if (currentUserData[scoid]['cmi.core.lesson_status'] === '') {
                 currentUserData[scoid]['cmi.core.lesson_status'] = 'not attempted';
             }
+
+            // Define mode and credit.
+            currentUserData[scoid]['cmi.core.credit'] = mode == $mmaModScorm.MODENORMAL ? 'credit' : 'no-credit';
+            currentUserData[scoid]['cmi.core.lesson_mode'] = mode;
         }
 
         // API helper methods.
@@ -183,8 +200,8 @@ angular.module('mm.addons.mod_scorm')
          * @return {String}    The element value
          */
         function getEl(el) {
-            if (typeof currentUserData[this.scoId][el] != 'undefined') {
-                return currentUserData[this.scoId][el];
+            if (typeof currentUserData[self.scoId] != 'undefined' && typeof currentUserData[self.scoId][el] != 'undefined') {
+                return currentUserData[self.scoId][el];
             }
             return '';
         }
@@ -196,7 +213,10 @@ angular.module('mm.addons.mod_scorm')
          * @param  {String} value The value
          */
         function setEl(el, value) {
-            currentUserData[this.scoId][el] = value;
+            if (typeof currentUserData[self.scoId] == 'undefined') {
+                currentUserData[self.scoId] = {};
+            }
+            currentUserData[self.scoId][el] = value;
         }
 
         /**
@@ -219,6 +239,61 @@ angular.module('mm.addons.mod_scorm')
         }
 
         /**
+         * Utility function for adding two times in format hh:mm:ss.
+         *
+         * @param {String} first  First time.
+         * @param {String} second Second time.
+         * @return {String}       Total time.
+         */
+        function AddTime (first, second) {
+            var sFirst = first.split(":");
+            var sSecond = second.split(":");
+            var cFirst = sFirst[2].split(".");
+            var cSecond = sSecond[2].split(".");
+            var change = 0;
+
+            FirstCents = 0;  //Cents
+            if (cFirst.length > 1) {
+                FirstCents = parseInt(cFirst[1],10);
+            }
+            SecondCents = 0;
+            if (cSecond.length > 1) {
+                SecondCents = parseInt(cSecond[1],10);
+            }
+            var cents = FirstCents + SecondCents;
+            change = Math.floor(cents / 100);
+            cents = cents - (change * 100);
+            if (Math.floor(cents) < 10) {
+                cents = "0" + cents.toString();
+            }
+
+            var secs = parseInt(cFirst[0],10) + parseInt(cSecond[0],10) + change;  //Seconds
+            change = Math.floor(secs / 60);
+            secs = secs - (change * 60);
+            if (Math.floor(secs) < 10) {
+                secs = "0" + secs.toString();
+            }
+
+            mins = parseInt(sFirst[1],10) + parseInt(sSecond[1],10) + change;   //Minutes
+            change = Math.floor(mins / 60);
+            mins = mins - (change * 60);
+            if (mins < 10) {
+                mins = "0" + mins.toString();
+            }
+
+            hours = parseInt(sFirst[0],10) + parseInt(sSecond[0],10) + change;  //Hours
+            if (hours < 10) {
+                hours = "0" + hours.toString();
+            }
+
+            if (cents != '0') {
+                return hours + ":" + mins + ":" + secs + '.' + cents;
+            } else {
+                return hours + ":" + mins + ":" + secs;
+            }
+        }
+
+        /**
          * Utility function for calculating the total time spent in the SCO.
          */
         function TotalTime() {
@@ -237,7 +312,7 @@ angular.module('mm.addons.mod_scorm')
                 if (getEl('cmi.core.lesson_status') == 'not attempted') {
                     setEl('cmi.core.lesson_status', 'completed');
                 }
-                if (getEl('cmi.core.lesson_mode') == 'normal') {
+                if (getEl('cmi.core.lesson_mode') == $mmaModScorm.MODENORMAL) {
                     if (getEl('cmi.core.credit') == 'credit') {
                         if (getEl('cmi.student_data.mastery_score') !== '' && getEl('cmi.core.score.raw') !== '') {
                             if (parseFloat(getEl('cmi.core.score.raw')) >= parseFloat(getEl('cmi.student_data.mastery_score'))) {
@@ -248,7 +323,7 @@ angular.module('mm.addons.mod_scorm')
                         }
                     }
                 }
-                if (getEl('cmi.core.lesson_mode') == 'browse') {
+                if (getEl('cmi.core.lesson_mode') == $mmaModScorm.MODEBROWSE) {
                     if (datamodel[scoid]['cmi.core.lesson_status'].defaultvalue == '' && getEl('cmi.core.lesson_status') == 'not attempted') {
                         setEl('cmi.core.lesson_status', 'browsed');
                     }
@@ -259,7 +334,7 @@ angular.module('mm.addons.mod_scorm')
                 tracks = CollectData();
             }
 
-            return $mmaModScorm.saveTracksSync(this.scoId, attempt, tracks);
+            return $mmaModScorm.saveTracksSync(self.scoId, attempt, tracks);
         }
 
         /**
@@ -268,7 +343,7 @@ angular.module('mm.addons.mod_scorm')
          */
         function CollectData() {
             var data = [];
-            for (var element in currentUserData[this.scoId]) {
+            for (var element in currentUserData[self.scoId]) {
                 // Ommit for example the nav. elements.
                 if (element.substr(0, 3) == 'cmi') {
                     expression = new RegExp(CMIIndex,'g');
@@ -331,7 +406,7 @@ angular.module('mm.addons.mod_scorm')
         var errorCode;
         var timeout;
 
-        this.LMSInitialize = function(param) {
+        self.LMSInitialize = function(param) {
             errorCode = "0";
             if (param == "") {
                 if (!initialized) {
@@ -348,7 +423,7 @@ angular.module('mm.addons.mod_scorm')
             return "false";
         };
 
-        this.LMSFinish = function(param) {
+        self.LMSFinish = function(param) {
             errorCode = "0";
             if (param == "") {
                 if (initialized) {
@@ -356,13 +431,25 @@ angular.module('mm.addons.mod_scorm')
                     result = StoreData(true);
                     if (getEl('nav.event') != '') {
                         if (getEl('nav.event') == 'continue') {
-                            $mmEvents.trigger(mmaModScormEventLaunchNextSco);
+                            $mmEvents.trigger(mmaModScormEventLaunchNextSco, {
+                                scormid: scorm.id,
+                                scoid: self.scoId,
+                                attempt: attempt
+                            });
                         } else {
-                            $mmEvents.trigger(mmaModScormEventLaunchPrevSco);
+                            $mmEvents.trigger(mmaModScormEventLaunchPrevSco, {
+                                scormid: scorm.id,
+                                scoid: self.scoId,
+                                attempt: attempt
+                            });
                         }
                     } else {
                         if (scorm.auto == '1') {
-                            $mmEvents.trigger(mmaModScormEventLaunchNextSco);
+                            $mmEvents.trigger(mmaModScormEventLaunchNextSco, {
+                                scormid: scorm.id,
+                                scoid: self.scoId,
+                                attempt: attempt
+                            });
                         }
                     }
                     errorCode = (result) ? '0' : '101';
@@ -370,7 +457,7 @@ angular.module('mm.addons.mod_scorm')
                     // Trigger TOC update.
                     $mmEvents.trigger(mmaModScormEventUpdateToc, {
                         scormid: scorm.id,
-                        scoid: this.scoId,
+                        scoid: self.scoId,
                         attempt: attempt
                     });
                     return result;
@@ -383,7 +470,7 @@ angular.module('mm.addons.mod_scorm')
             return "false";
         };
 
-        this.LMSGetValue = function(element) {
+        self.LMSGetValue = function(element) {
             errorCode = "0";
             if (initialized) {
                 if (element != "") {
@@ -426,7 +513,7 @@ angular.module('mm.addons.mod_scorm')
             return "";
         };
 
-        this.LMSSetValue = function(element, value) {
+        self.LMSSetValue = function(element, value) {
             errorCode = "0";
             if (initialized) {
                 if (element != "") {
@@ -462,7 +549,7 @@ angular.module('mm.addons.mod_scorm')
                                             subelement = subelement.concat('.' + elementIndex);
                                         }
 
-                                        if (typeof currentUserData[this.scoId][subelement] == "undefined") {
+                                        if (typeof currentUserData[self.scoId][subelement] == "undefined") {
                                             if (subelement.substr(0,14) == 'cmi.objectives') {
                                                 setEl(subelement + '.score._children', score_children);
                                                 setEl(subelement + '.score.raw', '');
@@ -480,7 +567,7 @@ angular.module('mm.addons.mod_scorm')
                                 //Store data
                                 if (errorCode == "0") {
                                     if (scorm.autocommit && !(timeout)) {
-                                        timeout = setTimeout(this.LMSCommit, 60000, [""]);
+                                        timeout = setTimeout(self.LMSCommit, 60000, [""]);
                                     }
                                     if (typeof datamodel[scoid][elementmodel].range != "undefined") {
                                         range = datamodel[scoid][elementmodel].range;
@@ -521,7 +608,7 @@ angular.module('mm.addons.mod_scorm')
             return "false";
         };
 
-        this.LMSCommit = function(param) {
+        self.LMSCommit = function(param) {
             if (timeout) {
                 clearTimeout(timeout);
                 timeout = null;
@@ -533,7 +620,7 @@ angular.module('mm.addons.mod_scorm')
                     // Trigger TOC update.
                     $mmEvents.trigger(mmaModScormEventUpdateToc, {
                         scormid: scorm.id,
-                        scoid: this.scoId,
+                        scoid: self.scoId,
                         attempt: attempt
                     });
 
@@ -548,7 +635,7 @@ angular.module('mm.addons.mod_scorm')
             return "false";
         };
 
-        this.LMSGetLastError = function() {
+        self.LMSGetLastError = function() {
             return errorCode;
         };
 
@@ -565,7 +652,7 @@ angular.module('mm.addons.mod_scorm')
         errorString["404"] = "Element is write only";
         errorString["405"] = "Incorrect data type";
 
-        this.LMSGetErrorString = function(param) {
+        self.LMSGetErrorString = function(param) {
             if (param != "") {
                 return errorString[param];
             } else {
@@ -573,7 +660,7 @@ angular.module('mm.addons.mod_scorm')
             }
         };
 
-        this.LMSGetDiagnostic = function(param) {
+        self.LMSGetDiagnostic = function(param) {
             if (param == "") {
                 param = errorCode;
             }
@@ -593,9 +680,11 @@ angular.module('mm.addons.mod_scorm')
      * @param  {Number} scoId The SCO id.
      * @param  {Number} attempt The attempt number.
      * @param  {Number} userData The user default data.
+     * @param  {String} [mode] Mode. One of $mmaModScorm#MODE constants. By default, MODENORMAL.
      */
-    self.initAPI = function(scorm, scoId, attempt, userData) {
-        $window.API = new SCORMAPI(scorm, scoId, attempt, userData);
+    self.initAPI = function(scorm, scoId, attempt, userData, mode) {
+        mode = mode || $mmaModScorm.MODENORMAL;
+        $window.API = new SCORMAPI(scorm, scoId, attempt, userData, mode);
     };
 
     /**
