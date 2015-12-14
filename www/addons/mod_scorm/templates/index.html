@@ -36,7 +36,7 @@
 	                </div>
 	            </div>
 	            <!-- TOC -->
-	            <div class="card" ng-if="scorm.displaycoursestructure || (organizations && organizations.length > 1)">
+	            <div class="card" ng-if="(scorm.displaycoursestructure && organizations.length) || (organizations && organizations.length > 1)">
 	        		<div class="item item-divider">{{ 'mma.mod_scorm.contents' | translate }}</div>
 	        		<div ng-if="organizations && organizations.length > 1" class="item item-input item-select">
 	                    <div class="input-label" id="mma-scorm-organizationslabel">
@@ -53,8 +53,8 @@
 	                	<div ng-repeat="sco in toc track by sco.id" class="mma-scorm-level-{{sco.level}}">
 	                		<p ng-if="sco.isvisible">
 	                			<img ng-src="{{sco.image.url}}" alt="{{sco.image.description}}" />
-	                			<a href="#" ng-if="sco.prereq" ng-click="open($event, sco.id)">{{ sco.title }}</a>
-	                			<span ng-if="!sco.prereq">{{ sco.title }}</span>
+	                			<a href="#" ng-if="sco.prereq && sco.launch" ng-click="open($event, sco.id)">{{ sco.title }}</a>
+	                			<span ng-if="!sco.prereq || !sco.launch">{{ sco.title }}</span>
 	                		</p>
 	                	</div>
 	                </div>

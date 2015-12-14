@@ -13,6 +13,7 @@
 	"errorgetscorm": "Error getting SCORM data.",
 	"errorinvalidversion": "Sorry, the application only supports SCORM 1.2.",
 	"errornotdownloadable": "The download of SCORM packages is disabled in your Moodle site. Please contact your Moodle site administrator.",
+	"errornovalidsco": "This SCORM doesn't have a visible SCO to load.",
 	"errorpackagefile": "Sorry, the application only supports ZIP packages.",
 	"exceededmaxattempts": "You have reached the maximum number of attempts.",
 	"failed": "Failed",

@@ -53,6 +53,39 @@ angular.module('mm.addons.mod_scorm')
     };
 
     /**
+     * Get the first SCO to load in a SCORM. If a non-empty TOC is provided, it will be the first valid SCO in the TOC.
+     * Otherwise, it will be the first valid SCO returned by $mmaModScorm#getScoes.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScormHelper#getFirstSco
+     * @param {String} scormid        Scorm ID.
+     * @param {Object[]} [toc]        SCORM's TOC.
+     * @param {String} [organization] Organization to use.
+     * @param {Number} attempt        Attempt number.
+     * @return {Promise}              Promise resolved with the first SCO.
+     */
+    self.getFirstSco = function(scormid, toc, organization, attempt) {
+        var promise;
+        if (toc && toc.length) {
+            promise = $q.when(toc);
+        } else {
+            // SCORM doesn't have a TOC. Get all the scoes.
+            promise = $mmaModScorm.getScoesWithData(scormid, organization, attempt);
+        }
+
+        return promise.then(function(scoes) {
+            // Search the first valid SCO.
+            for (var i = 0; i < scoes.length; i++) {
+                var sco = scoes[i];
+                if (sco.isvisible && sco.prereq && sco.launch) {
+                    return sco;
+                }
+            }
+        });
+    };
+
+    /**
      * Given a TOC in array format (@see $mmaModScorm#formatTocToArray) and a scoId, return the next available SCO.
      *
      * @module mm.addons.mod_scorm
@@ -67,7 +100,7 @@ angular.module('mm.addons.mod_scorm')
             if (toc[i].id == scoId) {
                 // We found the current SCO. Now let's search the next visible SCO with fulfilled prerequisites.
                 for (var j = i + 1; j < len; j++) {
-                    if (toc[j].isvisible && toc[j].prereq) {
+                    if (toc[j].isvisible && toc[j].prereq && toc[j].launch) {
                         return toc[j];
                     }
                 }
@@ -91,7 +124,7 @@ angular.module('mm.addons.mod_scorm')
             if (toc[i].id == scoId) {
                 // We found the current SCO. Now let's search the previous visible SCO with fulfilled prerequisites.
                 for (var j = i - 1; j >= 0; j--) {
-                    if (toc[j].isvisible && toc[j].prereq) {
+                    if (toc[j].isvisible && toc[j].prereq && toc[j].launch) {
                         return toc[j];
                     }
                 }

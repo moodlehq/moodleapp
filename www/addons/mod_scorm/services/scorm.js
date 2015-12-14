@@ -583,57 +583,26 @@ angular.module('mm.addons.mod_scorm')
      * @return {Promise}             Promise resolved with the toc object.
      */
     self.getOrganizationToc = function(scormid, organization, attempt) {
-        // First of all, get the track data for all the SCOes in the organization for the given attempt.
-        // We need this data to display the SCO status in the toc.
-        return self.getScormUserData(scormid, attempt).then(function(data) {
-            var trackData = {};
-            // Extract data for each SCO.
-            angular.forEach(data, function(sco) {
-                trackData[sco.scoid] = sco.userdata;
-            });
 
-            // Get organization SCOes.
-            return self.getScoes(scormid, organization).then(function(scoes) {
-                var map = {},
-                    rootScoes = [],
-                    trackDataBySCO = {};
+        return self.getScoesWithData(scormid, organization, attempt).then(function(scoes) {
+            var map = {},
+                rootScoes = [];
 
-                // First populate trackDataBySCO to index by SCO identifier.
-                angular.forEach(scoes, function(sco) {
-                    trackDataBySCO[sco.identifier] = trackData[sco.id];
-                });
-
-                angular.forEach(scoes, function(sco, index) {
-                    sco.children = [];
-                    map[sco.identifier] = index;
-                    if (sco.parent !== '/') {
-                        // Add specific SCO information (related to tracked data).
-                        var scodata = trackData[sco.id];
-                        // Check isvisible attribute.
-                        sco.isvisible = typeof scodata.isvisible != 'undefined' ?
-                                                scodata.isvisible && scodata.isvisible !== 'false' : true;
-                        // Check pre-requisites status.
-                        sco.prereq = typeof scodata.prerequisites == 'undefined' ||
-                                                self.evalPrerequisites(scodata.prerequisites, trackDataBySCO);
-                        // Add status.
-                        sco.status = (typeof scodata.status == 'undefined' || scodata.status === '') ?
-                                                'notattempted' : scodata.status;
-                        // Exit var.
-                        sco.exitvar = typeof scodata.exitvar == 'undefined' ? 'cmi.core.exit' : scodata.exitvar;
-                        sco.exitvalue = scodata[sco.exitvar];
-
-                        if (sco.parent == organization) {
-                            // It's a root SCO, add it to the root array.
-                            rootScoes.push(sco);
-                        } else {
-                            // Add this sco to the parent.
-                            scoes[map[sco.parent]].children.push(sco);
-                        }
+            angular.forEach(scoes, function(sco, index) {
+                sco.children = [];
+                map[sco.identifier] = index;
+                if (sco.parent !== '/') {
+                    if (sco.parent == organization) {
+                        // It's a root SCO, add it to the root array.
+                        rootScoes.push(sco);
+                    } else {
+                        // Add this sco to the parent.
+                        scoes[map[sco.parent]].children.push(sco);
                     }
-                });
-
-                return rootScoes;
+                }
             });
+
+            return rootScoes;
         });
     };
 
@@ -707,6 +676,62 @@ angular.module('mm.addons.mod_scorm')
     };
 
     /**
+     * Retrieves the list of SCO objects for a given SCORM and organization, including data about
+     * a certain attempt (status, isvisible, ...).
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScorm#getScoesWithData
+     * @param  {Number} scormid      SCORM ID.
+     * @param  {String} organization Organization ID.
+     * @param  {Number} attempt      Attempt number.
+     * @return {Promise}             Promise resolved with a list of SCO objects.
+     */
+    self.getScoesWithData = function(scormid, organization, attempt) {
+        // First of all, get the track data for all the SCOes in the organization for the given attempt.
+        // We'll use this data to set SCO data like isvisible, status and so.
+        return self.getScormUserData(scormid, attempt).then(function(data) {
+            var trackData = {};
+            // Extract data for each SCO.
+            angular.forEach(data, function(sco) {
+                trackData[sco.scoid] = sco.userdata;
+            });
+
+            // Get organization SCOes.
+            return self.getScoes(scormid, organization).then(function(scoes) {
+                var trackDataBySCO = {};
+
+                // First populate trackDataBySCO to index by SCO identifier.
+                angular.forEach(scoes, function(sco) {
+                    trackDataBySCO[sco.identifier] = trackData[sco.id];
+                });
+
+                angular.forEach(scoes, function(sco) {
+                    // Add specific SCO information (related to tracked data).
+                    var scodata = trackData[sco.id];
+                    if (!scodata) {
+                        return;
+                    }
+                    // Check isvisible attribute.
+                    sco.isvisible = typeof scodata.isvisible != 'undefined' ?
+                                            scodata.isvisible && scodata.isvisible !== 'false' : true;
+                    // Check pre-requisites status.
+                    sco.prereq = typeof scodata.prerequisites == 'undefined' ||
+                                            self.evalPrerequisites(scodata.prerequisites, trackDataBySCO);
+                    // Add status.
+                    sco.status = (typeof scodata.status == 'undefined' || scodata.status === '') ?
+                                            'notattempted' : scodata.status;
+                    // Exit var.
+                    sco.exitvar = typeof scodata.exitvar == 'undefined' ? 'cmi.core.exit' : scodata.exitvar;
+                    sco.exitvalue = scodata[sco.exitvar];
+                });
+
+                return scoes;
+            });
+        });
+    };
+
+    /**
      * Given a SCORM and a SCO, returns the full launch URL for the SCO.
      *
      * @module mm.addons.mod_scorm
@@ -717,6 +742,11 @@ angular.module('mm.addons.mod_scorm')
      * @return {Promise}      Promise resolved with the URL.
      */
     self.getScoSrc = function(scorm, sco) {
+        if (sco.launch.match(/http(s)?:\/\//)) {
+            // It's an online URL.
+            return $q.when($sce.trustAsResourceUrl(sco.launch));
+        }
+
         return $mmFilepool.getDirectoryUrlByUrl($mmSite.getId(), scorm.moduleurl).then(function(dirPath) {
             // This URL is going to be injected in an iframe, we need trustAsResourceUrl to make it work in a browser.
             return $sce.trustAsResourceUrl($mmFS.concatenatePaths(dirPath, sco.launch));
@@ -1053,32 +1083,19 @@ angular.module('mm.addons.mod_scorm')
      * @return {Promise}       Promise resolved with a boolean: true if incomplete, false otherwise.
      */
     self.isAttemptIncomplete = function(scorm, attempt) {
-        return self.getScormUserData(scorm.id, attempt).then(function(data) {
-            var trackData = {};
-            // Extract data for each SCO.
-            angular.forEach(data, function(sco) {
-                trackData[sco.scoid] = sco.userdata;
-            });
+        return self.getScoesWithData(scorm.id, undefined, attempt).then(function(scoes) {
+            var incomplete = false;
 
-            return self.getScoes(scorm.id).then(function(scoes) {
-                var incomplete = false;
-
-                angular.forEach(scoes, function(sco) {
-                    var scodata = trackData[sco.id];
-                    if (!scodata) {
+            angular.forEach(scoes, function(sco) {
+                // Ignore SCOes not visible or without launch URL.
+                if (sco.isvisible && sco.launch) {
+                    if (self.isStatusIncomplete(sco.status)) {
                         incomplete = true;
-                    } else {
-                        // Ignore SCOes not visible or without launch URL. If isvisible is not set we treat it like visible.
-                        if ((scodata.isvisible || typeof scodata.isvisible == 'undefined') && sco.launch) {
-                            if (self.isStatusIncomplete(scodata.status)) {
-                                incomplete = true;
-                            }
-                        }
                     }
-                });
-
-                return incomplete;
+                }
             });
+
+            return incomplete;
         });
     };
 

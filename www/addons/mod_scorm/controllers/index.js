@@ -164,8 +164,12 @@ angular.module('mm.addons.mod_scorm')
             $scope.organizations = organizations;
 
             if (!$scope.currentOrganization.identifier) {
-                // Load first organization.
-                $scope.currentOrganization.identifier = organizations[0].identifier;
+                // Load first organization (if any).
+                if (organizations.length) {
+                    $scope.currentOrganization.identifier = organizations[0].identifier;
+                } else {
+                    $scope.currentOrganization.identifier = '';
+                }
             }
 
             return loadOrganizationToc($scope.currentOrganization.identifier);
