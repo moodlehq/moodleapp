@@ -154,6 +154,15 @@ angular.module('mm.addons.mod_scorm')
         });
     }
 
+    // Set SCORM start time.
+    function setStartTime(scoId) {
+        var tracks = [{
+            element: 'x.start.time',
+            value: $mmUtil.timestamp()
+        }];
+        return $mmaModScorm.saveTracks(scoId, attempt, tracks);
+    }
+
     $scope.showToc = $mmaModScorm.displayTocInPlayer(scorm);
     if ($scope.showToc) {
         // Setup TOC popover.
@@ -169,8 +178,12 @@ angular.module('mm.addons.mod_scorm')
         if (!currentSco) {
             currentSco = $scope.toc[0];
         }
-        // Load SCO.
-        loadSco(currentSco);
+
+        // Set start time.
+        return setStartTime(currentSco.id).catch(showError).finally(function() {
+            // Load SCO.
+            loadSco(currentSco);
+        });
     }).finally(function() {
         $scope.loaded = true;
     });
