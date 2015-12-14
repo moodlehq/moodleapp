@@ -69,7 +69,7 @@ angular.module('mm.addons.mod_scorm')
 
             // Get the number of attempts and check if SCORM is incomplete.
             return $mmaModScorm.getAttemptCount(scorm.id).then(function(numAttempts) {
-                return $mmaModScorm.isScormIncomplete(scorm, numAttempts).then(function(incomplete) {
+                return $mmaModScorm.isAttemptIncomplete(scorm, numAttempts).then(function(incomplete) {
                     var promises = [];
 
                     scorm.incomplete = incomplete;
