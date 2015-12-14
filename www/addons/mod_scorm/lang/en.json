@@ -5,6 +5,7 @@
 	"averageattempt": "Average attempts",
 	"browse": "Preview",
 	"browsed": "Browsed",
+	"browsemode": "Preview mode",
 	"completed": "Completed",
 	"contents": "Contents",
 	"enter": "Enter",
@@ -34,6 +35,7 @@
 	"notattempted": "Not attempted",
 	"organizations": "Organisations",
 	"passed": "Passed",
+	"reviewmode": "Review mode",
 	"scormstatusnotdownloaded": "This SCORM is not downloaded. It will be automatically downloaded when you open it.",
 	"scormstatusoutdated": "This SCORM has been modified since the last download. It will be automatically downloaded when you open it.",
 	"suspended": "Suspended"
