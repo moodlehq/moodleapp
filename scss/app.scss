@@ -6,6 +6,8 @@
 
 // Colors.
 $positive: #387ef5;
+$base-color: #212630;
+$bar-content-bg: $base-color;
 
 // Setting the default button to button-outline.
 $button-default-bg: transparent;
@@ -28,4 +30,42 @@ $ionicons-font-path: "../lib/ionic/fonts" !default;
 .button.activated {
   box-shadow: none;
   color: #fff;
+}
+
+// Links
+a,
+mm-format-text a {
+    color: $positive;
+    text-decoration: none;
+}
+mm-format-text a:hover {
+    text-decoration: underline;
+}
+mm-format-text .button.activated a {
+    color: $light;
+}
+
+// Nav bar
+.bar-header {
+    background: linear-gradient(to bottom, #252B36, #1B1F27);
+    box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.1);
+}
+
+// Headings
+.bar-content .title,
+.item-divider h2,
+.item-divider p,
+a.item h2 {
+    color: #ff6500;
+}
+
+// Tabs
+.tabs .tab-item {
+    color: $base-color;
+}
+
+// Avatar and media
+a.item.item-avatar .item-heading,   // messages
+a.item.item-media h2 {              // calendar
+    color: $base-color;
 }
