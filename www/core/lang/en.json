@@ -35,6 +35,7 @@
     "errorinvalidresponse": "Invalid response received. Please contact your Moodle site administrator if the error persists.",
     "erroropenfilenoapp": "Error opening the file: no app found to open this kind of file.",
     "erroropenfilenoextension": "Error opening the file: the file doesn't have extension.",
+    "erroropenpopup": "This activity is trying to open a popup. This is not supported in this app.",
     "help" : "Help",
     "hour" : "hour",
     "hours" : "hours",
