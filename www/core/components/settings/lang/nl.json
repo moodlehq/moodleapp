@@ -1,6 +1,6 @@
 {
     "about": "Over",
-    "appname": "Moodle Mobile {{version}}",
+    "appname": "Learn Moodle {{version}}",
     "appready": "App klaar.",
     "cacheexpirationtime": "Cache verlooptijd (milliseconden)",
     "cordovadevicemodel": "Cordova Device model",

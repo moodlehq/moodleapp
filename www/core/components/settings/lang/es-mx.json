@@ -1,6 +1,6 @@
 {
     "about": "Acerca de",
-    "appname": "Moodle Mobile {{version}}",
+    "appname": "Learn Moodle {{version}}",
     "appready": "App lista",
     "cacheexpirationtime": "Tiempo de caducidad del caché (mili segundos)",
     "cordovadevicemodel": "Modelo Dispositivo Cordova",
