@@ -168,16 +168,67 @@ angular.module('mm.addons.mod_scorm')
             }
 
             // Load initial user data for current SCO.
-            for (var element in def[scoid]) {
+            for (element in def[scoid]) {
                 if (element.match(/\.n\./) === null) {
                     if (typeof datamodel[scoid][element].defaultvalue != 'undefined') {
                         currentUserData[scoid][element] = datamodel[scoid][element].defaultvalue;
                     } else if (typeof defExtra[scoid][element] != 'undefined') {
-                        // Objectives and interactions are outside the default user data.
+                        // Check in user data values.
                         currentUserData[scoid][element] = defExtra[scoid][element];
                     } else {
                         currentUserData[scoid][element] = '';
                     }
+                }
+            }
+
+            // Load interactions and objectives, and init the counters.
+            var expression = new RegExp(CMIIndex,'g');
+            var elementDotFormat, counterElement, currentCounterIndex, currentN;
+            for (element in defExtra[scoid]) {
+                counterElement = '';
+                currentCounterIndex = 0;
+                // This check for an indexed element. cmi.objectives.1.id or cmi.objectives_1.id.
+                if (element.match(expression)) {
+                    // Normalize to the expected value according the standard.
+                    // Moodle stores this values using _n. instead .n.
+                    elementDotFormat = element.replace(expression, ".$1.");
+                    currentUserData[scoid][elementDotFormat] = defExtra[scoid][element];
+
+                    // Get the correct counter and current index.
+                    if (elementDotFormat.indexOf("cmi.evaluation.comments") === 0) {
+                        counterElement = "cmi.evaluation.comments._count";
+                        currentCounterIndex = elementDotFormat.match(/.(\d+)./)[1];
+                    } else if (elementDotFormat.indexOf("cmi.objectives") === 0) {
+                        counterElement = "cmi.objectives._count";
+                        currentCounterIndex = elementDotFormat.match(/.(\d+)./)[1];
+                    } else if (elementDotFormat.indexOf("cmi.interactions") === 0) {
+                        if (elementDotFormat.indexOf(".objectives.") > 0) {
+                            currentN = elementDotFormat.match(/cmi.interactions.(\d+)./)[1];
+                            currentCounterIndex = elementDotFormat.match(/objectives.(\d+)./)[1];
+                            counterElement = "cmi.interactions." + currentN + ".objectives._count";
+                        } else if (elementDotFormat.indexOf(".correct_responses.") > 0) {
+                            currentN = elementDotFormat.match(/cmi.interactions.(\d+)./)[1];
+                            currentCounterIndex = elementDotFormat.match(/correct_responses.(\d+)./)[1];
+                            counterElement = "cmi.interactions." + currentN + ".correct_responses._count";
+                        } else {
+                            counterElement = "cmi.interactions._count";
+                            currentCounterIndex = elementDotFormat.match(/.(\d+)./)[1];
+                        }
+                    }
+
+                    if (counterElement) {
+                        if (typeof currentUserData[scoid][counterElement] == "undefined") {
+                            currentUserData[scoid][counterElement] = 0;
+                        }
+                        // Check if we need to sum.
+                        if (parseInt(currentCounterIndex) == parseInt(currentUserData[scoid][counterElement])) {
+                            currentUserData[scoid][counterElement] = parseInt(currentUserData[scoid][counterElement]) + 1;
+                        }
+                        if (parseInt(currentCounterIndex) > parseInt(currentUserData[scoid][counterElement])) {
+                            currentUserData[scoid][counterElement] = parseInt(currentCounterIndex) - 1;
+                        }
+                    }
+
                 }
             }
 
@@ -333,7 +384,6 @@ angular.module('mm.addons.mod_scorm')
             } else {
                 tracks = CollectData();
             }
-
             return $mmaModScorm.saveTracksSync(self.scoId, attempt, tracks);
         }
 
@@ -371,7 +421,8 @@ angular.module('mm.addons.mod_scorm')
                             if (datamodel[scoid][element].mod != 'r') {
 
                                 var el = {
-                                    'element': element,
+                                    // Moodle stores the organizations and interactions using _n. instead .n.
+                                    'element': element.replace(expression, "_$1."),
                                     'value': getEl(element)
                                 };
 
@@ -528,38 +579,49 @@ angular.module('mm.addons.mod_scorm')
                                 // Create dynamic data model element.
                                 if (element != elementmodel) {
 
+                                    // Init default counters and values.
+                                    if (element.indexOf("cmi.objectives") === 0) {
+                                        currentN = element.match(/cmi.objectives.(\d+)./)[1];
+                                        counterElement = "cmi.objectives." + currentN + ".score";
+                                        if (typeof currentUserData[self.scoId][counterElement + '._children'] == "undefined") {
+                                            setEl(currentUserData[self.scoId][counterElement + '._children'], score_children);
+                                            setEl(currentUserData[self.scoId][counterElement + '.raw'], '');
+                                            setEl(currentUserData[self.scoId][counterElement + '.min'], '');
+                                            setEl(currentUserData[self.scoId][counterElement + '.max'], '');
+                                        }
+
+                                    } else if (element.indexOf("cmi.interactions") === 0) {
+                                        currentN = element.match(/cmi.interactions.(\d+)./)[1];
+
+                                        counterElement = "cmi.interactions." + currentN + ".objectives._count";
+                                        if (typeof currentUserData[self.scoId][counterElement] == "undefined") {
+                                            setEl(counterElement, 0);
+                                        }
+                                        counterElement = "cmi.interactions." + currentN + ".correct_responses._count";
+                                        if (typeof currentUserData[self.scoId][counterElement] == "undefined") {
+                                            setEl(counterElement, 0);
+                                        }
+                                    }
+
                                     elementIndexes = element.split('.');
                                     subelement = 'cmi';
                                     for (i = 1; i < elementIndexes.length - 1; i++) {
                                         elementIndex = elementIndexes[i];
                                         if (elementIndexes[i + 1].match(/^\d+$/)) {
-                                            if ((typeof eval(subelement + '.' + elementIndex)) == "undefined") {
+                                            if (typeof currentUserData[self.scoId][subelement + '.' + elementIndex + '._count'] == "undefined") {
                                                 setEl(subelement + '.' + elementIndex + '._count', 0);
                                             }
                                             if (elementIndexes[i + 1] == getEl(subelement + '.' + elementIndex + '._count')) {
                                                 var count = getEl(subelement + '.' + elementIndex + '._count');
-                                                setEl(subelement + '.' + elementIndex + '._count', count + 1);
+                                                setEl(subelement + '.' + elementIndex + '._count', parseInt(count) + 1);
                                             }
                                             if (elementIndexes[i + 1] > getEl(subelement + '.' + elementIndex + '._count')) {
                                                 errorCode = "201";
                                             }
-                                            subelement = subelement.concat('.' + elementIndex + '_' + elementIndexes[i + 1]);
+                                            subelement = subelement.concat('.' + elementIndex + '.' + elementIndexes[i + 1]);
                                             i++;
                                         } else {
                                             subelement = subelement.concat('.' + elementIndex);
-                                        }
-
-                                        if (typeof currentUserData[self.scoId][subelement] == "undefined") {
-                                            if (subelement.substr(0,14) == 'cmi.objectives') {
-                                                setEl(subelement + '.score._children', score_children);
-                                                setEl(subelement + '.score.raw', '');
-                                                setEl(subelement + '.score.min', '');
-                                                setEl(subelement + '.score.max', '');
-                                            }
-                                            if (subelement.substr(0,16) == 'cmi.interactions') {
-                                                setEl(subelement + '.objectives._count', 0);
-                                                setEl(subelement + '.correct_responses._count', 0);
-                                            }
                                         }
                                     }
                                     element = subelement.concat('.' + elementIndexes[elementIndexes.length - 1]);
