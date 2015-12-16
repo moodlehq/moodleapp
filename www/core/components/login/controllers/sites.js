@@ -21,7 +21,8 @@ angular.module('mm.core.login')
  * @ngdoc controller
  * @name mmLoginSitesCtrl
  */
-.controller('mmLoginSitesCtrl', function($scope, $state, $mmSitesManager, $log, $translate, $mmUtil, $ionicHistory, $mmText) {
+.controller('mmLoginSitesCtrl', function($scope, $state, $mmSitesManager, $log, $translate, $mmUtil, $ionicHistory, $mmText,
+            $mmLoginHelper) {
 
     $log = $log.getInstance('mmLoginSitesCtrl');
 
@@ -50,10 +51,11 @@ angular.module('mm.core.login')
                 $mmSitesManager.deleteSite(site.id).then(function() {
                     $scope.sites.splice(index, 1);
                     $mmSitesManager.hasNoSites().then(function() {
+                        // No sites left, go to add a new site state.
                         $ionicHistory.nextViewOptions({disableBack: true});
-                        $state.go('mm_login.site');
+                        $mmLoginHelper.goToAddSite();
                     });
-                }, function(error) {
+                }, function() {
                     $log.error('Delete site failed');
                     $mmUtil.showErrorModal('mm.login.errordeletesite', true);
                 });
@@ -77,7 +79,7 @@ angular.module('mm.core.login')
     };
 
     $scope.add = function() {
-        $state.go('mm_login.site');
+        $mmLoginHelper.goToAddSite();
     };
 
 });

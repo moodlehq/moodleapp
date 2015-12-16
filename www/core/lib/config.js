@@ -27,7 +27,8 @@ angular.module('mm.core')
 })
 
 /**
- * Factory to provide access to app config and settings. It should not be abused into a temporary storage.
+ * Factory to provide access to dynamic and permanent config and settings.
+ * It should not be abused into a temporary storage.
  *
  * @module mm.core
  * @ngdoc service
@@ -35,29 +36,11 @@ angular.module('mm.core')
  * @description
  * Provides access to the app settings.
  */
-.factory('$mmConfig', function($http, $q, $log, $mmApp, mmCoreConfigStore) {
+.factory('$mmConfig', function($q, $log, $mmApp, mmCoreConfigStore) {
 
     $log = $log.getInstance('$mmConfig');
 
-    var initialized = false,
-        self = {
-            config: {}
-        };
-
-    function init() {
-        var deferred = $q.defer();
-
-        $http.get('config.json').then(function(response) {
-            var data = response.data;
-            for (var name in data) {
-                self.config[name] = data[name];
-            }
-            initialized = true;
-            deferred.resolve();
-        }, deferred.reject);
-
-        return deferred.promise;
-    };
+    var self = {};
 
     /**
      * Get an app setting.
@@ -72,38 +55,15 @@ angular.module('mm.core')
      * Get an app setting.
      */
     self.get = function(name, defaultValue) {
-
-        if (!initialized) {
-            return init().then(function() {
-                return getConfig(name);
-            }, function() {
-                $log.error('Failed to initialize $mmConfig.');
-                return $q.reject();
-            });
-        }
-
-        return getConfig(name);
-
-        function getConfig(name) {
-            var deferred = $q.defer(),
-                value = self.config[name];
-
-            if (typeof value == 'undefined') {
-                $mmApp.getDB().get(mmCoreConfigStore, name).then(function(entry) {
-                    deferred.resolve(entry.value);
-                }, function() {
-                    if (typeof defaultValue != 'undefined') {
-                        deferred.resolve(defaultValue);
-                    } else {
-                        deferred.reject();
-                    }
-                });
+        return $mmApp.getDB().get(mmCoreConfigStore, name).then(function(entry) {
+            return entry.value;
+        }).catch(function() {
+            if (typeof defaultValue != 'undefined') {
+                return defaultValue;
             } else {
-                deferred.resolve(value);
+                return $q.reject();
             }
-
-            return deferred.promise;
-        }
+        });
     };
 
     /**
@@ -119,31 +79,7 @@ angular.module('mm.core')
      * Set an app setting.
      */
     self.set = function(name, value) {
-
-        if (!initialized) {
-            return init().then(function() {
-                return setConfig(name, value);
-            }, function() {
-                $log.error('Failed to initialize $mmConfig.');
-                return $q.reject();
-            });
-        }
-
-        return setConfig(name, value);
-
-        function setConfig(name, value) {
-            var deferred,
-                fromStatic = self.config[name];
-
-            if (typeof(fromStatic) === 'undefined') {
-                return $mmApp.getDB().insert(mmCoreConfigStore, {name: name, value: value});
-            }
-
-            $log.error('Cannot save static config setting \'' + name + '\'.');
-            deferred = $q.defer()
-            deferred.reject();
-            return deferred.promise;
-        }
+        return $mmApp.getDB().insert(mmCoreConfigStore, {name: name, value: value});
     };
 
     /**
@@ -158,31 +94,7 @@ angular.module('mm.core')
      * Delete an app setting.
      */
     self.delete = function(name) {
-
-        if (!initialized) {
-            return init().then(function() {
-                return deleteConfig(name);
-            }, function() {
-                $log.error('Failed to initialize $mmConfig.');
-                return $q.reject();
-            });
-        }
-
-        return deleteConfig(name);
-
-        function deleteConfig(name) {
-            var deferred,
-                fromStatic = self.config[name];
-
-            if (typeof(fromStatic) === 'undefined') {
-                return $mmApp.getDB().remove(mmCoreConfigStore, name);
-            }
-
-            $log.error('Cannot delete static config setting \'' + name + '\'.');
-            deferred = $q.defer()
-            deferred.reject();
-            return deferred.promise;
-        }
+        return $mmApp.getDB().remove(mmCoreConfigStore, name);
     };
 
     return self;

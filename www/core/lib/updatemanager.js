@@ -28,7 +28,7 @@ angular.module('mm.core')
 .factory('$mmUpdateManager', function($log, $q, $mmConfig, $mmSitesManager, $mmFS, $cordovaLocalNotification, $mmLocalNotifications,
             $mmApp, $mmEvents, mmCoreSitesStore, mmCoreVersionApplied, mmCoreEventSiteAdded, mmCoreEventSiteUpdated,
             mmCoreEventSiteDeleted, $injector, $mmFilepool, mmCoreCourseModulesStore, mmFilepoolLinksStore,
-            mmFilepoolPackagesStore) {
+            mmFilepoolPackagesStore, mmCoreConfigConstants) {
 
     $log = $log.getInstance('$mmUpdateManager');
 
@@ -45,36 +45,35 @@ angular.module('mm.core')
      * @return {Promise} Promise resolved when the update process finishes.
      */
     self.check = function() {
-        var promises = [];
+        var promises = [],
+            versionCode = mmCoreConfigConstants.versioncode;
 
-        return $mmConfig.get('versioncode').then(function(versionCode) {
-            return $mmConfig.get(mmCoreVersionApplied, 0).then(function(versionApplied) {
+        return $mmConfig.get(mmCoreVersionApplied, 0).then(function(versionApplied) {
 
-                if (versionCode >= 391 && versionApplied < 391) {
-                    // Migrating from MM1 to MM2.
-                    promises.push(migrateMM1Sites());
-                    // Ignore errors in clearAppFolder. We don't want to clear the folder
-                    // everytime the app is opened if something goes wrong.
-                    promises.push(clearAppFolder().catch(function() {}));
-                }
+            if (versionCode >= 391 && versionApplied < 391) {
+                // Migrating from MM1 to MM2.
+                promises.push(migrateMM1Sites());
+                // Ignore errors in clearAppFolder. We don't want to clear the folder
+                // everytime the app is opened if something goes wrong.
+                promises.push(clearAppFolder().catch(function() {}));
+            }
 
-                if (versionCode >= 2003 && versionApplied < 2003) {
-                    promises.push(cancelAndroidNotifications());
-                }
+            if (versionCode >= 2003 && versionApplied < 2003) {
+                promises.push(cancelAndroidNotifications());
+            }
 
-                if (versionCode >= 2003) {
-                    setStoreSitesInFile();
-                }
+            if (versionCode >= 2003) {
+                setStoreSitesInFile();
+            }
 
-                if (versionCode >= 2007 && versionApplied < 2007) {
-                    promises.push(migrateModulesStatus());
-                }
+            if (versionCode >= 2007 && versionApplied < 2007) {
+                promises.push(migrateModulesStatus());
+            }
 
-                return $q.all(promises).then(function() {
-                    return $mmConfig.set(mmCoreVersionApplied, versionCode);
-                }).catch(function() {
-                    $log.error('Error applying update from ' + versionApplied + ' to ' + versionCode);
-                });
+            return $q.all(promises).then(function() {
+                return $mmConfig.set(mmCoreVersionApplied, versionCode);
+            }).catch(function() {
+                $log.error('Error applying update from ' + versionApplied + ' to ' + versionCode);
             });
         });
     };

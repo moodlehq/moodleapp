@@ -41,15 +41,8 @@ angular.module('mm.addons.mod_forum')
                 return $mmGroups.getActivityAllowedGroups(cmid).then(function(forumgroups) {
                     var promise;
                     if (mode === $mmGroups.VISIBLEGROUPS) {
-                        // We need to check which of the returned groups the user belongs to.
-                        promise = $mmGroups.getUserGroupsInCourse(courseid, refresh).then(function(usergroups) {
-                            if (usergroups.length === 0) {
-                                // User doesn't belong to any group, probably a teacher. Let's return all groups,
-                                // if the user can't post to some of them it will be filtered by add discussion WS.
-                                return forumgroups;
-                            }
-                            return filterGroups(forumgroups, usergroups);
-                        });
+                        // We need to check which of the returned groups the user can post to.
+                        promise = validateVisibleGroups(forumgroups, refresh);
                     } else {
                         // WS already filters groups, no need to do it ourselves.
                         promise = $q.when(forumgroups);
@@ -83,6 +76,54 @@ angular.module('mm.addons.mod_forum')
         });
     }
 
+    // Validate which of the groups returned by getActivityAllowedGroups in visible groups should be shown to post to.
+    function validateVisibleGroups(forumgroups, refresh) {
+        if ($mmaModForum.isCanAddDiscussionAvailable()) {
+            // Use the canAddDiscussion function to filter the groups.
+            // We first check if the user can post to all the groups.
+            return $mmaModForum.canAddDiscussionToAll(forumid).catch(function() {
+                // The call failed, let's assume he can't.
+                return false;
+            }).then(function(canAdd) {
+                if (canAdd) {
+                    // The user can post to all groups, return them all.
+                    return forumgroups;
+                } else {
+                    // The user can't post to all groups, let's check which groups he can post to.
+                    var promises = [],
+                        filtered = [];
+
+                    angular.forEach(forumgroups, function(group) {
+                        promises.push($mmaModForum.canAddDiscussion(forumid, group.id).catch(function() {
+                            // The call failed, let's return true so the group is shown. If the user can't post to
+                            // it an error will be shown when he tries to add the discussion.
+                            return true;
+                        }).then(function(canAdd) {
+                            if (canAdd) {
+                                filtered.push(group);
+                            }
+                        }));
+                    });
+
+                    return $q.all(promises).then(function() {
+                        return filtered;
+                    });
+                }
+            });
+        } else {
+            // We can't check it using WS. We'll get the groups the user belongs to and use them to
+            // filter the groups to post.
+            return $mmGroups.getUserGroupsInCourse(courseid, refresh).then(function(usergroups) {
+                if (usergroups.length === 0) {
+                    // User doesn't belong to any group, probably a teacher. Let's return all groups,
+                    // if the user can't post to some of them it will be filtered by add discussion WS.
+                    return forumgroups;
+                }
+                return filterGroups(forumgroups, usergroups);
+            });
+        }
+    }
+
     // Filter forumgroups, returning only those that are inside usergroups.
     function filterGroups(forumgroups, usergroups) {
         var filtered = [],
@@ -106,7 +147,8 @@ angular.module('mm.addons.mod_forum')
     // Pull to refresh.
     $scope.refreshGroups = function() {
         var p1 = $mmGroups.invalidateActivityGroupMode(cmid),
-            p2 = $mmGroups.invalidateActivityAllowedGroups(cmid);
+            p2 = $mmGroups.invalidateActivityAllowedGroups(cmid),
+            p3 = $mmaModForum.invalidateCanAddDiscussion(forumid);
 
         $q.all([p1, p2]).finally(function() {
             fetchGroups(true).finally(function() {

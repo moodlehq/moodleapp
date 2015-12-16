@@ -25,6 +25,27 @@ angular.module('mm.addons.mod_forum')
     var self = {};
 
     /**
+     * Get cache key for can add discussion WS calls.
+     *
+     * @param  {Number} forumid Forum ID.
+     * @param  {Number} groupid Group ID.
+     * @return {String}         Cache key.
+     */
+    function getCanAddDiscussionCacheKey(forumid, groupid) {
+        return getCommonCanAddDiscussionCacheKey(forumid) + ':' + groupid;
+    }
+
+    /**
+     * Get common part of cache key for can add discussion WS calls.
+     *
+     * @param  {Number} forumid Forum ID.
+     * @return {String}         Cache key.
+     */
+    function getCommonCanAddDiscussionCacheKey(forumid) {
+        return 'mmaModForum:canadddiscussion:' + forumid;
+    }
+
+    /**
      * Get cache key for forum data WS calls.
      *
      * @param {Number} courseid Course ID.
@@ -93,6 +114,46 @@ angular.module('mm.addons.mod_forum')
     };
 
     /**
+     * Check if a user can post to a certain group.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#canAddDiscussion
+     * @param  {Number} forumid Forum ID.
+     * @param  {Number} groupid Group ID.
+     * @return {Promise}        Promise resolved with a boolean: true if can add discussion, false otherwise.
+     */
+    self.canAddDiscussion = function(forumid, groupid) {
+        var params = {
+                forumid: forumid,
+                groupid: groupid
+            },
+            preSets = {
+                cacheKey: getCanAddDiscussionCacheKey(forumid, groupid)
+            };
+
+        return $mmSite.read('mod_forum_can_add_discussion', params, preSets).then(function(result) {
+            if (result) {
+                return !!result.status;
+            }
+            return $q.reject();
+        });
+    };
+
+    /**
+     * Check if a user can post to all groups.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#canAddDiscussionToAll
+     * @param  {Number} forumid Forum ID.
+     * @return {Promise}        Promise resolved with a boolean: true if can add discussion to all, false otherwise.
+     */
+    self.canAddDiscussionToAll = function(forumid) {
+        return self.canAddDiscussion(forumid, -1);
+    };
+
+    /**
      * Extract the starting post of a discussion from a list of posts. The post is removed from the array passed as a parameter.
      *
      * @module mm.addons.mod_forum
@@ -118,6 +179,18 @@ angular.module('mm.addons.mod_forum')
         }
 
         return undefined;
+    };
+
+    /**
+     * Check if canAddDiscussion is available.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#isCanAddDiscussionAvailable
+     * @return {Boolean} True if available, false otherwise.
+     */
+    self.isCanAddDiscussionAvailable = function() {
+        return $mmSite.wsAvailable('mod_forum_can_add_discussion');
     };
 
     /**
@@ -261,6 +334,19 @@ angular.module('mm.addons.mod_forum')
                 return $q.reject();
             }
         });
+    };
+
+    /**
+     * Invalidates can add discussion WS calls.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#invalidateCanAddDiscussion
+     * @param  {Number} forumid Forum ID.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateCanAddDiscussion = function(forumid) {
+        return $mmSite.invalidateWsCacheForKeyStartingWith(getCommonCanAddDiscussionCacheKey(forumid));
     };
 
     /**

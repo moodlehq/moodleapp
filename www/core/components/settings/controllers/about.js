@@ -21,19 +21,15 @@ angular.module('mm.core.settings')
  * @ngdoc controller
  * @name mmSettingsAboutCtrl
  */
-.controller('mmSettingsAboutCtrl', function($scope, $mmConfig, $translate, $window, $mmApp, $ionicPlatform, $mmLang, $mmFS,
-            $mmLocalNotifications) {
+.controller('mmSettingsAboutCtrl', function($scope, $translate, $window, $mmApp, $ionicPlatform, $mmLang, $mmFS,
+            $mmLocalNotifications, mmCoreConfigConstants) {
 
-    $mmConfig.get('versionname').then(function(versionname) {
-        $scope.versionname = versionname;
-        $translate('mm.settings.appname', {version: versionname}).then(function(appName) {
-            $scope.appname = appName;
-        });
+    $scope.versionname = mmCoreConfigConstants.versionname;
+    $translate('mm.settings.appname', {version: $scope.versionname}).then(function(appName) {
+        $scope.appname = appName;
     });
 
-    $mmConfig.get('versioncode').then(function(versioncode) {
-        $scope.versioncode = versioncode;
-    });
+    $scope.versioncode = mmCoreConfigConstants.versioncode;
 
     $scope.navigator = $window.navigator;
     if ($window.location && $window.location.href) {
@@ -53,7 +49,7 @@ angular.module('mm.core.settings')
     } else {
         var matches = navigator.userAgent.match(/\(([^\)]*)\)/);
         if (matches && matches.length > 1) {
-            $scope.deviceos = matches[1]
+            $scope.deviceos = matches[1];
         } else {
             $scope.deviceos = 'mm.core.unknown';
         }
