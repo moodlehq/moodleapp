@@ -10,11 +10,13 @@ $base-color: #212630;
 $bar-content-bg: $base-color;
 
 // Setting the default button to button-outline.
-$button-default-bg: transparent;
 $button-default-text: $positive;
 $button-default-border: $positive;
 $button-default-active-bg: $positive;
 $button-default-active-border: $positive;
+
+// Image root path.
+$image-path: "../img" !default;
 
 // The path to the font icons.
 $ionicons-font-path: "../lib/ionic/fonts" !default;
@@ -30,6 +32,46 @@ $ionicons-font-path: "../lib/ionic/fonts" !default;
 .button.activated {
   box-shadow: none;
   color: #fff;
+}
+
+.init,
+.connect,
+.credentials,
+.reconnect {
+    background-color: #6e999d;
+    background-image: url($image-path + "/logo.png"), url($image-path + "/bg_2.png");
+    background-repeat: no-repeat;
+    background-position: top 20px center, bottom right;
+    background-size: 260px auto, 50%;
+    padding-top: 65px;
+    .list-inset {
+        background-color: transparent;
+    }
+    .item {
+        background-color: rgba(255, 255, 255, 0.4);
+        border-color: rgba(255, 255, 255, 0.3);
+        border-bottom-color: rgba(255, 255, 255, 0.1);
+    }
+    .item-input {
+        padding-right: 16px;
+        input {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+    }
+    .item-stacked-label {
+        background-color: rgba(255, 255, 255, 0.4);
+    }
+    button {
+        border-color: lighten($positive, 25);
+    }
+}
+
+.init {
+    background-position: center 45%, bottom right;
+    img {
+        display: none;
+    }
 }
 
 // Links
