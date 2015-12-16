@@ -1256,16 +1256,93 @@ angular.module('mm.addons.mod_scorm')
     };
 
     /**
-     * Prefetches and unzips the SCORM package.
+     * Prefetches and unzips the SCORM package, and also prefetches some WS calls.
      * @see $mmaModScorm#_downloadOrPrefetch
      *
      * @module mm.addons.mod_scorm
      * @ngdoc method
      * @name $mmaModScorm#prefetch
      * @param {Object} scorm SCORM object returned by $mmaModScorm#getScorm.
-     * @return {Promise}     Promise resolved when the package is prefetched and unzipped.
+     * @return {Promise}     Promise resolved when prefetch is done. Resolve param is a warning message (if needed).
      */
     self.prefetch = function(scorm) {
+        var promises = [];
+
+        promises.push(self.prefetchPackage(scorm));
+
+        promises.push(self.prefetchData(scorm).catch(function() {
+            // If prefetchData fails we don't want to fail the whole downloaded, so we'll ignore the error for now.
+            // TODO: Implement a warning system so the user knows which SCORMs have failed.
+        }));
+
+        return $q.all(promises);
+    };
+
+    /**
+     * Prefetches some WS data for a SCORM.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScorm#prefetchData
+     * @param {Object} scorm SCORM object returned by $mmaModScorm#getScorm.
+     * @return {Promise}     Promise resolved when the data is prefetched.
+     */
+    self.prefetchData = function(scorm) {
+        var promises = [];
+
+        // Prefetch number of attempts (including not completed).
+        promises.push(self.getAttemptCount(scorm.id).catch(function() {
+            // If it fails, assume we have no attempts.
+            return 0;
+        }).then(function(numAttempts) {
+            if (numAttempts > 0) {
+                // Get user data for each attempt.
+                var datapromises = [],
+                    attempts = [];
+
+                // Fill an attempts array to be able to use forEach and prevent problems with attempt variable changing.
+                for (var i = 1; i <= numAttempts; i++) {
+                    attempts.push(i);
+                }
+
+                attempts.forEach(function(attempt) {
+                    datapromises.push(self.getScormUserData(scorm.id, attempt).catch(function(err) {
+                        // Ignore failures of all the attempts that aren't the last one.
+                        if (attempt == numAttempts) {
+                            return $q.reject(err);
+                        }
+                    }));
+                });
+
+                return $q.all(datapromises);
+            } else {
+                // No attempts. We'll still try to get user data to be able to identify SCOs not visible and so.
+                return self.getScormUserData(scorm.id, 0);
+            }
+        }));
+
+        // Prefetch SCOs.
+        promises.push(self.getScos(scorm.id));
+
+        // Prefetch number of finished attempts.
+        promises.push(self.getAttemptCount(scorm.id, undefined, true).catch(function(){
+            // Ignore failures.
+        }));
+
+        return $q.all(promises);
+    };
+
+    /**
+     * Prefetches and unzips the SCORM package.
+     * @see $mmaModScorm#_downloadOrPrefetch
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScorm#prefetchPackage
+     * @param {Object} scorm SCORM object returned by $mmaModScorm#getScorm.
+     * @return {Promise}     Promise resolved when the package is prefetched and unzipped.
+     */
+    self.prefetchPackage = function(scorm) {
         return self._downloadOrPrefetch(scorm, true);
     };
 
