@@ -67,6 +67,10 @@ angular.module('mm.core.login')
         siteChecked = true;
     }
 
+    $scope.signup = function() {
+        $mmUtil.openInBrowser("https://learn.moodle.net/login/signup.php");
+    }
+
     $scope.login = function() {
 
         $mmApp.closeKeyboard();
