@@ -217,7 +217,7 @@ angular.module('mm.addons.mod_scorm')
         loadSco(sco);
     };
 
-    // Listen for events to update the TOC and navigate through SCOes.
+    // Listen for events to update the TOC and navigate through SCOs.
     var tocObserver = $mmEvents.on(mmaModScormEventUpdateToc, function(data) {
         if (data.scormid === scorm.id) {
             refreshToc();
