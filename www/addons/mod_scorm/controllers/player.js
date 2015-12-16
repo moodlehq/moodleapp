@@ -44,8 +44,17 @@ angular.module('mm.addons.mod_scorm')
         // Get current attempt number.
         return $mmaModScorm.getAttemptCount(scorm.id).then(function(numAttempts) {
             attempt = numAttempts;
+
             // Check if current attempt is incomplete.
-            return $mmaModScorm.isAttemptIncomplete(scorm, attempt).then(function(incomplete) {
+            var promise;
+            if (numAttempts > 0) {
+                promise = $mmaModScorm.isAttemptIncomplete(scorm, attempt);
+            } else {
+                // User doesn't have attempts. Last attempt is not incomplete (since he doesn't have any).
+                promise = $q.when(false);
+            }
+
+            return promise.then(function(incomplete) {
                 // Determine mode and attempt to use.
                 var result = $mmaModScorm.determineAttemptAndMode(scorm, mode, attempt, newAttempt, incomplete);
                 mode = result.mode;

@@ -139,6 +139,11 @@ angular.module('mm.addons.mod_scorm')
                 mode = self.MODENORMAL;
             } else {
                 // We don't need to check attempts as browse mode is set.
+                if (attempt == 0) {
+                    attempt = 1;
+                    newAttempt = true;
+                }
+
                 return {
                     mode: mode,
                     attempt: attempt,
@@ -148,7 +153,9 @@ angular.module('mm.addons.mod_scorm')
         }
 
         // Validate user request to start a new attempt.
-        if (incomplete) {
+        if (attempt == 0) {
+            newAttempt = true;
+        } else if (incomplete) {
             // The option to start a new attempt should never have been presented. Force false.
             newAttempt = false;
         } else if (scorm.forcenewattempt) {
