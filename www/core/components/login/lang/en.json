@@ -26,6 +26,7 @@
     "reconnect": "Reconnect",
     "reconnectdescription": "Your authentication token is invalid or has expired, you have to reconnect to the site.",
     "reconnectssodescription": "Your authentication token is invalid or has expired, you have to reconnect to the site. You need to log in to the site in a browser window.",
+    "signup": "Sign up",
     "siteaddress": "Site address",
     "siteinmaintenance": "Your site is in maintenance mode",
     "siteurl": "Site URL",
