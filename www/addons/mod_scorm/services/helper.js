@@ -54,7 +54,7 @@ angular.module('mm.addons.mod_scorm')
 
     /**
      * Get the first SCO to load in a SCORM. If a non-empty TOC is provided, it will be the first valid SCO in the TOC.
-     * Otherwise, it will be the first valid SCO returned by $mmaModScorm#getScoes.
+     * Otherwise, it will be the first valid SCO returned by $mmaModScorm#getScos.
      *
      * @module mm.addons.mod_scorm
      * @ngdoc method
@@ -70,14 +70,14 @@ angular.module('mm.addons.mod_scorm')
         if (toc && toc.length) {
             promise = $q.when(toc);
         } else {
-            // SCORM doesn't have a TOC. Get all the scoes.
-            promise = $mmaModScorm.getScoesWithData(scormid, organization, attempt);
+            // SCORM doesn't have a TOC. Get all the scos.
+            promise = $mmaModScorm.getScosWithData(scormid, organization, attempt);
         }
 
-        return promise.then(function(scoes) {
+        return promise.then(function(scos) {
             // Search the first valid SCO.
-            for (var i = 0; i < scoes.length; i++) {
-                var sco = scoes[i];
+            for (var i = 0; i < scos.length; i++) {
+                var sco = scos[i];
                 if (sco.isvisible && sco.prereq && sco.launch) {
                     return sco;
                 }

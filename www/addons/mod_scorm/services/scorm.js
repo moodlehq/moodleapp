@@ -505,7 +505,7 @@ angular.module('mm.addons.mod_scorm')
      */
     self.getAttemptGrade = function(scorm, attempt) {
         var attemptscore = {
-            scoes: 0,
+            scos: 0,
             values: 0,
             max: 0,
             sum: 0
@@ -514,7 +514,7 @@ angular.module('mm.addons.mod_scorm')
             angular.forEach(data, function(scodata) {
                 var userdata = scodata.userdata;
                 if (userdata.status == 'completed' || userdata.status == 'passed') {
-                    attemptscore.scoes++;
+                    attemptscore.scos++;
                 }
 
                 if (userdata.score_raw || (typeof scorm.scormtype != 'undefined' &&
@@ -542,7 +542,7 @@ angular.module('mm.addons.mod_scorm')
                     score = attemptscore.sum;
                 break;
                 case self.GRADESCOES:
-                    score = attemptscore.scoes;
+                    score = attemptscore.scos;
                 break;
                 default:
                     score = attemptscore.max;   // Remote Learner GRADEHIGHEST is default.
@@ -562,9 +562,9 @@ angular.module('mm.addons.mod_scorm')
      * @return {Promise}        Promise resolved with the list of organizations.
      */
     self.getOrganizations = function(scormid) {
-        return self.getScoes(scormid).then(function(scoes) {
+        return self.getScos(scormid).then(function(scos) {
             var organizations = [];
-            angular.forEach(scoes, function(sco) {
+            angular.forEach(scos, function(sco) {
                 // Is an organization entry?
                 if (sco.organization == '' && sco.parent == '/' && sco.scormtype == '') {
                     organizations.push({
@@ -591,25 +591,25 @@ angular.module('mm.addons.mod_scorm')
      */
     self.getOrganizationToc = function(scormid, organization, attempt) {
 
-        return self.getScoesWithData(scormid, organization, attempt).then(function(scoes) {
+        return self.getScosWithData(scormid, organization, attempt).then(function(scos) {
             var map = {},
-                rootScoes = [];
+                rootScos = [];
 
-            angular.forEach(scoes, function(sco, index) {
+            angular.forEach(scos, function(sco, index) {
                 sco.children = [];
                 map[sco.identifier] = index;
                 if (sco.parent !== '/') {
                     if (sco.parent == organization) {
                         // It's a root SCO, add it to the root array.
-                        rootScoes.push(sco);
+                        rootScos.push(sco);
                     } else {
                         // Add this sco to the parent.
-                        scoes[map[sco.parent]].children.push(sco);
+                        scos[map[sco.parent]].children.push(sco);
                     }
                 }
             });
 
-            return rootScoes;
+            return rootScos;
         });
     };
 
@@ -633,24 +633,13 @@ angular.module('mm.addons.mod_scorm')
     };
 
     /**
-     * Get cache key for get SCORM scoes WS calls.
+     * Get cache key for get SCORM scos WS calls.
      *
-     * @param  {Number} scormid      SCORM ID.
-     * @param  {String} organization Organization ID.
-     * @return {String}              Cache key.
+     * @param  {Number} scormid SCORM ID.
+     * @return {String}         Cache key.
      */
-    function getScoesCacheKey(scormid, organization) {
-        return getScoesCommonCacheKey(scormid) + ':' + organization;
-    }
-
-    /**
-     * Get common cache key for get SCORM scoes WS calls.
-     *
-     * @param  {Number} scormid      SCORM ID.
-     * @return {String}              Cache key.
-     */
-    function getScoesCommonCacheKey(scormid) {
-        return 'mmaModScorm:scoes:' + scormid;
+    function getScosCacheKey(scormid) {
+        return 'mmaModScorm:scos:' + scormid;
     }
 
     /**
@@ -658,25 +647,36 @@ angular.module('mm.addons.mod_scorm')
      *
      * @module mm.addons.mod_scorm
      * @ngdoc method
-     * @name $mmaModScorm#getScoes
+     * @name $mmaModScorm#getScos
      * @param  {Number} scormid      SCORM ID.
      * @param  {String} organization Organization ID.
      * @return {Promise}             Promise resolved with a list of SCO objects.
      */
-    self.getScoes = function(scormid, organization) {
+    self.getScos = function(scormid, organization) {
         organization = organization || '';
 
+        // Don't send the organization to the WS, we'll filter them locally.
         var params = {
-                scormid: scormid,
-                organization: organization
+                scormid: scormid
             },
             preSets = {
-                cacheKey: getScoesCacheKey(scormid, organization)
+                cacheKey: getScosCacheKey(scormid)
             };
 
         return $mmSite.read('mod_scorm_get_scorm_scoes', params, preSets).then(function(response) {
             if (response && response.scoes) {
-                return response.scoes;
+                var scos = [];
+                if (organization) {
+                    // Filter SCOs by organization.
+                    angular.forEach(response.scoes, function(sco) {
+                        if (sco.organization == organization) {
+                            scos.push(sco);
+                        }
+                    });
+                } else {
+                    scos = response.scoes;
+                }
+                return scos;
             }
             return $q.reject();
         });
@@ -688,14 +688,14 @@ angular.module('mm.addons.mod_scorm')
      *
      * @module mm.addons.mod_scorm
      * @ngdoc method
-     * @name $mmaModScorm#getScoesWithData
+     * @name $mmaModScorm#getScosWithData
      * @param  {Number} scormid      SCORM ID.
      * @param  {String} organization Organization ID.
      * @param  {Number} attempt      Attempt number.
      * @return {Promise}             Promise resolved with a list of SCO objects.
      */
-    self.getScoesWithData = function(scormid, organization, attempt) {
-        // First of all, get the track data for all the SCOes in the organization for the given attempt.
+    self.getScosWithData = function(scormid, organization, attempt) {
+        // First of all, get the track data for all the SCOs in the organization for the given attempt.
         // We'll use this data to set SCO data like isvisible, status and so.
         return self.getScormUserData(scormid, attempt).then(function(data) {
             var trackData = {};
@@ -704,16 +704,16 @@ angular.module('mm.addons.mod_scorm')
                 trackData[sco.scoid] = sco.userdata;
             });
 
-            // Get organization SCOes.
-            return self.getScoes(scormid, organization).then(function(scoes) {
+            // Get organization SCOs.
+            return self.getScos(scormid, organization).then(function(scos) {
                 var trackDataBySCO = {};
 
                 // First populate trackDataBySCO to index by SCO identifier.
-                angular.forEach(scoes, function(sco) {
+                angular.forEach(scos, function(sco) {
                     trackDataBySCO[sco.identifier] = trackData[sco.id];
                 });
 
-                angular.forEach(scoes, function(sco) {
+                angular.forEach(scos, function(sco) {
                     // Add specific SCO information (related to tracked data).
                     var scodata = trackData[sco.id];
                     if (!scodata) {
@@ -733,7 +733,7 @@ angular.module('mm.addons.mod_scorm')
                     sco.exitvalue = scodata[sco.exitvar];
                 });
 
-                return scoes;
+                return scos;
             });
         });
     };
@@ -1008,7 +1008,7 @@ angular.module('mm.addons.mod_scorm')
     self.invalidateAllScormData = function(scormid, userid) {
         var promises = [];
         promises.push(self.invalidateAttemptCount(scormid, userid));
-        promises.push(self.invalidateScoes(scormid));
+        promises.push(self.invalidateScos(scormid));
         promises.push(self.invalidateScormUserData(scormid));
         return $q.all(promises);
     };
@@ -1041,16 +1041,16 @@ angular.module('mm.addons.mod_scorm')
     };
 
     /**
-     * Invalidates SCORM scoes for all organizations.
+     * Invalidates SCORM scos for all organizations.
      *
      * @module mm.addons.mod_scorm
      * @ngdoc method
-     * @name $mmaModScorm#invalidateScoes
+     * @name $mmaModScorm#invalidateScos
      * @param {Number} scormid SCORM ID.
      * @return {Promise}       Promise resolved when the data is invalidated.
      */
-    self.invalidateScoes = function(scormid) {
-        return $mmSite.invalidateWsCacheForKeyStartingWith(getScoesCommonCacheKey(scormid));
+    self.invalidateScos = function(scormid) {
+        return $mmSite.invalidateWsCacheForKey(getScosCacheKey(scormid));
     };
 
     /**
@@ -1090,11 +1090,11 @@ angular.module('mm.addons.mod_scorm')
      * @return {Promise}       Promise resolved with a boolean: true if incomplete, false otherwise.
      */
     self.isAttemptIncomplete = function(scorm, attempt) {
-        return self.getScoesWithData(scorm.id, undefined, attempt).then(function(scoes) {
+        return self.getScosWithData(scorm.id, undefined, attempt).then(function(scos) {
             var incomplete = false;
 
-            angular.forEach(scoes, function(sco) {
-                // Ignore SCOes not visible or without launch URL.
+            angular.forEach(scos, function(sco) {
+                // Ignore SCOs not visible or without launch URL.
                 if (sco.isvisible && sco.launch) {
                     if (self.isStatusIncomplete(sco.status)) {
                         incomplete = true;
