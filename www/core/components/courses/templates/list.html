@@ -4,12 +4,6 @@
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="coursesLoaded" on-refresh="refreshCourses()">
         </ion-refresher>
         <mm-loading hide-until="coursesLoaded">
-            <div class="list" ng-if="courses && courses.length > 5">
-                <label class="item item-input">
-                    <i class="icon ion-funnel placeholder-icon"></i>
-                    <input type="text" placeholder="{{ 'mm.courses.filtermycourses' | translate}}" ng-model="filterText">
-                </label>
-            </div>
             <section ng-repeat="course in courses | filter:{fullname: filterText}" class="list card">
                 <a class="item" ui-sref="site.mm_course({courseid: course.id})" title="{{course.fullname}}">
                     <h2><mm-format-text watch="true">{{course.fullname}}</mm-format-text></h2>
