@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<<<<<<< HEAD
+<widget id="com.moodle.moodleneu" version="2.7" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <name>NEU Moodle Mobile</name>
+  <description>Мобильное приложение Moodle E-NEU</description>
+=======
 <widget id="com.moodle.moodlemobile" version="2.6" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>Moodle Mobile</name>
-  <description>Official Moodle Mobile app</description>
-  <author href="http://moodle.com" email="juan@moodle.com">Juan Leyva</author>
+  <description>Мобильное приложение Moodle E-NEU app</description>
+>>>>>>> parent of 3d7b00f... Update config.xml
+  <author href="http://e.neu.kz" email="e-neu@newuni.kz">E-neu Team</author>
   <content src="index.html"/>
   <access origin="*"/>
 
