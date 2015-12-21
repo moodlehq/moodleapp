@@ -12,11 +12,14 @@
 
                     <p ng-if="showDate(messages[$index], messages[$index - 1])" class="mma-messages-date"><span>{{ message.timecreated * 1000 | mmFormatDate:"dfdayweekmonth" }}</span></p>
 
-                    <div class='item item-message item-text-wrap' ng-class='{"item-message-mine": message.useridfrom == currentUserId}'>
+                    <div class='item item-message item-text-wrap' ng-class='{"item-message-mine": message.useridfrom == currentUserId}' on-hold="selectMessage(message.id)">
 
                         <mm-format-text after-render="scrollAfterRender" watch="true">{{ message.smallmessage | mmaMessagesFormat }}</mm-format-text>
                         <ion-spinner ng-if="message.sending"></ion-spinner>
-                        <span class="item-note">{{ message.timecreated * 1000 | mmFormatDate:"dftimedate" }}</span>
+                        <span class="item-note">
+                            {{ message.timecreated * 1000 | mmFormatDate:"dftimedate" }}
+                            <button class="button button-icon icon ion-close-round mma-messages-delete-button" ng-if="canDelete && selectedMessage && selectedMessage == message.id" ng-click="deleteMessage(message, $index)"></button>
+                        </span>
 
                     </div>
 

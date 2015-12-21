@@ -61,6 +61,41 @@ angular.module('mm.addons.messages')
     };
 
     /**
+     * Check if messages can be deleted in current site.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#canDeleteMessages
+     * @return {Boolean} True if can delete messages, false otherwise.
+     */
+    self.canDeleteMessages = function() {
+        return $mmSite.wsAvailable('core_message_delete_message');
+    };
+
+    /**
+     * Check if messages can be deleted in current site.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#deleteMessage
+     * @param {Number} id       Message ID.
+     * @param {Number} read     1 if message is read, 0 otherwise.
+     * @param {Number} [userId] User we want to delete the message for. If not defined, use current user.
+     * @return {Promise}        Promise resolved when the message has been deleted.
+     */
+    self.deleteMessage = function(id, read, userId) {
+        userId = userId || $mmSite.getUserId();
+        var params = {
+                messageid: id,
+                userid: userId,
+                read: read
+            };
+        return $mmSite.write('core_message_delete_message', params).then(function() {
+            return self.invalidateDiscussionCache(userId);
+        });
+    };
+
+    /**
      * Get all the contacts of the current user.
      *
      * @module mm.addons.messages
@@ -405,7 +440,12 @@ angular.module('mm.addons.messages')
             newestfirst: 1,
         });
 
-        return $mmSite.read('core_message_get_messages', params, presets);
+        return $mmSite.read('core_message_get_messages', params, presets).then(function(response) {
+            angular.forEach(response.messages, function(message) {
+                message.read = params.read == 0 ? 0 : 1;
+            });
+            return response;
+        });
     };
 
     /**

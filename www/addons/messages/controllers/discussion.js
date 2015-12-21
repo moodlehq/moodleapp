@@ -24,7 +24,7 @@ angular.module('mm.addons.messages')
 .controller('mmaMessagesDiscussionCtrl', function($scope, $stateParams, $mmApp, $mmaMessages, $mmSite, $timeout, $mmEvents, $window,
         $ionicScrollDelegate, mmUserProfileState, $mmUtil, mmaMessagesPollInterval, $interval, $log, $ionicHistory, $ionicPlatform,
         mmCoreEventKeyboardShow, mmCoreEventKeyboardHide, mmaMessagesDiscussionLoadedEvent, mmaMessagesDiscussionLeftEvent,
-        $mmUser) {
+        $mmUser, $translate) {
 
     $log = $log.getInstance('mmaMessagesDiscussionCtrl');
 
@@ -32,6 +32,7 @@ angular.module('mm.addons.messages')
         userFullname = $stateParams.userFullname,
         messagesBeingSent = 0,
         polling,
+        fetching,
         backView = $ionicHistory.backView(),
         lastMessage,
         scrollView = $ionicScrollDelegate.$getByHandle('mmaMessagesScroll');
@@ -146,6 +147,38 @@ angular.module('mm.addons.messages')
         }
     };
 
+    // Convenience function to fetch messages.
+    function fetchMessages() {
+        $log.debug('Polling new messages for discussion with user ' + userId);
+        if (messagesBeingSent > 0) {
+            // We do not poll while a message is being sent or we could confuse the user
+            // as his message would disappear from the list, and he'd have to wait for the
+            // interval to check for new messages.
+            return;
+        } else if (!$mmApp.isOnline()) {
+            // Obviously we cannot check for new messages when the app is offline.
+            return;
+        } else if (fetching) {
+            // Already fetching.
+            return;
+        }
+
+        fetching = true;
+
+        // Invalidate the cache before fetching.
+        $mmaMessages.invalidateDiscussionCache(userId);
+        $mmaMessages.getDiscussion(userId).then(function(messages) {
+            if (messagesBeingSent > 0) {
+                // Ignore polling if due to a race condition.
+                return;
+            }
+            $scope.messages = $mmaMessages.sortMessages(messages);
+            notifyNewMessage();
+        }).finally(function() {
+            fetching = false;
+        });
+    }
+
     // Set a polling to get new messages every certain time.
     function setPolling() {
         if (polling) {
@@ -154,29 +187,7 @@ angular.module('mm.addons.messages')
         }
 
         // Start polling.
-        polling = $interval(function() {
-            $log.debug('Polling new messages for discussion with user ' + userId);
-            if (messagesBeingSent > 0) {
-                // We do not poll while a message is being sent or we could confuse the user
-                // as his message would disappear from the list, and he'd have to wait for the
-                // interval to check for new messages.
-                return;
-            } else if (!$mmApp.isOnline()) {
-                // Obviously we cannot check for new messages when the app is offline.
-                return;
-            }
-
-            // Invalidate the cache before fetching.
-            $mmaMessages.invalidateDiscussionCache(userId);
-            $mmaMessages.getDiscussion(userId).then(function(messages) {
-                if (messagesBeingSent > 0) {
-                    // Ignore polling if due to a race condition.
-                    return;
-                }
-                $scope.messages = $mmaMessages.sortMessages(messages);
-                notifyNewMessage();
-            });
-        }, mmaMessagesPollInterval);
+        polling = $interval(fetchMessages, mmaMessagesPollInterval);
     }
 
     // Unset polling.
@@ -263,6 +274,33 @@ angular.module('mm.addons.messages')
             });
         }
     }
+
+    // Check if user can delete messages.
+    $scope.canDelete = $mmaMessages.canDeleteMessages();
+
+    // Function to select a message to be deleted.
+    $scope.selectMessage = function(id) {
+        $scope.selectedMessage = id;
+    };
+
+    // Function to delete a message.
+    $scope.deleteMessage = function(message, index) {
+        $mmUtil.showConfirm($translate('mma.messages.deletemessageconfirmation')).then(function() {
+            var modal = $mmUtil.showModalLoading('mm.core.deleting', true);
+            $mmaMessages.deleteMessage(message.id, message.read).then(function() {
+                $scope.messages.splice(index, 1); // Remove message from the list without having to wait for re-fetch.
+                fetchMessages(); // Re-fetch messages to update cached data.
+            }).catch(function(error) {
+                if (typeof error === 'string') {
+                    $mmUtil.showErrorModal(error);
+                } else {
+                    $mmUtil.showErrorModal('mma.messages.errordeletemessage', true);
+                }
+            }).finally(function() {
+                modal.dismiss();
+            });
+        });
+    };
 
     if ($ionicPlatform.isTablet()) {
         $mmEvents.trigger(mmaMessagesDiscussionLoadedEvent, userId);
