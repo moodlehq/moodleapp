@@ -1,7 +1,7 @@
 {
     "appsettings": "Configurações do aplicativo",
     "help": "Ajuda",
-    "logout": "Sair",
+    "changesite": "Sair",
     "mycourses": "Meus cursos",
     "website": "Site"
 }

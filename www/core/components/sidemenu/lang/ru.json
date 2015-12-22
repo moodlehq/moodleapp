@@ -1,7 +1,7 @@
 {
     "appsettings": "Настройки приложения",
     "help": "Помощь",
-    "logout": "Выход",
+    "changesite": "Выход",
     "mycourses": "Мои курсы",
     "website": "Сайт"
 }
