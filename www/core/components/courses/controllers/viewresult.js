@@ -25,20 +25,31 @@ angular.module('mm.core.courses')
             $ionicModal, $mmEvents, $mmSite, mmCoursesSearchComponent, mmCoursesEnrolInvalidKey, mmCoursesEventMyCoursesUpdated) {
 
     var course = $stateParams.course || {},
-        selfEnrolWSAvailable = $mmCourses.isSelfEnrolmentEnabled();
+        selfEnrolWSAvailable = $mmCourses.isSelfEnrolmentEnabled(),
+        guestWSAvailable = $mmCourses.isGuestWSAvailable(),
+        isGuestEnabled = false,
+        guestInstanceId,
+        handlersShouldBeShown = true;
 
     $scope.course = course;
     $scope.title = course.fullname;
     $scope.component = mmCoursesSearchComponent;
 
-    if (selfEnrolWSAvailable) {
+    // Function to determine if handlers are being loaded.
+    $scope.loadingHandlers = function() {
+        return handlersShouldBeShown && !$mmCoursesDelegate.areNavHandlersLoadedFor(course.id);
+    };
+
+    if (selfEnrolWSAvailable || guestWSAvailable) {
         // Self enrol WS is available, check if the course supports self enrolment.
         angular.forEach(course.enrollmentmethods, function(method) {
-            if (method === 'self') {
+            if (method === 'self' && selfEnrolWSAvailable) {
                 $scope.selfEnrolEnabled = true;
                 $scope.enroldata = {
                     password: ''
                 };
+            } else if (method === 'guest' && guestWSAvailable) {
+                isGuestEnabled = true;
             }
         });
     }
@@ -58,14 +69,61 @@ angular.module('mm.core.courses')
             course.fullname = c.fullname || course.fullname;
             course.summary = c.summary || course.summary;
             course._handlers = $mmCoursesDelegate.getNavHandlersFor(course.id, refresh);
+        }).catch(function() {
+            // The user is not an admin/manager. Check if we can provide guest access to the course.
+            return canAccessAsGuest().then(function(passwordRequired) {
+                if (!passwordRequired) {
+                    course._handlers = $mmCoursesDelegate.getNavHandlersForGuest(course.id, refresh);
+                } else {
+                    course._handlers = [];
+                    handlersShouldBeShown = false;
+                }
+            }).catch(function() {
+                course._handlers = [];
+                handlersShouldBeShown = false;
+            });
+        });
+    }
+
+    // Convenience function to check if the user can access as guest.
+    function canAccessAsGuest() {
+        if (!isGuestEnabled) {
+            return $q.reject();
+        }
+
+        // Get course enrolment methods to get the instance ID.
+        return $mmCourses.getCourseEnrolmentMethods(course.id).then(function(methods) {
+            // Search instance ID of guest enrolment method.
+            angular.forEach(methods, function(method) {
+                if (method.type == 'guest') {
+                    guestInstanceId = method.id;
+                }
+            });
+
+            if (guestInstanceId) {
+                return $mmCourses.getCourseGuestEnrolmentInfo(guestInstanceId).then(function(info) {
+                    if (!info.status) {
+                        // Not active, reject.
+                        return $q.reject();
+                    }
+                    return info.passwordrequired;
+                });
+            }
+            return $q.reject();
         });
     }
 
     function refreshData() {
-        var p1 = $mmCourses.invalidateUserCourses(),
-            p2 = $mmCourses.invalidateCourse(course.id);
+        var promises = [];
 
-        return $q.all([p1, p2]).finally(function() {
+        promises.push($mmCourses.invalidateUserCourses());
+        promises.push($mmCourses.invalidateCourse(course.id));
+        promises.push($mmCourses.invalidateCourseEnrolmentMethods(course.id));
+        if (guestInstanceId) {
+            promises.push($mmCourses.invalidateCourseGuestEnrolmentInfo(guestInstanceId));
+        }
+
+        return $q.all(promises).finally(function() {
             return getCourse(true);
         });
     }

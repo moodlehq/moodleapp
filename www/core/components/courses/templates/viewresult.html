@@ -33,10 +33,13 @@
                 <div class="item" ng-if="!selfEnrolEnabled && !isEnrolled">
                     <p>{{ 'mm.courses.notenrollable' | translate }}</p>
                 </div>
-                <div class="item tabs tabs-icon-left" ng-show="course._handlers.length">
+                <div class="item tabs tabs-icon-left" ng-show="course._handlers && course._handlers.length">
                     <a ng-repeat="handler in course._handlers | orderBy:'-priority'" ng-controller="handler.controller" ng-click="action($event, course)" class="tab-item active" title="{{title | translate}}">
                         <i class="icon {{icon}}"></i> {{title | translate}}
                     </a>
+                </div>
+                <div class="item text-center" ng-if="(!course._handlers || !course._handlers.length) && loadingHandlers()">
+                    <ion-spinner></ion-spinner>
                 </div>
             </div>
         </mm-loading>
