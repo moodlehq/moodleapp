@@ -1,7 +1,7 @@
 {
     "appsettings": "Paràmetres de l'aplicació",
     "help": "Ajuda",
-    "logout": "Canvia de lloc",
+    "changesite": "Canvia de lloc",
     "mycourses": "Els meus cursos",
     "website": "Lloc web"
 }
