@@ -9,9 +9,11 @@
 	"mycourses": "My courses",
 	"nosearchresults": "There were no results from your search",
 	"notenrollable": "You can not enrol yourself in this course.",
+	"nocourses": "No course information to show.",
 	"password": "Enrolment key",
 	"search": "Search",
 	"searchcourses": "Search courses",
+	"searchcoursesadvice": "You can use the search courses button to access as guest or enrol yourself in courses that allow it.",
 	"selfenrolment": "Self-enrolment",
 	"totalcoursesearchresults": "Total courses: {{$a}}"
 }
