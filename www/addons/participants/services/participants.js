@@ -117,5 +117,27 @@ angular.module('mm.addons.participants')
         return $mmSite.invalidateWsCacheForKey(getParticipantsListCacheKey(courseid));
     };
 
+    /**
+     * Returns whether or not the participants addon is enabled for a certain course.
+     *
+     * @module mm.addons.participants
+     * @ngdoc method
+     * @name $mmaParticipants#isPluginEnabledForCourse
+     * @param {Number} courseId Course ID.
+     * @return {Promise}        Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
+     */
+    self.isPluginEnabledForCourse = function(courseId) {
+        if (!courseId) {
+            return $q.reject();
+        }
+
+        // Retrieving one participant will fail if browsing users is disabled by capabilities.
+        return self.getParticipants(courseId, 0, 1).then(function(parcitipants) {
+            return true;
+        }).catch(function(error) {
+            return false;
+        });
+    };
+
     return self;
 });
