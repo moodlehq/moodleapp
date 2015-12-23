@@ -28,13 +28,16 @@ angular.module('mm.core.course')
     var courseid = $stateParams.courseid || 1,
         sectionid = $stateParams.sectionid || -1;
 
+    $scope.sitehome = (courseid === 1); // Are we visiting the site home?
     $scope.sections = []; // Reset scope.sections, otherwise an error is shown in console with tablet view.
 
     if (sectionid < 0) {
         // Special scenario, we want all sections.
-        $translate('mm.course.allsections').then(function(str) {
-            $scope.title = str;
-        });
+        if ($scope.sitehome) {
+            $scope.title = $translate.instant('mma.frontpage.sitehome');
+        } else {
+            $scope.title = $translate.instant('mm.course.allsections');
+        }
         $scope.summary = null;
     }
 
@@ -69,6 +72,11 @@ angular.module('mm.core.course')
                 }
 
                 promise.then(function(sections) {
+                    // For the site home, we need to reverse the order to display first the site home section topic.
+                    if ($scope.sitehome) {
+                        sections.reverse();
+                    }
+
                     angular.forEach(sections, function(section) {
                         angular.forEach(section.modules, function(module) {
                             module._controller =

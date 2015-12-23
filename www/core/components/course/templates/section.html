@@ -12,7 +12,7 @@
                 </div>
             </section>
 
-            <section class="card" ng-repeat="section in sections">
+            <section class="card" ng-repeat="section in sections" ng-if="section.modules.length > 0 || section.summary != ''">
                 <!-- Title and summary are displayed when multiple sections per page. -->
                 <div class="item item-divider" ng-if="sections.length > 1">
                     <h2><mm-format-text watch="true">{{ section.name }}</mm-format-text></h2>
@@ -37,7 +37,7 @@
                 </a>
 
                 <!-- When there is nothing in the section. -->
-                <div class="item item-text-wrap" ng-if="section.modules.length < 1">
+                <div class="item item-text-wrap" ng-if="!sitehome && section.modules.length < 1">
                     {{ 'mm.course.nocontentavailable' | translate }}
                 </div>
             </section>
