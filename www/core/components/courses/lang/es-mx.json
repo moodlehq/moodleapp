@@ -8,11 +8,13 @@
     "filtermycourses": "<<<filtrar mis cursos",
     "frontpage": "Portada",
     "mycourses": "Mis cursos",
+    "nocourses": "Sin información del curso para mostrar.",
     "nosearchresults": "No hubo resultados de su búsqueda",
     "notenrollable": "Usted no puede inscribirse a Usted mismo en este curso.",
     "password": "Clave de inscripción",
     "search": "Buscar",
     "searchcourses": "Buscar cursos",
+    "searchcoursesadvice": "Usted puede usar el botón de 'buscar cursos' para acceder como invitado o para inscribirse Usted mismo en los cursos que lo permitan.",
     "selfenrolment": "Auto-inscripción",
     "totalcoursesearchresults": "Total de cursos: {{$a}}"
 }

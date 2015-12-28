@@ -1,10 +1,19 @@
 {
-    "enrolme": "Matrikula nazazu",
+    "confirmselfenrol": "Ziur zaude ikastaro honetan izena eman nahi duzula?",
+    "enrolme": "Matrikulatu nazazu",
     "errorloadcourses": "Errore bat gertatu da ikastaroak kargatzean.",
+    "errorsearching": "Errorea gertatu da bilatzean.",
+    "errorselfenrol": "Errorea gertatu da matrikulazio automatikoa egitean",
     "filter": "Iragazkia",
+    "filtermycourses": "Nire ikastaroak iragazi",
     "frontpage": "Hasiera-orria",
     "mycourses": "Nire ikastaroak",
-    "password": "Pasahitza",
+    "nocourses": "Ez dago ikastaroei buruzko informaziorik",
+    "nosearchresults": "Ez da emaitzik aurkitu zure bilaketarentzat",
+    "notenrollable": "Ezin duzu zeure burua matrikulatu ikastaro honetan.",
+    "password": "Matrikulazio-giltza",
     "search": "Bilatu",
-    "searchcourses": "Bilatu Ikastaroak"
+    "searchcourses": "Ikastaroak bilatu",
+    "selfenrolment": "Matrikulazio automatikoa",
+    "totalcoursesearchresults": "Ikastaroak guztira: {{$a}}"
 }

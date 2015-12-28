@@ -1,7 +1,8 @@
 {
     "appsettings": "Configuraciones del App",
-    "help": "Ayuda",
     "changesite": "Cambiar sitio",
+    "help": "Ayuda",
+    "logout": "Cambiar sitio",
     "mycourses": "Mis cursos",
     "togglemenu": "Alternar menú",
     "website": "Página web"

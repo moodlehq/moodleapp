@@ -8,11 +8,13 @@
     "filtermycourses": "Filtrer mes cours",
     "frontpage": "Page d'accueil",
     "mycourses": "Mes cours",
+    "nocourses": "Aucune information de cours à afficher",
     "nosearchresults": "Votre recherche n'a donné aucun résultat",
     "notenrollable": "Vous ne pouvez pas vous inscrire vous-même à ce cours.",
     "password": "Clef d'inscription",
     "search": "Rechercher",
     "searchcourses": "Rechercher des cours",
+    "searchcoursesadvice": "Veuillez utiliser le bouton de recherche de cours pour accéder anonymement à des cours ou vous inscrire vous-même à des cours qui le permettent.",
     "selfenrolment": "Auto-inscription",
     "totalcoursesearchresults": "Nombre de cours : {{$a}}"
 }

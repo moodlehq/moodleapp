@@ -1,6 +1,9 @@
 {
     "complete": "Osoa",
+    "completecourse": "Ikastaroa osatu",
     "completed": "Osatuta",
+    "completiondate": "Osaketa-data",
+    "couldnotloadreport": "Ezin izan da ikastaro-osaketaren txostena kargatu, mesedez saiatu beranduago.",
     "coursecompletion": "Ikastaro-osaketa",
     "criteria": "Irizpidea",
     "criteriagroup": "Irizpide-multzoa",
@@ -12,6 +15,7 @@
     "pending": "Egin gabe",
     "required": "Beharrezkoa",
     "requiredcriteria": "Irizpidea behar da",
+    "requirement": "Eskakizuna",
     "status": "Egoera",
     "viewcoursereport": "Ikastaroaren txostena ikusi"
 }

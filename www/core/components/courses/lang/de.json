@@ -1,4 +1,5 @@
 {
+    "confirmselfenrol": "Möchten Sie sich selbst in diesen Kurs einschreiben?",
     "enrolme": "Selbst einschreiben",
     "errorloadcourses": "Fehler beim Laden der Kurse",
     "errorsearching": "Fehler beim Suchen",
@@ -7,9 +8,13 @@
     "filtermycourses": "Meine Kurse filtern",
     "frontpage": "Startseite",
     "mycourses": "Meine Kurse",
+    "nocourses": "Keine Kursinformation",
     "nosearchresults": "Keine Suchergebnisse",
+    "notenrollable": "Sie können sich nicht selbst in diesen Kurs einschreiben.",
     "password": "Einschreibeschlüssel",
     "search": "Suchen",
     "searchcourses": "Kurse suchen",
+    "searchcoursesadvice": "Sie können Kurse suchen, um als Gast teilzunehmen oder sich selbst einzuschreiben, falls dies erlaubt ist.",
+    "selfenrolment": "Selbsteinschreibung",
     "totalcoursesearchresults": "Alle Kurse: {{$a}}"
 }

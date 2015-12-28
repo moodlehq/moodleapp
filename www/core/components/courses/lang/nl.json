@@ -8,11 +8,13 @@
     "filtermycourses": "Filter mijn cursussen",
     "frontpage": "Startpagina",
     "mycourses": "Mijn cursussen",
+    "nocourses": "Geen curusinformatie beschikbaar",
     "nosearchresults": "Je zoekopdracht gaf geen resultaten",
     "notenrollable": "Je kunt jezelf niet aanmelden in deze cursus.",
     "password": "Aanmeldingssleutel",
     "search": "Zoek",
     "searchcourses": "Zoek cursussen",
+    "searchcoursesadvice": "Je kunt via de cursus zoekknop toegang krijgen als gast of jezelf aanmelden in cursussen die dit toestaan.",
     "selfenrolment": "Zelf aanmelden",
     "totalcoursesearchresults": "Totaal aantal cursusen: {{$a}}"
 }

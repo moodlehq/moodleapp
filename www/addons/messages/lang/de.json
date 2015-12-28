@@ -4,6 +4,7 @@
     "contactlistempty": "Die Kontaktliste ist leer",
     "contactname": "Name",
     "contacts": "Kontakte",
+    "erroruseronlyacceptsmessagefromcontacts": "Fehler: Person erlaubt nur Nachrichten von ihren Kontakten",
     "errorwhileretrievingcontacts": "Fehler beim Lesen der Kontakte vom Server",
     "errorwhileretrievingdiscussions": "Fehler beim Lesen der Themen vom Server",
     "errorwhileretrievingmessages": "Fehler beim Lesen der Nachrichten vom Server",
