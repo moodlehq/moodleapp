@@ -1,7 +1,7 @@
 {
     "appsettings": "Réglages de l'app",
-    "help": "Aide",
     "changesite": "Déconnexion",
+    "help": "Aide",
     "mycourses": "Mes cours",
     "togglemenu": "Menu",
     "website": "Site web"

@@ -1,7 +1,7 @@
 {
     "appsettings": "Einstellungen",
-    "help": "Hilfe",
     "changesite": "Website wechseln",
+    "help": "Hilfe",
     "mycourses": "Meine Kurse",
     "togglemenu": "Menü umschalten",
     "website": "Website"

@@ -1,7 +1,7 @@
 {
     "appsettings": "Configuración de la aplicación",
-    "help": "Ayuda",
     "changesite": "Salir",
+    "help": "Ayuda",
     "mycourses": "Mis cursos",
     "website": "Página web"
 }
