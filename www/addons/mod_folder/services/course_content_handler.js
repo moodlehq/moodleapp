@@ -67,7 +67,7 @@ angular.module('mm.addons.mod_folder')
 
             downloadBtn = {
                 hidden: true,
-                icon: 'ion-ios-cloud-download',
+                icon: 'ion-ios-cloud-download-outline',
                 label: 'mm.core.download',
                 action: prefetchFolder
             };
