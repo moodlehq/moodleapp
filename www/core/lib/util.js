@@ -518,6 +518,35 @@ angular.module('mm.core')
         };
 
         /**
+         * Show a prompt modal to input some data.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#showPrompt
+         * @param  {String} body             Modal body.
+         * @param  {String} title            Modal title.
+         * @param  {String} inputPlaceholder Placeholder of the input box. By default, "Password".
+         * @param  {String} [inputType]      Type of the input box. By default, password.
+         * @return {Promise}                 Promise resolved with the input data if the user clicks OK, rejected if cancels.
+         */
+        self.showPrompt = function(body, title, inputPlaceholder, inputType) {
+            inputType = inputType || 'password';
+
+            var options = {
+                template: body,
+                title: title,
+                inputPlaceholder: inputPlaceholder,
+                inputType: inputType
+            };
+            return $ionicPopup.prompt(options).then(function(data) {
+                if (typeof data == 'undefined') {
+                    return $q.reject();
+                }
+                return data;
+            });
+        };
+
+        /**
          * Reads and parses a JSON file.
          *
          * @module mm.core
