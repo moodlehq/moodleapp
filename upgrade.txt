@@ -4,6 +4,7 @@ information provided here is intended especially for developers.
 === 2.8 ===
 
  * $mmModuleActionsDelegate has been renamed to $mmContentLinksDelegate to make it more generic. The specification of this delegate has changed, please look at its documentation to adapt your handlers.
+ * State site.mm_course now requires a courseid parameter instead of course.
 
 
 === 2.7 ===
