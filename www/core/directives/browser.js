@@ -21,7 +21,7 @@ angular.module('mm.core')
  * @ngdoc directive
  * @name mmBrowser
  */
-.directive('mmBrowser', function($mmUtil) {
+.directive('mmBrowser', function($mmUtil, $mmContentLinksDelegate) {
     return {
         restrict: 'A',
         priority: 100,
@@ -31,6 +31,18 @@ angular.module('mm.core')
                 if (href) {
                     event.preventDefault();
                     event.stopPropagation();
+
+                    // Check if the link should be treated by some component/addon.
+                    var actions = $mmContentLinksDelegate.getActionsFor(href);
+                    if (actions && actions.length) {
+                        for (var i = 0; i < actions.length; i++) {
+                            if (actions[i] && angular.isFunction(actions[i].action)) {
+                                actions[i].action();
+                                return; // We can only execute 1 action.
+                            }
+                        }
+                    }
+
                     if (href.indexOf('cdvfile://') === 0 || href.indexOf('file://') === 0) {
                         // We have a local file.
                         $mmUtil.openFile(href).catch(function(error) {

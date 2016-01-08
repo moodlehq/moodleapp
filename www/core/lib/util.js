@@ -518,6 +518,35 @@ angular.module('mm.core')
         };
 
         /**
+         * Show a prompt modal to input some data.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#showPrompt
+         * @param  {String} body             Modal body.
+         * @param  {String} title            Modal title.
+         * @param  {String} inputPlaceholder Placeholder of the input box. By default, "Password".
+         * @param  {String} [inputType]      Type of the input box. By default, password.
+         * @return {Promise}                 Promise resolved with the input data if the user clicks OK, rejected if cancels.
+         */
+        self.showPrompt = function(body, title, inputPlaceholder, inputType) {
+            inputType = inputType || 'password';
+
+            var options = {
+                template: body,
+                title: title,
+                inputPlaceholder: inputPlaceholder,
+                inputType: inputType
+            };
+            return $ionicPopup.prompt(options).then(function(data) {
+                if (typeof data == 'undefined') {
+                    return $q.reject();
+                }
+                return data;
+            });
+        };
+
+        /**
          * Reads and parses a JSON file.
          *
          * @module mm.core
@@ -735,6 +764,50 @@ angular.module('mm.core')
             });
 
             return deferred.promise;
+        };
+
+        /**
+         * Compare two objects. This function won't compare functions and proto properties, it's a basic compare.
+         * Also, this will only check if itemA's properties are in itemB with same value. This function will still
+         * return true if itemB has more properties than itemA.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#basicLeftCompare
+         * @param {Mixed}  itemA         First object.
+         * @param {Mixed}  itemB         Second object.
+         * @param {Number} [maxLevels=0] Number of levels to reach if 2 objects are compared.
+         * @param {Number} [level=0]     Current deep level (when comparing objects).
+         * @return {Boolean}             True if equal, false otherwise.
+         */
+        self.basicLeftCompare = function(itemA, itemB, maxLevels, level) {
+            level = level || 0;
+            maxLevels = maxLevels || 0;
+
+            if (angular.isFunction(itemA) || angular.isFunction(itemB)) {
+                return true; // Don't compare functions.
+            } else if (angular.isObject(itemA) && angular.isObject(itemB)) {
+                if (level >= maxLevels) {
+                    return true; // Max deep reached.
+                }
+
+                var equal = true;
+                angular.forEach(itemA, function(value, name) {
+                    if (!self.basicLeftCompare(value, itemB[name], maxLevels, level + 1)) {
+                        equal = false;
+                    }
+                });
+                return equal;
+            } else {
+                // We'll treat "2" and 2 as the same value.
+                var floatA = parseFloat(itemA),
+                    floatB = parseFloat(itemB);
+
+                if (!isNaN(floatA) && !isNaN(floatB)) {
+                    return floatA == floatB;
+                }
+                return itemA === itemB;
+            }
         };
 
         return self;

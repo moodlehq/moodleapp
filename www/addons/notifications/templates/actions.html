@@ -1,5 +1,5 @@
 <div ng-if="actions && actions.length > 0" class="item tabs tabs-icon-left">
-    <div class="tab-item" ng-repeat="action in actions track by $index" ng-click="jump($event, action.state, action.stateParams)">
+    <div class="tab-item" ng-repeat="action in actions track by $index" ng-click="action.action()">
         <i class="icon {{action.icon}}"></i>
         {{ action.message | translate }}
     </div>
