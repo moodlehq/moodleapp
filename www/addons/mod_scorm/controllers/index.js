@@ -23,13 +23,17 @@ angular.module('mm.addons.mod_scorm')
  */
 .controller('mmaModScormIndexCtrl', function($scope, $stateParams, $mmaModScorm, $mmUtil, $q, $mmCourse, $ionicScrollDelegate,
             $mmCoursePrefetchDelegate, $mmaModScormHelper, $mmEvents, $mmSite, $state, mmCoreOutdated, mmCoreNotDownloaded,
-            mmCoreDownloading, mmaModScormComponent, mmCoreEventPackageStatusChanged) {
+            mmCoreDownloading, mmaModScormComponent, mmCoreEventPackageStatusChanged, $ionicHistory, $ionicScrollDelegate) {
 
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
         scorm,
         statusObserver,
-        currentStatus;
+        currentStatus,
+        lastAttempt,
+        lastOffline = false,
+        attempts,
+        scrollView = $ionicScrollDelegate.$getByHandle('mmaModScormIndexScroll');
 
     $scope.title = module.name;
     $scope.description = module.description;
@@ -41,11 +45,6 @@ angular.module('mm.addons.mod_scorm')
 
     $scope.modenormal = $mmaModScorm.MODENORMAL;
     $scope.modebrowse = $mmaModScorm.MODEBROWSE;
-
-    // Function to filter attempts.
-    $scope.filterAttempts = function(attempt) {
-        return attempt && typeof attempt.grade != 'undefined';
-    };
 
     // Convenience function to get SCORM data.
     function fetchScormData(refresh) {
@@ -68,21 +67,22 @@ angular.module('mm.addons.mod_scorm')
             }
 
             // Get the number of attempts and check if SCORM is incomplete.
-            return $mmaModScorm.getAttemptCount(scorm.id).then(function(numAttempts) {
-                return $mmaModScorm.isAttemptIncomplete(scorm, numAttempts).then(function(incomplete) {
+            return $mmaModScorm.getAttemptCount(scorm.id).then(function(attemptsData) {
+                attempts = attemptsData;
+                lastAttempt = attempts.lastAttempt.number;
+                lastOffline = attempts.lastAttempt.offline;
+                return $mmaModScorm.isAttemptIncomplete(scorm, lastAttempt, lastOffline).then(function(incomplete) {
                     var promises = [];
 
                     scorm.incomplete = incomplete;
-                    scorm.numAttempts = numAttempts;
+                    scorm.numAttempts = attempts.total;
                     scorm.grademethodReadable = $mmaModScorm.getScormGradeMethod(scorm);
-                    scorm.attemptsLeft = $mmaModScorm.countAttemptsLeft(scorm, numAttempts);
+                    scorm.attemptsLeft = $mmaModScorm.countAttemptsLeft(scorm, lastAttempt);
                     if (scorm.forceattempt && scorm.incomplete) {
                         $scope.scormOptions.newAttempt = true;
                     }
 
-                    if (scorm.displayattemptstatus) {
-                        promises.push(getReportedGrades());
-                    }
+                    promises.push(getReportedGrades());
 
                     promises.push(fetchStructure());
 
@@ -125,36 +125,48 @@ angular.module('mm.addons.mod_scorm')
 
     // Get the grades of each attempt and the grade of the SCORM.
     function getReportedGrades() {
-        // Get the number of finished attempts.
-        return $mmaModScorm.getAttemptCount(scorm.id, undefined, true).then(function(numAttempts) {
-            var promises = [];
-            scorm.attempts = [];
-            // Calculate the grade for each attempt.
-            for (var attempt = 1; attempt <= numAttempts; attempt++) {
+        var promises = [];
+        scorm.onlineAttempts = {};
+        scorm.offlineAttempts = {};
+        // Calculate the grade for each attempt.
+        attempts.online.forEach(function(attempt) {
+            // Check that attempt isn't in offline to prevent showing the same attempt twice. Offline should be more recent.
+            if (attempts.offline.indexOf(attempt) == -1) {
                 promises.push(getAttemptGrade(scorm, attempt));
             }
+        });
+        attempts.offline.forEach(function(attempt) {
+            promises.push(getAttemptGrade(scorm, attempt, true));
+        });
 
-            return $q.all(promises).then(function() {
+        return $q.all(promises).then(function() {
 
-                // Calculate the grade of the whole SCORM.
-                scorm.grade = $mmaModScorm.calculateScormGrade(scorm, scorm.attempts);
+            // Calculate the grade of the whole SCORM. We only use online attempts to calculate this data.
+            scorm.grade = $mmaModScorm.calculateScormGrade(scorm, scorm.onlineAttempts);
 
-                // Now format the grades.
-                angular.forEach(scorm.attempts, function(attempt) {
-                    attempt.grade = $mmaModScorm.formatGrade(scorm, attempt.grade);
-                });
-                scorm.grade = $mmaModScorm.formatGrade(scorm, scorm.grade);
+            // Now format the grades.
+            angular.forEach(scorm.onlineAttempts, function(attempt) {
+                attempt.grade = $mmaModScorm.formatGrade(scorm, attempt.grade);
             });
+            angular.forEach(scorm.offlineAttempts, function(attempt) {
+                attempt.grade = $mmaModScorm.formatGrade(scorm, attempt.grade);
+            });
+            scorm.grade = $mmaModScorm.formatGrade(scorm, scorm.grade);
         });
     }
 
     // Convenience function to get the grade of an attempt and add it to the scorm attempts list.
-    function getAttemptGrade(scorm, attempt) {
-        return $mmaModScorm.getAttemptGrade(scorm, attempt).then(function(grade) {
-            scorm.attempts[attempt - 1] = {
+    function getAttemptGrade(scorm, attempt, offline) {
+        return $mmaModScorm.getAttemptGrade(scorm, attempt, offline).then(function(grade) {
+            var entry = {
                 number: attempt,
                 grade: grade
             };
+            if (offline) {
+                scorm.offlineAttempts[attempt] = entry;
+            } else {
+                scorm.onlineAttempts[attempt] = entry;
+            }
         });
     }
 
@@ -184,7 +196,7 @@ angular.module('mm.addons.mod_scorm')
         }
 
         $scope.loadingToc = true;
-        return $mmaModScorm.getOrganizationToc(scorm.id, organizationId, scorm.numAttempts).then(function(toc) {
+        return $mmaModScorm.getOrganizationToc(scorm.id, organizationId, lastAttempt, lastOffline).then(function(toc) {
             $scope.toc = $mmaModScorm.formatTocToArray(toc);
             // Get images for each SCO.
             angular.forEach($scope.toc, function(sco) {
@@ -348,6 +360,18 @@ angular.module('mm.addons.mod_scorm')
             openScorm(scoId);
         }
     };
+
+    // Update data when we come back from the player since it's probable that it has changed.
+    $scope.$on('$ionicView.enter', function() {
+        var forwardView = $ionicHistory.forwardView();
+        if (forwardView && forwardView.stateName === 'site.mod_scorm-player') {
+            $scope.scormLoaded = false;
+            scrollView.scrollTop();
+            refreshData().finally(function() {
+                $scope.scormLoaded = true;
+            });
+        }
+    });
 
     $scope.$on('$destroy', function() {
         statusObserver && statusObserver.off && statusObserver.off();

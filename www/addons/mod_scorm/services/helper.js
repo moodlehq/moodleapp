@@ -21,9 +21,83 @@ angular.module('mm.addons.mod_scorm')
  * @ngdoc service
  * @name $mmCourseHelper
  */
-.factory('$mmaModScormHelper', function($mmaModScorm, $mmUtil, $translate, $q) {
+.factory('$mmaModScormHelper', function($mmaModScorm, $mmUtil, $translate, $q, $mmaModScormOffline) {
 
-    var self = {};
+    var self = {},
+        elementsToIgnore = ['status', 'score_raw', 'total_time', 'session_time', 'student_id', 'student_name', 'credit',
+                            'mode', 'entry']; // List of elements we want to ignore when copying attempts (they're calculated).
+
+    /**
+     * Creates a new offline attempt based on an existing online attempt.
+     *
+     * @param  {Object} scorm   SCORM.
+     * @param  {Number} attempt Number of the online attempt.
+     * @return {Promise}        Promise resolved when the attempt is created.
+     */
+    self.convertAttemptToOffline = function(scorm, attempt) {
+        // Get data from the online attempt.
+        return $mmaModScorm.getScormUserData(scorm.id, attempt).then(function(onlineData) {
+            // The SCORM API might have written some data to the offline attempt already.
+            // We don't want to override it with cached online data.
+            return $mmaModScormOffline.getScormUserData(scorm.id, attempt).catch(function() {
+                // Ignore errors.
+            }).then(function(offlineData) {
+                // Filter the data to copy.
+                angular.forEach(onlineData, function(sco) {
+                    // Delete calculated data.
+                    elementsToIgnore.forEach(function(el) {
+                        delete sco.userdata[el];
+                    });
+
+                    // Don't override offline data.
+                    if (offlineData && offlineData[sco.scoid] && offlineData[sco.scoid].userdata) {
+                        var scoUserData = {};
+                        angular.forEach(sco.userdata, function(value, element) {
+                            if (!offlineData[sco.scoid].userdata[element]) {
+                                // This element is not stored in offline, we can save it.
+                                scoUserData[element] = value;
+                            }
+                        });
+                        sco.userdata = scoUserData;
+                    }
+                });
+
+                return $mmaModScormOffline.createNewAttempt(scorm, undefined, attempt, onlineData, true);
+            });
+        }).catch(function() {
+            // Shouldn't happen.
+            return $q.reject($translate.instant('mma.mod_scorm.errorcreateofflineattempt'));
+        });
+    };
+
+    /**
+     * Creates a new offline attempt.
+     *
+     * @param  {Object} scorm      SCORM.
+     * @param  {Number} newAttempt Number of the new attempt.
+     * @param  {Number} lastOnline Number of the last online attempt.
+     * @return {Promise}           Promise resolved when the attempt is created.
+     */
+    self.createOfflineAttempt = function(scorm, newAttempt, lastOnline) {
+        // Try to get data from online attempts.
+        return self.searchOnlineAttemptUserData(scorm.id, lastOnline).then(function(userData) {
+            // We're creating a new attempt, remove all the user data that is not needed for a new attempt.
+            // We need to get the SCO data from here because WS get_scoes doesn't return sco_data in Moodle 3.0.
+            angular.forEach(userData, function(sco) {
+                var filtered = {};
+                angular.forEach(sco.userdata, function(value, element) {
+                    if (element.indexOf('.') == -1 && elementsToIgnore.indexOf(element) == -1) {
+                        // The element doesn't use a dot notation, probably SCO data.
+                        filtered[element] = value;
+                    }
+                });
+                sco.userdata = filtered;
+            });
+            return $mmaModScormOffline.createNewAttempt(scorm, undefined, newAttempt, userData);
+        }).catch(function() {
+            return $q.reject($translate.instant('mma.mod_scorm.errorcreateofflineattempt'));
+        });
+    };
 
     /**
      * Show a confirm dialog if needed. If SCORM doesn't have size, try to calculate it.
@@ -63,15 +137,16 @@ angular.module('mm.addons.mod_scorm')
      * @param {Object[]} [toc]        SCORM's TOC.
      * @param {String} [organization] Organization to use.
      * @param {Number} attempt        Attempt number.
+     * @param {Boolean} offline       True if attempt is offline, false otherwise.
      * @return {Promise}              Promise resolved with the first SCO.
      */
-    self.getFirstSco = function(scormid, toc, organization, attempt) {
+    self.getFirstSco = function(scormid, toc, organization, attempt, offline) {
         var promise;
         if (toc && toc.length) {
             promise = $q.when(toc);
         } else {
             // SCORM doesn't have a TOC. Get all the scos.
-            promise = $mmaModScorm.getScosWithData(scormid, organization, attempt);
+            promise = $mmaModScorm.getScosWithData(scormid, organization, attempt, offline);
         }
 
         return promise.then(function(scos) {
@@ -149,6 +224,26 @@ angular.module('mm.addons.mod_scorm')
                 return toc[i];
             }
         }
+    };
+
+    /**
+     * Searches user data for an online attempt. If the data can't be retrieved,
+     * re-try with the previous online attempt (if exists).
+     *
+     * @param {Number} scormId SCORM ID.
+     * @param {Number} attempt Online attempt to get the data.
+     * @return {Promise}       Promise resolved with user data.
+     */
+    self.searchOnlineAttemptUserData = function(scormId, attempt) {
+        return $mmaModScorm.getScormUserData(scormId, attempt).catch(function() {
+            if (attempt > 0) {
+                // We couldn't retrieve the data. Try again with the previous online attempt.
+                return self.searchOnlineAttemptUserData(scormId, attempt - 1);
+            } else {
+                // No more attempts to try. Reject
+                return $q.reject();
+            }
+        });
     };
 
     /**

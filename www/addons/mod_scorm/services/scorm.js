@@ -21,8 +21,8 @@ angular.module('mm.addons.mod_scorm')
  * @ngdoc service
  * @name $mmaModScorm
  */
-.factory('$mmaModScorm', function($mmSite, $q, $translate, $mmLang, $mmFilepool, $mmFS, $mmWS, $sce,
-            mmaModScormComponent, mmCoreNotDownloaded) {
+.factory('$mmaModScorm', function($mmSite, $q, $translate, $mmLang, $mmFilepool, $mmFS, $mmWS, $sce, $mmaModScormOnline,
+            $mmaModScormOffline, $mmUtil, mmaModScormComponent, mmCoreNotDownloaded) {
     var self = {},
         statuses = ['notattempted', 'passed', 'completed', 'failed', 'incomplete', 'browsed', 'suspend'],
         downloadPromises = {}; // Store download promises to be able to restore them.
@@ -44,36 +44,46 @@ angular.module('mm.addons.mod_scorm')
 
     /**
      * Calculates the SCORM grade based on the grading method and the list of attempts scores.
+     * We only treat online attempts to calculate a SCORM grade.
      *
      * @module mm.addons.mod_scorm
      * @ngdoc method
      * @name $mmaModScorm#calculateScormGrade
-     * @param  {Object} scorm      SCORM.
-     * @param  {Object[]} attempts List of attempts. Each attempts must have a property called "grade".
-     * @return {Number}            Grade. -1 if no grade.
+     * @param  {Object} scorm           SCORM.
+     * @param  {Object} onlineAttempts  Online attempts. Each attempt must have a property called "grade".
+     * @return {Number}                 Grade. -1 if no grade.
      */
-    self.calculateScormGrade = function(scorm, attempts) {
-        if (!attempts.length) {
+    self.calculateScormGrade = function(scorm, onlineAttempts) {
+        if (!Object.keys(onlineAttempts).length) {
             return -1;
         }
 
         switch (scorm.whatgrade) {
             case self.FIRSTATTEMPT:
-                return attempts[0].grade;
+                return onlineAttempts[1] ? onlineAttempts[1].grade : -1;
             case self.LASTATTEMPT:
-                return attempts[attempts.length - 1].grade;
+                var max = 0;
+                angular.forEach(Object.keys(onlineAttempts), function(number) {
+                    max = Math.max(number, max);
+                });
+                if (max > 0) {
+                    return onlineAttempts[max].grade;
+                }
+                return -1;
             case self.HIGHESTATTEMPT:
                 var grade = 0;
-                for (var attempt = 0; attempt < attempts.length; attempt++) {
-                    grade = Math.max(attempts[attempt].grade, grade);
-                }
+                angular.forEach(onlineAttempts, function(attempt) {
+                    grade = Math.max(attempt.grade, grade);
+                });
                 return grade;
             case self.AVERAGEATTEMPT:
-                var sumgrades = 0;
-                for (var att = 0; att < attempts.length; att++) {
-                    sumgrades += attempts[att].grade;
-                }
-                return Math.round(sumgrades / attempts.length);
+                var sumgrades = 0,
+                    total = 0;
+                angular.forEach(onlineAttempts, function(attempt) {
+                    sumgrades += attempt.grade;
+                    total++;
+                });
+                return Math.round(sumgrades / total);
         }
 
         return -1;
@@ -415,7 +425,8 @@ angular.module('mm.addons.mod_scorm')
             return $translate.instant('mm.core.none');
         }
         if (scorm.grademethod !== self.GRADESCOES && scorm.maxgrade > 0) {
-            return $translate.instant('mm.core.percentagenumber', {$a: (grade / scorm.maxgrade) * 100});
+            grade = (grade / scorm.maxgrade) * 100;
+            return $translate.instant('mm.core.percentagenumber', {$a: $mmUtil.roundToDecimals(grade, 2)});
         }
         return grade;
     };
@@ -450,45 +461,63 @@ angular.module('mm.addons.mod_scorm')
     };
 
     /**
-     * Get cache key for SCORM attempt count WS calls.
-     *
-     * @param {Number} scormid  SCORM ID.
-     * @param {Number} [userid] User ID. If not defined, current user.
-     * @return {String}         Cache key.
-     */
-    function getAttemptCountCacheKey(scormid, userid) {
-        userid = userid || $mmSite.getUserId();
-        return 'mmaModScorm:attemptcount:' + scormid + ':' + userid;
-    }
-
-    /**
      * Get the number of attempts done by a user in the given SCORM.
      *
      * @module mm.addons.mod_scorm
      * @ngdoc method
      * @name $mmaModScorm#getAttemptCount
      * @param {Number} scormid        SCORM ID.
-     * @param {Number} [userid]       User ID. If not defined, current user.
-     * @param {Boolean} ignoreMissing True if it should ignore attempts that haven't reported a grade/completion.
-     * @return {Promise}              Promise resolved when the attempt count is retrieved.
+     * @param {Number} [userId]       User ID. If not defined, current user.
+     * @param {Boolean} ignoreMissing True if it should ignore attempts without grade/completion. Only for online attempts.
+     * @return {Promise}              Promise resolved when the attempt count is retrieved. It returns an object with
+     *                                online attempts, offline attempts, total number of attempts and last attempt.
      */
-    self.getAttemptCount = function(scormid, userid, ignoreMissing) {
-        userid = userid || $mmSite.getUserId();
+    self.getAttemptCount = function(scormId, userId, ignoreMissing) {
+        userId = userId || $mmSite.getUserId();
 
-        var params = {
-                scormid: scormid,
-                userid: userid,
-                ignoremissingcompletion: ignoreMissing ? 1 : 0
+        var result = {
+                lastAttempt: {
+                    number: 0,
+                    offline: false
+                }
             },
-            preSets = {
-                cacheKey: getAttemptCountCacheKey(scormid, userid)
-            };
+            promises = [];
 
-        return $mmSite.read('mod_scorm_get_scorm_attempt_count', params, preSets).then(function(response) {
-            if (response && typeof response.attemptscount != 'undefined') {
-                return response.attemptscount;
+        promises.push($mmaModScormOnline.getAttemptCount(scormId, userId, ignoreMissing).then(function(count) {
+            // Calculate numbers of offline attempts.
+            result.online = [];
+            for (var i = 1; i <= count; i++) {
+                result.online.push(i);
             }
-            return $q.reject();
+            // Calculate last attempt.
+            if (count > result.lastAttempt.number) {
+                result.lastAttempt.number = count;
+                result.lastAttempt.offline = false;
+            }
+        }));
+
+        promises.push($mmaModScormOffline.getAttempts(scormId, userId).then(function(attempts) {
+            // Get only attempt numbers.
+            result.offline = attempts.map(function(entry) {
+                // Calculate last attempt. We use >= to prioritize offline events if an attempt is both online and offline.
+                if (entry.attempt >= result.lastAttempt.number) {
+                    result.lastAttempt.number = entry.attempt;
+                    result.lastAttempt.offline = true;
+                }
+                return entry.attempt;
+            });
+        }));
+
+        return $q.all(promises).then(function() {
+            var total = result.online.length;
+            result.offline.forEach(function(attempt) {
+                // Check if this attempt also exists in online, it might have been copied to local.
+                if (result.online.indexOf(attempt) == -1) {
+                    total++;
+                }
+            });
+            result.total = total;
+            return result;
         });
     };
 
@@ -499,18 +528,20 @@ angular.module('mm.addons.mod_scorm')
      * @module mm.addons.mod_scorm
      * @ngdoc method
      * @name $mmaModScorm#getAttemptGrade
-     * @param {Number} scormid SCORM ID.
-     * @param {Number} attempt Attempt number.
-     * @return {Promise}       Promise resolved with the grade.
+     * @param {Number} scormid  SCORM ID.
+     * @param {Number} attempt  Attempt number.
+     * @param {Boolean} offline True if attempt is offline, false otherwise.
+     * @return {Promise}        Promise resolved with the grade. If the attempt hasn't reported grade/completion, grade will be -1.
      */
-    self.getAttemptGrade = function(scorm, attempt) {
+    self.getAttemptGrade = function(scorm, attempt, offline) {
         var attemptscore = {
             scos: 0,
             values: 0,
             max: 0,
             sum: 0
         };
-        return self.getScormUserData(scorm.id, attempt).then(function(data) {
+
+        return self.getScormUserData(scorm.id, attempt, offline).then(function(data) {
             angular.forEach(data, function(scodata) {
                 var userdata = scodata.userdata;
                 if (userdata.status == 'completed' || userdata.status == 'passed') {
@@ -522,7 +553,7 @@ angular.module('mm.addons.mod_scorm')
                     var scoreraw = parseFloat(userdata.score_raw);
                     attemptscore.values++;
                     attemptscore.sum += scoreraw;
-                    attemptscore.max = (scoreraw > attemptscore.max) ? scoreraw : attemptscore.max;
+                    attemptscore.max = Math.max(scoreraw, attemptscore.max);
                 }
             });
 
@@ -587,11 +618,12 @@ angular.module('mm.addons.mod_scorm')
      * @param  {Number} scormid      SCORM ID.
      * @param  {String} organization Organization identifier.
      * @param  {Number} attempt      The attempt number (to populate SCO track data).
+     * @param {Boolean} offline      True if attempt is offline, false otherwise.
      * @return {Promise}             Promise resolved with the toc object.
      */
-    self.getOrganizationToc = function(scormid, organization, attempt) {
+    self.getOrganizationToc = function(scormid, organization, attempt, offline) {
 
-        return self.getScosWithData(scormid, organization, attempt).then(function(scos) {
+        return self.getScosWithData(scormid, organization, attempt, offline).then(function(scos) {
             var map = {},
                 rootScos = [];
 
@@ -630,6 +662,29 @@ angular.module('mm.addons.mod_scorm')
             return scorm.reference;
         }
         return '';
+    };
+
+    /**
+     * Get the user data for a certain SCORM and attempt.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScorm#getScormUserData
+     * @param {Number} scormId  SCORM ID.
+     * @param {Number} attempt  Attempt number.
+     * @param {Boolean} offline True if attempt is offline, false otherwise.
+     * @param {Object[]} [scos] SCOs returned by $mmaModScorm#getScos. Recommended if offline=true.
+     * @return {Promise}        Promise resolved when the user data is retrieved.
+     */
+    self.getScormUserData = function(scormId, attempt, offline, scos) {
+        if (offline) {
+            var promise = scos ? $q.when(scos) : self.getScos(scormId);
+            return promise.then(function(scos) {
+                return $mmaModScormOffline.getScormUserData(scormId, attempt, scos);
+            });
+        } else {
+            return $mmaModScormOnline.getScormUserData(scormId, attempt);
+        }
     };
 
     /**
@@ -692,30 +747,26 @@ angular.module('mm.addons.mod_scorm')
      * @param  {Number} scormid      SCORM ID.
      * @param  {String} organization Organization ID.
      * @param  {Number} attempt      Attempt number.
+     * @param {Boolean} offline      True if attempt is offline, false otherwise.
      * @return {Promise}             Promise resolved with a list of SCO objects.
      */
-    self.getScosWithData = function(scormid, organization, attempt) {
-        // First of all, get the track data for all the SCOs in the organization for the given attempt.
-        // We'll use this data to set SCO data like isvisible, status and so.
-        return self.getScormUserData(scormid, attempt).then(function(data) {
-            var trackData = {};
-            // Extract data for each SCO.
-            angular.forEach(data, function(sco) {
-                trackData[sco.scoid] = sco.userdata;
-            });
+    self.getScosWithData = function(scormid, organization, attempt, offline) {
+        // Get organization SCOs.
+        return self.getScos(scormid, organization).then(function(scos) {
+            // Get the track data for all the SCOs in the organization for the given attempt.
+            // We'll use this data to set SCO data like isvisible, status and so.
+            return self.getScormUserData(scormid, attempt, offline, scos).then(function(data) {
 
-            // Get organization SCOs.
-            return self.getScos(scormid, organization).then(function(scos) {
                 var trackDataBySCO = {};
 
                 // First populate trackDataBySCO to index by SCO identifier.
                 angular.forEach(scos, function(sco) {
-                    trackDataBySCO[sco.identifier] = trackData[sco.id];
+                    trackDataBySCO[sco.identifier] = data[sco.id].userdata;
                 });
 
                 angular.forEach(scos, function(sco) {
                     // Add specific SCO information (related to tracked data).
-                    var scodata = trackData[sco.id];
+                    var scodata = data[sco.id].userdata;
                     if (!scodata) {
                         return;
                     }
@@ -933,69 +984,6 @@ angular.module('mm.addons.mod_scorm')
     };
 
     /**
-     * Get cache key for SCORM user data WS calls.
-     *
-     * @param {Number} scormid SCORM ID.
-     * @param {Number} attempt Attempt number.
-     * @return {String}        Cache key.
-     */
-    function getScormUserDataCacheKey(scormid, attempt) {
-        return getScormUserDataCommonCacheKey(scormid) + ':' + attempt;
-    }
-
-    /**
-     * Get common cache key for SCORM user data WS calls.
-     *
-     * @param {Number} scormid SCORM ID.
-     * @return {String}        Cache key.
-     */
-    function getScormUserDataCommonCacheKey(scormid) {
-        return 'mmaModScorm:userdata:' + scormid;
-    }
-
-    /**
-     * Get the user data for a certain SCORM and attempt.
-     *
-     * @module mm.addons.mod_scorm
-     * @ngdoc method
-     * @name $mmaModScorm#getScormUserData
-     * @param {Number} scormid SCORM ID.
-     * @param {Number} attempt Attempt number.
-     * @return {Promise}       Promise resolved when the user data is retrieved.
-     */
-    self.getScormUserData = function(scormid, attempt) {
-        var params = {
-                scormid: scormid,
-                attempt: attempt
-            },
-            preSets = {
-                cacheKey: getScormUserDataCacheKey(scormid, attempt)
-            };
-
-        return $mmSite.read('mod_scorm_get_scorm_user_data', params, preSets).then(function(response) {
-            if (response && response.data) {
-                // Format the response.
-                angular.forEach(response.data, function(sco) {
-                    var formattedDefaultData = {},
-                        formattedUserData = {};
-
-                    angular.forEach(sco.defaultdata, function(entry) {
-                        formattedDefaultData[entry.element] = entry.value;
-                    });
-                    angular.forEach(sco.userdata, function(entry) {
-                        formattedUserData[entry.element] = entry.value;
-                    });
-
-                    sco.defaultdata = formattedDefaultData;
-                    sco.userdata = formattedUserData;
-                });
-                return response.data;
-            }
-            return $q.reject();
-        });
-    };
-
-    /**
      * Invalidates all the data related to a certain SCORM.
      *
      * @module mm.addons.mod_scorm
@@ -1007,24 +995,10 @@ angular.module('mm.addons.mod_scorm')
      */
     self.invalidateAllScormData = function(scormid, userid) {
         var promises = [];
-        promises.push(self.invalidateAttemptCount(scormid, userid));
+        promises.push($mmaModScormOnline.invalidateAttemptCount(scormid, userid));
         promises.push(self.invalidateScos(scormid));
-        promises.push(self.invalidateScormUserData(scormid));
+        promises.push($mmaModScormOnline.invalidateScormUserData(scormid));
         return $q.all(promises);
-    };
-
-    /**
-     * Invalidates attempt count.
-     *
-     * @module mm.addons.mod_scorm
-     * @ngdoc method
-     * @name $mmaModScorm#invalidateAttemptCount
-     * @param {Number} scormid  SCORM ID.
-     * @param {Number} [userid] User ID. If not defined, current user.
-     * @return {Promise}        Promise resolved when the data is invalidated.
-     */
-    self.invalidateAttemptCount = function(scormid, userid) {
-        return $mmSite.invalidateWsCacheForKey(getAttemptCountCacheKey(scormid, userid));
     };
 
     /**
@@ -1067,30 +1041,18 @@ angular.module('mm.addons.mod_scorm')
     };
 
     /**
-     * Invalidates SCORM user data for all attempts.
-     *
-     * @module mm.addons.mod_scorm
-     * @ngdoc method
-     * @name $mmaModScorm#invalidateScormUserData
-     * @param {Number} scormid SCORM ID.
-     * @return {Promise}       Promise resolved when the data is invalidated.
-     */
-    self.invalidateScormUserData = function(scormid) {
-        return $mmSite.invalidateWsCacheForKeyStartingWith(getScormUserDataCommonCacheKey(scormid));
-    };
-
-    /**
      * Check if a SCORM's attempt is incomplete.
      *
      * @module mm.addons.mod_scorm
      * @ngdoc method
      * @name $mmaModScorm#isAttemptIncomplete
-     * @param {Object} scorm   SCORM.
-     * @param {Number} attempt Attempt.
+     * @param {Object} scorm    SCORM.
+     * @param {Number} attempt  Attempt.
+     * @param {Boolean} offline True if attempt is offline, false otherwise.
      * @return {Promise}       Promise resolved with a boolean: true if incomplete, false otherwise.
      */
-    self.isAttemptIncomplete = function(scorm, attempt) {
-        return self.getScosWithData(scorm.id, undefined, attempt).then(function(scos) {
+    self.isAttemptIncomplete = function(scorm, attempt, offline) {
+        return self.getScosWithData(scorm.id, undefined, attempt, offline).then(function(scos) {
             var incomplete = false;
 
             angular.forEach(scos, function(sco) {
@@ -1104,19 +1066,6 @@ angular.module('mm.addons.mod_scorm')
 
             return incomplete;
         });
-    };
-
-    /**
-     * Check if a SCO status is incomplete.
-     *
-     * @module mm.addons.mod_scorm
-     * @ngdoc method
-     * @name $mmaModScorm#isStatusIncomplete
-     * @param  {String}  status SCO status.
-     * @return {Boolean}        True if incomplete, false otherwise.
-     */
-    self.isStatusIncomplete = function(status) {
-        return !status || status == 'notattempted' || status == 'incomplete' || status == 'browsed';
     };
 
     /**
@@ -1218,6 +1167,19 @@ angular.module('mm.addons.mod_scorm')
     };
 
     /**
+     * Check if a SCO status is incomplete.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScorm#isStatusIncomplete
+     * @param  {String}  status SCO status.
+     * @return {Boolean}        True if incomplete, false otherwise.
+     */
+    self.isStatusIncomplete = function(status) {
+        return !status || status == 'notattempted' || status == 'incomplete' || status == 'browsed';
+    };
+
+    /**
      * Check if a package URL is valid.
      *
      * @module mm.addons.mod_scorm
@@ -1291,7 +1253,7 @@ angular.module('mm.addons.mod_scorm')
         var promises = [];
 
         // Prefetch number of attempts (including not completed).
-        promises.push(self.getAttemptCount(scorm.id).catch(function() {
+        promises.push($mmaModScormOnline.getAttemptCount(scorm.id).catch(function() {
             // If it fails, assume we have no attempts.
             return 0;
         }).then(function(numAttempts) {
@@ -1306,7 +1268,7 @@ angular.module('mm.addons.mod_scorm')
                 }
 
                 attempts.forEach(function(attempt) {
-                    datapromises.push(self.getScormUserData(scorm.id, attempt).catch(function(err) {
+                    datapromises.push($mmaModScormOnline.getScormUserData(scorm.id, attempt).catch(function(err) {
                         // Ignore failures of all the attempts that aren't the last one.
                         if (attempt == numAttempts) {
                             return $q.reject(err);
@@ -1317,17 +1279,12 @@ angular.module('mm.addons.mod_scorm')
                 return $q.all(datapromises);
             } else {
                 // No attempts. We'll still try to get user data to be able to identify SCOs not visible and so.
-                return self.getScormUserData(scorm.id, 0);
+                return $mmaModScormOnline.getScormUserData(scorm.id, 0);
             }
         }));
 
         // Prefetch SCOs.
         promises.push(self.getScos(scorm.id));
-
-        // Prefetch number of finished attempts.
-        promises.push(self.getAttemptCount(scorm.id, undefined, true).catch(function(){
-            // Ignore failures.
-        }));
 
         return $q.all(promises);
     };
@@ -1352,24 +1309,23 @@ angular.module('mm.addons.mod_scorm')
      * @module mm.addons.mod_scorm
      * @ngdoc method
      * @name $mmaModScorm#saveTracks
-     * @param  {Number} scoId    Sco ID.
-     * @param  {Number} attempt  Attempt number.
-     * @param  {Object[]} tracks Tracking data.
-     * @return {Promise}         Promise resolved when data is saved.
+     * @param  {Number} scoId      Sco ID.
+     * @param  {Number} attempt    Attempt number.
+     * @param  {Object[]} tracks   Tracking data to store.
+     * @param  {Boolean} offline   True if attempt is offline, false otherwise.
+     * @param  {Object} [scorm]    SCORM. Required if offline=true.
+     * @param  {Object} [userData] User data for this attempt and SCO. If not defined, it will be retrieved from DB. Recommended.
+     * @return {Promise}           Promise resolved when data is saved.
      */
-    self.saveTracks = function(scoId, attempt, tracks) {
-        var params = {
-            scoid: scoId,
-            attempt: attempt,
-            tracks: tracks
-        };
-
-        return $mmSite.write('mod_scorm_insert_scorm_tracks', params).then(function(response) {
-            if (response && response.trackids) {
-                return response.trackids;
-            }
-            return $q.reject();
-        });
+    self.saveTracks = function(scoId, attempt, tracks, offline, scorm, userData) {
+        if (offline) {
+            var promise = userData ? $q.when(userData) : self.getScormUserData(scorm.id, attempt, offline);
+            return promise.then(function(userData) {
+                return $mmaModScormOffline.saveTracks(scorm, scoId, attempt, tracks, userData);
+            });
+        } else {
+            return $mmaModScormOnline.saveTracks(scoId, attempt, tracks);
+        }
     };
 
     /**
@@ -1379,28 +1335,22 @@ angular.module('mm.addons.mod_scorm')
      * @module mm.addons.mod_scorm
      * @ngdoc method
      * @name $mmaModScorm#saveTracksSync
-     * @param  {Number} scoId    Sco ID.
-     * @param  {Number} attempt  Attempt number.
-     * @param  {Object[]} tracks Tracking data.
-     * @return {Boolean}         True if success, false otherwise.
+     * @param  {Number} scoId      Sco ID.
+     * @param  {Number} attempt    Attempt number.
+     * @param  {Object[]} tracks   Tracking data to store.
+     * @param  {Boolean} offline   True if attempt is offline, false otherwise.
+     * @param  {Object} [scorm]    SCORM. Required if offline=true.
+     * @param  {Object} [userData] User data for this attempt and SCO. Required if offline=true.
+     * @return {Boolean}           In online returns true if data is inserted, false otherwise.
+     *                             In offline returns true if data to insert is valid, false otherwise. True doesn't mean that the
+     *                             data has been stored, this function can return true but the insertion can still fail somehow.
      */
-    self.saveTracksSync = function(scoId, attempt, tracks) {
-        var params = {
-                scoid: scoId,
-                attempt: attempt,
-                tracks: tracks
-            },
-            preSets = {
-                siteurl: $mmSite.getURL(),
-                wstoken: $mmSite.getToken()
-            },
-            response;
-
-        response = $mmWS.syncCall('mod_scorm_insert_scorm_tracks', params, preSets);
-        if (response && !response.error && response.trackids) {
-            return true;
+    self.saveTracksSync = function(scoId, attempt, tracks, offline, scorm, userData) {
+        if (offline) {
+            return $mmaModScormOffline.saveTracksSync(scorm, scoId, attempt, tracks, userData);
+        } else {
+            return $mmaModScormOnline.saveTracksSync(scoId, attempt, tracks);
         }
-        return false;
     };
 
     return self;
