@@ -3,7 +3,7 @@
     <ion-nav-buttons side="secondary">
         <a class="button button-icon ion-ios-browsers-outline" ng-href="{{moduleUrl}}" mm-browser aria-label="{{ 'mm.core.openinbrowser' | translate }}"></a>
     </ion-nav-buttons>
-    <ion-content padding="true">
+    <ion-content padding="true" delegate-handle="mmaModScormIndexScroll">
     	<ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="scormLoaded" on-refresh="refreshScorm()">
         </ion-refresher>
         <mm-loading hide-until="scormLoaded">
@@ -11,28 +11,36 @@
 	        <p ng-if="scorm.warningmessage">{{ scorm.warningmessage }}</p>
 	        <div ng-if="!scorm.warningmessage">
 	        	<!-- Attempts status -->
-	        	<div class="card" ng-if="scorm.displayattemptstatus">
+	        	<div class="card" ng-if="scorm.displayattemptstatus || Object.keys(scorm.offlineAttempts).length">
 	        		<div class="item item-divider">{{ 'mma.mod_scorm.attempts' | translate }}</div>
-		        	<div class="item" ng-if="scorm.maxattempt >= 0">
+		        	<div class="item" ng-if="scorm.displayattemptstatus && scorm.maxattempt >= 0">
 	                    <p class="item-heading">{{ 'mma.mod_scorm.noattemptsallowed' | translate }}</p>
 	                    <p ng-if="scorm.maxattempt == 0">{{ 'mm.core.unlimited' | translate }}</p>
 	                    <p ng-if="scorm.maxattempt > 0">{{ scorm.maxattempt }}</p>
 	                </div>
-		        	<div class="item" ng-if="scorm.numAttempts >= 0">
+		        	<div class="item" ng-if="scorm.displayattemptstatus && scorm.numAttempts >= 0">
 	                    <p class="item-heading">{{ 'mma.mod_scorm.noattemptsmade' | translate }}</p>
 	                    <p>{{ scorm.numAttempts }}</p>
 	                </div>
-	                <div class="item" ng-repeat="attempt in scorm.attempts | filter: filterAttempts track by $index">
+	                <div class="item" ng-if="scorm.displayattemptstatus" ng-repeat="attempt in scorm.onlineAttempts track by $index">
 	                    <p class="item-heading">{{ 'mma.mod_scorm.gradeforattempt' | translate }} {{attempt.number}}</p>
-	                    <p>{{ attempt.grade }}</p>
+	                    <p ng-if="attempt.grade != -1">{{ attempt.grade }}</p>
+	                    <p ng-if="attempt.grade == -1">{{ 'mma.mod_scorm.cannotcalculategrade' | translate }}</p>
 	                </div>
-		        	<div class="item" ng-if="scorm.grademethodReadable">
+	                <div class="item item-text-wrap" ng-repeat="attempt in scorm.offlineAttempts track by $index">
+	                    <p class="item-heading">{{ 'mma.mod_scorm.gradeforattempt' | translate }} {{attempt.number}}</p>
+	                    <p ng-if="attempt.grade != -1">{{ attempt.grade }}</p>
+	                    <p ng-if="attempt.grade == -1">{{ 'mma.mod_scorm.cannotcalculategrade' | translate }}</p>
+	                    <p>{{ 'mma.mod_scorm.offlineattemptnote' | translate }}</p>
+	                </div>
+		        	<div class="item" ng-if="scorm.displayattemptstatus && scorm.grademethodReadable">
 	                    <p class="item-heading">{{ 'mma.mod_scorm.grademethod' | translate }}</p>
 	                    <p>{{ scorm.grademethodReadable }}</p>
 	                </div>
-		        	<div class="item" ng-if="scorm.grade">
+		        	<div class="item" ng-if="scorm.displayattemptstatus && scorm.grade">
 	                    <p class="item-heading">{{ 'mma.mod_scorm.gradereported' | translate }}</p>
-	                    <p>{{ scorm.grade }}</p>
+	                    <p ng-if="scorm.grade != -1">{{ scorm.grade }}</p>
+	                    <p ng-if="scorm.grade == -1">{{ 'mma.mod_scorm.cannotcalculategrade' | translate }}</p>
 	                </div>
 	            </div>
 	            <!-- TOC -->
@@ -82,7 +90,7 @@
                 			<span id="mma-mod_scorm-normal">{{ 'mma.mod_scorm.normal' | translate }}</span>
                 		</p>
                 	</div>
-               		<!-- Force new attempt -->
+               		<!-- Create new attempt -->
                 	<div class="item item-checkbox item-checkbox-right" ng-if="!scorm.forcenewattempt && scorm.numAttempts > 0 && !scorm.incomplete && scorm.attemptsLeft > 0">
 	                    <p class="item-heading">{{ 'mma.mod_scorm.newattempt' | translate }}</p>
 	                    <label class="checkbox">

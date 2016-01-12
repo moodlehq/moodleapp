@@ -10,8 +10,6 @@
         <mm-loading hide-until="loaded">
 	        <div class="mma-mod-scorm-container">
                 <mm-navigation-bar previous="previousSco" next="nextSco" action="loadSco" info="description" title="{{ 'mm.core.description' | translate }}"></mm-navigation-bar>
-                <p ng-if="isBrowse">{{ 'mma.mod_scorm.browsemode' | translate }}</p>
-                <p ng-if="isReview">{{ 'mma.mod_scorm.reviewmode' | translate }}</p>
                 <mm-iframe ng-if="src" src="src" class="mma-mod-scorm-iframe-container" iframe-width="{{scorm.popup ? scorm.width : undefined}}" iframe-height="{{scorm.popup ? scorm.height : undefined}}"></mm-iframe>
                 <p ng-if="!src && errorMessage">{{ errorMessage | translate }}</p>
             </div>

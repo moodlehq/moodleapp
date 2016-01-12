@@ -807,6 +807,25 @@ angular.module('mm.core')
             return provider.param(obj);
         };
 
+        /**
+         * Rounds a number to use a certain amout of decimals or less.
+         * Difference between this function and float's toFixed:
+         * 7.toFixed(2) -> 7.00
+         * roundToDecimals(7, 2) -> 7
+         *
+         * @param  {Float}  number       Float to round.
+         * @param  {Number} [decimals=2] Number of decimals. By default, 2.
+         * @return {Float}               Rounded number.
+         */
+        self.roundToDecimals = function(number, decimals) {
+            if (typeof decimals == 'undefined') {
+                decimals = 2;
+            }
+
+            var multiplier = Math.pow(10, decimals);
+            return Math.round(parseFloat(number) * multiplier) / multiplier;
+        };
+
         return self;
     };
 });

@@ -22,19 +22,20 @@ angular.module('mm.addons.mod_scorm')
  * @name $mmaModScormDataModel12
  */
 .factory('$mmaModScormDataModel12', function($mmaModScorm, $mmEvents, $window, mmaModScormEventLaunchNextSco,
-            mmaModScormEventLaunchPrevSco, mmaModScormEventUpdateToc) {
+            mmaModScormEventLaunchPrevSco, mmaModScormEventUpdateToc, mmaModScormEventGoOffline) {
     var self = {};
 
     /**
      * Initialize the global SCORM API class.
      *
-     * @param  {Object} scorm The SCORM object.
-     * @param  {Number} scoId The SCO id.
-     * @param  {Number} attempt The attempt number.
-     * @param  {Number} userData The user default data.
-     * @param  {String} mode Mode. One of $mmaModScorm#MODE constants.
+     * @param  {Object} scorm    The SCORM object.
+     * @param  {Number} scoId    The SCO id.
+     * @param  {Number} attempt  The attempt number.
+     * @param  {Object} userData The user default data.
+     * @param  {String} mode     Mode. One of $mmaModScorm#MODE constants.
+     * @param  {Boolean} offline True if attempt is offline, false otherwise.
      */
-    function SCORMAPI(scorm, scoId, attempt, userData, mode) {
+    function SCORMAPI(scorm, scoId, attempt, userData, mode, offline) {
 
         // Contains all the current values for all the data model elements for each SCO.
         var currentUserData = {},
@@ -42,6 +43,15 @@ angular.module('mm.addons.mod_scorm')
 
         // Current SCO Id.
         self.scoId = scoId;
+
+        // Convenience function to trigger events.
+        function triggerEvent(name) {
+            $mmEvents.trigger(name, {
+                scormid: scorm.id,
+                scoid: self.scoId,
+                attempt: attempt
+            });
+        }
 
         // Standard Data Type Definition.
         CMIString256 = '^[\\u0000-\\uFFFF]{0,255}$';
@@ -86,7 +96,7 @@ angular.module('mm.addons.mod_scorm')
         // We need an extra object that will contain the objectives and interactions data (all the .n. elements).
         var defExtra = {};
 
-        userData.forEach(function(sco) {
+        angular.forEach(userData, function(sco) {
             def[sco.scoid] = sco.defaultdata;
             defExtra[sco.scoid] = sco.userdata;
         });
@@ -384,7 +394,14 @@ angular.module('mm.addons.mod_scorm')
             } else {
                 tracks = CollectData();
             }
-            return $mmaModScorm.saveTracksSync(self.scoId, attempt, tracks);
+            var success = $mmaModScorm.saveTracksSync(self.scoId, attempt, tracks, offline, scorm, currentUserData);
+            if (!offline && !success) {
+                // Failure storing data in online. Go offline.
+                offline = true;
+                triggerEvent(mmaModScormEventGoOffline);
+                return $mmaModScorm.saveTracksSync(self.scoId, attempt, tracks, offline, scorm, currentUserData);
+            }
+            return success;
         }
 
         /**
@@ -482,35 +499,19 @@ angular.module('mm.addons.mod_scorm')
                     result = StoreData(true);
                     if (getEl('nav.event') != '') {
                         if (getEl('nav.event') == 'continue') {
-                            $mmEvents.trigger(mmaModScormEventLaunchNextSco, {
-                                scormid: scorm.id,
-                                scoid: self.scoId,
-                                attempt: attempt
-                            });
+                            triggerEvent(mmaModScormEventLaunchNextSco);
                         } else {
-                            $mmEvents.trigger(mmaModScormEventLaunchPrevSco, {
-                                scormid: scorm.id,
-                                scoid: self.scoId,
-                                attempt: attempt
-                            });
+                            triggerEvent(mmaModScormEventLaunchPrevSco);
                         }
                     } else {
                         if (scorm.auto == '1') {
-                            $mmEvents.trigger(mmaModScormEventLaunchNextSco, {
-                                scormid: scorm.id,
-                                scoid: self.scoId,
-                                attempt: attempt
-                            });
+                            triggerEvent(mmaModScormEventLaunchNextSco);
                         }
                     }
                     errorCode = (result) ? '0' : '101';
 
                     // Trigger TOC update.
-                    $mmEvents.trigger(mmaModScormEventUpdateToc, {
-                        scormid: scorm.id,
-                        scoid: self.scoId,
-                        attempt: attempt
-                    });
+                    triggerEvent(mmaModScormEventUpdateToc);
                     return result;
                 } else {
                     errorCode = "301";
@@ -680,11 +681,7 @@ angular.module('mm.addons.mod_scorm')
                 if (initialized) {
                     result = StoreData(false);
                     // Trigger TOC update.
-                    $mmEvents.trigger(mmaModScormEventUpdateToc, {
-                        scormid: scorm.id,
-                        scoid: self.scoId,
-                        attempt: attempt
-                    });
+                    triggerEvent(mmaModScormEventUpdateToc);
 
                     errorCode = result ? '0' : '101';
                     return result;
@@ -738,15 +735,16 @@ angular.module('mm.addons.mod_scorm')
      * @ngdoc method
      * @name $mmaModScorm#initAPI
      *
-     * @param  {Object} scorm The SCORM object.
-     * @param  {Number} scoId The SCO id.
-     * @param  {Number} attempt The attempt number.
-     * @param  {Number} userData The user default data.
-     * @param  {String} [mode] Mode. One of $mmaModScorm#MODE constants. By default, MODENORMAL.
+     * @param  {Object} scorm    The SCORM object.
+     * @param  {Number} scoId    The SCO id.
+     * @param  {Number} attempt  The attempt number.
+     * @param  {Object} userData The user default data.
+     * @param  {String} [mode]   Mode. One of $mmaModScorm#MODE constants. By default, MODENORMAL.
+     * @param  {Boolean} offline True if attempt is offline, false otherwise.
      */
-    self.initAPI = function(scorm, scoId, attempt, userData, mode) {
+    self.initAPI = function(scorm, scoId, attempt, userData, mode, offline) {
         mode = mode || $mmaModScorm.MODENORMAL;
-        $window.API = new SCORMAPI(scorm, scoId, attempt, userData, mode);
+        $window.API = new SCORMAPI(scorm, scoId, attempt, userData, mode, offline);
     };
 
     /**

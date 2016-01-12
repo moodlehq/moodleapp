@@ -361,6 +361,30 @@ angular.module('mm.core')
                     return callDBFunction(db, 'put', store, value, id);
                 },
                 /**
+                 * Add an entry to a store, returning a synchronous value.
+                 * Please use this function only if synchronous is a must, you should always use $mmDB#insert.
+                 * Take into account that the value will be returned BEFORE the value is actually stored. The value of the
+                 * boolean returned only indicates if it has passed the first validation.
+                 *
+                 * @param {String} store Name of the store.
+                 * @param {Object} value Object to store. Primary key (keyPath) is required.
+                 * @return {Boolean}     True if data to insert is valid, false otherwise. Returning true doesn't mean that the
+                 *                       data has been stored, this function can return true but the insertion can still fail.
+                 */
+                insertSync: function(store, value) {
+                    if (db) {
+                        try {
+                            db.put(store, value);
+                            return true;
+                        } catch(ex) {
+                            $log.error('Error executing function sync put to DB '+db.getName());
+                            $log.error(ex.name+': '+ex.message);
+                        }
+                    }
+
+                    return false;
+                },
+                /**
                  * Query the database.
                  *
                  * @param {String} store Name of the store.
