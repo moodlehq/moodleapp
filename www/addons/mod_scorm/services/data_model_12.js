@@ -385,7 +385,7 @@ angular.module('mm.addons.mod_scorm')
                     }
                 }
                 if (getEl('cmi.core.lesson_mode') == $mmaModScorm.MODEBROWSE) {
-                    if (datamodel[scoid]['cmi.core.lesson_status'].defaultvalue == '' && getEl('cmi.core.lesson_status') == 'not attempted') {
+                    if (datamodel[self.scoId]['cmi.core.lesson_status'].defaultvalue == '' && getEl('cmi.core.lesson_status') == 'not attempted') {
                         setEl('cmi.core.lesson_status', 'browsed');
                     }
                 }
@@ -423,19 +423,19 @@ angular.module('mm.addons.mod_scorm')
 
                         // Check if this specific element is not defined in the datamodel,
                         // but the generic element name is.
-                        if (typeof datamodel[scoid][element] == "undefined" &&
-                                typeof datamodel[scoid][elementmodel] != "undefined") {
+                        if (typeof datamodel[self.scoId][element] == "undefined" &&
+                                typeof datamodel[self.scoId][elementmodel] != "undefined") {
 
                             // Add this specific element to the data model (by cloning
                             // the generic element) so we can track changes to it.
-                            datamodel[scoid][element] = CloneObj(datamodel[scoid][elementmodel]);
+                            datamodel[self.scoId][element] = CloneObj(datamodel[self.scoId][elementmodel]);
                         }
 
                         // Check if the current element exists in the datamodel.
-                        if (typeof datamodel[scoid][element] != "undefined") {
+                        if (typeof datamodel[self.scoId][element] != "undefined") {
 
                             // Make sure this is not a read only element.
-                            if (datamodel[scoid][element].mod != 'r') {
+                            if (datamodel[self.scoId][element].mod != 'r') {
 
                                 var el = {
                                     // Moodle stores the organizations and interactions using _n. instead .n.
@@ -444,21 +444,21 @@ angular.module('mm.addons.mod_scorm')
                                 };
 
                                 // Check if the element has a default value.
-                                if (typeof datamodel[scoid][element].defaultvalue != "undefined") {
+                                if (typeof datamodel[self.scoId][element].defaultvalue != "undefined") {
 
                                     // Check if the default value is different from the current value.
-                                    if (datamodel[scoid][element].defaultvalue != el['value'] ||
-                                            typeof datamodel[scoid][element].defaultvalue != typeof(el['value'])) {
+                                    if (datamodel[self.scoId][element].defaultvalue != el['value'] ||
+                                            typeof datamodel[self.scoId][element].defaultvalue != typeof(el['value'])) {
 
                                         data.push(el);
 
                                         // Update the element default to reflect the current committed value.
-                                        datamodel[scoid][element].defaultvalue = el['value'];
+                                        datamodel[self.scoId][element].defaultvalue = el['value'];
                                     }
                                 } else {
                                     data.push(el);
                                     // No default value for the element, so set it now.
-                                    datamodel[scoid][element].defaultvalue = el['value'];
+                                    datamodel[self.scoId][element].defaultvalue = el['value'];
                                 }
                             }
                         }
@@ -528,26 +528,26 @@ angular.module('mm.addons.mod_scorm')
                 if (element != "") {
                     expression = new RegExp(CMIIndex,'g');
                     elementmodel = String(element).replace(expression,'.n.');
-                    if (typeof datamodel[scoid][elementmodel] != "undefined") {
-                        if (datamodel[scoid][elementmodel].mod != 'w') {
+                    if (typeof datamodel[self.scoId][elementmodel] != "undefined") {
+                        if (datamodel[self.scoId][elementmodel].mod != 'w') {
                             errorCode = "0";
                             return getEl(element);
                         } else {
-                            errorCode = datamodel[scoid][elementmodel].readerror;
+                            errorCode = datamodel[self.scoId][elementmodel].readerror;
                         }
                     } else {
                         childrenstr = '._children';
                         countstr = '._count';
                         if (elementmodel.substr(elementmodel.length - childrenstr.length,elementmodel.length) == childrenstr) {
                             parentmodel = elementmodel.substr(0,elementmodel.length - childrenstr.length);
-                            if (typeof datamodel[scoid][parentmodel] != "undefined") {
+                            if (typeof datamodel[self.scoId][parentmodel] != "undefined") {
                                 errorCode = "202";
                             } else {
                                 errorCode = "201";
                             }
                         } else if (elementmodel.substr(elementmodel.length - countstr.length,elementmodel.length) == countstr) {
                             parentmodel = elementmodel.substr(0,elementmodel.length - countstr.length);
-                            if (typeof datamodel[scoid][parentmodel] != "undefined") {
+                            if (typeof datamodel[self.scoId][parentmodel] != "undefined") {
                                 errorCode = "203";
                             } else {
                                 errorCode = "201";
@@ -571,9 +571,9 @@ angular.module('mm.addons.mod_scorm')
                 if (element != "") {
                     expression = new RegExp(CMIIndex,'g');
                     elementmodel = String(element).replace(expression,'.n.');
-                    if (typeof datamodel[scoid][elementmodel] != "undefined") {
-                        if (datamodel[scoid][elementmodel].mod != 'r') {
-                            expression = new RegExp(datamodel[scoid][elementmodel].format);
+                    if (typeof datamodel[self.scoId][elementmodel] != "undefined") {
+                        if (datamodel[self.scoId][elementmodel].mod != 'r') {
+                            expression = new RegExp(datamodel[self.scoId][elementmodel].format);
                             value = value + '';
                             matches = value.match(expression);
                             if (matches != null) {
@@ -632,8 +632,8 @@ angular.module('mm.addons.mod_scorm')
                                     if (scorm.autocommit && !(timeout)) {
                                         timeout = setTimeout(self.LMSCommit, 60000, [""]);
                                     }
-                                    if (typeof datamodel[scoid][elementmodel].range != "undefined") {
-                                        range = datamodel[scoid][elementmodel].range;
+                                    if (typeof datamodel[self.scoId][elementmodel].range != "undefined") {
+                                        range = datamodel[self.scoId][elementmodel].range;
                                         ranges = range.split('#');
                                         value = value * 1.0;
                                         if ((value >= ranges[0]) && (value <= ranges[1])) {
@@ -641,7 +641,7 @@ angular.module('mm.addons.mod_scorm')
                                             errorCode = "0";
                                             return "true";
                                         } else {
-                                            errorCode = datamodel[scoid][elementmodel].writeerror;
+                                            errorCode = datamodel[self.scoId][elementmodel].writeerror;
                                         }
                                     } else {
                                         if (element == 'cmi.comments') {
@@ -654,10 +654,10 @@ angular.module('mm.addons.mod_scorm')
                                     }
                                 }
                             } else {
-                                errorCode = datamodel[scoid][elementmodel].writeerror;
+                                errorCode = datamodel[self.scoId][elementmodel].writeerror;
                             }
                         } else {
-                            errorCode = datamodel[scoid][elementmodel].writeerror;
+                            errorCode = datamodel[self.scoId][elementmodel].writeerror;
                         }
                     } else {
                         errorCode = "201";
