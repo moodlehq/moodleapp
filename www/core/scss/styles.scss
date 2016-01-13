@@ -91,6 +91,28 @@ em {
   }
 }
 
+// Large centered avatar.
+.item-avatar-center {
+    @extend .item-avatar;
+    text-align: center;
+    padding-left: 16px;
+    &.item-complex .item-content {
+        text-align: center;
+        padding-left: 49px;
+    }
+    > img:first-child,
+    &.item-complex .item-content > img:first-child {
+        position: static;
+        width: 100px;
+        height: 100px;
+        max-width: 100px;
+        max-height: 100px;
+        margin-bottom: 10px;
+        padding: 4px;
+        border: 1px solid #ddd;
+    }
+}
+
 // Message item.
 .item-message {
   clear: both;
@@ -126,6 +148,10 @@ em {
       height: 16px;
     }
   }
+}
+
+.item-stacked-label {
+    background-color: $item-default-bg;
 }
 
 // Split pane.

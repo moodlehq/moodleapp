@@ -1,5 +1,5 @@
 // Variables.
-$bar-side-menu-height: 80px !default;
+$bar-side-menu-height: 160px !default;
 $bar-side-menu-color: $bar-content-bg !default;
 $bar-side-menu-border-color: $bar-content-border !default;
 $bar-side-menu-text-color: $bar-content-text !default;
@@ -12,8 +12,16 @@ $bar-side-menu-text-color: $bar-content-text !default;
     background: transparent;
     border: none;
   }
-  .item-avatar {
+  .item-avatar-center {
     margin-top: 0px !important; // MOBILE-959: Added to fix side menu header in iOS.
+    padding-top: $item-padding / 2;
+    padding-left: $item-media-width + ($item-padding * 2);
+    img {
+      width: 80px;
+      height: 80px;
+      max-width: 80px;
+      max-height: 80px;
+    }
     h2,
     p {
       color: $bar-side-menu-text-color;
