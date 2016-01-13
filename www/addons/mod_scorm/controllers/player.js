@@ -65,7 +65,7 @@ angular.module('mm.addons.mod_scorm')
         // Check if current attempt is incomplete.
         var promise;
         if (attempt > 0) {
-            promise = $mmaModScorm.isAttemptIncomplete(scorm, attempt, offline);
+            promise = $mmaModScorm.isAttemptIncomplete(scorm.id, attempt, offline);
         } else {
             // User doesn't have attempts. Last attempt is not incomplete (since he doesn't have any).
             promise = $q.when(false);
@@ -117,7 +117,7 @@ angular.module('mm.addons.mod_scorm')
         $scope.loadingToc = true;
         // We need to check incomplete again: attempt number might have changed in determineAttemptAndMode,
         // or attempt status might have changed due to an action in the current SCO.
-        return $mmaModScorm.isAttemptIncomplete(scorm, attempt, offline).then(function(incomplete) {
+        return $mmaModScorm.isAttemptIncomplete(scorm.id, attempt, offline).then(function(incomplete) {
             scorm.incomplete = incomplete;
 
             // Get TOC.

@@ -42,5 +42,7 @@
 	"reviewmode": "Review mode",
 	"scormstatusnotdownloaded": "This SCORM is not downloaded. It will be automatically downloaded when you open it.",
 	"scormstatusoutdated": "This SCORM has been modified since the last download. It will be automatically downloaded when you open it.",
-	"suspended": "Suspended"
+	"suspended": "Suspended",
+	"warningofflinedatadeleted": "Some offline data of the attempt {{number}} has been deleted because it couldn't be created into a new attempt.",
+	"warningsynconlineincomplete": "Some attempts couldn't be synchronized with the site because the last online attempt is not finished. Please finish the online attempt first."
 }

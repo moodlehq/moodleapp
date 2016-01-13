@@ -71,7 +71,7 @@ angular.module('mm.addons.mod_scorm')
                 attempts = attemptsData;
                 lastAttempt = attempts.lastAttempt.number;
                 lastOffline = attempts.lastAttempt.offline;
-                return $mmaModScorm.isAttemptIncomplete(scorm, lastAttempt, lastOffline).then(function(incomplete) {
+                return $mmaModScorm.isAttemptIncomplete(scorm.id, lastAttempt, lastOffline).then(function(incomplete) {
                     var promises = [];
 
                     scorm.incomplete = incomplete;
