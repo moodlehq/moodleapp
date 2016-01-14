@@ -222,7 +222,12 @@ angular.module('mm.addons.mod_scorm')
             element: 'x.start.time',
             value: $mmUtil.timestamp()
         }];
-        return $mmaModScorm.saveTracks(scoId, attempt, tracks, offline, scorm);
+        return $mmaModScorm.saveTracks(scoId, attempt, tracks, offline, scorm).then(function() {
+            if (!offline) {
+                // New online attempt created, update cached data about online attempts.
+                $mmaModScorm.getAttemptCount(scorm.id, undefined, false, true);
+            }
+        });
     }
 
     $scope.showToc = $mmaModScorm.displayTocInPlayer(scorm);
