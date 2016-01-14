@@ -10,7 +10,7 @@
                             <mm-format-text watch="true">{{section.name}}</mm-format-text>
 
                             <button ng-if="section.showDownload && !section.isDownloading" ng-click="prefetch($event, section)" class="button button-icon" aria-label="{{ 'mm.core.download' | translate }}">
-                                <i class="icon ion-ios-cloud-download"></i>
+                                <i class="icon ion-ios-cloud-download-outline"></i>
                             </button>
                             <button ng-if="section.showRefresh && !section.isDownloading" ng-click="prefetch($event, section)" class="button button-icon" aria-label="{{ 'mm.core.refresh' | translate }}">
                                 <i class="icon ion-android-refresh"></i>

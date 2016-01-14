@@ -226,5 +226,22 @@ angular.module('mm.core')
         return url;
     };
 
+    /**
+     * Remove protocol and www from a URL.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#removeProtocolAndWWW
+     * @param  {String} url URL to treat.
+     * @return {String}     Treated URL.
+     */
+    self.removeProtocolAndWWW = function(url) {
+        // Remove protocol.
+        url = url.replace(/.*?:\/\//g, '');
+        // Remove www.
+        url = url.replace(/^www./, '');
+        return url;
+    };
+
     return self;
 });

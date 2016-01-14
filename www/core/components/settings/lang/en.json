@@ -1,6 +1,6 @@
 {
     "about": "About",
-    "appname": "SLIIT Course Web {{2.9}}",
+    "appname": "Moodle Mobile {{version}}",
     "appready": "App ready",
     "cacheexpirationtime": "Cache expiration time (miliseconds)",
     "cordovadevicemodel": "Cordova Device model",
