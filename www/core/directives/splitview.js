@@ -40,7 +40,7 @@ angular.module('mm.core')
  *
  * @param {String} component   Component. In tablet, the new view will be named after the component.
  */
-.directive('mmSplitView', function($log, $state, $ionicPlatform, $timeout, $mmUtil, mmCoreSplitViewLoad) {
+.directive('mmSplitView', function($log, $state, $ionicPlatform, $timeout, mmCoreSplitViewLoad) {
 
     $log = $log.getInstance('mmSplitView');
 
@@ -160,8 +160,7 @@ angular.module('mm.core')
         link: function(scope, element, attrs, controller) {
             var el = element[0],
                 menu = angular.element(el.querySelector('.mm-split-pane-menu')),
-                menuState = $state.$current.name,
-                menuParams = $state.params,
+                menuState = $state.current.name,
                 menuWidth = attrs.menuWidth,
                 component = attrs.component || 'tablet';
 
@@ -195,8 +194,7 @@ angular.module('mm.core')
             // Load last opened link when we re-enter the same state. We use $stateChangeSuccess instead of $ionicView.enter
             // because $ionicView.enter is not triggered when going to the same state.
             scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
-                // Compare that name and params are similar. We'll only compare 1st level of params, it's not a deep compare.
-                if (toState.name === menuState && $mmUtil.basicLeftCompare(toParams, menuParams, 1)) {
+                if (toState.name === menuState) {
                     controller.loadLink();
                 }
             });

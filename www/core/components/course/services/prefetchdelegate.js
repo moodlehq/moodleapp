@@ -133,9 +133,6 @@ angular.module('mm.core')
                 promises = [];
 
             angular.forEach(modules, function(module) {
-                // Prevent null contents.
-                module.contents = module.contents || [];
-
                 // Check if the module has a prefetch handler.
                 var handler = enabledHandlers[module.modname];
                 if (handler) {
@@ -167,7 +164,6 @@ angular.module('mm.core')
          */
         self.getModuleStatus = function(module, revision, timemodified) {
             var handler = enabledHandlers[module.modname];
-            module.contents = module.contents || [];
 
             if (handler) {
                 var files = module.contents;
@@ -228,9 +224,6 @@ angular.module('mm.core')
                 // Check if the module has a prefetch handler.
                 var handler = enabledHandlers[module.modname],
                     promise;
-                // Prevent null contents.
-                module.contents = module.contents || [];
-
                 if (handler) {
                     var packageId = $mmFilepool.getPackageId(handler.component, module.id);
                     if (!refresh && statusCache[packageId] && statusCache[packageId].status) {
@@ -316,9 +309,6 @@ angular.module('mm.core')
             deferreds[siteid][id] = deferred;
 
             angular.forEach(modules, function(module) {
-                // Prevent null contents.
-                module.contents = module.contents || [];
-
                 // Check if the module has a prefetch handler.
                 var handler = enabledHandlers[module.modname];
                 if (handler) {

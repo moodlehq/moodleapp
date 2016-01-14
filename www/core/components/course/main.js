@@ -24,7 +24,7 @@ angular.module('mm.core.course', ['mm.core.courses'])
     .state('site.mm_course', {
         url: '/mm_course',
         params: {
-            courseid: null
+            course: null
         },
         views: {
             'site': {

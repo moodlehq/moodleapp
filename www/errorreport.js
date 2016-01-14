@@ -16,7 +16,7 @@
 // Using JS confirm function we are sure that the user get notified in a Mobile device.
 // This script should be added at the begining of the index.html and it should only use native javascript functions.
 
-var appVersion = '2.7 (2008)',
+var appVersion = '2.9 (2008)',
     reportInBackgroundName = 'mmCoreReportInBackground',
     errors = [],
     ignoredFiles = ['www/index.html#/site/mod_page', 'www/index.html#/site/mod_resource', 'www/index.html#/site/mm_course-section'];
@@ -71,7 +71,7 @@ window.onerror = function(msg, url, lineNumber) {
          */
         function reportError() {
             if (!errorReported) {
-                errorReported = true;
+                errorReported = false;
                 var reportUrl = 'http://prototype.moodle.net/mobile/feedback/mmfeedback.php?message=' + encodeURIComponent(msg) +
                                 '&file=' + encodeURIComponent(url) + '&line=' + encodeURIComponent(lineNumber) + '&appv=' +
                                 encodeURIComponent(appVersion) + '&bg=' + (reportInBackground ? 1 : 0);

@@ -343,17 +343,6 @@ angular.module('mm.core')
      * Check if local_mobile has been installed in Moodle but the app is not using it.
      */
 
-    /**
-     * @module mm.core
-     * @ngdoc method
-     * @name $mmSite#containsUrl
-     * @param  {String}  url URL to check.
-     * @return {Boolean}     True if URL belongs to this site, false otherwise.
-     * @description
-     *
-     * Check if a URL belongs to this site.
-     */
-
     // Replicate all Site methods refined in $mmSitesFactory to be used with current site.
     angular.forEach(siteMethods, function(method) {
         self[method] = function() {

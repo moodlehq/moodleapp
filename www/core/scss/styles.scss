@@ -83,12 +83,6 @@ em {
   p {
     margin: 0px;
   }
-  &.item-button-right {
-    > .button,
-    > .spinner {
-      top: $item-padding;
-    }
-  }
 }
 
 // Message item.

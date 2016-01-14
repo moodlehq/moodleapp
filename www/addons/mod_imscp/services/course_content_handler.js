@@ -58,7 +58,7 @@ angular.module('mm.addons.mod_imscp')
 
             downloadBtn = {
                 hidden: true,
-                icon: 'ion-ios-cloud-download-outline',
+                icon: 'ion-ios-cloud-download',
                 label: 'mm.core.download',
                 action: function(e) {
                     e.preventDefault();

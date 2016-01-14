@@ -755,21 +755,6 @@ angular.module('mm.core')
         };
 
         /**
-         * Check if a URL belongs to this site.
-         *
-         * @param  {String}  url URL to check.
-         * @return {Boolean}     True if URL belongs to this site, false otherwise.
-         */
-        Site.prototype.containsUrl = function(url) {
-            if (!url) {
-                return false;
-            }
-            var siteurl = $mmText.removeProtocolAndWWW(this.siteurl);
-            url = $mmText.removeProtocolAndWWW(url);
-            return url.indexOf(siteurl) > -1;
-        };
-
-        /**
          * Invalidate entries from the cache.
          *
          * @param  {Object} db      DB the entries belong to.

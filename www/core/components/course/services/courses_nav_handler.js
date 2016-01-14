@@ -56,7 +56,7 @@ angular.module('mm.core.course')
                 $scope.title = 'mm.course.contents';
 
                 $scope.action = function(e, course) {
-                    $state.go('site.mm_course', {courseid: course.id});
+                    $state.go('site.mm_course', {course: course});
                     e.preventDefault();
                     e.stopPropagation();
                 };

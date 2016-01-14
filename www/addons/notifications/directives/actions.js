@@ -21,17 +21,27 @@ angular.module('mm.addons.notifications')
  * @ngdoc directive
  * @name mmaNotificationsActions
  */
-.directive('mmaNotificationsActions', function($log, $mmContentLinksDelegate) {
+.directive('mmaNotificationsActions', function($log, $mmModuleActionsDelegate, $state) {
     $log = $log.getInstance('mmaNotificationsActions');
 
     // Directive link function.
-    function link(scope) {
+    function link(scope, element, attrs) {
         if (scope.contexturl) {
-            scope.actions = $mmContentLinksDelegate.getActionsFor(scope.contexturl, scope.courseid);
+            scope.actions = $mmModuleActionsDelegate.getActionsFor(scope.contexturl, scope.courseid);
         }
     }
 
+    // Directive controller.
+    function controller($scope) {
+        $scope.jump = function(e, state, stateParams) {
+            e.stopPropagation();
+            e.preventDefault();
+            $state.go(state, stateParams);
+        };
+    }
+
     return {
+        controller: controller,
         link: link,
         restrict: 'E',
         scope: {
