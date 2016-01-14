@@ -188,7 +188,21 @@ angular.module('mm.addons.mod_scorm')
                 element: 'cmi.core.lesson_status',
                 value: 'completed'
             }];
-            $mmaModScorm.saveTracks(sco.id, attempt, tracks, offline, scorm).then(function() {
+            $mmaModScorm.saveTracks(sco.id, attempt, tracks, offline, scorm).catch(function() {
+                // Error saving data. We'll go offline if we're online and the asset is not marked as completed already.
+                if (!offline) {
+                    return $mmaModScorm.getScormUserData(scorm.id, attempt, offline).then(function(data) {
+                        if (!data[sco.id] || data[sco.id].userdata['cmi.core.lesson_status'] != 'completed') {
+                            // Go offline.
+                            return $mmaModScormHelper.convertAttemptToOffline(scorm, attempt).then(function() {
+                                offline = true;
+                                $mmaModScormDataModel12.setOffline(true);
+                                return $mmaModScorm.saveTracks(sco.id, attempt, tracks, offline, scorm);
+                            }).catch(showError);
+                        }
+                    });
+                }
+            }).then(function() {
                 // Refresh TOC, some prerequisites might have changed.
                 refreshToc();
             });

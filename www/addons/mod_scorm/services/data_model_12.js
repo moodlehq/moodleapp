@@ -43,6 +43,7 @@ angular.module('mm.addons.mod_scorm')
 
         // Current SCO Id.
         self.scoId = scoId;
+        self.offline = offline;
 
         // Convenience function to trigger events.
         function triggerEvent(name) {
@@ -394,12 +395,12 @@ angular.module('mm.addons.mod_scorm')
             } else {
                 tracks = CollectData();
             }
-            var success = $mmaModScorm.saveTracksSync(self.scoId, attempt, tracks, offline, scorm, currentUserData);
-            if (!offline && !success) {
+            var success = $mmaModScorm.saveTracksSync(self.scoId, attempt, tracks, self.offline, scorm, currentUserData);
+            if (!self.offline && !success) {
                 // Failure storing data in online. Go offline.
-                offline = true;
+                self.offline = true;
                 triggerEvent(mmaModScormEventGoOffline);
-                return $mmaModScorm.saveTracksSync(self.scoId, attempt, tracks, offline, scorm, currentUserData);
+                return $mmaModScorm.saveTracksSync(self.scoId, attempt, tracks, self.offline, scorm, currentUserData);
             }
             return success;
         }
@@ -733,8 +734,7 @@ angular.module('mm.addons.mod_scorm')
      *
      * @module mm.addons.mod_scorm
      * @ngdoc method
-     * @name $mmaModScorm#initAPI
-     *
+     * @name $mmaModScormDataModel12#initAPI
      * @param  {Object} scorm    The SCORM object.
      * @param  {Number} scoId    The SCO id.
      * @param  {Number} attempt  The attempt number.
@@ -751,10 +751,25 @@ angular.module('mm.addons.mod_scorm')
      * Set a different SCO id for the current API object.
      * The scoId is like a pointer to be able to retrieve the SCO default values and set the new ones in the overall SCORM data structure
      *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScormDataModel12#loadSco
      * @param  {Number} scoId The new SCO id.
      */
     self.loadSco = function(scoId) {
         $window.API.scoId = scoId;
+    };
+
+    /**
+     * Set offline mode to true or false.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScormDataModel12#setOffline
+     * @param  {Boolean} offline True if offline, false otherwise.
+     */
+    self.setOffline = function(offline) {
+        $window.API.offline = offline;
     };
 
     return self;
