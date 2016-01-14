@@ -115,19 +115,19 @@ angular.module('mm.addons.mod_scorm')
      * @ngdoc method
      * @name $mmaModScorm#countAttemptsLeft
      * @param {Object} scorm         SCORM.
-     * @param {Number} attemptscount Number of attempts performed.
+     * @param {Number} attemptsCount Number of attempts performed.
      * @return {Number}              Number of attempts left.
      */
-    self.countAttemptsLeft = function(scorm, attemptscount) {
+    self.countAttemptsLeft = function(scorm, attemptsCount) {
         if (scorm.maxattempt == 0) {
             return Number.MAX_VALUE; // Unlimited attempts.
         }
 
-        attemptscount = parseInt(attemptscount, 10);
-        if (isNaN(attemptscount)) {
+        attemptsCount = parseInt(attemptsCount, 10);
+        if (isNaN(attemptsCount)) {
             return -1;
         }
-        return scorm.maxattempt - attemptscount;
+        return scorm.maxattempt - attemptsCount;
     };
 
     /**

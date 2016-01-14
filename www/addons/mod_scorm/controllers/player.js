@@ -59,45 +59,50 @@ angular.module('mm.addons.mod_scorm')
 
     // Determine the attempt to use, the mode (normal/preview) and if it's offline or online.
     function determineAttemptAndMode(attemptsData) {
-        attempt = attemptsData.lastAttempt.number;
-        offline = attemptsData.lastAttempt.offline;
-
-        // Check if current attempt is incomplete.
-        var promise;
-        if (attempt > 0) {
-            promise = $mmaModScorm.isAttemptIncomplete(scorm.id, attempt, offline);
-        } else {
-            // User doesn't have attempts. Last attempt is not incomplete (since he doesn't have any).
-            promise = $q.when(false);
-        }
-
-        return promise.then(function(incomplete) {
-            // Determine mode and attempt to use.
-            var result = $mmaModScorm.determineAttemptAndMode(scorm, mode, attempt, newAttempt, incomplete);
-
-            if (result.attempt > attempt) {
-                // We're creating a new attempt.
-                if (offline) {
-                    // Last attempt was offline, so we'll create a new offline attempt.
-                    promise = $mmaModScormHelper.createOfflineAttempt(scorm, result.attempt, attemptsData.online.length);
-                } else {
-                    // Last attempt was online, verify that we can create a new online attempt.
-                    promise = $mmaModScorm.getScormUserData(scorm.id, result.attempt).catch(function() {
-                        // Cannot communicate with the server, create an offline attempt.
-                        offline = true;
-                        return $mmaModScormHelper.createOfflineAttempt(scorm, result.attempt, attemptsData.online.length);
-                    });
-                }
-            } else {
-                promise = $q.when();
+        return $mmaModScormHelper.determineAttemptToContinue(scorm, attemptsData).then(function(data) {
+            attempt = data.number;
+            offline = data.offline;
+            if (attempt != attemptsData.lastAttempt.number) {
+                $scope.attemptToContinue = attempt;
             }
 
-            return promise.then(function() {
-                mode = result.mode;
-                newAttempt = result.newAttempt;
-                attempt = result.attempt;
-                $scope.isBrowse = mode === $mmaModScorm.MODEBROWSE;
-                $scope.isReview = mode === $mmaModScorm.MODEREVIEW;
+            // Check if current attempt is incomplete.
+            var promise;
+            if (attempt > 0) {
+                promise = $mmaModScorm.isAttemptIncomplete(scorm.id, attempt, offline);
+            } else {
+                // User doesn't have attempts. Last attempt is not incomplete (since he doesn't have any).
+                promise = $q.when(false);
+            }
+
+            return promise.then(function(incomplete) {
+                // Determine mode and attempt to use.
+                var result = $mmaModScorm.determineAttemptAndMode(scorm, mode, attempt, newAttempt, incomplete);
+
+                if (result.attempt > attempt) {
+                    // We're creating a new attempt.
+                    if (offline) {
+                        // Last attempt was offline, so we'll create a new offline attempt.
+                        promise = $mmaModScormHelper.createOfflineAttempt(scorm, result.attempt, attemptsData.online.length);
+                    } else {
+                        // Last attempt was online, verify that we can create a new online attempt. We ignore cache.
+                        promise = $mmaModScorm.getScormUserData(scorm.id, result.attempt, false, undefined, true).catch(function() {
+                            // Cannot communicate with the server, create an offline attempt.
+                            offline = true;
+                            return $mmaModScormHelper.createOfflineAttempt(scorm, result.attempt, attemptsData.online.length);
+                        });
+                    }
+                } else {
+                    promise = $q.when();
+                }
+
+                return promise.then(function() {
+                    mode = result.mode;
+                    newAttempt = result.newAttempt;
+                    attempt = result.attempt;
+                    $scope.isBrowse = mode === $mmaModScorm.MODEBROWSE;
+                    $scope.isReview = mode === $mmaModScorm.MODEREVIEW;
+                });
             });
         });
     }

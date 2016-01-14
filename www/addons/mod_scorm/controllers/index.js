@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_scorm')
  */
 .controller('mmaModScormIndexCtrl', function($scope, $stateParams, $mmaModScorm, $mmUtil, $q, $mmCourse, $ionicScrollDelegate,
             $mmCoursePrefetchDelegate, $mmaModScormHelper, $mmEvents, $mmSite, $state, mmCoreOutdated, mmCoreNotDownloaded,
-            mmCoreDownloading, mmaModScormComponent, mmCoreEventPackageStatusChanged, $ionicHistory, $ionicScrollDelegate) {
+            mmCoreDownloading, mmaModScormComponent, mmCoreEventPackageStatusChanged, $ionicHistory) {
 
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
@@ -69,36 +69,44 @@ angular.module('mm.addons.mod_scorm')
             // Get the number of attempts and check if SCORM is incomplete.
             return $mmaModScorm.getAttemptCount(scorm.id).then(function(attemptsData) {
                 attempts = attemptsData;
-                lastAttempt = attempts.lastAttempt.number;
-                lastOffline = attempts.lastAttempt.offline;
-                return $mmaModScorm.isAttemptIncomplete(scorm.id, lastAttempt, lastOffline).then(function(incomplete) {
-                    var promises = [];
-
-                    scorm.incomplete = incomplete;
-                    scorm.numAttempts = attempts.total;
-                    scorm.grademethodReadable = $mmaModScorm.getScormGradeMethod(scorm);
-                    scorm.attemptsLeft = $mmaModScorm.countAttemptsLeft(scorm, lastAttempt);
-                    if (scorm.forceattempt && scorm.incomplete) {
-                        $scope.scormOptions.newAttempt = true;
+                // Determine the attempt that will be continued or reviewed.
+                return $mmaModScormHelper.determineAttemptToContinue(scorm, attempts).then(function(attempt) {
+                    lastAttempt = attempt.number;
+                    lastOffline = attempt.offline;
+                    if (lastAttempt != attempts.lastAttempt.number) {
+                        $scope.attemptToContinue = lastAttempt;
+                    } else {
+                        delete $scope.attemptToContinue;
                     }
 
-                    promises.push(getReportedGrades());
+                    return $mmaModScorm.isAttemptIncomplete(scorm.id, lastAttempt, lastOffline).then(function(incomplete) {
+                        var promises = [];
 
-                    promises.push(fetchStructure());
+                        scorm.incomplete = incomplete;
+                        scorm.numAttempts = attempts.total;
+                        scorm.grademethodReadable = $mmaModScorm.getScormGradeMethod(scorm);
+                        scorm.attemptsLeft = $mmaModScorm.countAttemptsLeft(scorm, attempts.lastAttempt.number);
+                        if (scorm.forceattempt && scorm.incomplete) {
+                            $scope.scormOptions.newAttempt = true;
+                        }
 
-                    if (!scorm.packagesize && $scope.errorMessage === '') {
-                        // SCORM is supported but we don't have package size. Try to calculate it.
-                        promises.push($mmaModScorm.calculateScormSize(scorm).then(function(size) {
-                            scorm.packagesize = size;
-                        }));
-                    }
+                        promises.push(getReportedGrades());
 
-                    // Handle status. We don't add getStatus to promises because it should be fast.
-                    setStatusListener();
-                    getStatus().then(showStatus);
+                        promises.push(fetchStructure());
 
-                    return $q.all(promises);
+                        if (!scorm.packagesize && $scope.errorMessage === '') {
+                            // SCORM is supported but we don't have package size. Try to calculate it.
+                            promises.push($mmaModScorm.calculateScormSize(scorm).then(function(size) {
+                                scorm.packagesize = size;
+                            }));
+                        }
 
+                        // Handle status. We don't add getStatus to promises because it should be fast.
+                        setStatusListener();
+                        getStatus().then(showStatus);
+
+                        return $q.all(promises);
+                    });
                 });
             }).catch(function(message) {
                 return showError(message);
