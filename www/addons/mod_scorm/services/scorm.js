@@ -14,6 +14,19 @@
 
 angular.module('mm.addons.mod_scorm')
 
+.constant('mmaModScormSynchronizationStore', 'mod_scorm_sync')
+
+.config(function($mmSitesFactoryProvider, mmaModScormSynchronizationStore) {
+    var stores = [
+        {
+            name: mmaModScormSynchronizationStore,
+            keyPath: 'scormid',
+            indexes: []
+        }
+    ];
+    $mmSitesFactoryProvider.registerStores(stores);
+})
+
 /**
  * SCORM service.
  *
@@ -21,7 +34,7 @@ angular.module('mm.addons.mod_scorm')
  * @ngdoc service
  * @name $mmaModScorm
  */
-.factory('$mmaModScorm', function($mmSite, $q, $translate, $mmLang, $mmFilepool, $mmFS, $mmWS, $sce, $mmaModScormOnline,
+.factory('$mmaModScorm', function($mmSite, $q, $translate, $mmLang, $mmFilepool, $mmFS, $mmWS, $sce, $mmaModScormOnline, $state,
             $mmaModScormOffline, $mmUtil, $log, mmaModScormComponent, mmCoreNotDownloaded) {
     $log = $log.getInstance('$mmaModScorm');
 
@@ -56,7 +69,7 @@ angular.module('mm.addons.mod_scorm')
      * @return {Number}                 Grade. -1 if no grade.
      */
     self.calculateScormGrade = function(scorm, onlineAttempts) {
-        if (!Object.keys(onlineAttempts).length) {
+        if (!onlineAttempts || !Object.keys(onlineAttempts).length) {
             return -1;
         }
 
@@ -916,17 +929,15 @@ angular.module('mm.addons.mod_scorm')
     }
 
     /**
-     * Get a SCORM.
+     * Get a SCORM with key=value. If more than one is found, only the first will be returned.
      *
-     * @module mm.addons.mod_scorm
-     * @ngdoc method
-     * @name $mmaModScorm#getScorm
-     * @param {Number} courseid  Course ID.
-     * @param {Number} cmid      Course module ID.
-     * @parma {String} moduleurl Module UR:
-     * @return {Promise}         Promise resolved when the SCORM is retrieved.
+     * @param  {Number} courseid  Course ID.
+     * @param  {String} key       Name of the property to check.
+     * @param  {Mixed} value      Value to search.
+     * @param  {String} moduleurl Module URL.
+     * @return {Promise}          Promise resolved when the SCORM is retrieved.
      */
-    self.getScorm = function(courseid, cmid, moduleurl) {
+    function getScorm(courseid, key, value, moduleurl) {
         var params = {
                 courseids: [courseid]
             },
@@ -938,7 +949,7 @@ angular.module('mm.addons.mod_scorm')
             if (response && response.scorms) {
                 var currentScorm;
                 angular.forEach(response.scorms, function(scorm) {
-                    if (scorm.coursemodule == cmid) {
+                    if (!currentScorm && scorm[key] == value) {
                         currentScorm = scorm;
                     }
                 });
@@ -957,6 +968,36 @@ angular.module('mm.addons.mod_scorm')
             }
             return $q.reject();
         });
+    }
+
+    /**
+     * Get a SCORM by module ID.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScorm#getScorm
+     * @param {Number} courseid  Course ID.
+     * @param {Number} cmid      Course module ID.
+     * @parma {String} moduleurl Module URL.
+     * @return {Promise}         Promise resolved when the SCORM is retrieved.
+     */
+    self.getScorm = function(courseid, cmid, moduleurl) {
+        return getScorm(courseid, 'coursemodule', cmid, moduleurl);
+    };
+
+    /**
+     * Get a SCORM by SCORM ID.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScorm#getScormById
+     * @param {Number} courseid  Course ID.
+     * @param {Number} cmid      Course module ID.
+     * @parma {String} moduleurl Module URL.
+     * @return {Promise}         Promise resolved when the SCORM is retrieved.
+     */
+    self.getScormById = function(courseid, id, moduleurl) {
+        return getScorm(courseid, 'id', id, moduleurl);
     };
 
     /**
@@ -1095,6 +1136,19 @@ angular.module('mm.addons.mod_scorm')
                 $mmSite.wsAvailable('mod_scorm_get_scorm_user_data') &&
                 $mmSite.wsAvailable('mod_scorm_get_scorms_by_courses') &&
                 $mmSite.wsAvailable('mod_scorm_insert_scorm_tracks');
+    };
+
+    /**
+     * Check if a SCORM is being played right now.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScorm#isScormBeingPlayed
+     * @param  {Number}  scormId SCORM ID.
+     * @return {Boolean}         True if it's being played, false otherwise.
+     */
+    self.isScormBeingPlayed = function(scormId) {
+        return $state.current.name == 'site.mod_scorm-player' && $state.params.scorm && $state.params.scorm.id == scormId;
     };
 
     /**

@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_scorm')
  */
 .controller('mmaModScormPlayerCtrl', function($scope, $stateParams, $mmaModScorm, $mmUtil, $ionicPopover, $mmaModScormHelper,
             $mmEvents, $timeout, $q, mmaModScormEventUpdateToc, mmaModScormEventLaunchNextSco, mmaModScormEventLaunchPrevSco,
-            $mmaModScormDataModel12, mmaModScormEventGoOffline) {
+            $mmaModScormDataModel12, mmaModScormEventGoOffline, $mmaModScormSync) {
 
     var scorm = $stateParams.scorm || {},
         mode = $stateParams.mode || $mmaModScorm.MODENORMAL,
@@ -42,19 +42,22 @@ angular.module('mm.addons.mod_scorm')
 
     // Fetch data needed to play the SCORM.
     function fetchData() {
-        // Get attempts data.
-        return $mmaModScorm.getAttemptCount(scorm.id).then(function(attemptsData) {
-            return determineAttemptAndMode(attemptsData).then(function() {
-                // Fetch TOC and get user data.
-                var promises = [];
-                promises.push(fetchToc());
-                promises.push($mmaModScorm.getScormUserData(scorm.id, attempt, offline).then(function(data) {
-                    userData = data;
-                }));
+        // Wait for any ongoing sync to finish. We won't sync a SCORM while it's being played.
+        return $mmaModScormSync.waitForSync(scorm.id).then(function() {
+            // Get attempts data.
+            return $mmaModScorm.getAttemptCount(scorm.id).then(function(attemptsData) {
+                return determineAttemptAndMode(attemptsData).then(function() {
+                    // Fetch TOC and get user data.
+                    var promises = [];
+                    promises.push(fetchToc());
+                    promises.push($mmaModScorm.getScormUserData(scorm.id, attempt, offline).then(function(data) {
+                        userData = data;
+                    }));
 
-                return $q.all(promises);
-            });
-        }).catch(showError);
+                    return $q.all(promises);
+                });
+            }).catch(showError);
+        });
     }
 
     // Determine the attempt to use, the mode (normal/preview) and if it's offline or online.

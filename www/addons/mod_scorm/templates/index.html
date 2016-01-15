@@ -43,7 +43,15 @@
 	                    <p ng-if="scorm.grade != -1">{{ scorm.grade }}</p>
 	                    <p ng-if="scorm.grade == -1">{{ 'mma.mod_scorm.cannotcalculategrade' | translate }}</p>
 	                </div>
+	                <div class="item" ng-if="syncTime">
+	                	<p class="item-heading">{{ 'mma.mod_scorm.lastsync' | translate }}</p>
+	                    <p>{{ syncTime }}</p>
+	                </div>
 	            </div>
+                <!-- Synchronize button -->
+            	<div class="item item-text-wrap" ng-if="!errorMessage && showSyncButton">
+                    <button class="button button-block" ng-click="sync()">{{ 'mm.settings.synchronizenow' | translate }}</button>
+            	</div>
 	            <!-- TOC -->
 	            <div class="card" ng-if="(scorm.displaycoursestructure && organizations.length) || (organizations && organizations.length > 1)">
 	        		<div class="item item-divider">{{ 'mma.mod_scorm.contents' | translate }}</div>

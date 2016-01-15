@@ -33,6 +33,9 @@ angular.module('mm.addons.mod_scorm')
                     name: 'scormid'
                 },
                 {
+                    name: 'courseid'
+                },
+                {
                     name: 'timemodified'
                 },
                 {
@@ -128,6 +131,8 @@ angular.module('mm.addons.mod_scorm')
         // Get current data.
         return db.get(mmaModScormOfflineAttemptsStore, [scormId, userId, attempt]).then(function(entry) {
             newEntry.timecreated = entry.timecreated;
+            newEntry.courseid = entry.courseid;
+
             // Insert new attempt.
             return db.insert(mmaModScormOfflineAttemptsStore, newEntry).then(function() {
                 // Copy tracking data to the new attempt.
@@ -180,6 +185,7 @@ angular.module('mm.addons.mod_scorm')
                 scormid: scorm.id,
                 userid: userId,
                 attempt: attempt,
+                courseid: scorm.course,
                 timecreated: $mmUtil.timestamp(),
                 timemodified: $mmUtil.timestamp()
             };
@@ -299,6 +305,24 @@ angular.module('mm.addons.mod_scorm')
         });
         return response;
     }
+
+    /**
+     * Get all the offline attempts in current site.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScormOffline#getAllAttempts
+     * @return {Promise} Promise resolved when the offline attempts are retrieved.
+     */
+    self.getAllAttempts = function() {
+        var db = $mmSite.getDb();
+        if (!db) {
+            // No current site, return empty array.
+            return $q.when([]);
+        }
+
+        return db.getAll(mmaModScormOfflineAttemptsStore);
+    };
 
     /**
      * Get the offline attempts done by a user in the given SCORM.
