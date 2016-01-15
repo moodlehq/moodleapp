@@ -15,6 +15,7 @@
 angular.module('mm.core.settings', [])
 
 .constant('mmCoreSettingsReportInBackground', 'mmCoreReportInBackground')
+.constant('mmCoreSettingsSyncOnlyOnWifi', 'mmCoreSyncOnlyOnWifi')
 
 .config(function($stateProvider) {
 
