@@ -424,6 +424,8 @@ angular.module('mm.addons.mod_scorm')
             return;
         }
 
+        $scope.scormOptions.newAttempt = false; // Uncheck new attempt.
+
         var forwardView = $ionicHistory.forwardView();
         if (forwardView && forwardView.stateName === 'site.mod_scorm-player') {
             $scope.scormLoaded = false;
