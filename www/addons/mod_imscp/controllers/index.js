@@ -41,7 +41,9 @@ angular.module('mm.addons.mod_imscp')
     $scope.nextItem = '';
 
     $scope.items = $mmaModImscp.createItemList(module.contents);
-    currentItem = $scope.items[0].href;
+    if ($scope.items.length) {
+        currentItem = $scope.items[0].href;
+    }
 
     function loadItem(itemId) {
         currentItem = itemId;
@@ -60,7 +62,7 @@ angular.module('mm.addons.mod_imscp')
     }
 
     function fetchContent() {
-        if (module.contents) {
+        if (module.contents && module.contents.length) {
             var downloadFailed = false;
             return $mmaModImscp.downloadAllContent(module).catch(function() {
                 // Mark download as failed but go on since the main files could have been downloaded.
