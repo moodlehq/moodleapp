@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_scorm')
  */
 .controller('mmaModScormPlayerCtrl', function($scope, $stateParams, $mmaModScorm, $mmUtil, $ionicPopover, $mmaModScormHelper,
             $mmEvents, $timeout, $q, mmaModScormEventUpdateToc, mmaModScormEventLaunchNextSco, mmaModScormEventLaunchPrevSco,
-            $mmaModScormDataModel12, mmaModScormEventGoOffline) {
+            $mmaModScormDataModel12, mmaModScormEventGoOffline, $mmaModScormSync) {
 
     var scorm = $stateParams.scorm || {},
         mode = $stateParams.mode || $mmaModScorm.MODENORMAL,
@@ -42,62 +42,70 @@ angular.module('mm.addons.mod_scorm')
 
     // Fetch data needed to play the SCORM.
     function fetchData() {
-        // Get attempts data.
-        return $mmaModScorm.getAttemptCount(scorm.id).then(function(attemptsData) {
-            return determineAttemptAndMode(attemptsData).then(function() {
-                // Fetch TOC and get user data.
-                var promises = [];
-                promises.push(fetchToc());
-                promises.push($mmaModScorm.getScormUserData(scorm.id, attempt, offline).then(function(data) {
-                    userData = data;
-                }));
+        // Wait for any ongoing sync to finish. We won't sync a SCORM while it's being played.
+        return $mmaModScormSync.waitForSync(scorm.id).then(function() {
+            // Get attempts data.
+            return $mmaModScorm.getAttemptCount(scorm.id).then(function(attemptsData) {
+                return determineAttemptAndMode(attemptsData).then(function() {
+                    // Fetch TOC and get user data.
+                    var promises = [];
+                    promises.push(fetchToc());
+                    promises.push($mmaModScorm.getScormUserData(scorm.id, attempt, offline).then(function(data) {
+                        userData = data;
+                    }));
 
-                return $q.all(promises);
-            });
-        }).catch(showError);
+                    return $q.all(promises);
+                });
+            }).catch(showError);
+        });
     }
 
     // Determine the attempt to use, the mode (normal/preview) and if it's offline or online.
     function determineAttemptAndMode(attemptsData) {
-        attempt = attemptsData.lastAttempt.number;
-        offline = attemptsData.lastAttempt.offline;
-
-        // Check if current attempt is incomplete.
-        var promise;
-        if (attempt > 0) {
-            promise = $mmaModScorm.isAttemptIncomplete(scorm, attempt, offline);
-        } else {
-            // User doesn't have attempts. Last attempt is not incomplete (since he doesn't have any).
-            promise = $q.when(false);
-        }
-
-        return promise.then(function(incomplete) {
-            // Determine mode and attempt to use.
-            var result = $mmaModScorm.determineAttemptAndMode(scorm, mode, attempt, newAttempt, incomplete);
-
-            if (result.attempt > attempt) {
-                // We're creating a new attempt.
-                if (offline) {
-                    // Last attempt was offline, so we'll create a new offline attempt.
-                    promise = $mmaModScormHelper.createOfflineAttempt(scorm, result.attempt, attemptsData.online.length);
-                } else {
-                    // Last attempt was online, verify that we can create a new online attempt.
-                    promise = $mmaModScorm.getScormUserData(scorm.id, result.attempt).catch(function() {
-                        // Cannot communicate with the server, create an offline attempt.
-                        offline = true;
-                        return $mmaModScormHelper.createOfflineAttempt(scorm, result.attempt, attemptsData.online.length);
-                    });
-                }
-            } else {
-                promise = $q.when();
+        return $mmaModScormHelper.determineAttemptToContinue(scorm, attemptsData).then(function(data) {
+            attempt = data.number;
+            offline = data.offline;
+            if (attempt != attemptsData.lastAttempt.number) {
+                $scope.attemptToContinue = attempt;
             }
 
-            return promise.then(function() {
-                mode = result.mode;
-                newAttempt = result.newAttempt;
-                attempt = result.attempt;
-                $scope.isBrowse = mode === $mmaModScorm.MODEBROWSE;
-                $scope.isReview = mode === $mmaModScorm.MODEREVIEW;
+            // Check if current attempt is incomplete.
+            var promise;
+            if (attempt > 0) {
+                promise = $mmaModScorm.isAttemptIncomplete(scorm.id, attempt, offline);
+            } else {
+                // User doesn't have attempts. Last attempt is not incomplete (since he doesn't have any).
+                promise = $q.when(false);
+            }
+
+            return promise.then(function(incomplete) {
+                // Determine mode and attempt to use.
+                var result = $mmaModScorm.determineAttemptAndMode(scorm, mode, attempt, newAttempt, incomplete);
+
+                if (result.attempt > attempt) {
+                    // We're creating a new attempt.
+                    if (offline) {
+                        // Last attempt was offline, so we'll create a new offline attempt.
+                        promise = $mmaModScormHelper.createOfflineAttempt(scorm, result.attempt, attemptsData.online.length);
+                    } else {
+                        // Last attempt was online, verify that we can create a new online attempt. We ignore cache.
+                        promise = $mmaModScorm.getScormUserData(scorm.id, result.attempt, false, undefined, true).catch(function() {
+                            // Cannot communicate with the server, create an offline attempt.
+                            offline = true;
+                            return $mmaModScormHelper.createOfflineAttempt(scorm, result.attempt, attemptsData.online.length);
+                        });
+                    }
+                } else {
+                    promise = $q.when();
+                }
+
+                return promise.then(function() {
+                    mode = result.mode;
+                    newAttempt = result.newAttempt;
+                    attempt = result.attempt;
+                    $scope.isBrowse = mode === $mmaModScorm.MODEBROWSE;
+                    $scope.isReview = mode === $mmaModScorm.MODEREVIEW;
+                });
             });
         });
     }
@@ -117,7 +125,7 @@ angular.module('mm.addons.mod_scorm')
         $scope.loadingToc = true;
         // We need to check incomplete again: attempt number might have changed in determineAttemptAndMode,
         // or attempt status might have changed due to an action in the current SCO.
-        return $mmaModScorm.isAttemptIncomplete(scorm, attempt, offline).then(function(incomplete) {
+        return $mmaModScorm.isAttemptIncomplete(scorm.id, attempt, offline).then(function(incomplete) {
             scorm.incomplete = incomplete;
 
             // Get TOC.
@@ -188,7 +196,21 @@ angular.module('mm.addons.mod_scorm')
                 element: 'cmi.core.lesson_status',
                 value: 'completed'
             }];
-            $mmaModScorm.saveTracks(sco.id, attempt, tracks, offline, scorm).then(function() {
+            $mmaModScorm.saveTracks(sco.id, attempt, tracks, offline, scorm).catch(function() {
+                // Error saving data. We'll go offline if we're online and the asset is not marked as completed already.
+                if (!offline) {
+                    return $mmaModScorm.getScormUserData(scorm.id, attempt, offline).then(function(data) {
+                        if (!data[sco.id] || data[sco.id].userdata['cmi.core.lesson_status'] != 'completed') {
+                            // Go offline.
+                            return $mmaModScormHelper.convertAttemptToOffline(scorm, attempt).then(function() {
+                                offline = true;
+                                $mmaModScormDataModel12.setOffline(true);
+                                return $mmaModScorm.saveTracks(sco.id, attempt, tracks, offline, scorm);
+                            }).catch(showError);
+                        }
+                    });
+                }
+            }).then(function() {
                 // Refresh TOC, some prerequisites might have changed.
                 refreshToc();
             });
@@ -208,7 +230,12 @@ angular.module('mm.addons.mod_scorm')
             element: 'x.start.time',
             value: $mmUtil.timestamp()
         }];
-        return $mmaModScorm.saveTracks(scoId, attempt, tracks, offline, scorm);
+        return $mmaModScorm.saveTracks(scoId, attempt, tracks, offline, scorm).then(function() {
+            if (!offline) {
+                // New online attempt created, update cached data about online attempts.
+                $mmaModScorm.getAttemptCount(scorm.id, undefined, false, true);
+            }
+        });
     }
 
     $scope.showToc = $mmaModScorm.displayTocInPlayer(scorm);

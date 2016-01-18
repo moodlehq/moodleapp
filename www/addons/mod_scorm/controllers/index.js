@@ -23,7 +23,8 @@ angular.module('mm.addons.mod_scorm')
  */
 .controller('mmaModScormIndexCtrl', function($scope, $stateParams, $mmaModScorm, $mmUtil, $q, $mmCourse, $ionicScrollDelegate,
             $mmCoursePrefetchDelegate, $mmaModScormHelper, $mmEvents, $mmSite, $state, mmCoreOutdated, mmCoreNotDownloaded,
-            mmCoreDownloading, mmaModScormComponent, mmCoreEventPackageStatusChanged, $ionicHistory, $ionicScrollDelegate) {
+            mmCoreDownloading, mmaModScormComponent, mmCoreEventPackageStatusChanged, $ionicHistory, mmaModScormEventAutomSynced,
+            $mmaModScormSync) {
 
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
@@ -66,42 +67,63 @@ angular.module('mm.addons.mod_scorm')
                 return; // SCORM is closed or not open yet, we can't get more data.
             }
 
-            // Get the number of attempts and check if SCORM is incomplete.
-            return $mmaModScorm.getAttemptCount(scorm.id).then(function(attemptsData) {
-                attempts = attemptsData;
-                lastAttempt = attempts.lastAttempt.number;
-                lastOffline = attempts.lastAttempt.offline;
-                return $mmaModScorm.isAttemptIncomplete(scorm, lastAttempt, lastOffline).then(function(incomplete) {
-                    var promises = [];
+            return syncScorm(!refresh, false).catch(function() {
+                // Ignore errors, keep getting data even if sync fails.
+            }).then(function() {
 
-                    scorm.incomplete = incomplete;
-                    scorm.numAttempts = attempts.total;
-                    scorm.grademethodReadable = $mmaModScorm.getScormGradeMethod(scorm);
-                    scorm.attemptsLeft = $mmaModScorm.countAttemptsLeft(scorm, lastAttempt);
-                    if (scorm.forceattempt && scorm.incomplete) {
-                        $scope.scormOptions.newAttempt = true;
-                    }
-
-                    promises.push(getReportedGrades());
-
-                    promises.push(fetchStructure());
-
-                    if (!scorm.packagesize && $scope.errorMessage === '') {
-                        // SCORM is supported but we don't have package size. Try to calculate it.
-                        promises.push($mmaModScorm.calculateScormSize(scorm).then(function(size) {
-                            scorm.packagesize = size;
-                        }));
-                    }
-
-                    // Handle status. We don't add getStatus to promises because it should be fast.
-                    setStatusListener();
-                    getStatus().then(showStatus);
-
-                    return $q.all(promises);
-
+                // No need to return this promise, it should be faster than the rest.
+                $mmaModScormHelper.getScormReadableSyncTime(scorm.id).then(function(syncTime) {
+                    $scope.syncTime = syncTime;
                 });
-            }).catch(function(message) {
-                return showError(message);
+
+                // Get the number of attempts and check if SCORM is incomplete.
+                return $mmaModScorm.getAttemptCount(scorm.id).then(function(attemptsData) {
+                    attempts = attemptsData;
+                    $scope.showSyncButton = attempts.offline.length; // Show sync button only if there are offline attempts.
+
+                    // Determine the attempt that will be continued or reviewed.
+                    return $mmaModScormHelper.determineAttemptToContinue(scorm, attempts).then(function(attempt) {
+                        lastAttempt = attempt.number;
+                        lastOffline = attempt.offline;
+                        if (lastAttempt != attempts.lastAttempt.number) {
+                            $scope.attemptToContinue = lastAttempt;
+                        } else {
+                            delete $scope.attemptToContinue;
+                        }
+
+                        return $mmaModScorm.isAttemptIncomplete(scorm.id, lastAttempt, lastOffline).then(function(incomplete) {
+                            var promises = [];
+
+                            scorm.incomplete = incomplete;
+                            scorm.numAttempts = attempts.total;
+                            scorm.grademethodReadable = $mmaModScorm.getScormGradeMethod(scorm);
+                            scorm.attemptsLeft = $mmaModScorm.countAttemptsLeft(scorm, attempts.lastAttempt.number);
+                            if (scorm.forceattempt && scorm.incomplete) {
+                                $scope.scormOptions.newAttempt = true;
+                            }
+
+                            promises.push(getReportedGrades());
+
+                            promises.push(fetchStructure());
+
+                            if (!scorm.packagesize && $scope.errorMessage === '') {
+                                // SCORM is supported but we don't have package size. Try to calculate it.
+                                promises.push($mmaModScorm.calculateScormSize(scorm).then(function(size) {
+                                    scorm.packagesize = size;
+                                }));
+                            }
+
+                            // Handle status. We don't add getStatus to promises because it should be fast.
+                            setStatusListener();
+                            getStatus().then(showStatus);
+
+                            return $q.all(promises);
+                        });
+                    });
+                }).catch(function(message) {
+                    return showError(message);
+                });
+
             });
 
         }, function(message) {
@@ -114,11 +136,12 @@ angular.module('mm.addons.mod_scorm')
     }
 
     // Show error message and return a rejected promise.
-    function showError(message) {
+    function showError(message, defaultMessage) {
+        defaultMessage = defaultMessage || 'mma.mod_scorm.errorgetscorm';
         if (message) {
             $mmUtil.showErrorModal(message);
         } else {
-            $mmUtil.showErrorModal('mma.mod_scorm.errorgetscorm', true);
+            $mmUtil.showErrorModal(defaultMessage, true);
         }
         return $q.reject();
     }
@@ -254,7 +277,7 @@ angular.module('mm.addons.mod_scorm')
     }
 
     // Refreshes data.
-    function refreshData() {
+    function refreshData(dontForceSync) {
         var promises = [];
         promises.push($mmaModScorm.invalidateScormData(courseid));
         if (scorm) {
@@ -262,7 +285,7 @@ angular.module('mm.addons.mod_scorm')
         }
 
         return $q.all(promises).finally(function() {
-            return fetchScormData(true);
+            return fetchScormData(!dontForceSync);
         });
     }
 
@@ -302,6 +325,22 @@ angular.module('mm.addons.mod_scorm')
             newAttempt: !!$scope.scormOptions.newAttempt,
             organizationId: $scope.currentOrganization.identifier,
             scoId: scoId
+        });
+    }
+
+    // Tries to synchronize the current SCORM.
+    function syncScorm(checkTime, showErrors) {
+        var promise = checkTime ? $mmaModScormSync.syncScormIfNeeded(scorm) : $mmaModScormSync.syncScorm(scorm);
+        return promise.then(function(warnings) {
+            var message = $mmaModScormHelper.buildWarningsMessage(warnings);
+            if (message) {
+                $mmUtil.showErrorModal(message);
+            }
+        }).catch(function(err) {
+            if (showErrors) {
+                return showError(err, 'mma.mod_scorm.errorsyncscorm');
+            }
+            return $q.reject();
         });
     }
 
@@ -361,8 +400,32 @@ angular.module('mm.addons.mod_scorm')
         }
     };
 
+    // Synchronize the SCORM.
+    $scope.sync = function() {
+        var modal = $mmUtil.showModalLoading('mm.settings.synchronizing', true);
+        syncScorm(false, true).then(function() {
+            // Refresh the data.
+            $scope.scormLoaded = false;
+            scrollView.scrollTop();
+            refreshData(true).finally(function() {
+                $scope.scormLoaded = true;
+            });
+        }).finally(function() {
+            modal.dismiss();
+        });
+    };
+
     // Update data when we come back from the player since it's probable that it has changed.
+    // We want to skip the first $ionicView.enter event because it's when the view is created.
+    var skip = true;
     $scope.$on('$ionicView.enter', function() {
+        if (skip) {
+            skip = false;
+            return;
+        }
+
+        $scope.scormOptions.newAttempt = false; // Uncheck new attempt.
+
         var forwardView = $ionicHistory.forwardView();
         if (forwardView && forwardView.stateName === 'site.mod_scorm-player') {
             $scope.scormLoaded = false;
@@ -373,7 +436,19 @@ angular.module('mm.addons.mod_scorm')
         }
     });
 
+    // Refresh data if this SCORM is synchronized automatically.
+    var syncObserver = $mmEvents.on(mmaModScormEventAutomSynced, function(data) {
+        if (data && data.siteid == $mmSite.getId() && data.scormid == scorm.id) {
+            $scope.scormLoaded = false;
+            scrollView.scrollTop();
+            fetchScormData().finally(function() {
+                $scope.scormLoaded = true;
+            });
+        }
+    });
+
     $scope.$on('$destroy', function() {
         statusObserver && statusObserver.off && statusObserver.off();
+        syncObserver && syncObserver.off && syncObserver.off();
     });
 });

@@ -1,6 +1,21 @@
 <ion-view view-title="{{ 'mm.settings.synchronization' | translate }}" >
     <ion-content>
         <ul class="list">
+            <li class="item item-divider">
+                <p>{{ 'mm.settings.syncsettings' | translate }}</p>
+            </li>
+            <li class="item item-toggle item-text-wrap">
+                <p id="mm-settings-syncwifilabel" class="item-heading">{{ 'mm.settings.enablesyncwifi' | translate }}</p>
+                <label class="toggle" aria-labelledby="mm-settings-syncwifilabel">
+                    <input type="checkbox" ng-model="syncOnlyOnWifi" ng-change="syncWifiChanged(syncOnlyOnWifi)">
+                    <div class="track">
+                        <div class="handle"></div>
+                    </div>
+                </label>
+            </li>
+            <li class="item item-divider">
+                <p>{{ 'mm.settings.sites' | translate }}</p>
+            </li>
             <li ng-repeat="site in sites" class="item item-button-right">
                 <p class="item-heading"><mm-format-text>{{site.sitename}}</mm-format-text></p>
                 <p>{{site.fullname}}</p>

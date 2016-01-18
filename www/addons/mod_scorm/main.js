@@ -19,6 +19,8 @@ angular.module('mm.addons.mod_scorm', ['mm.core'])
 .constant('mmaModScormEventLaunchPrevSco', 'mma_mod_scorm_launch_prev_sco')
 .constant('mmaModScormEventUpdateToc', 'mma_mod_scorm_update_toc')
 .constant('mmaModScormEventGoOffline', 'mma_mod_scorm_go_offline')
+.constant('mmaModScormEventAutomSynced', 'mma_mod_scorm_autom_synced')
+.constant('mmaModScormSyncTime', 200000) // In milliseconds.
 
 .config(function($stateProvider) {
 
@@ -60,4 +62,37 @@ angular.module('mm.addons.mod_scorm', ['mm.core'])
 .config(function($mmCourseDelegateProvider, $mmCoursePrefetchDelegateProvider) {
     $mmCourseDelegateProvider.registerContentHandler('mmaModScorm', 'scorm', '$mmaModScormCourseContentHandler');
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModScorm', 'scorm', '$mmaModScormPrefetchHandler');
+})
+
+.run(function($timeout, $mmaModScormSync, $mmApp, $mmEvents, mmCoreEventLogin) {
+    var lastExecution = 0,
+        executing = false;
+
+    function syncScorms() {
+        var now = new Date().getTime();
+        // Prevent consecutive and simultaneous executions. A sync process shouldn't take more than a few minutes,
+        // so if it's been more than 5 minutes since the last execution we'll ignore the executing value.
+        if (now - 5000 > lastExecution && (!executing || now - 300000 > lastExecution)) {
+            lastExecution = new Date().getTime();
+            executing = true;
+
+            $timeout(function() { // Minor delay just to make sure network is fully established.
+                $mmaModScormSync.syncAllScorms().finally(function() {
+                    executing = false;
+                });
+            }, 1000);
+        }
+    }
+
+    $mmApp.ready().then(function() {
+        document.addEventListener('online', syncScorms, false); // Cordova event.
+        window.addEventListener('online', syncScorms, false); // HTML5 event.
+    });
+
+    $mmEvents.on(mmCoreEventLogin, function() {
+        if ($mmApp.isOnline()) {
+            syncScorms();
+        }
+    });
+
 });

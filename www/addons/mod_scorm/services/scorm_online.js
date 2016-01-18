@@ -46,9 +46,10 @@ angular.module('mm.addons.mod_scorm')
      * @param {Number} scormId        SCORM ID.
      * @param {Number} [userId]       User ID. If not defined, current user.
      * @param {Boolean} ignoreMissing True if it should ignore attempts that haven't reported a grade/completion.
+     * @param {Boolean} ignoreCache   True if it should ignore cached data (it will always fail in offline or server down).
      * @return {Promise}              Promise resolved when the attempt count is retrieved.
      */
-    self.getAttemptCount = function(scormId, userId, ignoreMissing) {
+    self.getAttemptCount = function(scormId, userId, ignoreMissing, ignoreCache) {
         userId = userId || $mmSite.getUserId();
 
         var params = {
@@ -59,6 +60,11 @@ angular.module('mm.addons.mod_scorm')
             preSets = {
                 cacheKey: getAttemptCountCacheKey(scormId, userId)
             };
+
+        if (ignoreCache) {
+            preSets.getFromCache = 0;
+            preSets.emergencyCache = 0;
+        }
 
         return $mmSite.read('mod_scorm_get_scorm_attempt_count', params, preSets).then(function(response) {
             if (response && typeof response.attemptscount != 'undefined') {
@@ -95,11 +101,12 @@ angular.module('mm.addons.mod_scorm')
      * @module mm.addons.mod_scorm
      * @ngdoc method
      * @name $mmaModScormOnline#getScormUserData
-     * @param {Number} scormId SCORM ID.
-     * @param {Number} attempt Attempt number.
-     * @return {Promise}       Promise resolved when the user data is retrieved.
+     * @param {Number} scormId      SCORM ID.
+     * @param {Number} attempt      Attempt number.
+     * @param {Boolean} ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @return {Promise}            Promise resolved when the user data is retrieved.
      */
-    self.getScormUserData = function(scormId, attempt) {
+    self.getScormUserData = function(scormId, attempt, ignoreCache) {
         var params = {
                 scormid: scormId,
                 attempt: attempt
@@ -107,6 +114,11 @@ angular.module('mm.addons.mod_scorm')
             preSets = {
                 cacheKey: getScormUserDataCacheKey(scormId, attempt)
             };
+
+        if (ignoreCache) {
+            preSets.getFromCache = 0;
+            preSets.emergencyCache = 0;
+        }
 
         return $mmSite.read('mod_scorm_get_scorm_user_data', params, preSets).then(function(response) {
             if (response && response.data) {

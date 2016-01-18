@@ -1,5 +1,6 @@
 <ion-popover-view class="mma-scorm-popover">
     <ion-content scroll="false">
+        <p class="padding" ng-if="attemptToContinue">{{ 'mma.mod_scorm.dataattemptshown' | translate:{number: attemptToContinue} }}</p>
         <p class="padding text-center" ng-if="isBrowse">{{ 'mma.mod_scorm.browsemode' | translate }}</p>
         <p class="padding text-center" ng-if="isReview">{{ 'mma.mod_scorm.reviewmode' | translate }}</p>
         <nav>

@@ -21,15 +21,37 @@ angular.module('mm.addons.mod_scorm')
  * @ngdoc service
  * @name $mmCourseHelper
  */
-.factory('$mmaModScormHelper', function($mmaModScorm, $mmUtil, $translate, $q, $mmaModScormOffline) {
+.factory('$mmaModScormHelper', function($mmaModScorm, $mmUtil, $translate, $q, $mmaModScormOffline, $mmaModScormSync) {
 
     var self = {},
         elementsToIgnore = ['status', 'score_raw', 'total_time', 'session_time', 'student_id', 'student_name', 'credit',
                             'mode', 'entry']; // List of elements we want to ignore when copying attempts (they're calculated).
 
     /**
+     * Build message to show warnings.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScormHelper#buildWarningsMessage
+     * @param  {String[]} warnings Warnings to show.
+     * @return {String}            Message with all the warnings.
+     */
+    self.buildWarningsMessage = function(warnings) {
+        var message = '';
+        angular.forEach(warnings, function(warning) {
+            if (warning) {
+                message = message + '<p>' + warning + '</p>';
+            }
+        });
+        return message;
+    };
+
+    /**
      * Creates a new offline attempt based on an existing online attempt.
      *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScormHelper#convertAttemptToOffline
      * @param  {Object} scorm   SCORM.
      * @param  {Number} attempt Number of the online attempt.
      * @return {Promise}        Promise resolved when the attempt is created.
@@ -73,6 +95,9 @@ angular.module('mm.addons.mod_scorm')
     /**
      * Creates a new offline attempt.
      *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScormHelper#createOfflineAttempt
      * @param  {Object} scorm      SCORM.
      * @param  {Number} newAttempt Number of the new attempt.
      * @param  {Number} lastOnline Number of the last online attempt.
@@ -124,6 +149,59 @@ angular.module('mm.addons.mod_scorm')
         return promise.then(function(size) {
             return $mmUtil.confirmDownloadSize(size);
         });
+    };
+
+    /**
+     * Determines the attempt to continue/review. It will be:
+     * - The last incomplete online attempt if it hasn't been continued in offline and all offline attempts are complete.
+     * - The attempt with highest number without surpassing max attempts otherwise.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScormHelper#determineAttemptToContinue
+     * @param  {Object} scorm    SCORM.
+     * @param  {Object} attempts Result of $mmaModScorm#getAttemptCount.
+     * @return {Promise}         Promise resolved with an object with 2 properties: 'number' and 'offline'.
+     */
+    self.determineAttemptToContinue = function(scorm, attempts) {
+        var lastOnline,
+            result = {
+                number: 0,
+                offline: false
+            };
+
+        // Get the last attempt. It'll be the highest number as long as it doesn't surpass the max number of attempts.
+        function getLastBeforeMax() {
+            if (scorm.maxattempt != 0 && attempts.lastAttempt.number > scorm.maxattempt) {
+                result.number = scorm.maxattempt;
+                result.offline = attempts.offline.indexOf(scorm.maxattempt) > -1;
+            } else {
+                result.number = attempts.lastAttempt.number;
+                result.offline = attempts.lastAttempt.offline;
+            }
+        }
+
+        // Get last online attempt.
+        if (attempts.online.length) {
+            lastOnline = Math.max.apply(Math, attempts.online);
+        }
+
+        if (lastOnline) {
+            // Check if last online incomplete.
+            var hasOffline = attempts.offline.indexOf(lastOnline) > -1;
+            return $mmaModScorm.isAttemptIncomplete(scorm.id, lastOnline, hasOffline).then(function(incomplete) {
+                if (incomplete) {
+                    result.number = lastOnline;
+                    result.offline = hasOffline;
+                } else {
+                    getLastBeforeMax();
+                }
+                return result;
+            });
+        } else {
+            getLastBeforeMax();
+            return $q.when(result);
+        }
     };
 
     /**
@@ -227,9 +305,31 @@ angular.module('mm.addons.mod_scorm')
     };
 
     /**
+     * Get SCORM sync time in a human readable format.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScormHelper#getScormReadableSyncTime
+     * @param  {Number} scormId SCORM ID.
+     * @return {Promise}        Promise resolved with the readable time.
+     */
+    self.getScormReadableSyncTime = function(scormId) {
+        return $mmaModScormSync.getScormSyncTime(scormId).then(function(time) {
+            if (time == 0) {
+                return $translate('mm.core.none');
+            } else {
+                return moment(time).format('LLL');
+            }
+        });
+    };
+
+    /**
      * Searches user data for an online attempt. If the data can't be retrieved,
      * re-try with the previous online attempt (if exists).
      *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScormHelper#searchOnlineAttemptUserData
      * @param {Number} scormId SCORM ID.
      * @param {Number} attempt Online attempt to get the data.
      * @return {Promise}       Promise resolved with user data.

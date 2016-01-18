@@ -31,7 +31,8 @@
 	                    <p class="item-heading">{{ 'mma.mod_scorm.gradeforattempt' | translate }} {{attempt.number}}</p>
 	                    <p ng-if="attempt.grade != -1">{{ attempt.grade }}</p>
 	                    <p ng-if="attempt.grade == -1">{{ 'mma.mod_scorm.cannotcalculategrade' | translate }}</p>
-	                    <p>{{ 'mma.mod_scorm.offlineattemptnote' | translate }}</p>
+	                    <p ng-if="scorm.maxattempt == 0 || attempt.number <= scorm.maxattempt">{{ 'mma.mod_scorm.offlineattemptnote' | translate }}</p>
+	                    <p ng-if="scorm.maxattempt != 0 && attempt.number > scorm.maxattempt">{{ 'mma.mod_scorm.offlineattemptovermax' | translate }}</p>
 	                </div>
 		        	<div class="item" ng-if="scorm.displayattemptstatus && scorm.grademethodReadable">
 	                    <p class="item-heading">{{ 'mma.mod_scorm.grademethod' | translate }}</p>
@@ -42,7 +43,15 @@
 	                    <p ng-if="scorm.grade != -1">{{ scorm.grade }}</p>
 	                    <p ng-if="scorm.grade == -1">{{ 'mma.mod_scorm.cannotcalculategrade' | translate }}</p>
 	                </div>
+	                <div class="item" ng-if="syncTime">
+	                	<p class="item-heading">{{ 'mma.mod_scorm.lastsync' | translate }}</p>
+	                    <p>{{ syncTime }}</p>
+	                </div>
 	            </div>
+                <!-- Synchronize button -->
+            	<div class="item item-text-wrap" ng-if="!errorMessage && showSyncButton">
+                    <button class="button button-block" ng-click="sync()">{{ 'mm.settings.synchronizenow' | translate }}</button>
+            	</div>
 	            <!-- TOC -->
 	            <div class="card" ng-if="(scorm.displaycoursestructure && organizations.length) || (organizations && organizations.length > 1)">
 	        		<div class="item item-divider">{{ 'mma.mod_scorm.contents' | translate }}</div>
@@ -57,6 +66,8 @@
 	                	<ion-spinner></ion-spinner>
 	                </div>
 	                <div class="item item-text-wrap" ng-if="scorm.displaycoursestructure && !loadingToc">
+	                	<!-- If data shown doesn't belong to last attempt, warn it. -->
+	                	<p ng-if="attemptToContinue">{{ 'mma.mod_scorm.dataattemptshown' | translate:{number: attemptToContinue} }}</p>
 	                	<p>{{ currentOrganization.title }}</p>
 	                	<div ng-repeat="sco in toc track by sco.id" class="mma-scorm-level-{{sco.level}}">
 	                		<p ng-if="sco.isvisible">
