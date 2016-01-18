@@ -1284,6 +1284,28 @@ angular.module('mm.addons.mod_scorm')
     };
 
     /**
+     * Report a SCO as being launched.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScorm#logLaunchSco
+     * @param {Number} scormId SCORM ID.
+     * @param {Number} scoId   SCO ID.
+     * @return {Promise}       Promise resolved when the WS call is successful.
+     */
+    self.logLaunchSco = function(scormId, scoId) {
+        var params = {
+            scormid: scormId,
+            scoid: scoId
+        };
+        return $mmSite.write('mod_scorm_launch_sco', params).then(function(response) {
+            if (!response || !response.status) {
+                return $q.reject();
+            }
+        });
+    };
+
+    /**
      * Prefetches and unzips the SCORM package, and also prefetches some WS calls.
      * @see $mmaModScorm#_downloadOrPrefetch
      *
