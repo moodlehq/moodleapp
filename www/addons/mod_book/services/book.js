@@ -130,6 +130,9 @@ angular.module('mm.addons.mod_book')
      * @protected
      */
     self.getToc = function(contents) {
+        if (!contents || !contents.length) {
+            return [];
+        }
         return JSON.parse(contents[0].content);
     };
 
@@ -168,6 +171,9 @@ angular.module('mm.addons.mod_book')
      * @protected
      */
     self.getFirstChapter = function(chapters) {
+        if (!chapters || !chapters.length) {
+            return;
+        }
         return chapters[0].id;
     };
 
@@ -232,8 +238,7 @@ angular.module('mm.addons.mod_book')
      * @return {Promise}
      */
     self.getChapterContent = function(contents, chapterId, moduleId) {
-        var deferred = $q.defer(),
-            indexUrl,
+        var indexUrl,
             paths = {},
             promise;
 

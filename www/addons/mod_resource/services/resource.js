@@ -142,6 +142,10 @@ angular.module('mm.addons.mod_resource')
      * @return {Promise}      Promise resolved with the iframe src.
      */
     self.getIframeSrc = function(module) {
+        if (!module.contents.length) {
+            return $q.reject();
+        }
+
         var mainFile = module.contents[0],
             mainFilePath = mainFile.filename;
 
@@ -174,8 +178,7 @@ angular.module('mm.addons.mod_resource')
      * @return {Promise}
      */
     self.getResourceHtml = function(contents, moduleId, target) {
-        var deferred = $q.defer(),
-            indexUrl,
+        var indexUrl,
             paths = {},
             promise;
 
@@ -202,7 +205,11 @@ angular.module('mm.addons.mod_resource')
 
         // Promise handling when we are in a browser.
         promise = (function() {
-            var deferred;
+            if (!indexUrl) {
+                // If ever that happens.
+                $log.debug('Could not locate the index page');
+                return $q.reject();
+            }
             if ($mmFS.isAvailable()) {
                 // The file system is available.
                 return $mmFilepool.downloadUrl($mmSite.getId(), indexUrl, false, mmaModResourceComponent, moduleId);
@@ -296,6 +303,9 @@ angular.module('mm.addons.mod_resource')
      * @return {Boolean}
      */
     self.isDisplayedInline = function(module) {
+        if (!module.contents.length) {
+            return false;
+        }
         var ext = $mmFS.getFileExtension(module.contents[0].filename);
         return ext === 'htm' || ext === 'html';
     };
@@ -343,6 +353,10 @@ angular.module('mm.addons.mod_resource')
      * @return {Promise}
      */
     self.openFile = function(contents, moduleId) {
+        if (!contents || !contents.length) {
+            return $q.reject();
+        }
+
         var url = contents[0].fileurl,
             promise;
 

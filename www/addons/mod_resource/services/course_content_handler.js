@@ -86,11 +86,14 @@ angular.module('mm.addons.mod_resource')
 
             $scope.title = module.name;
 
-            var filename = module.contents[0].filename;
-            var extension = $mmFS.getFileExtension(filename);
-
-            if (module.contents.length == 1 || (extension != "html" && extension != "htm")) {
-                $scope.icon = $mmFS.getFileIcon(filename);
+            if (module.contents.length) {
+                var filename = module.contents[0].filename,
+                    extension = $mmFS.getFileExtension(filename);
+                if (module.contents.length == 1 || (extension != "html" && extension != "htm")) {
+                    $scope.icon = $mmFS.getFileIcon(filename);
+                } else {
+                    $scope.icon = $mmCourse.getModuleIconSrc('resource');
+                }
             } else {
                 $scope.icon = $mmCourse.getModuleIconSrc('resource');
             }

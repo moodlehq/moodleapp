@@ -38,6 +38,9 @@ angular.module('mm.addons.mod_imscp')
      * @protected
      */
     self.getToc = function(contents) {
+        if (!contents || !contents.length) {
+            return [];
+        }
         return JSON.parse(contents[0].content);
     };
 
@@ -257,8 +260,12 @@ angular.module('mm.addons.mod_imscp')
      * @return {Promise}      Promise resolved with the iframe src.
      */
     self.getIframeSrc = function(module) {
-        var toc = self.getToc(module.contents);
-        var mainFilePath = toc[0].href;
+        var toc = self.getToc(module.contents),
+            mainFilePath;
+        if (!toc.length) {
+            return $q.reject();
+        }
+        mainFilePath = toc[0].href;
 
         return $mmFilepool.getDirectoryUrlByUrl($mmSite.getId(), module.url).then(function(dirPath) {
             currentDirPath = dirPath;

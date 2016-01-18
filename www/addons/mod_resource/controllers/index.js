@@ -37,7 +37,7 @@ angular.module('mm.addons.mod_resource')
     $scope.loaded = false;
 
     function fetchContent() {
-        if (module.contents) {
+        if (module.contents && module.contents.length) {
             if ($mmaModResource.isDisplayedInIframe(module)) {
                 $scope.mode = 'iframe';
                 var downloadFailed = false;

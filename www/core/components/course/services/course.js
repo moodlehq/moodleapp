@@ -41,7 +41,22 @@ angular.module('mm.core.course')
         mods = ["assign", "assignment", "book", "chat", "choice", "data", "database", "date", "external-tool",
             "feedback", "file", "folder", "forum", "glossary", "ims", "imscp", "label", "lesson", "lti", "page", "quiz",
             "resource", "scorm", "survey", "url", "wiki", "workshop"
-        ];
+        ],
+        modsWithContent = ['book', 'folder', 'imscp', 'page', 'resource', 'url'];
+
+    /**
+     * Add a 'contents' property if the module needs it and it doesn't have it already. In some weird cases the site
+     * doesn't return this property and it's needed. See MOBILE-1381.
+     *
+     * @param {Object} module Module to check.
+     * @return {Object}       Module with contents.
+     */
+    function addContentsIfNeeded(module) {
+        if (modsWithContent.indexOf(module.modname) > -1) {
+            module.contents = module.contents || [];
+        }
+        return module;
+    }
 
     /**
      * Check if module completion could have changed. If it could have, trigger event. This function must be used,
@@ -155,7 +170,7 @@ angular.module('mm.core.course')
                 for (var j = 0; j < section.modules.length; j++) {
                     module = section.modules[j];
                     if (module.id === moduleid) {
-                        return module;
+                        return addContentsIfNeeded(module);
                     }
                 }
             }
@@ -240,7 +255,14 @@ angular.module('mm.core.course')
         return $mmSite.read('core_course_get_contents', {
             courseid: courseid,
             options: []
-        }, presets);
+        }, presets).then(function(sections) {
+            angular.forEach(sections, function(section) {
+                angular.forEach(section.modules, function(module) {
+                    addContentsIfNeeded(module);
+                });
+            });
+            return sections;
+        });
     };
 
     /**

@@ -130,8 +130,7 @@ angular.module('mm.addons.mod_page')
      * @return {Promise}
      */
     self.getPageHtml = function(contents, moduleId) {
-        var deferred = $q.defer(),
-            indexUrl,
+        var indexUrl,
             paths = {},
             promise;
 
