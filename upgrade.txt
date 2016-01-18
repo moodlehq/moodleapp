@@ -5,7 +5,12 @@ information provided here is intended especially for developers.
 
  * $mmModuleActionsDelegate has been renamed to $mmContentLinksDelegate to make it more generic. The specification of this delegate has changed, please look at its documentation to adapt your handlers.
  * State site.mm_course now requires a courseid parameter instead of course.
-
+ * The parameters of the following $mmCoursePrefetchDelegate's functions have changed, now they also require a courseid: getDownloadSize, getModuleStatus, prefetchAll and getModulesStatus.
+ * New Phonegap plugin installed. Please run:
+    ionic plugin add cordova-plugin-zip
+        or
+    ionic state restore
+ * mmaModImscpBar directive has been moved to core. Now it's named mmNavigationBar.
 
 === 2.7 ===
 

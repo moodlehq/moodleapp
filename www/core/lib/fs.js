@@ -24,7 +24,7 @@ angular.module('mm.core')
  * @description
  * This service handles the interaction with the FileSystem.
  */
-.factory('$mmFS', function($ionicPlatform, $cordovaFile, $log, $q, $http, mmFsSitesFolder, mmFsTmpFolder) {
+.factory('$mmFS', function($ionicPlatform, $cordovaFile, $log, $q, $http, $cordovaZip, mmFsSitesFolder, mmFsTmpFolder) {
 
     $log = $log.getInstance('$mmFS');
 
@@ -861,6 +861,23 @@ angular.module('mm.core')
     };
 
     /**
+     * Adds the basePath to a path if it doesn't have it already.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#addBasePathIfNeeded
+     * @param {String} path Path to treat.
+     * @return {String}     Path with basePath added.
+     */
+    self.addBasePathIfNeeded = function(path) {
+        if (path.indexOf(basePath) > -1) {
+            return path;
+        } else {
+            return self.concatenatePaths(basePath, path);
+        }
+    };
+
+    /**
      * Unzips a file.
      *
      * @module mm.core
@@ -872,31 +889,11 @@ angular.module('mm.core')
      * @return {Promise}             Promise resolved when the file is unzipped.
      */
     self.unzipFile = function(path, destFolder) {
-        // Read the zip file.
-        return self.readFile(path, self.FORMATARRAYBUFFER).then(function(data) {
-            if (isHTMLAPI) {
-                var zip = new JSZip(data),
-                    promises = [];
-
-                destFolder = destFolder || self.removeExtension(path);
-
-                angular.forEach(zip.files, function(file, name) {
-                    var filepath = self.concatenatePaths(destFolder, name),
-                        type;
-
-                    if (!file.dir) {
-                        // It's a file. Get the mimetype and write the file.
-                        type = self.getMimeType(self.getFileExtension(name));
-                        promises.push(self.writeFile(filepath, new Blob([file.asArrayBuffer()], {type: type})));
-                    } else {
-                        // It's a folder, create it if it doesn't exist.
-                        promises.push(self.createDir(filepath));
-                    }
-                });
-
-                return $q.all(promises);
-            }
-        });
+        // We need to use ansolute paths (including basePath).
+        path = self.addBasePathIfNeeded(path);
+         // If destFolder is not set, use same location as ZIP file.
+        destFolder = self.addBasePathIfNeeded(destFolder || self.removeExtension(path));
+        return $cordovaZip.unzip(path, destFolder);
     };
 
     return self;

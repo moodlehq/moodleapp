@@ -20,16 +20,99 @@ angular.module('mm.core')
  * @module mm.core
  * @ngdoc directive
  * @name mmIframe
+ * @description
+ * Accepts the following attributes:
+ *
+ * @param {String} src          The source of the iframe.
+ * @param {Mixed} [width=100%]  Width of the iframe. If not defined, use 100%.
+ * @param {Mixed} [height=100%] Height of the iframe. If not defined, use 100%.
  */
 .directive('mmIframe', function($mmUtil) {
+
+    var errorShownTime = 0,
+        tags = ['iframe', 'frame', 'object', 'embed'];
+
+    /**
+     * Intercept window.open in a frame and its subframes, shows an error modal instead.
+     *
+     * @param  {DOMElement} element Element to treat.
+     * @return {Void}
+     */
+    function interceptPopups(element) {
+        if (element) {
+            // Redefine window.open in this element and sub frames, it might have been loaded already.
+            redefineWindowOpen(element);
+
+            element.on('load', function() {
+                // Element loaded, redefine window.open again.
+                redefineWindowOpen(element);
+            });
+        }
+    }
+
+    /**
+     * Redefine the open method in the contentWindow of an element and the sub frames.
+     *
+     * @param  {DOMElement} element Element to treat.
+     * @return {Void}
+     */
+    function redefineWindowOpen(element) {
+        var el = element[0],
+            contentWindow = element.contentWindow || el.contentWindow,
+            contents = element.contents();
+
+        if (!contentWindow && el && el.contentDocument) {
+            // It's probably an <object>. Try to get the window.
+            contentWindow = el.contentDocument.defaultView;
+        }
+
+        if (!contentWindow && el && el.getSVGDocument) {
+            // It's probably an <embed>. Try to get the window.
+            var svgDoc = el.getSVGDocument;
+            if (svgDoc && svgDoc.defaultView) {
+                contents = angular.element(svgdoc);
+                contentWindow = svgdoc.defaultView;
+            } else if (el.window) {
+                contentWindow = el.window;
+            } else if (el.getWindow) {
+                contentWindow = el.getWindow();
+            }
+        }
+
+        if (contentWindow) {
+            // Intercept window.open.
+            contentWindow.open = function () {
+                // Prevent showing more than one consecutive error. This shouldn't happen often because it means that the
+                // element is using more than one window.open, but it's better to handle it just in case.
+                var currentTime = new Date().getTime();
+                if (currentTime - errorShownTime > 500) {
+                    errorShownTime = currentTime;
+                    $mmUtil.showErrorModal('mm.core.erroropenpopup', true);
+                }
+                return {}; // Return empty "window" object.
+            };
+        }
+
+        // Search sub frames.
+        angular.forEach(tags, function(tag) {
+            angular.forEach(contents.find(tag), function(subelement) {
+                interceptPopups(angular.element(subelement));
+            });
+        });
+    }
+
     return {
         restrict: 'E',
-        template: '<div class="iframe-wrapper"><iframe class="mm-iframe" ng-src="{{src}}"></iframe></div>',
+        template: '<div class="iframe-wrapper"><iframe class="mm-iframe" ng-style="{\'width\': width, \'height\': height}" ng-src="{{src}}"></iframe></div>',
         scope: {
             src: '='
         },
         link: function(scope, element, attrs) {
+            scope.width = $mmUtil.formatPixelsSize(attrs.iframeWidth) || '100%';
+            scope.height = $mmUtil.formatPixelsSize(attrs.iframeHeight) || '100%';
+
             var iframe = angular.element(element.find('iframe')[0]);
+            interceptPopups(iframe);
             iframe.on('load', function() {
                 angular.forEach(iframe.contents().find('a'), function(el) {
                     var href = el.getAttribute('href');
@@ -41,6 +124,7 @@ angular.module('mm.core')
                     }
                 });
             });
+
         }
     };
 });

@@ -23,7 +23,8 @@ angular.module('mm.core')
  */
 .provider('$mmUtil', function(mmCoreSecondsYear, mmCoreSecondsDay, mmCoreSecondsHour, mmCoreSecondsMinute) {
 
-    var self = this; // Use 'self' to be coherent with the rest of services.
+    var self = this, // Use 'self' to be coherent with the rest of services.
+        provider = this; // To access provider methods from the service.
 
     /**
      * Serialize an object to be used in a request.
@@ -64,7 +65,8 @@ angular.module('mm.core')
         return query.length ? query.substr(0, query.length - 1) : query;
     };
 
-    this.$get = function($ionicLoading, $ionicPopup, $injector, $translate, $http, $log, $q, $mmLang, $mmFS, $timeout) {
+    this.$get = function($ionicLoading, $ionicPopup, $injector, $translate, $http, $log, $q, $mmLang, $mmFS, $timeout, $mmApp,
+                $mmText, mmCoreWifiDownloadThreshold, mmCoreDownloadThreshold) {
 
         $log = $log.getInstance('$mmUtil');
 
@@ -808,6 +810,93 @@ angular.module('mm.core')
                 }
                 return itemA === itemB;
             }
+        };
+
+        /**
+         * If the download size is higher than a certain threshold shows a confirm dialog.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#confirmDownloadSize
+         * @param {Number} size                 Size to download (in bytes).
+         * @param {String} [message]            Code of the message to show. Default: 'mm.course.confirmdownload'.
+         * @param {String} [unknownsizemessage] Code of the message to show if size is unknown.
+         *                                      Default: 'mm.course.confirmdownloadunknownsize'.
+         * @param {Number} [wifiThreshold]      Threshold to show confirm in WiFi connection. Default: mmCoreWifiDownloadThreshold.
+         * @param {Number} [limitedThreshold]   Threshold to show confirm in limited connection. Default: mmCoreDownloadThreshold.
+         * @return {Promise}                   Promise resolved when the user confirms or if no confirm needed.
+         */
+        self.confirmDownloadSize = function(size, message, unknownsizemessage, wifiThreshold, limitedThreshold) {
+            wifiThreshold = typeof wifiThreshold == 'undefined' ? mmCoreWifiDownloadThreshold : wifiThreshold;
+            limitedThreshold = typeof limitedThreshold == 'undefined' ? mmCoreDownloadThreshold : limitedThreshold;
+            message = message || 'mm.course.confirmdownload';
+            unknownsizemessage = unknownsizemessage || 'mm.course.confirmdownloadunknownsize';
+
+            if (size <= 0) {
+                // Seems size was unable to be calculated. Show a warning.
+                return self.showConfirm($translate(unknownsizemessage));
+            }
+            else if (size >= wifiThreshold || ($mmApp.isNetworkAccessLimited() && size >= limitedThreshold)) {
+                var readableSize = $mmText.bytesToSize(size, 2);
+                return self.showConfirm($translate(message, {size: readableSize}));
+            }
+            return $q.when();
+        };
+
+        /**
+         * Formats a size to be used as width/height of an element.
+         * If the size is already valid (like '500px' or '50%') it won't be modified.
+         * Returned size will have a format like '500px'.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#formatPixelsSize
+         * @param  {Mixed} size Size to format.
+         * @return {String}     Formatted size. If size is not valid, returns an empty string.
+         */
+        self.formatPixelsSize = function(size) {
+            if (typeof size == 'string' && (size.indexOf('px') > -1 || size.indexOf('%') > -1)) {
+                // It seems to be a valid size.
+                return size;
+            }
+
+            size = parseInt(size, 10);
+            if (!isNaN(size)) {
+                return size + 'px';
+            }
+            return '';
+        };
+
+        /**
+         * Serialize an object to be used in a request.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#param
+         * @param  {Object} obj Object to serialize.
+         * @return {String}     Serialization of the object.
+         */
+        self.param = function(obj) {
+            return provider.param(obj);
+        };
+
+        /**
+         * Rounds a number to use a certain amout of decimals or less.
+         * Difference between this function and float's toFixed:
+         * 7.toFixed(2) -> 7.00
+         * roundToDecimals(7, 2) -> 7
+         *
+         * @param  {Float}  number       Float to round.
+         * @param  {Number} [decimals=2] Number of decimals. By default, 2.
+         * @return {Float}               Rounded number.
+         */
+        self.roundToDecimals = function(number, decimals) {
+            if (typeof decimals == 'undefined') {
+                decimals = 2;
+            }
+
+            var multiplier = Math.pow(10, decimals);
+            return Math.round(parseFloat(number) * multiplier) / multiplier;
         };
 
         return self;

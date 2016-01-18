@@ -1,0 +1,15 @@
+<ion-popover-view class="mma-scorm-popover">
+    <ion-content scroll="false">
+        <p class="padding" ng-if="attemptToContinue">{{ 'mma.mod_scorm.dataattemptshown' | translate:{number: attemptToContinue} }}</p>
+        <p class="padding text-center" ng-if="isBrowse">{{ 'mma.mod_scorm.browsemode' | translate }}</p>
+        <p class="padding text-center" ng-if="isReview">{{ 'mma.mod_scorm.reviewmode' | translate }}</p>
+        <nav>
+            <ul class="list">
+                <a ng-repeat="sco in toc track by sco.id" class="item item-text-wrap mma-scorm-level-{{sco.level}} mma-scorm-popover-item" ng-if="sco.isvisible" ng-click="loadSco(sco)" ng-class='{"item-disabled": !sco.prereq || !sco.launch}'>
+                    <img ng-src="{{sco.image.url}}" alt="{{sco.image.description}}" />
+                    <span>{{ sco.title }}</span>
+                </a>
+            </ul>
+        </nav>
+    </ion-content>
+</ion-popover-view>

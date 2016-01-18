@@ -1,0 +1,18 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <a ng-href="{{externalUrl}}" class="button button-icon ion-ios-browsers-outline" mm-browser></a>
+        <button class="button button-icon ion-more" ng-if="showToc && !loadingToc && toc && toc.length" ng-click="popover.show($event)">
+        </button>
+        <ion-spinner ng-if="showToc && loadingToc"></ion-spinner>
+    </ion-nav-buttons>
+    <ion-content padding="true">
+        <mm-loading hide-until="loaded">
+	        <div class="mma-mod-scorm-container">
+                <mm-navigation-bar previous="previousSco" next="nextSco" action="loadSco" info="description" title="{{ 'mm.core.description' | translate }}"></mm-navigation-bar>
+                <mm-iframe ng-if="src" src="src" class="mma-mod-scorm-iframe-container" iframe-width="{{scorm.popup ? scorm.width : undefined}}" iframe-height="{{scorm.popup ? scorm.height : undefined}}"></mm-iframe>
+                <p ng-if="!src && errorMessage">{{ errorMessage | translate }}</p>
+            </div>
+	    </mm-loading>
+    </ion-content>
+</ion-view>

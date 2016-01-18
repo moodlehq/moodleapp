@@ -22,7 +22,7 @@ angular.module('mm.core')
  * @name $mmWS
  */
 .factory('$mmWS', function($http, $q, $log, $mmLang, $cordovaFileTransfer, $mmApp, $mmFS, $mmText, mmCoreSessionExpired,
-            mmCoreUserDeleted) {
+            mmCoreUserDeleted, $translate, $window, $mmUtil) {
 
     $log = $log.getInstance('$mmWS');
 
@@ -39,9 +39,9 @@ angular.module('mm.core')
      * @param {Object} preSets Extra settings and information.
      *                    - siteurl string The site URL.
      *                    - wstoken string The Webservice token.
-     *                    - wsfunctions array List of functions available on the site.
      *                    - responseExpected boolean Defaults to true. Set to false when the expected response is null.
      *                    - typeExpected string Defaults to 'object'. Use it when you expect a type that's not an object|array.
+     * @return {Promise} Promise resolved with the response data in success and rejected with the error message if it fails.
      */
     self.call = function(method, data, preSets) {
 
@@ -57,6 +57,9 @@ angular.module('mm.core')
         }
 
         preSets.typeExpected = preSets.typeExpected || 'object';
+        if (typeof preSets.responseExpected == 'undefined') {
+            preSets.responseExpected = true;
+        }
 
         data.wsfunction = method;
         data.wstoken = preSets.wstoken;
@@ -203,6 +206,127 @@ angular.module('mm.core')
         });
 
         return deferred.promise;
+    };
+
+    /*
+     * Perform a HEAD request to get the size of a remote file.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmWS#getRemoteFileSize
+     * @param {Object} uri File URI.
+     * @return {Promise}   Promise resolved with the size or -1 if failure.
+     */
+    self.getRemoteFileSize = function(url) {
+        return $http.head(url).then(function(data) {
+            var size = parseInt(data.headers('Content-Length'), 10);
+            if (size) {
+                return size;
+            }
+            return -1;
+        }).catch(function() {
+            return -1;
+        });
+    };
+
+    /**
+     * A wrapper function for a synchronous Moodle WebService call.
+     * Warning: This function should only be used if synchronous is a must. It's recommended to use $mmWS#call.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmWS#syncCall
+     * @param {string} method The WebService method to be called.
+     * @param {Object} data Arguments to pass to the method.
+     * @param {Object} preSets Extra settings and information.
+     *                    - siteurl string The site URL.
+     *                    - wstoken string The Webservice token.
+     *                    - responseExpected boolean Defaults to true. Set to false when the expected response is null.
+     *                    - typeExpected string Defaults to 'object'. Use it when you expect a type that's not an object|array.
+     * @return {Mixed} Request response. If the request fails, returns an object with 'error'=true and 'message' properties.
+     */
+    self.syncCall = function(method, data, preSets) {
+        var siteurl,
+            xhr,
+            errorResponse = {
+                error: true,
+                message: ''
+            };
+
+        data = convertValuesToString(data);
+
+        if (typeof preSets == 'undefined' || preSets === null ||
+                typeof preSets.wstoken == 'undefined' || typeof preSets.siteurl == 'undefined') {
+            errorResponse.message = $translate.instant('mm.core.unexpectederror');
+            return errorResponse;
+        } else if (!$mmApp.isOnline()) {
+            errorResponse.message = $translate.instant('mm.core.networkerrormsg');
+            return errorResponse;
+        }
+
+        preSets.typeExpected = preSets.typeExpected || 'object';
+        if (typeof preSets.responseExpected == 'undefined') {
+            preSets.responseExpected = true;
+        }
+
+        data.wsfunction = method;
+        data.wstoken = preSets.wstoken;
+        siteurl = preSets.siteurl + '/webservice/rest/server.php?moodlewsrestformat=json';
+
+        // Serialize data.
+        data = $mmUtil.param(data);
+
+        // Perform sync request using XMLHttpRequest.
+        xhr = new $window.XMLHttpRequest();
+        xhr.open('post', siteurl, false);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=utf-8');
+
+        xhr.send(data);
+
+        // Get response.
+        data = ('response' in xhr) ? xhr.response : xhr.responseText;
+
+        // Check status.
+        xhr.status = Math.max(xhr.status === 1223 ? 204 : xhr.status, 0);
+        if (xhr.status < 200 || xhr.status >= 300) {
+            // Request failed.
+            errorResponse.message = data;
+            return errorResponse;
+        }
+
+        // Treat response.
+        try {
+            data = JSON.parse(data);
+        } catch(ex) {}
+
+        // Some moodle web services return null.
+        // If the responseExpected value is set then so long as no data is returned, we create a blank object.
+        if ((!data || !data.data) && !preSets.responseExpected) {
+            data = {};
+        }
+
+        if (!data) {
+            errorResponse.message = $translate.instant('mm.core.serverconnection');
+        } else if (typeof data != preSets.typeExpected) {
+            $log.warn('Response of type "' + typeof data + '" received, expecting "' + preSets.typeExpected + '"');
+            errorResponse.message = $translate.instant('mm.core.errorinvalidresponse');
+        }
+
+        if (typeof data.exception != 'undefined' || typeof data.debuginfo != 'undefined') {
+            errorResponse.message = data.message;
+        }
+
+        if (errorResponse.message !== '') {
+            return errorResponse;
+        }
+
+        $log.info('Synchronous: Data received from WS ' + typeof data);
+
+        if (typeof(data) == 'object' && typeof(data.length) != 'undefined') {
+            $log.info('Synchronous: Data number of elements '+ data.length);
+        }
+
+        return data;
     };
 
     return self;

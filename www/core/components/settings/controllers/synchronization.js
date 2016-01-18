@@ -22,12 +22,20 @@ angular.module('mm.core.settings')
  * @name mmSettingsSynchronizationCtrl
  */
 .controller('mmSettingsSynchronizationCtrl', function($log, $scope, $mmSitesManager, $mmUtil, $mmFilepool, $mmEvents,
-            $mmLang, mmCoreEventSessionExpired) {
+            $mmLang, $mmConfig, mmCoreEventSessionExpired, mmCoreSettingsSyncOnlyOnWifi) {
     $log = $log.getInstance('mmSettingsSynchronizationCtrl');
 
     $mmSitesManager.getSites().then(function(sites) {
         $scope.sites = sites;
     });
+
+    $mmConfig.get(mmCoreSettingsSyncOnlyOnWifi, true).then(function(syncOnlyOnWifi) {
+        $scope.syncOnlyOnWifi = syncOnlyOnWifi;
+    });
+
+    $scope.syncWifiChanged = function(syncOnlyOnWifi) {
+        $mmConfig.set(mmCoreSettingsSyncOnlyOnWifi, syncOnlyOnWifi);
+    };
 
     $scope.synchronize = function(siteData) {
         if (siteData) {
