@@ -215,6 +215,9 @@ angular.module('mm.addons.mod_scorm')
                 refreshToc();
             });
         }
+
+        // Trigger SCO launch event.
+        $mmaModScorm.logLaunchSco(scorm.id, sco.id);
     }
 
     // Refresh the TOC.
