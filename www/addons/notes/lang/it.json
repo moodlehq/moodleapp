@@ -7,5 +7,6 @@
     "notes": "Annotazioni",
     "personalnotes": "Annotazioni personali",
     "publishstate": "Contesto",
-    "sitenotes": "Annotazioni del sito"
+    "sitenotes": "Annotazioni del sito",
+    "userwithid": "Utente con id {{id}}"
 }

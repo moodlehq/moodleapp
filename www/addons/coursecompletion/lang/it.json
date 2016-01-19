@@ -2,7 +2,8 @@
     "complete": "Completo",
     "completed": "Completato",
     "completiondate": "Data di completamento",
-    "coursecompletion": "Completamento corso",
+    "couldnotloadreport": "Non è stato possibile caricare il report di completamento del corso, per favore riporva.",
+    "coursecompletion": "Completamento del corso",
     "criteria": "Criteri",
     "criteriagroup": "Gruppo di criteri",
     "criteriarequiredall": "E' richiesto il soddisfacimento di tutti i criteri elencati",
@@ -14,5 +15,5 @@
     "required": "Obbligatorio",
     "requiredcriteria": "Criteri da soddisfare",
     "status": "Stato",
-    "viewcoursereport": "Visualizza il report del corso"
+    "viewcoursereport": "Visualizza report del corso"
 }

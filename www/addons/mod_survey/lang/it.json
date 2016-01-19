@@ -1,7 +1,9 @@
 {
-    "clicktocontinue": "Clicca qui per continuare",
+    "clicktocontinue": "Click per proseguire",
+    "errorgetsurvey": "Si è verificato un errore durante la ricezione di dati del sondaggio.",
     "ifoundthat": "Realmente",
     "ipreferthat": "Idealmente",
     "responses": "Scelte",
-    "results": "Risultati"
+    "results": "Risultati",
+    "surveycompletednograph": "Hai completato il sondaggio."
 }

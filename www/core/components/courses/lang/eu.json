@@ -8,12 +8,14 @@
     "filtermycourses": "Nire ikastaroak iragazi",
     "frontpage": "Hasiera-orria",
     "mycourses": "Nire ikastaroak",
-    "nocourses": "Ez dago ikastaroei buruzko informaziorik",
+    "nocourses": "Ez dago erakusteko ikastaro-informaziorik.",
     "nosearchresults": "Ez da emaitzik aurkitu zure bilaketarentzat",
+    "notenroled": "Ez zaude matrikulatuta ikastaro honetan",
     "notenrollable": "Ezin duzu zeure burua matrikulatu ikastaro honetan.",
     "password": "Matrikulazio-giltza",
     "search": "Bilatu",
     "searchcourses": "Ikastaroak bilatu",
+    "searchcoursesadvice": "Bilatu botoia erabil dezakezu ikastaroak topatu eta bisitari gisa sartu edo bertan matrikulatzeko ikastaroak baimentzen badu.",
     "selfenrolment": "Matrikulazio automatikoa",
     "totalcoursesearchresults": "Ikastaroak guztira: {{$a}}"
 }

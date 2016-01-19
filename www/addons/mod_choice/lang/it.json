@@ -1,5 +1,6 @@
 {
     "choiceoptions": "Opzioni scelta",
+    "errorgetchoice": "Si è verificato un errore durante la ricezione di dati della scelta.",
     "expired": "Spiacente, questa attività è stata chiusa il {{$a}} e non è più disponibile",
     "full": "(Completo)",
     "noresultsviewable": "I risultati non sono al momento visualizzabili.",
