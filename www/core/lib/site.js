@@ -354,6 +354,18 @@ angular.module('mm.core')
      * Check if a URL belongs to this site.
      */
 
+    /**
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSite#getCompatibleFunction
+     * @param  {String} method WS function to check.
+     * @return {String}        Method to use based in the available functions.
+     * @description
+     *
+     * Return the function to be used, based on the available functions in the site. It'll try to use non-deprecated
+     * functions first, and fallback to deprecated ones if needed.
+     */
+
     // Replicate all Site methods refined in $mmSitesFactory to be used with current site.
     angular.forEach(siteMethods, function(method) {
         self[method] = function() {

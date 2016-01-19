@@ -22,7 +22,9 @@ angular.module('mm.addons.mod_scorm')
  * @ngdoc service
  * @name $mmaModScormOnline
  */
-.factory('$mmaModScormOnline', function($mmSite, $q, $mmWS) {
+.factory('$mmaModScormOnline', function($mmSite, $q, $mmWS, $log, mmCoreWSPrefix) {
+    $log = $log.getInstance('$mmaModScormOnline');
+
     var self = {};
 
     /**
@@ -221,9 +223,20 @@ angular.module('mm.addons.mod_scorm')
                 siteurl: $mmSite.getURL(),
                 wstoken: $mmSite.getToken()
             },
+            wsFunction = $mmSite.getCompatibleFunction('mod_scorm_insert_scorm_tracks'),
             response;
 
-        response = $mmWS.syncCall('mod_scorm_insert_scorm_tracks', params, preSets);
+        // Check if the method is available, use a prefixed version if possible.
+        if (!$mmSite.wsAvailable(wsFunction, false)) {
+            if ($mmSite.wsAvailable(mmCoreWSPrefix + wsFunction, false)) {
+                wsFunction = mmCoreWSPrefix + wsFunction;
+            } else {
+                $log.error("WS function '" + wsFunction + "' is not available, even in compatibility mode.");
+                return false;
+            }
+        }
+
+        response = $mmWS.syncCall(wsFunction, params, preSets);
         if (response && !response.error && response.trackids) {
             return true;
         }
