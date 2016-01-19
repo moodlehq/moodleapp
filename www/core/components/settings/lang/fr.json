@@ -32,6 +32,7 @@
     "networkstatus": "Statut de la connexion internet",
     "reportinbackground": "Annoncer les erreurs automatiquement",
     "settings": "Réglages",
+    "sites": "Sites",
     "spaceusage": "Espace utilisé",
     "storagetype": "Type de stockage",
     "success": "Succès !",
