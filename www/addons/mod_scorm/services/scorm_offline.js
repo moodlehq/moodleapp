@@ -168,14 +168,14 @@ angular.module('mm.addons.mod_scorm')
      * @module mm.addons.mod_scorm
      * @ngdoc method
      * @name $mmaModScormOffline#createNewAttempt
-     * @param {Object} scorm    SCORM.
-     * @param {Number} [userId] User ID. If not defined, current user.
-     * @param {Number} attempt  Number of the new attempt.
-     * @param {Object} userData User data to store in the attempt.
-     * @param {Boolean} copy    True if this attempt is a copy of an online attempt, false otherwise.
-     * @return {Promise}        Promise resolved when the new attempt is created.
+     * @param {Object} scorm      SCORM.
+     * @param {Number} [userId]   User ID. If not defined, current user.
+     * @param {Number} attempt    Number of the new attempt.
+     * @param {Object} userData   User data to store in the attempt.
+     * @param {Object} [snapshot] Optional. Snapshot to store in the attempt.
+     * @return {Promise}          Promise resolved when the new attempt is created.
      */
-    self.createNewAttempt = function(scorm, userId, attempt, userData, copy) {
+    self.createNewAttempt = function(scorm, userId, attempt, userData, snapshot) {
         $log.debug('Creating new offline attempt ' + attempt + ' in SCORM ' + scorm.id);
         userId = userId || $mmSite.getUserId();
 
@@ -190,11 +190,10 @@ angular.module('mm.addons.mod_scorm')
                 timemodified: $mmUtil.timestamp()
             };
 
-        if (copy) {
-            // If we're copying an online attempt, save a snapshot of the data we had when we created the attempt.
+        if (snapshot) {
+            // Save a snapshot of the data we had when we created the attempt.
             // Remove the default data, we don't want to store it.
-            userData = removeDefaultData(userData);
-            entry.snapshot = userData;
+            entry.snapshot = removeDefaultData(snapshot);
         }
 
         return db.insert(mmaModScormOfflineAttemptsStore, entry).then(function() {

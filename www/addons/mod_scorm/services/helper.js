@@ -64,8 +64,9 @@ angular.module('mm.addons.mod_scorm')
             return $mmaModScormOffline.getScormUserData(scorm.id, attempt).catch(function() {
                 // Ignore errors.
             }).then(function(offlineData) {
+                var dataToStore = angular.copy(onlineData);
                 // Filter the data to copy.
-                angular.forEach(onlineData, function(sco) {
+                angular.forEach(dataToStore, function(sco) {
                     // Delete calculated data.
                     elementsToIgnore.forEach(function(el) {
                         delete sco.userdata[el];
@@ -84,7 +85,7 @@ angular.module('mm.addons.mod_scorm')
                     }
                 });
 
-                return $mmaModScormOffline.createNewAttempt(scorm, undefined, attempt, onlineData, true);
+                return $mmaModScormOffline.createNewAttempt(scorm, undefined, attempt, dataToStore, onlineData);
             });
         }).catch(function() {
             // Shouldn't happen.
