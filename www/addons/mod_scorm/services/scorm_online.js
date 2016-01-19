@@ -25,7 +25,20 @@ angular.module('mm.addons.mod_scorm')
 .factory('$mmaModScormOnline', function($mmSite, $q, $mmWS, $log, mmCoreWSPrefix) {
     $log = $log.getInstance('$mmaModScormOnline');
 
-    var self = {};
+    var self = {},
+        blockedScorms = {};
+
+    /**
+     * Clear blocked SCORMs.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScormOnline#clearBlockedScorms
+     * @return {Void}
+     */
+    self.clearBlockedScorms = function() {
+        blockedScorms = {};
+    };
 
     /**
      * Get cache key for SCORM attempt count WS calls.
@@ -176,28 +189,45 @@ angular.module('mm.addons.mod_scorm')
     };
 
     /**
+     * Check if a SCORM is blocked by a writing function.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScormOnline#isScormBlocked
+     * @param  {Number} scormId  SCORM ID.
+     * @return {Boolean}         True if blocked, false otherwise.
+     */
+    self.isScormBlocked = function(scormId) {
+        return !!blockedScorms[scormId];
+    };
+
+    /**
      * Saves a SCORM tracking record.
      *
      * @module mm.addons.mod_scorm
      * @ngdoc method
      * @name $mmaModScormOnline#saveTracks
+     * @param  {Number} scormId  SCORM ID.
      * @param  {Number} scoId    Sco ID.
      * @param  {Number} attempt  Attempt number.
      * @param  {Object[]} tracks Tracking data.
      * @return {Promise}         Promise resolved when data is saved.
      */
-    self.saveTracks = function(scoId, attempt, tracks) {
+    self.saveTracks = function(scormId, scoId, attempt, tracks) {
         var params = {
             scoid: scoId,
             attempt: attempt,
             tracks: tracks
         };
+        blockedScorms[scormId] = true;
 
         return $mmSite.write('mod_scorm_insert_scorm_tracks', params).then(function(response) {
             if (response && response.trackids) {
                 return response.trackids;
             }
             return $q.reject();
+        }).finally(function() {
+            blockedScorms[scormId] = false;
         });
     };
 

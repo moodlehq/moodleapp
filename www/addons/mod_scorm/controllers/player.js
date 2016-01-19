@@ -306,7 +306,7 @@ angular.module('mm.addons.mod_scorm')
                 $mmaModScormHelper.convertAttemptToOffline(scorm, attempt).catch(showError).finally(function() {
                     refreshToc();
                 });
-            }, 500);
+            }, 200);
         }
     });
 

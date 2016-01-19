@@ -64,7 +64,8 @@ angular.module('mm.addons.mod_scorm', ['mm.core'])
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModScorm', 'scorm', '$mmaModScormPrefetchHandler');
 })
 
-.run(function($timeout, $mmaModScormSync, $mmApp, $mmEvents, mmCoreEventLogin) {
+.run(function($timeout, $mmaModScormSync, $mmApp, $mmEvents, $mmaModScormOnline, $mmaModScormOffline, mmCoreEventLogin,
+            mmCoreEventLogout) {
     var lastExecution = 0,
         executing = false;
 
@@ -93,6 +94,11 @@ angular.module('mm.addons.mod_scorm', ['mm.core'])
         if ($mmApp.isOnline()) {
             syncScorms();
         }
+    });
+
+    $mmEvents.on(mmCoreEventLogout, function() {
+        $mmaModScormOnline.clearBlockedScorms();
+        $mmaModScormOffline.clearBlockedScorms();
     });
 
 });

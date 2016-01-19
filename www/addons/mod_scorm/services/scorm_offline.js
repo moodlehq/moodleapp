@@ -100,7 +100,8 @@ angular.module('mm.addons.mod_scorm')
             mmaModScormOfflineTracksStore) {
     $log = $log.getInstance('$mmaModScormOffline');
 
-    var self = {};
+    var self = {},
+        blockedScorms = {};
 
     /**
      * Changes an attempt number in the data stored in offline.
@@ -127,6 +128,8 @@ angular.module('mm.addons.mod_scorm')
                 attempt: newAttempt,
                 timemodified: $mmUtil.timestamp()
             };
+
+        blockedScorms[scormId] = true; // Block the SCORM so it can't be synced.
 
         // Get current data.
         return db.get(mmaModScormOfflineAttemptsStore, [scormId, userId, attempt]).then(function(entry) {
@@ -158,8 +161,22 @@ angular.module('mm.addons.mod_scorm')
                     });
                 });
             });
+        }).finally(function() {
+            blockedScorms[scormId] = false; // Unblock the SCORM.
         });
 
+    };
+
+    /**
+     * Clear blocked SCORMs.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScormOffline#clearBlockedScorms
+     * @return {Void}
+     */
+    self.clearBlockedScorms = function() {
+        blockedScorms = {};
     };
 
     /**
@@ -178,6 +195,8 @@ angular.module('mm.addons.mod_scorm')
     self.createNewAttempt = function(scorm, userId, attempt, userData, snapshot) {
         $log.debug('Creating new offline attempt ' + attempt + ' in SCORM ' + scorm.id);
         userId = userId || $mmSite.getUserId();
+
+        blockedScorms[scorm.id] = true; // Block the SCORM so it can't be synced.
 
         // Create attempt in DB.
         var db = $mmSite.getDb(),
@@ -207,6 +226,8 @@ angular.module('mm.addons.mod_scorm')
                 promises.push(self.saveTracks(scorm, sco.scoid, attempt, tracks, userData));
             });
             return $q.all(promises);
+        }).finally(function() {
+            blockedScorms[scorm.id] = false; // Unblock the SCORM.
         });
     };
 
@@ -656,6 +677,19 @@ angular.module('mm.addons.mod_scorm')
     }
 
     /**
+     * Check if a SCORM is blocked by a writing function.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScormOffline#isScormBlocked
+     * @param  {Number} scormId  SCORM ID.
+     * @return {Boolean}         True if blocked, false otherwise.
+     */
+    self.isScormBlocked = function(scormId) {
+        return !!blockedScorms[scormId];
+    };
+
+    /**
      * Mark all the entries from a SCO and attempt as synced.
      *
      * @module mm.addons.mod_scorm
@@ -714,7 +748,10 @@ angular.module('mm.addons.mod_scorm')
      * @return {Promise}           Promise resolved when data is saved.
      */
     self.saveTracks = function(scorm, scoId, attempt, tracks, userData) {
-        var userId = $mmSite.getUserId();
+        var userId = $mmSite.getUserId(),
+            initialBlocked = !!blockedScorms[scorm.id]; // Save initial blocked state.
+
+        blockedScorms[scorm.id] = true; // Block the SCORM so it can't be synced.
 
         // Insert all the tracks.
         var promises = [];
@@ -723,7 +760,11 @@ angular.module('mm.addons.mod_scorm')
                 insertTrack(userId, scorm.id, scoId, attempt, track.element, track.value, scorm.forcecompleted, userData[scoId])
             );
         });
-        return $q.all(promises);
+        return $q.all(promises).finally(function() {
+            if (!initialBlocked) {
+                blockedScorms[scorm.id] = false; // Unblock the SCORM only if it wasn't blocked by another function.
+            }
+        });
     };
 
     /**

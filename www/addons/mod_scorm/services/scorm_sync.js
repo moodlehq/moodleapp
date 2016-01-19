@@ -169,7 +169,7 @@ angular.module('mm.addons.mod_scorm')
             });
 
             angular.forEach(scos, function(tracks, scoId) {
-                promises.push($mmaModScormOnline.saveTracks(scoId, attempt, tracks).then(function() {
+                promises.push($mmaModScormOnline.saveTracks(scormId, scoId, attempt, tracks).then(function() {
                     // Sco data successfully sent. Mark them as synced. This is needed because some SCOs sync might fail.
                     return $mmaModScormOffline.markAsSynced(scormId, attempt, undefined, scoId).catch(function() {
                         // Ignore errors.
@@ -278,6 +278,11 @@ angular.module('mm.addons.mod_scorm')
             return syncPromises[siteId][scorm.id];
         } else if (!syncPromises[siteId]) {
             syncPromises[siteId] = {};
+        }
+
+        if ($mmaModScormOnline.isScormBlocked(scorm.id) || $mmaModScormOffline.isScormBlocked(scorm.id)) {
+            // The SCORM is blocked, cannot sync.
+            return $q.reject();
         }
 
         // Prefetches data , set sync time and return warnings.

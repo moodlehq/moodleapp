@@ -24,7 +24,7 @@ angular.module('mm.addons.mod_scorm')
 .controller('mmaModScormIndexCtrl', function($scope, $stateParams, $mmaModScorm, $mmUtil, $q, $mmCourse, $ionicScrollDelegate,
             $mmCoursePrefetchDelegate, $mmaModScormHelper, $mmEvents, $mmSite, $state, mmCoreOutdated, mmCoreNotDownloaded,
             mmCoreDownloading, mmaModScormComponent, mmCoreEventPackageStatusChanged, $ionicHistory, mmaModScormEventAutomSynced,
-            $mmaModScormSync) {
+            $mmaModScormSync, $timeout) {
 
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
@@ -430,9 +430,12 @@ angular.module('mm.addons.mod_scorm')
         if (forwardView && forwardView.stateName === 'site.mod_scorm-player') {
             $scope.scormLoaded = false;
             scrollView.scrollTop();
-            refreshData().finally(function() {
-                $scope.scormLoaded = true;
-            });
+            // Add a delay to make sure the player has started the last writing calls so we can detect conflicts.
+            $timeout(function() {
+                refreshData().finally(function() {
+                    $scope.scormLoaded = true;
+                });
+            }, 500);
         }
     });
 
