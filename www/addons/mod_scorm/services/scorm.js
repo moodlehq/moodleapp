@@ -1401,7 +1401,7 @@ angular.module('mm.addons.mod_scorm')
      * @param  {Number} attempt    Attempt number.
      * @param  {Object[]} tracks   Tracking data to store.
      * @param  {Boolean} offline   True if attempt is offline, false otherwise.
-     * @param  {Object} [scorm]    SCORM. Required if offline=true.
+     * @param  {Object} scorm      SCORM.
      * @param  {Object} [userData] User data for this attempt and SCO. If not defined, it will be retrieved from DB. Recommended.
      * @return {Promise}           Promise resolved when data is saved.
      */
@@ -1412,7 +1412,7 @@ angular.module('mm.addons.mod_scorm')
                 return $mmaModScormOffline.saveTracks(scorm, scoId, attempt, tracks, userData);
             });
         } else {
-            return $mmaModScormOnline.saveTracks(scoId, attempt, tracks);
+            return $mmaModScormOnline.saveTracks(scorm.id, scoId, attempt, tracks);
         }
     };
 

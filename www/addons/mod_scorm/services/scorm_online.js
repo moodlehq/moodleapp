@@ -22,8 +22,23 @@ angular.module('mm.addons.mod_scorm')
  * @ngdoc service
  * @name $mmaModScormOnline
  */
-.factory('$mmaModScormOnline', function($mmSite, $q, $mmWS) {
-    var self = {};
+.factory('$mmaModScormOnline', function($mmSite, $q, $mmWS, $log, mmCoreWSPrefix) {
+    $log = $log.getInstance('$mmaModScormOnline');
+
+    var self = {},
+        blockedScorms = {};
+
+    /**
+     * Clear blocked SCORMs.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScormOnline#clearBlockedScorms
+     * @return {Void}
+     */
+    self.clearBlockedScorms = function() {
+        blockedScorms = {};
+    };
 
     /**
      * Get cache key for SCORM attempt count WS calls.
@@ -174,28 +189,50 @@ angular.module('mm.addons.mod_scorm')
     };
 
     /**
+     * Check if a SCORM is blocked by a writing function.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScormOnline#isScormBlocked
+     * @param  {Number} scormId  SCORM ID.
+     * @return {Boolean}         True if blocked, false otherwise.
+     */
+    self.isScormBlocked = function(scormId) {
+        return !!blockedScorms[scormId];
+    };
+
+    /**
      * Saves a SCORM tracking record.
      *
      * @module mm.addons.mod_scorm
      * @ngdoc method
      * @name $mmaModScormOnline#saveTracks
+     * @param  {Number} scormId  SCORM ID.
      * @param  {Number} scoId    Sco ID.
      * @param  {Number} attempt  Attempt number.
      * @param  {Object[]} tracks Tracking data.
      * @return {Promise}         Promise resolved when data is saved.
      */
-    self.saveTracks = function(scoId, attempt, tracks) {
+    self.saveTracks = function(scormId, scoId, attempt, tracks) {
         var params = {
             scoid: scoId,
             attempt: attempt,
             tracks: tracks
         };
 
+        if (!tracks || !tracks.length) {
+            return $q.when(); // Nothing to save.
+        }
+
+        blockedScorms[scormId] = true;
+
         return $mmSite.write('mod_scorm_insert_scorm_tracks', params).then(function(response) {
             if (response && response.trackids) {
                 return response.trackids;
             }
             return $q.reject();
+        }).finally(function() {
+            blockedScorms[scormId] = false;
         });
     };
 
@@ -221,9 +258,24 @@ angular.module('mm.addons.mod_scorm')
                 siteurl: $mmSite.getURL(),
                 wstoken: $mmSite.getToken()
             },
+            wsFunction = $mmSite.getCompatibleFunction('mod_scorm_insert_scorm_tracks'),
             response;
 
-        response = $mmWS.syncCall('mod_scorm_insert_scorm_tracks', params, preSets);
+        if (!tracks || !tracks.length) {
+            return true; // Nothing to save.
+        }
+
+        // Check if the method is available, use a prefixed version if possible.
+        if (!$mmSite.wsAvailable(wsFunction, false)) {
+            if ($mmSite.wsAvailable(mmCoreWSPrefix + wsFunction, false)) {
+                wsFunction = mmCoreWSPrefix + wsFunction;
+            } else {
+                $log.error("WS function '" + wsFunction + "' is not available, even in compatibility mode.");
+                return false;
+            }
+        }
+
+        response = $mmWS.syncCall(wsFunction, params, preSets);
         if (response && !response.error && response.trackids) {
             return true;
         }

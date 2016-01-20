@@ -306,8 +306,13 @@ angular.module('mm.addons.mod_scorm')
                 $mmaModScormHelper.convertAttemptToOffline(scorm, attempt).catch(showError).finally(function() {
                     refreshToc();
                 });
-            }, 500);
+            }, 200);
         }
+    });
+
+    // Empty src when leaving the state so unload event is triggered in the iframe.
+    $scope.$on('$ionicView.beforeLeave', function() {
+        $scope.src = '';
     });
 
     $scope.$on('$destroy', function() {
