@@ -41,6 +41,7 @@
                     {{ 'mm.course.nocontentavailable' | translate }}
                 </div>
             </section>
+            <p class="padding" ng-if="!hasContent">{{ 'mm.course.nocontentavailable' | translate }}</p>
         </mm-loading>
     </ion-content>
 </ion-view>

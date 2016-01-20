@@ -21,7 +21,7 @@ angular.module('mm.addons.frontpage')
  * @ngdoc service
  * @name $mmaFrontpage
  */
-.factory('$mmaFrontpage', function($mmSite, $log, $q) {
+.factory('$mmaFrontpage', function($mmSite, $log, $q, $mmCourse) {
     $log = $log.getInstance('$mmaFrontpage');
 
     var self = {};
@@ -61,12 +61,7 @@ angular.module('mm.addons.frontpage')
         // On older version we cannot check other than calling a WS. If the request
         // fails there is a very high chance that frontpage is not available.
         $log.debug('Using WS call to check if frontpage is available.');
-        return $mmSite.read('core_course_get_contents', {
-            courseid: 1,
-            options: []
-        }, {
-            emergencyCache: false
-        }).then(function(data) {
+        return $mmCourse.getSections(1, {emergencyCache: false}).then(function(data) {
             if (!angular.isArray(data) || data.length == 0) {
                 return $q.reject();
             }
