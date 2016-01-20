@@ -245,17 +245,18 @@ angular.module('mm.core.course')
      * @module mm.core.course
      * @ngdoc method
      * @name $mmCourse#getSections
-     * @param {Number} courseid The course ID.
+     * @param {Number} courseid  The course ID.
+     * @param {Object} [preSets] Optional. Presets to use.
      * @return {Promise} The reject contains the error message, else contains the sections.
      */
-    self.getSections = function(courseid) {
-        var presets = {
-            cacheKey: getSectionsCacheKey(courseid)
-        };
+    self.getSections = function(courseid, preSets) {
+        preSets = preSets || {};
+        preSets.cacheKey = getSectionsCacheKey(courseid);
+
         return $mmSite.read('core_course_get_contents', {
             courseid: courseid,
             options: []
-        }, presets).then(function(sections) {
+        }, preSets).then(function(sections) {
             angular.forEach(sections, function(section) {
                 angular.forEach(section.modules, function(module) {
                     addContentsIfNeeded(module);
