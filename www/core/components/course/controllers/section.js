@@ -77,7 +77,13 @@ angular.module('mm.core.course')
                         sections.reverse();
                     }
 
+                    var hasContent = false;
+
                     angular.forEach(sections, function(section) {
+                        if (section.summary != '' || section.modules.length) {
+                            hasContent = true;
+                        }
+
                         angular.forEach(section.modules, function(module) {
                             module._controller =
                                     $mmCourseDelegate.getContentHandlerControllerFor(module.modname, module, courseid, section.id);
@@ -90,6 +96,7 @@ angular.module('mm.core.course')
                     });
 
                     $scope.sections = sections;
+                    $scope.hasContent = hasContent;
 
                     // Add log in Moodle.
                     $mmSite.write('core_course_view_course', {
