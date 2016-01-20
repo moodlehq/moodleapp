@@ -219,6 +219,11 @@ angular.module('mm.addons.mod_scorm')
             attempt: attempt,
             tracks: tracks
         };
+
+        if (!tracks || !tracks.length) {
+            return $q.when(); // Nothing to save.
+        }
+
         blockedScorms[scormId] = true;
 
         return $mmSite.write('mod_scorm_insert_scorm_tracks', params).then(function(response) {
@@ -255,6 +260,10 @@ angular.module('mm.addons.mod_scorm')
             },
             wsFunction = $mmSite.getCompatibleFunction('mod_scorm_insert_scorm_tracks'),
             response;
+
+        if (!tracks || !tracks.length) {
+            return true; // Nothing to save.
+        }
 
         // Check if the method is available, use a prefixed version if possible.
         if (!$mmSite.wsAvailable(wsFunction, false)) {
