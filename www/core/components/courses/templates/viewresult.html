@@ -23,14 +23,11 @@
                     </p>
                 </div>
                 <mm-file ng-repeat="file in course.overviewfiles" file="file" component="{{component}}" component-id="{{course.id}}"></mm-file>
-                <form class="item" ng-if="selfEnrolEnabled && !isEnrolled">
-                    <label id="mm-courses-enrol-password" ng-if="showPassword" class="item item-input item-stacked-label">
-                        <span class="input-label">{{ 'mm.courses.password' | translate }}</span>
-                        <input type="password" placeholder="{{ 'mm.courses.password' | translate }}" ng-model="enroldata.password">
-                    </label>
-                    <button class="button button-block" ng-click="enrol(enroldata.password)" aria-controls="mm-courses-enrol-password" aria-expanded="showPassword">{{ 'mm.courses.enrolme' | translate }}</button>
-                </form>
-                <div class="item" ng-if="!selfEnrolEnabled && !isEnrolled">
+                <div class="item" ng-if="!isEnrolled" ng-repeat="instance in selfEnrolInstances track by instance.id">
+                    <p class="item-heading">{{ instance.name }}</p>
+                    <button class="button button-block" ng-click="enrol(instance.id, enroldata.password)">{{ 'mm.courses.enrolme' | translate }}</button>
+                </div>
+                <div class="item" ng-if="!isEnrolled && !selfEnrolInstances.length">
                     <p>{{ 'mm.courses.notenrollable' | translate }}</p>
                 </div>
                 <div class="item tabs tabs-icon-left" ng-show="course._handlers && course._handlers.length">
