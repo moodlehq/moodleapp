@@ -34,7 +34,7 @@ angular.module('mm.core.login')
         });
 
         if ($mmSite.isLoggedIn()) {
-            $state.go('site.mm_courses');
+            $mmLoginHelper.goToSiteInitialPage();
         } else {
             $mmSitesManager.hasSites().then(function() {
                 return $state.go('mm_login.sites');

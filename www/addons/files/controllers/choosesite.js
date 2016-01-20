@@ -21,7 +21,8 @@ angular.module('mm.addons.files')
  * @ngdoc controller
  * @name mmaFilesChooseSiteCtrl
  */
-.controller('mmaFilesChooseSiteCtrl', function($scope, $state, $stateParams, $mmSitesManager, $mmaFilesHelper, $ionicHistory) {
+.controller('mmaFilesChooseSiteCtrl', function($scope, $stateParams, $mmSitesManager, $mmaFilesHelper, $ionicHistory,
+            $mmLoginHelper) {
 
     var fileEntry = $stateParams.file || {};
     $scope.filename = fileEntry.name;
@@ -35,7 +36,7 @@ angular.module('mm.addons.files')
             $ionicHistory.nextViewOptions({
                 disableBack: true
             });
-            $state.go('site.mm_courses');
+            $mmLoginHelper.goToSiteInitialPage();
         });
     };
 });

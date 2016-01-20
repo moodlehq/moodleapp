@@ -136,7 +136,7 @@ angular.module('mm.core.login', [])
                 disableAnimate: true,
                 disableBack: true
             });
-            $state.transitionTo('site.mm_courses');
+            $mmLoginHelper.goToSiteInitialPage();
         }
 
     });
@@ -202,7 +202,7 @@ angular.module('mm.core.login', [])
         $mmLoginHelper.validateBrowserSSOLogin(url).then(function(sitedata) {
 
             $mmLoginHelper.handleSSOLoginAuthentication(sitedata.siteurl, sitedata.token).then(function() {
-                $state.go('site.mm_courses');
+                return $mmLoginHelper.goToSiteInitialPage();
             }, function(error) {
                 $mmUtil.showErrorModal(error);
             }).finally(function() {
