@@ -1,5 +1,6 @@
 {
-    "complete": "Completo",
+    "complete": "Completato",
+    "completecourse": "Corso completato",
     "completed": "Completato",
     "completiondate": "Data di completamento",
     "couldnotloadreport": "Non è stato possibile caricare il report di completamento del corso, per favore riporva.",
@@ -12,8 +13,9 @@
     "manualselfcompletion": "Conferma personale di completamento",
     "notyetstarted": "Non iniziato",
     "pending": "In attesa",
-    "required": "Obbligatorio",
+    "required": "Da soddisfare",
     "requiredcriteria": "Criteri da soddisfare",
+    "requirement": "Requisito",
     "status": "Stato",
     "viewcoursereport": "Visualizza report del corso"
 }

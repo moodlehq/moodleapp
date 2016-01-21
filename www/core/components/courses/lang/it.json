@@ -1,4 +1,5 @@
 {
+    "confirmselfenrol": "Desideri iscriverti al corso?",
     "enrolme": "Iscrivimi",
     "errorloadcourses": "Si è verificato un errore durante il caricamento dei corsi.",
     "errorsearching": "Si è verificato un errore durante la ricerca.",
@@ -7,11 +8,14 @@
     "filtermycourses": "Filtra i miei corsi",
     "frontpage": "Pagina home",
     "mycourses": "I miei corsi",
-    "nocourses": "Non sono presenti informazioni sui corsi.",
+    "nocourses": "Non sono presenti informazioni sul corso.",
+    "nosearchresults": "La ricerca non ha prodotto risultati",
     "notenroled": "Non sei iscritto in questo corso",
+    "notenrollable": "Non puoi iscriverti al corso.",
     "password": "Chiave di iscrizione",
     "search": "Cerca",
     "searchcourses": "Cerca corsi",
+    "searchcoursesadvice": "Puoi utilizzare la ricerca corsi per accedere come ospite oppure iscriverti nei corsi che lo consentono.",
     "selfenrolment": "Iscrizione spontanea",
     "totalcoursesearchresults": "Totale corsi: {{$a}}"
 }
