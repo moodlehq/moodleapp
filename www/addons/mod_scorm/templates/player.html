@@ -6,13 +6,11 @@
         </button>
         <ion-spinner ng-if="showToc && loadingToc"></ion-spinner>
     </ion-nav-buttons>
-    <ion-content padding="true">
+    <ion-content>
         <mm-loading hide-until="loaded">
-	        <div class="mma-mod-scorm-container">
-                <mm-navigation-bar previous="previousSco" next="nextSco" action="loadSco" info="description" title="{{ 'mm.core.description' | translate }}"></mm-navigation-bar>
-                <mm-iframe ng-if="src" src="src" class="mma-mod-scorm-iframe-container" iframe-width="{{scorm.popup ? scorm.width : undefined}}" iframe-height="{{scorm.popup ? scorm.height : undefined}}"></mm-iframe>
-                <p ng-if="!src && errorMessage">{{ errorMessage | translate }}</p>
-            </div>
+            <mm-navigation-bar previous="previousSco" next="nextSco" action="loadSco" info="description" title="{{ 'mm.core.description' | translate }}"></mm-navigation-bar>
+            <mm-iframe ng-if="src" src="src" class="mma-mod-scorm-iframe-container" iframe-width="{{scorm.popup ? scorm.width : undefined}}" iframe-height="{{scorm.popup ? scorm.height : undefined}}"></mm-iframe>
+            <p ng-if="!src && errorMessage">{{ errorMessage | translate }}</p>
 	    </mm-loading>
     </ion-content>
 </ion-view>
