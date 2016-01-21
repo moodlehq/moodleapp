@@ -16,18 +16,11 @@ $mma-mod-scorm-warning-color:		#c00 !default;
   color: $mma-mod-scorm-warning-color;
 }
 
-.mma-mod-scorm-container {
-  display: flex;
-  flex-flow: column;
-  height: 100%;
-}
-
 .mma-mod-scorm-iframe-container {
-  flex: 1 1 auto;
-  position: relative;
-  .iframe-wrapper {
-    position: absolute;
-  }
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
 }
 
 ion-popover-view {
