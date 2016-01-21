@@ -71,7 +71,7 @@ angular.module('mm.core.course')
                     });
                 }
 
-                promise.then(function(sections) {
+                return promise.then(function(sections) {
                     // For the site home, we need to reverse the order to display first the site home section topic.
                     if ($scope.sitehome) {
                         sections.reverse();
