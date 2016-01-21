@@ -15,6 +15,7 @@
     "invalidaccount": "Verificare le proprie credenziali o chiedere all'amministratore del sito di controllare la configurazione del sito.",
     "invalidmoodleversion": "Versione di Moodle non valida. La versione minima richiesta:",
     "invalidsite": "L'URL del sito non è valida",
+    "localmobileunexpectedresponse": "Il controllo delle Moodle Mobile Additional Feature ha restituito una risposta inattesa, sarai autenticato tramite i servizi Mobile standard.",
     "login": "Login",
     "loginbutton": "Login!",
     "logininsiterequired": "Devi autenticarti usando una finestra browser",
