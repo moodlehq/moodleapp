@@ -39,6 +39,16 @@ angular.module('mm.addons.mod_scorm')
     $scope.scorm = scorm;
     $scope.loadingToc = true;
 
+    if (scorm.popup) {
+        // Fix for bug in WS not returning %. If we receive a value <= 100 we'll assume it's a percentage.
+        if (scorm.width <= 100) {
+            scorm.width = scorm.width + '%';
+        }
+        if (scorm.height <= 100) {
+            scorm.height = scorm.height + '%';
+        }
+    }
+
     // Fetch data needed to play the SCORM.
     function fetchData() {
         // Wait for any ongoing sync to finish. We won't sync a SCORM while it's being played.
