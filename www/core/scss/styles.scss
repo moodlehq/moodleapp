@@ -274,6 +274,18 @@ img.mm-media-adapt-width {
   line-height: 30px;
 }
 
+// Remove padding-top and bottom from navigation bar to minimize height used.
+mm-navigation-bar {
+  .row {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+  .col {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+}
+
 // Extra attributes to ionic classes to force frames via directive 100% height.
 
 .scroll {
@@ -281,9 +293,21 @@ img.mm-media-adapt-width {
 }
 
 .iframe-wrapper {
-  height: 100%;
-  width: 100%;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  height: auto;
+  width: auto;
+  position: absolute !important; // Position fixed causes problems in Android 4.1-4.3.
 }
+
+.mm-has-navigation-bar {
+  .iframe-wrapper {
+    top: $button-height + 5px;
+  }
+}
+
 
 /**
  * This CSS uses adjacent selectors instead of general sibling (~) selectors

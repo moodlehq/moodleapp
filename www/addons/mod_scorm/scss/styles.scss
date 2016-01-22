@@ -16,13 +16,6 @@ $mma-mod-scorm-warning-color:		#c00 !default;
   color: $mma-mod-scorm-warning-color;
 }
 
-.mma-mod-scorm-iframe-container {
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-}
-
 ion-popover-view {
   /* Adapt popover to content's height. The popover's ion-content needs to disable Ionic scroll. */
   &.mma-scorm-popover {
