@@ -67,6 +67,10 @@ angular.module('mm.addons.mod_scorm')
     self.getAttemptCount = function(scormId, userId, ignoreMissing, ignoreCache) {
         userId = userId || $mmSite.getUserId();
 
+        if (!$mmSite.isLoggedIn()) {
+            return $q.reject();
+        }
+
         var params = {
                 scormid: scormId,
                 userid: userId,
@@ -133,6 +137,10 @@ angular.module('mm.addons.mod_scorm')
         if (ignoreCache) {
             preSets.getFromCache = 0;
             preSets.emergencyCache = 0;
+        }
+
+        if (!$mmSite.isLoggedIn()) {
+            return $q.reject();
         }
 
         return $mmSite.read('mod_scorm_get_scorm_user_data', params, preSets).then(function(response) {
@@ -222,6 +230,10 @@ angular.module('mm.addons.mod_scorm')
 
         if (!tracks || !tracks.length) {
             return $q.when(); // Nothing to save.
+        }
+
+        if (!$mmSite.isLoggedIn()) {
+            return $q.reject();
         }
 
         blockedScorms[scormId] = true;

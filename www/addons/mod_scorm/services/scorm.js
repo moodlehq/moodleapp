@@ -728,6 +728,10 @@ angular.module('mm.addons.mod_scorm')
     self.getScos = function(scormid, organization, ignoreCache) {
         organization = organization || '';
 
+        if (!$mmSite.isLoggedIn()) {
+            return $q.reject();
+        }
+
         // Don't send the organization to the WS, we'll filter them locally.
         var params = {
                 scormid: scormid
@@ -944,6 +948,10 @@ angular.module('mm.addons.mod_scorm')
             preSets = {
                 cacheKey: getScormDataCacheKey(courseid)
             };
+
+        if (!$mmSite.isLoggedIn()) {
+            return $q.reject();
+        }
 
         return $mmSite.read('mod_scorm_get_scorms_by_courses', params, preSets).then(function(response) {
             if (response && response.scorms) {
