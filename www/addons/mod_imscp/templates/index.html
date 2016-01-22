@@ -9,7 +9,7 @@
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" on-refresh="doRefresh()" ng-if="loaded"></ion-refresher>
         <mm-loading hide-until="loaded">
             <mm-navigation-bar previous="previousItem" next="nextItem" action="loadItem" info="description" title="{{ 'mm.core.description' | translate }}"></mm-navigation-bar>
-            <mm-iframe src="src" class="mma-imscp-iframe-container"></mm-iframe>
+            <mm-iframe src="src" ng-class='{"mm-has-navigation-bar": previousItem || nextItem || description}'></mm-iframe>
         </mm-loading>
     </ion-content>
 </ion-view>

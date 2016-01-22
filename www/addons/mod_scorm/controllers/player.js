@@ -36,7 +36,6 @@ angular.module('mm.addons.mod_scorm')
         offline = false;
 
     $scope.title = scorm.name; // We use SCORM name at start, later we'll use the SCO title.
-    $scope.description = scorm.intro;
     $scope.scorm = scorm;
     $scope.loadingToc = true;
 
