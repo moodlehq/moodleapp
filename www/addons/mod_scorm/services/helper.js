@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_scorm')
  * @ngdoc service
  * @name $mmCourseHelper
  */
-.factory('$mmaModScormHelper', function($mmaModScorm, $mmUtil, $translate, $q, $mmaModScormOffline, $mmaModScormSync) {
+.factory('$mmaModScormHelper', function($mmaModScorm, $mmUtil, $translate, $q, $mmaModScormOffline, $mmaModScormSync, $mmSite) {
 
     var self = {},
         elementsToIgnore = ['status', 'score_raw', 'total_time', 'session_time', 'student_id', 'student_name', 'credit',
@@ -54,14 +54,17 @@ angular.module('mm.addons.mod_scorm')
      * @name $mmaModScormHelper#convertAttemptToOffline
      * @param  {Object} scorm   SCORM.
      * @param  {Number} attempt Number of the online attempt.
+     * @param {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}        Promise resolved when the attempt is created.
      */
-    self.convertAttemptToOffline = function(scorm, attempt) {
+    self.convertAttemptToOffline = function(scorm, attempt, siteId) {
+        siteId = siteId || $mmSite.getId();
+
         // Get data from the online attempt.
-        return $mmaModScorm.getScormUserData(scorm.id, attempt).then(function(onlineData) {
+        return $mmaModScorm.getScormUserData(scorm.id, attempt, false, siteId).then(function(onlineData) {
             // The SCORM API might have written some data to the offline attempt already.
             // We don't want to override it with cached online data.
-            return $mmaModScormOffline.getScormUserData(scorm.id, attempt).catch(function() {
+            return $mmaModScormOffline.getScormUserData(siteId, scorm.id, attempt).catch(function() {
                 // Ignore errors.
             }).then(function(offlineData) {
                 var dataToStore = angular.copy(onlineData);
@@ -85,7 +88,7 @@ angular.module('mm.addons.mod_scorm')
                     }
                 });
 
-                return $mmaModScormOffline.createNewAttempt(scorm, undefined, attempt, dataToStore, onlineData);
+                return $mmaModScormOffline.createNewAttempt(siteId, scorm, undefined, attempt, dataToStore, onlineData);
             });
         }).catch(function() {
             // Shouldn't happen.
@@ -102,11 +105,13 @@ angular.module('mm.addons.mod_scorm')
      * @param  {Object} scorm      SCORM.
      * @param  {Number} newAttempt Number of the new attempt.
      * @param  {Number} lastOnline Number of the last online attempt.
+     * @param {String} [siteId]    Site ID. If not defined, current site.
      * @return {Promise}           Promise resolved when the attempt is created.
      */
-    self.createOfflineAttempt = function(scorm, newAttempt, lastOnline) {
+    self.createOfflineAttempt = function(scorm, newAttempt, lastOnline, siteId) {
+        siteId = siteId || $mmSite.getId();
         // Try to get data from online attempts.
-        return self.searchOnlineAttemptUserData(scorm.id, lastOnline).then(function(userData) {
+        return self.searchOnlineAttemptUserData(scorm.id, lastOnline, siteId).then(function(userData) {
             // We're creating a new attempt, remove all the user data that is not needed for a new attempt.
             // We need to get the SCO data from here because WS get_scoes doesn't return sco_data in Moodle 3.0.
             angular.forEach(userData, function(sco) {
@@ -119,7 +124,7 @@ angular.module('mm.addons.mod_scorm')
                 });
                 sco.userdata = filtered;
             });
-            return $mmaModScormOffline.createNewAttempt(scorm, undefined, newAttempt, userData);
+            return $mmaModScormOffline.createNewAttempt(siteId, scorm, undefined, newAttempt, userData);
         }).catch(function() {
             return $q.reject($translate.instant('mma.mod_scorm.errorcreateofflineattempt'));
         });
@@ -162,9 +167,11 @@ angular.module('mm.addons.mod_scorm')
      * @name $mmaModScormHelper#determineAttemptToContinue
      * @param  {Object} scorm    SCORM.
      * @param  {Object} attempts Result of $mmaModScorm#getAttemptCount.
+     * @param {String} [siteId]  Site ID. If not defined, current site.
      * @return {Promise}         Promise resolved with an object with 2 properties: 'number' and 'offline'.
      */
-    self.determineAttemptToContinue = function(scorm, attempts) {
+    self.determineAttemptToContinue = function(scorm, attempts, siteId) {
+        siteId = siteId || $mmSite.getId();
         var lastOnline,
             result = {
                 number: 0,
@@ -190,7 +197,7 @@ angular.module('mm.addons.mod_scorm')
         if (lastOnline) {
             // Check if last online incomplete.
             var hasOffline = attempts.offline.indexOf(lastOnline) > -1;
-            return $mmaModScorm.isAttemptIncomplete(scorm.id, lastOnline, hasOffline).then(function(incomplete) {
+            return $mmaModScorm.isAttemptIncomplete(scorm.id, lastOnline, hasOffline, false, siteId).then(function(incomplete) {
                 if (incomplete) {
                     result.number = lastOnline;
                     result.offline = hasOffline;
@@ -212,20 +219,22 @@ angular.module('mm.addons.mod_scorm')
      * @module mm.addons.mod_scorm
      * @ngdoc method
      * @name $mmaModScormHelper#getFirstSco
-     * @param {String} scormid        Scorm ID.
+     * @param {String} scormId        Scorm ID.
      * @param {Object[]} [toc]        SCORM's TOC.
      * @param {String} [organization] Organization to use.
      * @param {Number} attempt        Attempt number.
      * @param {Boolean} offline       True if attempt is offline, false otherwise.
+     * @param {String} [siteId]       Site ID. If not defined, current site.
      * @return {Promise}              Promise resolved with the first SCO.
      */
-    self.getFirstSco = function(scormid, toc, organization, attempt, offline) {
+    self.getFirstSco = function(scormId, toc, organization, attempt, offline, siteId) {
+        siteId = siteId || $mmSite.getId();
         var promise;
         if (toc && toc.length) {
             promise = $q.when(toc);
         } else {
             // SCORM doesn't have a TOC. Get all the scos.
-            promise = $mmaModScorm.getScosWithData(scormid, organization, attempt, offline);
+            promise = $mmaModScorm.getScosWithData(scormId, organization, attempt, offline, false, siteId);
         }
 
         return promise.then(function(scos) {
@@ -312,10 +321,11 @@ angular.module('mm.addons.mod_scorm')
      * @ngdoc method
      * @name $mmaModScormHelper#getScormReadableSyncTime
      * @param  {Number} scormId SCORM ID.
+     * @param {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}        Promise resolved with the readable time.
      */
-    self.getScormReadableSyncTime = function(scormId) {
-        return $mmaModScormSync.getScormSyncTime(scormId).then(function(time) {
+    self.getScormReadableSyncTime = function(scormId, siteId) {
+        return $mmaModScormSync.getScormSyncTime(scormId, siteId).then(function(time) {
             if (time == 0) {
                 return $translate('mm.core.none');
             } else {
@@ -331,15 +341,17 @@ angular.module('mm.addons.mod_scorm')
      * @module mm.addons.mod_scorm
      * @ngdoc method
      * @name $mmaModScormHelper#searchOnlineAttemptUserData
-     * @param {Number} scormId SCORM ID.
-     * @param {Number} attempt Online attempt to get the data.
-     * @return {Promise}       Promise resolved with user data.
+     * @param {Number} scormId  SCORM ID.
+     * @param {Number} attempt  Online attempt to get the data.
+     * @param {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved with user data.
      */
-    self.searchOnlineAttemptUserData = function(scormId, attempt) {
-        return $mmaModScorm.getScormUserData(scormId, attempt).catch(function() {
+    self.searchOnlineAttemptUserData = function(scormId, attempt, siteId) {
+        siteId = siteId || $mmSite.getId();
+        return $mmaModScorm.getScormUserData(scormId, attempt, false, siteId).catch(function() {
             if (attempt > 0) {
                 // We couldn't retrieve the data. Try again with the previous online attempt.
-                return self.searchOnlineAttemptUserData(scormId, attempt - 1);
+                return self.searchOnlineAttemptUserData(scormId, attempt - 1, siteId);
             } else {
                 // No more attempts to try. Reject
                 return $q.reject();
