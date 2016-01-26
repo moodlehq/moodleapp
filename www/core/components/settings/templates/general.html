@@ -8,6 +8,16 @@
                 <select ng-model="selectedLanguage" ng-options="code as name for (code, name) in langs" ng-change="languageChanged(selectedLanguage)" aria-labelledby="mm-settings-languagelabel">
                 </select>
             </li>
+             <li class="item item-toggle item-text-wrap">
+                <p id="mm-settings-downloadsectionlabel" class="item-heading">{{ 'mm.settings.enabledownloadsection' | translate }}</p>
+                <p>{{ 'mm.settings.enabledownloadsectiondescription' | translate }}</p>
+                <label class="toggle" aria-labelledby="mm-settings-downloadsectionlabel">
+                    <input id="mm-settings-downloadsectioncheckbox" type="checkbox" ng-model="downloadSection" ng-change="downloadSectionChanged(downloadSection)">
+                    <div class="track">
+                        <div class="handle"></div>
+                    </div>
+                </label>
+            </li>
              <li class="item item-toggle item-text-wrap" ng-if="showReport">
                 <p id="mm-settings-reportlabel" class="item-heading">{{ 'mm.settings.reportinbackground' | translate }}</p>
                 <label class="toggle" aria-labelledby="mm-settings-reportlabel">
