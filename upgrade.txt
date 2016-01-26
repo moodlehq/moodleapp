@@ -1,6 +1,10 @@
 This files describes API changes in the Moodle Mobile app,
 information provided here is intended especially for developers.
 
+=== 2.9 ===
+
+ * Most of the functions from $mmaModScormOnline, $mmaModScormOffline, $mmaModScorm, $mmaModScormSync and $mmaModScormHelper now have a new param siteId to determine the site to affect. If you use any of these services please make sure you still pass the right parameters.
+
 === 2.8 ===
 
  * $mmModuleActionsDelegate has been renamed to $mmContentLinksDelegate to make it more generic. The specification of this delegate has changed, please look at its documentation to adapt your handlers.

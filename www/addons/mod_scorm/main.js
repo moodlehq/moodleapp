@@ -64,13 +64,18 @@ angular.module('mm.addons.mod_scorm', ['mm.core'])
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModScorm', 'scorm', '$mmaModScormPrefetchHandler');
 })
 
-.run(function($timeout, $mmaModScormSync, $mmApp, $mmEvents, $mmaModScormOnline, $mmaModScormOffline, mmCoreEventLogin,
-            mmCoreEventLogout) {
+.run(function($timeout, $mmaModScormSync, $mmApp, $mmEvents, $mmSite, mmCoreEventLogin) {
     var lastExecution = 0,
-        executing = false;
+        executing = false,
+        allSitesCalled = false;
 
-    function syncScorms() {
+    function syncScorms(allSites) {
         var now = new Date().getTime();
+
+        if (!allSites && !$mmSite.isLoggedIn()) {
+            return;
+        }
+
         // Prevent consecutive and simultaneous executions. A sync process shouldn't take more than a few minutes,
         // so if it's been more than 5 minutes since the last execution we'll ignore the executing value.
         if (now - 5000 > lastExecution && (!executing || now - 300000 > lastExecution)) {
@@ -78,7 +83,7 @@ angular.module('mm.addons.mod_scorm', ['mm.core'])
             executing = true;
 
             $timeout(function() { // Minor delay just to make sure network is fully established.
-                $mmaModScormSync.syncAllScorms().finally(function() {
+                $mmaModScormSync.syncAllScorms(allSites ? undefined : $mmSite.getId()).finally(function() {
                     executing = false;
                 });
             }, 1000);
@@ -86,19 +91,33 @@ angular.module('mm.addons.mod_scorm', ['mm.core'])
     }
 
     $mmApp.ready().then(function() {
-        document.addEventListener('online', syncScorms, false); // Cordova event.
-        window.addEventListener('online', syncScorms, false); // HTML5 event.
-    });
+        document.addEventListener('online', function() {
+            syncScorms(false);
+        }, false); // Cordova event.
+        window.addEventListener('online', function() {
+            syncScorms(false);
+        }, false); // HTML5 event.
 
-    $mmEvents.on(mmCoreEventLogin, function() {
-        if ($mmApp.isOnline()) {
-            syncScorms();
+        if (!$mmSite.isLoggedIn()) {
+            // App was started without any site logged in. Try to sync all sites.
+            allSitesCalled = true;
+            if ($mmApp.isOnline()) {
+                syncScorms(true);
+            }
         }
     });
 
-    $mmEvents.on(mmCoreEventLogout, function() {
-        $mmaModScormOnline.clearBlockedScorms();
-        $mmaModScormOffline.clearBlockedScorms();
+    $mmEvents.on(mmCoreEventLogin, function() {
+        var allSites = false;
+        if (!allSitesCalled) {
+            // App started with a site logged in. Try to sync all sites.
+            allSitesCalled = true;
+            allSites = true;
+        }
+
+        if ($mmApp.isOnline()) {
+            syncScorms(allSites);
+        }
     });
 
 });
