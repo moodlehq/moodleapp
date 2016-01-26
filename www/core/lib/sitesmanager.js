@@ -128,8 +128,12 @@ angular.module('mm.core')
      * @return {Promise}        A promise to be resolved if the site exists.
      */
     self.siteExists = function(siteurl) {
-        // We pass fake parameters to make CORS work (without params, the script stops before allowing CORS).
-        return $http.get(siteurl + '/login/token.php?username=a&password=b&service=c', {timeout: 30000});
+        var url = siteurl + '/login/token.php';
+        if (!ionic.Platform.isWebView()) {
+            // We pass fake parameters to make CORS work (without params, the script stops before allowing CORS).
+            url = url + '?username=a&password=b&service=c';
+        }
+        return $http.get(url, {timeout: 30000});
     };
 
     /**
