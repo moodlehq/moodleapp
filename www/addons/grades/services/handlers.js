@@ -21,7 +21,7 @@ angular.module('mm.addons.grades')
  * @ngdoc service
  * @name $mmaGradesHandlers
  */
-.factory('$mmaGradesHandlers', function($mmaGrades, $state, mmCoursesAccessMethods) {
+.factory('$mmaGradesHandlers', function($mmaGrades, $state, $mmUtil, $mmContentLinksHelper, mmCoursesAccessMethods) {
 
     var self = {};
 
@@ -150,6 +150,57 @@ angular.module('mm.addons.grades')
                 };
             };
 
+        };
+
+        return self;
+    };
+
+    /**
+     * Content links handler.
+     *
+     * @module mm.addons.grades
+     * @ngdoc method
+     * @name $mmaGradesHandlers#linksHandler
+     */
+    self.linksHandler = function() {
+
+        var self = {};
+
+        /**
+         * Whether or not the handler is enabled for the site.
+         *
+         * @return {Boolean}
+         */
+        self.isEnabled = function() {
+            return $mmaGrades.isPluginEnabled();
+        };
+
+        /**
+         * Get actions to perform with the link.
+         *
+         * @param {String} url URL to treat.
+         * @return {Object[]}  List of actions. See {@link $mmContentLinksDelegate#registerLinkHandler}.
+         */
+        self.getActions = function(url) {
+            // Check it's a grade URL.
+            if (url.indexOf('/grade/report/user/index.php') > -1) {
+                var params = $mmUtil.extractUrlParams(url);
+                if (typeof params.id != 'undefined') {
+                    // Return actions.
+                    return [{
+                        message: 'mm.core.view',
+                        icon: 'ion-eye',
+                        action: function(siteId) {
+                            var stateParams = {
+                                course: {id: parseInt(params.id, 10)},
+                                userid: parseInt(params.userid, 10)
+                            };
+                            $mmContentLinksHelper.goInSite('site.grades', stateParams, siteId);
+                        }
+                    }];
+                }
+            }
+            return [];
         };
 
         return self;

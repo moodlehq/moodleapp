@@ -886,6 +886,9 @@ angular.module('mm.core')
          * 7.toFixed(2) -> 7.00
          * roundToDecimals(7, 2) -> 7
          *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#roundToDecimals
          * @param  {Float}  number       Float to round.
          * @param  {Number} [decimals=2] Number of decimals. By default, 2.
          * @return {Float}               Rounded number.
@@ -897,6 +900,24 @@ angular.module('mm.core')
 
             var multiplier = Math.pow(10, decimals);
             return Math.round(parseFloat(number) * multiplier) / multiplier;
+        };
+
+        /**
+         * Extracts the parameters from a URL and stores them in an object.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#extractUrlParams
+         * @param  {String} url URL to treat.
+         * @return {Object}     Object with the params.
+         */
+        self.extractUrlParams = function(url) {
+            var regex = /[?&]+([^=&]+)=?([^&]*)?/gi,
+                params = {};
+            url.replace(regex, function(match, key, value) {
+                params[key] = value !== undefined ? value : '';
+            });
+            return params;
         };
 
         return self;

@@ -29,6 +29,31 @@ angular.module('mm.core.contentlinks')
     var self = {};
 
     /**
+     * Goes to a certain state in a certain site. If the site is current site it will perform a regular navigation,
+     * otherwise it uses the 'redirect' state to change the site.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmUtil#goToSite
+     * @param  {String} stateName   Name of the state to go.
+     * @param  {Object} stateParams Params to send to the state.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved when the state is changed.
+     */
+    self.goInSite = function(stateName, stateParams, siteId) {
+        siteId = siteId || $mmSite.getId();
+        if (siteId == $mmSite.getId()) {
+            return $state.go(stateName, stateParams);
+        } else {
+            return $state.go('redirect', {
+                siteid: siteId,
+                state: stateName,
+                params: stateParams
+            });
+        }
+    };
+
+    /**
      * Go to the view to choose a site.
      *
      * @module mm.core.contentlinks
