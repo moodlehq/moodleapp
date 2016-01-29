@@ -21,7 +21,8 @@ angular.module('mm.core.courses')
  * @ngdoc service
  * @name $mmCoursesHandlers
  */
-.factory('$mmCoursesHandlers', function($mmSite, $state, $mmCourses, $q, $mmUtil, $translate, $timeout, mmCoursesEnrolInvalidKey) {
+.factory('$mmCoursesHandlers', function($mmSite, $state, $mmCourses, $q, $mmUtil, $translate, $timeout, $mmContentLinksHelper,
+            mmCoursesEnrolInvalidKey) {
 
     var self = {};
 
@@ -167,22 +168,24 @@ angular.module('mm.core.courses')
          * @return {Object[]}         List of actions. See {@link $mmContentLinksDelegate#registerLinkHandler}.
          */
         self.getActions = function(url, courseId) {
-            // Check if URL belongs to the current site.
-            if ($mmSite.containsUrl(url)) {
-                // Check if it's a course enrol URL.
-                if (url.indexOf('enrol/index.php') > -1 || url.indexOf('course/enrol.php') > -1) {
-                    var matches = url.match(/\.php\?id=(\d*)/); // Get course ID.
-                    if (matches && typeof matches[1] != 'undefined') {
-                        courseId = matches[1];
-                        // Return actions.
-                        return [{
-                            message: 'mm.core.view',
-                            icon: 'ion-eye',
-                            action: function() {
-                                actionEnrol(courseId, url);
+            // Check if it's a course URL.
+            if (url.indexOf('enrol/index.php') > -1 || url.indexOf('course/enrol.php') > -1 ||
+                        url.indexOf('course/view.php') > -1) {
+                var params = $mmUtil.extractUrlParams(url);
+                if (typeof params.id != 'undefined') {
+                    // Return actions.
+                    return [{
+                        message: 'mm.core.view',
+                        icon: 'ion-eye',
+                        action: function(siteId) {
+                            siteId = siteId || $mmSite.getId();
+                            if (siteId == $mmSite.getId()) {
+                                actionEnrol(parseInt(params.id, 10), url);
+                            } else {
+                                $mmContentLinksHelper.goInSite('site.mm_course', {courseid: parseInt(params.id, 10)}, siteId);
                             }
-                        }];
-                    }
+                        }
+                    }];
                 }
             }
             return [];

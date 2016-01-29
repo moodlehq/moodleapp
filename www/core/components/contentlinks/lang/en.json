@@ -1,0 +1,7 @@
+{
+	"chooseaccount": "Choose account",
+	"chooseaccounttoopenlink": "Choose an account to open the link with.",
+	"confirmurlothersite": "This link belongs to another site. Do you want to open it?",
+	"errornoactions": "Couldn't find an action to perform with this link.",
+	"errornosites": "Couldn't find any site to handle this link."
+}

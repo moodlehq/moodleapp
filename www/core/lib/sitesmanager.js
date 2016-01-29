@@ -505,19 +505,22 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmSitesManager#getSites
-     * @return {Promise} Promise to be resolved when the sites are retrieved.
+     * @param {String[]} [ids] IDs of the sites to get. If not defined, return all sites.
+     * @return {Promise}       Promise to be resolved when the sites are retrieved.
      */
-    self.getSites = function() {
+    self.getSites = function(ids) {
         return $mmApp.getDB().getAll(mmCoreSitesStore).then(function(sites) {
             var formattedSites = [];
             angular.forEach(sites, function(site) {
-                formattedSites.push({
-                    id: site.id,
-                    siteurl: site.siteurl,
-                    fullname: site.infos.fullname,
-                    sitename: site.infos.sitename,
-                    avatar: site.infos.userpictureurl
-                });
+                if (!ids || ids.indexOf(site.id) > -1) {
+                    formattedSites.push({
+                        id: site.id,
+                        siteurl: site.siteurl,
+                        fullname: site.infos.fullname,
+                        sitename: site.infos.sitename,
+                        avatar: site.infos.userpictureurl
+                    });
+                }
             });
             return formattedSites;
         });
@@ -659,6 +662,57 @@ angular.module('mm.core')
     self.updateSiteInfoByUrl = function(siteurl, username) {
         var siteid = self.createSiteID(siteurl, username);
         return self.updateSiteInfo(siteid);
+    };
+
+    /**
+     * Get the site IDs a URL belongs to.
+     * Someone can have more than one account in the same site, that's why this function returns an array of IDs.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#getSitesUrls
+     * @param {String} url         URL to check.
+     * @param {Boolean} prioritize True if it should prioritize current site. If the URL belongs to current site then it won't
+     *                             check any other site, it will only return current site.
+     * @return {Promise}           Promise resolved with the site IDs (array).
+     */
+    self.getSiteIdsFromUrl = function(url, prioritize) {
+        // Check current site first, it has priority over the rest of sites.
+        if (prioritize && currentSite && currentSite.containsUrl(url)) {
+            return $q.when([currentSite.getId()]);
+        }
+
+        // Check if URL has http(s) protocol.
+        if (!url.match(/^https?:\/\//i)) {
+            // URL doesn't have http(s) protocol. Check if it has any protocol.
+            if (url.match(/^[^:]{2,10}:\/\//i)) {
+                // It has some protocol. Return empty array.
+                return $q.when([]);
+            } else {
+                // No protocol, probably a relative URL. Return current site.
+                if (currentSite) {
+                    return $q.when([currentSite.getId()]);
+                } else {
+                    return $q.when([]);
+                }
+            }
+        }
+
+        return $mmApp.getDB().getAll(mmCoreSitesStore).then(function(sites) {
+            var ids = [];
+            angular.forEach(sites, function(site) {
+                if (!sites[site.id]) {
+                    sites[site.id] = $mmSitesFactory.makeSite(site.id, site.siteurl, site.token, site.infos);
+                }
+                if (sites[site.id].containsUrl(url)) {
+                    ids.push(site.id);
+                }
+            });
+            return ids;
+        }).catch(function() {
+            // Shouldn't happen.
+            return [];
+        });
     };
 
     return self;

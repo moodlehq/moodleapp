@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.core')
+angular.module('mm.core.contentlinks')
 
 /**
  * Service to handle links found in contents. Allows to capture links in content and redirect to certain parts
  * of the app instead of opening them in browser.
  *
- * @module mm.core
+ * @module mm.core.contentlinks
  * @ngdoc provider
  * @name $mmContentLinksDelegate
  */
@@ -29,7 +29,7 @@ angular.module('mm.core')
     /**
      * Register a link handler.
      *
-     * @module mm.core
+     * @module mm.core.contentlinks
      * @ngdoc method
      * @name $mmContentLinksDelegateProvider#registerLinkHandler
      * @param {String} name                    Handler's name.
@@ -68,15 +68,15 @@ angular.module('mm.core')
         /**
          * Get the list of possible actions to do for a URL.
          *
-         * @module mm.core
+         * @module mm.core.contentlinks
          * @ngdoc method
          * @name $mmContentLinksDelegate#getLinkHandlersFor
          * @param {String} url        URL to handle.
-         * @param {Number} [courseid] Course ID related to the URL. Optional but recommended since some handlers might require
+         * @param {Number} [courseId] Course ID related to the URL. Optional but recommended since some handlers might require
          *                            to know the courseid if Moodle version is previous to 3.0.
          * @return {Object[]}         Actions. See {@link $mmContentLinksDelegate#registerLinkHandler}.
          */
-        self.getActionsFor = function(url, courseid) {
+        self.getActionsFor = function(url, courseId) {
             if (!url) {
                 return [];
             }
@@ -84,7 +84,7 @@ angular.module('mm.core')
             var linkActions = {};
             angular.forEach(enabledLinkHandlers, function(handler) {
                 if (handler.instance && angular.isFunction(handler.instance.getActions)) {
-                    var actions = handler.instance.getActions(url, courseid);
+                    var actions = handler.instance.getActions(url, courseId);
                     if (actions && actions.length) {
                         linkActions[handler.priority] = actions;
                     }
@@ -120,7 +120,7 @@ angular.module('mm.core')
         /**
          * Update the enabled link handlers for the current site.
          *
-         * @module mm.core
+         * @module mm.core.contentlinks
          * @ngdoc method
          * @name $mmContentLinksDelegate#updateLinkHandler
          * @param {String} name        The handler name.
@@ -159,7 +159,7 @@ angular.module('mm.core')
         /**
          * Update the link handlers for the current site.
          *
-         * @module mm.core
+         * @module mm.core.contentlinks
          * @ngdoc method
          * @name $mmContentLinksDelegate#updateLinkHandlers
          * @return {Promise} Resolved when done.

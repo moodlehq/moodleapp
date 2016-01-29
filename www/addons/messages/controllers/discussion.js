@@ -23,7 +23,8 @@ angular.module('mm.addons.messages')
  */
 .controller('mmaMessagesDiscussionCtrl', function($scope, $stateParams, $mmApp, $mmaMessages, $mmSite, $timeout, $mmEvents, $window,
         $ionicScrollDelegate, mmUserProfileState, $mmUtil, mmaMessagesPollInterval, $interval, $log, $ionicHistory, $ionicPlatform,
-        mmCoreEventKeyboardShow, mmCoreEventKeyboardHide, mmaMessagesDiscussionLoadedEvent, mmaMessagesDiscussionLeftEvent) {
+        mmCoreEventKeyboardShow, mmCoreEventKeyboardHide, mmaMessagesDiscussionLoadedEvent, mmaMessagesDiscussionLeftEvent,
+        $mmUser) {
 
     $log = $log.getInstance('mmaMessagesDiscussionCtrl');
 
@@ -43,6 +44,13 @@ angular.module('mm.addons.messages')
 
     if (userFullname) {
         $scope.title = userFullname;
+    } else if (userId) {
+        // We don't have the fullname, try to get it.
+        $mmUser.getProfile(userId).then(function(user) {
+            if (!$scope.title) {
+                $scope.title = user.fullname;
+            }
+        });
     }
 
     // Disable the profile button if we're coming from a profile. It is safer to prevent forbid the access

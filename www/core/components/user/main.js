@@ -16,7 +16,7 @@ angular.module('mm.core.user', [])
 
 .value('mmUserProfileState', 'site.mm_user-profile')
 
-.config(function($stateProvider) {
+.config(function($stateProvider, $mmContentLinksDelegateProvider) {
 
     $stateProvider
 
@@ -33,6 +33,9 @@ angular.module('mm.core.user', [])
                 userid: 0
             }
         });
+
+    // Register content links handler.
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmUser', '$mmUserHandlers.linksHandler');
 
 })
 

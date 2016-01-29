@@ -23,7 +23,7 @@ angular.module('mm.addons.messages')
  * @ngdoc service
  * @name $mmaMessagesHandlers
  */
-.factory('$mmaMessagesHandlers', function($log, $mmaMessages, $mmSite, $state, $mmUtil) {
+.factory('$mmaMessagesHandlers', function($log, $mmaMessages, $mmSite, $state, $mmUtil, $mmContentLinksHelper) {
     $log = $log.getInstance('$mmaMessagesHandlers');
 
     var self = {};
@@ -276,6 +276,81 @@ angular.module('mm.addons.messages')
                 $scope.title = 'mma.messages.messages';
                 $scope.state = 'site.messages';
             };
+        };
+
+        return self;
+    };
+
+    /**
+     * Content links handler.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessagesHandlers#linksHandler
+     */
+    self.linksHandler = function() {
+
+        var self = {};
+
+        /**
+         * Whether or not the handler is enabled for the site.
+         *
+         * @return {Boolean}
+         */
+        self.isEnabled = function() {
+            return $mmaMessages.isPluginEnabled();
+        };
+
+        /**
+         * Get actions to perform with the link.
+         *
+         * @param {String} url URL to treat.
+         * @return {Object[]}  List of actions. See {@link $mmContentLinksDelegate#registerLinkHandler}.
+         */
+        self.getActions = function(url) {
+            // Check it's a messages URL.
+            if (url.indexOf('/message/index.php') > -1) {
+                var params = $mmUtil.extractUrlParams(url);
+                // Return actions.
+                return [{
+                    message: 'mm.core.view',
+                    icon: 'ion-eye',
+                    action: function(siteId) {
+                        var stateName,
+                            stateParams;
+
+                        if (typeof params.user1 != 'undefined' && typeof params.user2 != 'undefined') {
+                            // Check if the current user is in the conversation.
+                            if ($mmSite.getUserId() == params.user1) {
+                                stateName = 'site.messages-discussion';
+                                stateParams = {userId: parseInt(params.user2, 10)};
+                            } else if ($mmSite.getUserId() == params.user2) {
+                                stateName = 'site.messages-discussion';
+                                stateParams = {userId: parseInt(params.user1, 10)};
+                            } else {
+                                // He isn't, open in browser.
+                                $mmUtil.openInBrowser(url);
+                                return;
+                            }
+                        } else if (typeof params.id != 'undefined') {
+                            stateName = 'site.messages-discussion';
+                            stateParams = {userId: parseInt(params.id, 10)};
+                        }
+
+                        if (!stateName) {
+                            // Go to messaging index page. We use redirect state to view the side menu.
+                            $state.go('redirect', {
+                                siteid: siteId,
+                                state: 'site.messages',
+                                params: {}
+                            });
+                        } else {
+                            $mmContentLinksHelper.goInSite(stateName, stateParams, siteId);
+                        }
+                    }
+                }];
+            }
+            return [];
         };
 
         return self;
