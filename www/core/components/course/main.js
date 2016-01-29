@@ -38,7 +38,7 @@ angular.module('mm.core.course', ['mm.core.courses'])
         url: '/mm_course-section',
         params: {
             sectionid: null,
-            courseid: null
+            cid: null // Not naming it courseid because it collides with 'site.mm_course' param in split-view.
         },
         views: {
             'site': {

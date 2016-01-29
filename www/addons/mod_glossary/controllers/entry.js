@@ -24,7 +24,7 @@ angular.module('mm.addons.mod_glossary')
 .controller('mmaModGlossaryEntryCtrl', function($scope, $stateParams, $mmaModGlossary, $translate,
         mmUserProfileState) {
     var entry = $stateParams.entry || {},
-        courseid = $stateParams.courseid || 0,
+        courseid = $stateParams.cid || 0,
         glossary;
 
     // This is a coding error, for now the course ID is required here as we need it for the author link.

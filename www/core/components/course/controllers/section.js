@@ -25,7 +25,7 @@ angular.module('mm.core.course')
             $mmEvents, $ionicScrollDelegate, $mmCourses, $q, mmCoreEventCompletionModuleViewed) {
 
     // Default values are course 1 (front page) and all sections.
-    var courseid = $stateParams.courseid || 1,
+    var courseid = $stateParams.cid || 1,
         sectionid = $stateParams.sectionid || -1;
 
     $scope.sitehome = (courseid === 1); // Are we visiting the site home?

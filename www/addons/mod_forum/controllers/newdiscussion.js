@@ -24,7 +24,7 @@ angular.module('mm.addons.mod_forum')
 .controller('mmaModForumNewDiscussionCtrl', function($scope, $stateParams, $mmGroups, $q, $mmaModForum, $mmEvents, $ionicPlatform,
             $mmUtil, $ionicHistory, $translate, mmaModForumNewDiscussionEvent) {
 
-    var courseid = $stateParams.courseid,
+    var courseid = $stateParams.cid,
         forumid = $stateParams.forumid,
         cmid = $stateParams.cmid;
 

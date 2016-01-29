@@ -19,6 +19,12 @@ angular.module('mm.core')
 /**
  * Directive to create a split view layout. This directive should be used along with mm-split-view-link.
  *
+ * IMPORTANT: Due to a limitation in Angular ui-router, the left pane state and the right pane state should NOT have
+ * parameters with the same name but different value. It can cause unexpected behaviors.
+ * Example: if the left pane loads a state with param 'courseid', then all the states that can be loaded in the right pane
+ * should avoid having a parameter named 'courseid'. The right pane state can have a 'courseid' param only if it will always
+ * have the same value than in left pane state.
+ *
  * @module mm.core
  * @ngdoc directive
  * @name mmSplitView
@@ -36,6 +42,12 @@ angular.module('mm.core')
  * element should it load you can use the mmCoreSplitViewLoad event. When the directive receives this event it will try to
  * immediately load the link set (if no link is set it will load the first link found). Example:
  * $rootScope.$broadcast(mmCoreSplitViewLoad, {load: 2});
+ *
+ * IMPORTANT: Due to a limitation in Angular ui-router, the left pane state and the right pane state should NOT have
+ * parameters with the same name but different value. It can cause unexpected behaviors.
+ * Example: if the left pane loads a state with param 'courseid', then all the states that can be loaded in the right pane
+ * should avoid having a parameter named 'courseid'. The right pane state can have a 'courseid' param only if it will always
+ * have the same value than in left pane state.
  *
  * Accepts the following params:
  *

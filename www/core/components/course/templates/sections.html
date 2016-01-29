@@ -6,7 +6,7 @@
             <mm-loading hide-until="sectionsLoaded">
                 <ul class="list">
                     <li ng-repeat="section in sections">
-                        <a class="item item-text-wrap item-button-right" mm-split-view-link="site.mm_course-section({courseid: courseid, coursecompletion: coursecompletion, sectionid: section.id})" title="{{section.name}}">
+                        <a class="item item-text-wrap item-button-right" mm-split-view-link="site.mm_course-section({cid: courseid, coursecompletion: coursecompletion, sectionid: section.id})" title="{{section.name}}">
                             <mm-format-text watch="true">{{section.name}}</mm-format-text>
 
                             <button ng-if="section.showDownload && !section.isDownloading" ng-click="prefetch($event, section)" class="button button-icon" aria-label="{{ 'mm.core.download' | translate }}">
