@@ -8,6 +8,7 @@
     "couldnotloadsections": "Could not load the sections, please try again later.",
     "couldnotloadsectioncontent": "Could not load the section content, please try again later.",
     "errordownloadingsection": "Error downloading section.",
+    "errorgetmodule": "Error getting module data.",
     "gotothesite": "Go to the site",
     "nocontentavailable": "No content available at the moment.",
     "showall": "Show all",

@@ -168,6 +168,30 @@ angular.module('mm.core.course')
     };
 
     /**
+     * Get the course ID from a module, showing an error message if it can't be retrieved.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourseHelper#getModuleCourseId
+     * @param {Number} id        Instance ID.
+     * @param {String} module    Name of the module. E.g. 'glossary'.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with the module's course ID.
+     */
+    self.getModuleCourseIdByInstance = function(id, module, siteId) {
+        return $mmCourse.getModuleBasicInfoByInstance(id, module, siteId).then(function(cm) {
+            return cm.course;
+        }).catch(function(error) {
+            if (error) {
+                $mmUtil.showErrorModal(error);
+            } else {
+                $mmUtil.showErrorModal('mm.course.errorgetmodule', true);
+            }
+            return $q.reject();
+        });
+    };
+
+    /**
      * Get the download ID of a section. It's used to interact with $mmCoursePrefetchDelegate.
      *
      * @module mm.core.course
