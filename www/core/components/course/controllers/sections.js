@@ -23,11 +23,14 @@ angular.module('mm.core.course')
  */
 .controller('mmCourseSectionsCtrl', function($mmCourse, $mmUtil, $scope, $stateParams, $translate, $mmCourseHelper, $mmEvents,
             $mmSite, $mmCoursePrefetchDelegate, $mmCourses, $q, $ionicHistory, $ionicPlatform, mmCoreCourseAllSectionsId,
-            mmCoreEventSectionStatusChanged, $mmConfig, mmCoreSettingsDownloadSection) {
-    var courseid = $stateParams.courseid,
+            mmCoreEventSectionStatusChanged, $mmConfig, mmCoreSettingsDownloadSection, $state, $timeout) {
+    var courseId = $stateParams.courseid,
+        sectionId = $stateParams.sid,
+        moduleId = $stateParams.moduleid,
         downloadSectionsEnabled;
 
-    $scope.courseid = courseid;
+    $scope.courseId = courseId;
+    $scope.sectionToLoad = 2; // Load "General" section by default.
 
     function checkDownloadSectionsEnabled() {
         return $mmConfig.get(mmCoreSettingsDownloadSection, true).then(function(enabled) {
@@ -40,10 +43,10 @@ angular.module('mm.core.course')
 
     function loadSections(refresh) {
         // Get full course data. If not refreshing we'll try to get it from cache to speed up the response.
-        return $mmCourses.getUserCourse(courseid).then(function(course) {
+        return $mmCourses.getUserCourse(courseId).then(function(course) {
             $scope.fullname = course.fullname;
             // Get the sections.
-            return $mmCourse.getSections(courseid).then(function(sections) {
+            return $mmCourse.getSections(courseId).then(function(sections) {
                 // Add a fake first section (all sections).
                 return $translate('mm.course.allsections').then(function(str) {
                     // Adding fake first section.
@@ -56,7 +59,7 @@ angular.module('mm.core.course')
 
                     if (downloadSectionsEnabled) {
                         // Calculate status of the sections.
-                        return $mmCourseHelper.calculateSectionsStatus(result, courseid, true, refresh).catch(function() {
+                        return $mmCourseHelper.calculateSectionsStatus(result, courseId, true, refresh).catch(function() {
                             // Ignore errors (shouldn't happen).
                         }).then(function(downloadpromises) {
                             // If we restored any download we'll recalculate the status once all of them have finished.
@@ -68,7 +71,7 @@ angular.module('mm.core.course')
                                 }).finally(function() {
                                     if (!$scope.$$destroyed) {
                                         // Recalculate the status.
-                                        $mmCourseHelper.calculateSectionsStatus($scope.sections, courseid, false);
+                                        $mmCourseHelper.calculateSectionsStatus($scope.sections, courseId, false);
                                     }
                                 });
                             }
@@ -88,7 +91,7 @@ angular.module('mm.core.course')
     // Prefetch a section. The second parameter indicates if the prefetch was started manually (true)
     // or it was automatically started because all modules are being downloaded (false).
     function prefetch(section, manual) {
-        $mmCourseHelper.prefetch(section, courseid, $scope.sections).catch(function() {
+        $mmCourseHelper.prefetch(section, courseId, $scope.sections).catch(function() {
             // Don't show error message if scope is destroyed or it's an automatic download but we aren't in this state.
             if ($scope.$$destroyed) {
                 return;
@@ -105,15 +108,41 @@ angular.module('mm.core.course')
         }).finally(function() {
             if (!$scope.$$destroyed) {
                 // Recalculate the status.
-                $mmCourseHelper.calculateSectionsStatus($scope.sections, courseid, false);
+                $mmCourseHelper.calculateSectionsStatus($scope.sections, courseId, false);
             }
         });
+    }
+
+    // Convenience function to autoload a section if sectionId param is set.
+    function autoloadSection() {
+        if (sectionId) {
+            if ($ionicPlatform.isTablet()) {
+                // Search the position of the section to load.
+                angular.forEach($scope.sections, function(section, index) {
+                    if (section.id == sectionId) {
+                        $scope.sectionToLoad = index + 1;
+                    }
+                });
+                // Set moduleId to pass it to the new state when the section is autoloaded. We unset it after this
+                // to prevent autoloading the module when the user manually loads a section.
+                $scope.moduleId = moduleId;
+                $timeout(function() {
+                    $scope.moduleId = null; // Unset moduleId when
+                }, 500);
+            } else {
+                $state.go('site.mm_course-section', {
+                    sectionid: sectionId,
+                    cid: courseId,
+                    mid: moduleId
+                });
+            }
+        }
     }
 
     $scope.doRefresh = function() {
         var promises = [];
         promises.push($mmCourses.invalidateUserCourses());
-        promises.push($mmCourse.invalidateSections(courseid));
+        promises.push($mmCourse.invalidateSections(courseId));
 
         $q.all(promises).finally(function() {
             loadSections(true).finally(function() {
@@ -126,13 +155,14 @@ angular.module('mm.core.course')
         e.preventDefault();
         e.stopPropagation();
 
-        $mmCourseHelper.confirmDownloadSize(courseid, section, $scope.sections).then(function() {
+        $mmCourseHelper.confirmDownloadSize(courseId, section, $scope.sections).then(function() {
             prefetch(section, true);
         });
     };
 
     checkDownloadSectionsEnabled().then(function() {
         loadSections().finally(function() {
+            autoloadSection();
             $scope.sectionsLoaded = true;
         });
     });
@@ -148,7 +178,7 @@ angular.module('mm.core.course')
             }
 
             // Recalculate the status.
-            $mmCourseHelper.calculateSectionsStatus($scope.sections, courseid, false).then(function() {
+            $mmCourseHelper.calculateSectionsStatus($scope.sections, courseId, false).then(function() {
                 var section;
                 angular.forEach($scope.sections, function(s) {
                     if (s.id === data.sectionid) {

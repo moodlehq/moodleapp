@@ -21,7 +21,8 @@ angular.module('mm.core.contentlinks')
  * @ngdoc service
  * @name $mmContentLinksHelper
  */
-.factory('$mmContentLinksHelper', function($log, $ionicHistory, $state, $mmSite, $mmContentLinksDelegate, $mmUtil, $translate) {
+.factory('$mmContentLinksHelper', function($log, $ionicHistory, $state, $mmSite, $mmContentLinksDelegate, $mmUtil, $translate,
+            $mmCourseHelper) {
 
     $log = $log.getInstance('$mmContentLinksHelper');
 
@@ -140,7 +141,6 @@ angular.module('mm.core.contentlinks')
      * @return {Promise}    Promise resolved with a boolean: true if URL was treated, false otherwise.
      */
     self.handleLink = function(url) {
-
         // Check if the link should be treated by some component/addon.
         return $mmContentLinksDelegate.getActionsFor(url).then(function(actions) {
             var action = self.getFirstValidAction(actions);
@@ -163,6 +163,41 @@ angular.module('mm.core.contentlinks')
         }).catch(function() {
             return false;
         });
+    };
+
+    /**
+     * Treats a URL that belongs to a module's index page.
+     *
+     * @module mm.core.contentlinks
+     * @ngdoc method
+     * @name $mmContentLinksHelper#treatModuleIndexUrl
+     * @param {String[]} siteIds   Site IDs the URL belongs to.
+     * @param {String} url         URL to treat.
+     * @param {Function} isEnabled Function to check if the module is enabled. @see $mmContentLinksHelper#filterSupportedSites .
+     * @param {Number} [courseId]  Course ID related to the URL.
+     * @return {Promise}           Promise resolved with the list of actions.
+     */
+    self.treatModuleIndexUrl = function(siteIds, url, isEnabled, courseId) {
+        var params = $mmUtil.extractUrlParams(url);
+        if (typeof params.id != 'undefined') {
+            // Pass false because all sites should have the same siteurl.
+            return self.filterSupportedSites(siteIds, isEnabled, false, courseId).then(function(ids) {
+                if (!ids.length) {
+                    return [];
+                } else {
+                    // Return actions.
+                    return [{
+                        message: 'mm.core.view',
+                        icon: 'ion-eye',
+                        sites: ids,
+                        action: function(siteId) {
+                            $mmCourseHelper.navigateToModule(parseInt(params.id, 10), siteId, courseId);
+                        }
+                    }];
+                }
+            });
+        }
+        return $q.when([]);
     };
 
     return self;

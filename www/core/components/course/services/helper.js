@@ -21,9 +21,8 @@ angular.module('mm.core.course')
  * @ngdoc service
  * @name $mmCourseHelper
  */
-.factory('$mmCourseHelper', function($q, $mmCoursePrefetchDelegate, $mmApp, $mmFilepool, $mmUtil, $translate, $mmText,
-            mmCoreNotDownloaded, mmCoreOutdated, mmCoreDownloading, mmCoreWifiDownloadThreshold, mmCoreDownloadThreshold,
-            mmCoreCourseAllSectionsId) {
+.factory('$mmCourseHelper', function($q, $mmCoursePrefetchDelegate, $mmFilepool, $mmUtil, $mmCourse, $mmSite, $state,
+            mmCoreNotDownloaded, mmCoreOutdated, mmCoreDownloading, mmCoreCourseAllSectionsId) {
 
     var self = {};
 
@@ -202,6 +201,66 @@ angular.module('mm.core.course')
      */
     self.getSectionDownloadId = function(section) {
         return 'Section-'+section.id;
+    };
+
+    /**
+     * Retrieves the courseId of the module and navigates to it.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourseHelper#navigateToModule
+     * @param  {Number} moduleId    Module's ID.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @param  {Number} [courseId]  Course ID. If not defined we'll try to retrieve it from the site.
+     * @param  {Number} [sectionId] Section the module belongs to. If not defined we'll try to retrieve it from the site.
+     * @return {Promise}            Promise resolved when the state changes.
+     */
+    self.navigateToModule = function(moduleId, siteId, courseId, sectionId) {
+        siteId = siteId || $mmSite.getId();
+        var modal = $mmUtil.showModalLoading(),
+            promise;
+
+        return $mmCourse.canGetModuleWithoutCourseId(siteId).then(function(enabled) {
+            if (courseId && sectionId) {
+                // No need to retrieve more data.
+                promise = $q.when();
+            } else if (!courseId && !enabled) {
+                // We don't have enough data and we can't retrieve it.
+                promise = $q.reject();
+            } else if (!courseId) {
+                // We don't have courseId but WS is enabled.
+                promise = $mmCourse.getModuleBasicInfo(moduleId, siteId).then(function(module) {
+                    courseId = module.course;
+                    sectionId = module.section;
+                });
+            } else {
+                // We don't have sectionId but we have courseId.
+                promise = $mmCourse.getModuleSectionId(moduleId, courseId, siteId).then(function(id) {
+                    sectionId = id;
+                });
+            }
+
+            return promise.then(function() {
+                return $state.go('redirect', {
+                    siteid: siteId,
+                    state: 'site.mm_course',
+                    params: {
+                        courseid: courseId,
+                        moduleid: moduleId,
+                        sid: sectionId
+                    }
+                });
+            });
+        }).catch(function(error) {
+            if (error) {
+                $mmUtil.showErrorModal(error);
+            } else {
+                $mmUtil.showErrorModal('mm.course.errorgetmodule', true);
+            }
+            return $q.reject();
+        }).finally(function() {
+            modal.dismiss();
+        });
     };
 
     /**

@@ -333,6 +333,47 @@ angular.module('mm.core.course')
     };
 
     /**
+     * Get the section ID a module belongs to.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#getModuleSectionId
+     * @param {Number} moduleId   The module ID.
+     * @param {Number} [courseId] The course ID. Required if Moodle site is prior to 3.0.
+     * @param {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}
+     */
+    self.getModuleSectionId = function(moduleId, courseId, siteId) {
+
+        if (!moduleId) {
+            return $q.reject();
+        }
+
+        // Try to get the section using getModuleBasicInfo.
+        return self.getModuleBasicInfo(moduleId, siteId).then(function(module) {
+            return module.section;
+        }).catch(function() {
+            if (!courseId) {
+                // It failed and we don't have courseId, reject.
+                return $q.reject();
+            }
+
+            // Get all the sections in the course and iterate over them to find it.
+            return self.getSections(courseId, {}, siteId).then(function(sections) {
+                sections.forEach(function(section) {
+                    section.modules.forEach(function(module) {
+                        if (module.id == moduleId) {
+                            return section.id;
+                        }
+                    });
+                });
+                // Not found.
+                return $q.reject();
+            });
+        });
+    };
+
+    /**
      * Return a specific section.
      *
      * @module mm.core.course
@@ -373,22 +414,26 @@ angular.module('mm.core.course')
      * @name $mmCourse#getSections
      * @param {Number} courseid  The course ID.
      * @param {Object} [preSets] Optional. Presets to use.
+     * @param {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise} The reject contains the error message, else contains the sections.
      */
-    self.getSections = function(courseid, preSets) {
+    self.getSections = function(courseid, preSets, siteId) {
         preSets = preSets || {};
+        siteId = siteId || $mmSite.getId();
         preSets.cacheKey = getSectionsCacheKey(courseid);
 
-        return $mmSite.read('core_course_get_contents', {
-            courseid: courseid,
-            options: []
-        }, preSets).then(function(sections) {
-            angular.forEach(sections, function(section) {
-                angular.forEach(section.modules, function(module) {
-                    addContentsIfNeeded(module);
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.read('core_course_get_contents', {
+                courseid: courseid,
+                options: []
+            }, preSets).then(function(sections) {
+                angular.forEach(sections, function(section) {
+                    angular.forEach(section.modules, function(module) {
+                        addContentsIfNeeded(module);
+                    });
                 });
+                return sections;
             });
-            return sections;
         });
     };
 
