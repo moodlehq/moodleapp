@@ -595,26 +595,30 @@ angular.module('mm.addons.messages')
      * @return {Promise} Resolved when enabled, otherwise rejected.
      * @protected
      */
-    self._isMessagingEnabled = function() {
-        var enabled = $mmSite.canUseAdvancedFeature('messaging', 'unknown');
+    self._isMessagingEnabled = function(siteId) {
+        siteId = siteId || $mmSite.getId();
 
-        if (enabled === 'unknown') {
-            // On older version we cannot check other than calling a WS. If the request
-            // fails there is a very high chance that messaging is disabled.
-            $log.debug('Using WS call to check if messaging is enabled.');
-            return $mmSite.read('core_message_search_contacts', {
-                searchtext: 'CheckingIfMessagingIsEnabled',
-                onlymycourses: 0
-            }, {
-                emergencyCache: false,
-                cacheKey: self._getCacheKeyForEnabled()
-            });
-        }
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var enabled = site.canUseAdvancedFeature('messaging', 'unknown');
 
-        if (enabled) {
-            return $q.when(true);
-        }
-        return $q.reject();
+            if (enabled === 'unknown') {
+                // On older version we cannot check other than calling a WS. If the request
+                // fails there is a very high chance that messaging is disabled.
+                $log.debug('Using WS call to check if messaging is enabled.');
+                return site.read('core_message_search_contacts', {
+                    searchtext: 'CheckingIfMessagingIsEnabled',
+                    onlymycourses: 0
+                }, {
+                    emergencyCache: false,
+                    cacheKey: self._getCacheKeyForEnabled()
+                });
+            }
+
+            if (enabled) {
+                return true;
+            }
+            return $q.reject();
+        });
     };
 
    /**
@@ -648,30 +652,30 @@ angular.module('mm.addons.messages')
     };
 
     /**
-     * Returns whether or not the plugin is enabled for the current site.
+     * Returns whether or not the plugin is enabled in a certain site.
      *
      * Do not abuse this method.
      *
      * @module mm.addons.messages
      * @ngdoc method
      * @name $mmaMessages#isPluginEnabled
-     * @return {Promise} Rejected when not enabled.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with true if enabled, rejected or resolved with false otherwise.
      */
-    self.isPluginEnabled = function() {
-        var infos,
-            enabled = $q.when(true);
+    self.isPluginEnabled = function(siteId) {
+        siteId = siteId || $mmSite.getId();
 
-        if (!$mmSite.isLoggedIn()) {
-            enabled = $q.reject();
-        } else if (!$mmSite.canUseAdvancedFeature('messaging')) {
-            enabled = $q.reject();
-        } else if (!$mmSite.wsAvailable('core_message_get_messages')) {
-            enabled = $q.reject();
-        } else {
-            enabled = self._isMessagingEnabled();
-        }
-
-        return enabled;
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            if (!site.canUseAdvancedFeature('messaging')) {
+                return false;
+            } else if (!site.wsAvailable('core_message_get_messages')) {
+                return false;
+            } else {
+                return self._isMessagingEnabled(siteId).then(function() {
+                    return true;
+                });
+            }
+        });
     };
 
     /**

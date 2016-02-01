@@ -21,20 +21,81 @@ angular.module('mm.core.contentlinks')
  * @ngdoc service
  * @name $mmContentLinksHelper
  */
-.factory('$mmContentLinksHelper', function($log, $ionicHistory, $state, $mmSite, $mmSitesManager, $mmContentLinksDelegate, $q,
-            $mmUtil, $translate) {
+.factory('$mmContentLinksHelper', function($log, $ionicHistory, $state, $mmSite, $mmContentLinksDelegate, $mmUtil, $translate) {
 
     $log = $log.getInstance('$mmContentLinksHelper');
 
     var self = {};
 
     /**
+     * Filter the list of supported sites based on a isEnabled function.
+     *
+     * @module mm.core.contentlinks
+     * @ngdoc method
+     * @name $mmContentLinksHelper#filterSupportedSites
+     * @param  {String[]} siteIds     Site IDs to filter.
+     * @param  {Function} isEnabledFn Function to call for each site. Must return a promise resolved with true if enabled. It
+     *                                receives a siteId param and all the params sent to this function after 'checkAll'.
+     * @param  {Boolean} checkAll     True if it should check all the sites, false if it should check only 1 and treat them all
+     *                                depending on this result.
+     * @param  {Mixed}                All the params sent after checkAll will be passed to isEnabledFn.
+     * @return {Promise}              Promise resolved with the list of supported sites.
+     */
+    self.filterSupportedSites = function(siteIds, isEnabledFn, checkAll) {
+        var promises = [],
+            supported = [],
+            extraParams = Array.prototype.slice.call(arguments, 3); // Params received after 'checkAll'.
+
+        angular.forEach(siteIds, function(siteId) {
+            if (checkAll || !promises.length) {
+                promises.push(isEnabledFn.apply(isEnabledFn, [siteId].concat(extraParams)).then(function(enabled) {
+                    if (enabled) {
+                        supported.push(siteId);
+                    }
+                }));
+            }
+        });
+
+        return $mmUtil.allPromises(promises).catch(function() {}).then(function() {
+            if (!checkAll) {
+                if (supported.length) {
+                    return siteIds; // Checking 1 was enough and it succeeded, all sites supported.
+                } else {
+                    return []; // Checking 1 was enough and it failed, no sites supported.
+                }
+            } else {
+                return supported;
+            }
+        });
+    };
+
+    /**
+     * Get the first valid action in a list of actions.
+     *
+     * @module mm.core.contentlinks
+     * @ngdoc method
+     * @name $mmContentLinksHelper#getFirstValidAction
+     * @param  {Object[]} actions List of actions.
+     * @return {Object}           First valid action. Returns undefined if no valid action found.
+     */
+    self.getFirstValidAction = function(actions) {
+        if (actions) {
+            for (var i = 0; i < actions.length; i++) {
+                var action = actions[i];
+                if (action && action.sites && action.sites.length && angular.isFunction(action.action)) {
+                    return action;
+                }
+            }
+        }
+    };
+
+    /**
      * Goes to a certain state in a certain site. If the site is current site it will perform a regular navigation,
      * otherwise it uses the 'redirect' state to change the site.
      *
-     * @module mm.core
+     * @module mm.core.contentlinks
      * @ngdoc method
-     * @name $mmUtil#goToSite
+     * @name $mmContentLinksHelper#goInSite
      * @param  {String} stateName   Name of the state to go.
      * @param  {Object} stateParams Params to send to the state.
      * @param  {String} [siteId]    Site ID. If not defined, current site.
@@ -81,41 +142,27 @@ angular.module('mm.core.contentlinks')
     self.handleLink = function(url) {
 
         // Check if the link should be treated by some component/addon.
-        // We perform this check first because it's synchronous.
-        var actions = $mmContentLinksDelegate.getActionsFor(url);
-        if (actions && actions.length) {
-            for (var i = 0; i < actions.length; i++) {
-                var action = actions[i];
-                if (action && angular.isFunction(action.action)) {
-
-                    // We found a valid action. We need to check if the link belongs to any site stored.
-                    return $mmSitesManager.getSiteIdsFromUrl(url, true).then(function(ids) {
-                        if (!ids.length) {
-                            // URL doesn't belong to any site.
-                            return false;
-                        } else if (ids.length == 1 && ids[0] == $mmSite.getId()) {
-                            // Current site.
-                            action.action(ids[0]);
+        return $mmContentLinksDelegate.getActionsFor(url).then(function(actions) {
+            var action = self.getFirstValidAction(actions);
+            if (action) {
+                if (action.sites.length == 1 && action.sites[0] == $mmSite.getId()) {
+                    // Current site.
+                    action.action(action.sites[0]);
+                } else {
+                    // Not current site or more than one site. Ask for confirmation.
+                    $mmUtil.showConfirm($translate('mm.contentlinks.confirmurlothersite')).then(function() {
+                        if (action.sites.length == 1) {
+                            action.action(action.sites[0]);
                         } else {
-                            // Not current site. Ask for confirmation.
-                            $mmUtil.showConfirm($translate('mm.contentlinks.confirmurlothersite')).then(function() {
-                                if (ids.length == 1) {
-                                    action.action(ids[0]);
-                                } else {
-                                    self.goToChooseSite(url);
-                                }
-                            });
+                            self.goToChooseSite(url);
                         }
-                        return true;
-                    }).catch(function() {
-                        return false;
                     });
                 }
+                return true;
             }
-        }
-
-        // No valid actions found.
-        return $q.when(false);
+        }).catch(function() {
+            return false;
+        });
     };
 
     return self;

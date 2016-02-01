@@ -35,12 +35,11 @@ angular.module('mm.core.contentlinks')
      * @param {String} name                    Handler's name.
      * @param {String|Object|Function} handler Must be resolved to an object defining the following functions. Or to a function
      *                         returning an object defining these functions. See {@link $mmUtil#resolveObject}.
-     *                             - isEnabled (Boolean|Promise) Whether or not the handler is enabled on a site level.
-     *                                                           When using a promise, it should return a boolean.
-     *                             - getActions(url, courseid) (Object[]) Returns list of actions. Each action must have:
+     *                             - getActions(siteIds, url, courseId) (Promise) Returns list of actions. Each action must have:
      *                                                           - message: Message related to the action to do. E.g. 'View'.
      *                                                           - icon: Icon related to the action to do.
-     *                                                           - action: A function to be called when the link is clicked.
+     *                                                           - sites: Sites IDs that support the action. Subset of 'siteIds'.
+     *                                                           - action(siteId): A function to be called when the link is clicked.
      * @param {Number} [priority]              Handler's priority.
      */
     self.registerLinkHandler = function(name, handler, priority) {
@@ -59,9 +58,8 @@ angular.module('mm.core.contentlinks')
         return true;
     };
 
-    self.$get = function($mmUtil, $log, $mmSite, $q) {
-        var enabledLinkHandlers = {},
-            self = {};
+    self.$get = function($mmUtil, $log, $q, $mmSitesManager) {
+        var self = {};
 
         $log = $log.getInstance('$mmContentLinksDelegate');
 
@@ -74,122 +72,66 @@ angular.module('mm.core.contentlinks')
          * @param {String} url        URL to handle.
          * @param {Number} [courseId] Course ID related to the URL. Optional but recommended since some handlers might require
          *                            to know the courseid if Moodle version is previous to 3.0.
-         * @return {Object[]}         Actions. See {@link $mmContentLinksDelegate#registerLinkHandler}.
+         * @return {Promise}          Promise resolved with the actions. See {@link $mmContentLinksDelegate#registerLinkHandler}.
          */
         self.getActionsFor = function(url, courseId) {
             if (!url) {
-                return [];
+                return $q.when([]);
             }
 
-            var linkActions = {};
-            angular.forEach(enabledLinkHandlers, function(handler) {
-                if (handler.instance && angular.isFunction(handler.instance.getActions)) {
-                    var actions = handler.instance.getActions(url, courseId);
-                    if (actions && actions.length) {
-                        linkActions[handler.priority] = actions;
+            // Get the list of sites the URL belongs to.
+            return $mmSitesManager.getSiteIdsFromUrl(url, true).then(function(siteIds) {
+                var linkActions = [],
+                    promises = [];
+
+                angular.forEach(linkHandlers, function(handler) {
+                    if (typeof handler.instance === 'undefined') {
+                        handler.instance = $mmUtil.resolveObject(handler.handler, true);
                     }
-                }
+
+                    if (handler.instance) {
+                        promises.push($q.when(handler.instance.getActions(siteIds, url, courseId)).then(function(actions) {
+                            if (actions && actions.length) {
+                                linkActions.push({
+                                    priority: handler.priority,
+                                    actions: actions
+                                });
+                            }
+                        }));
+                    }
+                });
+
+                return $mmUtil.allPromises(promises).catch(function() {}).then(function() {
+                    // Sort link actions by priority.
+                    return sortActionsByPriority(linkActions);
+                });
             });
-            return sortActionsByPriority(linkActions);
         };
 
         /**
-         * Converts an object with priority -> action to an array of actions ordered by priority.
-         * If object keys are numbers they're usually automatically ordered, but we can't be 100% sure.
+         * Sort actions by priority. Each object in the actions param must have a priority and a list of actions.
+         * The returned array only contains the actions ordered by priority.
          *
-         * @param  {Object} actions Actions to sort.
-         * @return {Object[]}       Sorted actions.
+         * @param  {Object[]} actions Actions to sort.
+         * @return {Object[]}         Sorted actions.
          */
         function sortActionsByPriority(actions) {
-            var sorted = [],
-                priorities = Object.keys(actions);
-            // Sort priorities.
-            priorities = priorities.sort(function(a, b) {
-                return parseInt(a, 10) > parseInt(b, 10);
+            var sorted = [];
+
+            // Sort by priority.
+            actions = actions.sort(function(a, b) {
+                return a.priority > b.priority;
             });
-            // Fill sorted array.
-            priorities.forEach(function(priority) {
-                var list = actions[priority];
-                list.forEach(function(action) {
-                    sorted.push(action);
-                });
+
+            // Fill result array.
+            actions.forEach(function(entry) {
+                sorted = sorted.concat(entry.actions);
             });
             return sorted;
         }
-
-        /**
-         * Update the enabled link handlers for the current site.
-         *
-         * @module mm.core.contentlinks
-         * @ngdoc method
-         * @name $mmContentLinksDelegate#updateLinkHandler
-         * @param {String} name        The handler name.
-         * @param {Object} handlerInfo The handler details.
-         * @return {Promise}           Resolved when enabled, rejected when not.
-         * @protected
-         */
-        self.updateLinkHandler = function(name, handlerInfo) {
-            var promise;
-
-            if (typeof handlerInfo.instance === 'undefined') {
-                handlerInfo.instance = $mmUtil.resolveObject(handlerInfo.handler, true);
-            }
-
-            if (!$mmSite.isLoggedIn()) {
-                promise = $q.reject();
-            } else {
-                promise = $q.when(handlerInfo.instance.isEnabled());
-            }
-
-            // Checks if the content is enabled.
-            return promise.then(function(enabled) {
-                if (enabled) {
-                    enabledLinkHandlers[name] = {
-                        instance: handlerInfo.instance,
-                        priority: handlerInfo.priority
-                    };
-                } else {
-                    return $q.reject();
-                }
-            }).catch(function() {
-                delete enabledLinkHandlers[name];
-            });
-        };
-
-        /**
-         * Update the link handlers for the current site.
-         *
-         * @module mm.core.contentlinks
-         * @ngdoc method
-         * @name $mmContentLinksDelegate#updateLinkHandlers
-         * @return {Promise} Resolved when done.
-         * @protected
-         */
-        self.updateLinkHandlers = function() {
-            var promises = [];
-
-            $log.debug('Updating link handlers for current site.');
-
-            // Loop over all the link handlers.
-            angular.forEach(linkHandlers, function(handler, name) {
-                promises.push(self.updateLinkHandler(name, handler));
-            });
-
-            return $q.all(promises).then(function() {
-                return true;
-            }, function() {
-                // Never reject.
-                return true;
-            });
-        };
 
         return self;
     };
 
     return self;
-})
-
-.run(function($mmEvents, $mmContentLinksDelegate, mmCoreEventLogin, mmCoreEventSiteUpdated) {
-    $mmEvents.on(mmCoreEventLogin, $mmContentLinksDelegate.updateLinkHandlers);
-    $mmEvents.on(mmCoreEventSiteUpdated, $mmContentLinksDelegate.updateLinkHandlers);
 });

@@ -27,7 +27,9 @@ angular.module('mm.addons.notifications')
     // Directive link function.
     function link(scope) {
         if (scope.contexturl) {
-            scope.actions = $mmContentLinksDelegate.getActionsFor(scope.contexturl, scope.courseid);
+            $mmContentLinksDelegate.getActionsFor(scope.contexturl, scope.courseid).then(function(actions) {
+                scope.actions = actions;
+            });
         }
     }
 

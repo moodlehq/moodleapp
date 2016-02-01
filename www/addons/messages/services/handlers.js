@@ -293,62 +293,73 @@ angular.module('mm.addons.messages')
         var self = {};
 
         /**
-         * Whether or not the handler is enabled for the site.
+         * Whether or not the handler is enabled for a certain site.
          *
-         * @return {Boolean}
+         * @param  {String} siteId Site ID.
+         * @return {Promise}       Promise resolved with true if enabled.
          */
-        self.isEnabled = function() {
-            return $mmaMessages.isPluginEnabled();
-        };
+        function isEnabledForSite(siteId) {
+            return $mmaMessages.isPluginEnabled(siteId);
+        }
 
         /**
          * Get actions to perform with the link.
          *
-         * @param {String} url URL to treat.
-         * @return {Object[]}  List of actions. See {@link $mmContentLinksDelegate#registerLinkHandler}.
+         * @param {String[]} siteIds Site IDs the URL belongs to.
+         * @param {String} url       URL to treat.
+         * @return {Object[]}        Promise resolved with the list of actions.
+         *                           See {@link $mmContentLinksDelegate#registerLinkHandler}.
          */
-        self.getActions = function(url) {
+        self.getActions = function(siteIds, url) {
             // Check it's a messages URL.
             if (url.indexOf('/message/index.php') > -1) {
-                var params = $mmUtil.extractUrlParams(url);
-                // Return actions.
-                return [{
-                    message: 'mm.core.view',
-                    icon: 'ion-eye',
-                    action: function(siteId) {
-                        var stateName,
-                            stateParams;
+                // Pass false because all sites should have the same siteurl.
+                return $mmContentLinksHelper.filterSupportedSites(siteIds, isEnabledForSite, false).then(function(ids) {
+                    if (!ids.length) {
+                        return [];
+                    } else {
+                        // Return actions.
+                        var params = $mmUtil.extractUrlParams(url);
+                        return [{
+                            message: 'mm.core.view',
+                            icon: 'ion-eye',
+                            sites: ids,
+                            action: function(siteId) {
+                                var stateName,
+                                    stateParams;
 
-                        if (typeof params.user1 != 'undefined' && typeof params.user2 != 'undefined') {
-                            // Check if the current user is in the conversation.
-                            if ($mmSite.getUserId() == params.user1) {
-                                stateName = 'site.messages-discussion';
-                                stateParams = {userId: parseInt(params.user2, 10)};
-                            } else if ($mmSite.getUserId() == params.user2) {
-                                stateName = 'site.messages-discussion';
-                                stateParams = {userId: parseInt(params.user1, 10)};
-                            } else {
-                                // He isn't, open in browser.
-                                $mmUtil.openInBrowser(url);
-                                return;
+                                if (typeof params.user1 != 'undefined' && typeof params.user2 != 'undefined') {
+                                    // Check if the current user is in the conversation.
+                                    if ($mmSite.getUserId() == params.user1) {
+                                        stateName = 'site.messages-discussion';
+                                        stateParams = {userId: parseInt(params.user2, 10)};
+                                    } else if ($mmSite.getUserId() == params.user2) {
+                                        stateName = 'site.messages-discussion';
+                                        stateParams = {userId: parseInt(params.user1, 10)};
+                                    } else {
+                                        // He isn't, open in browser.
+                                        $mmUtil.openInBrowser(url);
+                                        return;
+                                    }
+                                } else if (typeof params.id != 'undefined') {
+                                    stateName = 'site.messages-discussion';
+                                    stateParams = {userId: parseInt(params.id, 10)};
+                                }
+
+                                if (!stateName) {
+                                    // Go to messaging index page. We use redirect state to view the side menu.
+                                    $state.go('redirect', {
+                                        siteid: siteId,
+                                        state: 'site.messages',
+                                        params: {}
+                                    });
+                                } else {
+                                    $mmContentLinksHelper.goInSite(stateName, stateParams, siteId);
+                                }
                             }
-                        } else if (typeof params.id != 'undefined') {
-                            stateName = 'site.messages-discussion';
-                            stateParams = {userId: parseInt(params.id, 10)};
-                        }
-
-                        if (!stateName) {
-                            // Go to messaging index page. We use redirect state to view the side menu.
-                            $state.go('redirect', {
-                                siteid: siteId,
-                                state: 'site.messages',
-                                params: {}
-                            });
-                        } else {
-                            $mmContentLinksHelper.goInSite(stateName, stateParams, siteId);
-                        }
+                        }];
                     }
-                }];
+                });
             }
             return [];
         };

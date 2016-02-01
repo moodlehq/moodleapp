@@ -152,22 +152,13 @@ angular.module('mm.core.courses')
         }
 
         /**
-         * Whether or not the handler is enabled for the site.
-         *
-         * @return {Boolean}
-         */
-        self.isEnabled = function() {
-            return true;
-        };
-
-        /**
          * Get actions to perform with the link.
          *
-         * @param {String} url        URL to treat.
-         * @param {Number} [courseId] Course ID related to the URL.
-         * @return {Object[]}         List of actions. See {@link $mmContentLinksDelegate#registerLinkHandler}.
+         * @param {String[]} siteIds Site IDs the URL belongs to.
+         * @param {String} url       URL to treat.
+         * @return {Object[]}        List of actions. See {@link $mmContentLinksDelegate#registerLinkHandler}.
          */
-        self.getActions = function(url, courseId) {
+        self.getActions = function(siteIds, url) {
             // Check if it's a course URL.
             if (url.indexOf('enrol/index.php') > -1 || url.indexOf('course/enrol.php') > -1 ||
                         url.indexOf('course/view.php') > -1) {
@@ -177,6 +168,7 @@ angular.module('mm.core.courses')
                     return [{
                         message: 'mm.core.view',
                         icon: 'ion-eye',
+                        sites: siteIds,
                         action: function(siteId) {
                             siteId = siteId || $mmSite.getId();
                             if (siteId == $mmSite.getId()) {
