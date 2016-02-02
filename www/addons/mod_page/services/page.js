@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_page')
  * @ngdoc service
  * @name $mmaModPage
  */
-.factory('$mmaModPage', function($mmFilepool, $mmSite, $mmFS, $http, $log, $q, mmaModPageComponent) {
+.factory('$mmaModPage', function($mmFilepool, $mmSite, $mmFS, $http, $log, $q, $mmSitesManager, mmaModPageComponent) {
     $log = $log.getInstance('$mmaModPage');
 
     var self = {};
@@ -242,6 +242,23 @@ angular.module('mm.addons.mod_page')
             encodedUrl = encodeURIComponent(url);
 
         return (filename === 'index.html' && (fileurl.indexOf(url) > 0 || fileurl.indexOf(encodedUrl) > 0 ));
+    };
+
+    /**
+     * Check if page plugin is enabled in a certain site.
+     *
+     * @module mm.addons.mod_page
+     * @ngdoc method
+     * @name $mmaModPage#isPluginEnabled
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
+     */
+    self.isPluginEnabled = function(siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.canDownloadFiles();
+        });
     };
 
     /**

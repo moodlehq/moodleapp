@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_glossary')
  * @ngdoc service
  * @name $mmaModGlossary
  */
-.factory('$mmaModGlossary', function($mmSite, $q) {
+.factory('$mmaModGlossary', function($mmSite, $q, $mmSitesManager) {
     var self = {};
 
     /**
@@ -339,21 +339,26 @@ angular.module('mm.addons.mod_glossary')
     /**
      * Get one entry by ID.
      *
-     * @param  {Number} id
-     * @return {Promise}
      * @ngdoc  method
      * @module mm.addons.mod_glossary
      * @name   $mmaModGlossary#getEntry
+     * @param  {Number} id       Entry ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with the entry.
      */
-    self.getEntry = function(id) {
-        var params = {
-                id: id
-            },
-            preSets = {
-                cacheKey: self._getEntryCacheKey(id)
-            };
+    self.getEntry = function(id, siteId) {
+        siteId = siteId || $mmSite.getId();
 
-        return $mmSite.read('mod_glossary_get_entry_by_id', params, preSets);
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    id: id
+                },
+                preSets = {
+                    cacheKey: self._getEntryCacheKey(id)
+                };
+
+            return site.read('mod_glossary_get_entry_by_id', params, preSets);
+        });
     };
 
     /**
@@ -411,6 +416,24 @@ angular.module('mm.addons.mod_glossary')
                 }
             });
             return result;
+        });
+    };
+
+    /**
+     * Check if glossary plugin is enabled in a certain site.
+     *
+     * @module mm.addons.mod_glossary
+     * @ngdoc method
+     * @name $mmaModGlossary#isPluginEnabled
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
+     */
+    self.isPluginEnabled = function(siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            // This function was introduced along with all the other required ones.
+            return site.wsAvailable('mod_glossary_get_glossaries_by_courses');
         });
     };
 

@@ -42,7 +42,7 @@ angular.module('mm.addons.mod_folder')
 
     // Convenience function to fetch folder data from Moodle.
     function fetchFolder() {
-        return $mmCourse.getModule(courseid, module.id, sectionid).then(function(module) {
+        return $mmCourse.getModule(module.id, courseid, sectionid).then(function(module) {
             showModuleData(module);
         }, function(error) {
             if (error) {

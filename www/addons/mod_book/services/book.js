@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_book')
  * @ngdoc service
  * @name $mmaModBook
  */
-.factory('$mmaModBook', function($mmFilepool, $mmSite, $mmFS, $http, $log, $q, mmaModBookComponent) {
+.factory('$mmaModBook', function($mmFilepool, $mmSite, $mmFS, $http, $log, $q, $mmSitesManager, mmaModBookComponent) {
     $log = $log.getInstance('$mmaModBook');
 
     var self = {};
@@ -339,12 +339,17 @@ angular.module('mm.addons.mod_book')
      * @module mm.addons.mod_book
      * @ngdoc method
      * @name $mmaModBook#isPluginEnabled
-     * @return {Boolean} True if plugin is enabled, false otherwise.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
-    self.isPluginEnabled = function() {
-        var version = $mmSite.getInfo().version;
-        // Require Moodle 2.9.
-        return version && (parseInt(version) >= 2015051100) && $mmSite.canDownloadFiles();
+    self.isPluginEnabled = function(siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var version = site.getInfo().version;
+            // Require Moodle 2.9.
+            return version && (parseInt(version) >= 2015051100) && site.canDownloadFiles();
+        });
     };
 
     /**

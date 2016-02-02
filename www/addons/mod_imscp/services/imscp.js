@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_imscp')
  * @ngdoc service
  * @name $mmaModImscp
  */
-.factory('$mmaModImscp', function($mmFilepool, $mmSite, $mmFS, $log, $q, $sce, $mmApp, mmaModImscpComponent) {
+.factory('$mmaModImscp', function($mmFilepool, $mmSite, $mmFS, $log, $q, $sce, $mmApp, $mmSitesManager, mmaModImscpComponent) {
     $log = $log.getInstance('$mmaModImscp');
 
     var self = {},
@@ -339,17 +339,22 @@ angular.module('mm.addons.mod_imscp')
     };
 
     /**
-     * Return whether or not the plugin is enabled.
+     * Return whether or not the plugin is enabled in a certain site.
      *
      * @module mm.addons.mod_imscp
      * @ngdoc method
      * @name $mmaModImscp#isPluginEnabled
-     * @return {Boolean} True if plugin is enabled, false otherwise.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
-    self.isPluginEnabled = function() {
-        var version = $mmSite.getInfo().version;
-        // Require Moodle 2.9.
-        return version && (parseInt(version) >= 2015051100) && $mmSite.canDownloadFiles();
+    self.isPluginEnabled = function(siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var version = site.getInfo().version;
+            // Require Moodle 2.9.
+            return version && (parseInt(version) >= 2015051100) && site.canDownloadFiles();
+        });
     };
 
     /**
