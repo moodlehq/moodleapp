@@ -175,6 +175,10 @@ angular.module('mm.addons.calendar')
      * @return {Promise}   Promise resolved when the event data is retrieved.
      */
     self.getEventFromLocalDb = function(id) {
+        if (!$mmSite.isLoggedIn()) {
+            // Not logged in, we can't get the site DB. User logged out or session expired while an operation was ongoing.
+            return $q.reject();
+        }
         return $mmSite.getDb().get(mmaCalendarEventsStore, id);
     };
 
@@ -426,6 +430,11 @@ angular.module('mm.addons.calendar')
      * @return {Promise}      Promise resolved when the notification is updated.
      */
     self.updateNotificationTime = function(event, time) {
+        if (!$mmSite.isLoggedIn()) {
+            // Not logged in, we can't get the site DB. User logged out or session expired while an operation was ongoing.
+            return $q.reject();
+        }
+
         var db = $mmSite.getDb();
 
         event.notificationtime = time;

@@ -471,7 +471,10 @@ angular.module('mm.core')
      * @return {Promise}
      */
     self.getSite = function(siteId) {
-        if (currentSite && currentSite.getId() === siteId) {
+        if (!siteId) {
+            // Site ID not valid, reject.
+            return $q.reject();
+        } else if (currentSite && currentSite.getId() === siteId) {
             return $q.when(currentSite);
         } else if (typeof sites[siteId] != 'undefined') {
             return $q.when(sites[siteId]);
