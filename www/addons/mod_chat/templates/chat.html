@@ -27,7 +27,7 @@
                             <span>{{ 'mma.mod_chat.messagebeepsyou' | translate:{$a: message.userfullname} }}</span>
                         </p>
 
-                        <article ng-if="!message.system && message.message.substr(0, 4) != 'beep'" class="item item-avatar" href="#">
+                        <article ng-if="!message.system && message.message.substr(0, 4) != 'beep'" class="item item-avatar item-text-wrap" href="#">
                             <img ng-if="message.userprofileimageurl" ng-src="{{message.userprofileimageurl}}" mm-external-content>
                             <img ng-if="!message.userprofileimageurl" src="img/user-avatar.png" alt="">
                             <h2>{{ message.userfullname }}</h2>
