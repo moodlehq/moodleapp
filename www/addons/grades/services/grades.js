@@ -21,7 +21,7 @@ angular.module('mm.addons.grades')
  * @ngdoc service
  * @name $mmaGrades
  */
-.factory('$mmaGrades', function($q, $log, $mmSite, $mmText, $ionicPlatform, $translate, $mmCourse, $mmCourses) {
+.factory('$mmaGrades', function($q, $log, $mmSite, $mmText, $ionicPlatform, $translate, $mmCourse, $mmCourses, $mmSitesManager) {
 
     $log = $log.getInstance('$mmaGrades');
 
@@ -185,15 +185,20 @@ angular.module('mm.addons.grades')
     };
 
     /**
-     * Returns whether or not the plugin is enabled for the current site.
+     * Returns whether or not the plugin is enabled for a certain site.
      *
      * @module mm.addons.grades
      * @ngdoc method
      * @name $mmaGrades#isPluginEnabled
-     * @return {Boolean} True if plugin is enabled, false otherwise.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Boolean}         True if plugin is enabled, false otherwise.
      */
-    self.isPluginEnabled = function() {
-        return $mmSite.wsAvailable('gradereport_user_get_grades_table');
+    self.isPluginEnabled = function(siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.wsAvailable('gradereport_user_get_grades_table');
+        });
     };
 
     /**
@@ -202,15 +207,16 @@ angular.module('mm.addons.grades')
      * @module mm.addons.grades
      * @ngdoc method
      * @name $mmaGrades#isPluginEnabledForCourse
-     * @param {Number} courseId Course ID.
-     * @return {Promise}        Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
+     * @param {Number} courseId  Course ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
-    self.isPluginEnabledForCourse = function(courseId) {
+    self.isPluginEnabledForCourse = function(courseId, siteId) {
         if (!courseId) {
             return $q.reject();
         }
 
-        return $mmCourses.getUserCourse(courseId, true).then(function(course) {
+        return $mmCourses.getUserCourse(courseId, true, siteId).then(function(course) {
             if (course && typeof course.showgrades != 'undefined' && !course.showgrades) {
                 return false;
             }

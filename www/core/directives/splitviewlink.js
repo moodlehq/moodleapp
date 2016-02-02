@@ -18,6 +18,12 @@ angular.module('mm.core')
  * Directive to load a state in a split-view-content pane in tablet or in a new page in phone.
  * Requires being a child of mmSplitView.
  *
+ * IMPORTANT: Due to a limitation in Angular ui-router, the left pane state and the right pane state should NOT have
+ * parameters with the same name but different value. It can cause unexpected behaviors.
+ * Example: if the left pane loads a state with param 'courseid', then all the states that can be loaded in the right pane
+ * should avoid having a parameter named 'courseid'. The right pane state can have a 'courseid' param only if it will always
+ * have the same value than in left pane state.
+ *
  * @module mm.core
  * @ngdoc directive
  * @name mmSplitViewLink

@@ -24,7 +24,9 @@ angular.module('mm.core.course', ['mm.core.courses'])
     .state('site.mm_course', {
         url: '/mm_course',
         params: {
-            courseid: null
+            courseid: null,
+            sid: null, // Section to load. Not naming it sectionid because it collides with 'mm_course-section' param in split-view.
+            moduleid: null // Module to load.
         },
         views: {
             'site': {
@@ -38,7 +40,8 @@ angular.module('mm.core.course', ['mm.core.courses'])
         url: '/mm_course-section',
         params: {
             sectionid: null,
-            courseid: null
+            cid: null, // Not naming it courseid because it collides with 'site.mm_course' param in split-view.
+            mid: null // Not naming it moduleid because it collides with 'site.mm_course' param in split-view.
         },
         views: {
             'site': {

@@ -12,36 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.addons.mod_assign')
+angular.module('mm.addons.mod_survey')
 
 /**
- * Mod assign handlers.
+ * Mod survey handlers.
  *
- * @module mm.addons.mod_assign
+ * @module mm.addons.mod_survey
  * @ngdoc service
- * @name $mmaModAssignHandlers
+ * @name $mmaModSurveyHandlers
  */
-.factory('$mmaModAssignHandlers', function($mmCourse, $mmaModAssign, $state, $q, $mmContentLinksHelper) {
+.factory('$mmaModSurveyHandlers', function($mmCourse, $mmaModSurvey, $state, $q, $mmContentLinksHelper) {
     var self = {};
 
     /**
      * Course content handler.
      *
-     * @module mm.addons.mod_assign
+     * @module mm.addons.mod_survey
      * @ngdoc method
-     * @name $mmaModAssignHandlers#courseContent
+     * @name $mmaModSurveyHandlers#courseContent
      */
     self.courseContent = function() {
 
         var self = {};
 
         /**
-         * Whether or not the handler is enabled for the site.
+         * Whether or not the module is enabled for the site.
          *
-         * @return {Promise}
+         * @return {Boolean}
          */
         self.isEnabled = function() {
-            return $mmaModAssign.isPluginEnabled();
+            return $mmaModSurvey.isPluginEnabled();
         };
 
         /**
@@ -54,13 +54,13 @@ angular.module('mm.addons.mod_assign')
         self.getController = function(module, courseid) {
             return function($scope) {
                 $scope.title = module.name;
-                $scope.icon = $mmCourse.getModuleIconSrc('assign');
+                $scope.icon = $mmCourse.getModuleIconSrc('survey');
                 $scope.action = function(e) {
                     if (e) {
                         e.preventDefault();
                         e.stopPropagation();
                     }
-                    $state.go('site.mod_assign', {module: module, courseid: courseid});
+                    $state.go('site.mod_survey', {module: module, courseid: courseid});
                 };
             };
         };
@@ -71,9 +71,9 @@ angular.module('mm.addons.mod_assign')
     /**
      * Content links handler.
      *
-     * @module mm.addons.mod_assign
+     * @module mm.addons.mod_survey
      * @ngdoc method
-     * @name $mmaModAssignHandlers#linksHandler
+     * @name $mmaModSurveyHandlers#linksHandler
      */
     self.linksHandler = function() {
 
@@ -87,7 +87,7 @@ angular.module('mm.addons.mod_assign')
          * @return {Promise}           Promise resolved with true if enabled.
          */
         function isEnabled(siteId, courseId) {
-            return $mmaModAssign.isPluginEnabled(siteId).then(function(enabled) {
+            return $mmaModSurvey.isPluginEnabled(siteId).then(function(enabled) {
                 if (!enabled) {
                     return false;
                 }
@@ -105,8 +105,8 @@ angular.module('mm.addons.mod_assign')
          *                            See {@link $mmContentLinksDelegate#registerLinkHandler}.
          */
         self.getActions = function(siteIds, url, courseId) {
-            // Check it's an assign URL.
-            if (url.indexOf('/mod/assign/view.php') > -1) {
+            // Check it's a survey URL.
+            if (url.indexOf('/mod/survey/view.php') > -1) {
                 return $mmContentLinksHelper.treatModuleIndexUrl(siteIds, url, isEnabled, courseId);
             }
             return $q.when([]);

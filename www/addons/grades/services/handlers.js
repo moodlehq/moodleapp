@@ -39,7 +39,7 @@ angular.module('mm.addons.grades')
         /**
          * Check if handler is enabled.
          *
-         * @return {Boolean} True if handler is enabled, false otherwise.
+         * @return {Promise} Promise resolved with true if handler is enabled, false otherwise.
          */
         self.isEnabled = function() {
             return $mmaGrades.isPluginEnabled();
@@ -104,7 +104,7 @@ angular.module('mm.addons.grades')
         /**
          * Check if handler is enabled.
          *
-         * @return {Boolean} True if handler is enabled, false otherwise.
+         * @return {Promise} Promise resolved with true if handler is enabled, false otherwise.
          */
         self.isEnabled = function() {
             return $mmaGrades.isPluginEnabled();
@@ -167,37 +167,54 @@ angular.module('mm.addons.grades')
         var self = {};
 
         /**
-         * Whether or not the handler is enabled for the site.
+         * Whether or not the handler is enabled for a certain site and course.
          *
-         * @return {Boolean}
+         * @param  {String} siteId   Site ID.
+         * @param  {Number} courseId Course ID.
+         * @return {Promise}         Promise resolved with true if enabled.
          */
-        self.isEnabled = function() {
-            return $mmaGrades.isPluginEnabled();
-        };
+        function isEnabled(siteId, courseId) {
+            return $mmaGrades.isPluginEnabled(siteId).then(function(enabled) {
+                if (enabled) {
+                    return $mmaGrades.isPluginEnabledForCourse(courseId, siteId);
+                }
+            });
+        }
 
         /**
          * Get actions to perform with the link.
          *
-         * @param {String} url URL to treat.
-         * @return {Object[]}  List of actions. See {@link $mmContentLinksDelegate#registerLinkHandler}.
+         * @param {String[]} siteIds Site IDs the URL belongs to.
+         * @param {String} url       URL to treat.
+         * @return {Object[]}        Promise resolved with the list of actions.
+         *                           See {@link $mmContentLinksDelegate#registerLinkHandler}.
          */
-        self.getActions = function(url) {
+        self.getActions = function(siteIds, url) {
             // Check it's a grade URL.
             if (url.indexOf('/grade/report/user/index.php') > -1) {
                 var params = $mmUtil.extractUrlParams(url);
                 if (typeof params.id != 'undefined') {
-                    // Return actions.
-                    return [{
-                        message: 'mm.core.view',
-                        icon: 'ion-eye',
-                        action: function(siteId) {
-                            var stateParams = {
-                                course: {id: parseInt(params.id, 10)},
-                                userid: parseInt(params.userid, 10)
-                            };
-                            $mmContentLinksHelper.goInSite('site.grades', stateParams, siteId);
+                    var courseId = parseInt(params.id, 10);
+                    // Pass false because all sites should have the same siteurl.
+                    return $mmContentLinksHelper.filterSupportedSites(siteIds, isEnabled, false, courseId).then(function(ids) {
+                        if (!ids.length) {
+                            return [];
+                        } else {
+                            // Return actions.
+                            return [{
+                                message: 'mm.core.view',
+                                icon: 'ion-eye',
+                                sites: ids,
+                                action: function(siteId) {
+                                    var stateParams = {
+                                        course: {id: courseId},
+                                        userid: parseInt(params.userid, 10)
+                                    };
+                                    $mmContentLinksHelper.goInSite('site.grades', stateParams, siteId);
+                                }
+                            }];
                         }
-                    }];
+                    });
                 }
             }
             return [];

@@ -21,10 +21,12 @@ angular.module('mm.core.contentlinks')
  * @ngdoc controller
  * @name mmContentLinksChooseSiteCtrl
  */
-.controller('mmContentLinksChooseSiteCtrl', function($scope, $stateParams, $mmSitesManager, $mmUtil, $ionicHistory, $state,
-            $mmContentLinksDelegate) {
+.controller('mmContentLinksChooseSiteCtrl', function($scope, $stateParams, $mmSitesManager, $mmUtil, $ionicHistory, $state, $q,
+            $mmContentLinksDelegate, $mmContentLinksHelper) {
 
     $scope.url = $stateParams.url || '';
+
+    var action;
 
     function leaveView() {
         $mmSitesManager.logout().finally(function() {
@@ -41,33 +43,22 @@ angular.module('mm.core.contentlinks')
         return;
     }
 
-    $mmSitesManager.getSiteIdsFromUrl($scope.url, false).then(function(ids) {
-        if (!ids.length) {
-            $mmUtil.showErrorModal('mm.contentlinks.errornosites', true);
-            leaveView();
-            return;
+    $mmContentLinksDelegate.getActionsFor($scope.url).then(function(actions) {
+        action = $mmContentLinksHelper.getFirstValidAction(actions);
+        if (!action) {
+            return $q.reject();
         }
 
-        $mmSitesManager.getSites(ids).then(function(sites) {
+        $mmSitesManager.getSites(action.sites).then(function(sites) {
             $scope.sites = sites;
         });
+    }).catch(function() {
+        $mmUtil.showErrorModal('mm.contentlinks.errornosites', true);
+        leaveView();
     });
 
     $scope.siteClicked = function(siteId) {
-        // Get actions to treat the link.
-        var actions = $mmContentLinksDelegate.getActionsFor($scope.url);
-        if (actions && actions.length) {
-            for (var i = 0; i < actions.length; i++) {
-                if (actions[i] && angular.isFunction(actions[i].action)) {
-                    actions[i].action(siteId);
-                    return;
-                }
-            }
-        }
-
-        // No action found.
-        $mmUtil.showErrorModal('mm.contentlinks.errornoactions', true);
-        $scope.cancel();
+        action.action(siteId);
     };
 
     $scope.cancel = function() {

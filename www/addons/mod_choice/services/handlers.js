@@ -12,36 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.addons.mod_assign')
+angular.module('mm.addons.mod_choice')
 
 /**
- * Mod assign handlers.
+ * Mod choice handlers.
  *
- * @module mm.addons.mod_assign
+ * @module mm.addons.mod_choice
  * @ngdoc service
- * @name $mmaModAssignHandlers
+ * @name $mmaModChoiceHandlers
  */
-.factory('$mmaModAssignHandlers', function($mmCourse, $mmaModAssign, $state, $q, $mmContentLinksHelper) {
+.factory('$mmaModChoiceHandlers', function($mmCourse, $mmaModChoice, $state, $mmContentLinksHelper, $q) {
     var self = {};
 
     /**
      * Course content handler.
      *
-     * @module mm.addons.mod_assign
+     * @module mm.addons.mod_choice
      * @ngdoc method
-     * @name $mmaModAssignHandlers#courseContent
+     * @name $mmaModChoiceHandlers#courseContent
      */
     self.courseContent = function() {
 
         var self = {};
 
         /**
-         * Whether or not the handler is enabled for the site.
+         * Whether or not the module is enabled for the site.
          *
-         * @return {Promise}
+         * @return {Boolean}
          */
         self.isEnabled = function() {
-            return $mmaModAssign.isPluginEnabled();
+            return $mmaModChoice.isPluginEnabled();
         };
 
         /**
@@ -54,13 +54,9 @@ angular.module('mm.addons.mod_assign')
         self.getController = function(module, courseid) {
             return function($scope) {
                 $scope.title = module.name;
-                $scope.icon = $mmCourse.getModuleIconSrc('assign');
+                $scope.icon = $mmCourse.getModuleIconSrc('choice');
                 $scope.action = function(e) {
-                    if (e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                    }
-                    $state.go('site.mod_assign', {module: module, courseid: courseid});
+                    $state.go('site.mod_choice', {module: module, courseid: courseid});
                 };
             };
         };
@@ -71,9 +67,9 @@ angular.module('mm.addons.mod_assign')
     /**
      * Content links handler.
      *
-     * @module mm.addons.mod_assign
+     * @module mm.addons.mod_choice
      * @ngdoc method
-     * @name $mmaModAssignHandlers#linksHandler
+     * @name $mmaModChoiceHandlers#linksHandler
      */
     self.linksHandler = function() {
 
@@ -87,7 +83,7 @@ angular.module('mm.addons.mod_assign')
          * @return {Promise}           Promise resolved with true if enabled.
          */
         function isEnabled(siteId, courseId) {
-            return $mmaModAssign.isPluginEnabled(siteId).then(function(enabled) {
+            return $mmaModChoice.isPluginEnabled(siteId).then(function(enabled) {
                 if (!enabled) {
                     return false;
                 }
@@ -105,8 +101,8 @@ angular.module('mm.addons.mod_assign')
          *                            See {@link $mmContentLinksDelegate#registerLinkHandler}.
          */
         self.getActions = function(siteIds, url, courseId) {
-            // Check it's an assign URL.
-            if (url.indexOf('/mod/assign/view.php') > -1) {
+            // Check it's a choice URL.
+            if (url.indexOf('/mod/choice/view.php') > -1) {
                 return $mmContentLinksHelper.treatModuleIndexUrl(siteIds, url, isEnabled, courseId);
             }
             return $q.when([]);

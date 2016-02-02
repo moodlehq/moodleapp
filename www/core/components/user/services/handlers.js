@@ -37,21 +37,13 @@ angular.module('mm.core.user')
         var self = {};
 
         /**
-         * Whether or not the handler is enabled for the site.
-         *
-         * @return {Boolean}
-         */
-        self.isEnabled = function() {
-            return true;
-        };
-
-        /**
          * Get actions to perform with the link.
          *
-         * @param {String} url URL to treat.
-         * @return {Object[]}  List of actions. See {@link $mmContentLinksDelegate#registerLinkHandler}.
+         * @param {String[]} siteIds Site IDs the URL belongs to.
+         * @param {String} url       URL to treat.
+         * @return {Object[]}        List of actions. See {@link $mmContentLinksDelegate#registerLinkHandler}.
          */
-        self.getActions = function(url) {
+        self.getActions = function(siteIds, url) {
             // Check it's a user URL.
             if (url.indexOf('grade/report/user') == -1 &&
                     (url.indexOf('/user/view.php') > -1 || url.indexOf('/user/profile.php') > -1)) {
@@ -61,6 +53,7 @@ angular.module('mm.core.user')
                     return [{
                         message: 'mm.core.view',
                         icon: 'ion-eye',
+                        sites: siteIds,
                         action: function(siteId) {
                             var stateParams = {
                                 courseid: params.course,

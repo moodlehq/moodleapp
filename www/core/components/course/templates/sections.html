@@ -1,12 +1,12 @@
 <ion-view>
     <ion-nav-title><mm-format-text watch="true">{{fullname}}</mm-format-text></ion-nav-title>
-    <mm-split-view load-when="sectionsLoaded" load="2" component="mmCoreCourseSectionsList">
+    <mm-split-view load-when="sectionsLoaded" load="{{sectionToLoad}}" component="mmCoreCourseSectionsList">
         <ion-content>
            <ion-refresher on-refresh="doRefresh()" pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="sectionsLoaded"></ion-refresher>
             <mm-loading hide-until="sectionsLoaded">
                 <ul class="list">
                     <li ng-repeat="section in sections">
-                        <a class="item item-text-wrap item-button-right" mm-split-view-link="site.mm_course-section({courseid: courseid, coursecompletion: coursecompletion, sectionid: section.id})" title="{{section.name}}">
+                        <a class="item item-text-wrap item-button-right" mm-split-view-link="site.mm_course-section({cid: courseId, sectionid: section.id, mid: moduleId})" title="{{section.name}}">
                             <mm-format-text watch="true">{{section.name}}</mm-format-text>
 
                             <button ng-if="section.showDownload && !section.isDownloading" ng-click="prefetch($event, section)" class="button button-icon" aria-label="{{ 'mm.core.download' | translate }}">

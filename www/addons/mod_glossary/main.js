@@ -35,7 +35,7 @@ angular.module('mm.addons.mod_glossary', ['mm.core'])
     .state('site.mod_glossary-entry', {
       url: '/mod_glossary-entry',
       params: {
-        courseid: null,
+        cid: null, // Not naming it courseid because it collides with 'site.mod_glossary' param in split-view.
         entry: null
       },
       views: {
@@ -48,6 +48,7 @@ angular.module('mm.addons.mod_glossary', ['mm.core'])
 
 })
 
-.config(function($mmCourseDelegateProvider) {
-    $mmCourseDelegateProvider.registerContentHandler('mmaModGlossary', 'glossary', '$mmaModGlossaryCourseContentHandler');
+.config(function($mmCourseDelegateProvider, $mmContentLinksDelegateProvider) {
+    $mmCourseDelegateProvider.registerContentHandler('mmaModGlossary', 'glossary', '$mmaModGlossaryHandlers.courseContent');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModGlossary', '$mmaModGlossaryHandlers.linksHandler');
 });

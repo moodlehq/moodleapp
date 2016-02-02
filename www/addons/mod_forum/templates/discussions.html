@@ -11,12 +11,12 @@
                 <mm-course-mod-description watch="true" description="description" note="'mma.mod_forum.numdiscussions' | translate:{numdiscussions: forum.numdiscussions}" ></mm-course-mod-description>
                 <ul class="list" ng-if="forum">
                     <li class="item" ng-if="isCreateEnabled && forum.cancreatediscussions">
-                        <button class="button button-block" mm-split-view-link="site.mod_forum-newdiscussion({forumid: forum.id, cmid: forum.cmid, courseid: courseid})">
+                        <button class="button button-block" mm-split-view-link="site.mod_forum-newdiscussion({forumid: forum.id, cmid: forum.cmid, cid: courseid})">
                             {{ 'mma.mod_forum.addanewdiscussion' | translate }}
                         </button>
                     </li>
                     <li class="card" ng-repeat="discussion in discussions track by $index">
-                        <a class="mma-forum-discussion-link" mm-split-view-link="site.mod_forum-discussion({courseid: courseid, discussionid: discussion.discussion})">
+                        <a class="mma-forum-discussion-link" mm-split-view-link="site.mod_forum-discussion({cid: courseid, discussionid: discussion.discussion})">
                             <article>
                                 <div class="item item-avatar item-text-wrap">
                                     <img ng-if="discussion.userpictureurl" ng-src="{{discussion.userpictureurl}}" mm-external-content mm-split-view-link="{{userStateName}}({courseid: courseid, userid: discussion.userid})" alt="" role="presentation">
