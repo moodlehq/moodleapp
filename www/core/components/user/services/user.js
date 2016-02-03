@@ -46,9 +46,13 @@ angular.module('mm.core.user')
      * @return {Promise}   Promise resolve when the user is deleted.
      */
     self.deleteStoredUser = function(id) {
-        var db = $mmSite.getDb();
+        if (!$mmSite.isLoggedIn()) {
+            // Not logged in, we can't get the site DB. User logged out or session expired while an operation was ongoing.
+            return $q.reject();
+        }
+
         self.invalidateUserCache(id); // Invalidate WS calls.
-        return db.remove(mmCoreUsersStore, parseInt(id));
+        return $mmSite.getDb().remove(mmCoreUsersStore, parseInt(id));
     };
 
     /**
@@ -155,8 +159,11 @@ angular.module('mm.core.user')
      * @return {Promise}   Promise resolve when the user is retrieved.
      */
     self.getUserFromLocal = function(id) {
-        var db = $mmSite.getDb();
-        return db.get(mmCoreUsersStore, parseInt(id));
+        if (!$mmSite.isLoggedIn()) {
+            // Not logged in, we can't get the site DB. User logged out or session expired while an operation was ongoing.
+            return $q.reject();
+        }
+        return $mmSite.getDb().get(mmCoreUsersStore, parseInt(id));
     };
 
     /**
@@ -239,8 +246,12 @@ angular.module('mm.core.user')
      * @return {Promise}         Promise resolve when the user is stored.
      */
     self.storeUser = function(id, fullname, avatar) {
-        var db = $mmSite.getDb();
-        return db.insert(mmCoreUsersStore, {
+        if (!$mmSite.isLoggedIn()) {
+            // Not logged in, we can't get the site DB. User logged out or session expired while an operation was ongoing.
+            return $q.reject();
+        }
+
+        return $mmSite.getDb().insert(mmCoreUsersStore, {
             id: parseInt(id),
             fullname: fullname,
             profileimageurl: avatar
