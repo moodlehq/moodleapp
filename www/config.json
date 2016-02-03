@@ -8,5 +8,6 @@
     "wsservice" : "moodle_mobile_app",
     "wsextservice" : "local_mobile",
     "presets": {"url": "http://onlinetafevc.com.au/wodonga", "username": ""},
+    "notifications_enabled": true,
     "gcmpn": "694767596569"
 }
