@@ -21,7 +21,7 @@ angular.module('mm.addons.participants')
  * @ngdoc service
  * @name $mmaParticipantsHandlers
  */
-.factory('$mmaParticipantsHandlers', function($mmaParticipants, mmCoursesAccessMethods, $mmUtil, $mmContentLinksHelper) {
+.factory('$mmaParticipantsHandlers', function($mmaParticipants, mmCoursesAccessMethods, $mmUtil, $state) {
     var self = {};
 
     /**
@@ -111,10 +111,14 @@ angular.module('mm.addons.participants')
                         icon: 'ion-eye',
                         sites: siteIds,
                         action: function(siteId) {
-                            var stateParams = {
-                                course: {id: parseInt(params.id, 10)}
-                            };
-                            $mmContentLinksHelper.goInSite('site.participants', stateParams, siteId);
+                            // Use redirect to make the participants list the new history root (to avoid "loops" in history).
+                            $state.go('redirect', {
+                                siteid: siteId,
+                                state: 'site.participants',
+                                params: {
+                                    course: {id: parseInt(params.id, 10)}
+                                }
+                            });
                         }
                     }];
                 }

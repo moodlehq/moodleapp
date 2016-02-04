@@ -21,7 +21,7 @@ angular.module('mm.core.courses')
  * @ngdoc service
  * @name $mmCoursesHandlers
  */
-.factory('$mmCoursesHandlers', function($mmSite, $state, $mmCourses, $q, $mmUtil, $translate, $timeout, $mmContentLinksHelper,
+.factory('$mmCoursesHandlers', function($mmSite, $state, $mmCourses, $q, $mmUtil, $translate, $timeout,
             mmCoursesEnrolInvalidKey) {
 
     var self = {};
@@ -74,7 +74,12 @@ angular.module('mm.core.courses')
                 });
             }).then(function() {
                 modal.dismiss();
-                $state.go('site.mm_course', {courseid: parseInt(courseId)});
+                // Use redirect to make the course the new history root (to avoid "loops" in history).
+                $state.go('redirect', {
+                    siteid: $mmSite.getId(),
+                    state: 'site.mm_course',
+                    params: {courseid: courseId}
+                });
             });
         }
 
@@ -174,7 +179,12 @@ angular.module('mm.core.courses')
                             if (siteId == $mmSite.getId()) {
                                 actionEnrol(parseInt(params.id, 10), url);
                             } else {
-                                $mmContentLinksHelper.goInSite('site.mm_course', {courseid: parseInt(params.id, 10)}, siteId);
+                                // Use redirect to make the course the new history root (to avoid "loops" in history).
+                                $state.go('redirect', {
+                                    siteid: siteId,
+                                    state: 'site.mm_course',
+                                    params: {courseid: parseInt(params.id, 10)}
+                                });
                             }
                         }
                     }];
