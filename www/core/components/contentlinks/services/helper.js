@@ -22,7 +22,7 @@ angular.module('mm.core.contentlinks')
  * @name $mmContentLinksHelper
  */
 .factory('$mmContentLinksHelper', function($log, $ionicHistory, $state, $mmSite, $mmContentLinksDelegate, $mmUtil, $translate,
-            $mmCourseHelper) {
+            $mmCourseHelper, $mmSitesManager, mmCoreConfigConstants) {
 
     $log = $log.getInstance('$mmContentLinksHelper');
 
@@ -132,20 +132,91 @@ angular.module('mm.core.contentlinks')
     };
 
     /**
+     * Handle a URL received by Custom URL Scheme.
+     *
+     * @module mm.core.contentlinks
+     * @ngdoc method
+     * @name $mmContentLinksHelper#handleCustomUrl
+     * @param  {String} url URL to handle.
+     * @return {True}       True if the URL should be handled by this component, false otherwise.
+     */
+    self.handleCustomUrl = function(url) {
+        var contentLinksScheme = mmCoreConfigConstants.customurlscheme + '://link=';
+        if (url.indexOf(contentLinksScheme) == -1) {
+            return false;
+        }
+
+        // App opened using custom URL scheme.
+        $log.debug('Treating custom URL scheme: ' + url);
+
+        var modal = $mmUtil.showModalLoading(),
+            matches,
+            username;
+
+        // Delete the scheme from the URL.
+        url = url.replace(contentLinksScheme, '');
+
+        // Detect if there's a user specified.
+        if (url.indexOf('@') > -1) {
+            // Get URL without protocol.
+            var withoutProtocol;
+            if (url.indexOf('http') == 0) {
+                withoutProtocol = url.replace(/https?:\/\//, '');
+            } else {
+                withoutProtocol = url;
+            }
+
+            matches = withoutProtocol.match(/[^@]*/);
+            // Make sure that @ is at the start of the URL, not in a param at the end.
+            if (matches && matches.length && !matches[0].match(/[\/|?]/)) {
+                username = matches[0];
+                url = url.replace(username + '@', ''); // Remove the username from the URL.
+            }
+        }
+
+        // Check if the site is stored.
+        $mmSitesManager.getSiteIdsFromUrl(url, false, username).then(function(siteIds) {
+            if (siteIds.length) {
+                return self.handleLink(url, username).then(function(treated) {
+                    if (!treated) {
+                        $mmUtil.showErrorModal('mma.calendar.errornoactions', true);
+                    }
+                });
+            } else {
+                // Site not found. We'll allow to add it.
+                // @todo
+            }
+        }).finally(function() {
+            modal.dismiss();
+        });
+
+        return true;
+    };
+
+    /**
      * Handle a link.
      *
      * @module mm.core.contentlinks
      * @ngdoc method
      * @name $mmContentLinksHelper#handleLink
-     * @param  {String} url URL to handle.
-     * @return {Promise}    Promise resolved with a boolean: true if URL was treated, false otherwise.
+     * @param  {String} url        URL to handle.
+     * @param  {String} [username] Username related with the URL. E.g. in 'http://myuser@m.com', url would be 'http://m.com' and
+     *                             the username 'myuser'. Don't use it if you don't want to filter by username.
+     * @return {Promise}           Promise resolved with a boolean: true if URL was treated, false otherwise.
      */
-    self.handleLink = function(url) {
+    self.handleLink = function(url, username) {
         // Check if the link should be treated by some component/addon.
-        return $mmContentLinksDelegate.getActionsFor(url).then(function(actions) {
+        return $mmContentLinksDelegate.getActionsFor(url, username).then(function(actions) {
             var action = self.getFirstValidAction(actions);
             if (action) {
-                if (action.sites.length == 1 && action.sites[0] == $mmSite.getId()) {
+                if (!$mmSite.isLoggedIn()) {
+                    // No current site. Perform the action if only 1 site found, choose the site otherwise.
+                    if (action.sites.length == 1) {
+                        action.action(action.sites[0]);
+                    } else {
+                        self.goToChooseSite(url);
+                    }
+                } else if (action.sites.length == 1 && action.sites[0] == $mmSite.getId()) {
                     // Current site.
                     action.action(action.sites[0]);
                 } else {
@@ -160,6 +231,7 @@ angular.module('mm.core.contentlinks')
                 }
                 return true;
             }
+            return false;
         }).catch(function() {
             return false;
         });

@@ -33,4 +33,11 @@ angular.module('mm.core.contentlinks', [])
             url: null
         }
     });
+})
+
+.run(function($log, $mmURLDelegate, $mmContentLinksHelper) {
+
+    $log = $log.getInstance('mmContentLinks');
+
+    $mmURLDelegate.register('mmContentLinks', $mmContentLinksHelper.handleCustomUrl);
 });

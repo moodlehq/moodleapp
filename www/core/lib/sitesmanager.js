@@ -677,9 +677,11 @@ angular.module('mm.core')
      * @param {String} url         URL to check.
      * @param {Boolean} prioritize True if it should prioritize current site. If the URL belongs to current site then it won't
      *                             check any other site, it will only return current site.
+     * @param {String} [username]  If set, it will return only the sites where the current user has this username. This param
+     *                             will be ignored if prioritize=true and the URL belongs to the current site.
      * @return {Promise}           Promise resolved with the site IDs (array).
      */
-    self.getSiteIdsFromUrl = function(url, prioritize) {
+    self.getSiteIdsFromUrl = function(url, prioritize, username) {
         // Check current site first, it has priority over the rest of sites.
         if (prioritize && currentSite && currentSite.containsUrl(url)) {
             return $q.when([currentSite.getId()]);
@@ -708,7 +710,9 @@ angular.module('mm.core')
                     sites[site.id] = $mmSitesFactory.makeSite(site.id, site.siteurl, site.token, site.infos);
                 }
                 if (sites[site.id].containsUrl(url)) {
-                    ids.push(site.id);
+                    if (!username || sites[site.id].getInfo().username == username) {
+                        ids.push(site.id);
+                    }
                 }
             });
             return ids;
