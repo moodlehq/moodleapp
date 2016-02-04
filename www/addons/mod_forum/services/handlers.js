@@ -129,6 +129,9 @@ angular.module('mm.addons.mod_forum')
                 // Forum discussion.
                 var params = $mmUtil.extractUrlParams(url);
                 if (params.d != 'undefined') {
+                    // If courseId is not set we check if it's set in the URL as a param.
+                    courseId = courseId || params.courseid || params.cid;
+
                     // Pass false because all sites should have the same siteurl.
                     return $mmContentLinksHelper.filterSupportedSites(siteIds, isDiscEnabled, false, courseId).then(function(ids) {
                         if (!ids.length) {

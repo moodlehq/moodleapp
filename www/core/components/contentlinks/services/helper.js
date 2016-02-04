@@ -179,7 +179,7 @@ angular.module('mm.core.contentlinks')
             if (siteIds.length) {
                 return self.handleLink(url, username).then(function(treated) {
                     if (!treated) {
-                        $mmUtil.showErrorModal('mma.calendar.errornoactions', true);
+                        $mmUtil.showErrorModal('mm.contentlinks.errornoactions', true);
                     }
                 });
             } else {
@@ -252,6 +252,9 @@ angular.module('mm.core.contentlinks')
     self.treatModuleIndexUrl = function(siteIds, url, isEnabled, courseId) {
         var params = $mmUtil.extractUrlParams(url);
         if (typeof params.id != 'undefined') {
+            // If courseId is not set we check if it's set in the URL as a param.
+            courseId = courseId || params.courseid || params.cid;
+
             // Pass false because all sites should have the same siteurl.
             return self.filterSupportedSites(siteIds, isEnabled, false, courseId).then(function(ids) {
                 if (!ids.length) {
