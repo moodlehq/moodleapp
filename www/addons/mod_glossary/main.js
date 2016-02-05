@@ -36,7 +36,8 @@ angular.module('mm.addons.mod_glossary', ['mm.core'])
       url: '/mod_glossary-entry',
       params: {
         cid: null, // Not naming it courseid because it collides with 'site.mod_glossary' param in split-view.
-        entry: null
+        entry: null,
+        entryid: null // Required so Angular ui-router is able to compare states (it doesn't compare object properties).
       },
       views: {
         'site': {
