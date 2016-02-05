@@ -360,13 +360,14 @@ angular.module('mm.core.course')
 
             // Get all the sections in the course and iterate over them to find it.
             return self.getSections(courseId, {}, siteId).then(function(sections) {
-                sections.forEach(function(section) {
-                    section.modules.forEach(function(module) {
-                        if (module.id == moduleId) {
+                for (var i = 0, seclen = sections.length; i < seclen; i++) {
+                    var section = sections[i];
+                    for (var j = 0, modlen = section.modules.length; j < modlen; j++) {
+                        if (section.modules[j].id == moduleId) {
                             return section.id;
                         }
-                    });
-                });
+                    }
+                }
                 // Not found.
                 return $q.reject();
             });

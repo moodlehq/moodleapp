@@ -82,7 +82,8 @@ angular.module('mm.addons.mod_forum')
      */
     self.linksHandler = function() {
 
-        var self = {};
+        var self = {},
+            patterns = ['/mod/forum/view.php', '/mod/forum/discuss.php'];
 
         /**
          * Whether or not the handler is enabled for a certain site.
@@ -122,13 +123,16 @@ angular.module('mm.addons.mod_forum')
          */
         self.getActions = function(siteIds, url, courseId) {
             // Check it's a forum URL.
-            if (url.indexOf('/mod/forum/view.php') > -1) {
+            if (url.indexOf(patterns[0]) > -1) {
                 // Forum index.
                 return $mmContentLinksHelper.treatModuleIndexUrl(siteIds, url, isIndexEnabled, courseId);
-            } else if (url.indexOf('/mod/forum/discuss.php') > -1) {
+            } else if (url.indexOf(patterns[1]) > -1) {
                 // Forum discussion.
                 var params = $mmUtil.extractUrlParams(url);
                 if (params.d != 'undefined') {
+                    // If courseId is not set we check if it's set in the URL as a param.
+                    courseId = courseId || params.courseid || params.cid;
+
                     // Pass false because all sites should have the same siteurl.
                     return $mmContentLinksHelper.filterSupportedSites(siteIds, isDiscEnabled, false, courseId).then(function(ids) {
                         if (!ids.length) {
@@ -152,6 +156,21 @@ angular.module('mm.addons.mod_forum')
                 }
             }
             return $q.when([]);
+        };
+
+        /**
+         * Check if the URL is handled by this handler. If so, returns the URL of the site.
+         *
+         * @param  {String} url URL to check.
+         * @return {String}     Site URL. Undefined if the URL doesn't belong to this handler.
+         */
+        self.handles = function(url) {
+            for (var i = 0; i < patterns.length; i++) {
+                var position = url.indexOf(patterns[i]);
+                if (position > -1) {
+                    return url.substr(0, position);
+                }
+            }
         };
 
         return self;

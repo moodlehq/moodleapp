@@ -40,6 +40,7 @@ angular.module('mm.core.contentlinks')
      *                                                           - icon: Icon related to the action to do.
      *                                                           - sites: Sites IDs that support the action. Subset of 'siteIds'.
      *                                                           - action(siteId): A function to be called when the link is clicked.
+     *                             - handles(url) (String) Check if a URL is handled by this handler. If so, returns the site URL.
      * @param {Number} [priority]              Handler's priority.
      */
     self.registerLinkHandler = function(name, handler, priority) {
@@ -72,15 +73,16 @@ angular.module('mm.core.contentlinks')
          * @param {String} url        URL to handle.
          * @param {Number} [courseId] Course ID related to the URL. Optional but recommended since some handlers might require
          *                            to know the courseid if Moodle version is previous to 3.0.
+         * @param {String} [username] Username to use to filter sites.
          * @return {Promise}          Promise resolved with the actions. See {@link $mmContentLinksDelegate#registerLinkHandler}.
          */
-        self.getActionsFor = function(url, courseId) {
+        self.getActionsFor = function(url, courseId, username) {
             if (!url) {
                 return $q.when([]);
             }
 
             // Get the list of sites the URL belongs to.
-            return $mmSitesManager.getSiteIdsFromUrl(url, true).then(function(siteIds) {
+            return $mmSitesManager.getSiteIdsFromUrl(url, true, username).then(function(siteIds) {
                 var linkActions = [],
                     promises = [];
 
@@ -106,6 +108,36 @@ angular.module('mm.core.contentlinks')
                     return sortActionsByPriority(linkActions);
                 });
             });
+        };
+
+        /**
+         * Get the site URL if the URL is supported by any handler.
+         *
+         * @module mm.core.contentlinks
+         * @ngdoc method
+         * @name $mmContentLinksDelegate#getSiteUrl
+         * @param {String} url URL to handle.
+         * @return {String}   Site URL if the URL is supported by any handler, undefined otherwise.
+         */
+        self.getSiteUrl = function(url) {
+            if (!url) {
+                return;
+            }
+
+            // Check if any handler supports this URL.
+            for (var name in linkHandlers) {
+                var handler = linkHandlers[name];
+                if (typeof handler.instance === 'undefined') {
+                    handler.instance = $mmUtil.resolveObject(handler.handler, true);
+                }
+
+                if (handler.instance && handler.instance.handles) {
+                    var siteUrl = handler.instance.handles(url);
+                    if (siteUrl) {
+                        return siteUrl;
+                    }
+                }
+            }
         };
 
         /**

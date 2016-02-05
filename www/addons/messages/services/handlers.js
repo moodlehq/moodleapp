@@ -312,7 +312,7 @@ angular.module('mm.addons.messages')
          */
         self.getActions = function(siteIds, url) {
             // Check it's a messages URL.
-            if (url.indexOf('/message/index.php') > -1) {
+            if (typeof self.handles(url) != 'undefined') {
                 // Pass false because all sites should have the same siteurl.
                 return $mmContentLinksHelper.filterSupportedSites(siteIds, isEnabledForSite, false).then(function(ids) {
                     if (!ids.length) {
@@ -362,6 +362,19 @@ angular.module('mm.addons.messages')
                 });
             }
             return [];
+        };
+
+        /**
+         * Check if the URL is handled by this handler. If so, returns the URL of the site.
+         *
+         * @param  {String} url URL to check.
+         * @return {String}     Site URL. Undefined if the URL doesn't belong to this handler.
+         */
+        self.handles = function(url) {
+            var position = url.indexOf('/message/index.php');
+            if (position > -1) {
+                return url.substr(0, position);
+            }
         };
 
         return self;

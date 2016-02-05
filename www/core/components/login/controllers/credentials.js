@@ -22,12 +22,15 @@ angular.module('mm.core.login')
  * @name mmLoginCredentialsCtrl
  */
 .controller('mmLoginCredentialsCtrl', function($scope, $state, $stateParams, $mmSitesManager, $mmUtil, $ionicHistory, $mmApp,
-            $q, $mmLoginHelper, $translate) {
+            $q, $mmLoginHelper, $translate, $mmContentLinksDelegate, $mmContentLinksHelper) {
 
     $scope.siteurl = $stateParams.siteurl;
-    $scope.credentials = {};
+    $scope.credentials = {
+        username: $stateParams.username
+    };
 
-    var siteChecked = false;
+    var siteChecked = false,
+        urlToOpen = $stateParams.urltoopen;
 
     // Function to check if a site uses local_mobile, requires SSO login, etc.
     // This should be used only if a fixed URL is set, otherwise this check is already performed in mmLoginSiteCtrl.
@@ -105,7 +108,21 @@ angular.module('mm.core.login')
             return $mmSitesManager.newSite(data.siteurl, data.token).then(function() {
                 delete $scope.credentials; // Delete username and password from the scope.
                 $ionicHistory.nextViewOptions({disableBack: true});
-                $state.go('site.mm_courses');
+
+                if (urlToOpen) {
+                    // There's a content link to open.
+                    return $mmContentLinksDelegate.getActionsFor(urlToOpen, undefined, username).then(function(actions) {
+                        action = $mmContentLinksHelper.getFirstValidAction(actions);
+                        if (action && action.sites.length) {
+                            // Action should only have 1 site because we're filtering by username.
+                            action.action(action.sites[0]);
+                        } else {
+                            $state.go('site.mm_courses');
+                        }
+                    });
+                } else {
+                    $state.go('site.mm_courses');
+                }
             });
         }).catch(function(error) {
             $mmUtil.showErrorModal(error);

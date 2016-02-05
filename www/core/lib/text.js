@@ -243,5 +243,27 @@ angular.module('mm.core')
         return url;
     };
 
+    /**
+     * Gets a username from a URL like: user@mysite.com.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#getUsernameFromUrl
+     * @param  {String} url URL to treat.
+     * @return {String}     Username. Undefined if no username found.
+     */
+    self.getUsernameFromUrl = function(url) {
+        if (url.indexOf('@') > -1) {
+            // Get URL without protocol.
+            var withoutProtocol = url.replace(/.*?:\/\//, ''),
+                matches = withoutProtocol.match(/[^@]*/);
+
+            // Make sure that @ is at the start of the URL, not in a param at the end.
+            if (matches && matches.length && !matches[0].match(/[\/|?]/)) {
+                return matches[0];
+            }
+        }
+    };
+
     return self;
 });

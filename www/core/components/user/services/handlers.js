@@ -67,6 +67,26 @@ angular.module('mm.core.user')
             return [];
         };
 
+        /**
+         * Check if the URL is handled by this handler. If so, returns the URL of the site.
+         *
+         * @param  {String} url URL to check.
+         * @return {String}     Site URL. Undefined if the URL doesn't belong to this handler.
+         */
+        self.handles = function(url) {
+            // Accept any of these patterns.
+            var patterns = ['/user/view.php', '/user/profile.php'];
+            // Verify it's not a grade URL.
+            if (url.indexOf('grade/report/user') == -1) {
+                for (var i = 0; i < patterns.length; i++) {
+                    var position = url.indexOf(patterns[i]);
+                    if (position > -1) {
+                        return url.substr(0, position);
+                    }
+                }
+            }
+        };
+
         return self;
     };
 
