@@ -117,11 +117,11 @@ angular.module('mm.core.login')
                             // Action should only have 1 site because we're filtering by username.
                             action.action(action.sites[0]);
                         } else {
-                            $state.go('site.mm_courses');
+                            return $mmLoginHelper.goToSiteInitialPage();
                         }
                     });
                 } else {
-                    $state.go('site.mm_courses');
+                    return $mmLoginHelper.goToSiteInitialPage();
                 }
             });
         }).catch(function(error) {

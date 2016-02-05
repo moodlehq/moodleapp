@@ -26,7 +26,7 @@ angular.module('mm.core.login')
  * @name $mmLoginHelper
  */
 .factory('$mmLoginHelper', function($q, $log, $mmConfig, mmLoginSSOCode, mmLoginLaunchSiteURL, mmLoginLaunchPassport,
-            md5, $mmSite, $mmSitesManager, $mmLang, $mmUtil, $state, mmCoreConfigConstants) {
+            md5, $mmSite, $mmSitesManager, $mmLang, $mmUtil, $state, $mmAddonManager, mmCoreConfigConstants) {
 
     $log = $log.getInstance('$mmLoginHelper');
 
@@ -48,6 +48,26 @@ angular.module('mm.core.login')
         } else {
             return $state.go('mm_login.site');
         }
+    };
+
+    /**
+     * Go to the initial page of a site depending on 'userhomepage' setting.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#goToSiteInitialPage
+     * @return {Promise} Promise resolved when the state changes.
+     */
+    self.goToSiteInitialPage = function() {
+        if ($mmSite.getInfo() && $mmSite.getInfo().userhomepage === 0) {
+            // Configured to go to Site Home. Check if plugin is installed in the app.
+            var $mmaFrontpage = $mmAddonManager.get('$mmaFrontpage');
+            if ($mmaFrontpage) {
+                return $state.go('site.mm_course-section');
+            }
+        }
+
+        return $state.go('site.mm_courses');
     };
 
     /**
