@@ -78,7 +78,8 @@ angular.module('mm.addons.mod_glossary')
      */
     self.linksHandler = function() {
 
-        var self = {};
+        var self = {},
+            patterns = ['/mod/glossary/view.php', '/mod/glossary/showentry.php'];
 
         /**
          * Whether or not the handler is enabled to see glossary index for a certain site.
@@ -186,14 +187,29 @@ angular.module('mm.addons.mod_glossary')
          */
         self.getActions = function(siteIds, url, courseId) {
             // Check it's a glossary URL.
-            if (url.indexOf('/mod/glossary/view.php') > -1) {
+            if (url.indexOf(patterns[0]) > -1) {
                 // Glossary index.
                 return $mmContentLinksHelper.treatModuleIndexUrl(siteIds, url, isIndexEnabled, courseId);
-            } else if (url.indexOf('/mod/glossary/showentry.php') > -1) {
+            } else if (url.indexOf(patterns[1]) > -1) {
                 // Glossary entry.
                 return treatEntryLink(siteIds, url, courseId);
             }
             return $q.when([]);
+        };
+
+        /**
+         * Check if the URL is handled by this handler. If so, returns the URL of the site.
+         *
+         * @param  {String} url URL to check.
+         * @return {String}     Site URL. Undefined if the URL doesn't belong to this handler.
+         */
+        self.handles = function(url) {
+            for (var i = 0; i < patterns.length; i++) {
+                var position = url.indexOf(patterns[i]);
+                if (position > -1) {
+                    return url.substr(0, position);
+                }
+            }
         };
 
         return self;

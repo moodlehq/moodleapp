@@ -102,7 +102,7 @@ angular.module('mm.addons.participants')
          */
         self.getActions = function(siteIds, url) {
             // Check it's a user URL.
-            if (url.indexOf('grade/report/user') == -1 && url.indexOf('/user/index.php') > -1) {
+            if (typeof self.handles(url) != 'undefined') {
                 var params = $mmUtil.extractUrlParams(url);
                 if (typeof params.id != 'undefined') {
                     // Return actions.
@@ -124,6 +124,22 @@ angular.module('mm.addons.participants')
                 }
             }
             return [];
+        };
+
+        /**
+         * Check if the URL is handled by this handler. If so, returns the URL of the site.
+         *
+         * @param  {String} url URL to check.
+         * @return {String}     Site URL. Undefined if the URL doesn't belong to this handler.
+         */
+        self.handles = function(url) {
+            // Verify it's not a grade URL.
+            if (url.indexOf('grade/report/user') == -1) {
+                var position = url.indexOf('/user/index.php');
+                if (position > -1) {
+                    return url.substr(0, position);
+                }
+            }
         };
 
         return self;

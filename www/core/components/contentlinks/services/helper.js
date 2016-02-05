@@ -22,7 +22,7 @@ angular.module('mm.core.contentlinks')
  * @name $mmContentLinksHelper
  */
 .factory('$mmContentLinksHelper', function($log, $ionicHistory, $state, $mmSite, $mmContentLinksDelegate, $mmUtil, $translate,
-            $mmCourseHelper, $mmSitesManager, mmCoreConfigConstants) {
+            $mmCourseHelper, $mmSitesManager, $q, $mmLoginHelper, $mmText, mmCoreConfigConstants) {
 
     $log = $log.getInstance('$mmContentLinksHelper');
 
@@ -150,41 +150,77 @@ angular.module('mm.core.contentlinks')
         $log.debug('Treating custom URL scheme: ' + url);
 
         var modal = $mmUtil.showModalLoading(),
-            matches,
             username;
 
         // Delete the scheme from the URL.
         url = url.replace(contentLinksScheme, '');
 
         // Detect if there's a user specified.
-        if (url.indexOf('@') > -1) {
-            // Get URL without protocol.
-            var withoutProtocol;
-            if (url.indexOf('http') == 0) {
-                withoutProtocol = url.replace(/https?:\/\//, '');
-            } else {
-                withoutProtocol = url;
-            }
-
-            matches = withoutProtocol.match(/[^@]*/);
-            // Make sure that @ is at the start of the URL, not in a param at the end.
-            if (matches && matches.length && !matches[0].match(/[\/|?]/)) {
-                username = matches[0];
-                url = url.replace(username + '@', ''); // Remove the username from the URL.
-            }
+        username = $mmText.getUsernameFromUrl(url);
+        if (username) {
+            url = url.replace(username + '@', ''); // Remove the username from the URL.
         }
 
         // Check if the site is stored.
         $mmSitesManager.getSiteIdsFromUrl(url, false, username).then(function(siteIds) {
             if (siteIds.length) {
+                modal.dismiss(); // Dismiss modal so it doesn't collide with confirms.
                 return self.handleLink(url, username).then(function(treated) {
                     if (!treated) {
                         $mmUtil.showErrorModal('mm.contentlinks.errornoactions', true);
                     }
                 });
             } else {
-                // Site not found. We'll allow to add it.
-                // @todo
+                // Get the site URL.
+                var siteUrl = $mmContentLinksDelegate.getSiteUrl(url),
+                    formatted = $mmUtil.formatURL(siteUrl);
+                if (!siteUrl || !$mmUtil.isValidURL(formatted)) {
+                    $mmUtil.showErrorModal('mm.login.invalidsite', true);
+                    return;
+                }
+
+                // Check that site exists.
+                return $mmSitesManager.checkSite(siteUrl).then(function(result) {
+                    // Site exists. We'll allow to add it.
+                    var promise,
+                        ssoNeeded = $mmLoginHelper.isSSOLoginNeeded(result.code);
+
+                    modal.dismiss(); // Dismiss modal so it doesn't collide with confirms.
+
+                    if (!$mmSite.isLoggedIn()) {
+                        if (ssoNeeded) {
+                            // Ask SSO confirmation.
+                            promise = $mmUtil.showConfirm($translate('mm.login.logininsiterequired'));
+                        } else {
+                            // Not logged in and no SSO, no need to confirm.
+                            promise = $q.when();
+                        }
+                    } else {
+                        // Ask the user before changing site.
+                        promise = $mmUtil.showConfirm($translate('mm.contentlinks.confirmurlothersite')).then(function() {
+                            if (!ssoNeeded) {
+                                return $mmSitesManager.logout().catch(function() {
+                                    // Ignore errors (shouldn't happen).
+                                });
+                            }
+                        });
+                    }
+
+                    return promise.then(function() {
+                        if (ssoNeeded) {
+                            $mmLoginHelper.openBrowserForSSOLogin(result.siteurl);
+                        } else {
+                            $state.go('mm_login.credentials', {
+                                siteurl: result.siteurl,
+                                username: username,
+                                urltoopen: url
+                            });
+                        }
+                    });
+
+                }, function(error) {
+                    $mmUtil.showErrorModal(error);
+                });
             }
         }).finally(function() {
             modal.dismiss();
@@ -206,7 +242,7 @@ angular.module('mm.core.contentlinks')
      */
     self.handleLink = function(url, username) {
         // Check if the link should be treated by some component/addon.
-        return $mmContentLinksDelegate.getActionsFor(url, username).then(function(actions) {
+        return $mmContentLinksDelegate.getActionsFor(url, undefined, username).then(function(actions) {
             var action = self.getFirstValidAction(actions);
             if (action) {
                 if (!$mmSite.isLoggedIn()) {

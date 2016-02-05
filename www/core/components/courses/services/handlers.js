@@ -165,8 +165,7 @@ angular.module('mm.core.courses')
          */
         self.getActions = function(siteIds, url) {
             // Check if it's a course URL.
-            if (url.indexOf('enrol/index.php') > -1 || url.indexOf('course/enrol.php') > -1 ||
-                        url.indexOf('course/view.php') > -1) {
+            if (typeof self.handles(url) != 'undefined') {
                 var params = $mmUtil.extractUrlParams(url);
                 if (typeof params.id != 'undefined') {
                     // Return actions.
@@ -191,6 +190,23 @@ angular.module('mm.core.courses')
                 }
             }
             return [];
+        };
+
+        /**
+         * Check if the URL is handled by this handler. If so, returns the URL of the site.
+         *
+         * @param  {String} url URL to check.
+         * @return {String}     Site URL. Undefined if the URL doesn't belong to this handler.
+         */
+        self.handles = function(url) {
+            // Accept any of these patterns.
+            var patterns = ['/enrol/index.php', '/course/enrol.php', '/course/view.php'];
+            for (var i = 0; i < patterns.length; i++) {
+                var position = url.indexOf(patterns[i]);
+                if (position > -1) {
+                    return url.substr(0, position);
+                }
+            }
         };
 
         return self;
