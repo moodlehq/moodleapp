@@ -159,6 +159,7 @@ angular.module('mm.addons.mod_glossary')
                                 return promise.then(function(courseId) {
                                     var stateParams = {
                                         entry: entry,
+                                        entryid: entry.id,
                                         cid: courseId
                                     };
                                     $mmContentLinksHelper.goInSite('site.mod_glossary-entry', stateParams, siteId);
