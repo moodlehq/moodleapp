@@ -47,7 +47,7 @@ angular.module('mm.core.courses')
             console.log("$mmCoursesDelegateProvider: Addon '" + navHandlers[addon].addon + "' already registered as navigation handler");
             return false;
         }
-        console.log("$mmCoursesDelegateProvider: Registered addon '" + addon + "' as navibation handler.");
+        console.log("$mmCoursesDelegateProvider: Registered addon '" + addon + "' as navigation handler.");
         navHandlers[addon] = {
             addon: addon,
             handler: handler,
