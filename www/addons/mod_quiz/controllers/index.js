@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_quiz')
  * @name mmaModQuizIndexCtrl
  */
 .controller('mmaModQuizIndexCtrl', function($scope, $stateParams, $mmaModQuiz, $mmCourse, $ionicPlatform, $q, $translate,
-            $mmUtil, $mmaModQuizHelper) {
+            $mmaModQuizHelper) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         quiz,
@@ -51,14 +51,16 @@ angular.module('mm.addons.mod_quiz')
             $scope.description = quiz.intro || $scope.description;
             $scope.quiz = quiz;
 
-            return getAttempts().catch(showError);
+            return getAttempts().catch(function(message) {
+                return $mmaModQuizHelper.showError(message);
+            });
 
         }, function(message) {
             if (!refresh) {
                 // Get quiz failed, retry without using cache since it might be a new activity.
                 return refreshData();
             }
-            return showError(message);
+            return $mmaModQuizHelper.showError(message);
         });
     }
 
@@ -209,17 +211,6 @@ angular.module('mm.addons.mod_quiz')
                 $scope.buttonText = '';
             }
         }
-    }
-
-    // Show error message and return a rejected promise.
-    function showError(message, defaultMessage) {
-        defaultMessage = defaultMessage || 'mma.mod_quiz.errorgetquiz';
-        if (message) {
-            $mmUtil.showErrorModal(message);
-        } else {
-            $mmUtil.showErrorModal(defaultMessage, true);
-        }
-        return $q.reject();
     }
 
     // Refreshes data.
