@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.addons.mod_scorm')
+angular.module('mm.addons.mod_quiz')
 
 /**
  * Helper to gather some common quiz functions.
@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_scorm')
  * @ngdoc service
  * @name $mmaModQuizHelper
  */
-.factory('$mmaModQuizHelper', function($mmaModQuiz, $mmUtil, $translate) {
+.factory('$mmaModQuizHelper', function($mmaModQuiz, $mmUtil, $q) {
 
     var self = {};
 
@@ -82,18 +82,23 @@ angular.module('mm.addons.mod_scorm')
     };
 
     /**
-     * Show error because a SCORM download failed.
+     * Show an error message and returns a rejected promise.
      *
-     * @module mm.addons.mod_scorm
+     * @module mm.addons.mod_quiz
      * @ngdoc method
-     * @name $mmaModScormHelper#showDownloadError
-     * @param {Object} scorm SCORM downloaded.
-     * @return {Void}
+     * @name $mmaModQuizHelper#showError
+     * @param  {String} [message]        Message to show.
+     * @param  {String} [defaultMessage] Code of the message to show if message is not defined or empty.
+     * @return {Promise}                 Rejected promise.
      */
-    self.showDownloadError = function(scorm) {
-        $translate('mma.mod_scorm.errordownloadscorm', {name: scorm.name}).then(function(message) {
+    self.showError = function(message, defaultMessage) {
+        defaultMessage = defaultMessage || 'mma.mod_quiz.errorgetquiz';
+        if (message) {
             $mmUtil.showErrorModal(message);
-        });
+        } else {
+            $mmUtil.showErrorModal(defaultMessage, true);
+        }
+        return $q.reject();
     };
 
     return self;
