@@ -1,0 +1,77 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <a class="button button-icon ion-ios-browsers-outline" ng-href="{{moduleUrl}}" mm-browser ></a>
+    </ion-nav-buttons>
+    <ion-content class="mma-mod-quiz-index-content">
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="quizLoaded" on-refresh="refreshQuiz()"></ion-refresher>
+        <mm-loading hide-until="quizLoaded">
+            <mm-course-mod-description description="description" watch="true"></mm-course-mod-description>
+
+            <!-- Access rules description messages -->
+            <section class="card" ng-if="quiz.gradeMethodReadable || accessRules.length">
+                <div class="item item-text-wrap" ng-repeat="rule in accessRules">
+                    <p>{{ rule }}</p>
+                </div>
+	        	<div class="item" ng-if="quiz.gradeMethodReadable">
+                    <p class="item-heading">{{ 'mma.mod_quiz.grademethod' | translate }}</p>
+                    <p>{{ quiz.gradeMethodReadable }}</p>
+                </div>
+            </section>
+
+            <!-- Attempts -->
+            <div class="card" ng-if="attempts && attempts.length">
+                <div class="item item-divider">{{ 'mma.mod_quiz.summaryofattempts' | translate }}</div>
+                <div class="item item-text-wrap row">
+                    <p class="col text-center" ng-if="quiz.showAttemptColumn"><b>{{ 'mma.mod_quiz.attemptnumber' | translate }}</b></p>
+                    <p class="col col-50"><b>{{ 'mma.mod_quiz.attemptstate' | translate }}</b></p>
+                    <p class="col text-center" ng-if="isTablet && quiz.showMarkColumn"><b>{{ 'mma.mod_quiz.marks' | translate }} / {{ quiz.sumGradesFormatted }}</b></p>
+                    <p class="col text-center" ng-if="quiz.showGradeColumn"><b>{{ 'mma.mod_quiz.grade' | translate }} / {{ quiz.gradeFormatted }}</b></p>
+                    <p class="col text-center" ng-if="isTablet && quiz.showReviewColumn"><b>{{ 'mma.mod_quiz.review' | translate }}</b></p>
+                    <p class="col col-10"></p>
+                </div>
+                <div class="item item-text-wrap row" ng-repeat="attempt in attempts" ng-class='{"mma-mod-quiz-highlighted": attempt.highlightGrade}'>
+                    <p class="col text-center" ng-if="quiz.showAttemptColumn && attempt.preview">{{ 'mma.mod_quiz.preview' | translate }}</p>
+                    <p class="col text-center" ng-if="quiz.showAttemptColumn && !attempt.preview">{{ attempt.attempt }}</p>
+                    <div class="col col-50">
+                        <p ng-repeat="sentence in attempt.readableState">{{ sentence }}</p>
+                    </div>
+                    <p class="col text-center" ng-if="isTablet && quiz.showMarkColumn">{{ attempt.readableMark }}</p>
+                    <p class="col text-center" ng-if="quiz.showGradeColumn">{{ attempt.readableGrade }}</p>
+                    <p class="col text-center" ng-if="isTablet && quiz.showReviewColumn">
+                        <button class="button button-block" ng-if="attempt.finished">{{ 'mma.mod_quiz.review' | translate }}</button>
+                    </p>
+                    <p class="col col-10 text-center">
+                        <a class="button button-block button-icon ion-ios-arrow-forward" aria-label="{{ 'mm.core.seemoredetail' | translate }}"></a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Result info -->
+            <div class="card" ng-if="showResults">
+                <p class="item item-text-wrap" ng-if="gradeResult">{{ gradeResult }}</p>
+                <p class="item item-text-wrap" ng-if="gradeOverridden">{{ 'mm.course.overriddennotice' | translate }}</p>
+                <div class="item item-text-wrap" ng-if="gradebookFeedback">
+                    <p class="item-heading">{{ 'mma.mod_quiz.comment' | translate }}</p>
+                    <p><mm-format-text watch="true">{{ gradebookFeedback }}</mm-format-text></p>
+                </div>
+                <div class="item item-text-wrap" ng-if="quiz.showFeedbackColumn && overallFeedback">
+                    <p class="item-heading">{{ 'mma.mod_quiz.overallfeedback' | translate }}</p>
+                    <p><mm-format-text watch="true">{{ overallFeedback }}</mm-format-text></p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="item item-text-wrap" ng-repeat="message in preventMessages">
+                    <p class="mma-mod-quiz-warning">{{ message }}</p>
+                </div>
+                <div class="item item-text-wrap mma-mod-quiz-warning" ng-if="quiz.hasquestions === 0">
+                    <p class="mma-mod-quiz-warning">{{ 'mma.mod_quiz.noquestions' | translate }}</p>
+                </div>
+                <div class="item" ng-if="buttonText">
+                    <button class="button button-block">{{ buttonText | translate }}</button>
+                </div>
+            </div>
+        </mm-loading>
+    </ion-content>
+</ion-view>
