@@ -230,6 +230,31 @@ angular.module('mm.core')
     };
 
     /**
+     * Decode an escaped HTML text. This implementation is based on PHP's htmlspecialchars_decode.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#decodeHTML
+     * @param  {String} text Text to decode.
+     * @return {String}      Decoded text.
+     */
+    self.decodeHTML = function(text) {
+        if (typeof text == 'undefined' || text === null || (typeof text == 'number' && isNaN(text))) {
+            return '';
+        } else if (typeof text != 'string') {
+            return '' + text;
+        }
+
+        return text
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&#039;/g, "'")
+            .replace(/&nbsp;/g, ' ');
+    };
+
+    /**
      * Add or remove 'www' from a URL. The url needs to have http or https protocol.
      *
      * @module mm.core
