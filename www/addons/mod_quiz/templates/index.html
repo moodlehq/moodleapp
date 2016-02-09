@@ -68,6 +68,10 @@
                 <div class="item item-text-wrap mma-mod-quiz-warning" ng-if="quiz.hasquestions === 0">
                     <p class="mma-mod-quiz-warning">{{ 'mma.mod_quiz.noquestions' | translate }}</p>
                 </div>
+                <div class="item item-text-wrap mma-mod-quiz-warning" ng-if="unsupportedQuestions && unsupportedQuestions.length">
+                    <p class="mma-mod-quiz-warning">{{ 'mma.mod_quiz.errorquestionsnotsupported' | translate }}</p>
+                    <p class="mma-mod-quiz-warning" ng-repeat="type in unsupportedQuestions">{{ type }}</p>
+                </div>
                 <div class="item" ng-if="buttonText">
                     <button class="button button-block">{{ buttonText | translate }}</button>
                 </div>
