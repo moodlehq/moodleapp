@@ -25,7 +25,9 @@ angular.module('mm.addons.mod_quiz')
 
     $log = $log.getInstance('$mmaModQuiz');
 
-    var self = {};
+    var self = {},
+        supportedQuestions = ['calculated', 'calculatedsimple', 'calculatedmulti', 'description', 'essay', 'gapselect',
+                            'match', 'multichoice', 'numerical', 'shortanswer', 'truefalse'];
 
     // Constants.
 
@@ -670,6 +672,25 @@ angular.module('mm.addons.mod_quiz')
                 return $translate.instant('mma.mod_quiz.attemptlast');
         }
         return '';
+    };
+
+    /**
+     * Given a list of question types, returns the types that aren't supported.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#getUnsupportedQuestions
+     * @param  {String[]} questionTypes Question types to check.
+     * @return {String[]}               Not supported question types.
+     */
+    self.getUnsupportedQuestions = function(questionTypes) {
+        var notSupported = [];
+        angular.forEach(questionTypes, function(type) {
+            if (supportedQuestions.indexOf(type) == -1 && notSupported.indexOf(type) == -1) {
+                notSupported.push(type);
+            }
+        });
+        return notSupported;
     };
 
     /**
