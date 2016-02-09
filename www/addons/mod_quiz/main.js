@@ -30,6 +30,21 @@ angular.module('mm.addons.mod_quiz', ['mm.core'])
           templateUrl: 'addons/mod_quiz/templates/index.html'
         }
       }
+    })
+
+    .state('site.mod_quiz-attempt', {
+      url: '/mod_quiz-attempt',
+      params: {
+        courseid: null,
+        quizid: null,
+        attemptid: null
+      },
+      views: {
+        'site': {
+          controller: 'mmaModQuizAttemptCtrl',
+          templateUrl: 'addons/mod_quiz/templates/attempt.html'
+        }
+      }
     });
 
 })
