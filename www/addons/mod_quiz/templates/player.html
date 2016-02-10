@@ -1,0 +1,13 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ quiz.name }}</mm-format-text></ion-nav-title>
+    <ion-content>
+        <mm-loading hide-until="dataLoaded">
+            <div class="list" ng-if="!attempt">
+                <button class="button button-block" ng-click="start()">{{ 'mma.mod_quiz.startattempt' | translate }}</button>
+            </div>
+            <div class="list" ng-if="attempt">
+                TODO
+            </div>
+        </mm-loading>
+    </ion-content>
+</ion-view>
