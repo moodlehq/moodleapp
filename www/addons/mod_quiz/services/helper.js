@@ -21,9 +21,35 @@ angular.module('mm.addons.mod_quiz')
  * @ngdoc service
  * @name $mmaModQuizHelper
  */
-.factory('$mmaModQuizHelper', function($mmaModQuiz, $mmUtil, $q) {
+.factory('$mmaModQuizHelper', function($mmaModQuiz, $mmUtil, $q, $ionicModal) {
 
     var self = {};
+
+    /**
+     * Init a password modal, adding it to the scope.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizHelper#initPasswordModal
+     * @param  {Object} scope Scope.
+     * @return {Promise}      Promise resolved when the modal is initialized.
+     */
+    self.initPasswordModal = function(scope) {
+        return $ionicModal.fromTemplateUrl('addons/mod_quiz/templates/password-modal.html', {
+            scope: scope,
+            animation: 'slide-in-up'
+        }).then(function(modal) {
+            scope.modal = modal;
+
+            scope.closeModal = function() {
+                scope.password = '';
+                modal.hide();
+            };
+            scope.$on('$destroy', function() {
+                modal.remove();
+            });
+        });
+    };
 
     /**
      * Add some calculated data to the attempt.
