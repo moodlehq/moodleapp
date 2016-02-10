@@ -374,12 +374,17 @@ angular.module('mm.addons.mod_resource')
             return $q.reject();
         }
 
-        var url = contents[0].fileurl,
+        var files = [contents[0]],
+            siteId = $mmSite.getId(),
+            revision = $mmFilepool.getRevisionFromFileList(files),
+            timeMod = $mmFilepool.getTimemodifiedFromFileList(files),
             promise;
 
         if ($mmFS.isAvailable()) {
             // The file system is available.
-            promise = $mmFilepool.downloadUrl($mmSite.getId(), url, false, mmaModResourceComponent, moduleId);
+            promise = $mmFilepool.downloadPackage(siteId, files, mmaModResourceComponent, moduleId, revision, timeMod).then(function() {
+                return $mmFilepool.getUrlByUrl(siteId, contents[0].fileurl, mmaModResourceComponent, moduleId, timeMod);
+            });
         } else {
             // We use the live URL.
             promise = $q.when($mmSite.fixPluginfileURL(url));
