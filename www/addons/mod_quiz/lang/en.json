@@ -5,6 +5,8 @@
 	"attemptquiznow": "Attempt quiz now",
 	"attemptstate": "State",
 	"comment": "Comment",
+	"confirmstart": "The quiz has a time limit of {{$a}}. Time will count down from the moment you start your attempt and you must submit before it expires. Are you sure that you wish to start now?",
+	"confirmstartheader": "Timed quiz",
 	"continueattemptquiz": "Continue the last attempt",
 	"errorgetattempt": "Error getting attempt data.",
 	"errorgetquiz": "Error getting quiz data.",
