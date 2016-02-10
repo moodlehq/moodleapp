@@ -30,19 +30,19 @@ angular.module('mm.addons.mod_quiz')
      *
      * @module mm.addons.mod_quiz
      * @ngdoc method
-     * @name $mmaModQuizHelper#initPasswordModal
+     * @name $mmaModQuizHelper#initConfirmStartModal
      * @param  {Object} scope Scope.
      * @return {Promise}      Promise resolved when the modal is initialized.
      */
-    self.initPasswordModal = function(scope) {
-        return $ionicModal.fromTemplateUrl('addons/mod_quiz/templates/password-modal.html', {
+    self.initConfirmStartModal = function(scope) {
+        return $ionicModal.fromTemplateUrl('addons/mod_quiz/templates/confirmstart-modal.html', {
             scope: scope,
             animation: 'slide-in-up'
         }).then(function(modal) {
             scope.modal = modal;
 
             scope.closeModal = function() {
-                scope.password = '';
+                scope.preflightData.password = '';
                 modal.hide();
             };
             scope.$on('$destroy', function() {
