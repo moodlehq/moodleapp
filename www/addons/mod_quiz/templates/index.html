@@ -73,7 +73,7 @@
                     <p class="mma-mod-quiz-warning" ng-repeat="type in unsupportedQuestions">{{ type }}</p>
                 </div>
                 <div class="item" ng-if="buttonText">
-                    <button class="button button-block">{{ buttonText | translate }}</button>
+                    <a class="button button-block" ui-sref="site.mod_quiz-player({courseid: courseId, quizid: quiz.id})">{{ buttonText | translate }}</a>
                 </div>
             </div>
         </mm-loading>
