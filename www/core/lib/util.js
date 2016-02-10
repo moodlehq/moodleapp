@@ -457,7 +457,30 @@ angular.module('mm.core')
          */
         self.showErrorModal = function(errorMessage, needsTranslate, autocloseTime) {
             var errorKey = 'mm.core.error',
-                langKeys = [errorKey];
+                langKeys = [errorKey],
+                matches;
+
+            if (angular.isObject(errorMessage)) {
+                // We received an object instead of a string. Search for common properties.
+                if (typeof errorMessage.content != 'undefined') {
+                    errorMessage = errorMessage.content;
+                } else if (typeof errorMessage.body != 'undefined') {
+                    errorMessage = errorMessage.body;
+                } else if (typeof errorMessage.message != 'undefined') {
+                    errorMessage = errorMessage.message;
+                } else if (typeof errorMessage.error != 'undefined') {
+                    errorMessage = errorMessage.error;
+                } else {
+                    // No common properties found, just stringify it.
+                    errorMessage = JSON.stringify(errorMessage);
+                }
+
+                // Try to remove tokens from the contents.
+                matches = errorMessage.match(/token"?[=|:]"?(\w*)/, '');
+                if (matches && matches[1]) {
+                    errorMessage = errorMessage.replace(new RegExp(matches[1], 'g'), 'secret');
+                }
+            }
 
             if (needsTranslate) {
                 langKeys.push(errorMessage);

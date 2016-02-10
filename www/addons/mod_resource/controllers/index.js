@@ -104,7 +104,7 @@ angular.module('mm.addons.mod_resource')
                             $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
                         });
                     }).catch(function(error) {
-                        if (error) {
+                        if (error && typeof error == 'string') {
                             $mmUtil.showErrorModal(error);
                         } else {
                             $mmUtil.showErrorModal('mma.mod_resource.errorwhileloadingthecontent', true);
