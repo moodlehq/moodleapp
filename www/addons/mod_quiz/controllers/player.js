@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_quiz')
  * @ngdoc controller
  * @name mmaModQuizPlayerCtrl
  */
-.controller('mmaModQuizPlayerCtrl', function($scope, $stateParams, $mmaModQuiz, $mmaModQuizHelper, $q) {
+.controller('mmaModQuizPlayerCtrl', function($scope, $stateParams, $mmaModQuiz, $mmaModQuizHelper, $q, $mmUtil) {
     var quizId = $stateParams.quizid,
         courseId = $stateParams.courseid,
         quiz,
@@ -30,7 +30,9 @@ angular.module('mm.addons.mod_quiz')
         preflightData = {}, // Preflight data to send to WS (like password).
         newAttempt;
 
-    $scope.password = '';
+    $scope.preflightData = {
+        password: ''
+    };
 
     // Convenience function to start the player.
     function start(password) {
@@ -56,11 +58,20 @@ angular.module('mm.addons.mod_quiz')
     function fetchData() {
         return $mmaModQuiz.getQuizById(courseId, quizId).then(function(quizData) {
             quiz = quizData;
+
+            if (quiz.timelimit > 0) {
+                $scope.isTimed = true;
+                $mmUtil.formatTime(quiz.timelimit).then(function(time) {
+                    quiz.readableTimeLimit = time;
+                });
+            }
+
             $scope.quiz = quiz;
 
             // Get access information for the quiz.
             return $mmaModQuiz.getAccessInformation(quiz.id, 0, true).then(function(info) {
                 accessInfo = info;
+                $scope.requirePassword = accessInfo.ispreflightcheckrequired;
 
                 // Get attempts to determine last attempt.
                 return $mmaModQuiz.getUserAttempts(quiz.id, 'all', true, true).then(function(attempts) {
@@ -78,11 +89,14 @@ angular.module('mm.addons.mod_quiz')
     }
 
     // Convenience function to start/continue the attempt.
-    function getAttemptData(pwd) {
-        if (accessInfo.ispreflightcheckrequired && typeof pwd == 'undefined') {
-            // Quiz uses password. Ask the user.
+    function getAttemptData(password) {
+        // Check if we need to show a confirm modal (requires password or quiz has time limit).
+        // 'password' param will be != undefined even if password is not required, so we can use it to tell
+        // if the user clicked the modal button or not.
+        if (typeof password == 'undefined' && ($scope.requirePassword || $scope.isTimed)) {
+            // We need to show confirm modal and the user hasn't clicked the confirm button. Show the modal.
             if (!$scope.modal) {
-                $mmaModQuizHelper.initPasswordModal($scope).then(function() {
+                $mmaModQuizHelper.initConfirmStartModal($scope).then(function() {
                     $scope.modal.show();
                 });
             } else if (!$scope.modal.isShown()) {
@@ -92,7 +106,7 @@ angular.module('mm.addons.mod_quiz')
         }
 
         var promise;
-        preflightData.quizpassword = pwd;
+        preflightData.quizpassword = password;
 
         if (newAttempt) {
             promise = $mmaModQuiz.startAttempt(quiz.id, preflightData).then(function(att) {
