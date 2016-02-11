@@ -27,7 +27,10 @@ angular.module('mm.addons.mod_quiz')
 
     var self = {},
         supportedQuestions = ['calculated', 'calculatedsimple', 'calculatedmulti', 'description', 'essay', 'gapselect',
-                            'match', 'multichoice', 'numerical', 'shortanswer', 'truefalse'];
+                            'match', 'multichoice', 'numerical', 'shortanswer', 'truefalse'],
+        supportedRules = ['quizaccess_delaybetweenattempts', 'quizaccess_ipaddress', 'quizaccess_numattempts',
+                            'quizaccess_openclosedate', 'quizaccess_password', 'quizaccess_safebrowser',
+                            'quizaccess_securewindow', 'quizaccess_timelimit'];
 
     // Constants.
 
@@ -91,12 +94,13 @@ angular.module('mm.addons.mod_quiz')
      * @module mm.addons.mod_quiz
      * @ngdoc method
      * @name $mmaModQuiz#getAccessInformation
-     * @param {Number} quizId    Quiz ID.
-     * @param {Number} attemptId Attempt ID. 0 for user's last attempt.
-     * @param {String} [siteId]  Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved with the access information.
+     * @param {Number} quizId       Quiz ID.
+     * @param {Number} attemptId    Attempt ID. 0 for user's last attempt.
+     * @param {Boolean} ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with the access information.
      */
-    self.getAccessInformation = function(quizId, attemptId, siteId) {
+    self.getAccessInformation = function(quizId, attemptId, ignoreCache, siteId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -107,6 +111,11 @@ angular.module('mm.addons.mod_quiz')
                 preSets = {
                     cacheKey: getAccessInformationCacheKey(quizId, attemptId)
                 };
+
+            if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
 
             return site.read('mod_quiz_get_access_information', params, preSets);
         });
@@ -142,28 +151,29 @@ angular.module('mm.addons.mod_quiz')
      * @param {Number} attemptId     Attempt ID.
      * @param {Number} page          Page number.
      * @param {Object} preflightData Preflight required data (like password).
+     * @param {Boolean} ignoreCache  True if it should ignore cached data (it will always fail in offline or server down).
      * @param {String} [siteId]      Site ID. If not defined, current site.
      * @return {Promise}             Promise resolved with the attempt data.
      */
-    self.getAttemptData = function(attemptId, page, preflightData, siteId) {
+    self.getAttemptData = function(attemptId, page, preflightData, ignoreCache, siteId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     attemptid: attemptId,
                     page: page,
-                    preflightdata: preflightData
+                    preflightdata: treatPreflightData(preflightData)
                 },
                 preSets = {
                     cacheKey: getAttemptDataCacheKey(attemptId, page)
                 };
 
-            return site.read('mod_quiz_get_attempt_data', params, preSets).then(function(response) {
-                if (response && response.attempt) {
-                    return response.attempt;
-                }
-                return $q.reject();
-            });
+            if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+
+            return site.read('mod_quiz_get_attempt_data', params, preSets);
         });
     };
 
@@ -323,7 +333,7 @@ angular.module('mm.addons.mod_quiz')
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     attemptid: attemptId,
-                    preflightdata: preflightData
+                    preflightdata: treatPreflightData(preflightData)
                 },
                 preSets = {
                     cacheKey: getAttemptSummaryCacheKey(attemptId)
@@ -694,6 +704,25 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Given a list of access rules names, returns the rules that aren't supported.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#getUnsupportedRules
+     * @param  {String[]} rulesNames Rules to check.
+     * @return {String[]}            Not supported rules names.
+     */
+    self.getUnsupportedRules = function(rulesNames) {
+        var notSupported = [];
+        angular.forEach(rulesNames, function(name) {
+            if (supportedRules.indexOf(name) == -1 && notSupported.indexOf(name) == -1) {
+                notSupported.push(name);
+            }
+        });
+        return notSupported;
+    };
+
+    /**
      * Get cache key for get user attempts WS calls.
      *
      * @param {Number} quizId Quiz ID.
@@ -723,11 +752,12 @@ angular.module('mm.addons.mod_quiz')
      * @param {Number} quizId             Quiz ID.
      * @param {Number} [status]           Status of the attempts to get. By default, 'all'.
      * @param {Boolean} [includePreviews] True to include previews, false otherwise. Defaults to true.
+     * @param {Boolean} ignoreCache       True if it should ignore cached data (it will always fail in offline or server down).
      * @param {String} [siteId]           Site ID. If not defined, current site.
      * @param {Number} [userId]           User ID. If not defined use site's current user.
      * @return {Promise}                  Promise resolved with the attempts.
      */
-    self.getUserAttempts = function(quizId, status, includePreviews, siteId, userId) {
+    self.getUserAttempts = function(quizId, status, includePreviews, ignoreCache, siteId, userId) {
         siteId = siteId || $mmSite.getId();
         status = status || 'all';
         if (typeof includePreviews == 'undefined') {
@@ -746,6 +776,11 @@ angular.module('mm.addons.mod_quiz')
                 preSets = {
                     cacheKey: getUserAttemptsCacheKey(quizId, userId)
                 };
+
+            if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
 
             return site.read('mod_quiz_get_user_attempts', params, preSets).then(function(response) {
                 if (response && response.attempts) {
@@ -1259,6 +1294,58 @@ angular.module('mm.addons.mod_quiz')
         }
         return grade;
     };
+
+    /**
+     * Start an attempt.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#startAttempt
+     * @param  {Number} quizId        Quiz ID.
+     * @param  {Object} preflightData Preflight required data (like password).
+     * @param  {Boolean} forceNew     Whether to force a new attempt or not.
+     * @param  {String} [siteId]      Site ID. If not defined, current site.
+     * @return {Promise}              Promise resolved with the attempt data.
+     */
+    self.startAttempt = function(quizId, preflightData, forceNew, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    quizid: quizId,
+                    preflightdata: treatPreflightData(preflightData),
+                    forcenew: forceNew ? 1 : 0
+                };
+
+            return site.write('mod_quiz_start_attempt', params).then(function(response) {
+                if (response && response.warnings && response.warnings.length) {
+                    // Reject with the first warning.
+                    return $q.reject(response.warnings[0].message);
+                } else if (response && response.attempt) {
+                    return response.attempt;
+                }
+                return $q.reject();
+            });
+        });
+    };
+
+    /**
+     * Treat preflight data to be sent to a WS.
+     * Converts an object of type key => value into an array of type 0 => {name: key, value: value}.
+     *
+     * @param  {Object} data Data to treat.
+     * @return {Object[]}    Treated data.
+     */
+    function treatPreflightData(data) {
+        var treated = [];
+        angular.forEach(data, function(value, key) {
+            treated.push({
+                name: key,
+                value: value
+            });
+        });
+        return treated;
+    }
 
     return self;
 });
