@@ -73,6 +73,7 @@ angular.module('mm.addons.mod_quiz')
             $scope.accessRules = accessInfo.accessrules;
             quiz.showReviewColumn = accessInfo.canreviewmyattempts;
             $scope.unsupportedQuestions = $mmaModQuiz.getUnsupportedQuestions(accessInfo.questiontypes);
+            $scope.unsupportedRules = $mmaModQuiz.getUnsupportedRules(accessInfo.activerulenames);
 
             // Get attempts.
             return $mmaModQuiz.getUserAttempts(quiz.id).then(function(atts) {
@@ -210,7 +211,7 @@ angular.module('mm.addons.mod_quiz')
                 $scope.buttonText = '';
             } else if (accessInfo.canattempt && $scope.preventMessages.length) {
                 $scope.buttonText = '';
-            } else if ($scope.unsupportedQuestions.length) {
+            } else if ($scope.unsupportedQuestions.length || $scope.unsupportedRules.length) {
                 $scope.buttonText = '';
             }
         }
