@@ -27,7 +27,10 @@ angular.module('mm.addons.mod_quiz')
 
     var self = {},
         supportedQuestions = ['calculated', 'calculatedsimple', 'calculatedmulti', 'description', 'essay', 'gapselect',
-                            'match', 'multichoice', 'numerical', 'shortanswer', 'truefalse'];
+                            'match', 'multichoice', 'numerical', 'shortanswer', 'truefalse'],
+        supportedRules = ['quizaccess_delaybetweenattempts', 'quizaccess_ipaddress', 'quizaccess_numattempts',
+                            'quizaccess_openclosedate', 'quizaccess_password', 'quizaccess_safebrowser',
+                            'quizaccess_securewindow', 'quizaccess_timelimit'];
 
     // Constants.
 
@@ -695,6 +698,25 @@ angular.module('mm.addons.mod_quiz')
         angular.forEach(questionTypes, function(type) {
             if (supportedQuestions.indexOf(type) == -1 && notSupported.indexOf(type) == -1) {
                 notSupported.push(type);
+            }
+        });
+        return notSupported;
+    };
+
+    /**
+     * Given a list of access rules names, returns the rules that aren't supported.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#getUnsupportedRules
+     * @param  {String[]} rulesNames Rules to check.
+     * @return {String[]}            Not supported rules names.
+     */
+    self.getUnsupportedRules = function(rulesNames) {
+        var notSupported = [];
+        angular.forEach(rulesNames, function(name) {
+            if (supportedRules.indexOf(name) == -1 && notSupported.indexOf(name) == -1) {
+                notSupported.push(name);
             }
         });
         return notSupported;
