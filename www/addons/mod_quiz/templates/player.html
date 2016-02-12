@@ -9,8 +9,8 @@
                 <div ng-repeat="question in questions">
                     <section class="card">
                         <div class="item item-divider">
-                            <p ng-if="question.number">{{ 'mma.mod_quiz.questionno' | translate:{$a: question.number} }}</p>
-                            <p ng-if="!question.number">{{ 'mma.mod_quiz.information' | translate }}</p>
+                            <h2 ng-if="question.number">{{ 'mma.mod_quiz.questionno' | translate:{$a: question.number} }}</h2>
+                            <h2 ng-if="!question.number">{{ 'mma.mod_quiz.information' | translate }}</h2>
                         </div>
                         <div class="item item-text-wrap" ng-if="question.status">
                             <p>{{question.status}}</p>
