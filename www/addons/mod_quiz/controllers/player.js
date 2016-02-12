@@ -21,7 +21,9 @@ angular.module('mm.addons.mod_quiz')
  * @ngdoc controller
  * @name mmaModQuizPlayerCtrl
  */
-.controller('mmaModQuizPlayerCtrl', function($scope, $stateParams, $mmaModQuiz, $mmaModQuizHelper, $q, $mmUtil) {
+.controller('mmaModQuizPlayerCtrl', function($log, $scope, $stateParams, $mmaModQuiz, $mmaModQuizHelper, $q, $mmUtil) {
+    $log = $log.getInstance('mmaModQuizPlayerCtrl');
+
     var quizId = $stateParams.quizid,
         courseId = $stateParams.courseid,
         moduleUrl = $stateParams.moduleurl,
@@ -33,6 +35,7 @@ angular.module('mm.addons.mod_quiz')
 
     $scope.moduleUrl = moduleUrl;
     $scope.quizAborted = false;
+    $scope.answers = {};
     $scope.preflightData = {
         password: ''
     };
@@ -127,6 +130,13 @@ angular.module('mm.addons.mod_quiz')
 
                 angular.forEach($scope.questions, function(question) {
                     question.readableMark = $mmaModQuizHelper.getQuestionMarkFromHtml(question.html);
+                    var seqCheck = $mmaModQuizHelper.getQuestionSequenceCheckFromHtml(question.html);
+                    if (seqCheck) {
+                        $scope.answers[seqCheck.name] = seqCheck.value;
+                    } else {
+                        $log.warn('Aborting quiz because couldn\'t retrieve sequence check.', question.name);
+                        $scope.quizAborted = true;
+                    }
                 });
             });
         }).catch(function(message) {

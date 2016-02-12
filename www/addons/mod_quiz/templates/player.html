@@ -19,7 +19,7 @@
                             <p>{{question.readableMark}}</p>
                         </div>
                         <ion-checkbox ng-model="question.flagged">{{ 'mma.mod_quiz.flagged' | translate }}</ion-checkbox>
-                        <div class="item item-complex" mma-mod-quiz-question question="question" abort-quiz="abortQuiz()"></div>
+                        <div class="item item-complex" mma-mod-quiz-question question="question" answers="answers" abort-quiz="abortQuiz()"></div>
                     </section>
                 </div>
             </div>
