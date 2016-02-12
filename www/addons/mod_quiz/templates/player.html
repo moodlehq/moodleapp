@@ -5,8 +5,20 @@
             <div class="list" ng-if="!attempt">
                 <button class="button button-block" ng-click="start()">{{ 'mma.mod_quiz.startattempt' | translate }}</button>
             </div>
-            <div class="list" ng-if="attempt">
-                TODO
+            <div ng-repeat="question in questions">
+                <section class="card">
+                    <div class="item item-divider">
+                        <p ng-if="question.number">{{ 'mma.mod_quiz.questionno' | translate:{$a: question.number} }}</p>
+                        <p ng-if="!question.number">{{ 'mma.mod_quiz.information' | translate }}</p>
+                    </div>
+                    <div class="item item-text-wrap" ng-if="question.status">
+                        <p>{{question.status}}</p>
+                    </div>
+                    <div class="item item-text-wrap" ng-if="question.readableMark">
+                        <p>{{question.readableMark}}</p>
+                    </div>
+                    <ion-checkbox ng-model="question.flagged">{{ 'mma.mod_quiz.flagged' | translate }}</ion-checkbox>
+                    <div class="item item-complex" mma-mod-quiz-question question="question"></div>
             </div>
         </mm-loading>
     </ion-content>
