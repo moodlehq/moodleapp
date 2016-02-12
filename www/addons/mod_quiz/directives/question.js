@@ -42,6 +42,7 @@ angular.module('mm.addons.mod_quiz')
                 if (directive) {
                     // Treat the question before starting the directive.
                     $mmaModQuizHelper.extractQuestionInfoBox(scope.question);
+                    $mmaModQuizHelper.extractQuestionScripts(scope.question);
 
                     // Add the directive to the element.
                     element.attr(directive, '');
