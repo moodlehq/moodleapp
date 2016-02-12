@@ -24,12 +24,15 @@ angular.module('mm.addons.mod_quiz')
 .controller('mmaModQuizPlayerCtrl', function($scope, $stateParams, $mmaModQuiz, $mmaModQuizHelper, $q, $mmUtil) {
     var quizId = $stateParams.quizid,
         courseId = $stateParams.courseid,
+        moduleUrl = $stateParams.moduleurl,
         quiz,
         accessInfo,
         attempt,
         preflightData = {}, // Preflight data to send to WS (like password).
         newAttempt;
 
+    $scope.moduleUrl = moduleUrl;
+    $scope.quizAborted = false;
     $scope.preflightData = {
         password: ''
     };
@@ -137,6 +140,11 @@ angular.module('mm.addons.mod_quiz')
     // Start the player.
     $scope.start = function(password) {
         start(password);
+    };
+
+    // Function to call to abort the quiz.
+    $scope.abortQuiz = function() {
+        $scope.quizAborted = true;
     };
 
 });
