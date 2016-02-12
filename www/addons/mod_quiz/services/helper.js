@@ -40,10 +40,51 @@ angular.module('mm.addons.mod_quiz')
         if (el) {
             info = el.querySelector('.info');
             if (info) {
-                question.infoBox = info.innerHTML;
+                question.infoBox = info.outerHTML;
                 info.remove();
-                question.html = el.innerHTML;
+                question.html = el.outerHTML;
             }
+        }
+    };
+
+    /**
+     * Removes the scripts from a question's HTML and adds it in a new 'scriptsCode' property.
+     * It will also search for init_question functions of the question type and add the object to an 'initObjects' property.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizHelper#extractQuestionScripts
+     * @param  {Object} question Question.
+     * @return {Void}
+     */
+    self.extractQuestionScripts = function(question) {
+        var matches;
+
+        question.scriptsCode = '';
+        question.initObjects = [];
+
+        if (question.html) {
+            // Search the scripts.
+            matches = question.html.match(/<script[^>]*>[\s\S]*?<\/script>/mg);
+            angular.forEach(matches, function(match) {
+                // Add the script to scriptsCode and remove it from html.
+                question.scriptsCode += match;
+                question.html = question.html.replace(match, '');
+
+                // Search init_question functions for this type.
+                var initMatches = match.match(new RegExp('M\.' + question.type + '\.init_question\\(.*?}\\);', 'mg'));
+                angular.forEach(initMatches, function(initMatch) {
+                    // Remove start and end of the match, we only want the object.
+                    initMatch = initMatch.replace('M.' + question.type + '.init_question(', '');
+                    initMatch = initMatch.substr(0, initMatch.length - 2);
+
+                    // Try to convert it to an object and add it to the question.
+                    try {
+                        initMatch = JSON.parse(initMatch);
+                        question.initObjects.push(initMatch);
+                    } catch(ex) {}
+                });
+            });
         }
     };
 
