@@ -124,6 +124,33 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Get the sequence check from a question HTML.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizHelper#getQuestionSequenceCheckFromHtml
+     * @param  {String} html Question's HTML.
+     * @return {Object}      Object with the sequencecheck name and value.
+     */
+    self.getQuestionSequenceCheckFromHtml = function(html) {
+        var el,
+            input;
+
+        if (html) {
+            el = angular.element(html)[0];
+
+            // Search the input holding the sequencecheck.
+            input = el.querySelector('input[name*=sequencecheck]');
+            if (input && typeof input.name != 'undefined' && typeof input.value != 'undefined') {
+                return {
+                    name: input.name,
+                    value: input.value
+                };
+            }
+        }
+    };
+
+    /**
      * Init a password modal, adding it to the scope.
      *
      * @module mm.addons.mod_quiz
