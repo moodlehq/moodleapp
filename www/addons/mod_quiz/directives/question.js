@@ -42,6 +42,7 @@ angular.module('mm.addons.mod_quiz')
         templateUrl: 'addons/mod_quiz/templates/questionnotsupported.html',
         scope: {
             question: '=',
+            answers: '=',
             abortQuiz: '&'
         },
         link: function(scope, element) {
