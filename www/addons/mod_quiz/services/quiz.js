@@ -21,13 +21,11 @@ angular.module('mm.addons.mod_quiz')
  * @ngdoc service
  * @name $mmaModQuiz
  */
-.factory('$mmaModQuiz', function($log, $mmSite, $mmSitesManager, $q, $translate, $mmUtil, $mmText) {
+.factory('$mmaModQuiz', function($log, $mmSite, $mmSitesManager, $q, $translate, $mmUtil, $mmText, $mmaModQuizQuestionsDelegate) {
 
     $log = $log.getInstance('$mmaModQuiz');
 
     var self = {},
-        supportedQuestions = ['calculated', 'calculatedsimple', 'calculatedmulti', 'description', 'essay', 'gapselect',
-                            'match', 'multichoice', 'numerical', 'shortanswer', 'truefalse'],
         supportedRules = ['quizaccess_delaybetweenattempts', 'quizaccess_ipaddress', 'quizaccess_numattempts',
                             'quizaccess_openclosedate', 'quizaccess_password', 'quizaccess_safebrowser',
                             'quizaccess_securewindow', 'quizaccess_timelimit'];
@@ -696,7 +694,7 @@ angular.module('mm.addons.mod_quiz')
     self.getUnsupportedQuestions = function(questionTypes) {
         var notSupported = [];
         angular.forEach(questionTypes, function(type) {
-            if (supportedQuestions.indexOf(type) == -1 && notSupported.indexOf(type) == -1) {
+            if (type != 'random' && type != 'randomsamatch' && !$mmaModQuizQuestionsDelegate.isQuestionSupported('qtype_'+type)) {
                 notSupported.push(type);
             }
         });
