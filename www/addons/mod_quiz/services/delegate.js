@@ -54,6 +54,19 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Check if a question type is supported.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizQuestionsDelegate#isQuestionSupported
+     * @param  {String}  type Question type.
+     * @return {Boolean}      True if supported, false otherwise.
+     */
+    self.isQuestionSupported = function(type) {
+        return typeof enabledHandlers[type] != 'undefined';
+    };
+
+    /**
      * Register a question handler. The handler will be used when we need to render a question of the type defined.
      *
      * @module mm.addons.mod_quiz
