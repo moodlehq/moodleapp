@@ -51,7 +51,8 @@ angular.module('mm.addons.mod_quiz', ['mm.core'])
       url: '/mod_quiz-player',
       params: {
         courseid: null,
-        quizid: null
+        quizid: null,
+        moduleurl: null // Module URL to open it in browser.
       },
       views: {
         'site': {
