@@ -22,6 +22,14 @@ angular.module('mm.addons.mod_quiz')
  * @module mm.addons.mod_quiz
  * @ngdoc directive
  * @name mmaModQuizQuestion
+ * @description
+ *
+ * The directives to render the question will receive the following parameters in the scope:
+ *
+ * @param {Object} question The question to render.
+ * @param {Function} abortQuiz A function to call to abort the quiz execution. Please use it if there's any problem initializing
+ *                             your question. If this function is called, all questions will disappear from the screen and they'll
+ *                             be replaced by an error message and a button to attempt the quiz in the browser.
  */
 .directive('mmaModQuizQuestion', function($compile, $mmaModQuizQuestionsDelegate, $mmaModQuizHelper) {
 
@@ -34,6 +42,7 @@ angular.module('mm.addons.mod_quiz')
         templateUrl: 'addons/mod_quiz/templates/questionnotsupported.html',
         scope: {
             question: '=',
+            abortQuiz: '&'
         },
         link: function(scope, element) {
             if (scope.question) {
