@@ -5,9 +5,32 @@
             <div class="list" ng-if="!attempt">
                 <button class="button button-block" ng-click="start()">{{ 'mma.mod_quiz.startattempt' | translate }}</button>
             </div>
-            <div class="list" ng-if="attempt">
-                TODO
+            <div ng-if="attempt && questions.length && !quizAborted">
+                <div ng-repeat="question in questions">
+                    <section class="card">
+                        <div class="item item-divider">
+                            <h2 ng-if="question.number">{{ 'mma.mod_quiz.questionno' | translate:{$a: question.number} }}</h2>
+                            <h2 ng-if="!question.number">{{ 'mma.mod_quiz.information' | translate }}</h2>
+                        </div>
+                        <div class="item item-text-wrap" ng-if="question.status">
+                            <p>{{question.status}}</p>
+                        </div>
+                        <div class="item item-text-wrap" ng-if="question.readableMark">
+                            <p>{{question.readableMark}}</p>
+                        </div>
+                        <ion-checkbox ng-model="question.flagged">{{ 'mma.mod_quiz.flagged' | translate }}</ion-checkbox>
+                        <div class="item item-complex" mma-mod-quiz-question question="question" abort-quiz="abortQuiz()"></div>
+                    </section>
+                </div>
             </div>
+            <section class="card" ng-if="attempt && (!questions.length || quizAborted)">
+                <div class="item item-text-wrap">
+                    <p>{{ 'mma.mod_quiz.errorparsequestions' | translate }}</p>
+                </div>
+                <div class="item">
+                    <a class="button button-block" ng-href="{{moduleUrl}}" mm-browser>{{ 'mm.core.openinbrowser' | translate }}</a>
+                </div>
+            </section>
         </mm-loading>
     </ion-content>
 </ion-view>

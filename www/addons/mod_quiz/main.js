@@ -51,7 +51,8 @@ angular.module('mm.addons.mod_quiz', ['mm.core'])
       url: '/mod_quiz-player',
       params: {
         courseid: null,
-        quizid: null
+        quizid: null,
+        moduleurl: null // Module URL to open it in browser.
       },
       views: {
         'site': {
@@ -65,4 +66,9 @@ angular.module('mm.addons.mod_quiz', ['mm.core'])
 
 .config(function($mmCourseDelegateProvider) {
     $mmCourseDelegateProvider.registerContentHandler('mmaModQuiz', 'quiz', '$mmaModQuizHandlers.courseContentHandler');
+})
+
+.run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, $mmaModQuizQuestionsDelegate) {
+    $mmEvents.on(mmCoreEventLogin, $mmaModQuizQuestionsDelegate.updateQuestionHandlers);
+    $mmEvents.on(mmCoreEventSiteUpdated, $mmaModQuizQuestionsDelegate.updateQuestionHandlers);
 });

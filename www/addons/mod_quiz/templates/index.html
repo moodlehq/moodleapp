@@ -1,7 +1,7 @@
 <ion-view>
     <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
     <ion-nav-buttons side="secondary">
-        <a class="button button-icon ion-ios-browsers-outline" ng-href="{{moduleUrl}}" mm-browser ></a>
+        <a class="button button-icon ion-ios-browsers-outline" ng-href="{{moduleUrl}}" mm-browser aria-label="{{ 'mm.core.openinbrowser' | translate }}"></a>
     </ion-nav-buttons>
     <ion-content class="mma-mod-quiz-index-content">
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="quizLoaded" on-refresh="refreshQuiz()"></ion-refresher>
@@ -21,7 +21,9 @@
 
             <!-- Attempts -->
             <div class="card" ng-if="attempts && attempts.length">
-                <div class="item item-divider">{{ 'mma.mod_quiz.summaryofattempts' | translate }}</div>
+                <div class="item item-divider">
+                    <h2>{{ 'mma.mod_quiz.summaryofattempts' | translate }}</h2>
+                </div>
                 <div class="item item-text-wrap row">
                     <p class="col text-center" ng-if="quiz.showAttemptColumn"><b>{{ 'mma.mod_quiz.attemptnumber' | translate }}</b></p>
                     <p class="col col-50"><b>{{ 'mma.mod_quiz.attemptstate' | translate }}</b></p>
@@ -77,7 +79,7 @@
                     <p class="mma-mod-quiz-warning" ng-repeat="name in unsupportedRules">{{ name }}</p>
                 </div>
                 <div class="item" ng-if="buttonText">
-                    <a class="button button-block" ui-sref="site.mod_quiz-player({courseid: courseId, quizid: quiz.id})">{{ buttonText | translate }}</a>
+                    <a class="button button-block" ui-sref="site.mod_quiz-player({courseid: courseId, quizid: quiz.id, moduleurl: moduleUrl})">{{ buttonText | translate }}</a>
                 </div>
             </div>
         </mm-loading>
