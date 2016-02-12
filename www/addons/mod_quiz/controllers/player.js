@@ -120,6 +120,11 @@ angular.module('mm.addons.mod_quiz')
             return $mmaModQuiz.getAttemptData(attempt.id, 0, preflightData, true).then(function(data) {
                 $scope.closeModal && $scope.closeModal(); // Close modal if needed.
                 $scope.attempt = attempt;
+                $scope.questions = data.questions;
+
+                angular.forEach($scope.questions, function(question) {
+                    question.readableMark = $mmaModQuizHelper.getQuestionMarkFromHtml(question.html);
+                });
             });
         }).catch(function(message) {
             $mmaModQuizHelper.showError(message, 'mm.core.error');
