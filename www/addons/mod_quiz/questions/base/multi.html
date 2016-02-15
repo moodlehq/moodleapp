@@ -1,0 +1,18 @@
+<section class="list" ng-if="question.text">
+    <div class="item item-text-wrap">
+        <p><mm-format-text watch="true" class="mm-content-with-float">{{ question.text }}</mm-format-text></p>
+        <br ng-if="question.prompt" />
+        <p ng-if="question.prompt"><mm-format-text watch="true">{{ question.prompt }}</mm-format-text></p>
+    </div>
+    <li ng-if="question.multi" ng-repeat="option in question.options" class="item item-text-wrap item-checkbox item-checkbox-right">
+        <label class="checkbox">
+            <input type="checkbox" name="{{option.name}}" ng-model="answers[option.name]" aria-labelledby="mma-quiz-multichoice-{{option.id}}" >
+        </label>
+        <p id="mma-quiz-multichoice-{{option.id}}"><mm-format-text watch="true" class="mm-content-with-float">{{option.text}}</mm-format-text></p>
+    </li>
+    <label ng-if="!question.multi" ng-repeat="option in question.options" class="item item-radio">
+        <ion-radio-fix name="{{option.name}}" ng-model="answers[option.name]" ng-value="option.value">
+            <p><mm-format-text watch="true" class="mm-content-with-float">{{option.text}}</mm-format-text></p>
+        </ion-radio-fix>
+    </label>
+</section>
