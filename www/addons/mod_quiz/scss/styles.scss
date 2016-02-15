@@ -20,3 +20,8 @@ p.mma-mod-quiz-warning {
   background-color: $mma-mod-quiz-highlight-color;
 }
 
+.mma-quiz-textarea {
+  width: 100%;
+  height: 250px;
+  resize: none;
+}
