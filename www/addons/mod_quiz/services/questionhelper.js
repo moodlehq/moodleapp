@@ -70,11 +70,18 @@ angular.module('mm.addons.mod_quiz')
     self.inputTextDirective = function(scope, log) {
         var questionEl = self.directiveInit(scope, log);
         if (questionEl) {
+            questionEl = questionEl[0] || questionEl; // Convert from jqLite to plain JS if needed.
+
             // Get the input element.
-            input = questionEl[0].querySelector('input[type="text"][name*=answer]');
+            input = questionEl.querySelector('input[type="text"][name*=answer]');
             if (!input) {
                 log.warn('Aborting quiz because couldn\'t find input.', question.name);
                 return self.showDirectiveError(scope);
+            }
+
+            // Add current value to model if set.
+            if (input.value) {
+                scope.answers[input.name] = input.value;
             }
 
             scope.input = {
