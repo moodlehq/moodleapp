@@ -152,6 +152,19 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Get the validation error message from a question HTML if it's there.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizHelper#getValidationErrorFromHtml
+     * @param  {String} html Question's HTML.
+     * @return {Object}      Validation error message if present.
+     */
+    self.getValidationErrorFromHtml = function(html) {
+        return self.getContentsOfElement(angular.element(html), '.validationerror');
+    };
+
+    /**
      * Init a password modal, adding it to the scope.
      *
      * @module mm.addons.mod_quiz
