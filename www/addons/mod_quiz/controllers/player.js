@@ -123,13 +123,18 @@ angular.module('mm.addons.mod_quiz')
         }
 
         return promise.then(function() {
+            // Get the attempt data.
             return $mmaModQuiz.getAttemptData(attempt.id, 0, preflightData, true).then(function(data) {
                 $scope.closeModal && $scope.closeModal(); // Close modal if needed.
                 $scope.attempt = attempt;
                 $scope.questions = data.questions;
 
                 angular.forEach($scope.questions, function(question) {
+                    // Get the readable mark and validation error for each question.
                     question.readableMark = $mmaModQuizHelper.getQuestionMarkFromHtml(question.html);
+                    question.validationError = $mmaModQuizHelper.getValidationErrorFromHtml(question.html);
+
+                    // Get the sequence check (hidden input) and add it to the model. This is required.
                     var seqCheck = $mmaModQuizHelper.getQuestionSequenceCheckFromHtml(question.html);
                     if (seqCheck) {
                         $scope.answers[seqCheck.name] = seqCheck.value;
