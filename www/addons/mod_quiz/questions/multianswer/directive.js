@@ -50,6 +50,7 @@ angular.module('mm.addons.mod_quiz')
 
             // Remove sequencecheck.
             $mmaModQuizHelper.removeElement(content, 'input[name*=sequencecheck]');
+            $mmaModQuizHelper.removeElement(content, '.validationerror');
 
             // Find inputs of type text, radio and select and add ng-model to them.
             inputs = content.querySelectorAll('input[type="text"],input[type="radio"],select');
