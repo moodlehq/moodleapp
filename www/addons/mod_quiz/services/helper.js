@@ -27,6 +27,7 @@ angular.module('mm.addons.mod_quiz')
 
     /**
      * Removes the info box (flag, question number, etc.) from a question's HTML and adds it in a new infoBox property.
+     * Please take into account that all scripts will also be removed due to angular.element.
      *
      * @module mm.addons.mod_quiz
      * @ngdoc method
