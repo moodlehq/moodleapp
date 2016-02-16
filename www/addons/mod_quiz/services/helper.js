@@ -95,16 +95,16 @@ angular.module('mm.addons.mod_quiz')
      * @module mm.addons.mod_quiz
      * @ngdoc method
      * @name $mmaModQuizHelper#getContentsOfElement
-     * @param  {Object} element   DOM element to search in.
-     * @param  {String} className Class to search.
-     * @return {String}           Div contents.
+     * @param  {Object} element  DOM element to search in.
+     * @param  {String} selector Selector to search.
+     * @return {String}          Selection contents.
      */
     self.getContentsOfElement = function(element, selector) {
         if (element) {
             var el = element[0] || element, // Convert from jqLite to plain JS if needed.
-                div = el.querySelector(selector);
-            if (div) {
-                return div.innerHTML;
+                selected = el.querySelector(selector);
+            if (selected) {
+                return selected.innerHTML;
             }
         }
         return '';
@@ -175,6 +175,26 @@ angular.module('mm.addons.mod_quiz')
                 modal.remove();
             });
         });
+    };
+
+    /**
+     * Search and remove a certain element from inside another element.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizHelper#removeElement
+     * @param  {Object} element  DOM element to search in.
+     * @param  {String} selector Selector to search.
+     * @return {Void}
+     */
+    self.removeElement = function(element, selector) {
+        if (element) {
+            var el = element[0] || element, // Convert from jqLite to plain JS if needed.
+                selected = el.querySelector(selector);
+            if (selected) {
+                selected.remove();
+            }
+        }
     };
 
     /**
