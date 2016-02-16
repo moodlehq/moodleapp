@@ -694,7 +694,7 @@ angular.module('mm.addons.mod_quiz')
     self.getUnsupportedQuestions = function(questionTypes) {
         var notSupported = [];
         angular.forEach(questionTypes, function(type) {
-            if (type != 'random' && type != 'randomsamatch' && !$mmaModQuizQuestionsDelegate.isQuestionSupported('qtype_'+type)) {
+            if (type != 'random' && !$mmaModQuizQuestionsDelegate.isQuestionSupported('qtype_'+type)) {
                 notSupported.push(type);
             }
         });
