@@ -25,3 +25,7 @@ p.mma-mod-quiz-warning {
   height: 250px;
   resize: none;
 }
+
+.item.row.mma-quiz-item-padding {
+  padding: $item-padding; // Prevent .row from overridding .item padding.
+}

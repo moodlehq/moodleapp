@@ -287,6 +287,14 @@ mm-navigation-bar {
   }
 }
 
+// Accessibility: text 'seen' by screen readers but not visual users.
+.accesshide {
+  position: absolute;
+  left: -10000px;
+  font-weight: normal;
+  font-size: 1em;
+}
+
 // Extra attributes to ionic classes to force frames via directive 100% height.
 
 .scroll {

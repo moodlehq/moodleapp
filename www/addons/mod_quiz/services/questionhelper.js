@@ -23,7 +23,8 @@ angular.module('mm.addons.mod_quiz')
  */
 .factory('$mmaModQuestionHelper', function($mmaModQuizHelper, $mmUtil) {
 
-    var self = {};
+    var self = {},
+        lastErrorShown = 0;
 
     /**
      * Convenience function to initialize a question directive.
@@ -88,6 +89,89 @@ angular.module('mm.addons.mod_quiz')
                 id: input.id,
                 name: input.name
             };
+        }
+    };
+
+    /**
+     * Generic link function for question directives with a "matching" (selects).
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuestionHelper#matchingDirective
+     * @param  {Object} scope Directive's scope.
+     * @param  {Object} log   $log instance to log messages.
+     * @return {Void}
+     */
+    self.matchingDirective = function(scope, log) {
+        var questionEl = self.directiveInit(scope, log),
+            question = scope.question,
+            rows;
+
+        if (questionEl) {
+            questionEl = questionEl[0] || questionEl; // Convert from jqLite to plain JS if needed.
+
+            // Find rows.
+            rows = questionEl.querySelectorAll('tr');
+            if (!rows || !rows.length) {
+                log.warn('Aborting quiz because couldn\'t find any row.', question.name);
+                return self.showDirectiveError(scope);
+            }
+
+            question.rows = [];
+
+            angular.forEach(rows, function(row) {
+                var rowModel = {},
+                    select,
+                    options,
+                    accessibilityLabel,
+                    columns = row.querySelectorAll('td');
+
+                if (!columns || columns.length < 2) {
+                    log.warn('Aborting quiz because couldn\'t find the right columns.', question.name);
+                    return self.showDirectiveError(scope);
+                }
+
+                // Get the row's text. It should be in the first column.
+                rowModel.text = columns[0].innerHTML;
+
+                // Get the select and the options.
+                select = columns[1].querySelector('select');
+                options = columns[1].querySelectorAll('option');
+
+                if (!select || !options || !options.length) {
+                    log.warn('Aborting quiz because couldn\'t find select or options.', question.name);
+                    return self.showDirectiveError(scope);
+                }
+
+                rowModel.id = select.id;
+                rowModel.name = select.name;
+                rowModel.options = [];
+
+                // Treat each option.
+                angular.forEach(options, function(option) {
+                    if (typeof option.value == 'undefined') {
+                        log.warn('Aborting quiz because couldn\'t find option value.', question.name);
+                        return self.showDirectiveError(scope);
+                    }
+
+                    rowModel.options.push({
+                        value: option.value,
+                        label: option.innerHTML
+                    });
+
+                    if (option.selected) {
+                        scope.answers[select.name] = option.value;
+                    }
+                });
+
+                // Get the accessibility label.
+                accessibilityLabel = columns[1].querySelector('label.accesshide');
+                rowModel.accessibilityLabel = accessibilityLabel.innerHTML;
+
+                question.rows.push(rowModel);
+            });
+
+            question.loaded = true;
         }
     };
 
@@ -171,7 +255,12 @@ angular.module('mm.addons.mod_quiz')
      * @return {Void}
      */
     self.showDirectiveError = function(scope) {
-        $mmUtil.showErrorModal('Error parsing question. Please make sure you don\'t have a custom theme that can affect this.');
+        // Prevent consecutive errors.
+        var now = new Date().getTime();
+        if (now - lastErrorShown > 500) {
+            lastErrorShown = now;
+            $mmUtil.showErrorModal('Error parsing question. Please make sure you don\'t have a custom theme that can affect this.');
+        }
         scope.abortQuiz();
     };
 
