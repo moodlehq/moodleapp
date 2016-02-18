@@ -103,7 +103,8 @@ gulp.task('watch', function() {
 gulp.task('build', function(done) {
   var dependencies = ["'mm.core'"],
       componentRegex = /core\/components\/([^\/]+)\/main.js/,
-      pluginRegex = /addons\/([^\/]+)\/main.js/;
+      pluginRegex = /addons\/([^\/]+)\/main.js/,
+      subpluginRegex = /addons\/([^\/]+)\/([^\/]+)\/main.js/;
 
   gulp.src(paths.js)
     .pipe(gulpSlash())
@@ -113,6 +114,10 @@ gulp.task('build', function(done) {
         dependencies.push("'mm.core." + file.path.match(componentRegex)[1] + "'");
       } else if (pluginRegex.test(file.path)) {
         dependencies.push("'mm.addons." + file.path.match(pluginRegex)[1] + "'");
+      } else if (subpluginRegex.test(file.path)) {
+        // It's a subplugin, use plugin_subplugin to identify it.
+        var matches = file.path.match(subpluginRegex);
+        dependencies.push("'mm.addons." + matches[1] + '_' + matches[2] + "'");
       }
     }))
 
@@ -144,7 +149,7 @@ gulp.task('lang', function() {
     return fs.readdirSync(dir)
       .filter(function(file) {
         return file.indexOf('.json') > -1;
-      })
+      });
   }
 
   /**
@@ -181,8 +186,13 @@ gulp.task('lang', function() {
 
       } else if (filepath.indexOf('addons') == 0) {
 
-        var pluginName = filepath.replace('addons/', '');
-        pluginName = pluginName.substr(0, pluginName.indexOf('/'));
+        var split = filepath.split('/'),
+            pluginName = split[1];
+
+        // Check if it's a subplugin. If so, we'll use plugin_subplugin.
+        if (split[2] != 'lang') {
+          pluginName = pluginName + '_' + split[2];
+        }
         addProperties(merged, data[filepath], 'mma.'+pluginName+'.');
 
       } else if (filepath.indexOf('core/assets/countries') == 0) {
