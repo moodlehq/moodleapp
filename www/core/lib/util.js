@@ -1206,6 +1206,80 @@ angular.module('mm.core')
             }
         };
 
+        /**
+         * Returns the contents of a certain selection in a DOM element.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#getContentsOfElement
+         * @param  {Object} element  DOM element to search in.
+         * @param  {String} selector Selector to search.
+         * @return {String}          Selection contents.
+         */
+        self.getContentsOfElement = function(element, selector) {
+            if (element) {
+                var el = element[0] || element, // Convert from jqLite to plain JS if needed.
+                    selected = el.querySelector(selector);
+                if (selected) {
+                    return selected.innerHTML;
+                }
+            }
+            return '';
+        };
+
+        /**
+         * Search and remove a certain element from inside another element.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#removeElement
+         * @param  {Object} element  DOM element to search in.
+         * @param  {String} selector Selector to search.
+         * @return {Void}
+         */
+        self.removeElement = function(element, selector) {
+            if (element) {
+                var el = element[0] || element, // Convert from jqLite to plain JS if needed.
+                    selected = el.querySelector(selector);
+                if (selected) {
+                    selected.remove();
+                }
+            }
+        };
+
+        /**
+         * Search and remove a certain element from an HTML code.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#removeElementFromHtml
+         * @param  {String} html       HTML code to change.
+         * @param  {String} selector   Selector to search.
+         * @param  {Boolean} removeAll True if it should remove all matches found, false if it should only remove the first one.
+         * @return {String}            HTML without the element.
+         */
+        self.removeElementFromHtml = function(html, selector, removeAll) {
+            // Create a fake div element so we can search using querySelector.
+            var div = document.createElement('div'),
+                selected;
+
+            div.innerHTML = html;
+
+            if (removeAll) {
+                selected = div.querySelectorAll(selector);
+                angular.forEach(selected, function(el) {
+                    el.remove();
+                });
+            } else {
+                selected = div.querySelector(selector);
+                if (selected) {
+                    selected.remove();
+                }
+            }
+
+            return div.innerHTML;
+        };
+
         return self;
     };
 });
