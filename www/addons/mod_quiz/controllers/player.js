@@ -130,18 +130,10 @@ angular.module('mm.addons.mod_quiz')
                 $scope.questions = data.questions;
 
                 angular.forEach($scope.questions, function(question) {
-                    // Get the readable mark and validation error for each question.
+                    // Get the readable mark for each question.
                     question.readableMark = $mmaModQuizHelper.getQuestionMarkFromHtml(question.html);
-                    question.validationError = $mmaModQuizHelper.getValidationErrorFromHtml(question.html);
-
-                    // Get the sequence check (hidden input) and add it to the model. This is required.
-                    var seqCheck = $mmaModQuizHelper.getQuestionSequenceCheckFromHtml(question.html);
-                    if (seqCheck) {
-                        $scope.answers[seqCheck.name] = seqCheck.value;
-                    } else {
-                        $log.warn('Aborting quiz because couldn\'t retrieve sequence check.', question.name);
-                        $scope.quizAborted = true;
-                    }
+                    // Remove the question info box so it's not in the question HTML anymore.
+                    question.html = $mmUtil.removeElementFromHtml(question.html, '.info');
                 });
             });
         }).catch(function(message) {

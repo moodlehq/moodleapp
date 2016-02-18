@@ -26,91 +26,6 @@ angular.module('mm.addons.mod_quiz')
     var self = {};
 
     /**
-     * Removes the info box (flag, question number, etc.) from a question's HTML and adds it in a new infoBox property.
-     * Please take into account that all scripts will also be removed due to angular.element.
-     *
-     * @module mm.addons.mod_quiz
-     * @ngdoc method
-     * @name $mmaModQuizHelper#extractQuestionInfoBox
-     * @param  {Object} question Question.
-     * @return {Void}
-     */
-    self.extractQuestionInfoBox = function(question) {
-        var el = angular.element(question.html)[0],
-            info;
-        if (el) {
-            info = el.querySelector('.info');
-            if (info) {
-                question.infoBox = info.outerHTML;
-                info.remove();
-                question.html = el.outerHTML;
-            }
-        }
-    };
-
-    /**
-     * Removes the scripts from a question's HTML and adds it in a new 'scriptsCode' property.
-     * It will also search for init_question functions of the question type and add the object to an 'initObjects' property.
-     *
-     * @module mm.addons.mod_quiz
-     * @ngdoc method
-     * @name $mmaModQuizHelper#extractQuestionScripts
-     * @param  {Object} question Question.
-     * @return {Void}
-     */
-    self.extractQuestionScripts = function(question) {
-        var matches;
-
-        question.scriptsCode = '';
-        question.initObjects = [];
-
-        if (question.html) {
-            // Search the scripts.
-            matches = question.html.match(/<script[^>]*>[\s\S]*?<\/script>/mg);
-            angular.forEach(matches, function(match) {
-                // Add the script to scriptsCode and remove it from html.
-                question.scriptsCode += match;
-                question.html = question.html.replace(match, '');
-
-                // Search init_question functions for this type.
-                var initMatches = match.match(new RegExp('M\.' + question.type + '\.init_question\\(.*?}\\);', 'mg'));
-                angular.forEach(initMatches, function(initMatch) {
-                    // Remove start and end of the match, we only want the object.
-                    initMatch = initMatch.replace('M.' + question.type + '.init_question(', '');
-                    initMatch = initMatch.substr(0, initMatch.length - 2);
-
-                    // Try to convert it to an object and add it to the question.
-                    try {
-                        initMatch = JSON.parse(initMatch);
-                        question.initObjects.push(initMatch);
-                    } catch(ex) {}
-                });
-            });
-        }
-    };
-
-    /**
-     * Returns the contents of a certain selection in a DOM element.
-     *
-     * @module mm.addons.mod_quiz
-     * @ngdoc method
-     * @name $mmaModQuizHelper#getContentsOfElement
-     * @param  {Object} element  DOM element to search in.
-     * @param  {String} selector Selector to search.
-     * @return {String}          Selection contents.
-     */
-    self.getContentsOfElement = function(element, selector) {
-        if (element) {
-            var el = element[0] || element, // Convert from jqLite to plain JS if needed.
-                selected = el.querySelector(selector);
-            if (selected) {
-                return selected.innerHTML;
-            }
-        }
-        return '';
-    };
-
-    /**
      * Gets the mark string from a question HTML.
      * Example result: "Marked out of 1.00".
      *
@@ -121,47 +36,7 @@ angular.module('mm.addons.mod_quiz')
      * @return {String}      Question's mark.
      */
     self.getQuestionMarkFromHtml = function(html) {
-        return self.getContentsOfElement(angular.element(html), '.grade');
-    };
-
-    /**
-     * Get the sequence check from a question HTML.
-     *
-     * @module mm.addons.mod_quiz
-     * @ngdoc method
-     * @name $mmaModQuizHelper#getQuestionSequenceCheckFromHtml
-     * @param  {String} html Question's HTML.
-     * @return {Object}      Object with the sequencecheck name and value.
-     */
-    self.getQuestionSequenceCheckFromHtml = function(html) {
-        var el,
-            input;
-
-        if (html) {
-            el = angular.element(html)[0];
-
-            // Search the input holding the sequencecheck.
-            input = el.querySelector('input[name*=sequencecheck]');
-            if (input && typeof input.name != 'undefined' && typeof input.value != 'undefined') {
-                return {
-                    name: input.name,
-                    value: input.value
-                };
-            }
-        }
-    };
-
-    /**
-     * Get the validation error message from a question HTML if it's there.
-     *
-     * @module mm.addons.mod_quiz
-     * @ngdoc method
-     * @name $mmaModQuizHelper#getValidationErrorFromHtml
-     * @param  {String} html Question's HTML.
-     * @return {Object}      Validation error message if present.
-     */
-    self.getValidationErrorFromHtml = function(html) {
-        return self.getContentsOfElement(angular.element(html), '.validationerror');
+        return $mmUtil.getContentsOfElement(angular.element(html), '.grade');
     };
 
     /**
@@ -188,26 +63,6 @@ angular.module('mm.addons.mod_quiz')
                 modal.remove();
             });
         });
-    };
-
-    /**
-     * Search and remove a certain element from inside another element.
-     *
-     * @module mm.addons.mod_quiz
-     * @ngdoc method
-     * @name $mmaModQuizHelper#removeElement
-     * @param  {Object} element  DOM element to search in.
-     * @param  {String} selector Selector to search.
-     * @return {Void}
-     */
-    self.removeElement = function(element, selector) {
-        if (element) {
-            var el = element[0] || element, // Convert from jqLite to plain JS if needed.
-                selected = el.querySelector(selector);
-            if (selected) {
-                selected.remove();
-            }
-        }
     };
 
     /**

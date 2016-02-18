@@ -1,0 +1,3 @@
+{
+	"errorquestionnotsupported": "This type of question isn't supported by the app in your site: {{$a}}."
+}
