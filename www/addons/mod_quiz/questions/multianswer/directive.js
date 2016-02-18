@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_quiz')
  * @ngdoc directive
  * @name mmaModQuizQuestionMultianswer
  */
-.directive('mmaModQuizQuestionMultianswer', function($log, $mmaModQuestionHelper, $mmaModQuizHelper) {
+.directive('mmaModQuizQuestionMultianswer', function($log, $mmaModQuestionHelper, $mmUtil) {
 	$log = $log.getInstance('mmaModQuizQuestionMultianswer');
 
     return {
@@ -49,8 +49,8 @@ angular.module('mm.addons.mod_quiz')
             }
 
             // Remove sequencecheck.
-            $mmaModQuizHelper.removeElement(content, 'input[name*=sequencecheck]');
-            $mmaModQuizHelper.removeElement(content, '.validationerror');
+            $mmUtil.removeElement(content, 'input[name*=sequencecheck]');
+            $mmUtil.removeElement(content, '.validationerror');
 
             // Find inputs of type text, radio and select and add ng-model to them.
             inputs = content.querySelectorAll('input[type="text"],input[type="radio"],select');
