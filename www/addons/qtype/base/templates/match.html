@@ -1,0 +1,14 @@
+<section class="list" ng-if="question.loaded">
+    <div class="item item-text-wrap">
+        <p><mm-format-text watch="true" class="mm-content-with-float">{{ question.text }}</mm-format-text></p>
+    </div>
+	<div class="item item-text-wrap row mm-item-padding" ng-repeat="row in question.rows">
+		<div class="col">
+			<p><mm-format-text watch="true" class="mm-content-with-float" id="mma-question-{{row.id}}">{{ row.text }}</mm-format-text></p>
+		</div>
+		<div class="col text-center item-select">
+			<label class="accesshide" for="{{row.id}}" ng-if="row.accessibilityLabel">{{ row.accessibilityLabel }}</label>
+			<select id="{{row.id}}" name="{{row.name}}" ng-model="answers[row.name]" ng-options="o.value as o.label for o in row.options" aria-labelledby="mma-question-{{row.id}}"></select>
+		</div>
+	</div>
+</section>
