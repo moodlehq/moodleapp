@@ -48,9 +48,13 @@ angular.module('mm.core.login')
             if ($mmLoginHelper.isSSOLoginNeeded(result.code)) {
                 // SSO. User needs to authenticate in a browser.
                 $scope.isBrowserSSO = true;
-                $mmUtil.showConfirm($translate('mm.login.logininsiterequired')).then(function() {
-                    $mmLoginHelper.openBrowserForSSOLogin(result.siteurl);
-                });
+
+                // Check that there's no SSO authentication ongoing and the view hasn't changed.
+                if (!$mmLoginHelper.isSSOLoginOngoing() && !$scope.$$destroyed) {
+                    $mmUtil.showConfirm($translate('mm.login.logininsiterequired')).then(function() {
+                        $mmLoginHelper.openBrowserForSSOLogin(result.siteurl);
+                    });
+                }
             } else {
                 $scope.isBrowserSSO = false;
             }

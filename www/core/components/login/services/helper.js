@@ -30,7 +30,8 @@ angular.module('mm.core.login')
 
     $log = $log.getInstance('$mmLoginHelper');
 
-    var self = {};
+    var self = {},
+        isSSOLoginOngoing = false;
 
     /**
      * Go to the view to add a new site.
@@ -96,6 +97,19 @@ angular.module('mm.core.login')
     };
 
     /**
+     * Check if there's an SSO authentication ongoing. This should be true if the app was opened by a browser because of
+     * a SSO login and the authentication hasn't finished yet.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#isSSOLoginOngoing
+     * @return {Boolean} True if SSO is ongoing, false otherwise.
+     */
+    self.isSSOLoginOngoing = function() {
+        return isSSOLoginOngoing;
+    };
+
+    /**
      * Open a browser to perform SSO login.
      *
      * @module mm.core.login
@@ -117,6 +131,19 @@ angular.module('mm.core.login')
         if (navigator.app) {
             navigator.app.exitApp();
         }
+    };
+
+    /**
+     * Set the "SSO authentication ongoing" flag to true or false.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#setSSOLoginOngoing
+     * @param {Boolean} value Value to set.
+     * @return {Void}
+     */
+    self.setSSOLoginOngoing = function(value) {
+        isSSOLoginOngoing = value;
     };
 
     /**
