@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.addons.mod_quiz')
+angular.module('mm.core.question')
 
 /**
  * Helper to gather some common functions for question directives.
  *
- * @module mm.addons.mod_quiz
+ * @module mm.core.question
  * @ngdoc service
- * @name $mmaModQuestionHelper
+ * @name $mmQuestionHelper
  */
-.factory('$mmaModQuestionHelper', function($mmaModQuizHelper, $mmUtil) {
+.factory('$mmQuestionHelper', function($mmUtil) {
 
     var self = {},
         lastErrorShown = 0;
@@ -30,9 +30,9 @@ angular.module('mm.addons.mod_quiz')
      * Convenience function to initialize a question directive.
      * Performs some common checks and extracts the question's text.
      *
-     * @module mm.addons.mod_quiz
+     * @module mm.core.question
      * @ngdoc method
-     * @name $mmaModQuestionHelper#directiveInit
+     * @name $mmQuestionHelper#directiveInit
      * @param  {Object} scope Directive's scope.
      * @param  {Object} log   $log instance to log messages.
      * @return {Object}       Angular DOM element of the question's HTML. Undefined if an error happens.
@@ -42,16 +42,16 @@ angular.module('mm.addons.mod_quiz')
             questionEl;
 
         if (!question) {
-            log.warn('Aborting quiz because of no question received.');
+            log.warn('Aborting because of no question received.');
             return self.showDirectiveError(scope);
         }
 
         questionEl = angular.element(question.html);
 
         // Extract question text.
-        question.text = $mmaModQuizHelper.getContentsOfElement(questionEl, '.qtext');
+        question.text = $mmUtil.getContentsOfElement(questionEl, '.qtext');
         if (!question.text) {
-            log.warn('Aborting quiz because of an error parsing question.', question.name);
+            log.warn('Aborting because of an error parsing question.', question.name);
             return self.showDirectiveError(scope);
         }
 
@@ -59,11 +59,92 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Removes the scripts from a question's HTML and adds it in a new 'scriptsCode' property.
+     * It will also search for init_question functions of the question type and add the object to an 'initObjects' property.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#extractQuestionScripts
+     * @param  {Object} question Question.
+     * @return {Void}
+     */
+    self.extractQuestionScripts = function(question) {
+        var matches;
+
+        question.scriptsCode = '';
+        question.initObjects = [];
+
+        if (question.html) {
+            // Search the scripts.
+            matches = question.html.match(/<script[^>]*>[\s\S]*?<\/script>/mg);
+            angular.forEach(matches, function(match) {
+                // Add the script to scriptsCode and remove it from html.
+                question.scriptsCode += match;
+                question.html = question.html.replace(match, '');
+
+                // Search init_question functions for this type.
+                var initMatches = match.match(new RegExp('M\.' + question.type + '\.init_question\\(.*?}\\);', 'mg'));
+                angular.forEach(initMatches, function(initMatch) {
+                    // Remove start and end of the match, we only want the object.
+                    initMatch = initMatch.replace('M.' + question.type + '.init_question(', '');
+                    initMatch = initMatch.substr(0, initMatch.length - 2);
+
+                    // Try to convert it to an object and add it to the question.
+                    try {
+                        initMatch = JSON.parse(initMatch);
+                        question.initObjects.push(initMatch);
+                    } catch(ex) {}
+                });
+            });
+        }
+    };
+
+    /**
+     * Get the sequence check from a question HTML.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#getQuestionSequenceCheckFromHtml
+     * @param  {String} html Question's HTML.
+     * @return {Object}      Object with the sequencecheck name and value.
+     */
+    self.getQuestionSequenceCheckFromHtml = function(html) {
+        var el,
+            input;
+
+        if (html) {
+            el = angular.element(html)[0];
+
+            // Search the input holding the sequencecheck.
+            input = el.querySelector('input[name*=sequencecheck]');
+            if (input && typeof input.name != 'undefined' && typeof input.value != 'undefined') {
+                return {
+                    name: input.name,
+                    value: input.value
+                };
+            }
+        }
+    };
+
+    /**
+     * Get the validation error message from a question HTML if it's there.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#getValidationErrorFromHtml
+     * @param  {String} html Question's HTML.
+     * @return {Object}      Validation error message if present.
+     */
+    self.getValidationErrorFromHtml = function(html) {
+        return $mmUtil.getContentsOfElement(angular.element(html), '.validationerror');
+    };
+
+    /**
      * Generic link function for question directives with an input of type "text".
      *
-     * @module mm.addons.mod_quiz
+     * @module mm.core.question
      * @ngdoc method
-     * @name $mmaModQuestionHelper#inputTextDirective
+     * @name $mmQuestionHelper#inputTextDirective
      * @param  {Object} scope Directive's scope.
      * @param  {Object} log   $log instance to log messages.
      * @return {Void}
@@ -76,7 +157,7 @@ angular.module('mm.addons.mod_quiz')
             // Get the input element.
             input = questionEl.querySelector('input[type="text"][name*=answer]');
             if (!input) {
-                log.warn('Aborting quiz because couldn\'t find input.', question.name);
+                log.warn('Aborting because couldn\'t find input.', question.name);
                 return self.showDirectiveError(scope);
             }
 
@@ -95,9 +176,9 @@ angular.module('mm.addons.mod_quiz')
     /**
      * Generic link function for question directives with a "matching" (selects).
      *
-     * @module mm.addons.mod_quiz
+     * @module mm.core.question
      * @ngdoc method
-     * @name $mmaModQuestionHelper#matchingDirective
+     * @name $mmQuestionHelper#matchingDirective
      * @param  {Object} scope Directive's scope.
      * @param  {Object} log   $log instance to log messages.
      * @return {Void}
@@ -113,7 +194,7 @@ angular.module('mm.addons.mod_quiz')
             // Find rows.
             rows = questionEl.querySelectorAll('tr');
             if (!rows || !rows.length) {
-                log.warn('Aborting quiz because couldn\'t find any row.', question.name);
+                log.warn('Aborting because couldn\'t find any row.', question.name);
                 return self.showDirectiveError(scope);
             }
 
@@ -127,7 +208,7 @@ angular.module('mm.addons.mod_quiz')
                     columns = row.querySelectorAll('td');
 
                 if (!columns || columns.length < 2) {
-                    log.warn('Aborting quiz because couldn\'t find the right columns.', question.name);
+                    log.warn('Aborting because couldn\'t find the right columns.', question.name);
                     return self.showDirectiveError(scope);
                 }
 
@@ -139,7 +220,7 @@ angular.module('mm.addons.mod_quiz')
                 options = columns[1].querySelectorAll('option');
 
                 if (!select || !options || !options.length) {
-                    log.warn('Aborting quiz because couldn\'t find select or options.', question.name);
+                    log.warn('Aborting because couldn\'t find select or options.', question.name);
                     return self.showDirectiveError(scope);
                 }
 
@@ -150,7 +231,7 @@ angular.module('mm.addons.mod_quiz')
                 // Treat each option.
                 angular.forEach(options, function(option) {
                     if (typeof option.value == 'undefined') {
-                        log.warn('Aborting quiz because couldn\'t find option value.', question.name);
+                        log.warn('Aborting because couldn\'t find option value.', question.name);
                         return self.showDirectiveError(scope);
                     }
 
@@ -178,9 +259,9 @@ angular.module('mm.addons.mod_quiz')
     /**
      * Generic link function for question directives with a multi choice input.
      *
-     * @module mm.addons.mod_quiz
+     * @module mm.core.question
      * @ngdoc method
-     * @name $mmaModQuestionHelper#multiChoiceDirective
+     * @name $mmQuestionHelper#multiChoiceDirective
      * @param  {Object} scope Directive's scope.
      * @param  {Object} log   $log instance to log messages.
      * @return {Void}
@@ -193,7 +274,7 @@ angular.module('mm.addons.mod_quiz')
             questionEl = questionEl[0] || questionEl; // Convert from jqLite to plain JS if needed.
 
             // Get the prompt.
-            question.prompt = $mmaModQuizHelper.getContentsOfElement(questionEl, '.prompt');
+            question.prompt = $mmUtil.getContentsOfElement(questionEl, '.prompt');
 
             // Search radio buttons first (single choice).
             var options = questionEl.querySelectorAll('input[type="radio"]');
@@ -203,8 +284,8 @@ angular.module('mm.addons.mod_quiz')
                 options = questionEl.querySelectorAll('input[type="checkbox"]');
 
                 if (!options || !options.length) {
-                    // No checkbox found either. Abort the quiz.
-                    log.warn('Aborting quiz because of no radio and checkbox found.', question.name);
+                    // No checkbox found either. Abort.
+                    log.warn('Aborting because of no radio and checkbox found.', question.name);
                     return self.showDirectiveError(scope);
                 }
             }
@@ -239,18 +320,18 @@ angular.module('mm.addons.mod_quiz')
                 }
 
                 // Something went wrong when extracting the questions data. Abort.
-                log.warn('Aborting quiz because of an error parsing options.', question.name, option.name);
+                log.warn('Aborting because of an error parsing options.', question.name, option.name);
                 return self.showDirectiveError(scope);
             });
         }
     };
 
     /**
-     * Convenience function to show a parsing error and abort a quiz.
+     * Convenience function to show a parsing error and abort.
      *
-     * @module mm.addons.mod_quiz
+     * @module mm.core.question
      * @ngdoc method
-     * @name $mmaModQuestionHelper#showDirectiveError
+     * @name $mmQuestionHelper#showDirectiveError
      * @param  {Object} scope Directive scope.
      * @return {Void}
      */
@@ -259,9 +340,9 @@ angular.module('mm.addons.mod_quiz')
         var now = new Date().getTime();
         if (now - lastErrorShown > 500) {
             lastErrorShown = now;
-            $mmUtil.showErrorModal('Error parsing question. Please make sure you don\'t have a custom theme that can affect this.');
+            $mmUtil.showErrorModal('Error processing the question. This could be caused by custom modifications in your site.');
         }
-        scope.abortQuiz();
+        scope.abort();
     };
 
     return self;

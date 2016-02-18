@@ -66,9 +66,4 @@ angular.module('mm.addons.mod_quiz', ['mm.core'])
 
 .config(function($mmCourseDelegateProvider) {
     $mmCourseDelegateProvider.registerContentHandler('mmaModQuiz', 'quiz', '$mmaModQuizHandlers.courseContentHandler');
-})
-
-.run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, $mmaModQuizQuestionsDelegate) {
-    $mmEvents.on(mmCoreEventLogin, $mmaModQuizQuestionsDelegate.updateQuestionHandlers);
-    $mmEvents.on(mmCoreEventSiteUpdated, $mmaModQuizQuestionsDelegate.updateQuestionHandlers);
 });
