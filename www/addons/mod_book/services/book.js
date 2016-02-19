@@ -262,7 +262,6 @@ angular.module('mm.addons.mod_book')
 
         // Promise handling when we are in a browser.
         promise = (function() {
-            var deferred;
             if (!indexUrl) {
                 // If ever that happens.
                 $log.debug('Could not locate the index chapter');
@@ -272,9 +271,7 @@ angular.module('mm.addons.mod_book')
                 return $mmFilepool.downloadUrl($mmSite.getId(), indexUrl, false, mmaModBookComponent, moduleId);
             } else {
                 // We return the live URL.
-                deferred = $q.defer();
-                deferred.resolve($mmSite.fixPluginfileURL(indexUrl));
-                return deferred.promise;
+                return $q.when($mmSite.fixPluginfileURL(indexUrl));
             }
         })();
 
@@ -286,12 +283,16 @@ angular.module('mm.addons.mod_book')
                 } else {
                     // Now that we have the content, we update the SRC to point back to
                     // the external resource. That will be caught by mm-format-text.
-                    var html = angular.element('<div>');
+                    var html = angular.element('<div>'),
+                        media;
                     html.html(response.data);
-                    angular.forEach(html.find('img'), function(img) {
-                        var src = paths[decodeURIComponent(img.getAttribute('src'))];
+
+                    // Treat img, audio, video and source.
+                    media = html[0].querySelectorAll('img, video, audio, source');
+                    angular.forEach(media, function(el) {
+                        var src = paths[decodeURIComponent(el.getAttribute('src'))];
                         if (typeof src !== 'undefined') {
-                            img.setAttribute('src', src);
+                            el.setAttribute('src', src);
                         }
                     });
                     // We do the same for links.
@@ -301,6 +302,7 @@ angular.module('mm.addons.mod_book')
                             anchor.setAttribute('href', href);
                         }
                     });
+
                     return html.html();
                 }
             });
