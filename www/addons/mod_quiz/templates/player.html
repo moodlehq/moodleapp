@@ -5,6 +5,7 @@
             <div class="list" ng-if="!attempt">
                 <button class="button button-block" ng-click="start()">{{ 'mma.mod_quiz.startattempt' | translate }}</button>
             </div>
+            <!-- Questions -->
             <div ng-if="attempt && questions.length && !quizAborted">
                 <div ng-repeat="question in questions">
                     <section class="card">
@@ -19,10 +20,11 @@
                             <p>{{question.readableMark}}</p>
                         </div>
                         <ion-checkbox ng-model="question.flagged">{{ 'mma.mod_quiz.flagged' | translate }}</ion-checkbox>
-                        <div class="item item-complex" mma-mod-quiz-question question="question" abort-quiz="abortQuiz()"></div>
+                        <mm-question class="item item-complex" question="question" answers="answers" abort="abortQuiz()"></mm-question>
                     </section>
                 </div>
             </div>
+            <!-- Quiz aborted -->
             <section class="card" ng-if="attempt && (!questions.length || quizAborted)">
                 <div class="item item-text-wrap">
                     <p>{{ 'mma.mod_quiz.errorparsequestions' | translate }}</p>

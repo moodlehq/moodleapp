@@ -21,7 +21,9 @@ angular.module('mm.addons.mod_quiz')
  * @ngdoc controller
  * @name mmaModQuizPlayerCtrl
  */
-.controller('mmaModQuizPlayerCtrl', function($scope, $stateParams, $mmaModQuiz, $mmaModQuizHelper, $q, $mmUtil) {
+.controller('mmaModQuizPlayerCtrl', function($log, $scope, $stateParams, $mmaModQuiz, $mmaModQuizHelper, $q, $mmUtil) {
+    $log = $log.getInstance('mmaModQuizPlayerCtrl');
+
     var quizId = $stateParams.quizid,
         courseId = $stateParams.courseid,
         moduleUrl = $stateParams.moduleurl,
@@ -33,6 +35,7 @@ angular.module('mm.addons.mod_quiz')
 
     $scope.moduleUrl = moduleUrl;
     $scope.quizAborted = false;
+    $scope.answers = {};
     $scope.preflightData = {
         password: ''
     };
@@ -120,13 +123,17 @@ angular.module('mm.addons.mod_quiz')
         }
 
         return promise.then(function() {
+            // Get the attempt data.
             return $mmaModQuiz.getAttemptData(attempt.id, 0, preflightData, true).then(function(data) {
                 $scope.closeModal && $scope.closeModal(); // Close modal if needed.
                 $scope.attempt = attempt;
                 $scope.questions = data.questions;
 
                 angular.forEach($scope.questions, function(question) {
+                    // Get the readable mark for each question.
                     question.readableMark = $mmaModQuizHelper.getQuestionMarkFromHtml(question.html);
+                    // Remove the question info box so it's not in the question HTML anymore.
+                    question.html = $mmUtil.removeElementFromHtml(question.html, '.info');
                 });
             });
         }).catch(function(message) {

@@ -26,90 +26,6 @@ angular.module('mm.addons.mod_quiz')
     var self = {};
 
     /**
-     * Removes the info box (flag, question number, etc.) from a question's HTML and adds it in a new infoBox property.
-     *
-     * @module mm.addons.mod_quiz
-     * @ngdoc method
-     * @name $mmaModQuizHelper#extractQuestionInfoBox
-     * @param  {Object} question Question.
-     * @return {Void}
-     */
-    self.extractQuestionInfoBox = function(question) {
-        var el = angular.element(question.html)[0],
-            info;
-        if (el) {
-            info = el.querySelector('.info');
-            if (info) {
-                question.infoBox = info.outerHTML;
-                info.remove();
-                question.html = el.outerHTML;
-            }
-        }
-    };
-
-    /**
-     * Removes the scripts from a question's HTML and adds it in a new 'scriptsCode' property.
-     * It will also search for init_question functions of the question type and add the object to an 'initObjects' property.
-     *
-     * @module mm.addons.mod_quiz
-     * @ngdoc method
-     * @name $mmaModQuizHelper#extractQuestionScripts
-     * @param  {Object} question Question.
-     * @return {Void}
-     */
-    self.extractQuestionScripts = function(question) {
-        var matches;
-
-        question.scriptsCode = '';
-        question.initObjects = [];
-
-        if (question.html) {
-            // Search the scripts.
-            matches = question.html.match(/<script[^>]*>[\s\S]*?<\/script>/mg);
-            angular.forEach(matches, function(match) {
-                // Add the script to scriptsCode and remove it from html.
-                question.scriptsCode += match;
-                question.html = question.html.replace(match, '');
-
-                // Search init_question functions for this type.
-                var initMatches = match.match(new RegExp('M\.' + question.type + '\.init_question\\(.*?}\\);', 'mg'));
-                angular.forEach(initMatches, function(initMatch) {
-                    // Remove start and end of the match, we only want the object.
-                    initMatch = initMatch.replace('M.' + question.type + '.init_question(', '');
-                    initMatch = initMatch.substr(0, initMatch.length - 2);
-
-                    // Try to convert it to an object and add it to the question.
-                    try {
-                        initMatch = JSON.parse(initMatch);
-                        question.initObjects.push(initMatch);
-                    } catch(ex) {}
-                });
-            });
-        }
-    };
-
-    /**
-     * Returns the contents of a certain selection in a DOM element.
-     *
-     * @module mm.addons.mod_quiz
-     * @ngdoc method
-     * @name $mmaModQuizHelper#getContentsOfElement
-     * @param  {Object} element   DOM element to search in.
-     * @param  {String} className Class to search.
-     * @return {String}           Div contents.
-     */
-    self.getContentsOfElement = function(element, selector) {
-        if (element) {
-            var el = element[0] || element, // Convert from jqLite to plain JS if needed.
-                div = el.querySelector(selector);
-            if (div) {
-                return div.innerHTML;
-            }
-        }
-        return '';
-    };
-
-    /**
      * Gets the mark string from a question HTML.
      * Example result: "Marked out of 1.00".
      *
@@ -120,7 +36,7 @@ angular.module('mm.addons.mod_quiz')
      * @return {String}      Question's mark.
      */
     self.getQuestionMarkFromHtml = function(html) {
-        return self.getContentsOfElement(angular.element(html), '.grade');
+        return $mmUtil.getContentsOfElement(angular.element(html), '.grade');
     };
 
     /**

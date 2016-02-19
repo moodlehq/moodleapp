@@ -1,0 +1,9 @@
+<!-- Question body container. We'll inject the right directive here if any. -->
+<div id="mm-question-container">
+	<!-- This content will be replaced by the directive if any is applied. -->
+	<p class="padding">{{ 'mm.question.errorquestionnotsupported' | translate:{$a: question.type} }}</p>
+</div>
+<!-- Question validation error. -->
+<div class="item item-text-wrap" ng-if="question.validationError">
+    <p class="mm-warning">{{ question.validationError }}</p>
+</div>

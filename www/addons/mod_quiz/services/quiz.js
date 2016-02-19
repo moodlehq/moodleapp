@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_quiz')
  * @ngdoc service
  * @name $mmaModQuiz
  */
-.factory('$mmaModQuiz', function($log, $mmSite, $mmSitesManager, $q, $translate, $mmUtil, $mmText, $mmaModQuizQuestionsDelegate) {
+.factory('$mmaModQuiz', function($log, $mmSite, $mmSitesManager, $q, $translate, $mmUtil, $mmText, $mmQuestionDelegate) {
 
     $log = $log.getInstance('$mmaModQuiz');
 
@@ -694,7 +694,7 @@ angular.module('mm.addons.mod_quiz')
     self.getUnsupportedQuestions = function(questionTypes) {
         var notSupported = [];
         angular.forEach(questionTypes, function(type) {
-            if (type != 'random' && type != 'randomsamatch' && !$mmaModQuizQuestionsDelegate.isQuestionSupported('qtype_'+type)) {
+            if (type != 'random' && !$mmQuestionDelegate.isQuestionSupported('qtype_'+type)) {
                 notSupported.push(type);
             }
         });

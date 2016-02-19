@@ -11,7 +11,6 @@
 	"errorgetattempt": "Error getting attempt data.",
 	"errorgetquiz": "Error getting quiz data.",
 	"errorparsequestions": "An error occurred while treating the questions. Please attempt this quiz in a browser.",
-	"errorquestionnotsupported": "This type of question isn't supported by the app in your site: {{$a}}.",
 	"errorquestionsnotsupported": "This quiz can't be attempted in the app because it can contain questions not supported by the app:",
 	"errorrulesnotsupported": "This quiz can't be attempted in the app because it has active rules not supported by the app:",
 	"feedback": "Feedback",

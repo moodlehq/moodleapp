@@ -36,6 +36,9 @@ $completion-img-width: 24px !default;
 // Disabled items.
 $item-disabled-color: #999 !default;
 
+// Warnings (red).
+$mm-warning-color: #c00 !default;
+
 /**
  * Styles revert.
  */
@@ -284,6 +287,24 @@ mm-navigation-bar {
     padding-top: 0px;
     padding-bottom: 0px;
   }
+}
+
+// Accessibility: text 'seen' by screen readers but not visual users.
+.accesshide {
+  position: absolute;
+  left: -10000px;
+  font-weight: normal;
+  font-size: 1em;
+}
+
+// When using .item and .row in the same element, .row's padding prevails. Use this class to keep .item's padding.
+.item.row.mm-item-padding {
+  padding: $item-padding;
+}
+
+// Red color for paragraphs.
+p.mm-warning {
+  color: $mm-warning-color;
 }
 
 // Extra attributes to ionic classes to force frames via directive 100% height.
