@@ -31,34 +31,71 @@ angular.module('mm.core')
  * Attributes accepted:
  *     - siteid: Reference to the site ID if different than the site the user is connected to.
  */
-.directive('mmExternalContent', function($log, $mmFilepool, $mmSite, $mmSitesManager, $mmUtil) {
+.directive('mmExternalContent', function($log, $mmFilepool, $mmSite, $mmSitesManager, $mmUtil, $q) {
     $log = $log.getInstance('mmExternalContent');
 
+    /**
+     * Add a new source with a certain URL.
+     *
+     * @param {Object} dom Current source element. The new source will be a sibling of this element.
+     * @param {String} url URL to use in the source.
+     */
+    function addSource(dom, url) {
+        if (dom.tagName !== 'SOURCE') {
+            return;
+        }
+
+        var e = document.createElement('source');
+        e.setAttribute('src', url);
+        e.setAttribute('type', dom.getAttribute('type'));
+        dom.parentNode.insertBefore(e, dom);
+    }
+
+    /**
+     * Handle external content, setting the right URL.
+     *
+     * @param  {String} siteId        Site ID.
+     * @param  {Object} dom           DOM element.
+     * @param  {String} targetAttr    Attribute to modify.
+     * @param  {String} url           Original URL to treat.
+     * @param  {String} [component]   Component
+     * @param  {Number} [componentId] Component ID.
+     * @return {Promise}              Promise resolved if the element is successfully treated.
+     */
     function handleExternalContent(siteId, dom, targetAttr, url, component, componentId) {
 
         if (!url || !$mmUtil.isDownloadableUrl(url)) {
             $log.debug('Ignoring non-downloadable URL: ' + url);
-            return;
+            if (dom.tagName === 'SOURCE') {
+                // Restoring original src.
+                addSource(dom, url);
+            }
+            return $q.reject();
         }
 
         // Get the webservice pluginfile URL, we ignore failures here.
-        $mmSitesManager.getSite(siteId).then(function(site) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
             if (!site.canDownloadFiles() && $mmUtil.isPluginFileUrl(url)) {
                 dom.remove(); // Remove element since it'll be broken.
-                return;
+                return $q.reject();
             }
 
             var fn;
 
-            if (targetAttr === 'src') {
+            if (targetAttr === 'src' && dom.tagName !== 'SOURCE') {
                 fn = $mmFilepool.getSrcByUrl;
             } else {
                 fn = $mmFilepool.getUrlByUrl;
             }
 
-            fn(siteId, url, component, componentId).then(function(finalUrl) {
+            return fn(siteId, url, component, componentId).then(function(finalUrl) {
                 $log.debug('Using URL ' + finalUrl + ' for ' + url);
-                dom.setAttribute(targetAttr, finalUrl);
+                if (dom.tagName === 'SOURCE') {
+                    // The browser does not catch changes in SRC, we need to add a new source.
+                    addSource(dom, finalUrl);
+                } else {
+                    dom.setAttribute(targetAttr, finalUrl);
+                }
             });
         });
     }
@@ -70,20 +107,30 @@ angular.module('mm.core')
         },
         link: function(scope, element, attrs) {
             var dom = element[0],
+                siteid = scope.siteid || $mmSite.getId(),
                 component = attrs.component,
                 componentId = attrs.componentId,
                 targetAttr,
-                observe = false,
-                url;
+                sourceAttr,
+                observe = false;
 
             if (dom.tagName === 'A') {
                 targetAttr = 'href';
+                sourceAttr = 'href';
                 if (attrs.hasOwnProperty('ngHref')) {
                     observe = true;
                 }
 
             } else if (dom.tagName === 'IMG') {
                 targetAttr = 'src';
+                sourceAttr = 'src';
+                if (attrs.hasOwnProperty('ngSrc')) {
+                    observe = true;
+                }
+
+            } else if (dom.tagName === 'AUDIO' || dom.tagName === 'VIDEO' || dom.tagName === 'SOURCE') {
+                targetAttr = 'src';
+                sourceAttr = 'targetSrc';
                 if (attrs.hasOwnProperty('ngSrc')) {
                     observe = true;
                 }
@@ -99,10 +146,10 @@ angular.module('mm.core')
                     if (!url) {
                         return;
                     }
-                    handleExternalContent(scope.siteid || $mmSite.getId(), dom, targetAttr, url, component, componentId);
+                    handleExternalContent(siteid, dom, targetAttr, url, component, componentId);
                 });
             } else {
-                handleExternalContent(scope.siteid || $mmSite.getId(), dom, targetAttr, attrs[targetAttr], component, componentId);
+                handleExternalContent(siteid, dom, targetAttr, attrs[sourceAttr] || attrs[targetAttr], component, componentId);
             }
 
         }

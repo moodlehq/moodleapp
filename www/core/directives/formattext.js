@@ -43,6 +43,27 @@ angular.module('mm.core')
         tagsToIgnore = ['AUDIO', 'VIDEO', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'A'];
 
     /**
+     * Add mm-external-content and its extra attributes to a certain element.
+     *
+     * @param {Object} el            DOM element to add the attributes to.
+     * @param {String} [component]   Component.
+     * @param {Number} [componentId] Component ID.
+     * @param {String} [siteId]      Site ID.
+     */
+    function addExternalContent(el, component, componentId, siteId) {
+        el.setAttribute('mm-external-content', '');
+        if (component) {
+            el.setAttribute('component', component);
+            if (componentId) {
+                el.setAttribute('component-id', componentId);
+            }
+        }
+        if (siteId) {
+            el.setAttribute('siteid', siteId);
+        }
+    }
+
+    /**
      * Returns the number of characters to shorten the text. If the text shouldn't be shortened, returns undefined.
      *
      * @param  {Object} element   Directive root DOM element.
@@ -78,6 +99,15 @@ angular.module('mm.core')
         } else {
             return Math.round(elWidth * multiplier);
         }
+    }
+
+    /**
+     * Add class to adapt media to a certain element.
+     *
+     * @param {Object} el Dom element to add the class to.
+     */
+    function addMediaAdaptClass(el) {
+        angular.element(el).addClass('mm-media-adapt-width');
     }
 
     /**
@@ -175,44 +205,21 @@ angular.module('mm.core')
         return $mmText.formatText(text, attrs.clean, attrs.singleline, shorten).then(function(formatted) {
 
             var el = element[0],
-                elWidth = el.offsetWidth || el.width || el.clientWidth;
-
-            function addMediaAdaptClass(el) {
-                angular.element(el).addClass('mm-media-adapt-width');
-            }
-
-            // Convert the content into DOM.
-            var dom = angular.element('<div>').html(formatted);
+                elWidth = el.offsetWidth || el.width || el.clientWidth,
+                dom = angular.element('<div>').html(formatted); // Convert the content into DOM.
 
             // Walk through the content to find the links and add our directive to it.
             // Important: We need to look for links first because in 'img' we add new links without mm-browser.
             angular.forEach(dom.find('a'), function(anchor) {
-                anchor.setAttribute('mm-external-content', '');
                 anchor.setAttribute('mm-browser', '');
-                if (component) {
-                    anchor.setAttribute('component', component);
-                    if (componentId) {
-                        anchor.setAttribute('component-id', componentId);
-                    }
-                }
-                if (siteId) {
-                    anchor.setAttribute('siteid', siteId);
-                }
+                addExternalContent(anchor, component, componentId, siteId);
             });
 
             // Walk through the content to find images, and add our directive.
             angular.forEach(dom.find('img'), function(img) {
                 addMediaAdaptClass(img);
-                img.setAttribute('mm-external-content', '');
-                if (component) {
-                    img.setAttribute('component', component);
-                    if (componentId) {
-                        img.setAttribute('component-id', componentId);
-                    }
-                }
-                if (siteId) {
-                    img.setAttribute('siteid', siteId);
-                }
+                addExternalContent(img, component, componentId, siteId);
+
                 // Check if image width has been adapted. If so, add an icon to view the image at full size.
                 var imgWidth = img.offsetWidth || img.width || img.clientWidth;
                 if (imgWidth > elWidth) {
@@ -228,8 +235,12 @@ angular.module('mm.core')
                 }
             });
 
-            angular.forEach(dom.find('audio'), addMediaAdaptClass);
-            angular.forEach(dom.find('video'), addMediaAdaptClass);
+            angular.forEach(dom.find('audio'), function(el) {
+                treatMedia(el, component, componentId, siteId);
+            });
+            angular.forEach(dom.find('video'), function(el) {
+                treatMedia(el, component, componentId, siteId);
+            });
             angular.forEach(dom.find('iframe'), addMediaAdaptClass);
 
             return dom.html();
@@ -253,6 +264,25 @@ angular.module('mm.core')
         if (afterRender && scope[afterRender]) {
             scope[afterRender](scope);
         }
+    }
+
+    /**
+     * Add media adapt class and mm-external-content to the media element and their child sources.
+     *
+     * @param  {Object} el           DOM element.
+     * @param {String} [component]   Component.
+     * @param {Number} [componentId] Component ID.
+     * @param {String} [siteId]      Site ID.
+     */
+    function treatMedia(el, component, componentId, siteId) {
+        addMediaAdaptClass(el);
+
+        addExternalContent(el, component, componentId, siteId);
+        angular.forEach(angular.element(el).find('source'), function(source) {
+            source.setAttribute('target-src', source.getAttribute('src'));
+            source.removeAttribute('src');
+            addExternalContent(source, component, componentId, siteId);
+        });
     }
 
     return {
