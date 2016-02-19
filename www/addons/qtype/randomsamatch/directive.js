@@ -27,7 +27,7 @@ angular.module('mm.addons.qtype_randomsamatch')
     return {
         restrict: 'A',
         priority: 100,
-        templateUrl: 'addons/qtype/base/templates/match.html',
+        templateUrl: 'addons/qtype/match/template.html',
         link: function(scope) {
             $mmQuestionHelper.matchingDirective(scope, $log);
         }
