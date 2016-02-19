@@ -27,7 +27,7 @@ angular.module('mm.addons.qtype_multichoice')
     return {
         restrict: 'A',
         priority: 100,
-        templateUrl: 'addons/qtype/base/templates/multi.html',
+        templateUrl: 'addons/qtype/multichoice/template.html',
         link: function(scope) {
         	$mmQuestionHelper.multiChoiceDirective(scope, $log);
         }
