@@ -27,7 +27,7 @@ angular.module('mm.addons.qtype_calculated')
     return {
         restrict: 'A',
         priority: 100,
-        templateUrl: 'addons/qtype/base/templates/text.html',
+        templateUrl: 'addons/qtype/shortanswer/template.html',
         link: function(scope) {
             $mmQuestionHelper.inputTextDirective(scope, $log);
         }
