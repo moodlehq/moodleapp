@@ -41,11 +41,20 @@
     "cordova-plugin-splashscreen",
     "cordova-plugin-statusbar",
     "cordova-plugin-whitelist",
-    "com.phonegap.plugins.pushplugin",
-    "net.tunts.webintent",
-    "cordova-plugin-customurlscheme",
+    {
+      "locator": "https://github.com/phonegap-build/PushPlugin.git",
+      "id": "com.phonegap.plugins.PushPlugin"
+    },
+    {
+      "locator": "https://github.com/Tunts/WebIntent.git",
+      "id": "net.tunts.webintent"
+    },
+    "cordova-plugin-customurlscheme --variable URL_SCHEME=moodlemobile",
     "ionic-plugin-keyboard",
-    "ch.ti8m.documenthandler",
+    {
+      "locator": "https://github.com/ti8m/DocumentHandler.git",
+      "id": "ch.ti8m.documenthandler"
+    },
     "cordova-plugin-local-notifications-mm",
     "cordova-plugin-zip"
   ],
