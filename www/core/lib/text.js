@@ -205,6 +205,31 @@ angular.module('mm.core')
     };
 
     /**
+     * Decode an escaped HTML text. This implementation is based on PHP's htmlspecialchars_decode.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#decodeHTML
+     * @param  {String} text Text to decode.
+     * @return {String}      Decoded text.
+     */
+    self.decodeHTML = function(text) {
+        if (typeof text == 'undefined' || text === null || (typeof text == 'number' && isNaN(text))) {
+            return '';
+        } else if (typeof text != 'string') {
+            return '' + text;
+        }
+
+        return text
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&#039;/g, "'")
+            .replace(/&nbsp;/g, ' ');
+    };
+
+    /**
      * Add or remove 'www' from a URL. The url needs to have http or https protocol.
      *
      * @module mm.core
@@ -263,6 +288,38 @@ angular.module('mm.core')
                 return matches[0];
             }
         }
+    };
+
+    /**
+     * Replace all characters that cause problems with files in Android and iOS.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#removeSpecialCharactersForFiles
+     * @param  {String} text Text to treat.
+     * @return {String}      Treated text.
+     */
+    self.removeSpecialCharactersForFiles = function(text) {
+        return text.replace(/[#:\/\?\\]+/g, '_');
+    };
+
+    /**
+     * Given a URL, returns what's after the last '/' without params.
+     * Example:
+     * http://mysite.com/a/course.html?id=1 -> course.html
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#getLastFileWithoutParams
+     * @param  {String} url URL to treat.
+     * @return {String}     Last file without params.
+     */
+    self.getLastFileWithoutParams = function(url) {
+        var filename = url.substr(url.lastIndexOf('/') + 1);
+        if (filename.indexOf('?') != -1) {
+            filename = filename.substr(0, filename.indexOf('?'));
+        }
+        return filename;
     };
 
     return self;
