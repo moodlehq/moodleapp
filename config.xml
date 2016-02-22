@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.moodle.moodlemobile" version="2.8" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>Moodle Mobile</name>
-  <description>Official Moodle Mobile app</description>
-  <author href="http://moodle.com" email="juan@moodle.com">Juan Leyva</author>
+<widget id="com.eduenlinea.focadepro" version="2.8" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <name>EduEnLinea FOCADEPRO</name>
+  <description>Aplicación Academica Móvil Oficial: Formación y Capacitación de Profesionales FOCADEPRO</description>
+  <author href="http://www.focadepro.com" email="basora@focadepro.com">Héctor de Jesús Basora Arriaga</author>
   <content src="index.html"/>
   <access origin="*"/>
 
