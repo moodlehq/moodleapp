@@ -148,20 +148,22 @@ angular.module('mm.core')
     self.downloadFile = function(url, path, background) {
         $log.debug('Downloading file ' + url);
 
-        return $mmFS.getBasePathToDownload().then(function(basePath) {
-            // Use a tmp path to download the file and then move it to final location. This is because if the download fails,
-            // the local file is deleted.
-            var tmpPath = basePath + path + '.tmp';
-            return $cordovaFileTransfer.download(url, tmpPath, { encodeURI: false }, true).then(function() {
-                return $mmFS.moveFile(path + '.tmp', path).then(function(movedEntry) {
+        // Use a tmp path to download the file and then move it to final location.This is because if the download fails,
+        // the local file is deleted.
+        var tmpPath = path + '.tmp';
+
+        // Create the tmp file as an empty file.
+        return $mmFS.createFile(tmpPath).then(function(fileEntry) {
+            return $cordovaFileTransfer.download(url, fileEntry.toURL(), { encodeURI: false }, true).then(function() {
+                return $mmFS.moveFile(tmpPath, path).then(function(movedEntry) {
                     $log.debug('Success downloading file ' + url + ' to ' + path);
                     return movedEntry;
                 });
-            }, function(err) {
-                $log.error('Error downloading ' + url + ' to ' + path);
-                $log.error(JSON.stringify(err));
-                return $q.reject(err);
             });
+        }).catch(function(err) {
+            $log.error('Error downloading ' + url + ' to ' + path);
+            $log.error(JSON.stringify(err));
+            return $q.reject(err);
         });
     };
 

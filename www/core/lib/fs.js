@@ -914,11 +914,12 @@ angular.module('mm.core')
      * @return {Promise}             Promise resolved when the file is unzipped.
      */
     self.unzipFile = function(path, destFolder) {
-        // We need to use ansolute paths (including basePath).
-        path = self.addBasePathIfNeeded(path);
-         // If destFolder is not set, use same location as ZIP file.
-        destFolder = self.addBasePathIfNeeded(destFolder || self.removeExtension(path));
-        return $cordovaZip.unzip(path, destFolder);
+        // Get the source file.
+        return self.getFile(path).then(function(fileEntry) {
+            // If destFolder is not set, use same location as ZIP file. We need to use ansolute paths (including basePath).
+            destFolder = self.addBasePathIfNeeded(destFolder || self.removeExtension(path));
+            return $cordovaZip.unzip(fileEntry.toURL(), destFolder);
+        });
     };
 
     return self;

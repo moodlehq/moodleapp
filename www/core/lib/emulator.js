@@ -65,6 +65,7 @@ angular.module('mm.core')
                     errorCallback();
                 } else {
                     filePath = filePath.replace(basePath, ''); // Remove basePath from the filePath.
+                    filePath = filePath.replace(/%20/g, ' '); // Replace all %20 with spaces.
                     $mmFS.writeFile(filePath, data.data).then(function(e) {
                         successCallback(e);
                     }).catch(function(error) {
@@ -81,7 +82,9 @@ angular.module('mm.core')
             unzip: function(source, destination, callback, progressCallback) {
                 // Remove basePath from the source and destination.
                 source = source.replace(basePath, '');
+                source = source.replace(/%20/g, ' '); // Replace all %20 with spaces.
                 destination = destination.replace(basePath, '');
+                destination = destination.replace(/%20/g, ' '); // Replace all %20 with spaces.
 
                 $mmFS.readFile(source, $mmFS.FORMATARRAYBUFFER).then(function(data) {
                     var zip = new JSZip(data),
