@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_book')
  * @ngdoc service
  * @name $mmaModBook
  */
-.factory('$mmaModBook', function($mmFilepool, $mmSite, $mmFS, $http, $log, $q, $mmSitesManager, mmaModBookComponent) {
+.factory('$mmaModBook', function($mmFilepool, $mmSite, $mmFS, $http, $log, $q, $mmSitesManager, $mmUtil, mmaModBookComponent) {
     $log = $log.getInstance('$mmaModBook');
 
     var self = {};
@@ -262,7 +262,6 @@ angular.module('mm.addons.mod_book')
 
         // Promise handling when we are in a browser.
         promise = (function() {
-            var deferred;
             if (!indexUrl) {
                 // If ever that happens.
                 $log.debug('Could not locate the index chapter');
@@ -272,9 +271,7 @@ angular.module('mm.addons.mod_book')
                 return $mmFilepool.downloadUrl($mmSite.getId(), indexUrl, false, mmaModBookComponent, moduleId);
             } else {
                 // We return the live URL.
-                deferred = $q.defer();
-                deferred.resolve($mmSite.fixPluginfileURL(indexUrl));
-                return deferred.promise;
+                return $q.when($mmSite.fixPluginfileURL(indexUrl));
             }
         })();
 
@@ -286,22 +283,7 @@ angular.module('mm.addons.mod_book')
                 } else {
                     // Now that we have the content, we update the SRC to point back to
                     // the external resource. That will be caught by mm-format-text.
-                    var html = angular.element('<div>');
-                    html.html(response.data);
-                    angular.forEach(html.find('img'), function(img) {
-                        var src = paths[decodeURIComponent(img.getAttribute('src'))];
-                        if (typeof src !== 'undefined') {
-                            img.setAttribute('src', src);
-                        }
-                    });
-                    // We do the same for links.
-                    angular.forEach(html.find('a'), function(anchor) {
-                        var href = paths[decodeURIComponent(anchor.getAttribute('href'))];
-                        if (typeof href !== 'undefined') {
-                            anchor.setAttribute('href', href);
-                        }
-                    });
-                    return html.html();
+                    return $mmUtil.restoreSourcesInHtml(response.data, paths);
                 }
             });
         });

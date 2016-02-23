@@ -943,6 +943,48 @@ angular.module('mm.core')
             return params;
         };
 
+        /**
+         * Given an HTML, searched all links and media and tries to restore original sources using the paths object.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#restoreSourcesInHtml
+         * @param  {String} html         HTML code.
+         * @param  {Object} paths        Object linking URLs in the html code with the real URLs to use.
+         * @param  {Function} [anchorFn] Function to call with each anchor. Optional.
+         * @return {String}              Treated HTML code.
+         */
+        self.restoreSourcesInHtml = function(html, paths, anchorFn) {
+            var div = angular.element('<div>'),
+                media;
+            div.html(html);
+
+            // Treat img, audio, video and source.
+            media = div[0].querySelectorAll('img, video, audio, source');
+            angular.forEach(media, function(el) {
+                var src = paths[decodeURIComponent(el.getAttribute('src'))];
+                if (typeof src !== 'undefined') {
+                    el.setAttribute('src', src);
+                }
+            });
+
+            // We do the same for links.
+            angular.forEach(div.find('a'), function(anchor) {
+                var href = decodeURIComponent(anchor.getAttribute('href')),
+                    url = paths[href];
+
+                if (typeof url !== 'undefined') {
+                    anchor.setAttribute('href', url);
+
+                    if (angular.isFunction(anchorFn)) {
+                        anchorFn(anchor, href);
+                    }
+                }
+            });
+
+            return div.html();
+        };
+
         return self;
     };
 });
