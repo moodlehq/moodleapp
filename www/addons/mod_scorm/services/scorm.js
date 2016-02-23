@@ -836,7 +836,7 @@ angular.module('mm.addons.mod_scorm')
 
         siteId = siteId || $mmSite.getId();
 
-        return $mmFilepool.getDirectoryUrlByUrl(siteId, scorm.moduleurl).then(function(dirPath) {
+        return $mmFilepool.getPackageDirUrlByUrl(siteId, scorm.moduleurl).then(function(dirPath) {
             // This URL is going to be injected in an iframe, we need trustAsResourceUrl to make it work in a browser.
             return $sce.trustAsResourceUrl($mmFS.concatenatePaths(dirPath, sco.launch));
         });
@@ -854,7 +854,7 @@ angular.module('mm.addons.mod_scorm')
      */
     self.getScormFolder = function(moduleUrl, siteId) {
         siteId = siteId || $mmSite.getId();
-        return $mmFilepool.getFilePathByUrl(siteId, moduleUrl);
+        return $mmFilepool.getPackageDirPathByUrl(siteId, moduleUrl);
     };
 
     /**

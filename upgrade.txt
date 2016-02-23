@@ -4,6 +4,7 @@ information provided here is intended especially for developers.
 === 2.9 ===
 
  * Most of the functions from $mmaModScormOnline, $mmaModScormOffline, $mmaModScorm, $mmaModScormSync and $mmaModScormHelper now have a new param siteId to determine the site to affect. If you use any of these services please make sure you still pass the right parameters.
+ * Now filepool tries to use the files names instead of just using a hash. If you used the functions "getFilePathByUrl" or "getDirectoryUrlByUrl" to store package files, you should now use "getPackageDirPathByUrl" and "getPackageDirUrlByUrl" instead.
 
 === 2.8 ===
 

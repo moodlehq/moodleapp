@@ -692,15 +692,40 @@ angular.module('mm.core')
      */
     self.copyFile = function(from, to) {
         return self.init().then(function() {
-            // Check if to contains a directory.
-            var toFile = self.getFileAndDirectoryFromPath(to);
-            if (toFile.directory == '') {
-                return $cordovaFile.copyFile(basePath, from, basePath, to);
+            if (isHTMLAPI) {
+                // In Cordova API we need to calculate the longest matching path to make it work.
+                // $cordovaFile.copyFile('a/', 'b/c.ext', 'a/', 'b/d.ext') doesn't work.
+                // cordovaFile.copyFile('a/b/', 'c.ext', 'a/b/', 'd.ext') works.
+                var commonPath = basePath,
+                    dirsA = from.split('/'),
+                    dirsB = to.split('/');
+
+                for (var i = 0; i < dirsA.length; i++) {
+                    var dir = dirsA[i];
+                    if (dirsB[i] === dir) {
+                        // Found a common folder, add it to common path and remove it from each specific path.
+                        dir = dir + '/';
+                        commonPath = self.concatenatePaths(commonPath, dir);
+                        from = from.replace(dir, '');
+                        to = to.replace(dir, '');
+                    } else {
+                        // Folder doesn't match, stop searching.
+                        break;
+                    }
+                }
+
+                return $cordovaFile.copyFile(commonPath, from, commonPath, to);
             } else {
-                // Ensure directory is created.
-                return self.createDir(toFile.directory).then(function() {
+                // Check if to contains a directory.
+                var toFile = self.getFileAndDirectoryFromPath(to);
+                if (toFile.directory == '') {
                     return $cordovaFile.copyFile(basePath, from, basePath, to);
-                });
+                } else {
+                    // Ensure directory is created.
+                    return self.createDir(toFile.directory).then(function() {
+                        return $cordovaFile.copyFile(basePath, from, basePath, to);
+                    });
+                }
             }
         });
     };
@@ -889,11 +914,12 @@ angular.module('mm.core')
      * @return {Promise}             Promise resolved when the file is unzipped.
      */
     self.unzipFile = function(path, destFolder) {
-        // We need to use ansolute paths (including basePath).
-        path = self.addBasePathIfNeeded(path);
-         // If destFolder is not set, use same location as ZIP file.
-        destFolder = self.addBasePathIfNeeded(destFolder || self.removeExtension(path));
-        return $cordovaZip.unzip(path, destFolder);
+        // Get the source file.
+        return self.getFile(path).then(function(fileEntry) {
+            // If destFolder is not set, use same location as ZIP file. We need to use ansolute paths (including basePath).
+            destFolder = self.addBasePathIfNeeded(destFolder || self.removeExtension(path));
+            return $cordovaZip.unzip(fileEntry.toURL(), destFolder);
+        });
     };
 
     return self;

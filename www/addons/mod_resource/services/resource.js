@@ -45,7 +45,7 @@ angular.module('mm.addons.mod_resource')
 
         if (self.isDisplayedInIframe(module)) {
             // Get path of the module folder in filepool.
-            promise = $mmFilepool.getFilePathByUrl(siteid, module.url);
+            promise = $mmFilepool.getPackageDirPathByUrl(siteid, module.url);
         } else {
             promise = $q.when();
         }
@@ -153,7 +153,7 @@ angular.module('mm.addons.mod_resource')
             mainFilePath = mainFile.filepath.substr(1) + mainFilePath;
         }
 
-        return $mmFilepool.getDirectoryUrlByUrl($mmSite.getId(), module.url).then(function(dirPath) {
+        return $mmFilepool.getPackageDirUrlByUrl($mmSite.getId(), module.url).then(function(dirPath) {
             // This URL is going to be injected in an iframe, we need trustAsResourceUrl to make it work in a browser.
             return $sce.trustAsResourceUrl($mmFS.concatenatePaths(dirPath, mainFilePath));
         }, function() {
@@ -396,7 +396,7 @@ angular.module('mm.addons.mod_resource')
 
         if (self.isDisplayedInIframe(module)) {
             // Get path of the module folder in filepool.
-            promise = $mmFilepool.getFilePathByUrl(siteid, module.url);
+            promise = $mmFilepool.getPackageDirPathByUrl(siteid, module.url);
         } else {
             promise = $q.when();
         }
