@@ -227,33 +227,13 @@ angular.module('mm.addons.mod_resource')
                 } else {
                     // Now that we have the content, we update the SRC to point back to
                     // the external resource. That will be caught by mm-format-text.
-                    var html = angular.element('<div>'),
-                        media;
-                    html.html(response.data);
-
-                    // Treat img, audio, video and source.
-                    media = html[0].querySelectorAll('img, video, audio, source');
-                    angular.forEach(media, function(el) {
-                        var src = paths[decodeURIComponent(el.getAttribute('src'))];
-                        if (typeof src !== 'undefined') {
-                            el.setAttribute('src', src);
+                    return $mmUtil.restoreSourcesInHtml(response.data, paths, function(anchor, href) {
+                        var ext = $mmFS.getFileExtension(href);
+                        if (ext == 'html' || ext == 'html') {
+                            anchor.setAttribute('mma-mod-resource-html-link', 1);
+                            anchor.setAttribute('data-href', href);
                         }
                     });
-                    // We do the same for links.
-                    angular.forEach(html.find('a'), function(anchor) {
-                        var href = decodeURIComponent(anchor.getAttribute('href')),
-                            url = paths[href],
-                            ext = $mmFS.getFileExtension(href);
-                        if (typeof url !== 'undefined') {
-                            anchor.setAttribute('href', url);
-                            if (ext == 'html' || ext == 'html') {
-                                anchor.setAttribute('mma-mod-resource-html-link', 1);
-                                anchor.setAttribute('data-href', href);
-                            }
-                        }
-                    });
-
-                    return html.html();
                 }
             });
         });

@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_book')
  * @ngdoc service
  * @name $mmaModBook
  */
-.factory('$mmaModBook', function($mmFilepool, $mmSite, $mmFS, $http, $log, $q, $mmSitesManager, mmaModBookComponent) {
+.factory('$mmaModBook', function($mmFilepool, $mmSite, $mmFS, $http, $log, $q, $mmSitesManager, $mmUtil, mmaModBookComponent) {
     $log = $log.getInstance('$mmaModBook');
 
     var self = {};
@@ -283,27 +283,7 @@ angular.module('mm.addons.mod_book')
                 } else {
                     // Now that we have the content, we update the SRC to point back to
                     // the external resource. That will be caught by mm-format-text.
-                    var html = angular.element('<div>'),
-                        media;
-                    html.html(response.data);
-
-                    // Treat img, audio, video and source.
-                    media = html[0].querySelectorAll('img, video, audio, source');
-                    angular.forEach(media, function(el) {
-                        var src = paths[decodeURIComponent(el.getAttribute('src'))];
-                        if (typeof src !== 'undefined') {
-                            el.setAttribute('src', src);
-                        }
-                    });
-                    // We do the same for links.
-                    angular.forEach(html.find('a'), function(anchor) {
-                        var href = paths[decodeURIComponent(anchor.getAttribute('href'))];
-                        if (typeof href !== 'undefined') {
-                            anchor.setAttribute('href', href);
-                        }
-                    });
-
-                    return html.html();
+                    return $mmUtil.restoreSourcesInHtml(response.data, paths);
                 }
             });
         });
