@@ -513,6 +513,9 @@ angular.module('mm.addons.mod_scorm')
 
                     // Trigger TOC update.
                     triggerEvent(mmaModScormEventUpdateToc);
+
+                    // Conver to string representing a boolean.
+                    result = result ? "true" : "false";
                     return result;
                 } else {
                     errorCode = "301";
@@ -685,6 +688,9 @@ angular.module('mm.addons.mod_scorm')
                     triggerEvent(mmaModScormEventUpdateToc);
 
                     errorCode = result ? '0' : '101';
+
+                    // Conver to string representing a boolean.
+                    result = result ? "true" : "false";
                     return result;
                 } else {
                     errorCode = "301";
