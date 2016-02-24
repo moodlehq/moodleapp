@@ -4,7 +4,7 @@
         <button class="button button-icon ion-more" ng-if="toc && toc.length" ng-click="popover.show($event)">
         </button>
     </ion-nav-buttons>
-    <ion-content>
+    <ion-content mm-state-class>
         <mm-loading hide-until="dataLoaded">
             <div class="list" ng-if="!attempt">
                 <button class="button button-block" ng-click="start()">{{ 'mma.mod_quiz.startattempt' | translate }}</button>
