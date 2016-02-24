@@ -1,5 +1,5 @@
 <ion-view view-title="{{ 'mm.settings.spaceusage' | translate }}" >
-    <ion-content>
+    <ion-content mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="sizeLoaded" on-refresh="refresh()"></ion-refresher>
         <mm-loading hide-until="sizeLoaded">
             <ul>

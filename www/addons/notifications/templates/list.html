@@ -1,5 +1,5 @@
 <ion-view view-title="{{ 'mma.notifications.notifications' | translate }}">
-    <ion-content padding="true">
+    <ion-content padding="true" mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="notificationsLoaded" on-refresh="refreshNotifications()">
         </ion-refresher>
         <mm-loading hide-until="notificationsLoaded">

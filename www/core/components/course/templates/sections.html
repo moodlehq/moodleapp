@@ -1,7 +1,7 @@
 <ion-view>
     <ion-nav-title><mm-format-text watch="true">{{fullname}}</mm-format-text></ion-nav-title>
     <mm-split-view load-when="sectionsLoaded" load="{{sectionToLoad}}" component="mmCoreCourseSectionsList">
-        <ion-content>
+        <ion-content mm-state-class>
            <ion-refresher on-refresh="doRefresh()" pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="sectionsLoaded"></ion-refresher>
             <mm-loading hide-until="sectionsLoaded">
                 <ul class="list">

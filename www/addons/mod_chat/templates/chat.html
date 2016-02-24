@@ -5,7 +5,7 @@
         <button ng-if="loaded" class="button button-icon icon ion-person-stalker" ng-click="showChatUsers()"></button>
     </ion-nav-buttons>
 
-    <ion-content class="padding" delegate-handle="mmaChatScroll">
+    <ion-content class="padding" delegate-handle="mmaChatScroll" mm-state-class>
         <mm-loading hide-until="loaded">
             <section class="mma-chat-discussion-container" aria-live="polite">
                 <div class="list">

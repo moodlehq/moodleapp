@@ -7,7 +7,7 @@
 
     <mm-split-view load-when="loaded" component="mmaModGlossaryEntryList">
 
-        <ion-content padding="true" delegate-handle="mmaModGlossaryIndex">
+        <ion-content padding="true" delegate-handle="mmaModGlossaryIndex" mm-state-class>
 
             <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="loaded" on-refresh="refreshEntries()"></ion-refresher>
 

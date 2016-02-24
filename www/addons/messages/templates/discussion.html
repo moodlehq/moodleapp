@@ -5,7 +5,7 @@
         <button ng-if="profileLink" class="button button-icon icon ion-person" mm-user-link userid="{{userId}}" aria-label="{{ 'mm.core.viewprofile' | translate }}"></button>
     </ion-nav-buttons>
 
-    <ion-content class="padding" delegate-handle="mmaMessagesScroll">
+    <ion-content class="padding" delegate-handle="mmaMessagesScroll" mm-state-class>
         <mm-loading hide-until="loaded">
             <section class="mma-messages-discussion-container" aria-live="polite">
                 <div ng-repeat="message in messages track by $index">

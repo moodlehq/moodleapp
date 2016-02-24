@@ -4,7 +4,7 @@
         <a class="button button-icon ion-ios-browsers-outline" ng-href="{{moduleurl}}" mm-browser ></a>
     </ion-nav-buttons>
 
-    <ion-content padding="true">
+    <ion-content padding="true" mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="chatLoaded" on-refresh="refreshChat()"></ion-refresher>
         <mm-loading hide-until="chatLoaded">
             <mm-course-mod-description watch="true" description="description"></mm-course-mod-description>
