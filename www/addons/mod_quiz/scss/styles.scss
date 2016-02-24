@@ -25,3 +25,15 @@ p.mma-mod-quiz-warning {
   height: 250px;
   resize: none;
 }
+
+// Remove padding-top and bottom from navigation bar to minimize height used.
+mma-mod-quiz-arrows {
+  .row {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+  .col {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+}
