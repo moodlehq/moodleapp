@@ -42,11 +42,12 @@
                             <span ng-show="badge > 0" class="badge badge-positive">{{badge}}</span>
                         </a>
                     </li>
-                    <a menu-close class="item item-icon-left" ng-href="{{siteinfo.siteurl}}" mm-browser title="{{ 'mm.sidemenu.website' | translate}}">
-                        <i class="icon ion-earth"></i>{{ 'mm.sidemenu.website' | translate}}
-                    </a>
                     <li>
+                        <a menu-close class="item item-icon-left" ng-href="{{siteinfo.siteurl}}" mm-browser title="{{ 'mm.sidemenu.website' | translate}}">
+                            <i class="icon ion-earth"></i>{{ 'mm.sidemenu.website' | translate}}
+                        </a>
                     </li>
+                    <li>
                         <a menu-close class="item item-icon-left" ng-href="{{docsurl}}" mm-browser title="{{ 'mm.sidemenu.help' | translate}}">
                             <i class="icon ion-help-buoy"></i>{{ 'mm.sidemenu.help' | translate}}
                         </a>
@@ -56,8 +57,8 @@
                         <a menu-close class="item item-icon-left" ui-sref="site.mm_settings" title="{{ 'mm.sidemenu.appsettings' | translate}}">
                             <i class="icon ion-gear-b"></i>{{ 'mm.sidemenu.appsettings' | translate}}
                         </a>
-                    <li>
                     </li>
+                    <li>
                         <a class="item item-icon-left" ng-click="logout()" title="{{ 'mm.sidemenu.changesite' | translate}}">
                             <i class="icon ion-log-out"></i>{{ 'mm.sidemenu.changesite' | translate}}
                         </a>
