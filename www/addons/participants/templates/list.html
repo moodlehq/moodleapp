@@ -1,6 +1,6 @@
 <ion-view view-title="{{ 'mma.participants.participants' | translate }}">
     <mm-split-view load-when="participantsLoaded" component="mmaParticipantsList">
-        <ion-content>
+        <ion-content mm-state-class>
             <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="participantsLoaded" on-refresh="refreshParticipants()">
             </ion-refresher>
             <mm-loading hide-until="participantsLoaded">

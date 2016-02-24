@@ -1,7 +1,7 @@
 <ion-view>
     <ion-nav-title>{{ title }}</ion-nav-title>
 
-    <ion-content>
+    <ion-content mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="notesLoaded"
                        on-refresh="refreshNotes()">
         </ion-refresher>

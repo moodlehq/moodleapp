@@ -1,5 +1,5 @@
 <ion-view view-title="{{ 'mma.coursecompletion.coursecompletion' | translate }}">
-    <ion-content>
+    <ion-content mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="completionLoaded" on-refresh="refreshCompletion()">
         </ion-refresher>
         <mm-loading hide-until="completionLoaded">

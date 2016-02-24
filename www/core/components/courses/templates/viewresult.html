@@ -1,6 +1,6 @@
 <ion-view>
     <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
-    <ion-content padding="true">
+    <ion-content padding="true" mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" on-refresh="doRefresh()" ng-if="courseLoaded"></ion-refresher>
         <mm-loading hide-until="courseLoaded">
             <div ng-if="course" class="list card">

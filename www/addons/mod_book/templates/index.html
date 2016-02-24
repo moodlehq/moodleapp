@@ -7,7 +7,7 @@
       </div>
     </div>
     </ion-nav-buttons>
-    <ion-content padding="true">
+    <ion-content padding="true" mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" on-refresh="doRefresh()" ng-if="loaded"></ion-refresher>
         <mm-loading hide-until="loaded">
             <mm-course-mod-description description="description"></mm-course-mod-description>

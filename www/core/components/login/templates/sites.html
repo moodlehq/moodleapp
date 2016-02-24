@@ -3,7 +3,7 @@
       <button class="button button-icon ion-edit" ng-click="toggleDelete()" ng-show='data.hasSites'></button>
       <button class="button button-icon ion-plus" ng-click="add()"></button>
   </ion-nav-buttons>
-  <ion-content>
+  <ion-content mm-state-class>
       <ion-list ng-repeat="site in sites track by $index" show-delete='data.showDelete'>
         <ion-item class="item item-thumbnail-left item-remove-animate" ng-click="login(site.id)">
           <ion-delete-button class="ion-minus-circled" ng-click='onItemDelete($event, $index)'></ion-delete-button>

@@ -4,7 +4,7 @@
         <a class="button button-icon ion-ios-browsers-outline" ng-href="{{moduleurl}}" mm-browser aria-label="{{ 'mm.core.openinbrowser' | translate }}"></a>
     </ion-nav-buttons>
     <mm-split-view load-when="discussionsLoaded" component="mmaModForumDiscussionsList">
-        <ion-content delegate-handle="mmaModForumDiscussionsScroll">
+        <ion-content delegate-handle="mmaModForumDiscussionsScroll" mm-state-class>
             <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="discussionsLoaded" on-refresh="refreshDiscussions()">
             </ion-refresher>
             <mm-loading hide-until="discussionsLoaded">

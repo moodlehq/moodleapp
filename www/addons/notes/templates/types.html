@@ -1,6 +1,6 @@
 <ion-view view-title="{{ 'mma.notes.notes' | translate }}">
     <mm-split-view component="mmaNotesTypes">
-        <ion-content>
+        <ion-content mm-state-class>
             <ul>
                 <li>
                     <a class="item" mm-split-view-link="site.notes-list({courseid: courseid, type: 'site'})" title="{{ 'mma.notes.sitenotes' | translate }}">
