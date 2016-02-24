@@ -88,6 +88,7 @@
     "openfullimage": "Click here to display the image at full size",
     "openinbrowser": "Open in browser",
     "othergroups": "Other groups",
+    "pagea": "Page {{$a}}",
     "percentagenumber": "{{$a}}%",
     "phone": "Phone",
     "pictureof": "Picture of {{$a}}",

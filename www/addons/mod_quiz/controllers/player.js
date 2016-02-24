@@ -21,7 +21,8 @@ angular.module('mm.addons.mod_quiz')
  * @ngdoc controller
  * @name mmaModQuizPlayerCtrl
  */
-.controller('mmaModQuizPlayerCtrl', function($log, $scope, $stateParams, $mmaModQuiz, $mmaModQuizHelper, $q, $mmUtil) {
+.controller('mmaModQuizPlayerCtrl', function($log, $scope, $stateParams, $mmaModQuiz, $mmaModQuizHelper, $q, $mmUtil,
+            $ionicPopover, $ionicScrollDelegate) {
     $log = $log.getInstance('mmaModQuizPlayerCtrl');
 
     var quizId = $stateParams.quizid,
@@ -64,6 +65,7 @@ angular.module('mm.addons.mod_quiz')
     function fetchData() {
         return $mmaModQuiz.getQuizById(courseId, quizId).then(function(quizData) {
             quiz = quizData;
+            quiz.isSequential = $mmaModQuiz.isNavigationSequential(quiz);
 
             if (quiz.timelimit > 0) {
                 $scope.isTimed = true;
@@ -124,20 +126,32 @@ angular.module('mm.addons.mod_quiz')
 
         return promise.then(function() {
             // Get the attempt data.
-            return $mmaModQuiz.getAttemptData(attempt.id, 0, preflightData, true).then(function(data) {
+            return loadPage(attempt.currentpage).then(function() {
                 $scope.closeModal && $scope.closeModal(); // Close modal if needed.
                 $scope.attempt = attempt;
-                $scope.questions = data.questions;
-
-                angular.forEach($scope.questions, function(question) {
-                    // Get the readable mark for each question.
-                    question.readableMark = $mmaModQuizHelper.getQuestionMarkFromHtml(question.html);
-                    // Remove the question info box so it's not in the question HTML anymore.
-                    question.html = $mmUtil.removeElementFromHtml(question.html, '.info');
-                });
+                $scope.toc = $mmaModQuiz.getTocFromLayout(attempt.layout);
             });
         }).catch(function(message) {
             $mmaModQuizHelper.showError(message, 'mm.core.error');
+        });
+    }
+
+    // Load a page questions.
+    function loadPage(page) {
+        return $mmaModQuiz.getAttemptData(attempt.id, page, preflightData, true).then(function(data) {
+            $scope.questions = data.questions;
+            attempt.currentpage = page;
+            $scope.nextPage = data.nextpage;
+            $scope.previousPage = quiz.isSequential ? -1 : page - 1;
+
+            angular.forEach($scope.questions, function(question) {
+                // Get the readable mark for each question.
+                question.readableMark = $mmaModQuizHelper.getQuestionMarkFromHtml(question.html);
+                // Remove the question info box so it's not in the question HTML anymore.
+                question.html = $mmUtil.removeElementFromHtml(question.html, '.info');
+            });
+        }).catch(function(message) {
+            $mmaModQuizHelper.showError(message, 'mma.mod_quiz.errorgetquestions');
         });
     }
 
@@ -153,5 +167,30 @@ angular.module('mm.addons.mod_quiz')
     $scope.abortQuiz = function() {
         $scope.quizAborted = true;
     };
+
+    // Load a certain page.
+    $scope.loadPage = function(page, fromToc) {
+        if (page == attempt.currentpage || (fromToc && quiz.isSequential)) {
+            // If the user is navigating to the current page we do nothing.
+            // Also, in sequential quizzes we don't allow navigating using the TOC.
+            return;
+        }
+
+        $scope.dataLoaded = false;
+        $ionicScrollDelegate.scrollTop();
+        $scope.popover.hide(); // Hide popover if shown.
+
+        loadPage(page).finally(function() {
+            $scope.dataLoaded = true;
+            $ionicScrollDelegate.resize(); // Call resize to recalculate scroll area.
+        });
+    };
+
+    // Setup TOC popover.
+    $ionicPopover.fromTemplateUrl('addons/mod_quiz/templates/toc.html', {
+        scope: $scope,
+    }).then(function(popover) {
+        $scope.popover = popover;
+    });
 
 });

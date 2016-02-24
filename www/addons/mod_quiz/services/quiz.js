@@ -683,6 +683,36 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Given an attempt's layout, return the TOC (list of pages).
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#getTocFromLayout
+     * @param  {String} layout Attempt's layout.
+     * @return {Number[]}      TOC.
+     * @description
+     * An attempt's layout is a string with the question numbers separated by commas. A 0 indicates a change of page.
+     * Example: 1,2,3,0,4,5,6,0
+     * In the example above, first page has questions 1, 2 and 3. Second page has questions 4, 5 and 6.
+     *
+     * This function returns a list of pages.
+     */
+    self.getTocFromLayout = function(layout) {
+        var split = layout.split(','),
+            page = 1,
+            toc = [];
+
+        for (var i = 0; i < split.length; i++) {
+            if (split[i] == 0) {
+                toc.push(page);
+                page++;
+            }
+        }
+
+        return toc;
+    };
+
+    /**
      * Given a list of question types, returns the types that aren't supported.
      *
      * @module mm.addons.mod_quiz
@@ -1151,6 +1181,19 @@ angular.module('mm.addons.mod_quiz')
      */
     self.isAttemptFinished = function(state) {
         return state == self.ATTEMPT_FINISHED || state == self.ATTEMPT_ABANDONED;
+    };
+
+    /**
+     * Check if a quiz navigation is sequential.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#isNavigationSequential
+     * @param  {Object}  quiz Quiz.
+     * @return {Boolean}      True if navigation is sequential, false otherwise.
+     */
+    self.isNavigationSequential = function(quiz) {
+        return quiz.navmethod == "sequential";
     };
 
     /**
