@@ -1,5 +1,9 @@
 <ion-view>
     <ion-nav-title><mm-format-text watch="true">{{ quiz.name }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <button class="button button-icon ion-more" ng-if="toc && toc.length" ng-click="popover.show($event)">
+        </button>
+    </ion-nav-buttons>
     <ion-content>
         <mm-loading hide-until="dataLoaded">
             <div class="list" ng-if="!attempt">
@@ -7,6 +11,7 @@
             </div>
             <!-- Questions -->
             <div ng-if="attempt && questions.length && !quizAborted">
+                <mma-mod-quiz-arrows previous="previousPage" next="nextPage" action="loadPage"></mma-mod-quiz-arrows>
                 <div ng-repeat="question in questions">
                     <section class="card">
                         <div class="item item-divider">
@@ -23,6 +28,7 @@
                         <mm-question class="item item-complex" question="question" answers="answers" abort="abortQuiz()"></mm-question>
                     </section>
                 </div>
+                <mma-mod-quiz-arrows previous="previousPage" next="nextPage" action="loadPage"></mma-mod-quiz-arrows>
             </div>
             <!-- Quiz aborted -->
             <section class="card" ng-if="attempt && (!questions.length || quizAborted)">

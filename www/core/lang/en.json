@@ -86,6 +86,7 @@
     "online": "Online",
     "openfullimage": "Click here to display the image at full size",
     "openinbrowser": "Open in browser",
+    "pagea": "Page {{$a}}",
     "percentagenumber": "{{$a}}%",
     "phone": "Phone",
     "previous": "Previous",
