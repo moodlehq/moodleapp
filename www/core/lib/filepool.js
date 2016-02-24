@@ -21,6 +21,9 @@ angular.module('mm.core')
 .constant('mmFilepoolLinksStore', 'files_links')
 .constant('mmFilepoolPackagesStore', 'filepool_packages')
 
+.constant('mmFilepoolWifiDownloadThreshold', 20971520) // 20MB.
+.constant('mmFilepoolDownloadThreshold', 2097152) // 2MB.
+
 .config(function($mmAppProvider, $mmSitesFactoryProvider, mmFilepoolStore, mmFilepoolLinksStore, mmFilepoolQueueStore,
             mmFilepoolPackagesStore) {
     var siteStores = [
@@ -168,7 +171,7 @@ angular.module('mm.core')
 .factory('$mmFilepool', function($q, $log, $timeout, $mmApp, $mmFS, $mmWS, $mmSitesManager, $mmEvents, md5, mmFilepoolStore,
         mmFilepoolLinksStore, mmFilepoolQueueStore, mmFilepoolFolder, mmFilepoolQueueProcessInterval, mmCoreEventQueueEmpty,
         mmCoreDownloaded, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated, mmCoreNotDownloadable, mmFilepoolPackagesStore,
-        mmCoreEventPackageStatusChanged, $mmText, $mmUtil) {
+        mmCoreEventPackageStatusChanged, $mmText, $mmUtil, mmFilepoolWifiDownloadThreshold, mmFilepoolDownloadThreshold) {
 
     $log = $log.getInstance('$mmFilepool');
 
@@ -183,7 +186,8 @@ angular.module('mm.core')
         revisionRegex = new RegExp('/content/([0-9]+)/'),
         queueDeferreds = {}, // To handle file downloads using the queue.
         packagesPromises = {}, // To prevent downloading packages twice at the same time.
-        filePromises = {}; // To prevent downloading files twice at the same time.
+        filePromises = {}, // To prevent downloading files twice at the same time.
+        sizeCache = {}; // A "cache" to store file sizes to prevent performing too many HEAD requests.
 
     // Queue status codes.
     var QUEUE_RUNNING = 'mmFilepool:QUEUE_RUNNING',
@@ -1253,13 +1257,14 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmFilepool#_getFileUrlByUrl
-     * @param {String} siteId The site ID.
-     * @param {String} fileUrl The absolute URL to the file.
-     * @param {String} [mode=url] The type of URL to return. Accepts 'url' or 'src'.
-     * @param {String} component The component to link the file to.
-     * @param {Number} [componentId] An ID to use in conjunction with the component.
-     * @param {Number} [timemodified=0] The time this file was modified.
-     * @return {Promise} Resolved with the URL to use. When rejected, nothing could be done.
+     * @param {String} siteId            The site ID.
+     * @param {String} fileUrl           The absolute URL to the file.
+     * @param {String} [mode=url]        The type of URL to return. Accepts 'url' or 'src'.
+     * @param {String} component         The component to link the file to.
+     * @param {Number} [componentId]     An ID to use in conjunction with the component.
+     * @param {Number} [timemodified=0]  The time this file was modified.
+     * @param {Boolean} [checkSize=true] True if we shouldn't download files if their size is big, false otherwise.
+     * @return {Promise}                 Resolved with the URL to use. When rejected, nothing could be done.
      * @description
      * This will return a URL pointing to the content of the requested URL.
      *
@@ -1271,9 +1276,13 @@ angular.module('mm.core')
      * When the file cannot be found, and we are offline, then we reject the promise because
      * there was nothing we could do.
      */
-    self._getFileUrlByUrl = function(siteId, fileUrl, mode, component, componentId, timemodified) {
+    self._getFileUrlByUrl = function(siteId, fileUrl, mode, component, componentId, timemodified, checkSize) {
         var fileId,
             revision;
+
+        if (typeof checkSize == 'undefined') {
+            checkSize = true;
+        }
 
         return self._fixPluginfileURL(siteId, fileUrl).then(function(fixedUrl) {
             fileUrl = fixedUrl;
@@ -1291,12 +1300,12 @@ angular.module('mm.core')
 
                 if (typeof fileObject === 'undefined') {
                     // We do not have the file, add it to the queue, and return real URL.
-                    self.addToQueueByUrl(siteId, fileUrl, component, componentId, timemodified);
+                    addToQueueIfNeeded();
                     response = fileUrl;
 
                 } else if (self._isFileOutdated(fileObject, revision, timemodified) && $mmApp.isOnline()) {
                     // The file is outdated, we add to the queue and return real URL.
-                    self.addToQueueByUrl(siteId, fileUrl, component, componentId, timemodified);
+                    addToQueueIfNeeded();
                     response = fileUrl;
 
                 } else {
@@ -1317,7 +1326,7 @@ angular.module('mm.core')
                         // we had it, we will delete the entries associated with that ID.
                         $log.debug('File ' + fileId + ' not found on disk');
                         self._removeFileById(siteId, fileId);
-                        self.addToQueueByUrl(siteId, fileUrl, component, componentId, timemodified);
+                        addToQueueIfNeeded();
 
                         if ($mmApp.isOnline()) {
                             // We still have a chance to serve the right content.
@@ -1331,10 +1340,42 @@ angular.module('mm.core')
                 return response;
             }, function() {
                 // We do not have the file in store yet.
-                self.addToQueueByUrl(siteId, fileUrl, component, componentId, timemodified);
+                addToQueueIfNeeded();
                 return fileUrl;
             });
         });
+
+        function addToQueueIfNeeded() {
+            var promise;
+
+            if (checkSize) {
+                if (!$mmApp.isOnline()) {
+                    return;
+                }
+
+                if (typeof sizeCache[fileUrl] != 'undefined') {
+                    promise = $q.when(sizeCache[fileUrl]);
+                } else {
+                    promise = $mmWS.getRemoteFileSize(fileUrl);
+                }
+
+                // Calculate the size of the file.
+                promise.then(function(size) {
+                    if (size > 0) {
+                        // Store the size in the cache.
+                        sizeCache[fileUrl] = size;
+
+                        // We were able to calculate the size. Check that it's below the thresholds.
+                        var isWifi = !$mmApp.isNetworkAccessLimited();
+                        if (size <= mmFilepoolDownloadThreshold || (isWifi && size <= mmFilepoolWifiDownloadThreshold)) {
+                            self.addToQueueByUrl(siteId, fileUrl, component, componentId, timemodified);
+                        }
+                    }
+                });
+            } else {
+                self.addToQueueByUrl(siteId, fileUrl, component, componentId, timemodified);
+            }
+        }
     };
 
     /**
@@ -1568,20 +1609,21 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmFilepool#getSrcByUrl
-     * @param {String} siteId The site ID.
-     * @param {String} fileUrl The absolute URL to the file.
-     * @param {String} component The component to link the file to.
-     * @param {Number} [componentId] An ID to use in conjunction with the component.
-     * @param {Number} [timemodified] The time this file was modified.
-     * @return {Promise} Resolved with the URL to use. When rejected, nothing could be done,
-     *                   which means that you should not even use the fileUrl passed.
+     * @param {String} siteId            The site ID.
+     * @param {String} fileUrl           The absolute URL to the file.
+     * @param {String} component         The component to link the file to.
+     * @param {Number} [componentId]     An ID to use in conjunction with the component.
+     * @param {Number} [timemodified]    The time this file was modified.
+     * @param {Boolean} [checkSize=true] True if we shouldn't download files if their size is big, false otherwise.
+     * @return {Promise}                 Resolved with the URL to use. When rejected, nothing could be done,
+     *                                   which means that you should not even use the fileUrl passed.
      * @description
      * This will return a URL pointing to the content of the requested URL.
      * The URL returned is compatible to use with IMG tags.
      * See {@link $mmFilepool#_getFileUrlByUrl} for more details.
      */
-    self.getSrcByUrl = function(siteId, fileUrl, component, componentId, timemodified) {
-        return self._getFileUrlByUrl(siteId, fileUrl, 'src', component, componentId, timemodified);
+    self.getSrcByUrl = function(siteId, fileUrl, component, componentId, timemodified, checkSize) {
+        return self._getFileUrlByUrl(siteId, fileUrl, 'src', component, componentId, timemodified, checkSize);
     };
 
     /**
@@ -1611,20 +1653,21 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmFilepool#getUrlByUrl
-     * @param {String} siteId The site ID.
-     * @param {String} fileUrl The absolute URL to the file.
-     * @param {String} component The component to link the file to.
-     * @param {Number} [componentId] An ID to use in conjunction with the component.
-     * @param {Number} [timemodified] The time this file was modified.
-     * @return {Promise} Resolved with the URL to use. When rejected, nothing could be done,
-     *                   which means that you should not even use the fileUrl passed.
+     * @param {String} siteId            The site ID.
+     * @param {String} fileUrl           The absolute URL to the file.
+     * @param {String} component         The component to link the file to.
+     * @param {Number} [componentId]     An ID to use in conjunction with the component.
+     * @param {Number} [timemodified]    The time this file was modified.
+     * @param {Boolean} [checkSize=true] True if we shouldn't download files if their size is big, false otherwise.
+     * @return {Promise}                 Resolved with the URL to use. When rejected, nothing could be done,
+     *                                   which means that you should not even use the fileUrl passed.
      * @description
      * This will return a URL pointing to the content of the requested URL.
      * The URL returned is compatible to use with a local browser.
      * See {@link $mmFilepool#_getFileUrlByUrl} for more details.
      */
-    self.getUrlByUrl = function(siteId, fileUrl, component, componentId, timemodified) {
-        return self._getFileUrlByUrl(siteId, fileUrl, 'url', component, componentId, timemodified);
+    self.getUrlByUrl = function(siteId, fileUrl, component, componentId, timemodified, checkSize) {
+        return self._getFileUrlByUrl(siteId, fileUrl, 'url', component, componentId, timemodified, checkSize);
     };
 
     /**
