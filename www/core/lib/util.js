@@ -754,6 +754,22 @@ angular.module('mm.core')
         };
 
         /**
+         * Removes all properties from an object without losing its reference.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#emptyObject
+         * @param {Object} object Object to remove the properties.
+         */
+        self.emptyObject = function(object) {
+            for (var key in object) {
+                if (object.hasOwnProperty(key)) {
+                    delete object[key];
+                }
+            }
+        };
+
+        /**
          * Similar to $q.all, but if a promise fails this function's promise won't be rejected until ALL promises have finished.
          *
          * @module mm.core
