@@ -315,7 +315,7 @@
     "numhours": "{{$a}} timmar",
     "numminutes": "{{$a}} minuter",
     "nummonths": "{{$a}} månader",
-    "numseconds": "{$a}} sekunder",
+    "numseconds": "{{$a}}} sekunder",
     "numyears": "{{$a}} år",
     "offline": "Ingen inlämning online krävs",
     "online": "Uppkopplad",

@@ -1,0 +1,21 @@
+{
+    "complete": "Afslut",
+    "completecourse": "Afslut rum",
+    "completed": "Afsluttet",
+    "completiondate": "Afslutningsdato",
+    "couldnotloadreport": "Kunne ikke indlæse kursusafslutningsrapporten, prøv venligst igen senere.",
+    "coursecompletion": "Kursusafslutning",
+    "criteria": "Kriterier",
+    "criteriagroup": "Gruppe af kriterier",
+    "criteriarequiredall": "Alle nedenstående kriterier er påkrævet",
+    "criteriarequiredany": "Hvilken som helst af nedenstående kriterier er påkrævet",
+    "inprogress": "I gang",
+    "manualselfcompletion": "Manuel markering af færdiggørelse",
+    "notyetstarted": "Endnu ikke startet",
+    "pending": "Afventer",
+    "required": "Krævet",
+    "requiredcriteria": "Krævet kriterie",
+    "requirement": "Krav",
+    "status": "Status",
+    "viewcoursereport": "Se kursusrapport"
+}

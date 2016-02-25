@@ -1,0 +1,19 @@
+{
+    "cannotcalculategrade": "Karaktererne kunne ikke beregnes.",
+    "dataattemptshown": "Disse data tilhører forsøg nummer {{number}}.",
+    "errorcreateofflineattempt": "En fejl opstod ved oprettelse af et nyt offline forsøg. Prøv igen.",
+    "errordownloadscorm": "Fejs ved indhentning af SCORM: \"{{name}}\".",
+    "errorgetscorm": "Fejl ved indhentning af SCORM data.",
+    "errorinvalidversion": "Beklager programmet anvender kun SCORM 1.2.",
+    "errornotdownloadable": "Indhentning af SCORM pakker er deaktiveret på dit Moodle websted. Kontakt din Moodle wedstedsadministrator.",
+    "errornovalidsco": "Denne SCORM har ikke en synlig SCO at indhente.",
+    "errorpackagefile": "Beklager programmet anvender kun ZIP pakker.",
+    "errorsyncscorm": "En fejl opstod under synkronisering. Prøv igen.",
+    "lastsync": "Sidste sunkronisering",
+    "offlineattemptnote": "Dette forsøg har data, der ikke er synkroniseret.",
+    "offlineattemptovermax": "Dette forsøg kan ikke sendes, fordi du har overskredet det maksimale antal forsøg.",
+    "scormstatusnotdownloaded": "Denne SCORM er ikke indhentet. Den bliver indhentet automatisk, når du åbner den.",
+    "scormstatusoutdated": "Denne SCORM er ændret efter den sidste indhentning. Den bliver indhentet automatisk, når du åbner den.",
+    "warningofflinedatadeleted": "Nogle af forsøgets offlinedata {{number}} er blevet slettet, fordi de ikke kunne oprettes i et nyt forsøg.",
+    "warningsynconlineincomplete": "Nogle forsøg kunne ikke synkroniseres med webstedet, fordi det sidste onlineforsøg ikke er afsluttet. Venligst afslut onlineforsøget først."
+}

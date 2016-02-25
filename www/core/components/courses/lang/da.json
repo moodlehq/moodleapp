@@ -1,0 +1,21 @@
+{
+    "confirmselfenrol": "Er du sikker på du ønsker at tilmelde dig dette kursus?",
+    "enrolme": "Tilmeld mig",
+    "errorloadcourses": "En fejl opstod ved indlæsning af kurset.",
+    "errorsearching": "En fejl opstod under søgning.",
+    "errorselfenrol": "En fejl opstod under selvtilmelding.",
+    "filter": "Filter",
+    "filtermycourses": "Filtrer mit kursus",
+    "frontpage": "Forside",
+    "mycourses": "Mine kurser",
+    "nocourses": "Der er ingen kursusoplysninger at vise.",
+    "nosearchresults": "Din søgning gav ingen resultater",
+    "notenroled": "Du er ikke tilmeldt dette kursus",
+    "notenrollable": "Du kan ikke selv tilmelde dig dette kursus.",
+    "password": "Tilmeldingsnøgle",
+    "search": "Søg",
+    "searchcourses": "Kursussøgning",
+    "searchcoursesadvice": "Du kan bruge knappen kursussøgning for at få adgang som gæst eller tilmelde dig kurser der tillader det.",
+    "selfenrolment": "Selvtilmelding",
+    "totalcoursesearchresults": "Kurser ialt: {{$a}}"
+}

@@ -1,0 +1,10 @@
+{
+    "discussionsubscription": "Diskussions abonnement",
+    "erroremptysubject": "Indlægsemne kan ikke være tomt",
+    "errorgetforum": "Fejl ved indhentning af forumdata.",
+    "errorgetgroups": "Fejl ved indhentning af gruppeindstillinger.",
+    "forumnodiscussionsyet": "Der er endnu ingen diskussionsemner i dette forum.",
+    "group": "Gruppe",
+    "numdiscussions": "{{numdiscussions}} diskussioner",
+    "numreplies": "{{numdiscussions}} svar"
+}

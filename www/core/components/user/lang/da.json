@@ -1,0 +1,20 @@
+{
+    "address": "Adresse",
+    "city": "By",
+    "contact": "Kontakt",
+    "country": "Land",
+    "description": "Beskrivelse",
+    "details": "Detaljer",
+    "detailsnotavailable": "Denne bruges detaljer er ikke tilgængelige for dig.",
+    "editingteacher": "Lærer",
+    "email": "Email",
+    "interests": "Interesser",
+    "invaliduser": "Ugyldig bruger.",
+    "manager": "Manager",
+    "phone1": "Telefon",
+    "phone2": "Mobil",
+    "roles": "Roller",
+    "student": "Studerende",
+    "teacher": "Ikke redigerende lærer",
+    "webpage": "Webside"
+}
