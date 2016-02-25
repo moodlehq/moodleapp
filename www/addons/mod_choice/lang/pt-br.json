@@ -1,4 +1,5 @@
 {
+    "cannotsubmit": "Desculpe, houve um problema ao enviar sua escolha. Por favor, tente novamente.",
     "choiceoptions": "Opções de escolha",
     "expired": "Esta atividade está encerrada desde {{$a}}",
     "full": "(Cheio)",
@@ -6,6 +7,7 @@
     "notopenyet": "Esta atividade será acessível a partir de {{$a}}",
     "numberofuser": "Número de usuários",
     "numberofuserinpercentage": "Percentual de participantes",
+    "previewonly": "Esta é somente uma previsualização das opções dessa atividade. Você somente poderá enviar sua escolha a partir de {{$a}}",
     "removemychoice": "Remover a minha resposta",
     "responses": "Respostas",
     "responsesresultgraphheader": "Visualização do gráfico",

@@ -4,6 +4,8 @@
     "contactlistempty": "Kapcsolatainak jegyzéke jelenleg üres.",
     "contactname": "Név a kapcsolattartáshoz",
     "contacts": "Kapcsolatok",
+    "deletemessage": "Üzenet törlése",
+    "deletemessageconfirmation": "Biztosan törli az üzenetet? Az csak a korábbi üzeneteiből törlődik, az azt küldő vagy fogadó fél továbbra is láthatja.",
     "messages": "Üzenetek",
     "nomessages": "Nem várakozik üzenet",
     "nousersfound": "Nincs felhasználó",

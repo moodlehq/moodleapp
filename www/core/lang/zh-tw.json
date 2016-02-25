@@ -286,6 +286,7 @@
     "numseconds": "{{$a}}秒",
     "numyears": "{{$a}}年",
     "offline": "不需要線上繳交",
+    "online": "在線上",
     "phone": "電話",
     "previous": "向前",
     "refresh": "更新",

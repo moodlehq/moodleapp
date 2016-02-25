@@ -4,6 +4,8 @@
     "contactlistempty": "lista de contatos vazia",
     "contactname": "Nome do contato",
     "contacts": "Contatos",
+    "deletemessage": "Excluir mensagem",
+    "deletemessageconfirmation": "Tem certeza de que deseja excluir esta mensagem? Ela só será excluída do seu histórico de mensagens e ainda poderá ser vista pelo usuário que enviou ou recebeu a mensagem.",
     "errorwhileretrievingcontacts": "Erro ao recuperar contatos a partir do servidor.",
     "errorwhileretrievingdiscussions": "Erro ao recuperar discussão do servidor.",
     "errorwhileretrievingmessages": "Erro ao recuperar as mensagens do servidor.",

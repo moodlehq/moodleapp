@@ -1,4 +1,5 @@
 {
+    "cannotsubmit": "对不起，你的提交有误，请再试一次。",
     "choiceoptions": "投票选项",
     "expired": "对不起，该活动已于 {{$a}} 关闭，不能再参加",
     "full": "(已满)",

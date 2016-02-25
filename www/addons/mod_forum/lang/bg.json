@@ -4,6 +4,7 @@
     "cannotadddiscussionall": "Нямате разрешение да добавяте нова тема за всички участници.",
     "cannotcreatediscussion": "Не може да се създаде нова дискусия",
     "couldnotadd": "Вашето мнение не можа да се добави поради неизвестна грешка.",
+    "discussionsubscription": "Абониране за обсъждането",
     "erroremptymessage": "Мнението не може да бъде празно",
     "erroremptysubject": "Темата на мнението не може да бъде празна.",
     "forumnodiscussionsyet": "Няма теми за обсъждане в този форум",

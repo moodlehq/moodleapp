@@ -288,6 +288,7 @@
     "numseconds": "{{$a}} másodperc",
     "numyears": "{{$a}} év",
     "offline": "Nincs szükség neten keresztüli leadásra",
+    "online": "Online",
     "phone": "Telefon",
     "previous": "Előző",
     "refresh": "Frissítés",

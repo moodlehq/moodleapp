@@ -287,6 +287,7 @@
     "numseconds": "{{$a}} sekund",
     "numyears": "{{$a}} roků",
     "offline": "Nejsou požadovány odpovědi online",
+    "online": "Online",
     "phone": "Telefon",
     "previous": "Předchozí",
     "refresh": "Obnovit",

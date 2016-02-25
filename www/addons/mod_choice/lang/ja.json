@@ -1,4 +1,5 @@
 {
+    "cannotsubmit": "申し訳ございません、あなたの投票送信時に問題が発生しました。再度お試しください。",
     "choiceoptions": "投票オプション",
     "expired": "申し訳ございません、この活動は {{$a}} に終了しているため、これ以上利用することはできません。",
     "full": "(上限到達)",
@@ -6,6 +7,7 @@
     "notopenyet": "申し訳ございません、この活動は {{$a}} まで利用することができません。",
     "numberofuser": "参加者数",
     "numberofuserinpercentage": "参加者数 (%)",
+    "previewonly": "これはこの活動に関する利用可能なオプションのプレビューです。あなたの投票は {{$a}} まで送信することができません。",
     "removemychoice": "私の投票を削除する",
     "responses": "投票結果",
     "responsesresultgraphheader": "グラフ表示",

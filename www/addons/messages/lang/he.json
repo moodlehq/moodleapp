@@ -4,6 +4,8 @@
     "contactlistempty": "רשימת אנשי הקשר ריקה",
     "contactname": "שם איש קשר",
     "contacts": "אנשי קשר",
+    "deletemessage": "מחיקת מסר",
+    "deletemessageconfirmation": "האם הינך בטוח(ה) כי ברצונך למחוק את המסר? המסר ימחק רק מהיסטורית מסרים שלך ועדיין יהיה ניתן לצפות בו מהמשתמש השני שקיבל או שלח את המסר.",
     "errorwhileretrievingcontacts": "שגיאה בזמן טעינת אנשי קשר מהשרת.",
     "errorwhileretrievingdiscussions": "שגיאה בזמן טעינת הדיונים מהשרת.",
     "errorwhileretrievingmessages": "שגיאה בזמן טעינת המסרים מהשרת.",

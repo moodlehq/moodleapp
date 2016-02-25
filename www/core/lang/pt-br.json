@@ -318,6 +318,7 @@
     "numseconds": "{{$a}} segundos",
     "numyears": "{{$a}} anos",
     "offline": "Não há envios online solicitados",
+    "online": "Conectado",
     "phone": "Fone",
     "previous": "Anterior",
     "pulltorefresh": "Puxe para atualizar",

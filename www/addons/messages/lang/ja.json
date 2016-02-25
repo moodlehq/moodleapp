@@ -4,6 +4,8 @@
     "contactlistempty": "コンタクトリストは空です。",
     "contactname": "連絡先",
     "contacts": "コンタクト",
+    "deletemessage": "メッセージを削除する",
+    "deletemessageconfirmation": "本当にこのメッセージを削除してもよろしいですか? あなたのメッセージング履歴からのみ削除され、メッセージを送受信したユーザはまだ閲覧することができます。",
     "messages": "メッセージ",
     "nomessages": "未読メッセージはありません。",
     "nousersfound": "ユーザは見つかりませんでした。",

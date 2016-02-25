@@ -287,6 +287,7 @@
     "numseconds": "{{$a}} 秒",
     "numyears": "{{$a}} 年",
     "offline": "オンライン提出不要",
+    "online": "オンライン",
     "phone": "電話",
     "previous": "前へ",
     "refresh": "リフレッシュ",

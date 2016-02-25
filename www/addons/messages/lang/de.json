@@ -4,6 +4,8 @@
     "contactlistempty": "Die Kontaktliste ist leer",
     "contactname": "Name",
     "contacts": "Kontakte",
+    "deletemessage": "Nachricht löschen",
+    "deletemessageconfirmation": "Möchten Sie wirklich diese Nachricht löschen? Die Nachricht wird ausschließlich aus Ihrem Nachrichtenverlauf gelöscht, ist aber weiterhin bei der Person zu sehen, die Ihnen die Nachricht geschickt hat.",
     "erroruseronlyacceptsmessagefromcontacts": "Fehler: Person erlaubt nur Nachrichten von ihren Kontakten",
     "errorwhileretrievingcontacts": "Fehler beim Lesen der Kontakte vom Server",
     "errorwhileretrievingdiscussions": "Fehler beim Lesen der Themen vom Server",

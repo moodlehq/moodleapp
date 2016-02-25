@@ -3,6 +3,7 @@
     "currentusers": "Usuários atuais",
     "enterchat": "Clique aqui para entrar no chat agora",
     "entermessage": "Digite sua mensagem",
+    "errorwhilesendingmessage": "Ocorreu um erro ao enviar a mensagem, por favor, tente novamente mais tarde.",
     "messagebeepsyou": "{{$a}} está bipando você!",
     "messageenter": "{{$a}} entrou no chat",
     "messageexit": "{{$a}} abandonou este chat",

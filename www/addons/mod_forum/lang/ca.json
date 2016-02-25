@@ -4,6 +4,7 @@
     "cannotadddiscussionall": "No teniu permís per a afegir un nou tema de debat per a tots els participants.",
     "cannotcreatediscussion": "No s'ha pogut obrir un nou debat",
     "couldnotadd": "Un error desconegut ha impedit afegir el vostre missatge",
+    "discussionsubscription": "Subcripció a les discussions",
     "erroremptymessage": "El missatge no pot estar buit",
     "erroremptysubject": "La casella «Assumpte» no pot estar buida",
     "errorgetforum": "S'ha produït un error descarregant les dades del fòrum.",
