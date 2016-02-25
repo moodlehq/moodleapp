@@ -160,7 +160,7 @@ angular.module('mm.addons.mod_quiz')
             var params = {
                     attemptid: attemptId,
                     page: page,
-                    preflightdata: treatPreflightData(preflightData)
+                    preflightdata: treatDataToSend(preflightData)
                 },
                 preSets = {
                     cacheKey: getAttemptDataCacheKey(attemptId, page)
@@ -331,7 +331,7 @@ angular.module('mm.addons.mod_quiz')
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     attemptid: attemptId,
-                    preflightdata: treatPreflightData(preflightData)
+                    preflightdata: treatDataToSend(preflightData)
                 },
                 preSets = {
                     cacheKey: getAttemptSummaryCacheKey(attemptId)
@@ -680,6 +680,36 @@ angular.module('mm.addons.mod_quiz')
                 return $translate.instant('mma.mod_quiz.attemptlast');
         }
         return '';
+    };
+
+    /**
+     * Given an attempt's layout, return the TOC (list of pages).
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#getTocFromLayout
+     * @param  {String} layout Attempt's layout.
+     * @return {Number[]}      TOC.
+     * @description
+     * An attempt's layout is a string with the question numbers separated by commas. A 0 indicates a change of page.
+     * Example: 1,2,3,0,4,5,6,0
+     * In the example above, first page has questions 1, 2 and 3. Second page has questions 4, 5 and 6.
+     *
+     * This function returns a list of pages.
+     */
+    self.getTocFromLayout = function(layout) {
+        var split = layout.split(','),
+            page = 1,
+            toc = [];
+
+        for (var i = 0; i < split.length; i++) {
+            if (split[i] == 0) {
+                toc.push(page);
+                page++;
+            }
+        }
+
+        return toc;
     };
 
     /**
@@ -1154,6 +1184,19 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Check if a quiz navigation is sequential.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#isNavigationSequential
+     * @param  {Object}  quiz Quiz.
+     * @return {Boolean}      True if navigation is sequential, false otherwise.
+     */
+    self.isNavigationSequential = function(quiz) {
+        return quiz.navmethod == "sequential";
+    };
+
+    /**
      * Return whether or not the plugin is enabled in a certain site. Plugin is enabled if the quiz WS are available.
      *
      * @module mm.addons.mod_quiz
@@ -1245,6 +1288,42 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Process an attempt, saving its data.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#processAttempt
+     * @param  {Number} attemptId Attempt ID.
+     * @param  {Object} data      Data to save.
+     * @param  {Boolean} finish   True to finish the quiz, false otherwise.
+     * @param  {Boolean} timeup   True if the quiz time is up, false otherwise.
+     * @param  {String} [siteId]  Site ID. If not defined, current site.
+     * @return {Promise}          Promise resolved in success, rejected otherwise.
+     */
+    self.processAttempt = function(attemptId, data, finish, timeup, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                attemptid: attemptId,
+                data: treatDataToSend(data),
+                finishattempt: finish ? 1 : 0,
+                timeup: timeup ? 1 : 0
+            };
+
+            return site.write('mod_quiz_process_attempt', params).then(function(response) {
+                if (response && response.warnings && response.warnings.length) {
+                    // Reject with the first warning.
+                    return $q.reject(response.warnings[0].message);
+                } else if (response && response.state) {
+                    return response.state;
+                }
+                return $q.reject();
+            });
+        });
+    };
+
+    /**
      * Check if it's a graded quiz. Based on Moodle's quiz_has_grades.
      *
      * @module mm.addons.mod_quiz
@@ -1294,6 +1373,37 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Save an attempt data.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#saveAttempt
+     * @param  {Number} attemptId Attempt ID.
+     * @param  {Object} data      Data to save.
+     * @param  {String} [siteId]  Site ID. If not defined, current site.
+     * @return {Promise}          Promise resolved in success, rejected otherwise.
+     */
+    self.saveAttempt = function(attemptId, data, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                attemptid: attemptId,
+                data: treatDataToSend(data)
+            };
+
+            return site.write('mod_quiz_save_attempt', params).then(function(response) {
+                if (response && response.warnings && response.warnings.length) {
+                    // Reject with the first warning.
+                    return $q.reject(response.warnings[0].message);
+                } else if (!response || !response.status) {
+                    return $q.reject();
+                }
+            });
+        });
+    };
+
+    /**
      * Start an attempt.
      *
      * @module mm.addons.mod_quiz
@@ -1311,7 +1421,7 @@ angular.module('mm.addons.mod_quiz')
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     quizid: quizId,
-                    preflightdata: treatPreflightData(preflightData),
+                    preflightdata: treatDataToSend(preflightData),
                     forcenew: forceNew ? 1 : 0
                 };
 
@@ -1328,13 +1438,13 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
-     * Treat preflight data to be sent to a WS.
+     * Treats some data to be sent to a WS.
      * Converts an object of type key => value into an array of type 0 => {name: key, value: value}.
      *
      * @param  {Object} data Data to treat.
      * @return {Object[]}    Treated data.
      */
-    function treatPreflightData(data) {
+    function treatDataToSend(data) {
         var treated = [];
         angular.forEach(data, function(value, key) {
             treated.push({

@@ -1,0 +1,11 @@
+<ion-popover-view class="mma-mod_quiz-toc">
+    <ion-content>
+        <nav>
+            <ul class="list">
+                <a ng-repeat="page in toc" class="item item-text-wrap" ng-class='{"mma-mod-quiz-highlighted": attempt.currentpage + 1 == page}' ng-click="loadPage(page - 1, true)">
+                    <span>{{ 'mm.core.pagea' | translate:{$a: page} }}</span>
+                </a>
+            </ul>
+        </nav>
+    </ion-content>
+</ion-popover-view>
