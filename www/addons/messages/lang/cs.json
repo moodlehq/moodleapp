@@ -4,6 +4,8 @@
     "contactlistempty": "Váš seznam kontaktů je momentálně prázdný",
     "contactname": "Jméno",
     "contacts": "Kontakty",
+    "deletemessage": "Odstranit zprávu",
+    "deletemessageconfirmation": "Jste si jisti, že chcete smazat tuto zprávu? Bude odstraněna pouze z historie zpráv a nadále bude možné zobrazit uživatele, který zprávu odeslal nebo přijal.",
     "messages": "Zprávy",
     "nomessages": "Žádné nové zprávy",
     "nousersfound": "Nenalezeni žádní uživatelé",

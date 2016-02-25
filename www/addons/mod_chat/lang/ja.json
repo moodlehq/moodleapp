@@ -3,6 +3,7 @@
     "currentusers": "現在のユーザ",
     "enterchat": "チャットルームに入室する",
     "entermessage": "あなたのメッセージを入力してください。",
+    "errorwhilesendingmessage": "メッセージの送信中にエラーが発生しました。後で再度お試しください。",
     "messagebeepsyou": "{{$a}} があなたにビープしました!",
     "messageenter": "{{$a}} が入室しました。",
     "messageexit": "{{$a}} が退室しました。",

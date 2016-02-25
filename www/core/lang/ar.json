@@ -283,6 +283,8 @@
     "nummonths": "{{$a}} أشهر",
     "numseconds": "{{$a}} ثواني",
     "numyears": "{{$a}} سنوات",
+    "offline": "غير متصل بالأنترنت",
+    "online": "متصل بالإنترنت",
     "phone": "هاتف",
     "previous": "السابق",
     "refresh": "تحديث",

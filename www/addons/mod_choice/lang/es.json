@@ -1,4 +1,5 @@
 {
+    "cannotsubmit": "Lo lamentamos, se ha producido un error con el envío de su respuesta. Por favor inténtelo de nuevo.",
     "choiceoptions": "Opciones de la Consulta",
     "expired": "Lo sentimos, esta actividad se cerró el {{$a}} y ya no está disponible",
     "full": "(Lleno)",
@@ -6,6 +7,7 @@
     "notopenyet": "Lo sentimos, esta actividad no estará disponible hasta {{$a}}",
     "numberofuser": "Número de participantes",
     "numberofuserinpercentage": "Porcentaje de participantes",
+    "previewonly": "Esta es solamente una previsualización de las opciones disponibles para esta actividad. No podrá enviar su respuesta a la consulta hasta el {{$a}}.",
     "removemychoice": "Eliminar mi elección",
     "responses": "Respuestas",
     "responsesresultgraphheader": "Vista de gráfica",

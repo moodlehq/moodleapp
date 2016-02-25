@@ -4,6 +4,7 @@
     "cannotadddiscussionall": "您沒有權限新增討論主題給所有參與者。",
     "cannotcreatediscussion": "不能建立新的議題",
     "couldnotadd": "由於不明錯誤， 無法新增您的貼文",
+    "discussionsubscription": "議題訂閱",
     "erroremptymessage": "貼文的訊息不能是空白",
     "erroremptysubject": "貼文的主旨不能是空白",
     "forumnodiscussionsyet": "這個討論區還沒有討論主題",

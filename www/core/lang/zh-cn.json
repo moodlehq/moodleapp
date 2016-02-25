@@ -286,6 +286,7 @@
     "numseconds": "{{$a}}秒",
     "numyears": "{{$a}}年",
     "offline": "不需要在线提交",
+    "online": "在线",
     "phone": "电话",
     "previous": "向前",
     "refresh": "刷新",

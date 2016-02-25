@@ -1,0 +1,21 @@
+{
+    "addanewdiscussion": "Tilføj en ny tråd",
+    "cannotadddiscussion": "For at oprette en ny tråd i dette forum skal man være medlem af en gruppe.",
+    "cannotadddiscussionall": "Du har ikke tilladelse til at oprette en ny tråd for alle deltagere.",
+    "cannotcreatediscussion": "Kunne ikke oprette en ny tråd.",
+    "couldnotadd": "Kunne ikke tilføje dit indlæg pga. en ukendt fejl",
+    "discussionsubscription": "Diskussions abonnement",
+    "erroremptymessage": "Indlægget kan ikke være tomt.",
+    "erroremptysubject": "Indlægsemne kan ikke være tomt",
+    "errorgetforum": "Fejl ved indhentning af forumdata.",
+    "errorgetgroups": "Fejl ved indhentning af gruppeindstillinger.",
+    "forumnodiscussionsyet": "Der er endnu ingen diskussionsemner i dette forum.",
+    "group": "Gruppe",
+    "message": "Meddelelse",
+    "numdiscussions": "{{numdiscussions}} diskussioner",
+    "numreplies": "{{numdiscussions}} svar",
+    "posttoforum": "Send til forum",
+    "re": "Ang:",
+    "reply": "Svar",
+    "subject": "Emne"
+}

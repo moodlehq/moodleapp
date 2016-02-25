@@ -6,6 +6,7 @@
     "deletesitefiles": "Är du säker på att du vill ta bort de nedladdade filerna från den här webbplatsen?",
     "deletesitefilestitle": "Ta bort platsfiler",
     "development": "Utveckling",
+    "devicewebworkers": "Enheten stödjer Web Workers",
     "enabledebugging": "Aktivera felsökning",
     "errorsyncsite": "Fel vid synkronisering. Kontrollera din Internetanslutning och försök igen",
     "estimatedfreespace": "Beräknad ledigt utrymme",

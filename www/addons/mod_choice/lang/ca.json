@@ -1,4 +1,5 @@
 {
+    "cannotsubmit": "Hi ha hagut un problema en la tramesa de la vostra resposta. Torneu-ho a intentar.",
     "choiceoptions": "Opcions de la tria",
     "expired": "Aquesta activitat es va tancar el dia {{$a}} i ja no està disponible.",
     "full": "(Complet)",

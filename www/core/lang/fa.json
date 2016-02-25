@@ -279,6 +279,8 @@
     "nummonths": "{{$a}} ماه",
     "numseconds": "{{$a}} ثانیه",
     "numyears": "{{$a}} سال",
+    "offline": "آفلاین",
+    "online": "آنلاین",
     "phone": "تلفن",
     "previous": "قبلی",
     "refresh": "تازه‌سازی",

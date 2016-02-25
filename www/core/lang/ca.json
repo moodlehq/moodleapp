@@ -319,6 +319,7 @@
     "numseconds": "{{$a}} segons",
     "numyears": "{{$a}} anys",
     "offline": "No es requereix cap tramesa en línia",
+    "online": "En línia",
     "phone": "Telèfon",
     "previous": "Anterior",
     "pulltorefresh": "Estira per actualitzar",

@@ -1,0 +1,19 @@
+{
+    "cannotsubmit": "Beklager der var et problem med at indsende dit valg. Prøv igen.",
+    "choiceoptions": "Valgmuligheder",
+    "errorgetchoice": "Fejl ved indhentning af valgte data",
+    "expired": "Beklager denne aktivitet lukkede {{$a}} og er ikke længere tilgængelig",
+    "full": "(Fuld)",
+    "noresultsviewable": "Resultaterne er ikke tilgængelige på nuværende tidspunkt.",
+    "notopenyet": "Beklager denne aktivitet er først tilgængelig {{$a}}",
+    "numberofuser": "Antal brugere",
+    "numberofuserinpercentage": "Antal brugere i procent",
+    "previewonly": "Dette er kun en visning af aktivitetens muligheder. Du vil ikke kunne sende dit valg før {{$a}}",
+    "removemychoice": "Slet mit svar",
+    "responses": "Besvarelser",
+    "responsesresultgraphdescription": "{{number}}% af brugerne vælger denne mulighed: {{test}}",
+    "responsesresultgraphheader": "Grafisk visning",
+    "savemychoice": "Gem",
+    "userchoosethisoption": "Brugere, der vælger denne mulighed",
+    "yourselection": "Dine valg"
+}

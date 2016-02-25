@@ -3,6 +3,7 @@
     "currentusers": "當前用戶",
     "enterchat": "點選這裡進入聊天室",
     "entermessage": "輸入您的訊息",
+    "errorwhilesendingmessage": "當傳送簡訊時發生錯誤，請稍後再嘗試",
     "messagebeepsyou": "{{$a}} 呼叫您",
     "messageenter": "{{$a}} 剛加入這次聊天",
     "messageexit": "{{$a}} 已退出這次聊天",

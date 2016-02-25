@@ -311,6 +311,7 @@
     "numseconds": "{{number}} секунди",
     "numyears": "{{number}} години",
     "offline": "Не се изисква предаване онлайн",
+    "online": "Онлайн",
     "phone": "Телефон",
     "previous": "Предишна",
     "pulltorefresh": "",

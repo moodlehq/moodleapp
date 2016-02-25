@@ -1,12 +1,21 @@
 {
+    "confirmselfenrol": "Tem certeza de que deseja inscrever-se neste curso?",
     "enrolme": "Inscreva-me",
     "errorloadcourses": "Um erro ocorreu enquanto os cursos estavam sendo carregados.",
+    "errorsearching": "Ocorreu um erro durante a pesquisa.",
+    "errorselfenrol": "Ocorreu um erro ao auto registo.",
     "filter": "Filtro",
+    "filtermycourses": "Filtrar meus cursos",
     "frontpage": "Primeira página",
     "mycourses": "Meus cursos",
-    "nocourses": "Nenhuma informação disponível sobre o curso",
-    "notenroled": "Você não está inscrito como estudante neste curso",
-    "password": "Senha",
-    "search": "Buscar",
-    "searchcourses": "Buscar cursos"
+    "nocourses": "Sem informações sobre o curso para mostrar.",
+    "nosearchresults": "Não foram encontrados resultados da sua pesquisa",
+    "notenroled": "Você não está registrado neste curso",
+    "notenrollable": "Você não pode inscrever-se neste curso.",
+    "password": "Chave de inscrição",
+    "search": "Pesquisa",
+    "searchcourses": "Buscar cursos",
+    "searchcoursesadvice": "Você pode usar o botão de busca para acessar os cursos como convidado ou matricular-se em cursos que permitem que ele.",
+    "selfenrolment": "Auto-inscrição",
+    "totalcoursesearchresults": "Total de cursos: {{$a}}"
 }

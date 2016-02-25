@@ -1,5 +1,6 @@
 {
     "allparticipants": "Alla deltagare",
+    "areyousure": "Är du säker?",
     "cancel": "Avbryt",
     "cannotconnect": "Kan inte ansluta: Kontrollera att webbadressen är korrekt och att din webbplats använder Moodle 2.4 eller senare",
     "category": "Kategori",
@@ -314,9 +315,10 @@
     "numhours": "{{$a}} timmar",
     "numminutes": "{{$a}} minuter",
     "nummonths": "{{$a}} månader",
-    "numseconds": "{$a}} sekunder",
+    "numseconds": "{{$a}}} sekunder",
     "numyears": "{{$a}} år",
     "offline": "Ingen inlämning online krävs",
+    "online": "Uppkopplad",
     "phone": "Telefon",
     "previous": "Tidigare",
     "pulltorefresh": "Dra för att uppdatera",

@@ -3,6 +3,7 @@
     "currentusers": "משתמשים נוכחיים",
     "enterchat": "הקליקו כאן לכניסה לרב-שיח עכשיו",
     "entermessage": "הזנת הודעתך",
+    "errorwhilesendingmessage": "שגיאה התרחשה בעת שליחת המסר, יש לנסות שוב מאוחר יותר.",
     "messagebeepsyou": "{{$a}} מנסה ליצור קשר איתך עכשיו",
     "messageenter": "{{$a}} נכנס/ה לרב-שיח עכשיו",
     "messageexit": "{{$a}} עזב/ה את הרב-שיח עכשיו",

@@ -1,4 +1,5 @@
 {
+    "cannotsubmit": "Omlouváme se, nastal problém odesláním vaší odpovědi. Zkuste to prosím znovu.",
     "choiceoptions": "Možné odpovědi na anketu",
     "expired": "Je nám líto, tato činnost byla uzavřena {{$a}} a není nadále dostupná",
     "full": "(Obsazeno)",
@@ -6,6 +7,7 @@
     "notopenyet": "Je mi líto, tato činnost není až do {{$a}} dostupná",
     "numberofuser": "Počet uživatelů",
     "numberofuserinpercentage": "Počet uživatelů v procentech",
+    "previewonly": "Toto je náhled dostupných možností v této anketě. Hlasovat budete moci od {{$a}}.",
     "removemychoice": "Odstranit mou volbu",
     "responses": "Odpovědi",
     "responsesresultgraphheader": "Graf",

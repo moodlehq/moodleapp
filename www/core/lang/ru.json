@@ -320,6 +320,7 @@
     "numseconds": "{{number}} сек.",
     "numyears": "{{number}} г.",
     "offline": "Ответ вне сайта",
+    "online": "На сайте",
     "phone": "Телефон",
     "previous": "Назад",
     "pulltorefresh": "Потяните, чтобы обновить",
