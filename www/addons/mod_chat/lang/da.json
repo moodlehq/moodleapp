@@ -1,4 +1,7 @@
 {
+    "beep": "bip",
+    "currentusers": "Er i chatten nu:",
+    "enterchat": "Tryk her for at gå ind i chatten nu.",
     "errorwhileconnecting": "Fejl ved tilkobling til chatten.",
     "errorwhilegettingchatdata": "Fejl ved indhentning af chat data.",
     "errorwhilegettingchatusers": "Fejl ved indhentning af chatbrugere.",
@@ -8,5 +11,8 @@
     "messageenter": "{{$a}} er netop kommet på chatten",
     "messageexit": "{{$a}} har forladt chatten",
     "mustbeonlinetosendmessages": "Du skal være online for at sende beskeder",
-    "sessionstart": "Den næste chat session starter om {{$a}}"
+    "nomessages": "Ingen beskeder endnu",
+    "send": "Send",
+    "sessionstart": "Den næste chat session starter om {{$a}}",
+    "talk": "Tal"
 }
