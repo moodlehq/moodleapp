@@ -13,7 +13,7 @@
         </div>
     </form>
 
-    <mm-loading hide-until="loaded">
+    <mm-loading hide-until="loaded" dyn-message="loadingMessage">
         <ul class="list">
             <li ng-repeat="contactType in contactTypes" ng-if="contacts[contactType] && (contacts[contactType].length > 0 || contactType === searchType)">
 
