@@ -35,7 +35,7 @@ $mma-messages-date-badge: "stable" !default;
 }
 
 .button.button-icon.mma-messages-delete-button {
-  min-height: auto;
+  min-height: initial;
   line-height: initial;
   &:before {
     font-size: 100%;
