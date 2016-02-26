@@ -300,6 +300,36 @@ angular.module('mm.core.course')
     };
 
     /**
+     * Helper function to prefetch a module, showing a confirmation modal if the size is big
+     * and invalidating contents if refreshing.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourseHelper#prefetchModule
+     * @param  {Object} service  Service implementing 'invalidateContent' and 'prefetchContent'.
+     * @param  {Object} module   Module to download.
+     * @param  {Number} size     Size of the module.
+     * @param  {Boolean} refresh True if refreshing, false otherwise.
+     * @return {Promise}         Promise resolved when downloaded.
+     */
+    self.prefetchModule = function(service, module, size, refresh) {
+        // Show confirmation if needed.
+        return $mmUtil.confirmDownloadSize(size).then(function() {
+            // Invalidate content if refreshing and download the data.
+            var promise = refresh ? service.invalidateContent(module.id) : $q.when();
+            return promise.catch(function() {
+                // Ignore errors.
+            }).then(function() {
+                return service.prefetchContent(module).catch(function() {
+                    if (!$scope.$$destroyed) {
+                        $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                    }
+                });
+            });
+        });
+    };
+
+    /**
      * Prefetch or restore the prefetch of a certain section if it needs to be prefetched.
      * If the section is "All sections" it will be ignored.
      *

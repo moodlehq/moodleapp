@@ -21,9 +21,9 @@ angular.module('mm.addons.mod_folder')
  * @ngdoc service
  * @name $mmaModFolderHandlers
  */
-.factory('$mmaModFolderHandlers', function($mmCourse, $mmaModFolder, $mmEvents, $state, $mmSite, $mmUtil, $mmFilepool,
+.factory('$mmaModFolderHandlers', function($mmCourse, $mmaModFolder, $mmEvents, $state, $mmSite, $mmCourseHelper, $mmFilepool,
             $mmCoursePrefetchDelegate, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated, mmCoreEventPackageStatusChanged,
-            mmaModFolderComponent, $mmContentLinksHelper, $q) {
+            mmaModFolderComponent, $mmContentLinksHelper, $q, $mmaModFolderPrefetchHandler) {
     var self = {};
 
     /**
@@ -70,11 +70,10 @@ angular.module('mm.addons.mod_folder')
                 function prefetchFolder(e) {
                     e.preventDefault();
                     e.stopPropagation();
-                    $mmaModFolder.prefetchContent(module).catch(function() {
-                        if (!$scope.$$destroyed) {
-                            $mmUtil.showErrorModal('mm.core.errordownloading', true);
-                        }
-                    });
+
+                    // Check size and show confirmation if needed.
+                    var size = $mmaModFolderPrefetchHandler.getDownloadSize(module);
+                    $mmCourseHelper.prefetchModule($mmaModFolder, module, size, false);
                 }
 
                 downloadBtn = {
