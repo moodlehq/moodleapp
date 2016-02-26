@@ -26,10 +26,13 @@ angular.module('mm.core')
  *     <!-- CONTENT TO HIDE UNTIL LOADED -->
  * </mm-loading>
  * This directive will show a ion-spinner with a message and hide all the content until 'dataLoaded' variable is set to true.
- * If 'message' attribute is not set, default message "Loading" is shown.
+ * If 'message' and 'dynMessage' attributes aren't set, default message "Loading" is shown.
  * 'message' attribute accepts hardcoded strings, variables, filters, etc. E.g. message="{{ 'mm.core.loading' | translate}}".
  *
- * @param {String} [message]           Message to show while loading. If not set, default "Loading" message is shown.
+ * @param {String} [message]           Static message to show while loading. Please use this attribute if the message
+ *                                     will always be the same.
+ * @param {String} [dynMessage]        Dynamic message to show while loading. Please use this attribute if the message needs
+ *                                     to change during execution. Has priority over message.
  * @param {String} hideUntil           Scope variable to determine when should the contents be shown. When the variable is set
  *                                     to true, the loading is hidden and the contents are shown.
  * @param {String} [loadingPaddingTop] Padding top to set to loading view. If not set, no padding top is set. This attribute is
@@ -45,6 +48,7 @@ angular.module('mm.core')
         scope: {
             hideUntil: '=?',
             message: '@?',
+            dynMessage: '=?',
             loadingPaddingTop: '=?'
         },
         link: function(scope, element, attrs) {

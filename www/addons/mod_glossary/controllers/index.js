@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_glossary')
  * @name mmaModGlossaryIndexCtrl
  */
 .controller('mmaModGlossaryIndexCtrl', function($q, $scope, $stateParams, $ionicPopover, $mmUtil, $mmaModGlossary,
-        $ionicScrollDelegate) {
+        $ionicScrollDelegate, $translate) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
@@ -46,7 +46,9 @@ angular.module('mm.addons.mod_glossary')
                 key: 'search',
                 langkey: 'mma.mod_glossary.bysearch'
             }
-        ];
+        ],
+        searchingMessage = $translate.instant('mm.core.searching'),
+        loadingMessage = $translate.instant('mm.core.loading');
 
     $scope.title = module.name;
     $scope.description = module.description;
@@ -60,6 +62,7 @@ angular.module('mm.addons.mod_glossary')
     $scope.searchData = {
         searchQuery: ''
     };
+    $scope.loadingMessage = loadingMessage;
 
     $scope.loadMoreEntries = function() {
         loadMoreEntries().finally(function() {
@@ -78,8 +81,12 @@ angular.module('mm.addons.mod_glossary')
     };
 
     $scope.search = function(query) {
+        $scope.loadingMessage = searchingMessage;
         fetchArguments = [glossary.id, query, 1, 'CONCEPT', 'ASC'];
-        fetchEntries();
+        $scope.loaded = false;
+        fetchEntries().finally(function() {
+            $scope.loaded = true;
+        });
     };
 
     $scope.trackBy = function(entry) {
@@ -102,6 +109,7 @@ angular.module('mm.addons.mod_glossary')
         // Preparing the popover.
         popoverScope.modes = browseModes;
         popoverScope.modePicked = function(mode) {
+            $scope.loadingMessage = loadingMessage;
             $ionicScrollDelegate.$getByHandle('mmaModGlossaryIndex').scrollTop(false);
             if (switchMode(mode)) {
                 $scope.loaded = false;

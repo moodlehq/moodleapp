@@ -25,7 +25,7 @@
                 </div>
             </form>
 
-            <mm-loading hide-until="loaded">
+            <mm-loading hide-until="loaded" dyn-message="loadingMessage">
                 <div class="list" ng-if="entries && entries.length > 0">
                     <div ng-repeat="entry in entries track by trackBy(entry)">
 
