@@ -21,9 +21,9 @@ angular.module('mm.addons.mod_imscp')
  * @ngdoc service
  * @name $mmaModImscpHandlers
  */
-.factory('$mmaModImscpHandlers', function($mmCourse, $mmaModImscp, $mmEvents, $state, $mmSite, $mmUtil, $mmFilepool,
+.factory('$mmaModImscpHandlers', function($mmCourse, $mmaModImscp, $mmEvents, $state, $mmSite, $mmCourseHelper, $mmFilepool,
             $mmCoursePrefetchDelegate, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated, mmCoreEventPackageStatusChanged,
-            mmaModImscpComponent, $mmContentLinksHelper, $q) {
+            mmaModImscpComponent, $mmContentLinksHelper, $q, $mmaModImscpPrefetchHandler) {
     var self = {};
 
     /**
@@ -73,11 +73,8 @@ angular.module('mm.addons.mod_imscp')
                     action: function(e) {
                         e.preventDefault();
                         e.stopPropagation();
-                        $mmaModImscp.prefetchContent(module).catch(function() {
-                            if (!$scope.$$destroyed) {
-                                $mmUtil.showErrorModal('mm.core.errordownloading', true);
-                            }
-                        });
+                        var size = $mmaModImscpPrefetchHandler.getDownloadSize(module);
+                        $mmCourseHelper.prefetchModule($mmaModImscp, module, size, false);
                     }
                 };
 
@@ -88,13 +85,8 @@ angular.module('mm.addons.mod_imscp')
                     action: function(e) {
                         e.preventDefault();
                         e.stopPropagation();
-                        $mmaModImscp.invalidateContent(module.id).then(function() {
-                            $mmaModImscp.prefetchContent(module).catch(function() {
-                                if (!$scope.$$destroyed) {
-                                    $mmUtil.showErrorModal('mm.core.errordownloading', true);
-                                }
-                            });
-                        });
+                        var size = $mmaModImscpPrefetchHandler.getDownloadSize(module);
+                        $mmCourseHelper.prefetchModule($mmaModImscp, module, size, true);
                     }
                 };
 

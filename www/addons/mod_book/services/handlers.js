@@ -21,9 +21,9 @@ angular.module('mm.addons.mod_book')
  * @ngdoc service
  * @name $mmaModBookHandlers
  */
-.factory('$mmaModBookHandlers', function($mmCourse, $mmaModBook, $mmEvents, $state, $mmSite, $mmUtil, $mmFilepool,
+.factory('$mmaModBookHandlers', function($mmCourse, $mmaModBook, $mmEvents, $state, $mmSite, $mmCourseHelper, $mmFilepool,
             $mmCoursePrefetchDelegate, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated, mmCoreDownloaded,
-            mmCoreEventPackageStatusChanged, mmaModBookComponent, $mmContentLinksHelper, $q) {
+            mmCoreEventPackageStatusChanged, mmaModBookComponent, $mmContentLinksHelper, $q, $mmaModBookPrefetchHandler) {
 
     var self = {};
 
@@ -67,11 +67,8 @@ angular.module('mm.addons.mod_book')
                     action: function(e) {
                         e.preventDefault();
                         e.stopPropagation();
-                        $mmaModBook.prefetchContent(module).catch(function() {
-                            if (!$scope.$$destroyed) {
-                                $mmUtil.showErrorModal('mm.core.errordownloading', true);
-                            }
-                        });
+                        var size = $mmaModBookPrefetchHandler.getDownloadSize(module);
+                        $mmCourseHelper.prefetchModule($mmaModBook, module, size, false);
                     }
                 };
 
@@ -82,14 +79,8 @@ angular.module('mm.addons.mod_book')
                     action: function(e) {
                         e.preventDefault();
                         e.stopPropagation();
-
-                        $mmaModBook.invalidateContent(module.id).finally(function() {
-                            $mmaModBook.prefetchContent(module).catch(function() {
-                                if (!$scope.$$destroyed) {
-                                    $mmUtil.showErrorModal('mm.core.errordownloading', true);
-                                }
-                            });
-                        });
+                        var size = $mmaModBookPrefetchHandler.getDownloadSize(module);
+                        $mmCourseHelper.prefetchModule($mmaModBook, module, size, true);
                     }
                 };
 

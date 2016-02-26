@@ -21,9 +21,9 @@ angular.module('mm.addons.mod_resource')
  * @ngdoc service
  * @name $mmaModResourceHandlers
  */
-.factory('$mmaModResourceHandlers', function($mmCourse, $mmaModResource, $mmEvents, $state, $mmSite, $mmUtil,
+.factory('$mmaModResourceHandlers', function($mmCourse, $mmaModResource, $mmEvents, $state, $mmSite, $mmCourseHelper,
             $mmCoursePrefetchDelegate, $mmFilepool, $mmFS, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated,
-            mmCoreEventPackageStatusChanged, mmaModResourceComponent, $q, $mmContentLinksHelper) {
+            mmCoreEventPackageStatusChanged, mmaModResourceComponent, $q, $mmContentLinksHelper, $mmaModResourcePrefetchHandler) {
     var self = {};
 
     /**
@@ -67,11 +67,8 @@ angular.module('mm.addons.mod_resource')
                     action: function(e) {
                         e.preventDefault();
                         e.stopPropagation();
-                        $mmaModResource.prefetchContent(module).catch(function() {
-                            if (!$scope.$$destroyed) {
-                                $mmUtil.showErrorModal('mm.core.errordownloading', true);
-                            }
-                        });
+                        var size = $mmaModResourcePrefetchHandler.getDownloadSize(module);
+                        $mmCourseHelper.prefetchModule($mmaModResource, module, size, false);
                     }
                 };
 
@@ -82,13 +79,8 @@ angular.module('mm.addons.mod_resource')
                     action: function(e) {
                         e.preventDefault();
                         e.stopPropagation();
-                        $mmaModResource.invalidateContent(module.id).finally(function() {
-                            $mmaModResource.prefetchContent(module).catch(function() {
-                                if (!$scope.$$destroyed) {
-                                    $mmUtil.showErrorModal('mm.core.errordownloading', true);
-                                }
-                            });
-                        });
+                        var size = $mmaModResourcePrefetchHandler.getDownloadSize(module);
+                        $mmCourseHelper.prefetchModule($mmaModResource, module, size, true);
                     }
                 };
 
