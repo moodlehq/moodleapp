@@ -61,7 +61,7 @@ angular.module('mm.addons.mod_quiz')
 
         if (attempt) {
             // We're continuing an attempt. Call getAttemptData to validate the preflight data.
-            promise = $mmaModQuiz.getAttemptData(attempt.id, 0, preflightData, true);
+            promise = $mmaModQuiz.getAttemptData(attempt.id, attempt.currentpage, preflightData, true);
         } else {
             // We're starting a new attempt, call startAttempt.
             promise = $mmaModQuiz.startAttempt(quizId, preflightData).then(function(att) {
