@@ -18,6 +18,8 @@
     "devicewebworkers": "Trabajadores Web del Dispositivo soportados",
     "displayformat": "Mostrar formato",
     "enabledebugging": "Activar modo depuración (debug)",
+    "enabledownloadsection": "Habilitar descargar secciones",
+    "enabledownloadsectiondescription": "Deshabilitar ésta opción para acelerar la carga de secciones de curso.",
     "enablesyncwifi": "Permitir sincronización solamente cuando esté en Wi-Fi",
     "errordeletesitefiles": "Error al eliminar archivos del sitio.",
     "errorsyncsite": "Error al sincronizarlos datos del sitio; por favor revise su conexión de Internet e inténtelo de nuevo.",

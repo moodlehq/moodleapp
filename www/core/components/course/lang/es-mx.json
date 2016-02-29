@@ -9,6 +9,7 @@
     "couldnotloadsectioncontent": "No pudo cargarse el contenido de la sección; por favor inténtelo nuevamente después.",
     "couldnotloadsections": "No pudieron cargarse las secciones; por favor inténtelo nuevamente después.",
     "errordownloadingsection": "Error al descargar sección",
+    "errorgetmodule": "Error al obtener datos del módulo.",
     "gotothesite": "Ir al sitio",
     "nocontentavailable": "Sin contenido disponible al momento.",
     "showall": "Mostrar todo",

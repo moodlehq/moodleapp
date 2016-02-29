@@ -18,6 +18,8 @@
     "devicewebworkers": "Ondersteunde Device Web Workers",
     "displayformat": "Schermformaat",
     "enabledebugging": "Foutopsporing inschakelen",
+    "enabledownloadsection": "Downloadsecties inschakelen",
+    "enabledownloadsectiondescription": "Schakel deze optie uit om het laden van cursussecties te versnellen.",
     "enablesyncwifi": "Synchronisatie alleen over WI-FI toestaan.",
     "errordeletesitefiles": "Fout bij het verwijderen van bestanden",
     "errorsyncsite": "Fout bij het synchroniseren van sitegegevens. Controleer je internetverbinding en probeer opnieuw.",
