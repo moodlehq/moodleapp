@@ -5,6 +5,9 @@
                 <a ng-repeat="page in toc" class="item item-text-wrap" ng-class='{"mma-mod-quiz-highlighted": attempt.currentpage + 1 == page}' ng-click="loadPage(page - 1, true)">
                     <span>{{ 'mm.core.pagea' | translate:{$a: page} }}</span>
                 </a>
+                <a class="item item-text-wrap" ng-click="loadPage(-1, true)">
+                    <span>{{ 'mma.mod_quiz.finishattemptdots' | translate }}</span>
+                </a>
             </ul>
         </nav>
     </ion-content>

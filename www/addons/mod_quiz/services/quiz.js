@@ -320,10 +320,11 @@ angular.module('mm.addons.mod_quiz')
      * @name $mmaModQuiz#getAttemptSummary
      * @param {Number} attemptId     Attempt ID.
      * @param {Object} preflightData Preflight required data (like password).
+     * @param {Boolean} ignoreCache  True if it should ignore cached data (it will always fail in offline or server down).
      * @param {String} [siteId]      Site ID. If not defined, current site.
      * @return {Promise}             Promise resolved with the attempt summary.
      */
-    self.getAttemptSummary = function(attemptId, preflightData, siteId) {
+    self.getAttemptSummary = function(attemptId, preflightData, ignoreCache, siteId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -334,6 +335,11 @@ angular.module('mm.addons.mod_quiz')
                 preSets = {
                     cacheKey: getAttemptSummaryCacheKey(attemptId)
                 };
+
+            if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
 
             return site.read('mod_quiz_get_attempt_summary', params, preSets).then(function(response) {
                 if (response && response.questions) {

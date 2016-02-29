@@ -66,7 +66,11 @@ em {
   @extend h2;
 }
 
-// More options fro grids.
+// More options for grids.
+.col-65 {
+  @include flex(0, 0, 65%);
+  max-width: 65%;
+}
 .col-60 {
   @include flex(0, 0, 60%);
   max-width: 60%;
