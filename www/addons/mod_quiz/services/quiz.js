@@ -21,14 +21,12 @@ angular.module('mm.addons.mod_quiz')
  * @ngdoc service
  * @name $mmaModQuiz
  */
-.factory('$mmaModQuiz', function($log, $mmSite, $mmSitesManager, $q, $translate, $mmUtil, $mmText, $mmQuestionDelegate) {
+.factory('$mmaModQuiz', function($log, $mmSite, $mmSitesManager, $q, $translate, $mmUtil, $mmText, $mmQuestionDelegate,
+            $mmaModQuizAccessRulesDelegate) {
 
     $log = $log.getInstance('$mmaModQuiz');
 
-    var self = {},
-        supportedRules = ['quizaccess_delaybetweenattempts', 'quizaccess_ipaddress', 'quizaccess_numattempts',
-                            'quizaccess_openclosedate', 'quizaccess_password', 'quizaccess_safebrowser',
-                            'quizaccess_securewindow', 'quizaccess_timelimit'];
+    var self = {};
 
     // Constants.
 
@@ -743,7 +741,7 @@ angular.module('mm.addons.mod_quiz')
     self.getUnsupportedRules = function(rulesNames) {
         var notSupported = [];
         angular.forEach(rulesNames, function(name) {
-            if (supportedRules.indexOf(name) == -1 && notSupported.indexOf(name) == -1) {
+            if (!$mmaModQuizAccessRulesDelegate.isAccessRuleSupported(name)) {
                 notSupported.push(name);
             }
         });
