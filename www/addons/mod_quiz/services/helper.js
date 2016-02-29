@@ -21,9 +21,62 @@ angular.module('mm.addons.mod_quiz')
  * @ngdoc service
  * @name $mmaModQuizHelper
  */
-.factory('$mmaModQuizHelper', function($mmaModQuiz, $mmUtil, $q, $ionicModal) {
+.factory('$mmaModQuizHelper', function($mmaModQuiz, $mmUtil, $q, $ionicModal, $mmaModQuizAccessRulesDelegate, $translate) {
 
     var self = {};
+
+    /**
+     * Validate a preflight data or show a modal to input the preflight data if required.
+     * It calls $mmaModQuiz#startAttempt if a new attempt is needed.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizHelper#checkPreflightData
+     * @param  {Object} scope           Scope.
+     * @param  {Number} quizId          Quiz ID.
+     * @param  {Object} accessInfo      Access info returned by $mmaModQuiz#getAccessInformation.
+     * @param  {Object} [attempt]       Attempt to continue. Don't pass any value if the user needs to start a new attempt.
+     * @param  {Object} [preflightData] Preflight data to validate. Don't pass any value if the user hasn't input any data.
+     * @return {Promise}                Promise resolved when the preflight data is validated.
+     */
+    self.checkPreflightData = function(scope, quizId, accessInfo, attempt, preflightData) {
+        var promise;
+
+        if (accessInfo.ispreflightcheckrequired && !preflightData) {
+            // Preflight check is required but no preflightData has been sent. Show a modal with the preflight form.
+            if (!scope.modal) {
+                // Modal hasn't been created yet. Create it and show it.
+                return self.initPreflightModal(scope, accessInfo, attempt).catch(function(error) {
+                    return self.showError(error, 'Error initializing preflight modal.');
+                }).then(function() {
+                    scope.modal.show();
+                    return $q.reject();
+                });
+            } else if (!scope.modal.isShown()) {
+                // Modal is created but not shown. Show it.
+                scope.modal.show();
+            }
+            return $q.reject();
+        }
+
+        if (attempt) {
+            // We're continuing an attempt. Call getAttemptData to validate the preflight data.
+            promise = $mmaModQuiz.getAttemptData(attempt.id, 0, preflightData, true);
+        } else {
+            // We're starting a new attempt, call startAttempt.
+            promise = $mmaModQuiz.startAttempt(quizId, preflightData).then(function(att) {
+                attempt = att;
+            });
+        }
+
+        return promise.then(function() {
+            // Preflight data validated. Close modal if needed.
+            scope.modal && scope.modal.hide();
+            return attempt;
+        }).catch(function(error) {
+            return self.showError(error, 'mm.core.error');
+        });
+    };
 
     /**
      * Gets the mark string from a question HTML.
@@ -40,23 +93,46 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
-     * Init a password modal, adding it to the scope.
+     * Init a preflight modal, adding it to the scope.
      *
      * @module mm.addons.mod_quiz
      * @ngdoc method
-     * @name $mmaModQuizHelper#initConfirmStartModal
-     * @param  {Object} scope Scope.
-     * @return {Promise}      Promise resolved when the modal is initialized.
+     * @name $mmaModQuizHelper#initPreflightModal
+     * @param  {Object} scope      Scope.
+     * @param  {Object} accessInfo Access info returned by $mmaModQuiz#getAccessInformation.
+     * @param  {Object} [attempt]  Attempt to continue. Don't pass any value if the user needs to start a new attempt.
+     * @return {Promise}           Promise resolved when the modal is initialized.
      */
-    self.initConfirmStartModal = function(scope) {
-        return $ionicModal.fromTemplateUrl('addons/mod_quiz/templates/confirmstart-modal.html', {
+    self.initPreflightModal = function(scope, accessInfo, attempt) {
+        var notSupported = [],
+            directives = [];
+
+        angular.forEach(accessInfo.activerulenames, function(rule) {
+            var handler = $mmaModQuizAccessRulesDelegate.getAccessRuleHandler(rule);
+            if (handler) {
+                if (handler.isPreflightCheckRequired(attempt)) {
+                    directives.push(handler.getPreflightDirectiveName());
+                }
+            } else {
+                notSupported.push(rule);
+            }
+        });
+
+        if (notSupported.length) {
+            var error = $translate.instant('mma.mod_quiz.errorrulesnotsupported') + ' ' + JSON.stringify(notSupported);
+            return $q.reject(error);
+        }
+
+        scope.accessRulesDirectives = directives;
+
+        return $ionicModal.fromTemplateUrl('addons/mod_quiz/templates/preflight-modal.html', {
             scope: scope,
             animation: 'slide-in-up'
         }).then(function(modal) {
             scope.modal = modal;
 
             scope.closeModal = function() {
-                scope.preflightData.password = '';
+                $mmUtil.emptyObject(scope.preflightData);
                 modal.hide();
             };
             scope.$on('$destroy', function() {
