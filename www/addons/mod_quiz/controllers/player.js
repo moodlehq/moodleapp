@@ -31,7 +31,6 @@ angular.module('mm.addons.mod_quiz')
         quiz,
         accessInfo,
         attempt,
-        preflightData = {}, // Preflight data to send to WS (like password).
         newAttempt,
         originalBackFunction = $rootScope.$ionicGoBack,
         unregisterHardwareBack,
@@ -40,22 +39,20 @@ angular.module('mm.addons.mod_quiz')
     $scope.moduleUrl = moduleUrl;
     $scope.quizAborted = false;
     $scope.answers = {};
-    $scope.preflightData = {
-        password: ''
-    };
+    $scope.preflightData = {};
 
     // Convenience function to start the player.
-    function start(password) {
+    function start(preflightData) {
         var promise;
         $scope.dataLoaded = false;
 
         if (typeof password != 'undefined') {
             // Password submitted, get attempt data.
-            promise = getAttemptData(password);
+            promise = startOrContinueAttempt(preflightData);
         } else {
             // Fetch data.
             promise = fetchData().then(function() {
-                return getAttemptData();
+                return startOrContinueAttempt(preflightData);
             });
         }
 
@@ -100,48 +97,23 @@ angular.module('mm.addons.mod_quiz')
     }
 
     // Convenience function to start/continue the attempt.
-    function getAttemptData(password) {
-        // Check if we need to show a confirm modal (requires password or quiz has time limit).
-        // 'password' param will be != undefined even if password is not required, so we can use it to tell
-        // if the user clicked the modal button or not.
-        if (typeof password == 'undefined' && ($scope.requirePassword || $scope.isTimed)) {
-            // We need to show confirm modal and the user hasn't clicked the confirm button. Show the modal.
-            if (!$scope.modal) {
-                $mmaModQuizHelper.initConfirmStartModal($scope).then(function() {
-                    $scope.modal.show();
-                });
-            } else if (!$scope.modal.isShown()) {
-                $scope.modal.show();
-            }
-            return $q.reject();
-        }
+    function startOrContinueAttempt(preflightData) {
+        // Check preflight data and start attempt if needed.
+        var atmpt = newAttempt ? undefined : attempt;
+        return $mmaModQuizHelper.checkPreflightData($scope, quiz.id, accessInfo, atmpt, preflightData).then(function(att) {
+            attempt = att;
+            $scope.attempt = attempt;
+            $scope.toc = $mmaModQuiz.getTocFromLayout(attempt.layout);
 
-        var promise;
-        preflightData.quizpassword = password;
-
-        if (newAttempt) {
-            promise = $mmaModQuiz.startAttempt(quiz.id, preflightData).then(function(att) {
-                attempt = att;
+            return loadPage(attempt.currentpage).catch(function(message) {
+                return $mmaModQuizHelper.showError(message, 'mm.core.error');
             });
-        } else {
-            promise = $q.when();
-        }
-
-        return promise.then(function() {
-            // Get the attempt data.
-            return loadPage(attempt.currentpage).then(function() {
-                $scope.closeModal && $scope.closeModal(); // Close modal if needed.
-                $scope.attempt = attempt;
-                $scope.toc = $mmaModQuiz.getTocFromLayout(attempt.layout);
-            });
-        }).catch(function(message) {
-            return $mmaModQuizHelper.showError(message, 'mm.core.error');
         });
     }
 
     // Load a page questions.
     function loadPage(page) {
-        return $mmaModQuiz.getAttemptData(attempt.id, page, preflightData, true).then(function(data) {
+        return $mmaModQuiz.getAttemptData(attempt.id, page, $scope.preflightData, true).then(function(data) {
             // Remove all answers stored since each page has its own questions.
             $mmUtil.emptyObject($scope.answers);
 
@@ -169,8 +141,18 @@ angular.module('mm.addons.mod_quiz')
         }
 
         leaving = true;
-        var modal = $mmUtil.showModalLoading('mm.core.sending', true);
-        $mmaModQuiz.processAttempt(attempt.id, $scope.answers, false, false).catch(function() {
+        var promise,
+            modal = $mmUtil.showModalLoading('mm.core.sending', true);
+
+        if ($scope.questions && $scope.questions.length) {
+            // Save answers.
+            promise = $mmaModQuiz.processAttempt(attempt.id, $scope.answers, false, false);
+        } else {
+            // Nothing to save.
+            promise = $q.when();
+        }
+
+        promise.catch(function() {
             // Save attempt failed. Show confirmation.
             modal.dismiss();
             return $mmUtil.showConfirm($translate('mma.mod_quiz.confirmleavequizonerror'));
@@ -193,8 +175,8 @@ angular.module('mm.addons.mod_quiz')
     start();
 
     // Start the player.
-    $scope.start = function(password) {
-        start(password);
+    $scope.start = function(preflightData) {
+        start(preflightData);
     };
 
     // Function to call to abort the quiz.
