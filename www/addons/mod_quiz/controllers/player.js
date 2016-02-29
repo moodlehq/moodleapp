@@ -121,6 +121,7 @@ angular.module('mm.addons.mod_quiz')
             attempt.currentpage = page;
             $scope.nextPage = data.nextpage;
             $scope.previousPage = quiz.isSequential ? -1 : page - 1;
+            $scope.showSummary = false;
 
             angular.forEach($scope.questions, function(question) {
                 // Get the readable mark for each question.
@@ -134,6 +135,21 @@ angular.module('mm.addons.mod_quiz')
         });
     }
 
+    // Load attempt summary.
+    function loadSummary() {
+        $scope.showSummary = true;
+        $scope.summaryQuestions = [];
+        return $mmaModQuiz.getAttemptSummary(attempt.id, $scope.preflightData, true).then(function(questions) {
+            $scope.summaryQuestions = questions;
+
+            // Log summary as viewed.
+            $mmaModQuiz.logViewAttemptSummary(attempt.id);
+        }).catch(function(message) {
+            $scope.showSummary = false;
+            return $mmaModQuizHelper.showError(message, 'mma.mod_quiz.errorgetquestions');
+        });
+    }
+
     // Function called when the user wants to leave the player. Save the attempt before leaving.
     function leavePlayer() {
         if (leaving) {
@@ -144,7 +160,7 @@ angular.module('mm.addons.mod_quiz')
         var promise,
             modal = $mmUtil.showModalLoading('mm.core.sending', true);
 
-        if ($scope.questions && $scope.questions.length) {
+        if ($scope.questions && $scope.questions.length && !$scope.showSummary) {
             // Save answers.
             promise = $mmaModQuiz.processAttempt(attempt.id, $scope.answers, false, false);
         } else {
@@ -186,24 +202,34 @@ angular.module('mm.addons.mod_quiz')
 
     // Load a certain page.
     $scope.loadPage = function(page, fromToc) {
-        if (page == attempt.currentpage || (fromToc && quiz.isSequential)) {
+        if ((page == attempt.currentpage && !$scope.showSummary) || (fromToc && quiz.isSequential && page != -1)) {
             // If the user is navigating to the current page we do nothing.
-            // Also, in sequential quizzes we don't allow navigating using the TOC.
+            // Also, in sequential quizzes we don't allow navigating using the TOC except for finishing the quiz (summary).
+            return;
+        } else if (page === -1 && $scope.showSummary) {
+            // Summary already shown.
             return;
         }
+
+        var promise;
 
         $scope.dataLoaded = false;
         $ionicScrollDelegate.scrollTop();
         $scope.popover.hide(); // Hide popover if shown.
 
-        // First try to save the attempt data.
-        $mmaModQuiz.processAttempt(attempt.id, $scope.answers, false, false).catch(function(message) {
+        // First try to save the attempt data. We only save it if we're not seeing the summary.
+        promise = $scope.showSummary ? $q.when() : $mmaModQuiz.processAttempt(attempt.id, $scope.answers, false, false);
+        promise.catch(function(message) {
             return $mmaModQuizHelper.showError(message, 'mma.mod_quiz.errorsaveattempt');
         }).then(function() {
-            // Attempt data successfully saved, load the page.
-            return loadPage(page).catch(function(message) {
-                return $mmaModQuizHelper.showError(message, 'mma.mod_quiz.errorgetquestions');
-            });
+            // Attempt data successfully saved, load the page or summary.
+            if (page === -1) {
+                return loadSummary();
+            } else {
+                return loadPage(page).catch(function(message) {
+                    return $mmaModQuizHelper.showError(message, 'mma.mod_quiz.errorgetquestions');
+                });
+            }
         }).finally(function() {
             $scope.dataLoaded = true;
             $ionicScrollDelegate.resize(); // Call resize to recalculate scroll area.
