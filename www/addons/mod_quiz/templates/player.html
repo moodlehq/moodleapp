@@ -13,7 +13,7 @@
             <div ng-if="attempt && questions.length && !quizAborted && !showSummary">
                 <mma-mod-quiz-arrows previous="previousPage" next="nextPage" action="loadPage"></mma-mod-quiz-arrows>
                 <div ng-repeat="question in questions">
-                    <section class="card">
+                    <section class="card" id="mma-mod_quiz-question-{{question.number ? question.number : 'i'}}">
                         <div class="item item-divider">
                             <h2 ng-if="question.number">{{ 'mma.mod_quiz.questionno' | translate:{$a: question.number} }}</h2>
                             <h2 ng-if="!question.number">{{ 'mma.mod_quiz.information' | translate }}</h2>
@@ -31,7 +31,7 @@
                 <mma-mod-quiz-arrows previous="previousPage" next="nextPage" action="loadPage"></mma-mod-quiz-arrows>
             </div>
             <!-- Summary -->
-            <div ng-if="!quizAborted && showSummary && summaryQuestions && summaryQuestions.length" class="card">
+            <div ng-if="!quizAborted && showSummary && summaryQuestions && summaryQuestions.length" class="card mma-mod-quiz-table">
                 <div class="item item-text-wrap row">
                     <p class="col col-25 text-center"><b>{{ 'mma.mod_quiz.question' | translate }}</b></p>
                     <p class="col col-65 text-center"><b>{{ 'mma.mod_quiz.status' | translate }}</b></p>
@@ -41,7 +41,7 @@
                     <p class="col col-25 text-center">{{ question.number }}</p>
                     <p class="col col-65 text-center">{{ question.status }}</p>
                     <p class="col col-10 text-center" ng-if="!quiz.isSequential">
-                        <a class="button button-block button-icon ion-ios-arrow-forward" ng-click="loadPage(question.page)" aria-label="{{ 'mm.core.pagea' | translate:{$a: question.page} }}"></a>
+                        <a class="button button-block button-icon ion-ios-arrow-forward" ng-click="loadPage(question.page, false, question.number)" aria-label="{{ 'mma.mod_quiz.questionno' | translate:{$a: question.number} }}"></a>
                     </p>
                 </div>
                 <div class="item">
