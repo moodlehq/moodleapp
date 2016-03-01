@@ -105,9 +105,15 @@ angular.module('mm.addons.mod_quiz')
             $scope.attempt = attempt;
             $scope.toc = $mmaModQuiz.getTocFromLayout(attempt.layout);
 
-            return loadPage(attempt.currentpage).catch(function(message) {
-                return $mmaModQuizHelper.showError(message, 'mm.core.error');
-            });
+            if (attempt.state != $mmaModQuiz.ATTEMPT_OVERDUE) {
+                // Attempt not overdue, load page.
+                return loadPage(attempt.currentpage).catch(function(message) {
+                    return $mmaModQuizHelper.showError(message, 'mm.core.error');
+                });
+            } else {
+                // Attempt is overdue, we can only load the summary.
+                return loadSummary();
+            }
         });
     }
 
@@ -117,8 +123,11 @@ angular.module('mm.addons.mod_quiz')
             // Remove all answers stored since each page has its own questions.
             $mmUtil.emptyObject($scope.answers);
 
+            // Update attempt, status could change during the execution.
+            attempt = data.attempt;
+            $scope.attempt = attempt;
+
             $scope.questions = data.questions;
-            attempt.currentpage = page;
             $scope.nextPage = data.nextpage;
             $scope.previousPage = quiz.isSequential ? -1 : page - 1;
             $scope.showSummary = false;
@@ -141,6 +150,12 @@ angular.module('mm.addons.mod_quiz')
         $scope.summaryQuestions = [];
         return $mmaModQuiz.getAttemptSummary(attempt.id, $scope.preflightData, true).then(function(questions) {
             $scope.summaryQuestions = questions;
+            $scope.canReturn = attempt.state == $mmaModQuiz.ATTEMPT_IN_PROGRESS;
+
+            attempt.dueDateWarning = $mmaModQuiz.getAttemptDueDateWarning(quiz, attempt);
+
+            // Remove all answers stored since the questions aren't rendered anymore.
+            $mmUtil.emptyObject($scope.answers);
 
             // Log summary as viewed.
             $mmaModQuiz.logViewAttemptSummary(attempt.id);
@@ -162,7 +177,7 @@ angular.module('mm.addons.mod_quiz')
 
         if ($scope.questions && $scope.questions.length && !$scope.showSummary) {
             // Save answers.
-            promise = $mmaModQuiz.processAttempt(attempt.id, $scope.answers, false, false);
+            promise = $mmaModQuiz.processAttempt(attempt.id, $scope.answers, $scope.preflightData, false, false);
         } else {
             // Nothing to save.
             promise = $q.when();
@@ -218,7 +233,8 @@ angular.module('mm.addons.mod_quiz')
         $scope.popover.hide(); // Hide popover if shown.
 
         // First try to save the attempt data. We only save it if we're not seeing the summary.
-        promise = $scope.showSummary ? $q.when() : $mmaModQuiz.processAttempt(attempt.id, $scope.answers, false, false);
+        promise = $scope.showSummary ?
+                        $q.when() : $mmaModQuiz.processAttempt(attempt.id, $scope.answers, $scope.preflightData, false, false);
         promise.catch(function(message) {
             return $mmaModQuizHelper.showError(message, 'mma.mod_quiz.errorsaveattempt');
         }).then(function() {
