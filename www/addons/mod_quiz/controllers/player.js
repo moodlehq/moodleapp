@@ -196,6 +196,28 @@ angular.module('mm.addons.mod_quiz')
         });
     }
 
+    // Finish an attempt, either by timeup or because the user clicked to finish it.
+    function finishAttempt(timeup) {
+        var promise;
+
+        // Show confirm if the user clicked the finish button and the quiz is in progress.
+        if (!timeup && attempt.state == $mmaModQuiz.ATTEMPT_IN_PROGRESS) {
+            promise = $mmUtil.showConfirm($translate('mma.mod_quiz.confirmclose'));
+        } else {
+            promise = $q.when();
+        }
+
+        return promise.then(function() {
+            return $mmaModQuiz.processAttempt(attempt.id, $scope.answers, $scope.preflightData, true, timeup).then(function() {
+                // @todo Show review. For now we'll just go back.
+                $scope.questions = [];
+                leavePlayer();
+            }).catch(function(message) {
+                return $mmaModQuizHelper.showError(message, 'mma.mod_quiz.errorsaveattempt');
+            });
+        });
+    }
+
     // Override Ionic's back button behavior.
     $rootScope.$ionicGoBack = leavePlayer;
 
@@ -257,6 +279,11 @@ angular.module('mm.addons.mod_quiz')
                 }, 2000);
             }
         });
+    };
+
+    // User clicked to finish the attempt.
+    $scope.finishAttempt = function() {
+        finishAttempt();
     };
 
     // Setup TOC popover.

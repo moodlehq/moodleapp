@@ -1,8 +1,9 @@
 <ion-view>
     <ion-nav-title><mm-format-text watch="true">{{ quiz.name }}</mm-format-text></ion-nav-title>
     <ion-nav-buttons side="secondary">
-        <button class="button button-icon ion-more" ng-if="toc && toc.length" ng-click="popover.show($event)">
+        <button class="button button-icon ion-more" ng-if="toc && toc.length" ng-click="popover.show($event)" aria-label="{{ 'mma.mod_quiz.opentoc' | translate }}">
         </button>
+        <a class="button button-icon ion-ios-browsers-outline" ng-href="{{moduleUrl}}" mm-browser aria-label="{{ 'mm.core.openinbrowser' | translate }}"></a>
     </ion-nav-buttons>
     <ion-content mm-state-class>
         <mm-loading hide-until="dataLoaded">
@@ -54,7 +55,7 @@
                     <a class="button button-block" ng-click="loadPage(attempt.currentpage)">{{ 'mma.mod_quiz.returnattempt' | translate }}</a>
                 </div>
                 <div class="item">
-                    <a class="button button-block">{{ 'mma.mod_quiz.submitallandfinish' | translate }}</a>
+                    <a class="button button-block" ng-click="finishAttempt()">{{ 'mma.mod_quiz.submitallandfinish' | translate }}</a>
                 </div>
             </div>
             <!-- Quiz aborted -->
