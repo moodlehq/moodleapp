@@ -45,9 +45,12 @@ angular.module('mm.core')
             return;
         }
 
-        var e = document.createElement('source');
+        var e = document.createElement('source'),
+            type = dom.getAttribute('type');
         e.setAttribute('src', url);
-        e.setAttribute('type', dom.getAttribute('type'));
+        if (type) {
+            e.setAttribute('type', type);
+        }
         dom.parentNode.insertBefore(e, dom);
     }
 
