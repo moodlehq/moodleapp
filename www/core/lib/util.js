@@ -1134,7 +1134,8 @@ angular.module('mm.core')
             }
 
             var element = selector ? container.querySelector(selector) : container,
-                positionTop = positionLeft = 0;
+                positionTop = 0,
+                positionLeft = 0;
 
             if (!element) {
                 return false;

@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_quiz')
  * @name mmaModQuizPlayerCtrl
  */
 .controller('mmaModQuizPlayerCtrl', function($log, $scope, $stateParams, $mmaModQuiz, $mmaModQuizHelper, $q, $mmUtil,
-            $ionicPopover, $ionicScrollDelegate, $rootScope, $ionicPlatform, $translate) {
+            $ionicPopover, $ionicScrollDelegate, $rootScope, $ionicPlatform, $translate, $timeout) {
     $log = $log.getInstance('mmaModQuizPlayerCtrl');
 
     var quizId = $stateParams.quizid,
@@ -201,7 +201,7 @@ angular.module('mm.addons.mod_quiz')
     };
 
     // Load a certain page.
-    $scope.loadPage = function(page, fromToc) {
+    $scope.loadPage = function(page, fromToc, question) {
         if ((page == attempt.currentpage && !$scope.showSummary) || (fromToc && quiz.isSequential && page != -1)) {
             // If the user is navigating to the current page we do nothing.
             // Also, in sequential quizzes we don't allow navigating using the TOC except for finishing the quiz (summary).
@@ -233,6 +233,13 @@ angular.module('mm.addons.mod_quiz')
         }).finally(function() {
             $scope.dataLoaded = true;
             $ionicScrollDelegate.resize(); // Call resize to recalculate scroll area.
+
+            if (question) {
+                // Scroll to the question. Give some time to the questions to render.
+                $timeout(function() {
+                    $mmUtil.scrollToElement(document, '#mma-mod_quiz-question-' + question);
+                }, 2000);
+            }
         });
     };
 
