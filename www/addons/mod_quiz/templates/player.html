@@ -1,8 +1,9 @@
 <ion-view>
     <ion-nav-title><mm-format-text watch="true">{{ quiz.name }}</mm-format-text></ion-nav-title>
     <ion-nav-buttons side="secondary">
-        <button class="button button-icon ion-more" ng-if="toc && toc.length" ng-click="popover.show($event)">
+        <button class="button button-icon ion-more" ng-if="toc && toc.length" ng-click="popover.show($event)" aria-label="{{ 'mma.mod_quiz.opentoc' | translate }}">
         </button>
+        <a class="button button-icon ion-ios-browsers-outline" ng-href="{{moduleUrl}}" mm-browser aria-label="{{ 'mm.core.openinbrowser' | translate }}"></a>
     </ion-nav-buttons>
     <ion-content mm-state-class>
         <mm-loading hide-until="dataLoaded">
@@ -32,27 +33,33 @@
             </div>
             <!-- Summary -->
             <div ng-if="!quizAborted && showSummary && summaryQuestions && summaryQuestions.length" class="card mma-mod-quiz-table">
+                <div class="item item-divider">
+                    <h2>{{ 'mma.mod_quiz.summaryofattempt' | translate }}</h2>
+                </div>
                 <div class="item item-text-wrap row">
                     <p class="col col-25 text-center"><b>{{ 'mma.mod_quiz.question' | translate }}</b></p>
                     <p class="col col-65 text-center"><b>{{ 'mma.mod_quiz.status' | translate }}</b></p>
-                    <p class="col col-10 text-center" ng-if="!quiz.isSequential"></p>
+                    <p class="col col-10 text-center" ng-if="!quiz.isSequential && canReturn"></p>
                 </div>
                 <div ng-repeat="question in summaryQuestions" class="item item-text-wrap row" ng-if="question.number">
                     <p class="col col-25 text-center">{{ question.number }}</p>
                     <p class="col col-65 text-center">{{ question.status }}</p>
-                    <p class="col col-10 text-center" ng-if="!quiz.isSequential">
+                    <p class="col col-10 text-center" ng-if="!quiz.isSequential && canReturn">
                         <a class="button button-block button-icon ion-ios-arrow-forward" ng-click="loadPage(question.page, false, question.number)" aria-label="{{ 'mma.mod_quiz.questionno' | translate:{$a: question.number} }}"></a>
                     </p>
                 </div>
-                <div class="item">
+                <div class="item item-text-wrap" ng-if="attempt.dueDateWarning">
+                    {{ attempt.dueDateWarning }}
+                </div>
+                <div class="item" ng-if="canReturn">
                     <a class="button button-block" ng-click="loadPage(attempt.currentpage)">{{ 'mma.mod_quiz.returnattempt' | translate }}</a>
                 </div>
                 <div class="item">
-                    <a class="button button-block">{{ 'mma.mod_quiz.submitallandfinish' | translate }}</a>
+                    <a class="button button-block" ng-click="finishAttempt()">{{ 'mma.mod_quiz.submitallandfinish' | translate }}</a>
                 </div>
             </div>
             <!-- Quiz aborted -->
-            <section class="card" ng-if="attempt && (!questions.length || quizAborted)">
+            <section class="card" ng-if="attempt && ((!questions.length && !showSummary) || quizAborted)">
                 <div class="item item-text-wrap">
                     <p>{{ 'mma.mod_quiz.errorparsequestions' | translate }}</p>
                 </div>

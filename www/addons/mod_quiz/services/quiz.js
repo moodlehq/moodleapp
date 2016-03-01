@@ -218,6 +218,25 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Get an attempt's warning because of due date.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#getAttemptDueDateWarning
+     * @param  {Object} quiz    Quiz.
+     * @param  {Object} attempt Attempt.
+     * @return {String}         Attempt's warning, undefined if no due date.
+     */
+    self.getAttemptDueDateWarning = function(quiz, attempt) {
+        var dueDate = self.getAttemptDueDate(quiz, attempt);
+        if (attempt.state === self.ATTEMPT_OVERDUE) {
+            return $translate.instant('mma.mod_quiz.overduemustbesubmittedby', {$a: moment(dueDate).format('LLL')});
+        } else if (dueDate) {
+            return $translate.instant('mma.mod_quiz.mustbesubmittedby', {$a: moment(dueDate).format('LLL')});
+        }
+    };
+
+    /**
      * Turn attempt's state into a readable state.
      *
      * @module mm.addons.mod_quiz
@@ -1297,14 +1316,15 @@ angular.module('mm.addons.mod_quiz')
      * @module mm.addons.mod_quiz
      * @ngdoc method
      * @name $mmaModQuiz#processAttempt
-     * @param  {Number} attemptId Attempt ID.
-     * @param  {Object} data      Data to save.
-     * @param  {Boolean} finish   True to finish the quiz, false otherwise.
-     * @param  {Boolean} timeup   True if the quiz time is up, false otherwise.
-     * @param  {String} [siteId]  Site ID. If not defined, current site.
-     * @return {Promise}          Promise resolved in success, rejected otherwise.
+     * @param  {Number} attemptId     Attempt ID.
+     * @param  {Object} data          Data to save.
+     * @param  {Object} preflightData Preflight required data (like password).
+     * @param  {Boolean} finish       True to finish the quiz, false otherwise.
+     * @param  {Boolean} timeup       True if the quiz time is up, false otherwise.
+     * @param  {String} [siteId]      Site ID. If not defined, current site.
+     * @return {Promise}              Promise resolved in success, rejected otherwise.
      */
-    self.processAttempt = function(attemptId, data, finish, timeup, siteId) {
+    self.processAttempt = function(attemptId, data, preflightData, finish, timeup, siteId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -1312,7 +1332,8 @@ angular.module('mm.addons.mod_quiz')
                 attemptid: attemptId,
                 data: treatDataToSend(data),
                 finishattempt: finish ? 1 : 0,
-                timeup: timeup ? 1 : 0
+                timeup: timeup ? 1 : 0,
+                preflightdata: treatDataToSend(preflightData)
             };
 
             return site.write('mod_quiz_process_attempt', params).then(function(response) {
@@ -1382,18 +1403,20 @@ angular.module('mm.addons.mod_quiz')
      * @module mm.addons.mod_quiz
      * @ngdoc method
      * @name $mmaModQuiz#saveAttempt
-     * @param  {Number} attemptId Attempt ID.
-     * @param  {Object} data      Data to save.
-     * @param  {String} [siteId]  Site ID. If not defined, current site.
-     * @return {Promise}          Promise resolved in success, rejected otherwise.
+     * @param  {Number} attemptId     Attempt ID.
+     * @param  {Object} data          Data to save.
+     * @param  {Object} preflightData Preflight required data (like password).
+     * @param  {String} [siteId]      Site ID. If not defined, current site.
+     * @return {Promise}              Promise resolved in success, rejected otherwise.
      */
-    self.saveAttempt = function(attemptId, data, siteId) {
+    self.saveAttempt = function(attemptId, data, preflightData, siteId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                 attemptid: attemptId,
-                data: treatDataToSend(data)
+                data: treatDataToSend(data),
+                preflightdata: treatDataToSend(preflightData)
             };
 
             return site.write('mod_quiz_save_attempt', params).then(function(response) {

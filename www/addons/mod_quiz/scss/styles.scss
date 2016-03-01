@@ -1,7 +1,7 @@
 
 $mma-mod-quiz-warning-color:      #c00 !default;
 $mma-mod-quiz-highlight-color:    #d9edf7 !default;
-$mma-mod-quiz-alternate-color:    #f9f9f9 !default;
+$mma-mod-quiz-alternate-color:    #fbfbfb !default;
 
 p.mma-mod-quiz-warning {
   color: $mma-mod-quiz-warning-color;
@@ -17,7 +17,7 @@ p.mma-mod-quiz-warning {
   }
 }
 
-.item.mma-mod-quiz-highlighted {
+.item.mma-mod-quiz-highlighted, .mma-mod-quiz-table .item.row.mma-mod-quiz-highlighted {
   background-color: $mma-mod-quiz-highlight-color;
 }
 

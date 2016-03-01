@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_quiz')
  * @name mmaModQuizIndexCtrl
  */
 .controller('mmaModQuizIndexCtrl', function($scope, $stateParams, $mmaModQuiz, $mmCourse, $ionicPlatform, $q, $translate,
-            $mmaModQuizHelper) {
+            $mmaModQuizHelper, $ionicHistory, $ionicScrollDelegate) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         quiz,
@@ -32,7 +32,8 @@ angular.module('mm.addons.mod_quiz')
         bestGrade,
         gradebookData,
         accessInfo,
-        moreAttempts;
+        moreAttempts,
+        scrollView = $ionicScrollDelegate.$getByHandle('mmaModQuizIndexScroll');
 
     $scope.title = module.name;
     $scope.description = module.description;
@@ -249,5 +250,25 @@ angular.module('mm.addons.mod_quiz')
             $scope.$broadcast('scroll.refreshComplete');
         });
     };
+
+    // Update data when we come back from the player since the attempt status could have changed.
+    // We want to skip the first $ionicView.enter event because it's when the view is created.
+    var skip = true;
+    $scope.$on('$ionicView.enter', function() {
+        if (skip) {
+            skip = false;
+            return;
+        }
+
+        var forwardView = $ionicHistory.forwardView();
+        if (forwardView && forwardView.stateName === 'site.mod_quiz-player') {
+            // Refresh data.
+            $scope.quizLoaded = false;
+            scrollView.scrollTop();
+            refreshData().finally(function() {
+                $scope.quizLoaded = true;
+            });
+        }
+    });
 
 });
