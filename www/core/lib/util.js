@@ -66,7 +66,7 @@ angular.module('mm.core')
     };
 
     this.$get = function($ionicLoading, $ionicPopup, $injector, $translate, $http, $log, $q, $mmLang, $mmFS, $timeout, $mmApp,
-                $mmText, mmCoreWifiDownloadThreshold, mmCoreDownloadThreshold) {
+                $mmText, mmCoreWifiDownloadThreshold, mmCoreDownloadThreshold, $ionicScrollDelegate, $ionicPosition) {
 
         $log = $log.getInstance('$mmUtil');
 
@@ -1074,6 +1074,36 @@ angular.module('mm.core')
             }
 
             return div.innerHTML;
+        };
+
+        /**
+         * Scroll to a certain element inside another element.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#scrollToElement
+         * @param  {Object} container        Element to search in.
+         * @param  {String} [selector]       Selector to find the element to scroll to. If not defined, scroll to the container.
+         * @param  {Object} [scrollDelegate] Scroll delegate. If not defined, use $ionicScrollDelegate.
+         * @return {Boolean}                 True if the element is found, false otherwise.
+         */
+        self.scrollToElement = function(container, selector, scrollDelegate) {
+            if (!scrollDelegate) {
+                scrollDelegate = $ionicScrollDelegate;
+            }
+
+            var element = selector ? container.querySelector(selector) : container,
+                position;
+            if (element) {
+                element = angular.element(element); // Convert it to a jqLite element.
+                position = $ionicPosition.position(element);
+                if (position) {
+                    scrollDelegate.scrollTo(position.left, position.top);
+                    return true;
+                }
+            }
+
+            return false;
         };
 
         return self;
