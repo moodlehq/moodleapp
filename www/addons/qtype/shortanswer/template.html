@@ -3,6 +3,6 @@
         <p><mm-format-text watch="true" class="mm-content-with-float">{{ question.text }}</mm-format-text></p>
     </div>
     <label class="item item-input">
-        <input type="text" placeholder="{{ 'mm.question.answer' | translate }}" name="{{input.name}}" ng-model="answers[input.name]" autocorrect="off">
+        <input type="text" placeholder="{{ 'mm.question.answer' | translate }}" name="{{input.name}}" value="{{input.value}}" autocorrect="off">
     </label>
 </section>

@@ -8,7 +8,9 @@
 		</div>
 		<div class="col text-center item-select">
 			<label class="accesshide" for="{{row.id}}" ng-if="row.accessibilityLabel">{{ row.accessibilityLabel }}</label>
-			<select id="{{row.id}}" name="{{row.name}}" ng-model="answers[row.name]" ng-options="o.value as o.label for o in row.options" aria-labelledby="mma-question-{{row.id}}"></select>
+			<select id="{{row.id}}" name="{{row.name}}" aria-labelledby="mma-question-{{row.id}}">
+				<option ng-repeat="o in row.options" value="{{o.value}}" label="{{o.label}}" ng-selected="{{o.selected}}">{{o.label}}</option>
+			</select>
 		</div>
 	</div>
 </section>
