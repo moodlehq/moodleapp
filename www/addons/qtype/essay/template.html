@@ -3,6 +3,8 @@
         <p><mm-format-text watch="true" class="mm-content-with-float">{{ question.text }}</mm-format-text></p>
     </div>
     <label class="item item-input">
-        <textarea class="mm-question-textarea" placeholder="{{ 'mm.question.answer' | translate }}" name="{{textarea.name}}" ng-model="answers[textarea.name]" aria-multiline="true"></textarea>
+		<!-- "Format" hidden input -->
+		<input ng-if="formatInput" type="hidden" name="{{formatInput.name}}" value="{{formatInput.value}}" >
+        <textarea class="mm-question-textarea" placeholder="{{ 'mm.question.answer' | translate }}" name="{{textarea.name}}" aria-multiline="true">{{textarea.value}}</textarea>
     </label>
 </section>

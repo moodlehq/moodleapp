@@ -35,7 +35,10 @@ angular.module('mm.addons.qtype_description')
                 // Get the "seen" hidden input.
                 input = questionEl[0].querySelector('input[type="hidden"][name*=seen]');
                 if (input) {
-                    scope.answers[input.name] = input.value;
+                    scope.seenInput = {
+                        name: input.name,
+                        value: input.value
+                    };
                 }
             }
         }

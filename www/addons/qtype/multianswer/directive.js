@@ -31,8 +31,7 @@ angular.module('mm.addons.qtype_multianswer')
         link: function(scope) {
             var question = scope.question,
                 questionEl,
-                content,
-                inputs;
+                content;
 
             if (!question) {
                 $log.warn('Aborting because of no question received.');
@@ -51,24 +50,6 @@ angular.module('mm.addons.qtype_multianswer')
             // Remove sequencecheck.
             $mmUtil.removeElement(content, 'input[name*=sequencecheck]');
             $mmUtil.removeElement(content, '.validationerror');
-
-            // Find inputs of type text, radio and select and add ng-model to them.
-            inputs = content.querySelectorAll('input[type="text"],input[type="radio"],select');
-            angular.forEach(inputs, function(input) {
-                input.setAttribute('ng-model', 'answers["' + input.name + '"]');
-
-                if ((input.type == 'text' && input.value) || (input.type == 'radio' && input.checked)) {
-                    // Store the value in the model.
-                    scope.answers[input.name] = input.value;
-                } else if (input.tagName.toLowerCase() == 'select') {
-                    // Search if there's any option selected.
-                    var selected = input.querySelector('option[selected]');
-                    if (selected && selected.value !== '' && typeof selected.value != 'undefined') {
-                        // Store the value in the model.
-                        scope.answers[input.name] = selected.value;
-                    }
-                }
-            });
 
             // Set the question text.
             question.text = content.innerHTML;
