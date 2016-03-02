@@ -44,18 +44,17 @@ angular.module('mm.addons.qtype_essay')
                     return $mmQuestionHelper.showDirectiveError(scope);
                 }
 
-                // Add current value to model if set.
-                if (content) {
-                    scope.answers[textarea.name] = $mmText.decodeHTML(content);
-                }
-
                 scope.textarea = {
                     id: textarea.id,
-                    name: textarea.name
+                    name: textarea.name,
+                    value: content ? $mmText.decodeHTML(content) : ''
                 };
 
                 if (input) {
-                    scope.answers[input.name] = input.value;
+                    scope.formatInput = {
+                        name: input.name,
+                        value: input.value
+                    };
                 }
             }
         }

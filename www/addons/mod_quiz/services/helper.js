@@ -84,6 +84,24 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Gets the name of the flagged input.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizHelper#getQuestionFlaggedNameFromHtml
+     * @param  {String} html Question's HTML.
+     * @return {String}      Question's flag input name.
+     */
+    self.getQuestionFlaggedNameFromHtml = function(html) {
+        var el = angular.element(html)[0],
+            flag = el.querySelector('input[name*="_:flagged"]');
+
+        if (flag) {
+            return flag.name;
+        }
+    };
+
+    /**
      * Gets the mark string from a question HTML.
      * Example result: "Marked out of 1.00".
      *

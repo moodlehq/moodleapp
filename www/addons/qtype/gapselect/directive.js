@@ -21,7 +21,7 @@ angular.module('mm.addons.qtype_gapselect')
  * @ngdoc directive
  * @name mmaQtypeGapSelect
  */
-.directive('mmaQtypeGapSelect', function($log, $mmQuestionHelper) {
+.directive('mmaQtypeGapSelect', function($log, $mmQuestionHelper, $mmUtil) {
 	$log = $log.getInstance('mmaQtypeGapSelect');
 
     return {
@@ -31,8 +31,7 @@ angular.module('mm.addons.qtype_gapselect')
         link: function(scope) {
             var question = scope.question,
                 questionEl,
-                content,
-                selects;
+                content;
 
             if (!question) {
                 $log.warn('Aborting because of no question received.');
@@ -48,18 +47,9 @@ angular.module('mm.addons.qtype_gapselect')
                 return $mmQuestionHelper.showDirectiveError(scope);
             }
 
-            // Find selects and add ng-model to them.
-            selects = content.querySelectorAll('select');
-            angular.forEach(selects, function(select) {
-                select.setAttribute('ng-model', 'answers["' + select.name + '"]');
-
-                // Search if there's any option selected.
-                var selected = select.querySelector('option[selected]');
-                if (selected && selected.value !== '' && typeof selected.value != 'undefined') {
-                    // Store the value in the model.
-                    scope.answers[select.name] = selected.value;
-                }
-            });
+            // Remove sequencecheck.
+            $mmUtil.removeElement(content, 'input[name*=sequencecheck]');
+            $mmUtil.removeElement(content, '.validationerror');
 
             // Set the question text.
             question.text = content.innerHTML;
