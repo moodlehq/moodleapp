@@ -1380,7 +1380,7 @@ angular.module('mm.addons.mod_quiz')
             format = true;
         }
 
-        rawGrade = parseInt(rawGrade, 10);
+        rawGrade = parseFloat(rawGrade);
         if (!isNaN(rawGrade)) {
             if (quiz.sumgrades >= 0.000005) {
                 grade = rawGrade * quiz.grade / quiz.sumgrades;
