@@ -3,6 +3,8 @@
 	<!-- This content will be replaced by the directive if any is applied. -->
 	<p class="padding">{{ 'mm.question.errorquestionnotsupported' | translate:{$a: question.type} }}</p>
 </div>
+<!-- Sequence check input -->
+<input ng-if="seqCheck" type="hidden" name="{{seqCheck.name}}" value="{{seqCheck.value}}" >
 <!-- Question validation error. -->
 <div class="item item-text-wrap" ng-if="question.validationError">
     <p class="mm-warning">{{ question.validationError }}</p>

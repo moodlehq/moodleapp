@@ -27,7 +27,6 @@ angular.module('mm.core.question')
  * The directives to render the question will receive the following parameters in the scope:
  *
  * @param {Object} question The question to render.
- * @param {Object} answers  Object to store the answers in (model).
  * @param {Function} abort  A function to call to abort the execution.
  *                          Directives implementing questions should use it if there's a critical error.
  *                          Addons using this directive should provide a function that allows aborting the execution of the
@@ -41,7 +40,6 @@ angular.module('mm.core.question')
         templateUrl: 'core/components/question/templates/question.html',
         scope: {
             question: '=',
-            answers: '=',
             abort: '&'
         },
         link: function(scope, element) {
@@ -58,11 +56,9 @@ angular.module('mm.core.question')
                     // Extract the validation error of the question.
                     question.validationError = $mmQuestionHelper.getValidationErrorFromHtml(question.html);
 
-                    // Get the sequence check (hidden input) and add it to the model. This is required.
-                    var seqCheck = $mmQuestionHelper.getQuestionSequenceCheckFromHtml(question.html);
-                    if (seqCheck) {
-                        scope.answers[seqCheck.name] = seqCheck.value;
-                    } else {
+                    // Get the sequence check (hidden input). This is required.
+                    scope.seqCheck = $mmQuestionHelper.getQuestionSequenceCheckFromHtml(question.html);
+                    if (!scope.seqCheck) {
                         $log.warn('Aborting question because couldn\'t retrieve sequence check.', question.name);
                         scope.abort();
                         return;

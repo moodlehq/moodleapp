@@ -11,7 +11,7 @@
                 <button class="button button-block" ng-click="start()">{{ 'mma.mod_quiz.startattempt' | translate }}</button>
             </div>
             <!-- Questions -->
-            <div ng-if="attempt && questions.length && !quizAborted && !showSummary">
+            <form name="mma-mod_quiz-player-form" ng-if="attempt && questions.length && !quizAborted && !showSummary">
                 <mma-mod-quiz-arrows previous="previousPage" next="nextPage" action="loadPage"></mma-mod-quiz-arrows>
                 <div ng-repeat="question in questions">
                     <section class="card" id="mma-mod_quiz-question-{{question.number ? question.number : 'i'}}">
@@ -25,12 +25,12 @@
                         <div class="item item-text-wrap" ng-if="question.readableMark">
                             <p>{{question.readableMark}}</p>
                         </div>
-                        <ion-checkbox ng-model="question.flagged">{{ 'mma.mod_quiz.flagged' | translate }}</ion-checkbox>
-                        <mm-question class="item item-complex" question="question" answers="answers" abort="abortQuiz()"></mm-question>
+                        <ion-checkbox ng-model="question.flagged" name="{{question.flaggedName}}">{{ 'mma.mod_quiz.flagged' | translate }}</ion-checkbox>
+                        <mm-question class="item item-complex" question="question" abort="abortQuiz()"></mm-question>
                     </section>
                 </div>
                 <mma-mod-quiz-arrows previous="previousPage" next="nextPage" action="loadPage"></mma-mod-quiz-arrows>
-            </div>
+            </form>
             <!-- Summary -->
             <div ng-if="!quizAborted && showSummary && summaryQuestions && summaryQuestions.length" class="card mma-mod-quiz-table">
                 <div class="item item-divider">
