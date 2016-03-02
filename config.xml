@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.accs.moodlemobile" version="2.9" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>Moodle Mobile</name>
-  <description>Official Moodle Mobile app</description>
-  <author href="http://moodle.com" email="juan@moodle.com">Juan Leyva</author>
+<widget id="com.accs.moodlemobile" version="1.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <name>ACCS</name>
+  <description>American College Consulting Services App</description>
+  <author href="http://accs.eu.org" email="admin@accs.eu.org">Billy Koech</author>
   <content src="index.html"/>
   <access origin="*"/>
 
