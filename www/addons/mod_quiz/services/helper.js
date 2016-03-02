@@ -173,7 +173,7 @@ angular.module('mm.addons.mod_quiz')
      * @param  {Object} quiz        Quiz.
      * @param  {Object} attempt     Attempt.
      * @param  {Boolean} highlight  True if we should check if attempt should be highlighted, false otherwise.
-     * @param  {Number} [bestGrade] Quiz's best grade. Required if highlight=true.
+     * @param  {Number} [bestGrade] Quiz's best grade (formatted). Required if highlight=true.
      *                              the due date if the attempt's state is "overdue".
      * @return {Void}
      */
@@ -193,7 +193,7 @@ angular.module('mm.addons.mod_quiz')
             attempt.readableGrade = $mmaModQuiz.formatGrade(attempt.rescaledGrade, quiz.decimalpoints);
             // Highlight the highest grade if appropriate.
             attempt.highlightGrade = highlight && !attempt.preview && attempt.state == $mmaModQuiz.ATTEMPT_FINISHED &&
-                                        attempt.rescaledGrade == bestGrade;
+                                        attempt.readableGrade == bestGrade;
         } else {
             attempt.readableGrade = '';
         }

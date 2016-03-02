@@ -124,6 +124,7 @@ angular.module('mm.addons.mod_quiz')
 
         return $q.all(promises).then(function() {
             var quizGrade = typeof gradebookData.grade != 'undefined' ? gradebookData.grade : bestGrade.grade;
+            quizGrade = $mmaModQuiz.formatGrade(quizGrade, quiz.decimalpoints);
 
             // Calculate data to construct the header of the attempts table.
             $mmaModQuizHelper.setQuizCalculatedData(quiz, options);
@@ -143,8 +144,11 @@ angular.module('mm.addons.mod_quiz')
     function getResultInfo() {
         if (attempts.length && quiz.showGradeColumn && bestGrade.hasgrade && typeof gradebookData.grade != 'undefined') {
 
+            var formattedGradebookGrade = $mmaModQuiz.formatGrade(gradebookData.grade, quiz.decimalpoints),
+                formattedBestGrade = $mmaModQuiz.formatGrade(bestGrade.grade, quiz.decimalpoints);
+
             $scope.showResults = true;
-            $scope.gradeOverridden = gradebookData.grade != bestGrade.grade;
+            $scope.gradeOverridden = formattedGradebookGrade != formattedBestGrade;
             $scope.gradebookFeedback = gradebookData.feedback;
 
             if (overallStats) {
@@ -152,12 +156,12 @@ angular.module('mm.addons.mod_quiz')
                 if (moreAttempts) {
                     $scope.gradeResult = $translate.instant('mma.mod_quiz.gradesofar', {$a: {
                         method: quiz.gradeMethodReadable,
-                        mygrade: $mmaModQuiz.formatGrade(gradebookData.grade, quiz.decimalpoints),
+                        mygrade: formattedGradebookGrade,
                         quizgrade: quiz.gradeFormatted
                     }});
                 } else {
                     var outOfShort = $translate.instant('mma.mod_quiz.outofshort', {$a: {
-                        grade: $mmaModQuiz.formatGrade(gradebookData.grade, quiz.decimalpoints),
+                        grade: formattedGradebookGrade,
                         maxgrade: quiz.gradeFormatted
                     }});
                     $scope.gradeResult = $translate.instant('mma.mod_quiz.yourfinalgradeis', {$a: outOfShort});
