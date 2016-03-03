@@ -22,7 +22,8 @@ angular.module('mm.addons.mod_quiz')
  * @name mmaModQuizPlayerCtrl
  */
 .controller('mmaModQuizPlayerCtrl', function($log, $scope, $stateParams, $mmaModQuiz, $mmaModQuizHelper, $q, $mmUtil,
-            $ionicPopover, $ionicScrollDelegate, $rootScope, $ionicPlatform, $translate, $timeout, $mmQuestionHelper) {
+            $ionicPopover, $ionicScrollDelegate, $rootScope, $ionicPlatform, $translate, $timeout, $mmQuestionHelper,
+            $mmaModQuizAutoSave) {
     $log = $log.getInstance('mmaModQuizPlayerCtrl');
 
     var quizId = $stateParams.quizid,
@@ -121,6 +122,7 @@ angular.module('mm.addons.mod_quiz')
         return $mmaModQuiz.getAttemptData(attempt.id, page, $scope.preflightData, true).then(function(data) {
             // Update attempt, status could change during the execution.
             attempt = data.attempt;
+            attempt.currentpage = page;
             $scope.attempt = attempt;
 
             $scope.questions = data.questions;
@@ -139,6 +141,9 @@ angular.module('mm.addons.mod_quiz')
 
             // Mark the page as viewed. We'll ignore errors in this call.
             $mmaModQuiz.logViewAttempt(attempt.id, page);
+
+            // Start looking for changes.
+            $mmaModQuizAutoSave.startCheckChangesProcess($scope, quiz, attempt);
         });
     }
 
@@ -168,6 +173,15 @@ angular.module('mm.addons.mod_quiz')
         return $mmQuestionHelper.getAnswersFromForm(document.forms['mma-mod_quiz-player-form']);
     }
 
+    // Process attempt.
+    function processAttempt(finish, timeup) {
+        return $mmaModQuiz.processAttempt(attempt.id, getAnswers(), $scope.preflightData, finish, timeup).then(function() {
+            // Answers saved, cancel auto save.
+            $mmaModQuizAutoSave.cancelAutoSave();
+            $mmaModQuizAutoSave.hideAutoSaveError($scope);
+        });
+    }
+
     // Function called when the user wants to leave the player. Save the attempt before leaving.
     function leavePlayer() {
         if (leaving) {
@@ -180,7 +194,7 @@ angular.module('mm.addons.mod_quiz')
 
         if ($scope.questions && $scope.questions.length && !$scope.showSummary) {
             // Save answers.
-            promise = $mmaModQuiz.processAttempt(attempt.id, getAnswers(), $scope.preflightData, false, false);
+            promise = processAttempt(false, false);
         } else {
             // Nothing to save.
             promise = $q.when();
@@ -211,7 +225,7 @@ angular.module('mm.addons.mod_quiz')
         }
 
         return promise.then(function() {
-            return $mmaModQuiz.processAttempt(attempt.id, getAnswers(), $scope.preflightData, true, timeup).then(function() {
+            return processAttempt(true, timeup).then(function() {
                 // @todo Show review. For now we'll just go back.
                 $scope.questions = [];
                 leavePlayer();
@@ -226,6 +240,9 @@ angular.module('mm.addons.mod_quiz')
 
     // Override Android's back button. We set a priority of 101 to override the "Return to previous view" action.
     unregisterHardwareBack = $ionicPlatform.registerBackButtonAction(leavePlayer, 101);
+
+    // Init the auto save.
+    $mmaModQuizAutoSave.init($scope, 'mma-mod_quiz-player-form', 'conErrPopover', '#mma-mod_quiz-connectionerror-button');
 
     // Start the player when the controller is loaded.
     start();
@@ -258,16 +275,18 @@ angular.module('mm.addons.mod_quiz')
         $scope.popover.hide(); // Hide popover if shown.
 
         // First try to save the attempt data. We only save it if we're not seeing the summary.
-        promise = $scope.showSummary ?
-                        $q.when() : $mmaModQuiz.processAttempt(attempt.id, getAnswers(), $scope.preflightData, false, false);
+        promise = $scope.showSummary ? $q.when() : processAttempt(false, false);
         promise.catch(function(message) {
             return $mmaModQuizHelper.showError(message, 'mma.mod_quiz.errorsaveattempt');
         }).then(function() {
             // Attempt data successfully saved, load the page or summary.
+
             if (page === -1) {
                 return loadSummary();
             } else {
+                $mmaModQuizAutoSave.stopCheckChangesProcess(); // Stop checking for changes during page change.
                 return loadPage(page).catch(function(message) {
+                    $mmaModQuizAutoSave.startCheckChangesProcess($scope, quiz, attempt); // Start the check again.
                     return $mmaModQuizHelper.showError(message, 'mma.mod_quiz.errorgetquestions');
                 });
             }
@@ -296,9 +315,19 @@ angular.module('mm.addons.mod_quiz')
         $scope.popover = popover;
     });
 
+    // Setup connection error popover.
+    $ionicPopover.fromTemplateUrl('addons/mod_quiz/templates/connectionerror.html', {
+        scope: $scope,
+    }).then(function(popover) {
+        $scope.conErrPopover = popover;
+    });
+
     $scope.$on('$destroy', function() {
         // Restore original back functions.
         unregisterHardwareBack();
         $rootScope.$ionicGoBack = originalBackFunction;
+        // Stop auto save.
+        $mmaModQuizAutoSave.stopAutoSaving();
+        $mmaModQuizAutoSave.stopCheckChangesProcess();
     });
 });
