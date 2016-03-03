@@ -9,6 +9,7 @@
 	"confirmleavequizonerror": "An error occurred while saving the answers. Are you sure you want to leave the quiz?",
 	"confirmstart": "The quiz has a time limit of {{$a}}. Time will count down from the moment you start your attempt and you must submit before it expires. Are you sure that you wish to start now?",
 	"confirmstartheader": "Timed quiz",
+	"connectionerror": "Network connection lost. (Autosave failed).\n\nMake a note of any responses entered on this page in the last few minutes, then try to re-connect.\n\nOnce connection has been re-established, your responses should be saved and this message will disappear.",
 	"continueattemptquiz": "Continue the last attempt",
 	"errorgetattempt": "Error getting attempt data.",
 	"errorgetquestions": "Error getting questions.",
