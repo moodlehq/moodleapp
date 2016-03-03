@@ -2,6 +2,7 @@
 $mma-mod-quiz-warning-color:      #c00 !default;
 $mma-mod-quiz-highlight-color:    #d9edf7 !default;
 $mma-mod-quiz-alternate-color:    #fbfbfb !default;
+$mma-mod-quiz-conecterr-color:    #fcc !default;
 
 p.mma-mod-quiz-warning {
   color: $mma-mod-quiz-warning-color;
@@ -42,4 +43,8 @@ mma-mod-quiz-arrows {
 // Alternate background color in rows.
 .mma-mod-quiz-table .row:nth-child(odd) {
   background-color: $mma-mod-quiz-alternate-color;
+}
+
+.mma-mod_quiz-connection-error, ion-popover-view.popover.mma-mod_quiz-connection-error {
+  background-color: $mma-mod-quiz-conecterr-color;
 }

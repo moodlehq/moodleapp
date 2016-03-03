@@ -1207,6 +1207,34 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Check if an attempt is nearly over. We consider an attempt nearly over or over if:
+     * - Is not in progress
+     * OR
+     * - It finished before autosaveperiod passes.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#isAttemptTimeNearlyOver
+     * @param  {Object} quiz    Quiz.
+     * @param  {Object} attempt Attempt.
+     * @return {Boolean}        True if nearly over or over, false otherwise.
+     */
+    self.isAttemptTimeNearlyOver = function(quiz, attempt) {
+        if (attempt.state != self.ATTEMPT_IN_PROGRESS) {
+            // Attempt not in progress, return true.
+            return true;
+        }
+
+        var dueDate = self.getAttemptDueDate(quiz, attempt),
+            autoSavePeriod = quiz.autosaveperiod || 0;
+        if (dueDate > 0 && new Date().getTime() + autoSavePeriod >= dueDate) {
+            return true;
+        }
+
+        return false;
+    };
+
+    /**
      * Check if a quiz navigation is sequential.
      *
      * @module mm.addons.mod_quiz
