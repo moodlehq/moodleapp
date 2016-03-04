@@ -6,12 +6,12 @@
     </div>
     <li ng-if="question.multi" ng-repeat="option in question.options" class="item item-text-wrap item-checkbox item-checkbox-right">
         <label class="checkbox">
-            <input type="checkbox" name="{{option.name}}" ng-model="answers[option.name]" aria-labelledby="mma-question-multi-{{option.id}}" >
+            <input type="checkbox" name="{{option.name}}" ng-checked="option.checked" aria-labelledby="mma-question-multi-{{option.id}}" >
         </label>
         <p id="mma-question-multi-{{option.id}}"><mm-format-text watch="true" class="mm-content-with-float">{{option.text}}</mm-format-text></p>
     </li>
     <label ng-if="!question.multi" ng-repeat="option in question.options" class="item item-radio">
-        <ion-radio-fix name="{{option.name}}" ng-model="answers[option.name]" ng-value="option.value">
+        <ion-radio-fix name="{{option.name}}" ng-model="mcAnswers[option.name]" ng-value="option.value">
             <p><mm-format-text watch="true" class="mm-content-with-float">{{option.text}}</mm-format-text></p>
         </ion-radio-fix>
     </label>

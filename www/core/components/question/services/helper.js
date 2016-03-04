@@ -100,6 +100,49 @@ angular.module('mm.core.question')
     };
 
     /**
+     * Retrieve the answers entered in a form.
+     * We don't use ng-model because it doesn't detect changes done by JavaScript and some questions might do that.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#getAnswersFromForm
+     * @param  {Object} form Form (DOM element).
+     * @return {Object}      Object with the answers.
+     */
+    self.getAnswersFromForm = function(form) {
+        if (!form || !form.elements) {
+            return {};
+        }
+
+        var answers = {};
+
+        angular.forEach(form.elements, function(element, name) {
+            name = element.name || name;
+            // Ignore flag and submit inputs.
+            if (name.match(/_:flagged$/) || element.type == 'submit') {
+                return;
+            }
+            // Ignore selects without value.
+            if (element.tagName == 'SELECT' && (element.value === '' || typeof element.value == 'undefined')) {
+                return;
+            }
+
+            // Get the value.
+            if (element.type == 'checkbox') {
+                answers[name] = !!element.checked;
+            } else if (element.type == 'radio') {
+                if (element.checked) {
+                    answers[name] = element.value;
+                }
+            } else {
+                answers[name] = element.value;
+            }
+        });
+
+        return answers;
+    };
+
+    /**
      * Get the sequence check from a question HTML.
      *
      * @module mm.core.question
@@ -161,14 +204,10 @@ angular.module('mm.core.question')
                 return self.showDirectiveError(scope);
             }
 
-            // Add current value to model if set.
-            if (input.value) {
-                scope.answers[input.name] = input.value;
-            }
-
             scope.input = {
                 id: input.id,
-                name: input.name
+                name: input.name,
+                value: input.value
             };
         }
     };
@@ -237,12 +276,9 @@ angular.module('mm.core.question')
 
                     rowModel.options.push({
                         value: option.value,
-                        label: option.innerHTML
+                        label: option.innerHTML,
+                        selected: option.selected
                     });
-
-                    if (option.selected) {
-                        scope.answers[select.name] = option.value;
-                    }
                 });
 
                 // Get the accessibility label.
@@ -269,6 +305,9 @@ angular.module('mm.core.question')
     self.multiChoiceDirective = function(scope, log) {
         var questionEl = self.directiveInit(scope, log),
             question = scope.question;
+
+        // We need a model to store the answers for radio buttons since ng-checked isn't available for ion-radio.
+        scope.mcAnswers = {};
 
         if (questionEl) {
             questionEl = questionEl[0] || questionEl; // Convert from jqLite to plain JS if needed.
@@ -298,6 +337,7 @@ angular.module('mm.core.question')
                         id: element.id,
                         name: element.name,
                         value: element.value,
+                        checked: element.checked
                     },
                     label;
 
@@ -310,9 +350,9 @@ angular.module('mm.core.question')
                     if (typeof option.name != 'undefined' && typeof option.value != 'undefined' &&
                                 typeof option.text != 'undefined') {
 
-                        // If the option is checked we store the data in the model.
-                        if (element.checked) {
-                            scope.answers[option.name] = question.multi ? true : option.value;
+                        // If the option is checked and it's a single choice we use the model to select the one.
+                        if (element.checked && !question.multi) {
+                            scope.mcAnswers[option.name] = option.value;
                         }
                         question.options.push(option);
                         return;
