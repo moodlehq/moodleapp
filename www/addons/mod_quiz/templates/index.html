@@ -41,7 +41,7 @@
                     <p class="col text-center" ng-if="isTablet && quiz.showMarkColumn">{{ attempt.readableMark }}</p>
                     <p class="col text-center" ng-if="quiz.showGradeColumn">{{ attempt.readableGrade }}</p>
                     <p class="col text-center" ng-if="isTablet && quiz.showReviewColumn">
-                        <button class="button button-block" ng-if="attempt.finished">{{ 'mma.mod_quiz.review' | translate }}</button>
+                        <button class="button button-block" ng-if="attempt.finished" ui-sref="site.mod_quiz-review({courseid: courseId, quizid: quiz.id, attemptid: attempt.id})">{{ 'mma.mod_quiz.review' | translate }}</button>
                     </p>
                     <p class="col col-10 text-center">
                         <a class="button button-block button-icon ion-ios-arrow-forward" ui-sref="site.mod_quiz-attempt({courseid: courseId, quizid: quiz.id, attemptid: attempt.id})" aria-label="{{ 'mm.core.seemoredetail' | translate }}"></a>
