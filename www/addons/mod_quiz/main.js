@@ -15,6 +15,7 @@
 angular.module('mm.addons.mod_quiz', ['mm.core'])
 
 .constant('mmaModQuizCheckChangesInterval', 5000)
+.constant('mmaModQuizAttemptComponent', 'mmaModQuizAttempt')
 
 .config(function($stateProvider) {
 
@@ -60,6 +61,21 @@ angular.module('mm.addons.mod_quiz', ['mm.core'])
         'site': {
           controller: 'mmaModQuizPlayerCtrl',
           templateUrl: 'addons/mod_quiz/templates/player.html'
+        }
+      }
+    })
+
+    .state('site.mod_quiz-review', {
+      url: '/mod_quiz-review',
+      params: {
+        courseid: null,
+        quizid: null,
+        attemptid: null
+      },
+      views: {
+        'site': {
+          controller: 'mmaModQuizReviewCtrl',
+          templateUrl: 'addons/mod_quiz/templates/review.html'
         }
       }
     });
