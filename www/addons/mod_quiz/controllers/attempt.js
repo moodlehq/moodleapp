@@ -28,6 +28,8 @@ angular.module('mm.addons.mod_quiz')
         quiz,
         attempt;
 
+    $scope.courseId = courseId;
+
     // Convenience function to get the quiz data.
     function fetchData() {
         return $mmaModQuiz.getQuizById(courseId, quizId).then(function(quizData) {
