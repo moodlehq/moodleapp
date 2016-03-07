@@ -47,9 +47,15 @@ angular.module('mm.addons.qtype_multianswer')
                 return $mmQuestionHelper.showDirectiveError(scope);
             }
 
-            // Remove sequencecheck.
+            // Remove sequencecheck and validation error.
             $mmUtil.removeElement(content, 'input[name*=sequencecheck]');
             $mmUtil.removeElement(content, '.validationerror');
+
+            if (scope.review) {
+                // Replace Moodle's correct/incorrect and feedback classes with our own.
+                $mmQuestionHelper.replaceCorrectnessClasses(questionEl);
+                $mmQuestionHelper.replaceFeedbackClasses(questionEl);
+            }
 
             // Set the question text.
             question.text = content.innerHTML;

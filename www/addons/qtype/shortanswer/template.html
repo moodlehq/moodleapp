@@ -2,7 +2,7 @@
     <div class="item item-text-wrap">
         <p><mm-format-text watch="true" class="mm-content-with-float">{{ question.text }}</mm-format-text></p>
     </div>
-    <label class="item item-input">
-        <input type="text" placeholder="{{ 'mm.question.answer' | translate }}" name="{{input.name}}" value="{{input.value}}" autocorrect="off">
+    <label class="item item-input" ng-class='{"mm-question-answer-correct": review && input.isCorrect, "mm-question-answer-incorrect": review && !input.isCorrect}'>
+        <input type="text" placeholder="{{ 'mm.question.answer' | translate }}" name="{{input.name}}" value="{{input.value}}" autocorrect="off" ng-disabled="input.readOnly" >
     </label>
 </section>
