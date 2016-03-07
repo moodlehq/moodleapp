@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_quiz')
  */
 .controller('mmaModQuizPlayerCtrl', function($log, $scope, $stateParams, $mmaModQuiz, $mmaModQuizHelper, $q, $mmUtil,
             $ionicPopover, $ionicScrollDelegate, $rootScope, $ionicPlatform, $translate, $timeout, $mmQuestionHelper,
-            $mmaModQuizAutoSave) {
+            $mmaModQuizAutoSave,  $mmEvents, mmaModQuizAttemptFinishedEvent) {
     $log = $log.getInstance('mmaModQuizPlayerCtrl');
 
     var quizId = $stateParams.quizid,
@@ -226,7 +226,9 @@ angular.module('mm.addons.mod_quiz')
 
         return promise.then(function() {
             return processAttempt(true, timeup).then(function() {
-                // @todo Show review. For now we'll just go back.
+                // Trigger an event to notify the attempt was finished.
+                $mmEvents.trigger(mmaModQuizAttemptFinishedEvent, {quizId: quiz.id, attemptId: attempt.id});
+                // Leave the player.
                 $scope.questions = [];
                 leavePlayer();
             }).catch(function(message) {
