@@ -16,6 +16,7 @@ angular.module('mm.addons.mod_quiz', ['mm.core'])
 
 .constant('mmaModQuizCheckChangesInterval', 5000)
 .constant('mmaModQuizAttemptComponent', 'mmaModQuizAttempt')
+.constant('mmaModQuizAttemptFinishedEvent', 'mma_mod_quiz_attempt_finished')
 
 .config(function($stateProvider) {
 
