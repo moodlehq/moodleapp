@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_quiz')
  * @name mmaModQuizIndexCtrl
  */
 .controller('mmaModQuizIndexCtrl', function($scope, $stateParams, $mmaModQuiz, $mmCourse, $ionicPlatform, $q, $translate,
-            $mmaModQuizHelper, $ionicHistory, $ionicScrollDelegate) {
+            $mmaModQuizHelper, $ionicHistory, $ionicScrollDelegate, $mmEvents, mmaModQuizAttemptFinishedEvent, $state) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         quiz,
@@ -33,7 +33,8 @@ angular.module('mm.addons.mod_quiz')
         gradebookData,
         accessInfo,
         moreAttempts,
-        scrollView = $ionicScrollDelegate.$getByHandle('mmaModQuizIndexScroll');
+        scrollView = $ionicScrollDelegate.$getByHandle('mmaModQuizIndexScroll'),
+        autoReview;
 
     $scope.title = module.name;
     $scope.description = module.description;
@@ -266,12 +267,32 @@ angular.module('mm.addons.mod_quiz')
 
         var forwardView = $ionicHistory.forwardView();
         if (forwardView && forwardView.stateName === 'site.mod_quiz-player') {
+            if (typeof autoReview != 'undefined') {
+                // Go to review the attempt.
+                $state.go('site.mod_quiz-review', {courseid: courseId, quizid: quiz.id, attemptid: autoReview});
+            }
+
             // Refresh data.
             $scope.quizLoaded = false;
             scrollView.scrollTop();
             refreshData().finally(function() {
                 $scope.quizLoaded = true;
             });
+        }
+
+        autoReview = undefined;
+    });
+
+    // Listen for attempt finished events.
+    var obsFinished = $mmEvents.on(mmaModQuizAttemptFinishedEvent, function(data) {
+        if (data.quizId === quiz.id) {
+            autoReview = data.attemptId;
+        }
+    });
+
+    $scope.$on('$destroy', function() {
+        if (obsFinished && obsFinished.off) {
+            obsFinished.off();
         }
     });
 
