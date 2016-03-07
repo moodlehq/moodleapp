@@ -31,7 +31,8 @@ angular.module('mm.addons.mod_quiz')
         quiz,
         options,
         currentPage,
-        attempt;
+        attempt,
+        errorPasing = false;
 
     $scope.isReview = true;
     $scope.component = mmaModQuizAttemptComponent;
@@ -176,6 +177,14 @@ angular.module('mm.addons.mod_quiz')
         refreshData().finally(function() {
             $scope.$broadcast('scroll.refreshComplete');
         });
+    };
+
+    // Function to call when an error parsing the questions occur.
+    $scope.abortQuiz = function() {
+        if (!errorPasing) {
+            errorPasing = true;
+            $mmUtil.showErrorModal('mma.mod_quiz.errorparsequestions', true);
+        }
     };
 
     // Setup TOC popover.

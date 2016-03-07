@@ -18,7 +18,10 @@ p.mma-mod-quiz-warning {
   }
 }
 
-.item.mma-mod-quiz-highlighted, .mma-mod-quiz-table .item.row.mma-mod-quiz-highlighted {
+.item.mma-mod-quiz-highlighted,
+.platform-android .item.mma-mod-quiz-highlighted,
+.platform-ios .item.mma-mod-quiz-highlighted,
+.mma-mod-quiz-table .item.row.mma-mod-quiz-highlighted {
   background-color: $mma-mod-quiz-highlight-color;
 }
 
