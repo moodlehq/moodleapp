@@ -1297,6 +1297,28 @@ angular.module('mm.core')
             return div.innerHTML;
         };
 
+        /**
+         * Search for certain classes in an element contents and replace them with the specified new values.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#replaceClassesInElement
+         * @param  {Object} element DOM element.
+         * @param  {Object} map     Mapping of the classes to replace. Keys must be the value to replace, values must be
+         *                          the new class name. Example: {'correct': 'mm-question-answer-correct'}.
+         * @return {Void}
+         */
+        self.replaceClassesInElement = function(element, map) {
+            element = element[0] || element; // Convert from jqLite to plain JS if needed.
+
+            angular.forEach(map, function(newValue, toReplace) {
+                var matches = element.querySelectorAll('.' + toReplace);
+                angular.forEach(matches, function(element) {
+                    element.className = element.className.replace(toReplace, newValue);
+                });
+            });
+        };
+
         return self;
     };
 });
