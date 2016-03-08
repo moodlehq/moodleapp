@@ -25,23 +25,6 @@ angular.module('mm.core.login')
         $ionicModal, $mmLoginHelper) {
 
     $scope.siteurl = '';
-    $scope.isInvalidUrl = true;
-
-    $scope.validate = function(url) {
-        if (!url) {
-            $scope.isInvalidUrl = true;
-            return;
-        }
-
-        if ($mmSitesManager.getDemoSiteData(url)) {
-            // Is demo site.
-            $scope.isInvalidUrl = false;
-        } else {
-            // formatURL adds the protocol if is missing.
-            var formattedurl = $mmUtil.formatURL(url);
-            $scope.isInvalidUrl = formattedurl.indexOf('://localhost') == -1 && !$mmUtil.isValidURL(formattedurl);
-        }
-    };
 
     $scope.connect = function(url) {
 
