@@ -21,7 +21,7 @@ angular.module('mm.core.question')
  * @ngdoc service
  * @name $mmQuestionHelper
  */
-.factory('$mmQuestionHelper', function($mmUtil) {
+.factory('$mmQuestionHelper', function($mmUtil, $mmText, $ionicModal) {
 
     var self = {},
         lastErrorShown = 0;
@@ -57,6 +57,61 @@ angular.module('mm.core.question')
 
         return questionEl;
     };
+
+    /**
+     * Removes the comment from the question HTML code and adds it in a new "commentHtml" property.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#extractQuestionComment
+     * @param  {Object} question Question.
+     * @return {Void}
+     */
+    self.extractQuestionComment = function(question) {
+        extractQuestionLastElementNotInContent(question, '.comment', 'commentHtml');
+    };
+
+    /**
+     * Removes the feedback from the question HTML code and adds it in a new "feedbackHtml" property.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#extractQuestionFeedback
+     * @param  {Object} question Question.
+     * @return {Void}
+     */
+    self.extractQuestionFeedback = function(question) {
+        extractQuestionLastElementNotInContent(question, '.outcome', 'feedbackHtml');
+    };
+
+    /**
+     * Searches the last occurrence of a certain element and check it's not in the question contents.
+     * If found, removes it from the question HTML and adds it to a new property inside question.
+     *
+     *
+     * @param  {Object} question Question.
+     * @param  {String} selector Selector to search the element.
+     * @param  {String} attrName Name of the attribute to store the HTML in.
+     * @return {Void}
+     */
+    function extractQuestionLastElementNotInContent(question, selector, attrName) {
+        // Create a fake div element so we can search using querySelector.
+        var div = document.createElement('div'),
+            matches,
+            last;
+
+        div.innerHTML = question.html;
+
+        matches = div.querySelectorAll(selector);
+
+        // Get the last element and check it's not in the question contents.
+        last = matches[matches.length - 1];
+        if (last && !last.closest('.formulation')) {
+            question[attrName] = last.innerHTML;
+            last.remove();
+            question.html = div.innerHTML;
+        }
+    }
 
     /**
      * Removes the scripts from a question's HTML and adds it in a new 'scriptsCode' property.
@@ -143,6 +198,43 @@ angular.module('mm.core.question')
     };
 
     /**
+     * Given an HTML code with list of attachments, returns the list of attached files (filename and fileurl).
+     * Please take into account that this function will treat all the anchors in the HTML, you should provide
+     * an HTML containing only the attachments anchors.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#getQuestionAttachmentsFromHtml
+     * @param  {String} html HTML code to search in.
+     * @return {[type]}      [description]
+     */
+    self.getQuestionAttachmentsFromHtml = function(html) {
+        var el = angular.element('<div></div>'),
+            anchors,
+            attachments = [];
+
+        // Add the HTML and get the plain JS element.
+        el.html(html);
+        el = el[0];
+
+        // Search the anchors.
+        anchors = el.querySelectorAll('a');
+        angular.forEach(anchors, function(anchor) {
+            var content = anchor.innerHTML;
+            // Check anchor is valid.
+            if (anchor.href && content) {
+                content = $mmText.cleanTags(content, true).trim();
+                attachments.push({
+                    filename: content,
+                    fileurl: anchor.href
+                });
+            }
+        });
+
+        return attachments;
+    };
+
+    /**
      * Get the sequence check from a question HTML.
      *
      * @module mm.core.question
@@ -207,8 +299,14 @@ angular.module('mm.core.question')
             scope.input = {
                 id: input.id,
                 name: input.name,
-                value: input.value
+                value: input.value,
+                readOnly: input.readOnly
             };
+
+            if (scope.review) {
+                // We're reviewing, check if question is marked as correct.
+                scope.input.isCorrect = input.className.indexOf('incorrect') == -1;
+            }
         }
     };
 
@@ -265,7 +363,18 @@ angular.module('mm.core.question')
 
                 rowModel.id = select.id;
                 rowModel.name = select.name;
+                rowModel.disabled = select.disabled;
                 rowModel.options = [];
+
+                // Check if answer is correct.
+                if (scope.review) {
+                    // Check if answer is correct.
+                    if (columns[1].className.indexOf('incorrect') >= 0) {
+                        rowModel.isCorrect = 0;
+                    } else if (columns[1].className.indexOf('correct') >= 0) {
+                        rowModel.isCorrect = 1;
+                    }
+                }
 
                 // Treat each option.
                 angular.forEach(options, function(option) {
@@ -337,9 +446,12 @@ angular.module('mm.core.question')
                         id: element.id,
                         name: element.name,
                         value: element.value,
-                        checked: element.checked
+                        checked: element.checked,
+                        disabled: element.disabled
                     },
-                    label;
+                    label,
+                    parent,
+                    feedback;
 
                 // Get the label with the question text.
                 label = questionEl.querySelector('label[for="' + option.id + '"]');
@@ -350,9 +462,30 @@ angular.module('mm.core.question')
                     if (typeof option.name != 'undefined' && typeof option.value != 'undefined' &&
                                 typeof option.text != 'undefined') {
 
-                        // If the option is checked and it's a single choice we use the model to select the one.
-                        if (element.checked && !question.multi) {
-                            scope.mcAnswers[option.name] = option.value;
+                        if (element.checked) {
+                            // If the option is checked and it's a single choice we use the model to select the one.
+                            if (!question.multi) {
+                                scope.mcAnswers[option.name] = option.value;
+                            }
+
+                            if (scope.review) {
+                                parent = element.parentNode;
+
+                                if (parent) {
+                                    // Check if answer is correct.
+                                    if (parent && parent.className.indexOf('incorrect') >= 0) {
+                                        option.isCorrect = 0;
+                                    } else if (parent && parent.className.indexOf('correct') >= 0) {
+                                        option.isCorrect = 1;
+                                    }
+
+                                    // Search the feedback.
+                                    feedback = parent.querySelector('.specificfeedback');
+                                    if (feedback) {
+                                        option.feedback = feedback.innerHTML;
+                                    }
+                                }
+                            }
                         }
                         question.options.push(option);
                         return;
@@ -364,6 +497,38 @@ angular.module('mm.core.question')
                 return self.showDirectiveError(scope);
             });
         }
+    };
+
+    /**
+     * Replace Moodle's correct/incorrect classes with the Mobile ones.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#replaceCorrectnessClasses
+     * @param  {Object} element DOM element.
+     * @return {Void}
+     */
+    self.replaceCorrectnessClasses = function(element) {
+        $mmUtil.replaceClassesInElement(element, {
+            correct: 'mm-question-answer-correct',
+            incorrect: 'mm-question-answer-incorrect'
+        });
+    };
+
+    /**
+     * Replace Moodle's feedback classes with the Mobile ones.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#replaceFeedbackClasses
+     * @param  {Object} element DOM element.
+     * @return {Void}
+     */
+    self.replaceFeedbackClasses = function(element) {
+        $mmUtil.replaceClassesInElement(element, {
+            outcome: 'mm-question-feedback-container mm-question-feedback-padding',
+            specificfeedback: 'mm-question-feedback-container mm-question-feedback-inline'
+        });
     };
 
     /**
@@ -383,6 +548,68 @@ angular.module('mm.core.question')
             $mmUtil.showErrorModal('Error processing the question. This could be caused by custom modifications in your site.');
         }
         scope.abort();
+    };
+
+    /**
+     * Treat correctness icons, replacing them with local icons and setting click events to show the feedback if needed.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#treatCorrectnessIcons
+     * @param  {Object} scope   Directive scope.
+     * @param  {Object} element DOM element.
+     * @return {Void}
+     */
+    self.treatCorrectnessIcons = function(scope, element) {
+        element = element[0] || element; // Convert from jqLite to plain JS if needed.
+
+        var icons = element.querySelectorAll('.questioncorrectnessicon');
+        angular.forEach(icons, function(icon) {
+            var parent;
+
+            // Replace the icon with the local version.
+            if (icon.src && icon.src.indexOf('incorrect') > -1) {
+                icon.src = 'img/icons/grade_incorrect.svg';
+            } else if (icon.src && icon.src.indexOf('correct') > -1) {
+                icon.src = 'img/icons/grade_correct.svg';
+            }
+
+            // Search if there's a hidden feedback for this element.
+            parent = icon.parentNode;
+            if (!parent) {
+                return;
+            }
+            if (!parent.querySelector('.feedbackspan.accesshide')) {
+                return;
+            }
+
+            // There's a hidden feedback, set up ngClick to show the feedback.
+            icon.setAttribute('ng-click', 'questionCorrectnessIconClicked($event)');
+        });
+
+        // Set icon click function.
+        scope.questionCorrectnessIconClicked = function(event) {
+            var parent = event.target.parentNode,
+                feedback;
+            if (parent) {
+                feedback = parent.querySelector('.feedbackspan.accesshide');
+                if (feedback && feedback.innerHTML) {
+                    scope.currentFeedback = feedback.innerHTML;
+                    scope.feedbackModal.show();
+                }
+            }
+        };
+
+        // Feedback modal.
+        $ionicModal.fromTemplateUrl('core/components/question/templates/feedbackmodal.html', {
+            scope: scope
+        }).then(function(modal) {
+            scope.feedbackModal = modal;
+
+            scope.closeModal = function() {
+                modal.hide();
+            };
+        });
     };
 
     return self;

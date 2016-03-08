@@ -1,0 +1,72 @@
+<ion-view>
+    <ion-nav-title>{{ 'mma.mod_quiz.review' | translate }}</ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <button class="button button-icon ion-more" ng-if="toc && toc.length > 1" ng-click="popover.show($event)" aria-label="{{ 'mma.mod_quiz.opentoc' | translate }}">
+        </button>
+    </ion-nav-buttons>
+    <ion-content mm-state-class delegate-handle="mmaModQuizReviewScroll">
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="dataLoaded" on-refresh="refreshData()"></ion-refresher>
+        <mm-loading hide-until="dataLoaded">
+            <!-- Review summary -->
+            <section class="card" ng-if="attempt">
+                <div class="item item-divider">
+                    <h2 ng-if="attempt.preview">{{ 'mma.mod_quiz.reviewofpreview' | translate }}</h2>
+                    <h2 ng-if="!attempt.preview">{{ 'mma.mod_quiz.reviewofattempt' | translate:{$a: attempt.attempt} }}</h2>
+                </div>
+                <div class="item item-text-wrap">
+                    <p class="item-heading">{{ 'mma.mod_quiz.startedon' | translate }}</p>
+                    <p>{{ attempt.timestart * 1000 | mmFormatDate:"dfmediumdate" }}</p>
+                </div>
+                <div class="item item-text-wrap">
+                    <p class="item-heading">{{ 'mma.mod_quiz.attemptstate' | translate }}</p>
+                    <p>{{ attempt.readableState }}</p>
+                </div>
+                <div class="item item-text-wrap" ng-if="showCompleted">
+                    <p class="item-heading">{{ 'mma.mod_quiz.completedon' | translate }}</p>
+                    <p>{{ attempt.timefinish * 1000 | mmFormatDate:"dfmediumdate" }}</p>
+                </div>
+                <div class="item item-text-wrap" ng-if="attempt.timeTaken">
+                    <p class="item-heading">{{ 'mma.mod_quiz.timetaken' | translate }}</p>
+                    <p>{{ attempt.timeTaken }}</p>
+                </div>
+                <div class="item item-text-wrap" ng-if="attempt.overTime">
+                    <p class="item-heading">{{ 'mma.mod_quiz.overdue' | translate }}</p>
+                    <p>{{ attempt.overTime }}</p>
+                </div>
+                <div class="item item-text-wrap" ng-if="attempt.readableMark">
+                    <p class="item-heading">{{ 'mma.mod_quiz.marks' | translate }}</p>
+                    <p>{{ attempt.readableMark }}</p>
+                </div>
+                <div class="item item-text-wrap" ng-if="attempt.readableGrade">
+                    <p class="item-heading">{{ 'mma.mod_quiz.grade' | translate }}</p>
+                    <p>{{ attempt.readableGrade }}</p>
+                </div>
+                <div class="item item-text-wrap" ng-repeat="data in additionalData">
+                    <p class="item-heading">{{ data.title }}</p>
+                    <mm-format-text watch="true">{{ data.content }}</mm-format-text>
+                </div>
+            </section>
+            <!-- Questions -->
+            <div ng-if="attempt && questions.length">
+                <mma-mod-quiz-arrows previous="previousPage" next="nextPage" action="loadPage"></mma-mod-quiz-arrows>
+                <div ng-repeat="question in questions">
+                    <section class="card" id="mma-mod_quiz-question-{{question.number ? question.number : 'i'}}">
+                        <div class="item item-divider">
+                            <h2 ng-if="question.number">{{ 'mma.mod_quiz.questionno' | translate:{$a: question.number} }}</h2>
+                            <h2 ng-if="!question.number">{{ 'mma.mod_quiz.information' | translate }}</h2>
+                        </div>
+                        <div class="item item-text-wrap" ng-if="question.status">
+                            <p>{{question.status}}</p>
+                        </div>
+                        <div class="item item-text-wrap" ng-if="question.readableMark">
+                            <p>{{question.readableMark}}</p>
+                        </div>
+                        <ion-checkbox ng-model="question.flagged">{{ 'mma.mod_quiz.flagged' | translate }}</ion-checkbox>
+                        <mm-question class="item item-complex" question="question" answers="answers" abort="abortQuiz()" review="isReview" component="component" component-id="componentId"></mm-question>
+                    </section>
+                </div>
+                <mma-mod-quiz-arrows previous="previousPage" next="nextPage" action="loadPage"></mma-mod-quiz-arrows>
+            </div>
+        </mm-loading>
+    </ion-content>
+</ion-view>

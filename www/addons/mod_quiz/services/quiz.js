@@ -57,7 +57,7 @@ angular.module('mm.addons.mod_quiz')
      * @return {String|Float}    Grade to display.
      */
     self.formatGrade = function(grade, decimals) {
-        if (typeof grade == 'undefined' || grade == -1 || grade == null) {
+        if (typeof grade == 'undefined' || grade == -1 || grade === null) {
             return $translate.instant('mma.mod_quiz.notyetgraded');
         }
         return $mmUtil.roundToDecimals(grade, decimals);
@@ -237,7 +237,7 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
-     * Turn attempt's state into a readable state.
+     * Turn attempt's state into a readable state, including some extra data depending on the state.
      *
      * @module mm.addons.mod_quiz
      * @ngdoc method
@@ -274,6 +274,32 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Turn attempt's state into a readable state name, without any more data.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#getAttemptReadableStateName
+     * @param  {String} state State.
+     * @return {String}       Readable state name.
+     */
+    self.getAttemptReadableStateName = function(state) {
+        switch (state) {
+            case self.ATTEMPT_IN_PROGRESS:
+                return $translate.instant('mma.mod_quiz.stateinprogress');
+
+            case self.ATTEMPT_OVERDUE:
+                return $translate.instant('mma.mod_quiz.stateoverdue');
+
+            case self.ATTEMPT_FINISHED:
+                return $translate.instant('mma.mod_quiz.statefinished');
+
+            case self.ATTEMPT_ABANDONED:
+                return $translate.instant('mma.mod_quiz.stateabandoned');
+        }
+        return '';
+    };
+
+    /**
      * Get cache key for get attempt review WS calls.
      *
      * @param {Number} attemptId Attempt ID.
@@ -301,12 +327,15 @@ angular.module('mm.addons.mod_quiz')
      * @ngdoc method
      * @name $mmaModQuiz#getAttemptReview
      * @param {Number} attemptId Attempt ID.
-     * @param {Number} page      Page number, -1 for all the questions in all the pages.
+     * @param {Number} [page]    Page number. If not defined, return all the questions in all the pages.
      * @param {String} [siteId]  Site ID. If not defined, current site.
      * @return {Promise}         Promise resolved with the attempt review.
      */
     self.getAttemptReview = function(attemptId, page, siteId) {
         siteId = siteId || $mmSite.getId();
+        if (typeof page == 'undefined') {
+            page = -1;
+        }
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {

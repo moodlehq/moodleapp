@@ -26,11 +26,14 @@ angular.module('mm.core.question')
  *
  * The directives to render the question will receive the following parameters in the scope:
  *
- * @param {Object} question The question to render.
- * @param {Function} abort  A function to call to abort the execution.
- *                          Directives implementing questions should use it if there's a critical error.
- *                          Addons using this directive should provide a function that allows aborting the execution of the
- *                          addon, so if any question calls it the whole feature is aborted.
+ * @param {Object} question      The question to render.
+ * @param {Boolean} review       True if reviewing an attempt.
+ * @param {String} component     The component to link files to if the question has any.
+ * @param {Number} [componentId] An ID to use in conjunction with the component.
+ * @param {Function} abort       A function to call to abort the execution.
+ *                               Directives implementing questions should use it if there's a critical error.
+ *                               Addons using this directive should provide a function that allows aborting the execution
+ *                               of the addon, so if any question calls it the whole feature is aborted.
  */
 .directive('mmQuestion', function($log, $compile, $mmQuestionDelegate, $mmQuestionHelper) {
     $log = $log.getInstance('mmQuestion');
@@ -40,6 +43,9 @@ angular.module('mm.core.question')
         templateUrl: 'core/components/question/templates/question.html',
         scope: {
             question: '=',
+            review: '=?',
+            component: '=?',
+            componentId: '=?',
             abort: '&'
         },
         link: function(scope, element) {
@@ -62,6 +68,12 @@ angular.module('mm.core.question')
                         $log.warn('Aborting question because couldn\'t retrieve sequence check.', question.name);
                         scope.abort();
                         return;
+                    }
+
+                    if (scope.review) {
+                        // If we're in review mode, try to extract the feedback and comment for the question.
+                        $mmQuestionHelper.extractQuestionFeedback(question);
+                        $mmQuestionHelper.extractQuestionComment(question);
                     }
 
                     // Add the directive to the element.

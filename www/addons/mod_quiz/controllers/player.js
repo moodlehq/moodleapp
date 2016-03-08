@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_quiz')
  */
 .controller('mmaModQuizPlayerCtrl', function($log, $scope, $stateParams, $mmaModQuiz, $mmaModQuizHelper, $q, $mmUtil,
             $ionicPopover, $ionicScrollDelegate, $rootScope, $ionicPlatform, $translate, $timeout, $mmQuestionHelper,
-            $mmaModQuizAutoSave) {
+            $mmaModQuizAutoSave,  $mmEvents, mmaModQuizAttemptFinishedEvent) {
     $log = $log.getInstance('mmaModQuizPlayerCtrl');
 
     var quizId = $stateParams.quizid,
@@ -35,7 +35,8 @@ angular.module('mm.addons.mod_quiz')
         newAttempt,
         originalBackFunction = $rootScope.$ionicGoBack,
         unregisterHardwareBack,
-        leaving = false;
+        leaving = false,
+        scrollView = $ionicScrollDelegate.$getByHandle('mmaModQuizPlayerScroll');
 
     $scope.moduleUrl = moduleUrl;
     $scope.quizAborted = false;
@@ -226,7 +227,9 @@ angular.module('mm.addons.mod_quiz')
 
         return promise.then(function() {
             return processAttempt(true, timeup).then(function() {
-                // @todo Show review. For now we'll just go back.
+                // Trigger an event to notify the attempt was finished.
+                $mmEvents.trigger(mmaModQuizAttemptFinishedEvent, {quizId: quiz.id, attemptId: attempt.id});
+                // Leave the player.
                 $scope.questions = [];
                 leavePlayer();
             }).catch(function(message) {
@@ -271,7 +274,7 @@ angular.module('mm.addons.mod_quiz')
         var promise;
 
         $scope.dataLoaded = false;
-        $ionicScrollDelegate.scrollTop();
+        scrollView.scrollTop();
         $scope.popover.hide(); // Hide popover if shown.
 
         // First try to save the attempt data. We only save it if we're not seeing the summary.
@@ -292,7 +295,7 @@ angular.module('mm.addons.mod_quiz')
             }
         }).finally(function() {
             $scope.dataLoaded = true;
-            $ionicScrollDelegate.resize(); // Call resize to recalculate scroll area.
+            scrollView.resize(); // Call resize to recalculate scroll area.
 
             if (question) {
                 // Scroll to the question. Give some time to the questions to render.
