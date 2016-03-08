@@ -55,6 +55,9 @@ angular.module('mm.addons.qtype_multianswer')
                 // Replace Moodle's correct/incorrect and feedback classes with our own.
                 $mmQuestionHelper.replaceCorrectnessClasses(questionEl);
                 $mmQuestionHelper.replaceFeedbackClasses(questionEl);
+
+                // Treat the correct/incorrect icons.
+                $mmQuestionHelper.treatCorrectnessIcons(scope, questionEl);
             }
 
             // Set the question text.
