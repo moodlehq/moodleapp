@@ -32,7 +32,8 @@ angular.module('mm.addons.mod_quiz')
         options,
         currentPage,
         attempt,
-        errorPasing = false;
+        errorPasing = false,
+        scrollView = $ionicScrollDelegate.$getByHandle('mmaModQuizReviewScroll');
 
     $scope.isReview = true;
     $scope.component = mmaModQuizAttemptComponent;
@@ -161,14 +162,14 @@ angular.module('mm.addons.mod_quiz')
         }
 
         $scope.dataLoaded = false;
-        $ionicScrollDelegate.scrollTop();
+        scrollView.scrollTop();
         $scope.popover.hide(); // Hide popover if shown.
 
         return loadPage(page).catch(function(message) {
             return $mmaModQuizHelper.showError(message);
         }).finally(function() {
             $scope.dataLoaded = true;
-            $ionicScrollDelegate.resize(); // Call resize to recalculate scroll area.
+            scrollView.resize(); // Call resize to recalculate scroll area.
         });
     };
 
