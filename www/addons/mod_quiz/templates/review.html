@@ -4,7 +4,7 @@
         <button class="button button-icon ion-more" ng-if="toc && toc.length > 1" ng-click="popover.show($event)" aria-label="{{ 'mma.mod_quiz.opentoc' | translate }}">
         </button>
     </ion-nav-buttons>
-    <ion-content mm-state-class>
+    <ion-content mm-state-class delegate-handle="mmaModQuizReviewScroll">
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="dataLoaded" on-refresh="refreshData()"></ion-refresher>
         <mm-loading hide-until="dataLoaded">
             <!-- Review summary -->

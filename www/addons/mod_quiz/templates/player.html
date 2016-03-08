@@ -7,7 +7,7 @@
         </button>
         <a class="button button-icon ion-ios-browsers-outline" ng-href="{{moduleUrl}}" mm-browser aria-label="{{ 'mm.core.openinbrowser' | translate }}"></a>
     </ion-nav-buttons>
-    <ion-content mm-state-class>
+    <ion-content mm-state-class delegate-handle="mmaModQuizPlayerScroll">
         <mm-loading hide-until="dataLoaded">
             <div class="list" ng-if="!attempt">
                 <button class="button button-block" ng-click="start()">{{ 'mma.mod_quiz.startattempt' | translate }}</button>
