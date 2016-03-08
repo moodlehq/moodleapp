@@ -26,6 +26,7 @@ angular.module('mm.core.courses')
 
     $scope.searchEnabled = $mmCourses.isSearchCoursesAvailable();
     $scope.areNavHandlersLoadedFor = $mmCoursesDelegate.areNavHandlersLoadedFor;
+    $scope.filter = {};
 
     // Convenience function to fetch courses.
     function fetchCourses(refresh) {
@@ -34,7 +35,7 @@ angular.module('mm.core.courses')
             angular.forEach(courses, function(course) {
                 course._handlers = $mmCoursesDelegate.getNavHandlersFor(course.id, refresh);
             });
-            $scope.filterText = ''; // Filter value MUST be set after courses are shown.
+            $scope.filter.filterText = ''; // Filter value MUST be set after courses are shown.
         }, function(error) {
             if (typeof error != 'undefined' && error !== '') {
                 $mmUtil.showErrorModal(error);
