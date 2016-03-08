@@ -174,7 +174,7 @@ angular.module('mm.core.contentlinks')
                 // Get the site URL.
                 var siteUrl = $mmContentLinksDelegate.getSiteUrl(url),
                     formatted = $mmUtil.formatURL(siteUrl);
-                if (!siteUrl || !$mmUtil.isValidURL(formatted)) {
+                if (!siteUrl) {
                     $mmUtil.showErrorModal('mm.login.invalidsite', true);
                     return;
                 }

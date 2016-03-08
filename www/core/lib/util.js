@@ -214,7 +214,7 @@ angular.module('mm.core')
          *                     FALSE otherwise.
          */
         self.isValidURL = function(url) {
-            return /^http(s)?\:\/\/([\da-zA-Z\.-]+)\.([\da-zA-Z\.]{2,6})([\/\w \.-]*)*\/?/i.test(url);
+            return /^http(s)?\:\/\/.+/i.test(url);
         };
 
         /**
