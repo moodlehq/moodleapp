@@ -21,7 +21,7 @@ angular.module('mm.core.question')
  * @ngdoc service
  * @name $mmQuestionHelper
  */
-.factory('$mmQuestionHelper', function($mmUtil, $mmText) {
+.factory('$mmQuestionHelper', function($mmUtil, $mmText, $ionicModal) {
 
     var self = {},
         lastErrorShown = 0;
@@ -548,6 +548,68 @@ angular.module('mm.core.question')
             $mmUtil.showErrorModal('Error processing the question. This could be caused by custom modifications in your site.');
         }
         scope.abort();
+    };
+
+    /**
+     * Treat correctness icons, replacing them with local icons and setting click events to show the feedback if needed.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#treatCorrectnessIcons
+     * @param  {Object} scope   Directive scope.
+     * @param  {Object} element DOM element.
+     * @return {Void}
+     */
+    self.treatCorrectnessIcons = function(scope, element) {
+        element = element[0] || element; // Convert from jqLite to plain JS if needed.
+
+        var icons = element.querySelectorAll('.questioncorrectnessicon');
+        angular.forEach(icons, function(icon) {
+            var parent;
+
+            // Replace the icon with the local version.
+            if (icon.src && icon.src.indexOf('incorrect') > -1) {
+                icon.src = 'img/icons/grade_incorrect.svg';
+            } else if (icon.src && icon.src.indexOf('correct') > -1) {
+                icon.src = 'img/icons/grade_correct.svg';
+            }
+
+            // Search if there's a hidden feedback for this element.
+            parent = icon.parentNode;
+            if (!parent) {
+                return;
+            }
+            if (!parent.querySelector('.feedbackspan.accesshide')) {
+                return;
+            }
+
+            // There's a hidden feedback, set up ngClick to show the feedback.
+            icon.setAttribute('ng-click', 'questionCorrectnessIconClicked($event)');
+        });
+
+        // Set icon click function.
+        scope.questionCorrectnessIconClicked = function(event) {
+            var parent = event.target.parentNode,
+                feedback;
+            if (parent) {
+                feedback = parent.querySelector('.feedbackspan.accesshide');
+                if (feedback && feedback.innerHTML) {
+                    scope.currentFeedback = feedback.innerHTML;
+                    scope.feedbackModal.show();
+                }
+            }
+        };
+
+        // Feedback modal.
+        $ionicModal.fromTemplateUrl('core/components/question/templates/feedbackmodal.html', {
+            scope: scope
+        }).then(function(modal) {
+            scope.feedbackModal = modal;
+
+            scope.closeModal = function() {
+                modal.hide();
+            };
+        });
     };
 
     return self;
