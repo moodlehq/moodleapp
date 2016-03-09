@@ -1,0 +1,12 @@
+<ion-popover-view class="mma-mod_wiki-subwiki-picker">
+    <ion-content>
+        <div class="list">
+            <div ng-repeat-start="group in subwikiData.subwikis" ng-if="group.label" class="item item-divider">{{ group.label }}</div>
+            <ion-radio ng-repeat-end ng-class="{'item-disabled': subwiki.id <= 0}" ng-repeat="subwiki in group.subwikis"
+                        ng-model="subwikiData.selected" ng-value="subwiki.id" ng-disabled="subwiki.id <= 0"
+                        ng-click="subwikiPicked(subwiki.id)">
+                {{ subwiki.name }}
+            </ion-radio>
+        </div>
+    </ion-content>
+</ion-popover-view>

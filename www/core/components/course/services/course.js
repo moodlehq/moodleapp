@@ -227,12 +227,17 @@ angular.module('mm.core.course')
      * @param {Number} moduleId    The module ID.
      * @param {Number} [courseId]  The course ID. Recommended to speed up the process and minimize data usage.
      * @param {Number} [sectionId] The section ID.
+     * @param {Boolean} [preferCache=false] True if shouldn't call WS if data is cached, false otherwise.
      * @return {Promise}
      */
-    self.getModule = function(moduleId, courseId, sectionId) {
+    self.getModule = function(moduleId, courseId, sectionId, preferCache) {
 
         if (!moduleId) {
             return $q.reject();
+        }
+
+        if (typeof preferCache == 'undefined') {
+            preferCache = false;
         }
 
         var promise;
@@ -260,7 +265,8 @@ angular.module('mm.core.course')
                 ]
             };
             preSets = {
-                cacheKey: getModuleCacheKey(moduleId)
+                cacheKey: getModuleCacheKey(moduleId),
+                omitExpires: preferCache
             };
 
             if (sectionId) {
