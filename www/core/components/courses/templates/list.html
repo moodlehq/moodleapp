@@ -10,10 +10,10 @@
             <div class="list" ng-if="courses && courses.length > 5">
                 <label class="item item-input">
                     <i class="icon ion-funnel placeholder-icon"></i>
-                    <input type="text" placeholder="{{ 'mm.courses.filtermycourses' | translate}}" ng-model="filterText">
+                    <input type="text" placeholder="{{ 'mm.courses.filtermycourses' | translate}}" ng-model="filter.filterText">
                 </label>
             </div>
-            <section ng-repeat="course in courses | filter:{fullname: filterText}" class="list card">
+            <section ng-repeat="course in courses | filter:{fullname: filter.filterText}" class="list card">
                 <a class="item" ui-sref="site.mm_course({courseid: course.id})" title="{{course.fullname}}">
                     <h2><mm-format-text watch="true">{{course.fullname}}</mm-format-text></h2>
                 </a>
