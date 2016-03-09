@@ -41,7 +41,10 @@
     "cordova-plugin-splashscreen",
     "cordova-plugin-statusbar",
     "cordova-plugin-whitelist",
-    "com.phonegap.plugins.pushplugin",
+    {
+      "locator": "https://github.com/phonegap-build/PushPlugin",
+      "id": "com.phonegap.plugins.pushplugin"
+    },
     {
       "locator": "https://github.com/Tunts/WebIntent",
       "id": "net.tunts.webintent"
