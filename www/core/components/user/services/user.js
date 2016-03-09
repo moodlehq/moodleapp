@@ -100,7 +100,7 @@ angular.module('mm.core.user')
                             // Role name couldn't be translated, leave it like it was.
                             roleName = roleName.replace('mm.user.', '');
                         }
-                        roles += (roles != '' ? separator: '') + roleName;
+                        roles += (roles != '' ? separator + " ": '') + roleName;
                     }
                     deferred.resolve(roles);
                 });
