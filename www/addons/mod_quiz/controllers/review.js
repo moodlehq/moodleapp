@@ -28,9 +28,9 @@ angular.module('mm.addons.mod_quiz')
     var quizId = $stateParams.quizid,
         courseId = $stateParams.courseid,
         attemptId = $stateParams.attemptid,
+        currentPage = $stateParams.page,
         quiz,
         options,
-        currentPage,
         attempt,
         errorPasing = false,
         scrollView = $ionicScrollDelegate.$getByHandle('mmaModQuizReviewScroll');
@@ -47,8 +47,8 @@ angular.module('mm.addons.mod_quiz')
             return $mmaModQuiz.getCombinedReviewOptions(quiz.id).then(function(result) {
                 options = result;
 
-                // Load all questions.
-                return loadPage(-1);
+                // Load questions.
+                return loadPage(currentPage);
             });
 
         }).catch(function(message) {
