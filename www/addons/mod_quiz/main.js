@@ -71,7 +71,8 @@ angular.module('mm.addons.mod_quiz', ['mm.core'])
       params: {
         courseid: null,
         quizid: null,
-        attemptid: null
+        attemptid: null,
+        page: -1
       },
       views: {
         'site': {
@@ -83,6 +84,7 @@ angular.module('mm.addons.mod_quiz', ['mm.core'])
 
 })
 
-.config(function($mmCourseDelegateProvider) {
+.config(function($mmCourseDelegateProvider, $mmContentLinksDelegateProvider) {
     $mmCourseDelegateProvider.registerContentHandler('mmaModQuiz', 'quiz', '$mmaModQuizHandlers.courseContentHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModQuiz', '$mmaModQuizHandlers.linksHandler');
 });
