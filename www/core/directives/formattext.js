@@ -212,6 +212,7 @@ angular.module('mm.core')
             // Important: We need to look for links first because in 'img' we add new links without mm-browser.
             angular.forEach(dom.find('a'), function(anchor) {
                 anchor.setAttribute('mm-browser', '');
+                anchor.setAttribute('capture-link', true);
                 addExternalContent(anchor, component, componentId, siteId);
             });
 

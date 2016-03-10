@@ -20,8 +20,27 @@ angular.module('mm.core')
  * @module mm.core
  * @ngdoc directive
  * @name mmBrowser
+ *
+ * @param {Boolean} [captureLink=false] If the link needs to be captured by the app.
  */
 .directive('mmBrowser', function($mmUtil, $mmContentLinksHelper) {
+
+    /**
+     * Convenience function to open file or url in the browser.
+     *
+     * @param  {String} href    HREF to be opened
+     */
+    function openInBrowser(href) {
+        if (href.indexOf('cdvfile://') === 0 || href.indexOf('file://') === 0) {
+            // We have a local file.
+            $mmUtil.openFile(href).catch(function(error) {
+                $mmUtil.showErrorModal(error);
+            });
+        } else {
+            // It's an external link, we will open with browser.
+            $mmUtil.openInBrowser(href);
+        }
+    }
 
     return {
         restrict: 'A',
@@ -33,19 +52,15 @@ angular.module('mm.core')
                     event.preventDefault();
                     event.stopPropagation();
 
-                    $mmContentLinksHelper.handleLink(href).then(function(treated) {
-                        if (!treated) {
-                           if (href.indexOf('cdvfile://') === 0 || href.indexOf('file://') === 0) {
-                                // We have a local file.
-                                $mmUtil.openFile(href).catch(function(error) {
-                                    $mmUtil.showErrorModal(error);
-                                });
-                            } else {
-                                // It's an external link, we will open with browser.
-                                $mmUtil.openInBrowser(href);
+                    if (attrs.captureLink && attrs.captureLink !== 'false') {
+                        $mmContentLinksHelper.handleLink(href).then(function(treated) {
+                            if (!treated) {
+                               openInBrowser(href);
                             }
-                        }
-                    });
+                        });
+                    } else {
+                        openInBrowser(href);
+                    }
                 }
             });
         }
