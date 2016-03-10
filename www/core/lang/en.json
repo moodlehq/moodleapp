@@ -29,7 +29,7 @@
     "dftimedate": "h[:]mm A",
     "download": "Download",
     "downloading": "Downloading",
-    "elementseparator": ", ",
+    "elementseparator": ",",
     "error": "Error",
     "errorchangecompletion": "An error occurred while changing the completion status. Please try again.",
     "errordownloading": "Error downloading file.",
