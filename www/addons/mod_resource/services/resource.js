@@ -176,6 +176,9 @@ angular.module('mm.addons.mod_resource')
      * @param {Number} moduleId The module ID.
      * @param {String} [target] The HTML file that the user wants to open, if not defined uses the main file.
      * @return {Promise}
+     *
+     * @deprecated since version 2.10
+     * This function was used to show resources inline
      */
     self.getResourceHtml = function(contents, moduleId, target) {
         var indexUrl,
@@ -262,18 +265,12 @@ angular.module('mm.addons.mod_resource')
      * @return {Boolean}
      */
     self.isDisplayedInIframe = function(module) {
-        var inline = self.isDisplayedInline(module);
-
-        if (inline && $mmFS.isAvailable()) {
-            for (var i = 0; i < module.contents.length; i++) {
-                var ext = $mmFS.getFileExtension(module.contents[i].filename);
-                if (ext == 'js' || ext == 'swf' || ext == 'css') {
-                    return true;
-                }
-            }
+        if (!module.contents.length) {
+            return false;
         }
+        var ext = $mmFS.getFileExtension(module.contents[0].filename);
 
-        return false;
+        return (ext === 'htm' || ext === 'html') && $mmFS.isAvailable();
     };
 
     /**
@@ -284,13 +281,11 @@ angular.module('mm.addons.mod_resource')
      * @name $mmaModResource#isDisplayedInline
      * @param {Object} module The module object.
      * @return {Boolean}
+     *
+     * @deprecated since version 2.10
      */
     self.isDisplayedInline = function(module) {
-        if (!module.contents.length) {
-            return false;
-        }
-        var ext = $mmFS.getFileExtension(module.contents[0].filename);
-        return ext === 'htm' || ext === 'html';
+        return self.isDisplayedInIframe(module);
     };
 
     /**
