@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_quiz')
  */
 .controller('mmaModQuizPlayerCtrl', function($log, $scope, $stateParams, $mmaModQuiz, $mmaModQuizHelper, $q, $mmUtil,
             $ionicPopover, $ionicScrollDelegate, $rootScope, $ionicPlatform, $translate, $timeout, $mmQuestionHelper,
-            $mmaModQuizAutoSave,  $mmEvents, mmaModQuizAttemptFinishedEvent) {
+            $mmaModQuizAutoSave, $mmEvents, mmaModQuizAttemptFinishedEvent) {
     $log = $log.getInstance('mmaModQuizPlayerCtrl');
 
     var quizId = $stateParams.quizid,
@@ -36,6 +36,7 @@ angular.module('mm.addons.mod_quiz')
         originalBackFunction = $rootScope.$ionicGoBack,
         unregisterHardwareBack,
         leaving = false,
+        timeUpCalled = false,
         scrollView = $ionicScrollDelegate.$getByHandle('mmaModQuizPlayerScroll');
 
     $scope.moduleUrl = moduleUrl;
@@ -80,7 +81,6 @@ angular.module('mm.addons.mod_quiz')
             // Get access information for the quiz.
             return $mmaModQuiz.getAccessInformation(quiz.id, 0, true).then(function(info) {
                 accessInfo = info;
-                $scope.requirePassword = accessInfo.ispreflightcheckrequired;
 
                 // Get attempts to determine last attempt.
                 return $mmaModQuiz.getUserAttempts(quiz.id, 'all', true, true).then(function(attempts) {
@@ -102,19 +102,27 @@ angular.module('mm.addons.mod_quiz')
         // Check preflight data and start attempt if needed.
         var atmpt = newAttempt ? undefined : attempt;
         return $mmaModQuizHelper.checkPreflightData($scope, quiz.id, accessInfo, atmpt, preflightData).then(function(att) {
-            attempt = att;
-            $scope.attempt = attempt;
-            $scope.toc = $mmaModQuiz.getTocFromLayout(attempt.layout);
 
-            if (attempt.state != $mmaModQuiz.ATTEMPT_OVERDUE) {
-                // Attempt not overdue, load page.
-                return loadPage(attempt.currentpage).catch(function(message) {
-                    return $mmaModQuizHelper.showError(message, 'mm.core.error');
-                });
-            } else {
-                // Attempt is overdue, we can only load the summary.
-                return loadSummary();
-            }
+            // Re-fetch access information with the right attempt.
+            return $mmaModQuiz.getAccessInformation(quiz.id, att.id, true).then(function(info) {
+                accessInfo = info;
+
+                attempt = att;
+                $scope.attempt = attempt;
+                $scope.toc = $mmaModQuiz.getTocFromLayout(attempt.layout);
+
+                if (attempt.state != $mmaModQuiz.ATTEMPT_OVERDUE) {
+                    // Attempt not overdue, load page.
+                    return loadPage(attempt.currentpage).then(function() {
+                        initTimer();
+                    }).catch(function(message) {
+                        return $mmaModQuizHelper.showError(message, 'mm.core.error');
+                    });
+                } else {
+                    // Attempt is overdue, we can only load the summary.
+                    return loadSummary();
+                }
+            });
         });
     }
 
@@ -215,7 +223,7 @@ angular.module('mm.addons.mod_quiz')
     }
 
     // Finish an attempt, either by timeup or because the user clicked to finish it.
-    function finishAttempt(timeup) {
+    function finishAttempt(finish, timeup) {
         var promise;
 
         // Show confirm if the user clicked the finish button and the quiz is in progress.
@@ -226,7 +234,7 @@ angular.module('mm.addons.mod_quiz')
         }
 
         return promise.then(function() {
-            return processAttempt(true, timeup).then(function() {
+            return processAttempt(finish, timeup).then(function() {
                 // Trigger an event to notify the attempt was finished.
                 $mmEvents.trigger(mmaModQuizAttemptFinishedEvent, {quizId: quiz.id, attemptId: attempt.id});
                 // Leave the player.
@@ -236,6 +244,17 @@ angular.module('mm.addons.mod_quiz')
                 return $mmaModQuizHelper.showError(message, 'mma.mod_quiz.errorsaveattempt');
             });
         });
+    }
+
+    // Initializes the timer if enabled.
+    function initTimer() {
+        if (accessInfo.endtime > 0) {
+            if ($mmaModQuiz.shouldShowTimeLeft(accessInfo.activerulenames, attempt, accessInfo.endtime)) {
+                $scope.endTime = accessInfo.endtime;
+            } else {
+                delete $scope.endTime;
+            }
+        }
     }
 
     // Override Ionic's back button behavior.
@@ -308,7 +327,20 @@ angular.module('mm.addons.mod_quiz')
 
     // User clicked to finish the attempt.
     $scope.finishAttempt = function() {
-        finishAttempt();
+        finishAttempt(true);
+    };
+
+    // Quiz time has finished.
+    $scope.timeUp = function() {
+        if (timeUpCalled) {
+            return;
+        }
+
+        timeUpCalled = true;
+        var modal = $mmUtil.showModalLoading('mm.core.sending', true);
+        finishAttempt(false, true).finally(function() {
+            modal.dismiss();
+        });
     };
 
     // Setup TOC popover.
