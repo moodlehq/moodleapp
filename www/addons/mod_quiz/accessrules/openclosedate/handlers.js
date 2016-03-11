@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_quiz')
  * @ngdoc service
  * @name $mmaQuizAccessOpenCloseDateHandler
  */
-.factory('$mmaQuizAccessOpenCloseDateHandler', function() {
+.factory('$mmaQuizAccessOpenCloseDateHandler', function($mmaModQuiz) {
 
     var self = {};
 
@@ -41,6 +41,27 @@ angular.module('mm.addons.mod_quiz')
      * @return {Boolean}          True if preflight check required.
      */
     self.isPreflightCheckRequired = function(attempt) {
+        return false;
+    };
+
+    /**
+     * Check if time left should be shown.
+     *
+     * @param  {Object} attempt Attempt.
+     * @param  {Number} endTime The attempt end time (in seconds).
+     * @param  {Number} timeNow The time to consider as 'now' (in seconds).
+     * @return {Boolean}        True if it should show the time left.
+     */
+    self.shouldShowTimeLeft = function(attempt, endTime, timeNow) {
+        // If this is a teacher preview after the close date, do not show the time.
+        if (attempt.preview && timeNow > endTime) {
+            return false;
+        }
+
+        // Show the time left only if it's less than QUIZ_SHOW_TIME_BEFORE_DEADLINE.
+        if (timeNow > endTime - $mmaModQuiz.QUIZ_SHOW_TIME_BEFORE_DEADLINE) {
+            return true;
+        }
         return false;
     };
 

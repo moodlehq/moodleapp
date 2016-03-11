@@ -45,6 +45,11 @@ angular.module('mm.addons.mod_quiz')
         return true;
     };
 
+    /**
+     * Get the name of the directive to be rendered in the preflight form.
+     *
+     * @return {String} Directive name.
+     */
     self.getPreflightDirectiveName = function() {
         return 'mma-quiz-access-password-preflight';
     };

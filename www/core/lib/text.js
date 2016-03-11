@@ -381,5 +381,22 @@ angular.module('mm.core')
         return extension;
     };
 
+    /**
+     * If a number has only 1 digit, add a leading zero to it.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#twoDigits
+     * @param  {Number|String} num Number to convert.
+     * @return {String}            Number with leading zeros.
+     */
+    self.twoDigits = function(num) {
+        if (num < 10) {
+            return '0' + num;
+        } else {
+            return '' + num; // Convert to string for coherence.
+        }
+    };
+
     return self;
 });
