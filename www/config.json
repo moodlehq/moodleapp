@@ -1,7 +1,7 @@
 {
-    "app_id" : "com.moodle.moodlemobile",
-    "versioncode" : "2006",
-    "versionname" : "2.5",
+    "app_id" : "com.bpe.mobile_lms",
+    "versioncode" : "1",
+    "versionname" : "1.0",
     "cache_expiration_time" : 300000,
     "default_lang" : "en",
     "languages": {"ar": "عربي", "bg": "Български", "ca": "Català", "cs": "Čeština", "de": "Deutsch","en": "English", "es": "Español", "es-mx": "Español - México", "eu": "Euskara", "fa": "فارسی", "fr" : "Français", "he" : "עברית", "hu": "magyar", "it": "Italiano", "ja": "日本語","nl": "Nederlands", "pl": "Polski", "pt-br": "Português - Brasil", "ru": "Русский", "sv": "Svenska", "tr" : "Türkçe", "zh-cn" : "简体中文", "zh-tw" : "正體中文"},
