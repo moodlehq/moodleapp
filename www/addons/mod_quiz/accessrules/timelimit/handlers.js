@@ -45,8 +45,26 @@ angular.module('mm.addons.mod_quiz')
         return !attempt;
     };
 
+    /**
+     * Get the name of the directive to be rendered in the preflight form.
+     *
+     * @return {String} Directive name.
+     */
     self.getPreflightDirectiveName = function() {
         return 'mma-quiz-access-time-limit-preflight';
+    };
+
+    /**
+     * Check if time left should be shown.
+     *
+     * @param  {Object} attempt Attempt.
+     * @param  {Number} endTime The attempt end time (in seconds).
+     * @param  {Number} timeNow The time to consider as 'now' (in seconds).
+     * @return {Boolean}        True if it should show the time left.
+     */
+    self.shouldShowTimeLeft = function(attempt, endTime, timeNow) {
+        // If this is a teacher preview after the time limit expires, don't show the time left.
+        return !(attempt.preview && timeNow > endTime);
     };
 
     return self;
