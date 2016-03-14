@@ -20,6 +20,9 @@ angular.module('mm.addons.mod_resource')
  * @module mm.addons.mod_resource
  * @ngdoc directive
  * @name mmaModResourceHtmlLink
+ *
+ * @deprecated since version 2.10
+ * This function was used to show resources inline
  */
 .directive('mmaModResourceHtmlLink', function() {
     return {
