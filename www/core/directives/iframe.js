@@ -127,8 +127,11 @@ angular.module('mm.core')
                 } else if (el.target == '_parent' || el.target == '_top' || el.target == '_blank') {
                     // Opening links with _parent, _top or _blank can break the app. We'll open it in InAppBrowser.
                     angular.element(el).on('click', function(e) {
-                        e.preventDefault();
-                        $mmUtil.openInApp(href);
+                        // If the link's already prevented then we won't open it in InAppBrowser.
+                        if (!e.defaultPrevented) {
+                            e.preventDefault();
+                            $mmUtil.openInApp(href);
+                        }
                     });
                 }
             }
