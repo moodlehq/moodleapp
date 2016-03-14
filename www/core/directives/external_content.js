@@ -72,7 +72,7 @@ angular.module('mm.core')
      */
     function handleExternalContent(siteId, dom, targetAttr, url, component, componentId) {
 
-        if (dom.tagName == 'VIDEO' && dom.textTracks) {
+        if (dom.tagName == 'VIDEO' && dom.textTracks && targetAttr != 'poster') {
             // It's a video with subtitles. In iOS, subtitles position is wrong so it needs to be fixed.
             dom.textTracks.onaddtrack = function(event) {
                 if (event.track) {
@@ -125,7 +125,7 @@ angular.module('mm.core')
                 }
 
                 // Set events to download big files (not downloaded automatically).
-                if (finalUrl.indexOf('http') === 0 &&
+                if (finalUrl.indexOf('http') === 0 && targetAttr != 'poster' &&
                             (dom.tagName == 'VIDEO' || dom.tagName == 'AUDIO' || dom.tagName == 'A' || dom.tagName == 'SOURCE')) {
                     var eventName = dom.tagName == 'A' ? 'click' : 'play';
 
@@ -181,6 +181,11 @@ angular.module('mm.core')
                 sourceAttr = 'targetSrc';
                 if (attrs.hasOwnProperty('ngSrc')) {
                     observe = true;
+                }
+
+                if (dom.tagName === 'VIDEO' && attrs.poster) {
+                    // Handle poster.
+                    handleExternalContent(siteid, dom, 'poster', attrs.poster, component, componentId);
                 }
 
             } else {
