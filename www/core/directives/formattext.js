@@ -241,6 +241,8 @@ angular.module('mm.core')
             });
             angular.forEach(dom.find('video'), function(el) {
                 treatMedia(el, component, componentId, siteId);
+                // Set data-tap-disabled="true" to make controls work in Android (see MOBILE-1452).
+                el.setAttribute('data-tap-disabled', true);
             });
             angular.forEach(dom.find('iframe'), addMediaAdaptClass);
 
