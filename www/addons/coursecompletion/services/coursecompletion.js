@@ -188,7 +188,7 @@ angular.module('mm.addons.coursecompletion')
      *
      * @module mm.addons.coursecompletion
      * @ngdoc method
-     * @name $mmaCourseCompletion#isPluginViewEnabledForCourse
+     * @name $mmaCourseCompletion#isPluginViewEnabledForUser
      * @param {Number} courseId Course ID.
      * @param {Number} userId   User ID.
      * @return {Promise}        Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.

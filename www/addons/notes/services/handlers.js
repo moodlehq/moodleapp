@@ -25,7 +25,38 @@ angular.module('mm.addons.notes')
  */
 .factory('$mmaNotesHandlers', function($mmaNotes, $mmSite, $mmApp, $ionicModal, $mmUtil, $q, mmCoursesAccessMethods) {
 
-    var self = {};
+    // We use "caches" to decrease network usage.
+    var self = {},
+        addNoteEnabledCache = {},
+        coursesNavEnabledCache = {};
+
+    /**
+     * Clear add note cache.
+     * If a courseId is specified, it will only delete the entry for that course.
+     *
+     * @module mm.addons.notes
+     * @ngdoc method
+     * @name $mmaNotesHandlers#clearAddNoteCache
+     * @param  {Number} [courseId] Course ID.
+     */
+    self.clearAddNoteCache = function(courseId) {
+        if (courseId) {
+            delete addNoteEnabledCache[courseId];
+        } else {
+            addNoteEnabledCache = {};
+        }
+    };
+
+    /**
+     * Clear courses nav cache.
+     *
+     * @module mm.addons.notes
+     * @ngdoc method
+     * @name $mmaNotesHandlers#clearCoursesNavCache
+     */
+    self.clearCoursesNavCache = function() {
+        coursesNavEnabledCache = {};
+    };
 
     /**
      * Add a note handler.
@@ -59,7 +90,13 @@ angular.module('mm.addons.notes')
             if (!courseId || user.id == $mmSite.getUserId()) {
                 return $q.when(false);
             }
-            return $mmaNotes.isPluginAddNoteEnabledForCourse(courseId);
+            if (typeof addNoteEnabledCache[courseId] != 'undefined') {
+                return addNoteEnabledCache[courseId];
+            }
+            return $mmaNotes.isPluginAddNoteEnabledForCourse(courseId).then(function(enabled) {
+                addNoteEnabledCache[courseId] = enabled;
+                return enabled;
+            });
         };
 
         /**
@@ -164,7 +201,13 @@ angular.module('mm.addons.notes')
             if (accessData && accessData.type == mmCoursesAccessMethods.guest) {
                 return false; // Not enabled for guests.
             }
-            return $mmaNotes.isPluginViewNotesEnabledForCourse(courseId);
+            if (typeof coursesNavEnabledCache[courseId] != 'undefined') {
+                return coursesNavEnabledCache[courseId];
+            }
+            return $mmaNotes.isPluginViewNotesEnabledForCourse(courseId).then(function(enabled) {
+                coursesNavEnabledCache[courseId] = enabled;
+                return enabled;
+            });
         };
 
         /**
@@ -199,4 +242,15 @@ angular.module('mm.addons.notes')
     };
 
     return self;
+})
+
+.run(function($mmaNotesHandlers, $mmEvents, mmCoreEventLogout, mmCoursesEventMyCoursesRefreshed, mmUserEventProfileRefreshed) {
+    $mmEvents.on(mmCoreEventLogout, function() {
+        $mmaNotesHandlers.clearAddNoteCache();
+        $mmaNotesHandlers.clearCoursesNavCache();
+    });
+    $mmEvents.on(mmCoursesEventMyCoursesRefreshed, $mmaNotesHandlers.clearCoursesNavCache);
+    $mmEvents.on(mmUserEventProfileRefreshed, function(data) {
+        $mmaNotesHandlers.clearAddNoteCache(data.courseid);
+    });
 });

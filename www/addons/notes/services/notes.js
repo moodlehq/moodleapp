@@ -92,7 +92,7 @@ angular.module('mm.addons.notes')
      */
     self.isPluginAddNoteEnabledForCourse = function(courseId) {
         // The only way to detect if it's enabled is to perform a WS call.
-        // We use an invalid user ID (-1) and check if the error is due to permissions or to invalid ID.
+        // We use an invalid user ID (-1) to avoid saving the note if the user has permissions.
         var data = {
             "notes[0][userid]" : -1,
             "notes[0][courseid]": courseId,

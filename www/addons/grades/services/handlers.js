@@ -23,7 +23,37 @@ angular.module('mm.addons.grades')
  */
 .factory('$mmaGradesHandlers', function($mmaGrades, $state, $mmUtil, $mmContentLinksHelper, mmCoursesAccessMethods) {
 
-    var self = {};
+    var self = {},
+        viewGradesEnabledCache = {}; // We use a "cache" to decrease network usage.
+
+    /**
+     * Get a cache key to identify a course and a user.
+     *
+     * @param  {Number} courseId Course ID.
+     * @param  {Number} userId   User ID.
+     * @return {String}          Cache key.
+     */
+    function getCacheKey(courseId, userId) {
+        return courseId + '#' + userId;
+    }
+
+    /**
+     * Clear view grades cache.
+     * If a courseId and userId are specified, it will only delete the entry for that user and course.
+     *
+     * @module mm.addons.grades
+     * @ngdoc method
+     * @name $mmaGradesHandlers#clearViewGradesCache
+     * @param  {Number} [courseId] Course ID.
+     * @param  {Number} [userId]   User ID.
+     */
+    self.clearViewGradesCache = function(courseId, userId) {
+        if (courseId && userId) {
+            delete viewGradesEnabledCache[getCacheKey(courseId, userId)];
+        } else {
+            viewGradesEnabledCache = {};
+        }
+    };
 
     /**
      * Course nav handler.
@@ -119,7 +149,14 @@ angular.module('mm.addons.grades')
          */
         self.isEnabledForUser = function(user, courseId) {
             return $mmaGrades.isPluginEnabledForCourse(courseId).then(function() {
-                return $mmaGrades.isPluginEnabledForUser(courseId, user.id);
+                var cacheKey = getCacheKey(courseId, user.id);
+                if (typeof viewGradesEnabledCache[cacheKey] != 'undefined') {
+                    return viewGradesEnabledCache[cacheKey];
+                }
+                return $mmaGrades.isPluginEnabledForUser(courseId, user.id).then(function(enabled) {
+                    viewGradesEnabledCache[cacheKey] = enabled;
+                    return enabled;
+                });
             });
         };
 
@@ -239,4 +276,11 @@ angular.module('mm.addons.grades')
     };
 
     return self;
+})
+
+.run(function($mmaGradesHandlers, $mmEvents, mmCoreEventLogout, mmUserEventProfileRefreshed) {
+    $mmEvents.on(mmCoreEventLogout, $mmaGradesHandlers.clearViewGradesCache);
+    $mmEvents.on(mmUserEventProfileRefreshed, function(data) {
+        $mmaGradesHandlers.clearViewGradesCache(data.courseid, data.userid);
+    });
 });
