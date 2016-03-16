@@ -32,21 +32,22 @@ angular.module('mm.addons.mod_quiz')
      * @module mm.addons.mod_quiz
      * @ngdoc method
      * @name $mmaModQuizHelper#checkPreflightData
-     * @param  {Object} scope           Scope.
-     * @param  {Number} quizId          Quiz ID.
-     * @param  {Object} accessInfo      Access info returned by $mmaModQuiz#getAccessInformation.
-     * @param  {Object} [attempt]       Attempt to continue. Don't pass any value if the user needs to start a new attempt.
-     * @param  {Object} [preflightData] Preflight data to validate. Don't pass any value if the user hasn't input any data.
-     * @return {Promise}                Promise resolved when the preflight data is validated.
+     * @param  {Object} scope             Scope.
+     * @param  {Number} quizId            Quiz ID.
+     * @param  {Object} quizAccessInfo    Quiz access info returned by $mmaModQuiz#getQuizAccessInformation.
+     * @param  {Object} attemptAccessInfo Attempt access info returned by $mmaModQuiz#getAttemptAccessInformation.
+     * @param  {Object} [attempt]         Attempt to continue. Don't pass any value if the user needs to start a new attempt.
+     * @param  {Object} [preflightData]   Preflight data to validate. Don't pass any value if the user hasn't input any data.
+     * @return {Promise}                  Promise resolved when the preflight data is validated.
      */
-    self.checkPreflightData = function(scope, quizId, accessInfo, attempt, preflightData) {
+    self.checkPreflightData = function(scope, quizId, quizAccessInfo, attemptAccessInfo, attempt, preflightData) {
         var promise;
 
-        if (accessInfo.ispreflightcheckrequired && !preflightData) {
+        if (attemptAccessInfo.ispreflightcheckrequired && !preflightData) {
             // Preflight check is required but no preflightData has been sent. Show a modal with the preflight form.
             if (!scope.modal) {
                 // Modal hasn't been created yet. Create it and show it.
-                return self.initPreflightModal(scope, accessInfo, attempt).catch(function(error) {
+                return self.initPreflightModal(scope, quizAccessInfo, attempt).catch(function(error) {
                     return self.showError(error, 'Error initializing preflight modal.');
                 }).then(function() {
                     scope.modal.show();
@@ -121,16 +122,16 @@ angular.module('mm.addons.mod_quiz')
      * @module mm.addons.mod_quiz
      * @ngdoc method
      * @name $mmaModQuizHelper#initPreflightModal
-     * @param  {Object} scope      Scope.
-     * @param  {Object} accessInfo Access info returned by $mmaModQuiz#getAccessInformation.
-     * @param  {Object} [attempt]  Attempt to continue. Don't pass any value if the user needs to start a new attempt.
-     * @return {Promise}           Promise resolved when the modal is initialized.
+     * @param  {Object} scope          Scope.
+     * @param  {Object} quizAccessInfo Quiz access info returned by $mmaModQuiz#getQuizAccessInformation.
+     * @param  {Object} [attempt]      Attempt to continue. Don't pass any value if the user needs to start a new attempt.
+     * @return {Promise}               Promise resolved when the modal is initialized.
      */
-    self.initPreflightModal = function(scope, accessInfo, attempt) {
+    self.initPreflightModal = function(scope, quizAccessInfo, attempt) {
         var notSupported = [],
             directives = [];
 
-        angular.forEach(accessInfo.activerulenames, function(rule) {
+        angular.forEach(quizAccessInfo.activerulenames, function(rule) {
             var handler = $mmaModQuizAccessRulesDelegate.getAccessRuleHandler(rule);
             if (handler) {
                 if (handler.isPreflightCheckRequired(attempt)) {
