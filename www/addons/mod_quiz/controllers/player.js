@@ -30,7 +30,8 @@ angular.module('mm.addons.mod_quiz')
         courseId = $stateParams.courseid,
         moduleUrl = $stateParams.moduleurl,
         quiz,
-        accessInfo,
+        quizAccessInfo,
+        attemptAccessInfo,
         attempt,
         newAttempt,
         originalBackFunction = $rootScope.$ionicGoBack,
@@ -78,18 +79,23 @@ angular.module('mm.addons.mod_quiz')
 
             $scope.quiz = quiz;
 
-            // Get access information for the quiz.
-            return $mmaModQuiz.getAccessInformation(quiz.id, 0, true).then(function(info) {
-                accessInfo = info;
+            // Get access information for the quiz. quizAccessInfo
+            return $mmaModQuiz.getQuizAccessInformation(quiz.id, true).then(function(info) {
+                quizAccessInfo = info;
 
-                // Get attempts to determine last attempt.
-                return $mmaModQuiz.getUserAttempts(quiz.id, 'all', true, true).then(function(attempts) {
-                    if (!attempts.length) {
-                        newAttempt = true;
-                    } else {
-                        attempt = attempts[attempts.length - 1];
-                        newAttempt = $mmaModQuiz.isAttemptFinished(attempt.state);
-                    }
+                // Get attempt access info for the last attempt.
+                return $mmaModQuiz.getAttemptAccessInformation(quiz.id, 0, true).then(function(info) {
+                    attemptAccessInfo = info;
+
+                    // Get user attempts to determine last attempt.
+                    return $mmaModQuiz.getUserAttempts(quiz.id, 'all', true, true).then(function(attempts) {
+                        if (!attempts.length) {
+                            newAttempt = true;
+                        } else {
+                            attempt = attempts[attempts.length - 1];
+                            newAttempt = $mmaModQuiz.isAttemptFinished(attempt.state);
+                        }
+                    });
                 });
             });
         }).catch(function(message) {
@@ -101,11 +107,12 @@ angular.module('mm.addons.mod_quiz')
     function startOrContinueAttempt(preflightData) {
         // Check preflight data and start attempt if needed.
         var atmpt = newAttempt ? undefined : attempt;
-        return $mmaModQuizHelper.checkPreflightData($scope, quiz.id, accessInfo, atmpt, preflightData).then(function(att) {
+        return $mmaModQuizHelper.checkPreflightData($scope, quiz.id, quizAccessInfo, attemptAccessInfo, atmpt, preflightData)
+                    .then(function(att) {
 
-            // Re-fetch access information with the right attempt.
-            return $mmaModQuiz.getAccessInformation(quiz.id, att.id, true).then(function(info) {
-                accessInfo = info;
+            // Re-fetch attempt access information with the right attempt (might have changed because a new attempt was created).
+            return $mmaModQuiz.getAttemptAccessInformation(quiz.id, att.id, true).then(function(info) {
+                attemptAccessInfo = info;
 
                 attempt = att;
                 $scope.attempt = attempt;
@@ -248,9 +255,9 @@ angular.module('mm.addons.mod_quiz')
 
     // Initializes the timer if enabled.
     function initTimer() {
-        if (accessInfo.endtime > 0) {
-            if ($mmaModQuiz.shouldShowTimeLeft(accessInfo.activerulenames, attempt, accessInfo.endtime)) {
-                $scope.endTime = accessInfo.endtime;
+        if (attemptAccessInfo.endtime > 0) {
+            if ($mmaModQuiz.shouldShowTimeLeft(quizAccessInfo.activerulenames, attempt, attemptAccessInfo.endtime)) {
+                $scope.endTime = attemptAccessInfo.endtime;
             } else {
                 delete $scope.endTime;
             }

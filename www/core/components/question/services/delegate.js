@@ -87,7 +87,7 @@ angular.module('mm.core.question')
          * @return {String}          Directive name. Undefined if no directive found.
          */
         self.getDirectiveForQuestion = function(question) {
-            var type = question.type;
+            var type = 'qtype_' + question.type;
             if (typeof enabledHandlers[type] != 'undefined') {
                 return enabledHandlers[type].getDirectiveName(question);
             }
@@ -103,7 +103,7 @@ angular.module('mm.core.question')
          * @return {Boolean}      True if supported, false otherwise.
          */
         self.isQuestionSupported = function(type) {
-            return typeof enabledHandlers[type] != 'undefined';
+            return typeof enabledHandlers['qtype_' + type] != 'undefined';
         };
 
         /**

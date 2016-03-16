@@ -31,7 +31,8 @@ angular.module('mm.addons.mod_quiz')
         options,
         bestGrade,
         gradebookData,
-        accessInfo,
+        quizAccessInfo,
+        attemptAccessInfo,
         moreAttempts,
         scrollView = $ionicScrollDelegate.$getByHandle('mmaModQuizIndexScroll'),
         autoReview;
@@ -53,12 +54,22 @@ angular.module('mm.addons.mod_quiz')
             $scope.description = quiz.intro || $scope.description;
             $scope.quiz = quiz;
 
-            return getAttempts().catch(function(message) {
-                return $mmaModQuizHelper.showError(message);
+            // Get quiz access info.
+            return $mmaModQuiz.getQuizAccessInformation(quiz.id).then(function(info) {
+                quizAccessInfo = info;
+                $scope.accessRules = quizAccessInfo.accessrules;
+                quiz.showReviewColumn = quizAccessInfo.canreviewmyattempts;
+                $scope.unsupportedRules = $mmaModQuiz.getUnsupportedRules(quizAccessInfo.activerulenames);
+
+                // Get question types in the quiz.
+                return $mmaModQuiz.getQuizRequiredQtypes(quiz.id).then(function(types) {
+                    $scope.unsupportedQuestions = $mmaModQuiz.getUnsupportedQuestions(types);
+                    return getAttempts();
+                });
             });
 
-        }, function(message) {
-            if (!refresh) {
+        }).catch(function(message) {
+            if (!refresh && !quiz) {
                 // Get quiz failed, retry without using cache since it might be a new activity.
                 return refreshData();
             }
@@ -70,12 +81,8 @@ angular.module('mm.addons.mod_quiz')
     function getAttempts() {
 
         // Get access information of last attempt (it also works if no attempts made).
-        return $mmaModQuiz.getAccessInformation(quiz.id, 0).then(function(info) {
-            accessInfo = info;
-            $scope.accessRules = accessInfo.accessrules;
-            quiz.showReviewColumn = accessInfo.canreviewmyattempts;
-            $scope.unsupportedQuestions = $mmaModQuiz.getUnsupportedQuestions(accessInfo.questiontypes);
-            $scope.unsupportedRules = $mmaModQuiz.getUnsupportedRules(accessInfo.activerulenames);
+        return $mmaModQuiz.getAttemptAccessInformation(quiz.id, 0).then(function(info) {
+            attemptAccessInfo = info;
 
             // Get attempts.
             return $mmaModQuiz.getUserAttempts(quiz.id).then(function(atts) {
@@ -85,9 +92,9 @@ angular.module('mm.addons.mod_quiz')
                     // Check if user can create/continue attempts.
                     if (attempts.length) {
                         var lastAttempt = attempts[attempts.length - 1];
-                        moreAttempts = !$mmaModQuiz.isAttemptFinished(lastAttempt.state) || !accessInfo.isfinished;
+                        moreAttempts = !$mmaModQuiz.isAttemptFinished(lastAttempt.state) || !attemptAccessInfo.isfinished;
                     } else {
-                        moreAttempts = !accessInfo.isfinished;
+                        moreAttempts = !attemptAccessInfo.isfinished;
                     }
 
                     $scope.attempts = attempts;
@@ -188,15 +195,15 @@ angular.module('mm.addons.mod_quiz')
         if (quiz.hasquestions !== 0) {
             if (attempts.length && !$mmaModQuiz.isAttemptFinished(attempts[attempts.length - 1].state)) {
                 // Last attempt is unfinished.
-                if (accessInfo.canattempt) {
+                if (quizAccessInfo.canattempt) {
                     $scope.buttonText = 'mma.mod_quiz.continueattemptquiz';
-                } else if (accessInfo.canpreview) {
+                } else if (quizAccessInfo.canpreview) {
                     $scope.buttonText = 'mma.mod_quiz.continuepreview';
                 }
             } else {
                 // Last attempt is finished or no attempts.
-                if (accessInfo.canattempt) {
-                    $scope.preventMessages = accessInfo.preventnewattemptreasons;
+                if (quizAccessInfo.canattempt) {
+                    $scope.preventMessages = attemptAccessInfo.preventnewattemptreasons;
                     if (!$scope.preventMessages.length) {
                         if (!attempts.length) {
                             $scope.buttonText = 'mma.mod_quiz.attemptquiznow';
@@ -204,7 +211,7 @@ angular.module('mm.addons.mod_quiz')
                             $scope.buttonText = 'mma.mod_quiz.reattemptquiz';
                         }
                     }
-                } else if (accessInfo.canpreview) {
+                } else if (quizAccessInfo.canpreview) {
                     $scope.buttonText = 'mma.mod_quiz.previewquiznow';
                 }
             }
@@ -212,10 +219,10 @@ angular.module('mm.addons.mod_quiz')
 
         if ($scope.buttonText) {
             // So far we think a button should be printed, check if they will be allowed to access it.
-            $scope.preventMessages = accessInfo.preventaccessreasons;
+            $scope.preventMessages = quizAccessInfo.preventaccessreasons;
             if (!moreAttempts) {
                 $scope.buttonText = '';
-            } else if (accessInfo.canattempt && $scope.preventMessages.length) {
+            } else if (quizAccessInfo.canattempt && $scope.preventMessages.length) {
                 $scope.buttonText = '';
             } else if ($scope.unsupportedQuestions.length || $scope.unsupportedRules.length) {
                 $scope.buttonText = '';
@@ -229,7 +236,9 @@ angular.module('mm.addons.mod_quiz')
         promises.push($mmaModQuiz.invalidateQuizData(courseId));
         if (quiz) {
             promises.push($mmaModQuiz.invalidateUserAttemptsForUser(quiz.id));
-            promises.push($mmaModQuiz.invalidateAccessInformationForAttempt(quiz.id, 0));
+            promises.push($mmaModQuiz.invalidateQuizAccessInformation(quiz.id));
+            promises.push($mmaModQuiz.invalidateQuizRequiredQtypes(quiz.id));
+            promises.push($mmaModQuiz.invalidateAttemptAccessInformation(quiz.id));
             promises.push($mmaModQuiz.invalidateCombinedReviewOptionsForUser(quiz.id));
             promises.push($mmaModQuiz.invalidateUserBestGradeForUser(quiz.id));
             promises.push($mmaModQuiz.invalidateGradeFromGradebook(courseId));
