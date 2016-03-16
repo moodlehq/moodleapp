@@ -58,7 +58,7 @@ angular.module('mm.addons.mod_quiz')
             }
 
             return $mmaModQuiz.getCombinedReviewOptions(quiz.id).then(function(options) {
-                return $mmaModQuiz.getAccessInformation(quiz.id, attempt.id).then(function(accessInfo) {
+                return $mmaModQuiz.getQuizAccessInformation(quiz.id).then(function(accessInfo) {
                     // Determine fields to show.
                     $mmaModQuizHelper.setQuizCalculatedData(quiz, options);
                     quiz.showReviewColumn = accessInfo.canreviewmyattempts;
@@ -87,7 +87,7 @@ angular.module('mm.addons.mod_quiz')
         var promises = [];
         promises.push($mmaModQuiz.invalidateQuizData(courseId));
         promises.push($mmaModQuiz.invalidateUserAttemptsForUser(quizId));
-        promises.push($mmaModQuiz.invalidateAccessInformationForAttempt(quizId, attemptId));
+        promises.push($mmaModQuiz.invalidateQuizAccessInformation(quizId));
         promises.push($mmaModQuiz.invalidateCombinedReviewOptionsForUser(quizId));
         if (typeof attempt.feedback != 'undefined') {
             promises.push($mmaModQuiz.invalidateFeedback(quizId));
