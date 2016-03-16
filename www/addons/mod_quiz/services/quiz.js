@@ -67,24 +67,24 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
-     * Get cache key for get access information WS calls.
+     * Get cache key for get attempt access information WS calls.
      *
      * @param {Number} quizId    Quiz ID.
      * @param {Number} attemptId Attempt ID.
      * @return {String}          Cache key.
      */
-    function getAccessInformationCacheKey(quizId, attemptId) {
-        return getAccessInformationCommonCacheKey(quizId) + ':' + attemptId;
+    function getAttemptAccessInformationCacheKey(quizId, attemptId) {
+        return getAttemptAccessInformationCommonCacheKey(quizId) + ':' + attemptId;
     }
 
     /**
-     * Get common cache key for get access information WS calls.
+     * Get common cache key for get attempt access information WS calls.
      *
      * @param {Number} quizId Quiz ID.
      * @return {String}       Cache key.
      */
-    function getAccessInformationCommonCacheKey(quizId) {
-        return 'mmaModQuiz:accessInformation:' + quizId;
+    function getAttemptAccessInformationCommonCacheKey(quizId) {
+        return 'mmaModQuiz:attemptAccessInformation:' + quizId;
     }
 
     /**
@@ -92,14 +92,14 @@ angular.module('mm.addons.mod_quiz')
      *
      * @module mm.addons.mod_quiz
      * @ngdoc method
-     * @name $mmaModQuiz#getAccessInformation
+     * @name $mmaModQuiz#getAttemptAccessInformation
      * @param {Number} quizId       Quiz ID.
      * @param {Number} attemptId    Attempt ID. 0 for user's last attempt.
      * @param {Boolean} ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
      * @param {String} [siteId]     Site ID. If not defined, current site.
      * @return {Promise}            Promise resolved with the access information.
      */
-    self.getAccessInformation = function(quizId, attemptId, ignoreCache, siteId) {
+    self.getAttemptAccessInformation = function(quizId, attemptId, ignoreCache, siteId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -108,7 +108,7 @@ angular.module('mm.addons.mod_quiz')
                     attemptid: attemptId
                 },
                 preSets = {
-                    cacheKey: getAccessInformationCacheKey(quizId, attemptId)
+                    cacheKey: getAttemptAccessInformationCacheKey(quizId, attemptId)
                 };
 
             if (ignoreCache) {
@@ -116,7 +116,7 @@ angular.module('mm.addons.mod_quiz')
                 preSets.emergencyCache = 0;
             }
 
-            return site.read('mod_quiz_get_access_information', params, preSets);
+            return site.read('mod_quiz_get_attempt_access_information', params, preSets);
         });
     };
 
@@ -715,6 +715,47 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Get cache key for get quiz access information WS calls.
+     *
+     * @param {Number} quizId    Quiz ID.
+     * @return {String}          Cache key.
+     */
+    function getQuizAccessInformationCacheKey(quizId) {
+        return 'mmaModQuiz:quizAccessInformation:' + quizId;
+    }
+
+    /**
+     * Get access information for an attempt.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#getQuizAccessInformation
+     * @param {Number} quizId       Quiz ID.
+     * @param {Boolean} ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with the access information.
+     */
+    self.getQuizAccessInformation = function(quizId, ignoreCache, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    quizid: quizId
+                },
+                preSets = {
+                    cacheKey: getQuizAccessInformationCacheKey(quizId)
+                };
+
+            if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+
+            return site.read('mod_quiz_get_quiz_access_information', params, preSets);
+        });
+    };
+
+    /**
      * Get a readable Quiz grade method.
      *
      * @module mm.addons.mod_quiz
@@ -735,6 +776,52 @@ angular.module('mm.addons.mod_quiz')
                 return $translate.instant('mma.mod_quiz.attemptlast');
         }
         return '';
+    };
+
+    /**
+     * Get cache key for get quiz required qtypes WS calls.
+     *
+     * @param {Number} quizId    Quiz ID.
+     * @return {String}          Cache key.
+     */
+    function getQuizRequiredQtypesCacheKey(quizId) {
+        return 'mmaModQuiz:quizRequiredQtypes:' + quizId;
+    }
+
+    /**
+     * Get the potential question types that would be required for a given quiz.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#getQuizRequiredQtypes
+     * @param {Number} quizId       Quiz ID.
+     * @param {Boolean} ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with the access information.
+     */
+    self.getQuizRequiredQtypes = function(quizId, ignoreCache, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    quizid: quizId
+                },
+                preSets = {
+                    cacheKey: getQuizRequiredQtypesCacheKey(quizId)
+                };
+
+            if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+
+            return site.read('mod_quiz_get_quiz_required_qtypes', params, preSets).then(function(response) {
+                if (response && response.questiontypes) {
+                    return response.questiontypes;
+                }
+                return $q.reject();
+            });
+        });
     };
 
     /**
@@ -779,7 +866,7 @@ angular.module('mm.addons.mod_quiz')
     self.getUnsupportedQuestions = function(questionTypes) {
         var notSupported = [];
         angular.forEach(questionTypes, function(type) {
-            if (type != 'random' && !$mmQuestionDelegate.isQuestionSupported('qtype_'+type)) {
+            if (type != 'random' && !$mmQuestionDelegate.isQuestionSupported(type)) {
                 notSupported.push(type);
             }
         });
@@ -925,37 +1012,37 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
-     * Invalidates access information for all attempts in a quiz.
+     * Invalidates attempt access information for all attempts in a quiz.
      *
      * @module mm.addons.mod_quiz
      * @ngdoc method
-     * @name $mmaModQuiz#invalidateAccessInformation
+     * @name $mmaModQuiz#invalidateAttemptAccessInformation
      * @param {Number} quizId   Quiz ID.
      * @param {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
-    self.invalidateAccessInformation = function(quizId, siteId) {
+    self.invalidateAttemptAccessInformation = function(quizId, siteId) {
         siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.invalidateWsCacheForKeyStartingWith(getAccessInformationCommonCacheKey(quizId));
+            return site.invalidateWsCacheForKeyStartingWith(getAttemptAccessInformationCommonCacheKey(quizId));
         });
     };
 
     /**
-     * Invalidates access information for an attempt.
+     * Invalidates attempt access information for an attempt.
      *
      * @module mm.addons.mod_quiz
      * @ngdoc method
-     * @name $mmaModQuiz#invalidateAccessInformationForAttempt
+     * @name $mmaModQuiz#invalidateAttemptAccessInformationForAttempt
      * @param {Number} quizId    Quiz ID.
      * @param {Number} attemptId Attempt ID.
      * @param {String} [siteId]  Site ID. If not defined, current site.
      * @return {Promise}         Promise resolved when the data is invalidated.
      */
-    self.invalidateAccessInformationForAttempt = function(quizId, attemptId, siteId) {
+    self.invalidateAttemptAccessInformationForAttempt = function(quizId, attemptId, siteId) {
         siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.invalidateWsCacheForKey(getAccessInformationCacheKey(quizId, attemptId));
+            return site.invalidateWsCacheForKey(getAttemptAccessInformationCacheKey(quizId, attemptId));
         });
     };
 
@@ -1133,6 +1220,40 @@ angular.module('mm.addons.mod_quiz')
         return $mmSitesManager.getSite(siteId).then(function(site) {
             userId = userId || site.getUserId();
             return site.invalidateWsCacheForKey(getGradeFromGradebookCacheKey(courseId, userId));
+        });
+    };
+
+    /**
+     * Invalidates quiz access information for a quiz.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#invalidateQuizAccessInformation
+     * @param {Number} quizId    Quiz ID.
+     * @param {String} [siteId]  Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when the data is invalidated.
+     */
+    self.invalidateQuizAccessInformation = function(quizId, siteId) {
+        siteId = siteId || $mmSite.getId();
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getQuizAccessInformationCacheKey(quizId));
+        });
+    };
+
+    /**
+     * Invalidates required qtypes for a quiz.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#invalidateQuizRequiredQtypes
+     * @param {Number} quizId    Quiz ID.
+     * @param {String} [siteId]  Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when the data is invalidated.
+     */
+    self.invalidateQuizRequiredQtypes = function(quizId, siteId) {
+        siteId = siteId || $mmSite.getId();
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getQuizRequiredQtypesCacheKey(quizId));
         });
     };
 
