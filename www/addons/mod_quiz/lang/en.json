@@ -63,6 +63,7 @@
 	"submitallandfinish": "Submit all and finish",
 	"summaryofattempt": "Summary of attempt",
 	"summaryofattempts": "Summary of your previous attempts",
+	"timeleft": "Time left",
 	"timetaken": "Time taken",
 	"yourfinalgradeis": "Your final grade for this quiz is {{$a}}."
 }

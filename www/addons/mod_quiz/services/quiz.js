@@ -46,6 +46,9 @@ angular.module('mm.addons.mod_quiz')
     self.ATTEMPT_FINISHED    = 'finished';
     self.ATTEMPT_ABANDONED   = 'abandoned';
 
+    // Show the countdown timer if there is less than this amount of time left before the the quiz close date.
+    self.QUIZ_SHOW_TIME_BEFORE_DEADLINE = 3600;
+
     /**
      * Formats a grade to be displayed.
      *
@@ -1485,6 +1488,24 @@ angular.module('mm.addons.mod_quiz')
                 }
             });
         });
+    };
+
+    /**
+     * Check if time left should be shown.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#shouldShowTimeLeft
+     * @param  {String[]} rules  List of active rules names.
+     * @param  {Number} timeLeft Seconds left.
+     * @return {Boolean}         True if should be displayed, false otherwise.
+     */
+    self.shouldShowTimeLeft = function(rules, attempt, endTime) {
+        var timeNow = $mmUtil.timestamp();
+        if (attempt.state != self.ATTEMPT_IN_PROGRESS) {
+            return false;
+        }
+        return $mmaModQuizAccessRulesDelegate.shouldShowTimeLeft(rules, attempt, endTime, timeNow);
     };
 
     /**

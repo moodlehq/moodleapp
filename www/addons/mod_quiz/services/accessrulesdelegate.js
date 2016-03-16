@@ -98,6 +98,8 @@ angular.module('mm.addons.mod_quiz')
      *                             - getPreflightDirectiveName() (String) Optional. Returns the name of the directive to render
      *                                                           the access rule preflight. Required if the handler needs a
      *                                                           preflight check in some cases.
+     *                             - shouldShowTimeLeft(attempt, endTime, timeNow) (Boolean) Optional. Whether or not the time
+     *                                                           left of an attempt should be displayed.
      */
     self.registerHandler = function(addon, ruleName, handler) {
         if (typeof handlers[ruleName] !== 'undefined') {
@@ -116,6 +118,29 @@ angular.module('mm.addons.mod_quiz')
         if ($mmSite.isLoggedIn()) {
             self.updateHandler(ruleName, handlers[ruleName]);
         }
+    };
+
+    /**
+     * Compute what should be displayed to the user for time remaining in this attempt.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizAccessRulesDelegate#getTimeLeftDisplay
+     * @param  {String[]} rules List of active rules names.
+     * @param  {Object} attempt Attempt.
+     * @param  {Number} endTime The attempt end time (in seconds).
+     * @param  {Number} timeNow The time to consider as 'now' (in seconds).
+     * @return {Number|Boolean} The number of seconds remaining for this attempt. False if no limit should be displayed.
+     */
+    self.shouldShowTimeLeft = function(rules, attempt, endTime, timeNow) {
+        var show = false;
+        angular.forEach(rules, function(ruleName) {
+            var handler = self.getAccessRuleHandler(ruleName);
+            if (handler && handler.shouldShowTimeLeft && handler.shouldShowTimeLeft(attempt, endTime, timeNow)) {
+                show = true;
+            }
+        });
+        return show;
     };
 
     /**

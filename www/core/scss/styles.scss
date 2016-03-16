@@ -39,6 +39,11 @@ $item-disabled-color: #999 !default;
 // Warnings (red).
 $mm-warning-color: #c00 !default;
 
+// Timer variables.
+$mm-timer-warn-color:     #f00 !default;
+$mm-timer-color:          #fff !default;
+$mm-timer-iterations:     15 !default;
+
 /**
  * Styles revert.
  */
@@ -333,6 +338,25 @@ p.mm-warning {
   }
 }
 
+// Timer.
+mm-timer {
+  display: block;
+}
+
+// Style timer in items.
+.item mm-timer.mm-timer, mm-timer.mm-timer.item {
+  p, span, label {
+    color: $item-default-text;
+    font-size: $item-font-size;
+  }
+}
+
+// Create the timer warning colors. Go from $mm-timer-color to $mm-timer-warn-color.
+@for $i from 0 through $mm-timer-iterations {
+  mm-timer.mm-timer.mm-timer-timeleft-#{$i} {
+    background-color: mix($mm-timer-color, $mm-timer-warn-color, ($i / $mm-timer-iterations) * 100);
+  }
+}
 
 /**
  * This CSS uses adjacent selectors instead of general sibling (~) selectors

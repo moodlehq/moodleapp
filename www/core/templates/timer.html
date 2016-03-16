@@ -1,0 +1,5 @@
+<label ng-if="text">{{text}} </label>
+<b>
+	<span ng-if="timeLeft > 0">{{ timeLeft | mmSecondsToHMS }}</span>
+	<span ng-if="timeLeft <= 0">{{ 'mm.core.timesup' | translate }}</span>
+</b>

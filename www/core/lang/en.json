@@ -108,6 +108,7 @@
     "success": "Success!",
     "tablet": "Tablet",
     "teachers": "Teachers",
+    "timesup": "Time is up!",
     "twoparagraphs": "{{p1}}<br><br>{{p2}}",
     "unexpectederror": "Unexepected error. Please close and reopen the application to try again",
     "userdeleted": "This user account has been deleted",
