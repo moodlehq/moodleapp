@@ -55,7 +55,9 @@ angular.module('mm.addons.coursecompletion')
          * @return {Boolean}        True if handler is enabled, false otherwise.
          */
         self.isEnabledForUser = function(user, courseId) {
-            return $mmaCourseCompletion.isPluginViewEnabledForCourse(courseId);
+            return $mmaCourseCompletion.isPluginViewEnabledForCourse(courseId).then(function() {
+                return $mmaCourseCompletion.isPluginViewEnabledForUser(courseId, user.id);
+            });
         };
 
         /**
@@ -126,7 +128,10 @@ angular.module('mm.addons.coursecompletion')
             if (accessData && accessData.type == mmCoursesAccessMethods.guest) {
                 return false; // Not enabled for guests.
             }
-            return $mmaCourseCompletion.isPluginViewEnabledForCourse(courseId);
+            return $mmaCourseCompletion.isPluginViewEnabledForCourse(courseId).then(function() {
+                // Check if the user can see his own report, teachers can't.
+                return $mmaCourseCompletion.isPluginViewEnabledForUser(courseId);
+            });
         };
 
         /**

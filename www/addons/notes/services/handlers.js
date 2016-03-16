@@ -23,7 +23,7 @@ angular.module('mm.addons.notes')
  * @ngdoc service
  * @name $mmaNotesHandlers
  */
-.factory('$mmaNotesHandlers', function($mmaNotes, $mmSite, $mmApp, $ionicModal, $mmUtil, mmCoursesAccessMethods) {
+.factory('$mmaNotesHandlers', function($mmaNotes, $mmSite, $mmApp, $ionicModal, $mmUtil, $q, mmCoursesAccessMethods) {
 
     var self = {};
 
@@ -52,11 +52,14 @@ angular.module('mm.addons.notes')
          *
          * @param {Object} user     User to check.
          * @param {Number} courseId Course ID.
-         * @return {Boolean}        True if handler is enabled, false otherwise.
+         * @return {Promise}        Promise resolved with true if enabled, resolved with false otherwise.
          */
         self.isEnabledForUser = function(user, courseId) {
             // Active course required.
-            return courseId && user.id != $mmSite.getUserId();
+            if (!courseId || user.id == $mmSite.getUserId()) {
+                return $q.when(false);
+            }
+            return $mmaNotes.isPluginAddNoteEnabledForCourse(courseId);
         };
 
         /**
@@ -161,7 +164,7 @@ angular.module('mm.addons.notes')
             if (accessData && accessData.type == mmCoursesAccessMethods.guest) {
                 return false; // Not enabled for guests.
             }
-            return true;
+            return $mmaNotes.isPluginViewNotesEnabledForCourse(courseId);
         };
 
         /**

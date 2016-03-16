@@ -118,7 +118,9 @@ angular.module('mm.addons.grades')
          * @return {Promise}        Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
          */
         self.isEnabledForUser = function(user, courseId) {
-            return $mmaGrades.isPluginEnabledForCourse(courseId);
+            return $mmaGrades.isPluginEnabledForCourse(courseId).then(function() {
+                return $mmaGrades.isPluginEnabledForUser(courseId, user.id);
+            });
         };
 
         /**
