@@ -35,7 +35,6 @@ angular.module('mm.addons.mod_quiz')
         errorPasing = false,
         scrollView = $ionicScrollDelegate.$getByHandle('mmaModQuizReviewScroll');
 
-    $scope.isReview = true;
     $scope.component = mmaModQuizAttemptComponent;
     $scope.componentId = attemptId;
 
@@ -132,6 +131,12 @@ angular.module('mm.addons.mod_quiz')
                     }
                 }
             }
+
+            // Treat additional data.
+            angular.forEach($scope.additionalData, function(data) {
+                // Remove help links from additional data.
+                data.content = $mmUtil.removeElementFromHtml(data.content, '.helptooltip');
+            });
         }
     }
 
