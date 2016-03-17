@@ -85,6 +85,20 @@ angular.module('mm.core.question')
     };
 
     /**
+     * Extracts the info box from a question and add it to an "infoHtml" property.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#extractQuestionInfoBox
+     * @param  {Object} question Question.
+     * @param  {String} selector Selector to search the element.
+     * @return {Void}
+     */
+    self.extractQuestionInfoBox = function(question, selector) {
+        extractQuestionLastElementNotInContent(question, selector, 'infoHtml');
+    };
+
+    /**
      * Searches the last occurrence of a certain element and check it's not in the question contents.
      * If found, removes it from the question HTML and adds it to a new property inside question.
      *
@@ -174,7 +188,7 @@ angular.module('mm.core.question')
         angular.forEach(form.elements, function(element, name) {
             name = element.name || name;
             // Ignore flag and submit inputs.
-            if (name.match(/_:flagged$/) || element.type == 'submit') {
+            if (name.match(/_:flagged$/) || element.type == 'submit' || element.tagName == 'BUTTON') {
                 return;
             }
             // Ignore selects without value.
@@ -303,9 +317,11 @@ angular.module('mm.core.question')
                 readOnly: input.readOnly
             };
 
-            if (scope.review) {
-                // We're reviewing, check if question is marked as correct.
-                scope.input.isCorrect = input.className.indexOf('incorrect') == -1;
+            // Check if question is marked as correct.
+            if (input.className.indexOf('incorrect') >= 0) {
+                scope.input.isCorrect = 0;
+            } else if (input.className.indexOf('correct') >= 0) {
+                scope.input.isCorrect = 1;
             }
         }
     };
@@ -367,13 +383,10 @@ angular.module('mm.core.question')
                 rowModel.options = [];
 
                 // Check if answer is correct.
-                if (scope.review) {
-                    // Check if answer is correct.
-                    if (columns[1].className.indexOf('incorrect') >= 0) {
-                        rowModel.isCorrect = 0;
-                    } else if (columns[1].className.indexOf('correct') >= 0) {
-                        rowModel.isCorrect = 1;
-                    }
+                if (columns[1].className.indexOf('incorrect') >= 0) {
+                    rowModel.isCorrect = 0;
+                } else if (columns[1].className.indexOf('correct') >= 0) {
+                    rowModel.isCorrect = 1;
                 }
 
                 // Treat each option.
@@ -450,7 +463,7 @@ angular.module('mm.core.question')
                         disabled: element.disabled
                     },
                     label,
-                    parent,
+                    parent = element.parentNode,
                     feedback;
 
                 // Get the label with the question text.
@@ -468,22 +481,18 @@ angular.module('mm.core.question')
                                 scope.mcAnswers[option.name] = option.value;
                             }
 
-                            if (scope.review) {
-                                parent = element.parentNode;
+                            if (parent) {
+                                // Check if answer is correct.
+                                if (parent && parent.className.indexOf('incorrect') >= 0) {
+                                    option.isCorrect = 0;
+                                } else if (parent && parent.className.indexOf('correct') >= 0) {
+                                    option.isCorrect = 1;
+                                }
 
-                                if (parent) {
-                                    // Check if answer is correct.
-                                    if (parent && parent.className.indexOf('incorrect') >= 0) {
-                                        option.isCorrect = 0;
-                                    } else if (parent && parent.className.indexOf('correct') >= 0) {
-                                        option.isCorrect = 1;
-                                    }
-
-                                    // Search the feedback.
-                                    feedback = parent.querySelector('.specificfeedback');
-                                    if (feedback) {
-                                        option.feedback = feedback.innerHTML;
-                                    }
+                                // Search the feedback.
+                                feedback = parent.querySelector('.specificfeedback');
+                                if (feedback) {
+                                    option.feedback = feedback.innerHTML;
                                 }
                             }
                         }
