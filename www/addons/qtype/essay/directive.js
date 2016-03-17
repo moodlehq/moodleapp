@@ -30,28 +30,30 @@ angular.module('mm.addons.qtype_essay')
         templateUrl: 'addons/qtype/essay/template.html',
         link: function(scope) {
             var questionEl = $mmQuestionHelper.directiveInit(scope, $log),
-                question = scope.question;
+                question = scope.question,
+                textarea;
 
             if (questionEl) {
                 questionEl = questionEl[0] || questionEl; // Convert from jqLite to plain JS if needed.
 
-                if (scope.review) {
-                    // We're in review, search the answer and the attachments.
-                    scope.answer = $mmUtil.getContentsOfElement(angular.element(questionEl), '.qtype_essay_response');
-                    scope.attachments = $mmQuestionHelper.getQuestionAttachmentsFromHtml(
-                                            $mmUtil.getContentsOfElement(angular.element(questionEl), '.attachments'));
-                } else {
-                    // Not in review, search the textarea.
-                    var textarea = questionEl.querySelector('textarea[id*=answer_id]'),
-                        input = questionEl.querySelector('input[type="hidden"][name*=answerformat]'),
-                        content;
+                // First search the textarea.
+                textarea = questionEl.querySelector('textarea[id*=answer_id]');
 
-                    if (!textarea) {
-                        $log.warn('Aborting because couldn\'t find textarea.', question.name);
+                if (!textarea) {
+                    // Textarea not found, we're probably in review. Search the answer and the attachments.
+                    if (questionEl.querySelector('.qtype_essay_response')) {
+                        scope.answer = $mmUtil.getContentsOfElement(angular.element(questionEl), '.qtype_essay_response');
+                        scope.attachments = $mmQuestionHelper.getQuestionAttachmentsFromHtml(
+                                                $mmUtil.getContentsOfElement(angular.element(questionEl), '.attachments'));
+                    } else {
+                        // Answer not found. Abort.
+                        $log.warn('Aborting because couldn\'t find textarea or answer.', question.name);
                         return $mmQuestionHelper.showDirectiveError(scope);
                     }
-
-                    content = textarea.innerHTML;
+                } else {
+                    // Textarea found.
+                    var input = questionEl.querySelector('input[type="hidden"][name*=answerformat]'),
+                        content = textarea.innerHTML;
 
                     scope.textarea = {
                         id: textarea.id,

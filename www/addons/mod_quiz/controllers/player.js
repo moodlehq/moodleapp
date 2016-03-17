@@ -151,8 +151,8 @@ angular.module('mm.addons.mod_quiz')
                 question.flaggedName = $mmaModQuizHelper.getQuestionFlaggedNameFromHtml(question.html);
                 // Get the readable mark for each question.
                 question.readableMark = $mmaModQuizHelper.getQuestionMarkFromHtml(question.html);
-                // Remove the question info box so it's not in the question HTML anymore.
-                question.html = $mmUtil.removeElementFromHtml(question.html, '.info');
+                // Extract the question info box.
+                $mmQuestionHelper.extractQuestionInfoBox(question, '.info');
             });
 
             // Mark the page as viewed. We'll ignore errors in this call.
