@@ -51,13 +51,10 @@ angular.module('mm.addons.qtype_gapselect')
             $mmUtil.removeElement(content, 'input[name*=sequencecheck]');
             $mmUtil.removeElement(content, '.validationerror');
 
-            if (scope.review) {
-                // Replace Moodle's correct/incorrect classes with our own.
-                $mmQuestionHelper.replaceCorrectnessClasses(questionEl);
-
-                // Treat the correct/incorrect icons.
-                $mmQuestionHelper.treatCorrectnessIcons(scope, questionEl);
-            }
+            // Replace Moodle's correct/incorrect classes with our own.
+            $mmQuestionHelper.replaceCorrectnessClasses(questionEl);
+            // Treat the correct/incorrect icons.
+            $mmQuestionHelper.treatCorrectnessIcons(scope, questionEl);
 
             // Set the question text.
             question.text = content.innerHTML;

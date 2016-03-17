@@ -27,7 +27,6 @@ angular.module('mm.core.question')
  * The directives to render the question will receive the following parameters in the scope:
  *
  * @param {Object} question      The question to render.
- * @param {Boolean} review       True if reviewing an attempt.
  * @param {String} component     The component to link files to if the question has any.
  * @param {Number} [componentId] An ID to use in conjunction with the component.
  * @param {Function} abort       A function to call to abort the execution.
@@ -43,7 +42,6 @@ angular.module('mm.core.question')
         templateUrl: 'core/components/question/templates/question.html',
         scope: {
             question: '=',
-            review: '=?',
             component: '=?',
             componentId: '=?',
             abort: '&'
@@ -70,11 +68,9 @@ angular.module('mm.core.question')
                         return;
                     }
 
-                    if (scope.review) {
-                        // If we're in review mode, try to extract the feedback and comment for the question.
-                        $mmQuestionHelper.extractQuestionFeedback(question);
-                        $mmQuestionHelper.extractQuestionComment(question);
-                    }
+                    // Try to extract the feedback and comment for the question.
+                    $mmQuestionHelper.extractQuestionFeedback(question);
+                    $mmQuestionHelper.extractQuestionComment(question);
 
                     // Add the directive to the element.
                     questionContainer.setAttribute(directive, '');
