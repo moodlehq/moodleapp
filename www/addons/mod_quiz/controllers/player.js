@@ -153,6 +153,8 @@ angular.module('mm.addons.mod_quiz')
                 question.readableMark = $mmaModQuizHelper.getQuestionMarkFromHtml(question.html);
                 // Extract the question info box.
                 $mmQuestionHelper.extractQuestionInfoBox(question, '.info');
+                // Set the preferred behaviour.
+                question.preferredBehaviour = quiz.preferredbehaviour;
             });
 
             // Mark the page as viewed. We'll ignore errors in this call.
@@ -284,6 +286,37 @@ angular.module('mm.addons.mod_quiz')
     // Function to call to abort the quiz.
     $scope.abortQuiz = function() {
         $scope.quizAborted = true;
+    };
+
+    // A behaviour button in a question was clicked (Check, Redo, ...).
+    $scope.behaviourButtonClicked = function(name, value) {
+        $mmUtil.showConfirm($translate('mm.core.areyousure')).then(function() {
+            var modal = $mmUtil.showModalLoading('mm.core.sending', true),
+                answers = getAnswers();
+
+            // Add the clicked button data.
+            answers[name] = value;
+
+            $mmaModQuiz.processAttempt(attempt.id, answers, $scope.preflightData, false, false).then(function() {
+                // Reload the current page.
+                var scrollPos = scrollView.getScrollPosition();
+                $scope.dataLoaded = false;
+                scrollView.scrollTop();
+
+                return loadPage(attempt.currentpage).finally(function() {
+                    $scope.dataLoaded = true;
+                    scrollView.resize(); // Call resize to recalculate scroll area.
+                    if (scrollPos) {
+                        // Go back to the previous position.
+                        scrollView.scrollTo(scrollPos.left, scrollPos.top);
+                    }
+                });
+            }).catch(function(message) {
+                return $mmaModQuizHelper.showError(message, 'Error performing action.');
+            }).finally(function() {
+                modal.dismiss();
+            });
+        });
     };
 
     // Load a certain page.

@@ -26,15 +26,17 @@ angular.module('mm.core.question')
  *
  * The directives to render the question will receive the following parameters in the scope:
  *
- * @param {Object} question      The question to render.
- * @param {String} component     The component to link files to if the question has any.
- * @param {Number} [componentId] An ID to use in conjunction with the component.
- * @param {Function} abort       A function to call to abort the execution.
- *                               Directives implementing questions should use it if there's a critical error.
- *                               Addons using this directive should provide a function that allows aborting the execution
- *                               of the addon, so if any question calls it the whole feature is aborted.
+ * @param {Object} question          The question to render.
+ * @param {String} component         The component to link files to if the question has any.
+ * @param {Number} [componentId]     An ID to use in conjunction with the component.
+ * @param {Function} abort           A function to call to abort the execution.
+ *                                   Directives implementing questions should use it if there's a critical error.
+ *                                   Addons using this directive should provide a function that allows aborting the execution
+ *                                   of the addon, so if any question calls it the whole feature is aborted.
+ * @param {Function} [buttonClicked] A function to call when a question behaviour button is clicked (check, redo, ...).
+ *                                   Will receive as params the name and the value of the button.
  */
-.directive('mmQuestion', function($log, $compile, $mmQuestionDelegate, $mmQuestionHelper) {
+.directive('mmQuestion', function($log, $compile, $mmQuestionDelegate, $mmQuestionHelper, $mmQuestionBehaviourDelegate, $mmUtil) {
     $log = $log.getInstance('mmQuestion');
 
     return {
@@ -44,7 +46,8 @@ angular.module('mm.core.question')
             question: '=',
             component: '=?',
             componentId: '=?',
-            abort: '&'
+            abort: '&',
+            buttonClicked: '&?'
         },
         link: function(scope, element) {
             var question = scope.question,
@@ -56,6 +59,11 @@ angular.module('mm.core.question')
                 if (directive) {
                     // Treat the question before starting the directive.
                     $mmQuestionHelper.extractQuestionScripts(question);
+
+                    // Handle question behaviour.
+                    scope.behaviourDirectives = $mmQuestionBehaviourDelegate.handleQuestion(question, question.preferredBehaviour);
+                    $mmQuestionHelper.extractQbehaviourRedoButton(question);
+                    question.html = $mmUtil.removeElementFromHtml(question.html, '.im-controls');
 
                     // Extract the validation error of the question.
                     question.validationError = $mmQuestionHelper.getValidationErrorFromHtml(question.html);
