@@ -724,15 +724,18 @@ angular.module('mm.core.question')
      * @module mm.core.question
      * @ngdoc method
      * @name $mmQuestionHelper#showDirectiveError
-     * @param  {Object} scope Directive scope.
+     * @param  {Object} scope   Directive scope.
+     * @param  {String} [error] Error to show.
      * @return {Void}
      */
-    self.showDirectiveError = function(scope) {
+    self.showDirectiveError = function(scope, error) {
+        error = error || 'Error processing the question. This could be caused by custom modifications in your site.';
+
         // Prevent consecutive errors.
         var now = new Date().getTime();
         if (now - lastErrorShown > 500) {
             lastErrorShown = now;
-            $mmUtil.showErrorModal('Error processing the question. This could be caused by custom modifications in your site.');
+            $mmUtil.showErrorModal(error);
         }
         scope.abort();
     };
