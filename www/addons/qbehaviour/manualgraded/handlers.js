@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.addons.qtype_multianswer')
+angular.module('mm.addons.qbehaviour_manualgraded')
 
 /**
- * Multi answer (cloze) question handlers.
+ * Manual graded behaviour handler.
  *
- * @module mm.addons.qtype_multianswer
+ * @module mm.addons.qbehaviour_manualgraded
  * @ngdoc service
- * @name $mmaQtypeMultianswerHandler
+ * @name $mmaQbehaviourManualGradedHandler
  */
-.factory('$mmaQtypeMultianswerHandler', function() {
+.factory('$mmaQbehaviourManualGradedHandler', function() {
 
     var self = {};
 
@@ -35,27 +35,13 @@ angular.module('mm.addons.qtype_multianswer')
     };
 
     /**
-     * Get the behaviour for this question.
-     *
-     * @param  {Object} question  Question to get the directive for.
-     * @param  {String} behaviour Default behaviour.
-     * @return {String}           Behaviour name.
-     */
-    self.getBehaviour = function(question, behaviour) {
-        if (behaviour === 'interactive') {
-            return 'interactivecountback';
-        }
-        return behaviour;
-    };
-
-    /**
-     * Get the directive.
+     * Handle a question.
      *
      * @param {Object} question The question.
-     * @return {String}         Directive's name.
+     * @return {Void}
      */
-    self.getDirectiveName = function(question) {
-        return 'mma-qtype-multianswer';
+    self.handleQuestion = function(question) {
+        // Nothing to do.
     };
 
     return self;

@@ -27,6 +27,30 @@ angular.module('mm.core.question')
         lastErrorShown = 0;
 
     /**
+     * Add a behaviour button to the question's "behaviourButtons" property.
+     *
+     * @param {Object} question Question.
+     * @param {Object} button   Button (DOM element).
+     */
+    function addBehaviourButton(question, button) {
+        if (!button || !question) {
+            return;
+        }
+
+        if (!question.behaviourButtons) {
+            question.behaviourButtons = [];
+        }
+
+        // Extract the data we want.
+        question.behaviourButtons.push({
+            id: button.id,
+            name: button.name,
+            value: button.value,
+            disabled: button.disabled
+        });
+    }
+
+    /**
      * Convenience function to initialize a question directive.
      * Performs some common checks and extracts the question's text.
      *
@@ -56,6 +80,111 @@ angular.module('mm.core.question')
         }
 
         return questionEl;
+    };
+
+    /**
+     * Extract question behaviour submit buttons from the question's HTML.
+     * The buttons aren't deleted from the content because all the im-controls block will be removed afterwards.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#extractQbehaviourButtons
+     * @param  {Object} question   Question to treat.
+     * @param  {String} [selector] Selector to search the buttons. By default, '.im-controls input[type="submit"]'.
+     * @return {Void}
+     */
+    self.extractQbehaviourButtons = function(question, selector) {
+        selector = selector || '.im-controls input[type="submit"]';
+
+        // Create a fake div element so we can search using querySelector.
+        var div = document.createElement('div'),
+            buttons;
+
+        div.innerHTML = question.html;
+
+        // Search the buttons.
+        buttons = div.querySelectorAll(selector);
+        angular.forEach(buttons, function(button) {
+            addBehaviourButton(question, button);
+        });
+
+        question.html = div.innerHTML;
+    };
+
+    /**
+     * Check if the question has CBM and, if so, extract the certainty options and add them to a new
+     * "behaviourCertaintyOptions" property.
+     * The value of the selected option is stored in question.behaviourCertaintySelected.
+     * We don't remove them from HTML because all the im-controls block will be removed afterwards.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#extractQbehaviourCBM
+     * @param  {Object} question Question to treat.
+     * @return {Boolean}         True if the seen input is found, false otherwise.
+     */
+    self.extractQbehaviourCBM = function(question) {
+        // Create a fake div element so we can search using querySelector.
+        var div = document.createElement('div'),
+            labels;
+
+        div.innerHTML = question.html;
+
+        labels = div.querySelectorAll('.im-controls .certaintychoices label[for*="certainty"]');
+        question.behaviourCertaintyOptions = [];
+
+        angular.forEach(labels, function(label) {
+            var input = label.querySelector('input[type="radio"]');
+            if (input) {
+                question.behaviourCertaintyOptions.push({
+                    id: input.id,
+                    name: input.name,
+                    value: input.value,
+                    text: $mmText.cleanTags(label.innerHTML),
+                    disabled: input.disabled
+                });
+
+                if (input.checked) {
+                    question.behaviourCertaintySelected = input.value;
+                }
+            }
+        });
+
+        return labels && labels.length;
+    };
+
+    /**
+     * Check if the question contains a "seen" input.
+     * If so, add the name and value to a "behaviourSeenInput" property and remove the input.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#extractQbehaviourSeenInput
+     * @param  {Object} question Question to treat.
+     * @return {Boolean}         True if the seen input is found, false otherwise.
+     */
+    self.extractQbehaviourSeenInput = function(question) {
+        // Create a fake div element so we can search using querySelector.
+        var div = document.createElement('div'),
+            seenInput;
+
+        div.innerHTML = question.html;
+
+        // Search the "seen" input.
+        seenInput = div.querySelector('input[type="hidden"][name*=seen]');
+        if (seenInput) {
+            // Get the data and remove the input.
+            question.behaviourSeenInput = {
+                name: seenInput.name,
+                value: seenInput.value
+            };
+            seenInput.remove();
+            question.html = div.innerHTML;
+
+            // Return the directive to render this input.
+            return true;
+        }
+        return false;
     };
 
     /**

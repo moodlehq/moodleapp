@@ -12,14 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.core.question', [])
+angular.module('mm.addons.qbehaviour_deferredcbm')
 
-.run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, $mmQuestionDelegate, $mmQuestionBehaviourDelegate) {
-	function updateHandlers() {
-		$mmQuestionDelegate.updateQuestionHandlers();
-		$mmQuestionBehaviourDelegate.updateQuestionBehaviourHandlers();
-	}
+/**
+ * Directive to render certainty choices.
+ *
+ * @module mm.addons.qbehaviour_deferredcbm
+ * @ngdoc directive
+ * @name mmaQbehaviourDeferredCbm
+ */
+.directive('mmaQbehaviourDeferredCbm', function() {
 
-	$mmEvents.on(mmCoreEventLogin, updateHandlers);
-	$mmEvents.on(mmCoreEventSiteUpdated, updateHandlers);
+    return {
+        restrict: 'A',
+        priority: 100,
+        templateUrl: 'addons/qbehaviour/deferredcbm/template.html'
+    };
 });
