@@ -35,7 +35,7 @@ angular.module('mm.core.question')
  *     $mmQuestionDelegateProvider.registerHandler('mmaQtypeCalculated', 'qtype_calculated', '$mmaQtypeCalculatedHandler');
  * })
  *
- * @see $mmQuestionDelegateProvider#registerHandler to see the methods your handle needs to implement.
+ * @see $mmQuestionDelegateProvider#registerHandler to see the methods your handler needs to implement.
  */
 .provider('$mmQuestionDelegate', function() {
 
@@ -56,6 +56,10 @@ angular.module('mm.core.question')
      *                                                           When using a promise, it should return a boolean.
      *                             - getDirectiveName(question) (String) Returns the name of the directive to render the question.
      *                                                           There's no need to check the question type in this function.
+     *                             - getBehaviour(question, behaviour) (String) Optional. Returns the name of the behaviour to use
+     *                                                           for the question. If the question should use the default behaviour
+     *                                                           you shouldn't implement this question or it should just return
+     *                                                           the behaviour param.
      */
     self.registerHandler = function(name, questionType, handler) {
         if (typeof handlers[questionType] !== 'undefined') {
@@ -76,6 +80,29 @@ angular.module('mm.core.question')
 
         var enabledHandlers = {},
             self = {};
+
+        /**
+         * Get the behaviour to use for a certain question type.
+         * E.g. 'qtype_essay' uses 'manualgraded'.
+         *
+         * @module mm.core.question
+         * @ngdoc method
+         * @name $mmQuestionDelegate#getBehaviourForQuestion
+         * @param  {Object} question  Question to get the directive for.
+         * @param  {String} behaviour Default behaviour.
+         * @return {String}           Behaviour name.
+         */
+        self.getBehaviourForQuestion = function(question, behaviour) {
+            var type = 'qtype_' + question.type;
+            // Check if there's a handler and it implements the required method.
+            if (typeof enabledHandlers[type] != 'undefined' && enabledHandlers[type].getBehaviour) {
+                var questionBehaviour = enabledHandlers[type].getBehaviour(question, behaviour);
+                if (questionBehaviour) {
+                    return questionBehaviour;
+                }
+            }
+            return behaviour;
+        };
 
         /**
          * Get the directive to use for a certain question type.
