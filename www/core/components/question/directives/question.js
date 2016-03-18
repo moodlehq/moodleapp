@@ -36,7 +36,8 @@ angular.module('mm.core.question')
  * @param {Function} [buttonClicked] A function to call when a question behaviour button is clicked (check, redo, ...).
  *                                   Will receive as params the name and the value of the button.
  */
-.directive('mmQuestion', function($log, $compile, $mmQuestionDelegate, $mmQuestionHelper, $mmQuestionBehaviourDelegate, $mmUtil) {
+.directive('mmQuestion', function($log, $compile, $mmQuestionDelegate, $mmQuestionHelper, $mmQuestionBehaviourDelegate, $mmUtil,
+            $translate) {
     $log = $log.getInstance('mmQuestion');
 
     return {
@@ -51,7 +52,8 @@ angular.module('mm.core.question')
         },
         link: function(scope, element) {
             var question = scope.question,
-                questionContainer = element[0].querySelector('#mm-question-container');
+                questionContainer = element[0].querySelector('#mm-question-container'),
+                behaviour;
 
             if (question && questionContainer) {
                 // Search the right directive to render the question.
@@ -61,6 +63,14 @@ angular.module('mm.core.question')
                     $mmQuestionHelper.extractQuestionScripts(question);
 
                     // Handle question behaviour.
+                    behaviour = $mmQuestionDelegate.getBehaviourForQuestion(question, question.preferredBehaviour);
+                    if (!$mmQuestionBehaviourDelegate.isBehaviourSupported(behaviour)) {
+                        // Behaviour not supported! Abort the quiz.
+                        $log.warn('Aborting question because the behaviour is not supported.', question.name);
+                        $mmQuestionHelper.showDirectiveError(scope,
+                                $translate.instant('mma.mod_quiz.errorbehaviournotsupported') + ' ' + behaviour);
+                        return;
+                    }
                     scope.behaviourDirectives = $mmQuestionBehaviourDelegate.handleQuestion(question, question.preferredBehaviour);
                     $mmQuestionHelper.extractQbehaviourRedoButton(question);
                     question.html = $mmUtil.removeElementFromHtml(question.html, '.im-controls');
@@ -72,7 +82,7 @@ angular.module('mm.core.question')
                     scope.seqCheck = $mmQuestionHelper.getQuestionSequenceCheckFromHtml(question.html);
                     if (!scope.seqCheck) {
                         $log.warn('Aborting question because couldn\'t retrieve sequence check.', question.name);
-                        scope.abort();
+                        $mmQuestionHelper.showDirectiveError(scope);
                         return;
                     }
 

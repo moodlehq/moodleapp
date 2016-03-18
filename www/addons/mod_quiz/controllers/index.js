@@ -22,7 +22,8 @@ angular.module('mm.addons.mod_quiz')
  * @name mmaModQuizIndexCtrl
  */
 .controller('mmaModQuizIndexCtrl', function($scope, $stateParams, $mmaModQuiz, $mmCourse, $ionicPlatform, $q, $translate,
-            $mmaModQuizHelper, $ionicHistory, $ionicScrollDelegate, $mmEvents, mmaModQuizAttemptFinishedEvent, $state) {
+            $mmaModQuizHelper, $ionicHistory, $ionicScrollDelegate, $mmEvents, mmaModQuizAttemptFinishedEvent, $state,
+            $mmQuestionBehaviourDelegate) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         quiz,
@@ -60,6 +61,9 @@ angular.module('mm.addons.mod_quiz')
                 $scope.accessRules = quizAccessInfo.accessrules;
                 quiz.showReviewColumn = quizAccessInfo.canreviewmyattempts;
                 $scope.unsupportedRules = $mmaModQuiz.getUnsupportedRules(quizAccessInfo.activerulenames);
+                if (quiz.preferredbehaviour) {
+                    $scope.behaviourSupported = $mmQuestionBehaviourDelegate.isBehaviourSupported(quiz.preferredbehaviour);
+                }
 
                 // Get question types in the quiz.
                 return $mmaModQuiz.getQuizRequiredQtypes(quiz.id).then(function(types) {
@@ -231,7 +235,7 @@ angular.module('mm.addons.mod_quiz')
                 $scope.buttonText = '';
             } else if (quizAccessInfo.canattempt && $scope.preventMessages.length) {
                 $scope.buttonText = '';
-            } else if ($scope.unsupportedQuestions.length || $scope.unsupportedRules.length) {
+            } else if ($scope.unsupportedQuestions.length || $scope.unsupportedRules.length || !$scope.behaviourSupported) {
                 $scope.buttonText = '';
             }
         }
