@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.addons.qtype_multianswer')
+angular.module('mm.addons.qbehaviour_immediatecbm')
 
 /**
- * Multi answer (cloze) question handlers.
+ * Immediate CBM behaviour handler.
  *
- * @module mm.addons.qtype_multianswer
+ * @module mm.addons.qbehaviour_immediatecbm
  * @ngdoc service
- * @name $mmaQtypeMultianswerHandler
+ * @name $mmaQbehaviourImmediateCBMHandler
  */
-.factory('$mmaQtypeMultianswerHandler', function() {
+.factory('$mmaQbehaviourImmediateCBMHandler', function($mmQuestionHelper) {
 
     var self = {};
 
@@ -35,27 +35,16 @@ angular.module('mm.addons.qtype_multianswer')
     };
 
     /**
-     * Get the behaviour for this question.
-     *
-     * @param  {Object} question  Question to get the directive for.
-     * @param  {String} behaviour Default behaviour.
-     * @return {String}           Behaviour name.
-     */
-    self.getBehaviour = function(question, behaviour) {
-        if (behaviour === 'interactive') {
-            return 'interactivecountback';
-        }
-        return behaviour;
-    };
-
-    /**
-     * Get the directive.
+     * Handle a question.
      *
      * @param {Object} question The question.
-     * @return {String}         Directive's name.
+     * @return {String[]}       Directive to render the certainty options if required, undefined otherwise.
      */
-    self.getDirectiveName = function(question) {
-        return 'mma-qtype-multianswer';
+    self.handleQuestion = function(question) {
+        $mmQuestionHelper.extractQbehaviourButtons(question);
+        if ($mmQuestionHelper.extractQbehaviourCBM(question)) {
+            return ['mma-qbehaviour-deferred-cbm'];
+        }
     };
 
     return self;

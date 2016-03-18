@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.addons.qtype_multianswer')
+angular.module('mm.addons.qbehaviour_informationitem')
 
 /**
- * Multi answer (cloze) question handlers.
+ * Information item behaviour handler.
  *
- * @module mm.addons.qtype_multianswer
+ * @module mm.addons.qbehaviour_informationitem
  * @ngdoc service
- * @name $mmaQtypeMultianswerHandler
+ * @name $mmaQbehaviourInformationItemHandler
  */
-.factory('$mmaQtypeMultianswerHandler', function() {
+.factory('$mmaQbehaviourInformationItemHandler', function($mmQuestionHelper) {
 
     var self = {};
 
@@ -35,27 +35,15 @@ angular.module('mm.addons.qtype_multianswer')
     };
 
     /**
-     * Get the behaviour for this question.
-     *
-     * @param  {Object} question  Question to get the directive for.
-     * @param  {String} behaviour Default behaviour.
-     * @return {String}           Behaviour name.
-     */
-    self.getBehaviour = function(question, behaviour) {
-        if (behaviour === 'interactive') {
-            return 'interactivecountback';
-        }
-        return behaviour;
-    };
-
-    /**
-     * Get the directive.
+     * Handle a question.
      *
      * @param {Object} question The question.
-     * @return {String}         Directive's name.
+     * @return {String[]}       Directive to render the "seen" input if required, undefined otherwise.
      */
-    self.getDirectiveName = function(question) {
-        return 'mma-qtype-multianswer';
+    self.handleQuestion = function(question) {
+        if ($mmQuestionHelper.extractQbehaviourSeenInput(question)) {
+            return ['mma-qbehaviour-information-item'];
+        }
     };
 
     return self;
