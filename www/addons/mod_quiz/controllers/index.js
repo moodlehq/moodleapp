@@ -153,23 +153,30 @@ angular.module('mm.addons.mod_quiz')
         if (attempts.length && quiz.showGradeColumn && bestGrade.hasgrade && typeof gradebookData.grade != 'undefined') {
 
             var formattedGradebookGrade = $mmaModQuiz.formatGrade(gradebookData.grade, quiz.decimalpoints),
-                formattedBestGrade = $mmaModQuiz.formatGrade(bestGrade.grade, quiz.decimalpoints);
+                formattedBestGrade = $mmaModQuiz.formatGrade(bestGrade.grade, quiz.decimalpoints),
+                gradeToShow = formattedGradebookGrade; // By default we show the grade in the gradebook.
 
             $scope.showResults = true;
             $scope.gradeOverridden = formattedGradebookGrade != formattedBestGrade;
             $scope.gradebookFeedback = gradebookData.feedback;
+            if (formattedBestGrade > formattedGradebookGrade && formattedGradebookGrade == quiz.grade) {
+                // The best grade is higher than the max grade for the quiz. We'll do like Moodle web and
+                // show the best grade instead of the gradebook grade.
+                $scope.gradeOverridden = false;
+                gradeToShow = formattedBestGrade;
+            }
 
             if (overallStats) {
                 // Show the quiz grade. The message shown is different if the quiz is finished.
                 if (moreAttempts) {
                     $scope.gradeResult = $translate.instant('mma.mod_quiz.gradesofar', {$a: {
                         method: quiz.gradeMethodReadable,
-                        mygrade: formattedGradebookGrade,
+                        mygrade: gradeToShow,
                         quizgrade: quiz.gradeFormatted
                     }});
                 } else {
                     var outOfShort = $translate.instant('mma.mod_quiz.outofshort', {$a: {
-                        grade: formattedGradebookGrade,
+                        grade: gradeToShow,
                         maxgrade: quiz.gradeFormatted
                     }});
                     $scope.gradeResult = $translate.instant('mma.mod_quiz.yourfinalgradeis', {$a: outOfShort});
