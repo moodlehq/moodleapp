@@ -78,6 +78,10 @@
                     <p class="mma-mod-quiz-warning">{{ 'mma.mod_quiz.errorrulesnotsupported' | translate }}</p>
                     <p class="mma-mod-quiz-warning" ng-repeat="name in unsupportedRules">{{ name }}</p>
                 </div>
+                <div class="item item-text-wrap mma-mod-quiz-warning" ng-if="behaviourSupported === false">
+                    <p class="mma-mod-quiz-warning">{{ 'mma.mod_quiz.errorbehaviournotsupported' | translate }}</p>
+                    <p class="mma-mod-quiz-warning">{{ quiz.preferredbehaviour }}</p>
+                </div>
                 <div class="item" ng-if="buttonText">
                     <a class="button button-block" ui-sref="site.mod_quiz-player({courseid: courseId, quizid: quiz.id, moduleurl: moduleUrl})">{{ buttonText | translate }}</a>
                 </div>

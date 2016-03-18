@@ -16,6 +16,7 @@
 	"errorgetquestions": "Error getting questions.",
 	"errorgetquiz": "Error getting quiz data.",
 	"errorparsequestions": "An error occurred while treating the questions. Please attempt this quiz in a browser.",
+	"errorbehaviournotsupported": "This quiz can't be attempted in the app because the behaviour is not supported by the app:",
 	"errorquestionsnotsupported": "This quiz can't be attempted in the app because it can contain questions not supported by the app:",
 	"errorrulesnotsupported": "This quiz can't be attempted in the app because it has active rules not supported by the app:",
 	"errorsaveattempt": "An error occurred while saving the attempt data.",
