@@ -54,3 +54,9 @@ p.mma-mod-quiz-warning {
 .mma-mod_quiz-connection-error, ion-popover-view.popover.mma-mod_quiz-connection-error {
   background-color: $mma-mod-quiz-conecterr-color;
 }
+
+.mm-site_mod_quiz-review .item {
+  h3 {
+    font-size: 18px;
+  }
+}

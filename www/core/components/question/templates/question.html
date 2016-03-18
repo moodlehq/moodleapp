@@ -5,9 +5,15 @@
 </div>
 <!-- Sequence check input -->
 <input ng-if="seqCheck" type="hidden" name="{{seqCheck.name}}" value="{{seqCheck.value}}" >
+<!-- Question behaviour directives -->
+<div class="item item-complex" mm-question-behaviour ng-repeat="directive in behaviourDirectives"></div>
 <!-- Question validation error. -->
 <div class="item item-text-wrap" ng-if="question.validationError">
     <p class="mm-warning">{{ question.validationError }}</p>
+</div>
+<!-- Question behaviour buttons. -->
+<div class="item item-text-wrap" ng-repeat="bButton in question.behaviourButtons">
+	<a class="button button-block" ng-click="buttonClicked({name: bButton.name, value: bButton.value})" ng-disabled="bButton.disabled">{{ bButton.value }}</a>
 </div>
 <!-- Question feedback -->
 <div class="item item-text-wrap mm-question-feedback-container" ng-if="question.feedbackHtml">
