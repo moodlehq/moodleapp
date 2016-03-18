@@ -1,4 +1,7 @@
 
+$mm-question-correct-color:     #468847 !default;
+$mm-question-incorrect-color:   #b94a48 !default;
+
 .mm-question-textarea {
   width: 100%;
   height: 250px;
@@ -19,7 +22,7 @@ li.mm-question-answer-correct,
 .mm-question-answer-correct .item-radio input:checked + .radio-content .item-content,
 .mm-question-comment,
 .mm-question-comment p {
-  color: #468847;
+  color: $mm-question-correct-color;
   background-color: #dff0d8;
 }
 
@@ -37,7 +40,7 @@ li.mm-question-answer-incorrect,
 .mm-question-answer-incorrect .item-radio input:checked + .radio-content .item-content,
 .mm-question-incorrect,
 .mm-question-incorrect p {
-  color: #b94a48;
+  color: $mm-question-incorrect-color;
   background-color: #f2dede;
 }
 
@@ -47,6 +50,25 @@ li.mm-question-answer-incorrect,
 
   .specificfeedback, .rightanswer, .im-feedback, .feedback, .generalfeedback {
     margin: 0 0 .5em;
+  }
+
+  .correctness {
+    display: inline-block;
+    padding: 2px 4px;
+    font-weight: bold;
+    line-height: 14px;
+    color: #fff;
+    text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+    background-color: #999;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+
+    &.incorrect {
+      background-color: $mm-question-incorrect-color;
+    }
+    &.correct {
+      background-color: $mm-question-correct-color;
+    }
   }
 }
 
