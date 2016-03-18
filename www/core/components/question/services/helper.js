@@ -83,7 +83,7 @@ angular.module('mm.core.question')
     };
 
     /**
-     * Extract question behaviour submit buttons from the question's HTML.
+     * Extract question behaviour submit buttons from the question's HTML and add them to "behaviourButtons" property.
      * The buttons aren't deleted from the content because all the im-controls block will be removed afterwards.
      *
      * @module mm.core.question
@@ -151,6 +151,55 @@ angular.module('mm.core.question')
         });
 
         return labels && labels.length;
+    };
+
+    /**
+     * Check if the question has a redo button and, if so, add it to "behaviourButtons" property
+     * and remove it from the HTML.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#extractQbehaviourRedoButton
+     * @param  {Object} question Question to treat.
+     * @return {Void}
+     */
+    self.extractQbehaviourRedoButton = function(question) {
+        // Create a fake div element so we can search using querySelector.
+        var div = document.createElement('div'),
+            redoSelector = 'input[type="submit"][name*=redoslot]';
+
+        // Search redo button in feedback (Moodle 3.1+).
+        if (!searchButton('html', '.outcome ' + redoSelector)) {
+            // Not found in question HTML.
+            if (question.feedbackHtml) {
+                // We extracted the feedback already, search it in there.
+                if (searchButton('feedbackHtml', redoSelector)) {
+                    // Button found, stop.
+                    return;
+                }
+            }
+
+            // Button still not found. Now search in the info box if it exists.
+            if (!question.infoHtml) {
+                searchButton('infoHtml', redoSelector);
+            }
+        }
+
+        // Search the button in a certain question property containing HTML.
+        function searchButton(htmlProperty, selector) {
+            var button;
+
+            div.innerHTML = question[htmlProperty];
+
+            button = div.querySelector(selector);
+            if (button) {
+                addBehaviourButton(question, button);
+                button.remove();
+                question[htmlProperty] = div.innerHTML;
+                return true;
+            }
+            return false;
+        }
     };
 
     /**
