@@ -9,5 +9,5 @@
     "wsextservice" : "local_mobile",
     "demo_sites": {"student": {"url": "http://bekr.org", "username": "test", "password": "12345678"}, "teacher": {"url": "http://bekr.org", "username": "test", "password": "12345678"}, "cva": {"url": "http://bekr.org", "username": "test", "password": "12345678"}},
     "gcmpn": "694767596569",
-    "customurlscheme": "BekrMobile"
+    "customurlscheme": "moodlemobile"
 }
