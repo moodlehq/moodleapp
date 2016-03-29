@@ -27,6 +27,30 @@ angular.module('mm.core.question')
         lastErrorShown = 0;
 
     /**
+     * Add a behaviour button to the question's "behaviourButtons" property.
+     *
+     * @param {Object} question Question.
+     * @param {Object} button   Button (DOM element).
+     */
+    function addBehaviourButton(question, button) {
+        if (!button || !question) {
+            return;
+        }
+
+        if (!question.behaviourButtons) {
+            question.behaviourButtons = [];
+        }
+
+        // Extract the data we want.
+        question.behaviourButtons.push({
+            id: button.id,
+            name: button.name,
+            value: button.value,
+            disabled: button.disabled
+        });
+    }
+
+    /**
      * Convenience function to initialize a question directive.
      * Performs some common checks and extracts the question's text.
      *
@@ -59,6 +83,160 @@ angular.module('mm.core.question')
     };
 
     /**
+     * Extract question behaviour submit buttons from the question's HTML and add them to "behaviourButtons" property.
+     * The buttons aren't deleted from the content because all the im-controls block will be removed afterwards.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#extractQbehaviourButtons
+     * @param  {Object} question   Question to treat.
+     * @param  {String} [selector] Selector to search the buttons. By default, '.im-controls input[type="submit"]'.
+     * @return {Void}
+     */
+    self.extractQbehaviourButtons = function(question, selector) {
+        selector = selector || '.im-controls input[type="submit"]';
+
+        // Create a fake div element so we can search using querySelector.
+        var div = document.createElement('div'),
+            buttons;
+
+        div.innerHTML = question.html;
+
+        // Search the buttons.
+        buttons = div.querySelectorAll(selector);
+        angular.forEach(buttons, function(button) {
+            addBehaviourButton(question, button);
+        });
+
+        question.html = div.innerHTML;
+    };
+
+    /**
+     * Check if the question has CBM and, if so, extract the certainty options and add them to a new
+     * "behaviourCertaintyOptions" property.
+     * The value of the selected option is stored in question.behaviourCertaintySelected.
+     * We don't remove them from HTML because all the im-controls block will be removed afterwards.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#extractQbehaviourCBM
+     * @param  {Object} question Question to treat.
+     * @return {Boolean}         True if the seen input is found, false otherwise.
+     */
+    self.extractQbehaviourCBM = function(question) {
+        // Create a fake div element so we can search using querySelector.
+        var div = document.createElement('div'),
+            labels;
+
+        div.innerHTML = question.html;
+
+        labels = div.querySelectorAll('.im-controls .certaintychoices label[for*="certainty"]');
+        question.behaviourCertaintyOptions = [];
+
+        angular.forEach(labels, function(label) {
+            var input = label.querySelector('input[type="radio"]');
+            if (input) {
+                question.behaviourCertaintyOptions.push({
+                    id: input.id,
+                    name: input.name,
+                    value: input.value,
+                    text: $mmText.cleanTags(label.innerHTML),
+                    disabled: input.disabled
+                });
+
+                if (input.checked) {
+                    question.behaviourCertaintySelected = input.value;
+                }
+            }
+        });
+
+        return labels && labels.length;
+    };
+
+    /**
+     * Check if the question has a redo button and, if so, add it to "behaviourButtons" property
+     * and remove it from the HTML.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#extractQbehaviourRedoButton
+     * @param  {Object} question Question to treat.
+     * @return {Void}
+     */
+    self.extractQbehaviourRedoButton = function(question) {
+        // Create a fake div element so we can search using querySelector.
+        var div = document.createElement('div'),
+            redoSelector = 'input[type="submit"][name*=redoslot]';
+
+        // Search redo button in feedback (Moodle 3.1+).
+        if (!searchButton('html', '.outcome ' + redoSelector)) {
+            // Not found in question HTML.
+            if (question.feedbackHtml) {
+                // We extracted the feedback already, search it in there.
+                if (searchButton('feedbackHtml', redoSelector)) {
+                    // Button found, stop.
+                    return;
+                }
+            }
+
+            // Button still not found. Now search in the info box if it exists.
+            if (!question.infoHtml) {
+                searchButton('infoHtml', redoSelector);
+            }
+        }
+
+        // Search the button in a certain question property containing HTML.
+        function searchButton(htmlProperty, selector) {
+            var button;
+
+            div.innerHTML = question[htmlProperty];
+
+            button = div.querySelector(selector);
+            if (button) {
+                addBehaviourButton(question, button);
+                button.remove();
+                question[htmlProperty] = div.innerHTML;
+                return true;
+            }
+            return false;
+        }
+    };
+
+    /**
+     * Check if the question contains a "seen" input.
+     * If so, add the name and value to a "behaviourSeenInput" property and remove the input.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#extractQbehaviourSeenInput
+     * @param  {Object} question Question to treat.
+     * @return {Boolean}         True if the seen input is found, false otherwise.
+     */
+    self.extractQbehaviourSeenInput = function(question) {
+        // Create a fake div element so we can search using querySelector.
+        var div = document.createElement('div'),
+            seenInput;
+
+        div.innerHTML = question.html;
+
+        // Search the "seen" input.
+        seenInput = div.querySelector('input[type="hidden"][name*=seen]');
+        if (seenInput) {
+            // Get the data and remove the input.
+            question.behaviourSeenInput = {
+                name: seenInput.name,
+                value: seenInput.value
+            };
+            seenInput.remove();
+            question.html = div.innerHTML;
+
+            // Return the directive to render this input.
+            return true;
+        }
+        return false;
+    };
+
+    /**
      * Removes the comment from the question HTML code and adds it in a new "commentHtml" property.
      *
      * @module mm.core.question
@@ -82,6 +260,20 @@ angular.module('mm.core.question')
      */
     self.extractQuestionFeedback = function(question) {
         extractQuestionLastElementNotInContent(question, '.outcome', 'feedbackHtml');
+    };
+
+    /**
+     * Extracts the info box from a question and add it to an "infoHtml" property.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#extractQuestionInfoBox
+     * @param  {Object} question Question.
+     * @param  {String} selector Selector to search the element.
+     * @return {Void}
+     */
+    self.extractQuestionInfoBox = function(question, selector) {
+        extractQuestionLastElementNotInContent(question, selector, 'infoHtml');
     };
 
     /**
@@ -174,7 +366,7 @@ angular.module('mm.core.question')
         angular.forEach(form.elements, function(element, name) {
             name = element.name || name;
             // Ignore flag and submit inputs.
-            if (name.match(/_:flagged$/) || element.type == 'submit') {
+            if (name.match(/_:flagged$/) || element.type == 'submit' || element.tagName == 'BUTTON') {
                 return;
             }
             // Ignore selects without value.
@@ -303,9 +495,11 @@ angular.module('mm.core.question')
                 readOnly: input.readOnly
             };
 
-            if (scope.review) {
-                // We're reviewing, check if question is marked as correct.
-                scope.input.isCorrect = input.className.indexOf('incorrect') == -1;
+            // Check if question is marked as correct.
+            if (input.className.indexOf('incorrect') >= 0) {
+                scope.input.isCorrect = 0;
+            } else if (input.className.indexOf('correct') >= 0) {
+                scope.input.isCorrect = 1;
             }
         }
     };
@@ -367,13 +561,10 @@ angular.module('mm.core.question')
                 rowModel.options = [];
 
                 // Check if answer is correct.
-                if (scope.review) {
-                    // Check if answer is correct.
-                    if (columns[1].className.indexOf('incorrect') >= 0) {
-                        rowModel.isCorrect = 0;
-                    } else if (columns[1].className.indexOf('correct') >= 0) {
-                        rowModel.isCorrect = 1;
-                    }
+                if (columns[1].className.indexOf('incorrect') >= 0) {
+                    rowModel.isCorrect = 0;
+                } else if (columns[1].className.indexOf('correct') >= 0) {
+                    rowModel.isCorrect = 1;
                 }
 
                 // Treat each option.
@@ -450,7 +641,7 @@ angular.module('mm.core.question')
                         disabled: element.disabled
                     },
                     label,
-                    parent,
+                    parent = element.parentNode,
                     feedback;
 
                 // Get the label with the question text.
@@ -468,22 +659,18 @@ angular.module('mm.core.question')
                                 scope.mcAnswers[option.name] = option.value;
                             }
 
-                            if (scope.review) {
-                                parent = element.parentNode;
+                            if (parent) {
+                                // Check if answer is correct.
+                                if (parent && parent.className.indexOf('incorrect') >= 0) {
+                                    option.isCorrect = 0;
+                                } else if (parent && parent.className.indexOf('correct') >= 0) {
+                                    option.isCorrect = 1;
+                                }
 
-                                if (parent) {
-                                    // Check if answer is correct.
-                                    if (parent && parent.className.indexOf('incorrect') >= 0) {
-                                        option.isCorrect = 0;
-                                    } else if (parent && parent.className.indexOf('correct') >= 0) {
-                                        option.isCorrect = 1;
-                                    }
-
-                                    // Search the feedback.
-                                    feedback = parent.querySelector('.specificfeedback');
-                                    if (feedback) {
-                                        option.feedback = feedback.innerHTML;
-                                    }
+                                // Search the feedback.
+                                feedback = parent.querySelector('.specificfeedback');
+                                if (feedback) {
+                                    option.feedback = feedback.innerHTML;
                                 }
                             }
                         }
@@ -537,15 +724,18 @@ angular.module('mm.core.question')
      * @module mm.core.question
      * @ngdoc method
      * @name $mmQuestionHelper#showDirectiveError
-     * @param  {Object} scope Directive scope.
+     * @param  {Object} scope   Directive scope.
+     * @param  {String} [error] Error to show.
      * @return {Void}
      */
-    self.showDirectiveError = function(scope) {
+    self.showDirectiveError = function(scope, error) {
+        error = error || 'Error processing the question. This could be caused by custom modifications in your site.';
+
         // Prevent consecutive errors.
         var now = new Date().getTime();
         if (now - lastErrorShown > 500) {
             lastErrorShown = now;
-            $mmUtil.showErrorModal('Error processing the question. This could be caused by custom modifications in your site.');
+            $mmUtil.showErrorModal(error);
         }
         scope.abort();
     };

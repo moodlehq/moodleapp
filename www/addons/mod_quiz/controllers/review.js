@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_quiz')
  * @name mmaModQuizReviewCtrl
  */
 .controller('mmaModQuizReviewCtrl', function($log, $scope, $stateParams, $mmaModQuiz, $mmaModQuizHelper, $mmUtil,
-            $ionicPopover, $ionicScrollDelegate, $translate, $q, mmaModQuizAttemptComponent) {
+            $ionicPopover, $ionicScrollDelegate, $translate, $q, mmaModQuizAttemptComponent, $mmQuestionHelper) {
     $log = $log.getInstance('mmaModQuizReviewCtrl');
 
     var quizId = $stateParams.quizid,
@@ -35,7 +35,6 @@ angular.module('mm.addons.mod_quiz')
         errorPasing = false,
         scrollView = $ionicScrollDelegate.$getByHandle('mmaModQuizReviewScroll');
 
-    $scope.isReview = true;
     $scope.component = mmaModQuizAttemptComponent;
     $scope.componentId = attemptId;
 
@@ -75,8 +74,10 @@ angular.module('mm.addons.mod_quiz')
             angular.forEach($scope.questions, function(question) {
                 // Get the readable mark for each question.
                 question.readableMark = $mmaModQuizHelper.getQuestionMarkFromHtml(question.html);
-                // Remove the question info box so it's not in the question HTML anymore.
-                question.html = $mmUtil.removeElementFromHtml(question.html, '.info');
+                // Extract the question info box.
+                $mmQuestionHelper.extractQuestionInfoBox(question, '.info');
+                // Set the preferred behaviour.
+                question.preferredBehaviour = quiz.preferredbehaviour;
             });
         });
     }
@@ -132,6 +133,12 @@ angular.module('mm.addons.mod_quiz')
                     }
                 }
             }
+
+            // Treat additional data.
+            angular.forEach($scope.additionalData, function(data) {
+                // Remove help links from additional data.
+                data.content = $mmUtil.removeElementFromHtml(data.content, '.helptooltip');
+            });
         }
     }
 

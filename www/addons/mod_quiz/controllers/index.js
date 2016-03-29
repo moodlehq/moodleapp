@@ -22,7 +22,8 @@ angular.module('mm.addons.mod_quiz')
  * @name mmaModQuizIndexCtrl
  */
 .controller('mmaModQuizIndexCtrl', function($scope, $stateParams, $mmaModQuiz, $mmCourse, $ionicPlatform, $q, $translate,
-            $mmaModQuizHelper, $ionicHistory, $ionicScrollDelegate, $mmEvents, mmaModQuizAttemptFinishedEvent, $state) {
+            $mmaModQuizHelper, $ionicHistory, $ionicScrollDelegate, $mmEvents, mmaModQuizAttemptFinishedEvent, $state,
+            $mmQuestionBehaviourDelegate) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         quiz,
@@ -60,6 +61,9 @@ angular.module('mm.addons.mod_quiz')
                 $scope.accessRules = quizAccessInfo.accessrules;
                 quiz.showReviewColumn = quizAccessInfo.canreviewmyattempts;
                 $scope.unsupportedRules = $mmaModQuiz.getUnsupportedRules(quizAccessInfo.activerulenames);
+                if (quiz.preferredbehaviour) {
+                    $scope.behaviourSupported = $mmQuestionBehaviourDelegate.isBehaviourSupported(quiz.preferredbehaviour);
+                }
 
                 // Get question types in the quiz.
                 return $mmaModQuiz.getQuizRequiredQtypes(quiz.id).then(function(types) {
@@ -153,23 +157,30 @@ angular.module('mm.addons.mod_quiz')
         if (attempts.length && quiz.showGradeColumn && bestGrade.hasgrade && typeof gradebookData.grade != 'undefined') {
 
             var formattedGradebookGrade = $mmaModQuiz.formatGrade(gradebookData.grade, quiz.decimalpoints),
-                formattedBestGrade = $mmaModQuiz.formatGrade(bestGrade.grade, quiz.decimalpoints);
+                formattedBestGrade = $mmaModQuiz.formatGrade(bestGrade.grade, quiz.decimalpoints),
+                gradeToShow = formattedGradebookGrade; // By default we show the grade in the gradebook.
 
             $scope.showResults = true;
             $scope.gradeOverridden = formattedGradebookGrade != formattedBestGrade;
             $scope.gradebookFeedback = gradebookData.feedback;
+            if (formattedBestGrade > formattedGradebookGrade && formattedGradebookGrade == quiz.grade) {
+                // The best grade is higher than the max grade for the quiz. We'll do like Moodle web and
+                // show the best grade instead of the gradebook grade.
+                $scope.gradeOverridden = false;
+                gradeToShow = formattedBestGrade;
+            }
 
             if (overallStats) {
                 // Show the quiz grade. The message shown is different if the quiz is finished.
                 if (moreAttempts) {
                     $scope.gradeResult = $translate.instant('mma.mod_quiz.gradesofar', {$a: {
                         method: quiz.gradeMethodReadable,
-                        mygrade: formattedGradebookGrade,
+                        mygrade: gradeToShow,
                         quizgrade: quiz.gradeFormatted
                     }});
                 } else {
                     var outOfShort = $translate.instant('mma.mod_quiz.outofshort', {$a: {
-                        grade: formattedGradebookGrade,
+                        grade: gradeToShow,
                         maxgrade: quiz.gradeFormatted
                     }});
                     $scope.gradeResult = $translate.instant('mma.mod_quiz.yourfinalgradeis', {$a: outOfShort});
@@ -224,7 +235,7 @@ angular.module('mm.addons.mod_quiz')
                 $scope.buttonText = '';
             } else if (quizAccessInfo.canattempt && $scope.preventMessages.length) {
                 $scope.buttonText = '';
-            } else if ($scope.unsupportedQuestions.length || $scope.unsupportedRules.length) {
+            } else if ($scope.unsupportedQuestions.length || $scope.unsupportedRules.length || !$scope.behaviourSupported) {
                 $scope.buttonText = '';
             }
         }

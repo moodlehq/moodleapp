@@ -14,7 +14,12 @@
 
 angular.module('mm.core.question', [])
 
-.run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, $mmQuestionDelegate) {
-    $mmEvents.on(mmCoreEventLogin, $mmQuestionDelegate.updateQuestionHandlers);
-    $mmEvents.on(mmCoreEventSiteUpdated, $mmQuestionDelegate.updateQuestionHandlers);
+.run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, $mmQuestionDelegate, $mmQuestionBehaviourDelegate) {
+	function updateHandlers() {
+		$mmQuestionDelegate.updateQuestionHandlers();
+		$mmQuestionBehaviourDelegate.updateQuestionBehaviourHandlers();
+	}
+
+	$mmEvents.on(mmCoreEventLogin, updateHandlers);
+	$mmEvents.on(mmCoreEventSiteUpdated, updateHandlers);
 });

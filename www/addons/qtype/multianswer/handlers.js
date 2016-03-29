@@ -35,6 +35,20 @@ angular.module('mm.addons.qtype_multianswer')
     };
 
     /**
+     * Get the behaviour for this question.
+     *
+     * @param  {Object} question  Question to get the directive for.
+     * @param  {String} behaviour Default behaviour.
+     * @return {String}           Behaviour name.
+     */
+    self.getBehaviour = function(question, behaviour) {
+        if (behaviour === 'interactive') {
+            return 'interactivecountback';
+        }
+        return behaviour;
+    };
+
+    /**
      * Get the directive.
      *
      * @param {Object} question The question.
