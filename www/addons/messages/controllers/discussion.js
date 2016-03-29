@@ -24,7 +24,7 @@ angular.module('mm.addons.messages')
 .controller('mmaMessagesDiscussionCtrl', function($scope, $stateParams, $mmApp, $mmaMessages, $mmSite, $timeout, $mmEvents, $window,
         $ionicScrollDelegate, mmUserProfileState, $mmUtil, mmaMessagesPollInterval, $interval, $log, $ionicHistory, $ionicPlatform,
         mmCoreEventKeyboardShow, mmCoreEventKeyboardHide, mmaMessagesDiscussionLoadedEvent, mmaMessagesDiscussionLeftEvent,
-        $mmUser, $translate) {
+        $mmUser, $translate, mmaMessagesNewMessageEvent) {
 
     $log = $log.getInstance('mmaMessagesDiscussionCtrl');
 
@@ -224,7 +224,9 @@ angular.module('mm.addons.messages')
         var last = $scope.messages[$scope.messages.length - 1];
         if (last && last.smallmessage !== lastMessage) {
             lastMessage = last.smallmessage;
-            $mmEvents.trigger($mmaMessages.getDiscussionEventName(userId), {
+            $mmEvents.trigger(mmaMessagesNewMessageEvent, {
+                siteid: $mmSite.getId(),
+                userid: userId,
                 message: lastMessage,
                 timecreated: last.timecreated
             });
