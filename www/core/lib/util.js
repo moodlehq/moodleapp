@@ -391,7 +391,17 @@ angular.module('mm.core')
          * @return {Void}
          */
         self.openInApp = function(url) {
-            window.open(url, '_blank');
+            if (!url) {
+                return;
+            }
+
+            var options = 'enableViewPortScale=yes'; // Enable zoom on iOS.
+            if (ionic.Platform.isIOS() && url.indexOf('file://') === 0) {
+                // The URL uses file protocol, don't show it on iOS.
+                // In Android we keep it because otherwise we lose the whole toolbar.
+                options += ',location=no';
+            }
+            window.open(url, '_blank', options);
         };
 
         /**
