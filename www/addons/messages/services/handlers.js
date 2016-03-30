@@ -226,8 +226,7 @@ angular.module('mm.addons.messages')
                     $event.preventDefault();
                     $event.stopPropagation();
                     $state.go('site.messages-discussion', {
-                        userId: user.id,
-                        userFullname: user.fullname
+                        userId: user.id
                     });
                 };
             };

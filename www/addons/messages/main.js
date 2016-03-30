@@ -41,8 +41,7 @@ angular.module('mm.addons.messages', ['mm.core'])
     .state('site.messages-discussion', {
         url: '/messages-discussion',
         params: {
-            userId: null,
-            userFullname: null
+            userId: null
         },
         views: {
             'site': {

@@ -29,7 +29,6 @@ angular.module('mm.addons.messages')
     $log = $log.getInstance('mmaMessagesDiscussionCtrl');
 
     var userId = $stateParams.userId,
-        userFullname = $stateParams.userFullname,
         messagesBeingSent = 0,
         polling,
         fetching,
@@ -41,24 +40,25 @@ angular.module('mm.addons.messages')
     $scope.messages = [];
     $scope.userId = userId;
     $scope.currentUserId = $mmSite.getUserId();
-    $scope.profileLink = true;
 
-    if (userFullname) {
-        $scope.title = userFullname;
-    } else if (userId) {
-        // We don't have the fullname, try to get it.
-        $mmUser.getProfile(userId).then(function(user) {
+    // Disable the profile button if we're already coming from a profile.
+    if (backView && backView.stateName === mmUserProfileState) {
+        $scope.profileLink = false;
+    }
+
+    if (userId) {
+        // Get the user profile to retrieve the user fullname and image.
+        $mmUser.getProfile(userId, undefined, true).then(function(user) {
             if (!$scope.title) {
                 $scope.title = user.fullname;
             }
+            if (typeof $scope.profileLink == 'undefined') {
+                $scope.profileLink = user.profileimageurl;
+            }
+        }).catch(function() {
+            // Couldn't retrieve the image, use a default icon.
+            $scope.profileLink = true;
         });
-    }
-
-    // Disable the profile button if we're coming from a profile. It is safer to prevent forbid the access
-    // to the full profile (we do not know the course ID they came from) as some users cannot view the full
-    // profile of other users.
-    if (backView && backView.stateName === mmUserProfileState) {
-        $scope.profileLink = false;
     }
 
     $scope.isAppOffline = function() {
@@ -117,7 +117,7 @@ angular.module('mm.addons.messages')
     // Fetch the messages for the first time.
     $mmaMessages.getDiscussion(userId).then(function(messages) {
         $scope.messages = $mmaMessages.sortMessages(messages);
-        if (!userFullname && messages && messages.length > 0) {
+        if (!$scope.title && messages && messages.length > 0) {
             // When we did not receive the fullname via argument. Also it is possible that
             // we cannot resolve the name when no messages were yet exchanged.
             if (messages[0].useridto != $scope.currentUserId) {
