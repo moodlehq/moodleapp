@@ -23,19 +23,28 @@ angular.module('mm.core')
  *
  * @param {Boolean} [captureLink=false] If the link needs to be captured by the app.
  */
-.directive('mmBrowser', function($mmUtil, $mmContentLinksHelper) {
+.directive('mmBrowser', function($mmUtil, $mmContentLinksHelper, $location) {
 
     /**
-     * Convenience function to open file or url in the browser.
+     * Convenience function to correctly navigate, open file or url in the browser.
      *
      * @param  {String} href    HREF to be opened
      */
-    function openInBrowser(href) {
+    function navigate(href) {
         if (href.indexOf('cdvfile://') === 0 || href.indexOf('file://') === 0) {
             // We have a local file.
             $mmUtil.openFile(href).catch(function(error) {
                 $mmUtil.showErrorModal(error);
             });
+        } else if (href.charAt(0) == '#'){
+            href = href.substr(1);
+            // In site links
+            if (href.charAt(0) == '/') {
+                $location.url(href);
+            } else {
+                // Look for id or name
+                $mmUtil.scrollToElement(document, "#" + href + ", [name='" + href + "']");
+            }
         } else {
             // It's an external link, we will open with browser.
             $mmUtil.openInBrowser(href);
@@ -55,11 +64,11 @@ angular.module('mm.core')
                     if (attrs.captureLink && attrs.captureLink !== 'false') {
                         $mmContentLinksHelper.handleLink(href).then(function(treated) {
                             if (!treated) {
-                               openInBrowser(href);
+                               navigate(href);
                             }
                         });
                     } else {
-                        openInBrowser(href);
+                        navigate(href);
                     }
                 }
             });
