@@ -88,6 +88,7 @@
     "openinbrowser": "Open in browser",
     "percentagenumber": "{{$a}}%",
     "phone": "Phone",
+    "pictureof": "Picture of {{$a}}",
     "previous": "Previous",
     "pulltorefresh": "Pull to refresh",
     "refresh": "Refresh",
