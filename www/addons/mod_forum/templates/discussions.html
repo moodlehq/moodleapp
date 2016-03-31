@@ -19,8 +19,8 @@
                         <a class="mma-forum-discussion-link" mm-split-view-link="site.mod_forum-discussion({cid: courseid, discussionid: discussion.discussion})">
                             <article>
                                 <div class="item item-avatar item-text-wrap">
-                                    <img ng-if="discussion.userpictureurl" ng-src="{{discussion.userpictureurl}}" mm-external-content mm-split-view-link="{{userStateName}}({courseid: courseid, userid: discussion.userid})" alt="" role="presentation">
-                                    <img ng-if="!discussion.userpictureurl" src="img/user-avatar.png" alt="" role="presentation">
+                                    <img ng-if="discussion.userpictureurl" ng-src="{{discussion.userpictureurl}}" mm-external-content mm-split-view-link="{{userStateName}}({courseid: courseid, userid: discussion.userid})" alt="{{ 'mm.core.pictureof' | translate:{$a: discussion.userfullname} }}" role="presentation">
+                                    <img ng-if="!discussion.userpictureurl" src="img/user-avatar.png" alt="{{ 'mm.core.pictureof' | translate:{$a: discussion.userfullname} }}" role="presentation">
                                     <h2><summary>{{discussion.subject}}</summary></h2>
                                     <div class="item-note">{{discussion.created | mmDateDayOrTime}}</div>
                                     <p>{{discussion.userfullname}}</p>

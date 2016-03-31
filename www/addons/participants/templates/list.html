@@ -8,7 +8,7 @@
                 <ul class="list" ng-if="participants && participants.length > 0">
                     <li ng-repeat="participant in participants">
                         <a class="item item-avatar" mm-split-view-link="{{userStateName}}({courseid: courseid, userid: participant.id})" title="{{participant.fullname}}">
-                            <img ng-src="{{participant.profileimageurl}}" alt="" mm-external-content>
+                            <img ng-src="{{participant.profileimageurl}}" alt="{{ 'mm.core.pictureof' | translate:{$a: participant.fullname} }}" mm-external-content>
                             <mm-format-text>{{participant.fullname}}</mm-format-text>
                         </a>
                     </li>

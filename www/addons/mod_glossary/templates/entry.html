@@ -8,7 +8,7 @@
 
             <div class="card list" ng-if="entry != false">
                 <a class="item item-avatar" ng-if="showAuthor" ui-sref="{{userStateName}}({courseid: courseid, userid: entry.userid})">
-                    <img ng-src="{{entry.userpictureurl}}" alt="" mm-external-content role="presentation">
+                    <img ng-src="{{entry.userpictureurl}}" alt="{{ 'mm.core.pictureof' | translate:{$a: entry.userfullname} }}" mm-external-content role="presentation">
                     <h2><mm-format-text watch="true">{{ entry.concept }}</mm-format-text></h2>
                     <p ng-if="showDate" class="item-note">{{ entry.timemodified | mmDateDayOrTime }}</p>
                     <p><mm-format-text watch="true" clean="true">{{ entry.userfullname }}</mm-format-text></p>

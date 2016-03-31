@@ -26,7 +26,7 @@
                 </ion-item>
 
                 <a ng-repeat="contact in contacts[contactType] | orderBy:'fullname' track by $index" ng-if="contact.profileimageurl || contact.profileimageurlsmall" class="item item-avatar" mm-split-view-link="{{userStateName}}({userid: contact.id})" title="{{contact.fullname}}"> <!-- Don't show deleted users -->
-                    <img ng-src="{{ contact.profileimageurl || contact.profileimageurlsmall }}" alt="" role="presentation" mm-external-content >
+                    <img ng-src="{{ contact.profileimageurl || contact.profileimageurlsmall }}" alt="{{ 'mm.core.pictureof' | translate:{$a: contact.fullname} }}" role="presentation" mm-external-content >
                     <p class="item-heading">{{ contact.fullname }}</p>
                 </a>
             </li>
