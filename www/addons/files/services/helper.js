@@ -24,109 +24,39 @@ angular.module('mm.addons.files')
     var self = {};
 
     /**
-     * Convenient helper for the user to upload an image from an album.
+     * Convenient helper for the user to upload an image, either from the album or taking it with the camera.
      *
      * @module mm.addons.files
      * @ngdoc method
-     * @name $mmaFilesHelper#uploadImageFromAlbum
-     * @return {Promise} The reject contains the error message, if there is no error message
-     *                   then we can consider that this is a silent fail.
+     * @name $mmaFilesHelper#uploadImage
+     * @param  {Boolean} fromAlbum True if the image should be selected from album, false if it should be taken with camera.
+     * @return {Promise}           The reject contains the error message, if there is no error message
+     *                             then we can consider that this is a silent fail.
      */
-    self.uploadImageFromAlbum = function() {
-        $log.debug('Trying to get a image from albums');
-        var deferred = $q.defer();
-
-        var width  =  $window.innerWidth  - 200;
-        var height =  $window.innerHeight - 200;
-
-        // iPad popOver, see https://tracker.moodle.org/browse/MOBILE-208
-        var popover = new CameraPopoverOptions(10, 10, width, height, Camera.PopoverArrowDirection.ARROW_ANY);
-        $cordovaCamera.getPicture({
-            quality: 50,
-            destinationType: navigator.camera.DestinationType.FILE_URI,
-            sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY,
-            popoverOptions : popover
-        }).then(function(img) {
-            var modal = $mmUtil.showModalLoading('mma.files.uploading', true);
-            $mmaFiles.uploadImage(img, true).then(function() {
-                // Success.
-                deferred.resolve();
-            }, function() {
-                $mmLang.translateAndRejectDeferred(deferred, 'mma.files.errorwhileuploading');
-            }).finally(function() {
-                modal.dismiss();
-            });
-
-        }, function(error) {
-            treatImageError(error, deferred, 'mma.files.errorgettingimagealbum');
-        });
-
-        return deferred.promise;
-    };
-
-    /**
-     * Convenient helper for the user to take an image with the camera and upload it.
-     *
-     * @module mm.addons.files
-     * @ngdoc method
-     * @name $mmaFilesHelper#uploadImageFromCamera
-     * @return {Promise} The reject contains the error message, if there is no error message
-     *                   then we can consider that this is a silent fail.
-     */
-    self.uploadImageFromCamera = function() {
+    self.uploadImage = function(fromAlbum) {
         $log.debug('Trying to capture an image with camera');
-        var deferred = $q.defer();
-
-        $cordovaCamera.getPicture({
+        var options = {
             quality: 50,
             destinationType: navigator.camera.DestinationType.FILE_URI
-        }).then(function(img) {
+        };
+
+        if (fromAlbum) {
+            options.sourceType = navigator.camera.PictureSourceType.PHOTOLIBRARY;
+            options.popoverOptions = new CameraPopoverOptions(10, 10, $window.innerWidth  - 200, $window.innerHeight - 200,
+                                            Camera.PopoverArrowDirection.ARROW_ANY);
+        }
+
+        return $cordovaCamera.getPicture(options).then(function(img) {
+            // Upload the image.
             var modal = $mmUtil.showModalLoading('mma.files.uploading', true);
-            $mmaFiles.uploadImage(img, false).then(function() {
-                // Success.
-                deferred.resolve();
-            }, function() {
-                $mmLang.translateAndRejectDeferred(deferred, 'mma.files.errorwhileuploading');
+            return $mmaFiles.uploadImage(img, fromAlbum).catch(function() {
+                return $mmLang.translateAndReject('mma.files.errorwhileuploading');
             }).finally(function() {
                 modal.dismiss();
             });
-
         }, function(error) {
-            treatImageError(error, deferred, 'mma.files.errorcapturingimage');
+            return treatImageError(error, 'mma.files.errorcapturingimage');
         });
-
-        return deferred.promise;
-    };
-
-    /**
-     * Convenient helper for the user to record and upload an audio.
-     *
-     * @module mm.addons.files
-     * @ngdoc method
-     * @name $mmaFilesHelper#uploadAudio
-     * @return {Promise} The reject contains the error message, if there is no error message
-     *                   then we can consider that this is a silent fail.
-     */
-    self.uploadAudio = function() {
-        $log.debug('Trying to record an audio file');
-        var deferred = $q.defer();
-
-        $cordovaCapture.captureAudio({limit: 1}).then(function(medias) {
-            var modal = $mmUtil.showModalLoading('mma.files.uploading', true);
-            $q.all($mmaFiles.uploadMedia(medias)).then(function() {
-                // Success.
-                deferred.resolve();
-            }, function() {
-                $mmLang.translateAndRejectDeferred(deferred, 'mma.files.errorwhileuploading');
-            }).finally(function() {
-                modal.dismiss();
-            });
-
-        }, function(error) {
-            treatCaptureError(error, deferred, 'mma.files.errorcapturingaudio');
-        });
-
-        return deferred.promise;
     };
 
     /**
@@ -134,30 +64,25 @@ angular.module('mm.addons.files')
      *
      * @module mm.addons.files
      * @ngdoc method
-     * @name $mmaFilesHelper#uploadVideo
-     * @return {Promise} The reject contains the error message, if there is no error message
-     *                   then we can consider that this is a silent fail.
+     * @name $mmaFilesHelper#uploadAudioOrVideo
+     * @param  {Boolean} isAudio True if uploading an audio, false if it's a video.
+     * @return {Promise}         The reject contains the error message, if there is no error message
+     *                           then we can consider that this is a silent fail.
      */
-    self.uploadVideo = function() {
+    self.uploadAudioOrVideo = function(isAudio) {
         $log.debug('Trying to record a video file');
-        var deferred = $q.defer();
-
-        $cordovaCapture.captureVideo({limit: 1}).then(function(medias) {
+        var fn = isAudio ? $cordovaCapture.captureAudio : $cordovaCapture.captureVideo;
+        return fn({limit: 1}).then(function(medias) {
+            // Upload the video.
             var modal = $mmUtil.showModalLoading('mma.files.uploading', true);
-            $q.all($mmaFiles.uploadMedia(medias)).then(function() {
-                // Success.
-                deferred.resolve();
-            }, function() {
-                $mmLang.translateAndRejectDeferred(deferred, 'mma.files.errorwhileuploading');
+            return $q.all($mmaFiles.uploadMedia(medias)).catch(function() {
+                return $mmLang.translateAndReject('mma.files.errorwhileuploading');
             }).finally(function() {
                 modal.dismiss();
             });
-
         }, function(error) {
-            treatCaptureError(error, deferred, 'mma.files.errorcapturingvideo');
+            return treatCaptureError(error, 'mma.files.errorcapturingvideo');
         });
-
-        return deferred.promise;
     };
 
     /**
@@ -175,12 +100,10 @@ angular.module('mm.addons.files')
         }
 
         if ($mmApp.isNetworkAccessLimited() || size >= mmaFilesFileSizeWarning) {
-             var size = $mmText.bytesToSize(size, 2);
+            size = $mmText.bytesToSize(size, 2);
             return $mmUtil.showConfirm($translate('mma.files.confirmuploadfile', {size: size}));
         } else {
-            var deferred = $q.defer();
-            deferred.resolve();
-            return deferred.promise;
+            return $q.when();
         }
     };
 
@@ -194,31 +117,25 @@ angular.module('mm.addons.files')
      * @return {Promise}    Promise resolved when the file is uploaded.
      */
     self.copyAndUploadFile = function(file) {
-        var deferred = $q.defer();
-
         var modal = $mmUtil.showModalLoading('mma.files.readingfile', true);
 
         // We have the data of the file to be uploaded, but not its URL (needed). Create a copy of the file to upload it.
-        $mmFS.readFileData(file, $mmFS.FORMATARRAYBUFFER).then(function(data) {
-
+        return $mmFS.readFileData(file, $mmFS.FORMATARRAYBUFFER).then(function(data) {
             var filepath = $mmFS.getTmpFolder() + '/' + file.name;
 
-            $mmFS.writeFile(filepath, data).then(function(fileEntry) {
+            return $mmFS.writeFile(filepath, data).then(function(fileEntry) {
                 modal.dismiss();
-                self.uploadGenericFile(fileEntry.toURL(), file.name, file.type).then(deferred.resolve, deferred.reject);
+                return self.uploadGenericFile(fileEntry.toURL(), file.name, file.type);
             }, function(error) {
                 $log.error('Error writing file to upload: '+JSON.stringify(error));
-                $mmLang.translateAndRejectDeferred(deferred, 'mma.files.errorreadingfile');
                 modal.dismiss();
+                return $mmLang.translateAndReject('mma.files.errorreadingfile');
             });
-
         }, function(error) {
             $log.error('Error reading file to upload: '+JSON.stringify(error));
-            $mmLang.translateAndRejectDeferred(deferred, 'mma.files.errorreadingfile');
             modal.dismiss();
+            return $mmLang.translateAndReject('mma.files.errorreadingfile');
         });
-
-        return deferred.promise;
     };
 
     /**
@@ -234,23 +151,18 @@ angular.module('mm.addons.files')
      * @return {Promise}         Promise resolved when the file is uploaded.
      */
     self.uploadGenericFile = function(uri, name, type, siteid) {
-        var deferred = $q.defer();
-
         if (!$mmApp.isOnline()) {
-            $mmLang.translateAndRejectDeferred(deferred, 'mma.files.errormustbeonlinetoupload');
-            return deferred.promise;
+            return $mmLang.translateAndReject('mma.files.errormustbeonlinetoupload');
         }
 
         var modal = $mmUtil.showModalLoading('mma.files.uploading', true);
 
-        $mmaFiles.uploadGenericFile(uri, name, type, siteid).then(deferred.resolve, function(error) {
+        return $mmaFiles.uploadGenericFile(uri, name, type, siteid).catch(function(error) {
             $log.error('Error uploading file: '+JSON.stringify(error));
-            $mmLang.translateAndRejectDeferred(deferred, 'mma.files.errorwhileuploading');
+            return $mmLang.translateAndReject('mma.files.errorwhileuploading');
         }).finally(function() {
             modal.dismiss();
         });
-
-        return deferred.promise;
     };
 
     /**
@@ -287,65 +199,59 @@ angular.module('mm.addons.files')
             $mmUtil.showErrorModal('mma.files.errorreadingfile', true);
             return $q.reject();
         });
-    }
+    };
 
     /**
      * Treat a capture image or browse album error.
      *
      * @param  {String} error          Error returned by the Cordova plugin.
-     * @param  {Promise} deferred      Promise to reject.
      * @param  {String} defaultMessage Key of the default message to show.
      */
-    function treatImageError(error, deferred, defaultMessage) {
+    function treatImageError(error, defaultMessage) {
         // Cancelled, or error. If cancelled, error is a string with "Selection cancelled." or "Camera cancelled.".
         if (error) {
-            if (typeof(error) === 'string') {
+            if (typeof error == 'string') {
                 if (error.toLowerCase().indexOf("error") > -1 || error.toLowerCase().indexOf("unable") > -1) {
                     $log.error('Error getting image: ' + error);
-                    deferred.reject(error);
+                    return $q.reject(error);
                 } else {
                     $log.debug('Cancelled');
-                    deferred.reject();
                 }
             } else {
-                $mmLang.translateAndRejectDeferred(deferred, defaultMessage);
+                return $mmLang.translateAndReject(defaultMessage);
             }
-        } else {
-            deferred.reject();
         }
+        return $q.reject();
     }
 
     /**
      * Treat a capture audio/video error.
      *
      * @param  {Mixed} error           Error returned by the Cordova plugin. Can be a string or an object.
-     * @param  {Promise} deferred      Promise to reject.
      * @param  {String} defaultMessage Key of the default message to show.
      */
-    function treatCaptureError(error, deferred, defaultMessage) {
+    function treatCaptureError(error, defaultMessage) {
         // Cancelled, or error. If cancelled, error is an object with code = 3.
         if (error) {
             if (typeof(error) === 'string') {
                 $log.error('Error while recording audio/video: ' + error);
                 if (error.indexOf('No Activity found') > -1) {
                     // User doesn't have an app to do this.
-                    $mmLang.translateAndRejectDeferred(deferred, 'mma.files.errornoapp');
+                    return $mmLang.translateAndReject('mma.files.errornoapp');
                 } else {
-                    $mmLang.translateAndRejectDeferred(deferred, defaultMessage);
+                    return $mmLang.translateAndReject(defaultMessage);
                 }
             } else {
                 if (error.code != 3) {
                     // Error, not cancelled.
                     $log.error('Error while recording audio/video: ' + JSON.stringify(error));
-                    $mmLang.translateAndRejectDeferred(deferred, defaultMessage);
+                    return $mmLang.translateAndReject(defaultMessage);
                 } else {
                     $log.debug('Cancelled');
-                    deferred.reject();
                 }
             }
-        } else {
-            deferred.reject();
         }
+        return $q.reject();
     }
 
     return self;

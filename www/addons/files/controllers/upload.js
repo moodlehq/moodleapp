@@ -24,10 +24,10 @@ angular.module('mm.addons.files')
 .controller('mmaFilesUploadCtrl', function($scope, $stateParams, $mmUtil, $mmaFilesHelper, $ionicHistory, $mmaFiles, $mmApp) {
 
     var uploadMethods = {
-            album: $mmaFilesHelper.uploadImageFromAlbum,
-            camera: $mmaFilesHelper.uploadImageFromCamera,
-            audio: $mmaFilesHelper.uploadAudio,
-            video: $mmaFilesHelper.uploadVideo
+            album: $mmaFilesHelper.uploadImage,
+            camera: $mmaFilesHelper.uploadImage,
+            audio: $mmaFilesHelper.uploadAudioOrVideo,
+            video: $mmaFilesHelper.uploadAudioOrVideo
         },
         path = $stateParams.path,
         root = $stateParams.root;
@@ -49,12 +49,12 @@ angular.module('mm.addons.files')
         }
     }
 
-    $scope.upload = function(type) {
+    $scope.upload = function(type, param) {
         if (!$mmApp.isOnline()) {
             $mmUtil.showErrorModal('mma.files.errormustbeonlinetoupload', true);
         } else {
             if (typeof(uploadMethods[type]) !== 'undefined') {
-                uploadMethods[type]().then(successUploading, errorUploading);
+                uploadMethods[type](param).then(successUploading, errorUploading);
             }
         }
     };
@@ -69,5 +69,5 @@ angular.module('mm.addons.files')
                 $mmaFilesHelper.copyAndUploadFile(file).then(successUploading, errorUploading);
             }, errorUploading);
         }
-    }
+    };
 });

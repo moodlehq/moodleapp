@@ -1,16 +1,16 @@
 <ion-view view-title="{{'mma.files.uploadafile' | translate}}">
     <ion-content mm-state-class>
         <div class="list">
-            <a class="item" ng-click="upload('album')">
+            <a class="item" ng-click="upload('album', true)">
                 {{ 'mma.files.photoalbums' | translate }}
             </a>
-            <a class="item" ng-click="upload('camera')">
+            <a class="item" ng-click="upload('camera', false)">
                 {{ 'mma.files.camera' | translate }}
             </a>
-            <a class="item" ng-click="upload('audio')">
+            <a class="item" ng-click="upload('audio', true)">
                 {{ 'mma.files.audio' | translate }}
             </a>
-            <a class="item" ng-click="upload('video')">
+            <a class="item" ng-click="upload('video', false)">
                 {{ 'mma.files.video' | translate }}
             </a>
             <div class="item" ng-if="isAndroid">
