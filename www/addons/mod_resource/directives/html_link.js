@@ -27,7 +27,7 @@ angular.module('mm.addons.mod_resource')
 .directive('mmaModResourceHtmlLink', function() {
     return {
         restrict: 'A',
-        priority: 99,   // Must be lower than mm-browser, or anything listening for a click event.
+        priority: 99,   // Must be lower than mm-link, or anything listening for a click event.
         link: function(scope, element, attrs) {
             element.on('click', function(event) {
                 var href = element[0].getAttribute('data-href');
