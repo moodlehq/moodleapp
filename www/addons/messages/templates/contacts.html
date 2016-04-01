@@ -6,7 +6,7 @@
             <div class="item item-input-inset">
                 <label class="item-input-wrapper">
                     <i class="icon ion-search placeholder-icon"></i>
-                    <input type="text" placeholder="{{ 'mma.messages.contactname' | translate }}" ng-model="formData.searchString">
+                    <input type="text" placeholder="{{ 'mma.messages.contactname' | translate }}" ng-model="formData.searchString" autocorrect="off" spellcheck="false">
                 </label>
                 <button type="submit" class="button button-clear" ng-disabled="!formData.searchString || formData.searchString.length < 3">{{ 'mm.core.search' | translate}}</button>
             </div>
