@@ -25,7 +25,7 @@ angular.module('mm.addons.messages')
             mmaMessagesDiscussionLoadedEvent, mmaMessagesDiscussionLeftEvent) {
     // Listen for discussion loaded event to show user profile link in tablet view.
     var obsLoaded = $mmEvents.on(mmaMessagesDiscussionLoadedEvent, function(userId) {
-        if ($ionicPlatform.isTablet() && $ionicTabsDelegate.selectedIndex() === 0) {
+        if ($ionicPlatform.isTablet()) {
             // A discussion was loaded in tablet, get the user image and show the button to the profile.
             $scope.userId = userId;
             $mmUser.getProfile(userId, undefined, true).catch(function() {
