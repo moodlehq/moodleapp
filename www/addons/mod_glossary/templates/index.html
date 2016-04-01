@@ -2,7 +2,7 @@
     <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
     <ion-nav-buttons side="secondary">
         <button class="button button-icon ion-funnel" ng-click="pickMode($event)" aria-label="{{ 'mma.mod_glossary.browsemode' | translate }}"></button>
-        <a ng-href="{{externalUrl}}" class="button button-icon ion-ios-browsers-outline" mm-browser></a>
+        <a ng-href="{{externalUrl}}" class="button button-icon ion-ios-browsers-outline" mm-link></a>
     </ion-nav-buttons>
 
     <mm-split-view load-when="loaded" component="mmaModGlossaryEntryList">

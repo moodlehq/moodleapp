@@ -322,7 +322,7 @@ angular.module('mm.core')
      */
     function validateSiteInfo(infos) {
         if (!infos.firstname || !infos.lastname) {
-            var moodleLink = '<a mm-browser href="' + infos.siteurl + '">' + infos.siteurl + '</a>';
+            var moodleLink = '<a mm-link href="' + infos.siteurl + '">' + infos.siteurl + '</a>';
             return {error: 'mm.core.requireduserdatamissing', params: {'$a': moodleLink}};
         }
         return true;

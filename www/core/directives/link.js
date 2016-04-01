@@ -19,11 +19,11 @@ angular.module('mm.core')
  *
  * @module mm.core
  * @ngdoc directive
- * @name mmBrowser
+ * @name mmLink
  *
  * @param {Boolean} [captureLink=false] If the link needs to be captured by the app.
  */
-.directive('mmBrowser', function($mmUtil, $mmContentLinksHelper, $location) {
+.directive('mmLink', function($mmUtil, $mmContentLinksHelper, $location) {
 
     /**
      * Convenience function to correctly navigate, open file or url in the browser.

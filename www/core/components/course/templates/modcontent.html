@@ -7,6 +7,6 @@
             <p ng-if="url" class="item-body">{{ 'mm.course.activitynotyetviewablegothere' | translate }}</p>
             <p ng-if="!url" class="item-body">{{ 'mm.course.activitynotyetviewable' | translate }}</p>
         </div>
-        <a ng-if="url" href="{{ url }}" mm-browser class="button button-block"><i class="icon ion-ios-browsers-outline"></i> {{ 'mm.course.gotothesite' | translate }}</a>
+        <a ng-if="url" href="{{ url }}" mm-link class="button button-block"><i class="icon ion-ios-browsers-outline"></i> {{ 'mm.course.gotothesite' | translate }}</a>
     </ion-content>
 </ion-view>

@@ -1,7 +1,7 @@
 <ion-view>
     <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
     <ion-nav-buttons side="secondary">
-        <a class="button button-icon ion-ios-browsers-outline" ng-href="{{moduleUrl}}" mm-browser aria-label="{{ 'mm.core.openinbrowser' | translate }}"></a>
+        <a class="button button-icon ion-ios-browsers-outline" ng-href="{{moduleUrl}}" mm-link aria-label="{{ 'mm.core.openinbrowser' | translate }}"></a>
     </ion-nav-buttons>
     <ion-content padding="true" delegate-handle="mmaModScormIndexScroll" mm-state-class>
     	<ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="scormLoaded" on-refresh="refreshScorm()">
@@ -81,7 +81,7 @@
 	            <!-- Open in browser button -->
                 <div class="card padding" ng-if="errorMessage">
                 	<p class="mma-mod-scorm-warning">{{ errorMessage | translate }}</strong></p>
-                    <a class="button button-block" ng-href="{{moduleUrl}}" mm-browser>{{ 'mm.core.openinbrowser' | translate }}</a>
+                    <a class="button button-block" ng-href="{{moduleUrl}}" mm-link>{{ 'mm.core.openinbrowser' | translate }}</a>
                 </div>
                 <!-- Warning that you don't have any more attempts -->
                 <div class="card padding" ng-if="!errorMessage && scorm.attemptsLeft <= 0">

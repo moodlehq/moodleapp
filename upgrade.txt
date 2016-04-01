@@ -5,6 +5,7 @@ information provided here is intended especially for developers.
 
  * The function $mmaModBook#getChapterContent now requires to receive the result of $mmaModBook#getContentsMap instead of module.contents.
  * The events obtained using $mmaMessages#getDiscussionEventName are deprecated. Now you should just use the event mmaMessagesNewMessageEvent and you will receive the site ID and user ID as parameters.
+ * Directive "mm-browser" has been renamed to "mm-link" to be more coherent with its functionality.
 
 === 2.9 ===
 
