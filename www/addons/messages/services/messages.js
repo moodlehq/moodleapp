@@ -859,6 +859,8 @@ angular.module('mm.addons.messages')
     self.unblockContact = function(userId) {
         return $mmSite.write('core_message_unblock_contacts', {
             userids: [ userId ]
+        }, {
+            responseExpected: false
         }).then(function() {
             return self.invalidateAllContactsCache($mmSite.getUserId());
         });
