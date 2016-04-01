@@ -1,6 +1,10 @@
 This files describes API changes in the Moodle Mobile app,
 information provided here is intended especially for developers.
 
+=== 2.10 ===
+
+ * The function $mmaModBook#getChapterContent now requires to receive the result of $mmaModBook#getContentsMap instead of module.contents.
+
 === 2.9 ===
 
  * Most of the functions from $mmaModScormOnline, $mmaModScormOffline, $mmaModScorm, $mmaModScormSync and $mmaModScormHelper now have a new param siteId to determine the site to affect. If you use any of these services please make sure you still pass the right parameters.

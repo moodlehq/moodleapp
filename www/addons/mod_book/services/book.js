@@ -232,48 +232,27 @@ angular.module('mm.addons.mod_book')
      * @module mm.addons.mod_book
      * @ngdoc method
      * @name $mmaModBook#getChapterContent
-     * @param {Object} contents     The module contents.
+     * @param {Object} contentsMap  Contents map returned by $mmaModBook#getContentsMap.
      * @param {String} chapterId    Chapter to retrieve.
      * @param {Integer} moduleId    The module ID.
      * @return {Promise}
      */
-    self.getChapterContent = function(contents, chapterId, moduleId) {
-        var indexUrl,
-            paths = {},
+    self.getChapterContent = function(contentsMap, chapterId, moduleId) {
+        var indexUrl = contentsMap[chapterId] ? contentsMap[chapterId].indexUrl : undefined,
             promise;
 
-        // Extract the information about paths from the module contents.
-        angular.forEach(contents, function(content) {
-            if (self.isFileDownloadable(content)) {
-                var key,
-                    url = content.fileurl;
+        if (!indexUrl) {
+            // If ever that happens.
+            $log.debug('Could not locate the index chapter');
+            return $q.reject();
+        }
 
-                if (!indexUrl && content.filename == 'index.html') {
-                    // First chapter, we don't have a chapter id.
-                    if (content.filepath == "/" + chapterId + "/") {
-                        indexUrl = url;
-                    }
-                } else {
-                    key = content.filename;
-                    paths[key] = url;
-                }
-            }
-        });
-
-        // Promise handling when we are in a browser.
-        promise = (function() {
-            if (!indexUrl) {
-                // If ever that happens.
-                $log.debug('Could not locate the index chapter');
-                return $q.reject();
-            } else if ($mmFS.isAvailable()) {
-                // The file system is available.
-                return $mmFilepool.downloadUrl($mmSite.getId(), indexUrl, false, mmaModBookComponent, moduleId);
-            } else {
-                // We return the live URL.
-                return $q.when($mmSite.fixPluginfileURL(indexUrl));
-            }
-        })();
+        if ($mmFS.isAvailable()) {
+            promise = $mmFilepool.downloadUrl($mmSite.getId(), indexUrl, false, mmaModBookComponent, moduleId);
+        } else {
+            // We return the live URL.
+            return $q.when($mmSite.fixPluginfileURL(indexUrl));
+        }
 
         return promise.then(function(url) {
             // Fetch the URL content.
@@ -283,10 +262,60 @@ angular.module('mm.addons.mod_book')
                 } else {
                     // Now that we have the content, we update the SRC to point back to
                     // the external resource. That will be caught by mm-format-text.
-                    return $mmUtil.restoreSourcesInHtml(response.data, paths);
+                    return $mmUtil.restoreSourcesInHtml(response.data, contentsMap[chapterId].paths);
                 }
             });
         });
+    };
+
+    /**
+     * Convert an array of book contents into an object where contents are organized in chapters.
+     * Each chapter has an indexUrl and the list of contents in that chapter.
+     *
+     * @module mm.addons.mod_book
+     * @ngdoc method
+     * @name $mmaModBook#getContentsMap
+     * @param {Object} contents The module contents.
+     * @return {Object}         Contents map.
+     */
+    self.getContentsMap = function(contents) {
+        var map = {};
+
+        angular.forEach(contents, function(content) {
+            if (self.isFileDownloadable(content)) {
+                var chapter,
+                    matches,
+                    split,
+                    filepathIsChapter;
+
+                // Search the chapter number in the filepath.
+                matches = content.filepath.match(/\/(\d+)\//);
+                if (matches && matches[1]) {
+                    chapter = matches[1];
+                    filepathIsChapter = content.filepath == '/' + chapter + '/';
+
+                    // Init the chapter if it's not defined yet.
+                    map[chapter] = map[chapter] || { paths: {} };
+
+                    if (content.filename == 'index.html' && filepathIsChapter) {
+                        map[chapter].indexUrl = content.fileurl;
+                    } else {
+                        if (filepathIsChapter) {
+                            // It's a file in the root folder OR the WS isn't returning the filepath as it should (MDL-53671).
+                            // Try to get the path to the file from the URL.
+                            split = content.fileurl.split('mod_book/chapter' + content.filepath);
+                            key = split[1] || content.filename; // Use filename if we couldn't find the path.
+                        } else {
+                            // Remove the chapter folder from the path and add the filename.
+                            key = content.filepath.replace('/' + chapter + '/', '') + content.filename;
+                        }
+                        map[chapter].paths[key] = content.fileurl;
+                    }
+                }
+            }
+        });
+
+        return map;
     };
 
     /**
