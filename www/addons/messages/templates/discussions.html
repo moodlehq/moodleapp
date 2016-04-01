@@ -3,7 +3,7 @@
     <mm-loading hide-until="loaded">
         <ul class="list">
             <li>
-                <a class="item item-avatar" ng-repeat="disc in discussions | orderBy:'message.timecreated':true track by $index" mm-split-view-link="site.messages-discussion({userId: disc.message.user, userFullname: disc.fullname})" title="{{disc.fullname}}">
+                <a class="item item-avatar" ng-repeat="disc in discussions | orderBy:'message.timecreated':true track by $index" mm-split-view-link="site.messages-discussion({userId: disc.message.user})" title="{{disc.fullname}}">
 
                     <img ng-src="{{disc.profileimageurl}}" alt="{{ 'mm.core.pictureof' | translate:{$a: disc.fullname} }}" role="presentation" mm-external-content ng-if="disc.profileimageurl">
                     <img src="img/user-avatar.png" alt="{{ 'mm.core.pictureof' | translate:{$a: disc.fullname} }}" role="presentation" ng-if="!disc.profileimageurl">
