@@ -28,8 +28,8 @@
                         </p>
 
                         <article ng-if="!message.system && message.message.substr(0, 4) != 'beep'" class="item item-avatar item-text-wrap" href="#">
-                            <img ng-if="message.userprofileimageurl" ng-src="{{message.userprofileimageurl}}" mm-external-content>
-                            <img ng-if="!message.userprofileimageurl" src="img/user-avatar.png" alt="">
+                            <img ng-if="message.userprofileimageurl" ng-src="{{message.userprofileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: message.userfullname} }}" role="presentation">
+                            <img ng-if="!message.userprofileimageurl" src="img/user-avatar.png" alt="{{ 'mm.core.pictureof' | translate:{$a: message.userfullname} }}" role="presentation">
                             <h2>{{ message.userfullname }}</h2>
 
                             <mm-format-text after-render="scrollAfterRender" watch="true">{{ message.message }}</mm-format-text>

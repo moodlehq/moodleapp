@@ -21,7 +21,7 @@ angular.module('mm.addons.notifications')
  * @ngdoc service
  * @name $mmaNotifications
  */
-.factory('$mmaNotifications', function($q, $log, $mmSite, $mmSitesManager, mmaNotificationsListLimit) {
+.factory('$mmaNotifications', function($q, $log, $mmSite, $mmSitesManager, $mmUser, mmaNotificationsListLimit) {
 
     $log = $log.getInstance('$mmaNotifications');
 
@@ -42,6 +42,11 @@ angular.module('mm.addons.notifications')
             if (cid && cid[1]) {
                 notification.courseid = cid[1];
             }
+
+            // Try to get the profile picture of the user.
+            $mmUser.getProfile(notification.useridfrom, notification.courseid, true).then(function(user) {
+                notification.profileimageurlfrom = user.profileimageurl;
+            });
         });
     }
 
@@ -52,7 +57,7 @@ angular.module('mm.addons.notifications')
      */
     function getNotificationsCacheKey() {
         return 'mmaNotifications:list';
-    };
+    }
 
     /**
      * Get notifications from site.

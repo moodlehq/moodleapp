@@ -27,7 +27,7 @@
                     <div class="item item-divider" ng-if="$index > 0"></div>
 
                     <a class="item item-avatar" mm-user-link userid="{{submission.userid}}" courseid="{{courseid}}" title="{{submission.userfullname}}">
-                        <img ng-src="{{submission.userprofileimageurl}}" mm-external-content alt="" role="presentation">
+                        <img ng-src="{{submission.userprofileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: submission.userfullname} }}" role="presentation">
                         <p>{{submission.userfullname}}</p>
                         <div class="item-note">{{submission.status}}</div>
                         <p>{{ submission.timemodified * 1000 | mmFormatDate:"dfmediumdate" }}</p>

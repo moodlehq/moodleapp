@@ -5,8 +5,8 @@
         <mm-loading hide-until="userLoaded">
             <div class="list" ng-if="user && !isDeleted">
                 <div class="item item-avatar">
-                    <img ng-if="user.profileimageurl" ng-src="{{user.profileimageurl}}" mm-external-content alt="" role="presentation">
-                    <img ng-if="!user.profileimageurl" src="img/user-avatar.png" alt="" role="presentation">
+                    <img ng-if="user.profileimageurl" ng-src="{{user.profileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: user.fullname} }}" role="presentation">
+                    <img ng-if="!user.profileimageurl" src="img/user-avatar.png" alt="{{ 'mm.core.pictureof' | translate:{$a: user.fullname} }}" role="presentation">
                     <h2><mm-format-text watch="true" clean="true">{{user.fullname}}</mm-format-text></h2>
                 </div>
                 <div class="item item-divider" ng-if="hasContact">

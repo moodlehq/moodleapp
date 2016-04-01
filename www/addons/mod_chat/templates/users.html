@@ -8,7 +8,7 @@
             <ul class="list">
                 <li ng-repeat="user in chatUsers" class="card">
                     <div class="item item-avatar">
-                        <img ng-src="{{user.profileimageurl}}" alt="" mm-external-content>
+                        <img ng-src="{{user.profileimageurl}}" alt="{{ 'mm.core.pictureof' | translate:{$a: user.fullname} }}" mm-external-content>
                         <mm-format-text>{{user.fullname}}</mm-format-text>
                     </div>
                     <div class="item tabs tabs-secondary tabs-icon-left" ng-if="currentUserId != user.id && !isAppOffline()">
