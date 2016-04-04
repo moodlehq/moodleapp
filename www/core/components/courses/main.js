@@ -18,6 +18,7 @@ angular.module('mm.core.courses', [])
 .constant('mmCoursesSearchPerPage', 20) // Max of courses per page when searching courses.
 .constant('mmCoursesEnrolInvalidKey', 'mmCoursesEnrolInvalidKey')
 .constant('mmCoursesEventMyCoursesUpdated', 'my_courses_updated')
+.constant('mmCoursesEventMyCoursesRefreshed', 'my_courses_refreshed') // User refreshed My Courses.
 .constant('mmCoursesAccessMethods', {
      guest: 'guest',
      default: 'default'

@@ -225,6 +225,30 @@ angular.module('mm.addons.grades')
     };
 
     /**
+     * Returns whether or not the grade addon is enabled for a certain user.
+     *
+     * @module mm.addons.grades
+     * @ngdoc method
+     * @name $mmaGrades#isPluginEnabledForUser
+     * @param  {Number} courseId Course ID.
+     * @param  {Number} userId   User ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
+     */
+    self.isPluginEnabledForUser = function(courseId, userId) {
+        // We don't use the getGradesTable function to prevent formatting the table.
+        var data = {
+                courseid: courseId,
+                userid: userId
+            };
+        return $mmSite.read('gradereport_user_get_grades_table', data, {}).then(function() {
+            return true;
+        }).catch(function() {
+            return false;
+        });
+    };
+
+    /**
      * Get the grades for a certain course.
      * For now we only support gradereport_user_get_grades_table. It returns the complete grades table.
      *

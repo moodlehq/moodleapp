@@ -14,6 +14,7 @@
 
 angular.module('mm.core.user', [])
 
+.constant('mmUserEventProfileRefreshed', 'user_profile_refreshed') // User refreshed an user profile.
 .value('mmUserProfileState', 'site.mm_user-profile')
 
 .config(function($stateProvider, $mmContentLinksDelegateProvider) {

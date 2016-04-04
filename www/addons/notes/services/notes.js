@@ -46,7 +46,16 @@ angular.module('mm.addons.notes')
             "notes[0][text]": noteText,
             "notes[0][format]": 1
         };
-        return $mmSite.write('core_notes_create_notes', data);
+        return $mmSite.write('core_notes_create_notes', data).then(function(response) {
+            if (!response || !response.length) {
+                return $q.reject();
+            }
+
+            if (response[0].noteid == -1) {
+                return $q.reject(response[0].errormessage);
+            }
+            return response;
+        });
     };
 
     /**
@@ -61,8 +70,6 @@ angular.module('mm.addons.notes')
      * @return {Boolean}
      */
     self.isPluginAddNoteEnabled = function() {
-        var infos;
-
         if (!$mmSite.isLoggedIn()) {
             return false;
         } else if (!$mmSite.canUseAdvancedFeature('enablenotes')) {
@@ -72,6 +79,33 @@ angular.module('mm.addons.notes')
         }
 
         return true;
+    };
+
+    /**
+     * Returns whether or not the add note plugin is enabled for a certain course.
+     *
+     * @module mm.addons.notes
+     * @ngdoc method
+     * @name $mmaNotes#isPluginAddNoteEnabledForCourse
+     * @param {Number} courseId ID of the course.
+     * @return {Promise}        Promise resolved with true if enabled, resolved with false otherwise.
+     */
+    self.isPluginAddNoteEnabledForCourse = function(courseId) {
+        // The only way to detect if it's enabled is to perform a WS call.
+        // We use an invalid user ID (-1) to avoid saving the note if the user has permissions.
+        var data = {
+            "notes[0][userid]" : -1,
+            "notes[0][courseid]": courseId,
+            "notes[0][publishstate]": 'personal',
+            "notes[0][text]": '',
+            "notes[0][format]": 1
+        };
+        return $mmSite.read('core_notes_create_notes', data).then(function() {
+            // User can add notes.
+            return true;
+        }).catch(function() {
+            return false;
+        });
     };
 
     /**
@@ -86,8 +120,6 @@ angular.module('mm.addons.notes')
      * @return {Boolean}
      */
     self.isPluginViewNotesEnabled = function() {
-        var infos;
-
         if (!$mmSite.isLoggedIn()) {
             return false;
         } else if (!$mmSite.canUseAdvancedFeature('enablenotes')) {
@@ -97,6 +129,23 @@ angular.module('mm.addons.notes')
         }
 
         return true;
+    };
+
+    /**
+     * Returns whether or not the read notes plugin is enabled for a certain course.
+     *
+     * @module mm.addons.notes
+     * @ngdoc method
+     * @name $mmaNotes#isPluginViewNotesEnabledForCourse
+     * @param {Number} courseId ID of the course.
+     * @return {Promise}        Promise resolved with true if enabled, resolved with false otherwise.
+     */
+    self.isPluginViewNotesEnabledForCourse = function(courseId) {
+        return self.getNotes(courseId).then(function() {
+            return true;
+        }).catch(function() {
+            return false;
+        });
     };
 
     /**
