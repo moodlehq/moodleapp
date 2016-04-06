@@ -24,6 +24,7 @@ angular.module('mm.addons.mod_wiki', [])
         url: '/mod_wiki',
         params: {
             module: null,
+            moduleid: null, // Redundant parameter to fix a problem passing object as parameters. To be fixed in MOBILE-1370.
             courseid: null,
             pageid: null,
             pagetitle: null,

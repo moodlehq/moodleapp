@@ -59,6 +59,7 @@ angular.module('mm.addons.mod_wiki')
             return fetchPageContents(pageId).then(function(page) {
                 var stateParams = {
                     module: module,
+                    moduleid: module.id,
                     courseid: courseId,
                     pageid: page.id,
                     pagetitle: page.title,

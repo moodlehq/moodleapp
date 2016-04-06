@@ -56,7 +56,7 @@ angular.module('mm.addons.mod_wiki')
                 $scope.title = module.name;
                 $scope.icon = $mmCourse.getModuleIconSrc('wiki');
                 $scope.action = function(e) {
-                    $state.go('site.mod_wiki', {module: module, courseid: courseId});
+                    $state.go('site.mod_wiki', {module: module, moduleid: module.id, courseid: courseId});
                 };
             };
         };
@@ -145,6 +145,7 @@ angular.module('mm.addons.mod_wiki')
                             return promise.then(function(courseId) {
                                 var stateParams = {
                                     module: null,
+                                    moduleid: null,
                                     courseid: courseId,
                                     pageid: page.id,
                                     pagetitle: page.title,
