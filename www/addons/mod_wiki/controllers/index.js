@@ -22,13 +22,12 @@ angular.module('mm.addons.mod_wiki')
  * @name mmaModWikiIndexCtrl
  */
 .controller('mmaModWikiIndexCtrl', function($q, $scope, $stateParams, $mmCourse, $mmUser, $mmGroups, $ionicPopover, $mmUtil, $state,
-        $mmSite, $mmaModWiki, $ionicScrollDelegate, $ionicTabsDelegate, $ionicHistory, $translate, mmaModWikiSubwikiPagesLoaded) {
+        $mmSite, $mmaModWiki, $ionicTabsDelegate, $ionicHistory, $translate, mmaModWikiSubwikiPagesLoaded) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         action = $stateParams.action || 'page',
         currentPage = $stateParams.pageid || false,
         popover, wiki, currentSubwiki, loadedSubwikis,
-        scrollDelegate = $ionicScrollDelegate.$getByHandle('mmaModWikiIndexScroll'),
         tabsDelegate;
 
     $scope.title = $stateParams.pagetitle || module.name;
@@ -56,7 +55,7 @@ angular.module('mm.addons.mod_wiki')
 
     $scope.gotoPage = function(pageId) {
         if (currentPage != pageId) {
-            // Add a new State
+            // Add a new State.
             return fetchPageContents(pageId).then(function(page) {
                 var stateParams = {
                     module: module,
@@ -73,6 +72,29 @@ angular.module('mm.addons.mod_wiki')
 
         // No changes done.
         tabsDelegate.select(0);
+    };
+
+    $scope.gotoSubwiki = function(subwikiId) {
+
+        // Check if the subwiki is disabled.
+        if (subwikiId > 0) {
+            popover.hide();
+
+            if (subwikiId != currentSubwiki.id) {
+                // Add a new State.
+                var stateParams = {
+                    module: module,
+                    moduleid: module.id,
+                    courseid: courseId,
+                    pageid: null,
+                    pagetitle: null,
+                    wikiid: wiki.id,
+                    subwikiid: subwikiId,
+                    action: tabsDelegate.selectedIndex() == 0 ? 'page' : 'map'
+                };
+                return $state.go('site.mod_wiki', stateParams);
+            }
+        }
     };
 
     // Convenience function to get wiki data.
@@ -98,8 +120,6 @@ angular.module('mm.addons.mod_wiki')
             }
 
             return promise.then(function(mod) {
-                var groupmode = wiki.groupmode;
-
                 module = mod;
 
                 $scope.title = $scope.title || wiki.title;
@@ -131,7 +151,7 @@ angular.module('mm.addons.mod_wiki')
                         });
                     }).then(function() {
 
-                        if ($scope.subwikiData.count > 1 && !popover) {
+                        if ($scope.subwikiData.count > 1) {
                             // More than one subwiki available.
                             handleSubwikiPopover();
                         }
@@ -165,29 +185,6 @@ angular.module('mm.addons.mod_wiki')
 
     // Convinience function that handles Subwiki Popover.
     function handleSubwikiPopover() {
-
-        // Preparing the popover.
-        $scope.subwikiPicked = function(subwikiId) {
-
-            // Check if the subwiki is disabled.
-            if (subwikiId > 0) {
-                popover.hide();
-
-                if (subwikiId != currentSubwiki.id) {
-
-                    scrollDelegate.scrollTop(false);
-
-                    currentPage = false;
-                    $scope.subwikiData.selected = subwikiId;
-                    $scope.wikiLoaded = false;
-
-                    return fetchWikiPage();
-                }
-                // No changes done.
-                $scope.wikiLoaded = true;
-            }
-        };
-
         $ionicPopover.fromTemplateUrl('addons/mod_wiki/templates/subwiki_picker.html', {
             scope: $scope
         }).then(function(po) {
@@ -206,7 +203,7 @@ angular.module('mm.addons.mod_wiki')
             userGroupsIds = [],
             allParticipants = false,
             myGroups = false,
-            multiLevelList = false;
+            multiLevelList = false,
             currentUserId = $mmSite.getUserId() || false,
             allParticipantsTitle = $translate.instant('mm.core.allparticipants'),
             nonInGroupTitle = $translate.instant('mma.mod_wiki.notingroup'),

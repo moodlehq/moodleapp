@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_wiki')
  * @ngdoc controller
  * @name mmaModWikiMapCtrl
  */
-.controller('mmaModWikiMapCtrl', function($scope, $mmEvents, mmaModWikiSubwikiPagesLoaded, $stateParams) {
+.controller('mmaModWikiMapCtrl', function($scope, mmaModWikiSubwikiPagesLoaded) {
     $scope.map = [];
 
     $scope.constructMap = function(subwikiPages) {

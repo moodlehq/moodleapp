@@ -2,11 +2,11 @@
     <ion-content>
         <div class="list">
             <div ng-repeat-start="group in subwikiData.subwikis" ng-if="group.label" class="item item-divider">{{ group.label }}</div>
-            <ion-radio ng-repeat-end ng-class="{'item-disabled': subwiki.id <= 0}" ng-repeat="subwiki in group.subwikis"
-                        ng-model="subwikiData.selected" ng-value="subwiki.id" ng-disabled="subwiki.id <= 0"
-                        ng-click="subwikiPicked(subwiki.id)">
+            <ion-item ng-repeat-end class="item-icon-right" ng-class="{'item-disabled': subwiki.id <= 0, 'item-selected': subwiki.id == subwikiData.selected}" ng-repeat="subwiki in group.subwikis"
+                        ng-disabled="subwiki.id <= 0" ng-click="gotoSubwiki(subwiki.id)">
                 {{ subwiki.name }}
-            </ion-radio>
+                <i class="icon ion-checkmark" ng-if="subwiki.id == subwikiData.selected"></i>
+            </ion-item>
         </div>
     </ion-content>
 </ion-popover-view>

@@ -3,6 +3,7 @@ $mma-mod-wiki-newentry-link-color:   red !default;
 $mma-mod-wiki-toc-title-color:   #666 !default;
 $mma-mod-wiki-toc-border-color:   #bbb !default;
 $mma-mod-wiki-toc-background-color:   #eee !default;
+$mma-mod-wiki-subwiki-selected-background-color:   #f7f7f7 !default;
 
 .wiki-toc {
   border: 1px solid $mma-mod-wiki-toc-border-color;
@@ -10,7 +11,6 @@ $mma-mod-wiki-toc-background-color:   #eee !default;
   margin: 16px;
   padding: 8px;
 }
-
 
 .wiki-toc-title {
   color: $mma-mod-wiki-toc-title-color;
@@ -44,4 +44,12 @@ a.wiki_edit_section {
 
 .mma-mod_wiki-subwiki-picker .item-divider {
   font-weight: bold;
+}
+
+.mma-mod_wiki-subwiki-picker .item.item-selected {
+  background-color: $mma-mod-wiki-subwiki-selected-background-color;
+}
+
+.mma-mod_wiki-subwiki-picker .item.item-selected .icon {
+  font-size: 24px;
 }
