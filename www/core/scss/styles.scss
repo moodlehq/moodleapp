@@ -132,7 +132,8 @@ em {
 }
 
 // Defines a "disabled" item.
-.item.item-disabled {
+.item.item-disabled,
+.platform-android .item.item-disabled {
   color: $item-disabled-color;
 }
 
