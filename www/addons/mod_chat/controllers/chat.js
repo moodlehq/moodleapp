@@ -29,7 +29,6 @@ angular.module('mm.addons.mod_chat')
     var chatId = $stateParams.chatid,
         courseId = $stateParams.courseid,
         title = $stateParams.title,
-        polling,
         chatLastTime = 0,
         pollingRunning = false;
 
@@ -115,12 +114,23 @@ angular.module('mm.addons.mod_chat')
         return $q.reject();
     }
 
+    // Start the polling to get chat messages periodically.
+    function startPolling() {
+        // We already have the polling in place.
+        if ($scope.polling) {
+            return;
+        }
+
+        // Start polling.
+        $scope.polling = $interval(getMessagesInterval, mmaChatPollInterval);
+    }
+
     // Convenience function to be called every certain time to get chat messages.
     function getMessagesInterval() {
         $log.debug('Polling for messages');
         if (!$mmApp.isOnline() || pollingRunning) {
             // Obviously we cannot check for new messages when the app is offline.
-            return;
+            return $q.reject();
         }
 
         pollingRunning = true;
@@ -130,8 +140,11 @@ angular.module('mm.addons.mod_chat')
             return loginUser().then(function() {
                 return getMessages();
             }).catch(function(error) {
-                // Fail again. Stop polling.
-                $interval.cancel(polling);
+                // Fail again. Stop polling if needed.
+                if ($scope.polling) {
+                    $interval.cancel($scope.polling);
+                    $scope.polling = undefined;
+                }
                 return showError(error, 'mma.mod_chat.errorwhileretrievingmessages');
             });
         }).finally(function() {
@@ -176,9 +189,23 @@ angular.module('mm.addons.mod_chat')
         });
     };
 
+    $scope.reconnect = function() {
+        var modal = $mmUtil.showModalLoading();
+
+        // Call startPolling would take a while for the first execution, so we'll execute it manually to check if it works now.
+        return getMessagesInterval().then(function() {
+            // It works, start the polling again.
+            startPolling();
+        }).finally(function() {
+            modal.dismiss();
+        });
+    };
+
     // Login the user.
     loginUser().then(function() {
-        return getMessages().catch(function(error) {
+        return getMessages().then(function() {
+            startPolling();
+        }).catch(function(error) {
             return showError(error, 'mma.mod_chat.errorwhileretrievingmessages');
         });
     }, function(error) {
@@ -199,22 +226,11 @@ angular.module('mm.addons.mod_chat')
         }
     };
 
-    // Set up the polling on a view enter, this allows for the user to go back and resume the polling.
-    $scope.$on('$ionicView.enter', function() {
-        // Strange case, we already have the polling in place.
-        if (polling) {
-            return;
-        }
-
-        // Start polling.
-        polling = $interval(getMessagesInterval, mmaChatPollInterval);
-    });
-
     // Removing the polling as we leave the page.
     $scope.$on('$ionicView.leave', function() {
-        if (polling) {
+        if ($scope.polling) {
             $log.debug('Cancelling polling for conversation');
-            $interval.cancel(polling);
+            $interval.cancel($scope.polling);
         }
     });
 

@@ -25,3 +25,11 @@ $mma-chat-notice-badge: "stable" !default;
     margin: 0;
     width: 100%;
 }
+
+.mma-chat-send-form {
+  width: 100%;
+}
+
+.mma-chat-reconnect-button, .button.mma-chat-reconnect-button {
+  margin: 0;
+}
