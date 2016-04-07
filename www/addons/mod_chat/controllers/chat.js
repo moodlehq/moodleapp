@@ -115,6 +115,30 @@ angular.module('mm.addons.mod_chat')
         return $q.reject();
     }
 
+    // Convenience function to be called every certain time to get chat messages.
+    function getMessagesInterval() {
+        $log.debug('Polling for messages');
+        if (!$mmApp.isOnline() || pollingRunning) {
+            // Obviously we cannot check for new messages when the app is offline.
+            return;
+        }
+
+        pollingRunning = true;
+
+        return getMessages().catch(function() {
+            // Try to login, it might have failed because the session expired.
+            return loginUser().then(function() {
+                return getMessages();
+            }).catch(function(error) {
+                // Fail again. Stop polling.
+                $interval.cancel(polling);
+                return showError(error, 'mma.mod_chat.errorwhileretrievingmessages');
+            });
+        }).finally(function() {
+            pollingRunning = false;
+        });
+    }
+
     // Check if the date should be displayed between messages (when the day changes at midnight for example).
     $scope.showDate = function(message, prevMessage) {
         if (!prevMessage) {
@@ -142,6 +166,7 @@ angular.module('mm.addons.mod_chat')
             if (beep === '') {
                 $scope.newMessage.text = '';
             }
+            getMessagesInterval(); // Update messages to show the sent message.
         }, function(error) {
             // Only close the keyboard if an error happens, we want the user to be able to send multiple
             // messages withoutthe keyboard being closed.
@@ -182,29 +207,7 @@ angular.module('mm.addons.mod_chat')
         }
 
         // Start polling.
-        polling = $interval(function() {
-            $log.debug('Polling for messages');
-            if (!$mmApp.isOnline() || pollingRunning) {
-                // Obviously we cannot check for new messages when the app is offline.
-                return;
-            }
-
-            pollingRunning = true;
-
-            return getMessages().catch(function() {
-                // Try to login, it might have failed because the session expired.
-                return loginUser().then(function() {
-                    return getMessages();
-                }).catch(function(error) {
-                    // Fail again. Stop polling.
-                    $interval.cancel(polling);
-                    return showError(error, 'mma.mod_chat.errorwhileretrievingmessages');
-                });
-            }).finally(function() {
-                pollingRunning = false;
-            });
-
-        }, mmaChatPollInterval);
+        polling = $interval(getMessagesInterval, mmaChatPollInterval);
     });
 
     // Removing the polling as we leave the page.
