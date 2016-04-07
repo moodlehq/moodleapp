@@ -164,12 +164,13 @@ angular.module('mm.addons.mod_chat')
         var params = {
             chatsid: chatsid,
             chatlasttime: lasttime
-        };
-        var preSets = {
-            getFromCache: false
+        }, preSets = {
+            emergencyCache: false
         };
 
-        return $mmSite.read('mod_chat_get_chat_latest_messages', params, preSets);
+        // We use write to not use cache. It doesn't make sense to store the messages in cache
+        // because we won't be able to retireve them if $mmaModChat#loginUser fails.
+        return $mmSite.write('mod_chat_get_chat_latest_messages', params, preSets);
     };
 
     /**
