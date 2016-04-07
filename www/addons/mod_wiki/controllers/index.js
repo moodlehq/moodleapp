@@ -32,6 +32,7 @@ angular.module('mm.addons.mod_wiki')
 
     $scope.title = $stateParams.pagetitle || module.name;
     $scope.description = module.description;
+    $scope.mainpage = !currentPage;
     $scope.moduleUrl = module.url;
     $scope.courseId = courseId;
     $scope.subwikiData = {
