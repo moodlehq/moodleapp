@@ -99,9 +99,9 @@ angular.module('mm.addons.pushnotifications')
                     }));
 
                     promises.push($mmText.formatText(notification.message, true, true).then(function(formattedMessage) {
-                        localNotif.message = formattedMessage;
+                        localNotif.text = formattedMessage;
                     }).catch(function() {
-                        localNotif.message = notification.message;
+                        localNotif.text = notification.message;
                     }));
 
                     $q.all(promises).then(function() {

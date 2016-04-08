@@ -375,7 +375,7 @@ angular.module('mm.addons.calendar')
                     notification = {
                         id: event.id,
                         title: event.name,
-                        message: startDate.toLocaleString(),
+                        text: startDate.toLocaleString(),
                         at: dateTriggered,
                         smallIcon: 'res://icon',
                         data: {
