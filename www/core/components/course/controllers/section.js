@@ -40,6 +40,7 @@ angular.module('mm.core.course')
             $scope.title = $translate.instant('mm.course.allsections');
         }
         $scope.summary = null;
+        $scope.allSections = true;
     }
 
     // Convenience function to fetch section(s).
