@@ -147,8 +147,6 @@ angular.module('mm.addons.mod_quiz')
             $scope.showSummary = false;
 
             angular.forEach($scope.questions, function(question) {
-                // Get the name of the flagged input.
-                question.flaggedName = $mmaModQuizHelper.getQuestionFlaggedNameFromHtml(question.html);
                 // Get the readable mark for each question.
                 question.readableMark = $mmaModQuizHelper.getQuestionMarkFromHtml(question.html);
                 // Extract the question info box.
