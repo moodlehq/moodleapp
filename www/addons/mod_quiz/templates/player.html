@@ -39,7 +39,6 @@
                         <div class="item item-text-wrap" ng-if="question.readableMark">
                             <p><mm-format-text watch="true">{{question.readableMark}}</mm-format-text></p>
                         </div>
-                        <ion-checkbox ng-model="question.flagged" name="{{question.flaggedName}}">{{ 'mma.mod_quiz.flagged' | translate }}</ion-checkbox>
                         <mm-question class="item item-complex" question="question" abort="abortQuiz()" button-clicked="behaviourButtonClicked(name, value)"></mm-question>
                     </section>
                 </div>
