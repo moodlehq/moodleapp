@@ -1053,6 +1053,31 @@ angular.module('mm.core')
     };
 
     /**
+     * Get a package timemodified.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#getPackageTimemodified
+     * @param {String} siteId              Site ID.
+     * @param {String} component           Package's component.
+     * @param {Number} [componentId]       An ID to use in conjunction with the component.
+     * @return {Promise}                   Promise resolved with the timemodified.
+     */
+    self.getPackageTimemodified = function(siteId, component, componentId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var db = site.getDb(),
+                packageId = self.getPackageId(component, componentId);
+
+            // Get status.
+            return db.get(mmFilepoolPackagesStore, packageId).then(function(entry) {
+                return entry.timemodified;
+            }, function() {
+                return -1;
+            });
+        });
+    };
+
+    /**
      * Get the deferred object for a file in the queue.
      *
      * @module mm.core

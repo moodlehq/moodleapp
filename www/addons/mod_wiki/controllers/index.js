@@ -129,7 +129,7 @@ angular.module('mm.addons.mod_wiki')
                 $scope.moduleUrl = module.url;
 
                 // Get real groupmode, in case it's forced by the course.
-                $mmGroups.getActivityGroupMode(wiki.coursemodule).then(function(groupmode) {
+                return $mmGroups.getActivityGroupMode(wiki.coursemodule).then(function(groupmode) {
 
                     if (groupmode === $mmGroups.SEPARATEGROUPS || groupmode === $mmGroups.VISIBLEGROUPS) {
                         // Get the groups available for the user.
@@ -446,15 +446,21 @@ angular.module('mm.addons.mod_wiki')
 
     // Convenience function to refresh all the data.
     function refreshAllData() {
-        var p1 = $mmaModWiki.invalidateWikiData(courseId),
-            p2 = wiki ? $mmaModWiki.invalidateSubwikis(wiki.id) : $q.when(),
-            p3 = currentSubwiki ? $mmaModWiki.invalidateSubwikiPages(currentSubwiki.wikiid) : $q.when(),
-            p4 = currentPage ? $mmaModWiki.invalidatePage(currentPage) : $q.when();
-            p5 = wiki ? $mmGroups.invalidateActivityAllowedGroups(wiki.coursemodule) : $q.when();
-            p6 = wiki ? $mmGroups.invalidateActivityGroupMode(wiki.coursemodule) : $q.when();
-        var ps = [p1, p2, p3, p4, p5, p6];
+        var promises = [$mmaModWiki.invalidateWikiData(courseId)];
+        if (wiki) {
+            promises.push($mmaModWiki.invalidateSubwikis(wiki.id));
+            promises.push($mmGroups.invalidateActivityAllowedGroups(wiki.coursemodule));
+            promises.push($mmGroups.invalidateActivityGroupMode(wiki.coursemodule));
+        }
+        if (currentSubwiki) {
+            promises.push($mmaModWiki.invalidateSubwikiPages(currentSubwiki.wikiid));
+            promises.push($mmaModWiki.invalidateSubwikiFiles(currentSubwiki.wikiid));
+        }
+        if (currentPage) {
+            promises.push($mmaModWiki.invalidatePage(currentPage));
+        }
 
-        return $q.all(ps).finally(function() {
+        return $q.all(promises).finally(function() {
             return fetchWikiData(true);
         });
     }

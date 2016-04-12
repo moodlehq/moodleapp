@@ -186,10 +186,6 @@ angular.module('mm.core')
 
                 return promise.then(function(files) {
 
-                    if (files.length === 0) { // No files, treat is as downloaded.
-                        return $q.when(mmCoreDownloaded);
-                    }
-
                     // Get revision and timemodified if they aren't defined.
                     // If handler doesn't define a function to get them, get them from file list.
                     var promises = [];

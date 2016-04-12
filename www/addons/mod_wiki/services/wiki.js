@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_wiki')
  * @ngdoc service
  * @name $mmaModWiki
  */
-.factory('$mmaModWiki', function($q, $mmSite, $mmSitesManager) {
+.factory('$mmaModWiki', function($q, $mmSite, $mmSitesManager, $mmFilepool, mmaModWikiComponent) {
     var self = {},
         subwikiListsCache = {};
 
@@ -66,6 +66,29 @@ angular.module('mm.addons.mod_wiki')
     function getWikiSubwikiPagesCacheKeyPrefix(wikiId) {
         return 'mmaModWiki:subwikipages:' + wikiId;
     }
+
+    /**
+     * Get cache key for wiki Subwiki Files WS calls.
+     *
+     * @param {Number} wikiId Wiki ID.
+     * @param {Number} groupId Group ID.
+     * @param {Number} userId User ID.
+     * @return {String}     Cache key.
+     */
+    function getWikiSubwikiFilesCacheKey(wikiId, groupId, userId) {
+        return getWikiSubwikiFilesCacheKeyPrefix(wikiId) + ':' + groupId + ':' + userId;
+    }
+
+    /**
+     * Get cache key for all wiki Subwiki Files WS calls.
+     *
+     * @param {Number} wikiId Wiki ID.
+     * @return {String}     Cache key.
+     */
+    function getWikiSubwikiFilesCacheKeyPrefix(wikiId) {
+        return 'mmaModWiki:subwikifiles:' + wikiId;
+    }
+
 
     /**
      * Get cache key for wiki Pages Contents WS calls.
@@ -133,6 +156,64 @@ angular.module('mm.addons.mod_wiki')
                     }
                 }
                 return $q.reject();
+            });
+        });
+    };
+
+    /**
+     * Gets a list of files to download for a Wiki, using a format similar to module.contents from get_course_contents.
+     *
+     * @module mm.addons.mod_wiki
+     * @ngdoc method
+     * @name $mmaModWiki#getWikiFileList
+     * @param  {Object} wiki Wiki.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Object[]}     File list.
+     */
+    self.getWikiFileList = function(wiki, siteId) {
+        var files = [];
+        siteId = siteId || $mmSite.getId();
+
+        return self.getSubwikis(wiki.id, siteId).then(function(subwikis) {
+            var promises = [];
+            angular.forEach(subwikis, function(subwiki) {
+                promises.push(self.getSubwikiFiles(subwiki.wikiid, subwiki.groupid, subwiki.userid, siteId).then(function(subwikiFiles) {
+                    files = files.concat(subwikiFiles);
+                }));
+            });
+
+            return $q.all(promises).then(function() {
+                return files;
+            });
+        });
+    };
+
+    /**
+     * Gets a list of all pages for a Wiki.
+     *
+     * @module mm.addons.mod_wiki
+     * @ngdoc method
+     * @name $mmaModWiki#getWikiPageList
+     * @param  {Object} wiki Wiki.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}     Page list.
+     */
+    self.getWikiPageList = function(wiki, siteId) {
+        var pages = [];
+        siteId = siteId || $mmSite.getId();
+
+        return self.getSubwikis(wiki.id, siteId).then(function(subwikis) {
+            var promises = [];
+            angular.forEach(subwikis, function(subwiki) {
+                promises.push(self.getSubwikiPages(subwiki.wikiid, subwiki.groupid, subwiki.userid, null, null, null, siteId).then(
+                    function(subwikiPages) {
+                        pages = pages.concat(subwikiPages);
+                    }
+                ));
+            });
+
+            return $q.all(promises).then(function() {
+                return pages;
             });
         });
     };
@@ -266,6 +347,42 @@ angular.module('mm.addons.mod_wiki')
     };
 
     /**
+     * Gets the list of files from a specific subwiki.
+     *
+     * @module mm.addons.mod_wiki
+     * @ngdoc method
+     * @name $mmaModWiki#getSubwikiFiles
+     * @param {Number} wikiId Wiki ID.
+     * @param {Number} [groupId] to get files from
+     * @param {Number} [userId] to get files from
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved with wiki subwiki files.
+     */
+    self.getSubwikiFiles = function(wikiId, groupId, userId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            groupId = groupId || -1;
+            userId = userId || 0;
+            var params = {
+                    wikiid: wikiId,
+                    groupid: groupId,
+                    userid: userId
+                },
+                preSets = {
+                    cacheKey: getWikiSubwikiFilesCacheKey(wikiId, groupId, userId)
+                };
+
+            return site.read('mod_wiki_get_subwiki_files', params, preSets).then(function(response) {
+                if (response.files) {
+                    return response.files;
+                }
+                return $q.reject();
+            });
+        });
+    };
+
+    /**
      * Get a wiki page contents.
      *
      * @module mm.addons.mod_wiki
@@ -302,10 +419,14 @@ angular.module('mm.addons.mod_wiki')
      * @ngdoc method
      * @name $mmaModWiki#invalidateWikiData
      * @param {Number} courseId Course ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
-    self.invalidateWikiData = function(courseId) {
-        return $mmSite.invalidateWsCacheForKey(getWikiDataCacheKey(courseId));
+    self.invalidateWikiData = function(courseId, siteId) {
+        siteId = siteId || $mmSite.getId();
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getWikiDataCacheKey(courseId));
+        });
     };
 
     /**
@@ -315,11 +436,15 @@ angular.module('mm.addons.mod_wiki')
      * @ngdoc method
      * @name $mmaModWiki#invalidateSubwikis
      * @param {Number} wikiId Wiki ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
-    self.invalidateSubwikis = function(wikiId) {
+    self.invalidateSubwikis = function(wikiId, siteId) {
+        siteId = siteId || $mmSite.getId();
         self.clearSubwikiList(wikiId);
-        return $mmSite.invalidateWsCacheForKey(getWikiSubwikisCacheKey(wikiId));
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getWikiSubwikisCacheKey(wikiId));
+        });
     };
 
     /**
@@ -329,10 +454,31 @@ angular.module('mm.addons.mod_wiki')
      * @ngdoc method
      * @name $mmaModWiki#invalidateSubwikiPages
      * @param {Number} wikiId Wiki ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
-    self.invalidateSubwikiPages = function(wikiId) {
-        return $mmSite.invalidateWsCacheForKeyStartingWith(getWikiSubwikiPagesCacheKeyPrefix(wikiId));
+    self.invalidateSubwikiPages = function(wikiId, siteId) {
+        siteId = siteId || $mmSite.getId();
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKeyStartingWith(getWikiSubwikiPagesCacheKeyPrefix(wikiId));
+        });
+    };
+
+    /**
+     * Invalidates Subwiki Files.
+     *
+     * @module mm.addons.mod_wiki
+     * @ngdoc method
+     * @name $mmaModWiki#invalidateSubwikiFiles
+     * @param {Number} wikiId Wiki ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateSubwikiFiles = function(wikiId, siteId) {
+        siteId = siteId || $mmSite.getId();
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKeyStartingWith(getWikiSubwikiFilesCacheKeyPrefix(wikiId));
+        });
     };
 
     /**
@@ -342,10 +488,45 @@ angular.module('mm.addons.mod_wiki')
      * @ngdoc method
      * @name $mmaModWiki#invalidatePage
      * @param {Number} pageId Wiki Page ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
-    self.invalidatePage = function(pageId) {
-        return $mmSite.invalidateWsCacheForKey(getWikiPageCacheKey(pageId));
+    self.invalidatePage = function(pageId, siteId) {
+        siteId = siteId || $mmSite.getId();
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getWikiPageCacheKey(pageId));
+        });
+    };
+
+    /**
+     * Invalidate the prefetched content.
+     *
+     * @module mm.addons.mod_wiki
+     * @ngdoc method
+     * @name $mmaModWiki#invalidateContent
+     * @param {Object} moduleId The module ID.
+     * @param {Number} courseId Course ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}
+     */
+    self.invalidateContent = function(moduleId, courseId, siteId) {
+        var promises = [];
+        siteId = siteId || $mmSite.getId();
+
+        promises.push(self.getWiki(courseId, moduleId, 'coursemodule', siteId).then(function(wiki) {
+            var ps = [];
+            // Do not invalidate wiki data before getting wiki info, we need it!
+            ps.push(self.invalidateWikiData(courseId, siteId));
+            ps.push(self.invalidateSubwikis(wiki.id, siteId));
+            ps.push(self.invalidateSubwikiPages(wiki.id, siteId));
+            ps.push(self.invalidateSubwikiFiles(wiki.id, siteId));
+
+            return $q.all(ps);
+        }));
+
+        promises.push($mmFilepool.invalidateFilesByComponent(siteId, mmaModWikiComponent, moduleId));
+
+        return $q.all(promises);
     };
 
     /**

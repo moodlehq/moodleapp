@@ -16,6 +16,8 @@ angular.module('mm.addons.mod_wiki', [])
 
 .constant('mmaModWikiSubwikiPagesLoaded', 'mma_mod_wiki_subwiki_pages_loaded')
 
+.constant('mmaModWikiComponent', 'mmaModWiki')
+
 .config(function($stateProvider) {
 
     $stateProvider
@@ -42,9 +44,10 @@ angular.module('mm.addons.mod_wiki', [])
 
 })
 
-.config(function($mmCourseDelegateProvider, $mmContentLinksDelegateProvider) {
+.config(function($mmCourseDelegateProvider, $mmContentLinksDelegateProvider, $mmCoursePrefetchDelegateProvider) {
     $mmCourseDelegateProvider.registerContentHandler('mmaModWiki', 'wiki', '$mmaModWikiHandlers.courseContent');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModWiki', '$mmaModWikiHandlers.linksHandler');
+    $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModWiki', 'wiki', '$mmaModWikiPrefetchHandler');
 })
 
 .run(function($mmEvents, mmCoreEventLogout, $mmaModWiki) {

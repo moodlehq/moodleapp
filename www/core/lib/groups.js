@@ -38,24 +38,28 @@ angular.module('mm.core')
      * @name $mmGroups#getActivityAllowedGroups
      * @param {Number} cmid     Course module ID.
      * @param {Number} [userid] User ID. If not defined, use current user.
+     * @param {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}        Promise resolved when the groups are retrieved.
      */
-    self.getActivityAllowedGroups = function(cmid, userid) {
+    self.getActivityAllowedGroups = function(cmid, userid, siteId) {
         userid = userid || $mmSite.getUserId();
+        siteId = siteId || $mmSite.getId();
 
-        var params = {
-                cmid: cmid,
-                userid: userid
-            },
-            preSets = {
-                cacheKey: getActivityAllowedGroupsCacheKey(cmid, userid)
-            };
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    cmid: cmid,
+                    userid: userid
+                },
+                preSets = {
+                    cacheKey: getActivityAllowedGroupsCacheKey(cmid, userid)
+                };
 
-        return $mmSite.read('core_group_get_activity_allowed_groups', params, preSets).then(function(response) {
-            if (!response || !response.groups) {
-                return $q.reject();
-            }
-            return response.groups;
+            return site.read('core_group_get_activity_allowed_groups', params, preSets).then(function(response) {
+                if (!response || !response.groups) {
+                    return $q.reject();
+                }
+                return response.groups;
+            });
         });
     };
 
@@ -76,21 +80,26 @@ angular.module('mm.core')
      * @ngdoc method
      * @name $mmGroups#getActivityGroupMode
      * @param {Number} cmid Course module ID.
+     * @param {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}    Promise resolved when the group mode is retrieved.
      */
-    self.getActivityGroupMode = function(cmid) {
-        var params = {
-                cmid: cmid
-            },
-            preSets = {
-                cacheKey: getActivityGroupModeCacheKey(cmid)
-            };
+    self.getActivityGroupMode = function(cmid, siteId) {
+        siteId = siteId || $mmSite.getId();
 
-        return $mmSite.read('core_group_get_activity_groupmode', params, preSets).then(function(response) {
-            if (!response || typeof response.groupmode == 'undefined') {
-                return $q.reject();
-            }
-            return response.groupmode;
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    cmid: cmid
+                },
+                preSets = {
+                    cacheKey: getActivityGroupModeCacheKey(cmid)
+                };
+
+            return site.read('core_group_get_activity_groupmode', params, preSets).then(function(response) {
+                if (!response || typeof response.groupmode == 'undefined') {
+                    return $q.reject();
+                }
+                return response.groupmode;
+            });
         });
     };
 
