@@ -155,8 +155,11 @@ angular.module('mm.core.course')
         e.preventDefault();
         e.stopPropagation();
 
+        section.isCalculating = true;
         $mmCourseHelper.confirmDownloadSize(courseId, section, $scope.sections).then(function() {
             prefetch(section, true);
+        }).finally(function() {
+            section.isCalculating = false;
         });
     };
 

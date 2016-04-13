@@ -107,12 +107,16 @@ angular.module('mm.core.course')
             if (section.id === mmCoreCourseAllSectionsId) {
                 // "All sections" section status is calculated using the status of the rest of sections.
                 allsectionssection = section;
+                section.isCalculating = true;
             } else {
+                section.isCalculating = true;
                 statuspromises.push(self.calculateSectionStatus(section, courseid, restoreDownloads, refresh, downloadpromises)
                         .then(function(result) {
 
                     // Calculate "All sections" status.
                     allsectionsstatus = $mmFilepool.determinePackagesStatus(allsectionsstatus, result.status);
+                }).finally(function() {
+                    section.isCalculating = false;
                 }));
             }
         });
@@ -125,6 +129,10 @@ angular.module('mm.core.course')
                 allsectionssection.isDownloading = allsectionsstatus === mmCoreDownloading;
             }
             return downloadpromises;
+        }).finally(function() {
+            if (allsectionssection) {
+                allsectionssection.isCalculating = false;
+            }
         });
     };
 

@@ -87,7 +87,7 @@ angular.module('mm.addons.mod_page')
                 $scope.title = module.name;
                 $scope.icon = $mmCourse.getModuleIconSrc('page');
                 $scope.buttons = [downloadBtn, refreshBtn];
-                $scope.spinner = false;
+                $scope.spinner = true; // Show spinner while calculating status.
 
                 $scope.action = function(e) {
                     if (e) {
