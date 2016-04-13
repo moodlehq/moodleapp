@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_quiz')
  * @name mmaModQuizReviewCtrl
  */
 .controller('mmaModQuizReviewCtrl', function($log, $scope, $stateParams, $mmaModQuiz, $mmaModQuizHelper, $mmUtil,
-            $ionicPopover, $ionicScrollDelegate, $translate, $q, mmaModQuizAttemptComponent, $mmQuestionHelper) {
+            $ionicScrollDelegate, $translate, $q, mmaModQuizAttemptComponent, $mmQuestionHelper, $mmSideMenu) {
     $log = $log.getInstance('mmaModQuizReviewCtrl');
 
     var quizId = $stateParams.quizid,
@@ -35,6 +35,7 @@ angular.module('mm.addons.mod_quiz')
         errorPasing = false,
         scrollView = $ionicScrollDelegate.$getByHandle('mmaModQuizReviewScroll');
 
+    $scope.isReview = true;
     $scope.component = mmaModQuizAttemptComponent;
     $scope.componentId = attemptId;
 
@@ -170,7 +171,6 @@ angular.module('mm.addons.mod_quiz')
 
         $scope.dataLoaded = false;
         scrollView.scrollTop();
-        $scope.popover.hide(); // Hide popover if shown.
 
         return loadPage(page).catch(function(message) {
             return $mmaModQuizHelper.showError(message);
@@ -195,10 +195,6 @@ angular.module('mm.addons.mod_quiz')
         }
     };
 
-    // Setup TOC popover.
-    $ionicPopover.fromTemplateUrl('addons/mod_quiz/templates/toc.html', {
-        scope: $scope,
-    }).then(function(popover) {
-        $scope.popover = popover;
-    });
+    // Setup TOC right side menu.
+    $mmSideMenu.showRightSideMenu('addons/mod_quiz/templates/toc.html', $scope);
 });

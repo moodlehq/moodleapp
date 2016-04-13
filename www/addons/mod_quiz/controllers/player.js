@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_quiz')
  */
 .controller('mmaModQuizPlayerCtrl', function($log, $scope, $stateParams, $mmaModQuiz, $mmaModQuizHelper, $q, $mmUtil,
             $ionicPopover, $ionicScrollDelegate, $rootScope, $ionicPlatform, $translate, $timeout, $mmQuestionHelper,
-            $mmaModQuizAutoSave, $mmEvents, mmaModQuizAttemptFinishedEvent) {
+            $mmaModQuizAutoSave, $mmEvents, mmaModQuizAttemptFinishedEvent, $mmSideMenu) {
     $log = $log.getInstance('mmaModQuizPlayerCtrl');
 
     var quizId = $stateParams.quizid,
@@ -332,7 +332,6 @@ angular.module('mm.addons.mod_quiz')
 
         $scope.dataLoaded = false;
         scrollView.scrollTop();
-        $scope.popover.hide(); // Hide popover if shown.
 
         // First try to save the attempt data. We only save it if we're not seeing the summary.
         promise = $scope.showSummary ? $q.when() : processAttempt(false, false);
@@ -381,12 +380,8 @@ angular.module('mm.addons.mod_quiz')
         });
     };
 
-    // Setup TOC popover.
-    $ionicPopover.fromTemplateUrl('addons/mod_quiz/templates/toc.html', {
-        scope: $scope,
-    }).then(function(popover) {
-        $scope.popover = popover;
-    });
+    // Setup TOC right side menu.
+    $mmSideMenu.showRightSideMenu('addons/mod_quiz/templates/toc.html', $scope);
 
     // Setup connection error popover.
     $ionicPopover.fromTemplateUrl('addons/mod_quiz/templates/connectionerror.html', {
