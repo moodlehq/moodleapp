@@ -51,6 +51,7 @@
 	"reviewofattempt": "Review of attempt {{$a}}",
 	"reviewofpreview": "Review of preview",
 	"showall": "Show all questions on one page",
+	"showeachpage": "Show one page at a time",
 	"startattempt": "Start attempt",
 	"startedon": "Started on",
 	"stateabandoned": "Never submitted",

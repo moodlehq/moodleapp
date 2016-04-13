@@ -49,7 +49,7 @@
             <div ng-if="attempt && questions.length">
                 <mma-mod-quiz-arrows previous="previousPage" next="nextPage" action="loadPage"></mma-mod-quiz-arrows>
                 <div ng-repeat="question in questions">
-                    <section class="card" id="mma-mod_quiz-question-{{question.number ? question.number : 'i'}}">
+                    <section class="card" id="mma-mod_quiz-question-{{question.slot}}">
                         <div class="item item-divider">
                             <h2 ng-if="question.number" class="inline">{{ 'mma.mod_quiz.questionno' | translate:{$a: question.number} }}</h2>
                             <h2 ng-if="!question.number" class="inline">{{ 'mma.mod_quiz.information' | translate }}</h2>
