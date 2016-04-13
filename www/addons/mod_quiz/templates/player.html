@@ -27,7 +27,7 @@
             <!-- Questions -->
             <form name="mma-mod_quiz-player-form" ng-if="questions.length && !quizAborted && !showSummary">
                 <div ng-repeat="question in questions">
-                    <section class="card" id="mma-mod_quiz-question-{{question.number ? question.number : 'i'}}">
+                    <section class="card" id="mma-mod_quiz-question-{{question.slot}}">
                         <div class="item item-divider">
                             <h2 ng-if="question.number" class="inline">{{ 'mma.mod_quiz.questionno' | translate:{$a: question.number} }}</h2>
                             <h2 ng-if="!question.number" class="inline">{{ 'mma.mod_quiz.information' | translate }}</h2>
