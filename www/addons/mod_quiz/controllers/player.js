@@ -116,8 +116,10 @@ angular.module('mm.addons.mod_quiz')
 
                 attempt = att;
                 $scope.attempt = attempt;
-                $scope.toc = $mmaModQuiz.getTocFromLayout(attempt.layout);
-
+                return loadToc();
+            }).catch(function(message) {
+                return $mmaModQuizHelper.showError(message, 'mm.core.error');
+            }).then(function() {
                 if (attempt.state != $mmaModQuiz.ATTEMPT_OVERDUE) {
                     // Attempt not overdue, load page.
                     return loadPage(attempt.currentpage).then(function() {
@@ -130,6 +132,14 @@ angular.module('mm.addons.mod_quiz')
                     return loadSummary();
                 }
             });
+        });
+    }
+
+    // Load TOC to navigate to questions.
+    function loadToc() {
+        // We use the attempt summary to build the TOC because it contains all the questions.
+        return $mmaModQuiz.getAttemptSummary(attempt.id, $scope.preflightData).then(function(questions) {
+            $scope.toc = questions;
         });
     }
 
@@ -264,6 +274,11 @@ angular.module('mm.addons.mod_quiz')
         }
     }
 
+    // Scroll to a certain question.
+    function scrollToQuestion(slot) {
+        $mmUtil.scrollToElement(document, '#mma-mod_quiz-question-' + slot, scrollView);
+    }
+
     // Override Ionic's back button behavior.
     $rootScope.$ionicGoBack = leavePlayer;
 
@@ -317,9 +332,13 @@ angular.module('mm.addons.mod_quiz')
         });
     };
 
-    // Load a certain page.
-    $scope.loadPage = function(page, fromToc, question) {
-        if ((page == attempt.currentpage && !$scope.showSummary) || (fromToc && quiz.isSequential && page != -1)) {
+    // Load a certain page. If slot is supplied, try to scroll to that question.
+    $scope.loadPage = function(page, fromToc, slot) {
+        if (page == attempt.currentpage && !$scope.showSummary && typeof slot != 'undefined') {
+            // Navigating to a question in the current page.
+            scrollToQuestion(slot);
+            return;
+        } else if ((page == attempt.currentpage && !$scope.showSummary) || (fromToc && quiz.isSequential && page != -1)) {
             // If the user is navigating to the current page we do nothing.
             // Also, in sequential quizzes we don't allow navigating using the TOC except for finishing the quiz (summary).
             return;
@@ -353,10 +372,10 @@ angular.module('mm.addons.mod_quiz')
             $scope.dataLoaded = true;
             scrollView.resize(); // Call resize to recalculate scroll area.
 
-            if (question) {
+            if (typeof slot != 'undefined') {
                 // Scroll to the question. Give some time to the questions to render.
                 $timeout(function() {
-                    $mmUtil.scrollToElement(document, '#mma-mod_quiz-question-' + question);
+                    scrollToQuestion(slot);
                 }, 2000);
             }
         });
