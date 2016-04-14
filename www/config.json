@@ -1,5 +1,6 @@
 {
     "app_id" : "com.moodle.moodlemobile",
+    “siteurl”: “https://aitcomputer.moodlecloud.com",
     "versioncode" : "2011",
     "versionname" : "3.0.0",
     "cache_expiration_time" : 300000,
