@@ -1,6 +1,6 @@
 {
     "errorloadingpage": "An error occured while loading page.",
-    "errornowikiavailable": "There's no wiki available to be shown.",
+    "errornowikiavailable": "This wiki does not have any content yet.",
     "gowikihome": "Go Wiki home",
     "map": "Map",
     "notingroup": "Not in group",

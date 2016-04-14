@@ -31,10 +31,10 @@
                             <img ng-if="message.userprofileimageurl" ng-src="{{message.userprofileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: message.userfullname} }}" role="presentation">
                             <img ng-if="!message.userprofileimageurl" src="img/user-avatar.png" alt="{{ 'mm.core.pictureof' | translate:{$a: message.userfullname} }}" role="presentation">
                             <h2>{{ message.userfullname }}</h2>
+                            <span class="item-note">{{ message.timestamp * 1000 | mmFormatDate:"dftimedate" }}</span>
 
                             <mm-format-text after-render="scrollAfterRender" watch="true">{{ message.message }}</mm-format-text>
 
-                            <span class="item-note">{{ message.timestamp * 1000 | mmFormatDate:"dftimedate" }}</span>
                         </article>
                     </div>
                 </div>

@@ -36,7 +36,8 @@ angular.module('mm.addons.messages')
             }).then(function(user) {
                 // Verify that no other user was loaded while the async call was in progress.
                 if ($scope.userId == userId) {
-                    $scope.profileLink = user.profileimageurl;
+                    // Use a default icon if no image URL available.
+                    $scope.profileLink = user.profileimageurl || true;
                 }
             });
         }
