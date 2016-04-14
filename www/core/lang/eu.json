@@ -308,6 +308,7 @@
     "openinbrowser": "Ireki nabigatzailean",
     "percentagenumber": "%{{$a}}",
     "phone": "Telefonoa",
+    "pictureof": "{{$a}}-ren irudia",
     "previous": "Aurrekoa",
     "pulltorefresh": "Sakatu freskatzeko",
     "refresh": "Freskatu",

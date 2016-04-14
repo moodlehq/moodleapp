@@ -313,6 +313,7 @@
     "offline": "Не се изисква предаване онлайн",
     "online": "Онлайн",
     "phone": "Телефон",
+    "pictureof": "Снимка на {{$a}}",
     "previous": "Предишна",
     "pulltorefresh": "",
     "search": "Търсене",

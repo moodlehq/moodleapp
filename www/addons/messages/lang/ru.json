@@ -4,6 +4,8 @@
     "contactlistempty": "список контактов пуст",
     "contactname": "Имя контакта",
     "contacts": "Контакты",
+    "deletemessage": "Удалить сообщение",
+    "deletemessageconfirmation": "Вы уверены, что хотите удалить данное сообщение? Сообщение будет удалено лишь из списка сообщений и будет доступно для просмотра отправителем или получателем.",
     "errorwhileretrievingcontacts": "Ошибка при извлечении контактов с сервера",
     "errorwhileretrievingdiscussions": "Ошибка при получении обсуждения с сервера.",
     "errorwhileretrievingmessages": "Ошибка при получении сообщения с сервера",

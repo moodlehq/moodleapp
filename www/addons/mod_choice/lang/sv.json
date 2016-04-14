@@ -1,4 +1,5 @@
 {
+    "cannotsubmit": "Tyvärr fanns det ett problem att lämna ditt val . Var god försök igen.",
     "choiceoptions": "Alternativ för opinonsundersökning",
     "expired": "Den här aktiviteten är stängd på {{$a}} och den är inte längre tillgänglig.",
     "full": "(Full)",
@@ -6,6 +7,7 @@
     "notopenyet": "Den här aktiviteten är tyvärr inte tillgänglig förrän {{$a}}",
     "numberofuser": "Antal användare",
     "numberofuserinpercentage": "Antalet användare i procent.",
+    "previewonly": "Detta är bara en förhandsvisning av de tillgängliga alternativen för den här aktiviteten . Du kommer inte att kunna lämna in ditt val innan {{$a}}",
     "removemychoice": "Ta bort mitt val",
     "responses": "Svar",
     "responsesresultgraphheader": "Visa en graf",

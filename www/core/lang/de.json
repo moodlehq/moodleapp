@@ -341,6 +341,7 @@
     "openinbrowser": "Im Browser öffnen",
     "percentagenumber": "{{$a}}%",
     "phone": "Phone",
+    "pictureof": "Nutzerbild {{$a}}",
     "previous": "Zurück",
     "pulltorefresh": "Zum Erneuern ziehen",
     "refresh": "Neuladen",

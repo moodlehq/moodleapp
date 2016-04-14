@@ -342,6 +342,7 @@
     "openinbrowser": "Ouvrir dans le navigateur",
     "percentagenumber": "{{$a}} %",
     "phone": "Téléphone",
+    "pictureof": "Avatar {{$a}}",
     "previous": "Précédent",
     "pulltorefresh": "Tirer pour actualiser",
     "refresh": "Actualiser",

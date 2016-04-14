@@ -321,6 +321,7 @@
     "offline": "No es requereix cap tramesa en línia",
     "online": "En línia",
     "phone": "Telèfon",
+    "pictureof": "Imatge {{$a}}",
     "previous": "Anterior",
     "pulltorefresh": "Estira per actualitzar",
     "refresh": "Refresca",

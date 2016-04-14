@@ -342,6 +342,7 @@
     "openinbrowser": "Open in browser",
     "percentagenumber": "{{$a}}%",
     "phone": "Telefoon",
+    "pictureof": "Foto van {{$a}}",
     "previous": "Vorige",
     "pulltorefresh": "Slepen om te verversen",
     "refresh": "Ververs",

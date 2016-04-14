@@ -320,6 +320,7 @@
     "offline": "Ingen inlämning online krävs",
     "online": "Uppkopplad",
     "phone": "Telefon",
+    "pictureof": "Bild av {{$a}}",
     "previous": "Tidigare",
     "pulltorefresh": "Dra för att uppdatera",
     "refresh": "Uppdatera",

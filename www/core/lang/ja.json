@@ -289,6 +289,7 @@
     "offline": "オンライン提出不要",
     "online": "オンライン",
     "phone": "電話",
+    "pictureof": "画像 {{$a}}",
     "previous": "前へ",
     "refresh": "リフレッシュ",
     "search": "検索",
