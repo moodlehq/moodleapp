@@ -232,6 +232,8 @@ angular.module('mm.addons.coursecompletion')
     });
     $mmEvents.on(mmCoursesEventMyCoursesRefreshed, $mmaCourseCompletionHandlers.clearCoursesNavCache);
     $mmEvents.on(mmUserEventProfileRefreshed, function(data) {
-        $mmaCourseCompletionHandlers.clearViewCompletionCache(data.courseid, data.userid);
+        if (data) {
+            $mmaCourseCompletionHandlers.clearViewCompletionCache(data.courseid, data.userid);
+        }
     });
 });

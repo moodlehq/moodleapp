@@ -281,6 +281,8 @@ angular.module('mm.addons.grades')
 .run(function($mmaGradesHandlers, $mmEvents, mmCoreEventLogout, mmUserEventProfileRefreshed) {
     $mmEvents.on(mmCoreEventLogout, $mmaGradesHandlers.clearViewGradesCache);
     $mmEvents.on(mmUserEventProfileRefreshed, function(data) {
-        $mmaGradesHandlers.clearViewGradesCache(data.courseid, data.userid);
+        if (data) {
+            $mmaGradesHandlers.clearViewGradesCache(data.courseid, data.userid);
+        }
     });
 });
