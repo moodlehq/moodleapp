@@ -290,18 +290,28 @@ angular.module('mm.core.question')
         // Create a fake div element so we can search using querySelector.
         var div = document.createElement('div'),
             matches,
-            last;
+            last,
+            position;
 
         div.innerHTML = question.html;
 
         matches = div.querySelectorAll(selector);
 
         // Get the last element and check it's not in the question contents.
-        last = matches[matches.length - 1];
-        if (last && !last.closest('.formulation')) {
-            question[attrName] = last.innerHTML;
-            last.remove();
-            question.html = div.innerHTML;
+        // We don't use .pop() because the result of querySelectorAll doesn't support it.
+        position = matches.length -1;
+        last = matches[position];
+        while (last) {
+            if (!$mmUtil.closest(last, '.formulation')) {
+                question[attrName] = last.innerHTML;
+                last.remove();
+                question.html = div.innerHTML;
+                return;
+            }
+
+            // It's inside the question content, treat next element.
+            position--;
+            last = matches[position];
         }
     }
 

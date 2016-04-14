@@ -1319,6 +1319,48 @@ angular.module('mm.core')
             });
         };
 
+        /**
+         * Equivalent to element.closest(). If the browser doesn't support element.closest, it will
+         * traverse the parents to achieve the same functionality.
+         * Returns the closest ancestor of the current element (or the current element itself) which matches the selector.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#closest
+         * @param  {Object} element  DOM Element.
+         * @param  {String} selector Selector to search.
+         * @return {Object}          Closest ancestor.
+         */
+        self.closest = function(element, selector) {
+            // Try to use closest if the browser supports it.
+            if (typeof element.closest == 'function') {
+                return element.closest(selector);
+            }
+
+            if (!matchesFn) {
+                // Find the matches function supported by the browser.
+                ['matches','webkitMatchesSelector','mozMatchesSelector','msMatchesSelector','oMatchesSelector'].some(function(fn) {
+                    if (typeof document.body[fn] == 'function') {
+                        matchesFn = fn;
+                        return true;
+                    }
+                    return false;
+                });
+
+                if (!matchesFn) {
+                    return;
+                }
+            }
+
+            // Traverse parents.
+            while (element) {
+                if (element[matchesFn](selector)) {
+                    return element;
+                }
+                element = element.parentElement;
+            }
+        };
+
         return self;
     };
 });
