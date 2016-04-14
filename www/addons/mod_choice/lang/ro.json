@@ -1,0 +1,15 @@
+{
+    "errorgetchoice": "Eroare în obținerea de date pentru alegere",
+    "expired": "Ne pare rău, această activitate a fost închisă pe {{$a}} și nu mai este disponibila.",
+    "full": "(plin)",
+    "noresultsviewable": "În acest moment rezultatele nu pot fi vizualizate.",
+    "notopenyet": "Această activitate va fi disponibilă pe {{$a}}",
+    "numberofuser": "Numărul participanților",
+    "numberofuserinpercentage": "Procentul participanților",
+    "previewonly": "Acesta este doar o prezentare a opțiunilor existente pentru această activitate. Nu veți putea trimite opțiunea dvs. până la {{$a}}.",
+    "removemychoice": "Șterge alegerea mea",
+    "responses": "Răspunsuri",
+    "responsesresultgraphdescription": "{{number}}% dintre utilizatori au ales varianta: {{text}}.",
+    "savemychoice": "Salvează formularul meu de evaluare",
+    "yourselection": "Selecția ta"
+}

@@ -340,6 +340,7 @@
     "openinbrowser": "Apri nel browser",
     "percentagenumber": "{{$a}}%",
     "phone": "Telefono",
+    "pictureof": "Immagine {{$a}}",
     "previous": "Precedente",
     "pulltorefresh": "Trascina per aggiornare",
     "refresh": "Aggiorna",

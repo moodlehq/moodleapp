@@ -5,6 +5,8 @@
     "contactname": "Kontaktuaren izena",
     "contacts": "Kontaktuak",
     "deletemessage": "Ezabatu mezua",
+    "deletemessageconfirmation": "Ziur zaude mezu hau ezabatu nahi duzula? Soilik zure mezuen historiatik ezabatuko da, eta mezua bidali edo jaso duen erabiltzaileak ikusgai izaten jarraituko du.",
+    "errordeletemessage": "Errorea mezua ezabatzean.",
     "errorwhileretrievingcontacts": "Errorea kontaktuak zerbitzaritik jasotzean.",
     "errorwhileretrievingdiscussions": "Errorea elkarrizketak zerbitzaritik jasotzean.",
     "errorwhileretrievingmessages": "Errorea mezuak zerbitzaritik jasotzean.",

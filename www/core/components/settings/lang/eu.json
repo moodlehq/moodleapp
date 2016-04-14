@@ -18,6 +18,8 @@
     "devicewebworkers": "Device Web Workers onartuak",
     "displayformat": "Erakusteko modua",
     "enabledebugging": "Gaitu arazketa",
+    "enabledownloadsection": "Gaitu gaien deskarga",
+    "enabledownloadsectiondescription": "Desgaitu aukera hau ikastaroaren gaiak kargatzeko abiadura azkartzeko.",
     "enablesyncwifi": "Baimendu sinkronizazioa Wi-Fi bidezko konexioa dagoenean soilik",
     "errordeletesitefiles": "Errorea fitxategiak ezabatzean.",
     "errorsyncsite": "Errorea guneko datuak sinkronizatzean, mesedez egiaztatu zure interneterako konexioa eta saiatu berriz.",

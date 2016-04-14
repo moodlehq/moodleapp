@@ -1,0 +1,11 @@
+{
+    "addsubmission": "Enviar trabalho",
+    "allowsubmissionsfromdate": "Aceitar trabalhos a partir de",
+    "attemptnumber": "Número da tentativa",
+    "cutoffdate": "Data de fecho",
+    "duedate": "Data limite para submeter trabalhos",
+    "duedateno": "Sem data limite",
+    "submissions": "Trabalhos enviados",
+    "userwithid": "Utilizador com ID {{id}}",
+    "viewsubmission": "Ver trabalho"
+}

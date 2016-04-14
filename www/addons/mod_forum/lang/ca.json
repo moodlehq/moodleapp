@@ -8,6 +8,7 @@
     "erroremptymessage": "El missatge no pot estar buit",
     "erroremptysubject": "La casella «Assumpte» no pot estar buida",
     "errorgetforum": "S'ha produït un error descarregant les dades del fòrum.",
+    "errorgetgroups": "S'ha produït un error en descarregar la configuració del grup.",
     "forumnodiscussionsyet": "Encara no hi ha temes de debat en aquest fòrum",
     "group": "Grup",
     "message": "Cos del missatge",

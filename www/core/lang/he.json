@@ -329,6 +329,7 @@
     "openfullimage": "יש להקליק כאן להצגת התמונה בגודל מלא",
     "openinbrowser": "תצוגה בדפדפן",
     "phone": "טלפון",
+    "pictureof": "תמונה של {{$a}}",
     "previous": "קודם",
     "pulltorefresh": "משיכה לרענון",
     "refresh": "ריענון",

@@ -1,6 +1,9 @@
 {
     "complete": "Completado",
+    "completecourse": "Curso completado",
     "completed": "Finalizado",
+    "completiondate": "Fecha de finalización",
+    "couldnotloadreport": "No se puede cargar el informe de finalización del curso, por favor inténtalo de nuevo más tarde.",
     "coursecompletion": "Finalización del curso",
     "criteria": "Criterios",
     "criteriagroup": "Grupo de criterios",

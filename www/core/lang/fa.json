@@ -282,6 +282,7 @@
     "offline": "آفلاین",
     "online": "آنلاین",
     "phone": "تلفن",
+    "pictureof": "عکس {{$a}}",
     "previous": "قبلی",
     "refresh": "تازه‌سازی",
     "search": "جستجو",

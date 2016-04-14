@@ -8,6 +8,7 @@
     "erroremptymessage": "El mensaje no puede estar vacío",
     "erroremptysubject": "El asunto del mensaje no puede estar vacío.",
     "errorgetforum": "Error al obtener datos del foro.",
+    "errorgetgroups": "Error al obtener los datos del grupo.",
     "forumnodiscussionsyet": "No existen temas de discusión en este foro",
     "group": "Grupo",
     "message": "Cuerpo del mensaje",

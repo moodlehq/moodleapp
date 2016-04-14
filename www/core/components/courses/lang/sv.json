@@ -1,13 +1,21 @@
 {
-    "enrolme": "Koppla mig",
+    "confirmselfenrol": "Är du säker att du vill registrera dig i den här kursen ?",
+    "enrolme": "Registrera mig",
     "errorloadcourses": "Ett fel uppstod vid inläsning av kursen",
+    "errorsearching": "Fel uppstod vid sökning",
+    "errorselfenrol": "Fel uppstod vid registrering",
     "filter": "Filter",
+    "filtermycourses": "Filtrera mina kurser",
     "frontpage": "Ingångssidan",
     "mycourses": "Mina kurser",
-    "nocourses": "Det finns ingen kursinformation att visa.",
-    "nosearchresults": "Din sökning gav inga träffar",
-    "notenroled": "Du är inte registrerad i den här kursen",
-    "password": "Lösenord",
+    "nocourses": "Ingen kursinfomration att visa",
+    "nosearchresults": "Inga sökningsresultat",
+    "notenroled": "Du är inte registrerad i kursen",
+    "notenrollable": "Du kan inte självregistrera dig i kursen",
+    "password": "Kursnyckel",
     "search": "Sök",
-    "searchcourses": "Sök kurser"
+    "searchcourses": "Sök kurser",
+    "searchcoursesadvice": "Du kan använda knappen \"Sök kurser\" för att få tillgång som gäst eller registrera dig på kurser som tillåter det .",
+    "selfenrolment": "Kursnyckel (Student)",
+    "totalcoursesearchresults": "Total antal kurser: {{$a}}"
 }

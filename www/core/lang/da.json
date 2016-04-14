@@ -88,6 +88,7 @@
     "openinbrowser": "Åben i browser",
     "percentagenumber": "{{$a}}%",
     "phone": "Telefon",
+    "pictureof": "Billede af {{$a}}",
     "previous": "Forrige",
     "pulltorefresh": "Træk for at opdatere",
     "refresh": "Genindlæs",

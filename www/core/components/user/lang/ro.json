@@ -1,0 +1,21 @@
+{
+    "address": "Adresa",
+    "city": "Oraș",
+    "contact": "Contact",
+    "country": "Țara",
+    "description": "Descriere",
+    "details": "Detalii",
+    "detailsnotavailable": "Detaliile acestui utilizator nu vă sunt disponibile.",
+    "editingteacher": "Profesor",
+    "email": "Email",
+    "interests": "Interese",
+    "invaliduser": "Utilizator necunoscut.",
+    "manager": "Manager",
+    "phone1": "Telefon",
+    "phone2": "Mobil",
+    "roles": "Roluri",
+    "student": "Student",
+    "teacher": "Profesor asistent",
+    "viewprofile": "Vezi profilul",
+    "webpage": "Pagina Web"
+}

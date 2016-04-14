@@ -1,0 +1,21 @@
+{
+    "confirmselfenrol": "Tem certeza de que deseja inscrever-se nesta disciplina?",
+    "enrolme": "Inscreva-me",
+    "errorloadcourses": "Ocorreu um erro ao carregar as disciplinas.",
+    "errorsearching": "Ocorreu um erro durante a pesquisa.",
+    "errorselfenrol": "Ocorreu um erro na autoinscrição.",
+    "filter": "Filtro",
+    "filtermycourses": "Filtrar as minhas disciplinas",
+    "frontpage": "Página principal do site",
+    "mycourses": "As minhas disciplinas",
+    "nocourses": "Sem informações das disciplinas para mostrar",
+    "nosearchresults": "Não foram encontrados resultados na sua pesquisa",
+    "notenroled": "Não está inscrito nesta disciplina",
+    "notenrollable": "Não se pode inscrever nesta disciplina.",
+    "password": "Senha de inscrição",
+    "search": "Pesquisar",
+    "searchcourses": "Pesquisar disciplinas",
+    "searchcoursesadvice": "Pode usar o botão de pesquisa de disciplinas para aceder às mesmas como visitante ou autoinscrever-se caso o permitam.",
+    "selfenrolment": "Autoinscrição",
+    "totalcoursesearchresults": "Total de disciplinas: {{$a}}"
+}
