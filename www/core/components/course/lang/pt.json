@@ -1,0 +1,17 @@
+{
+    "activitynotyetviewable": "Não é possível visualizar esta atividade ou recurso nesta aplicação.",
+    "activitynotyetviewablegothere": "Não é possível visualizar esta atividade ou recurso nesta aplicação, clique no botão abaixo para aceder aos conteúdos a partir do site.",
+    "allsections": "Todas as secções",
+    "confirmdownload": "Está prestes a descarregar {{size}}. Tem a certeza que pretende continuar?",
+    "confirmdownloadsection": "Está prestes a descarregar {{size}}. Tem a certeza que pretende continuar?",
+    "confirmdownloadunknownsize": "Não foi possível calcular o tamanho da transferência. Tem a certeza que pretende continuar?",
+    "contents": "Conteúdos",
+    "couldnotloadsectioncontent": "Não foi possível carregar o conteúdo da secção, por favor tente novamente mais tarde.",
+    "couldnotloadsections": "Não foi possível carregar as secções, por favor tente novamente mais tarde.",
+    "errordownloadingsection": "Erro ao descarregar a secção.",
+    "errorgetmodule": "Erro ao obter os dados do módulo.",
+    "gotothesite": "Ir para o site",
+    "nocontentavailable": "Nenhum conteúdo disponível neste momento.",
+    "showall": "Mostrar todos",
+    "whoops": "Ops!"
+}

@@ -1,6 +1,9 @@
 {
     "complete": "Complet",
+    "completecourse": "Curs complet",
     "completed": "Completat",
+    "completiondate": "Data de compleció",
+    "couldnotloadreport": "No es pot carregar l'informe de compleció del curs, torneu a intentar-ho més tard.",
     "coursecompletion": "Compleció del curs",
     "criteria": "Criteris",
     "criteriagroup": "Grup de criteris",
@@ -12,6 +15,7 @@
     "pending": "Pendents",
     "required": "Necessari",
     "requiredcriteria": "Criteri requerit",
+    "requirement": "Requisit",
     "status": "Estat",
     "viewcoursereport": "Visualitza l'informe del curs"
 }

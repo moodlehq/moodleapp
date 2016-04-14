@@ -1,0 +1,21 @@
+{
+    "contactlistempty": "Lista de contacte este goală",
+    "contactname": "Nume contact",
+    "errordeletemessage": "Eroare la ștergerea mesajului.",
+    "erroruseronlyacceptsmessagefromcontacts": "-",
+    "errorwhileretrievingcontacts": "A apărut o eroare în găsirea contactelor pe server.",
+    "errorwhileretrievingdiscussions": "A apărut o eroare în găsirea conversațiilor de pe server.",
+    "errorwhileretrievingmessages": "A apărut o eroare în găsirea mesajelor de pe server.",
+    "messagenotsent": "Mesajul nu a fost expediat, vă rugăm să încercați mai târziu.",
+    "mustbeonlinetosendmessages": "Trebuie să fiți online pentru a putea trimite mesaje",
+    "newmessage": "Mesaj nou!",
+    "nomessages": "Nu aveți mesaje.",
+    "nousersfound": "Nu au fost găsiți utilizatori",
+    "send": "Trimite",
+    "type_blocked": "Blocat",
+    "type_offline": "Deconectat",
+    "type_online": "Conectat",
+    "type_search": "Caută rezultatele",
+    "type_strangers": "Alții",
+    "unblockcontact": "Deblocați contactul"
+}

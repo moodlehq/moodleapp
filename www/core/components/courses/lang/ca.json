@@ -1,13 +1,21 @@
 {
+    "confirmselfenrol": "Segur que voleu autoinscriure-us en aquest curs?",
     "enrolme": "Inscriu-me",
     "errorloadcourses": "S'ha produït un error carregant els cursos.",
+    "errorsearching": "S'ha produït un error durant la cerca.",
+    "errorselfenrol": "S'ha produït un error durant l'autoinscripció.",
     "filter": "Filtre",
+    "filtermycourses": "Filtrar els meus cursos",
     "frontpage": "Pàgina principal",
     "mycourses": "Els meus cursos",
-    "nocourses": "No hi ha informació de cursos per mostrar.",
-    "nosearchresults": "La cerca no ha obtingut resultats",
-    "notenroled": "No us heu inscrit en aquest curs",
-    "password": "Contrasenya",
+    "nocourses": "No hi ha informació del curs per mostrar.",
+    "nosearchresults": "No hi ha resultats per la vostra cerca",
+    "notenroled": "No esteu inscrit en aquest curs",
+    "notenrollable": "No podeu autoinscriure-us en aquest curs.",
+    "password": "Clau d'inscripció",
     "search": "Cerca",
-    "searchcourses": "Cerca cursos"
+    "searchcourses": "Cerca cursos",
+    "searchcoursesadvice": "Podeu fer servir el botó de cercar cursos per accedir als cursos com a convidat o autoinscriure-us en cursos que ho permetin.",
+    "selfenrolment": "Autoinscripció",
+    "totalcoursesearchresults": "Total de cursos: {{$a}}"
 }

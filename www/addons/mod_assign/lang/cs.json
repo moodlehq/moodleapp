@@ -6,5 +6,6 @@
     "duedate": "Termín odevzdání",
     "duedateno": "Bez termínu odevzdání",
     "submissions": "Odpovědi",
+    "userwithid": "Uživatel s ID {{id}}",
     "viewsubmission": "Zobrazit odpovědi"
 }

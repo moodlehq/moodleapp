@@ -1,4 +1,9 @@
 {
+    "errorloadingpage": "Er is een fout opgetreden tijdens het laden van de pagina.",
+    "errornowikiavailable": "Er is geen wiki beschikbaar",
+    "gowikihome": "Wiki startpagina",
     "map": "Map",
-    "notingroup": "Om deze activiteit te kunnen zien moet je lid zijn van een groep."
+    "notingroup": "Om deze activiteit te kunnen zien moet je lid zijn van een groep.",
+    "subwiki": "Subwiki",
+    "viewpage": "Bekijk pagina"
 }

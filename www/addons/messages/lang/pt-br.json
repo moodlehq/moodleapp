@@ -6,6 +6,7 @@
     "contacts": "Contatos",
     "deletemessage": "Excluir mensagem",
     "deletemessageconfirmation": "Tem certeza de que deseja excluir esta mensagem? Ela só será excluída do seu histórico de mensagens e ainda poderá ser vista pelo usuário que enviou ou recebeu a mensagem.",
+    "errordeletemessage": "Erro enquanto excluía a mensagem.",
     "erroruseronlyacceptsmessagefromcontacts": "O usuário somente aceita mensagens de contatos",
     "errorwhileretrievingcontacts": "Erro ao recuperar contatos a partir do servidor.",
     "errorwhileretrievingdiscussions": "Erro ao recuperar discussão do servidor.",

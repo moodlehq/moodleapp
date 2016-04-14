@@ -1,4 +1,9 @@
 {
+    "errorloadingpage": "Une erreur est survenue lors du chargement de la page.",
+    "errornowikiavailable": "Aucun wiki à consulter",
+    "gowikihome": "Vers l'accueil du wiki",
     "map": "Carte",
-    "notingroup": "Désolé, vous devez faire partie d'un groupe pour participer à cette activité."
+    "notingroup": "Désolé, vous devez faire partie d'un groupe pour participer à cette activité.",
+    "subwiki": "Sous-wiki",
+    "viewpage": "Consulter la page"
 }

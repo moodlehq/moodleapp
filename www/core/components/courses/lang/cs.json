@@ -1,12 +1,21 @@
 {
-    "enrolme": "Zapsat se do kurzu",
+    "confirmselfenrol": "Jste si jisti, že chcete zapsat se do tohoto kurzu?",
+    "enrolme": "Zapsat se",
+    "errorloadcourses": "Při načítání kurzů došlo k chybě.",
+    "errorsearching": "Při vyhledávání došlo k chybě.",
+    "errorselfenrol": "Při zápisu sebe sama došlo k chybě.",
     "filter": "Filtr",
+    "filtermycourses": "Filtrovat mé kurzy",
     "frontpage": "Titulní stránka",
     "mycourses": "Moje kurzy",
-    "nocourses": "Žádné dostupné informace o kurzech",
-    "nosearchresults": "Vaše vyhledávání nepřineslo žádný výsledek",
-    "notenroled": "Nejste zapsáni v tomto kurzu",
-    "password": "Heslo",
+    "nocourses": "O kurzu nejsou žádné informace.",
+    "nosearchresults": "Z vašeho hledání nebyly nalezeny žádné výsledky",
+    "notenroled": "V tomto kurzu nejste zapsán",
+    "notenrollable": "Do tohoto kurzu se nemůžete sami zapsat.",
+    "password": "Klíč zápisu",
     "search": "Hledat",
-    "searchcourses": "Vyhledat kurzy"
+    "searchcourses": "Hledat kurzy",
+    "searchcoursesadvice": "Můžete použít tlačítko Vyhledat kurzy, pracovat jako host nebo se zapsat do kurzů, které to umožňují.",
+    "selfenrolment": "Zápis sebe sama",
+    "totalcoursesearchresults": "Celkem kurzů:  {{$a}}"
 }

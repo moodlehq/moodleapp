@@ -1,0 +1,21 @@
+{
+    "contactlistempty": "A lista de contactos está vazia",
+    "contactname": "Nome do contacto",
+    "errordeletemessage": "Erro ao eliminar a mensagem.",
+    "erroruseronlyacceptsmessagefromcontacts": "O utilizador apenas recebe mensagens dos seus contactos",
+    "errorwhileretrievingcontacts": "Erro ao obter os contactos do servidor.",
+    "errorwhileretrievingdiscussions": "Erro ao obter os tópicos de discussão do servidor.",
+    "errorwhileretrievingmessages": "Erro ao obter as mensagens do servidor.",
+    "messagenotsent": "A mensagem não foi enviada. Por favor, tente novamente mais tarde.",
+    "mustbeonlinetosendmessages": "Precisa de estar online para enviar mensagens",
+    "newmessage": "Nova mensagem...",
+    "nomessages": "Sem mensagens.",
+    "nousersfound": "Nenhum utilizador encontrado",
+    "send": "Enviar",
+    "type_blocked": "Bloqueado",
+    "type_offline": "Offline",
+    "type_online": "Online",
+    "type_search": "Resultados da pesquisa",
+    "type_strangers": "Outros",
+    "unblockcontact": "Desbloquear contacto"
+}

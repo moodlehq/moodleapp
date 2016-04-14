@@ -1,4 +1,7 @@
 {
+    "calendarevents": "Kalendář událostí",
+    "errorloadevent": "Chyba při načítání události.",
+    "errorloadevents": "Chyba při načítání událostí.",
     "noevents": "Nejsou žádné události",
     "notifications": "Upozornění"
 }

@@ -1,0 +1,19 @@
+{
+    "cannotcalculategrade": "Nota nu a putut fi calculată.",
+    "dataattemptshown": "Aceste date aparțin încercării cu numărul {{number}}.",
+    "errorcreateofflineattempt": "A apărut o eroare la crearea încercării offline. Încercați din nou!",
+    "errordownloadscorm": "Eroare la descărcarea SCORM cu numele: \"{{name}}\".",
+    "errorgetscorm": "Eroare la obținerea de date pentru acest SCORM",
+    "errorinvalidversion": "Această aplicație suporta doar versiunea de SCORM 1.2",
+    "errornotdownloadable": "Descărcarea pachetelor SCORM este dezactivată pe acest site. Contactați administratorul siteului.",
+    "errornovalidsco": "Acest SCORM nu are un SCO vizibil pentru a fi încărcat.",
+    "errorpackagefile": "Această aplicație suportă doar fișiere de tip ZIP.",
+    "errorsyncscorm": "A apărut o eroare la sincronizare. Vă rugăm să reîncercați.",
+    "lastsync": "Ultima sincronizare",
+    "offlineattemptnote": "Această încercare conține date care nu au fost sincronizate.",
+    "offlineattemptovermax": "Această încercare nu poate fi trimisă deoarece a fost depășit numărul maxim de încercări.",
+    "scormstatusnotdownloaded": "Acest SCORM nu a fost descărcat. Va fi descărcat automat când îl veți deschide.",
+    "scormstatusoutdated": "Acest SCORM a fost modificat de la ultima descărcare. Va fi redescărcat automat când îl veți deschide.",
+    "warningofflinedatadeleted": "Unele date ale încercării offline cu numărul {{number}} au fost șterse deoarece nu s-au putut constitui într-o nouă încercare.",
+    "warningsynconlineincomplete": "Această încercare nu poate fi sincronizată cu siteul pentru că ultima încercare efectuată nu a fost finalizată. Vă rugăm să o finalizați."
+}

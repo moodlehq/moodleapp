@@ -1,0 +1,9 @@
+{
+    "erroremptysubject": "A assunto da mensagem não pode estar em branco",
+    "errorgetforum": "Erro ao obter dados do fórum.",
+    "errorgetgroups": "Erro ao obter as configurações do grupo.",
+    "forumnodiscussionsyet": "Ainda não foram criados tópicos de discussão neste fórum.",
+    "group": "Grupo",
+    "numdiscussions": "{{numdiscussions}} tópicos de discussão",
+    "numreplies": "{{numreplies}} respostas"
+}

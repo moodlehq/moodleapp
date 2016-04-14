@@ -5,14 +5,17 @@
     "country": "Země",
     "description": "Popis",
     "details": "Detaily",
+    "detailsnotavailable": "Podrobnosti o tomto uživateli nejsou k dispozici.",
+    "editingteacher": "Učitel",
     "email": "E-mail",
     "interests": "Zájmy",
-    "invaliduser": "Neplatný uživatel",
+    "invaliduser": "Neplatný uživatel.",
     "manager": "Manažer",
     "phone1": "Telefon",
     "phone2": "Mobil",
     "roles": "Role",
     "student": "Student",
+    "teacher": "Učitel bez práva upravovat",
     "viewprofile": "Zobrazit profil",
-    "webpage": "Webová stránka"
+    "webpage": "Webové stránky"
 }
