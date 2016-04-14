@@ -70,7 +70,8 @@ angular.module('mm.core')
 
         $log = $log.getInstance('$mmUtil');
 
-        var self = {}; // Use 'self' to be coherent with the rest of services.
+        var self = {}, // Use 'self' to be coherent with the rest of services.
+            matchesFn;
 
         /**
          * Formats a URL, trim, lowercase, etc...
@@ -1175,6 +1176,48 @@ angular.module('mm.core')
                     element.className = element.className.replace(toReplace, newValue);
                 });
             });
+        };
+
+        /**
+         * Equivalent to element.closest(). If the browser doesn't support element.closest, it will
+         * traverse the parents to achieve the same functionality.
+         * Returns the closest ancestor of the current element (or the current element itself) which matches the selector.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#closest
+         * @param  {Object} element  DOM Element.
+         * @param  {String} selector Selector to search.
+         * @return {Object}          Closest ancestor.
+         */
+        self.closest = function(element, selector) {
+            // Try to use closest if the browser supports it.
+            if (typeof element.closest == 'function') {
+                return element.closest(selector);
+            }
+
+            if (!matchesFn) {
+                // Find the matches function supported by the browser.
+                ['matches','webkitMatchesSelector','mozMatchesSelector','msMatchesSelector','oMatchesSelector'].some(function(fn) {
+                    if (typeof document.body[fn] == 'function') {
+                        matchesFn = fn;
+                        return true;
+                    }
+                    return false;
+                });
+
+                if (!matchesFn) {
+                    return;
+                }
+            }
+
+            // Traverse parents.
+            while (element) {
+                if (element[matchesFn](selector)) {
+                    return element;
+                }
+                element = element.parentElement;
+            }
         };
 
         return self;
