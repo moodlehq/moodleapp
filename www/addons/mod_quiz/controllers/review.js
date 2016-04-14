@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_quiz')
  * @name mmaModQuizReviewCtrl
  */
 .controller('mmaModQuizReviewCtrl', function($log, $scope, $stateParams, $mmaModQuiz, $mmaModQuizHelper, $mmUtil,
-            $ionicScrollDelegate, $translate, $q, mmaModQuizAttemptComponent, $mmQuestionHelper, $mmSideMenu) {
+            $ionicScrollDelegate, $translate, $q, mmaModQuizAttemptComponent, $mmQuestionHelper, $mmSideMenu, $timeout) {
     $log = $log.getInstance('mmaModQuizReviewCtrl');
 
     var quizId = $stateParams.quizid,
@@ -62,7 +62,12 @@ angular.module('mm.addons.mod_quiz')
     // Load TOC to navigate to questions.
     function loadToc() {
         return $mmaModQuiz.getAttemptReview(attemptId, -1).then(function(reviewData) {
+            var lastQuestion = reviewData.questions[reviewData.questions.length - 1];
+            angular.forEach(reviewData.questions, function(question) {
+                question.stateClass = $mmQuestionHelper.getQuestionStateClass(question.state);
+            });
             $scope.toc = reviewData.questions;
+            $scope.numPages = lastQuestion ? lastQuestion.page + 1 : 0;
         });
     }
 

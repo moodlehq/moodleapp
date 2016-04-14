@@ -1,6 +1,9 @@
 
-$mm-question-correct-color:     #468847 !default;
-$mm-question-incorrect-color:   #b94a48 !default;
+$mm-question-correct-color:         #468847 !default;
+$mm-question-incorrect-color:       #b94a48 !default;
+$mm-question-state-correct-color:   #cfc !default;
+$mm-question-state-partial-color:   #ffa !default;
+$mm-question-state-incorrect-color: #fcc !default;
 
 .mm-question-textarea {
   width: 100%;
@@ -78,4 +81,19 @@ li.mm-question-answer-incorrect,
 
 .mm-question-feedback-padding {
   padding: 8px 35px 8px 14px;
+}
+
+.item,
+.platform-android .item,
+.platform-ios .item {
+  &.mm-question-correct {
+    background-color: $mm-question-state-correct-color;
+  }
+  &.mm-question-partiallycorrect {
+    background-color: $mm-question-state-partial-color;
+  }
+  &.mm-question-notanswered,
+  &.mm-question-incorrect {
+    background-color: $mm-question-state-incorrect-color;
+  }
 }

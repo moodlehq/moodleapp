@@ -24,7 +24,21 @@ angular.module('mm.core.question')
 .factory('$mmQuestionHelper', function($mmUtil, $mmText, $ionicModal) {
 
     var self = {},
-        lastErrorShown = 0;
+        lastErrorShown = 0,
+        stateClasses = {
+            todo: 'mm-question-notyetanswered',
+            invalid: 'mm-question-invalidanswer',
+            complete: 'mm-question-answersaved',
+            needsgrading: 'mm-question-requiresgrading',
+            finished: 'mm-question-complete',
+            gaveup: 'mm-question-notanswered',
+            gradedwrong: 'mm-question-incorrect',
+            gradedpartial: 'mm-question-partiallycorrect',
+            gradedright: 'mm-question-correct',
+            mangrwrong: 'mm-question-incorrect',
+            mangrpartial: 'mm-question-partiallycorrect',
+            mangrright: 'mm-question-correct'
+        };
 
     /**
      * Add a behaviour button to the question's "behaviourButtons" property.
@@ -461,6 +475,19 @@ angular.module('mm.core.question')
                 };
             }
         }
+    };
+
+    /**
+     * Get the CSS class for a question based on its state.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#getQuestionStateClass
+     * @param  {String} state Question's state.
+     * @return {String}       State class.
+     */
+    self.getQuestionStateClass = function(state) {
+        return stateClasses[state] || '';
     };
 
     /**
