@@ -1,10 +1,10 @@
 {
     "cannotsubmitsurvey": "Fehler beim Übermitteln der Umfragedaten. Versuchen Sie es nochmal.",
-    "clicktocontinue": "Weiter",
+    "clicktocontinue": "Klicken Sie hier, um weiterzumachen",
     "errorgetsurvey": "Fehler beim Empfangen der Umfragedaten",
-    "ifoundthat": "Ich habe herausgefunden",
-    "ipreferthat": "Ich bevorzuge",
+    "ifoundthat": "Dies findet statt:",
+    "ipreferthat": "Ich bevorzuge es so:",
     "responses": "Antworten",
     "results": "Ergebnisse",
-    "surveycompletednograph": "Sie haben die Umfrage abgeschlossen"
+    "surveycompletednograph": "Sie haben diese Umfrage abgeschlossen."
 }

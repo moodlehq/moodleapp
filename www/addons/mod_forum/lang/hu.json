@@ -8,9 +8,9 @@
     "erroremptymessage": "A hozzászólás szövege nem lehet üres.",
     "erroremptysubject": "A hozzászólás tárgya nem lehet üres.",
     "group": "Csoport",
-    "message": "Üzenet törzsszövege",
+    "message": "Üzenet",
     "posttoforum": "Hozzászólás a fórumhoz",
     "re": "Tárgy:",
     "reply": "Válasz",
-    "subject": "Üzenet tárgya"
+    "subject": "Téma"
 }

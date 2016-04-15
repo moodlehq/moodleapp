@@ -33,7 +33,7 @@
     "incomplete": "Unvollständig",
     "lastattempt": "Letzter vollständiger Versuch",
     "lastsync": "Letzte Synchronisation",
-    "mode": "Modus",
+    "mode": "Einstellung",
     "newattempt": "Neuen Versuch beginnen",
     "noattemptsallowed": "Zahl zulässiger Versuche",
     "noattemptsmade": "Zahl Ihrer Versuche",
@@ -46,7 +46,7 @@
     "reviewmode": "Rückblick-Modus",
     "scormstatusnotdownloaded": "Dieses Lernpaket ist noch nicht geladen. Es wird automatisch heruntergeladen, wenn Sie es öffnen.",
     "scormstatusoutdated": "Dieses Lernpaket wurde seit dem Herunterladen verändert. Es wird automatisch heruntergeladen, wenn Sie es öffnen.",
-    "suspended": "gesperrt",
+    "suspended": "Ausgeschlossen",
     "warningofflinedatadeleted": "Offline-Daten von Versuch {{number}} wurden gelöscht, weil sie nicht für einen neuen Versuch verwendet werden können.",
     "warningsynconlineincomplete": "Mehrere Versuche konnten nicht synchronisiert werden, weil der letzte Online-Versuch auf der Website nicht beendet ist. Beenden Sie zuerst den Online-Versuch."
 }

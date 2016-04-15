@@ -1,11 +1,11 @@
 {
-    "addsubmission": "Bidalketa gehitu",
-    "allowsubmissionsfromdate": "Bidalketak hemendik baimendu",
-    "attemptnumber": "Saiakera kopurua",
+    "addsubmission": "Gehitu bidalketa",
+    "allowsubmissionsfromdate": "Baimendu bidalketak hemendik:",
+    "attemptnumber": "Saiakera-kopurua",
     "cutoffdate": "Itxiera-data",
     "duedate": "Entregatze-data",
     "duedateno": "Entregatze-datarik ez",
     "submissions": "Bidalketak",
     "userwithid": "{{id}} IDa duen erabiltzailea",
-    "viewsubmission": "Bidalketa ikusi"
+    "viewsubmission": "Ikusi bidalketa"
 }

@@ -37,7 +37,7 @@
     "newattempt": "Commencer une nouvelle tentative",
     "noattemptsallowed": "Nombre de tentatives permises",
     "noattemptsmade": "Nombre de tentatives effectuées",
-    "normal": "Normale",
+    "normal": "Normal",
     "notattempted": "Aucune tentative",
     "offlineattemptnote": "Cette tentative comporte des données non synchronisées.",
     "offlineattemptovermax": "Cette tentative ne peut pas être envoyée, car vous avez dépassé le nombre maximum de tentatives.",

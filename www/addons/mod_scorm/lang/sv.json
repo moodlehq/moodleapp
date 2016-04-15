@@ -46,7 +46,7 @@
     "reviewmode": "Läge för granskning",
     "scormstatusnotdownloaded": "Detta SCORM är inte nedladdat. Det kommer att laddas ner automatiskt när du öppnar den",
     "scormstatusoutdated": "Detta SCORM har modifierats sedan sista nedladdningen. Det kommer att laddas ner automatiskt när du öppnar den",
-    "suspended": "Spärrad",
+    "suspended": "Avstängd",
     "warningofflinedatadeleted": "Vissa offlinedata av försöket {{nummer}} har tagits bort eftersom den inte kunnat skapas in ett nytt försök .",
     "warningsynconlineincomplete": "Vissa försök kunde inte synkroniseras med sidan, eftersom senaste online försök inte är klar än . Vänligen avsluta online- försöket först ."
 }

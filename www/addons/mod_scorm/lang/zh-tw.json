@@ -5,7 +5,7 @@
     "averageattempt": "平均使用次數",
     "browse": "預覽",
     "browsed": "已瀏覽",
-    "browsemode": "瀏覽模式",
+    "browsemode": "預覽模式",
     "completed": "已完成",
     "contents": "目錄",
     "enter": "進入",
@@ -26,10 +26,10 @@
     "newattempt": "開始新的使用",
     "noattemptsallowed": "允許作答的次數",
     "noattemptsmade": "你已經作答的次數",
-    "normal": "標準的",
+    "normal": "一般",
     "notattempted": "未嘗試",
     "organizations": "組織",
     "passed": "通過",
     "reviewmode": "複習模式",
-    "suspended": "已停用"
+    "suspended": "中止"
 }

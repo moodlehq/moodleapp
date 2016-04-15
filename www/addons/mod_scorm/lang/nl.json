@@ -7,7 +7,7 @@
     "browsed": "Voorgeproefd",
     "browsemode": "Probeermodus",
     "cannotcalculategrade": "Cijfer kon niet berekend worden.",
-    "completed": "Voltooid",
+    "completed": "Volledig",
     "contents": "Inhoud",
     "dataattemptshown": "Deze gegevens horen bij poging nummer {{number}}.",
     "enter": "Start",
@@ -37,7 +37,7 @@
     "newattempt": "Begin een nieuwe poging",
     "noattemptsallowed": "Aantal toegelaten pogingen",
     "noattemptsmade": "Aantal pogingen die je gedaan hebt",
-    "normal": "Normaal",
+    "normal": "Activiteit starten",
     "notattempted": "Niet geprobeerd",
     "offlineattemptnote": "Deze poging bevat gegevens die nog niet gesynchroniseerd zijn.",
     "offlineattemptovermax": "Deze poging kan niet verzonden worden omdat je het maximale aantal pogingen overschreden hebt.",
@@ -46,7 +46,7 @@
     "reviewmode": "Nalezen",
     "scormstatusnotdownloaded": "Deze SCORM is niet gedownload. Het zal automatisch gedownload worden als je het opent.",
     "scormstatusoutdated": "Deze SCORM is gewijzigd sinds de laatste download. Het zal automatisch gedownload worden wanneer je het opent.",
-    "suspended": "Geschorst",
+    "suspended": "Onderbroken",
     "warningofflinedatadeleted": "Sommige offline gegevens van poging {{number}} zijn verwijderd omdat ze niet in een nieuwe poging konden omgezet worden.",
     "warningsynconlineincomplete": "Sommige pogingen konden niet gesynchroniseerd worden met de site omdat de laatste online-poging niet beëindigd was. Beëindig eerst de online-poging."
 }

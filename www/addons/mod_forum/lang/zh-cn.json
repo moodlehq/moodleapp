@@ -9,9 +9,9 @@
     "erroremptysubject": "帖子标题不能为空。",
     "forumnodiscussionsyet": "此论坛中还没有讨论话题",
     "group": "小组",
-    "message": "内容",
+    "message": "正文",
     "posttoforum": "发到讨论区上",
     "re": "回复:",
     "reply": "回复",
-    "subject": "标题"
+    "subject": "主题"
 }

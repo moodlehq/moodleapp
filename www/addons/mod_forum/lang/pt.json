@@ -11,11 +11,11 @@
     "errorgetgroups": "Erro ao obter as configurações do grupo.",
     "forumnodiscussionsyet": "Ainda não foram criados tópicos de discussão neste fórum.",
     "group": "Grupo",
-    "message": "Corpo da mensagem",
+    "message": "Mensagem",
     "numdiscussions": "{{numdiscussions}} tópicos de discussão",
     "numreplies": "{{numreplies}} respostas",
     "posttoforum": "Submeter tópico",
     "re": "Re:",
     "reply": "Responder",
-    "subject": "Assunto da mensagem"
+    "subject": "Assunto"
 }

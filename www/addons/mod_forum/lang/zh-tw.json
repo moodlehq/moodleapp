@@ -9,9 +9,9 @@
     "erroremptysubject": "貼文的主旨不能是空白",
     "forumnodiscussionsyet": "這個討論區還沒有討論主題",
     "group": "分組",
-    "message": "訊息主文",
+    "message": "訊息",
     "posttoforum": "貼文到討論區中",
     "re": "回應:",
     "reply": "回應",
-    "subject": "訊息主旨"
+    "subject": "主旨"
 }
