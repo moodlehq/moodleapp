@@ -8,12 +8,12 @@
     "errorwhilegettingchatusers": "Ошибка при получении пользователей чата",
     "errorwhileretrievingmessages": "Ошибка при получении сообщения от сервера",
     "errorwhilesendingmessage": "Ошибка при отправке сообщения",
-    "messagebeepsyou": "{{$a}} отправил Вам сигнал!",
-    "messageenter": "{{$a}} появился в чате",
-    "messageexit": "{{$a}} ушел из чата",
+    "messagebeepsyou": "Вам только что позвонили - {{$a}}",
+    "messageenter": "{{$a}} только что вошел в этот чат",
+    "messageexit": "{{$a}} покинул этот чат",
     "mustbeonlinetosendmessages": "Вы должны быть онлайн, чтобы отправлять сообщения",
     "nomessages": "Нет ни одного сообщения",
     "send": "Отправить",
-    "sessionstart": "Следующий сеанс чата начнется в: {{$a}}",
+    "sessionstart": "Следующая чат-сессия начнется в  {{$a}}",
     "talk": "Разговор"
 }

@@ -8,12 +8,12 @@
     "errorwhilegettingchatusers": "Fout bij het ophalen van de chatgebruikers.",
     "errorwhileretrievingmessages": "Fout bij het ophalen van de berichten van de server.",
     "errorwhilesendingmessage": "Fout tijdens het versturen van het bericht.",
-    "messagebeepsyou": "{{$a}} heeft je net gepiept!",
-    "messageenter": "{{$a}} is net deze chat binnen gekomen",
-    "messageexit": "{{$a}} heeft deze chat verlaten",
+    "messagebeepsyou": "{{$a}} heeft je gepiept",
+    "messageenter": "{{$a}} is de chat binnengekomen",
+    "messageexit": "{{$a}} heeft de chat verlaten",
     "mustbeonlinetosendmessages": "Je moet online zijn om berichten te versturen",
     "nomessages": "Nog geen berichten",
     "send": "Stuur",
-    "sessionstart": "Chatsessie zal starten binnen: {{$a}}",
+    "sessionstart": "De volgende chatsessie zal starten over {{$a}}",
     "talk": "Spreek"
 }
