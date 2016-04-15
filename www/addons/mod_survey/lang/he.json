@@ -1,10 +1,10 @@
 {
     "cannotsubmitsurvey": "מתנצלים, היתה בעיה בהגשת הסקר שלך. אנא נסה שוב.",
-    "clicktocontinue": "יש להקליק כאן להמשך",
+    "clicktocontinue": "לחץ כאן כדי להמשיך",
     "errorgetsurvey": "שגיאה בטעינת מידע אודות הסקר.",
-    "ifoundthat": "מצאתי ש",
-    "ipreferthat": "אני מעדיף ש",
+    "ifoundthat": "מצאתי ש-",
+    "ipreferthat": "אני מעדיף ש-",
     "responses": "תגובות",
     "results": "תוצאות",
-    "surveycompletednograph": "הסקר הנוכחי הושלם."
+    "surveycompletednograph": "השלמת את הסקר."
 }

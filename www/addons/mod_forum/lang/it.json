@@ -4,7 +4,7 @@
     "cannotadddiscussionall": "Non hai il permesso per aggiungere un argomento di discussione per tutti i partecipanti.",
     "cannotcreatediscussion": "Non è stato possibile creare una nuova discussione",
     "couldnotadd": "Non è possibile aggiungere l'intervento a causa di un errore sconosciuto.",
-    "discussionsubscription": "Sottoscrizione discussione",
+    "discussionsubscription": "Sottoscrizione della discussione",
     "erroremptymessage": "Il corpo del messaggio non può essere vuoto",
     "erroremptysubject": "L'oggetto dell'intervento non può essere vuoto",
     "errorgetforum": "Si è verificato un errore durante la ricezione dei dati del forum.",
@@ -17,5 +17,5 @@
     "posttoforum": "Invia al forum",
     "re": "Re:",
     "reply": "Rispondi",
-    "subject": "Oggetto del messaggio"
+    "subject": "Oggetto"
 }

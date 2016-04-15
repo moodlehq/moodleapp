@@ -11,11 +11,11 @@
     "errorgetgroups": "Error al obtener los datos del grupo.",
     "forumnodiscussionsyet": "No existen temas de discusión en este foro",
     "group": "Grupo",
-    "message": "Cuerpo del mensaje",
+    "message": "Mensaje",
     "numdiscussions": "{{numdiscussions}} discusiones",
     "numreplies": "{{numreplies}} respuestas",
     "posttoforum": "Enviar al foro",
     "re": "Re:",
     "reply": "Responder",
-    "subject": "Asunto del mensaje"
+    "subject": "Asunto"
 }

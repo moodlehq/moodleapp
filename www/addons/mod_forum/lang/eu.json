@@ -11,11 +11,11 @@
     "errorgetgroups": "Errorea talde-ezarpenak eskuratzean.",
     "forumnodiscussionsyet": "Oraindik ez dago elkarrizketarik foro honetan.",
     "group": "Taldea",
-    "message": "Mezuren gurputza",
+    "message": "Mezua",
     "numdiscussions": "{{numdiscussions}} elkarrizketa",
     "numreplies": "{{numreplies}} erantzun",
     "posttoforum": "Mezua forora bidali",
     "re": "Er:",
     "reply": "Erantzun",
-    "subject": "Mezuaren gaia"
+    "subject": "Gaia"
 }

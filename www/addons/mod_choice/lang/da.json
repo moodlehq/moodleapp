@@ -1,5 +1,5 @@
 {
-    "cannotsubmit": "Beklager der var et problem med at indsende dit valg. Prøv igen.",
+    "cannotsubmit": "Der var desværre problemer med at indsende dit valg. Prøv igen.",
     "choiceoptions": "Valgmuligheder",
     "errorgetchoice": "Fejl ved indhentning af valgte data",
     "expired": "Beklager denne aktivitet lukkede {{$a}} og er ikke længere tilgængelig",

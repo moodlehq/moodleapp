@@ -1,11 +1,11 @@
 {
-    "addsubmission": "Lägg till inlämning",
-    "allowsubmissionsfromdate": "Tillåt inlämningar från",
-    "attemptnumber": "Försök nr",
-    "cutoffdate": "Cut-off datum",
-    "duedate": "Förfallodag",
-    "duedateno": "Ingen förfallodag",
-    "submissions": "Inlämningar",
+    "addsubmission": "Lägg till uppgift",
+    "allowsubmissionsfromdate": "Tillåt inlämning från",
+    "attemptnumber": "Försök nummer",
+    "cutoffdate": "Avstängningsdatum",
+    "duedate": "Stoppdatum/tid",
+    "duedateno": "Inget stoppdatum/tid",
+    "submissions": "Inskickade uppgifter",
     "userwithid": "Användare men Id {{id}}",
     "viewsubmission": "Visa inlämning"
 }

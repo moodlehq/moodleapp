@@ -6,7 +6,7 @@
     "browse": "Przeglądaj",
     "browsed": "Przeglądane",
     "browsemode": "Tryb przeglądania",
-    "completed": "Ukończony",
+    "completed": "Zakończone",
     "contents": "Zawartość",
     "enter": "Wejdź",
     "exceededmaxattempts": "Osiągnąłeś maksymalną liczbę podejść.",
@@ -26,10 +26,10 @@
     "newattempt": "Rozpocznij nową próbę",
     "noattemptsallowed": "Liczba dozwolonych prób",
     "noattemptsmade": "Liczba wykonanych prób",
-    "normal": "Zwykły",
+    "normal": "Normalne",
     "notattempted": "Nie próbowano",
     "organizations": "Organizacje",
     "passed": "Udane",
     "reviewmode": "Tryb przeglądu",
-    "suspended": "Zawieszony"
+    "suspended": "Zawieszone"
 }

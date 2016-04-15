@@ -5,13 +5,13 @@
     "full": "(Betelt)",
     "noresultsviewable": "Az eredmények jelenleg nem tekinthetők meg.",
     "notopenyet": "Ez a tevékenység {{$a}} időpontig nem elérhető",
-    "numberofuser": "Résztvevők száma",
-    "numberofuserinpercentage": "Résztvevők száma százalékban",
+    "numberofuser": "Válaszok száma",
+    "numberofuserinpercentage": "Válaszok száma százalékban",
     "previewonly": "Ez a tevékenység lehetőségeinek előnézete. A választását {{$a}} időpontig nem közölheti.",
     "removemychoice": "Válaszlehetőségem törlése",
     "responses": "Tanuló által adott válaszok",
     "responsesresultgraphheader": "Gráfmegjelenítés",
     "savemychoice": "Válaszlehetőségem mentése",
-    "userchoosethisoption": "Felhasználó általi választás",
+    "userchoosethisoption": "Ezt választó felhasználók",
     "yourselection": "Az Ön választása"
 }

@@ -5,7 +5,7 @@
     "cutoffdate": "Datum ukončení",
     "duedate": "Termín odevzdání",
     "duedateno": "Bez termínu odevzdání",
-    "submissions": "Odpovědi",
+    "submissions": "Odevzdané úkoly",
     "userwithid": "Uživatel s ID {{id}}",
-    "viewsubmission": "Zobrazit odpovědi"
+    "viewsubmission": "Zobrazit odevzdané úkoly"
 }

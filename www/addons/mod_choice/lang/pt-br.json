@@ -1,5 +1,5 @@
 {
-    "cannotsubmit": "Desculpe, houve um problema enviar sua escolha. Por favor, tente novamente.",
+    "cannotsubmit": "Desculpe, houve um problema ao enviar sua escolha. Por favor, tente novamente.",
     "choiceoptions": "Opções de escolha",
     "errorgetchoice": "Erro ao obter dados do escolha.",
     "expired": "Desculpe, esta atividade encerrada em {{$a}} e já não está disponível",

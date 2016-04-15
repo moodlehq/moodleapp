@@ -1,11 +1,11 @@
 {
     "addsubmission": "Inzending toevoegen",
-    "allowsubmissionsfromdate": "Inzendingen toestaan van",
+    "allowsubmissionsfromdate": "Insturen toestaan vanaf",
     "attemptnumber": "Pogingnummer",
     "cutoffdate": "Afsluitdatum",
-    "duedate": "Voltooidatum",
-    "duedateno": "Geen voltooidatum",
-    "submissions": "Ingestuurde bestanden",
+    "duedate": "Uiterste inleverdatum",
+    "duedateno": "Geen uiterste inleverdatum",
+    "submissions": "Ingestuurde opdrachten",
     "userwithid": "Gebruiker met Id {{id}}",
-    "viewsubmission": "Bekijk ingestuurd bestand"
+    "viewsubmission": "Bekijk ingestuurde opdracht"
 }

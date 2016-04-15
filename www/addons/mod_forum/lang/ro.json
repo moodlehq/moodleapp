@@ -8,11 +8,11 @@
     "errorgetgroups": "Eroare la obținerea setărilor pentru grup.",
     "forumnodiscussionsyet": "Nu există subiecte deschise în acest forum.",
     "group": "Grup",
-    "message": "Conținut mesaj",
+    "message": "Mesaj",
     "numdiscussions": "{{numdiscussions}} discuții",
     "numreplies": "{{numreplies}} răspunsuri",
     "posttoforum": "Trimite intervenţie pe forum",
     "re": "Re:",
     "reply": "Răspunde",
-    "subject": "Subiectul mesajului"
+    "subject": "Subiect"
 }

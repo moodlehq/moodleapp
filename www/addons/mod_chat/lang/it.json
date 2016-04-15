@@ -2,7 +2,7 @@
     "beep": "Beep",
     "currentusers": "Utenti attivi",
     "enterchat": "Entra nella chat",
-    "entermessage": "Inserisci il messaggio",
+    "entermessage": "Inserisci il tuo messaggio",
     "errorwhileconnecting": "Si è verificato un errore durante il collegamento alla chat.",
     "errorwhilegettingchatdata": "Si è verificato un errore durante la ricezione dei dati della chat.",
     "errorwhilegettingchatusers": "Si è verificato un errore durante la ricezione degli utenti della chat.",
@@ -12,7 +12,7 @@
     "messageenter": "{{$a}} è entrato nella chat",
     "messageexit": "{{$a}} è uscito dalla chat",
     "mustbeonlinetosendmessages": "Per inviare messaggi devi essere online",
-    "nomessages": "Non sono presenti messaggi",
+    "nomessages": "Non ci sono ancora messaggi",
     "send": "Invia",
     "sessionstart": "La prossima sessione di chat inizierà tra {{$a}}",
     "talk": "Parla"

@@ -7,7 +7,7 @@
     "browsed": "Nabigatua",
     "browsemode": "Aurrebista-modua",
     "cannotcalculategrade": "Ezin izan da kalifikazioa kalkulatu.",
-    "completed": "Osatuta",
+    "completed": "Osatua",
     "contents": "Edukiak",
     "dataattemptshown": "Datu hauek {{number}} saiakerakoak dira.",
     "enter": "Sartu",
@@ -46,7 +46,7 @@
     "reviewmode": "Berrikusketa-modua",
     "scormstatusnotdownloaded": "SCORM hau ez dago aurretik jaitsita. Automatikoki jaitsiko da irekitzen duzunean.",
     "scormstatusoutdated": "SCORM hau eguneratua izan da azkenekoz jaitsi zenuenetik. Automatikoki jaitsiko da irekitzen duzunean.",
-    "suspended": "Kontua etenda",
+    "suspended": "Bere horretan utzia",
     "warningofflinedatadeleted": "{{number}}. saiakeraren lineaz kanpoko datu batzuk ezabatu dira ezin izan direlako saiakera berri batean sortu.",
     "warningsynconlineincomplete": "Saiakera batzuk ezin izan dira Moodle gunearekin sinkronizatu azken online saiakera ez delako bukatu. Mesedez, bukatu online saiakera aurretik."
 }

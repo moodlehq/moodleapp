@@ -1,8 +1,8 @@
 {
     "beep": "Piep",
     "currentusers": "Huidige gebruikers",
-    "enterchat": "Klik hier om de chatroom binnen te gaan",
-    "entermessage": "Bericht",
+    "enterchat": "Klik hier om de chat nu binnen te gaan",
+    "entermessage": "Geef je bericht",
     "errorwhileconnecting": "Fout bij het verbinden met de chat.",
     "errorwhilegettingchatdata": "Fout bij het ophalen van de chatgegevens.",
     "errorwhilegettingchatusers": "Fout bij het ophalen van de chatgebruikers.",

@@ -1,10 +1,10 @@
 {
     "cannotsubmitsurvey": "Lo sentimos, hubo un error al enviar su encuesta. Por favor, inténtelo nuevamente.",
-    "clicktocontinue": "Haga click aquí para continuar",
+    "clicktocontinue": "Haz clic aquí para continuar",
     "errorgetsurvey": "Error al obtener datos de la encuesta.",
-    "ifoundthat": "Yo encontré que",
-    "ipreferthat": "Yo prefiero que",
+    "ifoundthat": "Encontrado:",
+    "ipreferthat": "Prefiero esto",
     "responses": "Respuestas",
     "results": "Resultados",
-    "surveycompletednograph": "Usted ha completado esta encuesta"
+    "surveycompletednograph": "Usted ha completado esta encuesta."
 }

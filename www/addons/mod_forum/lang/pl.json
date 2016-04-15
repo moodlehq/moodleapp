@@ -9,9 +9,9 @@
     "erroremptysubject": "Tytuł wpisu nie może być pusty.",
     "forumnodiscussionsyet": "Brak tematów dyskusji na tym forum",
     "group": "Grupa",
-    "message": "Treść wiadomości",
+    "message": "Wiadomość",
     "posttoforum": "Wyślij wpis na forum",
     "re": "Odp:",
     "reply": "Odpowiedz",
-    "subject": "Temat wiadomości"
+    "subject": "Temat"
 }
