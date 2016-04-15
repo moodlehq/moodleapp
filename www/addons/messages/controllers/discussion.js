@@ -53,7 +53,7 @@ angular.module('mm.addons.messages')
                 $scope.title = user.fullname;
             }
             if (typeof $scope.profileLink == 'undefined') {
-                $scope.profileLink = user.profileimageurl;
+                $scope.profileLink = user.profileimageurl || true;
             }
         }).catch(function() {
             // Couldn't retrieve the image, use a default icon.
