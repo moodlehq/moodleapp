@@ -1,5 +1,5 @@
 <ion-view view-title="{{ 'mma.mod_forum.addanewdiscussion' | translate }}">
-    <ion-content padding="true" mm-state-class>
+    <ion-content padding="true" mm-state-class delegate-handle="mmaModForumNewDiscussion">
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="groupsLoaded" on-refresh="refreshGroups()">
         </ion-refresher>
         <mm-loading hide-until="groupsLoaded">
@@ -8,9 +8,9 @@
                     <span class="input-label">{{ 'mma.mod_forum.subject' | translate }}</span>
                     <input type="text" placeholder="{{ 'mma.mod_forum.subject' | translate }}" ng-model="newdiscussion.subject">
                 </label>
-                <label class="item item-input item-stacked-label">
+                <label class="item item-input item-stacked-label mm-item-has-rich-text-editor">
                     <span class="input-label">{{ 'mma.mod_forum.message' | translate }}</span>
-                    <textarea class="mma-forum-textarea" placeholder="{{ 'mma.mod_forum.message' | translate }}" ng-model="newdiscussion.message" aria-multiline="true"></textarea>
+                    <mm-rich-text-editor model="newdiscussion" placeholder="{{ 'mma.mod_forum.message' | translate }}" scroll-handle="mmaModForumNewDiscussion" name="mod_forum_new_discussion"></mm-rich-text-editor>
                 </label>
                 <div class="item item-input item-select" ng-if="showGroups">
                     <div class="input-label" id="mma-forum-groupslabel">
@@ -29,7 +29,7 @@
                     </label>
                 </li>
                 <div class="item">
-                    <button class="button button-block" ng-click="add()" ng-disabled="newdiscussion.subject == '' || newdiscussion.message == ''">{{ 'mma.mod_forum.posttoforum' | translate }}</button>
+                    <button class="button button-block" ng-click="add()" ng-disabled="newdiscussion.subject == '' || newdiscussion.text == ''">{{ 'mma.mod_forum.posttoforum' | translate }}</button>
                 </div>
             </form>
         </mm-loading>
