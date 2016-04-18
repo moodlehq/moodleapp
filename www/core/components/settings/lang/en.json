@@ -19,6 +19,8 @@
     "enabledebugging": "Enable debugging",
     "enabledownloadsection": "Enable download sections",
     "enabledownloadsectiondescription": "Disable this option to speed up the loading of course sections.",
+    "enablerichtexteditor": "Enable rich text editor",
+    "enablerichtexteditordescription": "If enabled, a rich text editor will be shown in places that allow it.",
     "enablesyncwifi": "Allow sync only when on Wi-Fi",
     "errordeletesitefiles": "Error deleting site files.",
     "errorsyncsite": "Error synchronizing the site data, please check your internet connection and try again.",

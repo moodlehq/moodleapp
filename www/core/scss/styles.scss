@@ -531,3 +531,25 @@ mm-timer {
 .scroll-refresher .ionic-refresher-content.ionic-refresher-with-text {
   bottom: 20px;
 }
+
+/**
+ * RichTextEditor.
+ */
+
+.mm-textarea {
+  width: 100%;
+  height: 200px;
+  resize: none;
+}
+
+.item.mm-item-has-rich-text-editor {
+  padding-left: 0;
+  padding-right: 0;
+
+  .input-label, .mm-textarea {
+    padding-left: $item-padding;
+  }
+  .mm-rich-text-editor-container {
+    padding-top: 5px;
+  }
+}
