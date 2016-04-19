@@ -336,103 +336,109 @@ angular.module('mm.core')
             return $q.reject();
         }
 
-        return self._fixPluginfileURL(siteId, fileUrl).then(function(fileUrl) {
-
-            timemodified = timemodified || 0;
-            revision = self.getRevisionFromUrl(fileUrl);
-            fileId = self._getFileIdByUrl(fileUrl);
-            priority = priority || 0;
-
-            // Set up the component.
-            if (typeof component !== 'undefined') {
-                link = {
-                    component: component,
-                    componentId: componentId
-                };
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            if (!site.canDownloadFiles()) {
+                return $q.reject();
             }
 
-            // Retrieve the queue deferred now if it exists to prevent errors if file is removed from queue
-            // while we're checking if the file is in queue.
-            queueDeferred = self._getQueueDeferred(siteId, fileId, false);
+            return self._fixPluginfileURL(siteId, fileUrl).then(function(fileUrl) {
 
-            return db.get(mmFilepoolQueueStore, [siteId, fileId]).then(function(fileObject) {
-                var foundLink = false,
-                    update = false;
+                timemodified = timemodified || 0;
+                revision = self.getRevisionFromUrl(fileUrl);
+                fileId = self._getFileIdByUrl(fileUrl);
+                priority = priority || 0;
 
-                if (fileObject) {
-                    // We already have the file in queue, we update the priority and links.
-                    if (fileObject.priority < priority) {
-                        update = true;
-                        fileObject.priority = priority;
-                    }
-                    if (revision && fileObject.revision !== revision) {
-                        update = true;
-                        fileObject.revision = revision;
-                    }
-                    if (timemodified && fileObject.timemodified !== timemodified) {
-                        update = true;
-                        fileObject.timemodified = timemodified;
-                    }
-                    if (filePath && fileObject.path !== filePath) {
-                        update = true;
-                        fileObject.path = filePath;
-                    }
-
-                    if (link) {
-                        // We need to add the new link if it does not exist yet.
-                        angular.forEach(fileObject.links, function(fileLink) {
-                            if (fileLink.component == link.component && fileLink.componentId == link.componentId) {
-                                foundLink = true;
-                            }
-                        });
-                        if (!foundLink) {
-                            update = true;
-                            fileObject.links.push(link);
-                        }
-                    }
-
-                    if (update) {
-                        // Update only when required.
-                        $log.debug('Updating file ' + fileId + ' which is already in queue');
-                        return db.insert(mmFilepoolQueueStore, fileObject).then(function() {
-                            return self._getQueuePromise(siteId, fileId);
-                        });
-                    }
-
-                    $log.debug('File ' + fileId + ' already in queue and does not require update');
-                    if (queueDeferred) {
-                        // If we were able to retrieve the queue deferred before we use that one, since the file download
-                        // might have finished now and the deferred wouldn't be in the array anymore.
-                        return queueDeferred.promise;
-                    } else {
-                        return self._getQueuePromise(siteId, fileId);
-                    }
-                } else {
-                    return addToQueue();
+                // Set up the component.
+                if (typeof component !== 'undefined') {
+                    link = {
+                        component: component,
+                        componentId: componentId
+                    };
                 }
-            }, function() {
-                // Unsure why we could not get the record, let's add to the queue anyway.
-                return addToQueue();
-            });
 
-            function addToQueue() {
-                $log.debug('Adding ' + fileId + ' to the queue');
-                return db.insert(mmFilepoolQueueStore, {
-                    siteId: siteId,
-                    fileId: fileId,
-                    added: now.getTime(),
-                    priority: priority,
-                    url: fileUrl,
-                    revision: revision,
-                    timemodified: timemodified,
-                    path: filePath,
-                    links: link ? [link] : []
-                }).then(function() {
-                    // Check if the queue is running.
-                    self.checkQueueProcessing();
-                    return self._getQueuePromise(siteId, fileId);
+                // Retrieve the queue deferred now if it exists to prevent errors if file is removed from queue
+                // while we're checking if the file is in queue.
+                queueDeferred = self._getQueueDeferred(siteId, fileId, false);
+
+                return db.get(mmFilepoolQueueStore, [siteId, fileId]).then(function(fileObject) {
+                    var foundLink = false,
+                        update = false;
+
+                    if (fileObject) {
+                        // We already have the file in queue, we update the priority and links.
+                        if (fileObject.priority < priority) {
+                            update = true;
+                            fileObject.priority = priority;
+                        }
+                        if (revision && fileObject.revision !== revision) {
+                            update = true;
+                            fileObject.revision = revision;
+                        }
+                        if (timemodified && fileObject.timemodified !== timemodified) {
+                            update = true;
+                            fileObject.timemodified = timemodified;
+                        }
+                        if (filePath && fileObject.path !== filePath) {
+                            update = true;
+                            fileObject.path = filePath;
+                        }
+
+                        if (link) {
+                            // We need to add the new link if it does not exist yet.
+                            angular.forEach(fileObject.links, function(fileLink) {
+                                if (fileLink.component == link.component && fileLink.componentId == link.componentId) {
+                                    foundLink = true;
+                                }
+                            });
+                            if (!foundLink) {
+                                update = true;
+                                fileObject.links.push(link);
+                            }
+                        }
+
+                        if (update) {
+                            // Update only when required.
+                            $log.debug('Updating file ' + fileId + ' which is already in queue');
+                            return db.insert(mmFilepoolQueueStore, fileObject).then(function() {
+                                return self._getQueuePromise(siteId, fileId);
+                            });
+                        }
+
+                        $log.debug('File ' + fileId + ' already in queue and does not require update');
+                        if (queueDeferred) {
+                            // If we were able to retrieve the queue deferred before we use that one, since the file download
+                            // might have finished now and the deferred wouldn't be in the array anymore.
+                            return queueDeferred.promise;
+                        } else {
+                            return self._getQueuePromise(siteId, fileId);
+                        }
+                    } else {
+                        return addToQueue();
+                    }
+                }, function() {
+                    // Unsure why we could not get the record, let's add to the queue anyway.
+                    return addToQueue();
                 });
-            }
+
+                function addToQueue() {
+                    $log.debug('Adding ' + fileId + ' to the queue');
+                    return db.insert(mmFilepoolQueueStore, {
+                        siteId: siteId,
+                        fileId: fileId,
+                        added: now.getTime(),
+                        priority: priority,
+                        url: fileUrl,
+                        revision: revision,
+                        timemodified: timemodified,
+                        path: filePath,
+                        links: link ? [link] : []
+                    }).then(function() {
+                        // Check if the queue is running.
+                        self.checkQueueProcessing();
+                        return self._getQueuePromise(siteId, fileId);
+                    });
+                }
+            });
         });
     };
 
