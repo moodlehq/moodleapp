@@ -90,14 +90,14 @@ gulp.task('sass', ['sass-build'], function(done) {
 });
 
 gulp.task('watch', function() {
-  gulp.watch(paths.sass.core, ['sass']);
-  gulp.watch(paths.sass.custom, ['sass']);
-  gulp.watch(paths.js, ['build', 'config']);
+  gulp.watch(paths.sass.core, { interval: 500 }, ['sass']);
+  gulp.watch(paths.sass.custom, { interval: 500 }, ['sass']);
+  gulp.watch(paths.js, { interval: 500 }, ['build', 'config']);
   var langsPaths = paths.lang.map(function(path) {
     return path + '*.json';
   });
-  gulp.watch(langsPaths, ['lang']);
-  gulp.watch(paths.config, ['config']);
+  gulp.watch(langsPaths, { interval: 500 }, ['lang']);
+  gulp.watch(paths.config, { interval: 500 }, ['config']);
 });
 
 gulp.task('build', function(done) {
