@@ -3,6 +3,7 @@ $mma-mod-quiz-warning-color:      #c00 !default;
 $mma-mod-quiz-highlight-color:    #d9edf7 !default;
 $mma-mod-quiz-alternate-color:    #fbfbfb !default;
 $mma-mod-quiz-conecterr-color:    #fcc !default;
+$mma-mod-quiz-selected-color:     #666 !default;
 
 p.mma-mod-quiz-warning {
   color: $mma-mod-quiz-warning-color;
@@ -58,5 +59,15 @@ p.mma-mod-quiz-warning {
 .mm-site_mod_quiz-review .item {
   h3 {
     font-size: 18px;
+  }
+}
+
+.item.mma-mod-quiz-selected,
+.platform-android .item.mma-mod-quiz-selected,
+.platform-ios .item.mma-mod-quiz-selected,
+.mma-mod-quiz-table .item.row.mma-mod-quiz-selected {
+  border: 3px solid $mma-mod-quiz-selected-color;
+  &:not(.mma-mod-quiz-last-of-page) {
+    border-bottom: 0;
   }
 }

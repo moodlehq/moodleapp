@@ -3,8 +3,7 @@
     <ion-nav-buttons side="secondary">
         <button id="mma-mod_quiz-connectionerror-button" class="button button-icon ion-alert-circled" ng-show="autoSaveError" ng-click="conErrPopover.show($event)" aria-label="{{ 'mm.core.error' | translate }}">
         </button>
-        <button class="button button-icon ion-more" ng-if="toc && toc.length" ng-click="popover.show($event)" aria-label="{{ 'mma.mod_quiz.opentoc' | translate }}">
-        </button>
+        <button menu-toggle="right" ng-if="toc && toc.length" class="button button-icon icon ion-navicon" aria-label="{{ 'mma.mod_quiz.opentoc' | translate }}"></button>
     </ion-nav-buttons>
     <!-- Navigation arrows -->
     <ion-header-bar class="bar-subheader mma-mod-quiz-subheader" ng-if="dataLoaded && questions.length && !quizAborted && !showSummary">
@@ -28,7 +27,7 @@
             <!-- Questions -->
             <form name="mma-mod_quiz-player-form" ng-if="questions.length && !quizAborted && !showSummary">
                 <div ng-repeat="question in questions">
-                    <section class="card" id="mma-mod_quiz-question-{{question.number ? question.number : 'i'}}">
+                    <section class="card" id="mma-mod_quiz-question-{{question.slot}}">
                         <div class="item item-divider">
                             <h2 ng-if="question.number" class="inline">{{ 'mma.mod_quiz.questionno' | translate:{$a: question.number} }}</h2>
                             <h2 ng-if="!question.number" class="inline">{{ 'mma.mod_quiz.information' | translate }}</h2>

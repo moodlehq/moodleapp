@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_quiz')
  * @name mmaModQuizReviewCtrl
  */
 .controller('mmaModQuizReviewCtrl', function($log, $scope, $stateParams, $mmaModQuiz, $mmaModQuizHelper, $mmUtil,
-            $ionicPopover, $ionicScrollDelegate, $translate, $q, mmaModQuizAttemptComponent, $mmQuestionHelper) {
+            $ionicScrollDelegate, $translate, $q, mmaModQuizAttemptComponent, $mmQuestionHelper, $mmSideMenu, $timeout) {
     $log = $log.getInstance('mmaModQuizReviewCtrl');
 
     var quizId = $stateParams.quizid,
@@ -35,8 +35,10 @@ angular.module('mm.addons.mod_quiz')
         errorPasing = false,
         scrollView = $ionicScrollDelegate.$getByHandle('mmaModQuizReviewScroll');
 
+    $scope.isReview = true;
     $scope.component = mmaModQuizAttemptComponent;
     $scope.componentId = attemptId;
+    $scope.showAll = currentPage == -1;
 
     // Convenience function to get the quiz data.
     function fetchData() {
@@ -46,12 +48,26 @@ angular.module('mm.addons.mod_quiz')
             return $mmaModQuiz.getCombinedReviewOptions(quiz.id).then(function(result) {
                 options = result;
 
-                // Load questions.
-                return loadPage(currentPage);
+                // Load the TOC.
+                return loadToc().then(function() {
+                    // Load questions.
+                    return loadPage(currentPage);
+                });
             });
-
         }).catch(function(message) {
             return $mmaModQuizHelper.showError(message);
+        });
+    }
+
+    // Load TOC to navigate to questions.
+    function loadToc() {
+        return $mmaModQuiz.getAttemptReview(attemptId, -1).then(function(reviewData) {
+            var lastQuestion = reviewData.questions[reviewData.questions.length - 1];
+            angular.forEach(reviewData.questions, function(question) {
+                question.stateClass = $mmQuestionHelper.getQuestionStateClass(question.state);
+            });
+            $scope.toc = reviewData.questions;
+            $scope.numPages = lastQuestion ? lastQuestion.page + 1 : 0;
         });
     }
 
@@ -66,7 +82,6 @@ angular.module('mm.addons.mod_quiz')
 
             $scope.attempt = attempt;
             $scope.questions = reviewData.questions;
-            $scope.toc = $mmaModQuiz.getTocFromLayout(attempt.layout);
             $scope.nextPage = page == -1 ? undefined : page + 1;
             $scope.previousPage = page - 1;
             attempt.currentpage = page;
@@ -154,6 +169,11 @@ angular.module('mm.addons.mod_quiz')
         });
     }
 
+    // Scroll to a certain question.
+    function scrollToQuestion(slot) {
+        $mmUtil.scrollToElement(document, '#mma-mod_quiz-question-' + slot, scrollView);
+    }
+
     // Fetch data.
     fetchData().then(function() {
         $mmaModQuiz.logViewAttemptSummary(attemptId);
@@ -162,22 +182,38 @@ angular.module('mm.addons.mod_quiz')
     });
 
     // Load a certain page.
-    $scope.loadPage = function(page) {
-        if (page == currentPage) {
-            // If the user is navigating to the current page we do nothing.
+    $scope.loadPage = function(page, fromToc, slot) {
+        if (typeof slot != 'undefined' && (attempt.currentpage == -1 || page == currentPage)) {
+            scrollToQuestion(slot);
+            return;
+        } else if (page == currentPage) {
+            // If the user is navigating to the current page and no question specified, we do nothing.
             return;
         }
 
         $scope.dataLoaded = false;
         scrollView.scrollTop();
-        $scope.popover.hide(); // Hide popover if shown.
 
         return loadPage(page).catch(function(message) {
             return $mmaModQuizHelper.showError(message);
         }).finally(function() {
             $scope.dataLoaded = true;
             scrollView.resize(); // Call resize to recalculate scroll area.
+
+            if (typeof slot != 'undefined') {
+                // Scroll to the question. Give some time to the questions to render.
+                $timeout(function() {
+                    scrollToQuestion(slot);
+                }, 2000);
+            }
         });
+    };
+
+    // Switch mode: all questions in same page OR one page at a time.
+    $scope.switchMode = function() {
+        $scope.showAll = !$scope.showAll;
+        // Load all questions or first page, depending on the mode.
+        $scope.loadPage($scope.showAll ? -1 : 0);
     };
 
     // Pull to refresh.
@@ -195,10 +231,6 @@ angular.module('mm.addons.mod_quiz')
         }
     };
 
-    // Setup TOC popover.
-    $ionicPopover.fromTemplateUrl('addons/mod_quiz/templates/toc.html', {
-        scope: $scope,
-    }).then(function(popover) {
-        $scope.popover = popover;
-    });
+    // Setup TOC right side menu.
+    $mmSideMenu.showRightSideMenu('addons/mod_quiz/templates/toc.html', $scope);
 });
