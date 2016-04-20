@@ -113,6 +113,22 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Check if a quiz is downloadable.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizPrefetchHandler#isDownloadable
+     * @param {Object} module    Module to get the timemodified.
+     * @param {Number} courseId  Course ID the module belongs to.
+     * @return {Promise}         Promise resolved with true if downloadable, resolved with false otherwise.
+     */
+    self.isDownloadable = function(module, courseId) {
+        return $mmaModQuiz.getQuiz(courseId, module.id).then(function(quiz) {
+            return quiz.allowofflineattempts === 1;
+        });
+    };
+
+    /**
      * Whether or not the module is enabled for the site.
      *
      * @module mm.addons.mod_quiz
