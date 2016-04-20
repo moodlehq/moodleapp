@@ -14,6 +14,8 @@
 
 angular.module('mm.core.question', [])
 
+.constant('mmQuestionComponent', 'mmQuestion')
+
 .run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, $mmQuestionDelegate, $mmQuestionBehaviourDelegate) {
 	function updateHandlers() {
 		$mmQuestionDelegate.updateQuestionHandlers();

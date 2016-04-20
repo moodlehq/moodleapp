@@ -1361,6 +1361,33 @@ angular.module('mm.core')
             }
         };
 
+        /**
+         * Extract the downloadable URLs from an HTML.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#extractDownloadableFilesFromHtml
+         * @param  {String} html HTML code.
+         * @return {String[]}    List of file urls.
+         */
+        self.extractDownloadableFilesFromHtml = function(html) {
+            var div = document.createElement('div'),
+                elements,
+                urls = [];
+
+            div.innerHTML = html;
+            elements = div.querySelectorAll('a, img, audio, video, source');
+
+            angular.forEach(elements, function(element) {
+                var url = element.tagName === 'A' ? element.href : element.src;
+                if (url && self.isDownloadableUrl(url)) {
+                    urls.push(url);
+                }
+            });
+
+            return urls;
+        };
+
         return self;
     };
 });
