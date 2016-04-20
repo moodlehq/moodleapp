@@ -21,7 +21,9 @@ angular.module('mm.addons.mod_quiz')
  * @ngdoc service
  * @name $mmaModQuizHandlers
  */
-.factory('$mmaModQuizHandlers', function($mmCourse, $mmaModQuiz, $state, $q, $mmContentLinksHelper, $mmUtil, $mmCourseHelper) {
+.factory('$mmaModQuizHandlers', function($mmCourse, $mmaModQuiz, $state, $q, $mmContentLinksHelper, $mmUtil, $mmCourseHelper,
+            $mmSite, $mmCoursePrefetchDelegate, $mmaModQuizPrefetchHandler, $mmEvents, mmCoreEventPackageStatusChanged,
+            mmaModQuizComponent, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated) {
 
     var self = {};
 
@@ -53,8 +55,28 @@ angular.module('mm.addons.mod_quiz')
          */
         self.getController = function(module, courseId) {
             return function($scope) {
+                var downloadBtn,
+                    refreshBtn;
+
+                downloadBtn = {
+                    hidden: true,
+                    icon: 'ion-ios-cloud-download',
+                    label: 'mm.core.download',
+                    action: download
+                };
+
+                refreshBtn = {
+                    icon: 'ion-android-refresh',
+                    label: 'mm.core.refresh',
+                    hidden: true,
+                    action: download
+                };
+
                 $scope.icon = $mmCourse.getModuleIconSrc('quiz');
                 $scope.title = module.name;
+                $scope.buttons = [downloadBtn, refreshBtn];
+                $scope.spinner = true; // Show spinner while calculating status.
+
                 $scope.action = function(e) {
                     if (e) {
                         e.preventDefault();
@@ -62,6 +84,49 @@ angular.module('mm.addons.mod_quiz')
                     }
                     $state.go('site.mod_quiz', {module: module, courseid: courseId});
                 };
+
+                function download(e) {
+                    if (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+
+                    $scope.spinner = true; // Show spinner since this operation might take a while.
+                    $mmaModQuizPrefetchHandler.prefetch(module, courseId).catch(function() {
+                        $scope.spinner = false;
+                        if (!$scope.$$destroyed) {
+                            $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                        }
+                    });
+                }
+
+                // Show buttons according to module status.
+                function showStatus(status) {
+                    if (status) {
+                        $scope.spinner = status === mmCoreDownloading;
+                        downloadBtn.hidden = status !== mmCoreNotDownloaded;
+                        refreshBtn.hidden = status !== mmCoreOutdated;
+                    }
+                }
+
+                // Listen for changes on this module status.
+                var statusObserver = $mmEvents.on(mmCoreEventPackageStatusChanged, function(data) {
+                    if (data.siteid === $mmSite.getId() && data.componentId === module.id &&
+                            data.component === mmaModQuizComponent) {
+                        showStatus(data.status);
+                    }
+                });
+
+                // Get current status to decide which icon should be shown.
+                $mmaModQuizPrefetchHandler.getRevision(module, courseId).then(function(revision) {
+                    $mmaModQuizPrefetchHandler.getTimemodified(module, courseId).then(function(timemodified) {
+                        $mmCoursePrefetchDelegate.getModuleStatus(module, courseId, revision, timemodified).then(showStatus);
+                    });
+                });
+
+                $scope.$on('$destroy', function() {
+                    statusObserver && statusObserver.off && statusObserver.off();
+                });
             };
         };
 
