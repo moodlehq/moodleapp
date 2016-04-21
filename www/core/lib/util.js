@@ -1026,17 +1026,40 @@ angular.module('mm.core')
          * @return {Boolean}                    True if the element is found, false otherwise.
          */
         self.scrollToElement = function(container, selector, scrollDelegate, scrollParentClass) {
+            var position;
+
             if (!scrollDelegate) {
                 scrollDelegate = $ionicScrollDelegate;
             }
 
-            if (!scrollParentClass) {
-                scrollParentClass = 'scroll-content';
+            position = self.getElementXY(container, selector, scrollParentClass);
+            if (!position) {
+                return false;
             }
 
+            scrollDelegate.scrollTo(position[0], position[1]);
+            return true;
+        };
+
+        /**
+         * Retrieve the position of a element relative to another element.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#getElementXY
+         * @param  {Object} container           Element to search in.
+         * @param  {String} [selector]          Selector to find the element to scroll to. If not defined, scroll to the container.
+         * @param  {String} [scrollParentClass] Scroll Parent Class where to stop calculating the position. Default scroll-content.
+         * @return {Array}                      positionLeft, positionTop of the element relative to.
+         */
+        self.getElementXY = function(container, selector, positionParentClass) {
             var element = selector ? container.querySelector(selector) : container,
                 positionTop = 0,
                 positionLeft = 0;
+
+            if (!positionParentClass) {
+                positionParentClass = 'scroll-content';
+            }
 
             if (!element) {
                 return false;
@@ -1046,15 +1069,14 @@ angular.module('mm.core')
                 positionLeft += (element.offsetLeft - element.scrollLeft + element.clientLeft);
                 positionTop += (element.offsetTop - element.scrollTop + element.clientTop);
 
-                element = element.offsetParent;
+                element = element.parent;
                 // If scrolling element is reached, stop adding tops.
-                if (angular.element(element).hasClass(scrollParentClass)) {
+                if (angular.element(element).hasClass(positionParentClass)) {
                     element = false;
                 }
             }
 
-            scrollDelegate.scrollTo(positionLeft, positionTop);
-            return true;
+            return [positionLeft, positionTop];
         };
 
         /**
