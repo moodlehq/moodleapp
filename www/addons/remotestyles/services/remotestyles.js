@@ -27,7 +27,28 @@ angular.module('mm.addons.remotestyles')
     $log = $log.getInstance('$mmaRemoteStyles');
 
     var self = {},
-        remoteStylesEl = angular.element(document.querySelector('#mobilecssurl'));
+        remoteStylesEls = {};
+
+    /**
+     * Add a style element for a site and load the styles for that element. The style will be disabled.
+     *
+     * @module mm.addons.remotestyles
+     * @ngdoc method
+     * @name $mmaRemoteStyles#addSite
+     * @param  {String} siteId Site ID.
+     * @return {Promise}       Promise resolved when added and loaded.
+     */
+    self.addSite = function(siteId) {
+        if (!siteId || remoteStylesEls[siteId]) {
+            return $q.when();
+        }
+
+        var el = angular.element('<style id="mobilecssurl-' + siteId + '" disabled="disabled"></style>');
+        angular.element(document.head).append(el);
+        remoteStylesEls[siteId] = el;
+
+        return self.load(siteId, true);
+    };
 
     /**
      * Clear remote styles added to the DOM.
@@ -37,7 +58,8 @@ angular.module('mm.addons.remotestyles')
      * @name $mmaRemoteStyles#clear
      */
     self.clear = function() {
-        remoteStylesEl.html('');
+        // Disable all the styles.
+        angular.element(document.querySelectorAll('style[id*=mobilecssurl]')).attr('disabled', true);
     };
 
     /**
@@ -61,6 +83,23 @@ angular.module('mm.addons.remotestyles')
             return $mmFilepool.downloadUrl(siteId, url, false, mmaRemoteStylesComponent, 1);
         });
     }
+
+    /**
+     * Enable the styles of a certain site.
+     *
+     * @module mm.addons.remotestyles
+     * @ngdoc method
+     * @name $mmaRemoteStyles#addSite
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Void}
+     */
+    self.enable = function(siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        if (remoteStylesEls[siteId]) {
+            remoteStylesEls[siteId].attr('disabled', false);
+        }
+    };
 
     /**
      * Get remote styles of a certain site.
@@ -111,22 +150,90 @@ angular.module('mm.addons.remotestyles')
     };
 
     /**
-     * Load styles for current site.
+     * Load styles for a certain site.
      *
      * @module mm.addons.remotestyles
      * @ngdoc method
      * @name $mmaRemoteStyles#load
+     * @param  {String} [siteId]  Site ID. If not defined, current site.
+     * @param  {Boolean} disabled True if loaded styles should be disabled, false if they should be enabled.
+     * @return {Promise}          Promise resolved when styles are loaded.
      */
-    self.load = function() {
-        var siteId = $mmSite.getId();
-        if (siteId) {
-            self.get(siteId).then(function(data) {
-                if (siteId === $mmSite.getId()) { // Make sure it hasn't logout while retrieving styles.
-                    remoteStylesEl.html(data.styles);
+    self.load = function(siteId, disabled) {
+        siteId = siteId || $mmSite.getId();
+        disabled = !!disabled;
+
+        $log.debug('Load site: ', siteId, disabled);
+        if (siteId && remoteStylesEls[siteId]) {
+            // Enable or disable the styles.
+            remoteStylesEls[siteId].attr('disabled', disabled);
+
+            return self.get(siteId).then(function(data) {
+                // Update the styles only if they have changed.
+                if (data.styles !== remoteStylesEls[siteId].html()) {
+                    remoteStylesEls[siteId].html(data.styles);
+
+                    // New styles will be applied even if the style is disabled. We'll disable it again if needed.
+                    if (disabled && remoteStylesEls[siteId].attr('disabled') == 'disabled') {
+                        remoteStylesEls[siteId].attr('disabled', true);
+                    }
                 }
+
                 // Styles have been loaded, now treat the CSS.
                 treatCSSCode(siteId, data.file, data.styles);
             });
+        }
+
+        return $q.reject();
+    };
+
+    /**
+     * Preload the styles of the current site (stored in DB). Please do not use.
+     *
+     * @module mm.addons.remotestyles
+     * @ngdoc method
+     * @name $mmaRemoteStyles#_preloadCurrentSite
+     * @return {Promise} Promise resolved when loaded.
+     * @protected
+     */
+    self._preloadCurrentSite = function() {
+        return $mmSitesManager.getStoredCurrentSiteId().then(function(siteId) {
+            return self.addSite(siteId);
+        });
+    };
+
+    /**
+     * Preload the styles of all the stored sites. Please do not use.
+     *
+     * @module mm.addons.remotestyles
+     * @ngdoc method
+     * @name $mmaRemoteStyles#_preloadSites
+     * @return {Promise} Promise resolved when loaded.
+     * @protected
+     */
+    self._preloadSites = function() {
+        return $mmSitesManager.getSitesIds().then(function(ids) {
+            var promises = [];
+            angular.forEach(ids, function(siteId) {
+                promises.push(self.addSite(siteId));
+            });
+            return $q.all(promises);
+        });
+    };
+
+    /**
+     * Remove the styles of a certain site.
+     *
+     * @module mm.addons.remotestyles
+     * @ngdoc method
+     * @name $mmaRemoteStyles#removeSite
+     * @param  {String} siteId Site ID.
+     * @return {Void}
+     */
+    self.removeSite = function(siteId) {
+        if (siteId && remoteStylesEls[siteId]) {
+            remoteStylesEls[siteId].remove();
+            delete remoteStylesEls[siteId];
         }
     };
 
@@ -155,15 +262,18 @@ angular.module('mm.addons.remotestyles')
         }));
 
         angular.forEach(urls, function(url) {
-            promises.push($mmFilepool.getUrlByUrl(siteId, url, mmaRemoteStylesComponent, 2).then(function(fileUrl) {
-                if (fileUrl != url) {
-                    cssCode = cssCode.replace(new RegExp(url, 'g'), fileUrl);
-                    updated = true;
-                }
-            }).catch(function(error) {
-                // It shouldn't happen. Ignore errors.
-                $log.warn('Error treating file ', url, error);
-            }));
+            // Download the file only if it's an online URL.
+            if (url.indexOf('http') == 0) {
+                promises.push($mmFilepool.downloadUrl(siteId, url, false, mmaRemoteStylesComponent, 2).then(function(fileUrl) {
+                    if (fileUrl != url) {
+                        cssCode = cssCode.replace(new RegExp(url, 'g'), fileUrl);
+                        updated = true;
+                    }
+                }).catch(function(error) {
+                    // It shouldn't happen. Ignore errors.
+                    $log.warn('MMRMSTYLES Error treating file ', url, error);
+                }));
+            }
         });
 
         return $q.all(promises).then(function() {
