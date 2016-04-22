@@ -54,6 +54,7 @@ angular.module('mm.addons.mod_chat')
             return function($scope) {
                 $scope.title = module.name;
                 $scope.icon = $mmCourse.getModuleIconSrc('chat');
+                $scope.class = 'mma-mod_chat-handler';
                 $scope.action = function(e) {
                     $state.go('site.mod_chat', {module: module, courseid: courseid});
                 };

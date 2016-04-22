@@ -130,6 +130,7 @@ angular.module('mm.addons.coursecompletion')
 
                 // Button title.
                 $scope.title = 'mma.coursecompletion.viewcoursereport';
+                $scope.class = 'mma-coursecompletion-user-handler';
 
                 $scope.action = function($event) {
                     $event.preventDefault();
@@ -208,6 +209,7 @@ angular.module('mm.addons.coursecompletion')
             return function($scope, $state) {
                 $scope.icon = 'ion-android-checkbox-outline';
                 $scope.title = 'mma.coursecompletion.coursecompletion';
+                $scope.class = 'mma-coursecompletion-mine-handler';
                 $scope.action = function($event, course) {
                     $event.preventDefault();
                     $event.stopPropagation();

@@ -55,6 +55,7 @@ angular.module('mm.addons.mod_choice')
             return function($scope) {
                 $scope.title = module.name;
                 $scope.icon = $mmCourse.getModuleIconSrc('choice');
+                $scope.class = 'mma-mod_choice-handler';
                 $scope.action = function(e) {
                     $state.go('site.mod_choice', {module: module, courseid: courseid});
                 };

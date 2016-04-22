@@ -86,6 +86,7 @@ angular.module('mm.addons.mod_book')
 
                 $scope.title = module.name;
                 $scope.icon = $mmCourse.getModuleIconSrc('book');
+                $scope.class = 'mma-mod_book-handler';
                 $scope.buttons = [downloadBtn, refreshBtn];
                 $scope.spinner = true; // Show spinner while calculating status.
 

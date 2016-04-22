@@ -55,6 +55,7 @@ angular.module('mm.addons.mod_survey')
             return function($scope) {
                 $scope.title = module.name;
                 $scope.icon = $mmCourse.getModuleIconSrc('survey');
+                $scope.class = 'mma-mod_survey-handler';
                 $scope.action = function(e) {
                     if (e) {
                         e.preventDefault();

@@ -119,6 +119,7 @@ angular.module('mm.addons.notes')
 
                 // Button title.
                 $scope.title = 'mma.notes.addnewnote';
+                $scope.class = 'mma-notes-add-handler';
 
                 $ionicModal.fromTemplateUrl('addons/notes/templates/add.html', {
                     scope: $scope,
@@ -228,6 +229,7 @@ angular.module('mm.addons.notes')
             return function($scope, $state) {
                 $scope.icon = 'ion-ios-list';
                 $scope.title = 'mma.notes.notes';
+                $scope.class = 'mma-notes-view-handler';
                 $scope.action = function($event, course) {
                     $event.preventDefault();
                     $event.stopPropagation();

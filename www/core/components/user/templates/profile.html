@@ -92,7 +92,7 @@
                 <div class="item text-center" ng-if="(!profileHandlers || !profileHandlers.length) && isLoadingHandlers">
                     <ion-spinner></ion-spinner>
                 </div>
-                <div ng-repeat="handler in profileHandlers | orderBy:'-priority'" ng-controller="handler.controller">
+                <div ng-repeat="handler in profileHandlers | orderBy:'-priority'" ng-controller="handler.controller" class="mm-user-profile-handler {{class}}">
                     <a class="button button-block" ng-click="action($event)" ng-hide="hidden" title="{{ title | translate }}">
                         {{ title | translate }} <ion-spinner class="icon" ng-if="spinner"></ion-spinner>
                     </a>

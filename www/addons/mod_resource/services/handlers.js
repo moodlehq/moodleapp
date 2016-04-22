@@ -97,6 +97,7 @@ angular.module('mm.addons.mod_resource')
                 } else {
                     $scope.icon = $mmCourse.getModuleIconSrc('resource');
                 }
+                $scope.class = 'mma-mod_resource-handler';
                 $scope.buttons = [downloadBtn, refreshBtn];
                 $scope.spinner = true; // Show spinner while calculating status.
 

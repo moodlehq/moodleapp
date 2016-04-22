@@ -73,6 +73,7 @@ angular.module('mm.addons.mod_scorm')
 
                 $scope.icon = $mmCourse.getModuleIconSrc('scorm');
                 $scope.title = module.name;
+                $scope.class = 'mma-mod_scorm-handler';
                 $scope.buttons = [downloadBtn, refreshBtn];
                 $scope.spinner = true; // Show spinner while calculating status.
 

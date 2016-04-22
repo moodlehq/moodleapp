@@ -63,8 +63,10 @@ angular.module('mm.addons.messages')
                     return $mmaMessages.isContact(user.id).then(function(isContact) {
                         if (isContact) {
                             $scope.title = 'mma.messages.removecontact';
+                            $scope.class = 'mma-messages-removecontact-handler';
                         } else {
                             $scope.title = 'mma.messages.addcontact';
+                            $scope.class = 'mma-messages-addcontact-handler';
                         }
                     }).catch(function() {
                         // This fails for some reason, let's just hide the button.
@@ -145,8 +147,10 @@ angular.module('mm.addons.messages')
                     return $mmaMessages.isBlocked(user.id).then(function(isBlocked) {
                         if (isBlocked) {
                             $scope.title = 'mma.messages.unblockcontact';
+                            $scope.class = 'mma-messages-unblockcontact-handler';
                         } else {
                             $scope.title = 'mma.messages.blockcontact';
+                            $scope.class = 'mma-messages-blockcontact-handler';
                         }
                     }).catch(function() {
                         // This fails for some reason, let's just hide the button.
@@ -222,6 +226,7 @@ angular.module('mm.addons.messages')
              */
             return function($scope) {
                 $scope.title = 'mma.messages.sendmessage';
+                $scope.class = 'mma-messages-sendmessage-handler';
                 $scope.action = function($event) {
                     $event.preventDefault();
                     $event.stopPropagation();
@@ -274,6 +279,7 @@ angular.module('mm.addons.messages')
                 $scope.icon = 'ion-chatbox';
                 $scope.title = 'mma.messages.messages';
                 $scope.state = 'site.messages';
+                $scope.class = 'mma-messages-handler';
             };
         };
 
