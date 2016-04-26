@@ -82,6 +82,28 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Given a list of rules, check if preflight check is required.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizAccessRulesDelegate#isPreflightCheckRequired
+     * @param  {String[]} rules Name of the rules.
+     * @return {Boolean}        True if required, false otherwise.
+     */
+    self.isPreflightCheckRequired = function(rules, attempt) {
+        var isRequired = false;
+        angular.forEach(rules, function(rule) {
+            var handler = self.getAccessRuleHandler(rule);
+            if (handler) {
+                if (handler.isPreflightCheckRequired(attempt)) {
+                    isRequired = true;
+                }
+            }
+        });
+        return isRequired;
+    };
+
+    /**
      * Register an access rule handler. The handler will be used when attempting a quiz.
      *
      * @module mm.addons.mod_quiz
@@ -100,6 +122,8 @@ angular.module('mm.addons.mod_quiz')
      *                                                           preflight check in some cases.
      *                             - shouldShowTimeLeft(attempt, endTime, timeNow) (Boolean) Optional. Whether or not the time
      *                                                           left of an attempt should be displayed.
+     *                             - cleanPreflight(data) Function called when preflight form is closed. Should delete all the
+     *                                                            data that should be resetted for the next form show.
      */
     self.registerHandler = function(addon, ruleName, handler) {
         if (typeof handlers[ruleName] !== 'undefined') {

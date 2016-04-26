@@ -391,7 +391,7 @@ angular.module('mm.core.question')
         angular.forEach(form.elements, function(element, name) {
             name = element.name || name;
             // Ignore flag and submit inputs.
-            if (name.match(/_:flagged$/) || element.type == 'submit' || element.tagName == 'BUTTON') {
+            if (!name || name.match(/_:flagged$/) || element.type == 'submit' || element.tagName == 'BUTTON') {
                 return;
             }
             // Ignore selects without value.
