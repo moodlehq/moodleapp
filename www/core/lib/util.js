@@ -1039,6 +1039,31 @@ angular.module('mm.core')
             return true;
         };
 
+        /**
+         * Search all the URLs in a CSS file content.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#extractUrlsFromCSS
+         * @param  {String} code CSS code.
+         * @return {String[]}    List of URLs.
+         */
+        self.extractUrlsFromCSS = function(code) {
+            // First of all, search all the url(...) occurrences that don't include "data:".
+            var urls = [],
+                matches = code.match(/url\(\s*["']?(?!data:)([^)]+)\)/igm);
+
+            // Extract the URL form each match.
+            angular.forEach(matches, function(match) {
+                var submatches = match.match(/url\(\s*['"]?([^'"]*)['"]?\s*\)/im);
+                if (submatches && submatches[1]) {
+                    urls.push(submatches[1]);
+                }
+            });
+
+            return urls;
+        };
+
         return self;
     };
 });

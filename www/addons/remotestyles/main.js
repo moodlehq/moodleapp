@@ -16,18 +16,35 @@ angular.module('mm.addons.remotestyles', [])
 
 .constant('mmaRemoteStylesComponent', 'mmaRemoteStyles')
 
-.run(function($mmEvents, mmCoreEventLogin, mmCoreEventLogout, mmCoreEventSiteAdded, mmCoreEventSiteUpdated, $mmaRemoteStyles,
-            $mmSite) {
+.config(function($mmInitDelegateProvider, mmInitDelegateMaxAddonPriority) {
+    // Addons shouldn't use a priority higher than mmInitDelegateMaxAddonPriority, but this is a special case
+    // because it needs to be done before the mmLogin process.
+    $mmInitDelegateProvider.registerProcess('mmaRemoteStylesCurrent',
+                '$mmaRemoteStyles._preloadCurrentSite', mmInitDelegateMaxAddonPriority + 250, true);
+    $mmInitDelegateProvider.registerProcess('mmaRemoteStylesPreload', '$mmaRemoteStyles._preloadSites');
+})
 
-    $mmEvents.on(mmCoreEventSiteAdded, $mmaRemoteStyles.load);
-    $mmEvents.on(mmCoreEventSiteUpdated, function(siteid) {
+.run(function($mmEvents, mmCoreEventLogin, mmCoreEventLogout, mmCoreEventSiteAdded, mmCoreEventSiteUpdated, $mmaRemoteStyles,
+            $mmSite, mmCoreEventSiteDeleted) {
+
+    $mmEvents.on(mmCoreEventSiteAdded, function(siteId) {
+        $mmaRemoteStyles.addSite(siteId);
+    });
+    $mmEvents.on(mmCoreEventSiteUpdated, function(siteId) {
         // Load only if current site was updated.
-        if (siteid === $mmSite.getId()) {
-            $mmaRemoteStyles.load();
+        if (siteId === $mmSite.getId()) {
+            $mmaRemoteStyles.load(siteId);
         }
     });
-    $mmEvents.on(mmCoreEventLogin, $mmaRemoteStyles.load);
 
-    // Remove added styles on logout.
+    // Enable styles of current site on login.
+    $mmEvents.on(mmCoreEventLogin, $mmaRemoteStyles.enable);
+
+    // Disable added styles on logout.
     $mmEvents.on(mmCoreEventLogout, $mmaRemoteStyles.clear);
+
+    // Remove site styles on logout.
+    $mmEvents.on(mmCoreEventSiteDeleted, function(site) {
+        $mmaRemoteStyles.removeSite(site.id);
+    });
 });
