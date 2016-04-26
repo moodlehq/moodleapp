@@ -15,24 +15,15 @@
 angular.module('mm.addons.mod_quiz')
 
 /**
- * Handler for password quiz access rule.
+ * Handler for offline attempts quiz access rule.
  *
  * @module mm.addons.mod_quiz
  * @ngdoc service
- * @name $mmaQuizAccessPasswordHandler
+ * @name $mmaQuizAccessOfflineAttemptsHandler
  */
-.factory('$mmaQuizAccessPasswordHandler', function() {
+.factory('$mmaQuizAccessOfflineAttemptsHandler', function() {
 
     var self = {};
-
-    /**
-     * Preflight form closed, reset password.
-     *
-     * @param  {Object} data Preflight data.
-     */
-    self.cleanPreflight = function(data) {
-        delete data.quizpassword;
-    };
 
     /**
      * Whether or not the rule is enabled for the site.
@@ -50,7 +41,7 @@ angular.module('mm.addons.mod_quiz')
      * @return {Boolean}          True if preflight check required.
      */
     self.isPreflightCheckRequired = function(attempt) {
-        // If the password rule is active in a quiz we always require to input the password.
+        // @todo: Show warning only if offline and last sync was a while ago.
         return true;
     };
 
@@ -60,7 +51,7 @@ angular.module('mm.addons.mod_quiz')
      * @return {String} Directive name.
      */
     self.getPreflightDirectiveName = function() {
-        return 'mma-quiz-access-password-preflight';
+        return 'mma-quiz-access-offline-attempts-preflight';
     };
 
     return self;
@@ -71,7 +62,7 @@ angular.module('mm.addons.mod_quiz')
     // since they cannot assume that the quiz addon will be packaged in custom apps.
     var $mmaModQuizAccessRulesDelegate = $mmAddonManager.get('$mmaModQuizAccessRulesDelegate');
     if ($mmaModQuizAccessRulesDelegate) {
-        $mmaModQuizAccessRulesDelegate.registerHandler('mmaQuizAccessPassword', 'quizaccess_password',
-                                '$mmaQuizAccessPasswordHandler');
+        $mmaModQuizAccessRulesDelegate.registerHandler('mmaQuizAccessOfflineAttempts', 'quizaccess_offlineattempts',
+                                '$mmaQuizAccessOfflineAttemptsHandler');
     }
 });

@@ -1654,7 +1654,10 @@ angular.module('mm.addons.mod_quiz')
     self.prefetchAttempt = function(quiz, attempt, siteId) {
         var pages = self.getPagesFromLayout(attempt.layout),
             promises = [],
-            attemptGrade;
+            attemptGrade,
+            preflightData = {
+                confirmdatasaved: 1
+            };
 
         if (self.isAttemptFinished(attempt.state)) {
             // Attempt is finished, get feedback and review data.
@@ -1678,13 +1681,12 @@ angular.module('mm.addons.mod_quiz')
         } else {
             // Attempt not finished, get data needed to continue the attempt.
             promises.push(self.getAttemptAccessInformation(quiz.id, attempt.id, true, siteId));
-            promises.push(self.getAttemptSummary(attempt.id, {}, true, siteId));
+            promises.push(self.getAttemptSummary(attempt.id, preflightData, true, siteId));
 
             if (attempt.state == self.ATTEMPT_IN_PROGRESS) {
-                // Call view attempt and get data for each page.
+                // Get data for each page.
                 angular.forEach(pages, function(page) {
-                    promises.push(self.logViewAttempt(attempt.id, page));
-                    promises.push(self.getAttemptData(attempt.id, page, true, siteId).then(function(data) {
+                    promises.push(self.getAttemptData(attempt.id, page, preflightData, true, siteId).then(function(data) {
                         // Download the files inside the questions.
                         var questionPromises = [];
                         angular.forEach(data.questions, function(question) {
