@@ -22,7 +22,7 @@ angular.module('mm.addons.remotestyles')
  * @name $mmaRemoteStyles
  */
 .factory('$mmaRemoteStyles', function($log, $q, $mmSite, $mmSitesManager, $mmFilepool, $http, $mmFS, mmaRemoteStylesComponent,
-            mmCoreNotDownloaded, $mmUtil) {
+            mmCoreNotDownloaded, $mmUtil, md5) {
 
     $log = $log.getInstance('$mmaRemoteStyles');
 
@@ -45,7 +45,10 @@ angular.module('mm.addons.remotestyles')
 
         var el = angular.element('<style id="mobilecssurl-' + siteId + '" disabled="disabled"></style>');
         angular.element(document.head).append(el);
-        remoteStylesEls[siteId] = el;
+        remoteStylesEls[siteId] = {
+            element: el,
+            hash: ''
+        };
 
         return self.load(siteId, true);
     };
@@ -97,7 +100,7 @@ angular.module('mm.addons.remotestyles')
         siteId = siteId || $mmSite.getId();
 
         if (remoteStylesEls[siteId]) {
-            remoteStylesEls[siteId].attr('disabled', false);
+            remoteStylesEls[siteId].element.attr('disabled', false);
         }
     };
 
@@ -166,16 +169,19 @@ angular.module('mm.addons.remotestyles')
         $log.debug('Load site: ', siteId, disabled);
         if (siteId && remoteStylesEls[siteId]) {
             // Enable or disable the styles.
-            remoteStylesEls[siteId].attr('disabled', disabled);
+            remoteStylesEls[siteId].element.attr('disabled', disabled);
 
             return self.get(siteId).then(function(data) {
+                var hash = md5.createHash(data.styles);
+
                 // Update the styles only if they have changed.
-                if (data.styles !== remoteStylesEls[siteId].html()) {
-                    remoteStylesEls[siteId].html(data.styles);
+                if (remoteStylesEls[siteId].hash !== hash) {
+                    remoteStylesEls[siteId].element.html(data.styles);
+                    remoteStylesEls[siteId].hash = hash;
 
                     // New styles will be applied even if the style is disabled. We'll disable it again if needed.
-                    if (disabled && remoteStylesEls[siteId].attr('disabled') == 'disabled') {
-                        remoteStylesEls[siteId].attr('disabled', true);
+                    if (disabled && remoteStylesEls[siteId].element.attr('disabled') == 'disabled') {
+                        remoteStylesEls[siteId].element.attr('disabled', true);
                     }
                 }
 
@@ -232,7 +238,7 @@ angular.module('mm.addons.remotestyles')
      */
     self.removeSite = function(siteId) {
         if (siteId && remoteStylesEls[siteId]) {
-            remoteStylesEls[siteId].remove();
+            remoteStylesEls[siteId].element.remove();
             delete remoteStylesEls[siteId];
         }
     };
