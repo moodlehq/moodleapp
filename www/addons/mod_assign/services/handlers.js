@@ -55,6 +55,7 @@ angular.module('mm.addons.mod_assign')
             return function($scope) {
                 $scope.title = module.name;
                 $scope.icon = $mmCourse.getModuleIconSrc('assign');
+                $scope.class = 'mma-mod_assign-handler';
                 $scope.action = function(e) {
                     if (e) {
                         e.preventDefault();

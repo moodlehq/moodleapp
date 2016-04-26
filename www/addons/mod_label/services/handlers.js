@@ -62,6 +62,7 @@ angular.module('mm.addons.mod_label')
                 }
 
                 $scope.icon = false;
+                $scope.class = 'mma-mod_label-handler';
                 $scope.action = function(e) {
                     if (e) {
                         e.preventDefault();

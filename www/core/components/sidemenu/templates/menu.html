@@ -28,7 +28,7 @@
         <ion-content class="has-side-menu-header mm-sidemenu-menu">
             <nav>
                 <ul class="list dark">
-                    <li>
+                    <li class="mm-mycourses-handler">
                         <a menu-close class="item item-icon-left" ui-sref="site.mm_courses" title="{{ 'mm.sidemenu.mycourses' | translate}}">
                             <i class="icon ion-ionic"></i>{{ 'mm.sidemenu.mycourses' | translate}}
                         </a>
@@ -36,7 +36,7 @@
                     <li class="item text-center" ng-if="(!handlers || !handlers.length) && !areNavHandlersLoaded()">
                         <ion-spinner></ion-spinner>
                     </li>
-                    <li ng-repeat="handler in handlers | orderBy:'-priority'" ng-controller="handler.controller" >
+                    <li ng-repeat="handler in handlers | orderBy:'-priority'" ng-controller="handler.controller" class="mm-sidemenu-handler {{class}}">
                         <a menu-close class="item item-icon-left" ui-sref="{{state}}" title="{{title | translate}}">
                             <i class="icon {{icon}}"></i> {{title | translate}}
                             <span ng-show="badge > 0" class="badge badge-positive">{{badge}}</span>

@@ -60,6 +60,7 @@ angular.module('mm.addons.mod_forum')
             return function($scope) {
                 $scope.title = module.name;
                 $scope.icon = $mmCourse.getModuleIconSrc('forum');
+                $scope.class = 'mma-mod_forum-handler';
                 $scope.action = function(e) {
                     if (e) {
                         e.preventDefault();

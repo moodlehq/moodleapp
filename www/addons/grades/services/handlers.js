@@ -107,6 +107,7 @@ angular.module('mm.addons.grades')
             return function($scope, $state) {
                 $scope.icon = 'ion-stats-bars';
                 $scope.title = 'mma.grades.grades';
+                $scope.class = 'mma-grades-mine-handler';
                 $scope.action = function($event, course) {
                     $event.preventDefault();
                     $event.stopPropagation();
@@ -178,6 +179,7 @@ angular.module('mm.addons.grades')
              */
             return function($scope) {
                 $scope.title = 'mma.grades.viewgrades';
+                $scope.class = 'mma-grades-user-handler';
 
                 $scope.action = function($event) {
                     $event.preventDefault();

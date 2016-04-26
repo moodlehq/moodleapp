@@ -55,6 +55,7 @@ angular.module('mm.addons.mod_url')
             return function($scope) {
                 $scope.icon = $mmCourse.getModuleIconSrc('url');
                 $scope.title = module.name;
+                $scope.class = 'mma-mod_url-handler';
                 $scope.action = function(e) {
                     if (e) {
                         e.preventDefault();

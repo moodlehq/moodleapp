@@ -72,6 +72,7 @@ angular.module('mm.addons.frontpage')
                 $scope.icon = 'ion-home';
                 $scope.title = 'mma.frontpage.sitehome';
                 $scope.state = 'site.mm_course-section';
+                $scope.class = 'mma-frontpage-handler';
             };
         };
 

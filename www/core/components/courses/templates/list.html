@@ -25,7 +25,7 @@
                     </p>
                 </div>
                 <div class="item tabs tabs-icon-left" ng-show="course._handlers && course._handlers.length">
-                    <a ng-repeat="handler in course._handlers | orderBy:'-priority'" ng-controller="handler.controller" ng-click="action($event, course)" class="tab-item active" title="{{title | translate}}">
+                    <a ng-repeat="handler in course._handlers | orderBy:'-priority'" ng-controller="handler.controller" ng-click="action($event, course)" class="tab-item active mm-courses-handler {{class}}" title="{{title | translate}}">
                         <i class="icon {{icon}}"></i> {{title | translate}}
                     </a>
                 </div>

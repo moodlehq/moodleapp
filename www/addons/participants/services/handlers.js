@@ -69,6 +69,7 @@ angular.module('mm.addons.participants')
             return function($scope, $state) {
                 $scope.icon = 'ion-person-stalker';
                 $scope.title = 'mma.participants.participants';
+                $scope.class = 'mma-participants-handler';
                 $scope.action = function($event, course) {
                     $event.preventDefault();
                     $event.stopPropagation();

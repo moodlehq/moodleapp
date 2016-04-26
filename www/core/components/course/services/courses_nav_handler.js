@@ -54,6 +54,7 @@ angular.module('mm.core.course')
             return function($scope, $state) {
                 $scope.icon = 'ion-briefcase';
                 $scope.title = 'mm.course.contents';
+                $scope.class = 'mm-course-handler';
 
                 $scope.action = function(e, course) {
                     $state.go('site.mm_course', {courseid: course.id});

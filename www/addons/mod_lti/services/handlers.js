@@ -55,6 +55,7 @@ angular.module('mm.addons.mod_lti')
             return function($scope) {
                 $scope.title = module.name;
                 $scope.icon = $mmCourse.getModuleIconSrc('lti'); // Get LTI default icon for now.
+                $scope.class = 'mma-mod_lti-handler';
                 $scope.action = function() {
                     $state.go('site.mod_lti', {module: module, courseid: courseid});
                 };

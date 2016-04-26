@@ -56,6 +56,7 @@ angular.module('mm.addons.mod_glossary')
             return function($scope) {
                 $scope.icon = $mmCourse.getModuleIconSrc('glossary');
                 $scope.title = module.name;
+                $scope.class = 'mma-mod_glossary-handler';
                 $scope.action = function(e) {
                     if (e) {
                         e.preventDefault();
