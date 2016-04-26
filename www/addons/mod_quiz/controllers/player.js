@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_quiz')
  */
 .controller('mmaModQuizPlayerCtrl', function($log, $scope, $stateParams, $mmaModQuiz, $mmaModQuizHelper, $q, $mmUtil,
             $ionicPopover, $ionicScrollDelegate, $rootScope, $ionicPlatform, $translate, $timeout, $mmQuestionHelper,
-            $mmaModQuizAutoSave, $mmEvents, mmaModQuizAttemptFinishedEvent, $mmSideMenu) {
+            $mmaModQuizAutoSave, $mmEvents, mmaModQuizAttemptFinishedEvent, $mmSideMenu, $mmaModQuizOnline) {
     $log = $log.getInstance('mmaModQuizPlayerCtrl');
 
     var quizId = $stateParams.quizid,
@@ -196,7 +196,7 @@ angular.module('mm.addons.mod_quiz')
 
     // Process attempt.
     function processAttempt(finish, timeup) {
-        return $mmaModQuiz.processAttempt(attempt.id, getAnswers(), $scope.preflightData, finish, timeup).then(function() {
+        return $mmaModQuiz.processAttempt(quiz, attempt, getAnswers(), $scope.preflightData, finish, timeup).then(function() {
             // Answers saved, cancel auto save.
             $mmaModQuizAutoSave.cancelAutoSave();
             $mmaModQuizAutoSave.hideAutoSaveError($scope);
@@ -305,7 +305,8 @@ angular.module('mm.addons.mod_quiz')
             // Add the clicked button data.
             answers[name] = value;
 
-            $mmaModQuiz.processAttempt(attempt.id, answers, $scope.preflightData, false, false).then(function() {
+            // Behaviour checks are always in online.
+            $mmaModQuizOnline.processAttempt(attempt.id, answers, $scope.preflightData, false, false).then(function() {
                 // Reload the current page.
                 var scrollPos = scrollView.getScrollPosition();
                 $scope.dataLoaded = false;

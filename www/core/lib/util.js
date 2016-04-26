@@ -1257,6 +1257,30 @@ angular.module('mm.core')
             return urls;
         };
 
+        /**
+         * Converts an object into an array of objects, where each entry is an object containing
+         * the key and value of the original object.
+         * For example, it can convert {size: 2} into [{name: 'size', value: 2}].
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#objectToArrayOfObjects
+         * @param  {Object} obj       Object to convert.
+         * @param  {String} keyName   Name of the properties where to store the keys.
+         * @param  {String} valueName Name of the properties where to store the values.
+         * @return {Object[]}         Array of objects with the name & value of each property.
+         */
+        self.objectToArrayOfObjects = function(obj, keyName, valueName) {
+            var result = [];
+            angular.forEach(obj, function(value, key) {
+                var entry = {};
+                entry[keyName] = key;
+                entry[valueName] = value;
+                result.push(entry);
+            });
+            return result;
+        };
+
         return self;
     };
 });
