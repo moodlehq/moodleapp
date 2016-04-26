@@ -160,7 +160,7 @@ angular.module('mm.addons.mod_quiz')
                 self.cancelAutoSave();
                 previousAnswers = answers; // Update previous answers to match what we're sending to the server.
 
-                $mmaModQuiz.saveAttempt(attempt.id, answers, scope.preflightData).then(function() {
+                $mmaModQuiz.saveAttempt(quiz, attempt, answers, scope.preflightData).then(function() {
                     // Save successful, we can hide the connection error if it was shown.
                     self.hideAutoSaveError(scope);
                 }).catch(function(message) {

@@ -22,8 +22,8 @@ angular.module('mm.addons.mod_quiz')
  * @name $mmaModQuiz
  */
 .factory('$mmaModQuiz', function($log, $mmSite, $mmSitesManager, $q, $translate, $mmUtil, $mmText, $mmQuestionDelegate,
-            $mmaModQuizAccessRulesDelegate, $mmQuestionHelper, $mmFilepool, mmaModQuizComponent, mmCoreDownloaded,
-            mmCoreDownloading) {
+            $mmaModQuizAccessRulesDelegate, $mmQuestionHelper, $mmFilepool, $mmaModQuizOnline, $mmaModQuizOffline,
+            mmaModQuizComponent, mmCoreDownloaded, mmCoreDownloading) {
 
     $log = $log.getInstance('$mmaModQuiz');
 
@@ -162,7 +162,7 @@ angular.module('mm.addons.mod_quiz')
             var params = {
                     attemptid: attemptId,
                     page: page,
-                    preflightdata: treatDataToSend(preflightData)
+                    preflightdata: $mmUtil.objectToArrayOfObjects(preflightData, 'name', 'value')
                 },
                 preSets = {
                     cacheKey: getAttemptDataCacheKey(attemptId, page)
@@ -388,7 +388,7 @@ angular.module('mm.addons.mod_quiz')
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     attemptid: attemptId,
-                    preflightdata: treatDataToSend(preflightData)
+                    preflightdata: $mmUtil.objectToArrayOfObjects(preflightData, 'name', 'value')
                 },
                 preSets = {
                     cacheKey: getAttemptSummaryCacheKey(attemptId)
@@ -1707,7 +1707,8 @@ angular.module('mm.addons.mod_quiz')
      * @module mm.addons.mod_quiz
      * @ngdoc method
      * @name $mmaModQuiz#processAttempt
-     * @param  {Number} attemptId     Attempt ID.
+     * @param  {Object} quiz          Quiz.
+     * @param  {Object} attempt       Attempt.
      * @param  {Object} data          Data to save.
      * @param  {Object} preflightData Preflight required data (like password).
      * @param  {Boolean} finish       True to finish the quiz, false otherwise.
@@ -1715,28 +1716,12 @@ angular.module('mm.addons.mod_quiz')
      * @param  {String} [siteId]      Site ID. If not defined, current site.
      * @return {Promise}              Promise resolved in success, rejected otherwise.
      */
-    self.processAttempt = function(attemptId, data, preflightData, finish, timeup, siteId) {
-        siteId = siteId || $mmSite.getId();
-
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            var params = {
-                attemptid: attemptId,
-                data: treatDataToSend(data),
-                finishattempt: finish ? 1 : 0,
-                timeup: timeup ? 1 : 0,
-                preflightdata: treatDataToSend(preflightData)
-            };
-
-            return site.write('mod_quiz_process_attempt', params).then(function(response) {
-                if (response && response.warnings && response.warnings.length) {
-                    // Reject with the first warning.
-                    return $q.reject(response.warnings[0].message);
-                } else if (response && response.state) {
-                    return response.state;
-                }
-                return $q.reject();
-            });
-        });
+    self.processAttempt = function(quiz, attempt, data, preflightData, finish, timeup, siteId) {
+        if (quiz.allowofflineattempts) {
+            return $mmaModQuizOffline.processAttempt(quiz, attempt, data, finish, siteId);
+        } else {
+            return $mmaModQuizOnline.processAttempt(attempt.id, data, preflightData, finish, timeup, siteId);
+        }
     };
 
     /**
@@ -1794,31 +1779,19 @@ angular.module('mm.addons.mod_quiz')
      * @module mm.addons.mod_quiz
      * @ngdoc method
      * @name $mmaModQuiz#saveAttempt
-     * @param  {Number} attemptId     Attempt ID.
+     * @param  {Object} quiz          Quiz.
+     * @param  {Object} attempt       Attempt.
      * @param  {Object} data          Data to save.
      * @param  {Object} preflightData Preflight required data (like password).
      * @param  {String} [siteId]      Site ID. If not defined, current site.
      * @return {Promise}              Promise resolved in success, rejected otherwise.
      */
-    self.saveAttempt = function(attemptId, data, preflightData, siteId) {
-        siteId = siteId || $mmSite.getId();
-
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            var params = {
-                attemptid: attemptId,
-                data: treatDataToSend(data),
-                preflightdata: treatDataToSend(preflightData)
-            };
-
-            return site.write('mod_quiz_save_attempt', params).then(function(response) {
-                if (response && response.warnings && response.warnings.length) {
-                    // Reject with the first warning.
-                    return $q.reject(response.warnings[0].message);
-                } else if (!response || !response.status) {
-                    return $q.reject();
-                }
-            });
-        });
+    self.saveAttempt = function(quiz, attempt, data, preflightData, siteId) {
+        if (quiz.allowofflineattempts) {
+            return $mmaModQuizOffline.processAttempt(quiz, attempt, data, false, siteId);
+        } else {
+            return $mmaModQuizOnline.saveAttempt(attempt.id, data, preflightData, siteId);
+        }
     };
 
     /**
@@ -1857,7 +1830,7 @@ angular.module('mm.addons.mod_quiz')
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     quizid: quizId,
-                    preflightdata: treatDataToSend(preflightData),
+                    preflightdata: $mmUtil.objectToArrayOfObjects(preflightData, 'name', 'value'),
                     forcenew: forceNew ? 1 : 0
                 };
 
@@ -1872,24 +1845,6 @@ angular.module('mm.addons.mod_quiz')
             });
         });
     };
-
-    /**
-     * Treats some data to be sent to a WS.
-     * Converts an object of type key => value into an array of type 0 => {name: key, value: value}.
-     *
-     * @param  {Object} data Data to treat.
-     * @return {Object[]}    Treated data.
-     */
-    function treatDataToSend(data) {
-        var treated = [];
-        angular.forEach(data, function(value, key) {
-            treated.push({
-                name: key,
-                value: value
-            });
-        });
-        return treated;
-    }
 
     return self;
 });
