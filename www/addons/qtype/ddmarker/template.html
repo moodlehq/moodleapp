@@ -1,0 +1,8 @@
+<section class="list mma-qtype-ddmarker-container" ng-if="question.text">
+    <div class="item item-text-wrap">
+        <p><mm-format-text watch="true" class="mm-content-with-float">{{ question.text }}</mm-format-text></p>
+        <mm-format-text watch="true" not-adapt-img="true" ng-if="question.ddarea" class="mm-content-with-float">
+            {{ question.ddarea }}
+        </mm-format-text>
+    </div>
+</section>
