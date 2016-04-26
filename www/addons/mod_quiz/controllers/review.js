@@ -100,7 +100,7 @@ angular.module('mm.addons.mod_quiz')
     // Calculate review summary data.
     function setSummaryCalculatedData(reviewData) {
         var timeTaken,
-            grade = reviewData.rescaledgrade,
+            grade = reviewData.grade,
             gradeObject;
 
         attempt.readableState = $mmaModQuiz.getAttemptReadableStateName(attempt.state);
