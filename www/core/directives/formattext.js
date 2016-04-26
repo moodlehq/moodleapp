@@ -34,6 +34,7 @@ angular.module('mm.core')
  *               If the element has no width it'll use 100 characters. If the attribute is empty it'll use 30% width.
  *     -expand-on-click: Indicate if contents should be expanded on click (undo shorten). Only applied if "shorten" is set.
  *     -fullview-on-click: Indicate if should open a new state with the full contents on click. Only applied if "shorten" is set.
+ *     -not-adapt-img: True if we don't want to adapt images to the screen size and add the "openfullimage" icon.
  *     -watch: True if the variable used inside the directive should be watched for changes. If the variable data is retrieved
  *             asynchronously, this value must be set to true, or the directive should be inside a ng-if, ng-repeat or similar.
  */
@@ -220,19 +221,20 @@ angular.module('mm.core')
             angular.forEach(dom.find('img'), function(img) {
                 addMediaAdaptClass(img);
                 addExternalContent(img, component, componentId, siteId);
-
-                // Check if image width has been adapted. If so, add an icon to view the image at full size.
-                var imgWidth = img.offsetWidth || img.width || img.clientWidth;
-                if (imgWidth > elWidth) {
-                    // Wrap the image in a new div with position relative.
-                    var div = angular.element('<div class="mm-adapted-img-container"></div>'),
-                        jqImg = angular.element(img),
-                        label = $mmText.escapeHTML($translate.instant('mm.core.openfullimage')),
-                        imgSrc = $mmText.escapeHTML(img.getAttribute('src'));
-                    img.style.float = ''; // Disable float since image will fill the whole width.
-                    jqImg.wrap(div);
-                    jqImg.after('<a href="#" class="mm-image-viewer-icon" mm-image-viewer img="' + imgSrc +
-                                    '" aria-label="' + label + '"><i class="icon ion-ios-search-strong"></i></a>');
+                if (!attrs.notAdaptImg) {
+                    // Check if image width has been adapted. If so, add an icon to view the image at full size.
+                    var imgWidth = img.offsetWidth || img.width || img.clientWidth;
+                    if (imgWidth > elWidth) {
+                        // Wrap the image in a new div with position relative.
+                        var div = angular.element('<div class="mm-adapted-img-container"></div>'),
+                            jqImg = angular.element(img),
+                            label = $mmText.escapeHTML($translate.instant('mm.core.openfullimage')),
+                            imgSrc = $mmText.escapeHTML(img.getAttribute('src'));
+                        img.style.float = ''; // Disable float since image will fill the whole width.
+                        jqImg.wrap(div);
+                        jqImg.after('<a href="#" class="mm-image-viewer-icon" mm-image-viewer img="' + imgSrc +
+                                        '" aria-label="' + label + '"><i class="icon ion-ios-search-strong"></i></a>');
+                    }
                 }
             });
 
