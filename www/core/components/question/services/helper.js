@@ -208,7 +208,7 @@ angular.module('mm.core.question')
             button = div.querySelector(selector);
             if (button) {
                 addBehaviourButton(question, button);
-                button.remove();
+                angular.element(button).remove();
                 question[htmlProperty] = div.innerHTML;
                 return true;
             }
@@ -241,7 +241,7 @@ angular.module('mm.core.question')
                 name: seenInput.name,
                 value: seenInput.value
             };
-            seenInput.remove();
+            angular.element(seenInput).remove();
             question.html = div.innerHTML;
 
             // Return the directive to render this input.
@@ -318,7 +318,7 @@ angular.module('mm.core.question')
         while (last) {
             if (!$mmUtil.closest(last, '.formulation')) {
                 question[attrName] = last.innerHTML;
-                last.remove();
+                angular.element(last).remove();
                 question.html = div.innerHTML;
                 return;
             }

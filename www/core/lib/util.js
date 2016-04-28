@@ -1294,7 +1294,7 @@ angular.module('mm.core')
                 var el = element[0] || element, // Convert from jqLite to plain JS if needed.
                     selected = el.querySelector(selector);
                 if (selected) {
-                    selected.remove();
+                    angular.element(selected).remove();
                 }
             }
         };
@@ -1320,12 +1320,12 @@ angular.module('mm.core')
             if (removeAll) {
                 selected = div.querySelectorAll(selector);
                 angular.forEach(selected, function(el) {
-                    el.remove();
+                    angular.element(el).remove();
                 });
             } else {
                 selected = div.querySelector(selector);
                 if (selected) {
-                    selected.remove();
+                    angular.element(selected).remove();
                 }
             }
 
