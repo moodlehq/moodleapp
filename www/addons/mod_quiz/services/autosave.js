@@ -33,6 +33,7 @@ angular.module('mm.addons.mod_quiz')
         previousAnswers,
         formName,
         popoverName,
+        offline,
         connectionErrorButtonSelector;
 
     /**
@@ -125,9 +126,10 @@ angular.module('mm.addons.mod_quiz')
      * @param  {String} popoverNm          Name of the connection error popover in the scope.
      *                                     This popover will be shown when there's a connection error.
      * @param  {String} connErrorButtonSel Selector to find the connection error button where to place the popover.
+     * @param  {Boolean} offlineMode       True if attempt is offline.
      * @return {Void}
      */
-    self.init = function(scope, formNm, popoverNm, connErrorButtonSel) {
+    self.init = function(scope, formNm, popoverNm, connErrorButtonSel, offlineMode) {
         // Cancel previous processes.
         self.cancelAutoSave();
         self.stopCheckChangesProcess();
@@ -137,6 +139,7 @@ angular.module('mm.addons.mod_quiz')
         formName = formNm;
         popoverName = popoverNm;
         connectionErrorButtonSelector = connErrorButtonSel;
+        offline = offlineMode;
     };
 
     /**
@@ -160,7 +163,7 @@ angular.module('mm.addons.mod_quiz')
                 self.cancelAutoSave();
                 previousAnswers = answers; // Update previous answers to match what we're sending to the server.
 
-                $mmaModQuiz.saveAttempt(quiz, attempt, answers, scope.preflightData).then(function() {
+                $mmaModQuiz.saveAttempt(quiz, attempt, answers, scope.preflightData, offline).then(function() {
                     // Save successful, we can hide the connection error if it was shown.
                     self.hideAutoSaveError(scope);
                 }).catch(function(message) {
