@@ -75,6 +75,26 @@ angular.module('mm.core.question')
      *
      * @module mm.core.question
      * @ngdoc method
+     * @name $mmQuestion#getAnswer
+     * @param  {String} component Component the attempt belongs to.
+     * @param  {Number} attemptId Attempt ID.
+     * @param  {String} name      Answer's name.
+     * @param  {String} [siteId]  Site ID. If not defined, current site.
+     * @return {Promise}          Promise resolved with the answers.
+     */
+    self.getAnswer = function(component, attemptId, name, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().get(mmQuestionAnswersStore, [component, attemptId, name]);
+        });
+    };
+
+    /**
+     * Retrieve an attempt answers from site DB.
+     *
+     * @module mm.core.question
+     * @ngdoc method
      * @name $mmQuestion#getAttemptAnswers
      * @param  {String} component Component the attempt belongs to.
      * @param  {Number} attemptId Attempt ID.

@@ -96,11 +96,12 @@ angular.module('mm.addons.mod_quiz')
      * @name $mmaModQuiz#getAttemptAccessInformation
      * @param {Number} quizId       Quiz ID.
      * @param {Number} attemptId    Attempt ID. 0 for user's last attempt.
+     * @param {Boolean} offline     True if it should return cached data. Has priority over ignoreCache.
      * @param {Boolean} ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
      * @param {String} [siteId]     Site ID. If not defined, current site.
      * @return {Promise}            Promise resolved with the access information.
      */
-    self.getAttemptAccessInformation = function(quizId, attemptId, ignoreCache, siteId) {
+    self.getAttemptAccessInformation = function(quizId, attemptId, offline, ignoreCache, siteId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -112,7 +113,9 @@ angular.module('mm.addons.mod_quiz')
                     cacheKey: getAttemptAccessInformationCacheKey(quizId, attemptId)
                 };
 
-            if (ignoreCache) {
+            if (offline) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
                 preSets.getFromCache = 0;
                 preSets.emergencyCache = 0;
             }
@@ -151,11 +154,12 @@ angular.module('mm.addons.mod_quiz')
      * @param {Number} attemptId     Attempt ID.
      * @param {Number} page          Page number.
      * @param {Object} preflightData Preflight required data (like password).
+     * @param {Boolean} offline      True if it should return cached data. Has priority over ignoreCache.
      * @param {Boolean} ignoreCache  True if it should ignore cached data (it will always fail in offline or server down).
      * @param {String} [siteId]      Site ID. If not defined, current site.
      * @return {Promise}             Promise resolved with the attempt data.
      */
-    self.getAttemptData = function(attemptId, page, preflightData, ignoreCache, siteId) {
+    self.getAttemptData = function(attemptId, page, preflightData, offline, ignoreCache, siteId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -168,7 +172,9 @@ angular.module('mm.addons.mod_quiz')
                     cacheKey: getAttemptDataCacheKey(attemptId, page)
                 };
 
-            if (ignoreCache) {
+            if (offline) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
                 preSets.getFromCache = 0;
                 preSets.emergencyCache = 0;
             }
@@ -756,11 +762,12 @@ angular.module('mm.addons.mod_quiz')
      * @ngdoc method
      * @name $mmaModQuiz#getQuizAccessInformation
      * @param {Number} quizId       Quiz ID.
+     * @param {Boolean} offline     True if it should return cached data. Has priority over ignoreCache.
      * @param {Boolean} ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
      * @param {String} [siteId]     Site ID. If not defined, current site.
      * @return {Promise}            Promise resolved with the access information.
      */
-    self.getQuizAccessInformation = function(quizId, ignoreCache, siteId) {
+    self.getQuizAccessInformation = function(quizId, offline, ignoreCache, siteId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -771,7 +778,9 @@ angular.module('mm.addons.mod_quiz')
                     cacheKey: getQuizAccessInformationCacheKey(quizId)
                 };
 
-            if (ignoreCache) {
+            if (offline) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
                 preSets.getFromCache = 0;
                 preSets.emergencyCache = 0;
             }
@@ -983,12 +992,13 @@ angular.module('mm.addons.mod_quiz')
      * @param {Number} quizId             Quiz ID.
      * @param {Number} [status]           Status of the attempts to get. By default, 'all'.
      * @param {Boolean} [includePreviews] True to include previews, false otherwise. Defaults to true.
+     * @param {Boolean} offline           True if it should return cached data. Has priority over ignoreCache.
      * @param {Boolean} ignoreCache       True if it should ignore cached data (it will always fail in offline or server down).
      * @param {String} [siteId]           Site ID. If not defined, current site.
      * @param {Number} [userId]           User ID. If not defined use site's current user.
      * @return {Promise}                  Promise resolved with the attempts.
      */
-    self.getUserAttempts = function(quizId, status, includePreviews, ignoreCache, siteId, userId) {
+    self.getUserAttempts = function(quizId, status, includePreviews, offline, ignoreCache, siteId, userId) {
         siteId = siteId || $mmSite.getId();
         status = status || 'all';
         if (typeof includePreviews == 'undefined') {
@@ -1008,7 +1018,9 @@ angular.module('mm.addons.mod_quiz')
                     cacheKey: getUserAttemptsCacheKey(quizId, userId)
                 };
 
-            if (ignoreCache) {
+            if (offline) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
                 preSets.getFromCache = 0;
                 preSets.emergencyCache = 0;
             }
@@ -1486,6 +1498,19 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Check if a quiz is enabled to be used in offline.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#isQuizOffline
+     * @param  {Object}  quiz Quiz.
+     * @return {Boolean}      True offline is enabled, false otherwise.
+     */
+    self.isQuizOffline = function(quiz) {
+        return !!quiz.allowofflineattempts;
+    };
+
+    /**
      * Report an attempt as being viewed.
      *
      * @module mm.addons.mod_quiz
@@ -1493,18 +1518,26 @@ angular.module('mm.addons.mod_quiz')
      * @name $mmaModQuiz#logViewAttempt
      * @param {String} attemptId Attempt ID.
      * @param {Number} [page=0]  Page number.
+     * @param {Boolean} offline  True if attempt is offline.
      * @return {Promise}         Promise resolved when the WS call is successful.
      */
-    self.logViewAttempt = function(attemptId, page) {
+    self.logViewAttempt = function(attemptId, page, offline) {
         if (typeof page == 'undefined') {
             page = 0;
         }
 
         var params = {
-            attemptid: attemptId,
-            page: page
-        };
-        return $mmSite.write('mod_quiz_view_attempt', params);
+                attemptid: attemptId,
+                page: page
+            },
+            promises = [];
+
+        promises.push($mmSite.write('mod_quiz_view_attempt', params));
+        if (offline) {
+            promises.push($mmaModQuizOffline.setAttemptCurrentPage(attemptId, page));
+        }
+
+        return $q.all(promises);
     };
 
     /**
@@ -1713,11 +1746,12 @@ angular.module('mm.addons.mod_quiz')
      * @param  {Object} preflightData Preflight required data (like password).
      * @param  {Boolean} finish       True to finish the quiz, false otherwise.
      * @param  {Boolean} timeup       True if the quiz time is up, false otherwise.
+     * @param  {Boolean} offline      True if attempt is offline.
      * @param  {String} [siteId]      Site ID. If not defined, current site.
      * @return {Promise}              Promise resolved in success, rejected otherwise.
      */
-    self.processAttempt = function(quiz, attempt, data, preflightData, finish, timeup, siteId) {
-        if (quiz.allowofflineattempts) {
+    self.processAttempt = function(quiz, attempt, data, preflightData, finish, timeup, offline, siteId) {
+        if (offline) {
             return $mmaModQuizOffline.processAttempt(quiz, attempt, data, finish, siteId);
         } else {
             return $mmaModQuizOnline.processAttempt(attempt.id, data, preflightData, finish, timeup, siteId);
@@ -1783,11 +1817,12 @@ angular.module('mm.addons.mod_quiz')
      * @param  {Object} attempt       Attempt.
      * @param  {Object} data          Data to save.
      * @param  {Object} preflightData Preflight required data (like password).
+     * @param  {Boolean} offline      True if attempt is offline.
      * @param  {String} [siteId]      Site ID. If not defined, current site.
      * @return {Promise}              Promise resolved in success, rejected otherwise.
      */
-    self.saveAttempt = function(quiz, attempt, data, preflightData, siteId) {
-        if (quiz.allowofflineattempts) {
+    self.saveAttempt = function(quiz, attempt, data, preflightData, offline, siteId) {
+        if (offline) {
             return $mmaModQuizOffline.processAttempt(quiz, attempt, data, false, siteId);
         } else {
             return $mmaModQuizOnline.saveAttempt(attempt.id, data, preflightData, siteId);

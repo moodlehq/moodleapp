@@ -23,7 +23,8 @@ angular.module('mm.addons.mod_quiz')
  */
 .controller('mmaModQuizPlayerCtrl', function($log, $scope, $stateParams, $mmaModQuiz, $mmaModQuizHelper, $q, $mmUtil,
             $ionicPopover, $ionicScrollDelegate, $rootScope, $ionicPlatform, $translate, $timeout, $mmQuestionHelper,
-            $mmaModQuizAutoSave, $mmEvents, mmaModQuizAttemptFinishedEvent, $mmSideMenu, $mmaModQuizOnline) {
+            $mmaModQuizAutoSave, $mmEvents, mmaModQuizAttemptFinishedEvent, $mmSideMenu, $mmaModQuizOnline,
+            mmaModQuizComponent) {
     $log = $log.getInstance('mmaModQuizPlayerCtrl');
 
     var quizId = $stateParams.quizid,
@@ -38,9 +39,11 @@ angular.module('mm.addons.mod_quiz')
         unregisterHardwareBack,
         leaving = false,
         timeUpCalled = false,
-        scrollView = $ionicScrollDelegate.$getByHandle('mmaModQuizPlayerScroll');
+        scrollView = $ionicScrollDelegate.$getByHandle('mmaModQuizPlayerScroll'),
+        offline;
 
     $scope.moduleUrl = moduleUrl;
+    $scope.component = mmaModQuizComponent;
     $scope.quizAborted = false;
     $scope.preflightData = {};
 
@@ -69,6 +72,9 @@ angular.module('mm.addons.mod_quiz')
         return $mmaModQuiz.getQuizById(courseId, quizId).then(function(quizData) {
             quiz = quizData;
             quiz.isSequential = $mmaModQuiz.isNavigationSequential(quiz);
+            offline = $mmaModQuiz.isQuizOffline(quiz);
+            $scope.offline = offline;
+            // @todo: Detect if attempt is offline. Maybe teacher has changed quiz setting.
 
             if (quiz.timelimit > 0) {
                 $scope.isTimed = true;
@@ -79,12 +85,12 @@ angular.module('mm.addons.mod_quiz')
 
             $scope.quiz = quiz;
 
-            // Get access information for the quiz. quizAccessInfo
-            return $mmaModQuiz.getQuizAccessInformation(quiz.id, true).then(function(info) {
+            // Get access information for the quiz.
+            return $mmaModQuiz.getQuizAccessInformation(quiz.id, offline, true).then(function(info) {
                 quizAccessInfo = info;
 
                 // Get user attempts to determine last attempt.
-                return $mmaModQuiz.getUserAttempts(quiz.id, 'all', true, true).then(function(attempts) {
+                return $mmaModQuiz.getUserAttempts(quiz.id, 'all', true, offline, true).then(function(attempts) {
                     if (!attempts.length) {
                         newAttempt = true;
                     } else {
@@ -101,12 +107,11 @@ angular.module('mm.addons.mod_quiz')
     // Convenience function to start/continue the attempt.
     function startOrContinueAttempt(preflightData) {
         // Check preflight data and start attempt if needed.
-        var atmpt = newAttempt ? undefined : attempt;
-        return $mmaModQuizHelper.checkPreflightData($scope, quiz.id, quizAccessInfo, atmpt, preflightData)
-                    .then(function(att) {
+        var att = newAttempt ? undefined : attempt;
+        return $mmaModQuizHelper.checkPreflightData($scope, quiz, quizAccessInfo, att, preflightData, offline).then(function(att) {
 
             // Re-fetch attempt access information with the right attempt (might have changed because a new attempt was created).
-            return $mmaModQuiz.getAttemptAccessInformation(quiz.id, att.id, true).then(function(info) {
+            return $mmaModQuiz.getAttemptAccessInformation(quiz.id, att.id, offline, true).then(function(info) {
                 attemptAccessInfo = info;
 
                 attempt = att;
@@ -140,7 +145,7 @@ angular.module('mm.addons.mod_quiz')
 
     // Load a page questions.
     function loadPage(page) {
-        return $mmaModQuiz.getAttemptData(attempt.id, page, $scope.preflightData, true).then(function(data) {
+        return $mmaModQuiz.getAttemptData(attempt.id, page, $scope.preflightData, offline, true).then(function(data) {
             // Update attempt, status could change during the execution.
             attempt = data.attempt;
             attempt.currentpage = page;
@@ -161,7 +166,7 @@ angular.module('mm.addons.mod_quiz')
             });
 
             // Mark the page as viewed. We'll ignore errors in this call.
-            $mmaModQuiz.logViewAttempt(attempt.id, page);
+            $mmaModQuiz.logViewAttempt(attempt.id, page, offline);
 
             // Start looking for changes.
             $mmaModQuizAutoSave.startCheckChangesProcess($scope, quiz, attempt);
@@ -196,7 +201,8 @@ angular.module('mm.addons.mod_quiz')
 
     // Process attempt.
     function processAttempt(finish, timeup) {
-        return $mmaModQuiz.processAttempt(quiz, attempt, getAnswers(), $scope.preflightData, finish, timeup).then(function() {
+        return $mmaModQuiz.processAttempt(quiz, attempt, getAnswers(), $scope.preflightData, finish, timeup, offline)
+                .then(function() {
             // Answers saved, cancel auto save.
             $mmaModQuizAutoSave.cancelAutoSave();
             $mmaModQuizAutoSave.hideAutoSaveError($scope);
