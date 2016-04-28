@@ -21,7 +21,8 @@ angular.module('mm.core.question')
  * @ngdoc service
  * @name $mmQuestionHelper
  */
-.factory('$mmQuestionHelper', function($mmUtil, $mmText, $ionicModal, mmQuestionComponent, $mmSitesManager, $mmFilepool, $q) {
+.factory('$mmQuestionHelper', function($mmUtil, $mmText, $ionicModal, mmQuestionComponent, $mmSitesManager, $mmFilepool, $q,
+            $mmQuestion) {
 
     var self = {},
         lastErrorShown = 0,
@@ -540,6 +541,59 @@ angular.module('mm.core.question')
                 scope.input.isCorrect = 1;
             }
         }
+    };
+
+    /**
+     * For each input element found in the HTML, search if there's a local answer stored and
+     * override the HTML's value with the local one.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#loadLocalAnswersInHtml
+     * @param  {String} component Component the answers belong to.
+     * @param  {Number} attemptId Attempt ID.
+     * @param  {Object} question  Question.
+     * @return {Promise}          Promise resolved when done.
+     */
+    self.loadLocalAnswersInHtml = function(component, attemptId, question) {
+        var form = document.createElement('form'),
+            promises = [];
+        form.innerHTML = question.html;
+
+        // Search all input elements.
+        angular.forEach(form.elements, function(element, name) {
+            name = element.name || name;
+            // Ignore flag and submit inputs.
+            if (name.match(/_:flagged$/) || element.type == 'submit' || element.tagName == 'BUTTON') {
+                return;
+            }
+
+            // Search if there's a local answer.
+            promises.push($mmQuestion.getAnswer(component, attemptId, name).then(function(answer) {
+                var selected;
+                if (element.tagName == 'TEXTAREA') {
+                    element.innerHTML = answer.value;
+                } else if (element.tagName == 'SELECT') {
+                    // Search the selected option and select it.
+                    selected = element.querySelector('option[value="' + answer.value + '"]');
+                    if (selected) {
+                        selected.setAttribute('selected', 'selected');
+                    }
+                } else if (element.type == 'radio' || element.type == 'checkbox') {
+                    if (element.value == answer.value) {
+                        element.setAttribute('checked', 'checked');
+                    }
+                } else {
+                    element.setAttribute('value', answer.value);
+                }
+            }).catch(function() {
+                // No local answer stored.
+            }));
+        });
+
+        return $q.all(promises).then(function() {
+            question.html = form.innerHTML;
+        });
     };
 
     /**

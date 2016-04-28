@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_quiz')
  * @name mmaModQuizReviewCtrl
  */
 .controller('mmaModQuizReviewCtrl', function($log, $scope, $stateParams, $mmaModQuiz, $mmaModQuizHelper, $mmUtil,
-            $ionicScrollDelegate, $translate, $q, mmaModQuizAttemptComponent, $mmQuestionHelper, $mmSideMenu, $timeout) {
+            $ionicScrollDelegate, $translate, $q, mmaModQuizComponent, $mmQuestionHelper, $mmSideMenu, $timeout) {
     $log = $log.getInstance('mmaModQuizReviewCtrl');
 
     var quizId = $stateParams.quizid,
@@ -36,8 +36,8 @@ angular.module('mm.addons.mod_quiz')
         scrollView = $ionicScrollDelegate.$getByHandle('mmaModQuizReviewScroll');
 
     $scope.isReview = true;
-    $scope.component = mmaModQuizAttemptComponent;
-    $scope.componentId = attemptId;
+    $scope.component = mmaModQuizComponent;
+    $scope.componentId = quizId;
     $scope.showAll = currentPage == -1;
 
     // Convenience function to get the quiz data.

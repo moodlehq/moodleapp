@@ -145,5 +145,31 @@ angular.module('mm.addons.mod_quiz')
         });
     };
 
+    /**
+     * Set attempt's current page.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizOffline#setAttemptCurrentPage
+     * @param  {Number} attemptId Attempt ID.
+     * @param  {Number} page      Page to set.
+     * @param  {String} [siteId]  Site ID. If not defined, current site.
+     * @return {Promise}          Promise resolved in success, rejected otherwise.
+     */
+    self.setAttemptCurrentPage = function(attemptId, page, siteId) {
+        siteId = siteId || $mmSite.getId();
+        var entry;
+
+        // Check if an attempt already exists.
+        return self.getAttemptById(attemptId, siteId).then(function(e) {
+            entry = e;
+            return $mmSitesManager.getSite(siteId);
+        }).then(function(site) {
+            // Save attempt in DB.
+            entry.currentpage = page;
+            return site.getDb().insert(mmaModQuizAttemptsStore, entry);
+        });
+    };
+
     return self;
 });

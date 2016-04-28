@@ -27,17 +27,20 @@ angular.module('mm.core.question')
  * The directives to render the question will receive the following parameters in the scope:
  *
  * @param {Object} question          The question to render.
- * @param {String} component         The component to link files to if the question has any.
- * @param {Number} [componentId]     An ID to use in conjunction with the component.
+ * @param {String} component         The component to link files and search local answers.
+ * @param {Number} [componentId]     An ID to use in conjunction with the component for the files.
+ * @param {Number} attemptId         Attempt ID the question belongs to.
  * @param {Function} abort           A function to call to abort the execution.
  *                                   Directives implementing questions should use it if there's a critical error.
  *                                   Addons using this directive should provide a function that allows aborting the execution
  *                                   of the addon, so if any question calls it the whole feature is aborted.
  * @param {Function} [buttonClicked] A function to call when a question behaviour button is clicked (check, redo, ...).
  *                                   Will receive as params the name and the value of the button.
+ * @param {Mixed} offlineEnabled     If offline mode is disabled for this question, set it to false, 0, "0" or "false".
+ *                                   Otherwise it'll assume offline mode is enabled.
  */
 .directive('mmQuestion', function($log, $compile, $mmQuestionDelegate, $mmQuestionHelper, $mmQuestionBehaviourDelegate, $mmUtil,
-            $translate) {
+            $translate, $q) {
     $log = $log.getInstance('mmQuestion');
 
     return {
@@ -47,13 +50,16 @@ angular.module('mm.core.question')
             question: '=',
             component: '=?',
             componentId: '=?',
+            attemptId: '=?',
             abort: '&',
-            buttonClicked: '&?'
+            buttonClicked: '&?',
+            offlineEnabled: '@?'
         },
         link: function(scope, element) {
             var question = scope.question,
                 questionContainer = element[0].querySelector('.mm-question-container'),
-                behaviour;
+                behaviour,
+                promise;
 
             if (question && questionContainer) {
                 // Search the right directive to render the question.
@@ -78,22 +84,31 @@ angular.module('mm.core.question')
                     // Extract the validation error of the question.
                     question.validationError = $mmQuestionHelper.getValidationErrorFromHtml(question.html);
 
-                    // Get the sequence check (hidden input). This is required.
-                    scope.seqCheck = $mmQuestionHelper.getQuestionSequenceCheckFromHtml(question.html);
-                    if (!scope.seqCheck) {
-                        $log.warn('Aborting question because couldn\'t retrieve sequence check.', question.name);
-                        $mmQuestionHelper.showDirectiveError(scope);
-                        return;
+                    // Load local answers if offline is enabled.
+                    if (scope.offlineEnabled && scope.offlineEnabled !== '0' && scope.offlineEnabled !== 'false') {
+                        promise = $mmQuestionHelper.loadLocalAnswersInHtml(scope.component, scope.attemptId, question);
+                    } else {
+                        promise = $q.when();
                     }
 
-                    // Try to extract the feedback and comment for the question.
-                    $mmQuestionHelper.extractQuestionFeedback(question);
-                    $mmQuestionHelper.extractQuestionComment(question);
+                    promise.then(function() {
+                        // Get the sequence check (hidden input). This is required.
+                        scope.seqCheck = $mmQuestionHelper.getQuestionSequenceCheckFromHtml(question.html);
+                        if (!scope.seqCheck) {
+                            $log.warn('Aborting question because couldn\'t retrieve sequence check.', question.name);
+                            $mmQuestionHelper.showDirectiveError(scope);
+                            return;
+                        }
 
-                    // Add the directive to the element.
-                    questionContainer.setAttribute(directive, '');
-                    // Compile the new directive.
-                    $compile(questionContainer)(scope);
+                        // Try to extract the feedback and comment for the question.
+                        $mmQuestionHelper.extractQuestionFeedback(question);
+                        $mmQuestionHelper.extractQuestionComment(question);
+
+                        // Add the directive to the element.
+                        questionContainer.setAttribute(directive, '');
+                        // Compile the new directive.
+                        $compile(questionContainer)(scope);
+                    });
                 }
             }
         }
