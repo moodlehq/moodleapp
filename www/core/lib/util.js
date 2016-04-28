@@ -1153,6 +1153,7 @@ angular.module('mm.core')
          */
         self.getElementXY = function(container, selector, positionParentClass) {
             var element = selector ? container.querySelector(selector) : container,
+                offsetElement,
                 positionTop = 0,
                 positionLeft = 0;
 
@@ -1168,8 +1169,20 @@ angular.module('mm.core')
                 positionLeft += (element.offsetLeft - element.scrollLeft + element.clientLeft);
                 positionTop += (element.offsetTop - element.scrollTop + element.clientTop);
 
-                element = element.parent;
-                // If scrolling element is reached, stop adding tops.
+                offsetElement = element.offsetParent;
+                element = element.parentElement;
+
+                // Every parent class has to be checked but the position has to be got form offsetParent.
+                while (offsetElement != element && element) {
+                    // If positionParentClass element is reached, stop adding tops.
+                    if (angular.element(element).hasClass(positionParentClass)) {
+                        element = false;
+                    } else {
+                        element = element.parentElement;
+                    }
+                }
+
+                // Finally, check again.
                 if (angular.element(element).hasClass(positionParentClass)) {
                     element = false;
                 }
