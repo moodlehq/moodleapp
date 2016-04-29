@@ -52,7 +52,7 @@ angular.module('mm.core.question')
         },
         link: function(scope, element) {
             var question = scope.question,
-                questionContainer = element[0].querySelector('#mm-question-container'),
+                questionContainer = element[0].querySelector('.mm-question-container'),
                 behaviour;
 
             if (question && questionContainer) {
