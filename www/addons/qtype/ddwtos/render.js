@@ -182,7 +182,6 @@ angular.module('mm.addons.qtype_ddwtos')
             drag.addClass('no' + this.nextdragitemno);
             this.nextdragitemno++;
             drag.css('visibility', 'visible').css('position', 'absolute');
-            drag.attr('data-tap-disabled', true);
             var container = document.querySelector(this.selectors.drag_container());
             container = angular.element(container);
             container.append(drag);
@@ -284,7 +283,6 @@ angular.module('mm.addons.qtype_ddwtos')
             // If home answer area is clicked, return drag home.
             var home = document.querySelector(this.selectors.top_node() + ' .answercontainer');
             home = angular.element(home);
-            home.attr('data-tap-disabled', true);
 
             home.on('click', function() {
                 var drag = instance.selected;
@@ -307,7 +305,6 @@ angular.module('mm.addons.qtype_ddwtos')
 
         this.make_drop_zone = function (drop) {
             drop = angular.element(drop);
-            drop.attr('data-tap-disabled', true);
             drop.on('click', function() {
                 var drag = instance.selected;
 

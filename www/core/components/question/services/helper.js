@@ -208,7 +208,7 @@ angular.module('mm.core.question')
             button = div.querySelector(selector);
             if (button) {
                 addBehaviourButton(question, button);
-                button.remove();
+                angular.element(button).remove();
                 question[htmlProperty] = div.innerHTML;
                 return true;
             }
@@ -241,7 +241,7 @@ angular.module('mm.core.question')
                 name: seenInput.name,
                 value: seenInput.value
             };
-            seenInput.remove();
+            angular.element(seenInput).remove();
             question.html = div.innerHTML;
 
             // Return the directive to render this input.
@@ -318,7 +318,7 @@ angular.module('mm.core.question')
         while (last) {
             if (!$mmUtil.closest(last, '.formulation')) {
                 question[attrName] = last.innerHTML;
-                last.remove();
+                angular.element(last).remove();
                 question.html = div.innerHTML;
                 return;
             }
@@ -354,18 +354,19 @@ angular.module('mm.core.question')
                 question.html = question.html.replace(match, '');
 
                 // Search init_question functions for this type.
-                var initMatches = match.match(new RegExp('M\.' + question.type + '\.init_question\\(.*?}\\);', 'mg'));
-                angular.forEach(initMatches, function(initMatch) {
+                var initMatches = match.match(new RegExp('M\.qtype_' + question.type + '\.init_question\\(.*?}\\);', 'mg'));
+                if (initMatches) {
+                    var initMatch = initMatches.pop();
+
                     // Remove start and end of the match, we only want the object.
-                    initMatch = initMatch.replace('M.' + question.type + '.init_question(', '');
+                    initMatch = initMatch.replace('M.qtype_' + question.type + '.init_question(', '');
                     initMatch = initMatch.substr(0, initMatch.length - 2);
 
                     // Try to convert it to an object and add it to the question.
                     try {
-                        initMatch = JSON.parse(initMatch);
-                        question.initObjects.push(initMatch);
+                        question.initObjects = JSON.parse(initMatch);
                     } catch(ex) {}
-                });
+                }
             });
         }
     };
