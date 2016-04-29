@@ -42,10 +42,6 @@
     "cordova-plugin-statusbar",
     "cordova-plugin-whitelist",
     {
-      "locator": "https://github.com/phonegap-build/PushPlugin",
-      "id": "com.phonegap.plugins.pushplugin"
-    },
-    {
       "locator": "https://github.com/Tunts/WebIntent",
       "id": "net.tunts.webintent"
     },
@@ -62,7 +58,14 @@
       "id": "ch.ti8m.documenthandler"
     },
     "cordova-plugin-local-notifications-mm",
-    "cordova-plugin-zip"
+    "cordova-plugin-zip",
+    {
+      "variables": {
+        "SENDER_ID": "694767596569"
+      },
+      "locator": "phonegap-plugin-push",
+      "id": "phonegap-plugin-push"
+    }
   ],
   "cordovaPlatforms": [
     "android",
