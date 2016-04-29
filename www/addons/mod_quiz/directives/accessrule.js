@@ -32,7 +32,7 @@ angular.module('mm.addons.mod_quiz')
         templateUrl: 'addons/mod_quiz/templates/accessrule.html',
         link: function(scope, element) {
             var directive = scope.directive,
-                container = element[0].querySelector('#mma-quiz-accessrule-container');
+                container = element[0].querySelector('.mma-quiz-accessrule-container');
 
             if (directive && container) {
                 // Add the directive to the element.
