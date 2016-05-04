@@ -21,7 +21,7 @@ angular.module('mm.addons.pushnotifications')
  * @ngdoc service
  * @name $mmaPushNotifications
  */
-.factory('$mmaPushNotifications', function($mmSite, $log, $cordovaPush, $mmText, $q, $cordovaDevice, $mmUtil, mmCoreConfigConstants,
+.factory('$mmaPushNotifications', function($mmSite, $log, $cordovaPushV5, $mmText, $q, $cordovaDevice, $mmUtil, mmCoreConfigConstants,
             $mmApp, $mmLocalNotifications, $mmPushNotificationsDelegate, $mmSitesManager, mmaPushNotificationsComponent) {
     $log = $log.getInstance('$mmaPushNotifications');
 
@@ -48,48 +48,12 @@ angular.module('mm.addons.pushnotifications')
      * @module mm.addons.pushnotifications
      * @ngdoc method
      * @name $mmaPushNotifications#notificationClicked
-     * @param {Object} data Notification data.
+     * @param {Object} notification Notification.
      */
-    self.notificationClicked = function(data) {
+    self.notificationClicked = function(notification) {
         $mmApp.ready().then(function() {
-            $mmPushNotificationsDelegate.clicked(data);
+            $mmPushNotificationsDelegate.clicked(notification);
         });
-    };
-
-    /**
-     * This function is called from the PushPlugin when we receive a Notification from GCM.
-     * The app can be in foreground or background,
-     * if we are in background this code is executed when we open the app clicking in the notification bar.
-     *
-     * @module mm.addons.pushnotifications
-     * @ngdoc method
-     * @name $mmaPushNotifications#onGCMReceived
-     * @param {Object} notification Notification data.
-     */
-    self.onGCMReceived = function(notification) {
-        $log.debug('GCM notification received. Type: '+notification.event);
-
-        switch (notification.event) {
-            case 'registered':
-                if (notification.regid.length > 0) {
-                    pushID = notification.regid;
-                    return self.registerDeviceOnMoodle();
-                } else {
-                    $log.debug('Device NOT registered in GCM, invalid regid');
-                    break;
-                }
-
-            case 'message':
-                notification.payload.foreground = notification.foreground;
-                return self.onMessageReceived(notification.payload);
-
-            case 'error':
-                $log.debug('Push messages error');
-                break;
-
-            default:
-                $log.debug('Push unknown message');
-        }
     };
 
     /**
@@ -100,12 +64,13 @@ angular.module('mm.addons.pushnotifications')
      * @module mm.addons.pushnotifications
      * @ngdoc method
      * @name $mmaPushNotifications#onMessageReceived
-     * @param {Object} data Notification data.
+     * @param {Object} notification Notification received.
      */
-    self.onMessageReceived = function(data) {
-        var promise;
+    self.onMessageReceived = function(notification) {
+        var promise,
+            data = notification ? notification.additionalData : {};
 
-        if (data && data.site) {
+        if (data.site) {
             promise = $mmSitesManager.getSite(data.site); // Check if site exists.
         } else {
             promise = $q.when(); // No site specified, resolve.
@@ -115,25 +80,39 @@ angular.module('mm.addons.pushnotifications')
             if ($mmUtil.isTrueOrOne(data.foreground)) {
                 // If the app is in foreground when the notification is received, it's not shown. Let's show it ourselves.
                 if ($mmLocalNotifications.isAvailable()) {
+                    var localNotif = {
+                            id: 1,
+                            at: new Date(),
+                            smallIcon: 'res://icon',
+                            data: {
+                                notif: data.notif,
+                                site: data.site
+                            }
+                        },
+                        promises = [];
+
                     // Apply formatText to title and message.
-                    $mmText.formatText(data.title, true, true).then(function(formattedTitle) {
-                        $mmText.formatText(data.message, true, true).then(function(formattedMessage) {
-                            var localNotif = {
-                                id: 1,
-                                title: formattedTitle,
-                                message: formattedMessage,
-                                at: new Date(),
-                                smallIcon: 'res://icon',
-                                data: {
-                                    notif: data.notif,
-                                    site: data.site
-                                }
-                            };
-                            $mmLocalNotifications.schedule(localNotif, mmaPushNotificationsComponent, data.site);
-                        });
+                    promises.push($mmText.formatText(notification.title, true, true).then(function(formattedTitle) {
+                        localNotif.title = formattedTitle;
+                    }).catch(function() {
+                        localNotif.title = notification.title;
+                    }));
+
+                    promises.push($mmText.formatText(notification.message, true, true).then(function(formattedMessage) {
+                        localNotif.message = formattedMessage;
+                    }).catch(function() {
+                        localNotif.message = notification.message;
+                    }));
+
+                    $q.all(promises).then(function() {
+                        $mmLocalNotifications.schedule(localNotif, mmaPushNotificationsComponent, data.site);
                     });
                 }
             } else {
+                // The notification was clicked. For compatibility with old push plugin implementation
+                // we'll merge all the notification data in a single object.
+                data.title = notification.title;
+                data.message = notification.message;
                 self.notificationClicked(data);
             }
         });
@@ -149,56 +128,29 @@ angular.module('mm.addons.pushnotifications')
      */
     self.registerDevice = function() {
         try {
-            if (ionic.Platform.isIOS()) {
-                return self._registerDeviceAPNS();
-            } else if (ionic.Platform.isAndroid()) {
-                return self._registerDeviceGCM();
-            }
+            var options = {
+                android: {
+                    senderID: mmCoreConfigConstants.gcmpn
+                },
+                ios: {
+                    alert: true,
+                    badge: true,
+                    sound: true
+                }
+            };
+            return $cordovaPushV5.initialize(options).then(function() {
+                // Start listening for notifications and errors.
+                $cordovaPushV5.onNotification();
+                $cordovaPushV5.onError();
+
+                // Register the device in GCM or APNS.
+                return $cordovaPushV5.register().then(function(token) {
+                    pushID = token;
+                    return self.registerDeviceOnMoodle();
+                });
+            });
         } catch(ex) {}
 
-        return $q.reject();
-    };
-
-    /**
-     * Register a device in Apple APNS (Apple Push Notificaiton System) using the Phonegap PushPlugin.
-     * It also registers the device in the Moodle site using the core_user_add_user_device WebService.
-     * We need the device registered in Moodle so we can connect the device with the message output Moode plugin airnotifier.
-     *
-     * @module mm.addons.pushnotifications
-     * @ngdoc method
-     * @name $mmaPushNotifications#_registerDeviceAPNS
-     * @return {Promise} Promise resolved when the device is registered.
-     * @protected
-     */
-    self._registerDeviceAPNS = function() {
-        var options = {
-            alert: 'true',
-            badge: 'true',
-            sound: 'true'
-        };
-        return $cordovaPush.register(options).then(function(token) {
-            pushID = token;
-            return self.registerDeviceOnMoodle();
-        }, function(error) {
-            return $q.reject();
-        });
-    };
-
-    /**
-     * Register a device in Google GCM using the Phonegap PushPlugin.
-     *
-     * @module mm.addons.pushnotifications
-     * @ngdoc method
-     * @name $mmaPushNotifications#_registerDeviceGCM
-     * @return {Promise} Promise resolved when the device is registered.
-     * @protected
-     */
-    self._registerDeviceGCM = function() {
-        if (mmCoreConfigConstants.gcmpn) {
-            return $cordovaPush.register({
-                senderID: mmCoreConfigConstants.gcmpn
-            });
-        }
         return $q.reject();
     };
 

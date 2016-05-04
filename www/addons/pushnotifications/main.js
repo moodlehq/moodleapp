@@ -25,12 +25,8 @@ angular.module('mm.addons.pushnotifications', [])
     });
 
     // Notification received.
-    $rootScope.$on('$cordovaPush:notificationReceived', function(e, notification) {
-        if (ionic.Platform.isAndroid()) {
-            $mmaPushNotifications.onGCMReceived(notification);
-        } else if (ionic.Platform.isIOS()) {
-            $mmaPushNotifications.onMessageReceived(notification);
-        }
+    $rootScope.$on('$cordovaPushV5:notificationReceived', function(e, notification) {
+        $mmaPushNotifications.onMessageReceived(notification);
     });
 
     // Register device on Moodle site when login.
