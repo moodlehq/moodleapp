@@ -72,9 +72,18 @@ angular.module('mm.addons.mod_quiz')
         return $mmaModQuiz.getQuizById(courseId, quizId).then(function(quizData) {
             quiz = quizData;
             quiz.isSequential = $mmaModQuiz.isNavigationSequential(quiz);
-            offline = $mmaModQuiz.isQuizOffline(quiz);
+
+            if ($mmaModQuiz.isQuizOffline(quiz)) {
+                // Quiz supports offline.
+                return true;
+            } else {
+                // Quiz doesn't support offline right now, but maybe it did and then the setting was changed.
+                // If we have an unfinished offline attempt then we'll use offline mode.
+                return $mmaModQuiz.isLastAttemptOfflineUnfinished(quiz);
+            }
+        }).then(function(offlineMode) {
+            offline = offlineMode;
             $scope.offline = offline;
-            // @todo: Detect if attempt is offline. Maybe teacher has changed quiz setting.
 
             if (quiz.timelimit > 0) {
                 $scope.isTimed = true;
