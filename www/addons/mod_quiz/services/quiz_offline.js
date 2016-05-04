@@ -59,8 +59,8 @@ angular.module('mm.addons.mod_quiz')
  * @ngdoc service
  * @name $mmaModQuizOffline
  */
-.factory('$mmaModQuizOffline', function($log, $mmSite, $mmSitesManager, $mmUtil, $q, $mmQuestion, mmaModQuizAttemptsStore,
-            mmaModQuizComponent) {
+.factory('$mmaModQuizOffline', function($log, $mmSite, $mmSitesManager, $mmUtil, $q, $mmQuestion, $mmQuestionBehaviourDelegate,
+            $translate, mmaModQuizAttemptsStore, mmaModQuizComponent) {
 
     $log = $log.getInstance('$mmaModQuizOffline');
 
@@ -99,6 +99,33 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Load local state in the questions.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizOffline#loadQuestionsLocalStates
+     * @param  {Number} attemptId   Attempt ID.
+     * @param  {Object[]} questions Questions.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved when done.
+     */
+    self.loadQuestionsLocalStates = function(attemptId, questions, siteId) {
+        var promises = [];
+        angular.forEach(questions, function(question) {
+            promises.push($mmQuestion.getQuestion(mmaModQuizComponent, attemptId, question.slot, siteId).then(function(q) {
+                var state = $mmQuestion.getState(q.state);
+                question.state = q.state;
+                question.status = $translate.instant('mm.question.' + state.status);
+            }).catch(function() {
+                // Question not found.
+            }));
+        });
+        return $q.all(promises).then(function() {
+            return questions;
+        });
+    };
+
+    /**
      * Process an attempt, saving its data.
      *
      * @module mm.addons.mod_quiz
@@ -106,12 +133,13 @@ angular.module('mm.addons.mod_quiz')
      * @name $mmaModQuizOffline#processAttempt
      * @param  {Object} quiz          Quiz.
      * @param  {Object} attempt       Attempt.
+     * @param  {Object} questions     Questions of the quiz. Keys should be question numbers.
      * @param  {Object} data          Data to save.
      * @param  {Boolean} finish       True to finish the quiz, false otherwise.
      * @param  {String} [siteId]      Site ID. If not defined, current site.
      * @return {Promise}              Promise resolved in success, rejected otherwise.
      */
-    self.processAttempt = function(quiz, attempt, data, finish, siteId) {
+    self.processAttempt = function(quiz, attempt, questions, data, finish, siteId) {
         siteId = siteId || $mmSite.getId();
 
         var now = $mmUtil.timestamp(),
@@ -141,7 +169,72 @@ angular.module('mm.addons.mod_quiz')
             return db.insert(mmaModQuizAttemptsStore, entry);
         }).then(function() {
             // Attempt has been saved, now we need to save the answers.
-            return $mmQuestion.saveAnswers(mmaModQuizComponent, quiz.id, attempt.id, attempt.userid, data, now, siteId);
+            return self.saveAnswers(quiz, attempt, questions, data, now, siteId);
+        });
+    };
+
+    /**
+     * Save an attempt's answers and calculate state for questions modified.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizOffline#saveAnswers
+     * @param  {Object} quiz      Quiz.
+     * @param  {Object} attempt   Attempt.
+     * @param  {Object} questions Questions of the quiz. Keys should be question slots.
+     * @param  {Object} answers   Answers to save.
+     * @param  {Number} [timemod] Time modified to set in the answers. If not defined, current time.
+     * @param  {String} [siteId]  Site ID. If not defined, current site.
+     * @return {Promise}          Promise resolved when done.
+     */
+    self.saveAnswers = function(quiz, attempt, questions, answers, timemod, siteId) {
+        siteId = siteId || $mmSite.getId();
+        timemod = timemod || $mmUtil.timestamp();
+
+        var promises = [],
+            questionsWithAnswers = {},
+            newStates = {};
+
+        // Classify the answers in each question.
+        angular.forEach(answers, function(value, name) {
+            var slot = $mmQuestion.getQuestionSlotFromName(name),
+                nameWithoutPrefix = $mmQuestion.removeQuestionPrefix(name);
+
+            if (questions[slot]) {
+                if (!questionsWithAnswers[slot]) {
+                    questionsWithAnswers[slot] = questions[slot];
+                    questionsWithAnswers[slot].answers = {};
+                }
+                questionsWithAnswers[slot].answers[nameWithoutPrefix] = value;
+            }
+        });
+
+        // First determine the new status of each question. We won't save the new state yet.
+        angular.forEach(questionsWithAnswers, function(question) {
+            promises.push($mmQuestionBehaviourDelegate.determineQuestionState(
+                        quiz.preferredbehaviour, mmaModQuizComponent, attempt.id, question, siteId).then(function(state) {
+                if (state) {
+                    newStates[question.slot] = state.name;
+                }
+            }));
+        });
+
+        return $q.all(promises).then(function() {
+            // Now save the answers.
+            return $mmQuestion.saveAnswers(mmaModQuizComponent, quiz.id, attempt.id, attempt.userid, answers, timemod, siteId);
+        }).then(function() {
+            // Answers have been saved, now we can save the questions with the states.
+            promises = [];
+            angular.forEach(newStates, function(state, slot) {
+                var question = questionsWithAnswers[slot];
+                promises.push(
+                    $mmQuestion.saveQuestion(mmaModQuizComponent, quiz.id, attempt.id, attempt.userid, question, state, siteId)
+                );
+            });
+            return $mmUtil.allPromises(promises).catch(function() {
+                // Ignore errors when saving question state.
+                $log.error('Error saveQuestion');
+            });
         });
     };
 

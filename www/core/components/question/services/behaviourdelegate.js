@@ -81,6 +81,27 @@ angular.module('mm.core.question')
             self = {};
 
         /**
+         * Determine a question state based on its answer(s).
+         *
+         * @module mm.core.question
+         * @ngdoc method
+         * @name $mmQuestionBehaviourDelegate#determineQuestionState
+         * @param  {String} component Component the question belongs to.
+         * @param  {Number} attemptId Attempt ID the question belongs to.
+         * @param  {Object} question  The question.
+         * @param  {String} [siteId]  Site ID. If not defined, current site.
+         * @return {Promise}          Promise resolved with the state or false if cannot determine state.
+         */
+        self.determineQuestionState = function(behaviour, component, attemptId, question, siteId) {
+            behaviour = $mmQuestionDelegate.getBehaviourForQuestion(question, behaviour);
+            var handler = enabledHandlers[behaviour];
+            if (typeof handler != 'undefined' && handler.determineQuestionState) {
+                return $q.when(handler.determineQuestionState(component, attemptId, question, siteId));
+            }
+            return $q.when(false);
+        };
+
+        /**
          * Handle a question behaviour.
          * If the behaviour requires a submit button, it should add it to question.behaviourButtons.
          * If the behaviour requires to show some extra data, it should return a directive to render it.

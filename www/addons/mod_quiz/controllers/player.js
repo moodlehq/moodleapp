@@ -138,7 +138,7 @@ angular.module('mm.addons.mod_quiz')
     // Load TOC to navigate to questions.
     function loadToc() {
         // We use the attempt summary to build the TOC because it contains all the questions.
-        return $mmaModQuiz.getAttemptSummary(attempt.id, $scope.preflightData).then(function(questions) {
+        return $mmaModQuiz.getAttemptSummary(attempt.id, $scope.preflightData, offline).then(function(questions) {
             $scope.toc = questions;
         });
     }
@@ -177,7 +177,7 @@ angular.module('mm.addons.mod_quiz')
     function loadSummary() {
         $scope.showSummary = true;
         $scope.summaryQuestions = [];
-        return $mmaModQuiz.getAttemptSummary(attempt.id, $scope.preflightData, true).then(function(questions) {
+        return $mmaModQuiz.getAttemptSummary(attempt.id, $scope.preflightData, offline, true, true).then(function(questions) {
             $scope.summaryQuestions = questions;
             $scope.canReturn = attempt.state == $mmaModQuiz.ATTEMPT_IN_PROGRESS;
 

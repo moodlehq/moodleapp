@@ -21,9 +21,26 @@ angular.module('mm.addons.qtype_ddmarker')
  * @ngdoc service
  * @name $mmaQtypeDdmarkerHandler
  */
-.factory('$mmaQtypeDdmarkerHandler', function() {
+.factory('$mmaQtypeDdmarkerHandler', function($mmQuestion) {
 
     var self = {};
+
+    /**
+     * Check if a response is complete.
+     *
+     * @param  {Object} answers Question answers (without prefix).
+     * @return {Mixed}          True if complete, false if not complete, -1 if cannot determine.
+     */
+    self.isCompleteResponse = function(answers) {
+        // We should always get a value for each dragitem so we can assume we receive all the possible answers.
+        var hasReponse = false;
+        angular.forEach(answers, function(value) {
+            if (value) {
+                hasReponse = true;
+            }
+        });
+        return hasReponse;
+    };
 
     /**
      * Whether or not the module is enabled for the site.
@@ -32,6 +49,28 @@ angular.module('mm.addons.qtype_ddmarker')
      */
     self.isEnabled = function() {
         return true;
+    };
+
+    /**
+     * Check if a student has provided enough of an answer for the question to be graded automatically,
+     * or whether it must be considered aborted.
+     *
+     * @param  {Object} answers Question answers (without prefix).
+     * @return {Mixed}          True if gradable, false if not gradable, -1 if cannot determine.
+     */
+    self.isGradableResponse = function(answers) {
+        return self.isCompleteResponse(answers);
+    };
+
+    /**
+     * Check if two responses are the same.
+     *
+     * @param  {Object} prevAnswers Previous answers.
+     * @param  {Object} newAnswers  New answers.
+     * @return {Boolean}            True if same, false otherwise.
+     */
+    self.isSameResponse = function(prevAnswers, newAnswers) {
+        return $mmQuestion.compareAllAnswers(prevAnswers, newAnswers);
     };
 
     /**

@@ -121,6 +121,66 @@ angular.module('mm.core.question')
         };
 
         /**
+         * Check if a response is complete.
+         *
+         * @module mm.core.question
+         * @ngdoc method
+         * @name $mmQuestionDelegate#isCompleteResponse
+         * @param  {Object} answers Question answers (without prefix).
+         * @return {Mixed}          True if complete, false if not complete, -1 if cannot determine.
+         */
+        self.isCompleteResponse = function(question, answers) {
+            var type = 'qtype_' + question.type;
+            if (typeof enabledHandlers[type] != 'undefined') {
+                if (enabledHandlers[type].isCompleteResponse) {
+                    return enabledHandlers[type].isCompleteResponse(answers);
+                }
+            }
+            return -1;
+        };
+
+        /**
+         * Check if a student has provided enough of an answer for the question to be graded automatically,
+         * or whether it must be considered aborted.
+         *
+         * @module mm.core.question
+         * @ngdoc method
+         * @name $mmQuestionDelegate#isGradableResponse
+         * @param  {Object} answers Question answers (without prefix).
+         * @return {Mixed}          True if gradable, false if not gradable, -1 if cannot determine.
+         */
+        self.isGradableResponse = function(question, answers) {
+            var type = 'qtype_' + question.type;
+            if (typeof enabledHandlers[type] != 'undefined') {
+                if (enabledHandlers[type].isGradableResponse) {
+                    return enabledHandlers[type].isGradableResponse(answers);
+                }
+            }
+            return -1;
+        };
+
+        /**
+         * Check if two responses are the same.
+         *
+         * @module mm.core.question
+         * @ngdoc method
+         * @name $mmQuestionDelegate#isSameResponse
+         * @param  {Object} question    Question.
+         * @param  {Object} prevAnswers Previous answers.
+         * @param  {Object} newAnswers  New answers.
+         * @return {Boolean}            True if same, false otherwise.
+         */
+        self.isSameResponse = function(question, prevAnswers, newAnswers) {
+            var type = 'qtype_' + question.type;
+            if (typeof enabledHandlers[type] != 'undefined') {
+                if (enabledHandlers[type].isSameResponse) {
+                    return enabledHandlers[type].isSameResponse(prevAnswers, newAnswers);
+                }
+            }
+            return false;
+        };
+
+        /**
          * Check if a question type is supported.
          *
          * @module mm.core.question

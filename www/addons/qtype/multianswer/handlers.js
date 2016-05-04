@@ -21,9 +21,27 @@ angular.module('mm.addons.qtype_multianswer')
  * @ngdoc service
  * @name $mmaQtypeMultianswerHandler
  */
-.factory('$mmaQtypeMultianswerHandler', function() {
+.factory('$mmaQtypeMultianswerHandler', function($mmQuestion) {
 
     var self = {};
+
+    /**
+     * Check if a response is complete.
+     *
+     * @param  {Object} answers Question answers (without prefix).
+     * @return {Mixed}          True if complete, false if not complete, -1 if cannot determine.
+     */
+    self.isCompleteResponse = function(answers) {
+        var hasReponse = false;
+        angular.forEach(answers, function(value) {
+            if (value || value === false) {
+                hasReponse = true;
+            }
+        });
+
+        // We don't have the full list of subquestions, so we can't be sure they all have been answered.
+        return hasReponse ? -1 : false;
+    };
 
     /**
      * Whether or not the module is enabled for the site.
@@ -32,6 +50,34 @@ angular.module('mm.addons.qtype_multianswer')
      */
     self.isEnabled = function() {
         return true;
+    };
+
+    /**
+     * Check if a student has provided enough of an answer for the question to be graded automatically,
+     * or whether it must be considered aborted.
+     *
+     * @param  {Object} answers Question answers (without prefix).
+     * @return {Mixed}          True if gradable, false if not gradable, -1 if cannot determine.
+     */
+    self.isGradableResponse = function(answers) {
+        var hasReponse = false;
+        angular.forEach(answers, function(value) {
+            if (value || value === false) {
+                hasReponse = true;
+            }
+        });
+        return hasReponse;
+    };
+
+    /**
+     * Check if two responses are the same.
+     *
+     * @param  {Object} prevAnswers Previous answers.
+     * @param  {Object} newAnswers  New answers.
+     * @return {Boolean}            True if same, false otherwise.
+     */
+    self.isSameResponse = function(prevAnswers, newAnswers) {
+        return $mmQuestion.compareAllAnswers(prevAnswers, newAnswers);
     };
 
     /**

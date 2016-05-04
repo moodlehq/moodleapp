@@ -21,9 +21,48 @@ angular.module('mm.addons.qtype_multichoice')
  * @ngdoc service
  * @name $mmaQtypeMultichoiceHandler
  */
-.factory('$mmaQtypeMultichoiceHandler', function() {
+.factory('$mmaQtypeMultichoiceHandler', function($mmUtil) {
 
     var self = {};
+
+    /**
+     * Check if a response is complete.
+     *
+     * @param  {Object} answers Question answers (without prefix).
+     * @return {Mixed}          True if complete, false if not complete, -1 if cannot determine.
+     */
+    self.isCompleteResponse = function(answers) {
+        var isSingle = true,
+            isMultiComplete = false;
+
+        // To know if it's single or multi answer we need to search for answers with "choice" in the name.
+        angular.forEach(answers, function(value, name) {
+            if (name.indexOf('choice') != -1) {
+                isSingle = false;
+                if (value) {
+                    isMultiComplete = true;
+                }
+            }
+        });
+
+        if (isSingle) {
+            // Single.
+            return self.isCompleteResponseSingle(answers);
+        } else {
+            // Multi.
+            return isMultiComplete;
+        }
+    };
+
+    /**
+     * Check if a response is complete. Only for single answer.
+     *
+     * @param  {Object} answers Question answers (without prefix).
+     * @return {Mixed}          True if complete, false if not complete, -1 if cannot determine.
+     */
+    self.isCompleteResponseSingle = function(answers) {
+        return answers['answer'] && answers['answer'] !== '';
+    };
 
     /**
      * Whether or not the module is enabled for the site.
@@ -32,6 +71,67 @@ angular.module('mm.addons.qtype_multichoice')
      */
     self.isEnabled = function() {
         return true;
+    };
+
+    /**
+     * Check if a student has provided enough of an answer for the question to be graded automatically,
+     * or whether it must be considered aborted.
+     *
+     * @param  {Object} answers Question answers (without prefix).
+     * @return {Mixed}          True if gradable, false if not gradable, -1 if cannot determine.
+     */
+    self.isGradableResponse = function(answers) {
+        return self.isCompleteResponse(answers);
+    };
+
+    /**
+     * Check if a student has provided enough of an answer for the question to be graded automatically,
+     * or whether it must be considered aborted. Only for single answer.
+     *
+     * @param  {Object} answers Question answers (without prefix).
+     * @return {Mixed}          True if gradable, false if not gradable, -1 if cannot determine.
+     */
+    self.isGradableResponseSingle = function(answers) {
+        return self.isCompleteResponseSingle(answers);
+    };
+
+    /**
+     * Check if two responses are the same.
+     *
+     * @param  {Object} prevAnswers Previous answers.
+     * @param  {Object} newAnswers  New answers.
+     * @return {Boolean}            True if same, false otherwise.
+     */
+    self.isSameResponse = function(prevAnswers, newAnswers) {
+        var isSingle = true,
+            isMultiSame = true;
+
+        // To know if it's single or multi answer we need to search for answers with "choice" in the name.
+        angular.forEach(newAnswers, function(value, name) {
+            if (name.indexOf('choice') != -1) {
+                isSingle = false;
+                if (!$mmUtil.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, name)) {
+                    isMultiSame = false;
+                }
+            }
+        });
+
+        if (isSingle) {
+            return self.isSameResponseSingle(prevAnswers, newAnswers);
+        } else {
+            return isMultiSame;
+        }
+    };
+
+    /**
+     * Check if two responses are the same. Only for single answer.
+     *
+     * @param  {Object} prevAnswers Previous answers.
+     * @param  {Object} newAnswers  New answers.
+     * @return {Boolean}            True if same, false otherwise.
+     */
+    self.isSameResponseSingle = function(prevAnswers, newAnswers) {
+        return $mmUtil.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer');
     };
 
     /**
