@@ -40,7 +40,7 @@ angular.module('mm.core.question')
  *                                   Otherwise it'll assume offline mode is enabled.
  */
 .directive('mmQuestion', function($log, $compile, $mmQuestionDelegate, $mmQuestionHelper, $mmQuestionBehaviourDelegate, $mmUtil,
-            $translate, $q) {
+            $translate, $q, $mmQuestion) {
     $log = $log.getInstance('mmQuestion');
 
     return {
@@ -57,9 +57,12 @@ angular.module('mm.core.question')
         },
         link: function(scope, element) {
             var question = scope.question,
+                component = scope.component,
+                attemptId = scope.attemptId,
                 questionContainer = element[0].querySelector('.mm-question-container'),
                 behaviour,
-                promise;
+                promise,
+                offline = scope.offlineEnabled && scope.offlineEnabled !== '0' && scope.offlineEnabled !== 'false';
 
             if (question && questionContainer) {
                 // Search the right directive to render the question.
@@ -77,28 +80,40 @@ angular.module('mm.core.question')
                                 $translate.instant('mma.mod_quiz.errorbehaviournotsupported') + ' ' + behaviour);
                         return;
                     }
-                    scope.behaviourDirectives = $mmQuestionBehaviourDelegate.handleQuestion(question, question.preferredBehaviour);
-                    $mmQuestionHelper.extractQbehaviourRedoButton(question);
-                    question.html = $mmUtil.removeElementFromHtml(question.html, '.im-controls');
 
-                    // Extract the validation error of the question.
-                    question.validationError = $mmQuestionHelper.getValidationErrorFromHtml(question.html);
+                    // Get the sequence check (hidden input). This is required.
+                    scope.seqCheck = $mmQuestionHelper.getQuestionSequenceCheckFromHtml(question.html);
+                    if (!scope.seqCheck) {
+                        $log.warn('Aborting question because couldn\'t retrieve sequence check.', question.name);
+                        $mmQuestionHelper.showDirectiveError(scope);
+                        return;
+                    }
 
                     // Load local answers if offline is enabled.
-                    if (scope.offlineEnabled && scope.offlineEnabled !== '0' && scope.offlineEnabled !== 'false') {
-                        promise = $mmQuestionHelper.loadLocalAnswersInHtml(scope.component, scope.attemptId, question);
+                    if (offline) {
+                        promise = $mmQuestion.getQuestionAnswers(component, attemptId, question.slot).then(function(answers) {
+                            question.localAnswers = $mmQuestion.convertAnswersArrayToObject(answers);
+                        }).catch(function() {
+                            question.localAnswers = {};
+                        });
                     } else {
+                        question.localAnswers = {};
                         promise = $q.when();
                     }
 
                     promise.then(function() {
-                        // Get the sequence check (hidden input). This is required.
-                        scope.seqCheck = $mmQuestionHelper.getQuestionSequenceCheckFromHtml(question.html);
-                        if (!scope.seqCheck) {
-                            $log.warn('Aborting question because couldn\'t retrieve sequence check.', question.name);
-                            $mmQuestionHelper.showDirectiveError(scope);
-                            return;
-                        }
+
+                        // Handle behaviour.
+                        scope.behaviourDirectives = $mmQuestionBehaviourDelegate.handleQuestion(
+                                        question, question.preferredBehaviour);
+                        $mmQuestionHelper.extractQbehaviourRedoButton(question);
+                        question.html = $mmUtil.removeElementFromHtml(question.html, '.im-controls');
+
+                        // Extract the validation error of the question.
+                        question.validationError = $mmQuestionHelper.getValidationErrorFromHtml(question.html);
+
+                        // Load the local answers in the HTML.
+                        $mmQuestionHelper.loadLocalAnswersInHtml(question);
 
                         // Try to extract the feedback and comment for the question.
                         $mmQuestionHelper.extractQuestionFeedback(question);

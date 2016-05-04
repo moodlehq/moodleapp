@@ -1474,6 +1474,26 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Check if last attempt is offline and unfinished.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#isLastAttemptOfflineUnfinished
+     * @param  {Number} attemptId Attempt ID.
+     * @param  {String} [siteId]  Site ID. If not defined, current site.
+     * @param  {Number} [userId]  User ID. If not defined, user current site's user.
+     * @return {Promise}          Promise resolved with boolean: true if last offline attempt is unfinished, false otherwise.
+     */
+    self.isLastAttemptOfflineUnfinished = function(quiz, siteId, userId) {
+        return $mmaModQuizOffline.getQuizAttempts(quiz.id, siteId, userId).then(function(attempts) {
+            var last = attempts.pop();
+            return last && !last.finished;
+        }).catch(function() {
+            return false;
+        });
+    };
+
+    /**
      * Check if a quiz navigation is sequential.
      *
      * @module mm.addons.mod_quiz

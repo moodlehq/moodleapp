@@ -99,6 +99,26 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Retrieve an attempt from site DB.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizOffline#getQuizAttempts
+     * @param  {Number} attemptId Attempt ID.
+     * @param  {String} [siteId]  Site ID. If not defined, current site.
+     * @param  {Number} [userId]  User ID. If not defined, user current site's user.
+     * @return {Promise}          Promise resolved with the attempt.
+     */
+    self.getQuizAttempts = function(quizId, siteId, userId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            userId = userId || site.getUserId();
+            return site.getDb().whereEqual(mmaModQuizAttemptsStore, 'quizAndUser', [quizId, userId]);
+        });
+    };
+
+    /**
      * Load local state in the questions.
      *
      * @module mm.addons.mod_quiz
