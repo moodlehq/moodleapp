@@ -25,21 +25,7 @@ angular.module('mm.core.question')
             $mmQuestion) {
 
     var self = {},
-        lastErrorShown = 0,
-        stateClasses = {
-            todo: 'mm-question-notyetanswered',
-            invalid: 'mm-question-invalidanswer',
-            complete: 'mm-question-answersaved',
-            needsgrading: 'mm-question-requiresgrading',
-            finished: 'mm-question-complete',
-            gaveup: 'mm-question-notanswered',
-            gradedwrong: 'mm-question-incorrect',
-            gradedpartial: 'mm-question-partiallycorrect',
-            gradedright: 'mm-question-correct',
-            mangrwrong: 'mm-question-incorrect',
-            mangrpartial: 'mm-question-partiallycorrect',
-            mangrright: 'mm-question-correct'
-        };
+        lastErrorShown = 0;
 
     /**
      * Add a behaviour button to the question's "behaviourButtons" property.
@@ -395,10 +381,6 @@ angular.module('mm.core.question')
             if (!name || name.match(/_:flagged$/) || element.type == 'submit' || element.tagName == 'BUTTON') {
                 return;
             }
-            // Ignore selects without value.
-            if (element.tagName == 'SELECT' && (element.value === '' || typeof element.value == 'undefined')) {
-                return;
-            }
 
             // Get the value.
             if (element.type == 'checkbox') {
@@ -485,11 +467,12 @@ angular.module('mm.core.question')
      * @module mm.core.question
      * @ngdoc method
      * @name $mmQuestionHelper#getQuestionStateClass
-     * @param  {String} state Question's state.
-     * @return {String}       State class.
+     * @param  {String} name Question's state name.
+     * @return {String}      State class.
      */
-    self.getQuestionStateClass = function(state) {
-        return stateClasses[state] || '';
+    self.getQuestionStateClass = function(name) {
+        var state = $mmQuestion.getState(name);
+        return state ? state.class : '';
     };
 
     /**

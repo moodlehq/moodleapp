@@ -78,7 +78,7 @@ angular.module('mm.addons.mod_quiz')
                 });
             } else {
                 // Attempt is overdue, we can only see the summary. Call getAttemptSummary to validate the preflight data.
-                promise = $mmaModQuiz.getAttemptSummary(attempt.id, preflightData, true);
+                promise = $mmaModQuiz.getAttemptSummary(attempt.id, preflightData, offline, true);
             }
         } else {
             // We're starting a new attempt, call startAttempt.

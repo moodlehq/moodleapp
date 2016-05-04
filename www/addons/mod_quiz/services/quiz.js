@@ -384,11 +384,13 @@ angular.module('mm.addons.mod_quiz')
      * @name $mmaModQuiz#getAttemptSummary
      * @param {Number} attemptId     Attempt ID.
      * @param {Object} preflightData Preflight required data (like password).
+     * @param {Boolean} offline      True if it should return cached data. Has priority over ignoreCache.
      * @param {Boolean} ignoreCache  True if it should ignore cached data (it will always fail in offline or server down).
+     * @param {Boolean} loadLocal    True if it should load local state for each question. Only applicable if offline=true.
      * @param {String} [siteId]      Site ID. If not defined, current site.
      * @return {Promise}             Promise resolved with the attempt summary.
      */
-    self.getAttemptSummary = function(attemptId, preflightData, ignoreCache, siteId) {
+    self.getAttemptSummary = function(attemptId, preflightData, offline, ignoreCache, loadLocal, siteId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -400,13 +402,18 @@ angular.module('mm.addons.mod_quiz')
                     cacheKey: getAttemptSummaryCacheKey(attemptId)
                 };
 
-            if (ignoreCache) {
+            if (offline) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
                 preSets.getFromCache = 0;
                 preSets.emergencyCache = 0;
             }
 
             return site.read('mod_quiz_get_attempt_summary', params, preSets).then(function(response) {
                 if (response && response.questions) {
+                    if (offline && loadLocal) {
+                        return $mmaModQuizOffline.loadQuestionsLocalStates(attemptId, response.questions, siteId);
+                    }
                     return response.questions;
                 }
                 return $q.reject();
@@ -1752,11 +1759,34 @@ angular.module('mm.addons.mod_quiz')
      */
     self.processAttempt = function(quiz, attempt, data, preflightData, finish, timeup, offline, siteId) {
         if (offline) {
-            return $mmaModQuizOffline.processAttempt(quiz, attempt, data, finish, siteId);
+            return processOfflineAttempt(quiz, attempt, data, preflightData, finish, siteId);
         } else {
             return $mmaModQuizOnline.processAttempt(attempt.id, data, preflightData, finish, timeup, siteId);
         }
     };
+
+    /**
+     * Process an offline attempt, saving its data.
+     *
+     * @param  {Object} quiz          Quiz.
+     * @param  {Object} attempt       Attempt.
+     * @param  {Object} data          Data to save.
+     * @param  {Object} preflightData Preflight required data (like password).
+     * @param  {Boolean} finish       True to finish the quiz, false otherwise.
+     * @param  {String} [siteId]      Site ID. If not defined, current site.
+     * @return {Promise}              Promise resolved in success, rejected otherwise.
+     */
+    function processOfflineAttempt(quiz, attempt, data, preflightData, finish, siteId) {
+        // Get attempt summary to have the list of questions.
+        return self.getAttemptSummary(attempt.id, preflightData, true, false, siteId).then(function(questionArray) {
+            // Convert the question array to an object.
+            var questions = {};
+            questionArray.forEach(function(question) {
+                questions[question.slot] = question;
+            });
+            return $mmaModQuizOffline.processAttempt(quiz, attempt, questions, data, finish, siteId);
+        });
+    }
 
     /**
      * Check if it's a graded quiz. Based on Moodle's quiz_has_grades.
@@ -1823,7 +1853,7 @@ angular.module('mm.addons.mod_quiz')
      */
     self.saveAttempt = function(quiz, attempt, data, preflightData, offline, siteId) {
         if (offline) {
-            return $mmaModQuizOffline.processAttempt(quiz, attempt, data, false, siteId);
+            return processOfflineAttempt(quiz, attempt, data, preflightData, false, siteId);
         } else {
             return $mmaModQuizOnline.saveAttempt(attempt.id, data, preflightData, siteId);
         }
