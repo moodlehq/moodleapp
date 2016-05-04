@@ -151,6 +151,11 @@ angular.module('mm.core.question')
             }
         });
 
+        // If we have a certainty value stored in local we'll use that one.
+        if (question.localAnswers && typeof question.localAnswers['-certainty'] != 'undefined') {
+            question.behaviourCertaintySelected = question.localAnswers['-certainty'];
+        }
+
         return labels && labels.length;
     };
 
@@ -536,11 +541,10 @@ angular.module('mm.core.question')
      * @param  {String} component Component the answers belong to.
      * @param  {Number} attemptId Attempt ID.
      * @param  {Object} question  Question.
-     * @return {Promise}          Promise resolved when done.
+     * @return {Void}
      */
-    self.loadLocalAnswersInHtml = function(component, attemptId, question) {
-        var form = document.createElement('form'),
-            promises = [];
+    self.loadLocalAnswersInHtml = function(question) {
+        var form = document.createElement('form');
         form.innerHTML = question.html;
 
         // Search all input elements.
@@ -552,31 +556,28 @@ angular.module('mm.core.question')
             }
 
             // Search if there's a local answer.
-            promises.push($mmQuestion.getAnswer(component, attemptId, name).then(function(answer) {
+            name = $mmQuestion.removeQuestionPrefix(name);
+            if (question.localAnswers && typeof question.localAnswers[name] != 'undefined') {
                 var selected;
                 if (element.tagName == 'TEXTAREA') {
-                    element.innerHTML = answer.value;
+                    element.innerHTML = question.localAnswers[name];
                 } else if (element.tagName == 'SELECT') {
                     // Search the selected option and select it.
-                    selected = element.querySelector('option[value="' + answer.value + '"]');
+                    selected = element.querySelector('option[value="' + question.localAnswers[name] + '"]');
                     if (selected) {
                         selected.setAttribute('selected', 'selected');
                     }
                 } else if (element.type == 'radio' || element.type == 'checkbox') {
-                    if (element.value == answer.value) {
+                    if (element.value == question.localAnswers[name]) {
                         element.setAttribute('checked', 'checked');
                     }
                 } else {
-                    element.setAttribute('value', answer.value);
+                    element.setAttribute('value', question.localAnswers[name]);
                 }
-            }).catch(function() {
-                // No local answer stored.
-            }));
+            }
         });
 
-        return $q.all(promises).then(function() {
-            question.html = form.innerHTML;
-        });
+        question.html = form.innerHTML;
     };
 
     /**
