@@ -119,6 +119,9 @@ angular.module('mm.addons.mod_quiz')
         var lastFinished = $mmaModQuiz.getLastFinishedAttemptFromList(attempts),
             promises = [];
 
+        // Load flag to show if attempts are finished but not synced.
+        promises.push($mmaModQuiz.loadFinishedOfflineData(attempts));
+
         // Get combined review options.
         promises.push($mmaModQuiz.getCombinedReviewOptions(quiz.id).then(function(result) {
             options = result;
@@ -305,7 +308,8 @@ angular.module('mm.addons.mod_quiz')
 
     // Listen for attempt finished events.
     var obsFinished = $mmEvents.on(mmaModQuizAttemptFinishedEvent, function(data) {
-        if (data.quizId === quiz.id) {
+        // Go to review attempt if an attempt in this quiz was finished and synced.
+        if (data.quizId === quiz.id && data.synced) {
             autoReview = data.attemptId;
         }
     });
