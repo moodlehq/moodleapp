@@ -593,7 +593,7 @@ angular.module('mm.addons.mod_quiz')
      * @name $mmaModQuiz#getGradeFromGradebook
      * @param  {Number} courseId    Course ID.
      * @param  {Number} moduleId    Quiz module ID.
-     * @param {Boolean} ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {Boolean} ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
      * @param  {String} [siteId]    Site ID. If not defined, current site.
      * @param  {Number} [userId]    User ID. If not defined use site's current user.
      * @return {Promise}            Promise resolved with an object containing the grade and the feedback.
@@ -1688,9 +1688,9 @@ angular.module('mm.addons.mod_quiz')
             var promises = [];
 
             // Get user attempts and data not related with attempts.
-            promises.push(self.getQuizAccessInformation(quiz.id, true, siteId));
+            promises.push(self.getQuizAccessInformation(quiz.id, false, true, siteId));
             promises.push(self.getQuizRequiredQtypes(quiz.id, true, siteId));
-            promises.push(self.getUserAttempts(quiz.id, undefined, undefined, true, siteId).then(function(atts) {
+            promises.push(self.getUserAttempts(quiz.id, 'all', true, false, true, siteId).then(function(atts) {
                 attempts = atts;
             }));
 
@@ -1706,7 +1706,7 @@ angular.module('mm.addons.mod_quiz')
 
             if (startAttempt) {
                 // Re-fetch user attempts since we created a new one.
-                promises.push(self.getUserAttempts(quiz.id, undefined, undefined, true, siteId).then(function(atts) {
+                promises.push(self.getUserAttempts(quiz.id, 'all', true, false, true, siteId).then(function(atts) {
                     attempts = atts;
                 }));
             }
@@ -1719,7 +1719,7 @@ angular.module('mm.addons.mod_quiz')
                     return self.getFeedbackForGrade(quiz.id, gradebookData.grade, true, siteId);
                 }
             }));
-            promises.push(self.getAttemptAccessInformation(quiz.id, 0, true, siteId)); // Last attempt.
+            promises.push(self.getAttemptAccessInformation(quiz.id, 0, false, true, siteId)); // Last attempt.
 
             return $q.all(promises);
         }).then(function() {
@@ -1783,13 +1783,13 @@ angular.module('mm.addons.mod_quiz')
             }));
         } else {
             // Attempt not finished, get data needed to continue the attempt.
-            promises.push(self.getAttemptAccessInformation(quiz.id, attempt.id, true, siteId));
-            promises.push(self.getAttemptSummary(attempt.id, preflightData, true, siteId));
+            promises.push(self.getAttemptAccessInformation(quiz.id, attempt.id, false, true, siteId));
+            promises.push(self.getAttemptSummary(attempt.id, preflightData, false, true, false, siteId));
 
             if (attempt.state == self.ATTEMPT_IN_PROGRESS) {
                 // Get data for each page.
                 angular.forEach(pages, function(page) {
-                    promises.push(self.getAttemptData(attempt.id, page, preflightData, true, siteId).then(function(data) {
+                    promises.push(self.getAttemptData(attempt.id, page, preflightData, false, true, siteId).then(function(data) {
                         // Download the files inside the questions.
                         var questionPromises = [];
                         angular.forEach(data.questions, function(question) {
