@@ -95,19 +95,22 @@ angular.module('mm.addons.mod_quiz')
             $scope.quiz = quiz;
 
             // Get access information for the quiz.
-            return $mmaModQuiz.getQuizAccessInformation(quiz.id, offline, true).then(function(info) {
-                quizAccessInfo = info;
+            return $mmaModQuiz.getQuizAccessInformation(quiz.id, offline, true);
+        }).then(function(info) {
+            quizAccessInfo = info;
 
-                // Get user attempts to determine last attempt.
-                return $mmaModQuiz.getUserAttempts(quiz.id, 'all', true, offline, true).then(function(attempts) {
-                    if (!attempts.length) {
-                        newAttempt = true;
-                    } else {
-                        attempt = attempts[attempts.length - 1];
-                        newAttempt = $mmaModQuiz.isAttemptFinished(attempt.state);
-                    }
-                });
-            });
+            // Get user attempts to determine last attempt.
+            return $mmaModQuiz.getUserAttempts(quiz.id, 'all', true, offline, true);
+        }).then(function(attempts) {
+            if (!attempts.length) {
+                newAttempt = true;
+            } else {
+                attempt = attempts[attempts.length - 1];
+                newAttempt = $mmaModQuiz.isAttemptFinished(attempt.state);
+
+                // Load flag to show if attempts are finished but not synced.
+                return $mmaModQuiz.loadFinishedOfflineData(attempts);
+            }
         }).catch(function(message) {
             return $mmaModQuizHelper.showError(message);
         });
@@ -129,15 +132,15 @@ angular.module('mm.addons.mod_quiz')
             }).catch(function(message) {
                 return $mmaModQuizHelper.showError(message, 'mm.core.error');
             }).then(function() {
-                if (attempt.state != $mmaModQuiz.ATTEMPT_OVERDUE) {
-                    // Attempt not overdue, load page.
+                if (attempt.state != $mmaModQuiz.ATTEMPT_OVERDUE && !attempt.finishedOffline) {
+                    // Attempt not overdue and not finished in offline, load page.
                     return loadPage(attempt.currentpage).then(function() {
                         initTimer();
                     }).catch(function(message) {
                         return $mmaModQuizHelper.showError(message, 'mm.core.error');
                     });
                 } else {
-                    // Attempt is overdue, we can only load the summary.
+                    // Attempt is overdue or finished in offline, we can only load the summary.
                     return loadSummary();
                 }
             });
@@ -188,7 +191,7 @@ angular.module('mm.addons.mod_quiz')
         $scope.summaryQuestions = [];
         return $mmaModQuiz.getAttemptSummary(attempt.id, $scope.preflightData, offline, true, true).then(function(questions) {
             $scope.summaryQuestions = questions;
-            $scope.canReturn = attempt.state == $mmaModQuiz.ATTEMPT_IN_PROGRESS;
+            $scope.canReturn = attempt.state == $mmaModQuiz.ATTEMPT_IN_PROGRESS && !attempt.finishedOffline;
 
             attempt.dueDateWarning = $mmaModQuiz.getAttemptDueDateWarning(quiz, attempt);
 
@@ -263,7 +266,7 @@ angular.module('mm.addons.mod_quiz')
         return promise.then(function() {
             return processAttempt(finish, timeup).then(function() {
                 // Trigger an event to notify the attempt was finished.
-                $mmEvents.trigger(mmaModQuizAttemptFinishedEvent, {quizId: quiz.id, attemptId: attempt.id});
+                $mmEvents.trigger(mmaModQuizAttemptFinishedEvent, {quizId: quiz.id, attemptId: attempt.id, synced: !offline});
                 // Leave the player.
                 $scope.questions = [];
                 leavePlayer();
@@ -345,7 +348,10 @@ angular.module('mm.addons.mod_quiz')
 
     // Load a certain page. If slot is supplied, try to scroll to that question.
     $scope.loadPage = function(page, fromToc, slot) {
-        if (page == attempt.currentpage && !$scope.showSummary && typeof slot != 'undefined') {
+        if (page != -1 && (attempt.state == $mmaModQuiz.ATTEMPT_OVERDUE || attempt.finishedOffline)) {
+            // We can't load a page if overdue of the local attempt is finished.
+            return;
+        } else if (page == attempt.currentpage && !$scope.showSummary && typeof slot != 'undefined') {
             // Navigating to a question in the current page.
             scrollToQuestion(slot);
             return;

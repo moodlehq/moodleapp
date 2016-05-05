@@ -23,6 +23,7 @@
 	"errorsaveattempt": "An error occurred while saving the attempt data.",
 	"feedback": "Feedback",
 	"finishattemptdots": "Finish attempt...",
+	"finishnotsynced": "Finished but not synchronized",
 	"grade": "Grade",
 	"gradeaverage": "Average grade",
 	"gradehighest": "Highest grade",

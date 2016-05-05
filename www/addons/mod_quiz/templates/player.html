@@ -64,7 +64,7 @@
                     {{ attempt.dueDateWarning }}
                 </div>
                 <mm-timer ng-if="endTime" class="item item-text-wrap" end-time="endTime" finished="timeUp()" timer-text="{{ 'mma.mod_quiz.timeleft' | translate }}"></mm-timer>
-                <div class="item">
+                <div class="item" ng-if="!attempt.finishedOffline">
                     <a class="button button-block" ng-click="finishAttempt()">{{ 'mma.mod_quiz.submitallandfinish' | translate }}</a>
                 </div>
             </div>
