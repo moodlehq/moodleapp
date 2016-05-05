@@ -257,6 +257,10 @@ angular.module('mm.addons.mod_quiz')
      * @return {String[]}       List of state sentences.
      */
     self.getAttemptReadableState = function(quiz, attempt) {
+        if (attempt.finishedOffline) {
+            return [$translate.instant('mma.mod_quiz.finishnotsynced')];
+        }
+
         switch (attempt.state) {
             case self.ATTEMPT_IN_PROGRESS:
                 return [$translate.instant('mma.mod_quiz.stateinprogress')];
@@ -1446,6 +1450,24 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Check if an attempt is finished in offline but not synced.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#isAttemptFinishedOffline
+     * @param  {Number} attemptId Attempt ID.
+     * @param  {String} [siteId]  Site ID. If not defined, current site.
+     * @return {Promise}          Promise resolved with boolean: true if finished in offline but not synced, false otherwise.
+     */
+    self.isAttemptFinishedOffline = function(attemptId, siteId) {
+        return $mmaModQuizOffline.getAttemptById(attemptId, siteId).then(function(attempt) {
+            return !!attempt.finished;
+        }).catch(function() {
+            return false;
+        });
+    };
+
+    /**
      * Check if an attempt is nearly over. We consider an attempt nearly over or over if:
      * - Is not in progress
      * OR
@@ -1535,6 +1557,27 @@ angular.module('mm.addons.mod_quiz')
      */
     self.isQuizOffline = function(quiz) {
         return !!quiz.allowofflineattempts;
+    };
+
+    /**
+     * Given a list of attempts, add finishedOffline=true to those attempts that are finished in offline but not synced.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#loadFinishedOfflineData
+     * @param  {Object[]} attempts List of attempts.
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved when done.
+     */
+    self.loadFinishedOfflineData = function(attempts, siteId) {
+        if (attempts.length) {
+            // We only need to check the last attempt because you can only have 1 local attempt.
+            var lastAttempt = attempts[attempts.length - 1];
+            return self.isAttemptFinishedOffline(lastAttempt.id, siteId).then(function(finished) {
+                lastAttempt.finishedOffline = finished;
+            });
+        }
+        return $q.when();
     };
 
     /**

@@ -44,8 +44,12 @@ angular.module('mm.addons.mod_quiz')
 
     // Convenience function to get the attempt.
     function fetchAttempt() {
+        var promises = [],
+            options,
+            accessInfo;
+
         // Get all the attempts and search the one we want.
-        return $mmaModQuiz.getUserAttempts(quiz.id).then(function(attempts) {
+        promises.push($mmaModQuiz.getUserAttempts(quiz.id).then(function(attempts) {
             angular.forEach(attempts, function(att) {
                 if (att.id == attemptId) {
                     attempt = att;
@@ -57,28 +61,37 @@ angular.module('mm.addons.mod_quiz')
                 return $q.reject();
             }
 
-            return $mmaModQuiz.getCombinedReviewOptions(quiz.id).then(function(options) {
-                return $mmaModQuiz.getQuizAccessInformation(quiz.id).then(function(accessInfo) {
-                    // Determine fields to show.
-                    $mmaModQuizHelper.setQuizCalculatedData(quiz, options);
-                    quiz.showReviewColumn = accessInfo.canreviewmyattempts;
+            // Load flag to show if attempt is finished but not synced.
+            return $mmaModQuiz.loadFinishedOfflineData([attempt]);
+        }));
 
-                    // Get readable data for the attempt.
-                    $mmaModQuizHelper.setAttemptCalculatedData(quiz, attempt, false);
+        promises.push($mmaModQuiz.getCombinedReviewOptions(quiz.id).then(function(opts) {
+            options = opts;
+        }));
 
-                    if (quiz.showFeedbackColumn && $mmaModQuiz.isAttemptFinished(attempt.state) &&
-                                options.someoptions.overallfeedback && angular.isNumber(attempt.rescaledGrade)) {
-                        return $mmaModQuiz.getFeedbackForGrade(quiz.id, attempt.rescaledGrade).then(function(response) {
-                            attempt.feedback = response.feedbacktext;
-                        });
-                    } else {
-                        delete attempt.feedback;
-                    }
+        promises.push($mmaModQuiz.getQuizAccessInformation(quiz.id).then(function(aI) {
+            accessInfo = aI;
+        }));
 
-                }).then(function() {
-                    $scope.attempt = attempt;
+        return $q.all(promises).then(function() {
+
+            // Determine fields to show.
+            $mmaModQuizHelper.setQuizCalculatedData(quiz, options);
+            quiz.showReviewColumn = accessInfo.canreviewmyattempts;
+
+            // Get readable data for the attempt.
+            $mmaModQuizHelper.setAttemptCalculatedData(quiz, attempt, false);
+
+            if (quiz.showFeedbackColumn && $mmaModQuiz.isAttemptFinished(attempt.state) &&
+                        options.someoptions.overallfeedback && angular.isNumber(attempt.rescaledGrade)) {
+                return $mmaModQuiz.getFeedbackForGrade(quiz.id, attempt.rescaledGrade).then(function(response) {
+                    attempt.feedback = response.feedbacktext;
                 });
-            });
+            } else {
+                delete attempt.feedback;
+            }
+        }).then(function() {
+            $scope.attempt = attempt;
         });
     }
 

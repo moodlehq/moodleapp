@@ -63,7 +63,7 @@ angular.module('mm.addons.mod_quiz')
         }
 
         if (attempt) {
-            if (attempt.state != $mmaModQuiz.ATTEMPT_OVERDUE) {
+            if (attempt.state != $mmaModQuiz.ATTEMPT_OVERDUE && !attempt.finishedOffline) {
                 // We're continuing an attempt. Call getAttemptData to validate the preflight data.
                 var page = attempt.currentpage;
                 promise = $mmaModQuiz.getAttemptData(attempt.id, page, preflightData, offline, true).then(function() {
@@ -77,7 +77,8 @@ angular.module('mm.addons.mod_quiz')
                     }
                 });
             } else {
-                // Attempt is overdue, we can only see the summary. Call getAttemptSummary to validate the preflight data.
+                // Attempt is overdue or finished in offline, we can only see the summary.
+                // Call getAttemptSummary to validate the preflight data.
                 promise = $mmaModQuiz.getAttemptSummary(attempt.id, preflightData, offline, true);
             }
         } else {
