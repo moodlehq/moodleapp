@@ -23,7 +23,8 @@ angular.module('mm.core')
  */
 .factory('$mmText', function($q, $mmLang, $translate) {
 
-    var self = {};
+    var self = {},
+        extensionRegex = new RegExp('^[a-z0-9]+$');
 
     /**
      * Convert size in bytes into human readable format
@@ -320,6 +321,32 @@ angular.module('mm.core')
             filename = filename.substr(0, filename.indexOf('?'));
         }
         return filename;
+    };
+
+    /**
+     * Guess the extension of a file from its URL.
+     *
+     * This is very weak and unreliable.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#guessExtensionFromUrl
+     * @param {String} fileUrl The file URL.
+     * @return {String}        The lowercased extension without the dot, or undefined.
+     */
+    self.guessExtensionFromUrl = function(fileUrl) {
+        var split = fileUrl.split('.'),
+            candidate,
+            extension;
+
+        if (split.length > 1) {
+            candidate = split.pop().toLowerCase();
+            if (extensionRegex.test(candidate)) {
+                extension = candidate;
+            }
+        }
+
+        return extension;
     };
 
     return self;

@@ -176,7 +176,6 @@ angular.module('mm.core')
     $log = $log.getInstance('$mmFilepool');
 
     var self = {},
-        extensionRegex = new RegExp('^[a-z0-9]+$'),
         tokenRegex = new RegExp('(\\?|&)token=([A-Za-z0-9]+)'),
         queueState,
         urlAttributes = [
@@ -1238,7 +1237,7 @@ angular.module('mm.core')
         // part of the file name. Also, we need the mimetype to open the file with web intents. The easiest way to
         // provide such information is to keep the extension in the file ID. Developers should not care about it,
         // but as we are using the file ID in the file path, devs and system can guess it.
-        candidate = self._guessExtensionFromUrl(url);
+        candidate = $mmText.guessExtensionFromUrl(url);
         if (candidate && candidate !== 'php') {
             extension = '.' + candidate;
         }
@@ -1274,7 +1273,7 @@ angular.module('mm.core')
             // web intents. The easiest way to provide such information is to keep the extension
             // in the file ID. Developers should not care about it, but as we are using the
             // file ID in the file path, devs and system can guess it.
-            candidate = self._guessExtensionFromUrl(url);
+            candidate = $mmText.guessExtensionFromUrl(url);
             if (candidate && candidate !== 'php') {
                 extension = '.' + candidate;
             }
@@ -1699,33 +1698,6 @@ angular.module('mm.core')
      */
     self.getUrlByUrl = function(siteId, fileUrl, component, componentId, timemodified, checkSize) {
         return self._getFileUrlByUrl(siteId, fileUrl, 'url', component, componentId, timemodified, checkSize);
-    };
-
-    /**
-     * Guess the extension of a file from its URL.
-     *
-     * This is very weak and unreliable.
-     *
-     * @module mm.core
-     * @ngdoc method
-     * @name $mmFilepool#_guessExtensionFromUrl
-     * @param {String} fileUrl The file URL.
-     * @return {String} The lowercased extension without the dot, or undefined.
-     * @protected
-     */
-    self._guessExtensionFromUrl = function(fileUrl) {
-        var split = fileUrl.split('.'),
-            candidate,
-            extension;
-
-        if (split.length > 1) {
-            candidate = split.pop().toLowerCase();
-            if (extensionRegex.test(candidate)) {
-                extension = candidate;
-            }
-        }
-
-        return extension;
     };
 
     /**

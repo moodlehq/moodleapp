@@ -66,7 +66,7 @@ angular.module('mm.core')
     };
 
     this.$get = function($ionicLoading, $ionicPopup, $injector, $translate, $http, $log, $q, $mmLang, $mmFS, $timeout, $mmApp,
-                $mmText, mmCoreWifiDownloadThreshold, mmCoreDownloadThreshold, $ionicScrollDelegate, $cordovaInAppBrowser) {
+                $mmText, mmCoreWifiDownloadThreshold, mmCoreDownloadThreshold, $ionicScrollDelegate, $mmWS, $cordovaInAppBrowser) {
 
         $log = $log.getInstance('$mmUtil');
 
@@ -270,7 +270,7 @@ angular.module('mm.core')
          *
          * node-webkit: Using the default application configured.
          * Android: Using the WebIntent plugin.
-         * iOs: Using the window.open method.
+         * iOs: Using handleDocumentWithURL.
          *
          * @module mm.core
          * @ngdoc method
@@ -421,6 +421,79 @@ angular.module('mm.core')
          */
         self.closeInAppBrowser = function() {
             $cordovaInAppBrowser.close();
+        };
+
+        /**
+         * Open an online file using platform specific method.
+         *
+         * node-webkit: Using the default application configured.
+         * Android: Using the WebIntent plugin.
+         * iOs: Using the window.open method.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#openOnlineFile
+         * @param  {String} url The URL of the file.
+         * @return {Promise}    Promise resolved when opened.
+         */
+        self.openOnlineFile = function(url) {
+            var deferred = $q.defer();
+
+            if (false) {
+                // @todo Restore node-webkit support.
+
+                // Link is the file path in the file system.
+                // We use the node-webkit shell for open the file (pdf, doc) using the default application configured in the os.
+                // var gui = require('nw.gui');
+                // gui.Shell.openItem(path);
+                deferred.resolve();
+
+            } else if (ionic.Platform.isAndroid() && window.plugins && window.plugins.webintent) {
+                // In Android we need the mimetype to open it.
+                var extension,
+                    iParams;
+
+                $mmWS.getRemoteFileMimeType(url).then(function(mimetype) {
+                    if (!mimetype) {
+                        // Couldn't retireve mimetype. Try to guess it.
+                        extension = $mmText.guessExtensionFromUrl(url);
+                        mimetype = $mmFS.getMimeType(extension);
+                    }
+
+                    iParams = {
+                        action: "android.intent.action.VIEW",
+                        url: url,
+                        type: mimetype
+                    };
+
+                    window.plugins.webintent.startActivity(
+                        iParams,
+                        function() {
+                            $log.debug('Intent launched');
+                            deferred.resolve();
+                        },
+                        function() {
+                            $log.debug('Intent launching failed.');
+                            $log.debug('action: ' + iParams.action);
+                            $log.debug('url: ' + iParams.url);
+                            $log.debug('type: ' + iParams.type);
+
+                            if (!extension || extension.indexOf('/') > -1 || extension.indexOf('\\') > -1) {
+                                // Extension not found.
+                                $mmLang.translateAndRejectDeferred(deferred, 'mm.core.erroropenfilenoextension');
+                            } else {
+                                $mmLang.translateAndRejectDeferred(deferred, 'mm.core.erroropenfilenoapp');
+                            }
+                        }
+                    );
+                });
+            } else {
+                $log.debug('Opening remote file using window.open()');
+                window.open(url, '_blank');
+                deferred.resolve();
+            }
+
+            return deferred.promise;
         };
 
         /**
