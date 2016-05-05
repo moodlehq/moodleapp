@@ -43,7 +43,7 @@
     <form  ng-if="!isAppOffline()" ng-submit="sendMessage(newMessage); newMessage = '';" style="width: 100%">
         <div class="mma-messages-input-inset item-input-inset">
             <label class="item-input-wrapper">
-                <input type="text" placeholder="{{ 'mma.messages.newmessage' | translate }}" ng-model="newMessage" style="width: 100%;">
+                <input type="text" mm-auto-focus placeholder="{{ 'mma.messages.newmessage' | translate }}" ng-model="newMessage" style="width: 100%;">
             </label>
             <button type="submit" class="button button-clear" ng-disabled="!newMessage">{{ 'mma.messages.send' | translate}}</button>
         </div>
