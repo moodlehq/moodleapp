@@ -21,7 +21,7 @@ angular.module('mm.core.question')
  * @ngdoc service
  * @name $mmQuestionHelper
  */
-.factory('$mmQuestionHelper', function($mmUtil, $mmText, $ionicModal) {
+.factory('$mmQuestionHelper', function($mmUtil, $mmText, $ionicModal, mmQuestionComponent, $mmSitesManager, $mmFilepool, $q) {
 
     var self = {},
         lastErrorShown = 0,
@@ -391,7 +391,7 @@ angular.module('mm.core.question')
         angular.forEach(form.elements, function(element, name) {
             name = element.name || name;
             // Ignore flag and submit inputs.
-            if (name.match(/_:flagged$/) || element.type == 'submit' || element.tagName == 'BUTTON') {
+            if (!name || name.match(/_:flagged$/) || element.type == 'submit' || element.tagName == 'BUTTON') {
                 return;
             }
             // Ignore selects without value.
@@ -722,6 +722,38 @@ angular.module('mm.core.question')
                 return self.showDirectiveError(scope);
             });
         }
+    };
+
+    /**
+     * Prefetch the files in a question HTML.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#prefetchQuestionFiles
+     * @param  {Object} question Question.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when all the files have been downloaded.
+     */
+    self.prefetchQuestionFiles = function(question, siteId) {
+        var urls = $mmUtil.extractDownloadableFilesFromHtml(question.html);
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var promises = [];
+
+            angular.forEach(urls, function(url) {
+                if (!site.canDownloadFiles() && $mmUtil.isPluginFileUrl(url)) {
+                    return;
+                }
+                if (url.indexOf('theme/image.php') > -1 && url.indexOf('flagged') > -1) {
+                    // Ignore flag images.
+                    return;
+                }
+
+                promises.push($mmFilepool.addToQueueByUrl(siteId, url, mmQuestionComponent, question.id));
+            });
+
+            return $q.all(promises);
+        });
     };
 
     /**

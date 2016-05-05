@@ -610,7 +610,7 @@ angular.module('mm.core')
             deleted = false;
 
         // Set package as downloading.
-        dwnPromise = self.storePackageStatus(siteId, component, componentId, mmCoreDownloading, revision, timemod).then(function() {
+        dwnPromise = self.storePackageStatus(siteId, component, componentId, mmCoreDownloading).then(function() {
             var promises = [],
                 deferred = $q.defer(),
                 packageLoaded = 0; // Use a deferred to be able to use notify.
@@ -2349,18 +2349,16 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmFilepool#storePackageStatus
-     * @param {String} siteId           Site ID.
-     * @param {String} component        Package's component.
-     * @param {Number} [componentId]    An ID to use in conjunction with the component.
-     * @param {String} status           New package status.
-     * @param {Number} [revision=0]     Package's revision.
-     * @param {Number} [timemodified=0] Package's timemodified.
-     * @return {Promise}                Promise resolved when status is stored.
+     * @param {String} siteId         Site ID.
+     * @param {String} component      Package's component.
+     * @param {Number} [componentId]  An ID to use in conjunction with the component.
+     * @param {String} status         New package status.
+     * @param {Number} [revision]     Package's revision. If not provided, try to use the current value.
+     * @param {Number} [timemodified] Package's timemodified. If not provided, try to use the current value.
+     * @return {Promise}              Promise resolved when status is stored.
      */
     self.storePackageStatus = function(siteId, component, componentId, status, revision, timemodified) {
         $log.debug('Set status \'' + status + '\' for package ' + component + ' ' + componentId);
-        revision = revision || 0;
-        timemodified = timemodified || 0;
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var db = site.getDb(),
@@ -2368,10 +2366,20 @@ angular.module('mm.core')
 
             // Search current status to set it as previous status.
             return db.get(mmFilepoolPackagesStore, packageId).then(function(entry) {
+                if (typeof revision == 'undefined') {
+                    revision = entry.revision;
+                }
+                if (typeof timemodified == 'undefined') {
+                    timemodified = entry.timemodified;
+                }
+
                 return entry.status;
-            }, function() {
+            }).catch(function() {
                 return undefined; // No previous status.
             }).then(function(previousStatus) {
+                revision = revision || 0;
+                timemodified = timemodified || 0;
+
                 var promise;
                 if (previousStatus === status) {
                     // The package already has this status, no need to change it.

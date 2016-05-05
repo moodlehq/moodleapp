@@ -12,16 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.core.question', [])
+angular.module('mm.addons.mod_quiz')
 
-.constant('mmQuestionComponent', 'mmQuestion')
-
-.run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, $mmQuestionDelegate, $mmQuestionBehaviourDelegate) {
-	function updateHandlers() {
-		$mmQuestionDelegate.updateQuestionHandlers();
-		$mmQuestionBehaviourDelegate.updateQuestionBehaviourHandlers();
-	}
-
-	$mmEvents.on(mmCoreEventLogin, updateHandlers);
-	$mmEvents.on(mmCoreEventSiteUpdated, updateHandlers);
+/**
+ * Directive to render offline attempt preflight.
+ *
+ * @module mm.addons.mod_quiz
+ * @ngdoc directive
+ * @name mmaQuizAccessOfflineAttemptsPreflight
+ */
+.directive('mmaQuizAccessOfflineAttemptsPreflight', function() {
+    return {
+        restrict: 'A',
+        priority: 100,
+        templateUrl: 'addons/mod_quiz/accessrules/offlineattempts/template.html'
+    };
 });

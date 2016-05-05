@@ -83,19 +83,14 @@ angular.module('mm.addons.mod_quiz')
             return $mmaModQuiz.getQuizAccessInformation(quiz.id, true).then(function(info) {
                 quizAccessInfo = info;
 
-                // Get attempt access info for the last attempt.
-                return $mmaModQuiz.getAttemptAccessInformation(quiz.id, 0, true).then(function(info) {
-                    attemptAccessInfo = info;
-
-                    // Get user attempts to determine last attempt.
-                    return $mmaModQuiz.getUserAttempts(quiz.id, 'all', true, true).then(function(attempts) {
-                        if (!attempts.length) {
-                            newAttempt = true;
-                        } else {
-                            attempt = attempts[attempts.length - 1];
-                            newAttempt = $mmaModQuiz.isAttemptFinished(attempt.state);
-                        }
-                    });
+                // Get user attempts to determine last attempt.
+                return $mmaModQuiz.getUserAttempts(quiz.id, 'all', true, true).then(function(attempts) {
+                    if (!attempts.length) {
+                        newAttempt = true;
+                    } else {
+                        attempt = attempts[attempts.length - 1];
+                        newAttempt = $mmaModQuiz.isAttemptFinished(attempt.state);
+                    }
                 });
             });
         }).catch(function(message) {
@@ -107,7 +102,7 @@ angular.module('mm.addons.mod_quiz')
     function startOrContinueAttempt(preflightData) {
         // Check preflight data and start attempt if needed.
         var atmpt = newAttempt ? undefined : attempt;
-        return $mmaModQuizHelper.checkPreflightData($scope, quiz.id, quizAccessInfo, attemptAccessInfo, atmpt, preflightData)
+        return $mmaModQuizHelper.checkPreflightData($scope, quiz.id, quizAccessInfo, atmpt, preflightData)
                     .then(function(att) {
 
             // Re-fetch attempt access information with the right attempt (might have changed because a new attempt was created).

@@ -22,7 +22,8 @@ angular.module('mm.addons.mod_quiz')
  * @name $mmaModQuiz
  */
 .factory('$mmaModQuiz', function($log, $mmSite, $mmSitesManager, $q, $translate, $mmUtil, $mmText, $mmQuestionDelegate,
-            $mmaModQuizAccessRulesDelegate) {
+            $mmaModQuizAccessRulesDelegate, $mmQuestionHelper, $mmFilepool, mmaModQuizComponent, mmCoreDownloaded,
+            mmCoreDownloading) {
 
     $log = $log.getInstance('$mmaModQuiz');
 
@@ -329,12 +330,13 @@ angular.module('mm.addons.mod_quiz')
      * @module mm.addons.mod_quiz
      * @ngdoc method
      * @name $mmaModQuiz#getAttemptReview
-     * @param {Number} attemptId Attempt ID.
-     * @param {Number} [page]    Page number. If not defined, return all the questions in all the pages.
-     * @param {String} [siteId]  Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved with the attempt review.
+     * @param {Number} attemptId    Attempt ID.
+     * @param {Number} [page]       Page number. If not defined, return all the questions in all the pages.
+     * @param {Boolean} ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with the attempt review.
      */
-    self.getAttemptReview = function(attemptId, page, siteId) {
+    self.getAttemptReview = function(attemptId, page, ignoreCache, siteId) {
         siteId = siteId || $mmSite.getId();
         if (typeof page == 'undefined') {
             page = -1;
@@ -348,6 +350,11 @@ angular.module('mm.addons.mod_quiz')
                 preSets = {
                     cacheKey: getAttemptReviewCacheKey(attemptId, page)
                 };
+
+            if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
 
             return site.read('mod_quiz_get_attempt_review', params, preSets);
         });
@@ -428,12 +435,13 @@ angular.module('mm.addons.mod_quiz')
      * @module mm.addons.mod_quiz
      * @ngdoc method
      * @name $mmaModQuiz#getCombinedReviewOptions
-     * @param {Number} quizId   Quiz ID.
-     * @param {String} [siteId] Site ID. If not defined, current site.
-     * @param {Number} [userId] User ID. If not defined use site's current user.
-     * @return {Promise}        Promise resolved with the combined review options.
+     * @param {Number} quizId       Quiz ID.
+     * @param {Boolean} ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param {String} [siteId]     Site ID. If not defined, current site.
+     * @param {Number} [userId]     User ID. If not defined use site's current user.
+     * @return {Promise}            Promise resolved with the combined review options.
      */
-    self.getCombinedReviewOptions = function(quizId, siteId, userId) {
+    self.getCombinedReviewOptions = function(quizId, ignoreCache, siteId, userId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -446,6 +454,11 @@ angular.module('mm.addons.mod_quiz')
                 preSets = {
                     cacheKey: getCombinedReviewOptionsCacheKey(quizId, userId)
                 };
+
+            if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
 
             return site.read('mod_quiz_get_combined_review_options', params, preSets).then(function(response) {
                 if (response && response.someoptions && response.alloptions) {
@@ -494,12 +507,13 @@ angular.module('mm.addons.mod_quiz')
      * @module mm.addons.mod_quiz
      * @ngdoc method
      * @name $mmaModQuiz#getFeedbackForGrade
-     * @param {Number} quizId   Quiz ID.
-     * @param {Number} grade    Grade.
-     * @param {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}        Promise resolved with the feedback.
+     * @param {Number} quizId       Quiz ID.
+     * @param {Number} grade        Grade.
+     * @param {Boolean} ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with the feedback.
      */
-    self.getFeedbackForGrade = function(quizId, grade, siteId) {
+    self.getFeedbackForGrade = function(quizId, grade, ignoreCache, siteId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -511,6 +525,11 @@ angular.module('mm.addons.mod_quiz')
                 preSets = {
                     cacheKey: getFeedbackForGradeCacheKey(quizId, grade)
                 };
+
+            if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
 
             return site.read('mod_quiz_get_quiz_feedback_for_grade', params, preSets);
         });
@@ -555,13 +574,14 @@ angular.module('mm.addons.mod_quiz')
      * @module mm.addons.mod_quiz
      * @ngdoc method
      * @name $mmaModQuiz#getGradeFromGradebook
-     * @param  {Number} courseId Course ID.
-     * @param  {Number} moduleId Quiz module ID.
-     * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @param  {Number} [userId] User ID. If not defined use site's current user.
-     * @return {Promise}         Promise resolved with an object containing the grade and the feedback.
+     * @param  {Number} courseId    Course ID.
+     * @param  {Number} moduleId    Quiz module ID.
+     * @param {Boolean} ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @param  {Number} [userId]    User ID. If not defined use site's current user.
+     * @return {Promise}            Promise resolved with an object containing the grade and the feedback.
      */
-    self.getGradeFromGradebook = function(courseId, moduleId, siteId, userId) {
+    self.getGradeFromGradebook = function(courseId, moduleId, ignoreCache, siteId, userId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -574,6 +594,11 @@ angular.module('mm.addons.mod_quiz')
                 preSets = {
                     cacheKey: getGradeFromGradebookCacheKey(courseId, userId)
                 };
+
+            if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
 
             return $mmSite.read('gradereport_user_get_grades_table', params, preSets).then(function(response) {
                 // Search the module we're looking for.
@@ -825,6 +850,72 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Given a list of attempts, returns the quiz revision.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#getQuizRevisionFromAttempts
+     * @param {Object[]} attempts Quiz attempts.
+     * @return {Number}           Quiz revision.
+     */
+    self.getQuizRevisionFromAttempts = function(attempts) {
+        if (attempts.length) {
+            // Return last attempt ID.
+            return attempts[attempts.length - 1].id;
+        } else {
+            return 0;
+        }
+    };
+
+    /**
+     * Given a list of attempts, returns the quiz time modified.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#getQuizTimemodifiedFromAttempts
+     * @param {Object[]} attempts Quiz attempts.
+     * @return {Number}           Quiz timemodified.
+     */
+    self.getQuizTimemodifiedFromAttempts = function(attempts) {
+        if (attempts.length) {
+            // Return last attempt timemodified.
+            return attempts[attempts.length - 1].timemodified;
+        } else {
+            return 0;
+        }
+    };
+
+    /**
+     * Given an attempt's layout, return the list of pages.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#getPagesFromLayout
+     * @param  {String} layout Attempt's layout.
+     * @return {Number[]}      Pages.
+     * @description
+     * An attempt's layout is a string with the question numbers separated by commas. A 0 indicates a change of page.
+     * Example: 1,2,3,0,4,5,6,0
+     * In the example above, first page has questions 1, 2 and 3. Second page has questions 4, 5 and 6.
+     *
+     * This function returns a list of pages.
+     */
+    self.getPagesFromLayout = function(layout) {
+        var split = layout.split(','),
+            page = 0,
+            pages = [];
+
+        for (var i = 0; i < split.length; i++) {
+            if (split[i] == 0) {
+                pages.push(page);
+                page++;
+            }
+        }
+
+        return pages;
+    };
+
+    /**
      * Given a list of question types, returns the types that aren't supported.
      *
      * @module mm.addons.mod_quiz
@@ -958,12 +1049,13 @@ angular.module('mm.addons.mod_quiz')
      * @module mm.addons.mod_quiz
      * @ngdoc method
      * @name $mmaModQuiz#getUserBestGrade
-     * @param {Number} quizId   Quiz ID.
-     * @param {String} [siteId] Site ID. If not defined, current site.
-     * @param {Number} [userId] User ID. If not defined use site's current user.
-     * @return {Promise}        Promise resolved with the attempts.
+     * @param {Number} quizId       Quiz ID.
+     * @param {Boolean} ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param {String} [siteId]     Site ID. If not defined, current site.
+     * @param {Number} [userId]     User ID. If not defined use site's current user.
+     * @return {Promise}            Promise resolved with the attempts.
      */
-    self.getUserBestGrade = function(quizId, siteId, userId) {
+    self.getUserBestGrade = function(quizId, ignoreCache, siteId, userId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -976,6 +1068,11 @@ angular.module('mm.addons.mod_quiz')
                 preSets = {
                     cacheKey: getUserBestGradeCacheKey(quizId, userId)
                 };
+
+            if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
 
             return site.read('mod_quiz_get_user_best_grade', params, preSets);
         });
@@ -1459,6 +1556,149 @@ angular.module('mm.addons.mod_quiz')
             return $mmSite.write('mod_quiz_view_quiz', params);
         }
         return $q.reject();
+    };
+
+    /**
+     * Prefetch all WS data for a quiz.
+     * This function will start a new attempt if possible and last attempt is finished or no attempts.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#prefetch
+     * @param {Object} module   The module object returned by WS.
+     * @param {Number} courseId Course ID the module belongs to.
+     * @return {Promise}        Promise resolved when the prefetch is finished. Data returned is not reliable.
+     */
+    self.prefetch = function(module, courseId) {
+        var siteId = $mmSite.getId(),
+            attempts,
+            startAttempt,
+            quiz;
+
+        // Mark package as downloading.
+        return $mmFilepool.storePackageStatus(siteId, mmaModQuizComponent, module.id, mmCoreDownloading).then(function() {
+            // Get quiz.
+            return self.getQuiz(courseId, module.id, siteId).then(function(q) {
+                quiz = q;
+            });
+        }).then(function() {
+            var promises = [];
+
+            // Get user attempts and data not related with attempts.
+            promises.push(self.getQuizAccessInformation(quiz.id, true, siteId));
+            promises.push(self.getQuizRequiredQtypes(quiz.id, true, siteId));
+            promises.push(self.getUserAttempts(quiz.id, undefined, undefined, true, siteId).then(function(atts) {
+                attempts = atts;
+            }));
+
+            return $q.all(promises);
+        }).then(function() {
+            // Start a new attempt if needed.
+            var lastAttempt = attempts[attempts.length - 1];
+            startAttempt = !attempts.length || self.isAttemptFinished(lastAttempt.state);
+
+            return startAttempt ? self.startAttempt(quiz.id, {}, false, siteId) : $q.when();
+        }).then(function() {
+            promises = [];
+
+            if (startAttempt) {
+                // Re-fetch user attempts since we created a new one.
+                promises.push(self.getUserAttempts(quiz.id, undefined, undefined, true, siteId).then(function(atts) {
+                    attempts = atts;
+                }));
+            }
+
+            // Fetch attempt related data.
+            promises.push(self.getCombinedReviewOptions(quiz.id, true, siteId));
+            promises.push(self.getUserBestGrade(quiz.id, true, siteId));
+            promises.push(self.getGradeFromGradebook(courseId, module.id, true, siteId).then(function(gradebookData) {
+                if (typeof gradebookData.grade != 'undefined') {
+                    return self.getFeedbackForGrade(quiz.id, gradebookData.grade, true, siteId);
+                }
+            }));
+            promises.push(self.getAttemptAccessInformation(quiz.id, 0, true, siteId)); // Last attempt.
+
+            return $q.all(promises);
+        }).then(function() {
+            // We have quiz data, now we'll get specific data for each attempt.
+            promises = [];
+            angular.forEach(attempts, function(attempt) {
+                promises.push(self.prefetchAttempt(quiz, attempt, siteId));
+            });
+
+            return $q.all(promises);
+        }).then(function() {
+            // Prefetch finished, mark as downloaded.
+            var revision = self.getQuizRevisionFromAttempts(attempts),
+                timemod = self.getQuizTimemodifiedFromAttempts(attempts);
+            return $mmFilepool.storePackageStatus(siteId, mmaModQuizComponent, module.id, mmCoreDownloaded, revision, timemod);
+        }).catch(function(error) {
+            // Error prefetching, go back to previous status and reject the promise.
+            return $mmFilepool.setPackagePreviousStatus(siteId, mmaModQuizComponent, module.id).then(function() {
+                return $q.reject(error);
+            });
+        });
+    };
+
+    /**
+     * Prefetch all WS data for an attempt.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#prefetchAttempt
+     * @param {Object} quiz      Quiz.
+     * @param {Object} attempt   Attempt.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when the prefetch is finished. Data returned is not reliable.
+     */
+    self.prefetchAttempt = function(quiz, attempt, siteId) {
+        var pages = self.getPagesFromLayout(attempt.layout),
+            promises = [],
+            attemptGrade,
+            preflightData = {
+                confirmdatasaved: 1
+            };
+
+        if (self.isAttemptFinished(attempt.state)) {
+            // Attempt is finished, get feedback and review data.
+            attemptGrade = self.rescaleGrade(attempt.sumgrades, quiz, false);
+            if (typeof attemptGrade != 'undefined') {
+                promises.push(self.getFeedbackForGrade(quiz.id, attemptGrade, true, siteId));
+            }
+
+            angular.forEach(pages, function(page) {
+                promises.push(self.getAttemptReview(attempt.id, page, true, siteId));
+            });
+             // All questions in same page.
+            promises.push(self.getAttemptReview(attempt.id, -1, true, siteId).then(function(data) {
+                // Download the files inside the questions.
+                var questionPromises = [];
+                angular.forEach(data.questions, function(question) {
+                    questionPromises.push($mmQuestionHelper.prefetchQuestionFiles(question, siteId));
+                });
+                return $q.all(questionPromises);
+            }));
+        } else {
+            // Attempt not finished, get data needed to continue the attempt.
+            promises.push(self.getAttemptAccessInformation(quiz.id, attempt.id, true, siteId));
+            promises.push(self.getAttemptSummary(attempt.id, preflightData, true, siteId));
+
+            if (attempt.state == self.ATTEMPT_IN_PROGRESS) {
+                // Get data for each page.
+                angular.forEach(pages, function(page) {
+                    promises.push(self.getAttemptData(attempt.id, page, preflightData, true, siteId).then(function(data) {
+                        // Download the files inside the questions.
+                        var questionPromises = [];
+                        angular.forEach(data.questions, function(question) {
+                            questionPromises.push($mmQuestionHelper.prefetchQuestionFiles(question, siteId));
+                        });
+                        return $q.all(questionPromises);
+                    }));
+                });
+            }
+        }
+
+        return $q.all(promises);
     };
 
     /**

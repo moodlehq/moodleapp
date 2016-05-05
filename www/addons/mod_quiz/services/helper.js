@@ -32,18 +32,18 @@ angular.module('mm.addons.mod_quiz')
      * @module mm.addons.mod_quiz
      * @ngdoc method
      * @name $mmaModQuizHelper#checkPreflightData
-     * @param  {Object} scope             Scope.
-     * @param  {Number} quizId            Quiz ID.
-     * @param  {Object} quizAccessInfo    Quiz access info returned by $mmaModQuiz#getQuizAccessInformation.
-     * @param  {Object} attemptAccessInfo Attempt access info returned by $mmaModQuiz#getAttemptAccessInformation.
-     * @param  {Object} [attempt]         Attempt to continue. Don't pass any value if the user needs to start a new attempt.
-     * @param  {Object} [preflightData]   Preflight data to validate. Don't pass any value if the user hasn't input any data.
-     * @return {Promise}                  Promise resolved when the preflight data is validated.
+     * @param  {Object} scope           Scope.
+     * @param  {Number} quizId          Quiz ID.
+     * @param  {Object} quizAccessInfo  Quiz access info returned by $mmaModQuiz#getQuizAccessInformation.
+     * @param  {Object} [attempt]       Attempt to continue. Don't pass any value if the user needs to start a new attempt.
+     * @param  {Object} [preflightData] Preflight data to validate. Don't pass any value if the user hasn't input any data.
+     * @return {Promise}                Promise resolved when the preflight data is validated.
      */
-    self.checkPreflightData = function(scope, quizId, quizAccessInfo, attemptAccessInfo, attempt, preflightData) {
-        var promise;
+    self.checkPreflightData = function(scope, quizId, quizAccessInfo, attempt, preflightData) {
+        var promise,
+            preflightRequired = $mmaModQuizAccessRulesDelegate.isPreflightCheckRequired(quizAccessInfo.activerulenames, attempt);
 
-        if (attemptAccessInfo.ispreflightcheckrequired && !preflightData) {
+        if (preflightRequired && !preflightData) {
             // Preflight check is required but no preflightData has been sent. Show a modal with the preflight form.
             if (!scope.modal) {
                 // Modal hasn't been created yet. Create it and show it.
@@ -111,12 +111,14 @@ angular.module('mm.addons.mod_quiz')
      */
     self.initPreflightModal = function(scope, quizAccessInfo, attempt) {
         var notSupported = [],
-            directives = [];
+            directives = [],
+            handlers = [];
 
         angular.forEach(quizAccessInfo.activerulenames, function(rule) {
             var handler = $mmaModQuizAccessRulesDelegate.getAccessRuleHandler(rule);
             if (handler) {
                 if (handler.isPreflightCheckRequired(attempt)) {
+                    handlers.push(handler);
                     directives.push(handler.getPreflightDirectiveName());
                 }
             } else {
@@ -138,8 +140,13 @@ angular.module('mm.addons.mod_quiz')
             scope.modal = modal;
 
             scope.closeModal = function() {
-                $mmUtil.emptyObject(scope.preflightData);
                 modal.hide();
+                // Clean the preflight data.
+                handlers.forEach(function(handler) {
+                    if (typeof handler.cleanPreflight == 'function') {
+                        handler.cleanPreflight(scope.preflightData);
+                    }
+                });
             };
             scope.$on('$destroy', function() {
                 modal.remove();

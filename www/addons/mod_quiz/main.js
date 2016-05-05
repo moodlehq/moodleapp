@@ -14,6 +14,7 @@
 
 angular.module('mm.addons.mod_quiz', ['mm.core'])
 
+.constant('mmaModQuizComponent', 'mmaModQuiz')
 .constant('mmaModQuizCheckChangesInterval', 5000)
 .constant('mmaModQuizAttemptComponent', 'mmaModQuizAttempt')
 .constant('mmaModQuizAttemptFinishedEvent', 'mma_mod_quiz_attempt_finished')
@@ -84,7 +85,8 @@ angular.module('mm.addons.mod_quiz', ['mm.core'])
 
 })
 
-.config(function($mmCourseDelegateProvider, $mmContentLinksDelegateProvider) {
+.config(function($mmCourseDelegateProvider, $mmContentLinksDelegateProvider, $mmCoursePrefetchDelegateProvider) {
     $mmCourseDelegateProvider.registerContentHandler('mmaModQuiz', 'quiz', '$mmaModQuizHandlers.courseContentHandler');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModQuiz', '$mmaModQuizHandlers.linksHandler');
+    $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModQuiz', 'quiz', '$mmaModQuizPrefetchHandler');
 });

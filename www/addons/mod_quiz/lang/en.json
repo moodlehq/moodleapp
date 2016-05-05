@@ -7,6 +7,7 @@
 	"comment": "Comment",
 	"completedon": "Completed on",
 	"confirmclose": "Once you submit, you will no longer be able to change your answers for this attempt.",
+	"confirmcontinueoffline": "This attempt hasn't been synchronized since {{$a}}. If you have continued this attempt in another device after that time you could lose data.",
 	"confirmleavequizonerror": "An error occurred while saving the answers. Are you sure you want to leave the quiz?",
 	"confirmstart": "The quiz has a time limit of {{$a}}. Time will count down from the moment you start your attempt and you must submit before it expires. Are you sure that you wish to start now?",
 	"confirmstartheader": "Timed quiz",
