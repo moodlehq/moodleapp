@@ -111,8 +111,7 @@ angular.module('mm.core.course')
 
                     // Add log in Moodle.
                     $mmSite.write('core_course_view_course', {
-                        courseid: courseId,
-                        sectionnumber: sectionnumber
+                        courseid: courseId
                     });
                 }, function(error) {
                     if (error) {
