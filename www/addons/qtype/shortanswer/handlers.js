@@ -21,9 +21,19 @@ angular.module('mm.addons.qtype_shortanswer')
  * @ngdoc service
  * @name $mmaQtypeShortAnswerHandler
  */
-.factory('$mmaQtypeShortAnswerHandler', function() {
+.factory('$mmaQtypeShortAnswerHandler', function($mmUtil) {
 
     var self = {};
+
+    /**
+     * Check if a response is complete.
+     *
+     * @param  {Object} answers Question answers (without prefix).
+     * @return {Mixed}          True if complete, false if not complete, -1 if cannot determine.
+     */
+    self.isCompleteResponse = function(answers) {
+        return answers['answer'] || answers['answer'] === 0;
+    };
 
     /**
      * Whether or not the module is enabled for the site.
@@ -32,6 +42,28 @@ angular.module('mm.addons.qtype_shortanswer')
      */
     self.isEnabled = function() {
         return true;
+    };
+
+    /**
+     * Check if a student has provided enough of an answer for the question to be graded automatically,
+     * or whether it must be considered aborted.
+     *
+     * @param  {Object} answers Question answers (without prefix).
+     * @return {Mixed}          True if gradable, false if not gradable, -1 if cannot determine.
+     */
+    self.isGradableResponse = function(answers) {
+        return self.isCompleteResponse(answers);
+    };
+
+    /**
+     * Check if two responses are the same.
+     *
+     * @param  {Object} prevAnswers Previous answers.
+     * @param  {Object} newAnswers  New answers.
+     * @return {Boolean}            True if same, false otherwise.
+     */
+    self.isSameResponse = function(prevAnswers, newAnswers) {
+        return $mmUtil.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer');
     };
 
     /**

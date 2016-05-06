@@ -21,9 +21,23 @@ angular.module('mm.addons.qtype_essay')
  * @ngdoc service
  * @name $mmaQtypeEssayHandler
  */
-.factory('$mmaQtypeEssayHandler', function() {
+.factory('$mmaQtypeEssayHandler', function($mmUtil) {
 
     var self = {};
+
+    /**
+     * Check if a response is complete.
+     *
+     * @param  {Object} answers Question answers (without prefix).
+     * @return {Mixed}          True if complete, false if not complete, -1 if cannot determine.
+     */
+    self.isCompleteResponse = function(answers) {
+        if (answers['answer'] && answers['answer'] !== '') {
+            return true;
+        }
+        // Since we can't know if the text is required or not we return -1.
+        return -1;
+    };
 
     /**
      * Whether or not the module is enabled for the site.
@@ -32,6 +46,29 @@ angular.module('mm.addons.qtype_essay')
      */
     self.isEnabled = function() {
         return true;
+    };
+
+    /**
+     * Check if a student has provided enough of an answer for the question to be graded automatically,
+     * or whether it must be considered aborted.
+     *
+     * @param  {Object} answers Question answers (without prefix).
+     * @return {Mixed}          True if gradable, false if not gradable, -1 if cannot determine.
+     */
+    self.isGradableResponse = function(answers) {
+        return false;
+    };
+
+    /**
+     * Check if two responses are the same.
+     *
+     * @param  {Object} prevAnswers Previous answers.
+     * @param  {Object} newAnswers  New answers.
+     * @return {Boolean}            True if same, false otherwise.
+     */
+    self.isSameResponse = function(prevAnswers, newAnswers) {
+        // For now we don't support attachments so we only compare the answer.
+        return $mmUtil.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer');
     };
 
     /**

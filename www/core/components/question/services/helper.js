@@ -21,24 +21,11 @@ angular.module('mm.core.question')
  * @ngdoc service
  * @name $mmQuestionHelper
  */
-.factory('$mmQuestionHelper', function($mmUtil, $mmText, $ionicModal, mmQuestionComponent, $mmSitesManager, $mmFilepool, $q) {
+.factory('$mmQuestionHelper', function($mmUtil, $mmText, $ionicModal, mmQuestionComponent, $mmSitesManager, $mmFilepool, $q,
+            $mmQuestion) {
 
     var self = {},
-        lastErrorShown = 0,
-        stateClasses = {
-            todo: 'mm-question-notyetanswered',
-            invalid: 'mm-question-invalidanswer',
-            complete: 'mm-question-answersaved',
-            needsgrading: 'mm-question-requiresgrading',
-            finished: 'mm-question-complete',
-            gaveup: 'mm-question-notanswered',
-            gradedwrong: 'mm-question-incorrect',
-            gradedpartial: 'mm-question-partiallycorrect',
-            gradedright: 'mm-question-correct',
-            mangrwrong: 'mm-question-incorrect',
-            mangrpartial: 'mm-question-partiallycorrect',
-            mangrright: 'mm-question-correct'
-        };
+        lastErrorShown = 0;
 
     /**
      * Add a behaviour button to the question's "behaviourButtons" property.
@@ -163,6 +150,11 @@ angular.module('mm.core.question')
                 }
             }
         });
+
+        // If we have a certainty value stored in local we'll use that one.
+        if (question.localAnswers && typeof question.localAnswers['-certainty'] != 'undefined') {
+            question.behaviourCertaintySelected = question.localAnswers['-certainty'];
+        }
 
         return labels && labels.length;
     };
@@ -394,10 +386,6 @@ angular.module('mm.core.question')
             if (!name || name.match(/_:flagged$/) || element.type == 'submit' || element.tagName == 'BUTTON') {
                 return;
             }
-            // Ignore selects without value.
-            if (element.tagName == 'SELECT' && (element.value === '' || typeof element.value == 'undefined')) {
-                return;
-            }
 
             // Get the value.
             if (element.type == 'checkbox') {
@@ -484,11 +472,12 @@ angular.module('mm.core.question')
      * @module mm.core.question
      * @ngdoc method
      * @name $mmQuestionHelper#getQuestionStateClass
-     * @param  {String} state Question's state.
-     * @return {String}       State class.
+     * @param  {String} name Question's state name.
+     * @return {String}      State class.
      */
-    self.getQuestionStateClass = function(state) {
-        return stateClasses[state] || '';
+    self.getQuestionStateClass = function(name) {
+        var state = $mmQuestion.getState(name);
+        return state ? state.class : '';
     };
 
     /**
@@ -540,6 +529,55 @@ angular.module('mm.core.question')
                 scope.input.isCorrect = 1;
             }
         }
+    };
+
+    /**
+     * For each input element found in the HTML, search if there's a local answer stored and
+     * override the HTML's value with the local one.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#loadLocalAnswersInHtml
+     * @param  {String} component Component the answers belong to.
+     * @param  {Number} attemptId Attempt ID.
+     * @param  {Object} question  Question.
+     * @return {Void}
+     */
+    self.loadLocalAnswersInHtml = function(question) {
+        var form = document.createElement('form');
+        form.innerHTML = question.html;
+
+        // Search all input elements.
+        angular.forEach(form.elements, function(element, name) {
+            name = element.name || name;
+            // Ignore flag and submit inputs.
+            if (name.match(/_:flagged$/) || element.type == 'submit' || element.tagName == 'BUTTON') {
+                return;
+            }
+
+            // Search if there's a local answer.
+            name = $mmQuestion.removeQuestionPrefix(name);
+            if (question.localAnswers && typeof question.localAnswers[name] != 'undefined') {
+                var selected;
+                if (element.tagName == 'TEXTAREA') {
+                    element.innerHTML = question.localAnswers[name];
+                } else if (element.tagName == 'SELECT') {
+                    // Search the selected option and select it.
+                    selected = element.querySelector('option[value="' + question.localAnswers[name] + '"]');
+                    if (selected) {
+                        selected.setAttribute('selected', 'selected');
+                    }
+                } else if (element.type == 'radio' || element.type == 'checkbox') {
+                    if (element.value == question.localAnswers[name]) {
+                        element.setAttribute('checked', 'checked');
+                    }
+                } else {
+                    element.setAttribute('value', question.localAnswers[name]);
+                }
+            }
+        });
+
+        question.html = form.innerHTML;
     };
 
     /**

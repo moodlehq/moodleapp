@@ -23,7 +23,8 @@ angular.module('mm.addons.mod_quiz')
  */
 .controller('mmaModQuizPlayerCtrl', function($log, $scope, $stateParams, $mmaModQuiz, $mmaModQuizHelper, $q, $mmUtil,
             $ionicPopover, $ionicScrollDelegate, $rootScope, $ionicPlatform, $translate, $timeout, $mmQuestionHelper,
-            $mmaModQuizAutoSave, $mmEvents, mmaModQuizAttemptFinishedEvent, $mmSideMenu) {
+            $mmaModQuizAutoSave, $mmEvents, mmaModQuizAttemptFinishedEvent, $mmSideMenu, $mmaModQuizOnline,
+            mmaModQuizComponent) {
     $log = $log.getInstance('mmaModQuizPlayerCtrl');
 
     var quizId = $stateParams.quizid,
@@ -38,9 +39,11 @@ angular.module('mm.addons.mod_quiz')
         unregisterHardwareBack,
         leaving = false,
         timeUpCalled = false,
-        scrollView = $ionicScrollDelegate.$getByHandle('mmaModQuizPlayerScroll');
+        scrollView = $ionicScrollDelegate.$getByHandle('mmaModQuizPlayerScroll'),
+        offline;
 
     $scope.moduleUrl = moduleUrl;
+    $scope.component = mmaModQuizComponent;
     $scope.quizAborted = false;
     $scope.preflightData = {};
 
@@ -70,6 +73,18 @@ angular.module('mm.addons.mod_quiz')
             quiz = quizData;
             quiz.isSequential = $mmaModQuiz.isNavigationSequential(quiz);
 
+            if ($mmaModQuiz.isQuizOffline(quiz)) {
+                // Quiz supports offline.
+                return true;
+            } else {
+                // Quiz doesn't support offline right now, but maybe it did and then the setting was changed.
+                // If we have an unfinished offline attempt then we'll use offline mode.
+                return $mmaModQuiz.isLastAttemptOfflineUnfinished(quiz);
+            }
+        }).then(function(offlineMode) {
+            offline = offlineMode;
+            $scope.offline = offline;
+
             if (quiz.timelimit > 0) {
                 $scope.isTimed = true;
                 $mmUtil.formatTime(quiz.timelimit).then(function(time) {
@@ -79,20 +94,23 @@ angular.module('mm.addons.mod_quiz')
 
             $scope.quiz = quiz;
 
-            // Get access information for the quiz. quizAccessInfo
-            return $mmaModQuiz.getQuizAccessInformation(quiz.id, true).then(function(info) {
-                quizAccessInfo = info;
+            // Get access information for the quiz.
+            return $mmaModQuiz.getQuizAccessInformation(quiz.id, offline, true);
+        }).then(function(info) {
+            quizAccessInfo = info;
 
-                // Get user attempts to determine last attempt.
-                return $mmaModQuiz.getUserAttempts(quiz.id, 'all', true, true).then(function(attempts) {
-                    if (!attempts.length) {
-                        newAttempt = true;
-                    } else {
-                        attempt = attempts[attempts.length - 1];
-                        newAttempt = $mmaModQuiz.isAttemptFinished(attempt.state);
-                    }
-                });
-            });
+            // Get user attempts to determine last attempt.
+            return $mmaModQuiz.getUserAttempts(quiz.id, 'all', true, offline, true);
+        }).then(function(attempts) {
+            if (!attempts.length) {
+                newAttempt = true;
+            } else {
+                attempt = attempts[attempts.length - 1];
+                newAttempt = $mmaModQuiz.isAttemptFinished(attempt.state);
+
+                // Load flag to show if attempts are finished but not synced.
+                return $mmaModQuiz.loadFinishedOfflineData(attempts);
+            }
         }).catch(function(message) {
             return $mmaModQuizHelper.showError(message);
         });
@@ -101,12 +119,11 @@ angular.module('mm.addons.mod_quiz')
     // Convenience function to start/continue the attempt.
     function startOrContinueAttempt(preflightData) {
         // Check preflight data and start attempt if needed.
-        var atmpt = newAttempt ? undefined : attempt;
-        return $mmaModQuizHelper.checkPreflightData($scope, quiz.id, quizAccessInfo, atmpt, preflightData)
-                    .then(function(att) {
+        var att = newAttempt ? undefined : attempt;
+        return $mmaModQuizHelper.checkPreflightData($scope, quiz, quizAccessInfo, att, preflightData, offline).then(function(att) {
 
             // Re-fetch attempt access information with the right attempt (might have changed because a new attempt was created).
-            return $mmaModQuiz.getAttemptAccessInformation(quiz.id, att.id, true).then(function(info) {
+            return $mmaModQuiz.getAttemptAccessInformation(quiz.id, att.id, offline, true).then(function(info) {
                 attemptAccessInfo = info;
 
                 attempt = att;
@@ -115,15 +132,15 @@ angular.module('mm.addons.mod_quiz')
             }).catch(function(message) {
                 return $mmaModQuizHelper.showError(message, 'mm.core.error');
             }).then(function() {
-                if (attempt.state != $mmaModQuiz.ATTEMPT_OVERDUE) {
-                    // Attempt not overdue, load page.
+                if (attempt.state != $mmaModQuiz.ATTEMPT_OVERDUE && !attempt.finishedOffline) {
+                    // Attempt not overdue and not finished in offline, load page.
                     return loadPage(attempt.currentpage).then(function() {
                         initTimer();
                     }).catch(function(message) {
                         return $mmaModQuizHelper.showError(message, 'mm.core.error');
                     });
                 } else {
-                    // Attempt is overdue, we can only load the summary.
+                    // Attempt is overdue or finished in offline, we can only load the summary.
                     return loadSummary();
                 }
             });
@@ -133,14 +150,14 @@ angular.module('mm.addons.mod_quiz')
     // Load TOC to navigate to questions.
     function loadToc() {
         // We use the attempt summary to build the TOC because it contains all the questions.
-        return $mmaModQuiz.getAttemptSummary(attempt.id, $scope.preflightData).then(function(questions) {
+        return $mmaModQuiz.getAttemptSummary(attempt.id, $scope.preflightData, offline).then(function(questions) {
             $scope.toc = questions;
         });
     }
 
     // Load a page questions.
     function loadPage(page) {
-        return $mmaModQuiz.getAttemptData(attempt.id, page, $scope.preflightData, true).then(function(data) {
+        return $mmaModQuiz.getAttemptData(attempt.id, page, $scope.preflightData, offline, true).then(function(data) {
             // Update attempt, status could change during the execution.
             attempt = data.attempt;
             attempt.currentpage = page;
@@ -161,7 +178,7 @@ angular.module('mm.addons.mod_quiz')
             });
 
             // Mark the page as viewed. We'll ignore errors in this call.
-            $mmaModQuiz.logViewAttempt(attempt.id, page);
+            $mmaModQuiz.logViewAttempt(attempt.id, page, offline);
 
             // Start looking for changes.
             $mmaModQuizAutoSave.startCheckChangesProcess($scope, quiz, attempt);
@@ -172,9 +189,9 @@ angular.module('mm.addons.mod_quiz')
     function loadSummary() {
         $scope.showSummary = true;
         $scope.summaryQuestions = [];
-        return $mmaModQuiz.getAttemptSummary(attempt.id, $scope.preflightData, true).then(function(questions) {
+        return $mmaModQuiz.getAttemptSummary(attempt.id, $scope.preflightData, offline, true, true).then(function(questions) {
             $scope.summaryQuestions = questions;
-            $scope.canReturn = attempt.state == $mmaModQuiz.ATTEMPT_IN_PROGRESS;
+            $scope.canReturn = attempt.state == $mmaModQuiz.ATTEMPT_IN_PROGRESS && !attempt.finishedOffline;
 
             attempt.dueDateWarning = $mmaModQuiz.getAttemptDueDateWarning(quiz, attempt);
 
@@ -196,7 +213,8 @@ angular.module('mm.addons.mod_quiz')
 
     // Process attempt.
     function processAttempt(finish, timeup) {
-        return $mmaModQuiz.processAttempt(attempt.id, getAnswers(), $scope.preflightData, finish, timeup).then(function() {
+        return $mmaModQuiz.processAttempt(quiz, attempt, getAnswers(), $scope.preflightData, finish, timeup, offline)
+                .then(function() {
             // Answers saved, cancel auto save.
             $mmaModQuizAutoSave.cancelAutoSave();
             $mmaModQuizAutoSave.hideAutoSaveError($scope);
@@ -248,7 +266,7 @@ angular.module('mm.addons.mod_quiz')
         return promise.then(function() {
             return processAttempt(finish, timeup).then(function() {
                 // Trigger an event to notify the attempt was finished.
-                $mmEvents.trigger(mmaModQuizAttemptFinishedEvent, {quizId: quiz.id, attemptId: attempt.id});
+                $mmEvents.trigger(mmaModQuizAttemptFinishedEvent, {quizId: quiz.id, attemptId: attempt.id, synced: !offline});
                 // Leave the player.
                 $scope.questions = [];
                 leavePlayer();
@@ -305,7 +323,8 @@ angular.module('mm.addons.mod_quiz')
             // Add the clicked button data.
             answers[name] = value;
 
-            $mmaModQuiz.processAttempt(attempt.id, answers, $scope.preflightData, false, false).then(function() {
+            // Behaviour checks are always in online.
+            $mmaModQuizOnline.processAttempt(attempt.id, answers, $scope.preflightData, false, false).then(function() {
                 // Reload the current page.
                 var scrollPos = scrollView.getScrollPosition();
                 $scope.dataLoaded = false;
@@ -329,7 +348,10 @@ angular.module('mm.addons.mod_quiz')
 
     // Load a certain page. If slot is supplied, try to scroll to that question.
     $scope.loadPage = function(page, fromToc, slot) {
-        if (page == attempt.currentpage && !$scope.showSummary && typeof slot != 'undefined') {
+        if (page != -1 && (attempt.state == $mmaModQuiz.ATTEMPT_OVERDUE || attempt.finishedOffline)) {
+            // We can't load a page if overdue of the local attempt is finished.
+            return;
+        } else if (page == attempt.currentpage && !$scope.showSummary && typeof slot != 'undefined') {
             // Navigating to a question in the current page.
             scrollToQuestion(slot);
             return;

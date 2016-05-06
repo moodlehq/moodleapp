@@ -21,7 +21,8 @@ angular.module('mm.addons.mod_quiz')
  * @ngdoc service
  * @name $mmaModQuizHelper
  */
-.factory('$mmaModQuizHelper', function($mmaModQuiz, $mmUtil, $q, $ionicModal, $mmaModQuizAccessRulesDelegate, $translate) {
+.factory('$mmaModQuizHelper', function($mmaModQuiz, $mmUtil, $q, $ionicModal, $mmaModQuizAccessRulesDelegate, $translate,
+            $mmaModQuizOffline) {
 
     var self = {};
 
@@ -32,14 +33,15 @@ angular.module('mm.addons.mod_quiz')
      * @module mm.addons.mod_quiz
      * @ngdoc method
      * @name $mmaModQuizHelper#checkPreflightData
-     * @param  {Object} scope           Scope.
-     * @param  {Number} quizId          Quiz ID.
-     * @param  {Object} quizAccessInfo  Quiz access info returned by $mmaModQuiz#getQuizAccessInformation.
-     * @param  {Object} [attempt]       Attempt to continue. Don't pass any value if the user needs to start a new attempt.
-     * @param  {Object} [preflightData] Preflight data to validate. Don't pass any value if the user hasn't input any data.
-     * @return {Promise}                Promise resolved when the preflight data is validated.
+     * @param  {Object} scope             Scope.
+     * @param  {Object} quiz              Quiz.
+     * @param  {Object} quizAccessInfo    Quiz access info returned by $mmaModQuiz#getQuizAccessInformation.
+     * @param  {Object} [attempt]         Attempt to continue. Don't pass any value if the user needs to start a new attempt.
+     * @param  {Object} [preflightData]   Preflight data to validate. Don't pass any value if the user hasn't input any data.
+     * @param  {Boolean} offline          True if attempt is offline.
+     * @return {Promise}                  Promise resolved when the preflight data is validated.
      */
-    self.checkPreflightData = function(scope, quizId, quizAccessInfo, attempt, preflightData) {
+    self.checkPreflightData = function(scope, quiz, quizAccessInfo, attempt, preflightData, offline) {
         var promise,
             preflightRequired = $mmaModQuizAccessRulesDelegate.isPreflightCheckRequired(quizAccessInfo.activerulenames, attempt);
 
@@ -61,16 +63,27 @@ angular.module('mm.addons.mod_quiz')
         }
 
         if (attempt) {
-            if (attempt.state != $mmaModQuiz.ATTEMPT_OVERDUE) {
+            if (attempt.state != $mmaModQuiz.ATTEMPT_OVERDUE && !attempt.finishedOffline) {
                 // We're continuing an attempt. Call getAttemptData to validate the preflight data.
-                promise = $mmaModQuiz.getAttemptData(attempt.id, attempt.currentpage, preflightData, true);
+                var page = attempt.currentpage;
+                promise = $mmaModQuiz.getAttemptData(attempt.id, page, preflightData, offline, true).then(function() {
+                    if (offline) {
+                        // Get current page stored in local.
+                        return $mmaModQuizOffline.getAttemptById(attempt.id).then(function(localAttempt) {
+                            attempt.currentpage = localAttempt.currentpage;
+                        }).catch(function() {
+                            // No local data.
+                        });
+                    }
+                });
             } else {
-                // Attempt is overdue, we can only see the summary. Call getAttemptSummary to validate the preflight data.
-                promise = $mmaModQuiz.getAttemptSummary(attempt.id, preflightData, true);
+                // Attempt is overdue or finished in offline, we can only see the summary.
+                // Call getAttemptSummary to validate the preflight data.
+                promise = $mmaModQuiz.getAttemptSummary(attempt.id, preflightData, offline, true);
             }
         } else {
             // We're starting a new attempt, call startAttempt.
-            promise = $mmaModQuiz.startAttempt(quizId, preflightData).then(function(att) {
+            promise = $mmaModQuiz.startAttempt(quiz.id, preflightData).then(function(att) {
                 attempt = att;
             });
         }

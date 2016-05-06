@@ -1257,6 +1257,91 @@ angular.module('mm.core')
             return urls;
         };
 
+        /**
+         * Converts an object into an array of objects, where each entry is an object containing
+         * the key and value of the original object.
+         * For example, it can convert {size: 2} into [{name: 'size', value: 2}].
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#objectToArrayOfObjects
+         * @param  {Object} obj       Object to convert.
+         * @param  {String} keyName   Name of the properties where to store the keys.
+         * @param  {String} valueName Name of the properties where to store the values.
+         * @return {Object[]}         Array of objects with the name & value of each property.
+         */
+        self.objectToArrayOfObjects = function(obj, keyName, valueName) {
+            var result = [];
+            angular.forEach(obj, function(value, key) {
+                var entry = {};
+                entry[keyName] = key;
+                entry[valueName] = value;
+                result.push(entry);
+            });
+            return result;
+        };
+
+        /**
+         * Tests to see whether two arrays or objects have the same value at a particular key.
+         * Missing values are replaced by '', and the values are compared with ===.
+         * Booleans and numbers are cast to string before comparing.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#sameAtKeyMissingIsBlank
+         * @param  {Object} obj1 The first object or array.
+         * @param  {Object} obj2 The second object or array.
+         * @param  {String} key  Key to check.
+         * @return {Boolean}     Whether the two objects/arrays have the same value (or lack of one) for a given key.
+         */
+        self.sameAtKeyMissingIsBlank = function(obj1, obj2, key) {
+            var value1 = typeof obj1[key] != 'undefined' ? obj1[key] : '',
+                value2 = typeof obj2[key] != 'undefined' ? obj2[key] : '';
+
+            if (typeof value1 == 'number' || typeof value1 == 'boolean') {
+                value1 = '' + value1;
+            }
+            if (typeof value2 == 'number' || typeof value2 == 'boolean') {
+                value2 = '' + value2;
+            }
+            return value1 === value2;
+        };
+
+        /**
+         * Merge two arrays, removing duplicate values.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#mergeArraysWithoutDuplicates
+         * @param  {Array} array1 The first array.
+         * @param  {Array} array2 The second array.
+         * @return {Array}        Merged array.
+         */
+        self.mergeArraysWithoutDuplicates = function(array1, array2) {
+            return self.uniqueArray(array1.concat(array2));
+        };
+
+        /**
+         * Return an array without duplicate values.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#uniqueArray
+         * @param  {Array} array The array to treat.
+         * @return {Array}       Array without duplicate values.
+         */
+        self.uniqueArray = function(array) {
+            var unique = [],
+                len = array.length;
+            for (var i = 0; i < len; i++) {
+                var value = array[i];
+                if (unique.indexOf(value) == -1) {
+                    unique.push(value);
+                }
+            }
+            return unique;
+        };
+
         return self;
     };
 });

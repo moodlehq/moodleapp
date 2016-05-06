@@ -21,9 +21,23 @@ angular.module('mm.addons.qtype_numerical')
  * @ngdoc service
  * @name $mmaQtypeNumericalHandler
  */
-.factory('$mmaQtypeNumericalHandler', function() {
+.factory('$mmaQtypeNumericalHandler', function($mmUtil) {
 
     var self = {};
+
+    /**
+     * Check if a response is complete.
+     *
+     * @param  {Object} answers Question answers (without prefix).
+     * @return {Mixed}          True if complete, false if not complete, -1 if cannot determine.
+     */
+    self.isCompleteResponse = function(answers) {
+        if (!self.isGradableResponse(answers) || !self.validateUnits(answers['answer'])) {
+            return false;
+        }
+
+        return -1;
+    };
 
     /**
      * Whether or not the module is enabled for the site.
@@ -35,6 +49,28 @@ angular.module('mm.addons.qtype_numerical')
     };
 
     /**
+     * Check if a student has provided enough of an answer for the question to be graded automatically,
+     * or whether it must be considered aborted.
+     *
+     * @param  {Object} answers Question answers (without prefix).
+     * @return {Mixed}          True if gradable, false if not gradable, -1 if cannot determine.
+     */
+    self.isGradableResponse = function(answers) {
+        return answers['answer'] || answers['answer'] === '0' || answers['answer'] === 0;
+    };
+
+    /**
+     * Check if two responses are the same.
+     *
+     * @param  {Object} prevAnswers Previous answers.
+     * @param  {Object} newAnswers  New answers.
+     * @return {Boolean}            True if same, false otherwise.
+     */
+    self.isSameResponse = function(prevAnswers, newAnswers) {
+        return $mmUtil.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer');
+    };
+
+    /**
      * Get the directive.
      *
      * @param {Object} question The question.
@@ -42,6 +78,40 @@ angular.module('mm.addons.qtype_numerical')
      */
     self.getDirectiveName = function(question) {
         return 'mma-qtype-numerical';
+    };
+
+    /**
+     * Validate a number with units. We don't have the list of valid units and conversions, so we can't perform
+     * a full validation. If this function returns true means we can't be sure it's valid.
+     *
+     * @param {String} answer Answer.
+     * @return {Boolean}      False if answer isn't valid, true if we aren't sure if it's valid.
+     */
+    self.validateUnits = function(answer) {
+        if (!answer) {
+            return false;
+        }
+
+        var regexString = '[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:e[-+]?\\d+)?';
+
+        // Strip spaces (which may be thousands separators) and change other forms of writing e to e.
+        answer = answer.replace(' ', '');
+        answer = answer.replace(/(?:e|E|(?:x|\*|×)10(?:\^|\*\*))([+-]?\d+)/, 'e$1');
+
+        // If a '.' is present or there are multiple ',' (i.e. 2,456,789) assume ',' is a thousands separator
+        // and strip it, else assume it is a decimal separator, and change it to '.'.
+        if (answer.indexOf('.') != -1 || answer.split(',').length - 1 > 1) {
+            answer = answer.replace(',', '');
+        } else {
+            answer = answer.replace(',', '.');
+        }
+
+        // We don't know if units should be before or after so we check both.
+        if (answer.match(new RegExp('^' + regexString)) === null || answer.match(new RegExp(regexString + '$')) === null) {
+            return false;
+        }
+
+        return true;
     };
 
     return self;
