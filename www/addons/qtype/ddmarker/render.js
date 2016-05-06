@@ -127,19 +127,12 @@ angular.module('mm.addons.qtype_ddmarker')
         this.doc_structure = function(number) {
             var topnode = document.querySelector("#mma-mod_quiz-question-" + number + ' .mma-qtype-ddmarker-container');
             var dragitemsarea = topnode.querySelector('div.dragitems');
-            var dropbgarea = topnode.querySelector('div.droparea');
             return {
                 top_node : function() {
                     return topnode;
                 },
                 bg_img : function() {
                     return topnode.querySelector('.dropbackground');
-                },
-                load_bg_img : function (url) {
-                    angular.element(dropbgarea).html('<img class="dropbackground" src="' + url + '"/>');
-                    var bg_img = angular.element(this.bg_img());
-                    // this.on_image_load... does not exists?
-                    bg_img.on('load', instance.on_image_load, this, 'bg_image');
                 },
                 drag_itemsarea : function() {
                     return dragitemsarea;
