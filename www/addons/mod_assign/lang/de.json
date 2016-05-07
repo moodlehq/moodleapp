@@ -1,11 +1,11 @@
 {
     "addsubmission": "Abgabe hinzufügen",
-    "allowsubmissionsfromdate": "Abgaben erlauben von",
-    "attemptnumber": "Versuch Nr.",
-    "cutoffdate": "Stichtag",
-    "duedate": "Fälligkeitsdatum",
-    "duedateno": "Kein Fälligkeitsdatum",
-    "submissions": "Abgaben",
+    "allowsubmissionsfromdate": "Abgabebeginn",
+    "attemptnumber": "Nummer des Versuchs",
+    "cutoffdate": "Verlängertes Abgabeende",
+    "duedate": "Abgabeende",
+    "duedateno": "Kein Abgabeende",
+    "submissions": "Abgegebene Aufgaben",
     "userwithid": "Nutzer/in mit ID {{id}}",
     "viewsubmission": "Abgabe anzeigen"
 }

@@ -33,7 +33,7 @@ angular.module('mm.core.course')
  * @ngdoc service
  * @name $mmCourse
  */
-.factory('$mmCourse', function($mmSite, $translate, $q, $log, $mmEvents, mmCoreEventCompletionModuleViewed) {
+.factory('$mmCourse', function($mmSite, $translate, $q, $log, $mmEvents, $mmSitesManager, mmCoreEventCompletionModuleViewed) {
 
     $log = $log.getInstance('$mmCourse');
 
@@ -41,7 +41,56 @@ angular.module('mm.core.course')
         mods = ["assign", "assignment", "book", "chat", "choice", "data", "database", "date", "external-tool",
             "feedback", "file", "folder", "forum", "glossary", "ims", "imscp", "label", "lesson", "lti", "page", "quiz",
             "resource", "scorm", "survey", "url", "wiki", "workshop"
-        ];
+        ],
+        modsWithContent = ['book', 'folder', 'imscp', 'page', 'resource', 'url'];
+
+    /**
+     * Add a 'contents' property if the module needs it and it doesn't have it already. In some weird cases the site
+     * doesn't return this property and it's needed. See MOBILE-1381.
+     *
+     * @param {Object} module Module to check.
+     * @return {Object}       Module with contents.
+     */
+    function addContentsIfNeeded(module) {
+        if (modsWithContent.indexOf(module.modname) > -1) {
+            module.contents = module.contents || [];
+        }
+        return module;
+    }
+
+    /**
+     * Check if the site is prepared to return a module without having its course ID.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#canGetModuleWithoutCourseId
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with true if can return it, rejected or resolved with false otherwise.
+     */
+    self.canGetModuleWithoutCourseId = function(siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.wsAvailable('core_course_get_course_module');
+        });
+    };
+
+    /**
+     * Check if the site is prepared to return a module by instance ID.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#canGetModuleByInstance
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with true if can return it, rejected or resolved with false otherwise.
+     */
+    self.canGetModuleByInstance = function(siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.wsAvailable('core_course_get_course_module_by_instance');
+        });
+    };
 
     /**
      * Check if module completion could have changed. If it could have, trigger event. This function must be used,
@@ -108,61 +157,159 @@ angular.module('mm.core.course')
     }
 
     /**
+     * Gets a module basic info by module ID.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#getModuleBasicInfo
+     * @param  {Number} moduleId Module ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with the module's info.
+     */
+    self.getModuleBasicInfo = function(moduleId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    cmid: moduleId
+                },
+                preSets = {
+                    cacheKey: getModuleCacheKey(moduleId)
+                };
+
+            return site.read('core_course_get_course_module', params, preSets).then(function(response) {
+                if (response.cm && (!response.warnings || !response.warnings.length)) {
+                    return response.cm;
+                }
+                return $q.reject();
+            });
+        });
+    };
+
+    /**
+     * Gets a module basic info by instance.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#getModuleBasicInfoByInstance
+     * @param {Number} id        Instance ID.
+     * @param {String} module    Name of the module. E.g. 'glossary'.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with the module's info.
+     */
+    self.getModuleBasicInfoByInstance = function(id, module, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    instance: id,
+                    module: module
+                },
+                preSets = {
+                    cacheKey: getModuleByInstanceCacheKey(id, module)
+                };
+
+            return site.read('core_course_get_course_module_by_instance', params, preSets).then(function(response) {
+                if (response.cm && (!response.warnings || !response.warnings.length)) {
+                    return response.cm;
+                }
+                return $q.reject();
+            });
+        });
+    };
+
+    /**
      * Get a module from Moodle.
      *
      * @module mm.core.course
      * @ngdoc method
      * @name $mmCourse#getModule
-     * @param {Number} courseid    The course ID.
-     * @param {Number} moduleid    The module ID.
-     * @param {Number} [sectionid] The section ID.
+     * @param {Number} moduleId    The module ID.
+     * @param {Number} [courseId]  The course ID. Recommended to speed up the process and minimize data usage.
+     * @param {Number} [sectionId] The section ID.
+     * @param {Boolean} [preferCache=false] True if shouldn't call WS if data is cached, false otherwise.
      * @return {Promise}
      */
-    self.getModule = function(courseid, moduleid, sectionid) {
+    self.getModule = function(moduleId, courseId, sectionId, preferCache) {
 
-        if (!moduleid) {
+        if (!moduleId) {
             return $q.reject();
         }
 
-        $log.debug('Getting module ' + moduleid + ' in course ' + courseid + ' and section ' +sectionid);
+        if (typeof preferCache == 'undefined') {
+            preferCache = false;
+        }
 
-        var params = {
-                courseid: courseid,
+        var promise;
+
+        if (!courseId) {
+            // No courseId passed, try to retrieve it.
+            promise = self.getModuleBasicInfo(moduleId).then(function(module) {
+                return module.course;
+            });
+        } else {
+            promise = $q.when(courseId);
+        }
+
+        return promise.then(function(courseId) {
+            // We have courseId, we can use core_course_get_contents for compatibility.
+            $log.debug('Getting module ' + moduleId + ' in course ' + courseId);
+
+            params = {
+                courseid: courseId,
                 options: [
                     {
                         name: 'cmid',
-                        value: moduleid
+                        value: moduleId
                     }
                 ]
-            },
+            };
             preSets = {
-                cacheKey: getModuleCacheKey(moduleid)
+                cacheKey: getModuleCacheKey(moduleId),
+                omitExpires: preferCache
             };
 
-        if (sectionid) {
-            params.options.push({
-                name: 'sectionid',
-                value: sectionid
-            });
-        }
-
-        return $mmSite.read('core_course_get_contents', params, preSets).then(function(sections) {
-            var section,
-                module;
-
-            for (var i = 0; i < sections.length; i++) {
-                section = sections[i];
-                for (var j = 0; j < section.modules.length; j++) {
-                    module = section.modules[j];
-                    if (module.id === moduleid) {
-                        return module;
-                    }
-                }
+            if (sectionId) {
+                params.options.push({
+                    name: 'sectionid',
+                    value: sectionId
+                });
             }
 
-            return $q.reject();
+            return $mmSite.read('core_course_get_contents', params, preSets).catch(function() {
+                // Error getting the module. Try to get all contents (without filtering).
+                params.options = [];
+                preSets.cacheKey = getSectionsCacheKey(courseId);
+                return $mmSite.read('core_course_get_contents', params, preSets);
+            }).then(function(sections) {
+                var section,
+                    module;
+
+                for (var i = 0; i < sections.length; i++) {
+                    section = sections[i];
+                    for (var j = 0; j < section.modules.length; j++) {
+                        module = section.modules[j];
+                        if (module.id == moduleId) {
+                            module.course = courseId;
+                            return addContentsIfNeeded(module);
+                        }
+                    }
+                }
+                return $q.reject();
+            });
         });
     };
+
+    /**
+     * Get cache key for module WS calls.
+     *
+     * @param {Number} id     Instance ID.
+     * @param {String} module Name of the module. E.g. 'glossary'.
+     * @return {String}       Cache key.
+     */
+    function getModuleByInstanceCacheKey(id, module) {
+        return 'mmCourse:moduleByInstance:' + module + ':' + id;
+    }
 
     /**
      * Get cache key for module WS calls.
@@ -189,6 +336,48 @@ angular.module('mm.core.course')
         }
 
         return "img/mod/" + moduleName + ".svg";
+    };
+
+    /**
+     * Get the section ID a module belongs to.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#getModuleSectionId
+     * @param {Number} moduleId   The module ID.
+     * @param {Number} [courseId] The course ID. Required if Moodle site is prior to 3.0.
+     * @param {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}
+     */
+    self.getModuleSectionId = function(moduleId, courseId, siteId) {
+
+        if (!moduleId) {
+            return $q.reject();
+        }
+
+        // Try to get the section using getModuleBasicInfo.
+        return self.getModuleBasicInfo(moduleId, siteId).then(function(module) {
+            return module.section;
+        }).catch(function() {
+            if (!courseId) {
+                // It failed and we don't have courseId, reject.
+                return $q.reject();
+            }
+
+            // Get all the sections in the course and iterate over them to find it.
+            return self.getSections(courseId, {}, siteId).then(function(sections) {
+                for (var i = 0, seclen = sections.length; i < seclen; i++) {
+                    var section = sections[i];
+                    for (var j = 0, modlen = section.modules.length; j < modlen; j++) {
+                        if (section.modules[j].id == moduleId) {
+                            return section.id;
+                        }
+                    }
+                }
+                // Not found.
+                return $q.reject();
+            });
+        });
     };
 
     /**
@@ -230,17 +419,29 @@ angular.module('mm.core.course')
      * @module mm.core.course
      * @ngdoc method
      * @name $mmCourse#getSections
-     * @param {Number} courseid The course ID.
+     * @param {Number} courseid  The course ID.
+     * @param {Object} [preSets] Optional. Presets to use.
+     * @param {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise} The reject contains the error message, else contains the sections.
      */
-    self.getSections = function(courseid) {
-        var presets = {
-            cacheKey: getSectionsCacheKey(courseid)
-        };
-        return $mmSite.read('core_course_get_contents', {
-            courseid: courseid,
-            options: []
-        }, presets);
+    self.getSections = function(courseid, preSets, siteId) {
+        preSets = preSets || {};
+        siteId = siteId || $mmSite.getId();
+        preSets.cacheKey = getSectionsCacheKey(courseid);
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.read('core_course_get_contents', {
+                courseid: courseid,
+                options: []
+            }, preSets).then(function(sections) {
+                angular.forEach(sections, function(section) {
+                    angular.forEach(section.modules, function(module) {
+                        addContentsIfNeeded(module);
+                    });
+                });
+                return sections;
+            });
+        });
     };
 
     /**
@@ -264,6 +465,20 @@ angular.module('mm.core.course')
      */
     self.invalidateModule = function(moduleid) {
         return $mmSite.invalidateWsCacheForKey(getModuleCacheKey(moduleid));
+    };
+
+    /**
+     * Invalidates module WS call.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#invalidateModuleByInstance
+     * @param {Number} id     Instance ID.
+     * @param {String} module Name of the module. E.g. 'glossary'.
+     * @return {Promise}      Promise resolved when the data is invalidated.
+     */
+    self.invalidateModuleByInstance = function(id, module) {
+        return $mmSite.invalidateWsCacheForKey(getModuleByInstanceCacheKey(id, module));
     };
 
     /**

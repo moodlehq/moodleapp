@@ -1,6 +1,9 @@
 <ion-view view-title="{{ 'mma.messages.messages' | translate }}">
     <ion-nav-buttons side="secondary">
-        <button ng-if="profileLink" class="button button-icon icon ion-person" mm-user-link userid="{{userId}}"></button>
+        <a ng-if="profileLink" mm-user-link userid="{{userId}}" aria-label="{{ 'mm.user.viewprofile' | translate }}">
+            <img ng-if="profileLink && profileLink !== true" class="button mm-bar-button-image" ng-src="{{profileLink}}" mm-external-content>
+            <span ng-if="profileLink === true" class="button button-icon icon ion-person"></span>
+        </a>
     </ion-nav-buttons>
 
     <mm-split-view component="mmaMessagesIndex">

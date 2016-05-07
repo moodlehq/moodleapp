@@ -1,7 +1,8 @@
 {
     "appsettings": "App instellingen",
+    "changesite": "Naar andere site",
     "help": "Help",
-    "logout": "Afmelden",
+    "logout": "Naar andere site",
     "mycourses": "Mijn cursussen",
     "togglemenu": "Menu schakelen",
     "website": "Website"

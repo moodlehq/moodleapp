@@ -1,11 +1,12 @@
 {
-    "addnewnote": "Escrever uma nova anotação",
-    "coursenotes": "Anotações do Curso",
+    "addnewnote": "Adicionar uma nova anotação",
+    "coursenotes": "Anotações do curso",
     "eventnotecreated": "Anotação criada",
-    "nonotes": "Não há mais notas desse típo",
-    "note": "Nota",
-    "notes": "Notas",
-    "personalnotes": "Notas pessoais",
+    "nonotes": "Não há mais anotações desse típo",
+    "note": "Anotação",
+    "notes": "Anotações",
+    "personalnotes": "Anotações pessoais",
     "publishstate": "Contexto",
-    "sitenotes": "Notas do site"
+    "sitenotes": "Anotações do site",
+    "userwithid": "Usuário com o id {{id}}"
 }

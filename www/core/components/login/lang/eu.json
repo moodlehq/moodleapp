@@ -15,6 +15,7 @@
     "invalidaccount": "Zure erabiltzaile eta pasahitza egiaztatu itzazu edo zure guneko administratzaileari guneko ezarpenak egiaztatzeko eskatu.",
     "invalidmoodleversion": "Moodle bertsio baliogabea. Gutxieneko bertsioa hurrengoa da:",
     "invalidsite": "Guneko URLa ez da zuzena",
+    "localmobileunexpectedresponse": "Moodle Mobile-ko Funtzio Aurreratuen kontrolak ezusteko erantzuna eman du, Mobile zerbitzu estandarra erabilita autentifikatuko zaitugu.",
     "login": "Saioa hasi",
     "loginbutton": "Hasi saioa!",
     "logininsiterequired": "Gunean web-nabigatzaile baten bidez sartu behar zara.",

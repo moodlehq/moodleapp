@@ -1,7 +1,9 @@
 {
     "appsettings": "Impostazioni app",
+    "changesite": "Cambia sito",
     "help": "Aiuto",
     "logout": "Logout",
     "mycourses": "I miei corsi",
+    "togglemenu": "Attiva/disattiva menu",
     "website": "Sito web"
 }

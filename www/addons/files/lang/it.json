@@ -5,7 +5,7 @@
     "chooseaccountuploadfile": "Seleziona l'account dove caricare file.",
     "clicktoupload": "Fai click sul pulsante sotto per caricare i file nei File personali",
     "confirmuploadfile": "Stai per caricare {{size}}. Sei sicuro di continuare?",
-    "couldnotloadfiles": "Non è stato possibile caricare l'elenco dei file",
+    "couldnotloadfiles": "Non è stato possibile caricare l'elenco dei file.",
     "downloading": "Scaricamento in corso",
     "emptyfilelist": "Non ci sono file da visualizzare.",
     "errorcapturingaudio": "Si è verificato un errore durante la registrazione dell'audio",

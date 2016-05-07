@@ -1,0 +1,21 @@
+{
+    "confirmselfenrol": "Sunteți sigur/ă că doriți să vă înregistrați la acest curs?",
+    "enrolme": "Înregistrează-mă",
+    "errorloadcourses": "A apărut o eroare la încărcarea cursurilor.",
+    "errorsearching": "A apărut o eroare în procesul de căutare.",
+    "errorselfenrol": "A apărut o eroare în procesul de auto-înregistrare.",
+    "filter": "Filtru",
+    "filtermycourses": "Filtrează cursurile",
+    "frontpage": "Prima pagină",
+    "mycourses": "Cursurile mele",
+    "nocourses": "Nu există informații despre curs",
+    "nosearchresults": "Nu există rezultate pentru căutarea dumneavoastră",
+    "notenroled": "Nu sunteți înregistrat la acest curs",
+    "notenrollable": "Nu vă puteți auto-înregistra la acest curs.",
+    "password": "Parola de înregistrare",
+    "search": "Caută",
+    "searchcourses": "Caută cursuri",
+    "searchcoursesadvice": "Puteți folosi butonul pentru căutarea cursurilor pentru a cauta și accesa ca vizitator sau pentru a vă auto-înregistra la acele cursuri care permit aceste opțiuni.",
+    "selfenrolment": "Auto înscriere",
+    "totalcoursesearchresults": "Totalul cursurilor: {{$a}}"
+}

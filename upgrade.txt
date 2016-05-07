@@ -1,11 +1,38 @@
 This files describes API changes in the Moodle Mobile app,
 information provided here is intended especially for developers.
 
+=== 3.0 ===
+
+ * The function $mmaModBook#getChapterContent now requires to receive the result of $mmaModBook#getContentsMap instead of module.contents.
+ * The events obtained using $mmaMessages#getDiscussionEventName are deprecated. Now you should just use the event mmaMessagesNewMessageEvent and you will receive the site ID and user ID as parameters.
+ * Directive "mm-browser" has been renamed to "mm-link" to be more coherent with its functionality.
+
+=== 2.9 ===
+
+ * Most of the functions from $mmaModScormOnline, $mmaModScormOffline, $mmaModScorm, $mmaModScormSync and $mmaModScormHelper now have a new param siteId to determine the site to affect. If you use any of these services please make sure you still pass the right parameters.
+ * Now filepool tries to use the files names instead of just using a hash. If you used the functions "getFilePathByUrl" or "getDirectoryUrlByUrl" to store package files, you should now use "getPackageDirPathByUrl" and "getPackageDirUrlByUrl" instead.
+ * A new directive "mm-state-class" has been created to allow a better customization of the app using remote CSS. You should add this directive to the ion-content in your views.
+
+=== 2.8 ===
+
+ * $mmModuleActionsDelegate has been renamed to $mmContentLinksDelegate to make it more generic. The specification of this delegate has changed, please look at its documentation to adapt your handlers.
+ * State site.mm_course now requires a courseid parameter instead of course.
+ * The parameters of the following $mmCoursePrefetchDelegate's functions have changed, now they also require a courseid: getDownloadSize, getModuleStatus, prefetchAll and getModulesStatus.
+ * New Phonegap plugin installed. Please run:
+    ionic plugin add cordova-plugin-zip
+        or
+    ionic state restore
+ * mmaModImscpBar directive has been moved to core. Now it's named mmNavigationBar.
+
 === 2.7 ===
 
  * JSzip installed. Please run:
     bower update
  * The following functions have been moved from $mmUtil to $mmFS: getFileIcon, getFolderIcon and getFileExtension.
+ * The values from config.json are no longer stored in $mmConfig. Now they are inside an AngularJS constant called mmCoreConfigConstants.
+ * The function $mmSitesManager#getDemoSiteData isn't asynchronous anymore.
+ * Fixed site URL is now supported via config.json. If you modified the code to use a fixed site URL we suggest you to remove the changes and add a property 'siteurl' to the config.json file instead.
+ * The function isEnabledForCourse implemented by $mmCoursesDelegate handlers now receives a new attribute accessData that indicates the type of access to the course.
 
 === 2.6 ===
 

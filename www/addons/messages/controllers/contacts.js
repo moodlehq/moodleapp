@@ -21,9 +21,11 @@ angular.module('mm.addons.messages')
  * @ngdoc controller
  * @name mmaMessagesContactsCtrl
  */
-.controller('mmaMessagesContactsCtrl', function($scope, $mmaMessages, $mmSite, $mmUtil, $mmApp, mmUserProfileState) {
+.controller('mmaMessagesContactsCtrl', function($scope, $mmaMessages, $mmSite, $mmUtil, $mmApp, mmUserProfileState, $translate) {
 
-    var currentUserId = $mmSite.getUserId();
+    var currentUserId = $mmSite.getUserId(),
+        searchingMessage = $translate.instant('mm.core.searching'),
+        loadingMessage = $translate.instant('mm.core.loading');
 
     $scope.loaded = false;
     $scope.contactTypes = ['online', 'offline', 'blocked', 'strangers', 'search'];
@@ -56,6 +58,7 @@ angular.module('mm.addons.messages')
         $mmApp.closeKeyboard();
 
         $scope.loaded = false;
+        $scope.loadingMessage = searchingMessage;
         return $mmaMessages.searchContacts(query).then(function(result) {
             $scope.hasContacts = result.length > 0;
             $scope.contacts = {
@@ -80,6 +83,7 @@ angular.module('mm.addons.messages')
     };
 
     function fetchContacts() {
+        $scope.loadingMessage = loadingMessage;
         return $mmaMessages.getAllContacts().then(function(contacts) {
             $scope.contacts = contacts;
 

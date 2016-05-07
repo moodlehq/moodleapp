@@ -66,6 +66,7 @@ angular.module('mm.addons.notifications')
                 $scope.icon = 'ion-ios-bell';
                 $scope.title = 'mma.notifications.notifications';
                 $scope.state = 'site.notifications';
+                $scope.class = 'mma-notifications-handler';
             };
         };
 

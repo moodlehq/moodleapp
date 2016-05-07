@@ -21,12 +21,14 @@ angular.module('mm.addons.notifications')
  * @ngdoc controller
  * @name mmaNotificationsListCtrl
  */
-.controller('mmaNotificationsListCtrl', function($scope, $mmUtil, $mmaNotifications, mmaNotificationsListLimit) {
+.controller('mmaNotificationsListCtrl', function($scope, $mmUtil, $mmaNotifications, mmaNotificationsListLimit,
+            mmUserProfileState) {
 
     var readCount = 0,
         unreadCount = 0;
 
     $scope.notifications = [];
+    $scope.userStateName = mmUserProfileState;
 
     // Convenience function to get notifications. Get unread notifications first.
     function fetchNotifications(refresh) {

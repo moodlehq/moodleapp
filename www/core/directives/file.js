@@ -28,6 +28,7 @@ angular.module('mm.core')
  * @param {Object} file            Required. Object with the following attributes:
  *                                     'filename': Name of the file.
  *                                     'fileurl' or 'url': File URL.
+ *                                     'filesize': Optional. Size of the file.
  * @param {String} [component]     Component the file belongs to.
  * @param {Number} [componentId]   Component ID.
  * @param {Boolean} [timemodified] If set, the value will be used to check if the file is outdated.
@@ -94,6 +95,7 @@ angular.module('mm.core')
         link: function(scope, element, attrs) {
             var fileurl = scope.file.fileurl || scope.file.url,
                 filename = scope.file.filename,
+                filesize = scope.file.filesize,
                 timemodified = attrs.timemodified || 0,
                 siteid = $mmSite.getId(),
                 component = attrs.component,
@@ -116,6 +118,7 @@ angular.module('mm.core')
             scope.download = function(e, openAfterDownload) {
                 e.preventDefault();
                 e.stopPropagation();
+                var promise;
 
                 if (scope.isDownloading) {
                     return;
@@ -134,13 +137,17 @@ angular.module('mm.core')
                         });
                     });
                 } else {
-                    // File doesn't need to be opened, add it to queue.
-                    $mmFilepool.invalidateFileByUrl(siteid, fileurl).finally(function() {
-                        scope.isDownloading = true;
-                        $mmFilepool.addToQueueByUrl(siteid, fileurl, component, componentid, timemodified);
+                    // File doesn't need to be opened (it's a prefetch). Show confirm modal if file size is defined and it's big.
+                    promise = filesize ? $mmUtil.confirmDownloadSize(filesize) : $q.when();
+                    promise.then(function() {
+                        // User confirmed, add the file to queue.
+                        $mmFilepool.invalidateFileByUrl(siteid, fileurl).finally(function() {
+                            scope.isDownloading = true;
+                            $mmFilepool.addToQueueByUrl(siteid, fileurl, component, componentid, timemodified);
+                        });
                     });
                 }
-            }
+            };
 
             scope.$on('$destroy', function() {
                 if (observer && observer.off) {

@@ -41,14 +41,16 @@ angular.module('mm.addons.mod_imscp')
     $scope.nextItem = '';
 
     $scope.items = $mmaModImscp.createItemList(module.contents);
-    currentItem = $scope.items[0].href;
+    if ($scope.items.length) {
+        currentItem = $scope.items[0].href;
+    }
 
     function loadItem(itemId) {
         currentItem = itemId;
         $scope.previousItem = $mmaModImscp.getPreviousItem($scope.items, itemId);
         $scope.nextItem = $mmaModImscp.getNextItem($scope.items, itemId);
         var src = $mmaModImscp.getFileSrc(module, itemId);
-        if (src === $scope.src) {
+        if ($scope.src && src.toString() == $scope.src.toString()) {
             // Re-loading same page. Set it to empty and then re-set the src in the next digest so it detects it has changed.
             $scope.src = '';
             $timeout(function() {
@@ -60,7 +62,7 @@ angular.module('mm.addons.mod_imscp')
     }
 
     function fetchContent() {
-        if (module.contents) {
+        if (module.contents && module.contents.length) {
             var downloadFailed = false;
             return $mmaModImscp.downloadAllContent(module).catch(function() {
                 // Mark download as failed but go on since the main files could have been downloaded.

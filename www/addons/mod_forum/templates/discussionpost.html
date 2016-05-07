@@ -1,7 +1,7 @@
 <div class="item item-divider" ng-if="showdivider"></div>
 <div class="item item-avatar">
-    <img ng-if="post.userpictureurl" ng-src="{{post.userpictureurl}}" mm-external-content mm-user-link courseid="{{courseid}}" userid="{{post.userid}}" alt="" role="presentation">
-    <img ng-if="!post.userpictureurl" src="img/user-avatar.png"  alt="" role="presentation">
+    <img ng-if="post.userpictureurl" ng-src="{{post.userpictureurl}}" mm-external-content mm-user-link courseid="{{courseid}}" userid="{{post.userid}}" alt="{{ 'mm.core.pictureof' | translate:{$a: post.userfullname} }}" role="presentation">
+    <img ng-if="!post.userpictureurl" src="img/user-avatar.png"  alt="{{ 'mm.core.pictureof' | translate:{$a: post.userfullname} }}" role="presentation">
     <h2 ng-if="titleimportant">{{title}}</h2>
     <p ng-if="!titleimportant">{{title}}</p>
     <div class="item-note">{{post.modified | mmDateDayOrTime}}</div>

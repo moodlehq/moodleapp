@@ -3,6 +3,9 @@
     "filter": "Filtr",
     "frontpage": "Strona startowa",
     "mycourses": "Moje kursy",
+    "nocourses": "Nie ma informacji do pokazania",
+    "nosearchresults": "Brak rezultatów wyszukiwania",
+    "notenroled": "Nie jesteś zapisany jako student w tym kursu",
     "password": "Hasło",
     "search": "Wyszukaj",
     "searchcourses": "Przeszukaj kursy"

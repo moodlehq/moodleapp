@@ -1,4 +1,17 @@
 {
+    "activitynotyetviewable": "Tato činnost nebo zdroj ještě není v aplikaci zobrazitelná.",
+    "activitynotyetviewablegothere": "Tato činnost nebo zdroj ještě není v aplikaci zobrazitelná, pro přístup z webu klikněte na tlačítko dole.",
+    "allsections": "Všechny sekce",
+    "confirmdownload": "Chystáte se stahovat {{velikost}}. Jste si jisti, že chcete pokračovat?",
+    "confirmdownloadsection": "Chystáte se stahovat {{velikost}}. Jste si jisti, že chcete pokračovat?",
+    "confirmdownloadunknownsize": "Nebyli jsme schopni vypočítat velikost stahování. Jste si jisti, že stahování chcete?",
     "contents": "Obsah",
-    "showall": "Zobrazit vše"
+    "couldnotloadsectioncontent": "Nelze načíst obsah sekce, zkuste to prosím později.",
+    "couldnotloadsections": "Nelze načíst sekce, zkuste to prosím později.",
+    "errordownloadingsection": "Chyba při stahování sekce.",
+    "errorgetmodule": "Chyba při načítání",
+    "gotothesite": "Přejít na stránky",
+    "nocontentavailable": "V tuto chvíli není k dispozici žádný obsah.",
+    "showall": "Zobrazit vše",
+    "whoops": "Jejda!"
 }

@@ -1,0 +1,19 @@
+<ion-view view-title="{{ 'mm.contentlinks.chooseaccount' | translate }}">
+    <ion-content mm-state-class>
+        <div class="list">
+            <div class="item item-text-wrap">
+                <h2>{{ 'mm.contentlinks.chooseaccounttoopenlink' | translate }}</h2>
+                <p>{{ url }}</p>
+            </div>
+            <ion-item class="item item-thumbnail-left" ng-repeat="site in sites track by $index" ng-click="siteClicked(site.id)">
+                <img ng-src="{{site.avatar}}">
+                <h2>{{site.fullname}}</h2>
+                <p><mm-format-text clean="true" watch="true">{{site.sitename}}</mm-format-text></p>
+                <p>{{site.siteurl}}</p>
+            </ion-item>
+            <div class="item">
+                <button class="button button-block" ng-click="cancel()">{{ 'mm.login.cancel' | translate }}</button>
+            </div>
+        </div>
+    </ion-content>
+</ion-view>

@@ -1,0 +1,21 @@
+{
+    "addanewdiscussion": "Criar um novo tópico",
+    "cannotadddiscussion": "Criar novos tópicos neste fórum requer adesão a grupo.",
+    "cannotadddiscussionall": "Não tem permissão para criar um novo tópico disponível para todos os participantes",
+    "cannotcreatediscussion": "Não foi possível criar o novo tópico de discussão",
+    "couldnotadd": "Não foi possível inserir a mensagem que submeteu devido a um erro desconhecido",
+    "discussionsubscription": "Subscrição da discussão",
+    "erroremptymessage": "O texto da mensagem não pode estar em branco",
+    "erroremptysubject": "A assunto da mensagem não pode estar em branco",
+    "errorgetforum": "Erro ao obter dados do fórum.",
+    "errorgetgroups": "Erro ao obter as configurações do grupo.",
+    "forumnodiscussionsyet": "Ainda não foram criados tópicos de discussão neste fórum.",
+    "group": "Grupo",
+    "message": "Mensagem",
+    "numdiscussions": "{{numdiscussions}} tópicos de discussão",
+    "numreplies": "{{numreplies}} respostas",
+    "posttoforum": "Submeter tópico",
+    "re": "Re:",
+    "reply": "Responder",
+    "subject": "Assunto"
+}

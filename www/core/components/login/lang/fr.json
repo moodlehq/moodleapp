@@ -15,7 +15,7 @@
     "invalidaccount": "Veuillez vérifier vos données de connexion ou demander à l'administrateur de votre site de vérifier sa configuration.",
     "invalidmoodleversion": "Version de Moodle non valide. La version minimale requise est :",
     "invalidsite": "Cette URL n'est pas valide.",
-    "localmobileunexpectedresponse": "La vérification des fonctionnalités additionnelles de Moodle Mobile a envoyée une réponse inattendue. Vous allez être connecté au moyen du service mobile standard.",
+    "localmobileunexpectedresponse": "La vérification des fonctionnalités additionnelles de Moodle Mobile a envoyé une réponse inattendue. Vous allez être connecté au moyen du service mobile standard.",
     "login": "Connexion",
     "loginbutton": "Se connecter !",
     "logininsiterequired": "Vous devez vous connecter au moyen d'un navigateur.",

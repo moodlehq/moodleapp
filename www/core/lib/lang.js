@@ -21,7 +21,7 @@ angular.module('mm.core')
  * @description
  * This service allows to add new languages strings.
  */
-.factory('$mmLang', function($translate, $translatePartialLoader, $mmConfig, $cordovaGlobalization, $q) {
+.factory('$mmLang', function($translate, $translatePartialLoader, $mmConfig, $cordovaGlobalization, $q, mmCoreConfigConstants) {
 
     var self = {},
         currentLanguage; // Save current language in a variable to speed up the get function.
@@ -54,15 +54,6 @@ angular.module('mm.core')
             return $q.when(currentLanguage);
         }
 
-        // Get default language from config.
-        function getDefaultLanguage() {
-            return $mmConfig.get('default_lang').then(function(language) {
-                return language;
-            }, function() {
-                return 'en';
-            });
-        }
-
         // Get current language from config (user might have changed it).
         return $mmConfig.get('current_language').then(function(language) {
             return language;
@@ -73,26 +64,20 @@ angular.module('mm.core')
                     var language = result.value.toLowerCase();
                     if (language.indexOf('-') > -1) {
                         // Language code defined by locale has a dash, like en-US or es-ES. Check if it's supported.
-                        return $mmConfig.get('languages').then(function(languages) {
-                            if (typeof languages[language] == 'undefined') {
-                                // Code is NOT supported. Fallback to language without dash. E.g. 'en-US' would fallback to 'en'.
-                                language = language.substr(0, language.indexOf('-'));
-                            }
-                            return language;
-                        }, function() {
-                            // Languages array not found (shouldn't happen).
-                            return language;
-                        });
-                    } else {
-                        return language;
+                        if (mmCoreConfigConstants.languages && typeof mmCoreConfigConstants.languages[language] == 'undefined') {
+                            // Code is NOT supported. Fallback to language without dash. E.g. 'en-US' would fallback to 'en'.
+                            language = language.substr(0, language.indexOf('-'));
+
+                        }
                     }
+                    return language;
                 }, function() {
                     // Error getting locale. Use default language.
-                    return getDefaultLanguage();
+                    return mmCoreConfigConstants.default_lang || 'en';
                 });
             } catch(err) {
                 // Error getting locale. Use default language.
-                return getDefaultLanguage();
+                return mmCoreConfigConstants.default_lang || 'en';
             }
         }).then(function(language) {
             currentLanguage = language; // Save it for later.

@@ -1,0 +1,14 @@
+{
+    "browsemode": "Navegueu per les entrades",
+    "byalphabet": "Alfabèticament",
+    "byauthor": "Agrupat per autor",
+    "bynewestfirst": "El més nou primer",
+    "byrecentlyupdated": "Actualitzat recentment",
+    "bysearch": "Cerca",
+    "entrypendingapproval": "Aquesta entrada està pendent d'aprovació.",
+    "errorloadingentries": "S'ha produït un error en carregar les entrades.",
+    "errorloadingentry": "S'ha produït un error en carregar l'entrada.",
+    "errorloadingglossary": "S'ha produït un error en carregar el glossari.",
+    "noentriesfound": "No s'han trobat entrades.",
+    "searchquery": "La vostra cerca"
+}

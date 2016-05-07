@@ -19,16 +19,16 @@
         <header>
             <div class="bar bar-header bar-side-menu">
                 <div class="item item-avatar">
-                    <img ng-src="{{siteinfo.userpictureurl}}" alt="" mm-external-content>
+                    <img ng-src="{{siteinfo.userpictureurl}}" alt="{{ 'mm.core.pictureof' | translate:{$a: siteinfo.fullname} }}" role="presentation" mm-external-content>
                     <h2>{{siteinfo.fullname}}</h2>
                     <p><mm-format-text watch="true">{{siteinfo.sitename}}</mm-format-text></p>
                 </div>
             </div>
         </header>
-        <ion-content class="has-side-menu-header">
+        <ion-content class="has-side-menu-header mm-sidemenu-menu">
             <nav>
                 <ul class="list dark">
-                    <li>
+                    <li class="mm-mycourses-handler">
                         <a menu-close class="item item-icon-left" ui-sref="site.mm_courses" title="{{ 'mm.sidemenu.mycourses' | translate}}">
                             <i class="icon ion-ionic"></i>{{ 'mm.sidemenu.mycourses' | translate}}
                         </a>
@@ -36,18 +36,19 @@
                     <li class="item text-center" ng-if="(!handlers || !handlers.length) && !areNavHandlersLoaded()">
                         <ion-spinner></ion-spinner>
                     </li>
-                    <li ng-repeat="handler in handlers | orderBy:'-priority'" ng-controller="handler.controller" >
+                    <li ng-repeat="handler in handlers | orderBy:'-priority'" ng-controller="handler.controller" class="mm-sidemenu-handler {{class}}">
                         <a menu-close class="item item-icon-left" ui-sref="{{state}}" title="{{title | translate}}">
                             <i class="icon {{icon}}"></i> {{title | translate}}
                             <span ng-show="badge > 0" class="badge badge-positive">{{badge}}</span>
                         </a>
                     </li>
-                    <a menu-close class="item item-icon-left" ng-href="{{siteinfo.siteurl}}" mm-browser title="{{ 'mm.sidemenu.website' | translate}}">
-                        <i class="icon ion-earth"></i>{{ 'mm.sidemenu.website' | translate}}
-                    </a>
                     <li>
+                        <a menu-close class="item item-icon-left" ng-href="{{siteinfo.siteurl}}" mm-link title="{{ 'mm.sidemenu.website' | translate}}">
+                            <i class="icon ion-earth"></i>{{ 'mm.sidemenu.website' | translate}}
+                        </a>
                     </li>
-                        <a menu-close class="item item-icon-left" ng-href="{{docsurl}}" mm-browser title="{{ 'mm.sidemenu.help' | translate}}">
+                    <li>
+                        <a menu-close class="item item-icon-left" ng-href="{{docsurl}}" mm-link title="{{ 'mm.sidemenu.help' | translate}}">
                             <i class="icon ion-help-buoy"></i>{{ 'mm.sidemenu.help' | translate}}
                         </a>
                     </li>
@@ -56,10 +57,10 @@
                         <a menu-close class="item item-icon-left" ui-sref="site.mm_settings" title="{{ 'mm.sidemenu.appsettings' | translate}}">
                             <i class="icon ion-gear-b"></i>{{ 'mm.sidemenu.appsettings' | translate}}
                         </a>
-                    <li>
                     </li>
-                        <a class="item item-icon-left" ng-click="logout()" title="{{ 'mm.sidemenu.logout' | translate}}">
-                            <i class="icon ion-log-out"></i>{{ 'mm.sidemenu.logout' | translate}}
+                    <li>
+                        <a class="item item-icon-left" ng-click="logout()" title="{{ 'mm.sidemenu.changesite' | translate}}">
+                            <i class="icon ion-log-out"></i>{{ 'mm.sidemenu.changesite' | translate}}
                         </a>
                     </li>
                 </ul>

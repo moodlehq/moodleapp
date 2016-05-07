@@ -1,10 +1,10 @@
 {
     "addsubmission": "Dodaj zadanie",
-    "allowsubmissionsfromdate": "Zezwalaj zadania od",
+    "allowsubmissionsfromdate": "Zezwól na przesyłanie rozwiązań od",
     "attemptnumber": "Numer próby",
-    "cutoffdate": "Data odcięcia(?)",
-    "duedate": "Termin",
-    "duedateno": "Brak daty terminu",
-    "submissions": "Zadania",
-    "viewsubmission": "Widok zadania"
+    "cutoffdate": "Ostateczny termin",
+    "duedate": "Termin oddania",
+    "duedateno": "Brak terminu oddania",
+    "submissions": "Oddane zadania",
+    "viewsubmission": "Wyświetl pracę domową"
 }

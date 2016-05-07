@@ -33,6 +33,9 @@ $item-message-mine-bg: rgba(17, 193, 243, .1) !default;
 // Completion
 $completion-img-width: 24px !default;
 
+// Disabled items.
+$item-disabled-color: #999 !default;
+
 /**
  * Styles revert.
  */
@@ -83,6 +86,12 @@ em {
   p {
     margin: 0px;
   }
+  &.item-button-right {
+    > .button,
+    > .spinner {
+      top: $item-padding;
+    }
+  }
 }
 
 // Message item.
@@ -120,6 +129,12 @@ em {
       height: 16px;
     }
   }
+}
+
+// Defines a "disabled" item.
+.item.item-disabled,
+.platform-android .item.item-disabled {
+  color: $item-disabled-color;
 }
 
 // Split pane.
@@ -182,8 +197,8 @@ em {
  */
 .mm-iframe {
   position: relative;
-  height: 100%;
-  width: 100%;
+  max-height: 100%;
+  max-width: 100%;
   top: 0;
   bottom: 0;
   left: 0;
@@ -260,6 +275,18 @@ img.mm-media-adapt-width {
   line-height: 30px;
 }
 
+// Remove padding-top and bottom from navigation bar to minimize height used.
+mm-navigation-bar {
+  .row {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+  .col {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+}
+
 // Extra attributes to ionic classes to force frames via directive 100% height.
 
 .scroll {
@@ -267,8 +294,28 @@ img.mm-media-adapt-width {
 }
 
 .iframe-wrapper {
-  height: 100%;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  height: auto;
+  width: auto;
+  position: absolute !important; // Position fixed causes problems in Android 4.1-4.3.
+}
+
+.mm-has-navigation-bar {
+  .iframe-wrapper {
+    top: $button-height + 5px;
+  }
+}
+
+.mm-bar-button-image, .bar .button.mm-bar-button-image {
+  padding: 0;
   width: 100%;
+  height: 100%;
+  max-width: $button-bar-button-height - 1;
+  max-height: $button-bar-button-height - 1;
+  border-radius: 50%;
 }
 
 /**

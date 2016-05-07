@@ -1,7 +1,7 @@
 <ion-view>
     <ion-nav-title>{{ title }}</ion-nav-title>
 
-    <ion-content>
+    <ion-content mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="notesLoaded"
                        on-refresh="refreshNotes()">
         </ion-refresher>
@@ -9,8 +9,8 @@
             <div class="list">
                 <article class="card" ng-repeat="note in notes">
                         <div class="item item-avatar">
-                            <img ng-if="note.userprofileimageurl" ng-src="{{note.userprofileimageurl}}" mm-external-content mm-user-link courseid="{{courseid}}" userid="{{note.userid}}">
-                            <img ng-if="!note.userprofileimageurl" src="img/user-avatar.png" alt="" role="presentation">
+                            <img ng-if="note.userprofileimageurl" ng-src="{{note.userprofileimageurl}}" mm-external-content mm-user-link courseid="{{courseid}}" userid="{{note.userid}}" alt="{{ 'mm.core.pictureof' | translate:{$a: note.userfullname} }}" role="presentation">
+                            <img ng-if="!note.userprofileimageurl" src="img/user-avatar.png" alt="{{ 'mm.core.pictureof' | translate:{$a: note.userfullname} }}" role="presentation">
                             <div class="item-note">{{note.lastmodified | mmDateDayOrTime}}</div>
                             <p>{{note.userfullname}}</p>
                         </div>

@@ -1,10 +1,12 @@
 <ion-view view-title="{{ 'mma.notifications.notifications' | translate }}">
-    <ion-content padding="true">
+    <ion-content padding="true" mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="notificationsLoaded" on-refresh="refreshNotifications()">
         </ion-refresher>
         <mm-loading hide-until="notificationsLoaded">
             <article class="card" ng-repeat="notification in notifications track by $index">
-                <div class="item">
+                <div class="item item-avatar item-text-wrap">
+                    <img ng-if="notification.profileimageurlfrom" ng-src="{{notification.profileimageurlfrom}}" mm-external-content ui-sref="{{userStateName}}({courseid: notification.courseid, userid: notification.useridfrom})" alt="{{ 'mm.core.pictureof' | translate:{$a: notification.userfromfullname} }}" role="presentation">
+                    <img ng-if="!notification.profileimageurlfrom" src="img/user-avatar.png" alt="{{ 'mm.core.pictureof' | translate:{$a: notification.userfromfullname} }}" role="presentation">
                     <h2>{{notification.userfromfullname}}</h2>
                     <p>{{notification.timecreated | mmDateDayOrTime}}</p>
                 </div>

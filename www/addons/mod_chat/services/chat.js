@@ -21,24 +21,29 @@ angular.module('mm.addons.mod_chat')
  * @ngdoc service
  * @name $mmaModChat
  */
-.factory('$mmaModChat', function($q, $mmSite, $mmUser) {
+.factory('$mmaModChat', function($q, $mmSite, $mmUser, $mmSitesManager) {
     var self = {};
 
 
     /**
-     * Return whether or not the plugin is enabled. Plugin is enabled if the chat WS are available.
+     * Return whether or not the plugin is enabled in a certain site. Plugin is enabled if the chat WS are available.
      *
      * @module mm.addons.mod_chat
      * @ngdoc method
      * @name $mmaModChat#isPluginEnabled
-     * @return {Boolean} True if plugin is enabled, false otherwise.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
-    self.isPluginEnabled = function() {
-        return  $mmSite.wsAvailable('mod_chat_get_chats_by_courses') &&
-                $mmSite.wsAvailable('mod_chat_login_user') &&
-                $mmSite.wsAvailable('mod_chat_get_chat_users') &&
-                $mmSite.wsAvailable('mod_chat_send_chat_message') &&
-                $mmSite.wsAvailable('mod_chat_get_chat_latest_messages');
+    self.isPluginEnabled = function(siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return  site.wsAvailable('mod_chat_get_chats_by_courses') &&
+                    site.wsAvailable('mod_chat_login_user') &&
+                    site.wsAvailable('mod_chat_get_chat_users') &&
+                    site.wsAvailable('mod_chat_send_chat_message') &&
+                    site.wsAvailable('mod_chat_get_chat_latest_messages');
+        });
     };
 
     /**
@@ -159,12 +164,13 @@ angular.module('mm.addons.mod_chat')
         var params = {
             chatsid: chatsid,
             chatlasttime: lasttime
-        };
-        var preSets = {
-            getFromCache: false
+        }, preSets = {
+            emergencyCache: false
         };
 
-        return $mmSite.read('mod_chat_get_chat_latest_messages', params, preSets);
+        // We use write to not use cache. It doesn't make sense to store the messages in cache
+        // because we won't be able to retireve them if $mmaModChat#loginUser fails.
+        return $mmSite.write('mod_chat_get_chat_latest_messages', params, preSets);
     };
 
     /**

@@ -1,5 +1,6 @@
 {
     "appsettings": "Configuraciones del App",
+    "changesite": "Cambiar sitio",
     "help": "Ayuda",
     "logout": "Cambiar sitio",
     "mycourses": "Mis cursos",

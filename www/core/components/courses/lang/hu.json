@@ -3,6 +3,9 @@
     "filter": "Szűrő",
     "frontpage": "Kezdőoldal",
     "mycourses": "Kurzusaim",
+    "nocourses": "Nincs megjelenítendő kurzusinformáció.",
+    "nosearchresults": "Keresése nem adott eredményt",
+    "notenroled": "Ezt a kurzust nem vette föl",
     "password": "Jelszó",
     "search": "Keresés",
     "searchcourses": "Kurzusok keresése"

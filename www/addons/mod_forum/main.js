@@ -40,7 +40,7 @@ angular.module('mm.addons.mod_forum', [])
         url: '/mod_forum-discussion',
         params: {
             discussionid: null,
-            courseid: null
+            cid: null // Not naming it courseid because it collides with 'site.mod_forum' param in split-view.
         },
         views: {
             'site': {
@@ -53,7 +53,7 @@ angular.module('mm.addons.mod_forum', [])
     .state('site.mod_forum-newdiscussion', {
         url: '/mod_forum-newdiscussion',
         params: {
-            courseid: null,
+            cid: null, // Not naming it courseid because it collides with 'site.mod_forum' param in split-view.
             forumid: null,
             cmid: null
         },
@@ -67,30 +67,7 @@ angular.module('mm.addons.mod_forum', [])
 
 })
 
-.config(function($mmCourseDelegateProvider) {
-    $mmCourseDelegateProvider.registerContentHandler('mmaModForum', 'forum', '$mmaModForumCourseContentHandler');
-})
-
-.run(function($mmaModForum, $mmModuleActionsDelegate) {
-
-    // Add actions to notifications. Forum will only add 1 action: view discussion.
-    $mmModuleActionsDelegate.registerModuleHandler('mmaModForum', function(url, courseid) {
-
-        if (courseid && url.indexOf('/mod/forum/') > -1 && $mmaModForum.isPluginEnabled()) {
-            var d = url.match(/discuss\.php\?d=([^#]*)/);
-            if (d && typeof d[1] != 'undefined') {
-                var action = {
-                    message: 'mm.core.view',
-                    icon: 'ion-eye',
-                    state: 'site.mod_forum-discussion',
-                    stateParams: {
-                        courseid: courseid,
-                        discussionid: d[1]
-                    }
-                };
-                return [action]; // Delegate expects an array of actions, a handler can define more than one action.
-            }
-        }
-
-    });
+.config(function($mmCourseDelegateProvider, $mmContentLinksDelegateProvider) {
+    $mmCourseDelegateProvider.registerContentHandler('mmaModForum', 'forum', '$mmaModForumHandlers.courseContent');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModForum', '$mmaModForumHandlers.linksHandler');
 });

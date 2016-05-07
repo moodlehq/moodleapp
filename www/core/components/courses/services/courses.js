@@ -59,6 +59,68 @@ angular.module('mm.core.courses')
     };
 
     /**
+     * Get the enrolment methods from a course.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#getCourseEnrolmentMethods
+     * @param {Number} id ID of the course.
+     * @return {Promise}  Promise to be resolved when the methods are retrieved.
+     */
+    self.getCourseEnrolmentMethods = function(id) {
+        var params = {
+                courseid: id
+            },
+            preSets = {
+                cacheKey: getCourseEnrolmentMethodsCacheKey(id)
+            };
+
+        return $mmSite.read('core_enrol_get_course_enrolment_methods', params, preSets);
+    };
+
+    /**
+     * Get cache key for get course enrolment methods WS call.
+     *
+     * @param  {Number} id Course ID.
+     * @return {String}    Cache key.
+     */
+    function getCourseEnrolmentMethodsCacheKey(id) {
+        return 'mmCourses:enrolmentmethods:' + id;
+    }
+
+    /**
+     * Get info from a course guest enrolment method.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#getCourseGuestEnrolmentInfo
+     * @param {Number} instanceId Guest instance ID.
+     * @return {Promise}          Promise to be resolved when the info is retrieved.
+     */
+    self.getCourseGuestEnrolmentInfo = function(instanceId) {
+        var params = {
+                instanceid: instanceId
+            },
+            preSets = {
+                cacheKey: getCourseGuestEnrolmentInfoCacheKey(instanceId)
+            };
+
+        return $mmSite.read('enrol_guest_get_instance_info', params, preSets).then(function(response) {
+            return response.instanceinfo;
+        });
+    };
+
+    /**
+     * Get cache key for get course enrolment methods WS call.
+     *
+     * @param {Number} instanceId Guest instance ID.
+     * @return {String}           Cache key.
+     */
+    function getCourseGuestEnrolmentInfoCacheKey(instanceId) {
+        return 'mmCourses:guestinfo:' + instanceId;
+    }
+
+    /**
      * Get courses.
      * Warning: if the user doesn't have permissions to view some of the courses passed the WS call will fail.
      * The user must be able to view ALL the courses passed.
@@ -222,6 +284,32 @@ angular.module('mm.core.courses')
     };
 
     /**
+     * Invalidates get course enrolment methods WS call.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#invalidateUserCourses
+     * @param {Number} id Course ID.
+     * @return {Promise}  Promise resolved when the data is invalidated.
+     */
+    self.invalidateCourseEnrolmentMethods = function(id) {
+        return $mmSite.invalidateWsCacheForKey(getCourseEnrolmentMethodsCacheKey(id));
+    };
+
+    /**
+     * Invalidates get course guest enrolment info WS call.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#invalidateUserCourses
+     * @param {Number} instanceId Guest instance ID.
+     * @return {Promise}          Promise resolved when the data is invalidated.
+     */
+    self.invalidateCourseGuestEnrolmentInfo = function(instanceId) {
+        return $mmSite.invalidateWsCacheForKey(getCourseGuestEnrolmentInfoCacheKey(instanceId));
+    };
+
+    /**
      * Invalidates get courses WS call.
      *
      * @module mm.core.courses
@@ -252,6 +340,18 @@ angular.module('mm.core.courses')
         return $mmSitesManager.getSite(siteid).then(function(site) {
             return site.invalidateWsCacheForKey(getUserCoursesCacheKey());
         });
+    };
+
+    /**
+     * Check if WS to retrieve guest enrolment data is available.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#isGuestWSAvailable
+     * @return {Boolean} True if guest WS is available, false otherwise.
+     */
+    self.isGuestWSAvailable = function() {
+        return $mmSite.wsAvailable('enrol_guest_get_instance_info');
     };
 
     /**
@@ -316,12 +416,13 @@ angular.module('mm.core.courses')
      * @module mm.core.courses
      * @ngdoc method
      * @name $mmCourses#selfEnrol
-     * @param {String} courseid Course ID.
-     * @param {String} password Password to use.
-     * @return {Promise}        Promise resolved if the user is enrolled. If the password is invalid,
-     *                          the promise is rejected with an object with code = mmCoursesEnrolInvalidKey.
+     * @param {String} courseid     Course ID.
+     * @param {String} [password]   Password to use.
+     * @param {Number} [instanceId] Enrol instance ID.
+     * @return {Promise}            Promise resolved if the user is enrolled. If the password is invalid,
+     *                              the promise is rejected with an object with code = mmCoursesEnrolInvalidKey.
      */
-    self.selfEnrol = function(courseid, password) {
+    self.selfEnrol = function(courseid, password, instanceId) {
         if (typeof password == 'undefined') {
             password = '';
         }
@@ -330,6 +431,9 @@ angular.module('mm.core.courses')
             courseid: courseid,
             password: password
         };
+        if (instanceId) {
+            params.instanceid = instanceId;
+        }
 
         return $mmSite.write('enrol_self_enrol_user', params).then(function(response) {
             if (response) {

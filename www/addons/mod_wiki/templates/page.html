@@ -1,0 +1,9 @@
+<ion-content delegate-handle="mmaModWikiIndexScroll" padding="true" mm-state-class>
+    <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="wikiLoaded" on-refresh="refreshWiki()"></ion-refresher>
+    <mm-loading hide-until="wikiLoaded">
+        <mm-course-mod-description description="description" watch="true" ng-if="mainpage"></mm-course-mod-description>
+        <article>
+            <mm-format-text class="mm-content-with-float" watch="true">{{ pageContent }}</mm-format-text>
+        </article>
+    </mm-loading>
+</ion-content>

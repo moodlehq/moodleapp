@@ -1,17 +1,15 @@
 <ion-view>
     <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
     <ion-nav-buttons side="secondary">
-        <a ng-href="{{externalUrl}}" class="button button-icon ion-ios-browsers-outline" mm-browser></a>
+        <a ng-href="{{externalUrl}}" class="button button-icon ion-ios-browsers-outline" mm-link></a>
         <button class="button button-icon ion-more" ng-click="popover.show($event)">
         </button>
     </ion-nav-buttons>
-    <ion-content>
+    <ion-content mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" on-refresh="doRefresh()" ng-if="loaded"></ion-refresher>
         <mm-loading hide-until="loaded">
-            <div class="mma-imscp-container">
-                <mma-mod-imscp-bar previous="previousItem" next="nextItem" action="loadItem" description="description"></mma-mod-imscp-bar>
-                <mm-iframe src="src" class="mma-imscp-iframe-container"></mm-iframe>
-            </div>
+            <mm-navigation-bar previous="previousItem" next="nextItem" action="loadItem" info="description" title="{{ 'mm.core.description' | translate }}"></mm-navigation-bar>
+            <mm-iframe src="src" ng-class='{"mm-has-navigation-bar": previousItem || nextItem || description}'></mm-iframe>
         </mm-loading>
     </ion-content>
 </ion-view>

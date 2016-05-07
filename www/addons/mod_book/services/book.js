@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_book')
  * @ngdoc service
  * @name $mmaModBook
  */
-.factory('$mmaModBook', function($mmFilepool, $mmSite, $mmFS, $http, $log, $q, mmaModBookComponent) {
+.factory('$mmaModBook', function($mmFilepool, $mmSite, $mmFS, $http, $log, $q, $mmSitesManager, $mmUtil, mmaModBookComponent) {
     $log = $log.getInstance('$mmaModBook');
 
     var self = {};
@@ -130,6 +130,9 @@ angular.module('mm.addons.mod_book')
      * @protected
      */
     self.getToc = function(contents) {
+        if (!contents || !contents.length) {
+            return [];
+        }
         return JSON.parse(contents[0].content);
     };
 
@@ -168,6 +171,9 @@ angular.module('mm.addons.mod_book')
      * @protected
      */
     self.getFirstChapter = function(chapters) {
+        if (!chapters || !chapters.length) {
+            return;
+        }
         return chapters[0].id;
     };
 
@@ -226,52 +232,27 @@ angular.module('mm.addons.mod_book')
      * @module mm.addons.mod_book
      * @ngdoc method
      * @name $mmaModBook#getChapterContent
-     * @param {Object} contents     The module contents.
+     * @param {Object} contentsMap  Contents map returned by $mmaModBook#getContentsMap.
      * @param {String} chapterId    Chapter to retrieve.
      * @param {Integer} moduleId    The module ID.
      * @return {Promise}
      */
-    self.getChapterContent = function(contents, chapterId, moduleId) {
-        var deferred = $q.defer(),
-            indexUrl,
-            paths = {},
+    self.getChapterContent = function(contentsMap, chapterId, moduleId) {
+        var indexUrl = contentsMap[chapterId] ? contentsMap[chapterId].indexUrl : undefined,
             promise;
 
-        // Extract the information about paths from the module contents.
-        angular.forEach(contents, function(content) {
-            if (self.isFileDownloadable(content)) {
-                var key,
-                    url = content.fileurl;
+        if (!indexUrl) {
+            // If ever that happens.
+            $log.debug('Could not locate the index chapter');
+            return $q.reject();
+        }
 
-                if (!indexUrl && content.filename == 'index.html') {
-                    // First chapter, we don't have a chapter id.
-                    if (content.filepath == "/" + chapterId + "/") {
-                        indexUrl = url;
-                    }
-                } else {
-                    key = content.filename;
-                    paths[key] = url;
-                }
-            }
-        });
-
-        // Promise handling when we are in a browser.
-        promise = (function() {
-            var deferred;
-            if (!indexUrl) {
-                // If ever that happens.
-                $log.debug('Could not locate the index chapter');
-                return $q.reject();
-            } else if ($mmFS.isAvailable()) {
-                // The file system is available.
-                return $mmFilepool.downloadUrl($mmSite.getId(), indexUrl, false, mmaModBookComponent, moduleId);
-            } else {
-                // We return the live URL.
-                deferred = $q.defer();
-                deferred.resolve($mmSite.fixPluginfileURL(indexUrl));
-                return deferred.promise;
-            }
-        })();
+        if ($mmFS.isAvailable()) {
+            promise = $mmFilepool.downloadUrl($mmSite.getId(), indexUrl, false, mmaModBookComponent, moduleId);
+        } else {
+            // We return the live URL.
+            return $q.when($mmSite.fixPluginfileURL(indexUrl));
+        }
 
         return promise.then(function(url) {
             // Fetch the URL content.
@@ -281,25 +262,60 @@ angular.module('mm.addons.mod_book')
                 } else {
                     // Now that we have the content, we update the SRC to point back to
                     // the external resource. That will be caught by mm-format-text.
-                    var html = angular.element('<div>');
-                    html.html(response.data);
-                    angular.forEach(html.find('img'), function(img) {
-                        var src = paths[decodeURIComponent(img.getAttribute('src'))];
-                        if (typeof src !== 'undefined') {
-                            img.setAttribute('src', src);
-                        }
-                    });
-                    // We do the same for links.
-                    angular.forEach(html.find('a'), function(anchor) {
-                        var href = paths[decodeURIComponent(anchor.getAttribute('href'))];
-                        if (typeof href !== 'undefined') {
-                            anchor.setAttribute('href', href);
-                        }
-                    });
-                    return html.html();
+                    return $mmUtil.restoreSourcesInHtml(response.data, contentsMap[chapterId].paths);
                 }
             });
         });
+    };
+
+    /**
+     * Convert an array of book contents into an object where contents are organized in chapters.
+     * Each chapter has an indexUrl and the list of contents in that chapter.
+     *
+     * @module mm.addons.mod_book
+     * @ngdoc method
+     * @name $mmaModBook#getContentsMap
+     * @param {Object} contents The module contents.
+     * @return {Object}         Contents map.
+     */
+    self.getContentsMap = function(contents) {
+        var map = {};
+
+        angular.forEach(contents, function(content) {
+            if (self.isFileDownloadable(content)) {
+                var chapter,
+                    matches,
+                    split,
+                    filepathIsChapter;
+
+                // Search the chapter number in the filepath.
+                matches = content.filepath.match(/\/(\d+)\//);
+                if (matches && matches[1]) {
+                    chapter = matches[1];
+                    filepathIsChapter = content.filepath == '/' + chapter + '/';
+
+                    // Init the chapter if it's not defined yet.
+                    map[chapter] = map[chapter] || { paths: {} };
+
+                    if (content.filename == 'index.html' && filepathIsChapter) {
+                        map[chapter].indexUrl = content.fileurl;
+                    } else {
+                        if (filepathIsChapter) {
+                            // It's a file in the root folder OR the WS isn't returning the filepath as it should (MDL-53671).
+                            // Try to get the path to the file from the URL.
+                            split = content.fileurl.split('mod_book/chapter' + content.filepath);
+                            key = split[1] || content.filename; // Use filename if we couldn't find the path.
+                        } else {
+                            // Remove the chapter folder from the path and add the filename.
+                            key = content.filepath.replace('/' + chapter + '/', '') + content.filename;
+                        }
+                        map[chapter].paths[key] = content.fileurl;
+                    }
+                }
+            }
+        });
+
+        return map;
     };
 
     /**
@@ -334,12 +350,17 @@ angular.module('mm.addons.mod_book')
      * @module mm.addons.mod_book
      * @ngdoc method
      * @name $mmaModBook#isPluginEnabled
-     * @return {Boolean} True if plugin is enabled, false otherwise.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
-    self.isPluginEnabled = function() {
-        var version = $mmSite.getInfo().version;
-        // Require Moodle 2.9.
-        return version && (parseInt(version) >= 2015051100) && $mmSite.canDownloadFiles();
+    self.isPluginEnabled = function(siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var version = site.getInfo().version;
+            // Require Moodle 2.9.
+            return version && (parseInt(version) >= 2015051100) && site.canDownloadFiles();
+        });
     };
 
     /**

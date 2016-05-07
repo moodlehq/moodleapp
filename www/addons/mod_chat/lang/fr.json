@@ -1,8 +1,8 @@
 {
     "beep": "Bip",
-    "currentusers": "Utilisateurs actuels",
-    "enterchat": "Cliquer ici pour entrer dans le chat",
-    "entermessage": "Taper votre message",
+    "currentusers": "Utilisateurs en ligne",
+    "enterchat": "Cliquer ici pour participer au chat",
+    "entermessage": "Saisissez votre message",
     "errorwhileconnecting": "Erreur lors de la connexion au chat.",
     "errorwhilegettingchatdata": "Erreur lors de l'obtention des données de chat.",
     "errorwhilegettingchatusers": "Erreur lors de l'obtention des usagers du chat.",
@@ -12,8 +12,8 @@
     "messageenter": "{{$a}} est entré dans ce chat",
     "messageexit": "{{$a}} a quitté ce chat",
     "mustbeonlinetosendmessages": "Vous devez être en ligne pour envoyer des messages",
-    "nomessages": "Pas encore de message",
+    "nomessages": "Pas encore de messages",
     "send": "Envoyer",
     "sessionstart": "La prochaine session de chat commencera dans {{$a}}",
-    "talk": "Discuter"
+    "talk": "Parler"
 }

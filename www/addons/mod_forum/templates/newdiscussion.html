@@ -1,5 +1,5 @@
 <ion-view view-title="{{ 'mma.mod_forum.addanewdiscussion' | translate }}">
-    <ion-content padding="true">
+    <ion-content padding="true" mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="groupsLoaded" on-refresh="refreshGroups()">
         </ion-refresher>
         <mm-loading hide-until="groupsLoaded">

@@ -1,5 +1,5 @@
 {
-    "cannotsubmit": "Sorry, er was een probleem bij het insturen van je keuze. Probeer opnieuw.",
+    "cannotsubmit": "Er was een probleem bij het insturen van je keuze. Probeer opnieuw",
     "choiceoptions": "Keuze-opties",
     "errorgetchoice": "Fout bij het ophalen van de keuzegegevens.",
     "expired": "Sorry, de activiteit is gesloten op {{$a}} en is niet langer beschikbaar.",
@@ -13,7 +13,7 @@
     "responses": "Antwoorden",
     "responsesresultgraphdescription": "{{number}}% van de gebruikers kozen optie: {{text}}.",
     "responsesresultgraphheader": "Grafiek tonen",
-    "savemychoice": "Bewaar mijn keuze",
-    "userchoosethisoption": "Gebruikers die deze optie kozen",
+    "savemychoice": "Bewaar mijn antwoord",
+    "userchoosethisoption": "Gebruikers due deze optie kozen",
     "yourselection": "Jouw selectie"
 }

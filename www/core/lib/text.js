@@ -205,6 +205,31 @@ angular.module('mm.core')
     };
 
     /**
+     * Decode an escaped HTML text. This implementation is based on PHP's htmlspecialchars_decode.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#decodeHTML
+     * @param  {String} text Text to decode.
+     * @return {String}      Decoded text.
+     */
+    self.decodeHTML = function(text) {
+        if (typeof text == 'undefined' || text === null || (typeof text == 'number' && isNaN(text))) {
+            return '';
+        } else if (typeof text != 'string') {
+            return '' + text;
+        }
+
+        return text
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&#039;/g, "'")
+            .replace(/&nbsp;/g, ' ');
+    };
+
+    /**
      * Add or remove 'www' from a URL. The url needs to have http or https protocol.
      *
      * @module mm.core
@@ -224,6 +249,77 @@ angular.module('mm.core')
             }
         }
         return url;
+    };
+
+    /**
+     * Remove protocol and www from a URL.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#removeProtocolAndWWW
+     * @param  {String} url URL to treat.
+     * @return {String}     Treated URL.
+     */
+    self.removeProtocolAndWWW = function(url) {
+        // Remove protocol.
+        url = url.replace(/.*?:\/\//g, '');
+        // Remove www.
+        url = url.replace(/^www./, '');
+        return url;
+    };
+
+    /**
+     * Gets a username from a URL like: user@mysite.com.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#getUsernameFromUrl
+     * @param  {String} url URL to treat.
+     * @return {String}     Username. Undefined if no username found.
+     */
+    self.getUsernameFromUrl = function(url) {
+        if (url.indexOf('@') > -1) {
+            // Get URL without protocol.
+            var withoutProtocol = url.replace(/.*?:\/\//, ''),
+                matches = withoutProtocol.match(/[^@]*/);
+
+            // Make sure that @ is at the start of the URL, not in a param at the end.
+            if (matches && matches.length && !matches[0].match(/[\/|?]/)) {
+                return matches[0];
+            }
+        }
+    };
+
+    /**
+     * Replace all characters that cause problems with files in Android and iOS.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#removeSpecialCharactersForFiles
+     * @param  {String} text Text to treat.
+     * @return {String}      Treated text.
+     */
+    self.removeSpecialCharactersForFiles = function(text) {
+        return text.replace(/[#:\/\?\\]+/g, '_');
+    };
+
+    /**
+     * Given a URL, returns what's after the last '/' without params.
+     * Example:
+     * http://mysite.com/a/course.html?id=1 -> course.html
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#getLastFileWithoutParams
+     * @param  {String} url URL to treat.
+     * @return {String}     Last file without params.
+     */
+    self.getLastFileWithoutParams = function(url) {
+        var filename = url.substr(url.lastIndexOf('/') + 1);
+        if (filename.indexOf('?') != -1) {
+            filename = filename.substr(0, filename.indexOf('?'));
+        }
+        return filename;
     };
 
     return self;

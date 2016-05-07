@@ -414,8 +414,7 @@ angular.module('mm.addons.files')
      */
     self.uploadImage = function(uri, isFromAlbum) {
         $log.debug('Uploading an image');
-        var d = new Date(),
-            options = {};
+        var options = {};
 
         if (typeof(uri) === 'undefined' || uri === ''){
             // In Node-Webkit, if you successfully upload a picture and then you open the file picker again
@@ -426,7 +425,7 @@ angular.module('mm.addons.files')
 
         options.deleteAfterUpload = !isFromAlbum;
         options.fileKey = "file";
-        options.fileName = "image_" + d.getTime() + ".jpg";
+        options.fileName = "image_" + new Date().getTime() + ".jpg";
         options.mimeType = "image/jpeg";
 
         return self.uploadFile(uri, options);
@@ -444,10 +443,20 @@ angular.module('mm.addons.files')
     self.uploadMedia = function(mediaFiles) {
         $log.debug('Uploading media');
         var promises = [];
-        angular.forEach(mediaFiles, function(mediaFile, index) {
-            var options = {};
+        angular.forEach(mediaFiles, function(mediaFile) {
+            var options = {},
+                filename = mediaFile.name,
+                split;
+
+            if (ionic.Platform.isIOS()) {
+                // In iOS we'll add a timestamp to the filename to make it unique.
+                split = filename.split('.');
+                split[0] += '_' + new Date().getTime();
+                filename = split.join('.');
+            }
+
             options.fileKey = null;
-            options.fileName = mediaFile.name;
+            options.fileName = filename;
             options.mimeType = null;
             options.deleteAfterUpload = true;
             promises.push(self.uploadFile(mediaFile.fullPath, options));

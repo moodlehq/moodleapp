@@ -4,6 +4,9 @@
     "filter": "Фильтр",
     "frontpage": "Главная страница",
     "mycourses": "Мои курсы",
+    "nocourses": "Нет информации для отображения.",
+    "nosearchresults": "Поиск не дал результатов",
+    "notenroled": "Вы не записаны на этот курс",
     "password": "Пароль",
     "search": "Найти",
     "searchcourses": "Поиск курса"

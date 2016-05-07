@@ -1,0 +1,14 @@
+{
+    "browsemode": "Prohlížení příspěvků",
+    "byalphabet": "Abecedně",
+    "byauthor": "Skupina podle autora",
+    "bynewestfirst": "Nejnovější nejdříve",
+    "byrecentlyupdated": "Posledně aktualizované",
+    "bysearch": "Hledat",
+    "entrypendingapproval": "Tato položka čeká na schválení",
+    "errorloadingentries": "Při načítání položek došlo k chybě",
+    "errorloadingentry": "Při načítání položky došlo k chybě",
+    "errorloadingglossary": "Při načítání slovníku došlo k chybě",
+    "noentriesfound": "Nebyly nalezeny žádné záznamy.",
+    "searchquery": "Vyhledávací dotaz"
+}

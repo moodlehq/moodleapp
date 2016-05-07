@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_imscp')
  * @ngdoc service
  * @name $mmaModImscp
  */
-.factory('$mmaModImscp', function($mmFilepool, $mmSite, $mmFS, $log, $q, $sce, $mmApp, mmaModImscpComponent) {
+.factory('$mmaModImscp', function($mmFilepool, $mmSite, $mmFS, $log, $q, $sce, $mmApp, $mmSitesManager, mmaModImscpComponent) {
     $log = $log.getInstance('$mmaModImscp');
 
     var self = {},
@@ -38,6 +38,9 @@ angular.module('mm.addons.mod_imscp')
      * @protected
      */
     self.getToc = function(contents) {
+        if (!contents || !contents.length) {
+            return [];
+        }
         return JSON.parse(contents[0].content);
     };
 
@@ -141,7 +144,7 @@ angular.module('mm.addons.mod_imscp')
             revision = $mmFilepool.getRevisionFromFileList(module.contents),
             timemod = $mmFilepool.getTimemodifiedFromFileList(module.contents);
 
-        return $mmFilepool.getFilePathByUrl($mmSite.getId(), module.url).then(function(dirPath) {
+        return $mmFilepool.getPackageDirPathByUrl($mmSite.getId(), module.url).then(function(dirPath) {
             return $mmFilepool.downloadPackage($mmSite.getId(), files, mmaModImscpComponent, module.id, revision, timemod, dirPath);
         });
     };
@@ -257,10 +260,14 @@ angular.module('mm.addons.mod_imscp')
      * @return {Promise}      Promise resolved with the iframe src.
      */
     self.getIframeSrc = function(module) {
-        var toc = self.getToc(module.contents);
-        var mainFilePath = toc[0].href;
+        var toc = self.getToc(module.contents),
+            mainFilePath;
+        if (!toc.length) {
+            return $q.reject();
+        }
+        mainFilePath = toc[0].href;
 
-        return $mmFilepool.getDirectoryUrlByUrl($mmSite.getId(), module.url).then(function(dirPath) {
+        return $mmFilepool.getPackageDirUrlByUrl($mmSite.getId(), module.url).then(function(dirPath) {
             currentDirPath = dirPath;
             // This URL is going to be injected in an iframe, we need trustAsResourceUrl to make it work in a browser.
             return $sce.trustAsResourceUrl($mmFS.concatenatePaths(dirPath, mainFilePath));
@@ -332,17 +339,22 @@ angular.module('mm.addons.mod_imscp')
     };
 
     /**
-     * Return whether or not the plugin is enabled.
+     * Return whether or not the plugin is enabled in a certain site.
      *
      * @module mm.addons.mod_imscp
      * @ngdoc method
      * @name $mmaModImscp#isPluginEnabled
-     * @return {Boolean} True if plugin is enabled, false otherwise.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
-    self.isPluginEnabled = function() {
-        var version = $mmSite.getInfo().version;
-        // Require Moodle 2.9.
-        return version && (parseInt(version) >= 2015051100) && $mmSite.canDownloadFiles();
+    self.isPluginEnabled = function(siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var version = site.getInfo().version;
+            // Require Moodle 2.9.
+            return version && (parseInt(version) >= 2015051100) && site.canDownloadFiles();
+        });
     };
 
     /**
@@ -378,7 +390,7 @@ angular.module('mm.addons.mod_imscp')
             revision = $mmFilepool.getRevisionFromFileList(module.contents),
             timemod = $mmFilepool.getTimemodifiedFromFileList(module.contents);
 
-        return $mmFilepool.getFilePathByUrl($mmSite.getId(), module.url).then(function(dirPath) {
+        return $mmFilepool.getPackageDirPathByUrl($mmSite.getId(), module.url).then(function(dirPath) {
             return $mmFilepool.prefetchPackage($mmSite.getId(), files, mmaModImscpComponent, module.id, revision, timemod, dirPath);
         });
     };

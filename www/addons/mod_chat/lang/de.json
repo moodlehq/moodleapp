@@ -1,8 +1,8 @@
 {
     "beep": "Beep",
-    "currentusers": "Aktuell online",
-    "enterchat": "Klicken Sie hier, um den Chat zu betreten",
-    "entermessage": "Nachricht eingeben",
+    "currentusers": "Aktuelle Nutzer/innen",
+    "enterchat": "Chat betreten",
+    "entermessage": "Schreiben Sie Ihre Nachricht.",
     "errorwhileconnecting": "Fehler beim Verbinden zum Chat",
     "errorwhilegettingchatdata": "Fehler beim Lesen der Chatdaten",
     "errorwhilegettingchatusers": "Fehler beim Lesen der Personen im Chat",
@@ -12,7 +12,7 @@
     "messageenter": "{{$a}} hat den Chat betreten",
     "messageexit": "{{$a}} hat den Chat verlassen",
     "mustbeonlinetosendmessages": "Sie müssen online sein, um Nachrichten zu senden",
-    "nomessages": "Keine Nachrichten",
+    "nomessages": "Bisher keine Mitteilungen",
     "send": "Senden",
     "sessionstart": "Der nächste Chat beginnt in {{$a}}",
     "talk": "Sprechen"

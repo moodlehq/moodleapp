@@ -33,3 +33,12 @@ $mma-messages-date-badge: "stable" !default;
 .mma-messages-discussion-container {
   padding-bottom: 15px;
 }
+
+.button.button-icon.mma-messages-delete-button {
+  min-height: initial;
+  line-height: initial;
+  &:before {
+    font-size: 100%;
+    line-height: initial;
+  }
+}

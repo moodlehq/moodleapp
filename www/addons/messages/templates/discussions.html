@@ -1,12 +1,12 @@
-<ion-content class="has-tabs">
+<ion-content class="has-tabs" mm-state-class>
     <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="loaded" on-refresh="refresh()"></ion-refresher>
     <mm-loading hide-until="loaded">
         <ul class="list">
             <li>
-                <a class="item item-avatar" ng-repeat="disc in discussions | orderBy:'message.timecreated':true track by $index" mm-split-view-link="site.messages-discussion({userId: disc.message.user, userFullname: disc.fullname})" title="{{disc.fullname}}">
+                <a class="item item-avatar" ng-repeat="disc in discussions | orderBy:'message.timecreated':true track by $index" mm-split-view-link="site.messages-discussion({userId: disc.message.user})" title="{{disc.fullname}}">
 
-                    <img ng-src="{{disc.profileimageurl}}" alt="" role="presentation" mm-external-content ng-if="disc.profileimageurl">
-                    <img src="img/user-avatar.png" alt="" role="presentation" ng-if="!disc.profileimageurl">
+                    <img ng-src="{{disc.profileimageurl}}" alt="{{ 'mm.core.pictureof' | translate:{$a: disc.fullname} }}" role="presentation" mm-external-content ng-if="disc.profileimageurl">
+                    <img src="img/user-avatar.png" alt="{{ 'mm.core.pictureof' | translate:{$a: disc.fullname} }}" role="presentation" ng-if="!disc.profileimageurl">
 
                     <span class="item-note" ng-if="disc.message.timecreated > 0">{{disc.message.timecreated | mmDateDayOrTime}}</span>
                     <p class="item-heading">{{disc.fullname}}</p>

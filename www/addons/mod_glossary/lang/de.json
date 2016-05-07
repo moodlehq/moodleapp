@@ -1,0 +1,14 @@
+{
+    "browsemode": "Einträge blättern",
+    "byalphabet": "Alphabetisch",
+    "byauthor": "Sortieren nach Autor/in",
+    "bynewestfirst": "Neueste zuerst",
+    "byrecentlyupdated": "Aktuelle zuerst",
+    "bysearch": "Suchen",
+    "entrypendingapproval": "Dieser Eintrag wartet auf Freigabe.",
+    "errorloadingentries": "Fehler beim Laden von Einträgen",
+    "errorloadingentry": "Fehler beim Laden des Eintrags",
+    "errorloadingglossary": "Fehler beim Laden des Glossars",
+    "noentriesfound": "Keine EInträge gefunden.",
+    "searchquery": "Suchanfrage"
+}

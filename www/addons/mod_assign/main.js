@@ -50,30 +50,7 @@ angular.module('mm.addons.mod_assign', ['mm.core'])
 
 })
 
-.config(function($mmCourseDelegateProvider) {
-    $mmCourseDelegateProvider.registerContentHandler('mmaModAssign', 'assign', '$mmaModAssignCourseContentHandler');
-})
-
-.run(function($mmaModAssign, $mmModuleActionsDelegate) {
-
-    // Add actions to notifications. Forum will only add 1 action: view discussion.
-    $mmModuleActionsDelegate.registerModuleHandler('mmaModAssign', function(url, courseid) {
-
-        if (courseid && url.indexOf('/mod/assign/') > -1 && $mmaModAssign.isPluginEnabled()) {
-            var matches = url.match(/view\.php\?id=(\d*)/); // Get assignment ID.
-            if (matches && typeof matches[1] != 'undefined') {
-                var action = {
-                    message: 'mm.core.view',
-                    icon: 'ion-eye',
-                    state: 'site.mod_assign',
-                    stateParams: {
-                        courseid: courseid,
-                        module: {id: matches[1]}
-                    }
-                };
-                return [action]; // Delegate expects an array of actions, a handler can define more than one action.
-            }
-        }
-
-    });
+.config(function($mmCourseDelegateProvider, $mmContentLinksDelegateProvider) {
+    $mmCourseDelegateProvider.registerContentHandler('mmaModAssign', 'assign', '$mmaModAssignHandlers.courseContent');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModAssign', '$mmaModAssignHandlers.linksHandler');
 });

@@ -1,6 +1,6 @@
 <ion-view>
     <ion-nav-title>{{ title }}</ion-nav-title>
-    <ion-content padding="true">
+    <ion-content padding="true" mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" on-refresh="doRefresh()" ng-if="ltiLoaded"></ion-refresher>
         <mm-loading hide-until="ltiLoaded">
             <mm-course-mod-description description="description"></mm-course-mod-description>

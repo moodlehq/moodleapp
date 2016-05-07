@@ -1,6 +1,6 @@
 <ion-view>
     <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
-    <ion-content delegate-handle="mmSectionScroll">
+    <ion-content delegate-handle="mmSectionScroll" mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="sectionLoaded" on-refresh="doRefresh()">
         </ion-refresher>
         <mm-loading hide-until="sectionLoaded" loading-padding-top="loadingPaddingTop">
@@ -12,17 +12,17 @@
                 </div>
             </section>
 
-            <section class="card" ng-repeat="section in sections">
+            <section class="card" ng-repeat="section in sections" ng-if="section.modules.length > 0 || section.summary != ''">
                 <!-- Title and summary are displayed when multiple sections per page. -->
-                <div class="item item-divider" ng-if="sections.length > 1">
+                <div class="item item-divider" ng-if="allSections">
                     <h2><mm-format-text watch="true">{{ section.name }}</mm-format-text></h2>
                 </div>
 
-                <div class="item item-text-wrap" ng-if="sections.length > 1 && section.summary">
+                <div class="item item-text-wrap" ng-if="allSections && section.summary">
                     <mm-format-text class="mm-content-with-float">{{ section.summary }}</mm-format-text>
                 </div>
 
-                <a class="item item-text-wrap" ng-repeat="module in section.modules" ng-click="action($event)" ng-class="{'item-button-right': buttons && buttons.length > 0, 'item-media': icon, 'item-completion': module.completionstatus}" ng-controller="module._controller" title="{{ title }}">
+                <a class="item item-text-wrap mm-course-module-handler {{class}}" ng-repeat="module in section.modules" ng-click="action($event)" ng-class="{'item-button-right': buttons && buttons.length > 0, 'item-media': icon, 'item-completion': module.completionstatus}" ng-controller="module._controller" title="{{ title }}">
 
                     <img ng-src="{{ icon }}" alt="" role="presentation" ng-if="icon">
                     <mm-format-text watch="true">{{ title }}</mm-format-text>
@@ -37,10 +37,11 @@
                 </a>
 
                 <!-- When there is nothing in the section. -->
-                <div class="item item-text-wrap" ng-if="section.modules.length < 1">
+                <div class="item item-text-wrap" ng-if="!sitehome && section.modules.length < 1">
                     {{ 'mm.course.nocontentavailable' | translate }}
                 </div>
             </section>
+            <p class="padding" ng-if="!hasContent">{{ 'mm.course.nocontentavailable' | translate }}</p>
         </mm-loading>
     </ion-content>
 </ion-view>

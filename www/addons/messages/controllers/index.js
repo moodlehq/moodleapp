@@ -21,12 +21,26 @@ angular.module('mm.addons.messages')
  * @ngdoc controller
  * @name mmaMessagesIndexCtrl
  */
-.controller('mmaMessagesIndexCtrl', function($scope, $mmEvents, $ionicPlatform, $ionicTabsDelegate,
+.controller('mmaMessagesIndexCtrl', function($scope, $mmEvents, $ionicPlatform, $ionicTabsDelegate, $mmUser,
             mmaMessagesDiscussionLoadedEvent, mmaMessagesDiscussionLeftEvent) {
     // Listen for discussion loaded event to show user profile link in tablet view.
     var obsLoaded = $mmEvents.on(mmaMessagesDiscussionLoadedEvent, function(userId) {
-        $scope.profileLink = $ionicPlatform.isTablet() && $ionicTabsDelegate.selectedIndex() == 0;
-        $scope.userId = userId;
+        if ($ionicPlatform.isTablet()) {
+            // A discussion was loaded in tablet, get the user image and show the button to the profile.
+            $scope.userId = userId;
+            $mmUser.getProfile(userId, undefined, true).catch(function() {
+                // Couldn't retrieve the image, use a default icon.
+                return {
+                    profileimageurl: true
+                };
+            }).then(function(user) {
+                // Verify that no other user was loaded while the async call was in progress.
+                if ($scope.userId == userId) {
+                    // Use a default icon if no image URL available.
+                    $scope.profileLink = user.profileimageurl || true;
+                }
+            });
+        }
     });
 
     // Listen for discussion loaded event to show user profile link in tablet view.

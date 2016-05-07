@@ -1,12 +1,12 @@
 <ion-view>
     <ion-nav-title>{{title}}</ion-nav-title>
-    <ion-content padding="true">
+    <ion-content padding="true" mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="userLoaded" on-refresh="refreshUser()"></ion-refresher>
         <mm-loading hide-until="userLoaded">
             <div class="list" ng-if="user && !isDeleted">
                 <div class="item item-avatar">
-                    <img ng-if="user.profileimageurl" ng-src="{{user.profileimageurl}}" mm-external-content alt="" role="presentation">
-                    <img ng-if="!user.profileimageurl" src="img/user-avatar.png" alt="" role="presentation">
+                    <img ng-if="user.profileimageurl" ng-src="{{user.profileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: user.fullname} }}" role="presentation">
+                    <img ng-if="!user.profileimageurl" src="img/user-avatar.png" alt="{{ 'mm.core.pictureof' | translate:{$a: user.fullname} }}" role="presentation">
                     <h2><mm-format-text watch="true" clean="true">{{user.fullname}}</mm-format-text></h2>
                 </div>
                 <div class="item item-divider" ng-if="hasContact">
@@ -15,7 +15,7 @@
                 <div class="item" ng-if="user.email">
                     <p class="item-heading">{{ 'mm.user.email' | translate}}</p>
                     <p>
-                        <a href="mailto:{{user.email}}" mm-browser>
+                        <a href="mailto:{{user.email}}" mm-link>
                             <mm-format-text watch="true" clean="true">{{user.email}}</mm-format-text>
                         </a>
                     </p>
@@ -23,7 +23,7 @@
                 <div class="item" ng-if="user.phone1">
                     <p class="item-heading">{{ 'mm.user.phone1' | translate}}</p>
                     <p>
-                        <a href="tel:{{user.phone1}}" mm-browser>
+                        <a href="tel:{{user.phone1}}" mm-link>
                             <mm-format-text watch="true" clean="true">{{user.phone1}}</mm-format-text>
                         </a>
                     </p>
@@ -31,7 +31,7 @@
                 <div class="item" ng-if="user.phone2">
                     <p class="item-heading">{{ 'mm.user.phone2' | translate}}</p>
                     <p>
-                        <a href="tel:{{user.phone2}}" mm-browser>
+                        <a href="tel:{{user.phone2}}" mm-link>
                             <mm-format-text watch="true" clean="true">{{user.phone2}}</mm-format-text>
                         </a>
                     </p>
@@ -39,10 +39,10 @@
                 <div class="item" ng-if="user.address">
                     <p class="item-heading">{{ 'mm.user.address' | translate}}</p>
                     <p>
-                        <a ng-if="isAndroid" href="geo:0,0?q={{user.encodedAddress}}" mm-browser>
+                        <a ng-if="isAndroid" href="geo:0,0?q={{user.encodedAddress}}" mm-link>
                             <mm-format-text watch="true" clean="true">{{user.address}}</mm-format-text>
                         </a>
-                        <a ng-if="!isAndroid" href="http://maps.google.com?q={{user.encodedAddress}}" mm-browser>
+                        <a ng-if="!isAndroid" href="http://maps.google.com?q={{user.encodedAddress}}" mm-link>
                             <mm-format-text watch="true" clean="true">{{user.address}}</mm-format-text>
                         </a>
                     </p>
@@ -65,7 +65,7 @@
                 <div class="item" ng-if="user.url">
                     <p class="item-heading">{{ 'mm.user.webpage' | translate}}</p>
                     <p>
-                        <a href="{{user.url}}" mm-browser>
+                        <a href="{{user.url}}" mm-link>
                             <mm-format-text watch="true" clean="true">{{user.url}}</mm-format-text>
                         </a>
                     </p>
@@ -92,7 +92,7 @@
                 <div class="item text-center" ng-if="(!profileHandlers || !profileHandlers.length) && isLoadingHandlers">
                     <ion-spinner></ion-spinner>
                 </div>
-                <div ng-repeat="handler in profileHandlers | orderBy:'-priority'" ng-controller="handler.controller">
+                <div ng-repeat="handler in profileHandlers | orderBy:'-priority'" ng-controller="handler.controller" class="mm-user-profile-handler {{class}}">
                     <a class="button button-block" ng-click="action($event)" ng-hide="hidden" title="{{ title | translate }}">
                         {{ title | translate }} <ion-spinner class="icon" ng-if="spinner"></ion-spinner>
                     </a>

@@ -1,7 +1,9 @@
 {
     "appsettings": "App-aren ezarpenak",
+    "changesite": "Aldatu gunea",
     "help": "Laguntza",
     "logout": "Gunea aldatu",
     "mycourses": "Nire ikastaroak",
+    "togglemenu": "Aldatu menua",
     "website": "Webgunea"
 }

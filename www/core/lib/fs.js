@@ -24,7 +24,7 @@ angular.module('mm.core')
  * @description
  * This service handles the interaction with the FileSystem.
  */
-.factory('$mmFS', function($ionicPlatform, $cordovaFile, $log, $q, $http, mmFsSitesFolder, mmFsTmpFolder) {
+.factory('$mmFS', function($ionicPlatform, $cordovaFile, $log, $q, $http, $cordovaZip, mmFsSitesFolder, mmFsTmpFolder) {
 
     $log = $log.getInstance('$mmFS');
 
@@ -692,15 +692,40 @@ angular.module('mm.core')
      */
     self.copyFile = function(from, to) {
         return self.init().then(function() {
-            // Check if to contains a directory.
-            var toFile = self.getFileAndDirectoryFromPath(to);
-            if (toFile.directory == '') {
-                return $cordovaFile.copyFile(basePath, from, basePath, to);
+            if (isHTMLAPI) {
+                // In Cordova API we need to calculate the longest matching path to make it work.
+                // $cordovaFile.copyFile('a/', 'b/c.ext', 'a/', 'b/d.ext') doesn't work.
+                // cordovaFile.copyFile('a/b/', 'c.ext', 'a/b/', 'd.ext') works.
+                var commonPath = basePath,
+                    dirsA = from.split('/'),
+                    dirsB = to.split('/');
+
+                for (var i = 0; i < dirsA.length; i++) {
+                    var dir = dirsA[i];
+                    if (dirsB[i] === dir) {
+                        // Found a common folder, add it to common path and remove it from each specific path.
+                        dir = dir + '/';
+                        commonPath = self.concatenatePaths(commonPath, dir);
+                        from = from.replace(dir, '');
+                        to = to.replace(dir, '');
+                    } else {
+                        // Folder doesn't match, stop searching.
+                        break;
+                    }
+                }
+
+                return $cordovaFile.copyFile(commonPath, from, commonPath, to);
             } else {
-                // Ensure directory is created.
-                return self.createDir(toFile.directory).then(function() {
+                // Check if to contains a directory.
+                var toFile = self.getFileAndDirectoryFromPath(to);
+                if (toFile.directory == '') {
                     return $cordovaFile.copyFile(basePath, from, basePath, to);
-                });
+                } else {
+                    // Ensure directory is created.
+                    return self.createDir(toFile.directory).then(function() {
+                        return $cordovaFile.copyFile(basePath, from, basePath, to);
+                    });
+                }
             }
         });
     };
@@ -861,6 +886,23 @@ angular.module('mm.core')
     };
 
     /**
+     * Adds the basePath to a path if it doesn't have it already.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#addBasePathIfNeeded
+     * @param {String} path Path to treat.
+     * @return {String}     Path with basePath added.
+     */
+    self.addBasePathIfNeeded = function(path) {
+        if (path.indexOf(basePath) > -1) {
+            return path;
+        } else {
+            return self.concatenatePaths(basePath, path);
+        }
+    };
+
+    /**
      * Unzips a file.
      *
      * @module mm.core
@@ -872,30 +914,11 @@ angular.module('mm.core')
      * @return {Promise}             Promise resolved when the file is unzipped.
      */
     self.unzipFile = function(path, destFolder) {
-        // Read the zip file.
-        return self.readFile(path, self.FORMATARRAYBUFFER).then(function(data) {
-            if (isHTMLAPI) {
-                var zip = new JSZip(data),
-                    promises = [];
-
-                destFolder = destFolder || self.removeExtension(path);
-
-                angular.forEach(zip.files, function(file, name) {
-                    var filepath = self.concatenatePaths(destFolder, name),
-                        type;
-
-                    if (!file.dir) {
-                        // It's a file. Get the mimetype and write the file.
-                        type = self.getMimeType(self.getFileExtension(name));
-                        promises.push(self.writeFile(filepath, new Blob([file.asArrayBuffer()], {type: type})));
-                    } else {
-                        // It's a folder, create it if it doesn't exist.
-                        promises.push(self.createDir(filepath));
-                    }
-                });
-
-                return $q.all(promises);
-            }
+        // Get the source file.
+        return self.getFile(path).then(function(fileEntry) {
+            // If destFolder is not set, use same location as ZIP file. We need to use ansolute paths (including basePath).
+            destFolder = self.addBasePathIfNeeded(destFolder || self.removeExtension(path));
+            return $cordovaZip.unzip(fileEntry.toURL(), destFolder);
         });
     };
 

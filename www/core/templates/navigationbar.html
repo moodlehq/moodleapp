@@ -1,0 +1,11 @@
+<div class="row" ng-if="previous || info || next">
+    <div class="col">
+        <a class="button button-icon icon ion-arrow-left-b" ng-if="previous" ng-click="action(previous)" title="{{ 'mm.core.previous' | translate }}"></a>
+    </div>
+    <div class="col text-center">
+        <a class="button button-icon icon ion-ios-information-outline" ng-if="info" ng-click="showInfo()" title="{{title}}"></a>
+    </div>
+    <div class="col text-right">
+        <a class="button button-icon icon ion-arrow-right-b" ng-if="next" ng-click="action(next)" title="{{ 'mm.core.next' | translate }}"></a>
+    </div>
+</div>

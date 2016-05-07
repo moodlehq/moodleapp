@@ -1,0 +1,14 @@
+{
+    "browsemode": "Aztertu sarrerak",
+    "byalphabet": "Alfabetikoki",
+    "byauthor": "Taldekatu egilearen arabera",
+    "bynewestfirst": "Berrienak lehenago",
+    "byrecentlyupdated": "Duela gutxi eguneratuak",
+    "bysearch": "Bilatu",
+    "entrypendingapproval": "Sarrera hau onarpenaren zain dago.",
+    "errorloadingentries": "Errorea gertatu da sarrerak kargatzean.",
+    "errorloadingentry": "Errorea gertatu da sarrera kargatzean.",
+    "errorloadingglossary": "Errorea gertatu da glosategia kargatzean.",
+    "noentriesfound": "Ez da sarrerarik aurkitu",
+    "searchquery": "Egin bilaketa"
+}

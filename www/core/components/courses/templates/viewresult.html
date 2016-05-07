@@ -1,6 +1,6 @@
 <ion-view>
     <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
-    <ion-content padding="true">
+    <ion-content padding="true" mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" on-refresh="doRefresh()" ng-if="courseLoaded"></ion-refresher>
         <mm-loading hide-until="courseLoaded">
             <div ng-if="course" class="list card">
@@ -23,20 +23,20 @@
                     </p>
                 </div>
                 <mm-file ng-repeat="file in course.overviewfiles" file="file" component="{{component}}" component-id="{{course.id}}"></mm-file>
-                <form class="item" ng-if="selfEnrolEnabled && !isEnrolled">
-                    <label id="mm-courses-enrol-password" ng-if="showPassword" class="item item-input item-stacked-label">
-                        <span class="input-label">{{ 'mm.courses.password' | translate }}</span>
-                        <input type="password" placeholder="{{ 'mm.courses.password' | translate }}" ng-model="enroldata.password">
-                    </label>
-                    <button class="button button-block" ng-click="enrol(enroldata.password)" aria-controls="mm-courses-enrol-password" aria-expanded="showPassword">{{ 'mm.courses.enrolme' | translate }}</button>
-                </form>
-                <div class="item" ng-if="!selfEnrolEnabled && !isEnrolled">
+                <div class="item" ng-if="!isEnrolled" ng-repeat="instance in selfEnrolInstances track by instance.id">
+                    <p class="item-heading">{{ instance.name }}</p>
+                    <button class="button button-block" ng-click="enrol(instance.id, enroldata.password)">{{ 'mm.courses.enrolme' | translate }}</button>
+                </div>
+                <div class="item" ng-if="!isEnrolled && !selfEnrolInstances.length">
                     <p>{{ 'mm.courses.notenrollable' | translate }}</p>
                 </div>
-                <div class="item tabs tabs-icon-left" ng-show="course._handlers.length">
-                    <a ng-repeat="handler in course._handlers | orderBy:'-priority'" ng-controller="handler.controller" ng-click="action($event, course)" class="tab-item active" title="{{title | translate}}">
+                <div class="item tabs tabs-icon-left" ng-show="course._handlers && course._handlers.length">
+                    <a ng-repeat="handler in course._handlers | orderBy:'-priority'" ng-controller="handler.controller" ng-click="action($event, course)" class="tab-item active mm-courses-handler {{class}}" title="{{title | translate}}">
                         <i class="icon {{icon}}"></i> {{title | translate}}
                     </a>
+                </div>
+                <div class="item text-center" ng-if="(!course._handlers || !course._handlers.length) && loadingHandlers()">
+                    <ion-spinner></ion-spinner>
                 </div>
             </div>
         </mm-loading>

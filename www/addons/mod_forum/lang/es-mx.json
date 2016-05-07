@@ -1,11 +1,11 @@
 {
-    "addanewdiscussion": "Añadir un nuevo tópico/tema de discusión",
-    "cannotadddiscussion": "El añadir discusiones a este foro requiere de membresía de grupo.",
-    "cannotadddiscussionall": "Usted no tiene permiso para añadir un nuevo tópico/tema de discusión para todos los participantes.",
-    "cannotcreatediscussion": "No pudo crearse nueva discusión",
-    "couldnotadd": "No pudo añadirse su publicación a causa de un error desconocido",
+    "addanewdiscussion": "Añadir un nuevo tópico/tema de discusión aquí",
+    "cannotadddiscussion": "Para agregar discusiones a este foro se requiere pertenecer al grupo.",
+    "cannotadddiscussionall": "No tiene permiso para añadir un nuevo tópico/tema de discusión para todos los participantes.",
+    "cannotcreatediscussion": "No se pudo crear una discusión nueva",
+    "couldnotadd": "No se puede colocar su mensaje debido a un problema desconocido.",
     "discussionsubscription": "Suscripción a discusión",
-    "erroremptymessage": "El mensaje de la publicación no puede estar vacío",
+    "erroremptymessage": "El mensaje no puede estar vacío",
     "erroremptysubject": "El asunto de la publicación no puede estar vacío",
     "errorgetforum": "Error al obtener datos del foro.",
     "errorgetgroups": "Error al obtener configuraciones de grupo.",
@@ -14,8 +14,8 @@
     "message": "Mensaje",
     "numdiscussions": "{{numdiscussions}} discusiones",
     "numreplies": "{{numreplies}} respuestas",
-    "posttoforum": "Publicar en el foro",
+    "posttoforum": "Enviar al foro",
     "re": "Re:",
-    "reply": "Contestar",
+    "reply": "Responder (réplica)",
     "subject": "Asunto"
 }

@@ -1,10 +1,10 @@
 {
-    "addanewdiscussion": "Добавить новую тему на форуме",
-    "cannotadddiscussion": "Добавление обсуждения в этом форуме требует членства в группе",
-    "cannotadddiscussionall": "Вы не имеете права добавить новую тему на форуме для всех участников.",
-    "cannotcreatediscussion": "Не удалось создать новое обсуждение",
-    "couldnotadd": "Не удалось добавить ваше сообщение из-за неизвестной ошибки",
-    "discussionsubscription": "Обсуждение подписки",
+    "addanewdiscussion": "Добавить тему для обсуждения",
+    "cannotadddiscussion": "Нужно быть участником группы, чтобы добавлять обсуждения на этот форум.",
+    "cannotadddiscussionall": "У вас нет привилегий для добавления новой темы обсуждения для всех участников.",
+    "cannotcreatediscussion": "Невозможно создать новое обсуждение",
+    "couldnotadd": "Сообщение не добавлено из-за неизвестной ошибки",
+    "discussionsubscription": "Подписаться на эту тему.",
     "erroremptymessage": "Сообщение не может быть пустым",
     "erroremptysubject": "Заголовок сообщения не может быть пустым",
     "errorgetforum": "Ошибка при получении данных форума",
@@ -14,8 +14,8 @@
     "message": "Сообщение",
     "numdiscussions": "Обсуждений - {{numdiscussions}}",
     "numreplies": "Ответов - {{numreplies}}",
-    "posttoforum": "Написать на форуме",
+    "posttoforum": "Отправить в форум",
     "re": "Re:",
-    "reply": "Ответ",
+    "reply": "Ответить",
     "subject": "Тема"
 }

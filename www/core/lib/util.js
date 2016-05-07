@@ -23,7 +23,8 @@ angular.module('mm.core')
  */
 .provider('$mmUtil', function(mmCoreSecondsYear, mmCoreSecondsDay, mmCoreSecondsHour, mmCoreSecondsMinute) {
 
-    var self = this; // Use 'self' to be coherent with the rest of services.
+    var self = this, // Use 'self' to be coherent with the rest of services.
+        provider = this; // To access provider methods from the service.
 
     /**
      * Serialize an object to be used in a request.
@@ -64,7 +65,8 @@ angular.module('mm.core')
         return query.length ? query.substr(0, query.length - 1) : query;
     };
 
-    this.$get = function($ionicLoading, $ionicPopup, $injector, $translate, $http, $log, $q, $mmLang, $mmFS, $timeout) {
+    this.$get = function($ionicLoading, $ionicPopup, $injector, $translate, $http, $log, $q, $mmLang, $mmFS, $timeout, $mmApp,
+                $mmText, mmCoreWifiDownloadThreshold, mmCoreDownloadThreshold, $ionicScrollDelegate) {
 
         $log = $log.getInstance('$mmUtil');
 
@@ -212,7 +214,7 @@ angular.module('mm.core')
          *                     FALSE otherwise.
          */
         self.isValidURL = function(url) {
-            return /^http(s)?\:\/\/([\da-zA-Z\.-]+)\.([\da-zA-Z\.]{2,6})([\/\w \.-]*)*\/?/i.test(url);
+            return /^http(s)?\:\/\/.+/i.test(url);
         };
 
         /**
@@ -389,7 +391,17 @@ angular.module('mm.core')
          * @return {Void}
          */
         self.openInApp = function(url) {
-            window.open(url, '_blank');
+            if (!url) {
+                return;
+            }
+
+            var options = 'enableViewPortScale=yes'; // Enable zoom on iOS.
+            if (ionic.Platform.isIOS() && url.indexOf('file://') === 0) {
+                // The URL uses file protocol, don't show it on iOS.
+                // In Android we keep it because otherwise we lose the whole toolbar.
+                options += ',location=no';
+            }
+            window.open(url, '_blank', options);
         };
 
         /**
@@ -455,7 +467,30 @@ angular.module('mm.core')
          */
         self.showErrorModal = function(errorMessage, needsTranslate, autocloseTime) {
             var errorKey = 'mm.core.error',
-                langKeys = [errorKey];
+                langKeys = [errorKey],
+                matches;
+
+            if (angular.isObject(errorMessage)) {
+                // We received an object instead of a string. Search for common properties.
+                if (typeof errorMessage.content != 'undefined') {
+                    errorMessage = errorMessage.content;
+                } else if (typeof errorMessage.body != 'undefined') {
+                    errorMessage = errorMessage.body;
+                } else if (typeof errorMessage.message != 'undefined') {
+                    errorMessage = errorMessage.message;
+                } else if (typeof errorMessage.error != 'undefined') {
+                    errorMessage = errorMessage.error;
+                } else {
+                    // No common properties found, just stringify it.
+                    errorMessage = JSON.stringify(errorMessage);
+                }
+
+                // Try to remove tokens from the contents.
+                matches = errorMessage.match(/token"?[=|:]"?(\w*)/, '');
+                if (matches && matches[1]) {
+                    errorMessage = errorMessage.replace(new RegExp(matches[1], 'g'), 'secret');
+                }
+            }
 
             if (needsTranslate) {
                 langKeys.push(errorMessage);
@@ -514,6 +549,35 @@ angular.module('mm.core')
                 if (!confirmed) {
                     return $q.reject();
                 }
+            });
+        };
+
+        /**
+         * Show a prompt modal to input some data.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#showPrompt
+         * @param  {String} body             Modal body.
+         * @param  {String} title            Modal title.
+         * @param  {String} inputPlaceholder Placeholder of the input box. By default, "Password".
+         * @param  {String} [inputType]      Type of the input box. By default, password.
+         * @return {Promise}                 Promise resolved with the input data if the user clicks OK, rejected if cancels.
+         */
+        self.showPrompt = function(body, title, inputPlaceholder, inputType) {
+            inputType = inputType || 'password';
+
+            var options = {
+                template: body,
+                title: title,
+                inputPlaceholder: inputPlaceholder,
+                inputType: inputType
+            };
+            return $ionicPopup.prompt(options).then(function(data) {
+                if (typeof data == 'undefined') {
+                    return $q.reject();
+                }
+                return data;
             });
         };
 
@@ -735,6 +799,269 @@ angular.module('mm.core')
             });
 
             return deferred.promise;
+        };
+
+        /**
+         * Compare two objects. This function won't compare functions and proto properties, it's a basic compare.
+         * Also, this will only check if itemA's properties are in itemB with same value. This function will still
+         * return true if itemB has more properties than itemA.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#basicLeftCompare
+         * @param {Mixed}  itemA         First object.
+         * @param {Mixed}  itemB         Second object.
+         * @param {Number} [maxLevels=0] Number of levels to reach if 2 objects are compared.
+         * @param {Number} [level=0]     Current deep level (when comparing objects).
+         * @return {Boolean}             True if equal, false otherwise.
+         */
+        self.basicLeftCompare = function(itemA, itemB, maxLevels, level) {
+            level = level || 0;
+            maxLevels = maxLevels || 0;
+
+            if (angular.isFunction(itemA) || angular.isFunction(itemB)) {
+                return true; // Don't compare functions.
+            } else if (angular.isObject(itemA) && angular.isObject(itemB)) {
+                if (level >= maxLevels) {
+                    return true; // Max deep reached.
+                }
+
+                var equal = true;
+                angular.forEach(itemA, function(value, name) {
+                    if (!self.basicLeftCompare(value, itemB[name], maxLevels, level + 1)) {
+                        equal = false;
+                    }
+                });
+                return equal;
+            } else {
+                // We'll treat "2" and 2 as the same value.
+                var floatA = parseFloat(itemA),
+                    floatB = parseFloat(itemB);
+
+                if (!isNaN(floatA) && !isNaN(floatB)) {
+                    return floatA == floatB;
+                }
+                return itemA === itemB;
+            }
+        };
+
+        /**
+         * If the download size is higher than a certain threshold shows a confirm dialog.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#confirmDownloadSize
+         * @param {Number} size                 Size to download (in bytes).
+         * @param {String} [message]            Code of the message to show. Default: 'mm.course.confirmdownload'.
+         * @param {String} [unknownsizemessage] Code of the message to show if size is unknown.
+         *                                      Default: 'mm.course.confirmdownloadunknownsize'.
+         * @param {Number} [wifiThreshold]      Threshold to show confirm in WiFi connection. Default: mmCoreWifiDownloadThreshold.
+         * @param {Number} [limitedThreshold]   Threshold to show confirm in limited connection. Default: mmCoreDownloadThreshold.
+         * @return {Promise}                   Promise resolved when the user confirms or if no confirm needed.
+         */
+        self.confirmDownloadSize = function(size, message, unknownsizemessage, wifiThreshold, limitedThreshold) {
+            wifiThreshold = typeof wifiThreshold == 'undefined' ? mmCoreWifiDownloadThreshold : wifiThreshold;
+            limitedThreshold = typeof limitedThreshold == 'undefined' ? mmCoreDownloadThreshold : limitedThreshold;
+            message = message || 'mm.course.confirmdownload';
+            unknownsizemessage = unknownsizemessage || 'mm.course.confirmdownloadunknownsize';
+
+            if (size <= 0) {
+                // Seems size was unable to be calculated. Show a warning.
+                return self.showConfirm($translate(unknownsizemessage));
+            }
+            else if (size >= wifiThreshold || ($mmApp.isNetworkAccessLimited() && size >= limitedThreshold)) {
+                var readableSize = $mmText.bytesToSize(size, 2);
+                return self.showConfirm($translate(message, {size: readableSize}));
+            }
+            return $q.when();
+        };
+
+        /**
+         * Formats a size to be used as width/height of an element.
+         * If the size is already valid (like '500px' or '50%') it won't be modified.
+         * Returned size will have a format like '500px'.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#formatPixelsSize
+         * @param  {Mixed} size Size to format.
+         * @return {String}     Formatted size. If size is not valid, returns an empty string.
+         */
+        self.formatPixelsSize = function(size) {
+            if (typeof size == 'string' && (size.indexOf('px') > -1 || size.indexOf('%') > -1)) {
+                // It seems to be a valid size.
+                return size;
+            }
+
+            size = parseInt(size, 10);
+            if (!isNaN(size)) {
+                return size + 'px';
+            }
+            return '';
+        };
+
+        /**
+         * Serialize an object to be used in a request.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#param
+         * @param  {Object} obj Object to serialize.
+         * @return {String}     Serialization of the object.
+         */
+        self.param = function(obj) {
+            return provider.param(obj);
+        };
+
+        /**
+         * Rounds a number to use a certain amout of decimals or less.
+         * Difference between this function and float's toFixed:
+         * 7.toFixed(2) -> 7.00
+         * roundToDecimals(7, 2) -> 7
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#roundToDecimals
+         * @param  {Float}  number       Float to round.
+         * @param  {Number} [decimals=2] Number of decimals. By default, 2.
+         * @return {Float}               Rounded number.
+         */
+        self.roundToDecimals = function(number, decimals) {
+            if (typeof decimals == 'undefined') {
+                decimals = 2;
+            }
+
+            var multiplier = Math.pow(10, decimals);
+            return Math.round(parseFloat(number) * multiplier) / multiplier;
+        };
+
+        /**
+         * Extracts the parameters from a URL and stores them in an object.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#extractUrlParams
+         * @param  {String} url URL to treat.
+         * @return {Object}     Object with the params.
+         */
+        self.extractUrlParams = function(url) {
+            var regex = /[?&]+([^=&]+)=?([^&]*)?/gi,
+                params = {};
+            url.replace(regex, function(match, key, value) {
+                params[key] = value !== undefined ? value : '';
+            });
+            return params;
+        };
+
+        /**
+         * Given an HTML, searched all links and media and tries to restore original sources using the paths object.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#restoreSourcesInHtml
+         * @param  {String} html         HTML code.
+         * @param  {Object} paths        Object linking URLs in the html code with the real URLs to use.
+         * @param  {Function} [anchorFn] Function to call with each anchor. Optional.
+         * @return {String}              Treated HTML code.
+         */
+        self.restoreSourcesInHtml = function(html, paths, anchorFn) {
+            var div = angular.element('<div>'),
+                media;
+            div.html(html);
+
+            // Treat img, audio, video and source.
+            media = div[0].querySelectorAll('img, video, audio, source');
+            angular.forEach(media, function(el) {
+                var src = paths[decodeURIComponent(el.getAttribute('src'))];
+                if (typeof src !== 'undefined') {
+                    el.setAttribute('src', src);
+                }
+            });
+
+            // We do the same for links.
+            angular.forEach(div.find('a'), function(anchor) {
+                var href = decodeURIComponent(anchor.getAttribute('href')),
+                    url = paths[href];
+
+                if (typeof url !== 'undefined') {
+                    anchor.setAttribute('href', url);
+
+                    if (angular.isFunction(anchorFn)) {
+                        anchorFn(anchor, href);
+                    }
+                }
+            });
+
+            return div.html();
+        };
+
+        /**
+         * Scroll to a certain element inside another element.
+         * This is done this way because using anchorScroll or $location.hash sticks the scroll to go upwards.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#scrollToElement
+         * @param  {Object} container           Element to search in.
+         * @param  {String} [selector]          Selector to find the element to scroll to. If not defined, scroll to the container.
+         * @param  {Object} [scrollDelegate]    Scroll delegate. If not defined, use $ionicScrollDelegate.
+         * @param  {String} [scrollParentClass] Scroll Parent Class where to stop calculating the position. Default scroll-content.
+         * @return {Boolean}                    True if the element is found, false otherwise.
+         */
+        self.scrollToElement = function(container, selector, scrollDelegate, scrollParentClass) {
+            if (!scrollDelegate) {
+                scrollDelegate = $ionicScrollDelegate;
+            }
+
+            if (!scrollParentClass) {
+                scrollParentClass = 'scroll-content';
+            }
+
+            var element = selector ? container.querySelector(selector) : container,
+                positionTop = positionLeft = 0;
+
+            if (!element) {
+                return false;
+            }
+
+            while (element) {
+                positionLeft += (element.offsetLeft - element.scrollLeft + element.clientLeft);
+                positionTop += (element.offsetTop - element.scrollTop + element.clientTop);
+
+                element = element.offsetParent;
+                // If scrolling element is reached, stop adding tops.
+                if (angular.element(element).hasClass(scrollParentClass)) {
+                    element = false;
+                }
+            }
+
+            scrollDelegate.scrollTo(positionLeft, positionTop);
+            return true;
+        };
+
+        /**
+         * Search all the URLs in a CSS file content.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#extractUrlsFromCSS
+         * @param  {String} code CSS code.
+         * @return {String[]}    List of URLs.
+         */
+        self.extractUrlsFromCSS = function(code) {
+            // First of all, search all the url(...) occurrences that don't include "data:".
+            var urls = [],
+                matches = code.match(/url\(\s*["']?(?!data:)([^)]+)\)/igm);
+
+            // Extract the URL form each match.
+            angular.forEach(matches, function(match) {
+                var submatches = match.match(/url\(\s*['"]?([^'"]*)['"]?\s*\)/im);
+                if (submatches && submatches[1]) {
+                    urls.push(submatches[1]);
+                }
+            });
+
+            return urls;
         };
 
         return self;

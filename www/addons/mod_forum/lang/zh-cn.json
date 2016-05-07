@@ -4,13 +4,14 @@
     "cannotadddiscussionall": "您没有向所有人添加新话题的权限",
     "cannotcreatediscussion": "不能建立新话题",
     "couldnotadd": "由于一个未知的错误，您的帖子无法发表",
+    "discussionsubscription": "话题订阅",
     "erroremptymessage": "帖子正文不能为空",
     "erroremptysubject": "帖子标题不能为空。",
     "forumnodiscussionsyet": "此论坛中还没有讨论话题",
     "group": "小组",
-    "message": "内容",
+    "message": "正文",
     "posttoforum": "发到讨论区上",
     "re": "回复:",
     "reply": "回复",
-    "subject": "标题"
+    "subject": "主题"
 }

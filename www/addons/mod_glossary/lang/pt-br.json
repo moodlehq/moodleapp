@@ -1,0 +1,14 @@
+{
+    "browsemode": "Navegar nas entradas",
+    "byalphabet": "Alfabeticamente",
+    "byauthor": "Agrupar por autor",
+    "bynewestfirst": "Novos primeiro",
+    "byrecentlyupdated": "Recentemente atualizados",
+    "bysearch": "Pesquisa",
+    "entrypendingapproval": "A entrada está pendente de aprovação.",
+    "errorloadingentries": "Ocorreu um erro enquanto carregava entradas.",
+    "errorloadingentry": "Ocorreu um erro enquanto carregava a entrada.",
+    "errorloadingglossary": "Ocorreu um erro enquanto carregava a entrada.",
+    "noentriesfound": "Nenhuma entrada foi encontrada",
+    "searchquery": "Consulta de pesquisa"
+}

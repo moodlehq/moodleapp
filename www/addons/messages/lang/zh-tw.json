@@ -4,6 +4,8 @@
     "contactlistempty": "您的通訊錄是空的",
     "contactname": "聯絡人姓名",
     "contacts": "通訊錄",
+    "deletemessage": "刪除簡訊",
+    "deletemessageconfirmation": "你確定要刪除這一簡訊？它只會從你的簡訊歷史紀錄上刪除，但是那發送或接收這一簡訊的用戶仍可以看得到。",
     "messages": "我的簡訊",
     "nomessages": "沒有待處理的簡訊",
     "nousersfound": "找不到用戶",

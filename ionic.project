@@ -5,7 +5,8 @@
     "build",
     "sass",
     "watch",
-    "lang"
+    "lang",
+    "config"
   ],
   "watchPatterns": [
     "www/**/*",

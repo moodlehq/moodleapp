@@ -1,5 +1,6 @@
 {
     "allsections": "Todas las secciones",
+    "confirmdownload": "Está a punto de descargar {{size}}. ¿Está seguro de que desea continuar?",
     "confirmdownloadsection": "Está a punto de descargar {{size}}. ¿Está seguro de que desea continuar?",
     "contents": "Contenidos",
     "errordownloadingsection": "Error durante la descarga de la sección.",

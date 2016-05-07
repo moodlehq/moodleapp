@@ -21,12 +21,10 @@ angular.module('mm.core.settings')
  * @ngdoc controller
  * @name mmSettingsGeneralCtrl
  */
-.controller('mmSettingsGeneralCtrl', function($scope, $mmConfig, $mmLang, $ionicHistory, $mmEvents, mmCoreEventLanguageChanged,
-            mmCoreSettingsReportInBackground) {
+.controller('mmSettingsGeneralCtrl', function($scope, $mmLang, $ionicHistory, $mmEvents, $mmConfig, mmCoreEventLanguageChanged,
+            mmCoreSettingsReportInBackground, mmCoreConfigConstants, mmCoreSettingsDownloadSection) {
 
-    $mmConfig.get('languages').then(function(languages) {
-        $scope.langs = languages;
-    });
+    $scope.langs = mmCoreConfigConstants.languages;
 
     $mmLang.getCurrentLanguage().then(function(currentLanguage) {
         $scope.selectedLanguage = currentLanguage;
@@ -38,6 +36,14 @@ angular.module('mm.core.settings')
             $ionicHistory.clearCache();
             $mmEvents.trigger(mmCoreEventLanguageChanged);
         });
+    };
+
+    $mmConfig.get(mmCoreSettingsDownloadSection, true).then(function(downloadSectionEnabled) {
+        $scope.downloadSection = downloadSectionEnabled;
+    });
+
+    $scope.downloadSectionChanged = function(downloadSection) {
+        $mmConfig.set(mmCoreSettingsDownloadSection, downloadSection);
     };
 
     if (localStorage && localStorage.getItem && localStorage.setItem) {

@@ -1,9 +1,9 @@
 <ion-view>
     <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
     <ion-nav-buttons side="secondary">
-        <a class="button button-icon ion-ios-browsers-outline" ng-href="{{assignurl}}" mm-browser></a>
+        <a class="button button-icon ion-ios-browsers-outline" ng-href="{{assignurl}}" mm-link></a>
     </ion-nav-buttons>
-    <ion-content padding="true">
+    <ion-content padding="true" mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="assignmentLoaded" on-refresh="refreshAssignment()"></ion-refresher>
         <mm-loading hide-until="assignmentLoaded">
             <mm-course-mod-description description="description" watch="true"></mm-course-mod-description>
@@ -27,7 +27,7 @@
                     <div class="item item-divider" ng-if="$index > 0"></div>
 
                     <a class="item item-avatar" mm-user-link userid="{{submission.userid}}" courseid="{{courseid}}" title="{{submission.userfullname}}">
-                        <img ng-src="{{submission.userprofileimageurl}}" mm-external-content alt="" role="presentation">
+                        <img ng-src="{{submission.userprofileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: submission.userfullname} }}" role="presentation">
                         <p>{{submission.userfullname}}</p>
                         <div class="item-note">{{submission.status}}</div>
                         <p>{{ submission.timemodified * 1000 | mmFormatDate:"dfmediumdate" }}</p>
@@ -41,7 +41,7 @@
                 </div>
             </div>
             <div ng-if="assign && !canviewsubmissions">
-                <a class="button button-block" ng-href="{{assignurl}}" mm-browser>{{ 'mma.mod_assign.addsubmission' | translate }}</a>
+                <a class="button button-block" ng-href="{{assignurl}}" mm-link>{{ 'mma.mod_assign.addsubmission' | translate }}</a>
             </div>
         </mm-loading>
     </ion-content>

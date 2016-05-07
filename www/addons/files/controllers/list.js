@@ -19,7 +19,6 @@ angular.module('mm.addons.files')
 
     var path = $stateParams.path,
         root = $stateParams.root,
-        title,
         promise;
 
     // We're loading the files.
@@ -32,40 +31,25 @@ angular.module('mm.addons.files')
             // The path is unknown, the user must be requesting a root.
             if (root === 'site') {
                 promise = $mmaFiles.getSiteFiles();
-                title = $translate('mma.files.sitefiles');
+                $scope.title = $translate.instant('mma.files.sitefiles');
             } else if (root === 'my') {
                 promise = $mmaFiles.getMyFiles();
-                title = $translate('mma.files.myprivatefiles');
+                $scope.title = $translate.instant('mma.files.myprivatefiles');
             } else {
                 // Upon error we create a fake promise that is rejected.
                 promise = $q.reject();
-                title = (function() {
-                    var q = $q.defer();
-                    q.resolve('');
-                    return q.promise;
-                })();
             }
         } else {
             // Serve the files the user requested.
             pathdata = JSON.parse(path);
             promise = $mmaFiles.getFiles(pathdata);
-
-            // Put the title in a promise to act like translate does.
-            title = (function() {
-                var q = $q.defer();
-                q.resolve($stateParams.title);
-                return q.promise;
-            })();
+            $scope.title = $stateParams.title;
         }
 
-        return $q.all([promise, title]).then(function(data) {
-            var files = data[0],
-                title = data[1];
-
+        return promise.then(function(files) {
             $scope.files = files.entries;
             $scope.count = files.count;
-            $scope.title = title;
-        }, function() {
+        }).catch(function() {
             $mmUtil.showErrorModal('mma.files.couldnotloadfiles', true);
         });
     }
@@ -84,7 +68,7 @@ angular.module('mm.addons.files')
 
     // Update list if we come from upload page (we don't know if user upoaded a file or not).
     // List is invalidated in upload state after uploading a file.
-    $scope.$on('$ionicView.enter', function(e) {
+    $scope.$on('$ionicView.enter', function() {
         var forwardView = $ionicHistory.forwardView();
         if (forwardView && forwardView.stateName === mmaFilesUploadStateName) {
             $scope.filesLoaded = false;

@@ -1,0 +1,7 @@
+{
+    "chooseaccount": "Sélectionner un compte",
+    "chooseaccounttoopenlink": "Sélectionner un compte avec lequel ouvrir le lien.",
+    "confirmurlothersite": "Ce lien provient d'un autre site. Voulez-vous l'ouvrir ?",
+    "errornoactions": "Impossible de trouver une action à effectuer avec ce lien.",
+    "errornosites": "Impossible de trouver un site pour traiter ce lien."
+}

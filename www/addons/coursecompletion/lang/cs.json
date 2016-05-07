@@ -1,17 +1,21 @@
 {
-    "complete": "Podrobný",
+    "complete": "Absolvováno",
+    "completecourse": "Absolvovaný kurz",
     "completed": "Splněno",
+    "completiondate": "Datum ukončení",
+    "couldnotloadreport": "Nelze načíst zprávu o absolvování kurzu, zkuste to prosím později.",
     "coursecompletion": "Absolvování kurzu",
-    "criteria": "Podmínky",
+    "criteria": "Kritéria",
     "criteriagroup": "Skupina podmínek",
-    "criteriarequiredall": "Všechny podmínky jsou požadovány",
-    "criteriarequiredany": "Libovolná podmínka je požadována",
+    "criteriarequiredall": "Jsou požadovány všechny podmínky",
+    "criteriarequiredany": "Je požadována libovolná podmínka",
     "inprogress": "Probíhá",
     "manualselfcompletion": "Ručně nastavené absolvování kurzu samotným studentem",
     "notyetstarted": "Zatím nezačalo",
     "pending": "Čeká",
-    "required": "Vyžadováno",
+    "required": "Požadováno",
     "requiredcriteria": "Požadovaná kriteria",
-    "status": "Stav",
-    "viewcoursereport": "Zobrazit přehled kurzu"
+    "requirement": "Požadavek",
+    "status": "Status",
+    "viewcoursereport": "Zobrazit sestavu kurzu"
 }

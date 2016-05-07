@@ -7,5 +7,6 @@
     "notes": "Anteckningar",
     "personalnotes": "Personliga anteckningar",
     "publishstate": "Sammanhang",
-    "sitenotes": "Webbplats anteckningar"
+    "sitenotes": "Webbplats anteckningar",
+    "userwithid": "Användare med ID {{id}}"
 }

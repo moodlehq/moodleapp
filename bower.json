@@ -4,7 +4,7 @@
   "devDependencies": {
     "ionic": "driftyco/ionic-bower#v1.1.1",
     "ydn.db": ">=1.0.3",
-    "ngCordova": ">=0.1.12-alpha",
+    "ngCordova": ">=0.1.24-alpha",
     "angular-mocks": "1.4.3",
     "angular-md5": "0.1.8",
     "angular-translate": ">=2.7.0",

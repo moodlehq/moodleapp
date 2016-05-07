@@ -1,6 +1,6 @@
 <ion-view view-title="{{ 'mma.participants.participants' | translate }}">
     <mm-split-view load-when="participantsLoaded" component="mmaParticipantsList">
-        <ion-content>
+        <ion-content mm-state-class>
             <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="participantsLoaded" on-refresh="refreshParticipants()">
             </ion-refresher>
             <mm-loading hide-until="participantsLoaded">
@@ -8,7 +8,7 @@
                 <ul class="list" ng-if="participants && participants.length > 0">
                     <li ng-repeat="participant in participants">
                         <a class="item item-avatar" mm-split-view-link="{{userStateName}}({courseid: courseid, userid: participant.id})" title="{{participant.fullname}}">
-                            <img ng-src="{{participant.profileimageurl}}" alt="" mm-external-content>
+                            <img ng-src="{{participant.profileimageurl}}" alt="{{ 'mm.core.pictureof' | translate:{$a: participant.fullname} }}" mm-external-content>
                             <mm-format-text>{{participant.fullname}}</mm-format-text>
                         </a>
                     </li>

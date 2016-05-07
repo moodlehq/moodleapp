@@ -1,19 +1,15 @@
 <ion-view>
     <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
     <ion-nav-buttons side="secondary">
-        <a ng-href="{{externalUrl}}" class="button button-icon ion-ios-browsers-outline" mm-browser></a>
+        <a ng-href="{{externalUrl}}" class="button button-icon ion-ios-browsers-outline" mm-link></a>
     </ion-nav-buttons>
-    <ion-content padding="true">
+    <ion-content padding="true" mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" on-refresh="doRefresh()" ng-if="loaded"></ion-refresher>
         <mm-loading hide-until="loaded">
             <mm-course-mod-description description="description"></mm-course-mod-description>
 
             <div ng-if="mode == 'iframe'">
                 <mm-iframe src="src"></mm-iframe>
-            </div>
-
-            <div ng-if="mode == 'inline'">
-                <mm-format-text class="mm-content-with-float" watch="true" component="{{ component }}" component-id="{{ componentId }}">{{ content }}</mm-format-text>
             </div>
 
             <div ng-if="mode == 'external'">

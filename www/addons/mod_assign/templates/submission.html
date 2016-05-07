@@ -1,6 +1,6 @@
 <ion-view>
     <ion-nav-title>{{ title }}</ion-nav-title>
-    <ion-content padding="true">
+    <ion-content padding="true" mm-state-class>
         <p><mm-format-text class="mm-content-with-float" watch="true">{{ submission.text }}</mm-format-text></p>
         <mm-file ng-repeat="attachment in submission.attachments" file="attachment" component="{{component}}" component-id="{{submission.id}}"></mm-file>
     </ion-content>
