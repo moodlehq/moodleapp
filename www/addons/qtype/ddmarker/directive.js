@@ -30,7 +30,6 @@ angular.module('mm.addons.qtype_ddmarker')
         templateUrl: 'addons/qtype/ddmarker/template.html',
         link: function(scope) {
             var ddarea, ddform, wrongparts, questionEl,
-                readonly = false,
                 dropzones = [],
                 question = scope.question;
 
@@ -57,20 +56,21 @@ angular.module('mm.addons.qtype_ddmarker')
                 question.ddarea += wrongparts.outerHTML;
             }
             question.ddarea += ddform.outerHTML;
+            question.readonly = false;
 
             if (question.initObjects) {
                 if (typeof question.initObjects.dropzones != 'undefined') {
                     dropzones = question.initObjects.dropzones;
                 }
                 if (typeof question.initObjects.readonly != 'undefined') {
-                    readonly = question.initObjects.readonly;
+                    question.readonly = question.initObjects.readonly;
                 }
             }
 
             question.loaded = false;
 
             $timeout(function() {
-                $mmaQtypeDdmarkerRender.init_question(question, readonly, dropzones);
+                $mmaQtypeDdmarkerRender.init_question(question, question.readonly, dropzones);
             });
         }
     };

@@ -30,7 +30,6 @@ angular.module('mm.addons.qtype_ddimageortext')
         templateUrl: 'addons/qtype/ddimageortext/template.html',
         link: function(scope) {
             var ddarea, questionEl,
-                readonly = false,
                 drops = [],
                 question = scope.question;
 
@@ -50,20 +49,21 @@ angular.module('mm.addons.qtype_ddimageortext')
             }
 
             question.ddarea = ddarea.outerHTML;
+            question.readonly = false;
 
             if (question.initObjects) {
                 if (typeof question.initObjects.drops != 'undefined') {
                     drops = question.initObjects.drops;
                 }
                 if (typeof question.initObjects.readonly != 'undefined') {
-                    readonly = question.initObjects.readonly;
+                    question.readonly = question.initObjects.readonly;
                 }
             }
 
             question.loaded = false;
 
             $timeout(function() {
-                var qi = $mmaQtypeDdimageortextRender.init_question(question, readonly, drops);
+                var qi = $mmaQtypeDdimageortextRender.init_question(question, question.readonly, drops);
 
                 scope.$on('$destroy', function() {
                     qi.stop_polling();
