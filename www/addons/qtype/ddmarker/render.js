@@ -115,6 +115,7 @@ angular.module('mm.addons.qtype_ddmarker')
                     instance.redraw_drags_and_drops();
                 });
                 instance.afterimageloaddone = true;
+                question.loaded = true;
             });
             $timeout(function() {
                 instance.poll_for_image_load();

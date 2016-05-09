@@ -78,6 +78,7 @@ angular.module('mm.addons.qtype_ddimageortext')
             if (this.toload <= 0) {
                 this.create_all_drag_and_drops();
                 this.afterimageloaddone = true;
+                question.loaded = true;
             }
 
             $timeout(function() {
@@ -177,7 +178,7 @@ angular.module('mm.addons.qtype_ddimageortext')
                     divdrag.addClass('draginstance' + draginstanceno);
                     divdrag.addClass('drag');
 
-                    divdrag.css('visibility', 'visible').css('position', 'absolute');
+                    divdrag.css('visibility', 'inherit').css('position', 'absolute');
                     divdrag.attr('draginstanceno', draginstanceno);
                     divdrag.attr('dragitemno', dragitemno);
                     draghome.after(divdrag);
