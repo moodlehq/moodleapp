@@ -380,8 +380,8 @@ angular.module('mm.core.question')
 
         var answers = {};
 
-        angular.forEach(form.elements, function(element, name) {
-            name = element.name || name;
+        angular.forEach(form.elements, function(element) {
+            var name = element.name || '';
             // Ignore flag and submit inputs.
             if (!name || name.match(/_:flagged$/) || element.type == 'submit' || element.tagName == 'BUTTON') {
                 return;
@@ -548,10 +548,10 @@ angular.module('mm.core.question')
         form.innerHTML = question.html;
 
         // Search all input elements.
-        angular.forEach(form.elements, function(element, name) {
-            name = element.name || name;
+        angular.forEach(form.elements, function(element) {
+            var name = element.name || '';
             // Ignore flag and submit inputs.
-            if (name.match(/_:flagged$/) || element.type == 'submit' || element.tagName == 'BUTTON') {
+            if (!name || name.match(/_:flagged$/) || element.type == 'submit' || element.tagName == 'BUTTON') {
                 return;
             }
 
