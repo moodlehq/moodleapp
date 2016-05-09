@@ -67,6 +67,8 @@ angular.module('mm.addons.qtype_ddmarker')
                 }
             }
 
+            question.loaded = false;
+
             $timeout(function() {
                 $mmaQtypeDdmarkerRender.init_question(question, readonly, dropzones);
             });
