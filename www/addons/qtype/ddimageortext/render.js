@@ -38,6 +38,11 @@ angular.module('mm.addons.qtype_ddimageortext')
         this.initializer = function(question) {
             this.doc = this.doc_structure(question.number ? question.number : 'i');
 
+            if (this.readonly) {
+                var container = angular.element(this.doc.top_node());
+                container.addClass('readonly');
+            }
+
             // Wait the DOM to be rendered.
             $timeout(function() {
                 var bgimg = instance.doc.bg_img();

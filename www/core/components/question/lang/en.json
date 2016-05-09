@@ -6,6 +6,7 @@
 	"correct": "Correct",
 	"errorquestionnotsupported": "This type of question isn't supported by the app in your site: {{$a}}.",
 	"feedback": "Feedback",
+	"howtodraganddrop": "Tap to select then tap to drop.",
 	"incorrect": "Incorrect",
 	"invalidanswer": "Incomplete answer",
 	"notanswered": "Not answered",

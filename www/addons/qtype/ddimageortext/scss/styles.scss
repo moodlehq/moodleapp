@@ -92,6 +92,9 @@
     z-index: 1;
     cursor: pointer;
   }
+  .readonly .dropzone {
+    cursor: auto;
+  }
 
   div.dragitems div.draghome, div.dragitems div.drag {
     font:13px/1.231 arial,helvetica,clean,sans-serif;
