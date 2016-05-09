@@ -26,7 +26,8 @@ angular.module('mm.core')
 
     $log = $log.getInstance('$mmWS');
 
-    var self = {};
+    var self = {},
+        mimeTypeCache = {}; // A "cache" to store file mimetypes to prevent performing too many HEAD requests.
 
     /**
      * A wrapper function for a moodle WebService call.
@@ -237,12 +238,19 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmWS#getRemoteFileMimeType
-     * @param {Object} url File URL.
-     * @return {Promise}   Promise resolved with the mimetype or '' if failure.
+     * @param  {Object} url          File URL.
+     * @param  {Boolean} ignoreCache True to ignore cache, false otherwise.
+     * @return {Promise}             Promise resolved with the mimetype or '' if failure.
      */
-    self.getRemoteFileMimeType = function(url) {
+    self.getRemoteFileMimeType = function(url, ignoreCache) {
+        if (mimeTypeCache[url] && !ignoreCache) {
+            promise = $q.when(mimeTypeCache[url]);
+        }
+
         return $http.head(url).then(function(data) {
-            return data.headers('Content-Type') || '';
+            var mimeType = data.headers('Content-Type');
+            mimeTypeCache[url] = mimeType;
+            return mimeType || '';
         }).catch(function() {
             return '';
         });

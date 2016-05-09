@@ -337,10 +337,17 @@ angular.module('mm.core')
     self.guessExtensionFromUrl = function(fileUrl) {
         var split = fileUrl.split('.'),
             candidate,
-            extension;
+            extension,
+            position;
 
         if (split.length > 1) {
             candidate = split.pop().toLowerCase();
+            // Remove params if any.
+            position = candidate.indexOf('?');
+            if (position > -1) {
+                candidate = candidate.substr(0, position);
+            }
+
             if (extensionRegex.test(candidate)) {
                 extension = candidate;
             }

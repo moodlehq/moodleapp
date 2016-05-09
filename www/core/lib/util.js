@@ -277,20 +277,12 @@ angular.module('mm.core')
          * @name $mmUtil#openFile
          * @param  {String} path The local path of the file to be open.
          * @return {Void}
+         * @todo Restore node-webkit support.
          */
         self.openFile = function(path) {
             var deferred = $q.defer();
 
-            if (false) {
-                // TODO Restore node-webkit support.
-
-                // Link is the file path in the file system.
-                // We use the node-webkit shell for open the file (pdf, doc) using the default application configured in the os.
-                // var gui = require('nw.gui');
-                // gui.Shell.openItem(path);
-                deferred.resolve();
-
-            } else if (window.plugins) {
+            if (window.plugins) {
                 var extension = $mmFS.getFileExtension(path),
                     mimetype = $mmFS.getMimeType(extension);
 
@@ -425,30 +417,24 @@ angular.module('mm.core')
 
         /**
          * Open an online file using platform specific method.
+         * Specially useful for audio and video since they can be streamed.
          *
          * node-webkit: Using the default application configured.
          * Android: Using the WebIntent plugin.
-         * iOs: Using the window.open method.
+         * iOS: Using the window.open method (InAppBrowser)
+         *      We don't use iOS quickview framework because it doesn't support streaming.
          *
          * @module mm.core
          * @ngdoc method
          * @name $mmUtil#openOnlineFile
          * @param  {String} url The URL of the file.
          * @return {Promise}    Promise resolved when opened.
+         * @todo Restore node-webkit support.
          */
         self.openOnlineFile = function(url) {
             var deferred = $q.defer();
 
-            if (false) {
-                // @todo Restore node-webkit support.
-
-                // Link is the file path in the file system.
-                // We use the node-webkit shell for open the file (pdf, doc) using the default application configured in the os.
-                // var gui = require('nw.gui');
-                // gui.Shell.openItem(path);
-                deferred.resolve();
-
-            } else if (ionic.Platform.isAndroid() && window.plugins && window.plugins.webintent) {
+            if (ionic.Platform.isAndroid() && window.plugins && window.plugins.webintent) {
                 // In Android we need the mimetype to open it.
                 var extension,
                     iParams;
@@ -494,6 +480,27 @@ angular.module('mm.core')
             }
 
             return deferred.promise;
+        };
+
+        /**
+         * Get the mimetype of a file given its URL. It'll perform a HEAD request to get it, if that
+         * fails it'll try to guess it using the URL.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#getMimeType
+         * @param  {String} url The URL of the file.
+         * @return {Promise}    Promise resolved with the mimetype.
+         */
+        self.getMimeType = function(url) {
+            return $mmWS.getRemoteFileMimeType(url).then(function(mimetype) {
+                if (!mimetype) {
+                    // Couldn't retireve mimetype. Try to guess it.
+                    extension = $mmText.guessExtensionFromUrl(url);
+                    mimetype = $mmFS.getMimeType(extension);
+                }
+                return mimetype || '';
+            });
         };
 
         /**

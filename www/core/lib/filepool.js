@@ -2322,6 +2322,37 @@ angular.module('mm.core')
     };
 
     /**
+     * Convenience function to check if a file should be downloaded before opening it.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#shouldDownloadBeforeOpen
+     * @param  {String} url  File online URL.
+     * @param  {Number} size File size.
+     * @return {Promise}     Promise resolved if should download before open, rejected otherwise.
+     * @description
+     * Convenience function to check if a file should be downloaded before opening it.
+     *
+     * The default behaviour in the app is to download first and then open the local file in the following cases:
+     *     - The file is small (less than mmFilepoolDownloadThreshold).
+     *     - The file cannot be streamed.
+     * If the file is big and can be streamed, the promise returned by this function will be rejected.
+     */
+    self.shouldDownloadBeforeOpen = function(url, size) {
+        if (size >= 0 && size <= mmFilepoolDownloadThreshold) {
+            // The file is small, download it.
+            return $q.when();
+        }
+
+        return $mmUtil.getMimeType(url).then(function(mimetype) {
+            // If the file is streaming (audio or video) we reject.
+            if (mimetype.indexOf('video') != -1 || mimetype.indexOf('audio') != -1) {
+                return $q.reject();
+            }
+        });
+    };
+
+    /**
      * Store package status.
      *
      * @module mm.core
