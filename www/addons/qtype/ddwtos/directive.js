@@ -30,7 +30,6 @@ angular.module('mm.addons.qtype_ddwtos')
         templateUrl: 'addons/qtype/ddwtos/template.html',
         link: function(scope) {
             var answersEl, questionEl,
-                readonly = false,
                 inputIds = [],
                 question = scope.question;
 
@@ -55,7 +54,7 @@ angular.module('mm.addons.qtype_ddwtos')
                 return self.showDirectiveError(scope);
             }
 
-            readonly = angular.element(answersEl).hasClass('readonly');
+            question.readonly = angular.element(answersEl).hasClass('readonly');
             question.answers = answersEl.outerHTML;
 
             question.text = $mmUtil.getContentsOfElement(questionEl, '.qtext');
@@ -71,7 +70,7 @@ angular.module('mm.addons.qtype_ddwtos')
             }
 
             $timeout(function() {
-                $mmaQtypeDdwtosRender.init_question(question, readonly, inputIds);
+                $mmaQtypeDdwtosRender.init_question(question, question.readonly, inputIds);
             });
         }
     };

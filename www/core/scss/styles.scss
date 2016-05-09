@@ -24,6 +24,9 @@ $bar-content-text: #fff !default;
 $item-media-width: 32px !default;
 $item-media-height: 32px !default;
 
+// Howto tips.
+$item-howto-color: #d9edf7 !default;
+
 // Messages.
 $item-message-bg: $stable !default;
 $item-message-note-text: #999 !default;
@@ -102,6 +105,24 @@ em {
     > .button,
     > .spinner {
       top: $item-padding;
+    }
+  }
+}
+
+// Howto tips.
+.item.item-howto {
+  padding-bottom: 12px;
+  padding: 9px;
+  margin-bottom: 12px;
+  background-color: $item-howto-color;
+  border-color: $item-howto-color;
+  color: #666;
+
+  &.item-icon-left {
+    padding-left: 35px;
+
+    .icon {
+      left: 4px;
     }
   }
 }
