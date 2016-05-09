@@ -60,6 +60,8 @@ angular.module('mm.addons.qtype_ddimageortext')
                 }
             }
 
+            question.loaded = false;
+
             $timeout(function() {
                 var qi = $mmaQtypeDdimageortextRender.init_question(question, readonly, drops);
 
@@ -67,8 +69,6 @@ angular.module('mm.addons.qtype_ddimageortext')
                     qi.stop_polling();
                 });
             });
-
-
         }
     };
 });
