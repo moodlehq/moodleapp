@@ -73,7 +73,7 @@ angular.module('mm.addons.mod_folder')
 
                     // Check size and show confirmation if needed.
                     var size = $mmaModFolderPrefetchHandler.getDownloadSize(module);
-                    $mmCourseHelper.prefetchModule($mmaModFolder, module, size, false);
+                    $mmCourseHelper.prefetchModule($scope, $mmaModFolder, module, size, false);
                 }
 
                 downloadBtn = {

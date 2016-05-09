@@ -68,7 +68,7 @@ angular.module('mm.addons.mod_page')
                         e.preventDefault();
                         e.stopPropagation();
                         var size = $mmaModPagePrefetchHandler.getDownloadSize(module);
-                        $mmCourseHelper.prefetchModule($mmaModPage, module, size, false);
+                        $mmCourseHelper.prefetchModule($scope, $mmaModPage, module, size, false);
                     }
                 };
 
@@ -80,7 +80,7 @@ angular.module('mm.addons.mod_page')
                         e.preventDefault();
                         e.stopPropagation();
                         var size = $mmaModPagePrefetchHandler.getDownloadSize(module);
-                        $mmCourseHelper.prefetchModule($mmaModPage, module, size, true);
+                        $mmCourseHelper.prefetchModule($scope, $mmaModPage, module, size, true);
                     }
                 };
 
