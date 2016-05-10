@@ -28,39 +28,6 @@ angular.module('mm.addons.mod_quiz')
     var self = {};
 
     /**
-     * Save an attempt data.
-     *
-     * @module mm.addons.mod_quiz
-     * @ngdoc method
-     * @name $mmaModQuizOnline#saveAttempt
-     * @param  {Number} attemptId     Attempt ID.
-     * @param  {Object} data          Data to save.
-     * @param  {Object} preflightData Preflight required data (like password).
-     * @param  {String} [siteId]      Site ID. If not defined, current site.
-     * @return {Promise}              Promise resolved in success, rejected otherwise.
-     */
-    self.saveAttempt = function(attemptId, data, preflightData, siteId) {
-        siteId = siteId || $mmSite.getId();
-
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            var params = {
-                attemptid: attemptId,
-                data: $mmUtil.objectToArrayOfObjects(data, 'name', 'value'),
-                preflightdata: $mmUtil.objectToArrayOfObjects(preflightData, 'name', 'value')
-            };
-
-            return site.write('mod_quiz_save_attempt', params).then(function(response) {
-                if (response && response.warnings && response.warnings.length) {
-                    // Reject with the first warning.
-                    return $q.reject(response.warnings[0].message);
-                } else if (!response || !response.status) {
-                    return $q.reject();
-                }
-            });
-        });
-    };
-
-    /**
      * Process an attempt, saving its data.
      *
      * @module mm.addons.mod_quiz
@@ -94,6 +61,39 @@ angular.module('mm.addons.mod_quiz')
                     return response.state;
                 }
                 return $q.reject();
+            });
+        });
+    };
+
+    /**
+     * Save an attempt data.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizOnline#saveAttempt
+     * @param  {Number} attemptId     Attempt ID.
+     * @param  {Object} data          Data to save.
+     * @param  {Object} preflightData Preflight required data (like password).
+     * @param  {String} [siteId]      Site ID. If not defined, current site.
+     * @return {Promise}              Promise resolved in success, rejected otherwise.
+     */
+    self.saveAttempt = function(attemptId, data, preflightData, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                attemptid: attemptId,
+                data: $mmUtil.objectToArrayOfObjects(data, 'name', 'value'),
+                preflightdata: $mmUtil.objectToArrayOfObjects(preflightData, 'name', 'value')
+            };
+
+            return site.write('mod_quiz_save_attempt', params).then(function(response) {
+                if (response && response.warnings && response.warnings.length) {
+                    // Reject with the first warning.
+                    return $q.reject(response.warnings[0].message);
+                } else if (!response || !response.status) {
+                    return $q.reject();
+                }
             });
         });
     };

@@ -67,6 +67,35 @@ angular.module('mm.addons.mod_quiz')
     var self = {};
 
     /**
+     * Classify the answers in questions.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizOffline#classifyAnswersInQuestions
+     * @param  {Object} answers List of answers.
+     * @return {Object}         List of questions with answers.
+     */
+    self.classifyAnswersInQuestions = function(answers) {
+        var questionsWithAnswers = {};
+
+        // Classify the answers in each question.
+        angular.forEach(answers, function(value, name) {
+            var slot = $mmQuestion.getQuestionSlotFromName(name),
+                nameWithoutPrefix = $mmQuestion.removeQuestionPrefix(name);
+
+            if (!questionsWithAnswers[slot]) {
+                questionsWithAnswers[slot] = {
+                    answers: {},
+                    prefix: name.substr(0, name.indexOf(nameWithoutPrefix))
+                };
+            }
+            questionsWithAnswers[slot].answers[nameWithoutPrefix] = value;
+        });
+
+        return questionsWithAnswers;
+    };
+
+    /**
      * Retrieve an attempt answers from site DB.
      *
      * @module mm.addons.mod_quiz
@@ -191,6 +220,33 @@ angular.module('mm.addons.mod_quiz')
             // Attempt has been saved, now we need to save the answers.
             return self.saveAnswers(quiz, attempt, questions, data, now, siteId);
         });
+    };
+
+    /**
+     * Remove an attempt and its answers from local DB.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizOffline#removeAttemptAndAnswers
+     * @param  {Number} attemptId Attempt ID.
+     * @param  {String} [siteId]  Site ID. If not defined, current site.
+     * @return {Promise}          Promise resolved when finished.
+     */
+    self.removeAttemptAndAnswers = function(attemptId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        var promises;
+
+        // Remove stored answers and questions.
+        promises.push($mmQuestion.removeAttemptAnswers(mmaModQuizComponent, attemptId, siteId));
+        promises.push($mmQuestion.removeAttemptQuestions(mmaModQuizComponent, attemptId, siteId));
+
+        // Remove the attempt.
+        promises.push($mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().remove(mmaModQuizAttemptsStore, attemptId);
+        }));
+
+        return $q.all(promises);
     };
 
     /**

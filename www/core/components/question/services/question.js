@@ -248,20 +248,25 @@ angular.module('mm.core.question')
      * @module mm.core.question
      * @ngdoc method
      * @name $mmQuestion#convertAnswersArrayToObject
-     * @param  {Object[]} answers List of answers.
-     * @return {Object}           Object with name -> value.
+     * @param  {Object[]} answers     List of answers.
+     * @param  {Boolean} removePrefix True if prefix should be removed, false otherwise.
+     * @return {Object}               Object with name -> value.
      */
-    self.convertAnswersArrayToObject = function(answers) {
+    self.convertAnswersArrayToObject = function(answers, removePrefix) {
         var result = {};
         angular.forEach(answers, function(answer) {
-            var nameWithoutPrefix = self.removeQuestionPrefix(answer.name);
-            result[nameWithoutPrefix] = answer.value;
+            if (removePrefix) {
+                var nameWithoutPrefix = self.removeQuestionPrefix(answer.name);
+                result[nameWithoutPrefix] = answer.value;
+            } else {
+                result[answer.name] = answer.value;
+            }
         });
         return result;
     };
 
     /**
-     * Retrieve an attempt answers from site DB.
+     * Retrieve an answer from site DB.
      *
      * @module mm.core.question
      * @ngdoc method
@@ -338,7 +343,7 @@ angular.module('mm.core.question')
     };
 
     /**
-     * Retrieve an attempt questions from site DB.
+     * Retrieve a question from site DB.
      *
      * @module mm.core.question
      * @ngdoc method
@@ -478,6 +483,94 @@ angular.module('mm.core.question')
      */
     self.isSameResponse = function(question, prevAnswers, newAnswers) {
         return $mmQuestionDelegate.isSameResponse(question, prevAnswers, newAnswers);
+    };
+
+    /**
+     * Remove an attempt answers from site DB.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestion#removeAttemptAnswers
+     * @param  {String} component Component the attempt belongs to.
+     * @param  {Number} attemptId Attempt ID.
+     * @param  {String} [siteId]  Site ID. If not defined, current site.
+     * @return {Promise}          Promise resolved when done.
+     */
+    self.removeAttemptAnswers = function(component, attemptId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return self.getAttemptAnswers(component, attemptId, siteId),then(function(answers) {
+            var promises = [];
+            angular.forEach(answers, function(answer) {
+                promises.push(self.removeAnswer(component, attemptId, answer.name, siteId));
+            });
+
+            return $q.all(promises);
+        });
+    };
+
+    /**
+     * Remove an attempt questions from site DB.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestion#removeAttemptQuestions
+     * @param  {String} component Component the attempt belongs to.
+     * @param  {Number} attemptId Attempt ID.
+     * @param  {String} [siteId]  Site ID. If not defined, current site.
+     * @return {Promise}          Promise resolved when done.
+     */
+    self.removeAttemptQuestions = function(component, attemptId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return self.getAttemptQuestions(component, attemptId, siteId),then(function(questions) {
+            var promises = [];
+            angular.forEach(questions, function(question) {
+                promises.push(self.removeQuestion(component, attemptId, question.slot, siteId));
+            });
+
+            return $q.all(promises);
+        });
+    };
+
+    /**
+     * Remove an answer from site DB.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestion#removeAnswer
+     * @param  {String} component Component the attempt belongs to.
+     * @param  {Number} attemptId Attempt ID.
+     * @param  {String} name      Answer's name.
+     * @param  {String} [siteId]  Site ID. If not defined, current site.
+     * @return {Promise}          Promise resolved with the answers.
+     */
+    self.removeAnswer = function(component, attemptId, name, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().remove(mmQuestionAnswersStore, [component, attemptId, name]);
+        });
+    };
+
+    /**
+     * Remove a question from site DB.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestion#removeQuestion
+     * @param  {String} component Component the attempt belongs to.
+     * @param  {Number} attemptId Attempt ID.
+     * @param  {Number} slot      Question slot.
+     * @param  {String} [siteId]  Site ID. If not defined, current site.
+     * @return {Promise}          Promise resolved with the questions.
+     */
+    self.removeQuestion = function(component, attemptId, slot, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().remove(mmQuestionStore, [component, attemptId, slot]);
+        });
     };
 
     /**

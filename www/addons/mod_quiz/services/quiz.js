@@ -27,7 +27,8 @@ angular.module('mm.addons.mod_quiz')
 
     $log = $log.getInstance('$mmaModQuiz');
 
-    var self = {};
+    var self = {},
+        blockedQuizzes = {};
 
     // Constants.
 
@@ -51,6 +52,40 @@ angular.module('mm.addons.mod_quiz')
     self.QUIZ_SHOW_TIME_BEFORE_DEADLINE = 3600;
 
     /**
+     * Block a quiz so it cannot be synced.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#blockQuiz
+     * @param  {String} siteId Site ID.
+     * @param  {Number} quizId Quiz ID.
+     * @return {Void}
+     */
+    self.blockQuiz = function(siteId, quizId) {
+        if (!blockedQuizzes[siteId]) {
+            blockedQuizzes[siteId] = {};
+        }
+        blockedQuizzes[siteId][quizId] = true;
+    };
+
+    /**
+     * Clear blocked quizzes.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#clearBlockedQuizzes
+     * @param {String} [siteId] If set, clear the blocked quizzes only for this site. Otherwise clear all quizzes.
+     * @return {Void}
+     */
+    self.clearBlockedQuizzes = function(siteId) {
+        if (siteId) {
+            delete blockedQuizzes[siteId];
+        } else {
+            blockedQuizzes = {};
+        }
+    };
+
+    /**
      * Formats a grade to be displayed.
      *
      * @module mm.addons.mod_quiz
@@ -65,6 +100,41 @@ angular.module('mm.addons.mod_quiz')
             return $translate.instant('mma.mod_quiz.notyetgraded');
         }
         return $mmUtil.roundToDecimals(grade, decimals);
+    };
+
+    /**
+     * Get attempt questions. Returns all of them or just the ones in certain pages.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#getAllQuestionsData
+     * @param  {Object} attempt       Attempt.
+     * @param  {Object} preflightData Preflight required data (like password).
+     * @param  {Number[]} [pages]     List of pages to get. If not defined, all pages.
+     * @param  {Boolean} offline      True if it should return cached data. Has priority over ignoreCache.
+     * @param  {Boolean} ignoreCache  True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String} [siteId]      Site ID. If not defined, current site.
+     * @return {Promise}              Promise resolved with the questions.
+     */
+    self.getAllQuestionsData = function(attempt, preflightData, pages, offline, ignoreCache, siteId) {
+        var promises = [],
+            questions = {};
+
+        if (!pages) {
+            pages = self.getPagesFromLayout(attempt.layout);
+        }
+
+        pages.forEach(function(page) {
+            promises.push(self.getAttemptData(attempt.id, page, preflightData, offline, ignoreCache, siteId).then(function(data) {
+                angular.forEach(data.questions, function(question) {
+                    questions[question.slot] = question;
+                });
+            }));
+        });
+
+        return $q.all(promises).then(function() {
+            return questions;
+        });
     };
 
     /**
@@ -936,6 +1006,43 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Given an attempt's layout and a list of questions identified by question slot,
+     * return the list of pages that have at least 1 of the questions.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#getPagesFromLayoutAndQuestions
+     * @param  {String} layout    Attempt's layout.
+     * @param  {Object} questions List of questions. It needs to be an object where the keys are question slot.
+     * @return {Number[]}         Pages.
+     * @description
+     * An attempt's layout is a string with the question numbers separated by commas. A 0 indicates a change of page.
+     * Example: 1,2,3,0,4,5,6,0
+     * In the example above, first page has questions 1, 2 and 3. Second page has questions 4, 5 and 6.
+     *
+     * This function returns a list of pages.
+     */
+    self.getPagesFromLayoutAndQuestions = function(layout, questions) {
+        var split = layout.split(','),
+            page = 0,
+            pageAdded = false,
+            pages = [];
+
+        for (var i = 0; i < split.length; i++) {
+            var value = split[i];
+            if (value == 0) {
+                page++;
+                pageAdded = false;
+            } else if (!pageAdded && questions[value]) {
+                pages.push(page);
+                pageAdded = true;
+            }
+        }
+
+        return pages;
+    };
+
+    /**
      * Given a list of question types, returns the types that aren't supported.
      *
      * @module mm.addons.mod_quiz
@@ -1099,6 +1206,44 @@ angular.module('mm.addons.mod_quiz')
 
             return site.read('mod_quiz_get_user_best_grade', params, preSets);
         });
+    };
+
+    /**
+     * Invalidates all the data related to a certain quiz.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#invalidateAllQuizData
+     * @param {Number} quizId      Quiz ID.
+     * @param {Number} [courseId]  Course ID.
+     * @param {Number} [attemptId] Attempt ID to invalidate some WS calls.
+     * @param {String} [siteId]    Site ID. If not defined, current site.
+     * @param {Number} [userId]    User ID. If not defined use site's current user.
+     * @return {Promise}           Promise resolved when the data is invalidated.
+     */
+    self.invalidateAllQuizData = function(quizId, courseId, attemptId, siteId, userId) {
+        siteId = siteId || $mmSite.getId();
+        var promises = [];
+
+        promises.push(self.invalidateAttemptAccessInformation(quizId, siteId));
+        promises.push(self.invalidateCombinedReviewOptionsForUser(quizId, siteId, userId));
+        promises.push(self.invalidateFeedback(quizId, siteId));
+        promises.push(self.invalidateQuizAccessInformation(quizId, siteId));
+        promises.push(self.invalidateQuizRequiredQtypes(quizId, siteId));
+        promises.push(self.invalidateUserAttemptsForUser(quizId, siteId, userId));
+        promises.push(self.invalidateUserBestGradeForUser(quizId, siteId, userId));
+
+        if (attemptId) {
+            promises.push(self.invalidateAttemptData(attemptId, siteId));
+            promises.push(self.invalidateAttemptReview(attemptId, siteId));
+            promises.push(self.invalidateAttemptSummary(attemptId, siteId));
+        }
+
+        if (courseId) {
+            promises.push(self.invalidateGradeFromGradebook(courseId, siteId, userId));
+        }
+
+        return $q.all(promises);
     };
 
     /**
@@ -1547,6 +1692,23 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Check if a quiz is blocked by a writing function.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#isQuizBlocked
+     * @param  {String} siteId Site ID.
+     * @param  {Number} quizId Quiz ID.
+     * @return {Boolean}         True if blocked, false otherwise.
+     */
+    self.isQuizBlocked = function(siteId, quizId) {
+        if (!blockedQuizzes[siteId]) {
+            return false;
+        }
+        return !!blockedQuizzes[siteId][quizId];
+    };
+
+    /**
      * Check if a quiz is enabled to be used in offline.
      *
      * @module mm.addons.mod_quiz
@@ -1805,6 +1967,46 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Prefetches some data for a quiz and its last attempt.
+     * This function will NOT start a new attempt, it only reads data for the quiz and the last attempt.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#prefetchQuizAndLastAttempt
+     * @param  {Object} quiz     Quiz.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when done.
+     */
+    self.prefetchQuizAndLastAttempt = function(quiz, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        var attempts,
+            promises = [];
+
+        // Get quiz data.
+        promises.push(self.getQuizAccessInformation(quiz.id, false, true, siteId));
+        promises.push(self.getQuizRequiredQtypes(quiz.id, true, siteId));
+        promises.push(self.getCombinedReviewOptions(quiz.id, true, siteId));
+        promises.push(self.getUserBestGrade(quiz.id, true, siteId));
+        promises.push(self.getUserAttempts(quiz.id, 'all', true, false, true, siteId).then(function(atts) {
+            attempts = atts;
+        }));
+        promises.push(self.getGradeFromGradebook(quiz.course, quiz.coursemodule, true, siteId).then(function(gradebookData) {
+            if (typeof gradebookData.grade != 'undefined') {
+                return self.getFeedbackForGrade(quiz.id, gradebookData.grade, true, siteId);
+            }
+        }));
+        promises.push(self.getAttemptAccessInformation(quiz.id, 0, false, true, siteId)); // Last attempt.
+
+        return $q.all(promises).then(function() {
+            if (attempts && attempts.length) {
+                // Get data for last attempt.
+                return self.prefetchAttempt(quiz, attempts[attempts.length - 1], siteId);
+            }
+        });
+    };
+
+    /**
      * Process an attempt, saving its data.
      *
      * @module mm.addons.mod_quiz
@@ -1821,11 +2023,19 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}              Promise resolved in success, rejected otherwise.
      */
     self.processAttempt = function(quiz, attempt, data, preflightData, finish, timeup, offline, siteId) {
+        var promise;
+
+        self.blockQuiz(siteId, quiz.id); // Block quiz so it cannot be synced.
+
         if (offline) {
-            return processOfflineAttempt(quiz, attempt, data, preflightData, finish, siteId);
+            promise = processOfflineAttempt(quiz, attempt, data, preflightData, finish, siteId);
         } else {
-            return $mmaModQuizOnline.processAttempt(attempt.id, data, preflightData, finish, timeup, siteId);
+            promise = $mmaModQuizOnline.processAttempt(attempt.id, data, preflightData, finish, timeup, siteId);
         }
+
+        return promise.finally(function() {
+            self.unblockQuiz(siteId, quiz.id);
+        });
     };
 
     /**
@@ -1915,11 +2125,19 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}              Promise resolved in success, rejected otherwise.
      */
     self.saveAttempt = function(quiz, attempt, data, preflightData, offline, siteId) {
+        var promise;
+
+        self.blockQuiz(siteId, quiz.id); // Block quiz so it cannot be synced.
+
         if (offline) {
-            return processOfflineAttempt(quiz, attempt, data, preflightData, false, siteId);
+            promise = processOfflineAttempt(quiz, attempt, data, preflightData, false, siteId);
         } else {
-            return $mmaModQuizOnline.saveAttempt(attempt.id, data, preflightData, siteId);
+            promise = $mmaModQuizOnline.saveAttempt(attempt.id, data, preflightData, siteId);
         }
+
+        return promise.finally(function() {
+            self.unblockQuiz(siteId, quiz.id);
+        });
     };
 
     /**
@@ -1972,6 +2190,22 @@ angular.module('mm.addons.mod_quiz')
                 return $q.reject();
             });
         });
+    };
+
+    /**
+     * Unblock a quiz so it can be synced.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#unblockQuiz
+     * @param  {String} siteId Site ID.
+     * @param  {Number} quizId Quiz ID.
+     * @return {Void}
+     */
+    self.unblockQuiz = function(siteId, quizId) {
+        if (blockedQuizzes[siteId]) {
+            blockedQuizzes[siteId][quizId] = false;
+        }
     };
 
     return self;

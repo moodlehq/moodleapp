@@ -92,7 +92,7 @@ angular.module('mm.core.question')
                     // Load local answers if offline is enabled.
                     if (offline) {
                         promise = $mmQuestion.getQuestionAnswers(component, attemptId, question.slot).then(function(answers) {
-                            question.localAnswers = $mmQuestion.convertAnswersArrayToObject(answers);
+                            question.localAnswers = $mmQuestion.convertAnswersArrayToObject(answers, true);
                         }).catch(function() {
                             question.localAnswers = {};
                         });
