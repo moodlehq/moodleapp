@@ -58,7 +58,7 @@ angular.module('mm.addons.qbehaviour_deferredfeedback')
                 prevBasicAnswers,
                 newBasicAnswers = $mmQuestion.getBasicAnswers(question.answers);
 
-            prevAnswers = $mmQuestion.convertAnswersArrayToObject(prevAnswers);
+            prevAnswers = $mmQuestion.convertAnswersArrayToObject(prevAnswers, true);
             prevBasicAnswers = $mmQuestion.getBasicAnswers(prevAnswers);
 
             // Check if answers haven't changed.

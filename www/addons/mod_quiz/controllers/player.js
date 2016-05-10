@@ -23,8 +23,7 @@ angular.module('mm.addons.mod_quiz')
  */
 .controller('mmaModQuizPlayerCtrl', function($log, $scope, $stateParams, $mmaModQuiz, $mmaModQuizHelper, $q, $mmUtil,
             $ionicPopover, $ionicScrollDelegate, $rootScope, $ionicPlatform, $translate, $timeout, $mmQuestionHelper,
-            $mmaModQuizAutoSave, $mmEvents, mmaModQuizAttemptFinishedEvent, $mmSideMenu, $mmaModQuizOnline,
-            mmaModQuizComponent) {
+            $mmaModQuizAutoSave, $mmEvents, mmaModQuizAttemptFinishedEvent, $mmSideMenu, mmaModQuizComponent) {
     $log = $log.getInstance('mmaModQuizPlayerCtrl');
 
     var quizId = $stateParams.quizid,
@@ -324,7 +323,7 @@ angular.module('mm.addons.mod_quiz')
             answers[name] = value;
 
             // Behaviour checks are always in online.
-            $mmaModQuizOnline.processAttempt(attempt.id, answers, $scope.preflightData, false, false).then(function() {
+            $mmaModQuiz.processAttempt(quiz, attempt, answers, $scope.preflightData, false, false, false).then(function() {
                 // Reload the current page.
                 var scrollPos = scrollView.getScrollPosition();
                 $scope.dataLoaded = false;
