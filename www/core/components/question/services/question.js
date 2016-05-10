@@ -499,7 +499,7 @@ angular.module('mm.core.question')
     self.removeAttemptAnswers = function(component, attemptId, siteId) {
         siteId = siteId || $mmSite.getId();
 
-        return self.getAttemptAnswers(component, attemptId, siteId),then(function(answers) {
+        return self.getAttemptAnswers(component, attemptId, siteId).then(function(answers) {
             var promises = [];
             angular.forEach(answers, function(answer) {
                 promises.push(self.removeAnswer(component, attemptId, answer.name, siteId));
@@ -523,7 +523,7 @@ angular.module('mm.core.question')
     self.removeAttemptQuestions = function(component, attemptId, siteId) {
         siteId = siteId || $mmSite.getId();
 
-        return self.getAttemptQuestions(component, attemptId, siteId),then(function(questions) {
+        return self.getAttemptQuestions(component, attemptId, siteId).then(function(questions) {
             var promises = [];
             angular.forEach(questions, function(question) {
                 promises.push(self.removeQuestion(component, attemptId, question.slot, siteId));
@@ -570,6 +570,29 @@ angular.module('mm.core.question')
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.getDb().remove(mmQuestionStore, [component, attemptId, slot]);
+        });
+    };
+
+    /**
+     * Remove a question answers from site DB.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestion#removeQuestionAnswers
+     * @param  {String} component Component the attempt belongs to.
+     * @param  {Number} attemptId Attempt ID.
+     * @param  {Number} slot      Question slot.
+     * @param  {String} [siteId]  Site ID. If not defined, current site.
+     * @return {Promise}          Promise resolved with the questions.
+     */
+    self.removeQuestionAnswers = function(component, attemptId, slot, siteId) {
+        return self.getQuestionAnswers(component, attemptId, slot, false, siteId).then(function(answers) {
+            var promises = [];
+            angular.forEach(answers, function(answer) {
+                promises.push(self.removeAnswer(component, attemptId, answer.name, siteId));
+            });
+
+            return $q.all(promises);
         });
     };
 

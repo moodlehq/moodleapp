@@ -104,5 +104,26 @@ angular.module('mm.addons.qtype_multianswer')
         return 'mma-qtype-multianswer';
     };
 
+    /**
+     * Validate if an offline sequencecheck is valid compared with the online one.
+     *
+     * @param  {Object} question        Question
+     * @param  {String} offlineSeqCheck Offline sequencecheck.
+     * @return {Boolean}                True if valid, false otherwise.
+     */
+    self.validateSequenceCheck = function(question, offlineSeqCheck) {
+        if (question.sequencecheck == offlineSeqCheck) {
+            return true;
+        }
+
+        // For some reason, viewing a multianswer for the first time without answering it
+        // creates a new step "todo". We'll treat this case as valid.
+        if (question.sequencecheck == 2 && question.state == 'todo' && offlineSeqCheck == 1) {
+            return true;
+        }
+
+        return false;
+    };
+
     return self;
 });
