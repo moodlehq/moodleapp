@@ -34,7 +34,7 @@ angular.module('mm.addons.qtype_ddwtos')
         this.selected = null;
 
         this.initializer = function(question) {
-            this.selectors = this.css_selectors(question.number ? question.number : 'i');
+            this.selectors = this.css_selectors(question.slot);
 
             var container = document.querySelector(this.selectors.top_node());
             container = angular.element(container);
@@ -63,8 +63,8 @@ angular.module('mm.addons.qtype_ddwtos')
          * put all our selectors in the same place so we can quickly find and change them later
          * if the structure of the document changes.
          */
-        this.css_selectors = function(number) {
-            var topnode = "#mma-mod_quiz-question-" + number + ' .mma-qtype-ddwtos-container';
+        this.css_selectors = function(slot) {
+            var topnode = "#mma-mod_quiz-question-" + slot + ' .mma-qtype-ddwtos-container';
             return {
                 top_node : function() {
                     return topnode;
