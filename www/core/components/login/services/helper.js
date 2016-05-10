@@ -121,6 +121,7 @@ angular.module('mm.core.login')
         var passport = Math.random() * 1000;
         var loginurl = siteurl + "/local/mobile/launch.php?service=" + mmCoreConfigConstants.wsextservice;
         loginurl += "&passport=" + passport;
+        loginurl += "&urlscheme=" + mmCoreConfigConstants.customurlscheme;
 
         // Store the siteurl and passport in $mmConfig for persistence. We are "configuring"
         // the app to wait for an SSO. $mmConfig shouldn't be used as a temporary storage.
