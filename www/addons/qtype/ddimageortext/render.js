@@ -36,7 +36,7 @@ angular.module('mm.addons.qtype_ddimageortext')
         this.selected = null;
 
         this.initializer = function(question) {
-            this.doc = this.doc_structure(question.number ? question.number : 'i');
+            this.doc = this.doc_structure(question.slot);
 
             if (this.readonly) {
                 var container = angular.element(this.doc.top_node());
@@ -98,8 +98,8 @@ angular.module('mm.addons.qtype_ddimageortext')
         /**
          * Object to encapsulate operations on dd area.
          */
-        this.doc_structure = function(number) {
-            var topnode = document.querySelector("#mma-mod_quiz-question-" + number + ' .mma-qtype-ddimageortext-container');
+        this.doc_structure = function(slot) {
+            var topnode = document.querySelector("#mma-mod_quiz-question-" + slot + ' .mma-qtype-ddimageortext-container');
             var dragitemsarea = topnode.querySelector('div.dragitems');
             return {
                 top_node : function() {

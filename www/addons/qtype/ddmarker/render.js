@@ -89,7 +89,7 @@ angular.module('mm.addons.qtype_ddmarker')
         var graphics = new GraphicsAPI();
 
         this.initializer = function(question) {
-            this.doc = this.doc_structure(question.number ? question.number : 'i');
+            this.doc = this.doc_structure(question.slot);
 
             // Wait the DOM to be rendered.
             $timeout(function() {
@@ -125,8 +125,8 @@ angular.module('mm.addons.qtype_ddmarker')
         /**
          * Object to encapsulate operations on dd area.
          */
-        this.doc_structure = function(number) {
-            var topnode = document.querySelector("#mma-mod_quiz-question-" + number + ' .mma-qtype-ddmarker-container');
+        this.doc_structure = function(slot) {
+            var topnode = document.querySelector("#mma-mod_quiz-question-" + slot + ' .mma-qtype-ddmarker-container');
             var dragitemsarea = topnode.querySelector('div.dragitems');
             return {
                 top_node : function() {
