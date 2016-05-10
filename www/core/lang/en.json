@@ -46,6 +46,7 @@
     "imageviewer": "Image viewer",
     "info": "Info",
     "ios": "iOS",
+    "lastsync": "Last synchronization",
     "loading": "Loading",
     "lostconnection": "Your authentication token is invalid or has expired, you will have to reconnect to the site.",
     "min" : "min",
