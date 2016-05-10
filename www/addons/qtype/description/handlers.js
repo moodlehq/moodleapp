@@ -55,5 +55,17 @@ angular.module('mm.addons.qtype_description')
         return 'mma-qtype-description';
     };
 
+    /**
+     * Validate if an offline sequencecheck is valid compared with the online one.
+     *
+     * @param  {Object} question        Question
+     * @param  {String} offlineSeqCheck Offline sequencecheck.
+     * @return {Boolean}                True if valid, false otherwise.
+     */
+    self.validateSequenceCheck = function(question, offlineSeqCheck) {
+        // Descriptions don't have any answer so we'll always treat them as valid.
+        return true;
+    };
+
     return self;
 });

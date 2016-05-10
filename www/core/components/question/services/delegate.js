@@ -60,6 +60,9 @@ angular.module('mm.core.question')
      *                                                           for the question. If the question should use the default behaviour
      *                                                           you shouldn't implement this question or it should just return
      *                                                           the behaviour param.
+     *                             - validateSequenceCheck(question, offlineSeqCheck) (Boolean) Optional. Validate if an offline
+     *                                                           sequencecheck is valid compared with the online one. This function
+     *                                                           only needs to be implemented if a specific compare is required.
      */
     self.registerHandler = function(name, questionType, handler) {
         if (typeof handlers[questionType] !== 'undefined') {
@@ -258,6 +261,30 @@ angular.module('mm.core.question')
                 // Never reject.
                 return true;
             });
+        };
+
+        /**
+         * Validate if an offline sequencecheck is valid compared with the online one.
+         *
+         * @module mm.core.question
+         * @ngdoc method
+         * @name $mmQuestionDelegate#validateSequenceCheck
+         * @param  {Object} question             Question.
+         * @param  {String} offlineSequenceCheck Sequence check stored in offline.
+         * @return {Boolean}                     True if offline sequencecheck is valid, false otherwise.
+         */
+        self.validateSequenceCheck = function(question, offlineSequenceCheck) {
+            var type = 'qtype_' + question.type;
+            // Check if there's a handler.
+            if (typeof enabledHandlers[type] != 'undefined') {
+                // Check if it implements its own comparing method.
+                if (enabledHandlers[type].validateSequenceCheck) {
+                    return enabledHandlers[type].validateSequenceCheck(question, offlineSequenceCheck);
+                } else {
+                    return question.sequencecheck == offlineSequenceCheck;
+                }
+            }
+            return false;
         };
 
         return self;

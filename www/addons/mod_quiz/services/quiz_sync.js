@@ -35,7 +35,7 @@ angular.module('mm.addons.mod_quiz')
  * @name $mmaModQuizSync
  */
 .factory('$mmaModQuizSync', function($log, $mmaModQuiz, $mmSite, $mmSitesManager, $q, $mmaModQuizOffline, $mmQuestion,
-            mmaModQuizSynchronizationStore) {
+            $mmQuestionDelegate, mmaModQuizSynchronizationStore) {
 
     $log = $log.getInstance('$mmaModQuizSync');
 
@@ -130,6 +130,7 @@ angular.module('mm.addons.mod_quiz')
                     return $mmaModQuizOffline.removeAttemptAndAnswers(offlineAttempt.id, siteId);
                 }
             }).then(function() {
+                // Update data.
                 return $mmaModQuiz.prefetchQuizAndLastAttempt(quiz, siteId);
             }).then(function() {
                 return self.setQuizSyncTime(quiz.id, siteId).catch(function() {
@@ -182,7 +183,17 @@ angular.module('mm.addons.mod_quiz')
 
                     return $mmaModQuiz.getAllQuestionsData(onlineAttempt, preflightData, pages, false, true, siteId)
                             .then(function(onlineQuestions) {
-                        // @todo Compare questions and send the offline data if can send.
+                        // Validate questions, discarding the offline answers that can't be synchronized.
+                        return self.validateQuestions(onlineAttempt.id, onlineQuestions, offlineQuestions, siteId);
+                    }).then(function(discardedData) {
+                        // Get the answers to send.
+                        var answers = $mmaModQuizOffline.extractAnswersFromQuestions(offlineQuestions),
+                            finish = offlineAttempt.finished && !discardedData;
+
+                        return $mmaModQuiz.processAttempt(quiz, onlineAttempt, answers, preflightData, finish, false, false, siteId);
+                    }).then(function() {
+                        // Data sent. Finish the sync.
+                        return finishSync(lastAttemptId, true);
                     });
                 });
             });
@@ -195,6 +206,51 @@ angular.module('mm.addons.mod_quiz')
             syncPromises[siteId][quiz.id] = syncPromise;
         }
         return syncPromise;
+    };
+
+    /**
+     * Validate questions, discarding the offline answers that can't be synchronized.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizSync#validateQuestions
+     * @param  {Number} attemptId        Attempt ID.
+     * @param  {Object} onlineQuestions  Online questions
+     * @param  {Object} offlineQuestions Offline questions.
+     * @param  {String} [siteId]         Site ID. If not defined, current site.
+     * @return {Promise}                 Promise resolved with boolean: true if some offline data was discarded, false otherwise.
+     *                                   The promise is rejected if an offline question isn't found in online questions.
+     */
+    self.validateQuestions = function(attemptId, onlineQuestions, offlineQuestions, siteId) {
+        var error = false,
+            discardedData = false,
+            promises = [];
+
+        angular.forEach(offlineQuestions, function(offlineQuestion, slot) {
+            var onlineQuestion = onlineQuestions[slot],
+                offlineSequenceCheck = offlineQuestion.answers[':sequencecheck'];
+
+            if (onlineQuestion && !error) {
+                if (!$mmQuestionDelegate.validateSequenceCheck(onlineQuestion, offlineSequenceCheck)) {
+                    discardedData = true;
+                    promises.push($mmaModQuizOffline.removeQuestionAndAnswers(attemptId, onlineQuestion.slot, siteId));
+                    delete offlineQuestions[slot];
+                } else {
+                    // Sequence check is valid. Use the online one to prevent synchronization errors.
+                    offlineQuestion.answers[':sequencecheck'] = onlineQuestion.sequencecheck;
+                }
+            } else {
+                error = true;
+            }
+        });
+
+        if (error) {
+            return $q.reject();
+        }
+
+        return $q.all(promises).then(function() {
+            return discardedData;
+        });
     };
 
     return self;

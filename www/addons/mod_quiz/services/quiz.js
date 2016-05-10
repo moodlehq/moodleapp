@@ -2003,6 +2003,12 @@ angular.module('mm.addons.mod_quiz')
                 // Get data for last attempt.
                 return self.prefetchAttempt(quiz, attempts[attempts.length - 1], siteId);
             }
+        }).then(function() {
+            // Prefetch finished, mark as downloaded.
+            var revision = self.getQuizRevisionFromAttempts(attempts),
+                timemod = self.getQuizTimemodifiedFromAttempts(attempts);
+            return $mmFilepool.storePackageStatus(siteId, mmaModQuizComponent,
+                            quiz.coursemodule, mmCoreDownloaded, revision, timemod);
         });
     };
 

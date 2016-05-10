@@ -96,6 +96,26 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Given a list of questions with answers classified in it (@see $mmaModQuizOffline#classifyAnswersInQuestions),
+     * returns a list of answers (including prefix in the name).
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizOffline#extractAnswersFromQuestions
+     * @param  {Object} questions Questions.
+     * @return {Object}           Answers.
+     */
+    self.extractAnswersFromQuestions = function(questions) {
+        var answers = {};
+        angular.forEach(questions, function(question) {
+            angular.forEach(question.answers, function(value, name) {
+                answers[question.prefix + name] = value;
+            });
+        });
+        return answers;
+    };
+
+    /**
      * Retrieve an attempt answers from site DB.
      *
      * @module mm.addons.mod_quiz
@@ -235,7 +255,7 @@ angular.module('mm.addons.mod_quiz')
     self.removeAttemptAndAnswers = function(attemptId, siteId) {
         siteId = siteId || $mmSite.getId();
 
-        var promises;
+        var promises = [];
 
         // Remove stored answers and questions.
         promises.push($mmQuestion.removeAttemptAnswers(mmaModQuizComponent, attemptId, siteId));
@@ -245,6 +265,28 @@ angular.module('mm.addons.mod_quiz')
         promises.push($mmSitesManager.getSite(siteId).then(function(site) {
             return site.getDb().remove(mmaModQuizAttemptsStore, attemptId);
         }));
+
+        return $q.all(promises);
+    };
+
+    /**
+     * Remove a question and its answers from local DB.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizOffline#removeQuestionAndAnswers
+     * @param  {Number} attemptId Attempt ID.
+     * @param  {Number} slot      Question slot.
+     * @param  {String} [siteId]  Site ID. If not defined, current site.
+     * @return {Promise}          Promise resolved when finished.
+     */
+    self.removeQuestionAndAnswers = function(attemptId, slot, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        var promises = [];
+
+        promises.push($mmQuestion.removeQuestion(mmaModQuizComponent, attemptId, slot, siteId));
+        promises.push($mmQuestion.removeQuestionAnswers(mmaModQuizComponent, attemptId, slot, siteId));
 
         return $q.all(promises);
     };
