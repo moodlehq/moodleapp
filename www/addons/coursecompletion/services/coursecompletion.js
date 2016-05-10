@@ -176,7 +176,7 @@ angular.module('mm.addons.coursecompletion')
         }
 
         return $mmCourses.getUserCourse(courseId, true).then(function(course) {
-            if (course && typeof course.enablecompletion != 'undefined' && !course.enablecompletion) {
+            if (course && typeof course.enablecompletion != 'undefined' && course.enablecompletion == 0) {
                 return false;
             }
             return true;

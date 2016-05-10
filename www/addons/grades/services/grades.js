@@ -217,7 +217,7 @@ angular.module('mm.addons.grades')
         }
 
         return $mmCourses.getUserCourse(courseId, true, siteId).then(function(course) {
-            if (course && typeof course.showgrades != 'undefined' && !course.showgrades) {
+            if (course && typeof course.showgrades != 'undefined' && course.showgrades == 0) {
                 return false;
             }
             return true;
