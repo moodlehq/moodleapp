@@ -32,7 +32,6 @@
 	"highestattempt": "Highest attempt",
 	"incomplete": "Incomplete",
 	"lastattempt": "Last completed attempt",
-	"lastsync": "Last synchronization",
 	"mode": "Mode",
 	"newattempt": "Start a new attempt",
 	"noattemptsallowed": "Number of attempts allowed",
