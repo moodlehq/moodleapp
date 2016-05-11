@@ -9,13 +9,17 @@
             <mm-course-mod-description description="description" watch="true"></mm-course-mod-description>
 
             <!-- Access rules description messages -->
-            <section class="card" ng-if="quiz.gradeMethodReadable || accessRules.length">
+            <section class="card" ng-if="quiz.gradeMethodReadable || accessRules.length || syncTime">
                 <div class="item item-text-wrap" ng-repeat="rule in accessRules">
                     <p>{{ rule }}</p>
                 </div>
 	        	<div class="item" ng-if="quiz.gradeMethodReadable">
                     <p class="item-heading">{{ 'mma.mod_quiz.grademethod' | translate }}</p>
                     <p>{{ quiz.gradeMethodReadable }}</p>
+                </div>
+                <div class="item item-text-wrap" ng-if="syncTime">
+                    <p class="item-heading">{{ 'mm.core.lastsync' | translate }}</p>
+                    <p>{{ syncTime }}</p>
                 </div>
             </section>
 
@@ -81,6 +85,11 @@
                 <div class="item item-text-wrap mma-mod-quiz-warning" ng-if="behaviourSupported === false">
                     <p class="mma-mod-quiz-warning">{{ 'mma.mod_quiz.errorbehaviournotsupported' | translate }}</p>
                     <p class="mma-mod-quiz-warning">{{ quiz.preferredbehaviour }}</p>
+                </div>
+                <!-- Synchronize button -->
+                <div class="item item-text-wrap" ng-if="buttonText && showSyncButton">
+                    <p class="mma-mod-quiz-warning">{{ 'mma.mod_quiz.hasdatatosync' | translate }}</p>
+                    <button class="button button-block" ng-click="sync()">{{ 'mm.settings.synchronizenow' | translate }}</button>
                 </div>
                 <div class="item" ng-if="buttonText">
                     <a class="button button-block" ui-sref="site.mod_quiz-player({courseid: courseId, quizid: quiz.id, moduleurl: moduleUrl})">{{ buttonText | translate }}</a>

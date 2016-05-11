@@ -116,6 +116,27 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Get all the offline attempts in a certain site.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizOffline#getAllAttempts
+     * @param {String} [siteId] Site ID. If not set, use current site.
+     * @return {Promise}        Promise resolved when the offline attempts are retrieved.
+     */
+    self.getAllAttempts = function(siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSiteDb(siteId).then(function(db) {
+            if (!db) {
+                return $q.reject();
+            }
+
+            return db.getAll(mmaModQuizAttemptsStore);
+        });
+    };
+
+    /**
      * Retrieve an attempt answers from site DB.
      *
      * @module mm.addons.mod_quiz

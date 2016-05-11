@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_quiz')
  * @name $mmaModQuizHelper
  */
 .factory('$mmaModQuizHelper', function($mmaModQuiz, $mmUtil, $q, $ionicModal, $mmaModQuizAccessRulesDelegate, $translate,
-            $mmaModQuizOffline) {
+            $mmaModQuizOffline, $mmaModQuizSync) {
 
     var self = {};
 
@@ -109,6 +109,26 @@ angular.module('mm.addons.mod_quiz')
      */
     self.getQuestionMarkFromHtml = function(html) {
         return $mmUtil.getContentsOfElement(angular.element(html), '.grade');
+    };
+
+    /**
+     * Get quiz sync time in a human readable format.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizHelper#getQuizReadableSyncTime
+     * @param  {Number} quizId   Quiz ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with the readable time.
+     */
+    self.getQuizReadableSyncTime = function(quizId, siteId) {
+        return $mmaModQuizSync.getQuizSyncTime(quizId, siteId).then(function(time) {
+            if (!time) {
+                return $translate('mm.core.none');
+            } else {
+                return moment(time).format('LLL');
+            }
+        });
     };
 
     /**

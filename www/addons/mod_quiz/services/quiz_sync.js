@@ -35,7 +35,8 @@ angular.module('mm.addons.mod_quiz')
  * @name $mmaModQuizSync
  */
 .factory('$mmaModQuizSync', function($log, $mmaModQuiz, $mmSite, $mmSitesManager, $q, $mmaModQuizOffline, $mmQuestion,
-            $mmQuestionDelegate, mmaModQuizSynchronizationStore) {
+            $mmQuestionDelegate, $mmApp, $mmConfig, $mmEvents, $translate, mmaModQuizSynchronizationStore, mmaModQuizSyncTime,
+            mmaModQuizEventAutomSynced, mmCoreSettingsSyncOnlyOnWifi) {
 
     $log = $log.getInstance('$mmaModQuizSync');
 
@@ -50,7 +51,7 @@ angular.module('mm.addons.mod_quiz')
      * @name $mmaModQuizSync#getQuizSyncTime
      * @param  {Number} quizId   Quiz ID.
      * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}        Promise resolved with the time.
+     * @return {Promise}         Promise resolved with the time.
      */
     self.getQuizSyncTime = function(quizId, siteId) {
         siteId = siteId || $mmSite.getId();
@@ -60,6 +61,24 @@ angular.module('mm.addons.mod_quiz')
             }).catch(function() {
                 return 0;
             });
+        });
+    };
+
+    /**
+     * Check if a quiz has data to synchronize.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizSync#hasDataToSync
+     * @param  {Number} quizId   Quiz ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with boolean: true if has data to sync, false otherwise.
+     */
+    self.hasDataToSync = function(quizId, siteId) {
+        return $mmaModQuizOffline.getQuizAttempts(quizId, siteId).then(function(attempts) {
+            return !!attempts.length;
+        }).catch(function() {
+            return false;
         });
     };
 
@@ -81,6 +100,104 @@ angular.module('mm.addons.mod_quiz')
                 time = new Date().getTime();
             }
             return db.insert(mmaModQuizSynchronizationStore, {quizid: quizId, time: time});
+        });
+    };
+
+    /**
+     * Try to synchronize all quizzes from current site that need it and haven't been synchronized in a while.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizSync#syncAllQuizzes
+     * @param {String} [siteId] Site ID to sync. If not defined, sync all sites.
+     * @return {Promise}        Promise resolved when the sync is done.
+     */
+    self.syncAllQuizzes = function(siteId) {
+        if (!$mmApp.isOnline()) {
+            $log.debug('Cannot sync all quizzes because device is offline.');
+            return $q.reject();
+        }
+
+        // We first check sync settings and current connection to see if we can sync.
+        return $mmConfig.get(mmCoreSettingsSyncOnlyOnWifi, true).then(function(syncOnlyOnWifi) {
+
+            if (syncOnlyOnWifi && $mmApp.isNetworkAccessLimited()) {
+                $log.debug('Cannot sync all quizzes because device isn\'t using a WiFi network.');
+                return $q.reject();
+            }
+
+            var promise;
+            if (!siteId) {
+                // No site ID defined, sync all sites.
+                $log.debug('Try to sync quizzes in all sites.');
+                promise = $mmSitesManager.getSitesIds();
+            } else {
+                $log.debug('Try to sync quizzes in site ' + siteId);
+                promise = $q.when([siteId]);
+            }
+
+            return promise.then(function(siteIds) {
+                var sitePromises = [];
+
+                angular.forEach(siteIds, function(siteId) {
+                    sitePromises.push($mmaModQuizOffline.getAllAttempts(siteId).then(function(attempts) {
+                        var quizzes = [],
+                            ids = [], // To prevent duplicates.
+                            promises = [];
+
+                        // Get the IDs of all the quizzes that have something to be synced.
+                        angular.forEach(attempts, function(attempt) {
+                            if (ids.indexOf(attempt.quizid) == -1) {
+                                ids.push(attempt.quizid);
+                                quizzes.push({
+                                    id: attempt.quizid,
+                                    courseid: attempt.courseid
+                                });
+                            }
+                        });
+
+                        // Sync all quizzes that haven't been synced for a while and that aren't played right now.
+                        angular.forEach(quizzes, function(quiz) {
+                            if (!$mmaModQuiz.isQuizBeingPlayed(quiz.id, siteId)) {
+                                promises.push($mmaModQuiz.getQuizById(quiz.courseid, quiz.id, siteId).then(function(quiz) {
+                                    return self.syncQuizIfNeeded(quiz, siteId).then(function(warnings) {
+                                        if (typeof warnings != 'undefined') {
+                                            // We tried to sync. Send event.
+                                            $mmEvents.trigger(mmaModQuizEventAutomSynced, {
+                                                siteid: siteId,
+                                                quizid: quiz.id
+                                            });
+                                        }
+                                    });
+                                }));
+                            }
+                        });
+
+                        return $q.all(promises);
+                    }));
+                });
+
+                return $q.all(sitePromises);
+            });
+        });
+    };
+
+    /**
+     * Sync a quiz only if a certain time has passed since the last time.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizSync#syncQuizIfNeeded
+     * @param {Object} quiz     Quiz downloaded.
+     * @param {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the quiz is synced or if it doesn't need to be synced.
+     */
+    self.syncQuizIfNeeded = function(quiz, siteId) {
+        siteId = siteId || $mmSite.getId();
+        return self.getQuizSyncTime(quiz.id, siteId).then(function(time) {
+            if (new Date().getTime() - mmaModQuizSyncTime >= time) {
+                return self.syncQuiz(quiz, siteId);
+            }
         });
     };
 
@@ -162,6 +279,7 @@ angular.module('mm.addons.mod_quiz')
 
                 if (!onlineAttempt || $mmaModQuiz.isAttemptFinished(onlineAttempt)) {
                     // Attempt not found or it's finished in online. Discard it.
+                    warnings.push($translate.instant('mma.mod_quiz.warningattemptfinished'));
                     return finishSync(lastAttemptId, true);
                 }
 
@@ -171,7 +289,7 @@ angular.module('mm.addons.mod_quiz')
                         pages;
 
                     if (!answers.length) {
-                        // No answers stored, finish..
+                        // No answers stored, finish.
                         return finishSync(lastAttemptId, true);
                     }
 
@@ -189,6 +307,14 @@ angular.module('mm.addons.mod_quiz')
                         // Get the answers to send.
                         var answers = $mmaModQuizOffline.extractAnswersFromQuestions(offlineQuestions),
                             finish = offlineAttempt.finished && !discardedData;
+
+                        if (discardedData) {
+                            if (offlineAttempt.finished) {
+                                warnings.push($translate.instant('mma.mod_quiz.warningdatadiscardedfromfinished'));
+                            } else {
+                                warnings.push($translate.instant('mma.mod_quiz.warningdatadiscarded'));
+                            }
+                        }
 
                         return $mmaModQuiz.processAttempt(quiz, onlineAttempt, answers, preflightData, finish, false, false, siteId);
                     }).then(function() {
@@ -251,6 +377,26 @@ angular.module('mm.addons.mod_quiz')
         return $q.all(promises).then(function() {
             return discardedData;
         });
+    };
+
+    /**
+     * If there's an ongoing sync for a certain quiz, wait for it to end.
+     * If there's no sync ongoing the promise will be resolved right away.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizSync#waitForSync
+     * @param  {Number} quizId   Quiz to check.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when there's no sync going on for the quiz.
+     */
+    self.waitForSync = function(quizId, siteId) {
+        siteId = siteId || $mmSite.getId();
+        if (syncPromises[siteId] && syncPromises[siteId][quizId]) {
+            // There's a sync ongoing for this quiz.
+            return syncPromises[siteId][quizId].catch(function() {});
+        }
+        return $q.when();
     };
 
     return self;

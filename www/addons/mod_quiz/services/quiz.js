@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_quiz')
  * @name $mmaModQuiz
  */
 .factory('$mmaModQuiz', function($log, $mmSite, $mmSitesManager, $q, $translate, $mmUtil, $mmText, $mmQuestionDelegate,
-            $mmaModQuizAccessRulesDelegate, $mmQuestionHelper, $mmFilepool, $mmaModQuizOnline, $mmaModQuizOffline,
+            $mmaModQuizAccessRulesDelegate, $mmQuestionHelper, $mmFilepool, $mmaModQuizOnline, $mmaModQuizOffline, $state,
             mmaModQuizComponent, mmCoreDownloaded, mmCoreDownloading) {
 
     $log = $log.getInstance('$mmaModQuiz');
@@ -1689,6 +1689,21 @@ angular.module('mm.addons.mod_quiz')
             // All WS were introduced at the same time so checking one is enough.
             return site.wsAvailable('mod_quiz_get_attempt_review');
         });
+    };
+
+    /**
+     * Check if a quiz is being played right now.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#isQuizBeingPlayed
+     * @param  {Number} quizId   Quiz ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Boolean}         True if it's being played, false otherwise.
+     */
+    self.isQuizBeingPlayed = function(quizId, siteId) {
+        siteId = siteId || $mmSite.getId();
+        return $mmSite.getId() == siteId && $state.current.name == 'site.mod_quiz-player' && $state.params.quizid == quizId;
     };
 
     /**
