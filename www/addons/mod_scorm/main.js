@@ -20,7 +20,7 @@ angular.module('mm.addons.mod_scorm', ['mm.core'])
 .constant('mmaModScormEventUpdateToc', 'mma_mod_scorm_update_toc')
 .constant('mmaModScormEventGoOffline', 'mma_mod_scorm_go_offline')
 .constant('mmaModScormEventAutomSynced', 'mma_mod_scorm_autom_synced')
-.constant('mmaModScormSyncTime', 200000) // In milliseconds.
+.constant('mmaModScormSyncTime', 300000) // In milliseconds.
 
 .config(function($stateProvider) {
 

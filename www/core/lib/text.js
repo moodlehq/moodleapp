@@ -26,6 +26,25 @@ angular.module('mm.core')
     var self = {};
 
     /**
+     * Given a list of sentences, build a message with all of them wrapped in <p>.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#buildMessage
+     * @param  {String[]} messages Messages to show.
+     * @return {String}            Message with all the messages.
+     */
+    self.buildMessage = function(messages) {
+        var result = '';
+        angular.forEach(messages, function(message) {
+            if (message) {
+                result = result + '<p>' + message + '</p>';
+            }
+        });
+        return result;
+    };
+
+    /**
      * Convert size in bytes into human readable format
      * http://codeaid.net/javascript/convert-size-in-bytes-to-human-readable-format-(javascript)
      *

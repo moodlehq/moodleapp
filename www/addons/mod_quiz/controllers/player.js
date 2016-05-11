@@ -23,7 +23,8 @@ angular.module('mm.addons.mod_quiz')
  */
 .controller('mmaModQuizPlayerCtrl', function($log, $scope, $stateParams, $mmaModQuiz, $mmaModQuizHelper, $q, $mmUtil,
             $ionicPopover, $ionicScrollDelegate, $rootScope, $ionicPlatform, $translate, $timeout, $mmQuestionHelper,
-            $mmaModQuizAutoSave, $mmEvents, mmaModQuizAttemptFinishedEvent, $mmSideMenu, mmaModQuizComponent) {
+            $mmaModQuizAutoSave, $mmEvents, mmaModQuizEventAttemptFinished, $mmSideMenu, mmaModQuizComponent,
+            $mmaModQuizSync) {
     $log = $log.getInstance('mmaModQuizPlayerCtrl');
 
     var quizId = $stateParams.quizid,
@@ -68,7 +69,10 @@ angular.module('mm.addons.mod_quiz')
 
     // Convenience function to get the quiz data.
     function fetchData() {
-        return $mmaModQuiz.getQuizById(courseId, quizId).then(function(quizData) {
+        // Wait for any ongoing sync to finish. We won't sync a quiz while it's being played.
+        return $mmaModQuizSync.waitForSync(quizId).then(function() {
+            return $mmaModQuiz.getQuizById(courseId, quizId);
+        }).then(function(quizData) {
             quiz = quizData;
             quiz.isSequential = $mmaModQuiz.isNavigationSequential(quiz);
 
@@ -265,7 +269,7 @@ angular.module('mm.addons.mod_quiz')
         return promise.then(function() {
             return processAttempt(finish, timeup).then(function() {
                 // Trigger an event to notify the attempt was finished.
-                $mmEvents.trigger(mmaModQuizAttemptFinishedEvent, {quizId: quiz.id, attemptId: attempt.id, synced: !offline});
+                $mmEvents.trigger(mmaModQuizEventAttemptFinished, {quizId: quiz.id, attemptId: attempt.id, synced: !offline});
                 // Leave the player.
                 $scope.questions = [];
                 leavePlayer();

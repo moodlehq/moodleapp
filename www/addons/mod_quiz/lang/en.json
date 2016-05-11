@@ -21,6 +21,7 @@
 	"errorquestionsnotsupported": "This quiz can't be attempted in the app because it can contain questions not supported by the app:",
 	"errorrulesnotsupported": "This quiz can't be attempted in the app because it has active rules not supported by the app:",
 	"errorsaveattempt": "An error occurred while saving the attempt data.",
+	"errorsyncquiz": "An error occurred while synchronizing. Please try again.",
 	"feedback": "Feedback",
 	"finishattemptdots": "Finish attempt...",
 	"finishnotsynced": "Finished but not synchronized",
@@ -29,6 +30,7 @@
 	"gradehighest": "Highest grade",
 	"grademethod": "Grading method",
 	"gradesofar": "{{$a.method}}: {{$a.mygrade}} / {{$a.quizgrade}}.",
+	"hasdatatosync": "This quiz has offline data to be synchronized.",
 	"information": "Information",
 	"marks": "Marks",
 	"mustbesubmittedby": "This attempt must be submitted by {{$a}}.",
@@ -68,5 +70,8 @@
 	"summaryofattempts": "Summary of your previous attempts",
 	"timeleft": "Time left",
 	"timetaken": "Time taken",
+	"warningattemptfinished": "Offline attempt was discarded because it was finished in site or not found.",
+	"warningdatadiscarded": "Some offline answers were discarded because the questions were modified in online.",
+	"warningdatadiscardedfromfinished": "Attempt wasn't finished because some offline answers were discarded. Please review your answers are ok and submit the attempt again.",
 	"yourfinalgradeis": "Your final grade for this quiz is {{$a}}."
 }
