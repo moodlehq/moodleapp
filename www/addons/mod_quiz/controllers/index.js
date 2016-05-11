@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_quiz')
  */
 .controller('mmaModQuizIndexCtrl', function($scope, $stateParams, $mmaModQuiz, $mmCourse, $ionicPlatform, $q, $translate,
             $mmaModQuizHelper, $ionicHistory, $ionicScrollDelegate, $mmEvents, mmaModQuizEventAttemptFinished, $state,
-            $mmQuestionBehaviourDelegate, $mmaModQuizSync, $mmText, mmaModQuizEventAutomSynced) {
+            $mmQuestionBehaviourDelegate, $mmaModQuizSync, $mmText, $mmUtil, mmaModQuizEventAutomSynced) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         quiz,
@@ -58,6 +58,7 @@ angular.module('mm.addons.mod_quiz')
             // Try to sync the quiz.
             return syncQuiz(!refresh, false).catch(function() {
                 // Ignore errors, keep getting data even if sync fails.
+                autoReview = undefined;
             });
         }).then(function() {
 
@@ -136,6 +137,15 @@ angular.module('mm.addons.mod_quiz')
 
         var lastFinished = $mmaModQuiz.getLastFinishedAttemptFromList(attempts),
             promises = [];
+
+        if (autoReview && lastFinished && lastFinished.id >= autoReview.attemptId) {
+            // User just finished an attempt in offline and it seems it's been synced, since it's finished in online.
+            // Go to the review of this attempt if the user hasn't left this view.
+            if (!$scope.$$destroyed && $state.current.name == 'site.mod_quiz') {
+                goToAutoReview();
+            }
+            autoReview = undefined;
+        }
 
         // Load flag to show if attempts are finished but not synced.
         promises.push($mmaModQuiz.loadFinishedOfflineData(attempts));
@@ -297,6 +307,11 @@ angular.module('mm.addons.mod_quiz')
         });
     }
 
+    // Go to review an attempt that has just been finished.
+    function goToAutoReview() {
+        $state.go('site.mod_quiz-review', {courseid: courseId, quizid: quiz.id, attemptid: autoReview.attemptId});
+    }
+
 
     // Fetch the Quiz data.
     fetchQuizData().then(function() {
@@ -340,9 +355,9 @@ angular.module('mm.addons.mod_quiz')
 
         var forwardView = $ionicHistory.forwardView();
         if (forwardView && forwardView.stateName === 'site.mod_quiz-player') {
-            if (typeof autoReview != 'undefined') {
-                // Go to review the attempt.
-                $state.go('site.mod_quiz-review', {courseid: courseId, quizid: quiz.id, attemptid: autoReview});
+            if (autoReview && autoReview.synced) {
+                goToAutoReview();
+                autoReview = undefined;
             }
 
             // Refresh data.
@@ -351,16 +366,20 @@ angular.module('mm.addons.mod_quiz')
             refreshData().finally(function() {
                 $scope.quizLoaded = true;
             });
+        } else {
+            autoReview = undefined;
         }
+    });
 
+    $scope.$on('$ionicView.leave', function() {
         autoReview = undefined;
     });
 
     // Listen for attempt finished events.
     var obsFinished = $mmEvents.on(mmaModQuizEventAttemptFinished, function(data) {
         // Go to review attempt if an attempt in this quiz was finished and synced.
-        if (data.quizId === quiz.id && data.synced) {
-            autoReview = data.attemptId;
+        if (data.quizId === quiz.id) {
+            autoReview = data;
         }
     });
 
