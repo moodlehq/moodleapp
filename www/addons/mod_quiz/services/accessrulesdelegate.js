@@ -69,6 +69,26 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Given a list of rules, get some fixed preflight data (data that doesn't require user interaction).
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizAccessRulesDelegate#getFixedPreflightData
+     * @param  {String[]} rules       Name of the rules.
+     * @param  {Object} attempt       Attempt.
+     * @param  {Object} preflightData Object where to store the preflight data.
+     * @return {Void}
+     */
+    self.getFixedPreflightData = function(rules, attempt, preflightData) {
+        angular.forEach(rules, function(rule) {
+            var handler = self.getAccessRuleHandler(rule);
+            if (handler && handler.getFixedPreflightData) {
+                handler.getFixedPreflightData(attempt, preflightData);
+            }
+        });
+    };
+
+    /**
      * Check if an access rule is supported.
      *
      * @module mm.addons.mod_quiz
@@ -88,6 +108,7 @@ angular.module('mm.addons.mod_quiz')
      * @ngdoc method
      * @name $mmaModQuizAccessRulesDelegate#isPreflightCheckRequired
      * @param  {String[]} rules Name of the rules.
+     * @param  {Object} attempt Attempt.
      * @return {Boolean}        True if required, false otherwise.
      */
     self.isPreflightCheckRequired = function(rules, attempt) {
@@ -117,6 +138,8 @@ angular.module('mm.addons.mod_quiz')
      *                                                           When using a promise, it should return a boolean.
      *                             - isPreflightCheckRequired(attempt) (Boolean|Promise) Whether or not the rule requires a
      *                                                           preflight check when starting/continuing an attempt.
+     *                             - getFixedPreflightData(attempt, preflightData) Optional. Should add preflight data that doesn't
+     *                                                           require user interaction.
      *                             - getPreflightDirectiveName() (String) Optional. Returns the name of the directive to render
      *                                                           the access rule preflight. Required if the handler needs a
      *                                                           preflight check in some cases.

@@ -48,17 +48,17 @@ angular.module('mm.addons.mod_quiz')
     $scope.preflightData = {};
 
     // Convenience function to start the player.
-    function start(preflightData) {
+    function start(fromModal) {
         var promise;
         $scope.dataLoaded = false;
 
         if (typeof password != 'undefined') {
             // Password submitted, get attempt data.
-            promise = startOrContinueAttempt(preflightData);
+            promise = startOrContinueAttempt(fromModal);
         } else {
             // Fetch data.
             promise = fetchData().then(function() {
-                return startOrContinueAttempt(preflightData);
+                return startOrContinueAttempt(fromModal);
             });
         }
 
@@ -108,11 +108,20 @@ angular.module('mm.addons.mod_quiz')
             if (!attempts.length) {
                 newAttempt = true;
             } else {
+                var promises = [];
                 attempt = attempts[attempts.length - 1];
                 newAttempt = $mmaModQuiz.isAttemptFinished(attempt.state);
 
+                // Load quiz last sync time. We set it to the attempt so it's accessible in access rules handlers.
+                promises.push($mmaModQuizSync.getQuizSyncTime(quiz.id).then(function(time) {
+                    attempt.quizSyncTime = time;
+                    quiz.syncTimeReadable = $mmaModQuizHelper.getReadableTimeFromTimestamp(time);
+                }));
+
                 // Load flag to show if attempts are finished but not synced.
-                return $mmaModQuiz.loadFinishedOfflineData(attempts);
+                promises.push($mmaModQuiz.loadFinishedOfflineData(attempts));
+
+                return $q.all(promises);
             }
         }).catch(function(message) {
             return $mmaModQuizHelper.showError(message);
@@ -120,10 +129,10 @@ angular.module('mm.addons.mod_quiz')
     }
 
     // Convenience function to start/continue the attempt.
-    function startOrContinueAttempt(preflightData) {
+    function startOrContinueAttempt(fromModal) {
         // Check preflight data and start attempt if needed.
         var att = newAttempt ? undefined : attempt;
-        return $mmaModQuizHelper.checkPreflightData($scope, quiz, quizAccessInfo, att, preflightData, offline).then(function(att) {
+        return $mmaModQuizHelper.checkPreflightData($scope, quiz, quizAccessInfo, att, offline, fromModal).then(function(att) {
 
             // Re-fetch attempt access information with the right attempt (might have changed because a new attempt was created).
             return $mmaModQuiz.getAttemptAccessInformation(quiz.id, att.id, offline, true).then(function(info) {
@@ -308,8 +317,8 @@ angular.module('mm.addons.mod_quiz')
     start();
 
     // Start the player.
-    $scope.start = function(preflightData) {
-        start(preflightData);
+    $scope.start = function(fromModal) {
+        start(fromModal);
     };
 
     // Function to call to abort the quiz.

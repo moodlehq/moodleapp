@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_quiz')
  * @name $mmaModQuizHelper
  */
 .factory('$mmaModQuizHelper', function($mmaModQuiz, $mmUtil, $q, $ionicModal, $mmaModQuizAccessRulesDelegate, $translate,
-            $mmaModQuizOffline, $mmaModQuizSync) {
+            $mmaModQuizOffline, $mmaModQuizSync, $timeout) {
 
     var self = {};
 
@@ -37,15 +37,15 @@ angular.module('mm.addons.mod_quiz')
      * @param  {Object} quiz              Quiz.
      * @param  {Object} quizAccessInfo    Quiz access info returned by $mmaModQuiz#getQuizAccessInformation.
      * @param  {Object} [attempt]         Attempt to continue. Don't pass any value if the user needs to start a new attempt.
-     * @param  {Object} [preflightData]   Preflight data to validate. Don't pass any value if the user hasn't input any data.
      * @param  {Boolean} offline          True if attempt is offline.
+     * @param  {Boolean} fromModal        True if sending data using preflight modal, false otherwise.
      * @return {Promise}                  Promise resolved when the preflight data is validated.
      */
-    self.checkPreflightData = function(scope, quiz, quizAccessInfo, attempt, preflightData, offline) {
+    self.checkPreflightData = function(scope, quiz, quizAccessInfo, attempt, offline, fromModal) {
         var promise,
             preflightRequired = $mmaModQuizAccessRulesDelegate.isPreflightCheckRequired(quizAccessInfo.activerulenames, attempt);
 
-        if (preflightRequired && !preflightData) {
+        if (preflightRequired && !fromModal) {
             // Preflight check is required but no preflightData has been sent. Show a modal with the preflight form.
             if (!scope.modal) {
                 // Modal hasn't been created yet. Create it and show it.
@@ -62,11 +62,17 @@ angular.module('mm.addons.mod_quiz')
             return $q.reject();
         }
 
+        // Hide modal if needed.
+        scope.modal && scope.modal.hide();
+
+        // Get some fixed preflight data from access rules (data that doesn't require user interaction).
+        $mmaModQuizAccessRulesDelegate.getFixedPreflightData(quizAccessInfo.activerulenames, attempt, scope.preflightData);
+
         if (attempt) {
             if (attempt.state != $mmaModQuiz.ATTEMPT_OVERDUE && !attempt.finishedOffline) {
                 // We're continuing an attempt. Call getAttemptData to validate the preflight data.
                 var page = attempt.currentpage;
-                promise = $mmaModQuiz.getAttemptData(attempt.id, page, preflightData, offline, true).then(function() {
+                promise = $mmaModQuiz.getAttemptData(attempt.id, page, scope.preflightData, offline, true).then(function() {
                     if (offline) {
                         // Get current page stored in local.
                         return $mmaModQuizOffline.getAttemptById(attempt.id).then(function(localAttempt) {
@@ -79,20 +85,23 @@ angular.module('mm.addons.mod_quiz')
             } else {
                 // Attempt is overdue or finished in offline, we can only see the summary.
                 // Call getAttemptSummary to validate the preflight data.
-                promise = $mmaModQuiz.getAttemptSummary(attempt.id, preflightData, offline, true);
+                promise = $mmaModQuiz.getAttemptSummary(attempt.id, scope.preflightData, offline, true);
             }
         } else {
             // We're starting a new attempt, call startAttempt.
-            promise = $mmaModQuiz.startAttempt(quiz.id, preflightData).then(function(att) {
+            promise = $mmaModQuiz.startAttempt(quiz.id, scope.preflightData).then(function(att) {
                 attempt = att;
             });
         }
 
         return promise.then(function() {
             // Preflight data validated. Close modal if needed.
-            scope.modal && scope.modal.hide();
             return attempt;
         }).catch(function(error) {
+            // Show modal again. We need to wait a bit because if it's called too close to .hide then it won't be shown.
+            $timeout(function() {
+                scope.modal && scope.modal.show();
+            }, 500);
             return self.showError(error, 'mm.core.error');
         });
     };
@@ -123,12 +132,25 @@ angular.module('mm.addons.mod_quiz')
      */
     self.getQuizReadableSyncTime = function(quizId, siteId) {
         return $mmaModQuizSync.getQuizSyncTime(quizId, siteId).then(function(time) {
-            if (!time) {
-                return $translate('mm.core.none');
-            } else {
-                return moment(time).format('LLL');
-            }
+            return self.getReadableTimeFromTimestamp(time);
         });
+    };
+
+    /**
+     * Given a timestamp return it in a human readable format.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizHelper#getReadableTimeFromTimestamp
+     * @param  {Number} timestamp Timestamp
+     * @return {String}           Human readable time.
+     */
+    self.getReadableTimeFromTimestamp = function(timestamp) {
+        if (!timestamp) {
+            return $translate('mm.core.none');
+        } else {
+            return moment(timestamp).format('LLL');
+        }
     };
 
     /**
