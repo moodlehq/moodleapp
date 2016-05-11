@@ -53,7 +53,6 @@ angular.module('mm.addons.mod_quiz')
             $scope.now = new Date().getTime();
             $scope.title = quiz.name || $scope.title;
             $scope.description = quiz.intro || $scope.description;
-            $scope.quiz = quiz;
 
             // Try to sync the quiz.
             return syncQuiz(!refresh, false).catch(function() {
@@ -91,6 +90,8 @@ angular.module('mm.addons.mod_quiz')
                 });
             });
 
+        }).then(function() {
+            $scope.quiz = quiz;
         }).catch(function(message) {
             if (!refresh && !quiz) {
                 // Get quiz failed, retry without using cache since it might be a new activity.
