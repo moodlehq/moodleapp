@@ -23,7 +23,8 @@ angular.module('mm.addons.mod_quiz')
  */
 .controller('mmaModQuizIndexCtrl', function($scope, $stateParams, $mmaModQuiz, $mmCourse, $ionicPlatform, $q, $translate,
             $mmaModQuizHelper, $ionicHistory, $ionicScrollDelegate, $mmEvents, mmaModQuizEventAttemptFinished, $state,
-            $mmQuestionBehaviourDelegate, $mmaModQuizSync, $mmText, $mmUtil, mmaModQuizEventAutomSynced) {
+            $mmQuestionBehaviourDelegate, $mmaModQuizSync, $mmText, $mmUtil, mmaModQuizEventAutomSynced,
+            $mmCoursePrefetchDelegate, mmCoreDownloaded) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         quiz,
@@ -313,6 +314,14 @@ angular.module('mm.addons.mod_quiz')
         $state.go('site.mod_quiz-review', {courseid: courseId, quizid: quiz.id, attemptid: autoReview.attemptId});
     }
 
+    // Open a quiz to attempt it.
+    function openQuiz() {
+        $state.go('site.mod_quiz-player', {
+            courseid: courseId,
+            quizid: quiz.id,
+            moduleurl: module.url
+        });
+    }
 
     // Fetch the Quiz data.
     fetchQuizData().then(function() {
@@ -343,6 +352,35 @@ angular.module('mm.addons.mod_quiz')
         }).finally(function() {
             modal.dismiss();
         });
+    };
+
+    // Attempt the quiz.
+    $scope.attemptQuiz = function() {
+        if ($mmaModQuiz.isQuizOffline(quiz)) {
+            // Quiz supports offline, check if it needs to be downloaded.
+            var revision = $mmaModQuiz.getQuizRevisionFromAttempts(attempts),
+                timemodified = $mmaModQuiz.getQuizTimemodifiedFromAttempts(attempts),
+                modal = $mmUtil.showModalLoading();
+
+            $mmCoursePrefetchDelegate.getModuleStatus(module, courseId, revision, timemodified).then(function(status) {
+                if (status != mmCoreDownloaded) {
+                    // Prefetch the quiz.
+                    return $mmaModQuiz.prefetch(module, courseId).then(function() {
+                        // Success downloading, open quiz.
+                        openQuiz();
+                    }).catch(function() {
+                        $mmUtil.showErrorModal('mma.mod_quiz.errordownloading', true);
+                    });
+                } else {
+                    // Already downloaded, open it.
+                    openQuiz();
+                }
+            }).finally(function() {
+                modal.dismiss();
+            });
+        } else {
+            openQuiz();
+        }
     };
 
     // Update data when we come back from the player since the attempt status could have changed.
