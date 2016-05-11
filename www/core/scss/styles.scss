@@ -369,6 +369,13 @@ p.mm-warning {
   border-radius: 50%;
 }
 
+.badge.badge-inline {
+  display: inline;
+  position: relative;
+  top: initial;
+  right: initial;
+}
+
 // Timer.
 mm-timer {
   display: block;
