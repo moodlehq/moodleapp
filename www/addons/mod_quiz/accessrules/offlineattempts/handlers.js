@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_quiz')
  * @ngdoc service
  * @name $mmaQuizAccessOfflineAttemptsHandler
  */
-.factory('$mmaQuizAccessOfflineAttemptsHandler', function() {
+.factory('$mmaQuizAccessOfflineAttemptsHandler', function(mmaModQuizSyncTime) {
 
     var self = {};
 
@@ -41,8 +41,26 @@ angular.module('mm.addons.mod_quiz')
      * @return {Boolean}          True if preflight check required.
      */
     self.isPreflightCheckRequired = function(attempt) {
-        // @todo: Show warning only if offline and last sync was a while ago.
-        return true;
+        if (!attempt) {
+            return true;
+        }
+
+        // Show warning if last sync was a while ago.
+        return new Date().getTime() - mmaModQuizSyncTime > attempt.quizSyncTime;
+    };
+
+    /**
+     * Get fixed preflight data (data that doesn't require user interaction).
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizAccessRulesDelegate#getFixedPreflightData
+     * @param  {Object} attempt       Attempt.
+     * @param  {Object} preflightData Object where to store the preflight data.
+     * @return {Void}
+     */
+    self.getFixedPreflightData = function(attempt, preflightData) {
+        preflightData.confirmdatasaved = 1;
     };
 
     /**
