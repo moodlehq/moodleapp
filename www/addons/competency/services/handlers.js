@@ -27,7 +27,9 @@ angular.module('mm.addons.competency')
     $log = $log.getInstance('$mmaCompetencyHandlers');
 
     var self = {},
-        coursesNavEnabledCache = {};
+        coursesNavEnabledCache = {},
+        participantsNavEnabledCache = {},
+        usersNavEnabledCache = {};
 
     /**
      * Clear courses nav cache.
@@ -38,6 +40,18 @@ angular.module('mm.addons.competency')
      */
     self.clearCoursesNavCache = function() {
         coursesNavEnabledCache = {};
+    };
+
+    /**
+     * Clear users nav cache.
+     *
+     * @module mm.addons.competency
+     * @ngdoc method
+     * @name $mmaCompetencyHandlers#clearUsersNavCache
+     */
+    self.clearUsersNavCache = function() {
+        participantsNavEnabledCache = {};
+        usersNavEnabledCache = {};
     };
 
     /**
@@ -126,10 +140,14 @@ angular.module('mm.addons.competency')
             if (accessData && accessData.type == mmCoursesAccessMethods.guest) {
                 return false; // Not enabled for guests.
             }
+
             if (typeof coursesNavEnabledCache[courseId] != 'undefined') {
                 return coursesNavEnabledCache[courseId];
             }
-            return $mmaCompetency.isPluginForCourseEnabled(courseId).then(function(enabled) {
+            return $mmaCompetency.isPluginForCourseEnabled(courseId).then(function(competencies) {
+                var enabled = competencies ? !competencies.canmanagecoursecompetencies : false;
+                // We can also cache call for participantsNav.
+                participantsNavEnabledCache[courseId] = !!competencies;
                 coursesNavEnabledCache[courseId] = enabled;
                 return enabled;
             });
@@ -167,12 +185,117 @@ angular.module('mm.addons.competency')
         return self;
     };
 
+    /**
+     * Learning Plan User handler.
+     *
+     * @module mm.addons.competency
+     * @ngdoc method
+     * @name $mmaCompetencyHandlers#learningPlan
+     */
+    self.learningPlan = function() {
+
+        var self = {};
+
+        /**
+         * Check if handler is enabled.
+         *
+         * @return {Boolean} True if handler is enabled, false otherwise.
+         */
+        self.isEnabled = function() {
+            return $mmaCompetency.isPluginEnabled();
+        };
+
+        /**
+         * Check if handler is enabled for this course.
+         *
+         * @param {Number} user     User to check.
+         * @param {Number} courseId Course ID.
+         * @return {Boolean}          True if handler is enabled, false otherwise.
+         */
+        self.isEnabledForUser = function(user, courseId) {
+
+            if (courseId) {
+                // Link on a user course profile.
+                if (typeof participantsNavEnabledCache[courseId] != 'undefined') {
+                    return participantsNavEnabledCache[courseId];
+                }
+                return $mmaCompetency.isPluginForCourseEnabled(courseId).then(function(competencies) {
+                    var enabled = !!competencies;
+                    // We can also cache call for coursesNav.
+                    coursesNavEnabledCache[courseId] = competencies ? !competencies.canmanagecoursecompetencies : false;
+                    participantsNavEnabledCache[courseId] = enabled;
+                    return enabled;
+                });
+            } else {
+                // Link on a user site profile.
+                if (typeof usersNavEnabledCache[user.id] != 'undefined') {
+                    return usersNavEnabledCache[user.id];
+                }
+                return $mmaCompetency.getLearningPlans(user.id).then(function(plans) {
+                    // Check the user has at least one learn plan available.
+                    var enabled = plans.length > 0;
+                    usersNavEnabledCache[user.id] = enabled;
+                    return enabled;
+                });
+            }
+        };
+
+        /**
+         * Get the controller.
+         *
+         * @param {Object} user    User.
+         * @param {Number} courseId Course ID.
+         * @return {Object}         Controller.
+         */
+        self.getController = function(user, courseId) {
+
+
+            /**
+             * Learning plan handler controller.
+             *
+             * @module mm.addons.competency
+             * @ngdoc controller
+             * @name $mmaCompetencyHandlers#learningPlan:controller
+             */
+            return function($scope, $state) {
+                $scope.class = 'mma-competency-handler';
+                if (courseId) {
+                    $scope.icon = 'ion-ribbon-a';
+                    $scope.title = 'mma.competency.competencies';
+                    $scope.action = function($event) {
+                        $event.preventDefault();
+                        $event.stopPropagation();
+                        $state.go('site.coursecompetencies', {
+                            courseid: courseId,
+                            userid: user.id
+                        });
+                    };
+                } else {
+                    $scope.icon = 'ion-map';
+                    $scope.title = 'mma.competency.learningplans';
+                    $scope.action = function($event) {
+                        $event.preventDefault();
+                        $event.stopPropagation();
+                        $state.go('site.learningplans', {
+                            userid: user.id
+                        });
+                    };
+                }
+            };
+
+        };
+
+        return self;
+    };
+
     return self;
 })
 
-.run(function($mmaCompetencyHandlers, $mmEvents, mmCoreEventLogout, mmCoursesEventMyCoursesRefreshed) {
+.run(function($mmaCompetencyHandlers, $mmEvents, mmCoreEventLogout, mmCoursesEventMyCoursesRefreshed, mmUserEventProfileRefreshed) {
     $mmEvents.on(mmCoreEventLogout, function() {
         $mmaCompetencyHandlers.clearCoursesNavCache();
+        $mmaCompetencyHandlers.clearUsersNavCache();
     });
     $mmEvents.on(mmCoursesEventMyCoursesRefreshed, $mmaCompetencyHandlers.clearCoursesNavCache);
+    $mmEvents.on(mmUserEventProfileRefreshed, $mmaCompetencyHandlers.clearUsersNavCache);
 });

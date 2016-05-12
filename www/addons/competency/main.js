@@ -25,16 +25,19 @@ angular.module('mm.addons.competency', [])
 .constant('mmaCompetencyReviewStatusWaitingForReview', 1)
 .constant('mmaCompetencyReviewStatusInReview', 2)
 
-.config(function($stateProvider, $mmSideMenuDelegateProvider, $mmCoursesDelegateProvider, mmaCompetencyPriority,
-    mmaCourseCompetenciesPriority) {
+.config(function($stateProvider, $mmSideMenuDelegateProvider, $mmCoursesDelegateProvider, $mmUserDelegateProvider,
+    mmaCompetencyPriority, mmaCourseCompetenciesPriority) {
 
     $stateProvider
         .state('site.learningplans', {
             url: '/learningplans',
+            params: {
+                userid: null
+            },
             views: {
                 'site': {
                     controller: 'mmaLearningPlansListCtrl',
-                    templateUrl: 'addons/competency/templates/list.html'
+                    templateUrl: 'addons/competency/templates/planlist.html'
                 }
             }
         })
@@ -55,9 +58,10 @@ angular.module('mm.addons.competency', [])
         .state('site.competencies', {
             url: '/competencies',
             params: {
-                pid: null,
-                cid: null,
-                compid: null
+                pid: null, // Not naming it planid because it collides with 'site.competency' param in split-view.
+                cid: null, // Not naming it courseid because it collides with 'site.competency' param in split-view.
+                compid: null, // Not naming it competencyid because it collides with 'site.competency' param in split-view.
+                uid: null // Not naming it userid because it collides with 'site.competency' param in split-view.
             },
             views: {
                 'site': {
@@ -72,7 +76,8 @@ angular.module('mm.addons.competency', [])
             params: {
                 planid: null,
                 courseid: null,
-                competencyid: null
+                competencyid: null,
+                userid: null
             },
             views: {
                 'site': {
@@ -85,7 +90,8 @@ angular.module('mm.addons.competency', [])
         .state('site.coursecompetencies', {
             url: '/coursecompetencies',
             params: {
-                courseid: null
+                courseid: null,
+                userid: null
             },
             views: {
                 'site': {
@@ -115,4 +121,8 @@ angular.module('mm.addons.competency', [])
     // Register courses handler.
     $mmCoursesDelegateProvider.registerNavHandler('mmaCompetency', '$mmaCompetencyHandlers.coursesNav',
         mmaCourseCompetenciesPriority);
+
+    // Register user profile addons.
+    $mmUserDelegateProvider.registerProfileHandler('mmaCompetency:learningPlan', '$mmaCompetencyHandlers.learningPlan',
+        mmaCompetencyPriority);
 });

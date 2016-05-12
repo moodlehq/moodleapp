@@ -7,7 +7,7 @@
         </ion-refresher>
         <mm-loading hide-until="competenciesLoaded">
             <article>
-                <ul class="list card">
+                <ul class="list card" ng-if="!user">
                     <li class="item item-text-wrap" ng-if="competencies.settings.pushratingstouserplans">
                         {{ 'mma.competency.coursecompetencyratingsarepushedtouserplans' | translate }}
                     </li>
@@ -19,11 +19,26 @@
                         {{ 'mma.competency.xcompetenciesproficientoutofyincourse' | translate:{x: competencies.statistics.proficientcompetencycount, y: competencies.statistics.competencycount} }} ({{ competencies.statistics.proficientcompetencypercentageformatted }}%)
                         <progress max="100" value="{{ competencies.statistics.proficientcompetencypercentage }}"></progress>
                     </li>
+                    <li class="item item-text-wrap" ng-if="competencies.statistics.leastproficientcount > 0">
+                        <strong>{{ 'mma.competency.competenciesmostoftennotproficientincourse' | translate }}</strong>:
+                        <ul>
+                            <li ng-repeat="comp in competencies.statistics.leastproficient">
+                                <a ui-sref="site.competencysummary({competencyid: comp.id})">
+                                    {{ comp.shortname }} - {{ comp.idnumber }}
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
                 </ul>
             </article>
 
             <article>
                 <h3>{{ 'mma.competency.competencies' | translate }}</h3>
+                <p ng-if="user" class="item item-avatar">
+                    <img ng-if="user.profileimageurl && user.profileimageurl !== true" ng-src="{{user.profileimageurl}}" alt="{{ 'mm.core.pictureof' | translate:{$a: user.fullname} }}" mm-external-content>
+                    <span ng-if="user.profileimageurl === true" class="button button-icon icon ion-person"></span>
+                    <mm-format-text>{{ user.fullname }}</mm-format-text>
+                </p>
                 <span ng-if="competencies.statistics.competencycount == 0">
                     {{ 'mma.competency.nocompetencies' | translate }}
                 </span>
@@ -51,7 +66,7 @@
                             </span>
                             <ul ng-if="competency.coursemodules.length > 0">
                                 <li ng-repeat="activity in competency.coursemodules">
-                                    <a mm-link capture-link class="item item-text-wrap mm-course-module-handler item-media" ui-sref="{{ activity.url }}" title="{{ activity.name }}">
+                                    <a mm-link capture-link="true" class="item item-text-wrap mm-course-module-handler item-media" href="{{ activity.url }}" title="{{ activity.name }}">
                                         <img ng-src="{{ activity.iconurl }}" mm-external-content alt="" role="presentation" ng-if="activity.iconurl">
                                         <mm-format-text watch="true">{{ activity.name }}</mm-format-text>
                                     </a>

@@ -21,20 +21,15 @@ angular.module('mm.addons.competency')
  * @ngdoc controller
  * @name mmaLearningPlansListCtrl
  */
-.controller('mmaLearningPlansListCtrl', function($scope, $log, $mmaCompetency, $mmUtil, $q) {
+.controller('mmaLearningPlansListCtrl', function($scope, $mmaCompetency, $mmUtil, $q, $stateParams, $mmaCompetencyHelper) {
 
-    $log = $log.getInstance('mmaLearningPlansListCtrl');
+    var userId = parseInt($stateParams.userid) || false;
 
-    function fetchLearningPlans(refresh) {
+    function fetchLearningPlans() {
 
-        return $mmaCompetency.getLearningPlans().then(function(plans) {
+        return $mmaCompetency.getLearningPlans(userId).then(function(plans) {
             $scope.plans = plans;
         }).catch(function(message) {
-            if (!refresh) {
-                // Some call failed, retry without using cache.
-                return refreshAllData();
-            }
-
             if (message) {
                 $mmUtil.showErrorModal(message);
             } else {
@@ -46,14 +41,12 @@ angular.module('mm.addons.competency')
 
     // Convenience function to refresh all the data.
     function refreshAllData() {
-        return $mmaCompetency.invalidateLearningPlans().finally(function() {
-            return fetchLearningPlans(true);
+        return $mmaCompetency.invalidateLearningPlans(userId).finally(function() {
+            return fetchLearningPlans();
         });
     }
 
-    fetchLearningPlans().then(function() {
-        //$mmaCompetency.logPageView(currentPage);
-    }).finally(function() {
+    fetchLearningPlans().finally(function() {
         $scope.plansLoaded = true;
     });
 

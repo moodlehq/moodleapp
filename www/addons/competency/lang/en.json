@@ -1,6 +1,7 @@
 {
     "activities": "Activities",
     "competencies": "Competencies",
+    "competenciesmostoftennotproficientincourse": "Competencies most often not proficient in this course",
     "coursecompetencyratingsarenotpushedtouserplans": "Competency ratings in this course do not affect learning plans.",
     "coursecompetencyratingsarepushedtouserplans": "Competency ratings in this course are updated immediately in learning plans.",
     "coursecompetencies": "Course competencies",
@@ -18,6 +19,7 @@
     "evidence_manualoverrideincourse": "The competency rating was manually set in the course {{a}}.",
     "evidence_manualoverrideinplan": "The competency rating was manually set in the learning plan {{a}}.",
     "learningplancompetencies": "Learning plan competencies",
+    "learningplans": "Learning plans",
     "noactivities": "No activities",
     "mylearningplans": "My learning plans",
     "nocrossreferencedcompetencies": "No other competencies have been cross-referenced to this competency.",

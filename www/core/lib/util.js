@@ -147,7 +147,7 @@ angular.module('mm.core')
             }
 
             if (typeof resolved === 'undefined') {
-                throw new Error('Unexpected argument passed passed');
+                throw new Error('Unexpected argument object passed');
             }
             return resolved;
         };

@@ -21,16 +21,15 @@ angular.module('mm.addons.competency')
  * @ngdoc controller
  * @name mmaCompetenciesListCtrl
  */
-.controller('mmaCompetenciesListCtrl', function($scope, $log, $mmaCompetency, $mmUtil, $stateParams, $state, $ionicPlatform, $q,
-    $translate) {
-
-    $log = $log.getInstance('mmaCompetenciesListCtrl');
+.controller('mmaCompetenciesListCtrl', function($scope, $mmaCompetency, $mmUtil, $stateParams, $state, $ionicPlatform, $q,
+    $translate, $mmaCompetencyHelper) {
 
     var planId = parseInt($stateParams.pid) || false,
         courseId = parseInt($stateParams.cid) || false,
-        competencyId = parseInt($stateParams.compid);
+        competencyId = parseInt($stateParams.compid),
+        userId = parseInt($stateParams.uid) || false;
 
-    function fetchCompetencies(refresh) {
+    function fetchCompetencies() {
         var promise;
 
         if (planId) {
@@ -50,6 +49,7 @@ angular.module('mm.addons.competency')
                 $scope.title = response.plan.name;
                 $scope.id = response.plan.id;
                 $scope.idname = 'planid';
+                userId = response.plan.userid;
             } else {
                 $scope.title = $translate.instant('mma.competency.coursecompetencies');
                 $scope.id = response.courseid;
@@ -58,11 +58,6 @@ angular.module('mm.addons.competency')
 
             $scope.competencies = response.competencies;
         }).catch(function(message) {
-            if (!refresh) {
-                // Some call failed, retry without using cache.
-                return refreshAllData();
-            }
-
             if (message) {
                 $mmUtil.showErrorModal(message);
             } else {
@@ -77,7 +72,7 @@ angular.module('mm.addons.competency')
             // Show split view on tablet.
             $state.go('site.competency', {planid: planId, competencyid: competencyId});
         } else {
-            $state.go('site.competency', {courseid: courseId, competencyid: competencyId});
+            $state.go('site.competency', {courseid: courseId, competencyid: competencyId, userid: userId});
         }
     };
 
@@ -85,12 +80,12 @@ angular.module('mm.addons.competency')
     function refreshAllData() {
         var promise;
         if (planId) {
-            promise =  $mmaCompetency.invalidateLearningPlan(planId);
+            promise = $mmaCompetency.invalidateLearningPlan(planId);
         } else {
             promise = $mmaCompetency.invalidateCourseCompetencies(courseId);
         }
         return promise.finally(function() {
-            return fetchCompetencies(true);
+            return fetchCompetencies();
         });
     }
 

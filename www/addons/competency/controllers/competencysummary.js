@@ -19,24 +19,17 @@ angular.module('mm.addons.competency')
  *
  * @module mm.addons.competency
  * @ngdoc controller
- * @name Competency
+ * @name mmaCompetencySummaryCtrl
  */
-.controller('mmaCompetencySummaryCtrl', function($scope, $log, $stateParams, $mmaCompetency, $mmUtil, $q) {
-
-    $log = $log.getInstance('mmaCompetencySummaryCtrl');
+.controller('mmaCompetencySummaryCtrl', function($scope, $stateParams, $mmaCompetency, $mmUtil, $q) {
 
     var competencyId = parseInt($stateParams.competencyid);
 
     // Convenience function that fetches the event and updates the scope.
-    function fetchCompetency(refresh) {
+    function fetchCompetency() {
         return $mmaCompetency.getCompetencySummary(competencyId).then(function(competency) {
             $scope.competency = competency;
         }, function(message) {
-            if (!refresh) {
-                // Some call failed, retry without using cache.
-                return refreshAllData();
-            }
-
             if (message) {
                 $mmUtil.showErrorModal(message);
             } else {
@@ -49,12 +42,11 @@ angular.module('mm.addons.competency')
     // Convenience function to refresh all the data.
     function refreshAllData() {
         return $mmaCompetency.invalidateCompetencySummary(competencyId).finally(function() {
-            return fetchCompetency(true);
+            return fetchCompetency();
         });
     }
 
-    // Get event.
-    fetchCompetency().finally(function() {
+    fetchCompetency().then(function() {
         $mmaCompetency.logCompetencyView(competencyId);
     }).finally(function() {
         $scope.competencyLoaded = true;
@@ -62,7 +54,7 @@ angular.module('mm.addons.competency')
 
     // Pull to refresh.
     $scope.refreshCompetency = function() {
-        fetchCompetency(true).finally(function() {
+        refreshAllData().finally(function() {
             $scope.$broadcast('scroll.refreshComplete');
         });
     };

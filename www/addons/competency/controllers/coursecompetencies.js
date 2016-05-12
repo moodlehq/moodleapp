@@ -21,22 +21,22 @@ angular.module('mm.addons.competency')
  * @ngdoc controller
  * @name mmaCourseCompetenciesCtrl
  */
-.controller('mmaCourseCompetenciesCtrl', function($scope, $log, $stateParams, $mmaCompetency, $mmUtil, $state, $ionicPlatform, $q) {
-
-    $log = $log.getInstance('mmaCourseCompetenciesCtrl');
+.controller('mmaCourseCompetenciesCtrl', function($scope, $stateParams, $mmaCompetency, $mmUtil, $state, $ionicPlatform, $q,
+    $mmaCompetencyHelper) {
 
     var courseId = parseInt($stateParams.courseid);
+        userId = parseInt($stateParams.userid) || false;
 
     // Convenience function that fetches the event and updates the scope.
-    function fetchCourseCompetencies(refresh) {
+    function fetchCourseCompetencies() {
         return $mmaCompetency.getCourseCompetencies(courseId).then(function(competencies) {
             $scope.competencies = competencies;
-        }, function(message) {
-            if (!refresh) {
-                // Some call failed, retry without using cache.
-                return refreshAllData();
-            }
 
+            // Get the user profile image.
+            $mmaCompetencyHelper.getProfile(userId).then(function(user) {
+                $scope.user = user;
+            });
+        }, function(message) {
             if (message) {
                 $mmUtil.showErrorModal(message);
             } else {
@@ -49,29 +49,26 @@ angular.module('mm.addons.competency')
     $scope.gotoCompetency = function(competencyId) {
         if ($ionicPlatform.isTablet()) {
             // Show split view on tablet.
-            $state.go('site.competencies', {cid: courseId, compid: competencyId});
+            $state.go('site.competencies', {cid: courseId, compid: competencyId, uid: userId});
         } else {
-            $state.go('site.competency', {courseid: courseId, competencyid: competencyId});
+            $state.go('site.competency', {courseid: courseId, competencyid: competencyId, userid: userId});
         }
     };
 
     // Convenience function to refresh all the data.
     function refreshAllData() {
         return $mmaCompetency.invalidateCourseCompetencies(courseId).finally(function() {
-            return fetchCourseCompetencies(true);
+            return fetchCourseCompetencies();
         });
     }
 
-    // Get event.
     fetchCourseCompetencies().finally(function() {
-        //$mmaCompetency.logPlanView(courseId);
-    }).finally(function() {
         $scope.competenciesLoaded = true;
     });
 
     // Pull to refresh.
     $scope.refreshCourseCompetencies = function() {
-        fetchCourseCompetencies(true).finally(function() {
+        refreshAllData().finally(function() {
             $scope.$broadcast('scroll.refreshComplete');
         });
     };

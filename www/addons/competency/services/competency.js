@@ -21,7 +21,7 @@ angular.module('mm.addons.competency')
  * @ngdoc service
  * @name $mmaCompetency
  */
-.factory('$mmaCompetency', function($log, $mmSite, $mmSitesManager, $q) {
+.factory('$mmaCompetency', function($log, $mmSite, $mmSitesManager, $q, mmaCompetencyStatusComplete) {
 
     $log = $log.getInstance('$mmaCompetency');
 
@@ -98,15 +98,16 @@ angular.module('mm.addons.competency')
      * @ngdoc method
      * @name $mmaCompetency#isPluginEnabled
      * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Boolean} True if competency learning plans WS is available, false otherwise.
+     * @return {Promise} True if competency learning plans WS is available, false otherwise.
      */
     self.isPluginEnabled = function(siteId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            return  site.wsAvailable('core_competency_list_course_competencies') &&
-                    site.wsAvailable('tool_lp_data_for_plans_page') &&
-                    self.getLearningPlans(false, siteId);
+            if (site.wsAvailable('core_competency_list_course_competencies') && site.wsAvailable('tool_lp_data_for_plans_page')) {
+                return self.getLearningPlans(false, siteId);
+            }
+            return false;
         });
     };
 
@@ -118,22 +119,24 @@ angular.module('mm.addons.competency')
      * @name $mmaCompetency#isPluginForCourseEnabled
      * @param  {Number} courseId Course ID.
      * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Boolean}
+     * @return {Promise} competencies if enabled for the given course, false otherwise.
      */
     self.isPluginForCourseEnabled = function(courseId, siteId) {
-        siteId = siteId || $mmSite.getId();
+        if (!$mmSite.isLoggedIn()) {
+            return $q.when(false);
+        }
 
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            if (!site.isLoggedIn()) {
+        if (!self.isPluginEnabled(siteId)) {
+            return $q.when(false);
+        }
+
+        return self.getCourseCompetencies(courseId, siteId).then(function(competencies) {
+            if (competencies.competencies.length <= 0) {
                 return false;
             }
-            if(!self.isPluginEnabled(siteId)) {
-                return false;
-            }
-            if (!self.getCourseCompetencies(courseId, siteId)) {
-                return false;
-            }
-            return true;
+            return competencies;
+        }).catch(function() {
+            return $q.when(false);
         });
     };
 
@@ -314,14 +317,14 @@ angular.module('mm.addons.competency')
     };
 
     /**
-     * Get a certain competency summary.
+     * Get an specific competency summary.
      *
      * @module mm.addons.competency
      * @ngdoc method
      * @name $mmaCompetency#getCourseCompetencies
-     * @param  {Number} [courseId]    ID of the course.
+     * @param  {Number} courseId    ID of the course.
      * @param  {String} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise}            Promise to be resolved when the plans are retrieved.
+     * @return {Promise}            Promise to be resolved when the course competencies are retrieved.
      */
     self.getCourseCompetencies = function(courseId, siteId) {
         siteId = siteId || $mmSite.getId();
@@ -353,7 +356,7 @@ angular.module('mm.addons.competency')
      * @name $mmaCompetency#invalidateLearningPlans
      * @param  {Number} [userId]    ID of the user. If not defined, current user.
      * @param  {String} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise}        Promise resolved when the data is invalidated.
+     * @return {Promise}            Promise resolved when the data is invalidated.
      */
     self.invalidateLearningPlans = function(userId, siteId) {
         siteId = siteId || $mmSite.getId();
@@ -462,23 +465,29 @@ angular.module('mm.addons.competency')
      * @ngdoc method
      * @name $mmaCompetency#logCompetencyInPlanView
      * @param  {Number} planId    ID of the plan.
-     * @param  {Number} competencyId    ID of the competency.
+     * @param  {Number} competencyId  ID of the competency.
+     * @param  {Number} planStatus    Current plan Status to decide what action should be logged.
      * @param  {String} [userId] User ID. If not defined, current user.
      * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}  Promise resolved when the WS call is successful.
      */
-    self.logCompetencyInPlanView = function(planId, competencyId, userId, siteId) {
+    self.logCompetencyInPlanView = function(planId, competencyId, planStatus, userId, siteId) {
         if (planId && competencyId) {
             siteId = siteId || $mmSite.getId();
-            userId = userId || $mmSite.getUserId();
 
             return $mmSitesManager.getSite(siteId).then(function(site) {
+                userId = userId || site.getUserId();
+
                 var params = {
                     planid: planId,
                     competencyid: competencyId,
                     userid: userId
                 };
-                return site.write('core_competency_user_competency_viewed_in_plan', params);
+                if (planStatus == mmaCompetencyStatusComplete) {
+                    return site.write('core_competency_user_competency_plan_viewed', params);
+                } else {
+                    return site.write('core_competency_user_competency_viewed_in_plan', params);
+                }
             });
         }
         return $q.reject();
@@ -499,9 +508,10 @@ angular.module('mm.addons.competency')
     self.logCompetencyInCourseView = function(courseId, competencyId, userId, siteId) {
         if (courseId && competencyId) {
             siteId = siteId || $mmSite.getId();
-            userId = userId || $mmSite.getUserId();
 
             return $mmSitesManager.getSite(siteId).then(function(site) {
+                userId = userId || site.getUserId();
+
                 var params = {
                     courseid: courseId,
                     competencyid: competencyId,

@@ -19,24 +19,25 @@ angular.module('mm.addons.competency')
  *
  * @module mm.addons.competency
  * @ngdoc controller
- * @name Competency
+ * @name mmaCompetencyCtrl
  */
-.controller('mmaCompetencyCtrl', function($scope, $log, $stateParams, $mmaCompetency, $mmUtil, $translate, $q,
+.controller('mmaCompetencyCtrl', function($scope, $stateParams, $mmaCompetency, $mmUtil, $translate, $q, $mmSite,
     mmaCompetencyReviewStatusIdle, mmaCompetencyReviewStatusInReview, mmaCompetencyReviewStatusWaitingForReview) {
-
-    $log = $log.getInstance('mmaCompetencyCtrl');
 
     var competencyId = parseInt($stateParams.competencyid),
         planId = parseInt($stateParams.planid) || false,
-        courseId = parseInt($stateParams.courseid) || false;
+        courseId = parseInt($stateParams.courseid) || false,
+        userId = parseInt($stateParams.userid) || false,
+        planStatus = false;
 
     // Convenience function that fetches the event and updates the scope.
-    function fetchCompetency(refresh) {
+    function fetchCompetency() {
 
         if (planId) {
+            planStatus = false;
             promise = $mmaCompetency.getCompetencyInPlan(planId, competencyId);
         } else if (courseId){
-            promise = $mmaCompetency.getCompetencyInCourse(courseId, competencyId);
+            promise = $mmaCompetency.getCompetencyInCourse(courseId, competencyId, userId);
         } else {
             promise = $q.reject();
         }
@@ -44,13 +45,20 @@ angular.module('mm.addons.competency')
         return promise.then(function(competency) {
 
             if (planId) {
-                statusName = getStatusName(competency.usercompetencysummary.usercompetency.status);
-                if (statusName) {
-                    competency.usercompetencysummary.usercompetency.statusname = statusName;
-                }
+                planStatus = competency.plan.status;
+                competency.usercompetencysummary.usercompetency.statusname = getStatusName(competency.usercompetencysummary.usercompetency.status);
             } else {
                 competency.usercompetencysummary.usercompetency = competency.usercompetencysummary.usercompetencycourse;
                 $scope.coursemodules = competency.coursemodules;
+            }
+
+            if (competency.usercompetencysummary.user.id != $mmSite.getUserId()) {
+                competency.usercompetencysummary.user.profileimageurl = competency.usercompetencysummary.user.profileimageurl
+                    || true;
+
+                // Get the user profile image from the returned object.
+                $scope.user = competency.usercompetencysummary.user;
+                console.log($scope.user);
             }
 
             angular.forEach(competency.usercompetencysummary.evidence, function(evidence) {
@@ -62,11 +70,6 @@ angular.module('mm.addons.competency')
             $scope.competency = competency.usercompetencysummary;
 
         }, function(message) {
-            if (!refresh) {
-                // Some call failed, retry without using cache.
-                return refreshAllData();
-            }
-
             if (message) {
                 $mmUtil.showErrorModal(message);
             } else {
@@ -91,7 +94,7 @@ angular.module('mm.addons.competency')
                 break;
             default:
                 // We can use the current status name.
-                return false;
+                return status;
         }
         return $translate.instant('mma.competency.usercompetencystatus_' + statusTranslateName);
     }
@@ -106,16 +109,15 @@ angular.module('mm.addons.competency')
             promise = $mmaCompetency.invalidateCompetencyInCourse(courseId, competencyId);
         }
         return promise.finally(function() {
-            return fetchCompetency(true);
+            return fetchCompetency();
         });
     }
 
-    // Get event.
-    fetchCompetency().finally(function() {
+    fetchCompetency().then(function() {
         if (planId) {
-            $mmaCompetency.logCompetencyInPlanView(planId, competencyId);
+            $mmaCompetency.logCompetencyInPlanView(planId, competencyId, planStatus, userId);
         } else {
-            $mmaCompetency.logCompetencyInCourseView(courseId, competencyId);
+            $mmaCompetency.logCompetencyInCourseView(courseId, competencyId, userId);
         }
     }).finally(function() {
         $scope.competencyLoaded = true;
@@ -123,7 +125,7 @@ angular.module('mm.addons.competency')
 
     // Pull to refresh.
     $scope.refreshCompetency = function() {
-        fetchCompetency(true).finally(function() {
+        refreshAllData().finally(function() {
             $scope.$broadcast('scroll.refreshComplete');
         });
     };

@@ -21,31 +21,27 @@ angular.module('mm.addons.competency')
  * @ngdoc controller
  * @name mmaLearningPlanCtrl
  */
-.controller('mmaLearningPlanCtrl', function($scope, $log, $stateParams, $mmaCompetency, $mmUtil, $translate,
+.controller('mmaLearningPlanCtrl', function($scope, $stateParams, $mmaCompetency, $mmUtil, $translate,
     mmaCompetencyStatusDraft, mmaCompetencyStatusActive, mmaCompetencyStatusComplete, mmaCompetencyStatusWaitingForReview,
-    mmaCompetencyStatusInReview, $state, $ionicPlatform, $q) {
-
-    $log = $log.getInstance('mmaLearningPlanCtrl');
+    mmaCompetencyStatusInReview, $state, $ionicPlatform, $q, $mmaCompetencyHelper) {
 
     var planId = parseInt($stateParams.id);
 
     // Convenience function that fetches the event and updates the scope.
-    function fetchLearningPlan(refresh) {
+    function fetchLearningPlan() {
         return $mmaCompetency.getLearningPlan(planId).then(function(plan) {
-            var statusName;
+            var statusName, userId;
 
-            statusName = getStatusName(plan.plan.status);
-            if (statusName) {
-                plan.plan.statusname = statusName;
-            }
+            plan.plan.statusname = getStatusName(plan.plan.status);
+
+            userId = plan.plan.userid;
+            // Get the user profile image.
+            $mmaCompetencyHelper.getProfile(userId).then(function(user) {
+                $scope.user = user;
+            });
 
             $scope.plan = plan;
         }, function(message) {
-            if (!refresh) {
-                // Some call failed, retry without using cache.
-                return refreshAllData();
-            }
-
             if (message) {
                 $mmUtil.showErrorModal(message);
             } else {
@@ -85,7 +81,7 @@ angular.module('mm.addons.competency')
                 break;
             default:
                 // We can use the current status name.
-                return false;
+                return status;
         }
         return $translate.instant('mma.competency.planstatus' + statusTranslateName);
     }
@@ -93,20 +89,17 @@ angular.module('mm.addons.competency')
     // Convenience function to refresh all the data.
     function refreshAllData() {
         return $mmaCompetency.invalidateLearningPlan(planId).finally(function() {
-            return fetchLearningPlan(true);
+            return fetchLearningPlan();
         });
     }
 
-    // Get event.
     fetchLearningPlan().finally(function() {
-        //$mmaCompetency.logPlanView(planId);
-    }).finally(function() {
         $scope.planLoaded = true;
     });
 
     // Pull to refresh.
     $scope.refreshLearningPlan = function() {
-        fetchLearningPlan(true).finally(function() {
+        refreshAllData().finally(function() {
             $scope.$broadcast('scroll.refreshComplete');
         });
     };
