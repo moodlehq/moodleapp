@@ -66,7 +66,7 @@ angular.module('mm.core')
     };
 
     this.$get = function($ionicLoading, $ionicPopup, $injector, $translate, $http, $log, $q, $mmLang, $mmFS, $timeout, $mmApp,
-                $mmText, mmCoreWifiDownloadThreshold, mmCoreDownloadThreshold, $ionicScrollDelegate) {
+                $mmText, mmCoreWifiDownloadThreshold, mmCoreDownloadThreshold, $ionicScrollDelegate, $cordovaInAppBrowser) {
 
         $log = $log.getInstance('$mmUtil');
 
@@ -388,20 +388,39 @@ angular.module('mm.core')
          * @ngdoc method
          * @name $mmUtil#openInApp
          * @param  {String} url The URL to open.
+         * @param  {Object} options Override default options passed to $cordovaInAppBrowser#open
          * @return {Void}
          */
-        self.openInApp = function(url) {
+        self.openInApp = function(url, options) {
             if (!url) {
                 return;
             }
 
-            var options = 'enableViewPortScale=yes'; // Enable zoom on iOS.
-            if (ionic.Platform.isIOS() && url.indexOf('file://') === 0) {
+            options = options || {};
+
+            if (!options.enableViewPortScale) {
+                options.enableViewPortScale = 'yes'; // Enable zoom on iOS.
+            }
+
+            if (!options.location && ionic.Platform.isIOS() && url.indexOf('file://') === 0) {
                 // The URL uses file protocol, don't show it on iOS.
                 // In Android we keep it because otherwise we lose the whole toolbar.
-                options += ',location=no';
+                options.location = 'no';
             }
-            window.open(url, '_blank', options);
+
+            $cordovaInAppBrowser.open(url, '_blank', options);
+        };
+
+        /**
+         * Close the InAppBrowser window.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#closeInAppBrowser
+         * @return {Void}
+         */
+        self.closeInAppBrowser = function() {
+            $cordovaInAppBrowser.close();
         };
 
         /**

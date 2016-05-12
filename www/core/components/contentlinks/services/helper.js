@@ -208,7 +208,7 @@ angular.module('mm.core.contentlinks')
 
                     return promise.then(function() {
                         if (ssoNeeded) {
-                            $mmLoginHelper.openBrowserForSSOLogin(result.siteurl);
+                            $mmLoginHelper.openBrowserForSSOLogin(result.siteurl, result.code);
                         } else {
                             $state.go('mm_login.credentials', {
                                 siteurl: result.siteurl,

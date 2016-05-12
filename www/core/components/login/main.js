@@ -104,6 +104,16 @@ angular.module('mm.core.login', [])
     // Register observer to check if the app was launched via URL scheme.
     $mmURLDelegate.register('mmLoginSSO', appLaunchedByURL);
 
+    // Observe loaded pages in the InAppBrowser to handle SSO URLs.
+    $rootScope.$on('$cordovaInAppBrowser:loadstart', function(e, event) {
+        // URLs with a custom scheme are prefixed with "http://", we need to remove this.
+        var url = event.url.replace(/^http:\/\//, '');
+        if (appLaunchedByURL(url)) {
+            // Close the browser if it's a valid SSO URL.
+            $mmUtil.closeInAppBrowser();
+        }
+    });
+
     // Redirect depending on user session.
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 
@@ -162,7 +172,7 @@ angular.module('mm.core.login', [])
                 if ($mmLoginHelper.isSSOLoginNeeded(result.code)) {
                     // SSO. User needs to authenticate in a browser.
                     $mmUtil.showConfirm($translate('mm.login.reconnectssodescription')).then(function() {
-                        $mmLoginHelper.openBrowserForSSOLogin(result.siteurl);
+                        $mmLoginHelper.openBrowserForSSOLogin(result.siteurl, result.code);
                     });
                 } else {
                     var info = $mmSite.getInfo();
