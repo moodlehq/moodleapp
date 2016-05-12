@@ -871,6 +871,27 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Get a quiz id given a course module object.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#getQuizIdFromModule
+     * @param {Object} module   Course module.
+     * @param {Number} courseId Course ID.
+     * @param {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the Quiz is retrieved.
+     */
+    self.getQuizIdFromModule = function(module, courseId, siteId) {
+        if (module.instance) {
+            return $q.when(module.instance);
+        } else {
+            return self.getQuiz(courseId, module.id, siteId).then(function(quiz) {
+                return quiz.id;
+            });
+        }
+    };
+
+    /**
      * Get a readable Quiz grade method.
      *
      * @module mm.addons.mod_quiz

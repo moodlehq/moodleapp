@@ -69,16 +69,7 @@ angular.module('mm.addons.mod_quiz')
      * @return {Number}         Promise resolved with revision.
      */
     self.getRevision = function(module, courseId) {
-        var promise;
-        if (module.instance) {
-            promise = $q.when(module.instance);
-        } else {
-            promise = $mmaModQuiz.getQuiz(courseId, module.id).then(function(quiz) {
-                return quiz.id;
-            });
-        }
-
-        return promise.then(function(quizId) {
+        return $mmaModQuiz.getQuizIdFromModule(module, courseId).then(function(quizId) {
             return $mmaModQuiz.getUserAttempts(quizId).then(function(attempts) {
                 return $mmaModQuiz.getQuizRevisionFromAttempts(attempts);
             });
@@ -96,16 +87,7 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}         Promise resolved with timemodified.
      */
     self.getTimemodified = function(module, courseId) {
-        var promise;
-        if (module.instance) {
-            promise = $q.when(module.instance);
-        } else {
-            promise = $mmaModQuiz.getQuiz(courseId, module.id).then(function(quiz) {
-                return quiz.id;
-            });
-        }
-
-        return promise.then(function(quizId) {
+        return $mmaModQuiz.getQuizIdFromModule(module, courseId).then(function(quizId) {
             return $mmaModQuiz.getUserAttempts(quizId).then(function(attempts) {
                 return $mmaModQuiz.getQuizTimemodifiedFromAttempts(attempts);
             });
@@ -124,7 +106,15 @@ angular.module('mm.addons.mod_quiz')
      */
     self.isDownloadable = function(module, courseId) {
         return $mmaModQuiz.getQuiz(courseId, module.id).then(function(quiz) {
-            return quiz.allowofflineattempts === 1;
+            if (quiz.allowofflineattempts !== 1 || quiz.hasquestions === 0) {
+                return false;
+            }
+
+            // Not downloadable if we reached max attempts.
+            return $mmaModQuiz.getUserAttempts(quiz.id).then(function(attempts) {
+                var isLastFinished = !attempts.length || $mmaModQuiz.isAttemptFinished(attempts[attempts.length - 1].state);
+                return quiz.attempts === 0 || quiz.attempts > attempts.length || !isLastFinished;
+            });
         });
     };
 
