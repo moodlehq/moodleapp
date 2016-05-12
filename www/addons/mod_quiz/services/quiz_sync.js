@@ -371,7 +371,8 @@ angular.module('mm.addons.mod_quiz')
                             }
                         }
 
-                        return $mmaModQuiz.processAttempt(quiz, onlineAttempt, answers, preflightData, finish, false, false, siteId);
+                        return $mmaModQuiz.processAttempt(quiz, onlineAttempt, answers,
+                                        preflightData, finish, false, false, siteId);
                     }).then(function() {
                         // Data sent. Finish the sync.
                         return finishSync(lastAttemptId, true);

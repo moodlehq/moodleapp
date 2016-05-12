@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_quiz')
  */
 .factory('$mmaModQuiz', function($log, $mmSite, $mmSitesManager, $q, $translate, $mmUtil, $mmText, $mmQuestionDelegate,
             $mmaModQuizAccessRulesDelegate, $mmQuestionHelper, $mmFilepool, $mmaModQuizOnline, $mmaModQuizOffline, $state,
-            mmaModQuizComponent, mmCoreDownloaded, mmCoreDownloading) {
+            mmaModQuizComponent, mmCoreDownloaded, mmCoreDownloading, mmCoreNotDownloaded) {
 
     $log = $log.getInstance('$mmaModQuiz');
 
@@ -1996,7 +1996,10 @@ angular.module('mm.addons.mod_quiz')
         siteId = siteId || $mmSite.getId();
 
         var attempts,
-            promises = [];
+            promises = [],
+            component = mmaModQuizComponent,
+            revision,
+            timemod;
 
         // Get quiz data.
         promises.push(self.getQuizAccessInformation(quiz.id, false, true, siteId));
@@ -2019,11 +2022,19 @@ angular.module('mm.addons.mod_quiz')
                 return self.prefetchAttempt(quiz, attempts[attempts.length - 1], siteId);
             }
         }).then(function() {
-            // Prefetch finished, mark as downloaded.
-            var revision = self.getQuizRevisionFromAttempts(attempts),
-                timemod = self.getQuizTimemodifiedFromAttempts(attempts);
-            return $mmFilepool.storePackageStatus(siteId, mmaModQuizComponent,
-                            quiz.coursemodule, mmCoreDownloaded, revision, timemod);
+            // Prefetch finished, get current status to determine if we need to change it.
+            revision = self.getQuizRevisionFromAttempts(attempts);
+            timemod = self.getQuizTimemodifiedFromAttempts(attempts);
+
+            return $mmFilepool.getPackageStatus(siteId, component, quiz.coursemodule, revision, timemod);
+        }).then(function(status) {
+            if (status !== mmCoreNotDownloaded) {
+                // Quiz was downloaded, set the new status.
+                // If no attempts or last is finished we'll mark it as not downloaded to show download icon.
+                var isLastFinished = !attempts.length || self.isAttemptFinished(attempts[attempts.length - 1].state),
+                    newStatus = isLastFinished ? mmCoreNotDownloaded : mmCoreDownloaded;
+                return $mmFilepool.storePackageStatus(siteId, component, quiz.coursemodule, newStatus, revision, timemod);
+            }
         });
     };
 

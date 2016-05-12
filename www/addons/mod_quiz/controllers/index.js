@@ -64,11 +64,15 @@ angular.module('mm.addons.mod_quiz')
                 }
             });
         }).then(function() {
-            // Try to sync the quiz.
-            return syncQuiz(!refresh, false).catch(function() {
-                // Ignore errors, keep getting data even if sync fails.
+            if ($mmaModQuiz.isQuizOffline(quiz)) {
+                // Try to sync the quiz.
+                return syncQuiz(!refresh, false).catch(function() {
+                    // Ignore errors, keep getting data even if sync fails.
+                    autoReview = undefined;
+                });
+            } else {
                 autoReview = undefined;
-            });
+            }
         }).then(function() {
 
             if ($mmaModQuiz.isQuizOffline(quiz)) {
