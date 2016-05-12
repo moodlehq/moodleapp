@@ -55,6 +55,15 @@ angular.module('mm.addons.mod_quiz')
             $scope.title = quiz.name || $scope.title;
             $scope.description = quiz.intro || $scope.description;
 
+            // Try to get warnings from automatic sync.
+            return $mmaModQuizSync.getQuizSyncWarnings(quiz.id).then(function(warnings) {
+                if (warnings && warnings.length) {
+                    // Show warnings and delete them so they aren't shown again.
+                    $mmUtil.showErrorModal($mmText.buildMessage(warnings));
+                    return $mmaModQuizSync.setQuizSyncWarnings(quiz.id, []);
+                }
+            });
+        }).then(function() {
             // Try to sync the quiz.
             return syncQuiz(!refresh, false).catch(function() {
                 // Ignore errors, keep getting data even if sync fails.
