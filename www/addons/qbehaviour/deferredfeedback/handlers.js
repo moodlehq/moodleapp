@@ -74,8 +74,10 @@ angular.module('mm.addons.qbehaviour_deferredfeedback')
 
             // Answers have changed.
             if (typeof isComplete == 'function') {
-                complete = isComplete(question, newBasicAnswers);
+                // Pass all the answers since some behaviours might need the extra data.
+                complete = isComplete(question, question.answers);
             } else {
+                // Only pass the basic answers since questions should be independent of extra data.
                 complete = $mmQuestion.isCompleteResponse(question, newBasicAnswers);
             }
 
