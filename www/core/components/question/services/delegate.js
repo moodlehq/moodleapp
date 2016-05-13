@@ -53,16 +53,23 @@ angular.module('mm.core.question')
      * @param {String|Object|Function} handler Must be resolved to an object defining the following properties. Or to a function
      *                           returning an object defining these properties. See {@link $mmUtil#resolveObject}.
      *                             - isEnabled (Boolean|Promise) Whether or not the handler is enabled on a site level.
-     *                                                           When using a promise, it should return a boolean.
+     *                                              When using a promise, it should return a boolean.
      *                             - getDirectiveName(question) (String) Returns the name of the directive to render the question.
-     *                                                           There's no need to check the question type in this function.
+     *                                              There's no need to check the question type in this function.
      *                             - getBehaviour(question, behaviour) (String) Optional. Returns the name of the behaviour to use
-     *                                                           for the question. If the question should use the default behaviour
-     *                                                           you shouldn't implement this question or it should just return
-     *                                                           the behaviour param.
+     *                                              for the question. If the question should use the default behaviour you
+     *                                              shouldn't implement this function.
      *                             - validateSequenceCheck(question, offlineSeqCheck) (Boolean) Optional. Validate if an offline
-     *                                                           sequencecheck is valid compared with the online one. This function
-     *                                                           only needs to be implemented if a specific compare is required.
+     *                                              sequencecheck is valid compared with the online one. This function only
+     *                                              needs to be implemented if a specific compare is required.
+     *                             - isCompleteResponse(question, answers) (Mixed) Optional. Check if a response is complete.
+     *                                              Return true if complete, false if not complete, -1 if cannot determine.
+     *                             - isGradableResponse(question, answers) (Mixed) Optional. Check if a student has provided enough
+     *                                              of an answer for the question to be graded automatically, or whether it must
+     *                                              be considered aborted.
+     *                                              Return true if gradable, false if not gradable, -1 if cannot determine.
+     *                             - isSameResponse(question, prevAnswers, newAnswers) (Boolean) Optional. Check if two responses
+     *                                              are equal. Always return boolean.
      */
     self.registerHandler = function(name, questionType, handler) {
         if (typeof handlers[questionType] !== 'undefined') {
@@ -136,7 +143,7 @@ angular.module('mm.core.question')
             var type = 'qtype_' + question.type;
             if (typeof enabledHandlers[type] != 'undefined') {
                 if (enabledHandlers[type].isCompleteResponse) {
-                    return enabledHandlers[type].isCompleteResponse(answers);
+                    return enabledHandlers[type].isCompleteResponse(question, answers);
                 }
             }
             return -1;
@@ -156,7 +163,7 @@ angular.module('mm.core.question')
             var type = 'qtype_' + question.type;
             if (typeof enabledHandlers[type] != 'undefined') {
                 if (enabledHandlers[type].isGradableResponse) {
-                    return enabledHandlers[type].isGradableResponse(answers);
+                    return enabledHandlers[type].isGradableResponse(question, answers);
                 }
             }
             return -1;
@@ -177,7 +184,7 @@ angular.module('mm.core.question')
             var type = 'qtype_' + question.type;
             if (typeof enabledHandlers[type] != 'undefined') {
                 if (enabledHandlers[type].isSameResponse) {
-                    return enabledHandlers[type].isSameResponse(prevAnswers, newAnswers);
+                    return enabledHandlers[type].isSameResponse(question, prevAnswers, newAnswers);
                 }
             }
             return false;

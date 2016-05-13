@@ -28,12 +28,13 @@ angular.module('mm.addons.qtype_calculated')
     /**
      * Check if a response is complete.
      *
-     * @param  {Object} answers Question answers (without prefix).
-     * @return {Mixed}          True if complete, false if not complete, -1 if cannot determine.
+     * @param  {Object} question Question.
+     * @param  {Object} answers  Question answers (without prefix).
+     * @return {Mixed}           True if complete, false if not complete, -1 if cannot determine.
      */
-    self.isCompleteResponse = function(answers) {
+    self.isCompleteResponse = function(question, answers) {
         // This question type depends on numerical.
-        return $mmaQtypeNumericalHandler.isCompleteResponse(answers);
+        return $mmaQtypeNumericalHandler.isCompleteResponse(question, answers);
     };
 
     /**
@@ -49,24 +50,26 @@ angular.module('mm.addons.qtype_calculated')
      * Check if a student has provided enough of an answer for the question to be graded automatically,
      * or whether it must be considered aborted.
      *
-     * @param  {Object} answers Question answers (without prefix).
-     * @return {Mixed}          True if gradable, false if not gradable, -1 if cannot determine.
+     * @param  {Object} question Question.
+     * @param  {Object} answers  Question answers (without prefix).
+     * @return {Mixed}           True if gradable, false if not gradable, -1 if cannot determine.
      */
-    self.isGradableResponse = function(answers) {
+    self.isGradableResponse = function(question, answers) {
         // This question type depends on numerical.
-        return $mmaQtypeNumericalHandler.isGradableResponse(answers);
+        return $mmaQtypeNumericalHandler.isGradableResponse(question, answers);
     };
 
     /**
      * Check if two responses are the same.
      *
+     * @param  {Object} question    Question.
      * @param  {Object} prevAnswers Previous answers.
      * @param  {Object} newAnswers  New answers.
      * @return {Boolean}            True if same, false otherwise.
      */
-    self.isSameResponse = function(prevAnswers, newAnswers) {
+    self.isSameResponse = function(question, prevAnswers, newAnswers) {
         // This question type depends on numerical.
-        return $mmaQtypeNumericalHandler.isSameResponse(prevAnswers, newAnswers);
+        return $mmaQtypeNumericalHandler.isSameResponse(question, prevAnswers, newAnswers);
     };
 
     /**

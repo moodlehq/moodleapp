@@ -21,26 +21,28 @@ angular.module('mm.addons.qtype_multianswer')
  * @ngdoc service
  * @name $mmaQtypeMultianswerHandler
  */
-.factory('$mmaQtypeMultianswerHandler', function($mmQuestion) {
+.factory('$mmaQtypeMultianswerHandler', function($mmQuestion, $mmQuestionHelper) {
 
     var self = {};
 
     /**
      * Check if a response is complete.
      *
-     * @param  {Object} answers Question answers (without prefix).
-     * @return {Mixed}          True if complete, false if not complete, -1 if cannot determine.
+     * @param  {Object} question Question.
+     * @param  {Object} answers  Question answers (without prefix).
+     * @return {Mixed}           True if complete, false if not complete, -1 if cannot determine.
      */
-    self.isCompleteResponse = function(answers) {
-        var hasReponse = false;
-        angular.forEach(answers, function(value) {
-            if (value || value === false) {
-                hasReponse = true;
-            }
-        });
+    self.isCompleteResponse = function(question, answers) {
+        // Get all the inputs in the question to check if they've all been answered.
+        var names = $mmQuestion.getBasicAnswers($mmQuestionHelper.getAllInputNamesFromHtml(question.html));
 
-        // We don't have the full list of subquestions, so we can't be sure they all have been answered.
-        return hasReponse ? -1 : false;
+        for (var name in names) {
+            if (!answers[name] && answers[name] !== false && answers[name] !== 0) {
+                return false;
+            }
+        }
+
+        return true;
     };
 
     /**
@@ -56,10 +58,11 @@ angular.module('mm.addons.qtype_multianswer')
      * Check if a student has provided enough of an answer for the question to be graded automatically,
      * or whether it must be considered aborted.
      *
-     * @param  {Object} answers Question answers (without prefix).
-     * @return {Mixed}          True if gradable, false if not gradable, -1 if cannot determine.
+     * @param  {Object} question Question.
+     * @param  {Object} answers  Question answers (without prefix).
+     * @return {Mixed}           True if gradable, false if not gradable, -1 if cannot determine.
      */
-    self.isGradableResponse = function(answers) {
+    self.isGradableResponse = function(question, answers) {
         var hasReponse = false;
         angular.forEach(answers, function(value) {
             if (value || value === false) {
@@ -72,11 +75,12 @@ angular.module('mm.addons.qtype_multianswer')
     /**
      * Check if two responses are the same.
      *
+     * @param  {Object} question    Question.
      * @param  {Object} prevAnswers Previous answers.
      * @param  {Object} newAnswers  New answers.
      * @return {Boolean}            True if same, false otherwise.
      */
-    self.isSameResponse = function(prevAnswers, newAnswers) {
+    self.isSameResponse = function(question, prevAnswers, newAnswers) {
         return $mmQuestion.compareAllAnswers(prevAnswers, newAnswers);
     };
 
