@@ -411,7 +411,7 @@ angular.module('mm.core.question')
      * @ngdoc method
      * @name $mmQuestionHelper#getQuestionAttachmentsFromHtml
      * @param  {String} html HTML code to search in.
-     * @return {[type]}      [description]
+     * @return {Object[]}    Attachments.
      */
     self.getQuestionAttachmentsFromHtml = function(html) {
         var el = angular.element('<div></div>'),
@@ -421,6 +421,9 @@ angular.module('mm.core.question')
         // Add the HTML and get the plain JS element.
         el.html(html);
         el = el[0];
+
+        // Remove the filemanager (area to attach files to a question).
+        $mmUtil.removeElement(el, 'div[id*=filemanager]');
 
         // Search the anchors.
         anchors = el.querySelectorAll('a');

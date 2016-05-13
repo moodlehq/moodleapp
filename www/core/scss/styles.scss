@@ -389,6 +389,10 @@ mm-timer {
   }
 }
 
+.mm-monospaced {
+  font-family: Andale Mono,Monaco,Courier New,DejaVu Sans Mono,monospace;
+}
+
 /**
  * This CSS uses adjacent selectors instead of general sibling (~) selectors
  * for ion radio that are broken in iOS 9 UIWebView.
