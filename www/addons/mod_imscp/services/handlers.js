@@ -74,7 +74,7 @@ angular.module('mm.addons.mod_imscp')
                         e.preventDefault();
                         e.stopPropagation();
                         var size = $mmaModImscpPrefetchHandler.getDownloadSize(module);
-                        $mmCourseHelper.prefetchModule($mmaModImscp, module, size, false);
+                        $mmCourseHelper.prefetchModule($scope, $mmaModImscp, module, size, false);
                     }
                 };
 
@@ -86,7 +86,7 @@ angular.module('mm.addons.mod_imscp')
                         e.preventDefault();
                         e.stopPropagation();
                         var size = $mmaModImscpPrefetchHandler.getDownloadSize(module);
-                        $mmCourseHelper.prefetchModule($mmaModImscp, module, size, true);
+                        $mmCourseHelper.prefetchModule($scope, $mmaModImscp, module, size, true);
                     }
                 };
 

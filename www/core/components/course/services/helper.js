@@ -314,13 +314,14 @@ angular.module('mm.core.course')
      * @module mm.core.course
      * @ngdoc method
      * @name $mmCourseHelper#prefetchModule
+     * @param  {Object} scope    Scope.
      * @param  {Object} service  Service implementing 'invalidateContent' and 'prefetchContent'.
      * @param  {Object} module   Module to download.
      * @param  {Number} size     Size of the module.
      * @param  {Boolean} refresh True if refreshing, false otherwise.
      * @return {Promise}         Promise resolved when downloaded.
      */
-    self.prefetchModule = function(service, module, size, refresh) {
+    self.prefetchModule = function(scope, service, module, size, refresh) {
         // Show confirmation if needed.
         return $mmUtil.confirmDownloadSize(size).then(function() {
             // Invalidate content if refreshing and download the data.
@@ -329,7 +330,7 @@ angular.module('mm.core.course')
                 // Ignore errors.
             }).then(function() {
                 return service.prefetchContent(module).catch(function() {
-                    if (!$scope.$$destroyed) {
+                    if (!scope.$$destroyed) {
                         $mmUtil.showErrorModal('mm.core.errordownloading', true);
                     }
                 });

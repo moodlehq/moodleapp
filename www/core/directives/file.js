@@ -40,13 +40,13 @@ angular.module('mm.core')
      * Convenience function to get the file state and set scope variables based on it.
      *
      * @param  {Object} scope          Directive's scope.
-     * @param  {String} siteid         Site ID.
-     * @param  {String} fileurl        File URL.
-     * @param  {Number} [timemodified] File's timemodified.
+     * @param  {String} siteId         Site ID.
+     * @param  {String} fileUrl        File URL.
+     * @param  {Number} [timeModified] File's timemodified.
      * @return {Void}
      */
-    function getState(scope, siteid, fileurl, timemodified) {
-        return $mmFilepool.getFileStateByUrl(siteid, fileurl, timemodified).then(function(state) {
+    function getState(scope, siteId, fileUrl, timeModified) {
+        return $mmFilepool.getFileStateByUrl(siteId, fileUrl, timeModified).then(function(state) {
             var canDownload = $mmSite.canDownloadFiles();
             scope.isDownloaded = state === mmCoreDownloaded || state === mmCoreOutdated;
             scope.isDownloading = canDownload && state === mmCoreDownloading;
@@ -58,31 +58,103 @@ angular.module('mm.core')
      * Convenience function to download a file.
      *
      * @param  {Object} scope          Directive's scope.
-     * @param  {String} siteid         Site ID.
-     * @param  {String} fileurl        File URL.
+     * @param  {String} siteId         Site ID.
+     * @param  {String} fileUrl        File URL.
      * @param  {String} component      Component the file belongs to.
-     * @param  {Number} componentid    Component ID.
-     * @param  {Number} [timemodified] File's timemodified.
+     * @param  {Number} componentId    Component ID.
+     * @param  {Number} [timeModified] File's timemodified.
      * @return {Promise}               Promise resolved when file is downloaded.
      */
-    function downloadFile(scope, siteid, fileurl, component, componentid, timemodified) {
+    function downloadFile(scope, siteId, fileUrl, component, componentId, timeModified) {
         if (!$mmSite.canDownloadFiles()) {
             $mmUtil.showErrorModal('mm.core.cannotdownloadfiles', true);
             return $q.reject();
         }
 
         scope.isDownloading = true;
-        return $mmFilepool.downloadUrl(siteid, fileurl, true, component, componentid, timemodified).then(function(localUrl) {
-            getState(scope, siteid, fileurl, timemodified); // Update state.
+        return $mmFilepool.downloadUrl(siteId, fileUrl, false, component, componentId, timeModified).then(function(localUrl) {
+            getState(scope, siteId, fileUrl, timeModified); // Update state.
             return localUrl;
         }, function() {
-            return getState(scope, siteid, fileurl, timemodified).then(function() {
+            return getState(scope, siteId, fileUrl, timeModified).then(function() {
                 if (scope.isDownloaded) {
                     return localUrl;
                 } else {
                     return $q.reject();
                 }
             });
+        });
+    }
+
+    /**
+     * Convenience function to open a file, downloading it if needed.
+     *
+     * @param  {Object} scope          Directive's scope.
+     * @param  {String} siteId         Site ID.
+     * @param  {String} fileUrl        File URL.
+     * @param  {String} fileSize       File size.
+     * @param  {String} component      Component the file belongs to.
+     * @param  {Number} componentId    Component ID.
+     * @param  {Number} [timeModified] File's timemodified.
+     * @return {Promise}               Promise resolved when file is opened.
+     */
+    function openFile(scope, siteId, fileUrl, fileSize, component, componentId, timeModified) {
+        var fixedUrl = $mmSite.fixPluginfileURL(fileUrl),
+            promise;
+
+        if ($mmFS.isAvailable()) {
+            promise = $q.when().then(function() {
+                // The file system is available.
+                var isWifi = !$mmApp.isNetworkAccessLimited(),
+                    isOnline = $mmApp.isOnline();
+
+                if (scope.isDownloaded && !scope.showDownload) {
+                    // Get the local file URL.
+                    return $mmFilepool.getUrlByUrl(siteId, fileUrl, component, componentId, timeModified);
+                } else {
+                    if (!isOnline && !scope.isDownloaded) {
+                        // Not downloaded and we're offline, reject.
+                        return $q.reject();
+                    }
+
+                    return $mmFilepool.shouldDownloadBeforeOpen(fixedUrl, fileSize).then(function() {
+                        if (scope.isDownloading) {
+                            // It's already downloading, stop.
+                            return;
+                        }
+                        // Download and then return the local URL.
+                        return downloadFile(scope, siteId, fileUrl, component, componentId, timeModified);
+                    }, function() {
+                        // Start the download if in wifi, but return the URL right away so the file is opened.
+                        if (isWifi && isOnline) {
+                            downloadFile(scope, siteId, fileUrl, component, componentId, timeModified);
+                        }
+
+                        if (scope.isDownloading || !scope.isDownloaded || isOnline) {
+                            // Not downloaded or outdated and online, return the online URL.
+                            return fixedUrl;
+                        } else {
+                            // Outdated but offline, so we return the local URL.
+                            return $mmFilepool.getUrlByUrl(siteId, fileUrl, component, componentId, timeModified);
+                        }
+                    });
+                }
+            });
+        } else {
+            // We use the live URL.
+            promise = $q.when(fixedUrl);
+        }
+
+        return promise.then(function(url) {
+            if (!url) {
+                return;
+            }
+
+            if (url.indexOf('http') === 0) {
+                return $mmUtil.openOnlineFile(url);
+            } else {
+                return $mmUtil.openFile(url);
+            }
         });
     }
 
@@ -93,22 +165,22 @@ angular.module('mm.core')
             file: '='
         },
         link: function(scope, element, attrs) {
-            var fileurl = scope.file.fileurl || scope.file.url,
-                filename = scope.file.filename,
-                filesize = scope.file.filesize,
-                timemodified = attrs.timemodified || 0,
-                siteid = $mmSite.getId(),
+            var fileUrl = scope.file.fileurl || scope.file.url,
+                fileName = scope.file.filename,
+                fileSize = scope.file.filesize,
+                timeModified = attrs.timemodified || 0,
+                siteId = $mmSite.getId(),
                 component = attrs.component,
-                componentid = attrs.componentId,
+                componentId = attrs.componentId,
                 observer;
 
-            scope.filename = filename;
-            scope.fileicon = $mmFS.getFileIcon(filename);
-            getState(scope, siteid, fileurl, timemodified);
+            scope.filename = fileName;
+            scope.fileicon = $mmFS.getFileIcon(fileName);
+            getState(scope, siteId, fileUrl, timeModified);
 
-            $mmFilepool.getFileEventNameByUrl(siteid, fileurl).then(function(eventName) {
+            $mmFilepool.getFileEventNameByUrl(siteId, fileUrl).then(function(eventName) {
                 observer = $mmEvents.on(eventName, function(data) {
-                    getState(scope, siteid, fileurl, timemodified);
+                    getState(scope, siteId, fileUrl, timeModified);
                     if (!data.success) {
                         $mmUtil.showErrorModal('mm.core.errordownloading', true);
                     }
@@ -120,7 +192,7 @@ angular.module('mm.core')
                 e.stopPropagation();
                 var promise;
 
-                if (scope.isDownloading) {
+                if (scope.isDownloading && !openAfterDownload) {
                     return;
                 }
 
@@ -131,19 +203,17 @@ angular.module('mm.core')
 
                 if (openAfterDownload) {
                     // File needs to be opened now. If file needs to be downloaded, skip the queue.
-                    downloadFile(scope, siteid, fileurl, component, componentid, timemodified).then(function(localUrl) {
-                        $mmUtil.openFile(localUrl).catch(function(error) {
-                            $mmUtil.showErrorModal(error);
-                        });
+                    openFile(scope, siteId, fileUrl, fileSize, component, componentId, timeModified).catch(function(error) {
+                        $mmUtil.showErrorModal(error);
                     });
                 } else {
                     // File doesn't need to be opened (it's a prefetch). Show confirm modal if file size is defined and it's big.
-                    promise = filesize ? $mmUtil.confirmDownloadSize(filesize) : $q.when();
+                    promise = fileSize ? $mmUtil.confirmDownloadSize(fileSize) : $q.when();
                     promise.then(function() {
                         // User confirmed, add the file to queue.
-                        $mmFilepool.invalidateFileByUrl(siteid, fileurl).finally(function() {
+                        $mmFilepool.invalidateFileByUrl(siteId, fileUrl).finally(function() {
                             scope.isDownloading = true;
-                            $mmFilepool.addToQueueByUrl(siteid, fileurl, component, componentid, timemodified);
+                            $mmFilepool.addToQueueByUrl(siteId, fileUrl, component, componentId, timeModified);
                         });
                     });
                 }

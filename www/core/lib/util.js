@@ -66,11 +66,12 @@ angular.module('mm.core')
     };
 
     this.$get = function($ionicLoading, $ionicPopup, $injector, $translate, $http, $log, $q, $mmLang, $mmFS, $timeout, $mmApp,
-                $mmText, mmCoreWifiDownloadThreshold, mmCoreDownloadThreshold, $ionicScrollDelegate, $cordovaInAppBrowser) {
+                $mmText, mmCoreWifiDownloadThreshold, mmCoreDownloadThreshold, $ionicScrollDelegate, $mmWS, $cordovaInAppBrowser) {
 
         $log = $log.getInstance('$mmUtil');
 
-        var self = {}; // Use 'self' to be coherent with the rest of services.
+        var self = {}, // Use 'self' to be coherent with the rest of services.
+            matchesFn;
 
         /**
          * Formats a URL, trim, lowercase, etc...
@@ -270,27 +271,19 @@ angular.module('mm.core')
          *
          * node-webkit: Using the default application configured.
          * Android: Using the WebIntent plugin.
-         * iOs: Using the window.open method.
+         * iOs: Using handleDocumentWithURL.
          *
          * @module mm.core
          * @ngdoc method
          * @name $mmUtil#openFile
          * @param  {String} path The local path of the file to be open.
          * @return {Void}
+         * @todo Restore node-webkit support.
          */
         self.openFile = function(path) {
             var deferred = $q.defer();
 
-            if (false) {
-                // TODO Restore node-webkit support.
-
-                // Link is the file path in the file system.
-                // We use the node-webkit shell for open the file (pdf, doc) using the default application configured in the os.
-                // var gui = require('nw.gui');
-                // gui.Shell.openItem(path);
-                deferred.resolve();
-
-            } else if (window.plugins) {
+            if (window.plugins) {
                 var extension = $mmFS.getFileExtension(path),
                     mimetype = $mmFS.getMimeType(extension);
 
@@ -421,6 +414,94 @@ angular.module('mm.core')
          */
         self.closeInAppBrowser = function() {
             $cordovaInAppBrowser.close();
+        };
+
+        /**
+         * Open an online file using platform specific method.
+         * Specially useful for audio and video since they can be streamed.
+         *
+         * node-webkit: Using the default application configured.
+         * Android: Using the WebIntent plugin.
+         * iOS: Using the window.open method (InAppBrowser)
+         *      We don't use iOS quickview framework because it doesn't support streaming.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#openOnlineFile
+         * @param  {String} url The URL of the file.
+         * @return {Promise}    Promise resolved when opened.
+         * @todo Restore node-webkit support.
+         */
+        self.openOnlineFile = function(url) {
+            var deferred = $q.defer();
+
+            if (ionic.Platform.isAndroid() && window.plugins && window.plugins.webintent) {
+                // In Android we need the mimetype to open it.
+                var extension,
+                    iParams;
+
+                $mmWS.getRemoteFileMimeType(url).then(function(mimetype) {
+                    if (!mimetype) {
+                        // Couldn't retireve mimetype. Try to guess it.
+                        extension = $mmText.guessExtensionFromUrl(url);
+                        mimetype = $mmFS.getMimeType(extension);
+                    }
+
+                    iParams = {
+                        action: "android.intent.action.VIEW",
+                        url: url,
+                        type: mimetype
+                    };
+
+                    window.plugins.webintent.startActivity(
+                        iParams,
+                        function() {
+                            $log.debug('Intent launched');
+                            deferred.resolve();
+                        },
+                        function() {
+                            $log.debug('Intent launching failed.');
+                            $log.debug('action: ' + iParams.action);
+                            $log.debug('url: ' + iParams.url);
+                            $log.debug('type: ' + iParams.type);
+
+                            if (!extension || extension.indexOf('/') > -1 || extension.indexOf('\\') > -1) {
+                                // Extension not found.
+                                $mmLang.translateAndRejectDeferred(deferred, 'mm.core.erroropenfilenoextension');
+                            } else {
+                                $mmLang.translateAndRejectDeferred(deferred, 'mm.core.erroropenfilenoapp');
+                            }
+                        }
+                    );
+                });
+            } else {
+                $log.debug('Opening remote file using window.open()');
+                window.open(url, '_blank');
+                deferred.resolve();
+            }
+
+            return deferred.promise;
+        };
+
+        /**
+         * Get the mimetype of a file given its URL. It'll perform a HEAD request to get it, if that
+         * fails it'll try to guess it using the URL.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#getMimeType
+         * @param  {String} url The URL of the file.
+         * @return {Promise}    Promise resolved with the mimetype.
+         */
+        self.getMimeType = function(url) {
+            return $mmWS.getRemoteFileMimeType(url).then(function(mimetype) {
+                if (!mimetype) {
+                    // Couldn't retireve mimetype. Try to guess it.
+                    extension = $mmText.guessExtensionFromUrl(url);
+                    mimetype = $mmFS.getMimeType(extension);
+                }
+                return mimetype || '';
+            });
         };
 
         /**
@@ -1081,6 +1162,48 @@ angular.module('mm.core')
             });
 
             return urls;
+        };
+
+        /**
+         * Equivalent to element.closest(). If the browser doesn't support element.closest, it will
+         * traverse the parents to achieve the same functionality.
+         * Returns the closest ancestor of the current element (or the current element itself) which matches the selector.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#closest
+         * @param  {Object} element  DOM Element.
+         * @param  {String} selector Selector to search.
+         * @return {Object}          Closest ancestor.
+         */
+        self.closest = function(element, selector) {
+            // Try to use closest if the browser supports it.
+            if (typeof element.closest == 'function') {
+                return element.closest(selector);
+            }
+
+            if (!matchesFn) {
+                // Find the matches function supported by the browser.
+                ['matches','webkitMatchesSelector','mozMatchesSelector','msMatchesSelector','oMatchesSelector'].some(function(fn) {
+                    if (typeof document.body[fn] == 'function') {
+                        matchesFn = fn;
+                        return true;
+                    }
+                    return false;
+                });
+
+                if (!matchesFn) {
+                    return;
+                }
+            }
+
+            // Traverse parents.
+            while (element) {
+                if (element[matchesFn](selector)) {
+                    return element;
+                }
+                element = element.parentElement;
+            }
         };
 
         return self;
