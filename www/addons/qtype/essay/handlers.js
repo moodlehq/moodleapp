@@ -37,6 +37,25 @@ angular.module('mm.addons.qtype_essay')
     };
 
     /**
+     * Check if a question can be submitted.
+     * If a question cannot be submitted it should return a message explaining why (translated or not).
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionDelegate#getPreventSubmitMessage
+     * @param  {Object} question Question.
+     * @return {String}          Prevent submit message. Undefined or empty if cannot be submitted.
+     */
+    self.getPreventSubmitMessage = function(question) {
+        var questionEl = angular.element(question.html)[0];
+
+        if (questionEl.querySelector('div[id*=filemanager]')) {
+            // The question allows attachments. Since the app cannot attach files yet we will prevent submitting the question.
+            return 'mm.question.errorattachmentsnotsupported';
+        }
+    };
+
+    /**
      * Check if a response is complete.
      *
      * @param  {Object} question Question.

@@ -64,7 +64,12 @@
                     {{ attempt.dueDateWarning }}
                 </div>
                 <mm-timer ng-if="endTime" class="item item-text-wrap" end-time="endTime" finished="timeUp()" timer-text="{{ 'mma.mod_quiz.timeleft' | translate }}"></mm-timer>
-                <div class="item" ng-if="!attempt.finishedOffline">
+                <div class="item item-text-wrap" ng-if="preventSubmitMessages.length">
+                    <p class="item-heading">{{ 'mma.mod_quiz.cannotsubmitquizdueto' | translate }}</p>
+                    <p ng-repeat="message in preventSubmitMessages">{{message}}</p>
+                    <a class="button button-block" ng-href="{{moduleUrl}}" mm-browser>{{ 'mm.core.openinbrowser' | translate }}</a>
+                </div>
+                <div class="item" ng-if="!attempt.finishedOffline && !preventSubmitMessages.length">
                     <a class="button button-block" ng-click="finishAttempt()">{{ 'mma.mod_quiz.submitallandfinish' | translate }}</a>
                 </div>
             </div>

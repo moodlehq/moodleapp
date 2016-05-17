@@ -74,6 +74,11 @@ em {
   @extend h2;
 }
 
+.item.item-text-wrap .item-heading {
+  overflow: visible;
+  white-space: normal;
+}
+
 // More options for grids.
 .col-65 {
   @include flex(0, 0, 65%);

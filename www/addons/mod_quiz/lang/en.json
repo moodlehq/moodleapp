@@ -4,6 +4,7 @@
 	"attemptnumber": "Attempt",
 	"attemptquiznow": "Attempt quiz now",
 	"attemptstate": "State",
+	"cannotsubmitquizdueto": "This quiz cannot be submitted due to the following reasons:",
 	"comment": "Comment",
 	"completedon": "Completed on",
 	"confirmclose": "Once you submit, you will no longer be able to change your answers for this attempt.",

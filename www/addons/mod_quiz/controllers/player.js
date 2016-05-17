@@ -201,14 +201,13 @@ angular.module('mm.addons.mod_quiz')
     function loadSummary() {
         $scope.showSummary = true;
         $scope.summaryQuestions = [];
+
         return $mmaModQuiz.getAttemptSummary(attempt.id, $scope.preflightData, offline, true, true).then(function(questions) {
             $scope.summaryQuestions = questions;
             $scope.canReturn = attempt.state == $mmaModQuiz.ATTEMPT_IN_PROGRESS && !attempt.finishedOffline;
+            $scope.preventSubmitMessages = $mmaModQuiz.getPreventSubmitMessages(questions);
 
             attempt.dueDateWarning = $mmaModQuiz.getAttemptDueDateWarning(quiz, attempt);
-
-            // Remove all answers stored since the questions aren't rendered anymore.
-            $mmUtil.emptyObject($scope.answers);
 
             // Log summary as viewed.
             $mmaModQuiz.logViewAttemptSummary(attempt.id);

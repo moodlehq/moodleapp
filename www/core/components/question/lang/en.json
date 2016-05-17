@@ -13,6 +13,7 @@
 	"notanswered": "Not answered",
 	"notyetanswered": "Not yet answered",
 	"partiallycorrect": "Partially correct",
+	"questionmessage": "Question {{$a}}: {{$b}}",
 	"requiresgrading": "Requires grading",
 	"unknown": "Cannot determine status"
 }

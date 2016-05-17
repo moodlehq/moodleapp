@@ -131,6 +131,24 @@ angular.module('mm.core.question')
         };
 
         /**
+         * Check if a question can be submitted.
+         * If a question cannot be submitted it should return a message explaining why (translated or not).
+         *
+         * @module mm.core.question
+         * @ngdoc method
+         * @name $mmQuestionDelegate#getPreventSubmitMessage
+         * @param  {Object} question Question.
+         * @return {String}          Prevent submit message. Undefined or empty if cannot be submitted.
+         */
+        self.getPreventSubmitMessage = function(question) {
+            var type = 'qtype_' + question.type,
+                handler = enabledHandlers[type];
+            if (typeof handler != 'undefined' && handler.getPreventSubmitMessage) {
+                return handler.getPreventSubmitMessage(question);
+            }
+        };
+
+        /**
          * Check if a response is complete.
          *
          * @module mm.core.question
