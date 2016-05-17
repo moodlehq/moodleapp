@@ -28,25 +28,6 @@ angular.module('mm.addons.mod_scorm')
                             'mode', 'entry']; // List of elements we want to ignore when copying attempts (they're calculated).
 
     /**
-     * Build message to show warnings.
-     *
-     * @module mm.addons.mod_scorm
-     * @ngdoc method
-     * @name $mmaModScormHelper#buildWarningsMessage
-     * @param  {String[]} warnings Warnings to show.
-     * @return {String}            Message with all the warnings.
-     */
-    self.buildWarningsMessage = function(warnings) {
-        var message = '';
-        angular.forEach(warnings, function(warning) {
-            if (warning) {
-                message = message + '<p>' + warning + '</p>';
-            }
-        });
-        return message;
-    };
-
-    /**
      * Creates a new offline attempt based on an existing online attempt.
      *
      * @module mm.addons.mod_scorm

@@ -1,0 +1,19 @@
+// Style gapselect content a bit. All these styles are copied from Moodle.
+.mma-qtype-gapselect-container {
+  p {
+    margin: 0 0 .5em;
+  }
+
+  select {
+    height: 30px;
+    line-height: 30px;
+    display: inline-block;
+    border: 1px solid #ccc;
+    padding: 4px 6px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+}
+

@@ -58,8 +58,9 @@ angular.module('mm.core.course')
                     $scope.sections = result;
 
                     if (downloadSectionsEnabled) {
-                        // Calculate status of the sections.
-                        return $mmCourseHelper.calculateSectionsStatus(result, courseId, true, refresh).catch(function() {
+                        // Calculate status of the sections. We don't return the promise because
+                        // we don't want to block the rendering of the sections.
+                        $mmCourseHelper.calculateSectionsStatus(result, courseId, true, refresh).catch(function() {
                             // Ignore errors (shouldn't happen).
                         }).then(function(downloadpromises) {
                             // If we restored any download we'll recalculate the status once all of them have finished.

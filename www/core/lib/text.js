@@ -27,6 +27,25 @@ angular.module('mm.core')
         extensionRegex = new RegExp('^[a-z0-9]+$');
 
     /**
+     * Given a list of sentences, build a message with all of them wrapped in <p>.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#buildMessage
+     * @param  {String[]} messages Messages to show.
+     * @return {String}            Message with all the messages.
+     */
+    self.buildMessage = function(messages) {
+        var result = '';
+        angular.forEach(messages, function(message) {
+            if (message) {
+                result = result + '<p>' + message + '</p>';
+            }
+        });
+        return result;
+    };
+
+    /**
      * Convert size in bytes into human readable format
      * http://codeaid.net/javascript/convert-size-in-bytes-to-human-readable-format-(javascript)
      *
@@ -231,6 +250,31 @@ angular.module('mm.core')
     };
 
     /**
+     * Decode an escaped HTML text. This implementation is based on PHP's htmlspecialchars_decode.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#decodeHTML
+     * @param  {String} text Text to decode.
+     * @return {String}      Decoded text.
+     */
+    self.decodeHTML = function(text) {
+        if (typeof text == 'undefined' || text === null || (typeof text == 'number' && isNaN(text))) {
+            return '';
+        } else if (typeof text != 'string') {
+            return '' + text;
+        }
+
+        return text
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&#039;/g, "'")
+            .replace(/&nbsp;/g, ' ');
+    };
+
+    /**
      * Add or remove 'www' from a URL. The url needs to have http or https protocol.
      *
      * @module mm.core
@@ -354,6 +398,23 @@ angular.module('mm.core')
         }
 
         return extension;
+    };
+
+    /**
+     * If a number has only 1 digit, add a leading zero to it.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#twoDigits
+     * @param  {Number|String} num Number to convert.
+     * @return {String}            Number with leading zeros.
+     */
+    self.twoDigits = function(num) {
+        if (num < 10) {
+            return '0' + num;
+        } else {
+            return '' + num; // Convert to string for coherence.
+        }
     };
 
     return self;
