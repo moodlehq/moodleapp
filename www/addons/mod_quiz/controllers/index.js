@@ -23,8 +23,9 @@ angular.module('mm.addons.mod_quiz')
  */
 .controller('mmaModQuizIndexCtrl', function($scope, $stateParams, $mmaModQuiz, $mmCourse, $ionicPlatform, $q, $translate,
             $mmaModQuizHelper, $ionicHistory, $ionicScrollDelegate, $mmEvents, mmaModQuizEventAttemptFinished, $state,
-            $mmQuestionBehaviourDelegate, $mmaModQuizSync, $mmText, $mmUtil, mmaModQuizEventAutomSynced,
-            $mmCoursePrefetchDelegate, mmCoreDownloaded) {
+            $mmQuestionBehaviourDelegate, $mmaModQuizSync, $mmText, $mmUtil, mmaModQuizEventAutomSynced, $mmSite,
+            $mmCoursePrefetchDelegate, mmCoreDownloaded, mmCoreDownloading, mmCoreEventPackageStatusChanged,
+            mmaModQuizComponent) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         quiz,
@@ -37,7 +38,8 @@ angular.module('mm.addons.mod_quiz')
         attemptAccessInfo,
         moreAttempts,
         scrollView = $ionicScrollDelegate.$getByHandle('mmaModQuizIndexScroll'),
-        autoReview;
+        autoReview,
+        currentStatus;
 
     $scope.title = module.name;
     $scope.description = module.description;
@@ -125,6 +127,12 @@ angular.module('mm.addons.mod_quiz')
             // Get attempts.
             return $mmaModQuiz.getUserAttempts(quiz.id).then(function(atts) {
                 attempts = atts;
+
+                if ($mmaModQuiz.isQuizOffline(quiz)) {
+                    // Handle status. We don't add getStatus to promises because it should be fast.
+                    setStatusListener();
+                    getStatus().then(showStatus);
+                }
 
                 return treatAttempts().then(function() {
                     // Check if user can create/continue attempts.
@@ -336,6 +344,38 @@ angular.module('mm.addons.mod_quiz')
         });
     }
 
+    // Get status of the quiz.
+    function getStatus() {
+        var revision = $mmaModQuiz.getQuizRevisionFromAttempts(attempts),
+            timemodified = $mmaModQuiz.getQuizTimemodifiedFromAttempts(attempts);
+
+        return $mmCoursePrefetchDelegate.getModuleStatus(module, courseId, revision, timemodified);
+    }
+
+    // Set a listener to monitor changes on this SCORM status to show a message to the user.
+    function setStatusListener() {
+        if (typeof statusObserver !== 'undefined') {
+            return; // Already set.
+        }
+
+        // Listen for changes on this module status to show a message to the user.
+        statusObserver = $mmEvents.on(mmCoreEventPackageStatusChanged, function(data) {
+            if (data.siteid === $mmSite.getId() && data.componentId === module.id &&
+                    data.component === mmaModQuizComponent) {
+                showStatus(data.status);
+            }
+        });
+    }
+
+    // Showing or hide a status message depending on the SCORM status.
+    function showStatus(status) {
+        currentStatus = status;
+
+        if (status == mmCoreDownloading) {
+            $scope.downloading = true;
+        }
+    }
+
     // Fetch the Quiz data.
     fetchQuizData().then(function() {
         $mmaModQuiz.logViewQuiz(quiz.id).then(function() {
@@ -369,28 +409,28 @@ angular.module('mm.addons.mod_quiz')
 
     // Attempt the quiz.
     $scope.attemptQuiz = function() {
+        if ($scope.downloading) {
+            // Scope is being downloaded, abort.
+            return;
+        }
+
         if ($mmaModQuiz.isQuizOffline(quiz)) {
             // Quiz supports offline, check if it needs to be downloaded.
-            var revision = $mmaModQuiz.getQuizRevisionFromAttempts(attempts),
-                timemodified = $mmaModQuiz.getQuizTimemodifiedFromAttempts(attempts),
-                modal = $mmUtil.showModalLoading();
-
-            $mmCoursePrefetchDelegate.getModuleStatus(module, courseId, revision, timemodified).then(function(status) {
-                if (status != mmCoreDownloaded) {
-                    // Prefetch the quiz.
-                    return $mmaModQuiz.prefetch(module, courseId).then(function() {
-                        // Success downloading, open quiz.
-                        openQuiz();
-                    }).catch(function() {
-                        $mmUtil.showErrorModal('mma.mod_quiz.errordownloading', true);
-                    });
-                } else {
-                    // Already downloaded, open it.
+            if (currentStatus != mmCoreDownloaded) {
+                // Prefetch the quiz.
+                $scope.downloading = true;
+                return $mmaModQuiz.prefetch(module, courseId, true).then(function() {
+                    // Success downloading, open quiz.
                     openQuiz();
-                }
-            }).finally(function() {
-                modal.dismiss();
-            });
+                }).catch(function(error) {
+                    $mmaModQuizHelper.showError(error, 'mma.mod_quiz.errordownloading');
+                }).finally(function() {
+                    $scope.downloading = false;
+                });
+            } else {
+                // Already downloaded, open it.
+                openQuiz();
+            }
         } else {
             openQuiz();
         }
