@@ -165,7 +165,7 @@ angular.module('mm.core')
         siteId = siteId || $mmSite.getId();
 
         var subPath = remoteAddonsFolderName + '/' + self.getRemoteAddonName(addon);
-        return $mmFilepool._getFilePath(siteId, subPath);
+        return $mmFS.concatenatePaths($mmFilepool.getFilepoolFolderPath(siteId), subPath);
     };
 
     /**

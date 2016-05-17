@@ -416,7 +416,7 @@ angular.module('mm.core')
                     });
 
                     return deferred.promise;
-                };
+                }
 
                 // General calculation, base 1MB and increasing factor 1.3.
                 calculateByRequest(1048576, 1.3).then(function(size) {
@@ -858,7 +858,7 @@ angular.module('mm.core')
      *
      * @module mm.core
      * @ngdoc method
-     * @name $mmUtil#allPromises
+     * @name $mmFS#getMimeType
      * @param  {String} extension Extension.
      * @return {String}           Mimetype.
      */
@@ -866,6 +866,24 @@ angular.module('mm.core')
         if (mimeTypes[extension] && mimeTypes[extension].type) {
             return mimeTypes[extension].type;
         }
+    };
+
+    /**
+     * Get the extension of a mimetype. Returns undefined if not found.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#getExtension
+     * @param  {String} mimetype  Mimetype.
+     * @return {String}           Extension.
+     */
+    self.getExtension = function(mimetype) {
+        for (var extension in mimeTypes) {
+            if (mimeTypes[extension].type == mimetype) {
+                return extension;
+            }
+        }
+        return undefined;
     };
 
     /**

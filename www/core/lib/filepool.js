@@ -795,62 +795,65 @@ angular.module('mm.core')
      * @param {String} fileUrl          The file URL.
      * @param {Number} [revision]       File revision number.
      * @param {Number} [timemodified]   The time this file was modified. Can be used to check file state.
-     * @param {String} [filePath]       Filepath to download the file to.
+     * @param {String} [filePath]       Filepath to download the file to. If defined, no extension will be added.
      * @param {Object} [poolFileObject] When set, the object will be updated, a new entry will not be created.
      * @return {Promise} Resolved with internal URL on success, rejected otherwise.
      * @protected
      */
     self._downloadForPoolByUrl = function(siteId, fileUrl, revision, timemodified, filePath, poolFileObject) {
-        var fileId = self._getFileIdByUrl(fileUrl);
-        filePath = filePath || self._getFilePath(siteId, fileId);
+        var fileId = self._getFileIdByUrl(fileUrl),
+            addExtension = typeof filePath == "undefined",
+            pathPromise = filePath ? $q.when(filePath) : self._getFilePath(siteId, fileId);
 
-        if (poolFileObject && poolFileObject.fileId !== fileId) {
-            $log.error('Invalid object to update passed');
-            return $q.reject();
-        }
-
-        var downloadId = self.getFileDownloadId(fileUrl, filePath),
-            deleted = false,
-            promise;
-
-        if (filePromises[siteId] && filePromises[siteId][downloadId]) {
-            // There's already a download ongoing for this file in this location, return the promise.
-            return filePromises[siteId][downloadId];
-        } else if (!filePromises[siteId]) {
-            filePromises[siteId] = {};
-        }
-
-        promise = $mmSitesManager.getSite(siteId).then(function(site) {
-
-            if (!site.canDownloadFiles()) {
+        return pathPromise.then(function(filePath) {
+            if (poolFileObject && poolFileObject.fileId !== fileId) {
+                $log.error('Invalid object to update passed');
                 return $q.reject();
             }
 
-            return $mmWS.downloadFile(fileUrl, filePath).then(function(fileEntry) {
-                var now = new Date(),
-                    data = poolFileObject || {};
+            var downloadId = self.getFileDownloadId(fileUrl, filePath),
+                deleted = false,
+                promise;
 
-                data.downloaded = now.getTime();
-                data.stale = false;
-                data.url = fileUrl;
-                data.revision = revision;
-                data.timemodified = timemodified;
-                data.path = filePath;
+            if (filePromises[siteId] && filePromises[siteId][downloadId]) {
+                // There's already a download ongoing for this file in this location, return the promise.
+                return filePromises[siteId][downloadId];
+            } else if (!filePromises[siteId]) {
+                filePromises[siteId] = {};
+            }
 
-                return self._addFileToPool(siteId, fileId, data).then(function() {
-                    return fileEntry.toURL();
+            promise = $mmSitesManager.getSite(siteId).then(function(site) {
+
+                if (!site.canDownloadFiles()) {
+                    return $q.reject();
+                }
+                return $mmWS.downloadFile(fileUrl, filePath, addExtension).then(function(fileEntry) {
+                    var now = new Date(),
+                        data = poolFileObject || {};
+
+                    data.downloaded = now.getTime();
+                    data.stale = false;
+                    data.url = fileUrl;
+                    data.revision = revision;
+                    data.timemodified = timemodified;
+                    data.path = fileEntry.path;
+                    data.extension = fileEntry.extension;
+
+                    return self._addFileToPool(siteId, fileId, data).then(function() {
+                        return fileEntry.toURL();
+                    });
                 });
+            }).finally(function() {
+                // Download finished, delete the promise.
+                delete filePromises[siteId][downloadId];
+                deleted = true;
             });
-        }).finally(function() {
-            // Download finished, delete the promise.
-            delete filePromises[siteId][downloadId];
-            deleted = true;
-        });
 
-        if (!deleted) { // In case promise was finished immediately.
-            filePromises[siteId][downloadId] = promise;
-        }
-        return promise;
+            if (!deleted) { // In case promise was finished immediately.
+                filePromises[siteId][downloadId] = promise;
+            }
+            return promise;
+        });
     };
 
     /**
@@ -1197,7 +1200,7 @@ angular.module('mm.core')
         if ($mmFS.isAvailable()) {
             return self._fixPluginfileURL(siteId, fileUrl).then(function(fileUrl) {
                 var fileId = self._getFileIdByUrl(fileUrl);
-                return $mmFS.getDir(self._getFilePath(siteId, fileId)).then(function(dirEntry) {
+                return $mmFS.getDir(self._getFilePath(siteId, fileId, false)).then(function(dirEntry) {
                     return dirEntry.toURL();
                 });
             });
@@ -1223,9 +1226,7 @@ angular.module('mm.core')
      */
     self._getFileIdByUrl = function(fileUrl) {
         var url = self._removeRevisionFromUrl(fileUrl),
-            filename,
-            candidate,
-            extension = '';
+            filename;
 
         // Decode URL.
         url = $mmText.decodeHTML(decodeURIComponent(url));
@@ -1241,16 +1242,7 @@ angular.module('mm.core')
         // people can easily identify the files after the download.
         filename = self._guessFilenameFromUrl(url);
 
-        // We need the extension for the inAppBrowser to open the files properly, e.g. the extension needs to be
-        // part of the file name. Also, we need the mimetype to open the file with web intents. The easiest way to
-        // provide such information is to keep the extension in the file ID. Developers should not care about it,
-        // but as we are using the file ID in the file path, devs and system can guess it.
-        candidate = $mmText.guessExtensionFromUrl(url);
-        if (candidate && candidate !== 'php') {
-            extension = '.' + candidate;
-        }
-
-        return filename + '_' + md5.createHash('url:' + url) + extension;
+        return filename + '_' + md5.createHash('url:' + url);
     };
 
     /**
@@ -1417,6 +1409,19 @@ angular.module('mm.core')
     };
 
     /**
+     * Get site Filepool Folder Path
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#getFilepoolFolderPath
+     * @param {String}  siteId The site ID.
+     * @return {String} The root path to the filepool of the site.
+     */
+    self.getFilepoolFolderPath = function(siteId) {
+        return $mmFS.getSiteFolder(siteId) + '/' + mmFilepoolFolder;
+    };
+
+    /**
      * Get the path to a file.
      *
      * This does not check if the file exists or not.
@@ -1426,11 +1431,30 @@ angular.module('mm.core')
      * @name $mmFilepool#_getFilePath
      * @param {String} siteId The site ID.
      * @param {String} fileId The file ID.
-     * @return {String} The path to the file relative to storage root.
+     * @param {Boolean} [extension] Previously calculated extension. False to not add any. Undefined to calculate it.
+     * @return {Promise|String} The path to the file relative to storage root.
      * @protected
      */
-    self._getFilePath = function(siteId, fileId) {
-        return $mmFS.getSiteFolder(siteId) + '/' + mmFilepoolFolder + '/' + fileId;
+    self._getFilePath = function(siteId, fileId, extension) {
+        var path = $mmFS.getSiteFolder(siteId) + '/' + mmFilepoolFolder + '/' + fileId;
+        if (typeof extension == 'undefined') {
+            // We need the extension for the inAppBrowser to open the files properly, e.g. the extension needs to be
+            // part of the file name. Also, we need the mimetype to open the file with web intents.
+            return self._hasFileInPool(siteId, fileId).then(function(fileObject) {
+                if (fileObject.extension) {
+                    path += '.' + fileObject.extension;
+                }
+                return path;
+            }).catch(function() {
+                // If file not found, use the path without extension.
+                return path;
+            });
+        } else {
+            if (extension) {
+                path += '.' + extension;
+            }
+            return path;
+        }
     };
 
     /**
@@ -1508,10 +1532,12 @@ angular.module('mm.core')
      */
     self._getInternalSrcById = function(siteId, fileId) {
         if ($mmFS.isAvailable()) {
-            return $mmFS.getFile(self._getFilePath(siteId, fileId)).then(function(fileEntry) {
-                // We use toInternalURL so images are loaded in iOS8 using img HTML tags,
-                // with toURL the OS is unable to find the image files.
-                return $mmFS.getInternalURL(fileEntry);
+            return self._getFilePath(siteId, fileId).then(function(path) {
+                return $mmFS.getFile(path).then(function(fileEntry) {
+                    // We use toInternalURL so images are loaded in iOS8 using img HTML tags,
+                    // with toURL the OS is unable to find the image files.
+                    return $mmFS.getInternalURL(fileEntry);
+                });
             });
         }
         return $q.reject();
@@ -1530,8 +1556,10 @@ angular.module('mm.core')
      */
     self._getInternalUrlById = function(siteId, fileId) {
         if ($mmFS.isAvailable()) {
-            return $mmFS.getFile(self._getFilePath(siteId, fileId)).then(function(fileEntry) {
-                return fileEntry.toURL();
+            return self._getFilePath(siteId, fileId).then(function(path) {
+                return $mmFS.getFile(path).then(function(fileEntry) {
+                    return fileEntry.toURL();
+                });
             });
         }
         return $q.reject();
@@ -1573,7 +1601,7 @@ angular.module('mm.core')
     self.getPackageDirPathByUrl = function(siteId, url) {
         return self._fixPluginfileURL(siteId, url).then(function(fixedUrl) {
             var fileId = self._getNonReadableFileIdByUrl(fixedUrl);
-            return self._getFilePath(siteId, fileId);
+            return self._getFilePath(siteId, fileId, false);
         });
     };
 
@@ -1592,7 +1620,7 @@ angular.module('mm.core')
         if ($mmFS.isAvailable()) {
             return self._fixPluginfileURL(siteId, url).then(function(fixedUrl) {
                 var fileId = self._getNonReadableFileIdByUrl(fixedUrl);
-                return $mmFS.getDir(self._getFilePath(siteId, fileId)).then(function(dirEntry) {
+                return $mmFS.getDir(self._getFilePath(siteId, fileId, false)).then(function(dirEntry) {
                     return dirEntry.toURL();
                 });
             });
@@ -1830,8 +1858,7 @@ angular.module('mm.core')
      * Invalidates a file by marking it stale. See {@link $mmFilepool#invalidateFileByUrl} for more details.
      */
     self.invalidateFilesByComponent = function(siteId, component, componentId) {
-        var values = { stale: true },
-            where;
+        var where;
         if (typeof componentId !== 'undefined') {
             where = ['componentAndId', '=', [component, self._fixComponentId(componentId)]];
         } else {
@@ -2170,7 +2197,13 @@ angular.module('mm.core')
                     return db.remove(mmFilepoolLinksStore, [entry.fileId, entry.component, entry.componentId]);
                 }));
             });
-            p3 = $mmFS.isAvailable() ? $mmFS.removeFile(self._getFilePath(siteId, fileId)) : $q.when();
+            if ($mmFS.isAvailable()) {
+                p3 = self._getFilePath(siteId, fileId).then(function(path) {
+                    return $mmFS.removeFile(path);
+                });
+            } else {
+                p3 = $q.when();
+            }
             return $q.all([p1, p2, p3]);
         });
     };
@@ -2241,6 +2274,126 @@ angular.module('mm.core')
     };
 
     /**
+     * Fill Missing Extension In the File Object if needed.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#_fillExtensionInFile
+     * @param {Object} fileObject   File object to be migrated.
+     * @param {String} siteId       SiteID to get migrated
+     * @protected
+     */
+    self._fillExtensionInFile = function(fileObject, siteId) {
+        var extension;
+
+        if (typeof fileObject.extension != 'undefined') {
+            // Already filled.
+            return;
+        }
+
+        return getSiteDb(siteId).then(function(db) {
+            extension = $mmFS.getFileExtension(fileObject.path);
+            if (!extension) {
+                // Files does not have extension.
+                // Invalidate file (stale = true)
+                // Minor problem: file will remain in the filesystem once downloaded again.
+                fileObject.stale = true;
+                $log.debug('Staled file with no extension ' + fileObject.fileId);
+                return db.insert(mmFilepoolStore, fileObject);
+            }
+
+            // File has extension. Save extension, and add extension to path.
+            var fileId = fileObject.fileId;
+            fileObject.fileId = $mmFS.removeExtension(fileId);
+            fileObject.extension = extension;
+
+            return db.insert(mmFilepoolStore, fileObject).then(function() {
+                if (fileObject.fileId == fileId) {
+                    $log.debug('Removed extesion ' + extension + ' from file ' + fileObject.fileId);
+                    return $q.when();
+                }
+
+                return db.query(mmFilepoolLinksStore, ['fileId', '=', fileId]).then(function(entries) {
+                    // Found some fileId on LinksStore, we have to change them.
+                    return $q.all(entries.map(function(linkEntry) {
+                        linkEntry.fileId = fileObject.fileId;
+                        return db.insert(mmFilepoolLinksStore, linkEntry).then(function() {
+                            $log.debug('Removed extesion ' + extension + ' from file links ' + linkEntry.fileId);
+                            return db.remove(mmFilepoolLinksStore, [fileId, linkEntry.component, linkEntry.componentId]);
+                        });
+                    }));
+                }).finally(function() {
+                    $log.debug('Removed extesion ' + extension + ' from file ' + fileObject.fileId);
+                    // Delete old file entry.
+                    return db.remove(mmFilepoolStore, fileId);
+                });
+            });
+        });
+    };
+
+    /**
+     * Fill Missing Extension In Files, used to migrate from previous file handling.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#fillMissingExtensionInFiles
+     * @param {String} siteId   SiteID to get migrated
+     * @return {Promise}        Promise resolved when done.
+     */
+    self.fillMissingExtensionInFiles = function(siteId) {
+        $log.debug('Fill missing extensions in files of ' + siteId);
+        return getSiteDb(siteId).then(function(db) {
+            return db.getAll(mmFilepoolStore).then(function(fileObjects) {
+                var promises = [];
+                angular.forEach(fileObjects, function(fileObject) {
+                    promises.push(self._fillExtensionInFile(fileObject, siteId));
+                });
+                return $q.all(promises);
+            });
+        });
+    };
+
+    /**
+     * Remove extension from fileId In Queue, used to migrate from previous file handling.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#treatExtensionInQueue
+     * @return {Promise}    Promise resolved when done.
+     */
+    self.treatExtensionInQueue = function() {
+        var appDB;
+
+        $log.debug('Treat extensions in queue');
+
+        appDB = $mmApp.getDB();
+
+        return appDB.getAll(mmFilepoolQueueStore).then(function(fileObjects) {
+            var promises = [];
+            angular.forEach(fileObjects, function(fileObject) {
+
+                // For files in the queue, we only need to remove the extension from the fileId.
+                // After downloading, additional info will be added.
+                // Remove extension from fileId if needed.
+
+                var fileId = fileObject.fileId;
+                fileObject.fileId = $mmFS.removeExtension(fileId);
+
+                if (fileId == fileObject.fileId) {
+                    return;
+                }
+
+                promises.push(appDB.insert(mmFilepoolQueueStore, fileObject).then(function() {
+                    $log.debug('Removed extesion from queued file ' + fileObject.fileId);
+                    // Delete old file entry.
+                    return self._removeFromQueue(fileObject.siteId, fileId);
+                }));
+            });
+            return $q.all(promises);
+        });
+    };
+
+    /**
      * The way to create the file ID changed in 2.9 to keep the original filename (see MOBILE-1408).
      * To prevent losing files already downloaded, this function will try to move files using old fileId to new fileId.
      *
@@ -2274,7 +2427,11 @@ angular.module('mm.core')
                     return $q.when();
                 } else {
                     // Old file is in pool. Copy the file using the new ID.
-                    return $mmFS.copyFile(self._getFilePath(siteId, oldFileId), self._getFilePath(siteId, fileId));
+                    return self._getFilePath(siteId, oldFileId).then(function(oldPath) {
+                        return self._getFilePath(siteId, fileId).then(function(newPath) {
+                            return $mmFS.copyFile(oldPath, newPath);
+                        });
+                    });
                 }
             }).then(function() {
                 // File copied. Update the entry in the pool.
