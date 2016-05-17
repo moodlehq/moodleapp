@@ -40,7 +40,7 @@ angular.module('mm.addons.mod_quiz')
  * @ngdoc service
  * @name $mmaModQuizSync
  */
-.factory('$mmaModQuizSync', function($log, $mmaModQuiz, $mmSite, $mmSitesManager, $q, $mmaModQuizOffline, $mmQuestion,
+.factory('$mmaModQuizSync', function($log, $mmaModQuiz, $mmSite, $mmSitesManager, $q, $mmaModQuizOffline, $mmQuestion, $mmLang,
             $mmQuestionDelegate, $mmApp, $mmConfig, $mmEvents, $translate, mmaModQuizSynchronizationStore, mmaModQuizSyncTime,
             mmaModQuizEventAutomSynced, mmCoreSettingsSyncOnlyOnWifi, mmaModQuizSynchronizationWarningsStore) {
 
@@ -75,7 +75,7 @@ angular.module('mm.addons.mod_quiz')
      *
      * @module mm.addons.mod_quiz
      * @ngdoc method
-     * @name $mmaModQuizSync#getQuizSyncTime
+     * @name $mmaModQuizSync#getQuizSyncWarnings
      * @param  {Number} quizId   Quiz ID.
      * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}         Promise resolved with the time.
@@ -290,7 +290,7 @@ angular.module('mm.addons.mod_quiz')
         // Verify that quiz isn't blocked.
         if ($mmaModQuiz.isQuizBlocked(siteId, quiz.id)) {
             $log.debug('Cannot sync quiz ' + quiz.id + ' because it is blocked.');
-            return $q.reject();
+            return $mmLang.translateAndReject('mma.mod_quiz.errorsyncquizblocked');
         }
 
         $log.debug('Try to sync quiz ' + quiz.id + ' in site ' + siteId);

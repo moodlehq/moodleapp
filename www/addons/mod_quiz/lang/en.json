@@ -23,6 +23,7 @@
 	"errorrulesnotsupported": "This quiz can't be attempted in the app because it has active rules not supported by the app:",
 	"errorsaveattempt": "An error occurred while saving the attempt data.",
 	"errorsyncquiz": "An error occurred while synchronizing. Please try again.",
+	"errorsyncquizblocked": "This quiz cannot be synchronized right now because there's an ongoing operation. Please try again later. If the problem persists, please restart the app.",
 	"feedback": "Feedback",
 	"finishattemptdots": "Finish attempt...",
 	"finishnotsynced": "Finished but not synchronized",
