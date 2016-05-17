@@ -2078,17 +2078,23 @@ angular.module('mm.addons.mod_quiz')
     self.processAttempt = function(quiz, attempt, data, preflightData, finish, timeup, offline, siteId) {
         var promise;
 
-        self.blockQuiz(siteId, quiz.id); // Block quiz so it cannot be synced.
+        try {
+            self.blockQuiz(siteId, quiz.id); // Block quiz so it cannot be synced.
 
-        if (offline) {
-            promise = processOfflineAttempt(quiz, attempt, data, preflightData, finish, siteId);
-        } else {
-            promise = $mmaModQuizOnline.processAttempt(attempt.id, data, preflightData, finish, timeup, siteId);
-        }
+            if (offline) {
+                promise = processOfflineAttempt(quiz, attempt, data, preflightData, finish, siteId);
+            } else {
+                promise = $mmaModQuizOnline.processAttempt(attempt.id, data, preflightData, finish, timeup, siteId);
+            }
 
-        return promise.finally(function() {
+            return promise.finally(function() {
+                self.unblockQuiz(siteId, quiz.id);
+            });
+        } catch(ex) {
             self.unblockQuiz(siteId, quiz.id);
-        });
+            console.error(ex);
+            return $q.reject();
+        }
     };
 
     /**
@@ -2180,17 +2186,23 @@ angular.module('mm.addons.mod_quiz')
     self.saveAttempt = function(quiz, attempt, data, preflightData, offline, siteId) {
         var promise;
 
-        self.blockQuiz(siteId, quiz.id); // Block quiz so it cannot be synced.
+        try {
+            self.blockQuiz(siteId, quiz.id); // Block quiz so it cannot be synced.
 
-        if (offline) {
-            promise = processOfflineAttempt(quiz, attempt, data, preflightData, false, siteId);
-        } else {
-            promise = $mmaModQuizOnline.saveAttempt(attempt.id, data, preflightData, siteId);
-        }
+            if (offline) {
+                promise = processOfflineAttempt(quiz, attempt, data, preflightData, false, siteId);
+            } else {
+                promise = $mmaModQuizOnline.saveAttempt(attempt.id, data, preflightData, siteId);
+            }
 
-        return promise.finally(function() {
+            return promise.finally(function() {
+                self.unblockQuiz(siteId, quiz.id);
+            });
+        } catch(ex) {
             self.unblockQuiz(siteId, quiz.id);
-        });
+            console.error(ex);
+            return $q.reject();
+        }
     };
 
     /**
