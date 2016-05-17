@@ -1,0 +1,20 @@
+<section class="list" ng-if="question.text">
+    <div class="item item-text-wrap">
+        <p><mm-format-text watch="true" class="mm-content-with-float">{{ question.text }}</mm-format-text></p>
+        <br ng-if="question.prompt" />
+        <p ng-if="question.prompt"><mm-format-text watch="true">{{ question.prompt }}</mm-format-text></p>
+    </div>
+    <li ng-if="question.multi" ng-repeat="option in question.options" class="item item-text-wrap item-checkbox item-checkbox-right" ng-class='{"mm-question-answer-correct": option.isCorrect === 1, "mm-question-answer-incorrect": option.isCorrect === 0}'>
+        <label class="checkbox">
+            <input type="checkbox" name="{{option.name}}" ng-checked="option.checked" ng-disabled="option.disabled" aria-labelledby="mma-question-multi-{{option.id}}" >
+        </label>
+        <p id="mma-question-multi-{{option.id}}"><mm-format-text watch="true" class="mm-content-with-float">{{option.text}}</mm-format-text></p>
+        <p class="mm-question-feedback-container" ng-if="option.feedback"><mm-format-text watch="true" class="mm-content-with-float">{{ option.feedback }}</mm-format-text></p>
+    </li>
+    <label ng-if="!question.multi" ng-repeat="option in question.options" class="item item-radio" ng-class='{"mm-question-answer-correct": option.isCorrect === 1, "mm-question-answer-incorrect": option.isCorrect === 0}'>
+        <ion-radio-fix name="{{option.name}}" ng-model="mcAnswers[option.name]" ng-value="option.value" ng-disabled="option.disabled">
+            <p><mm-format-text watch="true" class="mm-content-with-float">{{option.text}}</mm-format-text></p>
+            <p class="mm-question-feedback-container" ng-if="option.feedback"><mm-format-text watch="true" class="mm-content-with-float">{{ option.feedback }}</mm-format-text></p>
+        </ion-radio-fix>
+    </label>
+</section>

@@ -1,0 +1,17 @@
+{
+	"answer": "Answer",
+	"answersaved": "Answer saved",
+	"certainty": "Certainty",
+	"complete": "Complete",
+	"correct": "Correct",
+	"errorquestionnotsupported": "This type of question isn't supported by the app in your site: {{$a}}.",
+	"feedback": "Feedback",
+	"howtodraganddrop": "Tap to select then tap to drop.",
+	"incorrect": "Incorrect",
+	"invalidanswer": "Incomplete answer",
+	"notanswered": "Not answered",
+	"notyetanswered": "Not yet answered",
+	"partiallycorrect": "Partially correct",
+	"requiresgrading": "Requires grading",
+	"unknown": "Cannot determine status"
+}

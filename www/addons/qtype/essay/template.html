@@ -1,0 +1,16 @@
+<section class="list" ng-if="question.text">
+    <div class="item item-text-wrap">
+        <p><mm-format-text watch="true" class="mm-content-with-float">{{ question.text }}</mm-format-text></p>
+    </div>
+    <label class="item item-input" ng-if="textarea">
+		<!-- "Format" hidden input -->
+		<input ng-if="formatInput" type="hidden" name="{{formatInput.name}}" value="{{formatInput.value}}" >
+        <textarea class="mm-question-textarea" placeholder="{{ 'mm.question.answer' | translate }}" name="{{textarea.name}}" aria-multiline="true">{{textarea.value}}</textarea>
+    </label>
+    <div class="item item-text-wrap" ng-if="!textarea">
+    	<p><mm-format-text watch="true">{{answer}}</mm-format-text></p>
+    </div>
+    <div class="item" ng-if="!textarea && attachments && attachments.length">
+    	<mm-file ng-repeat="attachment in attachments" file="attachment" component="{{component}}" component-id="{{componentId}}"></mm-file>
+    </div>
+</section>

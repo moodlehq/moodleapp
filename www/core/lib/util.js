@@ -864,6 +864,22 @@ angular.module('mm.core')
         };
 
         /**
+         * Removes all properties from an object without losing its reference.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#emptyObject
+         * @param {Object} object Object to remove the properties.
+         */
+        self.emptyObject = function(object) {
+            for (var key in object) {
+                if (object.hasOwnProperty(key)) {
+                    delete object[key];
+                }
+            }
+        };
+
+        /**
          * Similar to $q.all, but if a promise fails this function's promise won't be rejected until ALL promises have finished.
          *
          * @module mm.core
@@ -1109,16 +1125,41 @@ angular.module('mm.core')
          * @return {Boolean}                    True if the element is found, false otherwise.
          */
         self.scrollToElement = function(container, selector, scrollDelegate, scrollParentClass) {
+            var position;
+
             if (!scrollDelegate) {
                 scrollDelegate = $ionicScrollDelegate;
             }
 
-            if (!scrollParentClass) {
-                scrollParentClass = 'scroll-content';
+            position = self.getElementXY(container, selector, scrollParentClass);
+            if (!position) {
+                return false;
             }
 
+            scrollDelegate.scrollTo(position[0], position[1]);
+            return true;
+        };
+
+        /**
+         * Retrieve the position of a element relative to another element.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#getElementXY
+         * @param  {Object} container           Element to search in.
+         * @param  {String} [selector]          Selector to find the element to scroll to. If not defined, scroll to the container.
+         * @param  {String} [scrollParentClass] Scroll Parent Class where to stop calculating the position. Default scroll-content.
+         * @return {Array}                      positionLeft, positionTop of the element relative to.
+         */
+        self.getElementXY = function(container, selector, positionParentClass) {
             var element = selector ? container.querySelector(selector) : container,
-                positionTop = positionLeft = 0;
+                offsetElement,
+                positionTop = 0,
+                positionLeft = 0;
+
+            if (!positionParentClass) {
+                positionParentClass = 'scroll-content';
+            }
 
             if (!element) {
                 return false;
@@ -1128,15 +1169,26 @@ angular.module('mm.core')
                 positionLeft += (element.offsetLeft - element.scrollLeft + element.clientLeft);
                 positionTop += (element.offsetTop - element.scrollTop + element.clientTop);
 
-                element = element.offsetParent;
-                // If scrolling element is reached, stop adding tops.
-                if (angular.element(element).hasClass(scrollParentClass)) {
+                offsetElement = element.offsetParent;
+                element = element.parentElement;
+
+                // Every parent class has to be checked but the position has to be got form offsetParent.
+                while (offsetElement != element && element) {
+                    // If positionParentClass element is reached, stop adding tops.
+                    if (angular.element(element).hasClass(positionParentClass)) {
+                        element = false;
+                    } else {
+                        element = element.parentElement;
+                    }
+                }
+
+                // Finally, check again.
+                if (angular.element(element).hasClass(positionParentClass)) {
                     element = false;
                 }
             }
 
-            scrollDelegate.scrollTo(positionLeft, positionTop);
-            return true;
+            return [positionLeft, positionTop];
         };
 
         /**
@@ -1162,6 +1214,102 @@ angular.module('mm.core')
             });
 
             return urls;
+        };
+
+        /**
+         * Returns the contents of a certain selection in a DOM element.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#getContentsOfElement
+         * @param  {Object} element  DOM element to search in.
+         * @param  {String} selector Selector to search.
+         * @return {String}          Selection contents.
+         */
+        self.getContentsOfElement = function(element, selector) {
+            if (element) {
+                var el = element[0] || element, // Convert from jqLite to plain JS if needed.
+                    selected = el.querySelector(selector);
+                if (selected) {
+                    return selected.innerHTML;
+                }
+            }
+            return '';
+        };
+
+        /**
+         * Search and remove a certain element from inside another element.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#removeElement
+         * @param  {Object} element  DOM element to search in.
+         * @param  {String} selector Selector to search.
+         * @return {Void}
+         */
+        self.removeElement = function(element, selector) {
+            if (element) {
+                var el = element[0] || element, // Convert from jqLite to plain JS if needed.
+                    selected = el.querySelector(selector);
+                if (selected) {
+                    angular.element(selected).remove();
+                }
+            }
+        };
+
+        /**
+         * Search and remove a certain element from an HTML code.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#removeElementFromHtml
+         * @param  {String} html       HTML code to change.
+         * @param  {String} selector   Selector to search.
+         * @param  {Boolean} removeAll True if it should remove all matches found, false if it should only remove the first one.
+         * @return {String}            HTML without the element.
+         */
+        self.removeElementFromHtml = function(html, selector, removeAll) {
+            // Create a fake div element so we can search using querySelector.
+            var div = document.createElement('div'),
+                selected;
+
+            div.innerHTML = html;
+
+            if (removeAll) {
+                selected = div.querySelectorAll(selector);
+                angular.forEach(selected, function(el) {
+                    angular.element(el).remove();
+                });
+            } else {
+                selected = div.querySelector(selector);
+                if (selected) {
+                    angular.element(selected).remove();
+                }
+            }
+
+            return div.innerHTML;
+        };
+
+        /**
+         * Search for certain classes in an element contents and replace them with the specified new values.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#replaceClassesInElement
+         * @param  {Object} element DOM element.
+         * @param  {Object} map     Mapping of the classes to replace. Keys must be the value to replace, values must be
+         *                          the new class name. Example: {'correct': 'mm-question-answer-correct'}.
+         * @return {Void}
+         */
+        self.replaceClassesInElement = function(element, map) {
+            element = element[0] || element; // Convert from jqLite to plain JS if needed.
+
+            angular.forEach(map, function(newValue, toReplace) {
+                var matches = element.querySelectorAll('.' + toReplace);
+                angular.forEach(matches, function(element) {
+                    element.className = element.className.replace(toReplace, newValue);
+                });
+            });
         };
 
         /**
@@ -1204,6 +1352,118 @@ angular.module('mm.core')
                 }
                 element = element.parentElement;
             }
+        };
+
+        /**
+         * Extract the downloadable URLs from an HTML.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#extractDownloadableFilesFromHtml
+         * @param  {String} html HTML code.
+         * @return {String[]}    List of file urls.
+         */
+        self.extractDownloadableFilesFromHtml = function(html) {
+            var div = document.createElement('div'),
+                elements,
+                urls = [];
+
+            div.innerHTML = html;
+            elements = div.querySelectorAll('a, img, audio, video, source');
+
+            angular.forEach(elements, function(element) {
+                var url = element.tagName === 'A' ? element.href : element.src;
+                if (url && self.isDownloadableUrl(url)) {
+                    urls.push(url);
+                }
+            });
+
+            return urls;
+        };
+
+        /**
+         * Converts an object into an array of objects, where each entry is an object containing
+         * the key and value of the original object.
+         * For example, it can convert {size: 2} into [{name: 'size', value: 2}].
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#objectToArrayOfObjects
+         * @param  {Object} obj       Object to convert.
+         * @param  {String} keyName   Name of the properties where to store the keys.
+         * @param  {String} valueName Name of the properties where to store the values.
+         * @return {Object[]}         Array of objects with the name & value of each property.
+         */
+        self.objectToArrayOfObjects = function(obj, keyName, valueName) {
+            var result = [];
+            angular.forEach(obj, function(value, key) {
+                var entry = {};
+                entry[keyName] = key;
+                entry[valueName] = value;
+                result.push(entry);
+            });
+            return result;
+        };
+
+        /**
+         * Tests to see whether two arrays or objects have the same value at a particular key.
+         * Missing values are replaced by '', and the values are compared with ===.
+         * Booleans and numbers are cast to string before comparing.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#sameAtKeyMissingIsBlank
+         * @param  {Object} obj1 The first object or array.
+         * @param  {Object} obj2 The second object or array.
+         * @param  {String} key  Key to check.
+         * @return {Boolean}     Whether the two objects/arrays have the same value (or lack of one) for a given key.
+         */
+        self.sameAtKeyMissingIsBlank = function(obj1, obj2, key) {
+            var value1 = typeof obj1[key] != 'undefined' ? obj1[key] : '',
+                value2 = typeof obj2[key] != 'undefined' ? obj2[key] : '';
+
+            if (typeof value1 == 'number' || typeof value1 == 'boolean') {
+                value1 = '' + value1;
+            }
+            if (typeof value2 == 'number' || typeof value2 == 'boolean') {
+                value2 = '' + value2;
+            }
+            return value1 === value2;
+        };
+
+        /**
+         * Merge two arrays, removing duplicate values.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#mergeArraysWithoutDuplicates
+         * @param  {Array} array1 The first array.
+         * @param  {Array} array2 The second array.
+         * @return {Array}        Merged array.
+         */
+        self.mergeArraysWithoutDuplicates = function(array1, array2) {
+            return self.uniqueArray(array1.concat(array2));
+        };
+
+        /**
+         * Return an array without duplicate values.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#uniqueArray
+         * @param  {Array} array The array to treat.
+         * @return {Array}       Array without duplicate values.
+         */
+        self.uniqueArray = function(array) {
+            var unique = [],
+                len = array.length;
+            for (var i = 0; i < len; i++) {
+                var value = array[i];
+                if (unique.indexOf(value) == -1) {
+                    unique.push(value);
+                }
+            }
+            return unique;
         };
 
         return self;

@@ -24,7 +24,7 @@ angular.module('mm.addons.mod_scorm')
 .controller('mmaModScormIndexCtrl', function($scope, $stateParams, $mmaModScorm, $mmUtil, $q, $mmCourse, $ionicScrollDelegate,
             $mmCoursePrefetchDelegate, $mmaModScormHelper, $mmEvents, $mmSite, $state, mmCoreOutdated, mmCoreNotDownloaded,
             mmCoreDownloading, mmaModScormComponent, mmCoreEventPackageStatusChanged, $ionicHistory, mmaModScormEventAutomSynced,
-            $mmaModScormSync, $timeout) {
+            $mmaModScormSync, $timeout, $mmText) {
 
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
@@ -332,7 +332,7 @@ angular.module('mm.addons.mod_scorm')
     function syncScorm(checkTime, showErrors) {
         var promise = checkTime ? $mmaModScormSync.syncScormIfNeeded(scorm) : $mmaModScormSync.syncScorm(scorm);
         return promise.then(function(warnings) {
-            var message = $mmaModScormHelper.buildWarningsMessage(warnings);
+            var message = $mmText.buildMessage(warnings);
             if (message) {
                 $mmUtil.showErrorModal(message);
             }
