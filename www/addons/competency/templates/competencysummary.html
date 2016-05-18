@@ -1,0 +1,25 @@
+<ion-view>
+    <ion-nav-title>{{ competency.competency.shortname }} <small>{{ competency.competency.idnumber }}</small></ion-nav-title>
+    <ion-content mm-state-class padding="true">
+        <!-- ion-refresher needs to be direct child of ion-content to work with native scrolling -->
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="competencyLoaded"
+                       on-refresh="refreshCompetency()">
+        </ion-refresher>
+        <mm-loading hide-until="competencyLoaded">
+            <article>
+                <ul class="list card">
+                    <li class="item item-text-wrap" ng-if="competency.competency.description">
+                        <mm-format-text watch="true">{{ competency.competency.description }}</mm-format-text>
+                    </li>
+                    <li class="item item-text-wrap">
+                        <strong>{{ 'mma.competency.path' | translate }}</strong>
+                        {{ competency.comppath.framework.name }}
+                        <span ng-repeat="ancestor in competency.comppath.ancestors">
+                            &nbsp;/&nbsp;<a ui-sref="site.competencysummary({competencyid: ancestor.id})">{{ ancestor.name }}</a>
+                        </span>
+                    </li>
+                </ul>
+            </article>
+        </mm-loading>
+    </ion-content>
+</ion-view>

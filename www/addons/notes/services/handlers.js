@@ -102,7 +102,7 @@ angular.module('mm.addons.notes')
         /**
          * Get the controller.
          *
-         * @param {Object} user     Course ID.
+         * @param {Object} user     User.
          * @param {Number} courseId Course ID.
          * @return {Object}         Controller.
          */
