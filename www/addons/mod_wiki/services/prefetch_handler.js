@@ -176,11 +176,12 @@ angular.module('mm.addons.mod_wiki')
      * @module mm.addons.mod_wiki
      * @ngdoc method
      * @name $mmaModWikiPrefetchHandler#prefetch
-     * @param {Object} module The module object returned by WS.
-     * @param {Number} courseId Course ID the module belongs to.
-     * @return {Promise}      Promise resolved when all files have been downloaded. Data returned is not reliable.
+     * @param  {Object} module   The module object returned by WS.
+     * @param  {Number} courseId Course ID the module belongs to.
+     * @param  {Boolean} single  True if we're downloading a single module, false if we're downloading a whole section.
+     * @return {Promise}         Promise resolved when all files have been downloaded. Data returned is not reliable.
      */
-    self.prefetch = function(module, courseId) {
+    self.prefetch = function(module, courseId, single) {
         var siteId = $mmSite.getId(),
             userid = userid || $mmSite.getUserId();
 

@@ -117,12 +117,13 @@ angular.module('mm.addons.mod_scorm')
      * @module mm.addons.mod_scorm
      * @ngdoc method
      * @name $mmaModScormPrefetchHandler#prefetch
-     * @param {Object} module   The module object returned by WS.
-     * @param {Number} courseid Course ID the module belongs to.
-     * @return {Promise}        Promise resolved when all files have been downloaded. Data returned is not reliable.
+     * @param  {Object} module   The module object returned by WS.
+     * @param  {Number} courseId Course ID the module belongs to.
+     * @param  {Boolean} single  True if we're downloading a single module, false if we're downloading a whole section.
+     * @return {Promise}         Promise resolved when all files have been downloaded. Data returned is not reliable.
      */
-    self.prefetch = function(module, courseid) {
-        return $mmaModScorm.getScorm(courseid, module.id, module.url).then(function(scorm) {
+    self.prefetch = function(module, courseId, single) {
+        return $mmaModScorm.getScorm(courseId, module.id, module.url).then(function(scorm) {
             return $mmaModScorm.prefetch(scorm);
         });
     };

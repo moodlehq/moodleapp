@@ -136,12 +136,13 @@ angular.module('mm.addons.mod_quiz')
      * @module mm.addons.mod_quiz
      * @ngdoc method
      * @name $mmaModQuizPrefetchHandler#prefetch
-     * @param {Object} module   The module object returned by WS.
-     * @param {Number} courseId Course ID the module belongs to.
-     * @return {Promise}        Promise resolved when the prefetch is finished. Data returned is not reliable.
+     * @param { Object} module   The module object returned by WS.
+     * @param  {Number} courseId Course ID the module belongs to.
+     * @param  {Boolean} single  True if we're downloading a single module, false if we're downloading a whole section.
+     * @return {Promise}         Promise resolved when the prefetch is finished. Data returned is not reliable.
      */
-    self.prefetch = function(module, courseId) {
-        return $mmaModQuiz.prefetch(module, courseId);
+    self.prefetch = function(module, courseId, single) {
+        return $mmaModQuiz.prefetch(module, courseId, single);
     };
 
     return self;
