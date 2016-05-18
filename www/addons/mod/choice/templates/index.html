@@ -1,0 +1,70 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <a class="button button-icon ion-ios-browsers-outline" ng-href="{{moduleurl}}" mm-link ></a>
+    </ion-nav-buttons>
+    <ion-content mm-state-class>
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="choiceLoaded" on-refresh="refreshChoice()"></ion-refresher>
+        <mm-loading hide-until="choiceLoaded">
+            <mm-course-mod-description description="description" watch="true"></mm-course-mod-description>
+
+            <!-- Activity availability messages -->
+            <section class="card padding" ng-if="choice.timeopen != 0 && choice.timeopen > now">
+                <p ng-if="options && options.length">{{ 'mma.mod_choice.previewonly' | translate:{$a: choice.openTimeReadable} }}</p>
+                <p ng-if="!options || !options.length">{{ 'mma.mod_choice.notopenyet' | translate:{$a: choice.openTimeReadable} }}</p>
+            </section>
+            <section class="card padding" ng-if="choice.timeclose != 0 && choice.timeclose <= now">
+                <p ng-if="options && options.length">{{ 'mma.mod_choice.yourselection' | translate }} <mm-format-text watch="true">{{options[0].text}}</mm-format-text></p>
+                <p>{{ 'mma.mod_choice.expired' | translate:{$a: choice.closeTimeReadable} }}</p>
+            </section>
+
+            <!-- Choice options -->
+            <section class="card" ng-if="options && options.length">
+                <li ng-if="choice.allowmultiple" ng-repeat="option in options" class="item item-text-wrap item-checkbox item-checkbox-right">
+                    <label class="checkbox">
+                        <input type="checkbox" ng-model="option.checked" ng-disabled="option.disabled || !canEdit">
+                    </label>
+                    <p><mm-format-text watch="true">{{option.text}}</mm-format-text> <span ng-if="choice.limitanswers && option.countanswers >= option.maxanswers">{{ 'mma.mod_choice.full' | translate }}</span></p>
+                </li>
+                <label ng-if="!choice.allowmultiple" ng-repeat="option in options" class="item item-radio">
+                    <ion-radio-fix ng-model="selectedOption.id" ng-value="option.id" ng-disabled="option.disabled || !canEdit">
+                        <p><mm-format-text watch="true">{{option.text}}</mm-format-text> <span ng-if="choice.limitanswers && option.countanswers >= option.maxanswers">{{ 'mma.mod_choice.full' | translate }}</span></p>
+                    </ion-radio-fix>
+                </label>
+                <div class="item" ng-if="canEdit">
+                    <button class="button button-block" ng-click="save()" ng-disabled="(!choice.allowmultiple && selectedOption.id == -1) || (choice.allowmultiple && (options | filter:{checked: true}).length == 0)">{{ 'mma.mod_choice.savemychoice' | translate }}</button>
+                </div>
+                <div class="item" ng-if="canDelete">
+                    <button class="button button-block" ng-click="delete()">{{ 'mma.mod_choice.removemychoice' | translate }}</button>
+                </div>
+            </section>
+
+            <!-- Choice results -->
+            <section class="card text-center" ng-if="canSeeResults">
+                <h3>{{ 'mma.mod_choice.responses' | translate }}</h3>
+                <div class="row">
+                    <p class="col"><b>{{ 'mma.mod_choice.choiceoptions' | translate }}</b></p>
+                    <p class="col"><b>{{ 'mma.mod_choice.numberofuser' | translate }}</b></p>
+                    <p class="col"><b>{{ 'mma.mod_choice.numberofuserinpercentage' | translate }}</b></p>
+                    <p class="col" ng-if="!choice.publish"><b>{{ 'mma.mod_choice.responsesresultgraphheader' | translate }}</b></p>
+                    <p class="col" ng-if="choice.publish"><b>{{ 'mma.mod_choice.userchoosethisoption' | translate }}</b></p>
+                </div>
+                <div class="row" ng-repeat="result in results">
+                    <p class="col"><b><mm-format-text watch="true">{{ result.text }}</mm-format-text></b></p>
+                    <p class="col">{{ result.numberofuser }}</p>
+                    <p class="col">{{ 'mm.core.percentagenumber' | translate:{$a: result.percentageamount} }}</p>
+                    <div class="col text-left">
+                        <img ng-if="!choice.publish" class="mma-mod_choice-graph-horizontal" src="addons/mod/choice/img/row.png" alt="{{ 'mma.mod_choice.responsesresultgraphdescription' | translate:{number: result.percentageamount, text: result.text} }}" ng-style="{'width': result.percentageamount+'%'}">
+                        <a ng-if="choice.publish" class="padding mma-mod_choice-user" ng-repeat="user in result.userresponses" mm-user-link courseid="{{courseid}}" userid="{{user.userid}}" title="{{user.fullname}}">
+                            <img ng-src="{{user.profileimageurl}}" alt="{{user.fullname}}" mm-external-content>
+                            <p>{{user.fullname}}</p>
+                        </a>
+                    </div>
+                </div>
+            </section>
+            <section class="card padding" ng-if="!canSeeResults">
+                <p>{{ 'mma.mod_choice.noresultsviewable' | translate }}</p>
+            </section>
+        </mm-loading>
+    </ion-content>
+</ion-view>
