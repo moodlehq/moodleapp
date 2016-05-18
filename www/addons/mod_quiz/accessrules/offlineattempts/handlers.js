@@ -38,9 +38,14 @@ angular.module('mm.addons.mod_quiz')
      * Check if a preflight check is required.
      *
      * @param  {Object} [attempt] Attempt to continue. Not defined if starting a new attempt.
+     * @param  {Boolean} prefetch True if prefetching, false if attempting the quiz.
      * @return {Boolean}          True if preflight check required.
      */
-    self.isPreflightCheckRequired = function(attempt) {
+    self.isPreflightCheckRequired = function(attempt, prefetch) {
+        if (prefetch) {
+            return false;
+        }
+
         if (!attempt) {
             return true;
         }
@@ -57,9 +62,10 @@ angular.module('mm.addons.mod_quiz')
      * @name $mmaModQuizAccessRulesDelegate#getFixedPreflightData
      * @param  {Object} attempt       Attempt.
      * @param  {Object} preflightData Object where to store the preflight data.
+     * @param  {Boolean} prefetch     True if prefetching, false if attempting the quiz.
      * @return {Void}
      */
-    self.getFixedPreflightData = function(attempt, preflightData) {
+    self.getFixedPreflightData = function(attempt, preflightData, prefetch) {
         preflightData.confirmdatasaved = 1;
     };
 

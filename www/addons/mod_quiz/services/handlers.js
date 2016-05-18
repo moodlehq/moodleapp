@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_quiz')
  */
 .factory('$mmaModQuizHandlers', function($mmCourse, $mmaModQuiz, $state, $q, $mmContentLinksHelper, $mmUtil, $mmCourseHelper,
             $mmSite, $mmCoursePrefetchDelegate, $mmaModQuizPrefetchHandler, $mmEvents, mmCoreEventPackageStatusChanged,
-            mmaModQuizComponent, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated) {
+            mmaModQuizComponent, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated, $mmaModQuizHelper) {
 
     var self = {};
 
@@ -92,10 +92,10 @@ angular.module('mm.addons.mod_quiz')
                     }
 
                     $scope.spinner = true; // Show spinner since this operation might take a while.
-                    $mmaModQuizPrefetchHandler.prefetch(module, courseId).catch(function() {
+                    $mmaModQuizPrefetchHandler.prefetch(module, courseId, true).catch(function(error) {
                         $scope.spinner = false;
                         if (!$scope.$$destroyed) {
-                            $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                            $mmaModQuizHelper.showError(error, 'mm.core.errordownloading');
                         }
                     });
                 }

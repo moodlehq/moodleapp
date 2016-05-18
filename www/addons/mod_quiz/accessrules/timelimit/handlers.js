@@ -38,10 +38,12 @@ angular.module('mm.addons.mod_quiz')
      * Check if a preflight check is required.
      *
      * @param  {Object} [attempt] Attempt to continue. Not defined if starting a new attempt.
+     * @param  {Boolean} prefetch True if prefetching, false if attempting the quiz.
      * @return {Boolean}          True if preflight check required.
      */
-    self.isPreflightCheckRequired = function(attempt) {
+    self.isPreflightCheckRequired = function(attempt, prefetch) {
         // Warning only required if the attempt is not already started.
+        // prefetch should always be false since offline isn't compatible with timed quizzes.
         return !attempt;
     };
 

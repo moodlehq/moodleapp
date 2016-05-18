@@ -91,11 +91,14 @@
                     <p class="mma-mod-quiz-warning">{{ 'mma.mod_quiz.hasdatatosync' | translate }}</p>
                     <button class="button button-block" ng-click="sync()">{{ 'mm.settings.synchronizenow' | translate }}</button>
                 </div>
-                <div class="item" ng-if="buttonText">
+                <div class="item" ng-if="buttonText && !downloading">
                     <a class="button button-block" ng-click="attemptQuiz()">{{ buttonText | translate }}</a>
                 </div>
                 <div class="item" ng-if="!buttonText && ((unsupportedQuestions && unsupportedQuestions.length) || (unsupportedRules && unsupportedRules.length) || behaviourSupported === false)">
                     <a class="button button-block" ng-href="{{moduleUrl}}" mm-link>{{ 'mm.core.openinbrowser' | translate }}</a>
+                </div>
+                <div class="item text-center" ng-if="downloading">
+                    <ion-spinner></ion-spinner>
                 </div>
             </div>
         </mm-loading>

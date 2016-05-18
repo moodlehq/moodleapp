@@ -77,13 +77,14 @@ angular.module('mm.addons.mod_quiz')
      * @param  {String[]} rules       Name of the rules.
      * @param  {Object} attempt       Attempt.
      * @param  {Object} preflightData Object where to store the preflight data.
+     * @param  {Boolean} prefetch     True if prefetching, false if attempting the quiz.
      * @return {Void}
      */
-    self.getFixedPreflightData = function(rules, attempt, preflightData) {
+    self.getFixedPreflightData = function(rules, attempt, preflightData, prefetch) {
         angular.forEach(rules, function(rule) {
             var handler = self.getAccessRuleHandler(rule);
             if (handler && handler.getFixedPreflightData) {
-                handler.getFixedPreflightData(attempt, preflightData);
+                handler.getFixedPreflightData(attempt, preflightData, prefetch);
             }
         });
     };
@@ -107,16 +108,17 @@ angular.module('mm.addons.mod_quiz')
      * @module mm.addons.mod_quiz
      * @ngdoc method
      * @name $mmaModQuizAccessRulesDelegate#isPreflightCheckRequired
-     * @param  {String[]} rules Name of the rules.
-     * @param  {Object} attempt Attempt.
-     * @return {Boolean}        True if required, false otherwise.
+     * @param  {String[]} rules   Name of the rules.
+     * @param  {Object} attempt   Attempt.
+     * @param  {Boolean} prefetch True if prefetching, false if attempting the quiz.
+     * @return {Boolean}          True if required, false otherwise.
      */
-    self.isPreflightCheckRequired = function(rules, attempt) {
+    self.isPreflightCheckRequired = function(rules, attempt, prefetch) {
         var isRequired = false;
         angular.forEach(rules, function(rule) {
             var handler = self.getAccessRuleHandler(rule);
             if (handler) {
-                if (handler.isPreflightCheckRequired(attempt)) {
+                if (handler.isPreflightCheckRequired(attempt, prefetch)) {
                     isRequired = true;
                 }
             }
@@ -136,10 +138,10 @@ angular.module('mm.addons.mod_quiz')
      *                           returning an object defining these properties. See {@link $mmUtil#resolveObject}.
      *                             - isEnabled (Boolean|Promise) Whether or not the handler is enabled on a site level.
      *                                                           When using a promise, it should return a boolean.
-     *                             - isPreflightCheckRequired(attempt) (Boolean|Promise) Whether or not the rule requires a
-     *                                                           preflight check when starting/continuing an attempt.
-     *                             - getFixedPreflightData(attempt, preflightData) Optional. Should add preflight data that doesn't
-     *                                                           require user interaction.
+     *                             - isPreflightCheckRequired(attempt, prefetch) (Boolean|Promise) Whether or not the rule requires
+     *                                                           a preflight check when prefetch or start/continue an attempt.
+     *                             - getFixedPreflightData(attempt, preflightData, prefetch) Optional. Should add preflight data
+     *                                                           that doesn't require user interaction.
      *                             - getPreflightDirectiveName() (String) Optional. Returns the name of the directive to render
      *                                                           the access rule preflight. Required if the handler needs a
      *                                                           preflight check in some cases.
