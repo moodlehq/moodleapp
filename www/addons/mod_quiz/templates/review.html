@@ -51,8 +51,8 @@
                 <div ng-repeat="question in questions">
                     <section class="card" id="mma-mod_quiz-question-{{question.slot}}">
                         <div class="item item-divider">
-                            <h2 ng-if="question.number" class="inline">{{ 'mma.mod_quiz.questionno' | translate:{$a: question.number} }}</h2>
-                            <h2 ng-if="!question.number" class="inline">{{ 'mma.mod_quiz.information' | translate }}</h2>
+                            <h2 ng-if="question.number" class="inline">{{ 'mm.question.questionno' | translate:{$a: question.number} }}</h2>
+                            <h2 ng-if="!question.number" class="inline">{{ 'mm.question.information' | translate }}</h2>
                             <div class="item-text-wrap item-note" ng-if="question.status || question.readableMark">
                                 <span ng-if="question.status" class="block">{{question.status}}</span>
                                 <span ng-if="question.readableMark" class="block"><mm-format-text watch="true">{{question.readableMark}}</mm-format-text></span>
