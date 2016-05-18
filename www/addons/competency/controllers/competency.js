@@ -58,7 +58,6 @@ angular.module('mm.addons.competency')
 
                 // Get the user profile image from the returned object.
                 $scope.user = competency.usercompetencysummary.user;
-                console.log($scope.user);
             }
 
             angular.forEach(competency.usercompetencysummary.evidence, function(evidence) {
