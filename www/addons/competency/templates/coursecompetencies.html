@@ -16,7 +16,7 @@
                     </li>
                     <li class="item item-text-wrap">
                         <strong>{{ 'mma.competency.progress' | translate }}</strong>:
-                        {{ 'mma.competency.xcompetenciesproficientoutofyincourse' | translate:{x: competencies.statistics.proficientcompetencycount, y: competencies.statistics.competencycount} }} ({{ competencies.statistics.proficientcompetencypercentageformatted }}%)
+                        {{ 'mma.competency.xcompetenciesproficientoutofyincourse' | translate:{$a: {x: competencies.statistics.proficientcompetencycount, y: competencies.statistics.competencycount} } }} ({{ competencies.statistics.proficientcompetencypercentageformatted }}%)
                         <progress max="100" value="{{ competencies.statistics.proficientcompetencypercentage }}"></progress>
                     </li>
                     <li class="item item-text-wrap" ng-if="competencies.statistics.leastproficientcount > 0">
