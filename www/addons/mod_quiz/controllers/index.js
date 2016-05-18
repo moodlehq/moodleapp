@@ -316,7 +316,7 @@ angular.module('mm.addons.mod_quiz')
 
     // Tries to synchronize the current quiz.
     function syncQuiz(checkTime, showErrors) {
-        var promise = checkTime ? $mmaModQuizSync.syncQuizIfNeeded(quiz) : $mmaModQuizSync.syncQuiz(quiz);
+        var promise = checkTime ? $mmaModQuizSync.syncQuizIfNeeded(quiz, true) : $mmaModQuizSync.syncQuiz(quiz, true);
         return promise.then(function(warnings) {
             var message = $mmText.buildMessage(warnings);
             if (message) {
@@ -372,7 +372,7 @@ angular.module('mm.addons.mod_quiz')
         currentStatus = status;
 
         if (status == mmCoreDownloading) {
-            $scope.downloading = true;
+            $scope.showSpinner = true;
         }
     }
 
@@ -394,7 +394,12 @@ angular.module('mm.addons.mod_quiz')
 
     // Synchronize the quiz.
     $scope.sync = function() {
-        var modal = $mmUtil.showModalLoading('mm.settings.synchronizing', true);
+        if ($scope.showSpinner) {
+            // Scope is being or synchronized, abort.
+            return;
+        }
+
+        $scope.showSpinner = true;
         syncQuiz(false, true).then(function() {
             // Refresh the data.
             $scope.quizLoaded = false;
@@ -403,14 +408,14 @@ angular.module('mm.addons.mod_quiz')
                 $scope.quizLoaded = true;
             });
         }).finally(function() {
-            modal.dismiss();
+            $scope.showSpinner = false;
         });
     };
 
     // Attempt the quiz.
     $scope.attemptQuiz = function() {
-        if ($scope.downloading) {
-            // Scope is being downloaded, abort.
+        if ($scope.showSpinner) {
+            // Scope is being or synchronized, abort.
             return;
         }
 
@@ -418,14 +423,14 @@ angular.module('mm.addons.mod_quiz')
             // Quiz supports offline, check if it needs to be downloaded.
             if (currentStatus != mmCoreDownloaded) {
                 // Prefetch the quiz.
-                $scope.downloading = true;
+                $scope.showSpinner = true;
                 return $mmaModQuiz.prefetch(module, courseId, true).then(function() {
                     // Success downloading, open quiz.
                     openQuiz();
                 }).catch(function(error) {
                     $mmaModQuizHelper.showError(error, 'mma.mod_quiz.errordownloading');
                 }).finally(function() {
-                    $scope.downloading = false;
+                    $scope.showSpinner = false;
                 });
             } else {
                 // Already downloaded, open it.

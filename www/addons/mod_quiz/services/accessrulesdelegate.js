@@ -75,17 +75,23 @@ angular.module('mm.addons.mod_quiz')
      * @ngdoc method
      * @name $mmaModQuizAccessRulesDelegate#getFixedPreflightData
      * @param  {String[]} rules       Name of the rules.
+     * @param  {Object} quiz          Quiz.
      * @param  {Object} attempt       Attempt.
      * @param  {Object} preflightData Object where to store the preflight data.
      * @param  {Boolean} prefetch     True if prefetching, false if attempting the quiz.
-     * @return {Void}
+     * @param  {String} [siteId]      Site ID. If not defined, current site.
+     * @return {Promise}              Promise resolved when all the data has been gathered.
      */
-    self.getFixedPreflightData = function(rules, attempt, preflightData, prefetch) {
+    self.getFixedPreflightData = function(rules, quiz, attempt, preflightData, prefetch, siteId) {
+        var promises = [];
         angular.forEach(rules, function(rule) {
             var handler = self.getAccessRuleHandler(rule);
             if (handler && handler.getFixedPreflightData) {
-                handler.getFixedPreflightData(attempt, preflightData, prefetch);
+                promises.push($q.when(handler.getFixedPreflightData(quiz, attempt, preflightData, prefetch, siteId)));
             }
+        });
+        return $mmUtil.allPromises(promises).catch(function() {
+            // Never reject.
         });
     };
 
@@ -109,21 +115,87 @@ angular.module('mm.addons.mod_quiz')
      * @ngdoc method
      * @name $mmaModQuizAccessRulesDelegate#isPreflightCheckRequired
      * @param  {String[]} rules   Name of the rules.
+     * @param  {Object} quiz      Quiz.
      * @param  {Object} attempt   Attempt.
      * @param  {Boolean} prefetch True if prefetching, false if attempting the quiz.
-     * @return {Boolean}          True if required, false otherwise.
+     * @param  {String} [siteId]  Site ID. If not defined, current site.
+     * @return {Promise}          Promise resolved with boolean: true if required, false otherwise.
      */
-    self.isPreflightCheckRequired = function(rules, attempt, prefetch) {
-        var isRequired = false;
+    self.isPreflightCheckRequired = function(rules, quiz, attempt, prefetch, siteId) {
+        var isRequired = false,
+            promises = [];
+
         angular.forEach(rules, function(rule) {
             var handler = self.getAccessRuleHandler(rule);
             if (handler) {
-                if (handler.isPreflightCheckRequired(attempt, prefetch)) {
-                    isRequired = true;
-                }
+                promises.push($q.when(handler.isPreflightCheckRequired(quiz, attempt, prefetch, siteId)).then(function(required) {
+                    if (required) {
+                        isRequired = true;
+                    }
+                }));
             }
         });
-        return isRequired;
+
+        return $mmUtil.allPromises(promises).then(function() {
+            return isRequired;
+        }).catch(function() {
+            // Never reject.
+            return isRequired;
+        });
+    };
+
+     /**
+     * The preflight check has passed. This is a chance to record that fact in some way.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizAccessRulesDelegate#notifyPreflightCheckPassed
+     * @param  {String[]} rules       Name of the rules.
+     * @param  {Object} quiz          Quiz.
+     * @param  {Object} attempt       Attempt.
+     * @param  {Object} preflightData Object where to store the preflight data.
+     * @param  {Boolean} prefetch     True if prefetching, false if attempting the quiz.
+     * @param  {String} [siteId]      Site ID. If not defined, current site.
+     * @return {Promise}              Promise resolved when done.
+     */
+    self.notifyPreflightCheckPassed = function(rules, quiz, attempt, preflightData, prefetch, siteId) {
+        var promises = [];
+        angular.forEach(rules, function(rule) {
+            var handler = self.getAccessRuleHandler(rule);
+            if (handler && handler.notifyPreflightCheckPassed) {
+                promises.push($q.when(handler.notifyPreflightCheckPassed(quiz, attempt, preflightData, prefetch, siteId)));
+            }
+        });
+        return $mmUtil.allPromises(promises).catch(function() {
+            // Never reject.
+        });
+    };
+
+     /**
+     * The preflight check has failed.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizAccessRulesDelegate#notifyPreflightCheckFailed
+     * @param  {String[]} rules       Name of the rules.
+     * @param  {Object} quiz          Quiz.
+     * @param  {Object} attempt       Attempt.
+     * @param  {Object} preflightData Object where to store the preflight data.
+     * @param  {Boolean} prefetch     True if prefetching, false if attempting the quiz.
+     * @param  {String} [siteId]      Site ID. If not defined, current site.
+     * @return {Promise}              Promise resolved when done.
+     */
+    self.notifyPreflightCheckFailed = function(rules, quiz, attempt, preflightData, prefetch, siteId) {
+        var promises = [];
+        angular.forEach(rules, function(rule) {
+            var handler = self.getAccessRuleHandler(rule);
+            if (handler && handler.notifyPreflightCheckFailed) {
+                promises.push($q.when(handler.notifyPreflightCheckFailed(quiz, attempt, preflightData, prefetch, siteId)));
+            }
+        });
+        return $mmUtil.allPromises(promises).catch(function() {
+            // Never reject.
+        });
     };
 
     /**
@@ -138,17 +210,24 @@ angular.module('mm.addons.mod_quiz')
      *                           returning an object defining these properties. See {@link $mmUtil#resolveObject}.
      *                             - isEnabled (Boolean|Promise) Whether or not the handler is enabled on a site level.
      *                                                           When using a promise, it should return a boolean.
-     *                             - isPreflightCheckRequired(attempt, prefetch) (Boolean|Promise) Whether or not the rule requires
-     *                                                           a preflight check when prefetch or start/continue an attempt.
-     *                             - getFixedPreflightData(attempt, preflightData, prefetch) Optional. Should add preflight data
-     *                                                           that doesn't require user interaction.
+     *                             - isPreflightCheckRequired(quiz, attempt, prefetch, siteId) (Boolean|Promise) Whether the rule
+     *                                                           requires a preflight check when prefetch/start/continue an attempt.
+     *                                                           It should return a boolean or a promise resolved with a boolean.
+     *                             - getFixedPreflightData(quiz, attempt, preflightData, prefetch, siteId) (Promise) Optional.
+     *                                                           Should add preflight data that doesn't require user interaction.
+     *                                                           Return a promise or nothing if synchronous.
      *                             - getPreflightDirectiveName() (String) Optional. Returns the name of the directive to render
      *                                                           the access rule preflight. Required if the handler needs a
      *                                                           preflight check in some cases.
+     *                             - notifyPreflightCheckPassed(quiz, attempt, preflightData, prefetch, siteId) (Promise) Optional.
+     *                                                           Called when the preflight check has passed. This is a chance to
+     *                                                           record that fact in some way.
+     *                             - notifyPreflightCheckFailed(quiz, attempt, preflightData, prefetch, siteId) (Promise) Optional.
+     *                                                           Called when the preflight check fails.
      *                             - shouldShowTimeLeft(attempt, endTime, timeNow) (Boolean) Optional. Whether or not the time
      *                                                           left of an attempt should be displayed.
      *                             - cleanPreflight(data) Function called when preflight form is closed. Should delete all the
-     *                                                            data that should be resetted for the next form show.
+     *                                                           data that should be resetted for the next form show.
      */
     self.registerHandler = function(addon, ruleName, handler) {
         if (typeof handlers[ruleName] !== 'undefined') {

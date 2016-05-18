@@ -46,6 +46,7 @@ angular.module('mm.addons.mod_quiz')
     $scope.component = mmaModQuizComponent;
     $scope.quizAborted = false;
     $scope.preflightData = {};
+    $scope.preflightModalTitle = 'mma.mod_quiz.startattempt';
 
     // Convenience function to start the player.
     function start(fromModal) {

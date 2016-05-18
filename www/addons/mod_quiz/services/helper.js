@@ -66,7 +66,7 @@ angular.module('mm.addons.mod_quiz')
      */
     self.getReadableTimeFromTimestamp = function(timestamp) {
         if (!timestamp) {
-            return $translate('mm.core.none');
+            return $translate.instant('mm.core.never');
         } else {
             return moment(timestamp).format('LLL');
         }
