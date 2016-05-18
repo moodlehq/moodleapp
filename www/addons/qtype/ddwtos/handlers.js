@@ -28,19 +28,20 @@ angular.module('mm.addons.qtype_ddwtos')
     /**
      * Check if a response is complete.
      *
-     * @param  {Object} answers Question answers (without prefix).
-     * @return {Mixed}          True if complete, false if not complete, -1 if cannot determine.
+     * @param  {Object} question Question.
+     * @param  {Object} answers  Question answers (without prefix).
+     * @return {Mixed}           True if complete, false if not complete, -1 if cannot determine.
      */
-    self.isCompleteResponse = function(answers) {
-        // An answer is complete if all drop zones have an answer. Since we don't have the list of drop zones
-        // we cannot determine if the answer is complete, only if it's unanswered.
-        var hasReponse = false;
+    self.isCompleteResponse = function(question, answers) {
+        // An answer is complete if all drop zones have an answer.
+        // We should always receive all the drop zones with their value ('0' if not answered).
+        var isComplete = true;
         angular.forEach(answers, function(value) {
-            if (value && value !== '0') {
-                hasReponse = true;
+            if (!value || value === '0') {
+                isComplete = false;
             }
         });
-        return hasReponse ? -1 : false;
+        return isComplete;
     };
 
     /**
@@ -56,10 +57,11 @@ angular.module('mm.addons.qtype_ddwtos')
      * Check if a student has provided enough of an answer for the question to be graded automatically,
      * or whether it must be considered aborted.
      *
-     * @param  {Object} answers Question answers (without prefix).
-     * @return {Mixed}          True if gradable, false if not gradable, -1 if cannot determine.
+     * @param  {Object} question Question.
+     * @param  {Object} answers  Question answers (without prefix).
+     * @return {Mixed}           True if gradable, false if not gradable, -1 if cannot determine.
      */
-    self.isGradableResponse = function(answers) {
+    self.isGradableResponse = function(question, answers) {
         var hasReponse = false;
         angular.forEach(answers, function(value) {
             if (value && value !== '0') {
@@ -72,11 +74,12 @@ angular.module('mm.addons.qtype_ddwtos')
     /**
      * Check if two responses are the same.
      *
+     * @param  {Object} question    Question.
      * @param  {Object} prevAnswers Previous answers.
      * @param  {Object} newAnswers  New answers.
      * @return {Boolean}            True if same, false otherwise.
      */
-    self.isSameResponse = function(prevAnswers, newAnswers) {
+    self.isSameResponse = function(question, prevAnswers, newAnswers) {
         return $mmQuestion.compareAllAnswers(prevAnswers, newAnswers);
     };
 

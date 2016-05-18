@@ -364,6 +364,37 @@ angular.module('mm.core.question')
     };
 
     /**
+     * Get the names of all the inputs inside an HTML code.
+     * This function will return an object where the keys are the input names. The values will always be true.
+     * This is in order to make this function compatible with other functions like $mmQuestion#getBasicAnswers.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#getAllInputNamesFromHtml
+     * @param  {String} html HTML code.
+     * @return {Object}      Object where the keys are the names.
+     */
+    self.getAllInputNamesFromHtml = function(html) {
+        var form = document.createElement('form'),
+            answers = {};
+
+        form.innerHTML = html;
+
+        // Search all input elements.
+        angular.forEach(form.elements, function(element) {
+            var name = element.name || '';
+            // Ignore flag and submit inputs.
+            if (!name || name.match(/_:flagged$/) || element.type == 'submit' || element.tagName == 'BUTTON') {
+                return;
+            }
+
+            answers[$mmQuestion.removeQuestionPrefix(name)] = true;
+        });
+
+        return answers;
+    };
+
+    /**
      * Retrieve the answers entered in a form.
      * We don't use ng-model because it doesn't detect changes done by JavaScript and some questions might do that.
      *
@@ -411,7 +442,7 @@ angular.module('mm.core.question')
      * @ngdoc method
      * @name $mmQuestionHelper#getQuestionAttachmentsFromHtml
      * @param  {String} html HTML code to search in.
-     * @return {[type]}      [description]
+     * @return {Object[]}    Attachments.
      */
     self.getQuestionAttachmentsFromHtml = function(html) {
         var el = angular.element('<div></div>'),
@@ -421,6 +452,9 @@ angular.module('mm.core.question')
         // Add the HTML and get the plain JS element.
         el.html(html);
         el = el[0];
+
+        // Remove the filemanager (area to attach files to a question).
+        $mmUtil.removeElement(el, 'div[id*=filemanager]');
 
         // Search the anchors.
         anchors = el.querySelectorAll('a');

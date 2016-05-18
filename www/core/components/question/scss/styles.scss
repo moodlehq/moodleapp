@@ -4,6 +4,7 @@ $mm-question-incorrect-color:       #b94a48 !default;
 $mm-question-state-correct-color:   #cfc !default;
 $mm-question-state-partial-color:   #ffa !default;
 $mm-question-state-incorrect-color: #fcc !default;
+$mm-question-warning-color:         #c00 !default;
 
 .mm-question-textarea {
   width: 100%;
@@ -96,4 +97,8 @@ li.mm-question-answer-incorrect,
   &.mm-question-incorrect {
     background-color: $mm-question-state-incorrect-color;
   }
+}
+
+.mm-question-warning, p.mm-question-warning, .item .mm-question-warning {
+  color: $mm-question-warning-color;
 }

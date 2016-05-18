@@ -750,6 +750,28 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Given a list of questions, check if the quiz can be submitted.
+     * Will return an array with the messages to prevent the submit. Empty array if quiz can be submitted.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#getPreventSubmitMessages
+     * @param  {Object[]} questions Questions.
+     * @return {String[]}           List of prevent submit messages. Empty array if quiz can be submitted.
+     */
+    self.getPreventSubmitMessages = function(questions) {
+        var messages = [];
+        angular.forEach(questions, function(question) {
+            var message = $mmQuestionDelegate.getPreventSubmitMessage(question);
+            if (message) {
+                message = $translate.instant(message);
+                messages.push($translate.instant('mm.question.questionmessage', {$a: question.slot, $b: message}));
+            }
+        });
+        return messages;
+    };
+
+    /**
      * Get cache key for Quiz data WS calls.
      *
      * @param {Number} courseId Course ID.

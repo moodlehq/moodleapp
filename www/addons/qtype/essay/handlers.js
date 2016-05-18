@@ -37,16 +37,41 @@ angular.module('mm.addons.qtype_essay')
     };
 
     /**
+     * Check if a question can be submitted.
+     * If a question cannot be submitted it should return a message explaining why (translated or not).
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionDelegate#getPreventSubmitMessage
+     * @param  {Object} question Question.
+     * @return {String}          Prevent submit message. Undefined or empty if cannot be submitted.
+     */
+    self.getPreventSubmitMessage = function(question) {
+        var questionEl = angular.element(question.html)[0];
+
+        if (questionEl.querySelector('div[id*=filemanager]')) {
+            // The question allows attachments. Since the app cannot attach files yet we will prevent submitting the question.
+            return 'mm.question.errorattachmentsnotsupported';
+        }
+    };
+
+    /**
      * Check if a response is complete.
      *
-     * @param  {Object} answers Question answers (without prefix).
-     * @return {Mixed}          True if complete, false if not complete, -1 if cannot determine.
+     * @param  {Object} question Question.
+     * @param  {Object} answers  Question answers (without prefix).
+     * @return {Mixed}           True if complete, false if not complete, -1 if cannot determine.
      */
-    self.isCompleteResponse = function(answers) {
-        if (answers['answer'] && answers['answer'] !== '') {
-            return true;
+    self.isCompleteResponse = function(question, answers) {
+        var hasInlineText = answers['answer'] && answers['answer'] !== '',
+            questionEl = angular.element(question.html)[0],
+            allowsAttachments = !!questionEl.querySelector('div[id*=filemanager]');
+
+        if (!allowsAttachments) {
+            return hasInlineText;
         }
-        // Since we can't know if the text is required or not we return -1.
+
+        // We can't know if the attachments are required or if the user added any in web.
         return -1;
     };
 
@@ -63,21 +88,23 @@ angular.module('mm.addons.qtype_essay')
      * Check if a student has provided enough of an answer for the question to be graded automatically,
      * or whether it must be considered aborted.
      *
-     * @param  {Object} answers Question answers (without prefix).
-     * @return {Mixed}          True if gradable, false if not gradable, -1 if cannot determine.
+     * @param  {Object} question Question.
+     * @param  {Object} answers  Question answers (without prefix).
+     * @return {Mixed}           True if gradable, false if not gradable, -1 if cannot determine.
      */
-    self.isGradableResponse = function(answers) {
+    self.isGradableResponse = function(question, answers) {
         return false;
     };
 
     /**
      * Check if two responses are the same.
      *
+     * @param  {Object} question    Question.
      * @param  {Object} prevAnswers Previous answers.
      * @param  {Object} newAnswers  New answers.
      * @return {Boolean}            True if same, false otherwise.
      */
-    self.isSameResponse = function(prevAnswers, newAnswers) {
+    self.isSameResponse = function(question, prevAnswers, newAnswers) {
         // For now we don't support attachments so we only compare the answer.
         return $mmUtil.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer');
     };

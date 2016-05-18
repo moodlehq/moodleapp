@@ -447,13 +447,16 @@ angular.module('mm.core.question')
     /**
      * Check if an answer is extra data like sequencecheck or certainty.
      *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestion#isExtraAnswer
      * @param  {String}  name Answer name.
      * @return {Boolean}      True if extra data, false otherwise.
      */
     self.isExtraAnswer = function(name) {
         // Maybe the name still has the prefix.
         name = self.removeQuestionPrefix(name);
-        return name[0] == '-' || name == ':';
+        return name[0] == '-' || name[0] == ':';
     };
 
     /**
