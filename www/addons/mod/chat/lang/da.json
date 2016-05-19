@@ -7,12 +7,12 @@
     "errorwhilegettingchatusers": "Fejl ved indhentning af chatbrugere.",
     "errorwhileretrievingmessages": "Fejl ved indhentning af beskeder fra serveren.",
     "errorwhilesendingmessage": "Fejl ved afsendelse af besked.",
-    "messagebeepsyou": "{{$a}} har lige bippet dig!",
-    "messageenter": "{{$a}} er lige kommet til",
+    "messagebeepsyou": "{{$a}} har netop beeped dig.",
+    "messageenter": "{{$a}} er netop kommet på chatten",
     "messageexit": "{{$a}} har forladt chatten",
     "mustbeonlinetosendmessages": "Du skal være online for at sende beskeder",
     "nomessages": "Ingen beskeder endnu",
     "send": "Send",
-    "sessionstart": "Chatsessionen vil begynde om: {{$a}}",
+    "sessionstart": "Den næste chat session starter om {{$a}}",
     "talk": "Tal"
 }

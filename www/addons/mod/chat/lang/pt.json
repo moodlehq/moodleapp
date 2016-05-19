@@ -8,12 +8,12 @@
     "errorwhilegettingchatusers": "Erro ao obter os utilizadores do chat.",
     "errorwhileretrievingmessages": "Erro ao obter as mensagens do servidor.",
     "errorwhilesendingmessage": "Erro ao enviar a mensagem.",
-    "messagebeepsyou": "{{$a}} acabou de o chamar!",
-    "messageenter": "{{$a}} acabou de entrar neste chat",
-    "messageexit": "{{$a}} acabou de sair deste chat",
+    "messagebeepsyou": "{{$a}} acabou de chamá-lo!",
+    "messageenter": "{{$a}} acabou de entrar na sala de chat",
+    "messageexit": "{{$a}} acabou de sair da sala de chat",
     "mustbeonlinetosendmessages": "Tem de estar online para enviar mensagens",
     "nomessages": "Ainda não há mensagens",
     "send": "Enviar",
-    "sessionstart": "A próxima sessão de chat irá iniciar em: {{$a}}",
+    "sessionstart": "A próxima sessão de chat irá começar em {{$a}}",
     "talk": "Falar"
 }

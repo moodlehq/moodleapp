@@ -8,12 +8,12 @@
     "errorwhilegettingchatusers": "Erro ao obter os usuários de bate-papo.",
     "errorwhileretrievingmessages": "Erro ao recuperar as mensagens do servidor.",
     "errorwhilesendingmessage": "Erro ao enviar a mensagem.",
-    "messagebeepsyou": "{{$a}} está bipando você!",
-    "messageenter": "{{$a}} entrou no chat",
-    "messageexit": "{{$a}} abandonou este chat",
+    "messagebeepsyou": "{{$a}} acaba de bipar você!",
+    "messageenter": "{{$a}} acaba de entrar neste bate-papo",
+    "messageexit": "{{$a}} deixou este bate-papo",
     "mustbeonlinetosendmessages": "Você deve estar online para enviar mensagens",
     "nomessages": "Nenhuma mensagem ainda",
     "send": "Enviar",
-    "sessionstart": "A próxima sessão de chat irá começar em {{$a}}",
+    "sessionstart": "A próxima sessão de chat vai começar em {{$a}}",
     "talk": "Falar"
 }

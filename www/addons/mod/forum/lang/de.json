@@ -6,7 +6,7 @@
     "couldnotadd": "Der Beitrag wurde wegen eines Fehlers nicht hinzugefügt.",
     "discussionsubscription": "Themenabonnement",
     "erroremptymessage": "Die Mitteilung darf nicht leer sein.",
-    "erroremptysubject": "Der Betreff darf nicht leer sein.",
+    "erroremptysubject": "Der Nachrichtenbetreff darf nicht leer sein.",
     "errorgetforum": "Fehler beim Emfang der Forumsdaten",
     "errorgetgroups": "Fehler beim Lesen der Gruppenenstellungen",
     "forumnodiscussionsyet": "Keine Themen im Forum",

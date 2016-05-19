@@ -6,7 +6,7 @@
     "couldnotadd": "Kunne ikke tilføje dit indlæg pga. en ukendt fejl",
     "discussionsubscription": "Abonnement på tråd",
     "erroremptymessage": "Indlægget kan ikke være tomt.",
-    "erroremptysubject": "Indlæggets emne kan ikke være tomt.",
+    "erroremptysubject": "Indlægsemne kan ikke være tomt",
     "errorgetforum": "Fejl ved indhentning af forumdata.",
     "errorgetgroups": "Fejl ved indhentning af gruppeindstillinger.",
     "forumnodiscussionsyet": "Der er endnu ingen diskussionsemner i dette forum.",

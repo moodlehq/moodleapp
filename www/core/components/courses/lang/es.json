@@ -1,15 +1,21 @@
 {
+    "confirmselfenrol": "¿Está seguro que desea auto-matricularse en este curso?",
     "enrolme": "Matricularme",
+    "errorloadcourses": "Se ha producido un error cargando los cursos.",
+    "errorsearching": "Se ha producido un error durante la búsqueda.",
+    "errorselfenrol": "Se ha producido un error durante la auto-matriculación.",
     "filter": "Filtro",
     "filtermycourses": "Filtrar mis cursos",
     "frontpage": "Página Principal",
     "mycourses": "Mis cursos",
     "nocourses": "No hay información del curso para mostrar.",
-    "nosearchresults": "La búsqueda no produjo resultados",
-    "notenroled": "Usted no está matriculado en este curso",
+    "nosearchresults": "No hay resultados para su búsqueda",
+    "notenroled": "No está inscrito en este curso",
+    "notenrollable": "No puede auto-matricularse en este curso.",
     "password": "Clave",
     "search": "Buscar",
     "searchcourses": "Buscar cursos",
+    "searchcoursesadvice": "Puede utilizar el botón de buscar cursos para acceder como invitado o auto-matricularse en los cursos que lo permitan.",
     "selfenrolment": "Auto-matriculación",
     "totalcoursesearchresults": "Total de cursos: {{$a}}"
 }

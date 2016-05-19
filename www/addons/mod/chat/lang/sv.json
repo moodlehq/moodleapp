@@ -8,12 +8,12 @@
     "errorwhilegettingchatusers": "Fel vid vid hämtning av chattanvändare",
     "errorwhileretrievingmessages": "Fel vid hämtning av meddelanden från servern",
     "errorwhilesendingmessage": "Fel när meddelandet skickades",
-    "messagebeepsyou": "{{$a}} har just skickat en pipsignal till Dig",
-    "messageenter": "{{$a}} har precis kommit in i detta direktsamtal",
-    "messageexit": "{{$a}} har lämnat det här direktsamtalet",
+    "messagebeepsyou": "{{$a}} has just beeped you!",
+    "messageenter": "{{$a}} har just gått in i denna chatt",
+    "messageexit": "{{$a}} har lämnat chatten",
     "mustbeonlinetosendmessages": "Du måste vara online för att skicka meddelanden",
     "nomessages": "Inga meddelanden än",
     "send": "Skicka",
-    "sessionstart": "Sessionen för direktsamtal kommer att starta inom: {{$a}}",
+    "sessionstart": "Nästa chatt kommer att starta i {{$a}}",
     "talk": "Tala"
 }

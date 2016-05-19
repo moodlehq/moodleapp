@@ -16,7 +16,7 @@
     "displayformat": "Formát zobrazení",
     "enabledebugging": "Povolit ladící informace",
     "enabledownloadsection": "Povolit stahování sekcí",
-    "enabledownloadsectiondescription": "Zakažte tuto možnost zrychlit načítání sekce kurzu.",
+    "enabledownloadsectiondescription": "Zákazem této možnosti zrychlíte načítání sekcí kurzu.",
     "enablesyncwifi": "Umožnit synchronizaci pouze na Wi-Fi",
     "errordeletesitefiles": "Chyba při odstraňování souborů stránek.",
     "errorsyncsite": "Chyba synchronizace dat stránek, zkontrolujte své připojení k internetu a zkuste to znovu.",

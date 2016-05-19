@@ -6,7 +6,7 @@
     "couldnotadd": "Non è possibile aggiungere l'intervento a causa di un errore sconosciuto.",
     "discussionsubscription": "Sottoscrizione della discussione",
     "erroremptymessage": "Il corpo del messaggio non può essere vuoto",
-    "erroremptysubject": "L'oggetto non può essere vuoto",
+    "erroremptysubject": "L'oggetto dell'intervento non può essere vuoto",
     "errorgetforum": "Si è verificato un errore durante la ricezione dei dati del forum.",
     "errorgetgroups": "Si è verificato un errore durante la ricezione delle impostazioni gruppo.",
     "forumnodiscussionsyet": "In questo forum non sono presenti discussioni",

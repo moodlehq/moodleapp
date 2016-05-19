@@ -9,11 +9,11 @@
     "errorwhileretrievingmessages": "Chyba při načítání zpráv ze serveru.",
     "errorwhilesendingmessage": "Chyba při odeslání zprávy.",
     "messagebeepsyou": "{{$a}} vás prozvání!",
-    "messageenter": "{{$a}} právě vstoupil(a) do tohoto chatu",
-    "messageexit": "{{$a}} opustil(a) tento chat",
+    "messageenter": "{{$a}} právě vstoupil na tento chat",
+    "messageexit": "{{$a}} opustil tento chat",
     "mustbeonlinetosendmessages": "Pro odesílání zpráv musíte být online",
     "nomessages": "Zatím žádné zprávy",
     "send": "Odeslat",
-    "sessionstart": "Další chatování začne v {{$a}}",
+    "sessionstart": "Další sezení chatu začne v {{$a}}",
     "talk": "Diskuse"
 }

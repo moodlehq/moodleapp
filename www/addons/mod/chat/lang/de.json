@@ -8,12 +8,12 @@
     "errorwhilegettingchatusers": "Fehler beim Lesen der Personen im Chat",
     "errorwhileretrievingmessages": "Fehler beim Empfangen der Nachrichten vom Server",
     "errorwhilesendingmessage": "Fehler beim Senden der Nachricht",
-    "messagebeepsyou": "{{$a}} hat Sie angepiepst!",
-    "messageenter": "{{$a}} hat den Chat gerade betreten",
+    "messagebeepsyou": "{{$a}} hat Ihnen ein Beep gesendet!",
+    "messageenter": "{{$a}} hat den Chat betreten",
     "messageexit": "{{$a}} hat den Chat verlassen",
     "mustbeonlinetosendmessages": "Sie müssen online sein, um Nachrichten zu senden",
     "nomessages": "Bisher keine Mitteilungen",
     "send": "Senden",
-    "sessionstart": "Nächster Chat läuft in: {{$a}}",
+    "sessionstart": "Der nächste Chat beginnt in {{$a}}",
     "talk": "Sprechen"
 }

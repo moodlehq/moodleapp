@@ -6,7 +6,7 @@
     "couldnotadd": "Det gick inte att lägga till Ditt inlägg på grund av okänt fel.",
     "discussionsubscription": "Diskussions prenumeration",
     "erroremptymessage": "Meddelandet i inlägget kan inte vara tomt",
-    "erroremptysubject": "Ämnesrubriken för inlägget kan inte vara tom.",
+    "erroremptysubject": "Rubriken kan inte vara tom",
     "errorgetforum": "Fel att få forum innehåll",
     "errorgetgroups": "Fel vid hämtning av gruppinställningar",
     "forumnodiscussionsyet": "Det finns inga diskussionsämnen ännu i detta forum.",
