@@ -575,9 +575,10 @@ angular.module('mm.core')
      */
     self.logout = function() {
         currentSite = undefined;
-        $mmEvents.trigger(mmCoreEventLogout);
-        return $mmApp.getDB().remove(mmCoreCurrentSiteStore, 1);
-    }
+        return $mmApp.getDB().remove(mmCoreCurrentSiteStore, 1).finally(function() {
+            $mmEvents.trigger(mmCoreEventLogout);
+        });
+    };
 
     /**
      * Restores the session to the previous one so the user doesn't has to login everytime the app is started.
