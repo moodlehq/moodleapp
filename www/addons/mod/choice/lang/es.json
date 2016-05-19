@@ -1,6 +1,7 @@
 {
     "cannotsubmit": "Lo lamentamos, se ha producido un error con el envío de su respuesta. Por favor inténtelo de nuevo.",
     "choiceoptions": "Opciones de la Consulta",
+    "errorgetchoice": "Se ha producido un error recuperando los datos de la consulta.",
     "expired": "Lo sentimos, esta actividad se cerró el {{$a}} y ya no está disponible",
     "full": "(Lleno)",
     "noresultsviewable": "Los resultados no pueden verse en este momento.",

@@ -1,0 +1,10 @@
+{
+    "answer": "Respuesta",
+    "complete": "Completado",
+    "correct": "Correcto",
+    "feedback": "Retroalimentación",
+    "incorrect": "Incorrecta",
+    "notanswered": "Sin contestar aún",
+    "notyetanswered": "Aún no se ha dado respuesta",
+    "partiallycorrect": "Parcialmente correcto"
+}

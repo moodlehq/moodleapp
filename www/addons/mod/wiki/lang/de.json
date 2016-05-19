@@ -1,4 +1,9 @@
 {
+    "errorloadingpage": "Fehler beim Laden der Seite",
+    "errornowikiavailable": "Kein Wiki zum Anzeigen vorhanden",
+    "gowikihome": "Zur Wiki-Startseite",
     "map": "Spezialseiten",
-    "notingroup": "Nicht in Gruppen"
+    "notingroup": "Nicht in Gruppen",
+    "subwiki": "Teilwiki",
+    "viewpage": "Seite anzeigen"
 }

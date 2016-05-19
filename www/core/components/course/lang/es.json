@@ -1,10 +1,17 @@
 {
+    "activitynotyetviewable": "Este tipo de actividad o recurso todavía no esta disponible para su visualización en la app.",
+    "activitynotyetviewablegothere": "Este tipo de actividad o recurso todavía no esta disponible para su visualización en la app, haga clic en el botón de abajo para acceder desde la web.",
     "allsections": "Todas las secciones",
     "confirmdownload": "Está a punto de descargar {{size}}. ¿Está seguro de que desea continuar?",
     "confirmdownloadsection": "Está a punto de descargar {{size}}. ¿Está seguro de que desea continuar?",
+    "confirmdownloadunknownsize": "No se puede calcular el tamaño de la descarga. ¿Está seguro que quiere descargarlo?",
     "contents": "Contenidos",
+    "couldnotloadsectioncontent": "No se ha podido cargar el contenido de la sección, por favor inténtelo más tarde.",
+    "couldnotloadsections": "No se ha podido cargar las secciones, por favor inténtelo más tarde.",
     "errordownloadingsection": "Error durante la descarga de la sección.",
+    "errorgetmodule": "Se ha producido un error recuperando los datos del módulo.",
     "gotothesite": "Ir al sitio",
+    "nocontentavailable": "No hay contenido disponible en este momento.",
     "showall": "Mostrar todo",
     "whoops": "¡Vaya!"
 }

@@ -1,0 +1,21 @@
+{
+    "attemptquiznow": "شروع آزمون",
+    "attemptstate": "وضعیت",
+    "comment": "نظر",
+    "feedback": "بازخورد",
+    "finishattemptdots": "اتمام آزمون...",
+    "grade": "نتیجه",
+    "marks": "نمرات",
+    "noquestions": "در این تالار هیچ سؤالی مطرح نشده است",
+    "preview": "پیش‌نمایش",
+    "question": "سؤال",
+    "review": "مرور",
+    "reviewofpreview": "مرور پیش‌نمایش",
+    "showall": "نمایش همه {{$a}}",
+    "statefinished": "پایان یافته",
+    "statefinisheddetails": "ثبت شده در: {{$a}}",
+    "status": "وضعیت",
+    "submitallandfinish": "ثبت همه و اتمام امتحان",
+    "timeleft": "زمان باقیمانده",
+    "timetaken": "زمان صرف شده"
+}

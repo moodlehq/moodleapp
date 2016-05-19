@@ -1,0 +1,10 @@
+{
+    "activities": "Aktiviteter",
+    "duedate": "Stoppdatum/tid",
+    "evidence": "Bevis",
+    "path": "Sökväg",
+    "progress": "Kursdeltagares progression",
+    "rating": "Betygssättning/omdömen",
+    "status": "Status",
+    "template": "Mall"
+}
