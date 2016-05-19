@@ -35,7 +35,8 @@ angular.module('mm.core')
         remoteAddonCssFilename = 'styles.css',
         pathWildcardRegex = /\$ADDONPATH\$/g,
         headEl = angular.element(document.querySelector('head')),
-        loadedAddons = [];
+        loadedAddons = [],
+        loadedModules = [];
 
     /**
      * Download a remote addon if it's not downloaded already.
@@ -104,12 +105,12 @@ angular.module('mm.core')
      * @ngdoc method
      * @name $mmAddonManager#downloadRemoteAddons
      * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved when done. Returns the list of downloaded addons.
+     * @return {Promise}         Promise resolved when done. Returns the list of downloaded addons (object).
      */
     self.downloadRemoteAddons = function(siteId) {
         siteId = siteId || $mmSite.getId();
 
-        var downloaded = [],
+        var downloaded = {},
             preSets = {};
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -120,7 +121,7 @@ angular.module('mm.core')
 
                 angular.forEach(data.plugins, function(addon) {
                     promises.push(self.downloadRemoteAddon(addon, siteId).then(function() {
-                        downloaded.push(addon);
+                        downloaded[addon.addon]= addon;
                     }));
                 });
 
@@ -261,15 +262,97 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmAddonManager#loadRemoteAddons
-     * @param  {Object[]} addons Addons to load.
-     * @return {Promise}         Promise resolved when all have been loaded.
+     * @param  {Object} addons Addons to load.
+     * @return {Promise}       Promise resolved when all have been loaded.
      */
     self.loadRemoteAddons = function(addons) {
         var promises = [];
+
+        // Update the list of loaded modules in the app.
+        loadedModules = $ocLazyLoad.getModules();
+
+        // Load each addon if all dependencies are found. Addons will be loaded in dependency order.
         angular.forEach(addons, function(addon) {
-            promises.push(self.loadRemoteAddon(addon));
+            self.setRemoteAddonLoadPromise(addons, addon);
+            if (addon.loadPromise) {
+                promises.push(addon.loadPromise);
+            }
         });
+
         return $mmUtil.allPromises(promises);
+    };
+
+    /**
+     * Set the promise to load a remote addon. The promise will be stored in 'addon.loadPromise'.
+     * This promise will depend on the dependencies promises, so an addon won't be loaded until all dependencies are.
+     * If a dependency isn't found then 'addon.loadPromise' will be set to false.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmAddonManager#setRemoteAddonLoadPromise
+     * @param {Object[]} addons       List of all addons to load.
+     * @param {Object} addon          Addon.
+     * @param {String[]} [dependants] List of addons that depend on this addon. Will be built on recursive calls.
+     *                                This is to prevent circular dependencies.
+     * @return {Void}
+     */
+    self.setRemoteAddonLoadPromise = function(addons, addon, dependants) {
+        if (typeof addon.loadPromise != 'undefined') {
+            // Already set.
+            return;
+        }
+
+        dependants = dependants || [];
+
+        var promises = [],
+            stop = false;
+
+        angular.forEach(addon.dependencies, function(dependency) {
+            if (stop) {
+                // A dependency wasn't found, no need to calculate it any further.
+                return;
+            }
+
+            if (dependency == addon.addon) {
+                // A plugin can't depend on itself, ignore it.
+                return;
+            }
+
+            if (dependants.indexOf(dependency) != -1) {
+                // Circular dependency! Stop.
+                stop = true;
+                return;
+            }
+
+            if (!addons[dependency]) {
+                // Dependency not found in remote addons. Search in app addons.
+                if (dependency.indexOf('mm.addons.') == -1) {
+                    dependency = 'mm.addons.' + dependency;
+                }
+
+                if (loadedModules.indexOf(dependency) == -1) {
+                    // Not found in app either.
+                    stop = true;
+                }
+            } else {
+                // Set the load promise of the dependency if it hasn't been set already.
+                self.setRemoteAddonLoadPromise(addons, addons[dependency], dependants.concat(addon.addon));
+                if (!addons[dependency].loadPromise) {
+                    // Dependency cannot be loaded, don't load this addon either.
+                    stop = true;
+                } else {
+                    promises.push(addons[dependency].loadPromise);
+                }
+            }
+        });
+
+        if (!stop) {
+            addon.loadPromise = $q.all(promises).then(function() {
+                return self.loadRemoteAddon(addon);
+            });
+        } else {
+            addon.loadPromise = false;
+        }
     };
 
     /**
