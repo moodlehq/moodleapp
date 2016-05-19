@@ -37,10 +37,13 @@ angular.module('mm.addons.mod_quiz')
     /**
      * Check if a preflight check is required.
      *
+     * @param  {Object} quiz      Quiz.
      * @param  {Object} [attempt] Attempt to continue. Not defined if starting a new attempt.
+     * @param  {Boolean} prefetch True if prefetching, false if attempting the quiz.
+     * @param  {String} [siteId]  Site ID. If not defined, current site.
      * @return {Boolean}          True if preflight check required.
      */
-    self.isPreflightCheckRequired = function(attempt) {
+    self.isPreflightCheckRequired = function(quiz, attempt, prefetch, siteId) {
         return false;
     };
 

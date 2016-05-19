@@ -47,7 +47,7 @@ angular.module('mm.core')
      *                             - component (String) Handler's component.
      *                             - getDownloadSize(module, courseid) (Number|Promise) Get the download size of a module.
      *                             - isEnabled() (Boolean|Promise) Whether or not the handler is enabled on a site level.
-     *                             - prefetch(module, courseid) (Promise) Prefetches a module.
+     *                             - prefetch(module, courseid, single) (Promise) Prefetches a module.
      *                             - (Optional) getFiles(module, courseid) (Object[]|Promise) Get list of files. If not defined,
      *                                                                      we'll assume they're in module.contents.
      *                             - (Optional) determineStatus(status) (String) Returns status to show based on current. E.g. for

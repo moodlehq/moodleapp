@@ -208,7 +208,7 @@ angular.module('mm.addons.mod_quiz')
                         angular.forEach(quizzes, function(quiz) {
                             if (!$mmaModQuiz.isQuizBeingPlayed(quiz.id, siteId)) {
                                 promises.push($mmaModQuiz.getQuizById(quiz.courseid, quiz.id, siteId).then(function(quiz) {
-                                    return self.syncQuizIfNeeded(quiz, siteId).then(function(warnings) {
+                                    return self.syncQuizIfNeeded(quiz, false, siteId).then(function(warnings) {
                                         if (warnings && warnings.length) {
                                             // Store the warnings to show them when the user opens the quiz.
                                             return self.setQuizSyncWarnings(quiz.id, warnings, siteId).then(function() {
@@ -243,15 +243,16 @@ angular.module('mm.addons.mod_quiz')
      * @module mm.addons.mod_quiz
      * @ngdoc method
      * @name $mmaModQuizSync#syncQuizIfNeeded
-     * @param {Object} quiz     Quiz downloaded.
-     * @param {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}        Promise resolved when the quiz is synced or if it doesn't need to be synced.
+     * @param {Object} quiz          Quiz.
+     * @param {Boolean} askPreflight True if we should ask for preflight data if needed, false otherwise.
+     * @param {String} [siteId]      Site ID. If not defined, current site.
+     * @return {Promise}             Promise resolved when the quiz is synced or if it doesn't need to be synced.
      */
-    self.syncQuizIfNeeded = function(quiz, siteId) {
+    self.syncQuizIfNeeded = function(quiz, askPreflight, siteId) {
         siteId = siteId || $mmSite.getId();
         return self.getQuizSyncTime(quiz.id, siteId).then(function(time) {
             if (new Date().getTime() - mmaModQuizSyncTime >= time) {
-                return self.syncQuiz(quiz, siteId);
+                return self.syncQuiz(quiz, askPreflight, siteId);
             }
         });
     };
@@ -263,11 +264,12 @@ angular.module('mm.addons.mod_quiz')
      * @module mm.addons.mod_quiz
      * @ngdoc method
      * @name $mmaModQuizSync#syncQuiz
-     * @param  {Object} quiz     Quiz.
-     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @param  {Object} quiz         Quiz.
+     * @param {Boolean} askPreflight True if we should ask for preflight data if needed, false otherwise.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
      * @return {Promise}         [description]
      */
-    self.syncQuiz = function(quiz, siteId) {
+    self.syncQuiz = function(quiz, askPreflight, siteId) {
         siteId = siteId || $mmSite.getId();
 
         var warnings = [],
@@ -276,9 +278,7 @@ angular.module('mm.addons.mod_quiz')
             deleted = false,
             offlineAttempt,
             onlineAttempt,
-            preflightData = {
-                confirmdatasaved: 1
-            };
+            preflightData = {};
 
         if (syncPromises[siteId] && syncPromises[siteId][quiz.id]) {
             // There's already a sync ongoing for this quiz, return the promise.
@@ -351,11 +351,16 @@ angular.module('mm.addons.mod_quiz')
                     answers = $mmQuestion.convertAnswersArrayToObject(answers);
                     offlineQuestions = $mmaModQuizOffline.classifyAnswersInQuestions(answers);
 
-                    // Now get the online questions data.
-                    pages = $mmaModQuiz.getPagesFromLayoutAndQuestions(onlineAttempt.layout, offlineQuestions);
+                    // We're going to need preflightData, get it.
+                    return $mmaModQuiz.getQuizAccessInformation(quiz.id, false, true, siteId).then(function(info) {
+                        return $mmaModQuiz.gatherPreflightData(quiz, info, onlineAttempt,
+                                                preflightData, siteId, askPreflight, 'mm.settings.synchronization');
+                    }).then(function() {
+                        // Now get the online questions data.
+                        pages = $mmaModQuiz.getPagesFromLayoutAndQuestions(onlineAttempt.layout, offlineQuestions);
 
-                    return $mmaModQuiz.getAllQuestionsData(onlineAttempt, preflightData, pages, false, true, siteId)
-                            .then(function(onlineQuestions) {
+                        return $mmaModQuiz.getAllQuestionsData(onlineAttempt, preflightData, pages, false, true, siteId);
+                    }).then(function(onlineQuestions) {
                         // Validate questions, discarding the offline answers that can't be synchronized.
                         return self.validateQuestions(onlineAttempt.id, onlineQuestions, offlineQuestions, siteId);
                     }).then(function(discardedData) {
@@ -371,8 +376,7 @@ angular.module('mm.addons.mod_quiz')
                             }
                         }
 
-                        return $mmaModQuiz.processAttempt(quiz, onlineAttempt, answers,
-                                        preflightData, finish, false, false, siteId);
+                        return $mmaModQuiz.processAttempt(quiz, onlineAttempt, answers, preflightData, finish, false, false, siteId);
                     }).then(function() {
                         // Data sent. Finish the sync.
                         return finishSync(lastAttemptId, true);

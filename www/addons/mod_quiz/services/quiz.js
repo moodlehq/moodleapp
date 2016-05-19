@@ -23,12 +23,14 @@ angular.module('mm.addons.mod_quiz')
  */
 .factory('$mmaModQuiz', function($log, $mmSite, $mmSitesManager, $q, $translate, $mmUtil, $mmText, $mmQuestionDelegate,
             $mmaModQuizAccessRulesDelegate, $mmQuestionHelper, $mmFilepool, $mmaModQuizOnline, $mmaModQuizOffline, $state,
-            mmaModQuizComponent, mmCoreDownloaded, mmCoreDownloading, mmCoreNotDownloaded) {
+            mmaModQuizComponent, mmCoreDownloaded, mmCoreDownloading, mmCoreNotDownloaded, $injector, $ionicModal,
+            $timeout, $rootScope) {
 
     $log = $log.getInstance('$mmaModQuiz');
 
     var self = {},
-        blockedQuizzes = {};
+        blockedQuizzes = {},
+        $mmaModQuizSync; // We'll inject it using $injector to prevent circular dependencies.
 
     // Constants.
 
@@ -66,6 +68,103 @@ angular.module('mm.addons.mod_quiz')
             blockedQuizzes[siteId] = {};
         }
         blockedQuizzes[siteId][quizId] = true;
+    };
+
+    /**
+     * Validate a preflight data or show a modal to input the preflight data if required.
+     * It calls $mmaModQuiz#startAttempt if a new attempt is needed.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#checkPreflightData
+     * @param  {Object} scope             Scope.
+     * @param  {Object} quiz              Quiz.
+     * @param  {Object} quizAccessInfo    Quiz access info returned by $mmaModQuiz#getQuizAccessInformation.
+     * @param  {Object} [attempt]         Attempt to continue. Don't pass any value if the user needs to start a new attempt.
+     * @param  {Boolean} offline          True if attempt is offline.
+     * @param  {Boolean} fromModal        True if sending data using preflight modal, false otherwise.
+     * @param  {Boolean} prefetch         True if prefetching.
+     * @param  {String} [siteId]          Site ID. If not defined, current site.
+     * @return {Promise}                  Promise resolved when the preflight data is validated.
+     */
+    self.checkPreflightData = function(scope, quiz, quizAccessInfo, attempt, offline, fromModal, prefetch, siteId) {
+        var promise,
+            rules = quizAccessInfo.activerulenames;
+
+        return $mmaModQuizAccessRulesDelegate.isPreflightCheckRequired(rules, quiz, attempt, prefetch, siteId)
+                .then(function(preflightRequired) {
+
+            if (preflightRequired && !fromModal) {
+                // Preflight check is required but no preflightData has been sent. Show a modal with the preflight form.
+                return self.initPreflightModal(scope, quiz, quizAccessInfo, attempt, prefetch, siteId).catch(function(error) {
+                    return $q.reject(error || 'Error initializing preflight modal.');
+                }).then(function() {
+                    scope.modal.show();
+                    return $q.reject();
+                });
+            }
+
+            // Hide modal if needed.
+            scope.modal && scope.modal.hide();
+
+            // Get some fixed preflight data from access rules (data that doesn't require user interaction).
+            return $mmaModQuizAccessRulesDelegate.getFixedPreflightData(rules, quiz, attempt, scope.preflightData, prefetch, siteId);
+        }).then(function() {
+            if (attempt) {
+                if (attempt.state != self.ATTEMPT_OVERDUE && !attempt.finishedOffline) {
+                    // We're continuing an attempt. Call getAttemptData to validate the preflight data.
+                    var page = attempt.currentpage;
+                    promise = self.getAttemptData(attempt.id, page, scope.preflightData, offline, true).then(function() {
+                        if (offline) {
+                            // Get current page stored in local.
+                            return $mmaModQuizOffline.getAttemptById(attempt.id).then(function(localAttempt) {
+                                attempt.currentpage = localAttempt.currentpage;
+                            }).catch(function() {
+                                // No local data.
+                            });
+                        }
+                    });
+                } else {
+                    // Attempt is overdue or finished in offline, we can only see the summary.
+                    // Call getAttemptSummary to validate the preflight data.
+                    promise = self.getAttemptSummary(attempt.id, scope.preflightData, offline, true);
+                }
+            } else {
+                // We're starting a new attempt, call startAttempt.
+                promise = self.startAttempt(quiz.id, scope.preflightData).then(function(att) {
+                    attempt = att;
+                });
+            }
+
+            return promise.then(function() {
+                // Preflight data validated.
+                $mmaModQuizAccessRulesDelegate.notifyPreflightCheckPassed(rules, quiz, attempt,
+                                                                scope.preflightData, prefetch, siteId);
+                return attempt;
+            }).catch(function(error) {
+                if ($mmUtil.isWebServiceError(error)) {
+                    // The WebService returned an error, assume the preflight failed.
+                    $mmaModQuizAccessRulesDelegate.notifyPreflightCheckFailed(rules, quiz, attempt,
+                                                                scope.preflightData, prefetch, siteId);
+                }
+
+                if (prefetch) {
+                    return $q.reject(error);
+                } else {
+                    // Show modal again. We need to wait a bit because if it's called too close to .hide then it won't be shown.
+                    $timeout(function() {
+                        scope.modal && scope.modal.show();
+                    }, 500);
+
+                    if (error) {
+                        $mmUtil.showErrorModal(error);
+                    } else {
+                        $mmUtil.showErrorModal('mm.core.error', true);
+                    }
+                    return $q.reject();
+                }
+            });
+        });
     };
 
     /**
@@ -236,7 +335,7 @@ angular.module('mm.addons.mod_quiz')
             var params = {
                     attemptid: attemptId,
                     page: page,
-                    preflightdata: $mmUtil.objectToArrayOfObjects(preflightData, 'name', 'value')
+                    preflightdata: $mmUtil.objectToArrayOfObjects(preflightData, 'name', 'value', true)
                 },
                 preSets = {
                     cacheKey: getAttemptDataCacheKey(attemptId, page)
@@ -470,7 +569,7 @@ angular.module('mm.addons.mod_quiz')
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     attemptid: attemptId,
-                    preflightdata: $mmUtil.objectToArrayOfObjects(preflightData, 'name', 'value')
+                    preflightdata: $mmUtil.objectToArrayOfObjects(preflightData, 'name', 'value', true)
                 },
                 preSets = {
                     cacheKey: getAttemptSummaryCacheKey(attemptId)
@@ -1252,6 +1351,81 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Init a preflight modal, adding it to the scope.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#initPreflightModal
+     * @param  {Object} scope          Scope.
+     * @param  {Object} quiz           Quiz.
+     * @param  {Object} quizAccessInfo Quiz access info returned by $mmaModQuiz#getQuizAccessInformation.
+     * @param  {Object} [attempt]      Attempt to continue. Don't pass any value if the user needs to start a new attempt.
+     * @param  {Boolean} prefetch      True if prefetching.
+     * @param  {String} [siteId]       Site ID. If not defined, current site.
+     * @return {Promise}               Promise resolved when the modal is initialized.
+     */
+    self.initPreflightModal = function(scope, quiz, quizAccessInfo, attempt, prefetch, siteId) {
+        var promises = [],
+            notSupported = [],
+            directives = [],
+            handlers = [];
+
+        angular.forEach(quizAccessInfo.activerulenames, function(rule) {
+            var handler = $mmaModQuizAccessRulesDelegate.getAccessRuleHandler(rule);
+            if (handler) {
+                promises.push($q.when(handler.isPreflightCheckRequired(quiz, attempt, prefetch, siteId)).then(function(required) {
+                    if (required) {
+                        handlers.push(handler);
+                        directives.push(handler.getPreflightDirectiveName());
+                    }
+                }));
+            } else {
+                notSupported.push(rule);
+            }
+        });
+
+        if (notSupported.length) {
+            var error = $translate.instant('mma.mod_quiz.errorrulesnotsupported') + ' ' + JSON.stringify(notSupported);
+            return $q.reject(error);
+        }
+
+        return $mmUtil.allPromises(promises).catch(function() {
+            // Ignore errors.
+        }).then(function() {
+            var promise;
+
+            scope.accessRulesDirectives = directives;
+
+            if (scope.modal) {
+                // The modal is already created.
+                promise = $q.when(scope.modal);
+            } else {
+                promise = $ionicModal.fromTemplateUrl('addons/mod_quiz/templates/preflight-modal.html', {
+                    scope: scope,
+                    animation: 'slide-in-up'
+                });
+            }
+
+            return promise.then(function(modal) {
+                scope.modal = modal;
+
+                scope.closeModal = function() {
+                    modal.hide();
+                    // Clean the preflight data.
+                    handlers.forEach(function(handler) {
+                        if (typeof handler.cleanPreflight == 'function') {
+                            handler.cleanPreflight(scope.preflightData);
+                        }
+                    });
+                };
+                scope.$on('$destroy', function() {
+                    modal.remove();
+                });
+            });
+        });
+    };
+
+    /**
      * Invalidates all the data related to a certain quiz.
      *
      * @module mm.addons.mod_quiz
@@ -1888,15 +2062,19 @@ angular.module('mm.addons.mod_quiz')
      * @module mm.addons.mod_quiz
      * @ngdoc method
      * @name $mmaModQuiz#prefetch
-     * @param {Object} module   The module object returned by WS.
-     * @param {Number} courseId Course ID the module belongs to.
-     * @return {Promise}        Promise resolved when the prefetch is finished. Data returned is not reliable.
+     * @param {Object} module        The module object returned by WS.
+     * @param {Number} courseId      Course ID the module belongs to.
+     * @param {Boolean} askPreflight True if we should ask for preflight data if needed, false otherwise.
+     * @return {Promise}             Promise resolved when the prefetch is finished. Data returned is not reliable.
      */
-    self.prefetch = function(module, courseId) {
+    self.prefetch = function(module, courseId, askPreflight) {
         var siteId = $mmSite.getId(),
             attempts,
             startAttempt,
-            quiz;
+            quiz,
+            quizAccessInfo,
+            preflightData = {},
+            scope;
 
         // Mark package as downloading.
         return $mmFilepool.storePackageStatus(siteId, mmaModQuizComponent, module.id, mmCoreDownloading).then(function() {
@@ -1908,7 +2086,9 @@ angular.module('mm.addons.mod_quiz')
             var promises = [];
 
             // Get user attempts and data not related with attempts.
-            promises.push(self.getQuizAccessInformation(quiz.id, false, true, siteId));
+            promises.push(self.getQuizAccessInformation(quiz.id, false, true, siteId).then(function(info) {
+                quizAccessInfo = info;
+            }));
             promises.push(self.getQuizRequiredQtypes(quiz.id, true, siteId));
             promises.push(self.getUserAttempts(quiz.id, 'all', true, false, true, siteId).then(function(atts) {
                 attempts = atts;
@@ -1916,12 +2096,18 @@ angular.module('mm.addons.mod_quiz')
 
             return $q.all(promises);
         }).then(function() {
-            // Start a new attempt if needed.
-            var lastAttempt = attempts[attempts.length - 1];
-            startAttempt = !attempts.length || self.isAttemptFinished(lastAttempt.state);
+            var attempt = attempts[attempts.length - 1];
+            if (!attempt || self.isAttemptFinished(attempt.state)) {
+                startAttempt = true;
+                attempt = undefined;
+            }
 
-            return startAttempt ? self.startAttempt(quiz.id, {}, false, siteId) : $q.when();
-        }).then(function() {
+            // Get the preflight data.
+            return self.gatherPreflightData(quiz, quizAccessInfo, attempt, preflightData, siteId, askPreflight, 'mm.core.download');
+
+        }).then(function(scp) {
+            scope = scp;
+
             promises = [];
 
             if (startAttempt) {
@@ -1946,7 +2132,7 @@ angular.module('mm.addons.mod_quiz')
             // We have quiz data, now we'll get specific data for each attempt.
             promises = [];
             angular.forEach(attempts, function(attempt) {
-                promises.push(self.prefetchAttempt(quiz, attempt, siteId));
+                promises.push(self.prefetchAttempt(quiz, attempt, preflightData, siteId));
             });
 
             return $q.all(promises);
@@ -1955,13 +2141,103 @@ angular.module('mm.addons.mod_quiz')
             var revision = self.getQuizRevisionFromAttempts(attempts),
                 timemod = self.getQuizTimemodifiedFromAttempts(attempts);
             return $mmFilepool.storePackageStatus(siteId, mmaModQuizComponent, module.id, mmCoreDownloaded, revision, timemod);
+        }).then(function() {
+            // If there's nothing to send, mark the quiz as synchronized.
+            // We don't return the promises because it should be fast and we don't want to block the user for this.
+            if (!$mmaModQuizSync) {
+                $mmaModQuizSync = $injector.get('$mmaModQuizSync');
+            }
+            $mmaModQuizSync.hasDataToSync(quiz.id, siteId).then(function(hasData) {
+                if (!hasData) {
+                    $mmaModQuizSync.setQuizSyncTime(quiz.id, siteId);
+                }
+            });
         }).catch(function(error) {
             // Error prefetching, go back to previous status and reject the promise.
             return $mmFilepool.setPackagePreviousStatus(siteId, mmaModQuizComponent, module.id).then(function() {
                 return $q.reject(error);
             });
+        }).finally(function() {
+            if (scope) {
+                scope.$destroy();
+            }
         });
     };
+
+    /**
+     * Gather some preflight data for an attempt.
+     *
+     * @param  {Object} quiz           Quiz.
+     * @param  {Object} quizAccessInfo Quiz access info returned by $mmaModQuiz#getQuizAccessInformation.
+     * @param  {Object} [attempt]      Attempt to continue. Don't pass any value if the user needs to start a new attempt.
+     * @param  {Object} preflightData  Object where to store the preflight data.
+     * @param  {String} [siteId]       Site ID. If not defined, current site.
+     * @param  {Boolean} askPreflight  True if we should ask for preflight data if needed, false otherwise.
+     * @param  {String} [modalTitle]   Lang key of the title to set to preflight modal (e.g. 'mma.mod_quiz.startattempt').
+     * @return {Promise}               Promise resolved when gathered. Resolve param is a scope if it was needed to create one.
+     *                                 Please make sure to destroy the scope once you're done.
+     */
+    self.gatherPreflightData = function(quiz, quizAccessInfo, attempt, preflightData, siteId, askPreflight, modalTitle) {
+        if (askPreflight) {
+            // Check if the quiz requires preflight data.
+            scope = $rootScope.$new();
+            scope.preflightData = preflightData;
+            scope.preflightModalTitle = modalTitle;
+
+            return getPreflightDataForPrefetch(scope, quiz, quizAccessInfo, attempt, false, siteId).then(function() {
+                return scope;
+            });
+        } else {
+            // Get some fixed preflight data from access rules (data that doesn't require user interaction).
+            var rules = quizAccessInfo.activerulenames;
+            return $mmaModQuizAccessRulesDelegate.getFixedPreflightData(rules, quiz, attempt, preflightData, true, siteId)
+                    .then(function() {
+                // Don't return anything.
+            });
+        }
+    };
+
+    /**
+     * Convenience function to get preflight data for prefetch.
+     *
+     * @param  {Object} scope          Scope.
+     * @param  {Object} quiz           Quiz.
+     * @param  {Object} quizAccessInfo Quiz access info returned by $mmaModQuiz#getQuizAccessInformation.
+     * @param  {Object} [attempt]      Attempt to continue. Don't pass any value if the user needs to start a new attempt.
+     * @param  {Boolean} fromModal     True if sending data using preflight modal, false otherwise.
+     * @param  {String} [siteId]       Site ID. If not defined, current site.
+     * @return {Promise}               Promise resolved when the preflight data is validated.
+     */
+    function getPreflightDataForPrefetch(scope, quiz, quizAccessInfo, attempt, fromModal, siteId) {
+        // Check if preflight data is valid or not required.
+        return self.checkPreflightData(scope, quiz, quizAccessInfo, attempt, false, fromModal, true, siteId).catch(function(error) {
+            if (error) {
+                // Something went wrong, reject.
+                return $q.reject(error);
+            } else {
+                // No preflight data provided and it's required. We need to wait for user input.
+                var deferred = $q.defer(),
+                    resolved = false;
+
+                scope.start = function() {
+                    resolved = true;
+                    // Try to validate new preflightData (chain promises).
+                    deferred.resolve(getPreflightDataForPrefetch(scope, quiz, quizAccessInfo, attempt, true, siteId));
+                };
+                scope.$on('modal.hidden', function() {
+                    if (!resolved) {
+                        deferred.reject();
+                    }
+                });
+                scope.$on('modal.removed', function() {
+                    if (!resolved) {
+                        deferred.reject();
+                    }
+                });
+                return deferred.promise;
+            }
+        });
+    }
 
     /**
      * Prefetch all WS data for an attempt.
@@ -1969,18 +2245,16 @@ angular.module('mm.addons.mod_quiz')
      * @module mm.addons.mod_quiz
      * @ngdoc method
      * @name $mmaModQuiz#prefetchAttempt
-     * @param {Object} quiz      Quiz.
-     * @param {Object} attempt   Attempt.
-     * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved when the prefetch is finished. Data returned is not reliable.
+     * @param  {Object} quiz          Quiz.
+     * @param  {Object} attempt       Attempt.
+     * @param  {Object} preflightData Preflight required data (like password).
+     * @param  {String} [siteId]      Site ID. If not defined, current site.
+     * @return {Promise}              Promise resolved when the prefetch is finished. Data returned is not reliable.
      */
-    self.prefetchAttempt = function(quiz, attempt, siteId) {
+    self.prefetchAttempt = function(quiz, attempt, preflightData, siteId) {
         var pages = self.getPagesFromLayout(attempt.layout),
             promises = [],
-            attemptGrade,
-            preflightData = {
-                confirmdatasaved: 1
-            };
+            attemptGrade;
 
         if (self.isAttemptFinished(attempt.state)) {
             // Attempt is finished, get feedback and review data.
@@ -2002,6 +2276,7 @@ angular.module('mm.addons.mod_quiz')
                 return $q.all(questionPromises);
             }));
         } else {
+
             // Attempt not finished, get data needed to continue the attempt.
             promises.push(self.getAttemptAccessInformation(quiz.id, attempt.id, false, true, siteId));
             promises.push(self.getAttemptSummary(attempt.id, preflightData, false, true, false, siteId));
@@ -2031,21 +2306,27 @@ angular.module('mm.addons.mod_quiz')
      * @module mm.addons.mod_quiz
      * @ngdoc method
      * @name $mmaModQuiz#prefetchQuizAndLastAttempt
-     * @param  {Object} quiz     Quiz.
-     * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved when done.
+     * @param  {Object} quiz         Quiz.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @param {Boolean} askPreflight True if we should ask for preflight data if needed, false otherwise.
+     * @return {Promise}             Promise resolved when done.
      */
-    self.prefetchQuizAndLastAttempt = function(quiz, siteId) {
+    self.prefetchQuizAndLastAttempt = function(quiz, siteId, askPreflight) {
         siteId = siteId || $mmSite.getId();
 
         var attempts,
             promises = [],
             component = mmaModQuizComponent,
             revision,
-            timemod;
+            timemod,
+            quizAccessInfo,
+            preflightData = {},
+            scope;
 
         // Get quiz data.
-        promises.push(self.getQuizAccessInformation(quiz.id, false, true, siteId));
+        promises.push(self.getQuizAccessInformation(quiz.id, false, true, siteId).then(function(info) {
+            quizAccessInfo = info;
+        }));
         promises.push(self.getQuizRequiredQtypes(quiz.id, true, siteId));
         promises.push(self.getCombinedReviewOptions(quiz.id, true, siteId));
         promises.push(self.getUserBestGrade(quiz.id, true, siteId));
@@ -2060,9 +2341,21 @@ angular.module('mm.addons.mod_quiz')
         promises.push(self.getAttemptAccessInformation(quiz.id, 0, false, true, siteId)); // Last attempt.
 
         return $q.all(promises).then(function() {
+            var attempt = attempts[attempts.length - 1];
+            if (!attempt) {
+                // No need to get attempt data, we don't need preflight data.
+                return;
+            }
+
+            // Get the preflight data.
+            return self.gatherPreflightData(quiz, quizAccessInfo, attempt, preflightData, siteId, askPreflight, 'mm.core.download');
+
+        }).then(function(scp) {
+            scope = scp;
+
             if (attempts && attempts.length) {
                 // Get data for last attempt.
-                return self.prefetchAttempt(quiz, attempts[attempts.length - 1], siteId);
+                return self.prefetchAttempt(quiz, attempts[attempts.length - 1], preflightData, siteId);
             }
         }).then(function() {
             // Prefetch finished, get current status to determine if we need to change it.
@@ -2077,6 +2370,10 @@ angular.module('mm.addons.mod_quiz')
                 var isLastFinished = !attempts.length || self.isAttemptFinished(attempts[attempts.length - 1].state),
                     newStatus = isLastFinished ? mmCoreNotDownloaded : mmCoreDownloaded;
                 return $mmFilepool.storePackageStatus(siteId, component, quiz.coursemodule, newStatus, revision, timemod);
+            }
+        }).finally(function() {
+            if (scope) {
+                scope.$destroy();
             }
         });
     };
@@ -2263,7 +2560,7 @@ angular.module('mm.addons.mod_quiz')
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     quizid: quizId,
-                    preflightdata: $mmUtil.objectToArrayOfObjects(preflightData, 'name', 'value'),
+                    preflightdata: $mmUtil.objectToArrayOfObjects(preflightData, 'name', 'value', true),
                     forcenew: forceNew ? 1 : 0
                 };
 

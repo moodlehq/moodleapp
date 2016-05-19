@@ -46,6 +46,7 @@ angular.module('mm.addons.mod_quiz')
     $scope.component = mmaModQuizComponent;
     $scope.quizAborted = false;
     $scope.preflightData = {};
+    $scope.preflightModalTitle = 'mma.mod_quiz.startattempt';
 
     // Convenience function to start the player.
     function start(fromModal) {
@@ -132,7 +133,7 @@ angular.module('mm.addons.mod_quiz')
     function startOrContinueAttempt(fromModal) {
         // Check preflight data and start attempt if needed.
         var att = newAttempt ? undefined : attempt;
-        return $mmaModQuizHelper.checkPreflightData($scope, quiz, quizAccessInfo, att, offline, fromModal).then(function(att) {
+        return $mmaModQuiz.checkPreflightData($scope, quiz, quizAccessInfo, att, offline, fromModal).then(function(att) {
 
             // Re-fetch attempt access information with the right attempt (might have changed because a new attempt was created).
             return $mmaModQuiz.getAttemptAccessInformation(quiz.id, att.id, offline, true).then(function(info) {
@@ -156,6 +157,10 @@ angular.module('mm.addons.mod_quiz')
                     return loadSummary();
                 }
             });
+        }).catch(function(error) {
+            if (error) {
+                return $mmaModQuizHelper.showError(error, 'mm.core.error');
+            }
         });
     }
 

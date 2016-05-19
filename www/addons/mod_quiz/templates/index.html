@@ -87,15 +87,18 @@
                     <p class="mma-mod-quiz-warning">{{ quiz.preferredbehaviour }}</p>
                 </div>
                 <!-- Synchronize button -->
-                <div class="item item-text-wrap" ng-if="buttonText && showSyncButton">
+                <div class="item item-text-wrap" ng-if="buttonText && showSyncButton && !showSpinner">
                     <p class="mma-mod-quiz-warning">{{ 'mma.mod_quiz.hasdatatosync' | translate }}</p>
                     <button class="button button-block" ng-click="sync()">{{ 'mm.settings.synchronizenow' | translate }}</button>
                 </div>
-                <div class="item" ng-if="buttonText">
+                <div class="item" ng-if="buttonText && !showSpinner">
                     <a class="button button-block" ng-click="attemptQuiz()">{{ buttonText | translate }}</a>
                 </div>
                 <div class="item" ng-if="!buttonText && ((unsupportedQuestions && unsupportedQuestions.length) || (unsupportedRules && unsupportedRules.length) || behaviourSupported === false)">
                     <a class="button button-block" ng-href="{{moduleUrl}}" mm-link>{{ 'mm.core.openinbrowser' | translate }}</a>
+                </div>
+                <div class="item text-center" ng-if="showSpinner">
+                    <ion-spinner></ion-spinner>
                 </div>
             </div>
         </mm-loading>

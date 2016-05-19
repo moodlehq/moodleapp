@@ -23,8 +23,9 @@ angular.module('mm.addons.mod_quiz')
  */
 .controller('mmaModQuizIndexCtrl', function($scope, $stateParams, $mmaModQuiz, $mmCourse, $ionicPlatform, $q, $translate,
             $mmaModQuizHelper, $ionicHistory, $ionicScrollDelegate, $mmEvents, mmaModQuizEventAttemptFinished, $state,
-            $mmQuestionBehaviourDelegate, $mmaModQuizSync, $mmText, $mmUtil, mmaModQuizEventAutomSynced,
-            $mmCoursePrefetchDelegate, mmCoreDownloaded) {
+            $mmQuestionBehaviourDelegate, $mmaModQuizSync, $mmText, $mmUtil, mmaModQuizEventAutomSynced, $mmSite,
+            $mmCoursePrefetchDelegate, mmCoreDownloaded, mmCoreDownloading, mmCoreEventPackageStatusChanged,
+            mmaModQuizComponent) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         quiz,
@@ -37,7 +38,8 @@ angular.module('mm.addons.mod_quiz')
         attemptAccessInfo,
         moreAttempts,
         scrollView = $ionicScrollDelegate.$getByHandle('mmaModQuizIndexScroll'),
-        autoReview;
+        autoReview,
+        currentStatus;
 
     $scope.title = module.name;
     $scope.description = module.description;
@@ -125,6 +127,12 @@ angular.module('mm.addons.mod_quiz')
             // Get attempts.
             return $mmaModQuiz.getUserAttempts(quiz.id).then(function(atts) {
                 attempts = atts;
+
+                if ($mmaModQuiz.isQuizOffline(quiz)) {
+                    // Handle status. We don't add getStatus to promises because it should be fast.
+                    setStatusListener();
+                    getStatus().then(showStatus);
+                }
 
                 return treatAttempts().then(function() {
                     // Check if user can create/continue attempts.
@@ -308,7 +316,7 @@ angular.module('mm.addons.mod_quiz')
 
     // Tries to synchronize the current quiz.
     function syncQuiz(checkTime, showErrors) {
-        var promise = checkTime ? $mmaModQuizSync.syncQuizIfNeeded(quiz) : $mmaModQuizSync.syncQuiz(quiz);
+        var promise = checkTime ? $mmaModQuizSync.syncQuizIfNeeded(quiz, true) : $mmaModQuizSync.syncQuiz(quiz, true);
         return promise.then(function(warnings) {
             var message = $mmText.buildMessage(warnings);
             if (message) {
@@ -336,6 +344,38 @@ angular.module('mm.addons.mod_quiz')
         });
     }
 
+    // Get status of the quiz.
+    function getStatus() {
+        var revision = $mmaModQuiz.getQuizRevisionFromAttempts(attempts),
+            timemodified = $mmaModQuiz.getQuizTimemodifiedFromAttempts(attempts);
+
+        return $mmCoursePrefetchDelegate.getModuleStatus(module, courseId, revision, timemodified);
+    }
+
+    // Set a listener to monitor changes on this SCORM status to show a message to the user.
+    function setStatusListener() {
+        if (typeof statusObserver !== 'undefined') {
+            return; // Already set.
+        }
+
+        // Listen for changes on this module status to show a message to the user.
+        statusObserver = $mmEvents.on(mmCoreEventPackageStatusChanged, function(data) {
+            if (data.siteid === $mmSite.getId() && data.componentId === module.id &&
+                    data.component === mmaModQuizComponent) {
+                showStatus(data.status);
+            }
+        });
+    }
+
+    // Showing or hide a status message depending on the SCORM status.
+    function showStatus(status) {
+        currentStatus = status;
+
+        if (status == mmCoreDownloading) {
+            $scope.showSpinner = true;
+        }
+    }
+
     // Fetch the Quiz data.
     fetchQuizData().then(function() {
         $mmaModQuiz.logViewQuiz(quiz.id).then(function() {
@@ -354,7 +394,12 @@ angular.module('mm.addons.mod_quiz')
 
     // Synchronize the quiz.
     $scope.sync = function() {
-        var modal = $mmUtil.showModalLoading('mm.settings.synchronizing', true);
+        if ($scope.showSpinner) {
+            // Scope is being or synchronized, abort.
+            return;
+        }
+
+        $scope.showSpinner = true;
         syncQuiz(false, true).then(function() {
             // Refresh the data.
             $scope.quizLoaded = false;
@@ -363,34 +408,34 @@ angular.module('mm.addons.mod_quiz')
                 $scope.quizLoaded = true;
             });
         }).finally(function() {
-            modal.dismiss();
+            $scope.showSpinner = false;
         });
     };
 
     // Attempt the quiz.
     $scope.attemptQuiz = function() {
+        if ($scope.showSpinner) {
+            // Scope is being or synchronized, abort.
+            return;
+        }
+
         if ($mmaModQuiz.isQuizOffline(quiz)) {
             // Quiz supports offline, check if it needs to be downloaded.
-            var revision = $mmaModQuiz.getQuizRevisionFromAttempts(attempts),
-                timemodified = $mmaModQuiz.getQuizTimemodifiedFromAttempts(attempts),
-                modal = $mmUtil.showModalLoading();
-
-            $mmCoursePrefetchDelegate.getModuleStatus(module, courseId, revision, timemodified).then(function(status) {
-                if (status != mmCoreDownloaded) {
-                    // Prefetch the quiz.
-                    return $mmaModQuiz.prefetch(module, courseId).then(function() {
-                        // Success downloading, open quiz.
-                        openQuiz();
-                    }).catch(function() {
-                        $mmUtil.showErrorModal('mma.mod_quiz.errordownloading', true);
-                    });
-                } else {
-                    // Already downloaded, open it.
+            if (currentStatus != mmCoreDownloaded) {
+                // Prefetch the quiz.
+                $scope.showSpinner = true;
+                return $mmaModQuiz.prefetch(module, courseId, true).then(function() {
+                    // Success downloading, open quiz.
                     openQuiz();
-                }
-            }).finally(function() {
-                modal.dismiss();
-            });
+                }).catch(function(error) {
+                    $mmaModQuizHelper.showError(error, 'mma.mod_quiz.errordownloading');
+                }).finally(function() {
+                    $scope.showSpinner = false;
+                });
+            } else {
+                // Already downloaded, open it.
+                openQuiz();
+            }
         } else {
             openQuiz();
         }

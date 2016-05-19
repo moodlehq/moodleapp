@@ -82,10 +82,12 @@ angular.module('mm.addons.mod_book')
      * @module mm.addons.mod_book
      * @ngdoc method
      * @name $mmaModBookPrefetchHandler#prefetch
-     * @param {Object} module The module object returned by WS.
-     * @return {Promise}      Promise resolved when all files have been downloaded. Data returned is not reliable.
+     * @param  {Object} module   The module object returned by WS.
+     * @param  {Number} courseId Course ID the module belongs to.
+     * @param  {Boolean} single  True if we're downloading a single module, false if we're downloading a whole section.
+     * @return {Promise}         Promise resolved when all files have been downloaded. Data returned is not reliable.
      */
-    self.prefetch = function(module) {
+    self.prefetch = function(module, courseId, single) {
         return $mmaModBook.prefetchContent(module);
     };
 

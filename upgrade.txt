@@ -1,6 +1,10 @@
 This files describes API changes in the Moodle Mobile app,
 information provided here is intended especially for developers.
 
+=== 3.1.0 ===
+
+ * A new param "single" is passed to the prefetch functions of handlers registered in $mmCoursePrefetchDelegateProvider. Please notice that the download of sections will always send false/undefined, if you use this function somewhere else to download a single module then you should pass single=true.
+
 === 3.0 ===
 
  * The function $mmaModBook#getChapterContent now requires to receive the result of $mmaModBook#getContentsMap instead of module.contents.
