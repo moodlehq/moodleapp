@@ -1,0 +1,18 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <button ng-if="subwikiData.count > 1" class="button button-icon ion-person-stalker" ng-click="showSubwikiPicker($event)" aria-label="{{ 'mma.mod_wiki.subwiki' | translate }}"></button>
+        <a class="button button-icon ion-home" ng-if="showHomeButton" ng-click="goHomeWiki()" mm-link aria-label="{{ 'mma.mod_wiki.gowikihome' | translate }}"></a>
+        <a class="button button-icon ion-ios-browsers-outline" ng-if="moduleUrl" ng-href="{{moduleUrl}}" mm-link aria-label="{{ 'mm.core.openinbrowser' | translate }}"></a>
+    </ion-nav-buttons>
+    <ion-tabs class="tabs-icon-top" delegate-handle="{{tabsDelegateName}}">
+        <ion-tab title="{{ 'mma.mod_wiki.viewpage' | translate }}" icon="ion-document">
+            <ng-include src="'addons/mod/wiki/templates/page.html'"></ng-include>
+        </ion-tab>
+        <ion-tab title="{{ 'mma.mod_wiki.map' | translate }}" icon="ion-map">
+            <ion-pane ng-controller="mmaModWikiMapCtrl">
+                <ng-include src="'addons/mod/wiki/templates/map.html'"></ng-include>
+            </ion-pane>
+        </ion-tab>
+    </ion-tabs>
+</ion-view>

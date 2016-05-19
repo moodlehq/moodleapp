@@ -4,6 +4,7 @@ information provided here is intended especially for developers.
 === 3.1.0 ===
 
  * A new param "single" is passed to the prefetch functions of handlers registered in $mmCoursePrefetchDelegateProvider. Please notice that the download of sections will always send false/undefined, if you use this function somewhere else to download a single module then you should pass single=true.
+ * Activity modules have been moved from addons/mod_* to addons/mod/*.
 
 === 3.0 ===
 
