@@ -3,8 +3,8 @@
     "allowsubmissionsfromdate": "Autoriser la remise dès le",
     "attemptnumber": "Numéro de tentative",
     "cutoffdate": "Date limite",
-    "duedate": "À remettre jusqu'au",
-    "duedateno": "Pas de date de retour",
+    "duedate": "Date de remise",
+    "duedateno": "Pas de date de remise",
     "submissions": "Devoirs rendus",
     "userwithid": "Utilisateur d'Id {{id}}",
     "viewsubmission": "Afficher le travail remis"

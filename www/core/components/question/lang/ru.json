@@ -1,0 +1,10 @@
+{
+    "answer": "Ответ",
+    "complete": "Завершено",
+    "correct": "Верно",
+    "feedback": "Отзыв",
+    "incorrect": "Неверно",
+    "notanswered": "Еще не ответили",
+    "notyetanswered": "Пока нет ответа",
+    "partiallycorrect": "Частично верно"
+}
