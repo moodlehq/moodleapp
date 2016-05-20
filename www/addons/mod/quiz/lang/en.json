@@ -37,6 +37,7 @@
 	"marks": "Marks",
 	"mustbesubmittedby": "This attempt must be submitted by {{$a}}.",
 	"noquestions": "No questions have been added yet",
+	"noreviewattempt": "You are not allowed to review this attempt.",
 	"notyetgraded": "Not yet graded",
 	"opentoc": "Open navigation popover.",
 	"outof": "{{$a.grade}} out of {{$a.maxgrade}}",

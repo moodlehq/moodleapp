@@ -60,7 +60,7 @@ angular.module('mm.addons.mod_quiz')
 
                 downloadBtn = {
                     hidden: true,
-                    icon: 'ion-ios-cloud-download',
+                    icon: 'ion-ios-cloud-download-outline',
                     label: 'mm.core.download',
                     action: download
                 };
