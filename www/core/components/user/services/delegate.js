@@ -62,7 +62,8 @@ angular.module('mm.core.user')
 
     self.$get = function($q, $log, $mmSite, $mmUtil) {
         var enabledProfileHandlers = {},
-            self = {};
+            self = {},
+            lastUpdateHandlersStart;
 
         $log = $log.getInstance('$mmUserDelegate');
 
@@ -106,6 +107,23 @@ angular.module('mm.core.user')
         };
 
         /**
+         * Check if a time belongs to the last update handlers call.
+         * This is to handle the cases where updateProfileHandlers don't finish in the same order as they're called.
+         *
+         * @module mm.core.user
+         * @ngdoc method
+         * @name $mmUserDelegate#isLastUpdateCall
+         * @param  {Number}  time Time to check.
+         * @return {Boolean}      True if equal, false otherwise.
+         */
+        self.isLastUpdateCall = function(time) {
+            if (!lastUpdateHandlersStart) {
+                return true;
+            }
+            return time == lastUpdateHandlersStart;
+        };
+
+        /**
          * Update the enabled profile handlers for the current site.
          *
          * @module mm.core.user
@@ -113,11 +131,13 @@ angular.module('mm.core.user')
          * @name $mmUserDelegate#updateProfileHandler
          * @param {String} component The component name.
          * @param {Object} handlerInfo The handler details.
+         * @param  {Number} time Time this update process started.
          * @return {Promise} Resolved when enabled, rejected when not.
          * @protected
          */
-        self.updateProfileHandler = function(component, handlerInfo) {
-            var promise;
+        self.updateProfileHandler = function(component, handlerInfo, time) {
+            var promise,
+                siteId = $mmSite.getId();
 
             if (typeof handlerInfo.instance === 'undefined') {
                 handlerInfo.instance = $mmUtil.resolveObject(handlerInfo.handler, true);
@@ -130,17 +150,21 @@ angular.module('mm.core.user')
             }
 
             // Checks if the content is enabled.
-            return promise.then(function(enabled) {
-                if (enabled) {
-                    enabledProfileHandlers[component] = {
-                        instance: handlerInfo.instance,
-                        priority: handlerInfo.priority
-                    };
-                } else {
-                    return $q.reject();
+            return promise.catch(function() {
+                return false;
+            }).then(function(enabled) {
+                // Verify that this call is the last one that was started.
+                // Check that site hasn't changed since the check started.
+                if (self.isLastUpdateCall(time) && $mmSite.isLoggedIn() && $mmSite.getId() === siteId) {
+                    if (enabled) {
+                        enabledProfileHandlers[component] = {
+                            instance: handlerInfo.instance,
+                            priority: handlerInfo.priority
+                        };
+                    } else {
+                        delete enabledProfileHandlers[component];
+                    }
                 }
-            }).catch(function() {
-                delete enabledProfileHandlers[component];
             });
         };
 
@@ -154,13 +178,16 @@ angular.module('mm.core.user')
          * @protected
          */
         self.updateProfileHandlers = function() {
-            var promises = [];
+            var promises = [],
+                now = new Date().getTime();
 
             $log.debug('Updating profile handlers for current site.');
 
+            lastUpdateHandlersStart = now;
+
             // Loop over all the profile handlers.
             angular.forEach(profileHandlers, function(handlerInfo, component) {
-                promises.push(self.updateProfileHandler(component, handlerInfo));
+                promises.push(self.updateProfileHandler(component, handlerInfo, now));
             });
 
             return $q.all(promises).then(function() {
