@@ -58,7 +58,7 @@ angular.module('mm.addons.qtype_ddwtos')
             question.answers = answersEl.outerHTML;
 
             question.text = $mmUtil.getContentsOfElement(questionEl, '.qtext');
-            if (!question.text) {
+            if (typeof question.text == 'undefined') {
                 log.warn('Aborting because of an error parsing question.', question.name);
                 return self.showDirectiveError(scope);
             }

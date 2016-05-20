@@ -1,4 +1,4 @@
-<section class="list mma-qtype-ddwtos-container" ng-if="question.text">
+<section class="list mma-qtype-ddwtos-container" ng-if="question.text || question.text === ''">
     <div class="item item-text-wrap">
         <p ng-if="!question.readonly" class="item-howto item item-icon-left"><i class="icon ion-information"></i> {{ 'mm.question.howtodraganddrop' | translate }}</p>
         <p><mm-format-text watch="true" class="mm-content-with-float">{{ question.text }}</mm-format-text></p>

@@ -44,7 +44,7 @@ angular.module('mm.addons.qtype_ddmarker')
             ddarea = questionEl.querySelector('.ddarea');
             ddform = questionEl.querySelector('.ddform');
             question.text = $mmUtil.getContentsOfElement(questionEl, '.qtext');
-            if (!ddarea || !ddform || !question.text) {
+            if (!ddarea || !ddform || typeof question.text == 'undefined') {
                 log.warn('Aborting because of an error parsing question.', question.name);
                 return self.showDirectiveError(scope);
             }

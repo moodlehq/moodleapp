@@ -1,4 +1,4 @@
-<section class="list mma-qtype-ddimageortext-container" ng-if="question.text">
+<section class="list mma-qtype-ddimageortext-container" ng-if="question.text || question.text === ''">
     <mm-loading hide-until="question.loaded"></mm-loading>
     <!-- Content is outside the mm-loading to let the script calculate drag items position -->
     <div ng-class="{invisible: !question.loaded}" class="item item-text-wrap">

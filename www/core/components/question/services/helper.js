@@ -75,7 +75,7 @@ angular.module('mm.core.question')
 
         // Extract question text.
         question.text = $mmUtil.getContentsOfElement(questionEl, '.qtext');
-        if (!question.text) {
+        if (typeof question.text == 'undefined') {
             log.warn('Aborting because of an error parsing question.', question.name);
             return self.showDirectiveError(scope);
         }
