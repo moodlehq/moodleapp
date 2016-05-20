@@ -1,4 +1,4 @@
-<section class="list" ng-if="question.text">
+<section class="list" ng-if="question.text || question.text === ''">
 	<!-- "Seen" hidden input -->
 	<input ng-if="seenInput" type="hidden" name="{{seenInput.name}}" value="{{seenInput.value}}" >
     <div class="item item-text-wrap">

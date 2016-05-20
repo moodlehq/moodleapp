@@ -1224,7 +1224,7 @@ angular.module('mm.core')
          * @name $mmUtil#getContentsOfElement
          * @param  {Object} element  DOM element to search in.
          * @param  {String} selector Selector to search.
-         * @return {String}          Selection contents.
+         * @return {String}          Selection contents. Undefined if not found.
          */
         self.getContentsOfElement = function(element, selector) {
             if (element) {
@@ -1234,7 +1234,6 @@ angular.module('mm.core')
                     return selected.innerHTML;
                 }
             }
-            return '';
         };
 
         /**
