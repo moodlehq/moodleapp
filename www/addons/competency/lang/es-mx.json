@@ -1,7 +1,10 @@
 {
     "activities": "Actividades",
     "duedate": "Fecha de entrega",
+    "errornocompetenciesfound": "No se encontraron competencias",
     "evidence": "Evidencia",
+    "mylearningplans": "Mis planes de aprendizaje",
+    "nocompetencies": "Sin competencias",
     "path": "Ruta",
     "progress": "Progreso del estudiante",
     "rating": "Valuación (rating)",

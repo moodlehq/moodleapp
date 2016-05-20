@@ -1,7 +1,10 @@
 {
     "activities": "Aktivitäten",
     "duedate": "Abgabeende",
+    "errornocompetenciesfound": "Keine Kompetenzen gefunden",
     "evidence": "Evidenz",
+    "mylearningplans": "Meine Lernpläne",
+    "nocompetencies": "Keine Kompetenzen",
     "path": "Pfad",
     "progress": "Bearbeitungsstand",
     "rating": "Bewertung",

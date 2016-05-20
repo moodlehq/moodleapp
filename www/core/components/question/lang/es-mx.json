@@ -2,9 +2,14 @@
     "answer": "Respuesta",
     "complete": "Completado",
     "correct": "Correcto",
+    "errorattachmentsnotsupported": "La aplicación todavía no soporta anexarle archivos a las respuestas.",
+    "errorquestionnotsupported": "Este tipo de pregunta no está soportada por la App en su sitio: {{$a}}.",
     "feedback": "Retroalimentación",
+    "howtodraganddrop": "Tocar para seleccionar y tocar para soltar",
     "incorrect": "Incorrecta",
     "notanswered": "Sin contestar aún",
     "notyetanswered": "Aún no se ha dado respuesta",
-    "partiallycorrect": "Parcialmente correcto"
+    "partiallycorrect": "Parcialmente correcto",
+    "questionmessage": "Pregunta {{$a}}: {{$b}}",
+    "unknown": "No se puede determinar el estatus"
 }
