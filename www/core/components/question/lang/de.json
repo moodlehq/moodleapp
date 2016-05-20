@@ -2,9 +2,14 @@
     "answer": "Antwort",
     "complete": "Fertig",
     "correct": "Richtig",
+    "errorattachmentsnotsupported": "Die App erlaubt keine Antworten mit Dateianhängen.",
+    "errorquestionnotsupported": "Dieser Fragetyp wird von der App nicht unterstützt :{{$a}}.",
     "feedback": "Rückmeldung",
+    "howtodraganddrop": "Tippen Sie zum Auswählen und tippen Sie noch einmal zum verwerfen.",
     "incorrect": "Falsch",
     "notanswered": "Nicht abgestimmt",
     "notyetanswered": "unbeantwortet",
-    "partiallycorrect": "Teilweise richtig"
+    "partiallycorrect": "Teilweise richtig",
+    "questionmessage": "Frage {{$a}}: {{$b}}",
+    "unknown": "Status kann nicht bestimmt werden."
 }

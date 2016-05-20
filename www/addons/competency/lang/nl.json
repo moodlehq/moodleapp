@@ -1,7 +1,10 @@
 {
     "activities": "Activiteiten",
     "duedate": "Uiterste inleverdatum",
+    "errornocompetenciesfound": "Geen competenties gevonden",
     "evidence": "Bewijs",
+    "mylearningplans": "Mijn leerplannen",
+    "nocompetencies": "Geen competenties",
     "path": "Pad",
     "progress": "Vooruitgang leerling",
     "rating": "Beoordeling",

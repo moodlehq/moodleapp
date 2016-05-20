@@ -5,7 +5,7 @@
 	"complete": "Complete",
 	"correct": "Correct",
 	"errorattachmentsnotsupported": "The application doesn't support attaching files to answers yet.",
-	"errorquestionnotsupported": "This type of question isn't supported by the app in your site: {{$a}}.",
+	"errorquestionnotsupported": "This question type is not supported by the app: {{$a}}.",
 	"feedback": "Feedback",
 	"howtodraganddrop": "Tap to select then tap to drop.",
 	"incorrect": "Incorrect",
