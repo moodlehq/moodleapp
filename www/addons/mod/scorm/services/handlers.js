@@ -61,7 +61,7 @@ angular.module('mm.addons.mod_scorm')
                 // Create the buttons without action yet. This is to prevent a glitch in the view.
                 downloadBtn = {
                     hidden: true,
-                    icon: 'ion-ios-cloud-download',
+                    icon: 'ion-ios-cloud-download-outline',
                     label: 'mm.core.download'
                 };
 
