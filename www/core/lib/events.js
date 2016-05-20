@@ -28,6 +28,7 @@ angular.module('mm.core')
 .constant('mmCoreEventUserDeleted', 'user_deleted')
 .constant('mmCoreEventPackageStatusChanged', 'filepool_package_status_changed')
 .constant('mmCoreEventSectionStatusChanged', 'section_status_changed')
+.constant('mmCoreEventRemoteAddonsLoaded', 'remote_addons_loaded')
 
 /**
  * Service to send and listen to events.

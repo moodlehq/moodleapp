@@ -51,7 +51,8 @@ angular.module('mm.addons.mod_quiz')
     var handlers = {},
         enabledHandlers = {},
         self = {},
-        updatePromises = {};
+        updatePromises = {},
+        lastUpdateHandlersStart;
 
     /**
      * Get the handler for a certain rule.
@@ -106,6 +107,23 @@ angular.module('mm.addons.mod_quiz')
      */
     self.isAccessRuleSupported = function(ruleName) {
         return typeof enabledHandlers[ruleName] != 'undefined';
+    };
+
+    /**
+     * Check if a time belongs to the last update handlers call.
+     * This is to handle the cases where updateHandlers don't finish in the same order as they're called.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizAccessRulesDelegate#isLastUpdateCall
+     * @param  {Number}  time Time to check.
+     * @return {Boolean}      True if equal, false otherwise.
+     */
+    self.isLastUpdateCall = function(time) {
+        if (!lastUpdateHandlersStart) {
+            return true;
+        }
+        return time == lastUpdateHandlersStart;
     };
 
     /**
@@ -279,10 +297,11 @@ angular.module('mm.addons.mod_quiz')
      * @name $mmaModQuizAccessRulesDelegate#updateHandler
      * @param {String} ruleName     The name of the rule this handler handles.
      * @param {Object} handlerInfo  The handler details.
+     * @param  {Number} time Time this update process started.
      * @return {Promise}            Resolved when done.
      * @protected
      */
-    self.updateHandler = function(ruleName, handlerInfo) {
+    self.updateHandler = function(ruleName, handlerInfo, time) {
         var promise,
             deleted = false,
             siteId = $mmSite.getId();
@@ -308,8 +327,9 @@ angular.module('mm.addons.mod_quiz')
         promise = promise.catch(function() {
             return false;
         }).then(function(enabled) {
+            // Verify that this call is the last one that was started.
             // Check that site hasn't changed since the check started.
-            if ($mmSite.isLoggedIn() && $mmSite.getId() === siteId) {
+            if (self.isLastUpdateCall(time) && $mmSite.isLoggedIn() && $mmSite.getId() === siteId) {
                 if (enabled) {
                     enabledHandlers[ruleName] = handlerInfo.instance;
                 } else {
@@ -338,13 +358,16 @@ angular.module('mm.addons.mod_quiz')
      * @protected
      */
     self.updateHandlers = function() {
-        var promises = [];
+        var promises = [],
+            now = new Date().getTime();
 
         $log.debug('Updating handlers for current site.');
 
+        lastUpdateHandlersStart = now;
+
         // Loop over all the handlers.
         angular.forEach(handlers, function(handlerInfo, ruleName) {
-            promises.push(self.updateHandler(ruleName, handlerInfo));
+            promises.push(self.updateHandler(ruleName, handlerInfo, now));
         });
 
         return $q.all(promises).then(function() {
@@ -358,7 +381,8 @@ angular.module('mm.addons.mod_quiz')
     return self;
 })
 
-.run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, $mmaModQuizAccessRulesDelegate) {
+.run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, $mmaModQuizAccessRulesDelegate, mmCoreEventRemoteAddonsLoaded) {
     $mmEvents.on(mmCoreEventLogin, $mmaModQuizAccessRulesDelegate.updateHandlers);
     $mmEvents.on(mmCoreEventSiteUpdated, $mmaModQuizAccessRulesDelegate.updateHandlers);
+    $mmEvents.on(mmCoreEventRemoteAddonsLoaded, $mmaModQuizAccessRulesDelegate.updateHandlers);
 });

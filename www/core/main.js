@@ -120,6 +120,8 @@ angular.module('mm.core', ['pascalprecht.translate'])
     hreflist = addProtocolIfMissing(hreflist, 'geo');
     hreflist = addProtocolIfMissing(hreflist, 'filesystem'); // For HTML5 FileSystem.
     imglist = addProtocolIfMissing(imglist, 'filesystem'); // For HTML5 FileSystem.
+    imglist = addProtocolIfMissing(imglist, 'file');
+    imglist = addProtocolIfMissing(imglist, 'cdvfile');
 
     $compileProvider.aHrefSanitizationWhitelist(hreflist);
     $compileProvider.imgSrcSanitizationWhitelist(imglist);

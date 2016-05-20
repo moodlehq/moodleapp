@@ -24,6 +24,7 @@ angular.module('mm.core')
 .factory('$mmLang', function($translate, $translatePartialLoader, $mmConfig, $cordovaGlobalization, $q, mmCoreConfigConstants) {
 
     var self = {},
+        fallbackLanguage = 'en',
         currentLanguage; // Save current language in a variable to speed up the get function.
 
     /**
@@ -33,11 +34,19 @@ angular.module('mm.core')
      * @ngdoc method
      * @name $mmLang#registerLanguageFolder
      * @param  {String} path Path of the folder to use.
-     * @return {Promise}     Promise resolved when file is loaded.
+     * @return {Promise}     Promise resolved when all the language files to be used are loaded.
      */
     self.registerLanguageFolder = function(path) {
         $translatePartialLoader.addPart(path);
-        return $translate.refresh();
+        // We refresh the languages one by one because if we refresh all of them at once and 1 file isn't found
+        // then no language will be loaded. This way if 1 language file is missing only that language won't be refreshed.
+        var promises = [];
+        promises.push($translate.refresh(currentLanguage));
+        if (currentLanguage !== fallbackLanguage) {
+            // Refresh fallback language.
+            promises.push($translate.refresh(fallbackLanguage));
+        }
+        return $q.all(promises);
     };
 
     /**
@@ -73,11 +82,11 @@ angular.module('mm.core')
                     return language;
                 }, function() {
                     // Error getting locale. Use default language.
-                    return mmCoreConfigConstants.default_lang || 'en';
+                    return mmCoreConfigConstants.default_lang || fallbackLanguage;
                 });
             } catch(err) {
                 // Error getting locale. Use default language.
-                return mmCoreConfigConstants.default_lang || 'en';
+                return mmCoreConfigConstants.default_lang || fallbackLanguage;
             }
         }).then(function(language) {
             currentLanguage = language; // Save it for later.

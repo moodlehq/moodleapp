@@ -78,7 +78,8 @@ angular.module('mm.core.question')
         $log = $log.getInstance('$mmQuestionBehaviourDelegate');
 
         var enabledHandlers = {},
-            self = {};
+            self = {},
+            lastUpdateHandlersStart;
 
         /**
          * Determine a question state based on its answer(s).
@@ -135,6 +136,23 @@ angular.module('mm.core.question')
         };
 
         /**
+         * Check if a time belongs to the last update handlers call.
+         * This is to handle the cases where updateQuestionBehaviourHandlers don't finish in the same order as they're called.
+         *
+         * @module mm.core.question
+         * @ngdoc method
+         * @name $mmQuestionBehaviourDelegate#isLastUpdateCall
+         * @param  {Number}  time Time to check.
+         * @return {Boolean}      True if equal, false otherwise.
+         */
+        self.isLastUpdateCall = function(time) {
+            if (!lastUpdateHandlersStart) {
+                return true;
+            }
+            return time == lastUpdateHandlersStart;
+        };
+
+        /**
          * Check if a handler is enabled for a certain site and add/remove it to enabledHandlers.
          *
          * @module mm.core.question
@@ -142,10 +160,11 @@ angular.module('mm.core.question')
          * @name $mmQuestionBehaviourDelegate#updateQuestionBehaviourHandler
          * @param  {String} behaviour   Name of the behaviour the handler supports.
          * @param  {Object} handlerInfo The handler details.
+         * @param  {Number} time Time this update process started.
          * @return {Promise}            Resolved when done.
          * @protected
          */
-        self.updateQuestionBehaviourHandler = function(behaviour, handlerInfo) {
+        self.updateQuestionBehaviourHandler = function(behaviour, handlerInfo, time) {
             var promise,
                 siteId = $mmSite.getId();
 
@@ -163,8 +182,9 @@ angular.module('mm.core.question')
             return promise.catch(function() {
                 return false;
             }).then(function(enabled) {
+                // Verify that this call is the last one that was started.
                 // Check that site hasn't changed since the check started.
-                if ($mmSite.isLoggedIn() && $mmSite.getId() === siteId) {
+                if (self.isLastUpdateCall(time) && $mmSite.isLoggedIn() && $mmSite.getId() === siteId) {
                     if (enabled) {
                         enabledHandlers[behaviour] = handlerInfo.instance;
                     } else {
@@ -184,13 +204,16 @@ angular.module('mm.core.question')
          * @protected
          */
         self.updateQuestionBehaviourHandlers = function() {
-            var promises = [];
+            var promises = [],
+                now = new Date().getTime();
 
             $log.debug('Updating question behaviour handlers for current site.');
 
+            lastUpdateHandlersStart = now;
+
             // Loop over all the handlers.
             angular.forEach(handlers, function(handlerInfo, behaviour) {
-                promises.push(self.updateQuestionBehaviourHandler(behaviour, handlerInfo));
+                promises.push(self.updateQuestionBehaviourHandler(behaviour, handlerInfo, now));
             });
 
             return $q.all(promises).then(function() {

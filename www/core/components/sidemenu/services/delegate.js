@@ -60,7 +60,8 @@ angular.module('mm.core.sidemenu')
         var enabledNavHandlers = {},
             currentSiteHandlers = [], // Handlers to return.
             self = {},
-            loaded = false; // If site handlers have been loaded.
+            loaded = false, // If site handlers have been loaded.
+            lastUpdateHandlersStart;
 
         $log = $log.getInstance('$mmSideMenuDelegate');
 
@@ -102,6 +103,23 @@ angular.module('mm.core.sidemenu')
         };
 
         /**
+         * Check if a time belongs to the last update handlers call.
+         * This is to handle the cases where updateNavHandlers don't finish in the same order as they're called.
+         *
+         * @module mm.core.sidemenu
+         * @ngdoc method
+         * @name $mmSideMenuDelegate#isLastUpdateCall
+         * @param  {Number}  time Time to check.
+         * @return {Boolean}      True if equal, false otherwise.
+         */
+        self.isLastUpdateCall = function(time) {
+            if (!lastUpdateHandlersStart) {
+                return true;
+            }
+            return time == lastUpdateHandlersStart;
+        };
+
+        /**
          * Update the handler for the current site.
          *
          * @module mm.core.sidemenu
@@ -109,11 +127,13 @@ angular.module('mm.core.sidemenu')
          * @name $mmSideMenuDelegate#updateNavHandler
          * @param {String} addon The addon.
          * @param {Object} handlerInfo The handler details.
+         * @param  {Number} time Time this update process started.
          * @return {Promise} Resolved when enabled, rejected when not.
          * @protected
          */
-        self.updateNavHandler = function(addon, handlerInfo) {
-            var promise;
+        self.updateNavHandler = function(addon, handlerInfo, time) {
+            var promise,
+                siteId = $mmSite.getId();
 
             if (typeof handlerInfo.instance === 'undefined') {
                 handlerInfo.instance = $mmUtil.resolveObject(handlerInfo.handler, true);
@@ -126,17 +146,21 @@ angular.module('mm.core.sidemenu')
             }
 
             // Checks if the content is enabled.
-            return promise.then(function(enabled) {
-                if (enabled) {
-                    enabledNavHandlers[addon] = {
-                        instance: handlerInfo.instance,
-                        priority: handlerInfo.priority
-                    };
-                } else {
-                    return $q.reject();
+            return promise.catch(function() {
+                return false;
+            }).then(function(enabled) {
+                // Verify that this call is the last one that was started.
+                // Check that site hasn't changed since the check started.
+                if (self.isLastUpdateCall(time) && $mmSite.isLoggedIn() && $mmSite.getId() === siteId) {
+                    if (enabled) {
+                        enabledNavHandlers[addon] = {
+                            instance: handlerInfo.instance,
+                            priority: handlerInfo.priority
+                        };
+                    } else {
+                        delete enabledNavHandlers[addon];
+                    }
                 }
-            }).catch(function() {
-                delete enabledNavHandlers[addon];
             });
         };
 
@@ -150,13 +174,16 @@ angular.module('mm.core.sidemenu')
          * @protected
          */
         self.updateNavHandlers = function() {
-            var promises = [];
+            var promises = [],
+                now = new Date().getTime();
 
             $log.debug('Updating navigation handlers for current site.');
 
+            lastUpdateHandlersStart = now;
+
             // Loop over all the content handlers.
             angular.forEach(navHandlers, function(handlerInfo, addon) {
-                promises.push(self.updateNavHandler(addon, handlerInfo));
+                promises.push(self.updateNavHandler(addon, handlerInfo, now));
             });
 
             return $q.all(promises).then(function() {
@@ -165,17 +192,19 @@ angular.module('mm.core.sidemenu')
                 // Never reject.
                 return true;
             }).finally(function() {
+                // Verify that this call is the last one that was started.
+                if (self.isLastUpdateCall(now)) {
+                    $mmUtil.emptyArray(currentSiteHandlers);
 
-                $mmUtil.emptyArray(currentSiteHandlers);
-
-                angular.forEach(enabledNavHandlers, function(handler) {
-                    currentSiteHandlers.push({
-                        controller: handler.instance.getController(),
-                        priority: handler.priority
+                    angular.forEach(enabledNavHandlers, function(handler) {
+                        currentSiteHandlers.push({
+                            controller: handler.instance.getController(),
+                            priority: handler.priority
+                        });
                     });
-                });
 
-                loaded = true;
+                    loaded = true;
+                }
             });
         };
 

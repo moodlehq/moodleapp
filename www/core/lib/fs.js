@@ -922,5 +922,29 @@ angular.module('mm.core')
         });
     };
 
+    /**
+     * Search a string or regexp in a file contents and replace it. The result is saved in the same file.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#replaceInFile
+     * @param  {String} path          Path to the file.
+     * @param  {String|RegExp} search Value to search.
+     * @param  {String} newValue      New value.
+     * @return {Promise}              Promise resolved in success.
+     */
+    self.replaceInFile = function(path, search, newValue) {
+        return self.readFile(path).then(function(content) {
+            if (typeof content == 'undefined' || content === null || !content.replace) {
+                return $q.reject();
+            }
+
+            if (content.match(search)) {
+                content = content.replace(search, newValue);
+                return self.writeFile(path, content);
+            }
+        });
+    };
+
     return self;
 });

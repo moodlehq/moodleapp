@@ -222,7 +222,7 @@ angular.module('mm.core')
      * @param {String} siteId The site ID.
      * @param {String} fileId The file ID.
      * @param {String} component The component to link the file to.
-     * @param {Number} [componentId] An ID to use in conjunction with the component.
+     * @param {Mixed} [componentId] An ID to use in conjunction with the component.
      * @return {Promise} Resolved on success. Rejected on failure. It is advised to silently ignore failures.
      * @protected
      */
@@ -250,7 +250,7 @@ angular.module('mm.core')
      * @param {String} siteId The site ID.
      * @param {String} fileUrl The file Url.
      * @param {String} component The component to link the file to.
-     * @param {Number} [componentId] An ID to use in conjunction with the component.
+     * @param {Mixed} [componentId] An ID to use in conjunction with the component.
      * @return {Promise} Resolved on success. Rejected on failure. It is advised to silently ignore failures.
      * @description
      * Use this method to create a link between a URL and a component. You usually do not need to call
@@ -317,7 +317,7 @@ angular.module('mm.core')
      * @param {String} siteId The site ID.
      * @param {String} fileUrl The absolute URL to the file.
      * @param {String} [component] The component to link the file to.
-     * @param {Number} [componentId] An ID to use in conjunction with the component (optional).
+     * @param {Mixed} [componentId] An ID to use in conjunction with the component (optional).
      * @param {Number} [timemodified=0] The time this file was modified. Can be used to check file state.
      * @param {String} [filePath]       Filepath to download the file to.
      * @param {Number} [priority=0] The priority this file should get in the queue (range 0-999).
@@ -351,7 +351,7 @@ angular.module('mm.core')
                 if (typeof component !== 'undefined') {
                     link = {
                         component: component,
-                        componentId: componentId
+                        componentId: self._fixComponentId(componentId)
                     };
                 }
 
@@ -518,7 +518,7 @@ angular.module('mm.core')
      * @name $mmFilepool#componentHasFiles
      * @param {String} siteId The site ID.
      * @param {String} component The component to link the file to.
-     * @param {Number} [componentId] An ID to use in conjunction with the component.
+     * @param {Mixed} [componentId] An ID to use in conjunction with the component.
      * @return {Promise} Resolved means yes, rejected means no.
      */
     self.componentHasFiles = function(siteId, component, componentId) {
@@ -589,7 +589,7 @@ angular.module('mm.core')
      * @param  {Object[]} fileList   List of files to download.
      * @param  {Boolean} prefetch    True if should prefetch the contents (queue), false if they should be downloaded right now.
      * @param {String} component     The component to link the file to.
-     * @param {Number} [componentId] An ID to use in conjunction with the component.
+     * @param {Mixed} [componentId]  An ID to use in conjunction with the component.
      * @param {Number} [revision]    Package's revision. If not defined, it will be calculated using the list of files.
      * @param {Number} [timemod]     Package's timemodified. If not defined, it will be calculated using the list of files.
      * @param {String} [dirPath]     Name of the directory where to store the files (inside filepool dir). If not defined, store
@@ -687,7 +687,7 @@ angular.module('mm.core')
      * @param {String} siteId         The site ID.
      * @param  {Object[]} fileList    List of files to download.
      * @param {String} component      The component to link the file to.
-     * @param {Number} componentId    An ID to identify the download. Must be unique.
+     * @param {Mixed} componentId     An ID to identify the download. Must be unique.
      * @param {Number} [revision]     Package's revision. If not defined, it will be calculated using the list of files.
      * @param {Number} [timemodified] Package's timemodified. If not defined, it will be calculated using the list of files.
      * @param {String} [dirPath]      Name of the directory where to store the files (inside filepool dir). If not defined, store
@@ -708,7 +708,7 @@ angular.module('mm.core')
      * @param {String} fileUrl The file URL.
      * @param {Boolean} [ignoreStale] True if 'stale' should be ignored.
      * @param {String} component The component to link the file to.
-     * @param {Number} [componentId] An ID to use in conjunction with the component.
+     * @param {Mixed} [componentId] An ID to use in conjunction with the component.
      * @param {Number} [timemodified=0] The time this file was modified. Can be used to check file state.
      * @param {String} [filePath]       Filepath to download the file to.
      * @return {Promise} Resolved with internal URL on success, rejected otherwise.
@@ -859,14 +859,20 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmFilepool#_fixComponentId
-     * @param {String|Number|undefined} The component ID.
+     * @param {Mixed} componentId The component ID.
      * @return {Number} The normalised component ID. -1 when undefined was passed.
      * @protected
      */
     self._fixComponentId = function(componentId) {
+        // Check if it's a number.
         var id = parseInt(componentId, 10);
         if (isNaN(id)) {
-            return -1;
+            // Not a number.
+            if (typeof componentId == 'undefined' || componentId === null) {
+                return -1;
+            } else {
+                return componentId;
+            }
         }
         return id;
     };
@@ -960,7 +966,7 @@ angular.module('mm.core')
      * @name $mmFilepool#getPackageDownloadPromise
      * @param {String} siteId        Site ID.
      * @param {String} component     The component of the package.
-     * @param {Number} [componentId] An ID to use in conjunction with the component.
+     * @param {Mixed} [componentId] An ID to use in conjunction with the component.
      * @return {String}             Download promise or undefined.
      */
     self.getPackageDownloadPromise = function(siteId, component, componentId) {
@@ -977,7 +983,7 @@ angular.module('mm.core')
      * @ngdoc method
      * @name $mmFilepool#getPackageId
      * @param {String} component     Package's component.
-     * @param {Number} [componentId] An ID to use in conjunction with the component.
+     * @param {Mixed} [componentId]  An ID to use in conjunction with the component.
      * @return {String}              Package ID.
      */
     self.getPackageId = function(component, componentId) {
@@ -992,7 +998,7 @@ angular.module('mm.core')
      * @name $mmFilepool#getPackagePreviousStatus
      * @param {String} siteId           Site ID.
      * @param {String} component        Package's component.
-     * @param {Number} [componentId]    An ID to use in conjunction with the component.
+     * @param {Mixed} [componentId]    An ID to use in conjunction with the component.
      * @return {Promise}                Promise resolved with the status.
      */
     self.getPackagePreviousStatus = function(siteId, component, componentId) {
@@ -1015,7 +1021,7 @@ angular.module('mm.core')
      * @name $mmFilepool#getPackageStatus
      * @param {String} siteId              Site ID.
      * @param {String} component           Package's component.
-     * @param {Number} [componentId]       An ID to use in conjunction with the component.
+     * @param {Mixed} [componentId]        An ID to use in conjunction with the component.
      * @param {Number|String} [revision=0] Package's revision.
      * @param {Number} [timemodified=0]    Package's timemodified.
      * @return {Promise}                   Promise resolved with the status.
@@ -1023,6 +1029,8 @@ angular.module('mm.core')
     self.getPackageStatus = function(siteId, component, componentId, revision, timemodified) {
         revision = revision || 0;
         timemodified = timemodified || 0;
+        componentId = self._fixComponentId(componentId);
+
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var db = site.getDb(),
                 packageId = self.getPackageId(component, componentId);
@@ -1065,7 +1073,7 @@ angular.module('mm.core')
      * @name $mmFilepool#getPackageTimemodified
      * @param {String} siteId              Site ID.
      * @param {String} component           Package's component.
-     * @param {Number} [componentId]       An ID to use in conjunction with the component.
+     * @param {Mixed} [componentId]        An ID to use in conjunction with the component.
      * @return {Promise}                   Promise resolved with the timemodified.
      */
     self.getPackageTimemodified = function(siteId, component, componentId) {
@@ -1291,7 +1299,7 @@ angular.module('mm.core')
      * @param {String} fileUrl           The absolute URL to the file.
      * @param {String} [mode=url]        The type of URL to return. Accepts 'url' or 'src'.
      * @param {String} component         The component to link the file to.
-     * @param {Number} [componentId]     An ID to use in conjunction with the component.
+     * @param {Mixed} [componentId]      An ID to use in conjunction with the component.
      * @param {Number} [timemodified=0]  The time this file was modified.
      * @param {Boolean} [checkSize=true] True if we shouldn't download files if their size is big, false otherwise.
      * @return {Promise}                 Resolved with the URL to use. When rejected, nothing could be done.
@@ -1642,7 +1650,7 @@ angular.module('mm.core')
      * @param {String} siteId            The site ID.
      * @param {String} fileUrl           The absolute URL to the file.
      * @param {String} component         The component to link the file to.
-     * @param {Number} [componentId]     An ID to use in conjunction with the component.
+     * @param {Mixed} [componentId]      An ID to use in conjunction with the component.
      * @param {Number} [timemodified]    The time this file was modified.
      * @param {Boolean} [checkSize=true] True if we shouldn't download files if their size is big, false otherwise.
      * @return {Promise}                 Resolved with the URL to use. When rejected, nothing could be done,
@@ -1686,7 +1694,7 @@ angular.module('mm.core')
      * @param {String} siteId            The site ID.
      * @param {String} fileUrl           The absolute URL to the file.
      * @param {String} component         The component to link the file to.
-     * @param {Number} [componentId]     An ID to use in conjunction with the component.
+     * @param {Mixed} [componentId]      An ID to use in conjunction with the component.
      * @param {Number} [timemodified]    The time this file was modified.
      * @param {Boolean} [checkSize=true] True if we shouldn't download files if their size is big, false otherwise.
      * @return {Promise}                 Resolved with the URL to use. When rejected, nothing could be done,
@@ -1816,7 +1824,7 @@ angular.module('mm.core')
      * @name $mmFilepool#invalidateFilesByComponent
      * @param {String} siteId The site ID.
      * @param {String} component The component to link the file to.
-     * @param {Number} [componentId] An ID to use in conjunction with the component.
+     * @param {Mixed} [componentId] An ID to use in conjunction with the component.
      * @return {Promise} Resolved on success. Rejected on failure. It is advised to ignore a failure.
      * @description
      * Invalidates a file by marking it stale. See {@link $mmFilepool#invalidateFileByUrl} for more details.
@@ -1918,7 +1926,7 @@ angular.module('mm.core')
      * @param {String} siteId         The site ID.
      * @param  {Object[]} fileList    List of files to download.
      * @param {String} component      The component to link the file to.
-     * @param {Number} componentId    An ID to identify the download. Must be unique.
+     * @param {Mixed} componentId    An ID to identify the download. Must be unique.
      * @param {Number} [revision]     Package's revision. If not defined, it will be calculated using the list of files.
      * @param {Number} [timemodified] Package's timemodified. If not defined, it will be calculated using the list of files.
      * @param {String} [dirPath]      Name of the directory where to store the files (inside filepool dir). If not defined, store
@@ -2175,7 +2183,7 @@ angular.module('mm.core')
      * @name $mmFilepool#removeFilesByComponent
      * @param {String} siteId        The site ID.
      * @param {String} component     The component to link the file to.
-     * @param {Number} [componentId] An ID to use in conjunction with the component.
+     * @param {Mixed} [componentId] An ID to use in conjunction with the component.
      * @return {Promise}             Resolved on success. Rejected on failure.
      */
     self.removeFilesByComponent = function(siteId, component, componentId) {
@@ -2297,11 +2305,13 @@ angular.module('mm.core')
      * @name $mmFilepool#setPackagePreviousStatus
      * @param {String} siteId        Site ID.
      * @param {String} component     Package's component.
-     * @param {Number} [componentId] An ID to use in conjunction with the component.
+     * @param {Mixed} [componentId]  An ID to use in conjunction with the component.
      * @return {Promise}             Promise resolved when the status is changed. Resolve param: new status.
      */
     self.setPackagePreviousStatus = function(siteId, component, componentId) {
         $log.debug('Set previous status for package ' + component + ' ' + componentId);
+        componentId = self._fixComponentId(componentId);
+
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var db = site.getDb(),
                 packageId = self.getPackageId(component, componentId);
@@ -2360,7 +2370,7 @@ angular.module('mm.core')
      * @name $mmFilepool#storePackageStatus
      * @param {String} siteId         Site ID.
      * @param {String} component      Package's component.
-     * @param {Number} [componentId]  An ID to use in conjunction with the component.
+     * @param {Mixed} [componentId]   An ID to use in conjunction with the component.
      * @param {String} status         New package status.
      * @param {Number} [revision]     Package's revision. If not provided, try to use the current value.
      * @param {Number} [timemodified] Package's timemodified. If not provided, try to use the current value.
@@ -2368,6 +2378,7 @@ angular.module('mm.core')
      */
     self.storePackageStatus = function(siteId, component, componentId, status, revision, timemodified) {
         $log.debug('Set status \'' + status + '\' for package ' + component + ' ' + componentId);
+        componentId = self._fixComponentId(componentId);
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var db = site.getDb(),
@@ -2445,7 +2456,7 @@ angular.module('mm.core')
      * @name $mmFilepool#_triggerPackageStatusChanged
      * @param {String} siteId        Site ID.
      * @param {String} component     Package's component.
-     * @param {Number} [componentId] An ID to use in conjunction with the component.
+     * @param {Mixed} [componentId]  An ID to use in conjunction with the component.
      * @param {String} status        New package status.
      * @return {Void}
      * @protected
@@ -2454,7 +2465,7 @@ angular.module('mm.core')
         var data = {
             siteid: siteId,
             component: component,
-            componentId: componentId,
+            componentId: self._fixComponentId(componentId),
             status: status
         };
         $mmEvents.trigger(mmCoreEventPackageStatusChanged, data);

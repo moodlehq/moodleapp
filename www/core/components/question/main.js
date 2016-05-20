@@ -16,7 +16,8 @@ angular.module('mm.core.question', [])
 
 .constant('mmQuestionComponent', 'mmQuestion')
 
-.run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, $mmQuestionDelegate, $mmQuestionBehaviourDelegate) {
+.run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, $mmQuestionDelegate, $mmQuestionBehaviourDelegate,
+			mmCoreEventRemoteAddonsLoaded) {
 	function updateHandlers() {
 		$mmQuestionDelegate.updateQuestionHandlers();
 		$mmQuestionBehaviourDelegate.updateQuestionBehaviourHandlers();
@@ -24,4 +25,5 @@ angular.module('mm.core.question', [])
 
 	$mmEvents.on(mmCoreEventLogin, updateHandlers);
 	$mmEvents.on(mmCoreEventSiteUpdated, updateHandlers);
+	$mmEvents.on(mmCoreEventRemoteAddonsLoaded, updateHandlers);
 });
