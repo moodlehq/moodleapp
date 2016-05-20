@@ -33,7 +33,6 @@
                     <p class="col col-50"><b>{{ 'mma.mod_quiz.attemptstate' | translate }}</b></p>
                     <p class="col text-center" ng-if="isTablet && quiz.showMarkColumn"><b>{{ 'mma.mod_quiz.marks' | translate }} / {{ quiz.sumGradesFormatted }}</b></p>
                     <p class="col text-center" ng-if="quiz.showGradeColumn"><b>{{ 'mma.mod_quiz.grade' | translate }} / {{ quiz.gradeFormatted }}</b></p>
-                    <p class="col text-center" ng-if="isTablet && quiz.showReviewColumn"><b>{{ 'mma.mod_quiz.review' | translate }}</b></p>
                     <p class="col col-10"></p>
                 </div>
                 <div class="item item-text-wrap row" ng-repeat="attempt in attempts" ng-class='{"mma-mod-quiz-highlighted": attempt.highlightGrade}'>
@@ -44,9 +43,6 @@
                     </div>
                     <p class="col text-center" ng-if="isTablet && quiz.showMarkColumn">{{ attempt.readableMark }}</p>
                     <p class="col text-center" ng-if="quiz.showGradeColumn">{{ attempt.readableGrade }}</p>
-                    <p class="col text-center" ng-if="isTablet && quiz.showReviewColumn">
-                        <button class="button button-block" ng-if="attempt.finished" ui-sref="site.mod_quiz-review({courseid: courseId, quizid: quiz.id, attemptid: attempt.id})">{{ 'mma.mod_quiz.review' | translate }}</button>
-                    </p>
                     <p class="col col-10 text-center">
                         <a class="button button-block button-icon ion-ios-arrow-forward" ui-sref="site.mod_quiz-attempt({courseid: courseId, quizid: quiz.id, attemptid: attempt.id})" aria-label="{{ 'mm.core.seemoredetail' | translate }}"></a>
                     </p>

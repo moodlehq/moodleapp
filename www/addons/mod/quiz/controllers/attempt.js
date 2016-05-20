@@ -71,6 +71,11 @@ angular.module('mm.addons.mod_quiz')
 
         promises.push($mmaModQuiz.getQuizAccessInformation(quiz.id).then(function(aI) {
             accessInfo = aI;
+            if (accessInfo.canreviewmyattempts) {
+                return $mmaModQuiz.getAttemptReview(attemptId, -1).catch(function() {
+                    accessInfo.canreviewmyattempts = false;
+                });
+            }
         }));
 
         return $q.all(promises).then(function() {
@@ -102,6 +107,7 @@ angular.module('mm.addons.mod_quiz')
         promises.push($mmaModQuiz.invalidateUserAttemptsForUser(quizId));
         promises.push($mmaModQuiz.invalidateQuizAccessInformation(quizId));
         promises.push($mmaModQuiz.invalidateCombinedReviewOptionsForUser(quizId));
+        promises.push($mmaModQuiz.invalidateAttemptReview(attemptId));
         if (typeof attempt.feedback != 'undefined') {
             promises.push($mmaModQuiz.invalidateFeedback(quizId));
         }
