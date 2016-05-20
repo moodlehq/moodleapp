@@ -237,10 +237,16 @@ angular.module('mm.core')
         return $mmFS.getDir(dirPath).then(function(dir) {
             absoluteDirPath = $mmFS.getInternalURL(dir);
 
-            // Register language folder so the language strings of the addon are loaded.
-            $mmLang.registerLanguageFolder($mmFS.concatenatePaths(absoluteDirPath, 'lang'));
-            // Load the addon.
-            return $ocLazyLoad.load($mmFS.concatenatePaths(absoluteDirPath, remoteAddonFilename)).then(function() {
+            // Check if the language folder exists.
+            return $mmFS.getDir($mmFS.concatenatePaths(dirPath, 'lang')).then(function() {
+                // Folder exists. Register language folder so the language strings of the addon are loaded.
+                return $mmLang.registerLanguageFolder($mmFS.concatenatePaths(absoluteDirPath, 'lang'));
+            }).catch(function() {
+                // Lang folder doesn't exist, don't register it.
+            }).then(function() {
+                // Load the addon.
+                return $ocLazyLoad.load($mmFS.concatenatePaths(absoluteDirPath, remoteAddonFilename));
+            }).then(function() {
                 loadedAddons.push(addon);
                 // Check if the addon has a CSS file.
                 return $mmFS.getFile($mmFS.concatenatePaths(dirPath, remoteAddonCssFilename)).then(function(file) {
