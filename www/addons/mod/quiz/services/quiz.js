@@ -2074,6 +2074,7 @@ angular.module('mm.addons.mod_quiz')
             startAttempt,
             quiz,
             quizAccessInfo,
+            attemptAccessInfo,
             preflightData = {},
             scope,
             prefetchPromise,
@@ -2095,7 +2096,7 @@ angular.module('mm.addons.mod_quiz')
         }).then(function() {
             var promises = [];
 
-            // Get user attempts and data not related with attempts.
+            // Get some quiz data.
             promises.push(self.getQuizAccessInformation(quiz.id, false, true, siteId).then(function(info) {
                 quizAccessInfo = info;
             }));
@@ -2103,11 +2104,19 @@ angular.module('mm.addons.mod_quiz')
             promises.push(self.getUserAttempts(quiz.id, 'all', true, false, true, siteId).then(function(atts) {
                 attempts = atts;
             }));
+            promises.push(self.getAttemptAccessInformation(quiz.id, 0, false, true, siteId).then(function(info) {
+                attemptAccessInfo = info;
+            }));
 
             return $q.all(promises);
         }).then(function() {
             var attempt = attempts[attempts.length - 1];
             if (!attempt || self.isAttemptFinished(attempt.state)) {
+                // Check if the user can attempt the quiz.
+                if (attemptAccessInfo.preventnewattemptreasons.length) {
+                    return $q.reject($mmText.buildMessage(attemptAccessInfo.preventnewattemptreasons));
+                }
+
                 startAttempt = true;
                 attempt = undefined;
             }
