@@ -8,12 +8,12 @@
     "errorwhilegettingchatusers": "Si è verificato un errore durante la ricezione degli utenti della chat.",
     "errorwhileretrievingmessages": "Si è verificato un errore durante la ricezione dei messaggi dal server.",
     "errorwhilesendingmessage": "Si è verificato un errore durante l'invio del messaggio.",
-    "messagebeepsyou": "{{$a}} ti ha inviato un bip!",
+    "messagebeepsyou": "{{$a}} ti ha richiamato!",
     "messageenter": "{{$a}} è entrato nella chat",
-    "messageexit": "{{$a}} è uscito dalla chat",
+    "messageexit": "{{$a}} ha lasciato la chat",
     "mustbeonlinetosendmessages": "Per inviare messaggi devi essere online",
     "nomessages": "Non ci sono ancora messaggi",
     "send": "Invia",
-    "sessionstart": "La prossima sessione di chat inizierà tra {{$a}}",
+    "sessionstart": "La prossima sessione di chat inizierà in {{$a}}",
     "talk": "Parla"
 }

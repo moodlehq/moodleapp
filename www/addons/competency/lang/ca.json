@@ -1,7 +1,10 @@
 {
     "activities": "Activitats",
     "duedate": "Data de venciment",
+    "errornocompetenciesfound": "No s'han trobat competències",
     "evidence": "Evidència",
+    "mylearningplans": "Els meus plans d'aprenentatge",
+    "nocompetencies": "Cap competència",
     "path": "Camí",
     "progress": "Progrés de l'estudiant",
     "rating": "Valoració",
