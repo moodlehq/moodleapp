@@ -1,4 +1,4 @@
-<ion-view>
+<ion-view can-swipe-back="false">
     <ion-nav-title><mm-format-text watch="true">{{ quiz.name }}</mm-format-text></ion-nav-title>
     <ion-nav-buttons side="secondary">
         <button id="mma-mod_quiz-connectionerror-button" class="button button-icon ion-alert-circled" ng-show="autoSaveError" ng-click="conErrPopover.show($event)" aria-label="{{ 'mm.core.error' | translate }}">
