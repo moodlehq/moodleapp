@@ -2264,7 +2264,9 @@ angular.module('mm.addons.mod_quiz')
             }
 
             angular.forEach(pages, function(page) {
-                promises.push(self.getAttemptReview(attempt.id, page, true, siteId));
+                promises.push(self.getAttemptReview(attempt.id, page, true, siteId).catch(function() {
+                    // Ignore failures, maybe the user can't review the attempt.
+                }));
             });
              // All questions in same page.
             promises.push(self.getAttemptReview(attempt.id, -1, true, siteId).then(function(data) {
@@ -2274,6 +2276,8 @@ angular.module('mm.addons.mod_quiz')
                     questionPromises.push($mmQuestionHelper.prefetchQuestionFiles(question, siteId));
                 });
                 return $q.all(questionPromises);
+            }, function() {
+                // Ignore failures, maybe the user can't review the attempt.
             }));
         } else {
 
