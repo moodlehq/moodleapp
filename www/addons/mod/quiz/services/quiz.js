@@ -30,7 +30,8 @@ angular.module('mm.addons.mod_quiz')
 
     var self = {},
         blockedQuizzes = {},
-        $mmaModQuizSync; // We'll inject it using $injector to prevent circular dependencies.
+        $mmaModQuizSync, // We'll inject it using $injector to prevent circular dependencies.
+        downloadPromises = {}; // Store download promises to prevent duplicate requests.
 
     // Constants.
 
@@ -2074,10 +2075,19 @@ angular.module('mm.addons.mod_quiz')
             quiz,
             quizAccessInfo,
             preflightData = {},
-            scope;
+            scope,
+            prefetchPromise,
+            deleted = false;
+
+        if (downloadPromises[siteId] && downloadPromises[siteId][module.id]) {
+            // There's already a download ongoing for this package, return the promise.
+            return downloadPromises[siteId][module.id];
+        } else if (!downloadPromises[siteId]) {
+            downloadPromises[siteId] = {};
+        }
 
         // Mark package as downloading.
-        return $mmFilepool.storePackageStatus(siteId, mmaModQuizComponent, module.id, mmCoreDownloading).then(function() {
+        prefetchPromise = $mmFilepool.storePackageStatus(siteId, mmaModQuizComponent, module.id, mmCoreDownloading).then(function() {
             // Get quiz.
             return self.getQuiz(courseId, module.id, siteId).then(function(q) {
                 quiz = q;
@@ -2161,7 +2171,14 @@ angular.module('mm.addons.mod_quiz')
             if (scope) {
                 scope.$destroy();
             }
+            deleted = true;
+            delete downloadPromises[siteId][module.id];
         });
+
+        if (!deleted) {
+            downloadPromises[siteId][module.id] = prefetchPromise;
+        }
+        return prefetchPromise;
     };
 
     /**
