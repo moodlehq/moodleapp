@@ -2192,7 +2192,13 @@ angular.module('mm.addons.mod_quiz')
             var rules = quizAccessInfo.activerulenames;
             return $mmaModQuizAccessRulesDelegate.getFixedPreflightData(rules, quiz, attempt, preflightData, true, siteId)
                     .then(function() {
-                // Don't return anything.
+
+                if (!attempt) {
+                    // We need to create a new attempt.
+                    return self.startAttempt(quiz.id, preflightData).then(function() {
+                        // Don't return anything.
+                    });
+                }
             });
         }
     };
