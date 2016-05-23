@@ -2,9 +2,14 @@
     "answer": "Resposta",
     "complete": "Complet",
     "correct": "Correcta",
+    "errorattachmentsnotsupported": "L'aplicació encara no admet l'adjunció de fitxers.",
+    "errorquestionnotsupported": "Aquest tipus de pregunta no és admesa per l'aplicació al vostre lloc web: {{$a}}.",
     "feedback": "Retroacció",
+    "howtodraganddrop": "Feu un toc per seleccionar i feu un toc de nou per deixar anar.",
     "incorrect": "Incorrecta",
     "notanswered": "No contestada encara",
     "notyetanswered": "Encara no s'ha contestat",
-    "partiallycorrect": "Parcialment correcte"
+    "partiallycorrect": "Parcialment correcte",
+    "questionmessage": "Pregunta {{$a}}: {{$b}}",
+    "unknown": "No es pot determinar l'estat"
 }
