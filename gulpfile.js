@@ -13,9 +13,11 @@ var tap = require('gulp-tap');
 var fs = require('fs');
 var through = require('through');
 var path = require('path');
+var gfile = require('gulp-file');
 var File = gutil.File;
 var gulpSlash = require('gulp-slash');
 var ngAnnotate = require('gulp-ng-annotate');
+var yargs = require('yargs');
 
 var license = '' +
   '// (C) Copyright 2015 Martin Dougiamas\n' +
@@ -45,7 +47,8 @@ var paths = {
     './www/core/components/**/*.js',
     './www/addons/**/main.js',
     './www/addons/**/*.js',
-    '!./www/**/tests/*.js'
+    '!./www/**/tests/*.js',
+    '!./www/**/e2e/*.js'
   ],
   sass: {
     core: [
@@ -64,7 +67,19 @@ var paths = {
     './www/addons/**/lang/',
     './www/core/assets/countries/'
   ],
-  config: './www/config.json'
+  config: './www/config.json',
+  e2e: {
+    build: './e2e/build',
+    buildToRoot: '../../',
+    libs: [
+      './e2e/*.js'
+    ],
+    plugins: './e2e/plugins',
+    pluginsToRoot: '../../',
+    specs: [
+      './www/**/e2e/*.spec.js'
+    ]
+  }
 };
 
 gulp.task('default', ['build', 'sass', 'lang', 'config']);
@@ -288,4 +303,223 @@ gulp.task('config', ['build'], function(done) {
     .pipe(concat(buildFile))
     .pipe(gulp.dest(paths.build))
     .on('end', done);
+});
+
+// Build config file for e2e testing.
+gulp.task('e2e-build', function() {
+  var argv;
+
+  yargs = yargs
+    .usage('gulp e2e-build --target <target> <options>')
+    .option('target', {
+      alias: 't',
+      choices: ['browser', 'android', 'ios'],
+      describe: 'The target for the test suite'
+    })
+    .option('output', {
+      alias: 'o',
+      default: 'protractor.conf.js',
+      describe: 'The output file'
+    })
+    .option('site-url', {
+      alias: 'U',
+      default: 'http://school.demo.moodle.net',
+      describe: 'The URL of the site targetted by the tests'
+    })
+    .option('site-version', {
+      alias: 'V',
+      default: 2.9,
+      describe: 'The version of the site targetted by the tests (2.8, 2.9, ...)'
+    })
+    .option('site-uses-local-mobile', {
+      alias: 'L',
+      describe: 'When set the site is using local_mobile',
+      type: 'boolean'
+    })
+    .option('tablet', {
+      describe: 'Indicate that the tests are run on a tablet',
+      type: 'boolean'
+    })
+    .option('help', {   // Fake the help option.
+      alias: 'h',
+      describe: 'Show help',
+      type: 'boolean'
+    });
+
+  // Show help when the target was not set.
+  argv = yargs.argv;
+  if (!argv.target) {
+    yargs.showHelp();
+    return;
+  }
+
+  // Restore the normal use of the help.
+  yargs = yargs.help('help');
+
+  // Define the arguments for the browser target.
+  if (argv.target == 'browser') {
+    yargs = yargs
+      .option('webdriver', {
+        alias: 'w',
+        default: 'http://127.0.0.1:4444/wd/hub',
+        describe: 'The URL to the Web Driver'
+      })
+      .option('browser', {
+        alias: 'b',
+        default: 'chrome',
+        describe: 'The browse to run the test on'
+      })
+      .option('url', {
+        alias: 'u',
+        default: 'http://localhost:8100/',
+        describe: 'The URL to open the browser at'
+      });
+
+  // Arguments for Android.
+  } else if (argv.target == 'android') {
+    yargs = yargs
+      .option('apk', {
+        alias: 'a',
+        default: 'platforms/android/ant-build/MainActivity-debug.apk',
+        describe: 'The relative path to the APK'
+      })
+      .option('device', {
+        alias: 'd',
+        demand: true,
+        describe: 'The device ID of the targetted device',
+      })
+      .option('version', {
+        alias: 'v',
+        demand: true,
+        describe: 'The Android version of the targetted device (4.4, 5.0, ...)'
+      })
+      .option('webdriver', {
+        alias: 'w',
+        default: 'http://127.0.0.1:4723/wd/hub',
+        describe: 'The URL to the Web Driver'
+      });
+
+  // Arguments for iOS.
+  } else if (argv.target == 'ios') {
+    yargs = yargs
+      .option('ipa', {
+        alias: 'i',
+        describe: 'The path to the .ipa'
+      })
+      .option('device', {
+        alias: 'd',
+        demand: true,
+        describe: 'The device UDID of the targetted device',
+      })
+      .option('version', {
+        alias: 'v',
+        demand: true,
+        describe: 'The iOS version of the targetted device (7.1.2, 8.0, ...)'
+      })
+      .option('webdriver', {
+        alias: 'w',
+        default: 'http://127.0.0.1:4723/wd/hub',
+        describe: 'The URL to the Web Driver'
+      });
+  }
+
+  argv = yargs.argv;
+  var config = {
+        framework: 'jasmine2',
+        specs: [],
+        capabilities: {},
+        restartBrowserBetweenTests: true,
+        onPrepare: 'FN_ONPREPARE_PLACEHOLDER',
+        plugins: [{
+          path: path.join(paths.e2e.pluginsToRoot, paths.e2e.plugins, 'wait_for_transitions.js')
+        }]
+      },
+      i,
+      configStr,
+      onPrepare,
+      users = {
+        STUDENT: {
+          LOGIN: 'student',
+          PASSWORD: 'moodle'
+        },
+        TEACHER: {
+          LOGIN: 'teacher',
+          PASSWORD: 'moodle'
+        },
+        ADMIN: {
+          LOGIN: 'admin',
+          PASSWORD: 'test'
+        }
+      };
+
+  // Preparing specs.
+  for (i in paths.e2e.libs) {
+    config.specs.push(path.join(paths.e2e.buildToRoot, paths.e2e.libs[i]));
+  }
+  for (i in paths.e2e.specs) {
+    config.specs.push(path.join(paths.e2e.buildToRoot, paths.e2e.specs[i]));
+  }
+
+  // Browser.
+  if (argv.target == 'browser') {
+    config.seleniumAddress = argv.webdriver;
+    config.capabilities.browserName = argv.browser;
+    config.capabilities.chromeOptions = {
+      args: ['--allow-file-access', '--allow-file-access-from-files', '--enable-local-file-accesses']
+    };
+
+  // Android.
+  } else if (argv.target == 'android') {
+    config.seleniumAddress = argv.webdriver;
+    config.capabilities.app = path.join(__dirname, argv.apk);
+    config.capabilities.browserName = '';
+    config.capabilities.platformName = 'Android';
+    config.capabilities.platformVersion = String(argv.version);
+    config.capabilities.deviceName = 'Android Device';
+    config.capabilities.udid = argv.device;
+    config.capabilities.autoWebview = true;
+    config.capabilities.autoWebviewTimeout = 10000;
+
+  // iOS.
+  } else if (argv.target == 'ios') {
+    config.seleniumAddress = argv.webdriver;
+    if (argv.ipa.charAt(0) === '/' || argv.ipa.charAt(0) === '\\') {
+      config.capabilities.app = argv.ipa;
+    } else {
+      config.capabilities.app = path.join(__dirname, argv.ipa);
+    }
+    config.capabilities.browserName = 'iOS';
+    config.capabilities.platformName = 'iOS';
+    config.capabilities.platformVersion = String(argv.version);
+    config.capabilities.deviceName = 'iOS Device';
+    config.capabilities.udid = argv.device;
+    config.capabilities.autoWebview = true;
+    config.capabilities.autoWebviewTimeout = 10000;
+  }
+
+  // Prepend the onPrepare function.
+  onPrepare = "" +
+    "var wd = require('wd'),\n" +
+    "    protractor = require('protractor'),\n" +
+    "    wdBridge = require('wd-bridge')(protractor, wd);\n" +
+    "wdBridge.initFromProtractor(exports.config);\n" +
+    "\n" +
+    "// Define global variables for our tests.\n" +
+    "global.ISANDROID      = " + (argv.target == 'android' ? 'true' : 'false') + ";\n" +
+    "global.ISBROWSER      = " + (argv.target == 'browser' ? 'true' : 'false') + ";\n" +
+    "global.ISIOS          = " + (argv.target == 'ios' ? 'true' : 'false') + ";\n" +
+    "global.ISTABLET       = " + (argv.tablet ? 'true' : 'false') + ";\n" +
+    "global.DEVICEURL      = " + (argv.url ? "'" + argv.url + "'" : undefined) + ";\n" +
+    "global.DEVICEVERSION  = " + (argv.version ? "'" + argv.version + "'" : 'undefined') + ";\n" +
+    "global.SITEURL        = '" + (argv['site-url']) + "';\n" +
+    "global.SITEVERSION    = " + (argv['site-version']) + ";\n" +
+    "global.SITEHASLM      = " + (argv['site-has-local-mobile'] ? 'true' : 'false') + ";\n" +
+    "global.USERS          = " + JSON.stringify(users) + ";\n" +
+    "\n";
+
+  configStr = JSON.stringify(config);
+  configStr = configStr.replace('"FN_ONPREPARE_PLACEHOLDER"', "function(){" + onPrepare + "}");
+  configStr = 'exports.config = ' + configStr + ';';
+
+  gfile(argv.output, configStr, {src: true}).pipe(gulp.dest(paths.e2e.build));
 });
