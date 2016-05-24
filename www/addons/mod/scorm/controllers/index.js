@@ -132,6 +132,8 @@ angular.module('mm.addons.mod_scorm')
                 return refreshData();
             }
             return showError(message);
+        }).then(function() {
+            $scope.allDataLoaded = true;
         });
     }
 
