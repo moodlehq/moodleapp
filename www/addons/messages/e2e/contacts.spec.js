@@ -26,7 +26,11 @@ describe('User can manage their contacts', function() {
         }).then(function() {
             return MM.clickOn('Heather Reyes');
         }).then(function() {
+            return MM.clickOnElement(element(by.xpath('//a[@mm-user-link]')));
+        }).then(function() {
             return MM.clickOn('Add contact');
+        }).then(function() {
+            return MM.goBack();
         }).then(function() {
             return MM.goBack();
         }).then(function() {
@@ -50,7 +54,11 @@ describe('User can manage their contacts', function() {
         }).then(function() {
             return MM.clickOn('Anna Alexander');
         }).then(function() {
+            return MM.clickOnElement(element(by.xpath('//a[@mm-user-link]')));
+        }).then(function() {
             return MM.clickOn('Block contact');
+        }).then(function() {
+            return MM.goBack();
         }).then(function() {
             return MM.goBack();
         }).then(function() {
