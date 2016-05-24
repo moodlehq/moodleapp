@@ -9,7 +9,7 @@
         <mm-loading hide-until="scormLoaded">
 	        <mm-course-mod-description description="description"></mm-course-mod-description>
 	        <p ng-if="scorm.warningmessage">{{ scorm.warningmessage }}</p>
-	        <div ng-if="!scorm.warningmessage">
+	        <div ng-if="allDataLoaded && !scorm.warningmessage">
 	        	<!-- Attempts status -->
 	        	<div class="card" ng-if="scorm.displayattemptstatus || Object.keys(scorm.offlineAttempts).length">
 	        		<div class="item item-divider">{{ 'mma.mod_scorm.attempts' | translate }}</div>
