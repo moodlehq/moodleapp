@@ -171,10 +171,7 @@ angular.module('mm.core')
                             }
                         } else {
                             // Open a new state with the interpolated contents.
-                            $state.go('site.mm_textviewer', {
-                                title: $translate.instant('mm.core.description'),
-                                content: text
-                            });
+                            $mmText.expandText($translate.instant('mm.core.description'), text);
                         }
                     }
                 });
