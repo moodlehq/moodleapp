@@ -465,7 +465,7 @@ gulp.task('e2e-build', function() {
     config.seleniumAddress = argv.webdriver;
     config.capabilities.browserName = argv.browser;
     config.capabilities.chromeOptions = {
-      args: ['--allow-file-access', '--allow-file-access-from-files', '--enable-local-file-accesses']
+      args: ['--allow-file-access', '--allow-file-access-from-files', '--enable-local-file-accesses', '--unlimited-storage']
     };
 
   // Android.
