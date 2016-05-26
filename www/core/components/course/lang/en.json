@@ -2,6 +2,7 @@
     "activitynotyetviewable": "This activity or resource is not yet viewable in the app.",
     "activitynotyetviewablegothere": "This activity or resource is not yet viewable in the app, click the button below to access it from the site.",
     "allsections": "All sections",
+    "confirmdeletemodulefiles": "Are you sure you want to delete this module files?",
     "confirmdownload": "You are about to download {{size}}. Are you sure you want to continue?",
     "confirmdownloadunknownsize": "We were unable to calculate the size of the download. Are you sure you want to download?",
     "contents": "Contents",
