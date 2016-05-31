@@ -650,6 +650,14 @@ angular.module('mm.core')
      * @return {Promise}            Promise resolved when the entry is moved.
      */
     self.moveFile = function(originalPath, newPath) {
+        // Paths cannot start with "/".
+        if (originalPath[0] == '/') {
+            originalPath = originalPath.substr(1);
+        }
+        if (newPath[0] == '/') {
+            newPath = newPath.substr(1);
+        }
+
         return self.init().then(function() {
             if (isHTMLAPI) {
                 // In Cordova API we need to calculate the longest matching path to make it work.

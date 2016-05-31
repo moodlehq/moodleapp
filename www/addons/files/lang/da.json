@@ -15,7 +15,6 @@
     "errormustbeonlinetoupload": "Du skal være online for at uploade filer.",
     "errornoapp": "Du har ikke installeret en app som kan udføre denne handling.",
     "errorreadingfile": "Fejl ved indlæsning af fil.",
-    "errorreceivefilenosites": "Der er ingen gemte websider. Tilføj en webside inden du prøver at uploade en fil.",
     "errorwhiledownloading": "En fejl opstod ved forsøg på at indlæse filen.",
     "errorwhilerecordingaudio": "En fejl opstod ved forsøg på at optage lyd.",
     "errorwhileuploading": "En fejl opstod under upload af filen.",

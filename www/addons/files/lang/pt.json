@@ -15,7 +15,6 @@
     "errormustbeonlinetoupload": "Necessita de estar online para enviar ficheiros",
     "errornoapp": "Não possui a aplicação móvel necessária para executar esta ação.",
     "errorreadingfile": "Erro ao ler o ficheiro",
-    "errorreceivefilenosites": "Não existem sites armazenados. Por favor adicione um site antes de carregar um ficheiro.",
     "errorwhiledownloading": "Ocorreu um erro ao descarregar o ficheiro",
     "errorwhilerecordingaudio": "Ocorreu um erro durante a gravação do áudio.",
     "errorwhileuploading": "Ocorreu um erro durante o carregamento do ficheiro.",

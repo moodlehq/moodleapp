@@ -15,7 +15,6 @@
     "errormustbeonlinetoupload": "Heu d'estar connectat per pujar arxius.",
     "errornoapp": "No teniu instal·lada una app per realitzar aquesta acció.",
     "errorreadingfile": "S'ha produït un error llegint el fitxer.",
-    "errorreceivefilenosites": "No hi ha llocs web emmagatzemats. Afegiu un lloc abans d'intentar pujar un arxiu.",
     "errorwhiledownloading": "S'ha produït un error descarregant el fitxer.",
     "errorwhilerecordingaudio": "S'ha produït un error gravant l'àudio.",
     "errorwhileuploading": "S'ha produït un error penjant el fitxer.",

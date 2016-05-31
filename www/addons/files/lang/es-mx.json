@@ -15,7 +15,6 @@
     "errormustbeonlinetoupload": "Usted debe de estar en-línea para subir archivos.",
     "errornoapp": "Usted no tiene una app instalada para realizar esta acción.",
     "errorreadingfile": "Eror al leer archivo.",
-    "errorreceivefilenosites": "No hay archivos almacenados. Por favor, añada un sitio antes de intentar subir un archivo.",
     "errorwhiledownloading": "Ocurrió un error al tratar de descargar el archivo.",
     "errorwhilerecordingaudio": "Ocurrió un error al tratar de grabar audio.",
     "errorwhileuploading": "Ocurrió un error al subir un archivo.",
