@@ -14,6 +14,9 @@
 
 angular.module('mm.core')
 
+// 30s timeout for $http requests and promises.
+.constant('mmWSTimeout', 30000)
+
 /**
  * Web service module.
  *
@@ -22,12 +25,13 @@ angular.module('mm.core')
  * @name $mmWS
  */
 .factory('$mmWS', function($http, $q, $log, $mmLang, $cordovaFileTransfer, $mmApp, $mmFS, mmCoreSessionExpired,
-            mmCoreUserDeleted, $translate, $window) {
+            mmCoreUserDeleted, $translate, $window, md5, $timeout, mmWSTimeout) {
 
     $log = $log.getInstance('$mmWS');
 
     var self = {},
-        mimeTypeCache = {}; // A "cache" to store file mimetypes to prevent performing too many HEAD requests.
+        mimeTypeCache = {}, // A "cache" to store file mimetypes to prevent performing too many HEAD requests.
+        ongoingCalls = {};
 
     /**
      * A wrapper function for a moodle WebService call.
@@ -68,52 +72,116 @@ angular.module('mm.core')
 
         var ajaxData = data;
 
-        return $http.post(siteurl, ajaxData).then(function(data) {
+        var promise = getPromiseHttp('post', preSets.siteurl, ajaxData);
 
-            // Some moodle web services return null.
-            // If the responseExpected value is set then so long as no data
-            // is returned, we create a blank object.
-            if ((!data || !data.data) && !preSets.responseExpected) {
-                data = {};
-            } else {
-                data = data.data;
-            }
+        if (!promise) {
+            promise = $http.post(siteurl, ajaxData, {timeout: mmWSTimeout}).then(function(data) {
 
-            if (!data) {
-                return $mmLang.translateAndReject('mm.core.serverconnection');
-            } else if (typeof data != preSets.typeExpected) {
-                $log.warn('Response of type "' + typeof data + '" received, expecting "' + preSets.typeExpected + '"');
-                return $mmLang.translateAndReject('mm.core.errorinvalidresponse');
-            }
-
-            if (typeof(data.exception) !== 'undefined') {
-                if (data.errorcode == 'invalidtoken' ||
-                        (data.errorcode == 'accessexception' && data.message.indexOf('Invalid token - token expired') > -1)) {
-                    $log.error("Critical error: " + JSON.stringify(data));
-                    return $q.reject(mmCoreSessionExpired);
-                } else if (data.errorcode === 'userdeleted') {
-                    return $q.reject(mmCoreUserDeleted);
+                // Some moodle web services return null.
+                // If the responseExpected value is set then so long as no data
+                // is returned, we create a blank object.
+                if ((!data || !data.data) && !preSets.responseExpected) {
+                    data = {};
                 } else {
-                    return $q.reject(data.message);
+                    data = data.data;
                 }
-            }
 
-            if (typeof(data.debuginfo) != 'undefined') {
-                return $q.reject('Error. ' + data.message);
-            }
+                if (!data) {
+                    return $mmLang.translateAndReject('mm.core.serverconnection');
+                } else if (typeof data != preSets.typeExpected) {
+                    $log.warn('Response of type "' + typeof data + '" received, expecting "' + preSets.typeExpected + '"');
+                    return $mmLang.translateAndReject('mm.core.errorinvalidresponse');
+                }
 
-            $log.info('WS: Data received from WS ' + typeof(data));
+                if (typeof(data.exception) !== 'undefined') {
+                    if (data.errorcode == 'invalidtoken' ||
+                            (data.errorcode == 'accessexception' && data.message.indexOf('Invalid token - token expired') > -1)) {
+                        $log.error("Critical error: " + JSON.stringify(data));
+                        return $q.reject(mmCoreSessionExpired);
+                    } else if (data.errorcode === 'userdeleted') {
+                        return $q.reject(mmCoreUserDeleted);
+                    } else {
+                        return $q.reject(data.message);
+                    }
+                }
 
-            if (typeof(data) == 'object' && typeof(data.length) != 'undefined') {
-                $log.info('WS: Data number of elements '+ data.length);
-            }
+                if (typeof(data.debuginfo) != 'undefined') {
+                    return $q.reject('Error. ' + data.message);
+                }
 
-            return data;
+                $log.info('WS: Data received from WS ' + typeof(data));
 
-        }, function() {
-            return $mmLang.translateAndReject('mm.core.serverconnection');
-        });
+                if (typeof(data) == 'object' && typeof(data.length) != 'undefined') {
+                    $log.info('WS: Data number of elements '+ data.length);
+                }
+
+                return data;
+            }, function() {
+                return $mmLang.translateAndReject('mm.core.serverconnection');
+            });
+
+            setPromiseHttp(promise, 'post', preSets.siteurl, ajaxData);
+        }
+
+        return promise;
     };
+
+    /**
+     * Save promise on the cache.
+     *
+     * @param {Promise} promise     to be saved
+     * @param {String}  method      Method of the HTTP request.
+     * @param {String}  url         Base URL of the HTTP request.
+     * @param {Object}  [params]    Params of the HTTP request.
+     */
+    function setPromiseHttp(promise, method, url, params) {
+        var deletePromise,
+            queueItemId = getQueueItemId(method, url, params);
+
+        ongoingCalls[queueItemId] = promise;
+
+        // HTTP not finished, but we should delete the promise after timeout.
+        deletePromise = $timeout(function() {
+            delete ongoingCalls[queueItemId];
+        }, mmWSTimeout);
+
+        // HTTP finished, delete from ongoing.
+        ongoingCalls[queueItemId].finally(function() {
+            delete ongoingCalls[queueItemId];
+
+            $timeout.cancel(deletePromise);
+        });
+    }
+
+    /**
+     * Get a promise from the cache.
+     *
+     * @param {String}  method      Method of the HTTP request.
+     * @param {String}  url         Base URL of the HTTP request.
+     * @param {Object}  [params]    Params of the HTTP request.
+     */
+    function getPromiseHttp(method, url, params) {
+        var queueItemId = getQueueItemId(method, url, params);
+        if (typeof ongoingCalls[queueItemId] != 'undefined') {
+            return ongoingCalls[queueItemId];
+        }
+
+        return false;
+    }
+
+    /**
+     * Get the unique queue item id of the cache for a HTTP request.
+     *
+     * @param {String}  method      Method of the HTTP request.
+     * @param {String}  url         Base URL of the HTTP request.
+     * @param {Object}  [params]    Params of the HTTP request.
+     */
+    function getQueueItemId(method, url, params) {
+        if (params) {
+            url += '###' + serializeParams(params);
+        }
+        return method + '#' + md5.createHash(url);
+    }
 
     /**
      * Converts an objects values to strings where appropriate.
@@ -211,7 +279,7 @@ angular.module('mm.core')
         return deferred.promise;
     };
 
-    /*
+    /**
      * Perform a HEAD request to get the size of a remote file.
      *
      * @module mm.core
@@ -221,18 +289,27 @@ angular.module('mm.core')
      * @return {Promise}   Promise resolved with the size or -1 if failure.
      */
     self.getRemoteFileSize = function(url) {
-        return $http.head(url).then(function(data) {
-            var size = parseInt(data.headers('Content-Length'), 10);
-            if (size) {
-                return size;
-            }
-            return -1;
-        }).catch(function() {
-            return -1;
-        });
+        var promise = getPromiseHttp('head', url);
+
+        if (!promise) {
+            promise = $http.head(url, {timeout: mmWSTimeout}).then(function(data) {
+                var size = parseInt(data.headers('Content-Length'), 10);
+
+                if (size) {
+                    return size;
+                }
+                return -1;
+            }).catch(function() {
+                return -1;
+            });
+
+            setPromiseHttp(promise, 'head', url);
+        }
+
+        return promise;
     };
 
-    /*
+    /**
      * Perform a HEAD request to get the mimetype of a remote file.
      *
      * @module mm.core
@@ -244,16 +321,25 @@ angular.module('mm.core')
      */
     self.getRemoteFileMimeType = function(url, ignoreCache) {
         if (mimeTypeCache[url] && !ignoreCache) {
-            promise = $q.when(mimeTypeCache[url]);
+            return $q.when(mimeTypeCache[url]);
         }
 
-        return $http.head(url).then(function(data) {
-            var mimeType = data.headers('Content-Type');
-            mimeTypeCache[url] = mimeType;
-            return mimeType || '';
-        }).catch(function() {
-            return '';
-        });
+        var promise = getPromiseHttp('head', url);
+
+        if (!promise) {
+            promise = $http.head(url, {timeout: mmWSTimeout}).then(function(data) {
+                var mimeType = data.headers('Content-Type');
+                mimeTypeCache[url] = mimeType;
+
+                return mimeType || '';
+            }).catch(function() {
+                return '';
+            });
+
+            setPromiseHttp(promise, 'head', url);
+        }
+
+        return promise;
     };
 
     /**
