@@ -68,7 +68,7 @@ angular.module('mm.addons.mod_quiz')
         }).then(function() {
             if ($mmaModQuiz.isQuizOffline(quiz)) {
                 // Try to sync the quiz.
-                return syncQuiz(!refresh, false).catch(function() {
+                return syncQuiz(false).catch(function() {
                     // Ignore errors, keep getting data even if sync fails.
                     autoReview = undefined;
                 });
@@ -315,9 +315,8 @@ angular.module('mm.addons.mod_quiz')
     }
 
     // Tries to synchronize the current quiz.
-    function syncQuiz(checkTime, showErrors) {
-        var promise = checkTime ? $mmaModQuizSync.syncQuizIfNeeded(quiz, true) : $mmaModQuizSync.syncQuiz(quiz, true);
-        return promise.then(function(warnings) {
+    function syncQuiz(showErrors) {
+        return $mmaModQuizSync.syncQuiz(quiz, true).then(function(warnings) {
             var message = $mmText.buildMessage(warnings);
             if (message) {
                 $mmUtil.showErrorModal(message);
@@ -409,7 +408,7 @@ angular.module('mm.addons.mod_quiz')
         }
 
         $scope.showSpinner = true;
-        syncQuiz(false, true).then(function() {
+        syncQuiz(true).then(function() {
             // Refresh the data.
             $scope.quizLoaded = false;
             scrollView.scrollTop();
