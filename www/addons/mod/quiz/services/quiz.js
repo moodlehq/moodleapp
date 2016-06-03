@@ -811,7 +811,7 @@ angular.module('mm.addons.mod_quiz')
                 });
 
                 if (quizEntry) {
-                    if (quizEntry.feedback.content) {
+                    if (quizEntry.feedback && quizEntry.feedback.content) {
                         result.feedback = $mmText.decodeHTML(quizEntry.feedback.content).trim();
                     } else {
                         result.feedback = '';
