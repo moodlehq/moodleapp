@@ -97,6 +97,8 @@ angular.module('mm.addons.mod_glossary')
     $mmaModGlossary.getGlossary(courseId, module.id).then(function(mod) {
         glossary = mod;
 
+        $scope.description = glossary.intro || module.description;
+
         // Preparing browse modes.
         if (glossary.browsemodes.indexOf('date') >= 0) {
             browseModes.push({key: 'newest_first', langkey: 'mma.mod_glossary.bynewestfirst'});
