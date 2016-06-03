@@ -90,6 +90,11 @@ angular.module('mm.core.sharedfiles')
      */
     self.searchIOSNewSharedFiles = function() {
         return $mmApp.ready().then(function() {
+            if ($state.$current.name == 'site.sharedfiles-choose-site') {
+                // We're already treating a shared file. Abort.
+                return $q.reject();
+            }
+
             return $mmSharedFiles.checkIOSNewFiles().then(function(fileEntry) {
                 return $mmSitesManager.getSitesIds().then(function(siteIds) {
                     if (!siteIds.length) {
