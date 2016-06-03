@@ -44,9 +44,9 @@
                     <li ng-if="plan.competencycount == 0" class="item item-text-wrap">
                         {{ 'mma.competency.nocompetencies' | translate }}
                     </li>
-                    <a ng-repeat="competency in plan.competencies" class="item item-text-wrap" ng-click="gotoCompetency(competency.competency.id)" title="{{competency.competency.shortname}}">
+                    <a ng-repeat="competency in plan.competencies" class="item item-text-wrap clearfix" ng-click="gotoCompetency(competency.competency.id)" title="{{competency.competency.shortname}}">
                         {{competency.competency.shortname}} <small>{{competency.competency.idnumber}}</small>
-                        <span ng-class="{'badge-balanced': competency.usercompetency.proficiency, 'badge-assertive': !competency.usercompetency.proficiency}" class="badge">{{ competency.usercompetency.gradename }}</span><br>
+                        <span ng-class="{'badge-balanced': competency.usercompetency.proficiency, 'badge-assertive': !competency.usercompetency.proficiency}" class="badge badge-inline item-note">{{ competency.usercompetency.gradename }}</span><br>
 
                     </a>
                 </ul>
