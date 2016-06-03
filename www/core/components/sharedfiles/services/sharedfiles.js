@@ -127,6 +127,23 @@ angular.module('mm.core.sharedfiles')
     };
 
     /**
+     * Get the shared files stored in a site.
+     *
+     * @module mm.core.sharedfiles
+     * @ngdoc method
+     * @name $mmSharedFiles#getSiteSharedFiles
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with the files.
+     */
+    self.getSiteSharedFiles = function(siteId) {
+        siteId = siteId || $mmSite.getId();
+        return $mmFS.getDirectoryContents(self.getSiteSharedFilesDirPath(siteId)).catch(function() {
+            // Directory not found, return empty list.
+            return [];
+        });
+    };
+
+    /**
      * Get the path to a site's shared files folder.
      *
      * @module mm.core.sharedfiles

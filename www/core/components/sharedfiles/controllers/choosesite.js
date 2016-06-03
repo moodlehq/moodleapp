@@ -32,9 +32,6 @@ angular.module('mm.core.sharedfiles')
         $mmUtil.showErrorModal('Error reading file.');
         $ionicHistory.goBack();
         return;
-    } else if (filePath[0] == '/') {
-        // Remove first slash, path needs to be relative.
-        filePath = filePath.substr(1);
     }
 
     $scope.filename = fileAndDir.name;

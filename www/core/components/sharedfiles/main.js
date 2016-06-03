@@ -38,7 +38,17 @@ angular.module('mm.core.sharedfiles', ['mm.core'])
         }
     }))
 
-    .state('mm_login.sharedfiles-choose-site', angular.extend(angular.copy(chooseSiteState), chooseSiteView));
+    .state('mm_login.sharedfiles-choose-site', angular.extend(angular.copy(chooseSiteState), chooseSiteView))
+
+    .state('site.sharedfiles-manage', {
+        url: '/sharedfiles-manage',
+        views: {
+            'site': {
+                templateUrl: 'core/components/sharedfiles/templates/manage.html',
+                controller: 'mmSharedFilesManageCtrl'
+            }
+        }
+    });
 })
 
 .run(function($mmSharedFilesHelper, $ionicPlatform) {

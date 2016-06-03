@@ -120,11 +120,7 @@ angular.module('mm.core.sharedfiles')
         siteId = siteId || $mmSite.getId();
 
         // First of all check if there's already a file with the same name in the shared files folder.
-        var sharedFilesFolder = $mmSharedFiles.getSiteSharedFilesDirPath(siteId);
-        return $mmFS.getDirectoryContents(sharedFilesFolder).catch(function() {
-            // Folder doesn't exist, no files inside.
-            return [];
-        }).then(function(entries) {
+        return $mmSharedFiles.getSiteSharedFiles(siteId).then(function(entries) {
             var files = {};
 
             // Index the files by name.
