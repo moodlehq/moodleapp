@@ -405,6 +405,12 @@ mm-timer {
   font-family: Andale Mono,Monaco,Courier New,DejaVu Sans Mono,monospace;
 }
 
+// Context Menu
+
+.popover.mm-context-menu {
+  width: 320px;
+}
+
 /**
  * This CSS uses adjacent selectors instead of general sibling (~) selectors
  * for ion radio that are broken in iOS 9 UIWebView.

@@ -21,7 +21,7 @@ angular.module('mm.core')
  * @description
  * This service provides functions related to text, like formatting texts from Moodle.
  */
-.factory('$mmText', function($q, $mmLang, $translate) {
+.factory('$mmText', function($q, $mmLang, $translate, $state) {
 
     var self = {},
         extensionRegex = new RegExp('^[a-z0-9]+$');
@@ -159,6 +159,25 @@ angular.module('mm.core')
             text += '&hellip;';
         }
         return text;
+    };
+
+    /**
+     * Shows a text on a new State
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#expandText
+     * @param  {String} title Title of the new state.
+     * @param  {String} text  Content of the text to be expanded.
+     */
+    self.expandText = function(title, text) {
+        if (text.length > 0) {
+            // Open a new state with the interpolated contents.
+            $state.go('site.mm_textviewer', {
+                title: title,
+                content: text
+            });
+        }
     };
 
     /**

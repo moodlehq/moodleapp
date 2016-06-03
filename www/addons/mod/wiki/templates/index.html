@@ -3,7 +3,12 @@
     <ion-nav-buttons side="secondary">
         <button ng-if="subwikiData.count > 1" class="button button-icon ion-person-stalker" ng-click="showSubwikiPicker($event)" aria-label="{{ 'mma.mod_wiki.subwiki' | translate }}"></button>
         <a class="button button-icon ion-home" ng-if="showHomeButton" ng-click="goHomeWiki()" mm-link aria-label="{{ 'mma.mod_wiki.gowikihome' | translate }}"></a>
-        <a class="button button-icon ion-ios-browsers-outline" ng-if="moduleUrl" ng-href="{{moduleUrl}}" mm-link aria-label="{{ 'mm.core.openinbrowser' | translate }}"></a>
+        <mm-context-menu>
+            <mm-context-menu-item priority="900" ng-if="moduleUrl" href="{{moduleUrl}}" content="{{ 'mm.core.openinbrowser' | translate }}" icon-action="ion-share"></mm-context-menu-item>
+            <mm-context-menu-item priority="800" ng-if="description" content="{{'mm.core.moduleintro' | translate }}" action="expandDescription()" icon-action="ion-arrow-right-c"></mm-context-menu-item>
+            <mm-context-menu-item priority="700" ng-if="timemodified" content="{{timemodified}}" icon-action="{{prefetchStatusIcon}}" action="prefetch()" close-on-click="false"></mm-context-menu-item>
+            <mm-context-menu-item priority="600" ng-if="size" content="{{size}}" icon-description="ion-cube" icon-action="ion-trash-a" action="removeFiles()"></mm-context-menu-item>
+        </mm-context-menu>
     </ion-nav-buttons>
     <ion-tabs class="tabs-icon-top" delegate-handle="{{tabsDelegateName}}">
         <ion-tab title="{{ 'mma.mod_wiki.viewpage' | translate }}" icon="ion-document">
