@@ -24,7 +24,8 @@ angular.module('mm.core.sharedfiles')
     $mmAppProvider.registerStores(stores);
 })
 
-.factory('$mmSharedFiles', function($mmFS, $q, $log, $mmApp, $mmSite, md5, mmSharedFilesStore, mmSharedFilesFolder) {
+.factory('$mmSharedFiles', function($mmFS, $q, $log, $mmApp, $mmSite, $mmEvents, md5, mmSharedFilesStore, mmSharedFilesFolder,
+            mmSharedFilesEventFileShared) {
 
     $log = $log.getInstance('$mmSharedFiles');
 
@@ -217,7 +218,10 @@ angular.module('mm.core.sharedfiles')
 
         // Create dir if it doesn't exist already.
         return $mmFS.createDir(sharedFilesFolder).then(function() {
-            return $mmFS.moveFile(entry.fullPath, newPath);
+            return $mmFS.moveFile(entry.fullPath, newPath).then(function(newFile) {
+                $mmEvents.trigger(mmSharedFilesEventFileShared, {siteid: siteId, name: newName});
+                return newFile;
+            });
         });
     };
 

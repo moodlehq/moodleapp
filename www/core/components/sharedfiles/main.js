@@ -16,6 +16,7 @@ angular.module('mm.core.sharedfiles', ['mm.core'])
 
 .constant('mmSharedFilesFolder', 'sharedfiles')
 .constant('mmSharedFilesStore', 'shared_files')
+.constant('mmSharedFilesEventFileShared', 'file_shared')
 
 .config(function($stateProvider) {
 
