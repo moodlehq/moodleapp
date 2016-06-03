@@ -799,6 +799,12 @@ angular.module('mm.core')
      * @return {String}          Concatenated path.
      */
     self.concatenatePaths = function(leftPath, rightPath) {
+        if (!leftPath) {
+            return rightPath;
+        } else if (!rightPath) {
+            return leftPath;
+        }
+
         var lastCharLeft = leftPath.slice(-1),
             firstCharRight = rightPath.charAt(0);
 

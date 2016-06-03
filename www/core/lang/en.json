@@ -44,6 +44,7 @@
     "erroropenpopup": "This activity is trying to open a popup. This is not supported in this app.",
     "errorrenamefile": "Error renaming the file. Please try again.",
     "filename": "Filename",
+    "folder": "Folder",
     "help" : "Help",
     "hour" : "hour",
     "hours" : "hours",

@@ -133,11 +133,18 @@ angular.module('mm.core.sharedfiles')
      * @ngdoc method
      * @name $mmSharedFiles#getSiteSharedFiles
      * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @param  {String} [path]   Path to search inside the site shared folder.
      * @return {Promise}         Promise resolved with the files.
      */
-    self.getSiteSharedFiles = function(siteId) {
+    self.getSiteSharedFiles = function(siteId, path) {
         siteId = siteId || $mmSite.getId();
-        return $mmFS.getDirectoryContents(self.getSiteSharedFilesDirPath(siteId)).catch(function() {
+
+        var pathToGet = self.getSiteSharedFilesDirPath(siteId);
+        if (path) {
+            pathToGet = $mmFS.concatenatePaths(pathToGet, path);
+        }
+
+        return $mmFS.getDirectoryContents(pathToGet).catch(function() {
             // Directory not found, return empty list.
             return [];
         });

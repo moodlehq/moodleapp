@@ -42,6 +42,9 @@ angular.module('mm.core.sharedfiles', ['mm.core'])
 
     .state('site.sharedfiles-manage', {
         url: '/sharedfiles-manage',
+        params: {
+            path: null
+        },
         views: {
             'site': {
                 templateUrl: 'core/components/sharedfiles/templates/manage.html',

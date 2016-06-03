@@ -21,10 +21,19 @@ angular.module('mm.core.sharedfiles')
  * @ngdoc controller
  * @name mmSharedFilesManageCtrl
  */
-.controller('mmSharedFilesManageCtrl', function($scope, $mmSharedFiles, $ionicScrollDelegate) {
+.controller('mmSharedFilesManageCtrl', function($scope, $stateParams, $mmSharedFiles, $ionicScrollDelegate, $state, $mmFS,
+            $translate) {
+
+    var path = $stateParams.path || '';
+
+    if (path) {
+        $scope.title = $mmFS.getFileAndDirectoryFromPath(path).name;
+    } else {
+        $scope.title = $translate.instant('mm.sharedfiles.sharedfiles');
+    }
 
     function loadFiles() {
-        return $mmSharedFiles.getSiteSharedFiles().then(function(files) {
+        return $mmSharedFiles.getSiteSharedFiles(undefined, path).then(function(files) {
             $scope.files = files;
         });
     }
@@ -43,5 +52,9 @@ angular.module('mm.core.sharedfiles')
     $scope.fileDeleted = function(index) {
         $scope.files.splice(index, 1);
         $ionicScrollDelegate.resize(); // Resize scroll area.
+    };
+
+    $scope.openFolder = function(folder) {
+        $state.go('site.sharedfiles-manage', {path: $mmFS.concatenatePaths(path, folder.name)});
     };
 });
