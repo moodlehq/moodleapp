@@ -1910,6 +1910,21 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
+     * Check if a question is blocked.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuiz#isQuestionBlocked
+     * @param  {Object} question Question.
+     * @return {Boolean}         True if blocked, false otherwise.
+     */
+    self.isQuestionBlocked = function(question) {
+        var div = document.createElement('div');
+        div.innerHTML = question.html;
+        return !!div.querySelector('.mod_quiz-blocked_question_warning');
+    };
+
+    /**
      * Check if a quiz is being played right now.
      *
      * @module mm.addons.mod_quiz
