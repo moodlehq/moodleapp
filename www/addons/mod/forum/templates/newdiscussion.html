@@ -16,7 +16,7 @@
                     <div class="input-label" id="mma-forum-groupslabel">
                         {{ 'mma.mod_forum.group' | translate }}
                     </div>
-                    <select ng-model="newdiscussion.groupid" ng-options="group.id as group.name for group in groups" aria-labelledby="mma-forum-groupslabel">
+                    <select ng-model="newdiscussion.groupid" ng-options="group.id as group.name for group in groups" aria-labelledby="mma-forum-groupslabel" mm-ios-select-fix>
                     </select>
                 </div>
                 <li class="item item-toggle item-text-wrap">

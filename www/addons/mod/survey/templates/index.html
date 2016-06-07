@@ -40,7 +40,7 @@
                             </div>
                             <!-- Phone view: select -->
                             <div ng-if="!isTablet" class="col-40 text-center item-select">
-                                <select class="mma-mod_survey-select" ng-model="answers[question.name]" ng-options="question.options.indexOf(o)+1 as o for o in question.options" aria-labelledby="mma-mod_survey-{{question.name}}">
+                                <select class="mma-mod_survey-select" ng-model="answers[question.name]" ng-options="question.options.indexOf(o)+1 as o for o in question.options" aria-labelledby="mma-mod_survey-{{question.name}}" mm-ios-select-fix>
                                     <option class="mma-mod_survey-defaultoption" value="" disabled selected>{{ 'mm.core.choose' | translate }}</option>
                                 </select>
                             </div>
@@ -52,7 +52,7 @@
                             <div id="mma-mod_survey-{{question.name}}" class="col" ng-class="{'col-50': isTablet, 'col-60': !isTablet}"><strong>{{question.num}}</strong> {{ question.text }}</div>
                             <div class="text-center" ng-class="{'item-select': question.type > 0, 'col-50': isTablet, 'col-40': !isTablet, 'item-input item-stacked-label': question.type == 0}">
                                 <textarea ng-if="question.type === 0" ng-model="answers[question.name]" class="mma-mod_survey-textarea no-resize" aria-labelledby="mma-mod_survey-{{question.name}}" aria-multiline="true"></textarea>
-                                <select class="mma-mod_survey-select" ng-if="question.type > 0" ng-model="answers[question.name]" ng-options="i as o for (i,o) in question.options" aria-labelledby="mma-mod_survey-{{question.name}}">
+                                <select class="mma-mod_survey-select" ng-if="question.type > 0" ng-model="answers[question.name]" ng-options="i as o for (i,o) in question.options" aria-labelledby="mma-mod_survey-{{question.name}}" mm-ios-select-fix>
                                 </select>
                             </div>
                         </div>
