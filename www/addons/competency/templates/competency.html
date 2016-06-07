@@ -41,7 +41,8 @@
                         </span>
                         <ul ng-if="coursemodules.length > 0">
                             <li ng-repeat="activity in coursemodules">
-                                <a mm-link capture-link="true" class="item item-text-wrap mm-course-module-handler" href="{{ activity.url }}" title="{{ activity.name }}">
+                                <a mm-link capture-link="true" class="item item-text-wrap mm-course-module-handler item-media" href="{{ activity.url }}" title="{{ activity.name }}">
+                                    <img ng-src="{{ activity.iconurl }}" mm-external-content alt="" role="presentation" ng-if="activity.iconurl">
                                     <mm-format-text watch="true">{{ activity.name }}</mm-format-text>
                                 </a>
                             </li>
