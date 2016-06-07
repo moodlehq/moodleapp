@@ -25,7 +25,8 @@ angular.module('mm.core.sharedfiles')
             $translate, $mmEvents, $mmSite, mmSharedFilesEventFileShared) {
 
     var path = $stateParams.path || '',
-        shareObserver;
+        shareObserver,
+        siteId = $mmSite.getId();
 
     if (path) {
         $scope.title = $mmFS.getFileAndDirectoryFromPath(path).name;
@@ -34,7 +35,7 @@ angular.module('mm.core.sharedfiles')
     }
 
     function loadFiles() {
-        return $mmSharedFiles.getSiteSharedFiles(undefined, path).then(function(files) {
+        return $mmSharedFiles.getSiteSharedFiles(siteId, path).then(function(files) {
             $scope.files = files;
         });
     }
@@ -45,7 +46,7 @@ angular.module('mm.core.sharedfiles')
 
     // Listen for new files shared with the app.
     shareObserver = $mmEvents.on(mmSharedFilesEventFileShared, function(data) {
-        if (data.siteid == $mmSite.getId()) {
+        if (data.siteid == siteId) {
             // File was stored in current site, refresh the list.
             $scope.filesLoaded = false;
             loadFiles().finally(function() {
@@ -69,6 +70,15 @@ angular.module('mm.core.sharedfiles')
     // Open a subfolder.
     $scope.openFolder = function(folder) {
         $state.go('site.sharedfiles-manage', {path: $mmFS.concatenatePaths(path, folder.name)});
+    };
+
+    // Change site loaded.
+    $scope.changeSite = function(sid) {
+        siteId = sid;
+        $scope.filesLoaded = false;
+        loadFiles().finally(function() {
+            $scope.filesLoaded = true;
+        });
     };
 
     $scope.$on('$destroy', function() {
