@@ -365,6 +365,8 @@ angular.module('mm.core')
             notification.data = notification.data || {};
             notification.data.component = component;
             notification.data.siteid = siteid;
+            notification.icon = notification.icon || 'res://icon';
+            notification.smallIcon = notification.smallIcon || 'res://icon';
 
             return self.isTriggered(notification).then(function(triggered) {
                 if (!triggered) {

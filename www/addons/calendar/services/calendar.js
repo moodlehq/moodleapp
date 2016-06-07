@@ -377,7 +377,6 @@ angular.module('mm.addons.calendar')
                         title: event.name,
                         text: startDate.toLocaleString(),
                         at: dateTriggered,
-                        smallIcon: 'res://icon',
                         data: {
                             eventid: event.id,
                             siteid: siteid
