@@ -33,6 +33,7 @@ angular.module('mm.core')
  *               E.g. 50% of an element with 1000px width = 500 characters.
  *               If the element has no width it'll use 100 characters. If the attribute is empty it'll use 30% width.
  *     -expand-on-click: Indicate if contents should be expanded on click (undo shorten). Only applied if "shorten" is set.
+ *     -expand-title: Page title to used in expanded/fullview. Default: Description.
  *     -fullview-on-click: Indicate if should open a new state with the full contents on click. Only applied if "shorten" is set.
  *     -not-adapt-img: True if we don't want to adapt images to the screen size and add the "openfullimage" icon.
  *     -watch: True if the variable used inside the directive should be watched for changes. If the variable data is retrieved
@@ -171,7 +172,7 @@ angular.module('mm.core')
                             }
                         } else {
                             // Open a new state with the interpolated contents.
-                            $mmText.expandText($translate.instant('mm.core.description'), text);
+                            $mmText.expandText(attrs.expandTitle || $translate.instant('mm.core.description'), text);
                         }
                     }
                 });

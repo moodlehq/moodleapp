@@ -15,16 +15,22 @@
 angular.module('mm.addons.mod_assign')
 
 /**
- * Assign submission controller.
+ * Directive to render assign feedback edit pdf.
  *
  * @module mm.addons.mod_assign
- * @ngdoc controller
- * @name mmaModAssignSubmissionCtrl
+ * @ngdoc directive
+ * @name mmaModAssignFeedbackEditpdf
  */
-.controller('mmaModAssignSubmissionCtrl', function($scope, $stateParams, mmaModAssignSubmissionComponent) {
-    var submission = $stateParams.submission || {};
-
-    $scope.title = submission.userfullname;
-    $scope.submission = submission;
-    $scope.component = mmaModAssignSubmissionComponent;
+.directive('mmaModAssignFeedbackEditpdf', function($mmaModAssign) {
+    return {
+        restrict: 'A',
+        priority: 100,
+        templateUrl: 'addons/mod/assign/feedback/editpdf/template.html',
+        link: function(scope) {
+            if (!scope.plugin) {
+                return;
+            }
+            scope.files = $mmaModAssign.getSubmissionPluginAttachments(scope.plugin);
+        }
+    };
 });

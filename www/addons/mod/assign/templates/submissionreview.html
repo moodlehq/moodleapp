@@ -1,0 +1,16 @@
+<ion-view>
+    <ion-nav-title>{{ user.fullname }}</ion-nav-title>
+    <ion-content padding="true" mm-state-class>
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="assignmentSubmissionLoaded" on-refresh="refreshSubmission()"></ion-refresher>
+        <mm-loading hide-until="assignmentSubmissionLoaded">
+            <a ng-if="user" class="item item-avatar" mm-user-link userid="{{submitid}}" courseid="{{courseid}}" title="{{user.fullname}}">
+                <img ng-src="{{user.profileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: user.fullname} }}" role="presentation">
+                <p>{{user.fullname}}</p>
+            </a>
+            <div ng-if="!user" class="item">
+                {{ 'mma.mod_assign.hiddenuser' | translate }}{{blindid}}
+            </div>
+            <mma-mod-assign-submission submitid="{{submitid}}" blindid="{{blindid}}" courseid="{{courseid}}" moduleid="{{moduleid}}"></mma-mod-assign-submission>
+        </mm-loading>
+    </ion-content>
+</ion-view>
