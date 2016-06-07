@@ -15,7 +15,6 @@
     "errormustbeonlinetoupload": "Dateien können nur online hochgeladen werden.",
     "errornoapp": "Keine App zum Ausführen dieser Aktion gefunden",
     "errorreadingfile": "Fehler beim Lesen der Datei",
-    "errorreceivefilenosites": "Bisher ist noch keine Website gespeichert. Fügen Sie eine Website hinzu, bevor Sie das Hochladen einer Datei versuchen.",
     "errorwhiledownloading": "Fehler beim Herunterladen der Datei",
     "errorwhilerecordingaudio": "Fehler bei der Audioaufnahme",
     "errorwhileuploading": "Fehler beim Hochladen der Datei",

@@ -15,7 +15,6 @@
     "errormustbeonlinetoupload": "Při nahrávání souboru musíte být online.",
     "errornoapp": "Pro provedení této akce nemáte nainstalovanou aplikaci .",
     "errorreadingfile": "Chyba při čtení souboru.",
-    "errorreceivefilenosites": "Nejsou uloženy žádné stránky. Než se pokusíte nahrát soubor, přidejte prosím stránku.",
     "errorwhiledownloading": "Při pokusu o stažení souboru došlo k chybě .",
     "errorwhilerecordingaudio": "Při pokusu o  o záznam zvuku došlo k chybě .",
     "errorwhileuploading": "Při pokusu o nahrání souboru došlo k chybě .",

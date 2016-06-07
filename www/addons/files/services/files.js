@@ -14,18 +14,7 @@
 
 angular.module('mm.addons.files')
 
-.config(function($mmAppProvider, mmaFilesSharedFilesStore) {
-    var stores = [
-        {
-            name: mmaFilesSharedFilesStore,
-            keyPath: 'id'
-        }
-    ];
-    $mmAppProvider.registerStores(stores);
-})
-
-.factory('$mmaFiles', function($mmSite, $mmFS, $q, $timeout, $log, $mmSitesManager, $mmApp, md5,
-            mmaFilesSharedFilesStore) {
+.factory('$mmaFiles', function($mmSite, $mmFS, $q, $timeout, $log, $mmSitesManager, md5) {
 
     $log = $log.getInstance('$mmaFiles');
 
@@ -49,88 +38,6 @@ angular.module('mm.addons.files')
      */
     self.canAccessFiles = function() {
         return $mmSite.wsAvailable('core_files_get_files');
-    };
-
-    /**
-     * Checks if there is a new file received in iOS. If more than one file is found, treat only the first one.
-     * The file returned is marked as "treated" and will be deleted in the next execution.
-     *
-     * @module mm.addons.files
-     * @ngdoc method
-     * @name $mmaFiles#checkIOSNewFiles
-     * @return {Promise} Promise resolved with a new file to be treated. If no new files found, promise is rejected.
-     */
-    self.checkIOSNewFiles = function() {
-
-        var deferred = $q.defer();
-
-        $log.debug('Search for new files on iOS');
-        $mmFS.getDirectoryContents('Inbox').then(function(entries) {
-
-            if (entries.length > 0) {
-
-                var promises = [];
-                angular.forEach(entries, function(entry) {
-
-                    var fileDeferred = $q.defer(),
-                        fileId = md5.createHash(entry.name);
-
-                    // Check if file was already treated.
-                    $mmApp.getDB().get(mmaFilesSharedFilesStore, fileId).then(function() {
-                        // File already treated. Delete it.
-                        $log.debug('Delete already treated file: ' + entry.name);
-                        fileDeferred.resolve();
-
-                        entry.remove(function() {
-                            $log.debug('File deleted: ' + entry.name);
-                            $mmApp.getDB().remove(mmaFilesSharedFilesStore, fileId).then(function() {
-                                $log.debug('"Treated" mark removed from file: ' + entry.name);
-                            }, function() {
-                                $log.debug('Error deleting "treated" mark from file: ' + entry.name);
-                            });
-                        }, function() {
-                            $log.debug('Error deleting file in Inbox: ' + entry.name);
-                        });
-
-                    }, function() {
-                        // File not treated before, send it to resolve so it's a candidate to be notified.
-                        $log.debug('Found new file ' + entry.name + ' shared with the app.');
-                        fileDeferred.resolve(entry);
-                    });
-
-                    promises.push(fileDeferred.promise);
-                });
-
-                $q.all(promises).then(function(responses) {
-                    var fileToReturn,
-                        fileId;
-                    for (var i = 0; i < responses.length; i++) {
-                        if (typeof(responses[i]) !== 'undefined') {
-                            // Found new entry to treat.
-                            fileToReturn = responses[i];
-                            break;
-                        }
-                    }
-                    if (fileToReturn) {
-                        fileId = md5.createHash(fileToReturn.name);
-                        // Mark it as "treated".
-                        $mmApp.getDB().insert(mmaFilesSharedFilesStore, {id: fileId}).then(function() {
-                            $log.debug('File marked as "treated": ' + fileToReturn.name);
-                            deferred.resolve(fileToReturn);
-                        }, function() {
-                            $log.debug('Error marking file as "treated": ' + fileToReturn.name);
-                            deferred.reject();
-                        });
-                    } else {
-                        deferred.reject();
-                    }
-                }, deferred.reject);
-            } else {
-                deferred.reject();
-            }
-        });
-
-        return deferred.promise;
     };
 
     /**

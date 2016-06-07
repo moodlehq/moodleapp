@@ -6,7 +6,6 @@
     "errorcapturingaudio": "Błąd poczas nagrywania dźwięku",
     "errorcapturingvideo": "Błąd podczas przechwytywania wideo",
     "errorreadingfile": "Błąd podczas odczytu pliku \"{$a}\"",
-    "errorreceivefilenosites": "Brak zachowanych stron. Dodaj stronę zanim będziesz próbować wysłać plik.",
     "file": "Plik",
     "fileuploaded": "Plik wysłany",
     "myfiles": "Moje pliku",

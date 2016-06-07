@@ -71,7 +71,9 @@ angular.module('mm.core')
         $log = $log.getInstance('$mmUtil');
 
         var self = {}, // Use 'self' to be coherent with the rest of services.
-            matchesFn;
+            matchesFn,
+            inputSupportKeyboard = ['date', 'datetime', 'datetime-local', 'email', 'month', 'number', 'password',
+                'search', 'tel', 'text', 'time', 'url', 'week'];
 
         /**
          * Formats a URL, trim, lowercase, etc...
@@ -1494,6 +1496,39 @@ angular.module('mm.core')
 
             ];
             return error && localErrors.indexOf(error) == -1;
+        };
+
+        /**
+         * Focus an element and open keyboard.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#focusElement
+         * @param  {Object} el DOM element to focus.
+         * @return {Void}
+         */
+        self.focusElement = function(el) {
+            if (el && el.focus) {
+                el.focus();
+                if (ionic.Platform.isAndroid() && self.supportsInputKeyboard(el)) {
+                    // On some Android versions the keyboard doesn't open automatically.
+                    $mmApp.openKeyboard();
+                }
+            }
+        };
+
+        /**
+         * Check if an element supports input via keyboard.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#supportsInputKeyboard
+         * @param  {Object} el DOM element to check.
+         * @return {Boolean}   True if supports input using keyboard.
+         */
+        self.supportsInputKeyboard = function(el) {
+            return el && !el.disabled && (el.tagName.toLowerCase() == 'textarea' ||
+                (el.tagName.toLowerCase() == 'input' && inputSupportKeyboard.indexOf(el.type) != -1));
         };
 
         return self;

@@ -15,7 +15,6 @@
     "errormustbeonlinetoupload": "Du måste vara online för att ladda upp filer.",
     "errornoapp": "Du behöver att ha en app installerat för att utföra den här åtgärden.",
     "errorreadingfile": "Fel vid läsning av fil.",
-    "errorreceivefilenosites": "Det finns inga webbsidor sparade. Lägg till en sida innan du försöker ladda upp en fil.",
     "errorwhiledownloading": "Ett fel uppstod vid försök att ladda ner filen.",
     "errorwhilerecordingaudio": "Ett fel uppstod vid försök att spela in ljud.",
     "errorwhileuploading": "Ett fel uppstod under filöverföringen.",

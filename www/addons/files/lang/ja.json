@@ -6,7 +6,6 @@
     "errorcapturingaudio": "音声キャプチャーのエラー",
     "errorcapturingvideo": "ビデオキャプチャーのエラー",
     "errorreadingfile": "ファイル\"{$a}\"の読み取りエラー",
-    "errorreceivefilenosites": "登録されているサイトがありません。ファイルをアップロードする前にサイトを追加してください。",
     "file": "ファイル",
     "fileuploaded": "アップロードしたファイル",
     "myfiles": "マイファイル",

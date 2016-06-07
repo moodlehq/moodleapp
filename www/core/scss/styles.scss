@@ -47,6 +47,12 @@ $mm-timer-warn-color:     #f00 !default;
 $mm-timer-color:          #fff !default;
 $mm-timer-iterations:     15 !default;
 
+// Text with icon.
+$mm-text-with-icon-height: 22px !default;
+
+// Smaller button icon.
+$mm-button-icon-small-height: 22px !default;
+
 /**
  * Styles revert.
  */
@@ -409,6 +415,38 @@ mm-timer {
 
 .popover.mm-context-menu {
   width: 320px;
+}
+
+// Inline icons and inputs.
+
+.mm-text-with-icon-right {
+  line-height: $mm-text-with-icon-height;
+  .icon {
+    font-size: $mm-text-with-icon-height;
+    padding: 0 5px;
+    color: $positive;
+  }
+}
+
+.mm-full-width {
+  width: 100%;
+}
+
+.item-input-inset.mm-input-inset-no-padding {
+  padding: 0;
+}
+
+.button.mm-button-icon-small {
+  padding: 0 3px;
+  min-height: $mm-button-icon-small-height;
+
+  .icon:before {
+    font-size: $mm-button-icon-small-height;
+  }
+}
+
+.item-input-wrapper ~ .button.mm-button-icon-small {
+  margin-left: 5px;
 }
 
 /**

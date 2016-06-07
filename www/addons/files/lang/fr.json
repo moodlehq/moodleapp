@@ -15,7 +15,6 @@
     "errormustbeonlinetoupload": "Vous devez être en ligne pour déposer des fichiers.",
     "errornoapp": "Vous n'avez pas d'app installée pour effectuer cette action.",
     "errorreadingfile": "Erreur de lecture du fichier « {{$a}} »",
-    "errorreceivefilenosites": "Aucun site enregistré. Veuillez ajouter un site avant de déposer un fichier.",
     "errorwhiledownloading": "Une erreur est survenue lors du téléchargement du fichier.",
     "errorwhilerecordingaudio": "Une erreur est survenue lors de l'enregistrement audio.",
     "errorwhileuploading": "Une erreur est survenue lors du dépôt du fichier.",

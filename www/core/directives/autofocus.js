@@ -21,7 +21,7 @@ angular.module('mm.core')
  * @ngdoc directive
  * @name mmAutoFocus
  */
-.directive('mmAutoFocus', function($mmApp) {
+.directive('mmAutoFocus', function($mmUtil) {
     return {
         restrict: 'A',
         link: function(scope, el) {
@@ -30,12 +30,8 @@ angular.module('mm.core')
                 return ionic.transition.isActive;
             }, function(isActive) {
                 if (!isActive) {
-                    el[0].focus();
+                    $mmUtil.focusElement(el[0]);
                     unregister(); // Stop watching.
-                    if (ionic.Platform.isAndroid()) {
-                        // On some Android versions the keyboard doesn't open automatically.
-                        $mmApp.openKeyboard();
-                    }
                 }
             });
         }
