@@ -90,12 +90,13 @@ angular.module('mm.core')
         return exists;
     }
 
-    this.$get = function($mmDB, $cordovaNetwork, $log, $injector, $ionicPlatform) {
+    this.$get = function($mmDB, $cordovaNetwork, $log, $injector, $ionicPlatform, $timeout, $q) {
 
         $log = $log.getInstance('$mmApp');
 
         var db,
-            self = {};
+            self = {},
+            ssoAuthenticationDeferred;
 
         /**
          * Create a new state in the UI-router.
@@ -271,6 +272,71 @@ angular.module('mm.core')
         self.ready = function() {
             // Injects to prevent circular dependencies.
             return $injector.get('$mmInitDelegate').ready();
+        };
+
+        /**
+         * Start an SSO authentication process.
+         * Please notice that this function should be called when the app receives the new token from the browser,
+         * NOT when the browser is opened.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#startSSOAuthentication
+         * @return {Void}
+         */
+        self.startSSOAuthentication = function() {
+            var cancelPromise;
+            ssoAuthenticationDeferred = $q.defer();
+
+            // Resolve it automatically after 10 seconds (it should never take that long).
+            cancelPromise = $timeout(function() {
+                self.finishSSOAuthentication();
+            }, 10000);
+
+            // If the promise is resolved because finishSSOAuthentication is called, stop the cancel promise.
+            ssoAuthenticationDeferred.promise.finally(function() {
+                $timeout.cancel(cancelPromise);
+            });
+        };
+
+        /**
+         * Finish an SSO authentication process.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#finishSSOAuthentication
+         * @return {Void}
+         */
+        self.finishSSOAuthentication = function() {
+            ssoAuthenticationDeferred && ssoAuthenticationDeferred.resolve();
+            ssoAuthenticationDeferred = undefined;
+        };
+
+        /**
+         * Check if there's an ongoing SSO authentication process.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#isSSOAuthenticationOngoing
+         * @return {Boolean} True if SSO authentication ongoing, false otherwise.
+         */
+        self.isSSOAuthenticationOngoing = function() {
+            return !!ssoAuthenticationDeferred;
+        };
+
+        /**
+         * Returns a promise that will be resolved once SSO authentication finishes.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#waitForSSOAuthentication
+         * @return {Promise} Promise resolved once SSO authentication finishes.
+         */
+        self.waitForSSOAuthentication = function() {
+            if (ssoAuthenticationDeferred) {
+                return ssoAuthenticationDeferred.promise;
+            }
+            return $q.when();
         };
 
         return self;

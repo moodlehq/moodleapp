@@ -98,6 +98,8 @@ angular.module('mm.core.login', [])
 
     $log = $log.getInstance('mmLogin');
 
+    var isSSOConfirmShown;
+
     // Listen for sessionExpired event to reconnect the user.
     $mmEvents.on(mmCoreEventSessionExpired, sessionExpired);
 
@@ -170,10 +172,16 @@ angular.module('mm.core.login', [])
                 }
 
                 if ($mmLoginHelper.isSSOLoginNeeded(result.code)) {
-                    // SSO. User needs to authenticate in a browser.
-                    $mmUtil.showConfirm($translate('mm.login.reconnectssodescription')).then(function() {
-                        $mmLoginHelper.openBrowserForSSOLogin(result.siteurl, result.code);
-                    });
+                    // SSO. User needs to authenticate in a browser. Prevent showing the message several times
+                    // or show it again if the user is already authenticating using SSO.
+                    if (!$mmApp.isSSOAuthenticationOngoing() && !isSSOConfirmShown) {
+                        isSSOConfirmShown = true;
+                        $mmUtil.showConfirm($translate('mm.login.reconnectssodescription')).then(function() {
+                            $mmLoginHelper.openBrowserForSSOLogin(result.siteurl, result.code);
+                        }).finally(function() {
+                            isSSOConfirmShown = false;
+                        });
+                    }
                 } else {
                     var info = $mmSite.getInfo();
                     if (typeof(info) !== 'undefined' && typeof(info.username) !== 'undefined') {
@@ -194,7 +202,7 @@ angular.module('mm.core.login', [])
         }
 
         // App opened using custom URL scheme. Probably an SSO authentication.
-        $mmLoginHelper.setSSOLoginOngoing(true);
+        $mmApp.startSSOAuthentication();
         $log.debug('App launched by URL');
 
         var modal = $mmUtil.showModalLoading('mm.login.authenticating', true);
@@ -210,19 +218,20 @@ angular.module('mm.core.login', [])
             return false;
         }
 
-        $mmLoginHelper.validateBrowserSSOLogin(url).then(function(sitedata) {
-
-            return $mmLoginHelper.handleSSOLoginAuthentication(sitedata.siteurl, sitedata.token).then(function() {
-                return $mmLoginHelper.goToSiteInitialPage();
-            });
-
+        // Wait for app to be ready.
+        $mmApp.ready().then(function() {
+            return $mmLoginHelper.validateBrowserSSOLogin(url);
+        }).then(function(siteData) {
+            return $mmLoginHelper.handleSSOLoginAuthentication(siteData.siteurl, siteData.token);
+        }).then(function() {
+            $mmLoginHelper.goToSiteInitialPage();
         }).catch(function(errorMessage) {
             if (typeof errorMessage === 'string' && errorMessage !== '') {
                 $mmUtil.showErrorModal(errorMessage);
             }
         }).finally(function() {
             modal.dismiss();
-            $mmLoginHelper.setSSOLoginOngoing(false);
+            $mmApp.finishSSOAuthentication();
         });
 
         return true;

@@ -117,7 +117,7 @@ angular.module('mm.core')
 
     this.$get = function($http, $q, $mmWS, $mmDB, $log, md5, $mmApp, $mmLang, $mmUtil, $mmFS, mmCoreWSCacheStore,
             mmCoreWSPrefix, mmCoreSessionExpired, $mmEvents, mmCoreEventSessionExpired, mmCoreUserDeleted, mmCoreEventUserDeleted,
-            $mmText, mmCoreConfigConstants) {
+            $mmText, $translate, mmCoreConfigConstants) {
 
         $log = $log.getInstance('$mmSite');
 
@@ -404,6 +404,7 @@ angular.module('mm.core')
          *                                        flag the cache entry, it doesn't affect the data retrieved in this call.
          *                    - getCacheUsingCacheKey (boolean) True if it should retrieve cached data by cacheKey,
          *                                        false if it should get the data based on the params passed (usual behavior).
+         * @param {Boolean} retrying True if we're retrying the call for some reason. This is to prevent infinite loops.
          * @return {Promise}
          * @description
          *
@@ -417,9 +418,9 @@ angular.module('mm.core')
          * compatibility one if need be, usually that means that it will fallback on
          * the 'local_mobile_' prefixed function if it is available and the non-prefixed is not.
          */
-        Site.prototype.request = function(method, data, preSets) {
-            var deferred = $q.defer(),
-                site = this;
+        Site.prototype.request = function(method, data, preSets, retrying) {
+            var site = this,
+                initialToken = site.token;
             data = data || {};
 
             // Get the method to use based on the available ones.
@@ -433,8 +434,7 @@ angular.module('mm.core')
                     method = mmCoreWSPrefix + method;
                 } else {
                     $log.error("WS function '" + method + "' is not available, even in compatibility mode.");
-                    $mmLang.translateAndRejectDeferred(deferred, 'mm.core.wsfunctionnotavailable');
-                    return deferred.promise;
+                    return $mmLang.translateAndReject('mm.core.wsfunctionnotavailable');
                 }
             }
 
@@ -445,9 +445,7 @@ angular.module('mm.core')
             // Enable text filtering.
             data.moodlewssettingfilter = true;
 
-            getFromCache(site, method, data, preSets).then(function(data) {
-                deferred.resolve(data);
-            }, function() {
+            return getFromCache(site, method, data, preSets).catch(function() {
                 // Do not pass those options to the core WS factory.
                 var wsPreSets = angular.copy(preSets);
                 delete wsPreSets.getFromCache;
@@ -457,9 +455,9 @@ angular.module('mm.core')
                 delete wsPreSets.emergencyCache;
                 delete wsPreSets.getCacheUsingCacheKey;
 
-                // TODO: Sync
+                // @todo Sync
 
-                $mmWS.call(method, data, wsPreSets).then(function(response) {
+                return $mmWS.call(method, data, wsPreSets).then(function(response) {
 
                     if (preSets.saveToCache) {
                         saveToCache(site, method, data, response, preSets.cacheKey);
@@ -467,33 +465,40 @@ angular.module('mm.core')
 
                     // We pass back a clone of the original object, this may
                     // prevent errors if in the callback the object is modified.
-                    deferred.resolve(angular.copy(response));
-                }, function(error) {
+                    return angular.copy(response);
+                }).catch(function(error) {
                     if (error === mmCoreSessionExpired) {
+                        if (initialToken !== site.token && !retrying) {
+                            // Token has changed, retry with the new token.
+                            return site.request(method, data, preSets, true);
+                        } else if ($mmApp.isSSOAuthenticationOngoing()) {
+                            // There's an SSO authentication ongoing, wait for it to finish and try again.
+                            return $mmApp.waitForSSOAuthentication().then(function() {
+                                return site.request(method, data, preSets, true);
+                            });
+                        }
+
                         // Session expired, trigger event.
-                        $mmLang.translateAndRejectDeferred(deferred, 'mm.core.lostconnection');
                         $mmEvents.trigger(mmCoreEventSessionExpired, site.id);
+                        // Change error message. We'll try to get data from cache.
+                        error = $translate.instant('mm.core.lostconnection');
                     } else if (error === mmCoreUserDeleted) {
                         // User deleted, trigger event.
-                        $mmLang.translateAndRejectDeferred(deferred, 'mm.core.userdeleted');
                         $mmEvents.trigger(mmCoreEventUserDeleted, {siteid: site.id, params: data});
+                        return $mmLang.translateAndReject('mm.core.userdeleted');
                     } else if (typeof preSets.emergencyCache !== 'undefined' && !preSets.emergencyCache) {
                         $log.debug('WS call ' + method + ' failed. Emergency cache is forbidden, rejecting.');
-                        deferred.reject(error);
-                    } else {
-                        $log.debug('WS call ' + method + ' failed. Trying to use the emergency cache.');
-                        preSets.omitExpires = true;
-                        preSets.getFromCache = true;
-                        getFromCache(site, method, data, preSets).then(function(data) {
-                            deferred.resolve(data);
-                        }, function() {
-                            deferred.reject(error);
-                        });
+                        return $q.reject(error);
                     }
+
+                    $log.debug('WS call ' + method + ' failed. Trying to use the emergency cache.');
+                    preSets.omitExpires = true;
+                    preSets.getFromCache = true;
+                    return getFromCache(site, method, data, preSets).catch(function() {
+                        return $q.reject(error);
+                    });
                 });
             });
-
-            return deferred.promise;
         };
 
         /**
