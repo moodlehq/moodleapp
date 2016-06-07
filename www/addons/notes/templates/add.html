@@ -14,7 +14,7 @@
                         <div class="input-label">
                           {{ 'mma.notes.publishstate' | translate }}
                         </div>
-                        <select ng-model="note.publishstate" name="publishstate">
+                        <select ng-model="note.publishstate" name="publishstate" mm-ios-select-fix>
                             <option value="personal">{{ 'mma.notes.personalnotes' | translate }}</option>
                             <option value="course">{{ 'mma.notes.coursenotes' | translate }}</option>
                             <option value="site">{{ 'mma.notes.sitenotes' | translate }}</option>

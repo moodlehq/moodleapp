@@ -8,7 +8,7 @@
 		</div>
 		<div class="col text-center item-select" ng-class='{"mm-question-answer-correct": row.isCorrect === 1, "mm-question-answer-incorrect": row.isCorrect === 0}'>
 			<label class="accesshide" for="{{row.id}}" ng-if="row.accessibilityLabel">{{ row.accessibilityLabel }}</label>
-			<select id="{{row.id}}" name="{{row.name}}" ng-disabled="row.disabled" aria-labelledby="mma-question-{{row.id}}">
+			<select id="{{row.id}}" name="{{row.name}}" ng-disabled="row.disabled" aria-labelledby="mma-question-{{row.id}}" mm-ios-select-fix>
 				<option ng-repeat="o in row.options" value="{{o.value}}" label="{{o.label}}" ng-selected="{{o.selected}}">{{o.label}}</option>
 			</select>
 		</div>

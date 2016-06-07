@@ -59,7 +59,7 @@
 	                    <div class="input-label" id="mma-scorm-organizationslabel">
 	                        {{ 'mma.mod_scorm.organizations' | translate }}
 	                    </div>
-	                    <select ng-model="currentOrganization.identifier" ng-options="org.identifier as org.title for org in organizations" ng-change="loadOrg()" aria-labelledby="mma-scorm-organizationslabel">
+	                    <select ng-model="currentOrganization.identifier" ng-options="org.identifier as org.title for org in organizations" ng-change="loadOrg()" aria-labelledby="mma-scorm-organizationslabel" mm-ios-select-fix>
 	                    </select>
 	                </div>
 	                <div class="item text-center" ng-if="scorm.displaycoursestructure && loadingToc">

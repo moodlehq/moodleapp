@@ -248,6 +248,13 @@ angular.module('mm.core')
             });
             angular.forEach(dom.find('iframe'), addMediaAdaptClass);
 
+            // Treat selects in iOS.
+            if (ionic.Platform.isIOS()) {
+                angular.forEach(dom.find('select'), function(select) {
+                    select.setAttribute('mm-ios-select-fix', '');
+                });
+            }
+
             return dom.html();
         });
     }
