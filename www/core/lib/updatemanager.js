@@ -70,6 +70,10 @@ angular.module('mm.core')
                 promises.push(migrateModulesStatus());
             }
 
+            if (versionCode >= 2013 && versionApplied < 2013) {
+                promises.push(migrateFileExtensions());
+            }
+
             return $q.all(promises).then(function() {
                 return $mmConfig.set(mmCoreVersionApplied, versionCode);
             }).catch(function() {
@@ -288,6 +292,22 @@ angular.module('mm.core')
                     });
                 });
             });
+        });
+    }
+
+    /**
+     * Migrates files filling extensions.
+     *
+     * @return {Promise}            Promise resolved when the site migration is finished.
+     */
+    function migrateFileExtensions() {
+        return $mmSitesManager.getSitesIds().then(function(sites) {
+            var promises = [];
+            angular.forEach(sites, function(siteId) {
+                promises.push($mmFilepool.fillMissingExtensionInFiles(siteId));
+            });
+            promises.push($mmFilepool.treatExtensionInQueue());
+            return $q.all(promises);
         });
     }
 

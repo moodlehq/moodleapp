@@ -209,12 +209,12 @@ angular.module('mm.core')
      * Downloads a file from Moodle using Cordova File API.
      * @todo Use Web Workers.
      *
-     * @param {String}   url        Download url.
-     * @param {String}   path       Local path to store the file.
-     * @param {Boolean}  background True if this function should be executed in background using Web Workers.
-     * @return {Promise}            The success returns the fileEntry, the reject will contain the error object.
+     * @param {String}   url            Download url.
+     * @param {String}   path           Local path to store the file.
+     * @param {Boolean}  addExtension   True if extension need to be added to the final path.
+     * @return {Promise}                The success returns the fileEntry, the reject will contain the error object.
      */
-    self.downloadFile = function(url, path, background) {
+    self.downloadFile = function(url, path, addExtension) {
         $log.debug('Downloading file ' + url);
 
         // Use a tmp path to download the file and then move it to final location.This is because if the download fails,
@@ -224,9 +224,38 @@ angular.module('mm.core')
         // Create the tmp file as an empty file.
         return $mmFS.createFile(tmpPath).then(function(fileEntry) {
             return $cordovaFileTransfer.download(url, fileEntry.toURL(), { encodeURI: false }, true).then(function() {
-                return $mmFS.moveFile(tmpPath, path).then(function(movedEntry) {
-                    $log.debug('Success downloading file ' + url + ' to ' + path);
-                    return movedEntry;
+                var promise;
+
+                if (addExtension) {
+                    ext = $mmFS.getFileExtension(path);
+
+                    if (!ext) {
+                        promise = self.getRemoteFileMimeType(url).then(function(mime) {
+                            var ext;
+                            if (mime) {
+                                ext = $mmFS.getExtension(mime);
+                                if (ext) {
+                                    path += '.' + ext;
+                                }
+                                return ext;
+                            }
+                            return false;
+                        });
+                    } else {
+                        promise = $q.when(ext);
+                    }
+                } else {
+                    promise = $q.when("");
+                }
+
+                return promise.then(function(extension) {
+                    return $mmFS.moveFile(tmpPath, path).then(function(movedEntry) {
+                        // Save the extension.
+                        movedEntry.extension = extension;
+                        movedEntry.path = path;
+                        $log.debug('Success downloading file ' + url + ' to ' + path);
+                        return movedEntry;
+                    });
                 });
             });
         }).catch(function(err) {
