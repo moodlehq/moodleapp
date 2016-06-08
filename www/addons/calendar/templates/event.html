@@ -30,7 +30,7 @@
             <div class="card" ng-if="notificationsEnabled">
                 <div class="item item-select">
                     {{ 'mma.calendar.notifications' | translate }}
-                    <select ng-model="notification.time" convert-to-number ng-change="updateNotificationTime()">
+                    <select ng-model="notification.time" convert-to-number ng-change="updateNotificationTime()" mm-ios-select-fix>
                         <option value="0">Disabled</option>
                         <option value="10">10 Minutes</option>
                         <option value="30">30 Minutes</option>
