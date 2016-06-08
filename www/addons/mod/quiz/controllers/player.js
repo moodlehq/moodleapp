@@ -192,6 +192,10 @@ angular.module('mm.addons.mod_quiz')
                 $mmQuestionHelper.extractQuestionInfoBox(question, '.info');
                 // Set the preferred behaviour.
                 question.preferredBehaviour = quiz.preferredbehaviour;
+                // Check if the question is blocked. If it is, treat it as a description question.
+                if ($mmaModQuiz.isQuestionBlocked(question)) {
+                    question.type = 'description';
+                }
             });
 
             // Mark the page as viewed. We'll ignore errors in this call.
