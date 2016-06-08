@@ -1,0 +1,13 @@
+{
+    "confirmuploadfile": "Chcesz wysłać plik {$a}. Czy na pewno chcesz kontynuować?",
+    "errorcapturingaudio": "錄製聲音時發生錯誤",
+    "errorcapturingvideo": "錄製影片時發生錯誤",
+    "errorreadingfile": "讀取檔案 \"{$a}\" 時發生錯誤",
+    "file": "檔案",
+    "fileuploaded": "檔案已上傳",
+    "readingfile": "Odczytywanie pliku",
+    "success": "成功",
+    "uploadafile": "上傳一個檔案",
+    "uploading": "上傳中",
+    "video": "錄製影片"
+}

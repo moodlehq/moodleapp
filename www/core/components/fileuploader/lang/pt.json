@@ -1,0 +1,21 @@
+{
+    "audio": "Áudio",
+    "camera": "Câmera",
+    "confirmuploadfile": "Está prestes a carregar {{size}}. Tem a certeza que quer continuar?",
+    "errorcapturingaudio": "Erro ao capturar áudio.",
+    "errorcapturingimage": "Erro ao capturar imagem.",
+    "errorcapturingvideo": "Erro ao capturar  vídeo.",
+    "errorgettingimagealbum": "Erro ao obter imagem do álbum",
+    "errormustbeonlinetoupload": "Necessita de estar online para enviar ficheiros",
+    "errornoapp": "Não possui a aplicação móvel necessária para executar esta ação.",
+    "errorreadingfile": "Erro ao ler o ficheiro",
+    "errorwhileuploading": "Ocorreu um erro durante o carregamento do ficheiro.",
+    "file": "Ficheiro",
+    "fileuploaded": "Ficheiro carregado com sucesso",
+    "photoalbums": "Álbuns de fotos",
+    "readingfile": "A ler ficheiros",
+    "success": "Sucesso!",
+    "uploadafile": "Carregar um ficheiro",
+    "uploading": "A carregar",
+    "video": "Video"
+}

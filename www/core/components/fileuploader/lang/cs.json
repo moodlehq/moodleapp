@@ -1,0 +1,21 @@
+{
+    "audio": "Audio",
+    "camera": "Fotoaparát",
+    "confirmuploadfile": "Chystáte nahrát {{$a}}. Jste si jisti, že chcete pokračovat?",
+    "errorcapturingaudio": "Chyba snímání zvuku.",
+    "errorcapturingimage": "Chyba snímání obrazu.",
+    "errorcapturingvideo": "Chyba snímání videa.",
+    "errorgettingimagealbum": "Chyba při načítání snímku z alba.",
+    "errormustbeonlinetoupload": "Při nahrávání souboru musíte být online.",
+    "errornoapp": "Pro provedení této akce nemáte nainstalovanou aplikaci .",
+    "errorreadingfile": "Chyba při čtení souboru.",
+    "errorwhileuploading": "Při pokusu o nahrání souboru došlo k chybě .",
+    "file": "Soubor",
+    "fileuploaded": "Soubor nahrán",
+    "photoalbums": "Fotoalba",
+    "readingfile": "Čtení souboru",
+    "success": "Úspěch!",
+    "uploadafile": "Nahrát soubor",
+    "uploading": "Nahrávání",
+    "video": "Video"
+}

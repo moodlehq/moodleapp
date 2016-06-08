@@ -1,0 +1,21 @@
+{
+    "audio": "Audioaufnahme",
+    "camera": "Kamera",
+    "confirmuploadfile": "Möchten Sie wirklich {{size}} hochladen?",
+    "errorcapturingaudio": "Fehler bei der Audioaufnahme",
+    "errorcapturingimage": "Fehler bei der Fotoaufnahme",
+    "errorcapturingvideo": "Fehler bei der Videoaufnahme",
+    "errorgettingimagealbum": "Fehler beim Laden aus dem Fotoalbum",
+    "errormustbeonlinetoupload": "Dateien können nur online hochgeladen werden.",
+    "errornoapp": "Keine App zum Ausführen dieser Aktion gefunden",
+    "errorreadingfile": "Fehler beim Lesen der Datei",
+    "errorwhileuploading": "Fehler beim Hochladen der Datei",
+    "file": "Datei",
+    "fileuploaded": "Datei hochgeladen",
+    "photoalbums": "Fotoalbum",
+    "readingfile": "Datei lesen",
+    "success": "Fertig!",
+    "uploadafile": "Datei hochladen",
+    "uploading": "Hochladen",
+    "video": "Videoaufnahme"
+}
