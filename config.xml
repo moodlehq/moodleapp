@@ -9,6 +9,7 @@
   <allow-navigation href="cdvfile:*" />
   <allow-navigation href="content:*" />
   <allow-navigation href="data:*" />
+  <allow-navigation href="*" />
 
   <allow-intent href="*" />
 
