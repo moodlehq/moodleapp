@@ -83,7 +83,6 @@ angular.module('mm.addons.pushnotifications')
                     var localNotif = {
                             id: 1,
                             at: new Date(),
-                            smallIcon: 'res://icon',
                             data: {
                                 notif: data.notif,
                                 site: data.site
