@@ -528,7 +528,7 @@ angular.module('mm.core')
                         return mmCoreNotDownloadable;
                     }
 
-                    var status = statusCache.getValue(handler.component, module.id, 'revision');
+                    var status = statusCache.getValue(handler.component, module.id, 'status');
                     if (status) {
                         return self.determineModuleStatus(module, status, true);
                     }
