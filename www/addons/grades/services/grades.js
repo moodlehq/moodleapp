@@ -70,7 +70,25 @@ angular.module('mm.addons.grades')
 
             // Reduce the returned columns for phone version.
             if (showSimple) {
-                returnedColumns = ["itemname", "grade"];
+                returnedColumns = ["itemname"];
+
+                // Add grade or percentage if needed.
+                var columnAdded = false;
+                for (var i = 0; i < tabledata.length && !columnAdded; i++) {
+                    if (typeof(tabledata[i]["grade"]) != "undefined"
+                            && typeof(tabledata[i]["grade"]["content"]) != "undefined") {
+                        returnedColumns.push("grade");
+                        columnAdded = true;
+                    } else if (typeof(tabledata[i]["percentage"]) != "undefined"
+                            && typeof(tabledata[i]["percentage"]["content"]) != "undefined") {
+                        returnedColumns.push("percentage");
+                        columnAdded = true;
+                    }
+                }
+                if (!columnAdded) {
+                    // Add one of those.
+                    returnedColumns.push("grade");
+                }
             }
 
             for (var el in columns) {
@@ -86,10 +104,9 @@ angular.module('mm.addons.grades')
                 }
             }
 
-            var name, rowspan, tclass, colspan, content, celltype, id, headers,j, img, colspanVal;
+            var name, rowspan, tclass, colspan, content, celltype, id, headers, j, img, colspanVal;
 
-            var len = tabledata.length;
-            for (var i = 0; i < len; i++) {
+            for (var i = 0; i < tabledata.length; i++) {
                 var row = '';
                 if (typeof(tabledata[i]['leader']) != "undefined") {
                     rowspan = tabledata[i]['leader']['rowspan'];
