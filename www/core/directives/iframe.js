@@ -121,8 +121,11 @@ angular.module('mm.core')
                 if (href.indexOf('http') === 0) {
                     // Link has protocol http(s), open it in browser.
                     angular.element(el).on('click', function(e) {
-                        e.preventDefault();
-                        $mmUtil.openInBrowser(href);
+                        // If the link's already prevented then we won't open it in browser.
+                        if (!e.defaultPrevented) {
+                            e.preventDefault();
+                            $mmUtil.openInBrowser(href);
+                        }
                     });
                 } else if (el.target == '_parent' || el.target == '_top' || el.target == '_blank') {
                     // Opening links with _parent, _top or _blank can break the app. We'll open it in InAppBrowser.
@@ -131,6 +134,20 @@ angular.module('mm.core')
                         if (!e.defaultPrevented) {
                             e.preventDefault();
                             $mmUtil.openInApp(href);
+                        }
+                    });
+                } else if (ionic.Platform.isIOS() && (!el.target || el.target == '_self')) {
+                    // In cordova ios 4.1.0 links inside iframes stopped working. We'll manually treat them.
+                    angular.element(el).on('click', function(e) {
+                        // If the link's already prevented then we won't treat it.
+                        if (!e.defaultPrevented) {
+                            if (element[0].tagName.toLowerCase() == 'object') {
+                                e.preventDefault();
+                                element.attr('data', href);
+                            } else {
+                                e.preventDefault();
+                                element.attr('src', href);
+                            }
                         }
                     });
                 }
