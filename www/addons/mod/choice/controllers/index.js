@@ -148,7 +148,10 @@ angular.module('mm.addons.mod_choice')
 
             var modal = $mmUtil.showModalLoading('mm.core.sending', true);
             $mmaModChoice.submitResponse(choice.id, responses).then(function() {
-                // Success! Let's refresh the data.
+                // Success!
+                // Check completion since it could be configured to complete once the user answers the choice.
+                $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
+                // Let's refresh the data.
                 return refreshAllData();
             }).catch(function(message) {
                 if (message) {
