@@ -17,6 +17,7 @@ angular.module('mm.addons.mod_forum', [])
 .constant('mmaModForumDiscPerPage', 10) // Max of discussions per page.
 .constant('mmaModForumComponent', 'mmaModForum')
 .constant('mmaModForumNewDiscussionEvent', 'mma-mod_forum_new_discussion')
+.constant('mmaModForumReplyDiscussionEvent', 'mma-mod_forum_reply_discussion')
 
 .config(function($stateProvider) {
 
@@ -40,7 +41,9 @@ angular.module('mm.addons.mod_forum', [])
         url: '/mod_forum-discussion',
         params: {
             discussionid: null,
-            cid: null // Not naming it courseid because it collides with 'site.mod_forum' param in split-view.
+            cid: null, // Not naming it courseid because it collides with 'site.mod_forum' param in split-view.
+            forumid: null,
+            cmid: null
         },
         views: {
             'site': {
