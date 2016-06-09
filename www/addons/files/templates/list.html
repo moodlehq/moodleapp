@@ -1,7 +1,7 @@
 <ion-view>
     <ion-nav-title><mm-format-text watch="true">{{title}}</mm-format-text></ion-nav-title>
     <ion-nav-buttons side="secondary">
-        <button class="button button-icon ion-plus" ng-click="add()" ng-if="showUpload()" aria-label="{{ 'mma.files.uploadafile' | translate }}"></button>
+        <button class="button button-icon ion-plus" ng-click="add()" ng-if="showUpload()" aria-label="{{ 'mm.fileuploader.uploadafile' | translate }}"></button>
     </ion-nav-buttons>
     <ion-content mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="filesLoaded" on-refresh="refreshFiles()"></ion-refresher>

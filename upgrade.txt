@@ -1,6 +1,10 @@
 This files describes API changes in the Moodle Mobile app,
 information provided here is intended especially for developers.
 
+=== 3.1.2 ===
+
+ * Most of the upload file logic has been moved from the addon "files" to the component "fileuploader". This includes controllers, templates, service functions and language strings.
+
 === 3.1.1 ===
 
  * checkTime parameter was removed from the syncQuiz function in the mmaModQuizIndexCtrl controller. We don't check for time anymore.

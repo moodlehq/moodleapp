@@ -14,7 +14,7 @@
 
 angular.module('mm.addons.files')
 
-.factory('$mmaFiles', function($mmSite, $mmFS, $q, $timeout, $log, $mmSitesManager, md5) {
+.factory('$mmaFiles', function($mmSite, $mmFS, $q, $log, $mmSitesManager, md5) {
 
     $log = $log.getInstance('$mmaFiles');
 
@@ -58,6 +58,18 @@ angular.module('mm.addons.files')
             // Uploading is not working right now for Moodle 3.1.0 (2016052300).
             return version && (parseInt(version) != 2016052300);
         });
+    };
+
+    /**
+     * Check if core_user_add_user_private_files WS call is available.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#canMoveFromDraftToPrivate
+     * @return {Boolean} True if WS is available, false otherwise.
+     */
+    self.canMoveFromDraftToPrivate = function() {
+        return false;
     };
 
     /**
@@ -231,7 +243,7 @@ angular.module('mm.addons.files')
         }
 
         return $mmSitesManager.getSite(siteid).then(function(site) {
-            site.invalidateWsCacheForKey(getFilesListCacheKey(params));
+            return site.invalidateWsCacheForKey(getFilesListCacheKey(params));
         });
     };
 
@@ -279,139 +291,28 @@ angular.module('mm.addons.files')
     };
 
     /**
-     * Upload a file.
+     * Move a file from draft area to private files.
      *
      * @module mm.addons.files
      * @ngdoc method
-     * @name $mmaFiles#uploadFile
-     * @param  {Object} uri      File URI.
-     * @param  {Object} options  Options for the upload.
-     *                           - {Boolean} deleteAfterUpload Whether or not to delete the original after upload.
-     *                           - {String} fileKey
-     *                           - {String} fileName
-     *                           - {String} mimeType
-     * @param  {String} [siteid] Id of the site to upload the file to. If not defined, use current site.
-     * @return {Promise}
+     * @name $mmaFiles#moveFromDraftToPrivate
+     * @param  {Number} draftId  The draft area ID of the file.
+     * @param  {String} [siteid] ID of the site. If not defined, use current site.
+     * @return {Promise}         Promise resolved in success, rejected otherwise.
      */
-    self.uploadFile = function(uri, options, siteid) {
-        options = options || {};
-        siteid = siteid || $mmSite.getId();
+    self.moveFromDraftToPrivate = function(draftId, siteId) {
+        siteId = siteId || $mmSite.getId();
 
-        var deleteAfterUpload = options.deleteAfterUpload,
-            deferred = $q.defer(),
-            ftOptions = {
-                fileKey: options.fileKey,
-                fileName: options.fileName,
-                mimeType: options.mimeType
+        var params = {
+                draftid: draftId
+            },
+            preSets = {
+                responseExpected: false
             };
 
-        function deleteFile() {
-            $timeout(function() {
-                // Use set timeout, otherwise in Node-Webkit the upload threw an error sometimes.
-                $mmFS.removeExternalFile(uri);
-            }, 500);
-        }
-
-        $mmSitesManager.getSite(siteid).then(function(site) {
-            site.uploadFile(uri, ftOptions).then(deferred.resolve, deferred.reject, deferred.notify).finally(function() {
-                if (deleteAfterUpload) {
-                    deleteFile();
-                }
-            });
-        }, function() {
-            if (deleteAfterUpload) {
-                deleteFile();
-            }
-            deferred.reject(error);
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.write('core_user_add_user_private_files', params, preSets);
         });
-
-        return deferred.promise;
-    };
-
-    /**
-     * Upload image.
-     * @todo Handle Node Webkit.
-     *
-     * @module mm.addons.files
-     * @ngdoc method
-     * @name $mmaFiles#uploadImage
-     * @param  {String}  uri         File URI.
-     * @param  {Boolean} isFromAlbum True if the image was taken from album, false if it's a new image taken with camera.
-     * @return {Promise}
-     */
-    self.uploadImage = function(uri, isFromAlbum) {
-        $log.debug('Uploading an image');
-        var options = {};
-
-        if (typeof(uri) === 'undefined' || uri === ''){
-            // In Node-Webkit, if you successfully upload a picture and then you open the file picker again
-            // and cancel, this function is called with an empty uri. Let's filter it.
-            $log.debug('Received invalid URI in $mmaFiles.uploadImage()');
-            return $q.reject();
-        }
-
-        options.deleteAfterUpload = !isFromAlbum;
-        options.fileKey = "file";
-        options.fileName = "image_" + new Date().getTime() + ".jpg";
-        options.mimeType = "image/jpeg";
-
-        return self.uploadFile(uri, options);
-    };
-
-    /**
-     * Upload media.
-     *
-     * @module mm.addons.files
-     * @ngdoc method
-     * @name $mmaFiles#uploadMedia
-     * @param  {Array} mediaFiles Array of file objects.
-     * @return {Array} Array of promises.
-     */
-    self.uploadMedia = function(mediaFiles) {
-        $log.debug('Uploading media');
-        var promises = [];
-        angular.forEach(mediaFiles, function(mediaFile) {
-            var options = {},
-                filename = mediaFile.name,
-                split;
-
-            if (ionic.Platform.isIOS()) {
-                // In iOS we'll add a timestamp to the filename to make it unique.
-                split = filename.split('.');
-                split[0] += '_' + new Date().getTime();
-                filename = split.join('.');
-            }
-
-            options.fileKey = null;
-            options.fileName = filename;
-            options.mimeType = null;
-            options.deleteAfterUpload = true;
-            promises.push(self.uploadFile(mediaFile.fullPath, options));
-        });
-        return promises;
-    };
-
-    /**
-     * Upload a file of any type.
-     *
-     * @module mm.addons.files
-     * @ngdoc method
-     * @name $mmaFiles#uploadGenericFile
-     * @param  {String} uri      File URI.
-     * @param  {String} name     File name.
-     * @param  {String} type     File type.
-     * @param  {String} [siteid] Id of the site to upload the file to. If not defined, use current site.
-     * @return {Promise}     Promise resolved when the file is uploaded.
-     */
-    self.uploadGenericFile = function(uri, name, type, siteid) {
-        var options = {};
-        options.fileKey = null;
-        options.fileName = name;
-        options.mimeType = type;
-        // Don't delete the file on iOS, it's going to be deleted on $mmaFiles#checkIOSNewFiles.
-        options.deleteAfterUpload = !ionic.Platform.isIOS();
-
-        return self.uploadFile(uri, options, siteid);
     };
 
     return self;

@@ -1,12 +1,4 @@
 {
-    "errorcapturingaudio": "خطا در ضبط صدا",
-    "errorcapturingvideo": "خطا در ضبط ویدئو",
-    "file": "فایل",
-    "fileuploaded": "فایل آپلود شده",
     "myfiles": "فایلهای من",
-    "sitefiles": "فایلهای سایت",
-    "success": "موفق",
-    "uploadafile": "قرار دادن یک فایل در سایت",
-    "uploading": "درحال بارگذاری",
-    "video": "ویدئو"
+    "sitefiles": "فایلهای سایت"
 }
