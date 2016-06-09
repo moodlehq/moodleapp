@@ -22,10 +22,12 @@ angular.module('mm.addons.mod_forum')
  * @name mmaModForumDiscussionCtrl
  */
 .controller('mmaModForumDiscussionCtrl', function($q, $scope, $stateParams, $mmaModForum, $mmSite, $mmUtil, $translate,
-            $ionicScrollDelegate, mmaModForumComponent) {
+            $ionicScrollDelegate, $mmEvents, mmaModForumComponent, mmaModForumReplyDiscussionEvent) {
 
     var discussionid = $stateParams.discussionid,
         courseid = $stateParams.cid,
+        forumId = $stateParams.forumid,
+        cmid = $stateParams.cmid,
         scrollView;
 
     $scope.component = mmaModForumComponent;
@@ -60,6 +62,16 @@ angular.module('mm.addons.mod_forum')
         });
     }
 
+    // Trigger an event to notify a new reply.
+    function notifyNewReply() {
+        var data = {
+            forumid: forumId,
+            discussionid: discussionid,
+            cmid: cmid
+        };
+        $mmEvents.trigger(mmaModForumReplyDiscussionEvent, data);
+    }
+
     fetchPosts().then(function() {
         // Add log in Moodle.
         $mmSite.write('mod_forum_view_forum_discussion', {
@@ -86,6 +98,8 @@ angular.module('mm.addons.mod_forum')
         $scope.newpost.replyingto = undefined;
         $scope.newpost.subject = $scope.defaultSubject;
         $scope.newpost.message = '';
+
+        notifyNewReply();
 
         $scope.discussionLoaded = false;
         refreshPosts().finally(function() {

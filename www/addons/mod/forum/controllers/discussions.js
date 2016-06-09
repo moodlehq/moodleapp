@@ -22,14 +22,17 @@ angular.module('mm.addons.mod_forum')
  * @name mmaModForumDiscussionsCtrl
  */
 .controller('mmaModForumDiscussionsCtrl', function($q, $scope, $stateParams, $mmaModForum, $mmCourse, $mmUtil, $mmGroups,
-            $mmEvents, $ionicScrollDelegate, $ionicPlatform, mmUserProfileState, mmaModForumNewDiscussionEvent) {
+            $mmEvents, $ionicScrollDelegate, $ionicPlatform, mmUserProfileState, mmaModForumNewDiscussionEvent,
+            mmaModForumReplyDiscussionEvent) {
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
         forum,
         page = 0,
         scrollView = $ionicScrollDelegate.$getByHandle('mmaModForumDiscussionsScroll'),
         shouldScrollTop = false,
-        usesGroups = false;
+        usesGroups = false,
+        obsNewDisc,
+        obsReply;
 
     $scope.title = module.name;
     $scope.description = module.description;
@@ -118,6 +121,24 @@ angular.module('mm.addons.mod_forum')
         });
     }
 
+    // Function called when we receive an event of new discussion or reply to discussion.
+    function eventReceived(data) {
+        if ((forum && forum.id === data.forumid) || data.cmid === module.id) {
+            if ($ionicPlatform.isTablet()) {
+                scrollView.scrollTop();
+            } else {
+                // We can't scroll top inmediately because the scroll is not seen.
+                shouldScrollTop = true;
+            }
+            $scope.discussionsLoaded = false;
+            refreshData().finally(function() {
+                $scope.discussionsLoaded = true;
+            });
+            // Check completion since it could be configured to complete once the user adds a new discussion or replies.
+            $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
+        }
+    }
+
     fetchForumDataAndDiscussions().then(function() {
         $mmaModForum.logView(forum.id).then(function() {
             $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
@@ -141,20 +162,8 @@ angular.module('mm.addons.mod_forum')
     };
 
     // Listen for discussions added. When a discussion is added, we reload the data.
-    var obsNewDisc = $mmEvents.on(mmaModForumNewDiscussionEvent, function(data) {
-        if ((forum && forum.id === data.forumid) || data.cmid === module.id) {
-            if ($ionicPlatform.isTablet()) {
-                scrollView.scrollTop();
-            } else {
-                // We can't scroll top inmediately because the scroll is not seen.
-                shouldScrollTop = true;
-            }
-            $scope.discussionsLoaded = false;
-            refreshData().finally(function() {
-                $scope.discussionsLoaded = true;
-            });
-        }
-    });
+    obsNewDisc = $mmEvents.on(mmaModForumNewDiscussionEvent, eventReceived);
+    obsReply = $mmEvents.on(mmaModForumReplyDiscussionEvent, eventReceived);
 
     // Scroll top if needed.
     $scope.$on('$ionicView.enter', function() {
@@ -167,6 +176,9 @@ angular.module('mm.addons.mod_forum')
     $scope.$on('$destroy', function(){
         if (obsNewDisc && obsNewDisc.off) {
             obsNewDisc.off();
+        }
+        if (obsReply && obsReply.off) {
+            obsReply.off();
         }
     });
 });

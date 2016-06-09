@@ -16,7 +16,7 @@
                         </button>
                     </li>
                     <li class="card" ng-repeat="discussion in discussions track by $index">
-                        <a class="mma-forum-discussion-link" mm-split-view-link="site.mod_forum-discussion({cid: courseid, discussionid: discussion.discussion})">
+                        <a class="mma-forum-discussion-link" mm-split-view-link="site.mod_forum-discussion({cid: courseid, discussionid: discussion.discussion, forumid: forum.id, cmid: forum.cmid})">
                             <article>
                                 <div class="item item-avatar item-text-wrap">
                                     <img ng-if="discussion.userpictureurl" ng-src="{{discussion.userpictureurl}}" mm-external-content mm-split-view-link="{{userStateName}}({courseid: courseid, userid: discussion.userid})" alt="{{ 'mm.core.pictureof' | translate:{$a: discussion.userfullname} }}" role="presentation">
