@@ -1,0 +1,8 @@
+<mm-loading hide-until="commentsLoaded">
+    <div ng-click="showComments()" ng-if="commentsCount >= 0">
+        {{ 'mm.core.commentscount' | translate : {'$a': commentsCount} }}
+    </div>
+    <div ng-if="commentsCount < 0">
+        {{ 'mm.core.commentsnotworking' | translate }}
+    </div>
+</mm-loading>
