@@ -208,19 +208,22 @@ angular.module('mm.addons.mod_quiz')
                         angular.forEach(quizzes, function(quiz) {
                             if (!$mmaModQuiz.isQuizBeingPlayed(quiz.id, siteId)) {
                                 promises.push($mmaModQuiz.getQuizById(quiz.courseid, quiz.id, siteId).then(function(quiz) {
-                                    return self.syncQuizIfNeeded(quiz, false, siteId).then(function(warnings) {
-                                        if (warnings && warnings.length) {
+                                    return self.syncQuizIfNeeded(quiz, false, siteId).then(function(data) {
+                                        if (data && data.warnings && data.warnings.length) {
                                             // Store the warnings to show them when the user opens the quiz.
-                                            return self.setQuizSyncWarnings(quiz.id, warnings, siteId).then(function() {
-                                                return warnings;
+                                            return self.setQuizSyncWarnings(quiz.id, data.warnings, siteId).then(function() {
+                                                return data;
                                             });
                                         }
-                                    }).then(function(warnings) {
-                                        if (typeof warnings != 'undefined') {
+                                        return data;
+                                    }).then(function(data) {
+                                        if (typeof data != 'undefined') {
                                             // We tried to sync. Send event.
                                             $mmEvents.trigger(mmaModQuizEventAutomSynced, {
                                                 siteid: siteId,
-                                                quizid: quiz.id
+                                                quizid: quiz.id,
+                                                attemptFinished: data.attemptFinished,
+                                                warnings: data.warnings
                                             });
                                         }
                                     });
@@ -267,7 +270,9 @@ angular.module('mm.addons.mod_quiz')
      * @param  {Object} quiz         Quiz.
      * @param {Boolean} askPreflight True if we should ask for preflight data if needed, false otherwise.
      * @param  {String} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise}         [description]
+     * @return {Promise}             Promise rejected in failure, resolved in success with an object containing:
+     *                                       -warnings Array of warnings.
+     *                                       -attemptFinished True if an attempt was finished in Moodle due to this sync.
      */
     self.syncQuiz = function(quiz, askPreflight, siteId) {
         siteId = siteId || $mmSite.getId();
@@ -309,7 +314,26 @@ angular.module('mm.addons.mod_quiz')
                     // Ignore errors.
                 });
             }).then(function() {
-                return warnings; // No offline attempts, nothing to sync.
+                // Check if online attempt was finished because of the sync.
+                if (onlineAttempt && !$mmaModQuiz.isAttemptFinished(onlineAttempt.state)) {
+                    // Attempt wasn't finished at start. Check if it's finished now.
+                    return $mmaModQuiz.getUserAttempts(quiz.id, 'all', true, false, false, siteId).then(function(attempts) {
+                        var isFinishedNow = true;
+                        // Search the attempt.
+                        angular.forEach(attempts, function(attempt) {
+                            if (attempt.id == onlineAttempt.id) {
+                                isFinishedNow = $mmaModQuiz.isAttemptFinished(attempt.state);
+                            }
+                        });
+                        return isFinishedNow;
+                    });
+                }
+                return false;
+            }).then(function(attemptFinished) {
+                return {
+                    warnings: warnings,
+                    attemptFinished: attemptFinished
+                };
             });
         }
 
@@ -332,7 +356,7 @@ angular.module('mm.addons.mod_quiz')
                     }
                 });
 
-                if (!onlineAttempt || $mmaModQuiz.isAttemptFinished(onlineAttempt)) {
+                if (!onlineAttempt || $mmaModQuiz.isAttemptFinished(onlineAttempt.state)) {
                     // Attempt not found or it's finished in online. Discard it.
                     warnings.push($translate.instant('mma.mod_quiz.warningattemptfinished'));
                     return finishSync(lastAttemptId, true);
