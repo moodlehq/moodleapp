@@ -141,12 +141,14 @@ angular.module('mm.addons.mod_scorm')
                         angular.forEach(scorms, function(scorm) {
                             if (!$mmaModScorm.isScormBeingPlayed(scorm.id, siteId)) {
                                 promises.push($mmaModScorm.getScormById(scorm.courseid, scorm.id, '', siteId).then(function(scorm) {
-                                    return self.syncScormIfNeeded(scorm, siteId).then(function(warnings) {
-                                        if (typeof warnings != 'undefined') {
+                                    return self.syncScormIfNeeded(scorm, siteId).then(function(data) {
+                                        if (typeof data != 'undefined') {
                                             // We tried to sync. Send event.
                                             $mmEvents.trigger(mmaModScormEventAutomSynced, {
                                                 siteid: siteId,
-                                                scormid: scorm.id
+                                                scormid: scorm.id,
+                                                attemptFinished: data.attemptFinished,
+                                                warnings: data.warnings
                                             });
                                         }
                                     });
@@ -300,11 +302,16 @@ angular.module('mm.addons.mod_scorm')
      * @name $mmaModScormSync#syncScorm
      * @param  {Object} scorm   SCORM to sync.
      * @param {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}        Promise resolved with warnings in success, rejected if synchronization fails.
+     * @return {Promise}        Promise rejected in failure, resolved in success with an object containing:
+     *                                  -warnings Array of warnings.
+     *                                  -attemptFinished True if an attempt was finished in Moodle due to this sync.
      */
     self.syncScorm = function(scorm, siteId) {
         siteId = siteId || $mmSite.getId();
         var warnings = [],
+            initialAttemptsData,
+            lastOnline = 0,
+            lastOnlineWasFinished = false,
             syncPromise,
             deleted = false;
 
@@ -325,13 +332,33 @@ angular.module('mm.addons.mod_scorm')
         // Prefetches data , set sync time and return warnings.
         function finishSync() {
             return $mmaModScorm.invalidateAllScormData(scorm.id, siteId).catch(function() {}).then(function() {
-                return $mmaModScorm.prefetchData(scorm, siteId).then(function() {
-                    return self.setScormSyncTime(scorm.id, siteId).catch(function() {
-                        // Ignore errors.
-                    }).then(function() {
-                        return warnings; // No offline attempts, nothing to sync.
-                    });
+                return $mmaModScorm.prefetchData(scorm, siteId);
+            }).then(function() {
+                return self.setScormSyncTime(scorm.id, siteId).catch(function() {
+                    // Ignore errors.
                 });
+            }).then(function() {
+                // Check if an attempt was finished in Moodle.
+                if (initialAttemptsData) {
+                    // Get attempt count again to check if an attempt was finished.
+                    return $mmaModScorm.getAttemptCount(scorm.id, siteId, undefined, false).then(function(attemptsData) {
+                        if (attemptsData.online.length > initialAttemptsData.online.length) {
+                            return true;
+                        } else if (!lastOnlineWasFinished && lastOnline > 0) {
+                            // Last online attempt wasn't finished, let's check if it is now.
+                            return $mmaModScorm.isAttemptIncomplete(scorm.id, lastOnline, false, false, siteId).then(function(inc) {
+                                return !inc;
+                            });
+                        }
+                        return false;
+                    });
+                }
+                return false;
+            }).then(function(attemptFinished) {
+                return {
+                    warnings: warnings,
+                    attemptFinished: attemptFinished
+                };
             });
         }
 
@@ -341,8 +368,9 @@ angular.module('mm.addons.mod_scorm')
                 return finishSync();
             }
 
+            initialAttemptsData = attemptsData;
+
             var collisions = [],
-                lastOnline = 0,
                 promise;
 
             // Check if there are collisions between offline and online attempts (same number).
@@ -357,6 +385,8 @@ angular.module('mm.addons.mod_scorm')
             promise = lastOnline > 0 ? $mmaModScorm.isAttemptIncomplete(scorm.id, lastOnline, false, true, siteId) : $q.when(false);
 
             return promise.then(function(incomplete) {
+                lastOnlineWasFinished = !incomplete;
+
                 if (!collisions.length && !incomplete) {
                     // No collisions and last attempt is complete. Send offline attempts to Moodle.
                     var promises = [];

@@ -333,10 +333,17 @@ angular.module('mm.addons.mod_scorm')
     // Tries to synchronize the current SCORM.
     function syncScorm(checkTime, showErrors) {
         var promise = checkTime ? $mmaModScormSync.syncScormIfNeeded(scorm) : $mmaModScormSync.syncScorm(scorm);
-        return promise.then(function(warnings) {
-            var message = $mmText.buildMessage(warnings);
-            if (message) {
-                $mmUtil.showErrorModal(message);
+        return promise.then(function(data) {
+            if (data) {
+                var message = $mmText.buildMessage(data.warnings);
+                if (message) {
+                    $mmUtil.showErrorModal(message);
+                }
+
+                if (data.attemptFinished) {
+                    // An attempt was finished, check completion status.
+                    $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
+                }
             }
         }).catch(function(err) {
             if (showErrors) {
@@ -449,6 +456,11 @@ angular.module('mm.addons.mod_scorm')
             fetchScormData().finally(function() {
                 $scope.scormLoaded = true;
             });
+
+            if (data.attemptFinished) {
+                // An attempt was finished, check completion status.
+                $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
+            }
         }
     });
 
