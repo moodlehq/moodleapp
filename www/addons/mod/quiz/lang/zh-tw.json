@@ -19,6 +19,7 @@
     "marks": "得分",
     "mustbesubmittedby": "這作答應該由{{$a}}提交",
     "noquestions": "尚未加入題目",
+    "noreviewattempt": "你不被允許重新檢視作答結果",
     "notyetgraded": "還沒被計分過",
     "outof": "{{$a.grade}}分（滿分為{{$a.maxgrade}}分）",
     "outofpercent": "得分{{$a.grade}}/配分{{$a.maxgrade}}({{$a.percent}}%)",

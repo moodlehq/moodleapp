@@ -1,13 +1,19 @@
 {
     "addcontact": "أضف كجهة اتصال",
     "blockcontact": "أحجب عنوان  الأتصال",
-    "contactlistempty": "قائمة اتصالك فارغة",
+    "contactlistempty": "قائمة الاتصال فارغة",
     "contacts": "عناوين اتصال",
+    "messagenotsent": "لم يتم إرسال الرسالة، يرجي المحاولة لاحقا",
     "messages": "رسائل",
-    "nomessages": "لا يوجد رساله/رسائل جديدة",
-    "nousersfound": "لا يوجد مستخدمون",
+    "newmessage": "رسالة جديدة",
+    "nomessages": "لا يوجد رسائل",
+    "nousersfound": "لا يوجد مستخدمين",
     "removecontact": "ازل عنوان الاتصال",
     "send": "ارسل",
     "sendmessage": "ارسل رسالة",
+    "type_offline": "غير متصل",
+    "type_online": "متصل",
+    "type_search": "نتائج البحث",
+    "type_strangers": "رسائل أخرى",
     "unblockcontact": "أزل الحجب عن عنوان الاتصال"
 }

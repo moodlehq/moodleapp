@@ -19,6 +19,7 @@
     "marks": "Notas",
     "mustbesubmittedby": "Esta tentativa precisa ser enviada até {{$a}}.",
     "noquestions": "Ainda não foi inserida nenhuma pergunta",
+    "noreviewattempt": "Você não tem permissão para revisar esta tentativa.",
     "notyetgraded": "Ainda não avaliado",
     "outof": "{{$a.grade}} de um máximo de {{$a.maxgrade}}",
     "outofpercent": "{{$a.grade}} de um máximo de {{$a.maxgrade}}({{$a.percent}}%)",

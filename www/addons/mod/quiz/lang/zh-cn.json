@@ -19,6 +19,7 @@
     "marks": "分数",
     "mustbesubmittedby": "此试卷必须在 {{$a}} 以前提交。",
     "noquestions": "尚未添加试题",
+    "noreviewattempt": "您无权回顾此试卷。",
     "notyetgraded": "仍未评分",
     "outof": "{{$a.grade}}/满分{{$a.maxgrade}}",
     "outofpercent": "{{$a.grade}}/满分{{$a.maxgrade}} ({{$a.percent}}%)",

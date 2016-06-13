@@ -35,6 +35,7 @@
     "marks": "Punkte",
     "mustbesubmittedby": "Dieser Versuch muss abgegeben werden vor {{$a}}.",
     "noquestions": "Es wurden noch keine Fragen eingetragen.",
+    "noreviewattempt": "Sie dürfen diesen Versuch nicht prüfen.",
     "notyetgraded": "Bisher nicht bewertet",
     "opentoc": "Offenes Navigationsfeld",
     "outof": "{{$a.grade}} von {{$a.maxgrade}}",

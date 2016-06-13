@@ -35,6 +35,7 @@
     "marks": "Punts",
     "mustbesubmittedby": "Aquest intent s'ha d'enviar abans de {{$a}}.",
     "noquestions": "Encara no s'han afegit preguntes",
+    "noreviewattempt": "No teniu permís per revisar aquest intent.",
     "notyetgraded": "Encara no s'ha avaluat",
     "opentoc": "Obre la navegació per preguntes.",
     "outof": "{{$a.grade}} d'un màxim de {{$a.maxgrade}}",

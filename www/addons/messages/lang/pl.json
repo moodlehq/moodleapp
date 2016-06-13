@@ -5,6 +5,7 @@
     "contactname": "Nazwa kontaktu",
     "contacts": "Kontakty",
     "deletemessage": "Usuń wiadomość",
+    "deletemessageconfirmation": "Czy jesteś pewien, że chcesz usunąć tę wiadomość? Zostanie ona usunięta wyłącznie z twojej historii wiadomości, użytkownik który ją wysłał lub odebrał nadal będzie mógł ją wyświetlić.",
     "messages": "Wiadomości",
     "nomessages": "Brak oczekujących wiadomości",
     "nousersfound": "Nie znaleziono użytkowników",

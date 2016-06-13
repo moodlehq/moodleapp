@@ -19,6 +19,7 @@
     "marks": "Баллы",
     "mustbesubmittedby": "Эта попытка должна быть отправлена до {{$a}}.",
     "noquestions": "Пока не добавлено ни одного вопроса",
+    "noreviewattempt": "Вам не разрешен просмотр этой попытки.",
     "notyetgraded": "Еще не оценено",
     "outof": "{{$a.grade}} из {{$a.maxgrade}}",
     "outofpercent": "{{$a.grade}} из {{$a.maxgrade}} ({{$a.percent}}%)",

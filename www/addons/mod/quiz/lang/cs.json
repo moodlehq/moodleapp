@@ -19,6 +19,7 @@
     "marks": "Body",
     "mustbesubmittedby": "Tento pokus musí být odeslán nejpozději {{$a}}.",
     "noquestions": "Dosud nebyly vloženy žádné úlohy.",
+    "noreviewattempt": "Nemůžete revidovat tento pokus.",
     "notyetgraded": "Dosud nehodnoceno",
     "outof": "{{$a.grade}} z možných {{$a.maxgrade}}",
     "outofpercent": "{{$a.grade}} z možných {{$a.maxgrade}} ({{$a.percent}}%)",

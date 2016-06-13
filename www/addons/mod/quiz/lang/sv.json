@@ -19,6 +19,7 @@
     "marks": "Poäng",
     "mustbesubmittedby": "Detta försöket måste skickas in av {{$a}}.",
     "noquestions": "Inga frågor har ännu lagts till",
+    "noreviewattempt": "Du har inte rätt att granska det här försöket. ",
     "notyetgraded": "Ännu inte betygssatta",
     "outof": "av ett maximum på",
     "outofpercent": "{{$a.grade}} av ett maximum på {{$a.maxgrade}} ({{$a.percent}}%)",

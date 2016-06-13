@@ -18,6 +18,7 @@
     "marks": "נקודות",
     "mustbesubmittedby": "יש צורך להגיש את נסיון מענה זה",
     "noquestions": "בשלב זה, יש להוסיף שאלות לבוחן על מנת שאפשר יהיה להציג אותו בפני התלמידים",
+    "noreviewattempt": "אין הרשאה לצפות בנסיון מענה זה",
     "notyetgraded": "לא ניתן ציון עדיין",
     "outof": "{{$a.grade}} מתוך מקסימום של {{$a.maxgrade}}",
     "outofpercent": "{{$a.grade}}  מתוך הציון המירבי  {{$a.maxgrade}}({{$a.percent}}%)",

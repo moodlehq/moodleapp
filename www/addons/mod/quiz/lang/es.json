@@ -19,6 +19,7 @@
     "marks": "Puntos",
     "mustbesubmittedby": "Este intento debe ser presentado por {{$a}}.",
     "noquestions": "Aún no se han agregado preguntas",
+    "noreviewattempt": "Usted no tiene permiso para revisar este intento.",
     "notyetgraded": "Sin calificar aún",
     "outof": "{{$a.grade}} de {{$a.maxgrade}}",
     "outofpercent": "{{$a.grade}} de {{$a.maxgrade}} ({{$a.percent}}%)",
