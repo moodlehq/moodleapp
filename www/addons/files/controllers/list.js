@@ -84,10 +84,14 @@ angular.module('mm.addons.files')
 
     // When we are in the root of the private files we can add more files.
     $scope.add = function() {
-        if (!$mmApp.isOnline()) {
-            $mmUtil.showErrorModal('mma.files.errormustbeonlinetoupload', true);
-        } else {
-            $state.go('site.files-upload', {root: root, path: path});
-        }
+        $mmaFiles.versionCanUploadFiles().then(function(canUpload) {
+            if (!canUpload) {
+                $mmUtil.showErrorModal('mma.files.erroruploadnotworking', true);
+            } else if (!$mmApp.isOnline()) {
+                $mmUtil.showErrorModal('mma.files.errormustbeonlinetoupload', true);
+            } else {
+                $state.go('site.files-upload', {root: root, path: path});
+            }
+        });
     };
 });
