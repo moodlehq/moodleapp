@@ -48,7 +48,7 @@ angular.module('mm.addons.mod_scorm')
     $scope.modebrowse = $mmaModScorm.MODEBROWSE;
 
     // Convenience function to get SCORM data.
-    function fetchScormData(refresh) {
+    function fetchScormData(refresh, checkCompletion) {
         return $mmaModScorm.getScorm(courseid, module.id, module.url).then(function(scormData) {
             scorm = scormData;
 
@@ -75,6 +75,10 @@ angular.module('mm.addons.mod_scorm')
                 $mmaModScormHelper.getScormReadableSyncTime(scorm.id).then(function(syncTime) {
                     $scope.syncTime = syncTime;
                 });
+
+                if (checkCompletion) {
+                    $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
+                }
 
                 // Get the number of attempts and check if SCORM is incomplete.
                 return $mmaModScorm.getAttemptCount(scorm.id).then(function(attemptsData) {
@@ -279,7 +283,7 @@ angular.module('mm.addons.mod_scorm')
     }
 
     // Refreshes data.
-    function refreshData(dontForceSync) {
+    function refreshData(dontForceSync, checkCompletion) {
         var promises = [];
         promises.push($mmaModScorm.invalidateScormData(courseid));
         if (scorm) {
@@ -287,7 +291,7 @@ angular.module('mm.addons.mod_scorm')
         }
 
         return $q.all(promises).finally(function() {
-            return fetchScormData(!dontForceSync);
+            return fetchScormData(!dontForceSync, checkCompletion);
         });
     }
 
@@ -338,11 +342,6 @@ angular.module('mm.addons.mod_scorm')
                 var message = $mmText.buildMessage(data.warnings);
                 if (message) {
                     $mmUtil.showErrorModal(message);
-                }
-
-                if (data.attemptFinished) {
-                    // An attempt was finished, check completion status.
-                    $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
                 }
             }
         }).catch(function(err) {
@@ -416,7 +415,7 @@ angular.module('mm.addons.mod_scorm')
             // Refresh the data.
             $scope.scormLoaded = false;
             scrollView.scrollTop();
-            refreshData(true).finally(function() {
+            refreshData(true, true).finally(function() {
                 $scope.scormLoaded = true;
             });
         }).finally(function() {
@@ -441,7 +440,7 @@ angular.module('mm.addons.mod_scorm')
             scrollView.scrollTop();
             // Add a delay to make sure the player has started the last writing calls so we can detect conflicts.
             $timeout(function() {
-                refreshData().finally(function() {
+                refreshData(false, true).finally(function() {
                     $scope.scormLoaded = true;
                 });
             }, 500);
@@ -453,14 +452,9 @@ angular.module('mm.addons.mod_scorm')
         if (data && data.siteid == $mmSite.getId() && data.scormid == scorm.id) {
             $scope.scormLoaded = false;
             scrollView.scrollTop();
-            fetchScormData().finally(function() {
+            fetchScormData(false, true).finally(function() {
                 $scope.scormLoaded = true;
             });
-
-            if (data.attemptFinished) {
-                // An attempt was finished, check completion status.
-                $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
-            }
         }
     });
 
