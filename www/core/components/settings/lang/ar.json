@@ -1,9 +1,12 @@
 {
     "about": "حول",
+    "appname": "تطبيق مودل {{version}}",
     "cacheexpirationtime": "وقت انتهاء صلاحية ذاكرة التخزين المؤقت (بالميلي ثانية)",
     "currentlanguage": "اللغة الحالية",
     "deletesitefiles": "هل أنت متأكد أنك تريد حذف الملفات التي تم تحميلها من هذا الموقع؟",
     "development": "التطوير",
+    "deviceinfo": "معلومات الجهاز",
+    "deviceos": "نظام تشغيل الجهاز",
     "enabledebugging": "تمكين التصحيح",
     "estimatedfreespace": "تقدير المساحة الحرة",
     "general": "العام",
@@ -12,6 +15,12 @@
     "settings": "الإعدادات",
     "sites": "المواقع",
     "spaceusage": "المساحة المستخدمة",
-    "success": "نجاح",
-    "total": "المجموع"
+    "success": "تم بنجاح",
+    "synchronization": "تزامن",
+    "synchronizenow": "زامن الأن",
+    "synchronizing": "يتم التزامن",
+    "syncsettings": "إعدادات المزامنة",
+    "total": "المجموع",
+    "versioncode": "رمز الإصدار",
+    "versionname": "اسم الإصدار"
 }
