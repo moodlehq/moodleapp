@@ -41,6 +41,26 @@ angular.module('mm.addons.files')
     };
 
     /**
+     * Check the Moodle version in order to check if upload files is working.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#versionCanUploadFiles
+     * @param  {String} [siteId] Id of the site to check. If not defined, use current site.
+     * @return {Promise} Resolved with true if WS is working, false otherwise.
+     */
+    self.versionCanUploadFiles = function(siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var version = site.getInfo().version;
+
+            // Uploading is not working right now for Moodle 3.1.0 (2016052300).
+            return version && (parseInt(version) != 2016052300);
+        });
+    };
+
+    /**
      * Get the list of files.
      *
      * @module mm.addons.files
