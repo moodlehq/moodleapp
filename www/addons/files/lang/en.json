@@ -15,6 +15,7 @@
     "errormustbeonlinetoupload": "You have to be online to upload files.",
     "errornoapp": "You don't have an app installed to perform this action.",
     "errorreadingfile": "Error reading file.",
+    "erroruploadnotworking": "Unfortunately it is currently not possible to upload files to your site.",
     "errorwhiledownloading": "An error occured while trying to download the file.",
     "errorwhileuploading": "An error occured during the file upload.",
     "errorwhilerecordingaudio": "An error occured while trying to record audio.",
