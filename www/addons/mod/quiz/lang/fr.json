@@ -35,6 +35,7 @@
     "marks": "Points",
     "mustbesubmittedby": "Cette tentative doit être envoyée avant {{$a}}.",
     "noquestions": "Aucune question n'a été encore ajoutée",
+    "noreviewattempt": "Vous n'êtes pas autorisé à relire cette tentative.",
     "notyetgraded": "Pas encore évalué",
     "opentoc": "Ouvrir la navigation",
     "outof": "{{$a.grade}} sur {{$a.maxgrade}}",

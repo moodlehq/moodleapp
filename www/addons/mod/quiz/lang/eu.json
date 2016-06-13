@@ -19,6 +19,7 @@
     "marks": "Puntuak",
     "mustbesubmittedby": "Saiakera hau {{$a}}-(e)k bidali behar du.",
     "noquestions": "Ez da galderarik gehitu oraindik",
+    "noreviewattempt": "Ez duzu saiakera hau berrikusteko baimenik.",
     "notyetgraded": "Ez da oraindik kalifikatu",
     "outof": "{{$a.grade}} eta gehienez {{$a.maxgrade}}",
     "outofpercent": "{{$a.grade}} eta gehienez {{$a.maxgrade}} (%{{$a.percent}})",

@@ -35,6 +35,7 @@
     "marks": "Punten",
     "mustbesubmittedby": "Deze poging moet ingestuurd worden door {{$a}}.",
     "noquestions": "Er zijn nog geen vragen toegevoegd",
+    "noreviewattempt": "Je mag deze poging niet nakijken",
     "notyetgraded": "Nog niet beoordeeld",
     "opentoc": "Open navigatie.",
     "outof": "{{$a.grade}} op een maximum van {{$a.maxgrade}}",

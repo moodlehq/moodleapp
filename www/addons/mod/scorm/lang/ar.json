@@ -21,6 +21,8 @@
     "lastattempt": "المحاولاة الأخيرة",
     "mode": "نمط",
     "newattempt": "ابداء محاولة جديدة",
+    "noattemptsallowed": "عدد المحاولات المسموح بها",
+    "noattemptsmade": "عدد المحاولات التي قمت بها",
     "normal": "عادي",
     "notattempted": "لم تتم محاولته",
     "organizations": "تنظيمات",

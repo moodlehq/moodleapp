@@ -19,6 +19,7 @@
     "marks": "Puanlar",
     "mustbesubmittedby": "Bu uygulama {{$a}} tarafından gönderilmelidir.",
     "noquestions": "Henüz bir soru eklenmemiş",
+    "noreviewattempt": "Bu uygulamayı gözden geçirmek için izniniz yok.",
     "notyetgraded": "Henüz puanlanmadı",
     "outof": "{{$a.maxgrade}} üzerinden {{$a.grade}}",
     "outofpercent": "Maksimum {{$a.maxgrade}} üzerinden {{$a.grade}} (%{{$a.percent}})",

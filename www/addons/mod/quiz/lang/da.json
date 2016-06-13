@@ -19,6 +19,7 @@
     "marks": "Point",
     "mustbesubmittedby": "Svaret skal indsendes senest {{$a}}",
     "noquestions": "Der er ikke tilføjet nogen spørgsmål  endnu",
+    "noreviewattempt": "Du har ikke tilladelse til at gennemse denne besvarelse.",
     "notyetgraded": "Ikke vurderet endnu",
     "outof": "{{$a.grade}} ud af {{$a.maxgrade}}",
     "outofpercent": "{{$a.grade}} ud af et maksimum på {{$a.maxgrade}} ({{$a.percent}}%)",

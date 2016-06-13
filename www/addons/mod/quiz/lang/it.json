@@ -19,6 +19,7 @@
     "marks": "Punteggio",
     "mustbesubmittedby": "Questo tentativo deve essere inviato entro {{$a}}.",
     "noquestions": "Ancora non sono state aggiunte domande",
+    "noreviewattempt": "Non hai il privilegio di rivedere questo tentativo.",
     "notyetgraded": "Non ancora valutato",
     "outof": "{{$a.grade}} su un massimo di {{$a.maxgrade}}",
     "outofpercent": "{{$a.grade}} su un massimo di {{$a.maxgrade}} ({{$a.percent}}%)",

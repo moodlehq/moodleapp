@@ -19,6 +19,7 @@
     "marks": "Pontok",
     "mustbesubmittedby": "A próbálkozást {{$a}} időpontig le kell adni.",
     "noquestions": "Nincs még hozzáadva kérdés",
+    "noreviewattempt": "Ezt a próbálkozást nem ellenőrizheti.",
     "notyetgraded": "Még nincs lepontozva",
     "outof": "{{$a.grade}} a maximum {{$a.maxgrade}} közül",
     "outofpercent": "{{$a.grade}} a maximum {{$a.maxgrade}} közül ({{$a.percent}}%)",

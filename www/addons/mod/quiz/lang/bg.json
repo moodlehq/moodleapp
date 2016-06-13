@@ -18,6 +18,7 @@
     "marks": "Точки",
     "mustbesubmittedby": "Това изпълнение трябва да бъде предадено до {{$a}}.",
     "noquestions": "Още не са добавени въпроси",
+    "noreviewattempt": "Вие нямате право да прегледате този опит.",
     "notyetgraded": "Още не е оценен",
     "outof": "{{$a.grade}} от {{$a.maxgrade}}",
     "outofpercent": "{{$a.grade}} от {{$a.maxgrade}} ({{$a.percent}}%)",

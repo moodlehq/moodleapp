@@ -35,6 +35,7 @@
     "marks": "Puntos",
     "mustbesubmittedby": "Este intento debe ser enviado para {{$a}}.",
     "noquestions": "Aún no se han agregado preguntas",
+    "noreviewattempt": "Usted no tiene permiso para revisar este intento.",
     "notyetgraded": "Sin calificar aún",
     "opentoc": "Abrir ventanilla de navegación.",
     "outof": "{{$a.grade}} de un total de {{$a.maxgrade}}",
