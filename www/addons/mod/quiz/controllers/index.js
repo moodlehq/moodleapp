@@ -338,6 +338,9 @@ angular.module('mm.addons.mod_quiz')
 
     // Go to review an attempt that has just been finished.
     function goToAutoReview() {
+        // If we go to auto review it means an attempt was finished. Check completion status.
+        $mmCourse.checkModuleCompletion(courseId, module.completionstatus);
+
         // Verify that user can see the review.
         var attemptId = autoReview.attemptId;
         if (quizAccessInfo.canreviewmyattempts) {
@@ -347,9 +350,6 @@ angular.module('mm.addons.mod_quiz')
                 // Ignore errors.
             });
         }
-
-        // If we go to auto review it means an attempt was finished. Check completion status.
-        $mmCourse.checkModuleCompletion(courseId, module.completionstatus);
 
         return $q.when();
     }
