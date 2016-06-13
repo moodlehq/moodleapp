@@ -17,8 +17,9 @@ angular.module('mm.core.sharedfiles', ['mm.core'])
 .constant('mmSharedFilesFolder', 'sharedfiles')
 .constant('mmSharedFilesStore', 'shared_files')
 .constant('mmSharedFilesEventFileShared', 'file_shared')
+.constant('mmSharedFilesPickerPriority', 1000)
 
-.config(function($stateProvider) {
+.config(function($stateProvider, $mmFileUploaderDelegateProvider, mmSharedFilesPickerPriority) {
 
     var chooseSiteState = {
             url: '/sharedfiles-choose-site',
@@ -41,18 +42,23 @@ angular.module('mm.core.sharedfiles', ['mm.core'])
 
     .state('mm_login.sharedfiles-choose-site', angular.extend(angular.copy(chooseSiteState), chooseSiteView))
 
-    .state('site.sharedfiles-manage', {
-        url: '/sharedfiles-manage',
+    .state('site.sharedfiles-list', {
+        url: '/sharedfiles-list',
         params: {
-            path: null
+            path: null,
+            manage: false,
+            pick: false
         },
         views: {
             'site': {
-                templateUrl: 'core/components/sharedfiles/templates/manage.html',
-                controller: 'mmSharedFilesManageCtrl'
+                templateUrl: 'core/components/sharedfiles/templates/list.html',
+                controller: 'mmSharedFilesListCtrl'
             }
         }
     });
+
+    $mmFileUploaderDelegateProvider.registerHandler('mmSharedFiles',
+                '$mmSharedFilesHandlers.filePicker', mmSharedFilesPickerPriority);
 })
 
 .run(function($mmSharedFilesHelper, $ionicPlatform) {

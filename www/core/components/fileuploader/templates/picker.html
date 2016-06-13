@@ -17,6 +17,10 @@
                 {{ 'mm.fileuploader.file' | translate }}
                 <input class="mm-fileuploader-picker" type="file" mm-file-uploader-on-change="uploadFile"> <!-- Hidden input, intercepts clicks on button-->
             </div>
+            <a ng-repeat="handler in handlers | orderBy:'-priority'" ng-controller="handler.controller" class="item mm-file-uploader-handler {{class}}" ng-click="handlerClicked($event, action)" ng-class='{"item-icon-left": icon}' title="{{title}}">
+                <i class="icon {{icon}}" ng-if="icon"></i>
+                {{title | translate}}
+            </a>
         </div>
     </ion-content>
 </ion-view>

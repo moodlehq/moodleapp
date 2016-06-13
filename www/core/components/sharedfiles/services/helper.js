@@ -19,7 +19,8 @@ angular.module('mm.core.sharedfiles')
 
     $log = $log.getInstance('$mmSharedFilesHelper');
 
-    var self = {};
+    var self = {},
+        filePickerDeferred;
 
     /**
      * Ask a user if he wants to replace a file (using originalName) or rename it (using newName).
@@ -65,6 +66,40 @@ angular.module('mm.core.sharedfiles')
     };
 
     /**
+     * Function called when the file picker is closed.
+     *
+     * @module mm.core.sharedfiles
+     * @ngdoc method
+     * @name $mmSharedFilesHelper#filePickerClosed
+     * @return {Void}
+     */
+    self.filePickerClosed = function() {
+        if (filePickerDeferred) {
+            filePickerDeferred.reject();
+            filePickerDeferred = undefined;
+        }
+    };
+
+    /**
+     * Function to call once a file is picked.
+     *
+     * @module mm.core.sharedfiles
+     * @ngdoc method
+     * @name $mmSharedFilesHelper#filePicked
+     * @param  {String} filePath Path of the file picked.
+     * @return {Void}
+     */
+    self.filePicked = function(filePath) {
+        if (filePickerDeferred) {
+            filePickerDeferred.resolve({
+                path: filePath,
+                uploaded: false
+            });
+            filePickerDeferred = undefined;
+        }
+    };
+
+    /**
      * Go to the choose site view.
      *
      * @module mm.core.sharedfiles
@@ -76,6 +111,20 @@ angular.module('mm.core.sharedfiles')
     self.goToChooseSite = function(filePath) {
         var parentState = $state.$current.name.split('.')[0];
         return $state.go(parentState + '.sharedfiles-choose-site', {filepath: filePath});
+    };
+
+    /**
+     * Open the view to select a shared file.
+     *
+     * @module mm.core.sharedfiles
+     * @ngdoc method
+     * @name $mmSharedFilesHelper#pickSharedFile
+     * @return {Promise} Promise resolved when a file is picked, rejected if file picker is closed without selecting a file.
+     */
+    self.pickSharedFile = function() {
+        filePickerDeferred = $q.defer();
+        $state.go('site.sharedfiles-list', {pick: true});
+        return filePickerDeferred.promise;
     };
 
     /**

@@ -64,7 +64,8 @@ angular.module('mm.core.fileuploader')
 
             return $mmFS.writeFile(filepath, data).then(function(fileEntry) {
                 modal.dismiss();
-                return self.uploadGenericFile(fileEntry.toURL(), file.name, file.type);
+                // Pass true to delete the copy after the upload.
+                return self.uploadGenericFile(fileEntry.toURL(), file.name, file.type, true);
             }, function(error) {
                 $log.error('Error writing file to upload: '+JSON.stringify(error));
                 modal.dismiss();
@@ -129,13 +130,13 @@ angular.module('mm.core.fileuploader')
      * @ngdoc method
      * @name $mmFileUploaderHelper#showConfirmAndUploadInSite
      * @param  {String} fileEntry FileEntry of the file to upload.
-     * @param  {String} [siteid]  Id of the site to upload the file to. If not defined, use current site.
+     * @param  {String} [siteId]  Id of the site to upload the file to. If not defined, use current site.
      * @return {Promise}          Promise resolved when the file is uploaded.
      */
-    self.showConfirmAndUploadInSite = function(fileEntry, siteId) {
+    self.showConfirmAndUploadInSite = function(fileEntry, deleteAfterUpload, siteId) {
         return $mmFS.getFileObjectFromFileEntry(fileEntry).then(function(file) {
             return self.confirmUploadFile(file.size).then(function() {
-                return self.uploadGenericFile(fileEntry.toURL(), file.name, file.type, siteId).then(function() {
+                return self.uploadGenericFile(fileEntry.toURL(), file.name, file.type, deleteAfterUpload, siteId).then(function() {
                     $mmUtil.showModal('mm.core.success', 'mm.fileuploader.fileuploaded');
                 });
             }).catch(function(err) {
@@ -186,20 +187,21 @@ angular.module('mm.core.fileuploader')
      * @module mm.core.fileuploader
      * @ngdoc method
      * @name $mmFileUploaderHelper#uploadGenericFile
-     * @param  {String} uri      File URI.
-     * @param  {String} name     File name.
-     * @param  {String} type     File type.
-     * @param  {String} [siteid] Id of the site to upload the file to. If not defined, use current site.
-     * @return {Promise}         Promise resolved when the file is uploaded.
+     * @param  {String} uri                File URI.
+     * @param  {String} name               File name.
+     * @param  {String} type               File type.
+     * @param  {Boolean} deleteAfterUpload Whether the file should be deleted after upload.
+     * @param  {String} [siteId]           Id of the site to upload the file to. If not defined, use current site.
+     * @return {Promise}                   Promise resolved when the file is uploaded.
      */
-    self.uploadGenericFile = function(uri, name, type, siteid) {
+    self.uploadGenericFile = function(uri, name, type, deleteAfterUpload, siteId) {
         if (!$mmApp.isOnline()) {
             return $mmLang.translateAndReject('mm.fileuploader.errormustbeonlinetoupload');
         }
 
         var modal = $mmUtil.showModalLoading('mm.fileuploader.uploading', true);
 
-        return $mmFileUploader.uploadGenericFile(uri, name, type, siteid).catch(function(error) {
+        return $mmFileUploader.uploadGenericFile(uri, name, type, deleteAfterUpload, siteId).catch(function(error) {
             $log.error('Error uploading file: '+JSON.stringify(error));
             if (typeof error == 'string') {
                 return $q.reject(error);

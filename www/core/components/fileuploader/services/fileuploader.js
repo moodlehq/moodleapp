@@ -131,19 +131,20 @@ angular.module('mm.core.fileuploader')
      * @module mm.core.fileuploader
      * @ngdoc method
      * @name $mmFileUploader#uploadGenericFile
-     * @param  {String} uri      File URI.
-     * @param  {String} name     File name.
-     * @param  {String} type     File type.
-     * @param  {String} [siteId] Id of the site to upload the file to. If not defined, use current site.
-     * @return {Promise}         Promise resolved when the file is uploaded.
+     * @param  {String} uri                File URI.
+     * @param  {String} name               File name.
+     * @param  {String} type               File type.
+     * @param  {Boolean} deleteAfterUpload Whether the file should be deleted after upload.
+     * @param  {String} [siteId]           Id of the site to upload the file to. If not defined, use current site.
+     * @return {Promise}                   Promise resolved when the file is uploaded.
      */
-    self.uploadGenericFile = function(uri, name, type, siteId) {
+    self.uploadGenericFile = function(uri, name, type, deleteAfterUpload, siteId) {
         var options = {};
         options.fileKey = null;
         options.fileName = name;
         options.mimeType = type;
         // Don't delete the file on iOS, shared files are kept in local file area.
-        options.deleteAfterUpload = !ionic.Platform.isIOS();
+        options.deleteAfterUpload = deleteAfterUpload;
 
         return self.uploadFile(uri, options, siteId);
     };

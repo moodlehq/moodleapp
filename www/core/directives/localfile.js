@@ -44,7 +44,9 @@ angular.module('mm.core')
         scope: {
             file: '=',
             manage: '=?',
-            fileDeleted: '&?'
+            fileDeleted: '&?',
+            overrideClick: '=?',
+            fileClicked: '&?'
         },
         link: function(scope, element) {
             var file = scope.file;
@@ -65,7 +67,12 @@ angular.module('mm.core')
             scope.open = function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                $mmUtil.openFile(file.toURL());
+
+                if (scope.overrideClick && scope.fileClicked) {
+                    scope.fileClicked();
+                } else {
+                    $mmUtil.openFile(file.toURL());
+                }
             };
 
             // Toogle edit mode.

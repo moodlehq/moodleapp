@@ -7,7 +7,7 @@
         <mm-loading hide-until="filesLoaded">
             <ul class="list">
                 <li ng-repeat="file in files">
-                    <mm-local-file ng-if="file.isFile" file="file" manage="true" file-deleted="fileDeleted($index)"></mm-local-file>
+                    <mm-local-file ng-if="file.isFile" file="file" manage="manage" override-click="pick" file-deleted="fileDeleted($index)" file-clicked="filePicked(file)"></mm-local-file>
                     <a class="item item-media" ng-if="!file.isFile" ng-click="openFolder(file)">
                         <img src="img/files/folder-64.png" alt="{{ 'mm.core.folder' | translate }}" role="presentation">
                         {{ file.name }}
