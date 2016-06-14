@@ -16,7 +16,7 @@ angular.module('mm.core.fileuploader')
 
 .constant('mmFileUploaderFileSizeWarning', 5242880)
 
-.factory('$mmFileUploaderHelper', function($q, $mmUtil, $mmApp, $log, $translate, $window, $state,
+.factory('$mmFileUploaderHelper', function($q, $mmUtil, $mmApp, $log, $translate, $window, $state, $rootScope,
         $mmFileUploader, $cordovaCamera, $cordovaCapture, $mmLang, $mmFS, $mmText, mmFileUploaderFileSizeWarning) {
 
     $log = $log.getInstance('$mmFileUploaderHelper');
@@ -299,15 +299,28 @@ angular.module('mm.core.fileuploader')
         var errorStr = $translate.instant('mm.core.error'),
             retryStr = $translate.instant('mm.core.retry'),
             args = arguments,
+            progressTemplate =  "<ion-spinner></ion-spinner>" +
+                                "<p ng-if=\"!perc\">{{'mm.fileuploader.uploading' | translate}}</p>" +
+                                "<p ng-if=\"perc\">{{'mm.fileuploader.uploadingperc' | translate:{$a: perc} }}</p>",
+            scope,
             modal;
 
         if (!$mmApp.isOnline()) {
             return errorUploading($translate.instant('mm.fileuploader.errormustbeonlinetoupload'));
         }
 
-        modal = $mmUtil.showModalLoading('mm.fileuploader.uploading', true);
+        scope = $rootScope.$new();
+        modal = $mmUtil.showModalLoadingWithTemplate(progressTemplate, {scope: scope});
 
-        return uploadFn.apply(undefined, Array.prototype.slice.call(args, 3)).catch(function(error) {
+        return uploadFn.apply(undefined, Array.prototype.slice.call(args, 3)).then(undefined, undefined, function(progress) {
+            // Progress uploading.
+            if (progress && progress.lengthComputable) {
+                var perc = parseFloat(Math.min((progress.loaded / progress.total) * 100, 100)).toFixed(1);
+                if (perc >= 0) {
+                    scope.perc = perc;
+                }
+            }
+        }).catch(function(error) {
             $log.error('Error uploading file: '+JSON.stringify(error));
 
             modal.dismiss();

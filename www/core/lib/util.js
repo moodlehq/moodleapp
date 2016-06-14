@@ -557,6 +557,39 @@ angular.module('mm.core')
         };
 
         /**
+         * Displays a loading modal window using a certain template.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#showModalLoadingWithTemplate
+         * @param {String} [template] Template to use in the modal.
+         * @param {Object} [options]  Options. See http://ionicframework.com/docs/api/service/$ionicLoading/
+         * @return {Object}           Object with a 'dismiss' function to close the modal.
+         * @description
+         * Usage:
+         *     var modal = $mmUtil.showModalLoadingWithTemplate(template);
+         *     ...
+         *     modal.dismiss();
+         */
+        self.showModalLoadingWithTemplate = function(template, options) {
+            options = options || {};
+
+            if (!template) {
+                template = "<ion-spinner></ion-spinner><p>{{'mm.core.loading' | translate}}</p>";
+            }
+
+            options.template = template;
+
+            $ionicLoading.show(options);
+
+            return {
+                dismiss: function() {
+                    $ionicLoading.hide();
+                }
+            };
+        };
+
+        /**
          * Show a modal with an error message.
          *
          * @module mm.core

@@ -16,5 +16,6 @@
     "readingfile": "Reading file",
     "uploadafile": "Upload a file",
     "uploading": "Uploading",
+    "uploadingperc": "Uploading: {{$a}}%",
     "video": "Video"
 }
