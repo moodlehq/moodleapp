@@ -643,11 +643,17 @@ angular.module('mm.core')
          * @module mm.core
          * @ngdoc method
          * @name $mmUtil#showConfirm
-         * @param  {Mixed} template Template to show in the modal body. Can be a string or a promise.
-         * @return {Promise}        Promise resolved if the user confirms and rejected if he cancels.
+         * @param  {Mixed} template   Template to show in the modal body. Can be a string or a promise.
+         * @param  {String} [title]   Title of the modal.
+         * @param  {Object} [options] More options. See http://ionicframework.com/docs/api/service/$ionicPopup/
+         * @return {Promise}          Promise resolved if the user confirms and rejected if he cancels.
          */
-        self.showConfirm = function(template, title) {
-            return $ionicPopup.confirm({template: template, title: title}).then(function(confirmed) {
+        self.showConfirm = function(template, title, options) {
+            options = options || {};
+
+            options.template = template;
+            options.title = title;
+            return $ionicPopup.confirm(options).then(function(confirmed) {
                 if (!confirmed) {
                     return $q.reject();
                 }

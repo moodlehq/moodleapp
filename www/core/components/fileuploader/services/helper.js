@@ -129,9 +129,10 @@ angular.module('mm.core.fileuploader')
      * @module mm.core.fileuploader
      * @ngdoc method
      * @name $mmFileUploaderHelper#showConfirmAndUploadInSite
-     * @param  {String} fileEntry FileEntry of the file to upload.
-     * @param  {String} [siteId]  Id of the site to upload the file to. If not defined, use current site.
-     * @return {Promise}          Promise resolved when the file is uploaded.
+     * @param  {Object} fileEntry          FileEntry of the file to upload.
+     * @param  {Boolean} deleteAfterUpload Whether the file should be deleted after upload.
+     * @param  {String} [siteId]           Id of the site to upload the file to. If not defined, use current site.
+     * @return {Promise}                   Promise resolved when the file is uploaded.
      */
     self.showConfirmAndUploadInSite = function(fileEntry, deleteAfterUpload, siteId) {
         return $mmFS.getFileObjectFromFileEntry(fileEntry).then(function(file) {
@@ -165,16 +166,11 @@ angular.module('mm.core.fileuploader')
         $log.debug('Trying to record a video file');
         var fn = isAudio ? $cordovaCapture.captureAudio : $cordovaCapture.captureVideo;
         return fn({limit: 1}).then(function(medias) {
-            // Upload the video.
-            var modal = $mmUtil.showModalLoading('mm.fileuploader.uploading', true);
-            return $mmFileUploader.uploadMedia(medias).catch(function(error) {
-                if (typeof error == 'string') {
-                    return $q.reject(error);
-                }
-                return $mmLang.translateAndReject('mm.fileuploader.errorwhileuploading');
-            }).finally(function() {
-                modal.dismiss();
+            // Upload the medias.
+            var paths = medias.map(function(media) {
+                return media.fullPath;
             });
+            return uploadFiles(true, paths, $mmFileUploader.uploadMedia, medias);
         }, function(error) {
             var defaultError = isAudio ? 'mm.fileuploader.errorcapturingaudio' : 'mm.fileuploader.errorcapturingvideo';
             return treatCaptureError(error, defaultError);
@@ -195,21 +191,7 @@ angular.module('mm.core.fileuploader')
      * @return {Promise}                   Promise resolved when the file is uploaded.
      */
     self.uploadGenericFile = function(uri, name, type, deleteAfterUpload, siteId) {
-        if (!$mmApp.isOnline()) {
-            return $mmLang.translateAndReject('mm.fileuploader.errormustbeonlinetoupload');
-        }
-
-        var modal = $mmUtil.showModalLoading('mm.fileuploader.uploading', true);
-
-        return $mmFileUploader.uploadGenericFile(uri, name, type, deleteAfterUpload, siteId).catch(function(error) {
-            $log.error('Error uploading file: '+JSON.stringify(error));
-            if (typeof error == 'string') {
-                return $q.reject(error);
-            }
-            return $mmLang.translateAndReject('mm.fileuploader.errorwhileuploading');
-        }).finally(function() {
-            modal.dismiss();
-        });
+        return uploadFiles(deleteAfterUpload, [uri], $mmFileUploader.uploadGenericFile, uri, name, type, deleteAfterUpload, siteId);
     };
 
     /**
@@ -236,16 +218,7 @@ angular.module('mm.core.fileuploader')
         }
 
         return $cordovaCamera.getPicture(options).then(function(img) {
-            // Upload the image.
-            var modal = $mmUtil.showModalLoading('mm.fileuploader.uploading', true);
-            return $mmFileUploader.uploadImage(img, fromAlbum).catch(function(error) {
-                if (typeof error == 'string') {
-                    return $q.reject(error);
-                }
-                return $mmLang.translateAndReject('mm.fileuploader.errorwhileuploading');
-            }).finally(function() {
-                modal.dismiss();
-            });
+            return uploadFiles(!fromAlbum, [img], $mmFileUploader.uploadImage, img, fromAlbum);
         }, function(error) {
             var defaultError = fromAlbum ? 'mm.fileuploader.errorgettingimagealbum' : 'mm.fileuploader.errorcapturingimage';
             return treatImageError(error, defaultError);
@@ -303,6 +276,68 @@ angular.module('mm.core.fileuploader')
             }
         }
         return $q.reject();
+    }
+
+    /**
+     * Convenience function to upload files, allowing to retry if it fails.
+     *
+     * @param  {Boolean} deleteAfterUpload Whether the files should be deleted after upload.
+     * @param  {String[]} [paths]          Absolute paths of the files to upload. Required only if deleteAfterUpload=true.
+     * @param  {Function} uploadFn         Function used to upload the files.
+     *                                     The function parameters need to be passed after this parameter.
+     * @return {Promise}                   Promise resolved if the files are uploaded, rejected otherwise.
+     * @description
+     *
+     * Usage:
+     * uploadFiles(false, paths, myFunction, param1, param2)
+     *
+     * This will call the following function to upload the file:
+     * myFunction(param1, param2)
+     */
+    function uploadFiles(deleteAfterUpload, paths, uploadFn) {
+
+        var errorStr = $translate.instant('mm.core.error'),
+            retryStr = $translate.instant('mm.core.retry'),
+            args = arguments,
+            modal;
+
+        if (!$mmApp.isOnline()) {
+            return errorUploading($translate.instant('mm.fileuploader.errormustbeonlinetoupload'));
+        }
+
+        modal = $mmUtil.showModalLoading('mm.fileuploader.uploading', true);
+
+        return uploadFn.apply(undefined, Array.prototype.slice.call(args, 3)).catch(function(error) {
+            $log.error('Error uploading file: '+JSON.stringify(error));
+
+            modal.dismiss();
+            if (typeof error != 'string') {
+                error = $translate.instant('mm.fileuploader.errorwhileuploading');
+            }
+            return errorUploading(error);
+        }).finally(function() {
+            modal.dismiss();
+        });
+
+        function errorUploading(error) {
+            // Allow the user to retry.
+            var options = {
+                okText: retryStr
+            };
+
+            return $mmUtil.showConfirm(error, errorStr, options).then(function() {
+                // Try again.
+                return uploadFiles.apply(undefined, args);
+            }, function() {
+                // User cancelled. Delete the file if needed.
+                if (deleteAfterUpload) {
+                    angular.forEach(paths, function(path) {
+                        $mmFS.removeExternalFile(path);
+                    });
+                }
+                return $q.reject();
+            });
+        }
     }
 
     return self;

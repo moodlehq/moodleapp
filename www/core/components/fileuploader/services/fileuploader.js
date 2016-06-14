@@ -28,7 +28,8 @@ angular.module('mm.core.fileuploader')
      * @name $mmFileUploader#uploadFile
      * @param  {Object} uri      File URI.
      * @param  {Object} options  Options for the upload.
-     *                           - {Boolean} deleteAfterUpload Whether or not to delete the original after upload.
+     *                           - {Boolean} deleteAfterUpload Whether or not to delete the original after upload. It will only
+     *                                                         be deleted in success.
      *                           - {String} fileKey The name of the form element. Defaults to "file".
      *                           - {String} fileName The file name to use when saving the file on the server.
      *                           - {String} mimeType The mime type of the data to upload.
@@ -46,18 +47,14 @@ angular.module('mm.core.fileuploader')
                 mimeType: options.mimeType
             };
 
-        function deleteFile() {
-            $timeout(function() {
-                // Use set timeout, otherwise in Node-Webkit the upload threw an error sometimes.
-                $mmFS.removeExternalFile(uri);
-            }, 500);
-        }
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.uploadFile(uri, ftOptions);
-        }).finally(function() {
+        }).then(function() {
             if (deleteAfterUpload) {
-                deleteFile();
+                $timeout(function() {
+                    // Use set timeout, otherwise in Node-Webkit the upload threw an error sometimes.
+                    $mmFS.removeExternalFile(uri);
+                }, 500);
             }
         });
     };
