@@ -24,7 +24,7 @@ angular.module('mm.core')
  * @description
  * This service handles the interaction with the FileSystem.
  */
-.factory('$mmFS', function($ionicPlatform, $cordovaFile, $log, $q, $http, $cordovaZip, mmFsSitesFolder, mmFsTmpFolder) {
+.factory('$mmFS', function($ionicPlatform, $cordovaFile, $log, $q, $http, $cordovaZip, $mmText, mmFsSitesFolder, mmFsTmpFolder) {
 
     $log = $log.getInstance('$mmFS');
 
@@ -32,11 +32,19 @@ angular.module('mm.core')
         initialized = false,
         basePath = '',
         isHTMLAPI = false,
-        mimeTypes = {};
+        extToMime = {},
+        mimeToExt = {};
 
-    // Loading all the mimetypes.
+    // Loading extensions to mimetypes file.
     $http.get('core/assets/mimetypes.json').then(function(response) {
-        mimeTypes = response.data;
+        extToMime = response.data;
+    }, function() {
+        // It failed, never mind...
+    });
+
+    // Loading mimetypes to extensions file.
+    $http.get('core/assets/mimetoext.json').then(function(response) {
+        mimeToExt = response.data;
     }, function() {
         // It failed, never mind...
     });
@@ -847,8 +855,8 @@ angular.module('mm.core')
         var ext = self.getFileExtension(filename),
             icon;
 
-        if (ext && mimeTypes[ext] && mimeTypes[ext].icon) {
-            icon = mimeTypes[ext].icon + '-64.png';
+        if (ext && extToMime[ext] && extToMime[ext].icon) {
+            icon = extToMime[ext].icon + '-64.png';
         } else {
             icon = 'unknown-64.png';
         }
@@ -900,8 +908,8 @@ angular.module('mm.core')
      * @return {String}           Mimetype.
      */
     self.getMimeType = function(extension) {
-        if (mimeTypes[extension] && mimeTypes[extension].type) {
-            return mimeTypes[extension].type;
+        if (extToMime[extension] && extToMime[extension].type) {
+            return extToMime[extension].type;
         }
     };
 
@@ -912,13 +920,20 @@ angular.module('mm.core')
      * @ngdoc method
      * @name $mmFS#getExtension
      * @param  {String} mimetype  Mimetype.
+     * @param  {String} [url]     URL of the file. Tt will be used if there's more than one possible extension.
      * @return {String}           Extension.
      */
-    self.getExtension = function(mimetype) {
-        for (var extension in mimeTypes) {
-            if (mimeTypes[extension].type == mimetype) {
-                return extension;
+    self.getExtension = function(mimetype, url) {
+        var extensions = mimeToExt[mimetype];
+        if (extensions && extensions.length) {
+            if (extensions.length > 1 && url) {
+                // There's more than one possible extension. Check if the URL has extension.
+                var candidate = $mmText.guessExtensionFromUrl(url);
+                if (extensions.indexOf(candidate) != -1) {
+                    return candidate;
+                }
             }
+            return extensions[0];
         }
         return undefined;
     };
