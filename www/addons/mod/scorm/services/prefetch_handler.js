@@ -100,6 +100,20 @@ angular.module('mm.addons.mod_scorm')
     };
 
     /**
+     * Invalidates WS calls needed to determine module status.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScormPrefetchHandler#invalidateModule
+     * @param  {Object} module   Module to invalidate.
+     * @param  {Number} courseId Course ID the module belongs to.
+     * @return {Promise}         Promise resolved when done.
+     */
+    self.invalidateModule = function(module, courseId) {
+        return $mmaModScorm.invalidateScormData(courseId);
+    };
+
+    /**
      * Whether or not the module is enabled for the site.
      *
      * @module mm.addons.mod_scorm
