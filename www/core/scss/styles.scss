@@ -449,6 +449,13 @@ mm-timer {
   margin-left: 5px;
 }
 
+// This is to allow clicks in links inside buttons.
+.mm-button-with-inner-link, .button.mm-button-with-inner-link {
+  &:after {
+    display: none;
+  }
+}
+
 /**
  * This CSS uses adjacent selectors instead of general sibling (~) selectors
  * for ion radio that are broken in iOS 9 UIWebView.

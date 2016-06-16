@@ -252,6 +252,14 @@ angular.module('mm.core')
                 });
             }
 
+            // Handle buttons with inner links.
+            angular.forEach(dom[0].querySelectorAll('.button'), function(button) {
+                // Check if it has a link inside.
+                if (button.querySelector('a')) {
+                    angular.element(button).addClass('mm-button-with-inner-link');
+                }
+            });
+
             return dom.html();
         });
     }
