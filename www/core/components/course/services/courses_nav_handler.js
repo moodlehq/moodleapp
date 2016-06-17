@@ -57,7 +57,7 @@ angular.module('mm.core.course')
                 $scope.class = 'mm-course-handler';
 
                 $scope.action = function(e, course) {
-                    $state.go('site.mm_course', {courseid: course.id});
+                    $state.go('site.mm_course', {courseid: course.id, coursefullname: course.fullname});
                     e.preventDefault();
                     e.stopPropagation();
                 };
