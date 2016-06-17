@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
+
 describe('User can manage their contacts', function() {
 
     it('Adding a new contact', function(done) {
