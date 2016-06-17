@@ -318,15 +318,27 @@ angular.module('mm.core.course')
             }
 
             return promise.then(function() {
-                return $state.go('redirect', {
-                    siteid: siteId,
-                    state: 'site.mm_course',
-                    params: {
-                        courseid: courseId,
-                        moduleid: moduleId,
-                        sid: sectionId
-                    }
-                });
+                if (courseId == 1) {
+                    // It's front page we go directly to course section.
+                    return $state.go('redirect', {
+                        siteid: siteId,
+                        state: 'site.mm_course-section',
+                        params: {
+                            cid: courseId,
+                            mid: moduleId
+                        }
+                    });
+                } else {
+                    return $state.go('redirect', {
+                        siteid: siteId,
+                        state: 'site.mm_course',
+                        params: {
+                            courseid: courseId,
+                            moduleid: moduleId,
+                            sid: sectionId
+                        }
+                    });
+                }
             });
         }).catch(function(error) {
             if (error) {

@@ -182,8 +182,9 @@ angular.module('mm.core.courses')
         self.getActions = function(siteIds, url) {
             // Check if it's a course URL.
             if (typeof self.handles(url) != 'undefined') {
-                var params = $mmUtil.extractUrlParams(url);
-                if (typeof params.id != 'undefined') {
+                var params = $mmUtil.extractUrlParams(url),
+                    courseId = parseInt(params.id, 10);
+                if (courseId && courseId != 1) {
                     // Return actions.
                     return [{
                         message: 'mm.core.view',
@@ -192,13 +193,13 @@ angular.module('mm.core.courses')
                         action: function(siteId) {
                             siteId = siteId || $mmSite.getId();
                             if (siteId == $mmSite.getId()) {
-                                actionEnrol(parseInt(params.id, 10), url);
+                                actionEnrol(courseId, url);
                             } else {
                                 // Use redirect to make the course the new history root (to avoid "loops" in history).
                                 $state.go('redirect', {
                                     siteid: siteId,
                                     state: 'site.mm_course',
-                                    params: {courseid: parseInt(params.id, 10)}
+                                    params: {courseid: courseId}
                                 });
                             }
                         }
