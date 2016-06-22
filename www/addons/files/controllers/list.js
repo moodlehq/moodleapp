@@ -86,7 +86,7 @@ angular.module('mm.addons.files')
     $scope.add = function() {
         $mmaFiles.versionCanUploadFiles().then(function(canUpload) {
             if (!canUpload) {
-                $mmUtil.showErrorModal('mma.files.erroruploadnotworking', true);
+                $mmUtil.showModal('mm.core.notice', 'mma.files.erroruploadnotworking');
             } else if (!$mmApp.isOnline()) {
                 $mmUtil.showErrorModal('mma.files.errormustbeonlinetoupload', true);
             } else {
