@@ -59,6 +59,9 @@ angular.module('mm.core')
      *                             - (Optional) isDownloadable(module, courseid) (Boolean|Promise) Check if a module can be
      *                                                                 downloaded. If function is not defined, we assume that all
      *                                                                 modules will be downloadable.
+     *                             - (Optional) invalidateModule(module, courseId) (Promise) Invalidates WS calls needed to
+     *                                                                 determine module status. This should NOT invalidate files
+     *                                                                 nor all the prefetched data.
      */
     self.registerPrefetchHandler = function(addon, handles, handler) {
         if (typeof prefetchHandlers[handles] !== 'undefined') {
@@ -664,6 +667,36 @@ angular.module('mm.core')
         };
 
         /**
+         * Invalidate a list of modules in a course. This should only invalidate WS calls, not downloaded files.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmCoursePrefetchDelegate#invalidateModules
+         * @param  {Object[]} modules List of modules.
+         * @param  {Number} courseId  Course ID.
+         * @return {Promise}          Promise resolved when modules are invalidated.
+         */
+        self.invalidateModules = function(modules, courseId) {
+            var promises = [];
+
+            angular.forEach(modules, function(module) {
+                var handler = enabledHandlers[module.modname];
+                if (handler) {
+                    if (handler.invalidateModule) {
+                        promises.push(handler.invalidateModule(module, courseId).catch(function() {
+                            // Ignore errors.
+                        }));
+                    }
+
+                    // Invalidate cache.
+                    statusCache.invalidate(handler.component, module.id);
+                }
+            });
+
+            return $q.all(promises);
+        };
+
+        /**
          * Check if a list of modules is being downloaded.
          *
          * @module mm.core
@@ -731,7 +764,6 @@ angular.module('mm.core')
          * @module mm.core
          * @ngdoc method
          * @name $mmCoursePrefetchDelegate#getPrefetchHandlerFor
-         * @param  {String} siteid    Site ID.
          * @param  {String} id        An ID to identify the download. It can be used to retrieve the download promise.
          * @param  {Object[]} modules List of modules to prefetch.
          * @param  {Number} courseid  Course ID the modules belong to.
