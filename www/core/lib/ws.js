@@ -233,7 +233,7 @@ angular.module('mm.core')
                         promise = self.getRemoteFileMimeType(url).then(function(mime) {
                             var ext;
                             if (mime) {
-                                ext = $mmFS.getExtension(mime);
+                                ext = $mmFS.getExtension(mime, url);
                                 if (ext) {
                                     path += '.' + ext;
                                 }
