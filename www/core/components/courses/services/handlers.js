@@ -21,7 +21,7 @@ angular.module('mm.core.courses')
  * @ngdoc service
  * @name $mmCoursesHandlers
  */
-.factory('$mmCoursesHandlers', function($mmSite, $state, $mmCourses, $q, $mmUtil, $translate, $timeout,
+.factory('$mmCoursesHandlers', function($mmSite, $state, $mmCourses, $q, $mmUtil, $translate, $timeout, $mmCourse,
             mmCoursesEnrolInvalidKey) {
 
     var self = {};
@@ -35,7 +35,8 @@ angular.module('mm.core.courses')
      */
     self.linksHandler = function() {
 
-        var self = {};
+        var self = {},
+            patterns = ['/enrol/index.php', '/course/enrol.php', '/course/view.php'];
 
         /**
          * Action to perform when an enrol link is clicked.
@@ -45,32 +46,47 @@ angular.module('mm.core.courses')
          * @return {Void}
          */
         function actionEnrol(courseId, url) {
-            var modal = $mmUtil.showModalLoading();
+            var modal = $mmUtil.showModalLoading(),
+                isEnrolUrl = url.indexOf(patterns[0]) > -1 || url.indexOf(patterns[1]) > -1;
 
             // Check if user is enrolled in the course.
             $mmCourses.getUserCourse(courseId).catch(function() {
                 // User is not enrolled in the course. Check if can self enrol.
                 return canSelfEnrol(courseId).then(function() {
+                    var promise;
                     modal.dismiss();
-                    return selfEnrol(courseId).catch(function() {
-                        if (typeof error == 'string') {
-                            $mmUtil.showErrorModal(error);
-                        }
-                        return $q.reject();
+
+                    // The user can self enrol. If it's not a enrolment URL we'll ask for confirmation.
+                    promise = isEnrolUrl ? $q.when() : $mmUtil.showConfirm($translate('mm.courses.confirmselfenrol'));
+
+                    return promise.then(function() {
+                        // Enrol URL or user confirmed.
+                        return selfEnrol(courseId).catch(function(error) {
+                            if (typeof error == 'string') {
+                                $mmUtil.showErrorModal(error);
+                            }
+                            return $q.reject();
+                        });
+                    }, function() {
+                        // User cancelled. Check if the user can view the course contents (guest access or similar).
+                        return $mmCourse.getSections(courseId);
                     });
                 }, function(error) {
-                    // Error. Show error message and allow the user to open the link in browser.
-                    modal.dismiss();
-                    if (typeof error != 'string') {
-                        error = $translate.instant('mm.courses.notenroled');
-                    }
+                    // Can't self enrol. Check if the user can view the course contents (guest access or similar).
+                    return $mmCourse.getSections(courseId).catch(function() {
+                        // Error. Show error message and allow the user to open the link in browser.
+                        modal.dismiss();
+                        if (typeof error != 'string') {
+                            error = $translate.instant('mm.courses.notenroled');
+                        }
 
-                    var body = $translate('mm.core.twoparagraphs',
-                                    {p1: error, p2: $translate.instant('mm.core.confirmopeninbrowser')});
-                    $mmUtil.showConfirm(body).then(function() {
-                        $mmUtil.openInBrowser(url);
+                        var body = $translate('mm.core.twoparagraphs',
+                                        {p1: error, p2: $translate.instant('mm.core.confirmopeninbrowser')});
+                        $mmUtil.showConfirm(body).then(function() {
+                            $mmUtil.openInBrowser(url);
+                        });
+                        return $q.reject();
                     });
-                    return $q.reject();
                 });
             }).then(function() {
                 modal.dismiss();
@@ -166,8 +182,9 @@ angular.module('mm.core.courses')
         self.getActions = function(siteIds, url) {
             // Check if it's a course URL.
             if (typeof self.handles(url) != 'undefined') {
-                var params = $mmUtil.extractUrlParams(url);
-                if (typeof params.id != 'undefined') {
+                var params = $mmUtil.extractUrlParams(url),
+                    courseId = parseInt(params.id, 10);
+                if (courseId && courseId != 1) {
                     // Return actions.
                     return [{
                         message: 'mm.core.view',
@@ -176,13 +193,13 @@ angular.module('mm.core.courses')
                         action: function(siteId) {
                             siteId = siteId || $mmSite.getId();
                             if (siteId == $mmSite.getId()) {
-                                actionEnrol(parseInt(params.id, 10), url);
+                                actionEnrol(courseId, url);
                             } else {
                                 // Use redirect to make the course the new history root (to avoid "loops" in history).
                                 $state.go('redirect', {
                                     siteid: siteId,
                                     state: 'site.mm_course',
-                                    params: {courseid: parseInt(params.id, 10)}
+                                    params: {courseid: courseId}
                                 });
                             }
                         }
@@ -200,7 +217,6 @@ angular.module('mm.core.courses')
          */
         self.handles = function(url) {
             // Accept any of these patterns.
-            var patterns = ['/enrol/index.php', '/course/enrol.php', '/course/view.php'];
             for (var i = 0; i < patterns.length; i++) {
                 var position = url.indexOf(patterns[i]);
                 if (position > -1) {

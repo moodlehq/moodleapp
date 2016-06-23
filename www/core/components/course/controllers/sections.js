@@ -27,10 +27,12 @@ angular.module('mm.core.course')
     var courseId = $stateParams.courseid,
         sectionId = $stateParams.sid,
         moduleId = $stateParams.moduleid,
+        courseFullName = $stateParams.coursefullname,
         downloadSectionsEnabled;
 
     $scope.courseId = courseId;
     $scope.sectionToLoad = 2; // Load "General" section by default.
+    $scope.fullname = courseFullName;
 
     function checkDownloadSectionsEnabled() {
         return $mmConfig.get(mmCoreSettingsDownloadSection, true).then(function(enabled) {
@@ -42,9 +44,28 @@ angular.module('mm.core.course')
     }
 
     function loadSections(refresh) {
-        // Get full course data. If not refreshing we'll try to get it from cache to speed up the response.
-        return $mmCourses.getUserCourse(courseId).then(function(course) {
-            $scope.fullname = course.fullname;
+        var promise;
+
+        if (courseFullName) {
+            promise = $q.when();
+        } else {
+            // We don't have the course name, get it.
+            promise = $mmCourses.getUserCourse(courseId).catch(function() {
+                // Fail, maybe user isn't enrolled but he has capabilities to view it.
+                return $mmCourses.getCourse(courseId);
+            }).then(function(course) {
+                return course.fullname;
+            }).catch(function() {
+                // Fail again, return generic value.
+                return $translate.instant('mm.core.course');
+            });
+        }
+
+        return promise.then(function(courseFullName) {
+            if (courseFullName) {
+                $scope.fullname = courseFullName;
+            }
+
             // Get the sections.
             return $mmCourse.getSections(courseId).then(function(sections) {
                 // Add a fake first section (all sections).
