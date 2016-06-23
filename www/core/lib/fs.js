@@ -283,6 +283,21 @@ angular.module('mm.core')
     };
 
     /**
+     * Removes a file given its FileEntry.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#removeFileByFileEntry
+     * @param  {Object} fileEntry File Entry.
+     * @return {Promise}          Promise resolved when the file is deleted.
+     */
+    self.removeFileByFileEntry = function(fileEntry) {
+        var deferred = $q.defer();
+        fileEntry.remove(deferred.resolve, deferred.reject);
+        return deferred.promise;
+    };
+
+    /**
      * Retrieve the contents of a directory (not subdirectories).
      *
      * @module mm.core

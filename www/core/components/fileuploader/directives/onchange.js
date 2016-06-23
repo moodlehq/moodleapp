@@ -12,20 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.addons.files')
+angular.module('mm.core.fileuploader')
 
 /**
  * Directive to detect chanegs on file inputs (ng-Change doesn't work in that type of input).
  *
- * @module mm.addons.files
+ * @module mm.core.fileuploader
  * @ngdoc directive
- * @name mmaFilesOnChange
+ * @name mmFileUploaderOnChange
  */
-.directive('mmaFilesOnChange', function() {
+.directive('mmFileUploaderOnChange', function() {
   return {
     restrict: 'A',
     link: function (scope, element, attrs) {
-      var onChangeHandler = scope.$eval(attrs.mmaFilesOnChange);
+      var onChangeHandler = scope.$eval(attrs.mmFileUploaderOnChange);
       element.bind('change', onChangeHandler);
     }
   };

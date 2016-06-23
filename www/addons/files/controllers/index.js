@@ -14,7 +14,7 @@
 
 angular.module('mm.addons.files')
 
-.controller('mmaFilesIndexController', function($scope, $mmaFiles, $mmSite, $mmUtil, $mmApp, $state) {
+.controller('mmaFilesIndexController', function($scope, $mmaFiles, $mmSite, $mmUtil, $mmApp, $mmaFilesHelper) {
 
     $scope.canAccessFiles = $mmaFiles.canAccessFiles;
     $scope.showPrivateFiles = function() {
@@ -31,9 +31,9 @@ angular.module('mm.addons.files')
             if (!canUpload) {
                 $mmUtil.showModal('mm.core.notice', 'mma.files.erroruploadnotworking');
             } else if (!$mmApp.isOnline()) {
-                $mmUtil.showErrorModal('mma.files.errormustbeonlinetoupload', true);
+                $mmUtil.showErrorModal('mm.fileuploader.errormustbeonlinetoupload', true);
             } else {
-                $state.go('site.files-upload');
+                $mmaFilesHelper.selectAndUploadFile();
             }
         });
     };

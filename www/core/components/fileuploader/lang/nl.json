@@ -1,0 +1,21 @@
+{
+    "audio": "Audio",
+    "camera": "Camera",
+    "confirmuploadfile": "Je gaat {{$a}} uploaden. Wil je verder gaan?",
+    "errorcapturingaudio": "Fout bij het opnemen van audio",
+    "errorcapturingimage": "Fout bij foto-opname.",
+    "errorcapturingvideo": "Fout bij opnemen video",
+    "errorgettingimagealbum": "Fout bij het ophalen van foto van album.",
+    "errormustbeonlinetoupload": "Je moet online zijn om bestanden te uploaden.",
+    "errornoapp": "Je hebt geen app geïnstalleerd om deze actie mee uit te voeren.",
+    "errorreadingfile": "Fout bij het lezen van bestand \"{{$a}}\"",
+    "errorwhileuploading": "Er is een fout opgetreden tijdens het uploaden van het bestand.",
+    "file": "Bestand",
+    "fileuploaded": "Bestand geüploaded",
+    "photoalbums": "Foto-albums",
+    "readingfile": "Bestand aan het lezen",
+    "success": "Succes!",
+    "uploadafile": "Upload een bestand",
+    "uploading": "Uploaden",
+    "video": "Video"
+}

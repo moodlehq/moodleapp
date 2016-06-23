@@ -1,0 +1,21 @@
+{
+    "audio": "Audio",
+    "camera": "Kamera",
+    "confirmuploadfile": "{{size}} igotzear zaude. Ziur al zaude aurrera egin nahi duzula?",
+    "errorcapturingaudio": "Errorea audioa kapturatzean",
+    "errorcapturingimage": "Errorea irudia kapturatzean",
+    "errorcapturingvideo": "Errorea bideoa kapturatzean",
+    "errorgettingimagealbum": "Errorea irudia bildumatik jasotzean.",
+    "errormustbeonlinetoupload": "Online egon behar zara fitxategiak igotzeko.",
+    "errornoapp": "Ez daukazu ekintza hau burutzeko app-ik instalatuta.",
+    "errorreadingfile": "Errorea fitxategia irakurtzean.",
+    "errorwhileuploading": "Errorea gertatu da fitxategia igotzean.",
+    "file": "Fitxategia",
+    "fileuploaded": "Fitxategia ondo igo da.",
+    "photoalbums": "Argazki-bildumak",
+    "readingfile": "Fitxategia irakurtzen",
+    "success": "Ondo!",
+    "uploadafile": "Fitxategi bat igo",
+    "uploading": "Igotzen",
+    "video": "Bideoa"
+}

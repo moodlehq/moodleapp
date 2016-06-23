@@ -1,0 +1,11 @@
+{
+    "errorcapturingaudio": "خطأ في التقاط الصوت",
+    "errorcapturingvideo": "خطأ في التقاط الفيديو",
+    "errorreadingfile": "خطاء في قراءة ملف \"{$a}\"",
+    "file": "ملف",
+    "fileuploaded": "الملف الذي تم رفعه",
+    "success": "نجاح",
+    "uploadafile": "تحميل ملف",
+    "uploading": "تحميل",
+    "video": "فيديو"
+}

@@ -14,12 +14,11 @@
 
 angular.module('mm.addons.files', ['mm.core'])
 
-.constant('mmaFilesUploadStateName', 'site.files-upload')
 .constant('mmaFilesMyComponent', 'mmaFilesMy')
 .constant('mmaFilesSiteComponent', 'mmaFilesSite')
 .constant('mmaFilesPriority', 200)
 
-.config(function($stateProvider, $mmSideMenuDelegateProvider, mmaFilesUploadStateName, mmaFilesPriority) {
+.config(function($stateProvider, $mmSideMenuDelegateProvider, mmaFilesPriority) {
 
     $stateProvider
         .state('site.files', {
@@ -43,20 +42,6 @@ angular.module('mm.addons.files', ['mm.core'])
                 'site': {
                     controller: 'mmaFilesListController',
                     templateUrl: 'addons/files/templates/list.html'
-                }
-            }
-        })
-
-        .state(mmaFilesUploadStateName, {
-            url: '/upload',
-            params: {
-                path: false,
-                root: false
-            },
-            views: {
-                'site': {
-                    controller: 'mmaFilesUploadCtrl',
-                    templateUrl: 'addons/files/templates/upload.html'
                 }
             }
         })

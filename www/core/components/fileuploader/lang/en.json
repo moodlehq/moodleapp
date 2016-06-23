@@ -1,0 +1,21 @@
+{
+    "audio": "Audio",
+    "camera": "Camera",
+    "confirmuploadfile": "You are about to upload {{size}}. Are you sure you want to continue?",
+    "errorcapturingaudio": "Error capturing audio.",
+    "errorcapturingimage": "Error capturing image.",
+    "errorcapturingvideo": "Error capturing video.",
+    "errorgettingimagealbum": "Error getting image from album.",
+    "errormustbeonlinetoupload": "You have to be online to upload files.",
+    "errornoapp": "You don't have an app installed to perform this action.",
+    "errorreadingfile": "Error reading file.",
+    "errorwhileuploading": "An error occurred during the file upload.",
+    "file": "File",
+    "fileuploaded": "The file was successfully uploaded.",
+    "photoalbums": "Photo albums",
+    "readingfile": "Reading file",
+    "uploadafile": "Upload a file",
+    "uploading": "Uploading",
+    "uploadingperc": "Uploading: {{$a}}%",
+    "video": "Video"
+}

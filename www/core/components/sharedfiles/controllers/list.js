@@ -15,19 +15,24 @@
 angular.module('mm.core.sharedfiles')
 
 /**
- * Controller to manage the shared files stored in a site.
+ * Controller to manage the shared files stored in a site or pick one.
  *
  * @module mm.core.sharedfiles
  * @ngdoc controller
- * @name mmSharedFilesManageCtrl
+ * @name mmSharedFilesListCtrl
  */
-.controller('mmSharedFilesManageCtrl', function($scope, $stateParams, $mmSharedFiles, $ionicScrollDelegate, $state, $mmFS,
-            $translate, $mmEvents, $mmSite, mmSharedFilesEventFileShared) {
+.controller('mmSharedFilesListCtrl', function($scope, $stateParams, $mmSharedFiles, $ionicScrollDelegate, $state, $mmFS,
+            $translate, $mmEvents, $mmSite, $mmSharedFilesHelper, $ionicHistory, mmSharedFilesEventFileShared) {
 
     var path = $stateParams.path || '',
+        manage = $stateParams.manage,
+        pick = $stateParams.pick,
         shareObserver,
         siteId = $mmSite.getId();
+        window.path = path;
 
+    $scope.manage = manage;
+    $scope.pick = pick;
     if (path) {
         $scope.title = $mmFS.getFileAndDirectoryFromPath(path).name;
     } else {
@@ -69,7 +74,7 @@ angular.module('mm.core.sharedfiles')
 
     // Open a subfolder.
     $scope.openFolder = function(folder) {
-        $state.go('site.sharedfiles-manage', {path: $mmFS.concatenatePaths(path, folder.name)});
+        $state.go('site.sharedfiles-list', {path: $mmFS.concatenatePaths(path, folder.name), manage: manage, pick: pick});
     };
 
     // Change site loaded.
@@ -81,7 +86,25 @@ angular.module('mm.core.sharedfiles')
         });
     };
 
+    // $mmSharedFilesHelper#hasPickedFile
+
+    if (pick) {
+        // File picked.
+        $scope.filePicked = function(file) {
+            $mmSharedFilesHelper.filePicked(file.fullPath);
+            if (path) {
+                var count = path.split('/').length + 1;
+                $ionicHistory.goBack(-count);
+            } else {
+                $ionicHistory.goBack();
+            }
+        };
+    }
+
     $scope.$on('$destroy', function() {
         shareObserver && shareObserver.off && shareObserver.off();
+        if (pick && !path) {
+            $mmSharedFilesHelper.filePickerClosed();
+        }
     });
 });
