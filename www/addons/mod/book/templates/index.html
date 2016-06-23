@@ -1,9 +1,12 @@
 <ion-view>
     <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
     <ion-nav-buttons side="secondary">
-        <a ng-href="{{externalUrl}}" class="button button-icon ion-ios-browsers-outline" mm-link></a>
-        <button class="button button-icon ion-more" ng-click="popover.show($event)">
+        <button class="button button-icon ion-bookmark" ng-click="popover.show($event)">
         </button>
+        <mm-context-menu>
+            <mm-context-menu-item priority="900" ng-if="externalUrl" href="{{externalUrl}}" content="{{ 'mm.core.openinbrowser' | translate }}" icon-action="ion-share"></mm-context-menu-item>
+            <mm-context-menu-item priority="800" ng-if="description" content="{{'mm.core.moduleintro' | translate }}" action="expandDescription()" icon-action="ion-arrow-right-c"></mm-context-menu-item>
+        </mm-context-menu>
       </div>
     </div>
     </ion-nav-buttons>

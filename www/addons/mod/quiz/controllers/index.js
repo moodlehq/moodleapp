@@ -460,6 +460,12 @@ angular.module('mm.addons.mod_quiz')
         }
     };
 
+    // Context Menu Description action.
+    $scope.expandDescription = function() {
+        $mmText.expandText($translate.instant('mm.core.description'), $scope.description);
+    };
+
+
     // Update data when we come back from the player since the attempt status could have changed.
     // We want to skip the first $ionicView.enter event because it's when the view is created.
     var skip = true;

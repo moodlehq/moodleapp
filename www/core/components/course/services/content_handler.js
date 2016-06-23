@@ -37,7 +37,7 @@ angular.module('mm.core.course')
 
                 if (module.url) {
                     $scope.buttons = [{
-                        icon: 'ion-ios-browsers-outline',
+                        icon: 'ion-share',
                         label: 'mm.core.openinbrowser',
                         action: function(e) {
                             $mmUtil.openInBrowser(module.url);

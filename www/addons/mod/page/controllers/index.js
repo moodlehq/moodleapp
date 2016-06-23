@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_page')
  * @name mmaModPageIndexCtrl
  */
 .controller('mmaModPageIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModPage, $mmCourse, $q, $log, $mmApp,
-            mmaModPageComponent) {
+            mmaModPageComponent, $mmText, $translate) {
     $log = $log.getInstance('mmaModPageIndexCtrl');
 
     var module = $stateParams.module || {},
@@ -57,6 +57,11 @@ angular.module('mm.addons.mod_page')
             });
         });
     }
+
+    // Context Menu Description action.
+    $scope.expandDescription = function() {
+        $mmText.expandText($translate.instant('mm.core.description'), $scope.description);
+    };
 
     $scope.doRefresh = function() {
         $mmaModPage.invalidateContent(module.id).then(function() {

@@ -21,7 +21,8 @@ angular.module('mm.addons.mod_resource')
  * @ngdoc controller
  * @name mmaModResourceIndexCtrl
  */
-.controller('mmaModResourceIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModResource, $log, $mmApp, $mmCourse, $timeout) {
+.controller('mmaModResourceIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModResource, $log, $mmApp, $mmCourse, $timeout,
+        $mmText, $translate) {
     $log = $log.getInstance('mmaModResourceIndexCtrl');
 
     var module = $stateParams.module || {},
@@ -32,6 +33,7 @@ angular.module('mm.addons.mod_resource')
     $scope.externalUrl = module.url;
     $scope.mode = false;
     $scope.loaded = false;
+    $scope.refreshIcon = 'spinner';
 
     function fetchContent() {
         if (module.contents && module.contents.length) {
@@ -64,10 +66,12 @@ angular.module('mm.addons.mod_resource')
                         $mmUtil.showErrorModal('mma.mod_resource.errorwhileloadingthecontent', true);
                     }).finally(function() {
                         $scope.loaded = true;
+                        $scope.refreshIcon = 'ion-refresh';
                     });
                 });
             } else {
                 $scope.loaded = true;
+                $scope.refreshIcon = 'ion-refresh';
                 $scope.mode = 'external';
 
                 $scope.open = function() {
@@ -93,12 +97,20 @@ angular.module('mm.addons.mod_resource')
         }
     }
 
+    // Context Menu Description action.
+    $scope.expandDescription = function() {
+        $mmText.expandText($translate.instant('mm.core.description'), $scope.description);
+    };
+
     $scope.doRefresh = function() {
-        $mmaModResource.invalidateContent(module.id).then(function() {
-            return fetchContent();
-        }).finally(function() {
-            $scope.$broadcast('scroll.refreshComplete');
-        });
+        if ($scope.loaded) {
+            $scope.refreshIcon = 'spinner';
+            $mmaModResource.invalidateContent(module.id).then(function() {
+                return fetchContent();
+            }).finally(function() {
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+        }
     };
 
     fetchContent();

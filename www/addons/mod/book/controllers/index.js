@@ -21,8 +21,8 @@ angular.module('mm.addons.mod_book')
  * @ngdoc controller
  * @name mmaModBookIndexCtrl
  */
-.controller('mmaModBookIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModBook, $log, mmaModBookComponent,
-            $ionicPopover, $mmApp, $q, $mmCourse, $ionicScrollDelegate) {
+.controller('mmaModBookIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModBook, $log, mmaModBookComponent, $mmText,
+            $ionicPopover, $mmApp, $q, $mmCourse, $ionicScrollDelegate, $translate) {
     $log = $log.getInstance('mmaModBookIndexCtrl');
 
     var module = $stateParams.module || {},
@@ -96,6 +96,11 @@ angular.module('mm.addons.mod_book')
     }).then(function(popover) {
         $scope.popover = popover;
     });
+
+    // Context Menu Description action.
+    $scope.expandDescription = function() {
+        $mmText.expandText($translate.instant('mm.core.description'), $scope.description);
+    };
 
 
     fetchContent(currentChapter).then(function() {

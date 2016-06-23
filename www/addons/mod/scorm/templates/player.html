@@ -1,7 +1,7 @@
 <ion-view>
     <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
     <ion-nav-buttons side="secondary">
-        <button class="button button-icon ion-more" ng-if="showToc && !loadingToc && toc && toc.length" ng-click="popover.show($event)">
+        <button class="button button-icon ion-bookmark" ng-if="showToc && !loadingToc && toc && toc.length" ng-click="popover.show($event)">
         </button>
         <ion-spinner ng-if="showToc && loadingToc"></ion-spinner>
     </ion-nav-buttons>

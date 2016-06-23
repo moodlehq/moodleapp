@@ -21,14 +21,14 @@ angular.module('mm.addons.mod_chat')
  * @ngdoc controller
  * @name mmaModChatIndexCtrl
  */
-.controller('mmaModChatIndexCtrl', function($scope, $stateParams, $mmaModChat, $mmUtil, $q, $mmCourse) {
+.controller('mmaModChatIndexCtrl', function($scope, $stateParams, $mmaModChat, $mmUtil, $q, $mmCourse, $mmText, $translate) {
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
         chat;
 
     $scope.title = module.name;
     $scope.description = module.description;
-    $scope.moduleurl = module.url;
+    $scope.moduleUrl = module.url;
     $scope.courseid = courseid;
 
     // Convenience function to get chat data.
@@ -71,6 +71,11 @@ angular.module('mm.addons.mod_chat')
     }).finally(function() {
         $scope.chatLoaded = true;
     });
+
+    // Context Menu Description action.
+    $scope.expandDescription = function() {
+        $mmText.expandText($translate.instant('mm.core.description'), $scope.description);
+    };
 
     // Pull to refresh.
     $scope.refreshChat = function() {
