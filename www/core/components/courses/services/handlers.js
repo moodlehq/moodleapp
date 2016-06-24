@@ -36,7 +36,11 @@ angular.module('mm.core.courses')
     self.linksHandler = function() {
 
         var self = {},
-            patterns = ['/enrol/index.php', '/course/enrol.php', '/course/view.php'];
+            patterns = [
+                /(\/enrol\/index\.php)|(\/course\/enrol\.php)/, // Enrol in course.
+                /\/course\/view\.php/, // View course.
+                /\/course\/?(index\.php.*)?$/ // My courses.
+            ];
 
         /**
          * Action to perform when an enrol link is clicked.
@@ -182,30 +186,48 @@ angular.module('mm.core.courses')
         self.getActions = function(siteIds, url) {
             // Check if it's a course URL.
             if (typeof self.handles(url) != 'undefined') {
-                var params = $mmUtil.extractUrlParams(url),
-                    courseId = parseInt(params.id, 10);
-                if (courseId && courseId != 1) {
-                    // Return actions.
+                if (url.search(patterns[2]) > -1) {
+                    // My courses. Return actions.
                     return [{
                         message: 'mm.core.view',
                         icon: 'ion-eye',
                         sites: siteIds,
                         action: function(siteId) {
-                            siteId = siteId || $mmSite.getId();
-                            if (siteId == $mmSite.getId()) {
-                                actionEnrol(courseId, url);
-                            } else {
-                                // Use redirect to make the course the new history root (to avoid "loops" in history).
-                                $state.go('redirect', {
-                                    siteid: siteId,
-                                    state: 'site.mm_course',
-                                    params: {courseid: courseId}
-                                });
-                            }
+                            // Use redirect to go to history root.
+                            $state.go('redirect', {
+                                siteid: siteId || $mmSite.getId(),
+                                state: 'site.mm_courses'
+                            });
                         }
                     }];
+                } else {
+                    // Course view or enrol.
+                    var params = $mmUtil.extractUrlParams(url),
+                        courseId = parseInt(params.id, 10);
+                    if (courseId && courseId != 1) {
+                        // Return actions.
+                        return [{
+                            message: 'mm.core.view',
+                            icon: 'ion-eye',
+                            sites: siteIds,
+                            action: function(siteId) {
+                                siteId = siteId || $mmSite.getId();
+                                if (siteId == $mmSite.getId()) {
+                                    actionEnrol(courseId, url);
+                                } else {
+                                    // Use redirect to make the course the new history root (to avoid "loops" in history).
+                                    $state.go('redirect', {
+                                        siteid: siteId,
+                                        state: 'site.mm_course',
+                                        params: {courseid: courseId}
+                                    });
+                                }
+                            }
+                        }];
+                    }
                 }
             }
+
             return [];
         };
 
@@ -218,7 +240,7 @@ angular.module('mm.core.courses')
         self.handles = function(url) {
             // Accept any of these patterns.
             for (var i = 0; i < patterns.length; i++) {
-                var position = url.indexOf(patterns[i]);
+                var position = url.search(patterns[i]);
                 if (position > -1) {
                     return url.substr(0, position);
                 }
