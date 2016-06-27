@@ -48,6 +48,14 @@ angular.module('mm.addons.mod_book')
             $scope.content = content;
             $scope.previousChapter = $mmaModBook.getPreviousChapter(chapters, chapterId);
             $scope.nextChapter = $mmaModBook.getNextChapter(chapters, chapterId);
+
+            // Chapter loaded, log view. We don't return the promise because we don't want to block the user for this.
+            $mmaModBook.logView(module.instance, chapterId).then(function() {
+                // Module is completed when last chapter is viewed, so we only check completion if the last is reached.
+                if (!$scope.nextChapter) {
+                    $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
+                }
+            });
         }).catch(function() {
             $mmUtil.showErrorModal('mma.mod_book.errorchapter', true);
             return $q.reject();
@@ -98,9 +106,5 @@ angular.module('mm.addons.mod_book')
     });
 
 
-    fetchContent(currentChapter).then(function() {
-        $mmaModBook.logView(module.instance).then(function() {
-            $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
-        });
-    });
+    fetchContent(currentChapter);
 });

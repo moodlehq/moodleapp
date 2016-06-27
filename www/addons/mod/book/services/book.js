@@ -369,15 +369,21 @@ angular.module('mm.addons.mod_book')
      * @module mm.addons.mod_book
      * @ngdoc method
      * @name $mmaModBook#logView
-     * @param {String} id Module ID.
-     * @return {Promise}  Promise resolved when the WS call is successful.
+     * @param {Number} id        Module ID.
+     * @param {Number} chapterId Chapter ID.
+     * @return {Promise}         Promise resolved when the WS call is successful.
      */
-    self.logView = function(id) {
+    self.logView = function(id, chapterId) {
         if (id) {
             var params = {
-                bookid: id
+                bookid: id,
+                chapterid: chapterId
             };
-            return $mmSite.write('mod_book_view_book', params);
+            return $mmSite.write('mod_book_view_book', params).then(function(response) {
+                if (!response.status) {
+                    return $q.reject();
+                }
+            });
         }
         return $q.reject();
     };
