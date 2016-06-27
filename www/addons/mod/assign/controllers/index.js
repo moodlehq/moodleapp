@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc controller
  * @name mmaModAssignIndexCtrl
  */
-.controller('mmaModAssignIndexCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $translate,
+.controller('mmaModAssignIndexCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $translate, $mmText,
         mmaModAssignComponent, mmaModAssignSubmissionComponent) {
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid;
@@ -30,7 +30,7 @@ angular.module('mm.addons.mod_assign')
     $scope.description = module.description;
     $scope.assigncomponent = mmaModAssignComponent;
     $scope.submissioncomponent = mmaModAssignSubmissionComponent;
-    $scope.assignurl = module.url;
+    $scope.moduleUrl = module.url;
     $scope.courseid = courseid;
 
     function fetchAssignment(refresh) {
@@ -77,6 +77,11 @@ angular.module('mm.addons.mod_assign')
     fetchAssignment().finally(function() {
         $scope.assignmentLoaded = true;
     });
+
+    // Context Menu Description action.
+    $scope.expandDescription = function() {
+        $mmText.expandText($translate.instant('mm.core.description'), $scope.description);
+    };
 
     $scope.refreshAssignment = function() {
         fetchAssignment(true).finally(function() {

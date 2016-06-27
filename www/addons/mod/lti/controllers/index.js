@@ -21,13 +21,14 @@ angular.module('mm.addons.mod_lti')
  * @ngdoc controller
  * @name mmaModLtiIndexCtrl
  */
-.controller('mmaModLtiIndexCtrl', function($scope, $stateParams, $mmaModLti, $mmUtil, $q, $mmCourse) {
+.controller('mmaModLtiIndexCtrl', function($scope, $stateParams, $mmaModLti, $mmUtil, $q, $mmCourse, $mmText, $translate) {
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
         lti;
 
     $scope.title = module.name;
     $scope.description = module.description;
+    $scope.moduleUrl = module.url;
     $scope.courseid = courseid;
 
     // Convenience function to get LTI data.
@@ -90,5 +91,10 @@ angular.module('mm.addons.mod_lti')
                 $mmUtil.showErrorModal(message);
             }
         });
+    };
+
+    // Context Menu Description action.
+    $scope.expandDescription = function() {
+        $mmText.expandText($translate.instant('mm.core.description'), $scope.description);
     };
 });

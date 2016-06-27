@@ -24,7 +24,7 @@ angular.module('mm.addons.mod_scorm')
 .controller('mmaModScormIndexCtrl', function($scope, $stateParams, $mmaModScorm, $mmUtil, $q, $mmCourse, $ionicScrollDelegate,
             $mmCoursePrefetchDelegate, $mmaModScormHelper, $mmEvents, $mmSite, $state, mmCoreOutdated, mmCoreNotDownloaded,
             mmCoreDownloading, mmaModScormComponent, mmCoreEventPackageStatusChanged, $ionicHistory, mmaModScormEventAutomSynced,
-            $mmaModScormSync, $timeout, $mmText) {
+            $mmaModScormSync, $timeout, $mmText, $translate) {
 
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
@@ -421,6 +421,11 @@ angular.module('mm.addons.mod_scorm')
         }).finally(function() {
             modal.dismiss();
         });
+    };
+
+    // Context Menu Description action.
+    $scope.expandDescription = function() {
+        $mmText.expandText($translate.instant('mm.core.description'), $scope.description);
     };
 
     // Update data when we come back from the player since it's probable that it has changed.

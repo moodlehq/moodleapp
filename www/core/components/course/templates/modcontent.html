@@ -1,5 +1,11 @@
 <ion-view>
     <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <mm-context-menu>
+            <mm-context-menu-item priority="900" ng-if="url" href="{{url}}" content="{{ 'mm.core.openinbrowser' | translate }}" icon-action="ion-share"></mm-context-menu-item>
+            <mm-context-menu-item priority="800" ng-if="description" content="{{'mm.core.moduleintro' | translate }}" action="expandDescription()" icon-action="ion-arrow-right-c"></mm-context-menu-item>
+        </mm-context-menu>
+    </ion-nav-buttons>
     <ion-content padding="true" mm-state-class>
         <mm-course-mod-description description="description"></mm-course-mod-description>
         <div class="card">
@@ -7,6 +13,6 @@
             <p ng-if="url" class="item-body">{{ 'mm.course.activitynotyetviewablegothere' | translate }}</p>
             <p ng-if="!url" class="item-body">{{ 'mm.course.activitynotyetviewable' | translate }}</p>
         </div>
-        <a ng-if="url" href="{{ url }}" mm-link class="button button-block"><i class="icon ion-ios-browsers-outline"></i> {{ 'mm.course.gotothesite' | translate }}</a>
+        <a ng-if="url" href="{{ url }}" mm-link class="button button-block icon-right ion-share">{{ 'mm.course.gotothesite' | translate }}</a>
     </ion-content>
 </ion-view>

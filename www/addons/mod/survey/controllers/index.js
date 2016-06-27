@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_survey')
  * @ngdoc controller
  * @name mmaModSurveyIndexCtrl
  */
-.controller('mmaModSurveyIndexCtrl', function($scope, $stateParams, $mmaModSurvey, $mmUtil, $q, $mmCourse, $translate,
+.controller('mmaModSurveyIndexCtrl', function($scope, $stateParams, $mmaModSurvey, $mmUtil, $q, $mmCourse, $translate, $mmText,
             $ionicPlatform, $ionicScrollDelegate) {
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
@@ -30,7 +30,7 @@ angular.module('mm.addons.mod_survey')
 
     $scope.title = module.name;
     $scope.description = module.description;
-    $scope.moduleurl = module.url;
+    $scope.moduleUrl = module.url;
     $scope.courseid = courseid;
     $scope.answers = {};
     $scope.isTablet = $ionicPlatform.isTablet();
@@ -137,6 +137,11 @@ angular.module('mm.addons.mod_survey')
                 modal.dismiss();
             });
         });
+    };
+
+    // Context Menu Description action.
+    $scope.expandDescription = function() {
+        $mmText.expandText($translate.instant('mm.core.description'), $scope.description);
     };
 
     // Pull to refresh.

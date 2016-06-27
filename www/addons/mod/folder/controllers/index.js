@@ -21,22 +21,23 @@ angular.module('mm.addons.mod_folder')
  * @ngdoc controller
  * @name mmaModFolderIndexCtrl
  */
-.controller('mmaModFolderIndexCtrl', function($scope, $stateParams, $mmaModFolder, $mmCourse, $mmUtil, $q) {
+.controller('mmaModFolderIndexCtrl', function($scope, $stateParams, $mmaModFolder, $mmCourse, $mmUtil, $q, $mmText, $translate) {
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
         sectionid = $stateParams.sectionid,
         path = $stateParams.path;
 
+    $scope.description = module.description;
+    $scope.moduleUrl = module.url;
+
     // Convenience function to set scope data using module.
     function showModuleData(module) {
         $scope.title = module.name;
-        $scope.description = module.description;
         if (path) {
             // Subfolder.
             $scope.contents = module.contents;
         } else {
             $scope.contents = $mmaModFolder.formatContents(module.contents);
-            $scope.moduleurl = module.url;
         }
     }
 
@@ -74,6 +75,11 @@ angular.module('mm.addons.mod_folder')
             $scope.canReload = true;
         });
     }
+
+    // Context Menu Description action.
+    $scope.expandDescription = function() {
+        $mmText.expandText($translate.instant('mm.core.description'), $scope.description);
+    };
 
     $scope.refreshFolder = function() {
         $mmCourse.invalidateModule(module.id).finally(function() {

@@ -1,7 +1,7 @@
 <ion-view can-swipe-back="false">
     <ion-nav-title>{{ 'mma.mod_quiz.review' | translate }}</ion-nav-title>
     <ion-nav-buttons side="secondary">
-        <button menu-toggle="right" ng-if="toc && toc.length" class="button button-icon icon ion-navicon" aria-label="{{ 'mma.mod_quiz.opentoc' | translate }}"></button>
+        <button menu-toggle="right" ng-if="toc && toc.length" class="button button-icon icon ion-bookmark" aria-label="{{ 'mma.mod_quiz.opentoc' | translate }}"></button>
     </ion-nav-buttons>
     <ion-content mm-state-class delegate-handle="mmaModQuizReviewScroll">
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="dataLoaded" on-refresh="refreshData()"></ion-refresher>

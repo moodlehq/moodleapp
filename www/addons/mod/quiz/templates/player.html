@@ -3,7 +3,7 @@
     <ion-nav-buttons side="secondary">
         <button id="mma-mod_quiz-connectionerror-button" class="button button-icon ion-alert-circled" ng-show="autoSaveError" ng-click="conErrPopover.show($event)" aria-label="{{ 'mm.core.error' | translate }}">
         </button>
-        <button menu-toggle="right" ng-if="toc && toc.length" class="button button-icon icon ion-navicon" aria-label="{{ 'mma.mod_quiz.opentoc' | translate }}"></button>
+        <button menu-toggle="right" ng-if="toc && toc.length" class="button button-icon icon ion-bookmark" aria-label="{{ 'mma.mod_quiz.opentoc' | translate }}"></button>
     </ion-nav-buttons>
     <!-- Navigation arrows -->
     <ion-header-bar class="bar-subheader mma-mod-quiz-subheader" ng-if="dataLoaded && questions.length && !quizAborted && !showSummary">
@@ -67,7 +67,7 @@
                 <div class="item item-text-wrap" ng-if="preventSubmitMessages.length">
                     <p class="item-heading">{{ 'mma.mod_quiz.cannotsubmitquizdueto' | translate }}</p>
                     <p ng-repeat="message in preventSubmitMessages">{{message}}</p>
-                    <a class="button button-block" ng-href="{{moduleUrl}}" mm-browser>{{ 'mm.core.openinbrowser' | translate }}</a>
+                    <a class="button button-block icon-right ion-share" ng-href="{{moduleUrl}}" mm-browser>{{ 'mm.core.openinbrowser' | translate }}</a>
                 </div>
                 <div class="item" ng-if="!attempt.finishedOffline && !preventSubmitMessages.length">
                     <a class="button button-block" ng-click="finishAttempt()">{{ 'mma.mod_quiz.submitallandfinish' | translate }}</a>
@@ -79,7 +79,7 @@
                     <p>{{ 'mma.mod_quiz.errorparsequestions' | translate }}</p>
                 </div>
                 <div class="item">
-                    <a class="button button-block" ng-href="{{moduleUrl}}" mm-browser>{{ 'mm.core.openinbrowser' | translate }}</a>
+                    <a class="button button-block icon-right ion-share" ng-href="{{moduleUrl}}" mm-browser>{{ 'mm.core.openinbrowser' | translate }}</a>
                 </div>
             </section>
         </mm-loading>
