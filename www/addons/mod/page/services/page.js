@@ -148,7 +148,7 @@ angular.module('mm.addons.mod_page')
                     // Add the folders without the leading slash.
                     key = content.filepath.substr(1) + key;
                 }
-                paths[key] = url;
+                paths[decodeURIComponent(key)] = url;
             }
         });
 
