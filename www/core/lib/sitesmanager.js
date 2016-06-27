@@ -97,7 +97,14 @@ angular.module('mm.core')
             // Now, replace the siteurl with the protocol.
             siteurl = siteurl.replace(/^http(s)?\:\/\//i, protocol);
 
-            return self.siteExists(siteurl).then(function() {
+            return self.siteExists(siteurl).catch(function() {
+                // Site doesn't exist. Try to add or remove 'www'.
+                var treatedUrl = $mmText.addOrRemoveWWW(siteurl);
+                return self.siteExists(treatedUrl).then(function() {
+                    // Success, use this new URL as site url.
+                    siteurl = treatedUrl;
+                });
+            }).then(function() {
                 // Create a temporary site to check if local_mobile is installed.
                 var temporarySite = $mmSitesFactory.makeSite(undefined, siteurl);
                 return temporarySite.checkLocalMobilePlugin().then(function(data) {
