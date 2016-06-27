@@ -202,7 +202,7 @@ angular.module('mm.addons.mod_resource')
                 indexUrl = url;
             } else {
                 // Any other file in the resource.
-                paths[fullpath] = url;
+                paths[decodeURIComponent(fullpath)] = url;
             }
         });
 
