@@ -41,6 +41,7 @@ angular.module('mm.addons.mod_wiki')
         subwikis: [],
         count: 0
     };
+    $scope.refreshIcon = 'spinner';
 
     $scope.tabsDelegateName = 'mmaModWikiTabs_'+(module.id || 0) + '_' + (currentPage || 0) + '_' +  new Date().getTime();
     tabsDelegate = $ionicTabsDelegate.$getByHandle($scope.tabsDelegateName);
@@ -473,6 +474,7 @@ angular.module('mm.addons.mod_wiki')
             });
         }).finally(function() {
             $scope.wikiLoaded = true;
+            $scope.refreshIcon = 'ion-refresh';
         });
     }
 
@@ -534,13 +536,18 @@ angular.module('mm.addons.mod_wiki')
         }
     }).finally(function() {
         $scope.wikiLoaded = true;
+        $scope.refreshIcon = 'ion-refresh';
     });
 
     // Pull to refresh.
     $scope.refreshWiki = function() {
-        refreshAllData().finally(function() {
-            $scope.$broadcast('scroll.refreshComplete');
-        });
+        if ($scope.wikiLoaded) {
+            $scope.refreshIcon = 'spinner';
+            refreshAllData().finally(function() {
+                $scope.refreshIcon = 'ion-refresh';
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+        }
     };
 
     $scope.$on('$destroy', function() {

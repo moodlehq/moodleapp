@@ -30,6 +30,7 @@ angular.module('mm.addons.mod_lti')
     $scope.description = module.description;
     $scope.moduleUrl = module.url;
     $scope.courseid = courseid;
+    $scope.refreshIcon = 'spinner';
 
     // Convenience function to get LTI data.
     function fetchLTI(refresh) {
@@ -69,13 +70,18 @@ angular.module('mm.addons.mod_lti')
 
     fetchLTI().finally(function() {
         $scope.ltiLoaded = true;
+        $scope.refreshIcon = 'ion-refresh';
     });
 
     // Pull to refresh.
     $scope.doRefresh = function() {
-        refreshAllData().finally(function() {
-            $scope.$broadcast('scroll.refreshComplete');
-        });
+        if ($scope.ltiLoaded) {
+            $scope.refreshIcon = 'spinner';
+            refreshAllData().finally(function() {
+                $scope.refreshIcon = 'ion-refresh';
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+        }
     };
 
     // Launch the LTI.

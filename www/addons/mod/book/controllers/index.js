@@ -36,6 +36,7 @@ angular.module('mm.addons.mod_book')
     $scope.componentId = module.id;
     $scope.externalUrl = module.url;
     $scope.loaded = false;
+    $scope.refreshIcon = 'spinner';
 
     var chapters = $mmaModBook.getTocList(module.contents);
     currentChapter = $mmaModBook.getFirstChapter(chapters);
@@ -61,6 +62,7 @@ angular.module('mm.addons.mod_book')
             return $q.reject();
         }).finally(function() {
             $scope.loaded = true;
+            $scope.refreshIcon = 'ion-refresh';
             $ionicScrollDelegate.resize(); // Call resize to recalculate scroll area.
         });
     }
@@ -83,17 +85,22 @@ angular.module('mm.addons.mod_book')
     }
 
     $scope.doRefresh = function() {
-        $mmaModBook.invalidateContent(module.id).then(function() {
-            return fetchContent(currentChapter);
-        }).finally(function() {
-            $scope.$broadcast('scroll.refreshComplete');
-        });
+        if ($scope.loaded) {
+            $scope.refreshIcon = 'spinner';
+            $mmaModBook.invalidateContent(module.id).then(function() {
+                return fetchContent(currentChapter);
+            }).finally(function() {
+                $scope.refreshIcon = 'ion-refresh';
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+        }
     };
 
     // Function to load a chapter.
     $scope.loadChapter = function(chapterId) {
         $scope.popover.hide();
         $scope.loaded = false;
+        $scope.refreshIcon = 'spinner';
         loadChapter(chapterId);
     };
 

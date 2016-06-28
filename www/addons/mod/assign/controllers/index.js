@@ -32,6 +32,7 @@ angular.module('mm.addons.mod_assign')
     $scope.submissioncomponent = mmaModAssignSubmissionComponent;
     $scope.moduleUrl = module.url;
     $scope.courseid = courseid;
+    $scope.refreshIcon = 'spinner';
 
     function fetchAssignment(refresh) {
         // Get assignment data.
@@ -76,6 +77,7 @@ angular.module('mm.addons.mod_assign')
 
     fetchAssignment().finally(function() {
         $scope.assignmentLoaded = true;
+        $scope.refreshIcon = 'ion-refresh';
     });
 
     // Context Menu Description action.
@@ -84,8 +86,12 @@ angular.module('mm.addons.mod_assign')
     };
 
     $scope.refreshAssignment = function() {
-        fetchAssignment(true).finally(function() {
-            $scope.$broadcast('scroll.refreshComplete');
-        });
+        if ($scope.assignmentLoaded) {
+            $scope.refreshIcon = 'spinner';
+            fetchAssignment(true).finally(function() {
+                $scope.refreshIcon = 'ion-refresh';
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+        }
     };
 });
