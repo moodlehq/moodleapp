@@ -37,9 +37,10 @@ angular.module('mm.core')
         transclude: true,
         templateUrl: 'core/templates/contextmenuicon.html',
         controller: ['$scope', function($scope) {
-            var items = $scope.items = [];
+            var items = $scope.ctxtMenuItems = [],
+                refreshObserver;
 
-            this.addItem = function(item) {
+            this.addContextMenuItem = function(item) {
                 items.push(item);
 
                 item.$on('$destroy', function() {
@@ -48,7 +49,7 @@ angular.module('mm.core')
                 });
             };
 
-            $scope.itemClicked = function(item) {
+            $scope.contextMenuItemClicked = function(item) {
                 if (typeof item.action == 'function') {
                     if (!item.iconAction || item.iconAction == 'spinner') {
                         return false;
@@ -62,28 +63,33 @@ angular.module('mm.core')
             };
 
             $scope.showContextMenu = function($event) {
-                $scope.popover.show($event);
+                $scope.contextMenuPopover.show($event);
             };
 
             function hideContextMenu(closeOnClick) {
                 if (typeof closeOnClick == 'undefined' || closeOnClick == "true") {
-                    $scope.popover.hide();
+                    $scope.contextMenuPopover.hide();
                 }
             }
 
             $ionicPopover.fromTemplateUrl('core/templates/contextmenu.html', {
                 scope: $scope
             }).then(function(popover) {
-                $scope.popover = popover;
+                $scope.contextMenuPopover = popover;
+            });
+
+            refreshObserver = $scope.$on('scroll.refreshComplete', function() {
+                $scope.contextMenuPopover.hide();
             });
 
             $scope.$on('$destroy', function() {
-                $scope.popover.remove();
+                $scope.contextMenuPopover.remove();
+                refreshObserver && refreshObserver.off && refreshObserver.off();
             });
         }],
         link: function(scope) {
-            scope.menuicon = scope.icon || 'ion-android-more-vertical';
-            scope.aria = scope.title || $translate.instant('mm.core.info');
+            scope.contextMenuIcon = scope.icon || 'ion-android-more-vertical';
+            scope.contextMenuAria = scope.title || $translate.instant('mm.core.info');
         }
     };
 })
@@ -146,7 +152,7 @@ angular.module('mm.core')
             // Navigation help if href provided.
             scope.captureLink = scope.href && scope.captureLink ? scope.captureLink : "false";
 
-            CtxtMenuCtrl.addItem(scope);
+            CtxtMenuCtrl.addContextMenuItem(scope);
         }
     };
 });
