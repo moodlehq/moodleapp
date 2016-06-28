@@ -30,6 +30,7 @@ angular.module('mm.addons.mod_chat')
     $scope.description = module.description;
     $scope.moduleUrl = module.url;
     $scope.courseid = courseid;
+    $scope.refreshIcon = 'spinner';
 
     // Convenience function to get chat data.
     function fetchChatData(refresh) {
@@ -70,6 +71,7 @@ angular.module('mm.addons.mod_chat')
         });
     }).finally(function() {
         $scope.chatLoaded = true;
+        $scope.refreshIcon = 'ion-refresh';
     });
 
     // Context Menu Description action.
@@ -79,8 +81,12 @@ angular.module('mm.addons.mod_chat')
 
     // Pull to refresh.
     $scope.refreshChat = function() {
-        fetchChatData(true).finally(function() {
-            $scope.$broadcast('scroll.refreshComplete');
-        });
+        if ($scope.chatLoaded) {
+            $scope.refreshIcon = 'spinner';
+            fetchChatData(true).finally(function() {
+                $scope.refreshIcon = 'ion-refresh';
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+        }
     };
 });

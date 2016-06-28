@@ -40,6 +40,7 @@ angular.module('mm.addons.mod_forum')
     $scope.courseid = courseid;
     $scope.userStateName = mmUserProfileState;
     $scope.isCreateEnabled = $mmaModForum.isCreateDiscussionEnabled();
+    $scope.refreshIcon = 'spinner';
 
     // Convenience function to get forum data and discussions.
     function fetchForumDataAndDiscussions(refresh) {
@@ -131,7 +132,9 @@ angular.module('mm.addons.mod_forum')
                 shouldScrollTop = true;
             }
             $scope.discussionsLoaded = false;
+            $scope.refreshIcon = 'spinner';
             refreshData().finally(function() {
+                $scope.refreshIcon = 'ion-refresh';
                 $scope.discussionsLoaded = true;
             });
             // Check completion since it could be configured to complete once the user adds a new discussion or replies.
@@ -144,6 +147,7 @@ angular.module('mm.addons.mod_forum')
             $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
         });
     }).finally(function() {
+        $scope.refreshIcon = 'ion-refresh';
         $scope.discussionsLoaded = true;
     });
 
@@ -156,9 +160,13 @@ angular.module('mm.addons.mod_forum')
 
     // Pull to refresh.
     $scope.refreshDiscussions = function() {
-        refreshData().finally(function() {
-            $scope.$broadcast('scroll.refreshComplete');
-        });
+        if ($scope.discussionsLoaded) {
+            $scope.refreshIcon = 'spinner';
+            refreshData().finally(function() {
+                $scope.refreshIcon = 'ion-refresh';
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+        }
     };
 
     // Context Menu Description action.

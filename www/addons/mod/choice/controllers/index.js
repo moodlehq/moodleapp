@@ -32,6 +32,7 @@ angular.module('mm.addons.mod_choice')
     $scope.description = module.description;
     $scope.moduleUrl = module.url;
     $scope.courseid = courseid;
+    $scope.refreshIcon = 'spinner';
 
     // Convenience function to get choice data.
     function fetchChoiceData(refresh) {
@@ -128,6 +129,7 @@ angular.module('mm.addons.mod_choice')
         });
     }).finally(function() {
         $scope.choiceLoaded = true;
+        $scope.refreshIcon = 'ion-refresh';
     });
 
     // Save options selected.
@@ -191,8 +193,12 @@ angular.module('mm.addons.mod_choice')
 
     // Pull to refresh.
     $scope.refreshChoice = function() {
-        refreshAllData().finally(function() {
-            $scope.$broadcast('scroll.refreshComplete');
-        });
+        if ($scope.choiceLoaded) {
+            $scope.refreshIcon = 'spinner';
+            refreshAllData().finally(function() {
+                $scope.refreshIcon = 'ion-refresh';
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+        }
     };
 });

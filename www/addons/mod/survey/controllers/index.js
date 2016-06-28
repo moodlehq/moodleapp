@@ -34,6 +34,7 @@ angular.module('mm.addons.mod_survey')
     $scope.courseid = courseid;
     $scope.answers = {};
     $scope.isTablet = $ionicPlatform.isTablet();
+    $scope.refreshIcon = 'spinner';
 
     // Convenience function to get survey data.
     function fetchSurveyData(refresh) {
@@ -95,6 +96,7 @@ angular.module('mm.addons.mod_survey')
         });
     }).finally(function() {
         $scope.surveyLoaded = true;
+        $scope.refreshIcon = 'ion-refresh';
     });
 
     // Check if answers are valid to be submitted.
@@ -146,8 +148,12 @@ angular.module('mm.addons.mod_survey')
 
     // Pull to refresh.
     $scope.refreshSurvey = function() {
-        refreshAllData().finally(function() {
-            $scope.$broadcast('scroll.refreshComplete');
-        });
+        if ($scope.surveyLoaded) {
+            $scope.refreshIcon = 'spinner';
+            refreshAllData().finally(function() {
+                $scope.refreshIcon = 'ion-refresh';
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+        }
     };
 });

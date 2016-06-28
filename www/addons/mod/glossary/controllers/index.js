@@ -55,6 +55,7 @@ angular.module('mm.addons.mod_glossary')
     $scope.externalUrl = module.url;
     $scope.courseid = courseId;
     $scope.loaded = false;
+    $scope.refreshIcon = 'spinner';
     $scope.entries = [];
     $scope.getDivider = noop;
     $scope.showDivider = noop;
@@ -70,9 +71,13 @@ angular.module('mm.addons.mod_glossary')
         });
     };
     $scope.refreshEntries = function() {
-        refreshEntries().finally(function() {
-            $scope.$broadcast('scroll.refreshComplete');
-        });
+        if ($scope.loaded) {
+            $scope.refreshIcon = 'spinner';
+            refreshEntries().finally(function() {
+                $scope.refreshIcon = 'ion-refresh';
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+        }
     };
 
     $scope.pickMode = function(e) {
@@ -84,8 +89,10 @@ angular.module('mm.addons.mod_glossary')
         $scope.loadingMessage = searchingMessage;
         fetchArguments = [glossary.id, query, 1, 'CONCEPT', 'ASC'];
         $scope.loaded = false;
+        $scope.refreshIcon = 'spinner';
         fetchEntries().finally(function() {
             $scope.loaded = true;
+            $scope.refreshIcon = 'ion-refresh';
         });
     };
 
@@ -120,12 +127,15 @@ angular.module('mm.addons.mod_glossary')
             $ionicScrollDelegate.$getByHandle('mmaModGlossaryIndex').scrollTop(false);
             if (switchMode(mode)) {
                 $scope.loaded = false;
+                $scope.refreshIcon = 'spinner';
                 fetchEntries().finally(function() {
                     $scope.loaded = true;
+                    $scope.refreshIcon = 'ion-refresh';
                 });
             } else {
                 // If it's not an instant search, then we reset the values.
                 $scope.loaded = true;
+                $scope.refreshIcon = 'ion-refresh';
                 $scope.entries = [];
                 $scope.canLoadMore = false;
                 $scope.showNoEntries = false;
@@ -152,10 +162,12 @@ angular.module('mm.addons.mod_glossary')
             $mmaModGlossary.logView(glossary.id, viewMode);
         }).finally(function() {
             $scope.loaded = true;
+            $scope.refreshIcon = 'ion-refresh';
         });
     }).catch(function() {
         $mmUtil.showErrorModal('mma.mod_glossary.errorloadingglossary', true);
         $scope.loaded = true;
+        $scope.refreshIcon = 'ion-refresh';
     });
 
     // Controller library.

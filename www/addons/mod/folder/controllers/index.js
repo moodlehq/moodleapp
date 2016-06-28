@@ -29,6 +29,7 @@ angular.module('mm.addons.mod_folder')
 
     $scope.description = module.description;
     $scope.moduleUrl = module.url;
+    $scope.refreshIcon = 'spinner';
 
     // Convenience function to set scope data using module.
     function showModuleData(module) {
@@ -65,6 +66,7 @@ angular.module('mm.addons.mod_folder')
         showModuleData(module);
         $scope.folderLoaded = true;
         $scope.canReload = false;
+        $scope.refreshIcon = 'ion-refresh';
     } else {
         fetchFolder().then(function() {
             $mmaModFolder.logView(module.instance).then(function() {
@@ -73,6 +75,7 @@ angular.module('mm.addons.mod_folder')
         }).finally(function() {
             $scope.folderLoaded = true;
             $scope.canReload = true;
+            $scope.refreshIcon = 'ion-refresh';
         });
     }
 
@@ -82,10 +85,14 @@ angular.module('mm.addons.mod_folder')
     };
 
     $scope.refreshFolder = function() {
-        $mmCourse.invalidateModule(module.id).finally(function() {
-            fetchFolder().finally(function() {
-                $scope.$broadcast('scroll.refreshComplete');
+        if ($scope.canReload) {
+            $scope.refreshIcon = 'spinner';
+            $mmCourse.invalidateModule(module.id).finally(function() {
+                fetchFolder().finally(function() {
+                    $scope.refreshIcon = 'ion-refresh';
+                    $scope.$broadcast('scroll.refreshComplete');
+                });
             });
-        });
+        }
     };
 });
