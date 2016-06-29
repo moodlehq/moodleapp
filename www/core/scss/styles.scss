@@ -181,6 +181,25 @@ em {
   color: $item-disabled-color;
 }
 
+.user-with-avatar {
+  position: relative;
+  z-index: 2;
+  display: block;
+  padding: 4px;
+  padding-left: 56px;
+  min-height: 48px;
+}
+.user-with-avatar > img:first-child {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    max-width: 40px;
+    max-height: 40px;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+
 // Split pane.
 .mm-split-pane {
   @include display-flex();
@@ -381,7 +400,7 @@ p.mm-warning {
 }
 
 .badge.badge-inline {
-  display: inline;
+  display: inline-block;
   position: relative;
   top: initial;
   right: initial;

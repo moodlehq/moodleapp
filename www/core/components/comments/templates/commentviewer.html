@@ -1,0 +1,21 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-content mm-state-class>
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="commentsLoaded" on-refresh="refreshComments()"></ion-refresher>
+        <mm-loading hide-until="commentsLoaded">
+            <div class="list card" ng-repeat="comment in comments | orderBy:'comment.timecreated':true">
+                <a mm-link capture-link="true" ng-href="{{comment.profileurl}}" class="item item-avatar item-heading">
+                    <img ng-src="{{comment.profileimageurl}}" alt="{{ 'mm.core.pictureof' | translate:{$a: comment.fullname} }}" role="presentation" mm-external-content>
+                    <h2>{{ comment.fullname }}</h2>
+                    <p>{{ comment.time }}</p>
+                </a>
+                <div class="item item-text-wrap item-body">
+                    <mm-format-text watch="true" clean="true">{{comment.content}}</mm-format-text>
+                </div>
+            </div>
+            <div class="card" ng-if="!comments || !comments.length">
+                <p class="item">{{ 'mm.core.nocomments' | translate }}</p>
+            </div>
+        </mm-loading>
+    </ion-content>
+</ion-view>

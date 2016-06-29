@@ -1,0 +1,23 @@
+<ion-view view-title="{{ title }}">
+    <mm-split-view load-when="assignmentLoaded" load="{{submissionToLoad}}" component="{{assignComponent}}">
+        <ion-content mm-state-class>
+            <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="assignmentLoaded" on-refresh="refreshSubmissionList()"></ion-refresher>
+            <mm-loading hide-until="assignmentLoaded">
+                <ul class="list">
+                    <li ng-repeat="submission in submissions">
+                        <a ng-class="{'item-avatar': submission.userprofileimageurl}" class="item item-text-wrap" mm-split-view-link="site.mod_assign-submission({'submitid': submission.submitid, 'blindid': submission.blindid, 'courseid': courseId, 'moduleid': moduleId})">
+                            <img ng-if="submission.userprofileimageurl" ng-src="{{submission.userprofileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: submission.userfullname} }}" role="presentation">
+                            <p ng-if="submission.userfullname">{{submission.userfullname}}</p>
+                            <p ng-if="!submission.userfullname">{{ 'mma.mod_assign.hiddenuser' | translate }}{{submission.blindid}}</p>
+                            <p ng-if="submission.timemodified">{{ submission.timemodified * 1000 | mmFormatDate:"dfmediumdate" }}</p>
+                            <p class="badge badge-inline {{submission.statusClass}}">{{submission.statusTranslated}}</p>
+                        </a>
+                    </li>
+                    <li class="item item-text-wrap" ng-if="!haveAllParticipants">
+                        <p class="badge badge-assertive badge-inline">{{ 'mma.mod_assign.notallparticipantsareshown' | translate }}</p>
+                    </li>
+                </ul>
+            </mm-loading>
+        </ion-content>
+    </mm-split-view>
+</ion-view>

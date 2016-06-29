@@ -893,6 +893,48 @@ angular.module('mm.core')
         };
 
         /**
+         * Returns hours, minutes and seconds in a human readable format
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#formatDuration
+         * @param  {Integer} duration       Duration in seconds
+         * @param  {Integer} [precission]   Number of elements to have in precission. 0 or undefined to full precission.
+         * @return {String}                 Full Human readable duration formatted
+         */
+        self.formatDuration = function(duration, precission) {
+            eventDuration = moment.duration(duration, 'seconds');
+
+            if (!precission) {
+                precission = 5;
+            }
+
+            durationString = "";
+            if (precission && eventDuration.years() > 0) {
+                durationString += " " + moment.duration(eventDuration.years(), 'years').humanize();
+                precission--;
+            }
+            if (precission && eventDuration.months() > 0) {
+                durationString += " " + moment.duration(eventDuration.months(), 'months').humanize();
+                precission--;
+            }
+            if (precission && eventDuration.days() > 0) {
+                durationString += " " + moment.duration(eventDuration.days(), 'days').humanize();
+                precission--;
+            }
+            if (precission && eventDuration.hours() > 0) {
+                durationString += " " + moment.duration(eventDuration.hours(), 'hours').humanize();
+                precission--;
+            }
+            if (precission && eventDuration.minutes() > 0) {
+                durationString += " " + moment.duration(eventDuration.minutes(), 'minutes').humanize();
+                precission--;
+            }
+
+            return durationString.trim();
+        };
+
+        /**
          * Empties an array without losing its reference.
          *
          * @module mm.core
