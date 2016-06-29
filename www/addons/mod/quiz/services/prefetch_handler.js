@@ -121,7 +121,7 @@ angular.module('mm.addons.mod_quiz')
      * @module mm.addons.mod_quiz
      * @ngdoc method
      * @name $mmaModQuizPrefetchHandler#isDownloadable
-     * @param {Object} module    Module to get the timemodified.
+     * @param {Object} module    Module to check.
      * @param {Number} courseId  Course ID the module belongs to.
      * @return {Promise}         Promise resolved with true if downloadable, resolved with false otherwise.
      */
