@@ -284,6 +284,10 @@ em {
   height: 100%;
 }
 
+mm-loading.mm-loading-noheight .mm-loading-content {
+  height: auto;
+}
+
 // Align ion-spinner right
 .spinner-right {
   position: absolute;

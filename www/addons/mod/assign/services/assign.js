@@ -582,6 +582,28 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Check if save and submit assignments is enabled in site.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssign#isSaveAndSubmitSupported
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with true if enabled, false otherwise.
+     */
+    self.isSaveAndSubmitSupported = function(siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            // Even if save & submit WS were introduced in 2.6, we'll also check get_submission_status WS
+            // to make sure we have all the WS to provide the whole submit experience.
+            return site.wsAvailable('mod_assign_get_submission_status') && site.wsAvailable('mod_assign_save_submission') &&
+                   site.wsAvailable('mod_assign_submit_for_grading');
+        }).catch(function() {
+            return false;
+        });
+    };
+
+    /**
      * Report an assignment submission as being viewed.
      *
      * @module mm.addons.mod_assign

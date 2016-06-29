@@ -34,6 +34,11 @@ angular.module('mm.addons.mod_assign')
     $scope.moduleid = module.id;
     $scope.refreshIcon = 'spinner';
 
+    // Check if submit through app is supported.
+    $mmaModAssign.isSaveAndSubmitSupported().then(function(enabled) {
+        $scope.submitSupported = enabled;
+    });
+
     $scope.gotoSubmission = function(submit, blind) {
         if ($ionicPlatform.isTablet()) {
             // Show split view on tablet.

@@ -64,6 +64,13 @@
             </div>
 
             <mma-mod-assign-submission ng-if="!canviewsubmissions" courseid="{{courseid}}" moduleid="{{moduleid}}"></mma-mod-assign-submission>
+
+            <!-- Submit through app not supported. -->
+            <div class="list card" ng-if="!canviewsubmissions && !submitSupported">
+                <div class="item item-text-wrap">
+                    <a class="button button-block icon-right ion-share" ng-href="{{moduleUrl}}" mm-link>{{'mma.mod_assign.addsubmission' | translate }}</a>
+                </div>
+            </div>
         </mm-loading>
     </ion-content>
 </ion-view>

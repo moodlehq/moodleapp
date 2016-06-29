@@ -26,7 +26,7 @@ angular.module('mm.addons.mod_assign')
 .directive('mmaModAssignSubmission', function($mmaModAssign, $translate, $mmUser, mmaModAssignAttemptReopenMethodNone, $q, $mmSite,
         mmaModAssignUnlimitedAttempts, mmaModAssignGradingStatusGraded, mmaModAssignGradingStatusNotGraded, mmUserProfileState,
         mmaModMarkingWorkflowStateReleased, mmaModAssignSubmissionStatusNew, mmaModAssignSubmissionStatusSubmitted, $mmUtil,
-        mmaModAssignSubmissionInvalidated, $mmGroups) {
+        mmaModAssignSubmissionInvalidated, $mmGroups, mmaModAssignSubmissionStatusReopened) {
 
     // Directive controller.
     function controller() {
@@ -62,6 +62,7 @@ angular.module('mm.addons.mod_assign')
                         var blindMarking = scope.isGrading && response.lastattempt.blindmarking && !assign.revealidentities;
 
                         scope.cansubmit = !scope.isGrading && response.lastattempt.cansubmit;
+                        scope.canEdit = !scope.isGrading && response.lastattempt.canedit;
 
                         scope.userSubmission = assign.teamsubmission ?
                             response.lastattempt.teamsubmission : response.lastattempt.submission;
@@ -262,10 +263,16 @@ angular.module('mm.addons.mod_assign')
         link: function(scope, element, attributes, controller) {
             scope.isGrading = !!attributes.submitid;
             scope.statusNew = mmaModAssignSubmissionStatusNew;
+            scope.statusReopened = mmaModAssignSubmissionStatusReopened;
             scope.loaded = false;
 
             var obsLoaded = scope.$on(mmaModAssignSubmissionInvalidated, function() {
                 controller.load(scope, attributes.moduleid, attributes.courseid, attributes.submitid, attributes.blindid, true);
+            });
+
+            // Check if submit through app is supported.
+            $mmaModAssign.isSaveAndSubmitSupported().then(function(enabled) {
+                scope.submitSupported = enabled;
             });
 
             scope.$on('$destroy', obsLoaded);
