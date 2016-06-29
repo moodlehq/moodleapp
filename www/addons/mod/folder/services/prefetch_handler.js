@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_folder')
  * @ngdoc service
  * @name $mmaModFolderPrefetchHandler
  */
-.factory('$mmaModFolderPrefetchHandler', function($mmaModFolder, $mmSite, mmaModFolderComponent) {
+.factory('$mmaModFolderPrefetchHandler', function($mmaModFolder, $q, mmaModFolderComponent) {
 
     var self = {};
 
@@ -44,6 +44,20 @@ angular.module('mm.addons.mod_folder')
             }
         });
         return size;
+    };
+
+    /**
+     * Check if a folder is downloadable.
+     *
+     * @module mm.addons.mod_folder
+     * @ngdoc method
+     * @name $mmaModFolderPrefetchHandler#isDownloadable
+     * @param {Object} module    Module to check.
+     * @param {Number} courseId  Course ID the module belongs to.
+     * @return {Promise}         Promise resolved with true if downloadable, resolved with false otherwise.
+     */
+    self.isDownloadable = function(module, courseId) {
+        return $q.when(module.contents.length > 0);
     };
 
     /**
