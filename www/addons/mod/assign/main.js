@@ -43,6 +43,22 @@ angular.module('mm.addons.mod_assign', ['mm.core'])
         }
     })
 
+    .state('site.mod_assign-description', {
+        url: '/mod_assign-description',
+        params: {
+            assignid: null,
+            description: null,
+            files: null
+
+        },
+        views: {
+            'site': {
+                controller: 'mmaModAssignDescriptionCtrl',
+                templateUrl: 'addons/mod/assign/templates/description.html'
+            }
+        }
+    })
+
     .state('site.mod_assign-submission-list', {
         url: '/mod_assign-submission-list',
         params: {

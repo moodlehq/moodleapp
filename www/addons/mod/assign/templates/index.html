@@ -3,14 +3,18 @@
     <ion-nav-buttons side="secondary">
         <mm-context-menu>
             <mm-context-menu-item priority="900" ng-if="moduleUrl" href="{{moduleUrl}}" content="{{ 'mm.core.openinbrowser' | translate }}" icon-action="ion-share"></mm-context-menu-item>
-            <mm-context-menu-item priority="800" ng-if="description" content="{{'mm.core.moduleintro' | translate }}" action="expandDescription()" icon-action="ion-arrow-right-c"></mm-context-menu-item>
+            <mm-context-menu-item priority="800" ng-if="assign.id && (description || assign.introattachments)" content="{{'mm.core.moduleintro' | translate }}" action="expandDescription()" icon-action="ion-arrow-right-c"></mm-context-menu-item>
             <mm-context-menu-item priority="700" content="{{'mm.core.refresh' | translate }}" action="refreshAssignment()" icon-action="{{refreshIcon}}" icon-action="ion-refresh" close-on-click="false"></mm-context-menu-item>
         </mm-context-menu>
     </ion-nav-buttons>
     <ion-content padding="true" mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="assignmentLoaded" on-refresh="refreshAssignment()"></ion-refresher>
         <mm-loading hide-until="assignmentLoaded">
-            <mm-course-mod-description description="description" watch="true"></mm-course-mod-description>
+            <div class="card" ng-if="description" ng-click="expandDescription()">
+                <div class="item item-text-wrap item-body">
+                    <mm-format-text class="mm-content-with-float" shorten clean="true">{{ description }}</mm-format-text>
+                </div>
+            </div>
             <div class="list card" ng-if="assign.introattachments">
                 <mm-file class="item item-complex" ng-repeat="attachment in assign.introattachments" file="attachment" component="{{assignComponent}}" component-id="{{assign.id}}"></mm-file>
             </div>
