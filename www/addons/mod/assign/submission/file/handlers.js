@@ -37,9 +37,11 @@ angular.module('mm.addons.mod_assign')
     /**
      * Get the name of the directive to render this plugin.
      *
+     * @param  {Object} plugin Plugin to get the directive for.
+     * @param  {Boolean} edit  True if editing a submission, false if read only.
      * @return {String} Directive name.
      */
-    self.getDirectiveName = function() {
+    self.getDirectiveName = function(plugin, edit) {
         return 'mma-mod-assign-submission-file';
     };
 

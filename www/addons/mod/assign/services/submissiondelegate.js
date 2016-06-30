@@ -60,12 +60,13 @@ angular.module('mm.addons.mod_assign')
      * @ngdoc method
      * @name $mmaModAssignSubmissionDelegate#getDirectiveForPlugin
      * @param  {Object} plugin Plugin to get the directive for.
+     * @param  {Boolean} edit  True if editing a submission, false if read only.
      * @return {String}        Directive name. Undefined if no directive found.
      */
-    self.getDirectiveForPlugin = function(plugin) {
+    self.getDirectiveForPlugin = function(plugin, edit) {
         var handler = self.getPluginHandler(plugin.type);
         if (handler && handler.getDirectiveName) {
-            return handler.getDirectiveName(plugin);
+            return handler.getDirectiveName(plugin, edit);
         }
     };
 
@@ -126,7 +127,8 @@ angular.module('mm.addons.mod_assign')
      *                           returning an object defining these properties. See {@link $mmUtil#resolveObject}.
      *                             - isEnabled (Boolean|Promise) Whether or not the handler is enabled on a site level.
      *                                                           When using a promise, it should return a boolean.
-     *                             - getDirectiveName() (String) Optional. Returns the name of the directive to render the plugin.
+     *                             - getDirectiveName(plugin, edit) (String) Optional. Returns the name of the directive to render
+     *                                                           the plugin.
      */
     self.registerHandler = function(addon, pluginType, handler) {
         if (typeof handlers[pluginType] !== 'undefined') {

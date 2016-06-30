@@ -98,6 +98,7 @@
     "no": "No",
     "nocomments": "No comments",
     "none": "None",
+    "nopermissions": "Sorry, but you do not currently have permissions to do that ({{$a}})",
     "notapplicable": "n/a",
     "notice": "Notice",
     "now" : "now",

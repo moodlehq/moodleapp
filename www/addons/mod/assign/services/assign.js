@@ -419,7 +419,8 @@ angular.module('mm.addons.mod_assign')
                 "userid": userId
             },
             preSets = {
-                cacheKey: getSubmissionStatusCacheKey(assignId, userId, isBlind)
+                cacheKey: getSubmissionStatusCacheKey(assignId, userId, isBlind),
+                getCacheUsingCacheKey: true // We use the cache key to take isBlind into account.
             };
 
             return site.read('mod_assign_get_submission_status', params, preSets).then(function(response) {

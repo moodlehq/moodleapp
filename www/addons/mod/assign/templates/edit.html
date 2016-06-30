@@ -1,0 +1,24 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-content padding="true" mm-state-class>
+        <!-- <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="assignmentLoaded" on-refresh="refreshAssignment()"></ion-refresher> -->
+        <mm-loading hide-until="assignmentLoaded">
+            <!-- TODO: plagiarism_print_disclosure -->
+            <li ng-if="submissionStatement" class="item item-text-wrap item-checkbox item-checkbox-right">
+                <label class="checkbox">
+                    <input type="checkbox" name="submissionstatement" aria-labelledby="mma-mod-assign-submissionstatement" >
+                </label>
+                <p id="mma-mod-assign-submissionstatement"><mm-format-text watch="true" class="mm-content-with-float">{{submissionStatement}}</mm-format-text></p>
+            </li>
+
+            <mma-mod-assign-submission-plugin ng-repeat="plugin in userSubmission.plugins" assign="assign" submission="userSubmission" plugin="plugin" edit="true"></mma-mod-assign-submission-plugin>
+
+            <div class="list">
+                <div class="item button-bar">
+                    <button class="button" ng-click="save()">{{ 'mma.mod_assign.savechanges' | translate }}</button>
+                    <button class="button" ng-click="cancel()">{{ 'mm.core.cancel' | translate }}</button>
+                </div>
+            </div>
+        </mm-loading>
+    </ion-content>
+</ion-view>

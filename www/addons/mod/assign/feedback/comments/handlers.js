@@ -31,6 +31,7 @@ angular.module('mm.addons.mod_assign')
      * @return {Boolean}
      */
     self.isEnabled = function() {
+        // We don't need to call getComments, so receiving the plugin as active means it's supported.
         return true;
     };
 

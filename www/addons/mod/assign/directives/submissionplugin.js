@@ -22,12 +22,31 @@ angular.module('mm.addons.mod_assign')
  * @name mmaModAssignSubmissionPlugin
  * @description
  * Directive to render submission plugin.
+ *
  * It requires to receive a "plugin" scope variable indicating the plugin to render the submission.
+ *
+ * Parameters received by this directive and shared with the directive to render the plugin (if any):
+ *
+ * @param {Object} assign     The assign.
+ * @param {Object} submission The submission.
+ * @param {Object} plugin     The plugin to render.
+ * @param {Boolean} edit      True if editing, false if read only.
+ *
+ * Also, the directives to render the plugin will receive the following parameters in the scope:
+ *
+ * @param {String} assignComponent Assignment component.
+ * @param {Object} configs         Plugin configs.
  */
 .directive('mmaModAssignSubmissionPlugin', function($compile, $mmaModAssignSubmissionDelegate, $mmaModAssign,
             mmaModAssignComponent) {
     return {
         restrict: 'E',
+        scope: {
+            assign: '=',
+            plugin: '=',
+            submission: '=',
+            edit: '@?'
+        },
         templateUrl: 'addons/mod/assign/templates/submissionplugin.html',
         link: function(scope, element, attributes) {
             var plugin = scope.plugin,
@@ -39,9 +58,10 @@ angular.module('mm.addons.mod_assign')
             }
 
             scope.assignComponent = mmaModAssignComponent;
+            scope.edit = scope.edit && scope.edit !== 'false';
 
             // Check if the plugin has defined its own directive to render itself.
-            directive = $mmaModAssignSubmissionDelegate.getDirectiveForPlugin(plugin);
+            directive = $mmaModAssignSubmissionDelegate.getDirectiveForPlugin(plugin, scope.edit);
 
             if (directive) {
                 // Configs are only used in directives.

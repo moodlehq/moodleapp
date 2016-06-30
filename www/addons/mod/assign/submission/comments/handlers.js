@@ -21,26 +21,28 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc service
  * @name $mmaModAssignSubmissionCommentsHandler
  */
-.factory('$mmaModAssignSubmissionCommentsHandler', function() {
+.factory('$mmaModAssignSubmissionCommentsHandler', function($mmComments) {
 
     var self = {};
 
     /**
      * Whether or not the rule is enabled for the site.
      *
-     * @return {Boolean}
+     * @return {Promise} Promise resolved with true if enabled, rejected or resolved with false otherwise.
      */
     self.isEnabled = function() {
-        return true;
+        return $mmComments.isPluginEnabled();
     };
 
     /**
      * Get the name of the directive to render this plugin.
      *
+     * @param  {Object} plugin Plugin to get the directive for.
+     * @param  {Boolean} edit  True if editing a submission, false if read only.
      * @return {String} Directive name.
      */
-    self.getDirectiveName = function() {
-        return 'mma-mod-assign-submission-comments';
+    self.getDirectiveName = function(plugin, edit) {
+        return edit ? false : 'mma-mod-assign-submission-comments';
     };
 
     return self;

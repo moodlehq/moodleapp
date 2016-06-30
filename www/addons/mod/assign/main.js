@@ -91,6 +91,22 @@ angular.module('mm.addons.mod_assign', ['mm.core'])
                 templateUrl: 'addons/mod/assign/templates/submissionreview.html'
             }
         }
+    })
+
+    .state('site.mod_assign-submission-edit', {
+        url: '/mod_assign-submission-edit',
+        params: {
+            moduleid: null,
+            courseid: null,
+            userid: null,
+            blindid: null
+        },
+        views: {
+            'site': {
+                controller: 'mmaModAssignEditCtrl',
+                templateUrl: 'addons/mod/assign/templates/edit.html'
+            }
+        }
     });
 
 })

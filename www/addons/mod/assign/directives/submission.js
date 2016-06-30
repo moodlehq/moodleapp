@@ -26,7 +26,7 @@ angular.module('mm.addons.mod_assign')
 .directive('mmaModAssignSubmission', function($mmaModAssign, $translate, $mmUser, mmaModAssignAttemptReopenMethodNone, $q, $mmSite,
         mmaModAssignUnlimitedAttempts, mmaModAssignGradingStatusGraded, mmaModAssignGradingStatusNotGraded, mmUserProfileState,
         mmaModMarkingWorkflowStateReleased, mmaModAssignSubmissionStatusNew, mmaModAssignSubmissionStatusSubmitted, $mmUtil,
-        mmaModAssignSubmissionInvalidated, $mmGroups, mmaModAssignSubmissionStatusReopened) {
+        mmaModAssignSubmissionInvalidated, $mmGroups, $state, mmaModAssignSubmissionStatusReopened) {
 
     // Directive controller.
     function controller() {
@@ -278,6 +278,15 @@ angular.module('mm.addons.mod_assign')
             scope.$on('$destroy', obsLoaded);
 
             controller.load(scope, attributes.moduleid, attributes.courseid, attributes.submitid, attributes.blindid, false);
+
+            scope.goToEdit = function() {
+                $state.go('site.mod_assign-submission-edit', {
+                    moduleid: attributes.moduleid,
+                    courseid: attributes.courseid,
+                    userid: attributes.submitid,
+                    blindid: attributes.blindid
+                });
+            };
         }
     };
 });
