@@ -41,8 +41,9 @@ angular.module('mm.core.fileuploader')
      *                                         * class Optional. Class to add to the handler's row.
      *                                         * title Required. Title to show in the handler's row.
      *                                         * icon Optional. Icon to show in the handler's row.
-     *                                         * action Required. A function called when the handler is clicked. It must return an
-     *                                             object - or a promise resolved with an object - containing these properties:
+     *                                         * action Required. A function called when the handler is clicked, receives maxSize
+     *                                             as parameter. It must return an object - or a promise resolved with an object -
+     *                                             containing these properties:
      *                                                 - uploaded Boolean. Whether the handler uploaded the file.
      *                                                 - path String. Ignored if uploaded=true. The path of the file to upload.
      *                                                 - fileEntry Object. Ignored if uploaded=true. The fileEntry to upload.

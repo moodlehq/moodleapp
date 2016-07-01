@@ -79,6 +79,26 @@ angular.module('mm.core.fileuploader')
     };
 
     /**
+     * Function to call when trying to upload a file bigger than max size. Shows error and returns rejected promise.
+     *
+     * @module mm.core.fileuploader
+     * @ngdoc method
+     * @name $mmFileUploaderHelper#errorMaxBytes
+     * @param  {Number} maxSize  Max size (bytes).
+     * @param  {String} fileName Name of the file.
+     * @return {Promise}         Rejected promise.
+     */
+    self.errorMaxBytes = function(maxSize, fileName) {
+        var error = $translate.instant('mm.fileuploader.maxbytesfile', {$a: {
+            file: fileName,
+            size: $mmText.bytesToSize(maxSize, 2)
+        }});
+
+        $mmUtil.showErrorModal(error);
+        return $q.reject();
+    };
+
+    /**
      * Function called when the file picker is closed.
      *
      * @module mm.core.fileuploader
@@ -115,11 +135,12 @@ angular.module('mm.core.fileuploader')
      * @module mm.core.fileuploader
      * @ngdoc method
      * @name $mmFileUploaderHelper#selectAndUploadFile
+     * @param  {Number} [maxSize] Max size of the file to upload. If not defined or -1, no max size.
      * @return {Promise} Promise resolved when a file is uploaded, rejected if file picker is closed without a file uploaded.
      */
-    self.selectAndUploadFile = function() {
+    self.selectAndUploadFile = function(maxSize) {
         filePickerDeferred = $q.defer();
-        $state.go('site.fileuploader-picker');
+        $state.go('site.fileuploader-picker', {maxsize: maxSize});
         return filePickerDeferred.promise;
     };
 
@@ -159,10 +180,11 @@ angular.module('mm.core.fileuploader')
      * @ngdoc method
      * @name $mmFileUploaderHelper#uploadAudioOrVideo
      * @param  {Boolean} isAudio True if uploading an audio, false if it's a video.
+     * @param  {Number} maxSize  Max size of the upload. -1 for no max size.
      * @return {Promise}         The reject contains the error message, if there is no error message
      *                           then we can consider that this is a silent fail.
      */
-    self.uploadAudioOrVideo = function(isAudio) {
+    self.uploadAudioOrVideo = function(isAudio, maxSize) {
         $log.debug('Trying to record a video file');
         var fn = isAudio ? $cordovaCapture.captureAudio : $cordovaCapture.captureVideo;
         return fn({limit: 1}).then(function(medias) {
@@ -170,7 +192,7 @@ angular.module('mm.core.fileuploader')
             var paths = medias.map(function(media) {
                 return media.fullPath;
             });
-            return uploadFiles(true, paths, $mmFileUploader.uploadMedia, medias);
+            return uploadFiles(true, paths, maxSize, true, $mmFileUploader.uploadMedia, medias);
         }, function(error) {
             var defaultError = isAudio ? 'mm.fileuploader.errorcapturingaudio' : 'mm.fileuploader.errorcapturingvideo';
             return treatCaptureError(error, defaultError);
@@ -191,7 +213,10 @@ angular.module('mm.core.fileuploader')
      * @return {Promise}                   Promise resolved when the file is uploaded.
      */
     self.uploadGenericFile = function(uri, name, type, deleteAfterUpload, siteId) {
-        return uploadFiles(deleteAfterUpload, [uri], $mmFileUploader.uploadGenericFile, uri, name, type, deleteAfterUpload, siteId);
+        // We won't check size so there's no need to pass maxSize. Functions calling
+        // uploadGenericFile should check the size before calling this function.
+        return uploadFiles(deleteAfterUpload, [uri], -1, false,
+                $mmFileUploader.uploadGenericFile, uri, name, type, deleteAfterUpload, siteId);
     };
 
     /**
@@ -201,10 +226,11 @@ angular.module('mm.core.fileuploader')
      * @ngdoc method
      * @name $mmFileUploaderHelper#uploadImage
      * @param  {Boolean} fromAlbum True if the image should be selected from album, false if it should be taken with camera.
+     * @param  {Number} maxSize    Max size of the upload. -1 for no max size.
      * @return {Promise}           The reject contains the error message, if there is no error message
      *                             then we can consider that this is a silent fail.
      */
-    self.uploadImage = function(fromAlbum) {
+    self.uploadImage = function(fromAlbum, maxSize) {
         $log.debug('Trying to capture an image with camera');
         var options = {
             quality: 50,
@@ -218,7 +244,7 @@ angular.module('mm.core.fileuploader')
         }
 
         return $cordovaCamera.getPicture(options).then(function(img) {
-            return uploadFiles(!fromAlbum, [img], $mmFileUploader.uploadImage, img, fromAlbum);
+            return uploadFiles(!fromAlbum, [img], maxSize, true, $mmFileUploader.uploadImage, img, fromAlbum);
         }, function(error) {
             var defaultError = fromAlbum ? 'mm.fileuploader.errorgettingimagealbum' : 'mm.fileuploader.errorcapturingimage';
             return treatImageError(error, defaultError);
@@ -283,18 +309,20 @@ angular.module('mm.core.fileuploader')
      *
      * @param  {Boolean} deleteAfterUpload Whether the files should be deleted after upload.
      * @param  {String[]} [paths]          Absolute paths of the files to upload. Required only if deleteAfterUpload=true.
+     * @param  {Number} maxSize            Max size of the upload. -1 for no max size.
+     * @param  {Boolean} checkSize         True to check size.
      * @param  {Function} uploadFn         Function used to upload the files.
      *                                     The function parameters need to be passed after this parameter.
      * @return {Promise}                   Promise resolved if the files are uploaded, rejected otherwise.
      * @description
      *
      * Usage:
-     * uploadFiles(false, paths, myFunction, param1, param2)
+     * uploadFiles(false, paths, maxSize, checkSize, myFunction, param1, param2)
      *
      * This will call the following function to upload the file:
      * myFunction(param1, param2)
      */
-    function uploadFiles(deleteAfterUpload, paths, uploadFn) {
+    function uploadFiles(deleteAfterUpload, paths, maxSize, checkSize, uploadFn) {
 
         var errorStr = $translate.instant('mm.core.error'),
             retryStr = $translate.instant('mm.core.retry'),
@@ -303,33 +331,63 @@ angular.module('mm.core.fileuploader')
                                 "<p ng-if=\"!perc\">{{'mm.fileuploader.uploading' | translate}}</p>" +
                                 "<p ng-if=\"perc\">{{'mm.fileuploader.uploadingperc' | translate:{$a: perc} }}</p>",
             scope,
-            modal;
+            modal,
+            promises = [],
+            totalSize = 0,
+            fileTooLarge;
 
         if (!$mmApp.isOnline()) {
             return errorUploading($translate.instant('mm.fileuploader.errormustbeonlinetoupload'));
         }
 
-        scope = $rootScope.$new();
-        modal = $mmUtil.showModalLoadingWithTemplate(progressTemplate, {scope: scope});
+        if (checkSize) {
+            // Check that files size is the right one.
+            angular.forEach(paths, function(path) {
+                promises.push($mmFS.getExternalFile(path).then(function(fileEntry) {
+                    return $mmFS.getFileObjectFromFileEntry(fileEntry).then(function(file) {
+                        totalSize += file.size;
+                        if (maxSize != -1 && file.size > maxSize) {
+                            fileTooLarge = file;
+                        }
+                    });
+                }).catch(function() {
+                    // Ignore failures.
+                }));
+            });
+        }
 
-        return uploadFn.apply(undefined, Array.prototype.slice.call(args, 3)).then(undefined, undefined, function(progress) {
-            // Progress uploading.
-            if (progress && progress.lengthComputable) {
-                var perc = parseFloat(Math.min((progress.loaded / progress.total) * 100, 100)).toFixed(1);
-                if (perc >= 0) {
-                    scope.perc = perc;
+        return $q.all(promises).then(function() {
+            if (fileTooLarge) {
+                return self.errorMaxBytes(maxSize, fileTooLarge.name);
+            }
+
+            if (totalSize > 0) {
+                return self.confirmUploadFile(totalSize);
+            }
+        }).then(function() {
+            // Files aren't too large and user confirmed, let's upload.
+            scope = $rootScope.$new();
+            modal = $mmUtil.showModalLoadingWithTemplate(progressTemplate, {scope: scope});
+
+            return uploadFn.apply(undefined, Array.prototype.slice.call(args, 5)).then(undefined, undefined, function(progress) {
+                // Progress uploading.
+                if (progress && progress.lengthComputable) {
+                    var perc = parseFloat(Math.min((progress.loaded / progress.total) * 100, 100)).toFixed(1);
+                    if (perc >= 0) {
+                        scope.perc = perc;
+                    }
                 }
-            }
-        }).catch(function(error) {
-            $log.error('Error uploading file: '+JSON.stringify(error));
+            }).catch(function(error) {
+                $log.error('Error uploading file: '+JSON.stringify(error));
 
-            modal.dismiss();
-            if (typeof error != 'string') {
-                error = $translate.instant('mm.fileuploader.errorwhileuploading');
-            }
-            return errorUploading(error);
-        }).finally(function() {
-            modal.dismiss();
+                modal.dismiss();
+                if (typeof error != 'string') {
+                    error = $translate.instant('mm.fileuploader.errorwhileuploading');
+                }
+                return errorUploading(error);
+            }).finally(function() {
+                modal.dismiss();
+            });
         });
 
         function errorUploading(error) {
