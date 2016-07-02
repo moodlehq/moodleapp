@@ -1,6 +1,6 @@
 {
     "about": "About",
-    "appname": "Moodle Mobile {{version}}",
+    "appname": "Nrivez Mobile {{version}}",
     "appready": "App ready",
     "cacheexpirationtime": "Cache expiration time (miliseconds)",
     "cordovadevicemodel": "Cordova Device model",
