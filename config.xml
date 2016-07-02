@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.moodle.moodlemobile" version="3.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>Moodle Mobile</name>
-  <description>Official Moodle Mobile app</description>
-  <author href="http://moodle.com" email="juan@moodle.com">Juan Leyva</author>
+<widget id="net.nrivez.nrivezmobile" version="3.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <name>Nrivez Mobile</name>
+  <description>Official Nrivez Mobile app</description>
+  <author href="http://moodle.com" email="aymentounsi20@gmail.com">Aymen Tounsi</author>
   <content src="index.html"/>
   <access origin="*"/>
 
