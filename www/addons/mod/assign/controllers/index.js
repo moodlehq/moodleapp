@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_assign')
  * @name mmaModAssignIndexCtrl
  */
 .controller('mmaModAssignIndexCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $translate, mmaModAssignComponent, $q,
-$state, $ionicPlatform, mmaModAssignSubmissionInvalidated, $mmEvents, $mmSite, mmaModAssignSubmissionSavedEvent) {
+        $state, $ionicPlatform, mmaModAssignSubmissionInvalidatedEvent, $mmEvents, $mmSite, mmaModAssignSubmissionSavedEvent) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid;
 
@@ -132,7 +132,7 @@ $state, $ionicPlatform, mmaModAssignSubmissionInvalidated, $mmEvents, $mmSite, m
         }
 
         return $q.all(promises).finally(function() {
-            $scope.$broadcast(mmaModAssignSubmissionInvalidated);
+            $scope.$broadcast(mmaModAssignSubmissionInvalidatedEvent);
             return fetchAssignment();
         });
     }

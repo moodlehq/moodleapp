@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc directive
  * @name mmaModAssignSubmissionComments
  */
-.directive('mmaModAssignSubmissionComments', function($state, $mmComments, mmaModAssignSubmissionInvalidated) {
+.directive('mmaModAssignSubmissionComments', function($state, $mmComments, mmaModAssignSubmissionInvalidatedEvent) {
     return {
         restrict: 'A',
         priority: 100,
@@ -44,7 +44,7 @@ angular.module('mm.addons.mod_assign')
             scope.submissionId = scope.submission.id;
             scope.cmid = scope.assign.cmid;
 
-            var obsLoaded = scope.$on(mmaModAssignSubmissionInvalidated, function() {
+            var obsLoaded = scope.$on(mmaModAssignSubmissionInvalidatedEvent, function() {
                 $mmComments.invalidateCommentsData('module', scope.cmid, 'assignsubmission_comments', scope.submissionId,
                     'submission_comments');
             });

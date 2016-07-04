@@ -26,7 +26,7 @@ angular.module('mm.addons.mod_assign')
 .directive('mmaModAssignSubmission', function($mmaModAssign, $translate, $mmUser, mmaModAssignAttemptReopenMethodNone, $q, $mmSite,
         mmaModAssignUnlimitedAttempts, mmaModAssignGradingStatusGraded, mmaModAssignGradingStatusNotGraded, mmUserProfileState,
         mmaModMarkingWorkflowStateReleased, mmaModAssignSubmissionStatusNew, mmaModAssignSubmissionStatusSubmitted, $mmUtil,
-        mmaModAssignSubmissionInvalidated, $mmGroups, $state, mmaModAssignSubmissionStatusReopened) {
+        mmaModAssignSubmissionInvalidatedEvent, $mmGroups, $state, mmaModAssignSubmissionStatusReopened) {
 
     // Directive controller.
     function controller() {
@@ -266,7 +266,7 @@ angular.module('mm.addons.mod_assign')
             scope.statusReopened = mmaModAssignSubmissionStatusReopened;
             scope.loaded = false;
 
-            var obsLoaded = scope.$on(mmaModAssignSubmissionInvalidated, function() {
+            var obsLoaded = scope.$on(mmaModAssignSubmissionInvalidatedEvent, function() {
                 controller.load(scope, attributes.moduleid, attributes.courseid, attributes.submitid, attributes.blindid, true);
             });
 
