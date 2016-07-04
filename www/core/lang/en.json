@@ -102,6 +102,7 @@
     "notapplicable": "n/a",
     "notice": "Notice",
     "now" : "now",
+    "numwords": "{{$a}} words",
     "offline": "Offline",
     "online": "Online",
     "openfullimage": "Click here to display the image at full size",

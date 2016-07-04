@@ -86,6 +86,25 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Get the handler for a certain submission plugin.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionDelegate#getPluginHandler
+     * @param  {Object} plugin     Plugin to get the data for.
+     * @param  {Object} inputData  Data entered in the submission form.
+     * @param  {Object} pluginData Object where to add the plugin data.
+     * @return {Promise}           Promise resolved when data has been gathered.
+     */
+    self.getPluginSubmissionData = function(plugin, inputData, pluginData) {
+        var handler = self.getPluginHandler(plugin.type);
+        if (handler && handler.getSubmissionData) {
+            return $q.when(handler.getSubmissionData(plugin, inputData, pluginData));
+        }
+        return $q.when();
+    };
+
+    /**
      * Check if a time belongs to the last update handlers call.
      * This is to handle the cases where updateHandlers don't finish in the same order as they're called.
      *
@@ -129,6 +148,9 @@ angular.module('mm.addons.mod_assign')
      *                                                           When using a promise, it should return a boolean.
      *                             - getDirectiveName(plugin, edit) (String) Optional. Returns the name of the directive to render
      *                                                           the plugin.
+     *                             - getSubmissionData(plugin, inputData, pluginData). Should add to pluginData the data to send to
+     *                                                           server based in the input data. Return promise if async.
+     *                                                           If data hasn't changed it shouldn't add anything.
      */
     self.registerHandler = function(addon, pluginType, handler) {
         if (typeof handlers[pluginType] !== 'undefined') {

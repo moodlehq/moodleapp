@@ -72,5 +72,6 @@
     "ungroupedusers": "The setting 'Require group to make submission' is enabled and some users are either not a member of any group, or are a member of more than one group, so are unable to make submissions.",
     "userwithid": "User with Id {{id}}",
     "userswhoneedtosubmit": "Users who need to submit: {{$a}}",
-    "viewsubmission": "View submission"
+    "viewsubmission": "View submission",
+    "wordlimit": "Word limit"
 }

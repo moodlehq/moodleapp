@@ -45,6 +45,29 @@ angular.module('mm.addons.mod_assign')
         return 'mma-mod-assign-submission-onlinetext';
     };
 
+    /**
+     * Should add to pluginData the data to send to server based in the input data.
+     * If data hasn't changed it shouldn't add anything.
+     *
+     * @param  {Object} plugin     Plugin to get the data for.
+     * @param  {Object} inputData  Data entered in the submission form.
+     * @param  {Object} pluginData Object where to add the plugin data.
+     * @return {Void}
+     */
+    self.getSubmissionData = function(plugin, inputData, pluginData) {
+        // Check if text has changed.
+        var initialText = plugin.editorfields && plugin.editorfields[0] ? plugin.editorfields[0].text : '',
+            newText = inputData.onlinetext_editor_text;
+
+        if (initialText != newText) {
+            pluginData.onlinetext_editor = {
+                text: newText,
+                format: 1,
+                itemid: 0 // Can't add new files yet, so we use a fake itemid.
+            };
+        }
+    };
+
     return self;
 })
 

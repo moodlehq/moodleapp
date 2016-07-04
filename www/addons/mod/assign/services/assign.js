@@ -397,13 +397,14 @@ angular.module('mm.addons.mod_assign')
      * @module mm.addons.mod_assign
      * @ngdoc method
      * @name $mmaModAssign#getSubmissionStatus
-     * @param {Number}  assignId   Assignment instance id.
-     * @param {Number}  [userId]   User id (empty for current user).
-     * @param {Number}  [isBlind]  If blind marking is enabled or not.
-     * @param {Number}  [siteId]   Site id (empty for current site).
-     * @return {Promise}           Promise always resolved with the user submission status.
+     * @param {Number}  assignId      Assignment instance id.
+     * @param {Number}  [userId]      User id (empty for current user).
+     * @param {Number}  [isBlind]     If blind marking is enabled or not.
+     * @param {Boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
+     * @param {Number}  [siteId]      Site id (empty for current site).
+     * @return {Promise}              Promise always resolved with the user submission status.
      */
-    self.getSubmissionStatus = function(assignId, userId, isBlind, siteId) {
+    self.getSubmissionStatus = function(assignId, userId, isBlind, ignoreCache, siteId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -415,13 +416,18 @@ angular.module('mm.addons.mod_assign')
             userId = userId || 0;
 
             var params = {
-                "assignid": assignId,
-                "userid": userId
-            },
-            preSets = {
-                cacheKey: getSubmissionStatusCacheKey(assignId, userId, isBlind),
-                getCacheUsingCacheKey: true // We use the cache key to take isBlind into account.
-            };
+                    assignid: assignId,
+                    userid: userId
+                },
+                preSets = {
+                    cacheKey: getSubmissionStatusCacheKey(assignId, userId, isBlind),
+                    getCacheUsingCacheKey: true, // We use the cache key to take isBlind into account.
+                };
+
+            if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
 
             return site.read('mod_assign_get_submission_status', params, preSets).then(function(response) {
                 return response;
@@ -655,6 +661,29 @@ angular.module('mm.addons.mod_assign')
                 return 'badge-assertive';
         }
         return "";
+    };
+
+    /**
+     * Save current user submission for a certain assignment.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssign#saveSubmission
+     * @param  {Number} assignmentId Assign ID.
+     * @param  {Object} pluginData   Data to save.
+     * @return {Promise}             Promise resolved when saved, rejected otherwise.
+     */
+    self.saveSubmission = function(assignmentId, pluginData) {
+        var params = {
+            assignmentid: assignmentId,
+            plugindata: pluginData
+        };
+        return $mmSite.write('mod_assign_save_submission', params).then(function(warnings) {
+            if (warnings && warnings.length) {
+                // The WebService returned warnings, reject.
+                return $q.reject(warnings);
+            }
+        });
     };
 
     return self;

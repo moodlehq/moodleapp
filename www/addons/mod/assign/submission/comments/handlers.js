@@ -26,6 +26,15 @@ angular.module('mm.addons.mod_assign')
     var self = {};
 
     /**
+     * Whether or not this plugin accepts submissions.
+     *
+     * @return {Boolean}
+     */
+    self.allowSubmissions = function() {
+        return false;
+    };
+
+    /**
      * Whether or not the rule is enabled for the site.
      *
      * @return {Promise} Promise resolved with true if enabled, rejected or resolved with false otherwise.

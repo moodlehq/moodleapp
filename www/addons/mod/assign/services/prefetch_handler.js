@@ -108,7 +108,7 @@ angular.module('mm.addons.mod_assign')
     };
 
     function getSubmissionFiles(assign, submission, siteId) {
-        return $mmaModAssign.getSubmissionStatus(assign.id, submission.submitid, !!submission.blindid, siteId)
+        return $mmaModAssign.getSubmissionStatus(assign.id, submission.submitid, !!submission.blindid, false, siteId)
                 .then(function(response) {
             var promises = [];
 
@@ -213,7 +213,7 @@ angular.module('mm.addons.mod_assign')
     };
 
     function getSubmissionTimemodified(assign, submission, siteId) {
-        return $mmaModAssign.getSubmissionStatus(assign.id, submission.submitid, !!submission.blindid, siteId)
+        return $mmaModAssign.getSubmissionStatus(assign.id, submission.submitid, !!submission.blindid, false, siteId)
                 .then(function(response) {
             var lastModified = 0;
 
@@ -305,8 +305,8 @@ angular.module('mm.addons.mod_assign')
                             siteId).then(function(submissions) {
                         var promises = [];
                         angular.forEach(submissions, function(submission) {
-                            promises.push(
-                                $mmaModAssign.getSubmissionStatus(assign.id, submission.submitid, !!submission.blindid, siteId));
+                            promises.push($mmaModAssign.getSubmissionStatus(
+                                assign.id, submission.submitid, !!submission.blindid, false, siteId));
                         });
                         return $q.all(promises).catch(function(error) {
                             // Fail silently (Moodle < 3.1)
@@ -325,7 +325,7 @@ angular.module('mm.addons.mod_assign')
                     }));
                 } else {
                     // Student.
-                    promise = $q.all([$mmaModAssign.getSubmissionStatus(assign.id, userId, false, siteId)]);
+                    promise = $q.all([$mmaModAssign.getSubmissionStatus(assign.id, userId, false, false, siteId)]);
                 }
 
                 altPromises.push($mmGroups.getActivityAllowedGroups(assign.cmid, false, siteId));

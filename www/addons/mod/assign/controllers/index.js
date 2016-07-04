@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_assign')
  * @name mmaModAssignIndexCtrl
  */
 .controller('mmaModAssignIndexCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $translate, mmaModAssignComponent, $q,
-        $state, $ionicPlatform, mmaModAssignSubmissionInvalidated) {
+$state, $ionicPlatform, mmaModAssignSubmissionInvalidated, $mmEvents, $mmSite, mmaModAssignSubmissionSavedEvent) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid;
 
@@ -169,4 +169,23 @@ angular.module('mm.addons.mod_assign')
             });
         }
     };
+
+    // Listen for submission saved event to refresh data.
+    var obsSaved = $mmEvents.on(mmaModAssignSubmissionSavedEvent, function(data) {
+        if (data.assignmentId == $scope.assign.id && data.siteId == $mmSite.getId() && data.userId == $mmSite.getUserId()) {
+            // Assignment submission saved, refresh data.
+            $scope.refreshIcon = 'spinner';
+            $scope.assignmentLoaded = false;
+            refreshAllData().finally(function() {
+                $scope.refreshIcon = 'ion-refresh';
+                $scope.assignmentLoaded = true;
+            });
+        }
+    });
+
+    $scope.$on('$destroy', function() {
+        if (obsSaved && obsSaved.off) {
+            obsSaved.off();
+        }
+    });
 });

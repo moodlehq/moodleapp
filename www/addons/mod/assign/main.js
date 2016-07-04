@@ -26,6 +26,7 @@ angular.module('mm.addons.mod_assign', ['mm.core'])
 .constant('mmaModAssignGradingStatusNotGraded', 'notgraded')
 .constant('mmaModMarkingWorkflowStateReleased', 'released')
 .constant('mmaModAssignSubmissionInvalidated', 'mma_mod_assign_submission_invalidated')
+.constant('mmaModAssignSubmissionSavedEvent', 'mma_mod_assign_submission_saved')
 
 .config(function($stateProvider) {
 

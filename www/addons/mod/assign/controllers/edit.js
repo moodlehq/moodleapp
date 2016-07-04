@@ -22,12 +22,14 @@ angular.module('mm.addons.mod_assign')
  * @name mmaModAssignEditCtrl
  */
 .controller('mmaModAssignEditCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $translate, mmaModAssignComponent, $q,
-        $mmText, $mmSite) {
+        $mmText, $mmSite, $mmaModAssignHelper, $rootScope, $ionicPlatform, $timeout, $mmEvents, mmaModAssignSubmissionSavedEvent) {
 
     var courseId = $stateParams.courseid,
         userId = $mmSite.getUserId(), // Right now we can only edit current user's submissions.
         isBlind = !!$stateParams.blindid,
-        editStr = $translate.instant('mma.mod_assign.editsubmission');
+        editStr = $translate.instant('mma.mod_assign.editsubmission'),
+        originalBackFunction = $rootScope.$ionicGoBack,
+        unregisterHardwareBack;
 
     $scope.title = editStr; // Temporary title.
     $scope.assignComponent = mmaModAssignComponent;
@@ -40,9 +42,8 @@ angular.module('mm.addons.mod_assign')
             $scope.title = assign.name || $scope.title;
             $scope.assign = assign;
 
-            // Get submission status.
-            return $mmaModAssign.getSubmissionStatus(assign.id, userId, isBlind).then(function(response) {
-                console.log(response);
+            // Get submission status. Ignore cache to get the latest data.
+            return $mmaModAssign.getSubmissionStatus(assign.id, userId, isBlind, true).then(function(response) {
                 if (!response.lastattempt.canedit) {
                     // Can't edit. Reject.
                     return $q.reject($translate.instant('mm.core.nopermissions', {$a: editStr}));
@@ -68,32 +69,114 @@ angular.module('mm.addons.mod_assign')
         });
     }
 
-    // Convenience function to refresh all the data.
-    // function refreshAllData() {
-    //     var promises = [$mmaModAssign.invalidateAssignmentData(courseId)];
-    //     if ($scope.assign) {
-    //         promises.push($mmaModAssign.invalidateSubmissionStatusData($scope.assign.id, userId, isBlind));
-    //     }
+    // Get the input data.
+    function getInputData() {
+        return $mmaModAssignHelper.getAnswersFromForm(document.forms['mma-mod_assign-edit-form']);
+    }
 
-    //     return $q.all(promises).finally(function() {
-    //         return fetchAssignment();
-    //     });
-    // }
+    // Get submission data.
+    function getSubmissionData() {
+        return $mmaModAssignHelper.getSubmissionPluginData($scope.userSubmission.plugins, getInputData());
+    }
+
+    // Save the submission.
+    function saveSubmission() {
+        var modal = $mmUtil.showModalLoading('mm.core.sending', true);
+
+        return getSubmissionData().then(function(pluginData) {
+            if (Object.keys(pluginData).length) {
+                // There's something to save.
+                return $mmaModAssign.saveSubmission($scope.assign.id, pluginData).then(function() {
+                    // Submission saved, trigger event.
+                    $mmEvents.trigger(mmaModAssignSubmissionSavedEvent, {
+                        assignmentId: $scope.assign.id,
+                        submissionId: $scope.userSubmission.id,
+                        userId: $mmSite.getUserId(),
+                        siteId: $mmSite.getId()
+                    });
+                });
+            }
+        }).catch(function(message) {
+            if (message) {
+                $mmUtil.showErrorModal(message);
+            } else {
+                $mmUtil.showErrorModal('Error saving submission.');
+            }
+            return $q.reject();
+        }).finally(function() {
+            modal.dismiss();
+        });
+    }
+
+    // Function called when user wants to leave view without saving.
+    function leaveView() {
+        // Gather data to check if there's something to send.
+        // Wait a bit before showing the modal because usually the getSubmissionData call will be resolved inmediately.
+        var modal,
+            showModal = true;
+
+        $timeout(function() {
+            if (showModal) {
+                modal = $mmUtil.showModalLoading();
+            }
+        }, 100);
+
+        return getSubmissionData().then(function(pluginData) {
+           if (modal) {
+                modal.dismiss();
+            } else {
+                showModal = false;
+            }
+
+            if (Object.keys(pluginData).length) {
+                return $mmUtil.showConfirm($translate('mm.core.confirmcanceledit'));
+            }
+        }).then(function() {
+            // Nothing has changed or user confirmed to leave.
+            originalBackFunction();
+        }).catch(function(message) {
+            if (message) {
+                $mmUtil.showErrorModal(message);
+            }
+            return $q.reject();
+        }).finally(function() {
+           if (modal) {
+                modal.dismiss();
+            } else {
+                showModal = false;
+            }
+        });
+    }
 
     fetchAssignment().finally(function() {
         $scope.assignmentLoaded = true;
     });
+
+    // Override Ionic's back button behavior.
+    $rootScope.$ionicGoBack = leaveView;
+    // Override Android's back button. We set a priority of 101 to override the "Return to previous view" action.
+    unregisterHardwareBack = $ionicPlatform.registerBackButtonAction(leaveView, 101);
 
     // Context Menu Description action.
     $scope.expandDescription = function() {
         $mmText.expandText($translate.instant('mm.core.description'), $scope.description);
     };
 
-    // $scope.refreshAssignment = function() {
-    //     if ($scope.assignmentLoaded) {
-    //         refreshAllData().finally(function() {
-    //             $scope.$broadcast('scroll.refreshComplete');
-    //         });
-    //     }
-    // };
+    // Save the submission.
+    $scope.save = function() {
+        saveSubmission().then(function() {
+            originalBackFunction();
+        });
+    };
+
+    // Cancel.
+    $scope.cancel = function() {
+        leaveView();
+    };
+
+    $scope.$on('$destroy', function() {
+        // Restore original back functions.
+        unregisterHardwareBack();
+        $rootScope.$ionicGoBack = originalBackFunction;
+    });
 });
