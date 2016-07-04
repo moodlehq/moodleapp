@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_assign')
  * @name mmaModAssignIndexCtrl
  */
 .controller('mmaModAssignIndexCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $translate, mmaModAssignComponent, $q,
-        $state, $ionicPlatform, mmaModAssignSubmissionInvalidated, $mmText) {
+        $state, $ionicPlatform, mmaModAssignSubmissionInvalidated) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid;
 
@@ -145,7 +145,14 @@ angular.module('mm.addons.mod_assign')
 
     // Context Menu Description action.
     $scope.expandDescription = function() {
-        $mmText.expandText($translate.instant('mm.core.description'), $scope.description);
+        if ($scope.assign.id && ($scope.description || $scope.assign.introattachments)) {
+            // Open a new state with the interpolated contents.
+            $state.go('site.mod_assign-description', {
+                assignid: $scope.assign.id,
+                description: $scope.description,
+                files: $scope.assign.introattachments
+            });
+        }
     };
 
     $scope.refreshAssignment = function() {
