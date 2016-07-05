@@ -20,6 +20,9 @@ angular.module('mm.core.fileuploader', ['mm.core'])
 
     .state('site.fileuploader-picker', {
         url: '/fileuploader-picker',
+        params: {
+            maxsize: -1
+        },
         views: {
             'site': {
                 templateUrl: 'core/components/fileuploader/templates/picker.html',

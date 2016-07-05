@@ -14,7 +14,7 @@
 
 angular.module('mm.addons.files')
 
-.factory('$mmaFilesHelper', function($q, $mmUtil, $log, $mmaFiles, $mmFileUploaderHelper) {
+.factory('$mmaFilesHelper', function($q, $mmUtil, $log, $mmaFiles, $mmFileUploaderHelper, $mmSite) {
 
     $log = $log.getInstance('$mmaFilesHelper');
 
@@ -30,7 +30,13 @@ angular.module('mm.addons.files')
      */
     self.selectAndUploadFile = function() {
         // Open the file picker.
-        return $mmFileUploaderHelper.selectAndUploadFile().then(function(result) {
+        var maxSize = $mmSite.getInfo().usermaxuploadfilesize;
+        if (typeof maxSize == 'undefined') {
+            // In versions pre Moodle 2.9 this field is not present, so we force to ignore the file size.
+            maxSize = -1;
+        }
+
+        return $mmFileUploaderHelper.selectAndUploadFile(maxSize).then(function(result) {
             // File uploaded. Move it to private files if needed.
             if ($mmaFiles.canMoveFromDraftToPrivate()) {
                 if (!result) {

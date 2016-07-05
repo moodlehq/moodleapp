@@ -65,7 +65,9 @@ angular.module('mm.core.sharedfiles')
                 $scope.title = 'mm.sharedfiles.sharedfiles';
                 $scope.class = 'mm-sharedfiles-filepicker-handler';
 
-                $scope.action = function() {
+                $scope.action = function(maxSize) {
+                    // We don't use maxSize because we aren't uploading the file ourselves, we return
+                    // the file to upload to the fileuploader.
                     return $mmSharedFilesHelper.pickSharedFile();
                 };
             };

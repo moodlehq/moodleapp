@@ -22,9 +22,10 @@ angular.module('mm.core.fileuploader')
  * @name mmFileUploaderPickerCtrl
  */
 .controller('mmFileUploaderPickerCtrl', function($scope, $mmUtil, $mmFileUploaderHelper, $ionicHistory, $mmApp, $mmFS, $q,
-            $mmFileUploaderDelegate) {
+            $mmFileUploaderDelegate, $stateParams) {
 
-    var uploadMethods = {
+    var maxSize = $stateParams.maxsize,
+        uploadMethods = {
             album: $mmFileUploaderHelper.uploadImage,
             camera: $mmFileUploaderHelper.uploadImage,
             audio: $mmFileUploaderHelper.uploadAudioOrVideo,
@@ -65,6 +66,10 @@ angular.module('mm.core.fileuploader')
 
     // Upload a file given the file object.
     function uploadFileObject(file) {
+        if (maxSize != -1 && file.size > maxSize) {
+            return $mmFileUploaderHelper.errorMaxBytes(maxSize, file.name);
+        }
+
         return $mmFileUploaderHelper.confirmUploadFile(file.size).then(function() {
             // We have the data of the file to be uploaded, but not its URL (needed). Create a copy of the file to upload it.
             return $mmFileUploaderHelper.copyAndUploadFile(file).then(successUploading, errorUploading);
@@ -87,10 +92,14 @@ angular.module('mm.core.fileuploader')
         }).then(function(f) {
             file = f;
 
+            if (maxSize != -1 && file.size > maxSize) {
+                return $mmFileUploaderHelper.errorMaxBytes(maxSize, file.name);
+            }
+
             // Ask confirm if needed.
             return $mmFileUploaderHelper.confirmUploadFile(file.size);
         }).then(function() {
-            return $mmFileUploaderHelper.uploadGenericFile(fileEntry.toURL(), file.name, file.type, deleteAfterUpload);
+            return $mmFileUploaderHelper.uploadGenericFile(fileEntry.toURL(), file.name, file.type, deleteAfterUpload, false);
         }).then(successUploading)
         .catch(errorUploading);
     }
@@ -101,7 +110,7 @@ angular.module('mm.core.fileuploader')
             $mmUtil.showErrorModal('mm.fileuploader.errormustbeonlinetoupload', true);
         } else {
             if (typeof(uploadMethods[type]) !== 'undefined') {
-                uploadMethods[type](param).then(successUploading, errorUploading);
+                uploadMethods[type](param, maxSize).then(successUploading, errorUploading);
             }
         }
     };
@@ -120,7 +129,7 @@ angular.module('mm.core.fileuploader')
     $scope.handlerClicked = function(e, action) {
         e.preventDefault();
         e.stopPropagation();
-        action().then(function(data) {
+        action(maxSize).then(function(data) {
             if (data.uploaded) {
                 // The handler already uploaded the file. Return the result.
                 successUploading(data.result);
