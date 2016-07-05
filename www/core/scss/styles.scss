@@ -490,3 +490,8 @@ mm-timer {
     /* show the checkmark icon when its checked */
     visibility: visible;
   }
+
+/** Hide PTR when slowly released */
+.scroll-refresher .ionic-refresher-content.ionic-refresher-with-text {
+  bottom: 20px;
+}
