@@ -38,7 +38,7 @@ $mma-mod-wiki-subwiki-selected-background-color:   #eee !default;
 }
 
 /* Hide edit section links */
-a.wiki_edit_section {
+.mma-mod_wiki-noedit a.wiki_edit_section {
   display: none;
 }
 
@@ -52,4 +52,10 @@ a.wiki_edit_section {
 
 .mma-mod_wiki-subwiki-picker .item.item-selected .icon {
   font-size: 24px;
+}
+
+.mma-mod_wiki-textarea textarea {
+  width: 100%;
+  height: 300px;
+  resize: none;
 }

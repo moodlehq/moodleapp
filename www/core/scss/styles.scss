@@ -404,6 +404,7 @@ p.mm-warning {
   position: relative;
   top: initial;
   right: initial;
+  white-space: normal;
 }
 
 // Timer.
@@ -473,6 +474,23 @@ mm-timer {
   &:after {
     display: none;
   }
+}
+
+.item-title {
+  border: 0;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 10px;
+  padding: 5px;
+
+  input {
+    font-size: 20px;
+    line-height: 22px;
+  }
+}
+
+.item-noborder {
+  border: 0;
+  padding: 0;
 }
 
 /**

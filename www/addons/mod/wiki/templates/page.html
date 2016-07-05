@@ -2,8 +2,9 @@
     <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="wikiLoaded" on-refresh="refreshWiki()"></ion-refresher>
     <mm-loading hide-until="wikiLoaded">
         <mm-course-mod-description description="description" watch="true" ng-if="mainpage"></mm-course-mod-description>
-        <article>
-            <mm-format-text class="mm-content-with-float" watch="true" component="{{component}}" component-id="{{componentId}}">{{ pageContent }}</mm-format-text>
+        <article ng-class="{'mma-mod_wiki-noedit': !canEdit}">
+            <mm-format-text class="mm-content-with-float" watch="true" component="{{component}}" component-id="{{componentId}}" ng-if="pageContent">{{ pageContent }}</mm-format-text>
+            <mm-format-text class="mm-content-with-float" watch="true" ng-if="!pageContent">{{ 'mma.mod_wiki.nocontent' | translate }}</mm-format-text>
         </article>
     </mm-loading>
 </ion-content>
