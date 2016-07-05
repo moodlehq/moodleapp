@@ -49,13 +49,14 @@ angular.module('mm.core.fileuploader')
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.uploadFile(uri, ftOptions);
-        }).then(function() {
+        }).then(function(result) {
             if (deleteAfterUpload) {
                 $timeout(function() {
                     // Use set timeout, otherwise in Node-Webkit the upload threw an error sometimes.
                     $mmFS.removeExternalFile(uri);
                 }, 500);
             }
+            return result;
         });
     };
 
