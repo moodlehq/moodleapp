@@ -199,19 +199,21 @@ angular.module('mm.addons.mod_assign')
      * @module mm.addons.mod_assign
      * @ngdoc method
      * @name $mmaModAssign#getSubmissionText
-     * @param {Object} submissionPlugin Submission Plugin.
-     * @return {String}                 Submission text.
+     * @param  {Object} submissionPlugin Submission Plugin.
+     * @param  {Boolean} [keepUrls]      True if it should keep original URLs, false if they should be replaced.
+     * @return {String}                  Submission text.
      */
-    self.getSubmissionPluginText = function(submissionPlugin) {
+    self.getSubmissionPluginText = function(submissionPlugin, keepUrls) {
 
         // Helper data and fallback.
-        var text = "";
+        var text = '';
         if (submissionPlugin.editorfields) {
             angular.forEach(submissionPlugin.editorfields, function(field) {
                 text += field.text;
             });
 
-            if (submissionPlugin.fileareas && submissionPlugin.fileareas[0] && submissionPlugin.fileareas[0].files && submissionPlugin.fileareas[0].files[0]) {
+            if (!keepUrls && submissionPlugin.fileareas && submissionPlugin.fileareas[0] &&
+                        submissionPlugin.fileareas[0].files && submissionPlugin.fileareas[0].files[0]) {
                 var fileURL =  submissionPlugin.fileareas[0].files[0].fileurl;
                 fileURL = fileURL.substr(0, fileURL.lastIndexOf('/')).replace('pluginfile.php/', 'pluginfile.php?file=/');
                 text = text.replace(/@@PLUGINFILE@@/g, fileURL);

@@ -53,7 +53,7 @@ angular.module('mm.addons.mod_assign')
 
             // Get the text.
             scope.model = {
-                text: $mmaModAssign.getSubmissionPluginText(scope.plugin)
+                text: $mmaModAssign.getSubmissionPluginText(scope.plugin, scope.edit)
             };
 
             if (!scope.edit) {
