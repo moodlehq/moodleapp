@@ -1,4 +1,4 @@
-<div ng-class='{"mm-rich-text-editor-container": richTextEditor}'>
-	<textarea ng-if="richTextEditor" ckeditor="editorOptions" ng-model="model.text"></textarea>
+<div ng-class="{'mm-rich-text-editor-container': richTextEditor}" data-tap-disabled="true">
+    <textarea ng-if="richTextEditor" ckeditor="editorOptions" ng-model="model.text" ready="editorReady()" placeholder="{{ placeholder }}"></textarea>
 	<textarea ng-if="!richTextEditor" class="mm-textarea" placeholder="{{ placeholder }}" ng-model="model.text" aria-multiline="true"></textarea>
 </div>

@@ -40,7 +40,7 @@ angular.module('mm.core')
  * @param {Object} [tabletOptions] Options to pass to the editor when run in a tablet. Has priority over "options" param.
  * @param {Object} [phoneOptions]  Options to pass to the editor when run in a phone. Has priority over "options" param.
  */
-.directive('mmRichTextEditor', function($mmConfig, $ionicPlatform, $mmLang, mmCoreSettingsRichTextEditor) {
+.directive('mmRichTextEditor', function($mmConfig, $ionicPlatform, $mmLang, mmCoreSettingsRichTextEditor, $ionicModal, $mmApp, $timeout) {
 
     /**
      * Converts language code from "aa-bb" to "aa_BB".
@@ -59,6 +59,25 @@ angular.module('mm.core')
         }
     }
 
+    function isRichTextEditorEnabled() {
+        // Enabled for all platforms different from iOS and Android.
+        if (!ionic.Platform.isIOS() && !ionic.Platform.isAndroid()) {
+            return $mmConfig.get(mmCoreSettingsRichTextEditor, true);
+        }
+
+        // Check Android version >= 4.4
+        if (ionic.Platform.isAndroid() && ionic.Platform.version() >= 4.4) {
+            return $mmConfig.get(mmCoreSettingsRichTextEditor, true);
+        }
+
+        // Check iOS version > 6
+        if (ionic.Platform.isIOS() && ionic.Platform.version() > 6) {
+            return $mmConfig.get(mmCoreSettingsRichTextEditor, true);
+        }
+
+        return $q.when(false);
+    }
+
     return {
         restrict: 'E',
         templateUrl: 'core/templates/richtexteditor.html',
@@ -69,33 +88,46 @@ angular.module('mm.core')
             tabletOptions: '=?',
             phoneOptions: '=?'
         },
-        link: function(scope, element, attrs) {
+        link: function(scope, element) {
+
+            scope.editorReady = function() {
+                var collapser = document.querySelector('.cke_toolbox_collapser');
+                angular.element(collapser).on('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var toolbox = document.querySelector('.cke_bottom');
+                    angular.element(toolbox).toggleClass('cke_expanded');
+                    $timeout(function() {
+                        if (angular.element(toolbox).hasClass('cke_expanded')) {
+                            $mmApp.openKeyboard();
+                        }
+                    });
+                });
+            };
+
+            // More customization in http://docs.ckeditor.com/#!/api/CKEDITOR.config-cfg-customConfig
             var defaultOptions = {
                 allowedContent: true,
                 defaultLanguage: 'en',
-                height: 200,
+                height: 300,
                 toolbarCanCollapse: true,
+                toolbarStartupExpanded: false,
                 toolbar: [
+                    {name: 'basicstyles', items: ['Bold', 'Italic']},
                     {name: 'styles', items: ['Format']},
-                    {name: 'basicstyles', items: ['Bold', 'Italic', 'Strike', 'Underline', 'Superscript', 'Subscript']},
                     {name: 'links', items: ['Link', 'Unlink']},
-                    {name: 'document', items: ['Source']},
+                    {name: 'lists', items: ['NumberedList', 'BulletedList']},
                     '/',
-                    {name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'JustifyLeft', 'JustifyCenter',
-                                                'JustifyRight', 'JustifyBlock', '-', 'Outdent', 'Indent']},
-                    {name: 'insert', items: ['Table', 'SpecialChar', '-', 'RemoveFormat']},
-                    {name: 'clipboard', items: ['Undo', 'Redo']}
+                    {name: 'document', items: ['Source', 'RemoveFormat']},
+                    {name: 'tools', items: [ 'Maximize' ]}
                 ],
+                toolbarLocation: 'bottom',
+                removePlugins: 'elementspath,resize,pastetext,pastefromword,clipboard',
                 removeButtons: ''
             };
-            // var defaultOptions = {
-            //     trusted: true,
-            //     height: 200,
-            //     plugins: 'link code charmap',
-            // };
 
             // Check if we should use rich text editor.
-            $mmConfig.get(mmCoreSettingsRichTextEditor, true).then(function(enabled) {
+            isRichTextEditorEnabled().then(function(enabled) {
                 scope.richTextEditor = enabled;
 
                 if (enabled) {
@@ -104,26 +136,9 @@ angular.module('mm.core')
                         defaultOptions.language = changeLanguageCode(lang);
 
                         if ($ionicPlatform.isTablet()) {
-                            // In tablet we use 2 toolbars.
-                            // defaultOptions.menu = {};
-                            // defaultOptions.toolbar = [
-                            //     'formatselect bold italic | bullist numlist | link unlink | code',
-                            //     'underline strikethrough superscript subscript | alignleft aligncenter alignright alignjustify' +
-                            //         ' | indent outdent | charmap removeformat | undo redo'
-                            // ];
                             scope.editorOptions = angular.extend(defaultOptions, scope.options, scope.tabletOptions);
                         } else {
-                            // In phone we use menu dropdowns and only 1 toolbar.
-                            // defaultOptions.menu = {
-                            //     edit: {title: 'Edit', items: 'undo redo'},
-                            //     insert: {title: 'Insert', items: 'link | charmap'},
-                            //     format: {title: 'Format', items: 'bold italic underline strikethrough superscript subscript' +
-                            //         ' | formats | removeformat'},
-                            //     tools: {title: 'Tools', items: 'code'}
-                            // };
-                            // defaultOptions.toolbar = [
-                            //     'bullist numlist | alignleft aligncenter alignright alignjustify | indent outdent'
-                            // ];
+                            //defaultOptions.height = '100%';
                             scope.editorOptions = angular.extend(defaultOptions, scope.options, scope.phoneOptions);
                         }
                     });
