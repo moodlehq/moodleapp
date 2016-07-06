@@ -54,6 +54,25 @@ angular.module('mm.addons.mod_assign')
         lastUpdateHandlersStart;
 
     /**
+     * Clear some temporary data because a submission was cancelled.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionDelegate#clearTmpData
+     * @param  {Object} assign     Assignment.
+     * @param  {Object} submission Submission to clear the data for.
+     * @param  {Object} plugin     Plugin to clear the data for.
+     * @param  {Object} inputData  Data entered in the submission form.
+     * @return {Void}
+     */
+    self.clearTmpData = function(assign, submission, plugin, inputData) {
+        var handler = self.getPluginHandler(plugin.type);
+        if (handler && handler.clearTmpData) {
+            handler.clearTmpData(assign, submission, plugin, inputData);
+        }
+    };
+
+    /**
      * Get the directive to use for a certain submission plugin.
      *
      * @module mm.addons.mod_assign
@@ -86,7 +105,7 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
-     * Get the handler for a certain submission plugin.
+     * Get the data to submit for a certain submission plugin.
      *
      * @module mm.addons.mod_assign
      * @ngdoc method
@@ -151,6 +170,8 @@ angular.module('mm.addons.mod_assign')
      *                             - getSubmissionData(plugin, inputData, pluginData). Should add to pluginData the data to send to
      *                                                           server based in the input data. Return promise if async.
      *                                                           If data hasn't changed it shouldn't add anything.
+     *                             - clearTmpData(assign, submission, plugin, inputData). Optional. Should clear temporary data
+     *                                                           for a cancelled submission.
      */
     self.registerHandler = function(addon, pluginType, handler) {
         if (typeof handlers[pluginType] !== 'undefined') {

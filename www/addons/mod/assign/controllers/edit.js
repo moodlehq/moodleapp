@@ -133,6 +133,9 @@ angular.module('mm.addons.mod_assign')
             }
         }).then(function() {
             // Nothing has changed or user confirmed to leave.
+            // Clear temporary data from plugins.
+            $mmaModAssignHelper.clearSubmissionPluginTmpData($scope.assign, $scope.userSubmission, getInputData());
+            // Leave the view.
             originalBackFunction();
         }).catch(function(message) {
             if (message) {

@@ -988,6 +988,23 @@ angular.module('mm.core')
     };
 
     /**
+     * Remove the base path from a path. If basePath isn't found, return false.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#removeBasePath
+     * @param {String} path Path to treat.
+     * @return {Mixed}     Path without basePath if basePath was found, false otherwise.
+     */
+    self.removeBasePath = function(path) {
+        if (path.indexOf(basePath) > -1) {
+            return path.replace(basePath, '');
+        } else {
+            return false;
+        }
+    };
+
+    /**
      * Unzips a file.
      *
      * @module mm.core
@@ -1189,6 +1206,9 @@ angular.module('mm.core')
                 // Ask the user what he wants to do.
                 return newName;
             }
+        }).catch(function() {
+            // Folder doesn't exist, name is unique.
+            return fileName;
         });
     };
 

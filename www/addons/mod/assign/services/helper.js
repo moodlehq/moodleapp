@@ -26,6 +26,23 @@ angular.module('mm.addons.mod_assign')
     var self = {};
 
     /**
+     * Clear plugins temporary data because a submission was cancelled.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignHelper#clearSubmissionPluginTmpData
+     * @param  {Object} assign     Assignment.
+     * @param  {Object} submission Submission to clear the data for.
+     * @param  {Object} inputData  Data entered in the submission form.
+     * @return {Void}
+     */
+    self.clearSubmissionPluginTmpData = function(assign, submission, inputData) {
+        angular.forEach(submission.plugins, function(plugin) {
+            $mmaModAssignSubmissionDelegate.clearTmpData(assign, submission, plugin, inputData);
+        });
+    };
+
+    /**
      * Retrieve the answers entered in a form.
      * We don't use ng-model because it doesn't detect changes done by JavaScript.
      *

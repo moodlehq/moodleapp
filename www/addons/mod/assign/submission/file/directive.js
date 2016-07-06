@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc directive
  * @name mmaModAssignSubmissionFile
  */
-.directive('mmaModAssignSubmissionFile', function($mmaModAssign) {
+.directive('mmaModAssignSubmissionFile', function($mmaModAssign, $mmaModAssignSubmissionFileSession) {
     return {
         restrict: 'A',
         priority: 100,
@@ -30,7 +30,9 @@ angular.module('mm.addons.mod_assign')
             if (!scope.plugin) {
                 return;
             }
+
             scope.files = $mmaModAssign.getSubmissionPluginAttachments(scope.plugin);
+            $mmaModAssignSubmissionFileSession.setFiles(scope.assign.id, scope.files);
         }
     };
 });

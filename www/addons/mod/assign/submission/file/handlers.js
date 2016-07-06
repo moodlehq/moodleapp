@@ -21,9 +21,32 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc service
  * @name $mmaModAssignSubmissionFileHandler
  */
-.factory('$mmaModAssignSubmissionFileHandler', function() {
+.factory('$mmaModAssignSubmissionFileHandler', function($mmaModAssignSubmissionFileSession) {
 
     var self = {};
+
+    /**
+     * Clear some temporary data because a submission was cancelled.
+     *
+     * @param  {Object} assign     Assignment.
+     * @param  {Object} submission Submission to clear the data for.
+     * @param  {Object} plugin     Plugin to clear the data for.
+     * @param  {Object} inputData  Data entered in the submission form.
+     * @return {Void}
+     */
+    self.clearTmpData = function(assign, submission, plugin, inputData) {
+        var files = $mmaModAssignSubmissionFileSession.getFiles(assign.id);
+
+        // Clear the files in session for this assign.
+        $mmaModAssignSubmissionFileSession.clearFiles(assign.id);
+
+        // Now delete the local files from the tmp folder.
+        files.forEach(function(file) {
+            if (file.remove) {
+                file.remove();
+            }
+        });
+    };
 
     /**
      * Whether or not the rule is enabled for the site.

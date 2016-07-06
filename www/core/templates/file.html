@@ -1,8 +1,13 @@
-<a class="item item-text-wrap item-button-right item-media" ng-click="download($event, true)">
+<a class="item item-text-wrap item-button-right item-media" ng-click="download($event, true)" ng-class="{'item-2-button-right': canDelete}">
     <img ng-src="{{fileicon}}" alt="" role="presentation" />
     <p>{{filename}}</p>
-    <button class="button button-icon" ng-click="download($event)" ng-if="!isDownloading && showDownload" aria-label="{{ 'mm.core.download' | translate }}">
-        <i class="icon" ng-class="isDownloaded ? 'ion-android-refresh' : 'ion-ios-cloud-download-outline'"></i>
-    </button>
+    <div class="buttons">
+	    <button class="button button-icon" ng-click="download($event)" ng-if="!isDownloading && showDownload" aria-label="{{ 'mm.core.download' | translate }}">
+	        <i class="icon" ng-class="isDownloaded ? 'ion-android-refresh' : 'ion-ios-cloud-download-outline'"></i>
+	    </button>
+	    <button class="button button-icon" ng-click="delete($event)" ng-if="!isDownloading && canDelete" aria-label="{{ 'mm.core.delete' | translate }}">
+	        <i class="icon ion-trash-a"></i>
+	    </button>
+    </div>
     <ion-spinner class="spinner-right" ng-if="isDownloading"></ion-spinner>
 </a>
