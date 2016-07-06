@@ -12,7 +12,9 @@
     "angular-aria": "1.4.3",
     "moment": "~2.10.6",
     "jszip": "~2.5.0",
-    "oclazyload": "~1.0.9"
+    "oclazyload": "~1.0.9",
+    "ckeditor": "=4.5.9",
+    "angular-ckeditor": "=1.0.3"
   },
   "resolutions": {
     "angular": "1.4.3",
