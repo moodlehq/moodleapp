@@ -105,22 +105,23 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
-     * Get the data to submit for a certain submission plugin.
+     * Check if the submission data has changed for a certain plugin.
      *
      * @module mm.addons.mod_assign
      * @ngdoc method
-     * @name $mmaModAssignSubmissionDelegate#getPluginHandler
-     * @param  {Object} plugin     Plugin to get the data for.
+     * @name $mmaModAssignSubmissionDelegate#hasPluginDataChanged
+     * @param  {Object} assign     Assignment.
+     * @param  {Object} submission Submission to check data.
+     * @param  {Object} plugin     Plugin.
      * @param  {Object} inputData  Data entered in the submission form.
-     * @param  {Object} pluginData Object where to add the plugin data.
-     * @return {Promise}           Promise resolved when data has been gathered.
+     * @return {Promise}           Promise resolved with true if data has changed, resolved with false otherwise.
      */
-    self.getPluginSubmissionData = function(plugin, inputData, pluginData) {
+    self.hasPluginDataChanged = function(assign, submission, plugin, inputData) {
         var handler = self.getPluginHandler(plugin.type);
-        if (handler && handler.getSubmissionData) {
-            return $q.when(handler.getSubmissionData(plugin, inputData, pluginData));
+        if (handler && handler.hasDataChanged) {
+            return $q.when(handler.hasDataChanged(assign, submission, plugin, inputData));
         }
-        return $q.when();
+        return $q.when(false);
     };
 
     /**
@@ -154,6 +155,27 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Prepare and return the data to submit for a certain submission plugin.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionDelegate#preparePluginSubmissionData
+     * @param  {Object} assign     Assignment.
+     * @param  {Object} submission Submission to check data.
+     * @param  {Object} plugin     Plugin to get the data for.
+     * @param  {Object} inputData  Data entered in the submission form.
+     * @param  {Object} pluginData Object where to add the plugin data.
+     * @return {Promise}           Promise resolved when data has been gathered.
+     */
+    self.preparePluginSubmissionData = function(assign, submission, plugin, inputData, pluginData) {
+        var handler = self.getPluginHandler(plugin.type);
+        if (handler && handler.prepareSubmissionData) {
+            return $q.when(handler.prepareSubmissionData(assign, submission, plugin, inputData, pluginData));
+        }
+        return $q.when();
+    };
+
+    /**
      * Register a submission plugin handler. The handler will be used when submitting an assign.
      *
      * @module mm.addons.mod_assign
@@ -167,9 +189,11 @@ angular.module('mm.addons.mod_assign')
      *                                                           When using a promise, it should return a boolean.
      *                             - getDirectiveName(plugin, edit) (String) Optional. Returns the name of the directive to render
      *                                                           the plugin.
-     *                             - getSubmissionData(plugin, inputData, pluginData). Should add to pluginData the data to send to
-     *                                                           server based in the input data. Return promise if async.
-     *                                                           If data hasn't changed it shouldn't add anything.
+     *                             - prepareSubmissionData(assign, submission, plugin, inputData, pluginData). Should prepare and
+     *                                                           add to pluginData the data to send to server based in the input.
+     *                                                           Return promise if async.
+     *                             - hasDataChanged(assign, submission, plugin, inputData) (Promise|Boolean) Check if the
+     *                                                           submission data has changed for this plugin.
      *                             - clearTmpData(assign, submission, plugin, inputData). Optional. Should clear temporary data
      *                                                           for a cancelled submission.
      */

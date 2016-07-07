@@ -21,7 +21,8 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc service
  * @name $mmaModAssignSubmissionFileHandler
  */
-.factory('$mmaModAssignSubmissionFileHandler', function($mmaModAssignSubmissionFileSession) {
+.factory('$mmaModAssignSubmissionFileHandler', function($mmaModAssignSubmissionFileSession, $mmaModAssign, $mmFileUploader,
+            $mmFilepool, $mmFS, $mmSite, $q, mmaModAssignComponent) {
 
     var self = {};
 
@@ -67,6 +68,116 @@ angular.module('mm.addons.mod_assign')
     self.getDirectiveName = function(plugin, edit) {
         return 'mma-mod-assign-submission-file';
     };
+
+    /**
+     * Check if the submission data has changed for this plugin.
+     *
+     * @param  {Object} assign     Assignment.
+     * @param  {Object} submission Submission to check data.
+     * @param  {Object} plugin     Plugin.
+     * @param  {Object} inputData  Data entered in the submission form.
+     * @return {Promise}           Promise resolved with true if data has changed, resolved with false otherwise.
+     */
+    self.hasDataChanged = function(assign, submission, plugin, inputData) {
+        var currentFiles = $mmaModAssignSubmissionFileSession.getFiles(assign.id),
+            initialFiles = $mmaModAssign.getSubmissionPluginAttachments(plugin);
+
+        if (currentFiles.length != initialFiles.length) {
+            return true;
+        }
+
+        // Search if there is any local file added.
+        for (var i = 0; i < currentFiles.length; i++) {
+            var file = currentFiles[i];
+            if (!file.filename && typeof file.name != 'undefined') {
+                // There's a local file added, list has changed.
+                return true;
+            }
+        }
+
+        // No local files and list length is the same, this means the list hasn't changed.
+        return false;
+    };
+
+    /**
+     * Should prepare and add to pluginData the data to send to server based in the input data.
+     *
+     * @param  {Object} assign     Assignment.
+     * @param  {Object} submission Submission to check data.
+     * @param  {Object} plugin     Plugin to get the data for.
+     * @param  {Object} inputData  Data entered in the submission form.
+     * @param  {Object} pluginData Object where to add the plugin data.
+     * @return {Void}
+     */
+    self.prepareSubmissionData = function(assign, submission, plugin, inputData, pluginData) {
+        var siteId = $mmSite.getId();
+
+        if (self.hasDataChanged(assign, submission, plugin, inputData)) {
+            // Data has changed, we need to upload new files and re-upload all the existing files.
+            var currentFiles = $mmaModAssignSubmissionFileSession.getFiles(assign.id);
+
+            if (!currentFiles.length) {
+                // There are no attached files. Use a fake draft id and stop.
+                pluginData.files_filemanager = 1;
+                return;
+            }
+
+            // Upload only the first file first to get a draft id.
+            return uploadFile(assign.id, currentFiles[0]).then(function(itemId) {
+                var promises = [];
+
+                angular.forEach(currentFiles, function(file, index) {
+                    if (index === 0) {
+                        // First file has already been uploaded.
+                        return;
+                    }
+
+                    promises.push(uploadFile(assign.id, file, itemId, siteId));
+                });
+
+                return $q.all(promises).then(function() {
+                    pluginData.files_filemanager = itemId;
+                });
+            });
+
+        }
+    };
+
+    /**
+     * Upload a file to a draft area. If the file is an online file it will be downloaded and then re-uploaded.
+     *
+     * @param  {Number} assignId Assignment ID.
+     * @param  {Object} file     Online file or local FileEntry.
+     * @param  {Number} [itemId] Draft ID to use. Undefined or 0 to create a new draft ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with the itemId.
+     */
+    function uploadFile(assignId, file, itemId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        var promise,
+            fileName;
+
+        if (file.filename) {
+            // It's an online file. We need to download it and re-upload it.
+            fileName = file.filename;
+            promise = $mmFilepool.downloadUrl(siteId, file.fileurl, false, mmaModAssignComponent, assignId).then(function(path) {
+                return $mmFS.getExternalFile(path);
+            });
+        } else {
+            // Local file, we already have the file entry.
+            fileName = file.name;
+            promise = $q.when(file);
+        }
+
+        return promise.then(function(fileEntry) {
+            // Now upload the file.
+            return $mmFileUploader.uploadGenericFile(fileEntry.toURL(), fileName, fileEntry.type, true, itemId, siteId)
+                    .then(function(result) {
+                return result.itemid;
+            });
+        });
+    }
 
     return self;
 })

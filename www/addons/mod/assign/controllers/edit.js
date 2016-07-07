@@ -22,14 +22,16 @@ angular.module('mm.addons.mod_assign')
  * @name mmaModAssignEditCtrl
  */
 .controller('mmaModAssignEditCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $translate, mmaModAssignComponent, $q,
-        $mmText, $mmSite, $mmaModAssignHelper, $rootScope, $ionicPlatform, $timeout, $mmEvents, mmaModAssignSubmissionSavedEvent) {
+        $mmText, $mmSite, $mmaModAssignHelper, $rootScope, $ionicPlatform, $timeout, $mmEvents, $ionicHistory,
+        mmaModAssignSubmissionSavedEvent) {
 
     var courseId = $stateParams.courseid,
         userId = $mmSite.getUserId(), // Right now we can only edit current user's submissions.
         isBlind = !!$stateParams.blindid,
         editStr = $translate.instant('mma.mod_assign.editsubmission'),
         originalBackFunction = $rootScope.$ionicGoBack,
-        unregisterHardwareBack;
+        unregisterHardwareBack,
+        currentView = $ionicHistory.currentView();
 
     $scope.title = editStr; // Temporary title.
     $scope.assignComponent = mmaModAssignComponent;
@@ -75,15 +77,20 @@ angular.module('mm.addons.mod_assign')
     }
 
     // Get submission data.
-    function getSubmissionData() {
-        return $mmaModAssignHelper.getSubmissionPluginData($scope.userSubmission.plugins, getInputData());
+    function prepareSubmissionData() {
+        return $mmaModAssignHelper.prepareSubmissionPluginData($scope.assign, $scope.userSubmission, getInputData());
+    }
+
+    // Check if data has changed.
+    function hasDataChanged() {
+        return $mmaModAssignHelper.hasSubmissionDataChanged($scope.assign, $scope.userSubmission, getInputData());
     }
 
     // Save the submission.
     function saveSubmission() {
         var modal = $mmUtil.showModalLoading('mm.core.sending', true);
 
-        return getSubmissionData().then(function(pluginData) {
+        return prepareSubmissionData().then(function(pluginData) {
             if (Object.keys(pluginData).length) {
                 // There's something to save.
                 return $mmaModAssign.saveSubmission($scope.assign.id, pluginData).then(function() {
@@ -110,8 +117,15 @@ angular.module('mm.addons.mod_assign')
 
     // Function called when user wants to leave view without saving.
     function leaveView() {
+        // Check that we're leaving the current view, since the user can navigate to other views from here.
+        if ($ionicHistory.currentView() !== currentView) {
+            // It's another view.
+            originalBackFunction();
+            return;
+        }
+
         // Gather data to check if there's something to send.
-        // Wait a bit before showing the modal because usually the getSubmissionData call will be resolved inmediately.
+        // Wait a bit before showing the modal because usually the hasDataChanged call will be resolved inmediately.
         var modal,
             showModal = true;
 
@@ -121,14 +135,14 @@ angular.module('mm.addons.mod_assign')
             }
         }, 100);
 
-        return getSubmissionData().then(function(pluginData) {
+        return hasDataChanged().then(function(changed) {
            if (modal) {
                 modal.dismiss();
             } else {
                 showModal = false;
             }
 
-            if (Object.keys(pluginData).length) {
+            if (changed) {
                 return $mmUtil.showConfirm($translate('mm.core.confirmcanceledit'));
             }
         }).then(function() {

@@ -4,6 +4,7 @@ information provided here is intended especially for developers.
 === 3.1.2 ===
 
  * Most of the upload file logic has been moved from the addon "files" to the component "fileuploader". This includes controllers, templates, service functions and language strings.
+ * The function uploadGenericFile inside "fileuploader" component now accepts a new parameter "itemId".
 
 === 3.1.1 ===
 

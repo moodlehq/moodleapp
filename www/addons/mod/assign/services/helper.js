@@ -82,21 +82,54 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
-     * Given a list of plugins and the data entered in the submission form, return the plugin data to send.
+     * Check if the submission data has changed for a certain submission and assign.
      *
      * @module mm.addons.mod_assign
      * @ngdoc method
-     * @name $mmaModAssignHelper#getSubmissionPluginData
-     * @param  {Object[]} plugins List of plugins.
-     * @param  {Object} inputData Data entered in the submission form.
-     * @return {Object}           Plugin data to send to server.
+     * @name $mmaModAssignHelper#hasSubmissionDataChanged
+     * @param  {Object} assign     Assignment.
+     * @param  {Object} submission Submission to check data.
+     * @param  {Object} inputData  Data entered in the submission form.
+     * @return {Promise}           Promise resolved with true if data has changed, resolved with false otherwise.
      */
-    self.getSubmissionPluginData = function(plugins, inputData) {
+    self.hasSubmissionDataChanged = function(assign, submission, inputData) {
+        var hasChanged = false,
+            promises = [];
+
+        angular.forEach(submission.plugins, function(plugin) {
+            promises.push($mmaModAssignSubmissionDelegate.hasPluginDataChanged(assign, submission, plugin, inputData)
+                    .then(function(changed) {
+                if (changed) {
+                    hasChanged = true;
+                }
+            }).catch(function() {
+                // Ignore errors.
+            }));
+        });
+
+        return $mmUtil.allPromises(promises).then(function() {
+            return hasChanged;
+        });
+    };
+
+    /**
+     * Prepare and return the plugin data to send for a certain submission and assign.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignHelper#prepareSubmissionPluginData
+     * @param  {Object} assign     Assignment.
+     * @param  {Object} submission Submission to check data.
+     * @param  {Object} inputData  Data entered in the submission form.
+     * @return {Promise}           Promise resolved with plugin data to send to server.
+     */
+    self.prepareSubmissionPluginData = function(assign, submission, inputData) {
         var pluginData = {},
             promises = [];
 
-        angular.forEach(plugins, function(plugin) {
-            promises.push($mmaModAssignSubmissionDelegate.getPluginSubmissionData(plugin, inputData, pluginData));
+        angular.forEach(submission.plugins, function(plugin) {
+            promises.push($mmaModAssignSubmissionDelegate.preparePluginSubmissionData(
+                    assign, submission, plugin, inputData, pluginData));
         });
 
         return $mmUtil.allPromises(promises).then(function() {

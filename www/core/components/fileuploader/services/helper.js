@@ -245,7 +245,7 @@ angular.module('mm.core.fileuploader')
         // We won't check size so there's no need to pass maxSize. Functions calling
         // uploadGenericFile should check the size before calling this function.
         return uploadFiles(deleteAfterUpload, [uri], -1, false,
-                $mmFileUploader.uploadGenericFile, uri, name, type, deleteAfterUpload, siteId);
+                $mmFileUploader.uploadGenericFile, uri, name, type, deleteAfterUpload, undefined, siteId);
     };
 
     /**
