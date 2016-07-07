@@ -40,7 +40,9 @@ angular.module('mm.addons.mod_assign')
             }
 
             return $mmaModAssign.getAssignment(courseId, moduleId).then(function(assign) {
-                var time = parseInt(Date.now() / 1000);
+                var time = parseInt(Date.now() / 1000),
+                    submissionStatementMissing = assign.requiresubmissionstatement &&
+                        typeof assign.submissionstatement == 'undefined';
 
                 scope.assign = assign;
 
@@ -61,8 +63,23 @@ angular.module('mm.addons.mod_assign')
                     if (response.lastattempt) {
                         var blindMarking = scope.isGrading && response.lastattempt.blindmarking && !assign.revealidentities;
 
-                        scope.cansubmit = !scope.isGrading && response.lastattempt.cansubmit;
+                        scope.canSubmit = !scope.isGrading && response.lastattempt.cansubmit;
                         scope.canEdit = !scope.isGrading && response.lastattempt.canedit;
+
+                        // Get submission statement if needed.
+                        if (assign.requiresubmissionstatement && assign.submissiondrafts && submitId == $mmSite.getUserId()) {
+                            scope.submissionStatement = assign.submissionstatement;
+                            scope.submitModel.submissionStatement = false;
+                        } else {
+                            scope.submissionStatement = false;
+                            scope.submitModel.submissionStatement = true; // No submission statement, so it's accepted.
+                        }
+
+                        // Show error instead of edit/submit button if submission statement should be shown
+                        // but we couldn't retrieve it from server (Moodle 3.1 or previous).
+                        scope.showErrorStatementEdit = submissionStatementMissing && !assign.submissiondrafts &&
+                                submitId == $mmSite.getUserId();
+                        scope.showErrorStatementSubmit = submissionStatementMissing && assign.submissiondrafts;
 
                         scope.userSubmission = assign.teamsubmission ?
                             response.lastattempt.teamsubmission : response.lastattempt.submission;
@@ -243,7 +260,7 @@ angular.module('mm.addons.mod_assign')
                     }
 
                     return $mmaModAssign.getSubmissions(assign.id).then(function(data) {
-                        scope.cansubmit = !data.canviewsubmissions;
+                        scope.canSubmit = !data.canviewsubmissions;
 
                         if (data.submissions) {
                             scope.userSubmission = false;
@@ -288,9 +305,10 @@ angular.module('mm.addons.mod_assign')
             scope.statusNew = mmaModAssignSubmissionStatusNew;
             scope.statusReopened = mmaModAssignSubmissionStatusReopened;
             scope.loaded = false;
+            scope.submitModel = {};
 
             var obsLoaded = scope.$on(mmaModAssignSubmissionInvalidatedEvent, function() {
-                controller.load(scope, attributes.moduleid, attributes.courseid, attributes.submitid, attributes.blindid, true);
+                controller.load(scope, attributes.moduleid, attributes.courseid, attributes.submitid, attributes.blindid);
             });
 
             // Check if submit through app is supported.
@@ -300,14 +318,41 @@ angular.module('mm.addons.mod_assign')
 
             scope.$on('$destroy', obsLoaded);
 
-            controller.load(scope, attributes.moduleid, attributes.courseid, attributes.submitid, attributes.blindid, false);
+            controller.load(scope, attributes.moduleid, attributes.courseid, attributes.submitid, attributes.blindid);
 
+            // Add or edit submission.
             scope.goToEdit = function() {
                 $state.go('site.mod_assign-submission-edit', {
                     moduleid: attributes.moduleid,
                     courseid: attributes.courseid,
                     userid: attributes.submitid,
                     blindid: attributes.blindid
+                });
+            };
+
+            // Submit for grading.
+            scope.submit = function(acceptStatement) {
+                // Ask for confirmation. @todo plugin precheck_submission
+                $mmUtil.showConfirm($translate('mma.mod_assign.confirmsubmission')).then(function() {
+                    var modal = $mmUtil.showModalLoading('mm.core.sending', true);
+                    $mmaModAssign.submitForGrading(scope.assign.id, acceptStatement).then(function() {
+                        // Invalidate and refresh data.
+                        scope.loaded = false;
+
+                        var promises = [$mmaModAssign.invalidateAssignmentData(attributes.courseid)];
+                        if (scope.assign) {
+                            promises.push($mmaModAssign.invalidateAllSubmissionData(scope.assign.id));
+                            promises.push($mmaModAssign.invalidateAssignmentUserMappingsData(scope.assign.id));
+                        }
+
+                        $q.all(promises).finally(function() {
+                            controller.load(scope, attributes.moduleid, attributes.courseid, attributes.submitid, attributes.blindid);
+                        });
+                    }).catch(function(error) {
+                        $mmUtil.showErrorModal(error);
+                    }).finally(function() {
+                        modal.dismiss();
+                    });
                 });
             };
         }

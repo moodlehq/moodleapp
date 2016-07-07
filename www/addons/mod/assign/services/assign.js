@@ -709,7 +709,30 @@ angular.module('mm.addons.mod_assign')
         return $mmSite.write('mod_assign_save_submission', params).then(function(warnings) {
             if (warnings && warnings.length) {
                 // The WebService returned warnings, reject.
-                return $q.reject(warnings);
+                return $q.reject(warnings[0].message);
+            }
+        });
+    };
+
+    /**
+     * Submit the current user assignment for grading.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssign#submitForGrading
+     * @param  {Number} assignmentId     Assign ID.
+     * @param  {Boolean} acceptStatement True if submission statement is accepted, false otherwise.
+     * @return {Promise}                 Promise resolved when submitted, rejected otherwise.
+     */
+    self.submitForGrading = function(assignmentId, acceptStatement) {
+        var params = {
+            assignmentid: assignmentId,
+            acceptsubmissionstatement: acceptStatement ? 1 : 0
+        };
+        return $mmSite.write('mod_assign_submit_for_grading', params).then(function(warnings) {
+            if (warnings && warnings.length) {
+                // The WebService returned warnings, reject.
+                return $q.reject(warnings[0].message);
             }
         });
     };

@@ -88,30 +88,33 @@ angular.module('mm.addons.mod_assign')
 
     // Save the submission.
     function saveSubmission() {
-        var modal = $mmUtil.showModalLoading('mm.core.sending', true);
+        // Ask confirmation.
+        return $mmUtil.showConfirm($translate('mm.core.areyousure')).then(function() {
+            var modal = $mmUtil.showModalLoading('mm.core.sending', true);
 
-        return prepareSubmissionData().then(function(pluginData) {
-            if (Object.keys(pluginData).length) {
-                // There's something to save.
-                return $mmaModAssign.saveSubmission($scope.assign.id, pluginData).then(function() {
-                    // Submission saved, trigger event.
-                    $mmEvents.trigger(mmaModAssignSubmissionSavedEvent, {
-                        assignmentId: $scope.assign.id,
-                        submissionId: $scope.userSubmission.id,
-                        userId: $mmSite.getUserId(),
-                        siteId: $mmSite.getId()
+            return prepareSubmissionData().then(function(pluginData) {
+                if (Object.keys(pluginData).length) {
+                    // There's something to save.
+                    return $mmaModAssign.saveSubmission($scope.assign.id, pluginData).then(function() {
+                        // Submission saved, trigger event.
+                        $mmEvents.trigger(mmaModAssignSubmissionSavedEvent, {
+                            assignmentId: $scope.assign.id,
+                            submissionId: $scope.userSubmission.id,
+                            userId: $mmSite.getUserId(),
+                            siteId: $mmSite.getId()
+                        });
                     });
-                });
-            }
-        }).catch(function(message) {
-            if (message) {
-                $mmUtil.showErrorModal(message);
-            } else {
-                $mmUtil.showErrorModal('Error saving submission.');
-            }
-            return $q.reject();
-        }).finally(function() {
-            modal.dismiss();
+                }
+            }).catch(function(message) {
+                if (message) {
+                    $mmUtil.showErrorModal(message);
+                } else {
+                    $mmUtil.showErrorModal('Error saving submission.');
+                }
+                return $q.reject();
+            }).finally(function() {
+                modal.dismiss();
+            });
         });
     }
 
