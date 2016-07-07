@@ -22,11 +22,7 @@ describe('User can search courses', function() {
         }).then(function () {
             element(by.css('.mm-site_mm_searchcourses input')).sendKeys('Software Engineering');
         }).then(function () {
-            return MM.clickOn('Search');
-        }).then(function () {
-            element(by.xpath('/html/body/div[4]/div/div[3]/button')).click();
-        }).then(function () {
-            element(by.xpath('/html/body/ion-nav-view/ion-side-menus/ion-side-menu-content/ion-nav-bar/div[1]/ion-header-bar/button')).click();
+            MM.clickOn('Search');
             done();
         });
     });
