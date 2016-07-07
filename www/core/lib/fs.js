@@ -1212,5 +1212,17 @@ angular.module('mm.core')
         });
     };
 
+    /**
+     * Remove app temporary folder.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#clearTmpFolder
+     * @return {Promise} Promise resolved when done.
+     */
+    self.clearTmpFolder = function() {
+        return self.removeDir(mmFsTmpFolder);
+    };
+
     return self;
 });

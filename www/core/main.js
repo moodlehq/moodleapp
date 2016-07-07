@@ -131,6 +131,9 @@ angular.module('mm.core', ['pascalprecht.translate'])
 
     // Register upgrade check process, this should happen almost before everything else.
     $mmInitDelegateProvider.registerProcess('mmUpdateManager', '$mmUpdateManager.check', mmInitDelegateMaxAddonPriority + 300, true);
+
+    // Register clear app tmp folder.
+    $mmInitDelegateProvider.registerProcess('mmFSClearTmp', '$mmFS.clearTmpFolder', mmInitDelegateMaxAddonPriority + 150, false);
 })
 
 .run(function($ionicPlatform, $ionicBody, $window, $mmEvents, $mmInitDelegate, mmCoreEventKeyboardShow, mmCoreEventKeyboardHide) {
