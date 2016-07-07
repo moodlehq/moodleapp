@@ -26,21 +26,23 @@ angular.module('mm.addons.mod_assign')
     var self = {};
 
     /**
-     * Whether or not this plugin accepts submissions.
-     *
-     * @return {Boolean}
-     */
-    self.allowSubmissions = function() {
-        return false;
-    };
-
-    /**
      * Whether or not the rule is enabled for the site.
      *
      * @return {Promise} Promise resolved with true if enabled, rejected or resolved with false otherwise.
      */
     self.isEnabled = function() {
         return $mmComments.isPluginEnabled();
+    };
+
+    /**
+     * Whether or not the plugin is enabled for editing in the site.
+     * This should return true if the plugin has no submission component (allow_submissions=false),
+     * otherwise the user won't be able to edit submissions at all.
+     *
+     * @return {Boolean}
+     */
+    self.isEnabledForEdit = function() {
+        return true;
     };
 
     /**

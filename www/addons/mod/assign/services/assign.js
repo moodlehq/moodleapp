@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_assign')
  * @name $mmaModAssign
  */
 .factory('$mmaModAssign', function($mmSite, $q, $mmUser, $mmSitesManager, mmaModAssignComponent, $mmFilepool, $mmComments,
-        mmaModAssignSubmissionStatusNew, mmaModAssignSubmissionStatusSubmitted) {
+        $mmaModAssignSubmissionDelegate, mmaModAssignSubmissionStatusNew, mmaModAssignSubmissionStatusSubmitted) {
     var self = {};
 
     /**
@@ -355,6 +355,32 @@ angular.module('mm.addons.mod_assign')
 
         return $q.all(promises).then(function() {
             return subs;
+        });
+    };
+
+    /**
+     * Given a list of plugins, returns the plugin names that aren't supported for editing.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModAssign#getUnsupportedEditPlugins
+     * @param  {Object[]} plugins Plugins to check.
+     * @return {Promise}          Promise resolved with unsupported plugin names.
+     */
+    self.getUnsupportedEditPlugins = function(plugins) {
+        var notSupported = [],
+            promises = [];
+
+        angular.forEach(plugins, function(plugin) {
+            promises.push($q.when($mmaModAssignSubmissionDelegate.isPluginSupportedForEdit(plugin.type)).then(function(enabled) {
+                if (!enabled) {
+                    notSupported.push(plugin.name);
+                }
+            }));
+        });
+
+        return $q.all(promises).then(function() {
+            return notSupported;
         });
     };
 

@@ -16,6 +16,7 @@
     "duedatereached": "The due date for this assignment has now passed",
     "editingstatus": "Editing status",
     "editsubmission": "Edit submission",
+    "erroreditpluginsnotsupported": "You cannot add or edit a submission in the app because some plugins aren't supported for editing:",
     "errorshowinginformation": "We can't display the submission information",
     "extensionduedate": "Extension due date",
     "feedback": "Feedback",

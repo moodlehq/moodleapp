@@ -59,6 +59,17 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Whether or not the plugin is enabled for editing in the site.
+     * This should return true if the plugin has no submission component (allow_submissions=false),
+     * otherwise the user won't be able to edit submissions at all.
+     *
+     * @return {Boolean}
+     */
+    self.isEnabledForEdit = function() {
+        return true;
+    };
+
+    /**
      * Get the name of the directive to render this plugin.
      *
      * @param  {Object} plugin Plugin to get the directive for.

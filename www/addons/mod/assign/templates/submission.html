@@ -27,7 +27,7 @@
     <div ng-if="statusTranslated" class="item item-text-wrap">
         <h2>{{ 'mma.mod_assign.submissionstatus' | translate }}</h2>
         <p class="badge badge-inline {{statusClass}}">{{statusTranslated}}</p>
-        <div ng-if="canEdit && submitSupported">
+        <div ng-if="canEdit && submitSupported && !unsupportedEditPlugins.length">
             <!-- If no submission or is new, show add submission. -->
             <a ng-if="!userSubmission || userSubmission.status == statusNew" class="button button-block" ng-click="goToEdit()">{{ 'mma.mod_assign.addsubmission' | translate }}</a>
             <!-- If reopened, show addfromprevious and addnewattempt. -->
@@ -35,6 +35,10 @@
             <a ng-if="userSubmission && userSubmission.status == statusReopened" class="button button-block" ng-click="goToEdit()">{{ 'mma.mod_assign.addnewattempt' | translate }}</a>
             <!-- Else show editsubmission. -->
             <a ng-if="userSubmission && userSubmission.status != statusNew && userSubmission.status != statusReopened" class="button button-block" ng-click="goToEdit()">{{ 'mma.mod_assign.editsubmission' | translate }}</a>
+        </div>
+        <div ng-if="unsupportedEditPlugins && unsupportedEditPlugins.length">
+            <p class="mma-mod-assign-warning">{{ 'mma.mod_assign.erroreditpluginsnotsupported' | translate }}</p>
+            <p class="mma-mod-assign-warning" ng-repeat="name in unsupportedEditPlugins">{{ name }}</p>
         </div>
     </div>
 

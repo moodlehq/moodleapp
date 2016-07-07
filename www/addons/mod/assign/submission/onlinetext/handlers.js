@@ -21,17 +21,31 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc service
  * @name $mmaModAssignSubmissionOnlinetextHandler
  */
-.factory('$mmaModAssignSubmissionOnlinetextHandler', function() {
+.factory('$mmaModAssignSubmissionOnlinetextHandler', function($mmSite) {
 
     var self = {};
 
     /**
-     * Whether or not the rule is enabled for the site.
+     * Whether or not the plugin is enabled for the site.
      *
      * @return {Boolean}
      */
     self.isEnabled = function() {
         return true;
+    };
+
+    /**
+     * Whether or not the plugin is enabled for editing in the site.
+     * This should return true if the plugin has no submission component (allow_submissions=false),
+     * otherwise the user won't be able to edit submissions at all.
+     *
+     * @return {Boolean}
+     */
+    self.isEnabledForEdit = function() {
+        // There's a bug in Moodle 3.1.0 that doesn't allow submitting HTML, so we'll disable this plugin in that case.
+        // Bug was fixed in 3.1.1 minor release (2016052301) and in master version 2016070700.
+        var version = parseInt($mmSite.getInfo().version, 10);
+        return (version >= 2016052301 && version < 2016052400) || version >= 2016070700;
     };
 
     /**

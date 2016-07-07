@@ -155,6 +155,23 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Check if a submission plugin is supported for edit.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionDelegate#isPluginSupportedForEdit
+     * @param  {String} pluginType Type of the plugin.
+     * @return {Boolean}           True if supported, false otherwise.
+     */
+    self.isPluginSupportedForEdit = function(pluginType) {
+        var handler = self.getPluginHandler(pluginType);
+        if (handler && handler.isEnabledForEdit) {
+            return handler.isEnabledForEdit();
+        }
+        return false;
+    };
+
+    /**
      * Prepare and return the data to submit for a certain submission plugin.
      *
      * @module mm.addons.mod_assign
@@ -187,6 +204,9 @@ angular.module('mm.addons.mod_assign')
      *                           returning an object defining these properties. See {@link $mmUtil#resolveObject}.
      *                             - isEnabled (Boolean|Promise) Whether or not the handler is enabled on a site level.
      *                                                           When using a promise, it should return a boolean.
+     *                             - isEnabledForEdit (Boolean|Promise) Whether or not the handler is enabled for edit on a site
+     *                                                           level. When using a promise, it should return a boolean.
+     *                                                           This should return true if the plugin has no submission component.
      *                             - getDirectiveName(plugin, edit) (String) Optional. Returns the name of the directive to render
      *                                                           the plugin.
      *                             - prepareSubmissionData(assign, submission, plugin, inputData, pluginData). Should prepare and

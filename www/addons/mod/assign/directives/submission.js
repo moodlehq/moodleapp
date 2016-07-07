@@ -199,6 +199,29 @@ angular.module('mm.addons.mod_assign')
                         }
                     }
 
+                    // Check if there's any unsupported plugin for editing.
+                    var plugins;
+                    if (scope.userSubmission) {
+                        plugins = scope.userSubmission.plugins;
+                    } else {
+                        // Submission not created yet, we have to use assign configs to detect the plugins used.
+                        plugins = [];
+                        angular.forEach(assign.configs, function(config) {
+                            if (config.subtype == 'assignsubmission') {
+                                if (config.name == 'enabled' && parseInt(config.value, 10) === 1) {
+                                    plugins.push({
+                                        type: config.plugin,
+                                        name: config.plugin
+                                    });
+                                }
+                            }
+                        });
+                    }
+
+                    promises.push($mmaModAssign.getUnsupportedEditPlugins(plugins).then(function(list) {
+                        scope.unsupportedEditPlugins = list;
+                    }));
+
                     return $q.all(promises);
                 }).catch(function(error) {
                     if (typeof error != "undefined") {
