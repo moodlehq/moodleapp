@@ -21,8 +21,8 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc service
  * @name $mmaModAssignSubmissionFileHandler
  */
-.factory('$mmaModAssignSubmissionFileHandler', function($mmaModAssignSubmissionFileSession, $mmaModAssign, $mmFileUploader,
-            $mmFilepool, $mmFS, $mmSite, $q, mmaModAssignComponent) {
+.factory('$mmaModAssignSubmissionFileHandler', function($mmaModAssignSubmissionFileSession, $mmaModAssign, $mmSite, $q,
+            $mmaModAssignHelper) {
 
     var self = {};
 
@@ -46,6 +46,24 @@ angular.module('mm.addons.mod_assign')
             if (file.remove) {
                 file.remove();
             }
+        });
+    };
+
+    /**
+     * Function meant to copy a submission.
+     * Should add to pluginData the data to send to server based in the data in plugin (previous attempt).
+     *
+     * @param  {Object} assign     Assignment.
+     * @param  {Object} plugin     Plugin data of the previous submission (the one to get the data from).
+     * @param  {Object} pluginData Object where to add the plugin data.
+     * @return {Promise}           Promise resolved when copied.
+     */
+    self.copySubmissionData = function(assign, plugin, pluginData) {
+        // We need to re-upload all the existing files.
+        var files = $mmaModAssign.getSubmissionPluginAttachments(plugin);
+
+        return $mmaModAssignHelper.uploadFiles(assign.id, files).then(function(itemId) {
+            pluginData.files_filemanager = itemId;
         });
     };
 
@@ -127,68 +145,11 @@ angular.module('mm.addons.mod_assign')
             // Data has changed, we need to upload new files and re-upload all the existing files.
             var currentFiles = $mmaModAssignSubmissionFileSession.getFiles(assign.id);
 
-            if (!currentFiles.length) {
-                // There are no attached files. Use a fake draft id and stop.
-                pluginData.files_filemanager = 1;
-                return;
-            }
-
-            // Upload only the first file first to get a draft id.
-            return uploadFile(assign.id, currentFiles[0]).then(function(itemId) {
-                var promises = [];
-
-                angular.forEach(currentFiles, function(file, index) {
-                    if (index === 0) {
-                        // First file has already been uploaded.
-                        return;
-                    }
-
-                    promises.push(uploadFile(assign.id, file, itemId, siteId));
-                });
-
-                return $q.all(promises).then(function() {
-                    pluginData.files_filemanager = itemId;
-                });
+            return $mmaModAssignHelper.uploadFiles(assign.id, currentFiles, siteId).then(function(itemId) {
+                pluginData.files_filemanager = itemId;
             });
-
         }
     };
-
-    /**
-     * Upload a file to a draft area. If the file is an online file it will be downloaded and then re-uploaded.
-     *
-     * @param  {Number} assignId Assignment ID.
-     * @param  {Object} file     Online file or local FileEntry.
-     * @param  {Number} [itemId] Draft ID to use. Undefined or 0 to create a new draft ID.
-     * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved with the itemId.
-     */
-    function uploadFile(assignId, file, itemId, siteId) {
-        siteId = siteId || $mmSite.getId();
-
-        var promise,
-            fileName;
-
-        if (file.filename) {
-            // It's an online file. We need to download it and re-upload it.
-            fileName = file.filename;
-            promise = $mmFilepool.downloadUrl(siteId, file.fileurl, false, mmaModAssignComponent, assignId).then(function(path) {
-                return $mmFS.getExternalFile(path);
-            });
-        } else {
-            // Local file, we already have the file entry.
-            fileName = file.name;
-            promise = $q.when(file);
-        }
-
-        return promise.then(function(fileEntry) {
-            // Now upload the file.
-            return $mmFileUploader.uploadGenericFile(fileEntry.toURL(), fileName, fileEntry.type, true, itemId, siteId)
-                    .then(function(result) {
-                return result.itemid;
-            });
-        });
-    }
 
     return self;
 })

@@ -173,7 +173,7 @@ angular.module('mm.addons.mod_assign')
      *
      * @module mm.addons.mod_assign
      * @ngdoc method
-     * @name $mmaModAssign#getSubmissionAttachments
+     * @name $mmaModAssign#getSubmissionPluginAttachments
      * @param {Object} submissionPlugin Submission Plugin.
      * @return {Object[]}               Submission Pluginattachments.
      */

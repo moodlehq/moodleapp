@@ -73,6 +73,25 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Copy the data from last submitted attempt to the current submission.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionDelegate#copyPluginSubmissionData
+     * @param  {Object} assign     Assignment.
+     * @param  {Object} plugin     Plugin data of the previous submission (the one to get the data from).
+     * @param  {Object} pluginData Object where to add the plugin data.
+     * @return {Promise}           Promise resolved when data has been gathered.
+     */
+    self.copyPluginSubmissionData = function(assign, plugin, pluginData) {
+        var handler = self.getPluginHandler(plugin.type);
+        if (handler && handler.copySubmissionData) {
+            return $q.when(handler.copySubmissionData(assign, plugin, pluginData));
+        }
+        return $q.when();
+    };
+
+    /**
      * Get the directive to use for a certain submission plugin.
      *
      * @module mm.addons.mod_assign
@@ -212,6 +231,9 @@ angular.module('mm.addons.mod_assign')
      *                             - prepareSubmissionData(assign, submission, plugin, inputData, pluginData). Should prepare and
      *                                                           add to pluginData the data to send to server based in the input.
      *                                                           Return promise if async.
+     *                             - copySubmissionData(assign, plugin, pluginData). Function meant to copy a submission. Should
+     *                                                           add to pluginData the data to send to server based in the data
+     *                                                           in plugin (previous attempt).
      *                             - hasDataChanged(assign, submission, plugin, inputData) (Promise|Boolean) Check if the
      *                                                           submission data has changed for this plugin.
      *                             - clearTmpData(assign, submission, plugin, inputData). Optional. Should clear temporary data

@@ -26,7 +26,7 @@ angular.module('mm.addons.mod_assign')
 .directive('mmaModAssignSubmission', function($mmaModAssign, $translate, $mmUser, mmaModAssignAttemptReopenMethodNone, $q, $mmSite,
         mmaModAssignUnlimitedAttempts, mmaModAssignGradingStatusGraded, mmaModAssignGradingStatusNotGraded, mmUserProfileState,
         mmaModMarkingWorkflowStateReleased, mmaModAssignSubmissionStatusNew, mmaModAssignSubmissionStatusSubmitted, $mmUtil,
-        mmaModAssignSubmissionInvalidatedEvent, $mmGroups, $state, mmaModAssignSubmissionStatusReopened) {
+        mmaModAssignSubmissionInvalidatedEvent, $mmGroups, $state, $mmaModAssignHelper, mmaModAssignSubmissionStatusReopened) {
 
     // Directive controller.
     function controller() {
@@ -59,6 +59,7 @@ angular.module('mm.addons.mod_assign')
                     scope.submissionStatusAvailable = true;
 
                     scope.lastAttempt = response.lastattempt;
+                    scope.previousAttempts = response.previousattempts;
                     scope.membersToSubmit = [];
                     if (response.lastattempt) {
                         var blindMarking = scope.isGrading && response.lastattempt.blindmarking && !assign.revealidentities;
@@ -330,6 +331,35 @@ angular.module('mm.addons.mod_assign')
                 });
             };
 
+            // Copy previous attempt and then go to edit.
+            scope.copyPrevious = function() {
+                if (!scope.previousAttempts || !scope.previousAttempts.length) {
+                    // Cannot access previous attempts, just go to edit.
+                    scope.goToEdit();
+                    return;
+                }
+
+                // Confirm.
+                $mmUtil.showConfirm($translate('mm.core.areyousure')).then(function() {
+                    var modal = $mmUtil.showModalLoading('mm.core.sending', true),
+                        previousAttempt = scope.previousAttempts[scope.previousAttempts.length - 1],
+                        previousSubmission = scope.assign.teamsubmission ?
+                                previousAttempt.teamsubmission : previousAttempt.submission;
+
+                    $mmaModAssignHelper.copyPreviousAttempt(scope.assign, previousSubmission).then(function() {
+                        // Now go to edit.
+                        scope.goToEdit();
+
+                        // Invalidate and refresh data to update this view.
+                        invalidateAndRefresh();
+                    }).catch(function(err) {
+                        alert(err);
+                    }).finally(function() {
+                        modal.dismiss();
+                    });
+                });
+            };
+
             // Submit for grading.
             scope.submit = function(acceptStatement) {
                 // Ask for confirmation. @todo plugin precheck_submission
@@ -337,17 +367,7 @@ angular.module('mm.addons.mod_assign')
                     var modal = $mmUtil.showModalLoading('mm.core.sending', true);
                     $mmaModAssign.submitForGrading(scope.assign.id, acceptStatement).then(function() {
                         // Invalidate and refresh data.
-                        scope.loaded = false;
-
-                        var promises = [$mmaModAssign.invalidateAssignmentData(attributes.courseid)];
-                        if (scope.assign) {
-                            promises.push($mmaModAssign.invalidateAllSubmissionData(scope.assign.id));
-                            promises.push($mmaModAssign.invalidateAssignmentUserMappingsData(scope.assign.id));
-                        }
-
-                        $q.all(promises).finally(function() {
-                            controller.load(scope, attributes.moduleid, attributes.courseid, attributes.submitid, attributes.blindid);
-                        });
+                        invalidateAndRefresh();
                     }).catch(function(error) {
                         $mmUtil.showErrorModal(error);
                     }).finally(function() {
@@ -355,6 +375,21 @@ angular.module('mm.addons.mod_assign')
                     });
                 });
             };
+
+            // Invalidate and refresh data.
+            function invalidateAndRefresh() {
+                scope.loaded = false;
+
+                var promises = [$mmaModAssign.invalidateAssignmentData(attributes.courseid)];
+                if (scope.assign) {
+                    promises.push($mmaModAssign.invalidateAllSubmissionData(scope.assign.id));
+                    promises.push($mmaModAssign.invalidateAssignmentUserMappingsData(scope.assign.id));
+                }
+
+                $q.all(promises).finally(function() {
+                    controller.load(scope, attributes.moduleid, attributes.courseid, attributes.submitid, attributes.blindid);
+                });
+            }
         }
     };
 });

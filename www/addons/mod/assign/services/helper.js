@@ -21,7 +21,8 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc service
  * @name $mmaModAssignHelper
  */
-.factory('$mmaModAssignHelper', function($mmUtil, $mmaModAssignSubmissionDelegate) {
+.factory('$mmaModAssignHelper', function($mmUtil, $mmaModAssignSubmissionDelegate, $q, $mmSite, $mmFS, $mmFilepool, $mmaModAssign,
+            $mmFileUploader, mmaModAssignComponent) {
 
     var self = {};
 
@@ -39,6 +40,40 @@ angular.module('mm.addons.mod_assign')
     self.clearSubmissionPluginTmpData = function(assign, submission, inputData) {
         angular.forEach(submission.plugins, function(plugin) {
             $mmaModAssignSubmissionDelegate.clearTmpData(assign, submission, plugin, inputData);
+        });
+    };
+
+    /**
+     * Copy the data from last submitted attempt to the current submission.
+     * Since we don't have any WS for that we'll have to re-submit everything manually.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignHelper#copyPreviousAttempt
+     * @param  {Object} assign             Assignment.
+     * @param  {Object} previousSubmission Submission to copy.
+     * @return {Promise}                   Promise resolved when done.
+     */
+    self.copyPreviousAttempt = function(assign, previousSubmission) {
+        var pluginData = {},
+            promises = [],
+            errorMessage;
+
+        angular.forEach(previousSubmission.plugins, function(plugin) {
+            promises.push($mmaModAssignSubmissionDelegate.copyPluginSubmissionData(assign, plugin, pluginData).catch(function(err) {
+                errorMessage = err;
+                return $q.reject();
+            }));
+        });
+
+        return $q.all(promises).then(function() {
+            // We got the plugin data. Now we need to submit it.
+            if (Object.keys(pluginData).length) {
+                // There's something to save.
+                return $mmaModAssign.saveSubmission(assign.id, pluginData);
+            }
+        }).catch(function() {
+            return $q.reject(errorMessage);
         });
     };
 
@@ -134,6 +169,85 @@ angular.module('mm.addons.mod_assign')
 
         return $mmUtil.allPromises(promises).then(function() {
             return pluginData;
+        });
+    };
+
+    /**
+     * Upload a file to a draft area. If the file is an online file it will be downloaded and then re-uploaded.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignHelper#uploadFile
+     * @param  {Number} assignId Assignment ID.
+     * @param  {Object} file     Online file or local FileEntry.
+     * @param  {Number} [itemId] Draft ID to use. Undefined or 0 to create a new draft ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with the itemId.
+     */
+    self.uploadFile = function(assignId, file, itemId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        var promise,
+            fileName;
+
+        if (file.filename) {
+            // It's an online file. We need to download it and re-upload it.
+            fileName = file.filename;
+            promise = $mmFilepool.downloadUrl(siteId, file.fileurl, false, mmaModAssignComponent, assignId).then(function(path) {
+                return $mmFS.getExternalFile(path);
+            });
+        } else {
+            // Local file, we already have the file entry.
+            fileName = file.name;
+            promise = $q.when(file);
+        }
+
+        return promise.then(function(fileEntry) {
+            // Now upload the file.
+            return $mmFileUploader.uploadGenericFile(fileEntry.toURL(), fileName, fileEntry.type, true, itemId, siteId)
+                    .then(function(result) {
+                return result.itemid;
+            });
+        });
+    };
+
+    /**
+     * Given a list of files (either online files or local files), upload them to a draft area and return the draft ID.
+     * Online files will be downloaded and then re-uploaded.
+     * If there are no files to upload it will return a fake draft ID (1).
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignHelper#uploadFiles
+     * @param  {Number} assignId Assignment ID.
+     * @param  {Object[]} files  List of files.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with the itemId.
+     */
+    self.uploadFiles = function(assignId, files, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        if (!files || !files.length) {
+            // Return fake draft ID.
+            return $q.when(1);
+        }
+
+        // Upload only the first file first to get a draft id.
+        return self.uploadFile(assignId, files[0]).then(function(itemId) {
+            var promises = [];
+
+            angular.forEach(files, function(file, index) {
+                if (index === 0) {
+                    // First file has already been uploaded.
+                    return;
+                }
+
+                promises.push(self.uploadFile(assignId, file, itemId, siteId));
+            });
+
+            return $q.all(promises).then(function() {
+                return itemId;
+            });
         });
     };
 

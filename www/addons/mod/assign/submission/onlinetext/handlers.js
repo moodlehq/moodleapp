@@ -21,9 +21,40 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc service
  * @name $mmaModAssignSubmissionOnlinetextHandler
  */
-.factory('$mmaModAssignSubmissionOnlinetextHandler', function($mmSite) {
+.factory('$mmaModAssignSubmissionOnlinetextHandler', function($mmSite, $mmaModAssign, $q, $mmaModAssignHelper) {
 
     var self = {};
+
+    /**
+     * Function meant to copy a submission.
+     * Should add to pluginData the data to send to server based in the data in plugin (previous attempt).
+     *
+     * @param  {Object} assign     Assignment.
+     * @param  {Object} plugin     Plugin data of the previous submission (the one to get the data from).
+     * @param  {Object} pluginData Object where to add the plugin data.
+     * @return {Promise}           Promise resolved when copied.
+     */
+    self.copySubmissionData = function(assign, plugin, pluginData) {
+        var text = $mmaModAssign.getSubmissionPluginText(plugin, true),
+            files = $mmaModAssign.getSubmissionPluginAttachments(plugin),
+            promise;
+
+        if (!files.length) {
+            // No files to copy, no item ID.
+            promise = $q.when(0);
+        } else {
+            // Re-upload the files.
+            promise = $mmaModAssignHelper.uploadFiles(assign.id, files);
+        }
+
+        return promise.then(function(itemId) {
+            pluginData.onlinetext_editor = {
+                text: text,
+                format: 1,
+                itemid: itemId
+            };
+        });
+    };
 
     /**
      * Whether or not the plugin is enabled for the site.
