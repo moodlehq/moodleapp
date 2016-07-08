@@ -30,19 +30,26 @@ angular.module('mm.core.fileuploader')
      * @module mm.core.fileuploader
      * @ngdoc method
      * @name $mmFileUploaderHelper#confirmUploadFile
-     * @param  {Number} size File's size.
-     * @return {Promise}     Promise resolved when the user confirms or if there's no need to show a modal.
+     * @param  {Number} size           File's size.
+     * @param  {Boolean} alwaysConfirm True to show a confirm even if the size isn't high, false otherwise.
+     * @return {Promise}               Promise resolved when the user confirms or if there's no need to show a modal.
      */
-    self.confirmUploadFile = function(size) {
+    self.confirmUploadFile = function(size, alwaysConfirm) {
         if (!$mmApp.isOnline()) {
             return $mmLang.translateAndReject('mm.fileuploader.errormustbeonlinetoupload');
         }
 
-        if ($mmApp.isNetworkAccessLimited() || size >= mmFileUploaderFileSizeWarning) {
+        if (size < 0) {
+            return $mmUtil.showConfirm($translate('mm.fileuploader.confirmuploadunknownsize'));
+        } else if ($mmApp.isNetworkAccessLimited() || size >= mmFileUploaderFileSizeWarning) {
             size = $mmText.bytesToSize(size, 2);
             return $mmUtil.showConfirm($translate('mm.fileuploader.confirmuploadfile', {size: size}));
         } else {
-            return $q.when();
+            if (alwaysConfirm) {
+                return $mmUtil.showConfirm($translate('mm.core.areyousure'));
+            } else {
+                return $q.when();
+            }
         }
     };
 

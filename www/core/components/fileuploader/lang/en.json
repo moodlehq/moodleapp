@@ -3,6 +3,7 @@
     "audio": "Audio",
     "camera": "Camera",
     "confirmuploadfile": "You are about to upload {{size}}. Are you sure you want to continue?",
+    "confirmuploadunknownsize": "We were unable to calculate the size of the upload. Are you sure you want to continue?",
     "errorcapturingaudio": "Error capturing audio.",
     "errorcapturingimage": "Error capturing image.",
     "errorcapturingvideo": "Error capturing video.",

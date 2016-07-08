@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_assign')
  */
 .controller('mmaModAssignEditCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $translate, mmaModAssignComponent, $q,
         $mmText, $mmSite, $mmaModAssignHelper, $rootScope, $ionicPlatform, $timeout, $mmEvents, $ionicHistory,
-        mmaModAssignSubmissionSavedEvent, mmaModAssignSubmittedForGradingEvent) {
+        mmaModAssignSubmissionSavedEvent, mmaModAssignSubmittedForGradingEvent, $mmFileUploaderHelper) {
 
     var courseId = $stateParams.courseid,
         userId = $mmSite.getUserId(), // Right now we can only edit current user's submissions.
@@ -77,8 +77,8 @@ angular.module('mm.addons.mod_assign')
     }
 
     // Get submission data.
-    function prepareSubmissionData() {
-        return $mmaModAssignHelper.prepareSubmissionPluginData($scope.assign, $scope.userSubmission, getInputData());
+    function prepareSubmissionData(inputData) {
+        return $mmaModAssignHelper.prepareSubmissionPluginData($scope.assign, $scope.userSubmission, inputData);
     }
 
     // Check if data has changed.
@@ -88,11 +88,22 @@ angular.module('mm.addons.mod_assign')
 
     // Save the submission.
     function saveSubmission() {
-        // Ask confirmation.
-        return $mmUtil.showConfirm($translate('mm.core.areyousure')).then(function() {
-            var modal = $mmUtil.showModalLoading('mm.core.sending', true);
+        var modal = $mmUtil.showModalLoading(),
+            inputData = getInputData();
 
-            return prepareSubmissionData().then(function(pluginData) {
+        // Get size to ask for confirmation.
+        return $mmaModAssignHelper.getSubmissionSizeForEdit($scope.assign, $scope.userSubmission, inputData).catch(function() {
+            // Error calculating size, return -1.
+            return -1;
+        }).then(function(size) {
+            modal.dismiss();
+
+            // Confirm action.
+            return $mmFileUploaderHelper.confirmUploadFile(size, true);
+        }).then(function() {
+            modal = $mmUtil.showModalLoading('mm.core.sending', true);
+
+            return prepareSubmissionData(inputData).then(function(pluginData) {
                 if (Object.keys(pluginData).length) {
                     // There's something to save.
                     return $mmaModAssign.saveSubmission($scope.assign.id, pluginData).then(function() {
@@ -190,8 +201,16 @@ angular.module('mm.addons.mod_assign')
 
     // Save the submission.
     $scope.save = function() {
-        saveSubmission().then(function() {
-            originalBackFunction();
+        // Check if data has changed.
+        hasDataChanged().then(function(changed) {
+            if (changed) {
+                saveSubmission().then(function() {
+                    originalBackFunction();
+                });
+            } else {
+                // Nothing to save, just go back.
+                originalBackFunction();
+            }
         });
     };
 

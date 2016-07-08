@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc service
  * @name $mmaModAssignSubmissionOnlinetextHandler
  */
-.factory('$mmaModAssignSubmissionOnlinetextHandler', function($mmSite, $mmaModAssign, $q, $mmaModAssignHelper) {
+.factory('$mmaModAssignSubmissionOnlinetextHandler', function($mmSite, $mmaModAssign, $q, $mmaModAssignHelper, $mmWS) {
 
     var self = {};
 
@@ -54,6 +54,54 @@ angular.module('mm.addons.mod_assign')
                 itemid: itemId
             };
         });
+    };
+
+    /**
+     * Get the size of data (in bytes) this plugin will send to copy a previous attempt.
+     *
+     * @param  {Object} assign Assignment.
+     * @param  {Object} plugin Plugin data of the previous submission (the one to get the data from).
+     * @return {Promise}       Promise resolved with the size.
+     */
+    self.getSizeForCopy = function(assign, plugin) {
+        var text = $mmaModAssign.getSubmissionPluginText(plugin, true),
+            files = $mmaModAssign.getSubmissionPluginAttachments(plugin),
+            totalSize = text.length,
+            promises;
+
+        if (!files.length) {
+            return totalSize;
+        }
+
+        promises = [];
+
+        angular.forEach(files, function(file) {
+            promises.push($mmWS.getRemoteFileSize(file.fileurl).then(function(size) {
+                if (size == -1) {
+                    // Couldn't determine the size, reject.
+                    return $q.reject();
+                }
+                totalSize += size;
+            }));
+        });
+
+        return $q.all(promises).then(function() {
+            return totalSize;
+        });
+    };
+
+    /**
+     * Get the size of data (in bytes) this plugin will send to add or edit a submission.
+     *
+     * @param  {Object} assign     Assignment.
+     * @param  {Object} submission Submission to check data.
+     * @param  {Object} plugin     Plugin to get the data for.
+     * @param  {Object} inputData  Data entered in the submission form.
+     * @return {Number}            Size.
+     */
+    self.getSizeForEdit = function(assign, submission, plugin, inputData) {
+        var text = $mmaModAssign.getSubmissionPluginText(plugin, true);
+        return text.length;
     };
 
     /**

@@ -144,6 +144,44 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Get the size of data (in bytes) this plugin will send to copy a previous attempt.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionDelegate#getPluginSizeForCopy
+     * @param  {Object} assign Assignment.
+     * @param  {Object} plugin Plugin data of the previous submission (the one to get the data from).
+     * @return {Promise}       Promise resolved with the size.
+     */
+    self.getPluginSizeForCopy = function(assign, plugin) {
+        var handler = self.getPluginHandler(plugin.type);
+        if (handler && handler.getSizeForCopy) {
+            return $q.when(handler.getSizeForCopy(assign, plugin));
+        }
+        return $q.when(0);
+    };
+
+    /**
+     * Get the size of data (in bytes) this plugin will send to add or edit a submission.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionDelegate#getPluginSizeForEdit
+     * @param  {Object} assign     Assignment.
+     * @param  {Object} submission Submission to check data.
+     * @param  {Object} plugin     Plugin to get the data for.
+     * @param  {Object} inputData  Data entered in the submission form.
+     * @return {Promise}           Promise resolved with the size.
+     */
+    self.getPluginSizeForEdit = function(assign, submission, plugin, inputData) {
+        var handler = self.getPluginHandler(plugin.type);
+        if (handler && handler.getSizeForEdit) {
+            return $q.when(handler.getSizeForEdit(assign, submission, plugin, inputData));
+        }
+        return $q.when(0);
+    };
+
+    /**
      * Check if a time belongs to the last update handlers call.
      * This is to handle the cases where updateHandlers don't finish in the same order as they're called.
      *

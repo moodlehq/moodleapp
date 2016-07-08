@@ -27,7 +27,7 @@ angular.module('mm.addons.mod_assign')
         mmaModAssignUnlimitedAttempts, mmaModAssignGradingStatusGraded, mmaModAssignGradingStatusNotGraded, mmUserProfileState,
         mmaModMarkingWorkflowStateReleased, mmaModAssignSubmissionStatusNew, mmaModAssignSubmissionStatusSubmitted, $mmUtil,
         mmaModAssignSubmissionInvalidatedEvent, $mmGroups, $state, $mmaModAssignHelper, mmaModAssignSubmissionStatusReopened,
-        $mmEvents, mmaModAssignSubmittedForGradingEvent) {
+        $mmEvents, mmaModAssignSubmittedForGradingEvent, $mmFileUploaderHelper, $mmApp) {
 
     // Directive controller.
     function controller() {
@@ -334,18 +334,33 @@ angular.module('mm.addons.mod_assign')
 
             // Copy previous attempt and then go to edit.
             scope.copyPrevious = function() {
+                if (!$mmApp.isOnline()) {
+                    $mmUtil.showErrorModal('mm.core.networkerrormsg', true);
+                    return;
+                }
+
                 if (!scope.previousAttempts || !scope.previousAttempts.length) {
                     // Cannot access previous attempts, just go to edit.
                     scope.goToEdit();
                     return;
                 }
 
-                // Confirm.
-                $mmUtil.showConfirm($translate('mm.core.areyousure')).then(function() {
-                    var modal = $mmUtil.showModalLoading('mm.core.sending', true),
-                        previousAttempt = scope.previousAttempts[scope.previousAttempts.length - 1],
-                        previousSubmission = scope.assign.teamsubmission ?
-                                previousAttempt.teamsubmission : previousAttempt.submission;
+                var modal = $mmUtil.showModalLoading(),
+                    previousAttempt = scope.previousAttempts[scope.previousAttempts.length - 1],
+                    previousSubmission = scope.assign.teamsubmission ?
+                            previousAttempt.teamsubmission : previousAttempt.submission;
+
+                $mmaModAssignHelper.getSubmissionSizeForCopy(scope.assign, previousSubmission).catch(function() {
+                    // Error calculating size, return -1.
+                    return -1;
+                }).then(function(size) {
+                    modal.dismiss();
+
+                    // Confirm action.
+                    return $mmFileUploaderHelper.confirmUploadFile(size, true);
+                }).then(function() {
+                    // User confirmed, copy the attempt.
+                    modal = $mmUtil.showModalLoading('mm.core.sending', true);
 
                     $mmaModAssignHelper.copyPreviousAttempt(scope.assign, previousSubmission).then(function() {
                         // Now go to edit.

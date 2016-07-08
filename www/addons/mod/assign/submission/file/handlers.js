@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_assign')
  * @name $mmaModAssignSubmissionFileHandler
  */
 .factory('$mmaModAssignSubmissionFileHandler', function($mmaModAssignSubmissionFileSession, $mmaModAssign, $mmSite, $q,
-            $mmaModAssignHelper) {
+            $mmaModAssignHelper, $mmWS, $mmFS, $mmFilepool) {
 
     var self = {};
 
@@ -65,6 +65,87 @@ angular.module('mm.addons.mod_assign')
         return $mmaModAssignHelper.uploadFiles(assign.id, files).then(function(itemId) {
             pluginData.files_filemanager = itemId;
         });
+    };
+
+    /**
+     * Get the size of data (in bytes) this plugin will send to copy a previous attempt.
+     *
+     * @param  {Object} assign Assignment.
+     * @param  {Object} plugin Plugin data of the previous submission (the one to get the data from).
+     * @return {Promise}       Promise resolved with the size.
+     */
+    self.getSizeForCopy = function(assign, plugin) {
+        var files = $mmaModAssign.getSubmissionPluginAttachments(plugin),
+            totalSize = 0,
+            promises = [];
+
+        angular.forEach(files, function(file) {
+            promises.push($mmWS.getRemoteFileSize(file.fileurl).then(function(size) {
+                if (size == -1) {
+                    // Couldn't determine the size, reject.
+                    return $q.reject();
+                }
+                totalSize += size;
+            }));
+        });
+
+        return $q.all(promises).then(function() {
+            return totalSize;
+        });
+    };
+
+    /**
+     * Get the size of data (in bytes) this plugin will send to add or edit a submission.
+     *
+     * @param  {Object} assign     Assignment.
+     * @param  {Object} submission Submission to check data.
+     * @param  {Object} plugin     Plugin to get the data for.
+     * @param  {Object} inputData  Data entered in the submission form.
+     * @return {Number}            Size.
+     */
+    self.getSizeForEdit = function(assign, submission, plugin, inputData) {
+        var siteId = $mmSite.getId();
+
+        // Check if there's any change.
+        if (self.hasDataChanged(assign, submission, plugin, inputData)) {
+            var files = $mmaModAssignSubmissionFileSession.getFiles(assign.id),
+                totalSize = 0,
+                promises = [];
+
+            angular.forEach(files, function(file) {
+                if (file.filename) {
+                    // It's a remote file. First check if we have the file downloaded since it's more reliable.
+                    promises.push($mmFilepool.getFilePathByUrl(siteId, file.fileurl).then(function(path) {
+                        return $mmFS.getFile(path).then(function(fileEntry) {
+                            return $mmFS.getFileObjectFromFileEntry(fileEntry);
+                        }).then(function(file) {
+                            totalSize += file.size;
+                        });
+                    }).catch(function() {
+                        // Error getting the file, maybe it's not downloaded. Get remote size.
+                        return $mmWS.getRemoteFileSize(file.fileurl).then(function(size) {
+                            if (size == -1) {
+                                // Couldn't determine the size, reject.
+                                return $q.reject();
+                            }
+                            totalSize += size;
+                        });
+                    }));
+                } else if (file.name) {
+                    // It's a local file, get its size.
+                    promises.push($mmFS.getFileObjectFromFileEntry(file).then(function(file) {
+                        totalSize += file.size;
+                    }));
+                }
+            });
+
+            return $q.all(promises).then(function() {
+                return totalSize;
+            });
+        } else {
+            // Nothing has changed, we won't upload any file.
+            return 0;
+        }
     };
 
     /**

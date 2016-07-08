@@ -117,6 +117,58 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Get the size that will be uploaded to perform an attempt copy.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignHelper#getSubmissionSizeForCopy
+     * @param  {Object} assign             Assignment.
+     * @param  {Object} previousSubmission Submission to copy.
+     * @return {Promise}                   Promise resolved with the size.
+     */
+    self.getSubmissionSizeForCopy = function(assign, previousSubmission) {
+        var totalSize = 0,
+            promises = [];
+
+        angular.forEach(previousSubmission.plugins, function(plugin) {
+            promises.push($q.when($mmaModAssignSubmissionDelegate.getPluginSizeForCopy(assign, plugin)).then(function(size) {
+                totalSize += size;
+            }));
+        });
+
+        return $q.all(promises).then(function() {
+            return totalSize;
+        });
+    };
+
+    /**
+     * Get the size that will be uploaded to save a submission.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignHelper#getSubmissionSizeForEdit
+     * @param  {Object} assign     Assignment.
+     * @param  {Object} submission Submission to check data.
+     * @param  {Object} inputData  Data entered in the submission form.
+     * @return {Promise}           Promise resolved with the size.
+     */
+    self.getSubmissionSizeForEdit = function(assign, submission, inputData) {
+        var totalSize = 0,
+            promises = [];
+
+        angular.forEach(submission.plugins, function(plugin) {
+            var promise = $q.when($mmaModAssignSubmissionDelegate.getPluginSizeForEdit(assign, submission, plugin, inputData));
+            promises.push(promise.then(function(size) {
+                totalSize += size;
+            }));
+        });
+
+        return $q.all(promises).then(function() {
+            return totalSize;
+        });
+    };
+
+    /**
      * Check if the submission data has changed for a certain submission and assign.
      *
      * @module mm.addons.mod_assign
