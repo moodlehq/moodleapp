@@ -26,7 +26,8 @@ angular.module('mm.addons.mod_assign')
 .directive('mmaModAssignSubmission', function($mmaModAssign, $translate, $mmUser, mmaModAssignAttemptReopenMethodNone, $q, $mmSite,
         mmaModAssignUnlimitedAttempts, mmaModAssignGradingStatusGraded, mmaModAssignGradingStatusNotGraded, mmUserProfileState,
         mmaModMarkingWorkflowStateReleased, mmaModAssignSubmissionStatusNew, mmaModAssignSubmissionStatusSubmitted, $mmUtil,
-        mmaModAssignSubmissionInvalidatedEvent, $mmGroups, $state, $mmaModAssignHelper, mmaModAssignSubmissionStatusReopened) {
+        mmaModAssignSubmissionInvalidatedEvent, $mmGroups, $state, $mmaModAssignHelper, mmaModAssignSubmissionStatusReopened,
+        $mmEvents, mmaModAssignSubmittedForGradingEvent) {
 
     // Directive controller.
     function controller() {
@@ -352,6 +353,16 @@ angular.module('mm.addons.mod_assign')
 
                         // Invalidate and refresh data to update this view.
                         invalidateAndRefresh();
+
+                        if (!scope.assign.submissiondrafts) {
+                            // No drafts allowed, so it was submitted. Trigger event.
+                            $mmEvents.trigger(mmaModAssignSubmittedForGradingEvent, {
+                                assignmentId: scope.assign.id,
+                                submissionId: scope.userSubmission.id,
+                                userId: $mmSite.getUserId(),
+                                siteId: $mmSite.getId()
+                            });
+                        }
                     }).catch(function(err) {
                         alert(err);
                     }).finally(function() {
@@ -368,6 +379,14 @@ angular.module('mm.addons.mod_assign')
                     $mmaModAssign.submitForGrading(scope.assign.id, acceptStatement).then(function() {
                         // Invalidate and refresh data.
                         invalidateAndRefresh();
+
+                        // Submitted, trigger event.
+                        $mmEvents.trigger(mmaModAssignSubmittedForGradingEvent, {
+                            assignmentId: scope.assign.id,
+                            submissionId: scope.userSubmission.id,
+                            userId: $mmSite.getUserId(),
+                            siteId: $mmSite.getId()
+                        });
                     }).catch(function(error) {
                         $mmUtil.showErrorModal(error);
                     }).finally(function() {

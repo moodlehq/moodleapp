@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_assign')
  */
 .controller('mmaModAssignEditCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $translate, mmaModAssignComponent, $q,
         $mmText, $mmSite, $mmaModAssignHelper, $rootScope, $ionicPlatform, $timeout, $mmEvents, $ionicHistory,
-        mmaModAssignSubmissionSavedEvent) {
+        mmaModAssignSubmissionSavedEvent, mmaModAssignSubmittedForGradingEvent) {
 
     var courseId = $stateParams.courseid,
         userId = $mmSite.getUserId(), // Right now we can only edit current user's submissions.
@@ -97,12 +97,18 @@ angular.module('mm.addons.mod_assign')
                     // There's something to save.
                     return $mmaModAssign.saveSubmission($scope.assign.id, pluginData).then(function() {
                         // Submission saved, trigger event.
-                        $mmEvents.trigger(mmaModAssignSubmissionSavedEvent, {
+                        var params = {
                             assignmentId: $scope.assign.id,
                             submissionId: $scope.userSubmission.id,
                             userId: $mmSite.getUserId(),
                             siteId: $mmSite.getId()
-                        });
+                        };
+                        $mmEvents.trigger(mmaModAssignSubmissionSavedEvent, params);
+
+                        if (!$scope.assign.submissiondrafts) {
+                            // No drafts allowed, so it was submitted. Trigger event.
+                            $mmEvents.trigger(mmaModAssignSubmittedForGradingEvent, params);
+                        }
                     });
                 }
             }).catch(function(message) {

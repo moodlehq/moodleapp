@@ -22,9 +22,12 @@ angular.module('mm.addons.mod_assign')
  * @name mmaModAssignIndexCtrl
  */
 .controller('mmaModAssignIndexCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $translate, mmaModAssignComponent, $q,
-        $state, $ionicPlatform, mmaModAssignSubmissionInvalidatedEvent, $mmEvents, $mmSite, mmaModAssignSubmissionSavedEvent) {
+        $state, $ionicPlatform, mmaModAssignSubmissionInvalidatedEvent, $mmEvents, $mmSite, mmaModAssignSubmissionSavedEvent,
+        mmaModAssignSubmittedForGradingEvent, $mmCourse) {
     var module = $stateParams.module || {},
-        courseId = $stateParams.courseid;
+        courseId = $stateParams.courseid,
+        siteId = $mmSite.getId(),
+        userId = $mmSite.getUserId();
 
     $scope.title = module.name;
     $scope.description = module.description;
@@ -172,7 +175,7 @@ angular.module('mm.addons.mod_assign')
 
     // Listen for submission saved event to refresh data.
     var obsSaved = $mmEvents.on(mmaModAssignSubmissionSavedEvent, function(data) {
-        if (data.assignmentId == $scope.assign.id && data.siteId == $mmSite.getId() && data.userId == $mmSite.getUserId()) {
+        if ($scope.assign && data.assignmentId == $scope.assign.id && data.siteId == siteId && data.userId == userId) {
             // Assignment submission saved, refresh data.
             $scope.refreshIcon = 'spinner';
             $scope.assignmentLoaded = false;
@@ -183,9 +186,20 @@ angular.module('mm.addons.mod_assign')
         }
     });
 
+    // Listen for submitted for grading event to refresh data.
+    var obsSubmitted = $mmEvents.on(mmaModAssignSubmittedForGradingEvent, function(data) {
+        if ($scope.assign && data.assignmentId == $scope.assign.id && data.siteId == siteId && data.userId == userId) {
+            // Assignment submitted, check completion.
+            $mmCourse.checkModuleCompletion(courseId, module.completionstatus);
+        }
+    });
+
     $scope.$on('$destroy', function() {
         if (obsSaved && obsSaved.off) {
             obsSaved.off();
+        }
+        if (obsSubmitted && obsSubmitted.off) {
+            obsSubmitted.off();
         }
     });
 });
