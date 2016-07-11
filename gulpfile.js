@@ -543,6 +543,7 @@ gulp.task('e2e-build', function() {
         capabilities: {},
         restartBrowserBetweenTests: true,
         onPrepare: 'FN_ONPREPARE_PLACEHOLDER',
+        getPageTimeout: 15000,  // Increase page fetching time out because of travis.
         plugins: [{
           path: npmPath.join(paths.e2e.pluginsToRoot, paths.e2e.plugins, 'wait_for_transitions.js')
         }]
@@ -611,26 +612,26 @@ gulp.task('e2e-build', function() {
   }
 
   // Prepend the onPrepare function.
-  onPrepare = "" +
-    "var wd = require('wd'),\n" +
-    "    protractor = require('protractor'),\n" +
-    "    wdBridge = require('wd-bridge')(protractor, wd);\n" +
-    "wdBridge.initFromProtractor(exports.config);\n" +
+  onPrepare = "\n" +
+    "        var wd = require('wd'),\n" +
+    "        protractor = require('protractor'),\n" +
+    "        wdBridge = require('wd-bridge')(protractor, wd);\n" +
+    "        wdBridge.initFromProtractor(exports.config);\n" +
     "\n" +
-    "// Define global variables for our tests.\n" +
-    "global.ISANDROID      = " + (argv.target == 'android' ? 'true' : 'false') + ";\n" +
-    "global.ISBROWSER      = " + (argv.target == 'browser' ? 'true' : 'false') + ";\n" +
-    "global.ISIOS          = " + (argv.target == 'ios' ? 'true' : 'false') + ";\n" +
-    "global.ISTABLET       = " + (argv.tablet ? 'true' : 'false') + ";\n" +
-    "global.DEVICEURL      = " + (argv.url ? "'" + argv.url + "'" : undefined) + ";\n" +
-    "global.DEVICEVERSION  = " + (argv.version ? "'" + argv.version + "'" : 'undefined') + ";\n" +
-    "global.SITEURL        = '" + (argv['site-url']) + "';\n" +
-    "global.SITEVERSION    = " + (argv['site-version']) + ";\n" +
-    "global.SITEHASLM      = " + (argv['site-has-local-mobile'] ? 'true' : 'false') + ";\n" +
-    "global.USERS          = " + JSON.stringify(users) + ";\n" +
-    "\n";
+    "        // Define global variables for our tests.\n" +
+    "        global.ISANDROID      = " + (argv.target == 'android' ? 'true' : 'false') + ";\n" +
+    "        global.ISBROWSER      = " + (argv.target == 'browser' ? 'true' : 'false') + ";\n" +
+    "        global.ISIOS          = " + (argv.target == 'ios' ? 'true' : 'false') + ";\n" +
+    "        global.ISTABLET       = " + (argv.tablet ? 'true' : 'false') + ";\n" +
+    "        global.DEVICEURL      = " + (argv.url ? "'" + argv.url + "'" : undefined) + ";\n" +
+    "        global.DEVICEVERSION  = " + (argv.version ? "'" + argv.version + "'" : 'undefined') + ";\n" +
+    "        global.SITEURL        = '" + (argv['site-url']) + "';\n" +
+    "        global.SITEVERSION    = " + (argv['site-version']) + ";\n" +
+    "        global.SITEHASLM      = " + (argv['site-has-local-mobile'] ? 'true' : 'false') + ";\n" +
+    "        global.USERS          = \n" + JSON.stringify(users, null, 4) + ";    \n" +
+    "    ";
 
-  configStr = JSON.stringify(config);
+  configStr = JSON.stringify(config, null, 4);
   configStr = configStr.replace('"FN_ONPREPARE_PLACEHOLDER"', "function(){" + onPrepare + "}");
   configStr = 'exports.config = ' + configStr + ';';
 
