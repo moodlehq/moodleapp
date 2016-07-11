@@ -160,7 +160,7 @@ angular.module('mm.addons.mod_wiki')
     self.linksHandler = function() {
 
         var self = {},
-            patterns = ['/mod/wiki/view.php', '/mod/wiki/map.php'];
+            patterns = ['/mod/wiki/view.php', '/mod/wiki/map.php', '/mod/wiki/create.php', '/mod/wiki/edit.php'];
 
         /**
          * Whether or not the handler is enabled for a certain site.
@@ -239,7 +239,7 @@ angular.module('mm.addons.mod_wiki')
                                     subwikiid: page.subwikiid,
                                     action: action
                                 };
-                                return $mmContentLinksHelper.goInSite('site.mod_wiki', stateParams, siteIds);
+                                return $mmContentLinksHelper.goInSite('site.mod_wiki', stateParams, siteId);
                             });
                         }).finally(function() {
                             modal.dismiss();
@@ -286,6 +286,90 @@ angular.module('mm.addons.mod_wiki')
         }
 
         /**
+         * Treat a Wiki create page link.
+         *
+         * @param {String[]} siteIds  Site IDs the URL belongs to.
+         * @param {String} url        URL to treat.
+         * @param {Number} [courseId] Course ID related to the URL.
+         * @return {Promise}          Promise resolved with the list of actions.
+         */
+        function treatCreateLink(siteIds, url, courseId) {
+            // Map links.
+            var params = $mmUtil.extractUrlParams(url);
+            if (typeof params.swid != 'undefined' && typeof params.title != 'undefined') {
+                // Pass false because all sites should have the same siteurl.
+                return $mmContentLinksHelper.filterSupportedSites(siteIds, isEnabled, false, courseId).then(function(ids) {
+                    if (!ids.length) {
+                        return [];
+                    }
+
+                    // Return actions.
+                    return [{
+                        message: 'mm.core.view',
+                        icon: 'ion-eye',
+                        sites: ids,
+                        action: function(siteId) {
+                            var stateParams = {
+                                module: null,
+                                moduleid: null,
+                                courseid: courseId,
+                                pagetitle: params.title,
+                                subwikiid: parseInt(params.swid, 10)
+                            };
+                            return $mmContentLinksHelper.goInSite('site.mod_wiki-edit', stateParams, siteId);
+                        }
+                    }];
+                });
+            } else {
+                return $q.when([]);
+            }
+        }
+
+        /**
+         * Treat a Wiki edit page link.
+         *
+         * @param {String[]} siteIds  Site IDs the URL belongs to.
+         * @param {String} url        URL to treat.
+         * @param {Number} [courseId] Course ID related to the URL.
+         * @return {Promise}          Promise resolved with the list of actions.
+         */
+        function treatEditLink(siteIds, url, courseId) {
+            // Map links.
+            var params = $mmUtil.extractUrlParams(url);
+            if (typeof params.pageid != 'undefined') {
+                // Pass false because all sites should have the same siteurl.
+                return $mmContentLinksHelper.filterSupportedSites(siteIds, isEnabled, false, courseId).then(function(ids) {
+                    if (!ids.length) {
+                        return [];
+                    }
+                    var section = "";
+                    if (typeof params.section != 'undefined') {
+                        section = decodeURIComponent(params.section.replace(/\+/g, ' '));
+                    }
+
+                    // Return actions.
+                    return [{
+                        message: 'mm.core.view',
+                        icon: 'ion-eye',
+                        sites: ids,
+                        action: function(siteId) {
+                            var stateParams = {
+                                module: null,
+                                moduleid: null,
+                                courseid: courseId,
+                                section: section,
+                                pageid: parseInt(params.pageid, 10)
+                            };
+                            return $mmContentLinksHelper.goInSite('site.mod_wiki-edit', stateParams, siteId);
+                        }
+                    }];
+                });
+            } else {
+                return $q.when([]);
+            }
+        }
+
+        /**
          * Get actions to perform with the link.
          *
          * @param {String[]} siteIds  Site IDs the URL belongs to.
@@ -301,6 +385,12 @@ angular.module('mm.addons.mod_wiki')
             } else if (url.indexOf(patterns[1]) > -1) {
                 // Map URL.
                 return treatMapLink(siteIds, url, courseId);
+            } else if (url.indexOf(patterns[2]) > -1 && $mmaModWiki.isPluginEnabledForEditing()) {
+                // Create page URL.
+                return treatCreateLink(siteIds, url, courseId);
+            }  else if (url.indexOf(patterns[3]) > -1 && $mmaModWiki.isPluginEnabledForEditing()) {
+                // Edit page URL.
+                return treatEditLink(siteIds, url, courseId);
             }
             return $q.when([]);
         };

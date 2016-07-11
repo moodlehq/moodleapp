@@ -20,6 +20,7 @@
     "completion-alt-auto-y": "Completed: {{$a}}",
     "completion-alt-manual-n": "Not completed: {{$a}}. Select to mark as complete.",
     "completion-alt-manual-y": "Completed: {{$a}}. Select to mark as not complete.",
+    "confirmcanceledit": "Are you sure you want to leave this page? All changes will be lost.",
     "confirmdeletefile": "Are you sure you want to delete this file?",
     "confirmopeninbrowser": "Do you want to open it in browser?",
     "course": "Course",

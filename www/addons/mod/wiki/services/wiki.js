@@ -121,6 +121,20 @@ angular.module('mm.addons.mod_wiki')
     };
 
     /**
+     * Return whether or not the plugin is enabled for editing in the current site. Plugin is enabled if the wiki WS are available.
+     *
+     * @module mm.addons.mod_wiki
+     * @ngdoc method
+     * @name $mmaModWiki#isPluginEnabledForEditing
+     * @return {Boolean}     Whether the wiki editing is available or not.
+     */
+    self.isPluginEnabledForEditing = function() {
+        return  $mmSite.wsAvailable('mod_wiki_get_page_for_editing') &&
+                $mmSite.wsAvailable('mod_wiki_new_page') &&
+                $mmSite.wsAvailable('mod_wiki_edit_page');
+    };
+
+    /**
      * Get a wiki.
      *
      * @module mm.addons.mod_wiki
@@ -413,6 +427,89 @@ angular.module('mm.addons.mod_wiki')
     };
 
     /**
+     * Get a wiki page contents for editing. It does not cache calls.
+     *
+     * @module mm.addons.mod_wiki
+     * @ngdoc method
+     * @name $mmaModWiki#getPageForEditing
+     * @param {Number}  pageId      Page ID.
+     * @param {String}  [section]   section to get.
+     * @return {Promise}            Promise resolved with wiki page contents.
+     */
+    self.getPageForEditing = function(pageId, section) {
+        var params = {
+                pageid: pageId
+            };
+
+        if (section) {
+            params.section = section;
+        }
+
+        return $mmSite.write('mod_wiki_get_page_for_editing', params).then(function(response) {
+            if (response.pagesection) {
+                return response.pagesection;
+            }
+            return $q.reject();
+        });
+    };
+
+    /**
+     * Create a new page on a subwiki. It does not cache calls.
+     *
+     * @module mm.addons.mod_wiki
+     * @ngdoc method
+     * @name $mmaModWiki#newPage
+     * @param {Number} subwikiId    Subwiki ID.
+     * @param {String} title        title to create the page.
+     * @param {String} content      content to save on the page.
+     * @return {Promise}            Promise resolved with wiki page contents.
+     */
+    self.newPage = function(subwikiId, title, content) {
+        var params = {
+                title: title,
+                content: content,
+                contentformat: 'html',
+                subwikiid: subwikiId
+            };
+
+        return $mmSite.write('mod_wiki_new_page', params).then(function(response) {
+            if (response.pageid) {
+                return response.pageid;
+            }
+            return $q.reject();
+        });
+    };
+
+    /**
+     * Save wiki contents on a page or section. It does not cache calls.
+     *
+     * @module mm.addons.mod_wiki
+     * @ngdoc method
+     * @name $mmaModWiki#editPage
+     * @param {Number} pageId Page ID.
+     * @param {String} content content to be saved.
+     * @param {String} [section] section to get.
+     * @return {Promise}        Promise resolved with wiki page contents.
+     */
+    self.editPage = function(pageId, content, section) {
+        var params = {
+                pageid: pageId,
+                content: content
+            };
+
+        if (section) {
+            params.section = section;
+        }
+
+        return $mmSite.write('mod_wiki_edit_page', params).then(function(response) {
+            if (response.pageid) {
+                return response.pageid;
+            }
+            return $q.reject();
+        });
+    };
+
+    /**
      * Invalidates wiki data.
      *
      * @module mm.addons.mod_wiki
@@ -482,7 +579,7 @@ angular.module('mm.addons.mod_wiki')
     };
 
     /**
-     * Invalidates Subwiki Pages.
+     * Invalidates Pages Contents.
      *
      * @module mm.addons.mod_wiki
      * @ngdoc method

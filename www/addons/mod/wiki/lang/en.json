@@ -1,9 +1,19 @@
 {
+    "cannoteditpage": "You can not edit this page.",
+    "content": "Content",
+    "createpage": "Create page",
+    "editingpage": "Editing this page '{{$a}}'",
     "errorloadingpage": "An error occured while loading page.",
     "errornowikiavailable": "This wiki does not have any content yet.",
     "gowikihome": "Go Wiki home",
     "map": "Map",
     "notingroup": "Not in group",
+    "newpagehdr": "New page",
+    "newpagetitle": "New page title",
+    "nocontent": "There is no content for this page",
+    "pagename": "Page name",
     "subwiki": "Subwiki",
-    "viewpage": "View page"
+    "titleshouldnotbeempty": "Title should not be empty",
+    "viewpage": "View page",
+    "wrongversionlock": "Another user has edited this page while you were editing and your content is obsolete."
 }
