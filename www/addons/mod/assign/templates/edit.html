@@ -1,24 +1,22 @@
 <ion-view>
     <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
-    <ion-content padding="true" mm-state-class>
+    <ion-nav-buttons side="secondary">
+        <a class="button button-clear" ng-click="save()" mm-link aria-label="{{ 'mm.core.save' | translate }}"> {{ 'mm.core.save' | translate }}</a>
+    </ion-nav-buttons>
+    <ion-content mm-state-class>
         <mm-loading hide-until="assignmentLoaded">
-            <!-- TODO: plagiarism_print_disclosure -->
-            <li ng-if="submissionStatement" class="item item-text-wrap item-checkbox item-checkbox-right">
-                <label class="checkbox">
-                    <input type="checkbox" name="submissionstatement" aria-labelledby="mma-mod-assign-submissionstatement" >
-                </label>
-                <p id="mma-mod-assign-submissionstatement"><mm-format-text watch="true" class="mm-content-with-float">{{submissionStatement}}</mm-format-text></p>
-            </li>
-
-            <form name="mma-mod_assign-edit-form" ng-if="userSubmission && userSubmission.plugins && userSubmission.plugins.length">
-                <mma-mod-assign-submission-plugin ng-repeat="plugin in userSubmission.plugins" assign="assign" submission="userSubmission" plugin="plugin" edit="true"></mma-mod-assign-submission-plugin>
-            </form>
-
             <div class="list">
-                <div class="item button-bar">
-                    <button class="button" ng-click="save()">{{ 'mma.mod_assign.savechanges' | translate }}</button>
-                    <button class="button" ng-click="cancel()">{{ 'mm.core.cancel' | translate }}</button>
-                </div>
+                <!-- TODO: plagiarism_print_disclosure -->
+                <li ng-if="submissionStatement" class="item item-text-wrap item-checkbox item-checkbox-right">
+                    <label class="checkbox">
+                        <input type="checkbox" name="submissionstatement" aria-labelledby="mma-mod-assign-submissionstatement" >
+                    </label>
+                    <p id="mma-mod-assign-submissionstatement"><mm-format-text watch="true" class="mm-content-with-float">{{submissionStatement}}</mm-format-text></p>
+                </li>
+
+                <form name="mma-mod_assign-edit-form" ng-if="userSubmission && userSubmission.plugins && userSubmission.plugins.length">
+                    <mma-mod-assign-submission-plugin ng-repeat="plugin in userSubmission.plugins" assign="assign" submission="userSubmission" plugin="plugin" edit="true"></mma-mod-assign-submission-plugin>
+                </form>
             </div>
         </mm-loading>
     </ion-content>
