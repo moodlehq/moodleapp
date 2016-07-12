@@ -70,7 +70,11 @@ angular.module('mm.addons.qtype_ddwtos')
             }
 
             $timeout(function() {
-                $mmaQtypeDdwtosRender.init_question(question, question.readonly, inputIds);
+                var qi = $mmaQtypeDdwtosRender.init_question(question, question.readonly, inputIds);
+
+                scope.$on('$destroy', function() {
+                    qi.destroy();
+                });
             });
         }
     };
