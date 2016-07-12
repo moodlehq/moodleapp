@@ -38,6 +38,7 @@ angular.module('mm.core.question')
  *                                   Will receive as params the name and the value of the button.
  * @param {Mixed} offlineEnabled     If offline mode is disabled for this question, set it to false, 0, "0" or "false".
  *                                   Otherwise it'll assume offline mode is enabled.
+ * @param {String} [scrollHandle]    Name of the scroll handle of the page containing the post.
  */
 .directive('mmQuestion', function($log, $compile, $mmQuestionDelegate, $mmQuestionHelper, $mmQuestionBehaviourDelegate, $mmUtil,
             $translate, $q, $mmQuestion) {
@@ -53,7 +54,8 @@ angular.module('mm.core.question')
             attemptId: '=?',
             abort: '&',
             buttonClicked: '&?',
-            offlineEnabled: '@?'
+            offlineEnabled: '@?',
+            scrollHandle: '@?'
         },
         link: function(scope, element) {
             var question = scope.question,
