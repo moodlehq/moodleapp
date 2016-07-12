@@ -16,6 +16,7 @@ angular.module('mm.core')
 
 /**
  * Directive to handle a local file.
+ * Only files inside the app folder can be managed.
  *
  * @module mm.core
  * @ngdoc directive
@@ -24,10 +25,21 @@ angular.module('mm.core')
  * Directive to handle a local file. Shows the file name, icon (depending on extension), size and time modified.
  * Also, if managing is enabled it will also show buttons to rename and delete the file.
  *
+ * Usage example:
+ *
+ * <mm-local-file file="file" manage="manage" file-deleted="delete($index)" file-renamed="renamed($index, file)"></mm-local-file>
+ *
+ * The rename function will receive the new fileEntry in a parameter named "file". This parameter MUST be named "file" in the
+ * template using this directive. It doesn't matter the position of this parameter, only the name.
+ *
  * Attributes:
- * @param {Object} file            Required. A fileEntry retrieved using $mmFS#getFile or similar.
- * @param {Boolean} [manage]       True if the user can manage the file (edit/delete), false otherwise.
- * @param {Function} [fileDeleted] Function to call when a file is deleted. Required if manage=true.
+ * @param {Object} file             Required. A fileEntry retrieved using $mmFS#getFile or similar.
+ * @param {Boolean} [manage]        True if the user can manage the file (edit/delete), false otherwise.
+ * @param {Function} [fileDeleted]  Function to call when a file is deleted. Required if manage=true.
+ * @param {Function} [fileRenamed]  Function to call when a file is renamed. It will receive a "file" parameter with the new
+ *                                  fileEntry. This parameter needs to be named "file".
+ * @param {Boolean} [overrideClick] True if the default item click should be overridden, false otherwise.
+ * @param {Function} [fileClicked]  Function to call when a file is clicked. Requires overrideClick=true.
  */
 .directive('mmLocalFile', function($mmFS, $mmText, $mmUtil, $timeout, $translate) {
 
@@ -45,11 +57,25 @@ angular.module('mm.core')
             file: '=',
             manage: '=?',
             fileDeleted: '&?',
+            fileRenamed: '&?',
             overrideClick: '=?',
             fileClicked: '&?'
         },
         link: function(scope, element) {
-            var file = scope.file;
+            var file = scope.file,
+                relativePath;
+
+            if (!file || !file.name) {
+                // Invalid data received.
+                return;
+            }
+
+            // Let's calculate the relative path for the file.
+            relativePath = $mmFS.removeBasePath(file.toURL());
+            if (!relativePath) {
+                // Didn't find basePath, use fullPath but if the user tries to manage the file it'll probably fail.
+                relativePath = file.fullPath;
+            }
 
             loadFileBasicData(scope, file);
             scope.data = {};
@@ -100,7 +126,7 @@ angular.module('mm.core')
                 }
 
                 var modal = $mmUtil.showModalLoading(),
-                    fileAndDir = $mmFS.getFileAndDirectoryFromPath(file.fullPath),
+                    fileAndDir = $mmFS.getFileAndDirectoryFromPath(relativePath),
                     newPath = $mmFS.concatenatePaths(fileAndDir.directory, newName);
 
                 // Check if there's a file with this name.
@@ -109,10 +135,11 @@ angular.module('mm.core')
                     $mmUtil.showErrorModal('mm.core.errorfileexistssamename', true);
                 }).catch(function() {
                     // File doesn't exist, move it.
-                    return $mmFS.moveFile(file.fullPath, newPath).then(function(fileEntry) {
+                    return $mmFS.moveFile(relativePath, newPath).then(function(fileEntry) {
                         scope.editMode = false;
                         scope.file = file = fileEntry;
                         loadFileBasicData(scope, file);
+                        scope.fileRenamed && scope.fileRenamed({file: file});
                     }).catch(function() {
                         $mmUtil.showErrorModal('mm.core.errorrenamefile', true);
                     });
@@ -129,7 +156,7 @@ angular.module('mm.core')
                 // Ask confirmation.
                 $mmUtil.showConfirm($translate.instant('mm.core.confirmdeletefile')).then(function() {
                     var modal = $mmUtil.showModalLoading();
-                    $mmFS.removeFile(file.fullPath).then(function() {
+                    $mmFS.removeFile(relativePath).then(function() {
                         scope.fileDeleted && scope.fileDeleted();
                     }).catch(function() {
                         $mmUtil.showErrorModal('mm.core.errordeletefile', true);

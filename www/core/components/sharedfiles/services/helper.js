@@ -174,30 +174,13 @@ angular.module('mm.core.sharedfiles')
         siteId = siteId || $mmSite.getId();
 
         // First of all check if there's already a file with the same name in the shared files folder.
-        return $mmSharedFiles.getSiteSharedFiles(siteId).then(function(entries) {
-            var files = {};
-
-            // Index the files by name.
-            angular.forEach(entries, function(entry) {
-                files[entry.name] = entry;
-            });
-
-            if (typeof files[fileEntry.name] == 'undefined') {
+        var sharedFilesDirPath = $mmSharedFiles.getSiteSharedFilesDirPath(siteId);
+        return $mmFS.getUniqueNameInFolder(sharedFilesDirPath, fileEntry.name).then(function(newName) {
+            if (newName == fileEntry.name) {
                 // No file with the same name. Use the original file name.
-                return fileEntry.name;
+                return newName;
             } else {
-                // Repeated name. Add a number until we find a free name.
-                var newName,
-                    number = 1,
-                    extension = $mmFS.getFileExtension(fileEntry.name),
-                    nameWithoutExtension = fileEntry.name.substr(0, fileEntry.name.length - extension.length - 1);
-
-                do {
-                    newName = nameWithoutExtension + '(' + number + ').' + extension;
-                    number++;
-                } while (typeof files[newName] != 'undefined');
-
-                // Ask the user what he wants to do.
+                // Repeated name. Ask the user what he wants to do.
                 return self.askRenameReplace(fileEntry.name, newName);
             }
         }).then(function(name) {

@@ -1,4 +1,4 @@
-<mm-loading hide-until="loaded">
+<mm-loading hide-until="loaded" class="mm-loading-noheight">
     <div class="item item-divider">{{ 'mma.mod_assign.submissionstatusheading' | translate }}</div>
 
     <div ng-if="fromDate && !isGrading" class="item item-text-wrap">
@@ -27,7 +27,43 @@
     <div ng-if="statusTranslated" class="item item-text-wrap">
         <h2>{{ 'mma.mod_assign.submissionstatus' | translate }}</h2>
         <p class="badge badge-inline {{statusClass}}">{{statusTranslated}}</p>
-        <a ng-if="cansubmit" class="button button-block icon-right ion-share" ng-href="{{moduleUrl}}" mm-link>{{ 'mma.mod_assign.addsubmission' | translate }}</a>
+        <!-- Add or edit submission. -->
+        <div ng-if="canEdit && submitSupported && !unsupportedEditPlugins.length && !showErrorStatementEdit">
+            <!-- If no submission or is new, show add submission. -->
+            <a ng-if="!userSubmission || userSubmission.status == statusNew" class="button button-block" ng-click="goToEdit()">{{ 'mma.mod_assign.addsubmission' | translate }}</a>
+            <!-- If reopened, show addfromprevious and addnewattempt. -->
+            <a ng-if="userSubmission && userSubmission.status == statusReopened" class="button button-block" ng-click="copyPrevious()">{{ 'mma.mod_assign.addnewattemptfromprevious' | translate }}</a>
+            <a ng-if="userSubmission && userSubmission.status == statusReopened" class="button button-block" ng-click="goToEdit()">{{ 'mma.mod_assign.addnewattempt' | translate }}</a>
+            <!-- Else show editsubmission. -->
+            <a ng-if="userSubmission && userSubmission.status != statusNew && userSubmission.status != statusReopened" class="button button-block" ng-click="goToEdit()">{{ 'mma.mod_assign.editsubmission' | translate }}</a>
+        </div>
+        <div ng-if="canEdit && unsupportedEditPlugins && unsupportedEditPlugins.length && !showErrorStatementEdit">
+            <p class="mma-mod-assign-warning">{{ 'mma.mod_assign.erroreditpluginsnotsupported' | translate }}</p>
+            <p class="mma-mod-assign-warning" ng-repeat="name in unsupportedEditPlugins">{{ name }}</p>
+        </div>
+        <div ng-if="canEdit && showErrorStatementEdit">
+            <p class="mma-mod-assign-warning">{{ 'mma.mod_assign.cannoteditduetostatementsubmission' | translate }}</p>
+        </div>
+    </div>
+
+    <!-- Submit for grading form. -->
+    <div ng-if="canSubmit && submitSupported">
+        <li ng-if="submissionStatement" class="item item-text-wrap item-checkbox item-checkbox-right">
+            <label class="checkbox">
+                <input type="checkbox" aria-labelledby="mma-mod-assign-submissionstatement" ng-model="submitModel.submissionStatement">
+            </label>
+            <p id="mma-mod-assign-submissionstatement"><mm-format-text watch="true" class="mm-content-with-float">{{submissionStatement}}</mm-format-text></p>
+        </li>
+        <!-- Submit button. -->
+        <div ng-if="!showErrorStatementSubmit" class="item item-text-wrap">
+            <a class="button button-block" ng-click="submit(submitModel.submissionStatement)">{{ 'mma.mod_assign.submitassignment' | translate }}</a>
+            <p>{{ 'mma.mod_assign.submitassignment_help' | translate }}</p>
+        </div>
+        <!-- Error because we lack submissions statement. -->
+        <div ng-if="showErrorStatementSubmit" class="item item-text-wrap">
+            <p class="mma-mod-assign-warning">{{ 'mma.mod_assign.cannotsubmitduetostatementsubmission' | translate }}</p>
+        </div>
+
     </div>
 
     <div ng-if="membersToSubmit.length > 0" class="item item-text-wrap">
@@ -85,7 +121,7 @@
         <p ng-if="userSubmission.status == statusNew">-</p>
     </div>
 
-    <mma-mod-assign-submission-plugin ng-repeat="plugin in submissionPlugins"></mma-mod-assign-submission-plugin>
+    <mma-mod-assign-submission-plugin ng-repeat="plugin in submissionPlugins" assign="assign" submission="userSubmission" plugin="plugin"></mma-mod-assign-submission-plugin>
 
     <div ng-if="feedback">
         <div class="item item-divider">{{ 'mma.mod_assign.feedback' | translate }}</div>
@@ -106,6 +142,6 @@
                 </a>
             </p>
         </div>
-        <mma-mod-assign-feedback-plugin ng-repeat="plugin in feedback.plugins"></mma-mod-assign-feedback-plugin>
+        <mma-mod-assign-feedback-plugin ng-repeat="plugin in feedback.plugins" assign="assign" submission="userSubmission" plugin="plugin"></mma-mod-assign-feedback-plugin>
     </div>
 </mm-loading>

@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_assign')
  * @name mmaModAssignSubmissionReviewCtrl
  */
 .controller('mmaModAssignSubmissionReviewCtrl', function($scope, $stateParams, $mmUser, $q, $mmaModAssign,
-        mmaModAssignSubmissionInvalidated) {
+        mmaModAssignSubmissionInvalidatedEvent) {
     var assign;
 
     $scope.courseid = $stateParams.courseid;
@@ -55,7 +55,7 @@ angular.module('mm.addons.mod_assign')
             promises.push($mmaModAssign.invalidateSubmissionStatusData(assign.id, $scope.submitid, $scope.blindMarking));
         }
         return $q.all(promises).finally(function() {
-            $scope.$broadcast(mmaModAssignSubmissionInvalidated);
+            $scope.$broadcast(mmaModAssignSubmissionInvalidatedEvent);
             return fetchSubmission();
         });
     }

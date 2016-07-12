@@ -272,7 +272,7 @@ angular.module('mm.core')
      * @ngdoc method
      * @name $mmWS#uploadFile
      * @param {Object} uri File URI.
-     * @param {Object} options File settings: fileKey, fileName, mimeType and fileArea.
+     * @param {Object} options File settings: fileKey, fileName, mimeType, fileArea and itemId.
      * @param {Object} preSets Contains siteurl and token.
      * @return {Promise}
      */
@@ -292,7 +292,8 @@ angular.module('mm.core')
         ftOptions.mimeType = options.mimeType;
         ftOptions.params = {
             token: preSets.token,
-            filearea: options.fileArea || 'draft'
+            filearea: options.fileArea || 'draft',
+            itemid: options.itemId || 0
         };
         ftOptions.chunkedMode = false;
         ftOptions.headers = {

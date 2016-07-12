@@ -22,27 +22,49 @@ angular.module('mm.addons.mod_assign')
  * @name mmaModAssignSubmissionPlugin
  * @description
  * Directive to render submission plugin.
+ *
  * It requires to receive a "plugin" scope variable indicating the plugin to render the submission.
+ *
+ * Parameters received by this directive and shared with the directive to render the plugin (if any):
+ *
+ * @param {Object} assign     The assign.
+ * @param {Object} submission The submission.
+ * @param {Object} plugin     The plugin to render.
+ * @param {Boolean} edit      True if editing, false if read only.
+ *
+ * Also, the directives to render the plugin will receive the following parameters in the scope:
+ *
+ * @param {String} assignComponent Assignment component.
+ * @param {Object} configs         Plugin configs.
  */
-.directive('mmaModAssignSubmissionPlugin', function($compile, $injector, $mmaModAssign, mmaModAssignComponent) {
+.directive('mmaModAssignSubmissionPlugin', function($compile, $mmaModAssignSubmissionDelegate, $mmaModAssign,
+            mmaModAssignComponent) {
     return {
         restrict: 'E',
+        scope: {
+            assign: '=',
+            plugin: '=',
+            submission: '=',
+            edit: '@?'
+        },
         templateUrl: 'addons/mod/assign/templates/submissionplugin.html',
         link: function(scope, element, attributes) {
             var plugin = scope.plugin,
-                container = element[0].querySelector('.mma-mod-assign-submission-container');
+                container = element[0].querySelector('.mma-mod-assign-submission-container'),
+                directive;
 
             if (!plugin || !container) {
                 return;
             }
 
             scope.assignComponent = mmaModAssignComponent;
+            scope.edit = scope.edit && scope.edit !== 'false';
 
-            // Dash to Camel case plugin name.
-            var pluginname = plugin.type.charAt(0).toUpperCase() + plugin.type.substr(1).toLowerCase();
-            // Check if Directive exists.
-            if ($injector.has('mmaModAssignSubmission' + pluginname + 'Directive')) {
-                // Configs are only used in Directives.
+            // Check if the plugin has defined its own directive to render itself.
+            directive = $mmaModAssignSubmissionDelegate.getDirectiveForPlugin(plugin, scope.edit);
+
+            if (directive) {
+                // Configs are only used in directives.
                 scope.configs = {};
                 angular.forEach(scope.assign.configs, function(config) {
                     if (config.subtype == 'assignsubmission' && config.plugin == plugin.type) {
@@ -51,14 +73,14 @@ angular.module('mm.addons.mod_assign')
                 });
 
                 // Add the directive to the element.
-                container.setAttribute('mma-mod-assign-submission-' + plugin.type, '');
+                container.setAttribute(directive, '');
                 // Compile the new directive.
                 $compile(container)(scope);
             } else {
                 // Helper data and fallback.
                 scope.text = $mmaModAssign.getSubmissionPluginText(plugin);
                 scope.files = $mmaModAssign.getSubmissionPluginAttachments(plugin);
-                scope.notsupported = true;
+                scope.notSupported = $mmaModAssignSubmissionDelegate.isPluginSupported(plugin.type);
             }
         }
     };

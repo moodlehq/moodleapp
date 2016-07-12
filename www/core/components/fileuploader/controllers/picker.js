@@ -25,6 +25,7 @@ angular.module('mm.core.fileuploader')
             $mmFileUploaderDelegate, $stateParams) {
 
     var maxSize = $stateParams.maxsize,
+        upload = $stateParams.upload,
         uploadMethods = {
             album: $mmFileUploaderHelper.uploadImage,
             camera: $mmFileUploaderHelper.uploadImage,
@@ -72,36 +73,8 @@ angular.module('mm.core.fileuploader')
 
         return $mmFileUploaderHelper.confirmUploadFile(file.size).then(function() {
             // We have the data of the file to be uploaded, but not its URL (needed). Create a copy of the file to upload it.
-            return $mmFileUploaderHelper.copyAndUploadFile(file).then(successUploading, errorUploading);
+            return $mmFileUploaderHelper.copyAndUploadFile(file, upload).then(successUploading, errorUploading);
         }, errorUploading);
-    }
-
-    // Upload a file given the absolute path.
-    function uploadFileFromPath(filePath, deleteAfterUpload) {
-        var fileEntry,
-            file;
-
-        return $mmFS.getExternalFile(filePath).then(function(fe) {
-            fileEntry = fe;
-
-            return $mmFS.getFileObjectFromFileEntry(fileEntry);
-        }).catch(function() {
-            // Error reading file.
-            $mmUtil.showErrorModal('mm.fileuploader.errorreadingfile', true);
-            return $q.reject();
-        }).then(function(f) {
-            file = f;
-
-            if (maxSize != -1 && file.size > maxSize) {
-                return $mmFileUploaderHelper.errorMaxBytes(maxSize, file.name);
-            }
-
-            // Ask confirm if needed.
-            return $mmFileUploaderHelper.confirmUploadFile(file.size);
-        }).then(function() {
-            return $mmFileUploaderHelper.uploadGenericFile(fileEntry.toURL(), file.name, file.type, deleteAfterUpload, false);
-        }).then(successUploading)
-        .catch(errorUploading);
     }
 
     // Upload media.
@@ -110,7 +83,7 @@ angular.module('mm.core.fileuploader')
             $mmUtil.showErrorModal('mm.fileuploader.errormustbeonlinetoupload', true);
         } else {
             if (typeof(uploadMethods[type]) !== 'undefined') {
-                uploadMethods[type](param, maxSize).then(successUploading, errorUploading);
+                uploadMethods[type](param, maxSize, upload).then(successUploading, errorUploading);
             }
         }
     };
@@ -129,9 +102,10 @@ angular.module('mm.core.fileuploader')
     $scope.handlerClicked = function(e, action) {
         e.preventDefault();
         e.stopPropagation();
-        action(maxSize).then(function(data) {
+        action(maxSize, upload).then(function(data) {
             if (data.uploaded) {
                 // The handler already uploaded the file. Return the result.
+                // We shouldn't enter here if upload is false, but that's the handler's fault.
                 successUploading(data.result);
             } else {
                 // The handler didn't upload the file, we need to upload it.
@@ -141,10 +115,12 @@ angular.module('mm.core.fileuploader')
                 } else if (data.path) {
                     // The handler provided a path. First treat it like it's a relative path.
                     return $mmFS.getFile(data.path).then(function(fileEntry) {
-                        return uploadFileFromPath(fileEntry.toURL(), data.delete);
+                        return uploadFileEntry(fileEntry, data.delete);
                     }, function() {
                         // File not found, it's probably an absolute path.
-                        return uploadFileFromPath(data.path, data.delete);
+                        return $mmFS.getExternalFile(data.path).then(function(fileEntry) {
+                            return uploadFileEntry(fileEntry, data.delete);
+                        }, errorUploading);
                     });
                 }
 

@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_assign')
  * @name mmaModAssignSubmissionListCtrl
  */
 .controller('mmaModAssignSubmissionListCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $translate, $q,
-        mmaModAssignComponent, mmaModAssignSubmissionInvalidated) {
+        mmaModAssignComponent, mmaModAssignSubmissionInvalidatedEvent) {
 
     var courseId = $stateParams.courseid;
 
@@ -91,7 +91,7 @@ angular.module('mm.addons.mod_assign')
         }
 
         return $q.all(promises).finally(function() {
-            $scope.$broadcast(mmaModAssignSubmissionInvalidated);
+            $scope.$broadcast(mmaModAssignSubmissionInvalidatedEvent);
             return fetchAssignment();
         });
     }

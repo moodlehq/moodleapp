@@ -22,9 +22,12 @@ angular.module('mm.addons.mod_assign')
  * @name mmaModAssignIndexCtrl
  */
 .controller('mmaModAssignIndexCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $translate, mmaModAssignComponent, $q,
-        $state, $ionicPlatform, mmaModAssignSubmissionInvalidated) {
+        $state, $ionicPlatform, mmaModAssignSubmissionInvalidatedEvent, $mmEvents, $mmSite, mmaModAssignSubmissionSavedEvent,
+        mmaModAssignSubmittedForGradingEvent, $mmCourse) {
     var module = $stateParams.module || {},
-        courseId = $stateParams.courseid;
+        courseId = $stateParams.courseid,
+        siteId = $mmSite.getId(),
+        userId = $mmSite.getUserId();
 
     $scope.title = module.name;
     $scope.description = module.description;
@@ -33,6 +36,11 @@ angular.module('mm.addons.mod_assign')
     $scope.courseid = courseId;
     $scope.moduleid = module.id;
     $scope.refreshIcon = 'spinner';
+
+    // Check if submit through app is supported.
+    $mmaModAssign.isSaveAndSubmitSupported().then(function(enabled) {
+        $scope.submitSupported = enabled;
+    });
 
     $scope.gotoSubmission = function(submit, blind) {
         if ($ionicPlatform.isTablet()) {
@@ -127,7 +135,7 @@ angular.module('mm.addons.mod_assign')
         }
 
         return $q.all(promises).finally(function() {
-            $scope.$broadcast(mmaModAssignSubmissionInvalidated);
+            $scope.$broadcast(mmaModAssignSubmissionInvalidatedEvent);
             return fetchAssignment();
         });
     }
@@ -164,4 +172,34 @@ angular.module('mm.addons.mod_assign')
             });
         }
     };
+
+    // Listen for submission saved event to refresh data.
+    var obsSaved = $mmEvents.on(mmaModAssignSubmissionSavedEvent, function(data) {
+        if ($scope.assign && data.assignmentId == $scope.assign.id && data.siteId == siteId && data.userId == userId) {
+            // Assignment submission saved, refresh data.
+            $scope.refreshIcon = 'spinner';
+            $scope.assignmentLoaded = false;
+            refreshAllData().finally(function() {
+                $scope.refreshIcon = 'ion-refresh';
+                $scope.assignmentLoaded = true;
+            });
+        }
+    });
+
+    // Listen for submitted for grading event to refresh data.
+    var obsSubmitted = $mmEvents.on(mmaModAssignSubmittedForGradingEvent, function(data) {
+        if ($scope.assign && data.assignmentId == $scope.assign.id && data.siteId == siteId && data.userId == userId) {
+            // Assignment submitted, check completion.
+            $mmCourse.checkModuleCompletion(courseId, module.completionstatus);
+        }
+    });
+
+    $scope.$on('$destroy', function() {
+        if (obsSaved && obsSaved.off) {
+            obsSaved.off();
+        }
+        if (obsSubmitted && obsSubmitted.off) {
+            obsSubmitted.off();
+        }
+    });
 });

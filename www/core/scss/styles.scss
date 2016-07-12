@@ -114,6 +114,7 @@ em {
   }
   &.item-button-right {
     > .button,
+    > .buttons,
     > .spinner {
       top: $item-padding;
     }
@@ -255,6 +256,19 @@ em {
     line-height: $item-button-line-height;
   }
 }
+
+// Buttons.
+.item-button-right,
+a.item.item-button-right,
+button.item.item-button-right {
+  &.item-2-button-right {
+    padding-right: $item-padding * 7;
+  }
+  &.item-3-button-right {
+    padding-right: $item-padding * 10;
+  }
+}
+
 /**
  * Core directives.
  */
@@ -282,6 +296,10 @@ em {
 
 .mm-loading-content {
   height: 100%;
+}
+
+mm-loading.mm-loading-noheight .mm-loading-content {
+  height: auto;
 }
 
 // Align ion-spinner right

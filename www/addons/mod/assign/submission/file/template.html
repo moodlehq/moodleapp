@@ -1,4 +1,10 @@
-<div class="item item-text-wrap" ng-if="files.length">
+<!-- Edit -->
+<div ng-if="edit">
+    <h2 class="item item-text-wrap item-divider">{{plugin.name}}</h2>
+    <mm-attachments files="files" max-size="{{configs.maxsubmissionsizebytes}}" max-submissions="{{configs.maxfilesubmissions}}" component="{{assignComponent}}" component-id="{{assign.id}}"></mm-attachments>
+</div>
+
+<div class="item item-text-wrap" ng-if="files.length && !edit">
     <h2>{{plugin.name}}</h2>
     <mm-file ng-repeat="file in files" file="file" component="{{assignComponent}}" component-id="{{assign.id}}"></mm-file>
 </div>

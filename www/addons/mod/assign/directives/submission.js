@@ -26,7 +26,8 @@ angular.module('mm.addons.mod_assign')
 .directive('mmaModAssignSubmission', function($mmaModAssign, $translate, $mmUser, mmaModAssignAttemptReopenMethodNone, $q, $mmSite,
         mmaModAssignUnlimitedAttempts, mmaModAssignGradingStatusGraded, mmaModAssignGradingStatusNotGraded, mmUserProfileState,
         mmaModMarkingWorkflowStateReleased, mmaModAssignSubmissionStatusNew, mmaModAssignSubmissionStatusSubmitted, $mmUtil,
-        mmaModAssignSubmissionInvalidated, $mmGroups) {
+        mmaModAssignSubmissionInvalidatedEvent, $mmGroups, $state, $mmaModAssignHelper, mmaModAssignSubmissionStatusReopened,
+        $mmEvents, mmaModAssignSubmittedForGradingEvent, $mmFileUploaderHelper, $mmApp) {
 
     // Directive controller.
     function controller() {
@@ -40,7 +41,9 @@ angular.module('mm.addons.mod_assign')
             }
 
             return $mmaModAssign.getAssignment(courseId, moduleId).then(function(assign) {
-                var time = parseInt(Date.now() / 1000);
+                var time = parseInt(Date.now() / 1000),
+                    submissionStatementMissing = assign.requiresubmissionstatement &&
+                        typeof assign.submissionstatement == 'undefined';
 
                 scope.assign = assign;
 
@@ -57,11 +60,28 @@ angular.module('mm.addons.mod_assign')
                     scope.submissionStatusAvailable = true;
 
                     scope.lastAttempt = response.lastattempt;
+                    scope.previousAttempts = response.previousattempts;
                     scope.membersToSubmit = [];
                     if (response.lastattempt) {
                         var blindMarking = scope.isGrading && response.lastattempt.blindmarking && !assign.revealidentities;
 
-                        scope.cansubmit = !scope.isGrading && response.lastattempt.cansubmit;
+                        scope.canSubmit = !scope.isGrading && response.lastattempt.cansubmit;
+                        scope.canEdit = !scope.isGrading && response.lastattempt.canedit;
+
+                        // Get submission statement if needed.
+                        if (assign.requiresubmissionstatement && assign.submissiondrafts && submitId == $mmSite.getUserId()) {
+                            scope.submissionStatement = assign.submissionstatement;
+                            scope.submitModel.submissionStatement = false;
+                        } else {
+                            scope.submissionStatement = false;
+                            scope.submitModel.submissionStatement = true; // No submission statement, so it's accepted.
+                        }
+
+                        // Show error instead of edit/submit button if submission statement should be shown
+                        // but we couldn't retrieve it from server (Moodle 3.1 or previous).
+                        scope.showErrorStatementEdit = submissionStatementMissing && !assign.submissiondrafts &&
+                                submitId == $mmSite.getUserId();
+                        scope.showErrorStatementSubmit = submissionStatementMissing && assign.submissiondrafts;
 
                         scope.userSubmission = assign.teamsubmission ?
                             response.lastattempt.teamsubmission : response.lastattempt.submission;
@@ -198,6 +218,29 @@ angular.module('mm.addons.mod_assign')
                         }
                     }
 
+                    // Check if there's any unsupported plugin for editing.
+                    var plugins;
+                    if (scope.userSubmission) {
+                        plugins = scope.userSubmission.plugins;
+                    } else {
+                        // Submission not created yet, we have to use assign configs to detect the plugins used.
+                        plugins = [];
+                        angular.forEach(assign.configs, function(config) {
+                            if (config.subtype == 'assignsubmission') {
+                                if (config.name == 'enabled' && parseInt(config.value, 10) === 1) {
+                                    plugins.push({
+                                        type: config.plugin,
+                                        name: config.plugin
+                                    });
+                                }
+                            }
+                        });
+                    }
+
+                    promises.push($mmaModAssign.getUnsupportedEditPlugins(plugins).then(function(list) {
+                        scope.unsupportedEditPlugins = list;
+                    }));
+
                     return $q.all(promises);
                 }).catch(function(error) {
                     if (typeof error != "undefined") {
@@ -219,7 +262,7 @@ angular.module('mm.addons.mod_assign')
                     }
 
                     return $mmaModAssign.getSubmissions(assign.id).then(function(data) {
-                        scope.cansubmit = !data.canviewsubmissions;
+                        scope.canSubmit = !data.canviewsubmissions;
 
                         if (data.submissions) {
                             scope.userSubmission = false;
@@ -262,15 +305,125 @@ angular.module('mm.addons.mod_assign')
         link: function(scope, element, attributes, controller) {
             scope.isGrading = !!attributes.submitid;
             scope.statusNew = mmaModAssignSubmissionStatusNew;
+            scope.statusReopened = mmaModAssignSubmissionStatusReopened;
             scope.loaded = false;
+            scope.submitModel = {};
 
-            var obsLoaded = scope.$on(mmaModAssignSubmissionInvalidated, function() {
-                controller.load(scope, attributes.moduleid, attributes.courseid, attributes.submitid, attributes.blindid, true);
+            var obsLoaded = scope.$on(mmaModAssignSubmissionInvalidatedEvent, function() {
+                controller.load(scope, attributes.moduleid, attributes.courseid, attributes.submitid, attributes.blindid);
+            });
+
+            // Check if submit through app is supported.
+            $mmaModAssign.isSaveAndSubmitSupported().then(function(enabled) {
+                scope.submitSupported = enabled;
             });
 
             scope.$on('$destroy', obsLoaded);
 
-            controller.load(scope, attributes.moduleid, attributes.courseid, attributes.submitid, attributes.blindid, false);
+            controller.load(scope, attributes.moduleid, attributes.courseid, attributes.submitid, attributes.blindid);
+
+            // Add or edit submission.
+            scope.goToEdit = function() {
+                $state.go('site.mod_assign-submission-edit', {
+                    moduleid: attributes.moduleid,
+                    courseid: attributes.courseid,
+                    userid: attributes.submitid,
+                    blindid: attributes.blindid
+                });
+            };
+
+            // Copy previous attempt and then go to edit.
+            scope.copyPrevious = function() {
+                if (!$mmApp.isOnline()) {
+                    $mmUtil.showErrorModal('mm.core.networkerrormsg', true);
+                    return;
+                }
+
+                if (!scope.previousAttempts || !scope.previousAttempts.length) {
+                    // Cannot access previous attempts, just go to edit.
+                    scope.goToEdit();
+                    return;
+                }
+
+                var modal = $mmUtil.showModalLoading(),
+                    previousAttempt = scope.previousAttempts[scope.previousAttempts.length - 1],
+                    previousSubmission = scope.assign.teamsubmission ?
+                            previousAttempt.teamsubmission : previousAttempt.submission;
+
+                $mmaModAssignHelper.getSubmissionSizeForCopy(scope.assign, previousSubmission).catch(function() {
+                    // Error calculating size, return -1.
+                    return -1;
+                }).then(function(size) {
+                    modal.dismiss();
+
+                    // Confirm action.
+                    return $mmFileUploaderHelper.confirmUploadFile(size, true);
+                }).then(function() {
+                    // User confirmed, copy the attempt.
+                    modal = $mmUtil.showModalLoading('mm.core.sending', true);
+
+                    $mmaModAssignHelper.copyPreviousAttempt(scope.assign, previousSubmission).then(function() {
+                        // Now go to edit.
+                        scope.goToEdit();
+
+                        // Invalidate and refresh data to update this view.
+                        invalidateAndRefresh();
+
+                        if (!scope.assign.submissiondrafts) {
+                            // No drafts allowed, so it was submitted. Trigger event.
+                            $mmEvents.trigger(mmaModAssignSubmittedForGradingEvent, {
+                                assignmentId: scope.assign.id,
+                                submissionId: scope.userSubmission.id,
+                                userId: $mmSite.getUserId(),
+                                siteId: $mmSite.getId()
+                            });
+                        }
+                    }).catch(function(err) {
+                        alert(err);
+                    }).finally(function() {
+                        modal.dismiss();
+                    });
+                });
+            };
+
+            // Submit for grading.
+            scope.submit = function(acceptStatement) {
+                // Ask for confirmation. @todo plugin precheck_submission
+                $mmUtil.showConfirm($translate('mma.mod_assign.confirmsubmission')).then(function() {
+                    var modal = $mmUtil.showModalLoading('mm.core.sending', true);
+                    $mmaModAssign.submitForGrading(scope.assign.id, acceptStatement).then(function() {
+                        // Invalidate and refresh data.
+                        invalidateAndRefresh();
+
+                        // Submitted, trigger event.
+                        $mmEvents.trigger(mmaModAssignSubmittedForGradingEvent, {
+                            assignmentId: scope.assign.id,
+                            submissionId: scope.userSubmission.id,
+                            userId: $mmSite.getUserId(),
+                            siteId: $mmSite.getId()
+                        });
+                    }).catch(function(error) {
+                        $mmUtil.showErrorModal(error);
+                    }).finally(function() {
+                        modal.dismiss();
+                    });
+                });
+            };
+
+            // Invalidate and refresh data.
+            function invalidateAndRefresh() {
+                scope.loaded = false;
+
+                var promises = [$mmaModAssign.invalidateAssignmentData(attributes.courseid)];
+                if (scope.assign) {
+                    promises.push($mmaModAssign.invalidateAllSubmissionData(scope.assign.id));
+                    promises.push($mmaModAssign.invalidateAssignmentUserMappingsData(scope.assign.id));
+                }
+
+                $q.all(promises).finally(function() {
+                    controller.load(scope, attributes.moduleid, attributes.courseid, attributes.submitid, attributes.blindid);
+                });
+            }
         }
     };
 });

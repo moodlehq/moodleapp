@@ -41,21 +41,20 @@ angular.module('mm.core.fileuploader')
         siteId = siteId || $mmSite.getId();
 
         var deleteAfterUpload = options.deleteAfterUpload,
-            ftOptions = {
-                fileKey: options.fileKey,
-                fileName: options.fileName,
-                mimeType: options.mimeType
-            };
+            ftOptions = angular.copy(options);
+
+        delete ftOptions.deleteAfterUpload;
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.uploadFile(uri, ftOptions);
-        }).then(function() {
+        }).then(function(result) {
             if (deleteAfterUpload) {
                 $timeout(function() {
                     // Use set timeout, otherwise in Node-Webkit the upload threw an error sometimes.
                     $mmFS.removeExternalFile(uri);
                 }, 500);
             }
+            return result;
         });
     };
 
@@ -132,16 +131,17 @@ angular.module('mm.core.fileuploader')
      * @param  {String} name               File name.
      * @param  {String} type               File type.
      * @param  {Boolean} deleteAfterUpload Whether the file should be deleted after upload.
+     * @param  {Number} [itemId]           Draft ID to upload the file to, 0 to create new. Only for draft files.
      * @param  {String} [siteId]           Id of the site to upload the file to. If not defined, use current site.
      * @return {Promise}                   Promise resolved when the file is uploaded.
      */
-    self.uploadGenericFile = function(uri, name, type, deleteAfterUpload, siteId) {
+    self.uploadGenericFile = function(uri, name, type, deleteAfterUpload, itemId, siteId) {
         var options = {};
         options.fileKey = null;
         options.fileName = name;
         options.mimeType = type;
-        // Don't delete the file on iOS, shared files are kept in local file area.
         options.deleteAfterUpload = deleteAfterUpload;
+        options.itemId = itemId;
 
         return self.uploadFile(uri, options, siteId);
     };

@@ -17,13 +17,17 @@ angular.module('mm.addons.mod_assign', ['mm.core'])
 .constant('mmaModAssignComponent', 'mmaModAssign')
 .constant('mmaModAssignSubmissionComponent', 'mmaModAssignSubmission')
 .constant('mmaModAssignSubmissionStatusNew', 'new')
+.constant('mmaModAssignSubmissionStatusReopened', 'reopened')
+.constant('mmaModAssignSubmissionStatusDraft', 'draft')
 .constant('mmaModAssignSubmissionStatusSubmitted', 'submitted')
 .constant('mmaModAssignAttemptReopenMethodNone', 'none')
 .constant('mmaModAssignUnlimitedAttempts', -1)
 .constant('mmaModAssignGradingStatusGraded', 'graded')
 .constant('mmaModAssignGradingStatusNotGraded', 'notgraded')
 .constant('mmaModMarkingWorkflowStateReleased', 'released')
-.constant('mmaModAssignSubmissionInvalidated', 'mma_mod_assign_submission_invalidated')
+.constant('mmaModAssignSubmissionInvalidatedEvent', 'mma_mod_assign_submission_invalidated')
+.constant('mmaModAssignSubmissionSavedEvent', 'mma_mod_assign_submission_saved')
+.constant('mmaModAssignSubmittedForGradingEvent', 'mma_mod_assign_submitted_for_grading')
 
 .config(function($stateProvider) {
 
@@ -87,6 +91,22 @@ angular.module('mm.addons.mod_assign', ['mm.core'])
             'site': {
                 controller: 'mmaModAssignSubmissionReviewCtrl',
                 templateUrl: 'addons/mod/assign/templates/submissionreview.html'
+            }
+        }
+    })
+
+    .state('site.mod_assign-submission-edit', {
+        url: '/mod_assign-submission-edit',
+        params: {
+            moduleid: null,
+            courseid: null,
+            userid: null,
+            blindid: null
+        },
+        views: {
+            'site': {
+                controller: 'mmaModAssignEditCtrl',
+                templateUrl: 'addons/mod/assign/templates/edit.html'
             }
         }
     });

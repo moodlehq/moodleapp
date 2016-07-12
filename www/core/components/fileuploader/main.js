@@ -21,7 +21,8 @@ angular.module('mm.core.fileuploader', ['mm.core'])
     .state('site.fileuploader-picker', {
         url: '/fileuploader-picker',
         params: {
-            maxsize: -1
+            maxsize: -1,
+            upload: true // True if file should be uploaded, false to only pick the file.
         },
         views: {
             'site': {

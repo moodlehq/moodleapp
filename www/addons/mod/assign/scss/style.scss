@@ -1,3 +1,6 @@
+
+$mma-mod-assign-warning-color:      #c00 !default;
+
 .mm-site_mod_assign {
 
   div.latesubmission {
@@ -11,4 +14,8 @@
   div.submissioneditable {
     color: red;
   }
+}
+
+p.mma-mod-assign-warning {
+  color: $mma-mod-assign-warning-color;
 }

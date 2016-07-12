@@ -898,7 +898,7 @@ angular.module('mm.core')
      *
      * @module mm.core
      * @ngdoc method
-     * @name $mmUtil#getFileExtension
+     * @name $mmFS#getFileExtension
      * @param  {string} filename The file name.
      * @return {string}          The lowercased extension, or undefined.
      */
@@ -984,6 +984,23 @@ angular.module('mm.core')
             return path;
         } else {
             return self.concatenatePaths(basePath, path);
+        }
+    };
+
+    /**
+     * Remove the base path from a path. If basePath isn't found, return false.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#removeBasePath
+     * @param {String} path Path to treat.
+     * @return {Mixed}     Path without basePath if basePath was found, false otherwise.
+     */
+    self.removeBasePath = function(path) {
+        if (path.indexOf(basePath) > -1) {
+            return path.replace(basePath, '');
+        } else {
+            return false;
         }
     };
 
@@ -1087,6 +1104,124 @@ angular.module('mm.core')
             return path.substr(1);
         }
         return path;
+    };
+
+    /**
+     * Convenience function to copy or move an external file.
+     *
+     * @param  {String} from  Absolute path to the file to copy/move.
+     * @param  {String} to    Relative new path of the file (inside the app folder).
+     * @param  {Boolean} copy True to copy, false to move.
+     * @return {Promise}      Promise resolved when the entry is copied/moved.
+     */
+    function copyOrMoveExternalFile(from, to, copy) {
+        // Get the file to copy/move.
+        return self.getExternalFile(from).then(function(fileEntry) {
+            // Create the destination dir if it doesn't exist.
+            var dirAndFile = self.getFileAndDirectoryFromPath(to);
+            return self.createDir(dirAndFile.directory).then(function(dirEntry) {
+                // Now copy/move the file.
+                var deferred = $q.defer();
+                if (copy) {
+                    fileEntry.copyTo(dirEntry, dirAndFile.name, deferred.resolve, deferred.reject);
+                } else {
+                    fileEntry.moveTo(dirEntry, dirAndFile.name, deferred.resolve, deferred.reject);
+                }
+                return deferred.promise;
+            });
+        });
+    }
+
+    /**
+     * Copy a file from outside of the app folder to somewhere inside the app folder.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#copyExternalFile
+     * @param {String} from Absolute path to the file to copy.
+     * @param {String} to   Relative new path of the file (inside the app folder).
+     * @return {Promise}    Promise resolved when the entry is copied.
+     */
+    self.copyExternalFile = function(from, to) {
+        return copyOrMoveExternalFile(from, to, true);
+    };
+
+    /**
+     * Move a file from outside of the app folder to somewhere inside the app folder.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#moveExternalFile
+     * @param {String} from Absolute path to the file to move.
+     * @param {String} to   Relative new path of the file (inside the app folder).
+     * @return {Promise}    Promise resolved when the entry is moved.
+     */
+    self.moveExternalFile = function(from, to) {
+        return copyOrMoveExternalFile(from, to, false);
+    };
+
+    /**
+     * Get a unique file name inside a folder, adding numbers to the file name if needed.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#getUniqueNameInFolder
+     * @param  {String} dirPath      Path to the destination folder.
+     * @param  {String} fileName     File name that wants to be used.
+     * @param  {String} [defaultExt] Default extension to use if no extension found in the file.
+     * @return {Promise}             Promise resolved with the unique file name.
+     */
+    self.getUniqueNameInFolder = function(dirPath, fileName, defaultExt) {
+        // Get existing files in the folder.
+        return self.getDirectoryContents(dirPath).then(function(entries) {
+            var files = {},
+                fileNameWithoutExtension = self.removeExtension(fileName),
+                extension = self.getFileExtension(fileName) || defaultExt,
+                newName,
+                number = 1;
+
+            // Index the files by name.
+            angular.forEach(entries, function(entry) {
+                files[entry.name] = entry;
+            });
+
+            // Format extension.
+            if (extension) {
+                extension = '.' + extension;
+            } else {
+                extension = '';
+            }
+
+            newName = fileNameWithoutExtension + extension;
+            if (typeof files[newName] == 'undefined') {
+                // No file with the same name.
+                return newName;
+            } else {
+                // Repeated name. Add a number until we find a free name.
+                do {
+                    newName = fileNameWithoutExtension + '(' + number + ')' + extension;
+                    number++;
+                } while (typeof files[newName] != 'undefined');
+
+                // Ask the user what he wants to do.
+                return newName;
+            }
+        }).catch(function() {
+            // Folder doesn't exist, name is unique.
+            return fileName;
+        });
+    };
+
+    /**
+     * Remove app temporary folder.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#clearTmpFolder
+     * @return {Promise} Promise resolved when done.
+     */
+    self.clearTmpFolder = function() {
+        return self.removeDir(mmFsTmpFolder);
     };
 
     return self;

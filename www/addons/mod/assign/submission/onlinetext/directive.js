@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc directive
  * @name mmaModAssignSubmissionOnlinetext
  */
-.directive('mmaModAssignSubmissionOnlinetext', function($mmaModAssign, $mmText) {
+.directive('mmaModAssignSubmissionOnlinetext', function($mmaModAssign, $mmText, $timeout) {
 
     // Convenience function to count words of the text.
     function wordcount(text) {
@@ -41,22 +41,46 @@ angular.module('mm.addons.mod_assign')
         priority: 100,
         templateUrl: 'addons/mod/assign/submission/onlinetext/template.html',
         link: function(scope, element) {
+            var wordCountTimeout;
+
             if (!scope.plugin) {
                 return;
             }
-            scope.text = $mmaModAssign.getSubmissionPluginText(scope.plugin);
 
-            angular.element(element).on('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                if (scope.text && scope.text != "") {
-                    // Open a new state with the interpolated contents.
-                    $mmText.expandText(scope.plugin.name, scope.text);
-                }
-            });
+            // We receive them as strings, convert to int.
+            scope.configs.wordlimit = parseInt(scope.configs.wordlimit, 10);
+            scope.configs.wordlimitenabled = parseInt(scope.configs.wordlimitenabled, 10);
+
+            // Get the text.
+            scope.model = {
+                text: $mmaModAssign.getSubmissionPluginText(scope.plugin, scope.edit)
+            };
+
+            if (!scope.edit) {
+                // Not editing, see full text when clicked.
+                angular.element(element).on('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (scope.model.text) {
+                        // Open a new state with the interpolated contents.
+                        $mmText.expandText(scope.plugin.name, scope.model.text);
+                    }
+                });
+            }
 
             if (scope.configs.wordlimitenabled) {
-                scope.words = wordcount(scope.text);
+                scope.words = wordcount(scope.model.text);
+
+                // Text changed.
+                scope.onChange = function() {
+                    // Cancel previous wait.
+                    $timeout.cancel(wordCountTimeout);
+                    // Wait before calculating, if the user keeps inputing we won't calculate.
+                    // This is to prevent slowing down devices, this calculation can be slow if the text is long.
+                    wordCountTimeout = $timeout(function() {
+                        scope.words = wordcount(scope.model.text);
+                    }, 1500);
+                };
             }
         }
     };

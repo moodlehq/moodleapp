@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_assign')
  * @name $mmaModAssign
  */
 .factory('$mmaModAssign', function($mmSite, $q, $mmUser, $mmSitesManager, mmaModAssignComponent, $mmFilepool, $mmComments,
-        mmaModAssignSubmissionStatusNew, mmaModAssignSubmissionStatusSubmitted) {
+        $mmaModAssignSubmissionDelegate, mmaModAssignSubmissionStatusNew, mmaModAssignSubmissionStatusSubmitted) {
     var self = {};
 
     /**
@@ -173,7 +173,7 @@ angular.module('mm.addons.mod_assign')
      *
      * @module mm.addons.mod_assign
      * @ngdoc method
-     * @name $mmaModAssign#getSubmissionAttachments
+     * @name $mmaModAssign#getSubmissionPluginAttachments
      * @param {Object} submissionPlugin Submission Plugin.
      * @return {Object[]}               Submission Pluginattachments.
      */
@@ -199,19 +199,21 @@ angular.module('mm.addons.mod_assign')
      * @module mm.addons.mod_assign
      * @ngdoc method
      * @name $mmaModAssign#getSubmissionText
-     * @param {Object} submissionPlugin Submission Plugin.
-     * @return {String}                 Submission text.
+     * @param  {Object} submissionPlugin Submission Plugin.
+     * @param  {Boolean} [keepUrls]      True if it should keep original URLs, false if they should be replaced.
+     * @return {String}                  Submission text.
      */
-    self.getSubmissionPluginText = function(submissionPlugin) {
+    self.getSubmissionPluginText = function(submissionPlugin, keepUrls) {
 
         // Helper data and fallback.
-        var text = "";
+        var text = '';
         if (submissionPlugin.editorfields) {
             angular.forEach(submissionPlugin.editorfields, function(field) {
                 text += field.text;
             });
 
-            if (submissionPlugin.fileareas && submissionPlugin.fileareas[0] && submissionPlugin.fileareas[0].files && submissionPlugin.fileareas[0].files[0]) {
+            if (!keepUrls && submissionPlugin.fileareas && submissionPlugin.fileareas[0] &&
+                        submissionPlugin.fileareas[0].files && submissionPlugin.fileareas[0].files[0]) {
                 var fileURL =  submissionPlugin.fileareas[0].files[0].fileurl;
                 fileURL = fileURL.substr(0, fileURL.lastIndexOf('/')).replace('pluginfile.php/', 'pluginfile.php?file=/');
                 text = text.replace(/@@PLUGINFILE@@/g, fileURL);
@@ -357,6 +359,32 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Given a list of plugins, returns the plugin names that aren't supported for editing.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModAssign#getUnsupportedEditPlugins
+     * @param  {Object[]} plugins Plugins to check.
+     * @return {Promise}          Promise resolved with unsupported plugin names.
+     */
+    self.getUnsupportedEditPlugins = function(plugins) {
+        var notSupported = [],
+            promises = [];
+
+        angular.forEach(plugins, function(plugin) {
+            promises.push($q.when($mmaModAssignSubmissionDelegate.isPluginSupportedForEdit(plugin.type)).then(function(enabled) {
+                if (!enabled) {
+                    notSupported.push(plugin.name);
+                }
+            }));
+        });
+
+        return $q.all(promises).then(function() {
+            return notSupported;
+        });
+    };
+
+    /**
      * List the participants for a single assignment, with some summary info about their submissions.
      *
      * @module mm.addons.mod_assign
@@ -397,13 +425,14 @@ angular.module('mm.addons.mod_assign')
      * @module mm.addons.mod_assign
      * @ngdoc method
      * @name $mmaModAssign#getSubmissionStatus
-     * @param {Number}  assignId   Assignment instance id.
-     * @param {Number}  [userId]   User id (empty for current user).
-     * @param {Number}  [isBlind]  If blind marking is enabled or not.
-     * @param {Number}  [siteId]   Site id (empty for current site).
-     * @return {Promise}           Promise always resolved with the user submission status.
+     * @param {Number}  assignId      Assignment instance id.
+     * @param {Number}  [userId]      User id (empty for current user).
+     * @param {Number}  [isBlind]     If blind marking is enabled or not.
+     * @param {Boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
+     * @param {Number}  [siteId]      Site id (empty for current site).
+     * @return {Promise}              Promise always resolved with the user submission status.
      */
-    self.getSubmissionStatus = function(assignId, userId, isBlind, siteId) {
+    self.getSubmissionStatus = function(assignId, userId, isBlind, ignoreCache, siteId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -415,12 +444,18 @@ angular.module('mm.addons.mod_assign')
             userId = userId || 0;
 
             var params = {
-                "assignid": assignId,
-                "userid": userId
-            },
-            preSets = {
-                cacheKey: getSubmissionStatusCacheKey(assignId, userId, isBlind)
-            };
+                    assignid: assignId,
+                    userid: userId
+                },
+                preSets = {
+                    cacheKey: getSubmissionStatusCacheKey(assignId, userId, isBlind),
+                    getCacheUsingCacheKey: true, // We use the cache key to take isBlind into account.
+                };
+
+            if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
 
             return site.read('mod_assign_get_submission_status', params, preSets).then(function(response) {
                 return response;
@@ -582,6 +617,28 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Check if save and submit assignments is enabled in site.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssign#isSaveAndSubmitSupported
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with true if enabled, false otherwise.
+     */
+    self.isSaveAndSubmitSupported = function(siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            // Even if save & submit WS were introduced in 2.6, we'll also check get_submission_status WS
+            // to make sure we have all the WS to provide the whole submit experience.
+            return site.wsAvailable('mod_assign_get_submission_status') && site.wsAvailable('mod_assign_save_submission') &&
+                   site.wsAvailable('mod_assign_submit_for_grading');
+        }).catch(function() {
+            return false;
+        });
+    };
+
+    /**
      * Report an assignment submission as being viewed.
      *
      * @module mm.addons.mod_assign
@@ -632,6 +689,52 @@ angular.module('mm.addons.mod_assign')
                 return 'badge-assertive';
         }
         return "";
+    };
+
+    /**
+     * Save current user submission for a certain assignment.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssign#saveSubmission
+     * @param  {Number} assignmentId Assign ID.
+     * @param  {Object} pluginData   Data to save.
+     * @return {Promise}             Promise resolved when saved, rejected otherwise.
+     */
+    self.saveSubmission = function(assignmentId, pluginData) {
+        var params = {
+            assignmentid: assignmentId,
+            plugindata: pluginData
+        };
+        return $mmSite.write('mod_assign_save_submission', params).then(function(warnings) {
+            if (warnings && warnings.length) {
+                // The WebService returned warnings, reject.
+                return $q.reject(warnings[0].message);
+            }
+        });
+    };
+
+    /**
+     * Submit the current user assignment for grading.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssign#submitForGrading
+     * @param  {Number} assignmentId     Assign ID.
+     * @param  {Boolean} acceptStatement True if submission statement is accepted, false otherwise.
+     * @return {Promise}                 Promise resolved when submitted, rejected otherwise.
+     */
+    self.submitForGrading = function(assignmentId, acceptStatement) {
+        var params = {
+            assignmentid: assignmentId,
+            acceptsubmissionstatement: acceptStatement ? 1 : 0
+        };
+        return $mmSite.write('mod_assign_submit_for_grading', params).then(function(warnings) {
+            if (warnings && warnings.length) {
+                // The WebService returned warnings, reject.
+                return $q.reject(warnings[0].message);
+            }
+        });
     };
 
     return self;
