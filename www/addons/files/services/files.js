@@ -26,7 +26,8 @@ angular.module('mm.addons.files')
             "itemid": 0,
             "filepath": "",
             "filename": ""
-        };
+        },
+        moodle310version = 2016052300;
 
     /**
      * Check if core_files_get_files WS call is available.
@@ -41,35 +42,20 @@ angular.module('mm.addons.files')
     };
 
     /**
-     * Check the Moodle version in order to check if upload files is working.
-     *
-     * @module mm.addons.files
-     * @ngdoc method
-     * @name $mmaFiles#versionCanUploadFiles
-     * @param  {String} [siteId] Id of the site to check. If not defined, use current site.
-     * @return {Promise} Resolved with true if WS is working, false otherwise.
-     */
-    self.versionCanUploadFiles = function(siteId) {
-        siteId = siteId || $mmSite.getId();
-
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            var version = site.getInfo().version;
-
-            // Uploading is not working right now for Moodle 3.1.0 (2016052300).
-            return version && (parseInt(version) != 2016052300);
-        });
-    };
-
-    /**
      * Check if core_user_add_user_private_files WS call is available.
      *
      * @module mm.addons.files
      * @ngdoc method
      * @name $mmaFiles#canMoveFromDraftToPrivate
-     * @return {Boolean} True if WS is available, false otherwise.
+     * @param  {String} [siteId] Id of the site to check. If not defined, use current site.
+     * @return {Promise}         Promise resolved with true if WS is available, false otherwise.
      */
-    self.canMoveFromDraftToPrivate = function() {
-        return false;
+    self.canMoveFromDraftToPrivate = function(siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.wsAvailable('core_user_add_user_private_files');
+        });
     };
 
     /**
@@ -312,6 +298,53 @@ angular.module('mm.addons.files')
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.write('core_user_add_user_private_files', params, preSets);
+        });
+    };
+
+    /**
+     * Check the Moodle version in order to check if file should be moved from draft to private files.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#shouldMoveFromDraftToPrivate
+     * @param  {String} [siteId] Id of the site to check. If not defined, use current site.
+     * @return {Promise}         Resolved with true if should be moved, false otherwise.
+     */
+    self.shouldMoveFromDraftToPrivate = function(siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var version = parseInt(site.getInfo().version, 10);
+            return version && version >= moodle310version;
+        });
+    };
+
+    /**
+     * Check the Moodle version in order to check if upload files is working.
+     *
+     * @module mm.addons.files
+     * @ngdoc method
+     * @name $mmaFiles#versionCanUploadFiles
+     * @param  {String} [siteId] Id of the site to check. If not defined, use current site.
+     * @return {Promise}         Resolved with true if WS is working, false otherwise.
+     */
+    self.versionCanUploadFiles = function(siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var version = parseInt(site.getInfo().version, 10);
+            if (!version) {
+                // Cannot determine version, return false.
+                return false;
+            } else if (version == moodle310version) {
+                // Uploading is not working right now for Moodle 3.1.0 (2016052300).
+                return false;
+            } else if (version > moodle310version) {
+                // In Moodle 3.1.1 or higher we need a WS to move to private files.
+                return self.canMoveFromDraftToPrivate(siteId);
+            }
+
+            return true;
         });
     };
 

@@ -30,31 +30,41 @@ angular.module('mm.addons.files')
      */
     self.selectAndUploadFile = function() {
         // Open the file picker.
-        var maxSize = $mmSite.getInfo().usermaxuploadfilesize;
+        var maxSize = $mmSite.getInfo().usermaxuploadfilesize,
+            userQuota = $mmSite.getInfo().userquota;
         if (typeof maxSize == 'undefined') {
-            // In versions pre Moodle 2.9 this field is not present, so we force to ignore the file size.
-            maxSize = -1;
+            if (typeof userQuota != 'undefined') {
+                maxSize = userQuota;
+            } else {
+                // In versions pre Moodle 2.9 this field is not present, so we force to ignore the file size.
+                maxSize = -1;
+            }
+        } else if (typeof userQuota != 'undefined') {
+            // Use the minimum value.
+            maxSize = Math.min(maxSize, userQuota);
         }
 
         return $mmFileUploaderHelper.selectAndUploadFile(maxSize).then(function(result) {
             // File uploaded. Move it to private files if needed.
-            if ($mmaFiles.canMoveFromDraftToPrivate()) {
-                if (!result) {
-                    return $q.reject();
-                }
-
-                var modal = $mmUtil.showModalLoading('mm.fileuploader.uploading', true);
-                return $mmaFiles.moveFromDraftToPrivate(result.itemid).catch(function(error) {
-                    if (error) {
-                        $mmUtil.showErrorModal(error);
-                    } else {
-                        $mmUtil.showErrorModal('mm.fileuploader.errorwhileuploading', true);
+            return $mmaFiles.shouldMoveFromDraftToPrivate().then(function(move) {
+                if (move) {
+                    if (!result) {
+                        return $q.reject();
                     }
-                    return $q.reject();
-                }).finally(function() {
-                    modal.dismiss();
-                });
-            }
+
+                    var modal = $mmUtil.showModalLoading('mm.fileuploader.uploading', true);
+                    return $mmaFiles.moveFromDraftToPrivate(result.itemid).catch(function(error) {
+                        if (error) {
+                            $mmUtil.showErrorModal(error);
+                        } else {
+                            $mmUtil.showErrorModal('mm.fileuploader.errorwhileuploading', true);
+                        }
+                        return $q.reject();
+                    }).finally(function() {
+                        modal.dismiss();
+                    });
+                }
+            });
         }).then(function() {
             $mmUtil.showModal('mm.core.success', 'mm.fileuploader.fileuploaded');
         });
