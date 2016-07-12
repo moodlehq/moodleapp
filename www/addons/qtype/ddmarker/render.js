@@ -38,6 +38,14 @@ angular.module('mm.addons.qtype_ddmarker')
         this.shapes = [];
         this.selected = null;
 
+        this.resizeFunction = function() {
+            instance.redraw_drags_and_drops();
+        };
+
+        this.destroy = function() {
+            ionic.off('resize', this.resizeFunction, window);
+        };
+
         function GraphicsAPI () {
             this.dropzone = null;
             var NS="http://www.w3.org/2000/svg";
@@ -96,9 +104,7 @@ angular.module('mm.addons.qtype_ddmarker')
                 instance.poll_for_image_load();
             });
 
-            ionic.on('resize', function() {
-                instance.redraw_drags_and_drops();
-            });
+            ionic.on('resize', this.resizeFunction, window);
         };
 
         this.poll_for_image_load = function () {
