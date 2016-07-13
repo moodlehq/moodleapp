@@ -41,11 +41,34 @@ angular.module('mm.core')
  * @param {Object} [tabletOptions] Options to pass to the editor when run in a tablet. Has priority over "options" param.
  * @param {Object} [phoneOptions]  Options to pass to the editor when run in a phone. Has priority over "options" param.
  * @param {String} [scrollHandle]  Name of the scroll handle of the page containing the editor, to scroll to editor when focused.
+ * @param {String} [name]          Name to set to the hidden textarea.
+ * @param {Function} [textChange]  Function to call when the editor text changes.
  */
-.directive('mmRichTextEditor', function($mmConfig, $ionicPlatform, $mmLang, mmCoreSettingsRichTextEditor, $timeout, $mmEvents,
-            $window, $ionicScrollDelegate, $mmUtil, mmCoreEventKeyboardShow, mmCoreEventKeyboardHide) {
+.directive('mmRichTextEditor', function($ionicPlatform, $mmLang, $timeout, $q, $window, $ionicScrollDelegate, $mmUtil,
+            $mmSite, $mmFilepool) {
 
-    var editorInitialHeight = 300;
+    var editorInitialHeight = 300,
+        frameTags = ['iframe', 'frame', 'object', 'embed'];
+
+    /**
+     * Calculate the height of fixed bars (like top bar).
+     *
+     * @param  {Object} editorEl Editor DOM element.
+     * @return {Number}          Size of the fixed bars, 0 if not found.
+     */
+    function calculateFixedBarsHeight(editorEl) {
+        var ionContentEl = editorEl.parentElement;
+        while (ionContentEl && ionContentEl.nodeName != 'ION-CONTENT') {
+            ionContentEl = ionContentEl.parentElement;
+        }
+
+        if (ionContentEl.nodeName == 'ION-CONTENT') {
+            ionContentHeight = ionContentEl.offsetHeight || ionContentEl.height || ionContentEl.clientHeight;
+            return $window.innerHeight - ionContentHeight;
+        } else {
+            return 0;
+        }
+    }
 
     /**
      * Converts language code from "aa-bb" to "aa_BB".
@@ -65,27 +88,119 @@ angular.module('mm.core')
     }
 
     /**
-     * Check if rich text editor is enabled based in settings and platform version.
+     * Search WYSIWYG iframe and format its contents.
      *
-     * @return {Promise} Promise resolved with true if enabled and false otherwise.
+     * @param  {Object} element Directive DOM element.
+     * @param  {Number} [tries] Number of retries done until now.
+     * @return {Promise}        Promise resolved with the WYSIWYG iframe or undefined if not found.
      */
-    function isRichTextEditorEnabled() {
-        // Enabled for all platforms different from iOS and Android.
-        if (!ionic.Platform.isIOS() && !ionic.Platform.isAndroid()) {
-            return $mmConfig.get(mmCoreSettingsRichTextEditor, true);
+    function searchAndFormatWysiwyg(element, tries) {
+        if (typeof tries == 'undefined') {
+            tries = 0;
         }
 
-        // Check Android version >= 4.4
-        if (ionic.Platform.isAndroid() && ionic.Platform.version() >= 4.4) {
-            return $mmConfig.get(mmCoreSettingsRichTextEditor, true);
+        var wysiwygIframe = element.querySelector('.cke_wysiwyg_frame');
+        if (wysiwygIframe) {
+            treatFrame(wysiwygIframe);
+            return $q.when(wysiwygIframe);
+        } else if (tries < 5) {
+            return $timeout(function() {
+                return searchAndFormatWysiwyg(element, tries+1);
+            }, 100);
+        }
+    }
+
+    /**
+     * Treats a frame (iframe, object, ...), doing the following to it and all its sub frames:
+     * Search links (<a>) and open them in browser.
+     * Searches images and media and fixes their URLs.
+     *
+     * @param  {DOMElement} element Element to treat.
+     * @return {Void}
+     */
+    function treatFrame(element) {
+        if (element) {
+            var loaded = false;
+
+            // Make sure it's a jqLite element.
+            element = angular.element(element);
+
+            element.on('load', function() {
+                if (!loaded) {
+                    // Element loaded, treat external content and subframes.
+                    loaded = true;
+                    treatExternalContent(element);
+                    treatSubframes(element);
+                }
+            });
+
+            // If iframe isn't loaded in 1 second we'll treat inner elements anyway.
+            $timeout(function() {
+                if (!loaded) {
+                    loaded = true;
+                    treatExternalContent(element);
+                    treatSubframes(element);
+                }
+            }, 1000);
+        }
+    }
+
+    /**
+     * Redefine the open method in the contentWindow of an element and the sub frames.
+     *
+     * @param  {DOMElement} element Element to treat.
+     * @return {Void}
+     */
+    function treatSubframes(element) {
+        var el = element[0],
+            contentWindow = element.contentWindow || el.contentWindow,
+            contents = element.contents();
+
+        if (!contentWindow && el && el.contentDocument) {
+            // It's probably an <object>. Try to get the window.
+            contentWindow = el.contentDocument.defaultView;
         }
 
-        // Check iOS version > 6
-        if (ionic.Platform.isIOS() && ionic.Platform.version() > 6) {
-            return $mmConfig.get(mmCoreSettingsRichTextEditor, true);
+        if (!contentWindow && el && el.getSVGDocument) {
+            // It's probably an <embed>. Try to get the window.
+            var svgDoc = el.getSVGDocument();
+            if (svgDoc && svgDoc.defaultView) {
+                contents = angular.element(svgdoc);
+            }
         }
 
-        return $q.when(false);
+        // Search sub frames.
+        angular.forEach(frameTags, function(tag) {
+            angular.forEach(contents.find(tag), function(subelement) {
+                treatFrame(angular.element(subelement));
+            });
+        });
+    }
+
+    /**
+     * Treat elements that can contain external content.
+     * We only search for images because the editor should receive unfiltered text, so the multimedia filter won't be applied.
+     * Treating videos and audios in here is complex, so if a user manually adds one he won't be able to play it in the editor.
+     *
+     * @param  {DOMElement} element Element to treat.
+     * @return {Void}
+     */
+    function treatExternalContent(element) {
+        var elements = element.contents().find('img');
+        angular.forEach(elements, function(el) {
+            var url = el.src,
+                siteId = $mmSite.getId();
+
+            if (!url || !$mmUtil.isDownloadableUrl(url) || (!$mmSite.canDownloadFiles() && $mmUtil.isPluginFileUrl(url))) {
+                // Nothing to treat.
+                return;
+            }
+
+            // Check if it's downloaded.
+            return $mmFilepool.getSrcByUrl(siteId, url).then(function(finalUrl) {
+                el.setAttribute('src', finalUrl);
+            });
+        });
     }
 
     return {
@@ -97,7 +212,9 @@ angular.module('mm.core')
             options: '=?',
             tabletOptions: '=?',
             phoneOptions: '=?',
-            scrollHandle: '@?'
+            scrollHandle: '@?',
+            name: '@?',
+            textChange: '&?'
         },
         link: function(scope, element) {
             element = element[0];
@@ -119,18 +236,19 @@ angular.module('mm.core')
                         {name: 'tools', items: [ 'Maximize' ]}
                     ],
                     toolbarLocation: 'bottom',
-                    removePlugins: 'elementspath,resize,pastetext,pastefromword,clipboard',
+                    removePlugins: 'elementspath,resize,pastetext,pastefromword,clipboard,image',
                     removeButtons: ''
                 },
                 scrollView,
-                resized = false;
+                resized = false,
+                fixedBarsHeight;
 
             if (scope.scrollHandle) {
                 scrollView = $ionicScrollDelegate.$getByHandle(scope.scrollHandle);
             }
 
             // Check if we should use rich text editor.
-            isRichTextEditorEnabled().then(function(enabled) {
+            $mmUtil.isRichTextEditorEnabled().then(function(enabled) {
                 scope.richTextEditor = enabled;
 
                 if (enabled) {
@@ -155,7 +273,16 @@ angular.module('mm.core')
                     lastButton = element.querySelector('.cke_toolbox_main .cke_toolbar:last-child'),
                     toolbar = element.querySelector('.cke_bottom'),
                     editorEl = element.querySelector('.cke'),
-                    contentsEl = element.querySelector('.cke_contents');
+                    contentsEl = element.querySelector('.cke_contents'),
+                    sourceCodeButton = element.querySelector('.cke_button__source'),
+                    seeingSourceCode = false,
+                    wysiwygIframe,
+                    unregisterDialogListener;
+
+                // Search and format contents of wysiwygIframe.
+                searchAndFormatWysiwyg(element).then(function(iframe) {
+                    wysiwygIframe = iframe;
+                });
 
                 // Setup collapser.
                 if (firstButton && lastButton && collapser && toolbar) {
@@ -176,9 +303,19 @@ angular.module('mm.core')
                     });
                 }
 
-                // Setup resize when keyboard opens.
-                if (editorEl && contentsEl) {
-                    setResizeWithKeyboard(editorEl, contentsEl, toolbar);
+                // Compile when source code is done.
+                if (sourceCodeButton) {
+                    angular.element(sourceCodeButton).on('click', function() {
+                        $timeout(function() {
+                            seeingSourceCode = !seeingSourceCode;
+                            if (!seeingSourceCode) {
+                                // User is switching from source code to wysiwyg, re-compile the content once it's done.
+                                searchAndFormatWysiwyg(element).then(function(iframe) {
+                                    wysiwygIframe = iframe;
+                                });
+                            }
+                        });
+                    });
                 }
 
                 // Listen for event resize.
@@ -186,6 +323,9 @@ angular.module('mm.core')
 
                 scope.$on('$destroy', function() {
                     ionic.off('resize', onResize, window);
+                    if (unregisterDialogListener) {
+                        unregisterDialogListener();
+                    }
                 });
 
                 // Window resized.
@@ -202,27 +342,48 @@ angular.module('mm.core')
                 }
             };
 
+            // Text changed.
+            scope.onChange = function() {
+                if (scope.textChange) {
+                    scope.textChange();
+                }
+            };
+
             // Resize the editor to fill the visible screen size (except top bar).
             function resizeContent(editorEl, contentsEl, toolbar) {
-                var topBarHeight = ionic.Platform.isIOS() ? 64 : 44,
-                    editorHeight = editorEl.offsetHeight || editorEl.height || editorEl.clientHeight || editorInitialHeight,
-                    contentVisibleHeight = $window.innerHeight - topBarHeight, // Visible screen minus top bar.
-                    toolbarHeight = toolbar.offsetHeight || toolbar.height || toolbar.clientHeight,
-                    editorContentNewHeight = contentVisibleHeight - toolbarHeight,
-                    screenSmallerThanEditor = contentVisibleHeight > 0 && contentVisibleHeight < editorHeight && toolbarHeight > 0;
+                var toolbarHeight = toolbar.offsetHeight || toolbar.height || toolbar.clientHeight || 0,
+                    editorHeightWithoutResize = editorInitialHeight + toolbarHeight,
+                    contentVisibleHeight,
+                    editorContentNewHeight,
+                    screenSmallerThanEditor;
 
-                // Don't resize if the content new height is too small or if the editor already fits in the screen.
+                if (typeof fixedBarsHeight == 'undefined') {
+                    fixedBarsHeight = calculateFixedBarsHeight(editorEl);
+                }
+
+                contentVisibleHeight = $window.innerHeight - fixedBarsHeight;
+                screenSmallerThanEditor = contentVisibleHeight > 0 && contentVisibleHeight < editorHeightWithoutResize;
+                editorContentNewHeight = contentVisibleHeight - toolbarHeight;
+
                 if (resized && !screenSmallerThanEditor) {
                     // The editor was resized but now it isn't needed anymore, undo the resize.
                     undoResize(editorEl, contentsEl);
                 } else if (editorContentNewHeight > 50 && (resized || screenSmallerThanEditor)) {
                     // The visible screen size is lower than the editor size, resize editor to fill the screen.
+                    // We don't resize if the content new height is too small.
                     angular.element(editorEl).css('height', contentVisibleHeight + 'px');
                     angular.element(contentsEl).css('height', editorContentNewHeight + 'px');
                     resized = true;
 
                     if (scrollView) {
-                        $mmUtil.scrollToElement(editorEl, undefined, scrollView);
+                        // Check that this editor was the one focused.
+                        var focused = document.activeElement;
+                        if (focused) {
+                            var parentEditor = $mmUtil.closest(focused, '.cke');
+                            if (parentEditor == editorEl) {
+                                $mmUtil.scrollToElement(editorEl, undefined, scrollView);
+                            }
+                        }
                     }
                 }
             }
@@ -232,31 +393,6 @@ angular.module('mm.core')
                 angular.element(editorEl).css('height', 'auto');
                 angular.element(contentsEl).css('height', editorInitialHeight + 'px');
                 resized = false;
-            }
-
-            // Set listeners to resize the editor to fill the visible screen size (except top bar).
-            function setResizeWithKeyboard(editorEl, contentsEl, toolbar) {
-                // if (ionic.Platform.isAndroid()) {
-                    var obsShow,
-                        obsHide;
-
-                    obsShow = $mmEvents.on(mmCoreEventKeyboardShow, function() {
-                        $timeout(function() {
-                            resizeContent(editorEl, contentsEl, toolbar);
-                        });
-                    });
-
-                    obsHide = $mmEvents.on(mmCoreEventKeyboardHide, function() {
-                        if (resized) {
-                            undoResize(editorEl, contentsEl);
-                        }
-                    });
-
-                    scope.$on('$destroy', function() {
-                        obsShow && obsShow.off && obsShow.off();
-                        obsHide && obsHide.off && obsHide.off();
-                    });
-                // }
             }
         }
     };

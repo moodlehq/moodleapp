@@ -304,7 +304,7 @@ angular.module('mm.core')
     }
 
     return {
-        restrict: 'E',
+        restrict: 'EA',
         scope: true,
         link: function(scope, element, attrs) {
             element.addClass('hide'); // Hide contents until they're treated.

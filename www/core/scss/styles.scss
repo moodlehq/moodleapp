@@ -289,7 +289,7 @@ button.item.item-button-right {
 }
 
 // Fix lists styles in mm-format-text.
-mm-format-text {
+mm-format-text, *[mm-format-text] {
   ul, ol {
     -webkit-padding-start: 40px;
   }
@@ -556,9 +556,8 @@ mm-timer {
 }
 
 .item.mm-item-has-rich-text-editor {
-  padding-left: 0;
-  padding-right: 0;
-  padding-bottom: 0;
+  padding: 0;
+  display: block;
 
   .input-label, .mm-textarea {
     padding-left: $item-padding;
@@ -566,7 +565,6 @@ mm-timer {
 }
 
 .mm-rich-text-editor-container {
-  padding-top: 5px;
 
   .cke.cke_chrome {
     border: 0;
