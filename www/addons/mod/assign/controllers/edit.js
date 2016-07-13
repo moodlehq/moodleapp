@@ -45,7 +45,7 @@ angular.module('mm.addons.mod_assign')
             $scope.assign = assign;
 
             // Get submission status. Ignore cache to get the latest data.
-            return $mmaModAssign.getSubmissionStatus(assign.id, userId, isBlind, true).then(function(response) {
+            return $mmaModAssign.getSubmissionStatus(assign.id, userId, isBlind, false, true).then(function(response) {
                 if (!response.lastattempt.canedit) {
                     // Can't edit. Reject.
                     return $q.reject($translate.instant('mm.core.nopermissions', {$a: editStr}));

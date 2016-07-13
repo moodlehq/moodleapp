@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc service
  * @name $mmaModAssignSubmissionOnlinetextHandler
  */
-.factory('$mmaModAssignSubmissionOnlinetextHandler', function($mmSite, $mmaModAssign, $q, $mmaModAssignHelper, $mmWS) {
+.factory('$mmaModAssignSubmissionOnlinetextHandler', function($mmSite, $mmaModAssign, $q, $mmaModAssignHelper, $mmWS, $mmText) {
 
     var self = {};
 
@@ -150,7 +150,7 @@ angular.module('mm.addons.mod_assign')
      */
     self.prepareSubmissionData = function(assign, submission, plugin, inputData, pluginData) {
         pluginData.onlinetext_editor = {
-            text: inputData.onlinetext_editor_text,
+            text: getTextToSubmit(plugin, inputData),
             format: 1,
             itemid: 0 // Can't add new files yet, so we use a fake itemid.
         };
@@ -167,11 +167,35 @@ angular.module('mm.addons.mod_assign')
      */
     self.hasDataChanged = function(assign, submission, plugin, inputData) {
         // Check if text has changed.
-        var initialText = plugin.editorfields && plugin.editorfields[0] ? plugin.editorfields[0].text : '',
-            newText = inputData.onlinetext_editor_text;
+        if (typeof plugin.rteInitialText != 'undefined') {
+            // We have the initial text from the rich text editor, compare it with the new text.
+            return plugin.rteInitialText != inputData.onlinetext_editor_text;
+        } else {
+            // Not using rich text editor or weren't able to get its initial text. Get it from plugin.
+            var initialText = plugin.editorfields && plugin.editorfields[0] ? plugin.editorfields[0].text : '',
+                newText = getTextToSubmit(plugin, inputData);
 
-        return initialText != newText;
+            return initialText != newText;
+        }
     };
+
+    /**
+     * Get the text to submit.
+     *
+     * @param  {Object} plugin    Plugin.
+     * @param  {Object} inputData Data entered in the submission form.
+     * @return {String}           Text to submit.
+     */
+    function getTextToSubmit(plugin, inputData) {
+        var url = $mmaModAssign.getSubmissionPluginTextPluginfileUrl(plugin),
+            text = inputData.onlinetext_editor_text;
+
+        if (url) {
+            return text.replace(new RegExp($mmText.escapeForRegex(url), 'g'), '@@PLUGINFILE@@');
+        }
+
+        return text;
+    }
 
     return self;
 })

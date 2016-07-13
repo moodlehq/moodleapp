@@ -21,67 +21,82 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc directive
  * @name mmaModAssignSubmissionOnlinetext
  */
-.directive('mmaModAssignSubmissionOnlinetext', function($mmaModAssign, $mmText, $timeout) {
-
-    // Convenience function to count words of the text.
-    function wordcount(text) {
-        text = text.replace(/<\/?(?!\!)[^>]*>/gi, '');
-        // Replace underscores (which are classed as word characters) with spaces.
-        text = text.replace(/_/gi, " ");
-        // Remove any characters that shouldn't be treated as word boundaries.
-        text = text.replace(/[\'"’-]/gi, "");
-        // Remove dots and commas from within numbers only.
-        text = text.replace(/([0-9])[.,]([0-9])/gi, '$1$2');
-
-        return text.split(/\w\b/gi).length - 1;
-    }
+.directive('mmaModAssignSubmissionOnlinetext', function($mmaModAssign, $mmText, $timeout, $q, $mmUtil) {
 
     return {
         restrict: 'A',
         priority: 100,
         templateUrl: 'addons/mod/assign/submission/onlinetext/template.html',
         link: function(scope, element) {
-            var wordCountTimeout;
+            var wordCountTimeout,
+                promise,
+                rteEnabled;
 
             if (!scope.plugin) {
                 return;
             }
 
-            // We receive them as strings, convert to int.
-            scope.configs.wordlimit = parseInt(scope.configs.wordlimit, 10);
-            scope.configs.wordlimitenabled = parseInt(scope.configs.wordlimitenabled, 10);
-
-            // Get the text.
-            scope.model = {
-                text: $mmaModAssign.getSubmissionPluginText(scope.plugin, scope.edit)
-            };
-
-            if (!scope.edit) {
-                // Not editing, see full text when clicked.
-                angular.element(element).on('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (scope.model.text) {
-                        // Open a new state with the interpolated contents.
-                        $mmText.expandText(scope.plugin.name, scope.model.text);
-                    }
-                });
+            // Check if rich text editor is enabled.
+            if (scope.edit) {
+                promise = $mmUtil.isRichTextEditorEnabled();
+            } else {
+                // We aren't editing, so no rich text editor.
+                promise = $q.when(false);
             }
 
-            if (scope.configs.wordlimitenabled) {
-                scope.words = wordcount(scope.model.text);
+            promise.then(function(enabled) {
+                rteEnabled = enabled;
+
+                // Get the text.
+                var text = $mmaModAssign.getSubmissionPluginText(scope.plugin, scope.edit && !rteEnabled);
+                return text;
+            }).then(function(text) {
+                var firstChange = true,
+                    now = new Date().getTime();
+
+                // We receive them as strings, convert to int.
+                scope.configs.wordlimit = parseInt(scope.configs.wordlimit, 10);
+                scope.configs.wordlimitenabled = parseInt(scope.configs.wordlimitenabled, 10);
+
+                // Get the text.
+                scope.model = {
+                    text: text
+                };
+
+                if (!scope.edit) {
+                    // Not editing, see full text when clicked.
+                    angular.element(element).on('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (text) {
+                            // Open a new state with the interpolated contents.
+                            $mmText.expandText(scope.plugin.name, text);
+                        }
+                    });
+                }
 
                 // Text changed.
                 scope.onChange = function() {
-                    // Cancel previous wait.
-                    $timeout.cancel(wordCountTimeout);
-                    // Wait before calculating, if the user keeps inputing we won't calculate.
-                    // This is to prevent slowing down devices, this calculation can be slow if the text is long.
-                    wordCountTimeout = $timeout(function() {
-                        scope.words = wordcount(scope.model.text);
-                    }, 1500);
+                    if (rteEnabled && firstChange && new Date().getTime() - now < 1000) {
+                        // On change triggered by first rendering. Store the value as the initial text.
+                        // This is because rich text editor performs some minor changes (like new lines),
+                        // and we don't want to detect those as real user changes.
+                        scope.plugin.rteInitialText = scope.model.text;
+                    }
+                    firstChange = false;
+
+                    // Count words if needed.
+                    if (scope.configs.wordlimitenabled) {
+                        // Cancel previous wait.
+                        $timeout.cancel(wordCountTimeout);
+                        // Wait before calculating, if the user keeps inputing we won't calculate.
+                        // This is to prevent slowing down devices, this calculation can be slow if the text is long.
+                        wordCountTimeout = $timeout(function() {
+                            scope.words = $mmText.countWords(scope.model.text);
+                        }, 1500);
+                    }
                 };
-            }
+            });
         }
     };
 });

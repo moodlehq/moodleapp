@@ -24,7 +24,8 @@ angular.module('mm.core')
 .factory('$mmText', function($q, $mmLang, $translate, $state) {
 
     var self = {},
-        extensionRegex = new RegExp('^[a-z0-9]+$');
+        extensionRegex = new RegExp('^[a-z0-9]+$'),
+        element = document.createElement('div'); // Fake element to use in some functions, to prevent re-creating it each time.
 
     /**
      * Given a list of sentences, build a message with all of them wrapped in <p>.
@@ -269,28 +270,22 @@ angular.module('mm.core')
     };
 
     /**
-     * Decode an escaped HTML text. This implementation is based on PHP's htmlspecialchars_decode.
+     * Decode HTML entities in a text. Equivalent to PHP html_entity_decode.
      *
      * @module mm.core
      * @ngdoc method
-     * @name $mmText#decodeHTML
+     * @name $mmText#decodeHTMLEntities
      * @param  {String} text Text to decode.
      * @return {String}      Decoded text.
      */
-    self.decodeHTML = function(text) {
-        if (typeof text == 'undefined' || text === null || (typeof text == 'number' && isNaN(text))) {
-            return '';
-        } else if (typeof text != 'string') {
-            return '' + text;
+    self.decodeHTMLEntities = function(text) {
+        if (text && typeof text === 'string') {
+            element.innerHTML = text;
+            text = element.textContent;
+            element.textContent = '';
         }
 
-        return text
-            .replace(/&amp;/g, '&')
-            .replace(/&lt;/g, '<')
-            .replace(/&gt;/g, '>')
-            .replace(/&quot;/g, '"')
-            .replace(/&#039;/g, "'")
-            .replace(/&nbsp;/g, ' ');
+        return text;
     };
 
     /**
@@ -434,6 +429,44 @@ angular.module('mm.core')
         } else {
             return '' + num; // Convert to string for coherence.
         }
+    };
+
+    /**
+     * Escapes some characters in a string to be used as a regular expression.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#escapeForRegex
+     * @param  {String} text Text to escape.
+     * @return {String}      Escaped text.
+     */
+    self.escapeForRegex = function(text) {
+        return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+    };
+
+    /**
+     * Count words in a text.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#countWords
+     * @param  {String} text Text to count.
+     * @return {Number}      Number of words.
+     */
+    self.countWords = function(text) {
+        // Clean HTML scripts and tags.
+        text = text.replace(/<script[^>]*>([\S\s]*?)<\/script>/gmi, '');
+        text = text.replace(/<\/?(?!\!)[^>]*>/gi, '');
+        // Decode HTML entities.
+        text = self.decodeHTMLEntities(text);
+        // Replace underscores (which are classed as word characters) with spaces.
+        text = text.replace(/_/gi, " ");
+        // Remove any characters that shouldn't be treated as word boundaries.
+        text = text.replace(/[\'"’-]/gi, "");
+        // Remove dots and commas from within numbers only.
+        text = text.replace(/([0-9])[.,]([0-9])/gi, '$1$2');
+
+        return text.split(/\w\b/gi).length - 1;
     };
 
     return self;

@@ -27,10 +27,11 @@ angular.module('mm.addons.mod_assign')
  *
  * Parameters received by this directive and shared with the directive to render the plugin (if any):
  *
- * @param {Object} assign     The assign.
- * @param {Object} submission The submission.
- * @param {Object} plugin     The plugin to render.
- * @param {Boolean} edit      True if editing, false if read only.
+ * @param {Object} assign         The assign.
+ * @param {Object} submission     The submission.
+ * @param {Object} plugin         The plugin to render.
+ * @param {Boolean} edit          True if editing, false if read only.
+ * @param {String} [scrollHandle] Name of the scroll handle of the page containing the plugin.
  *
  * Also, the directives to render the plugin will receive the following parameters in the scope:
  *
@@ -45,7 +46,8 @@ angular.module('mm.addons.mod_assign')
             assign: '=',
             plugin: '=',
             submission: '=',
-            edit: '@?'
+            edit: '@?',
+            scrollHandle: '@?'
         },
         templateUrl: 'addons/mod/assign/templates/submissionplugin.html',
         link: function(scope, element, attributes) {

@@ -297,7 +297,8 @@ angular.module('mm.addons.mod_assign')
             courseid: '@',
             moduleid: '@',
             submitid: '@?',
-            blindid: '@?'
+            blindid: '@?',
+            scrollHandle: '@?'
         },
         restrict: 'E',
         controller: controller,

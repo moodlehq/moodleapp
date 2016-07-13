@@ -121,7 +121,7 @@
         <p ng-if="userSubmission.status == statusNew">-</p>
     </div>
 
-    <mma-mod-assign-submission-plugin ng-repeat="plugin in submissionPlugins" assign="assign" submission="userSubmission" plugin="plugin"></mma-mod-assign-submission-plugin>
+    <mma-mod-assign-submission-plugin ng-repeat="plugin in submissionPlugins" assign="assign" submission="userSubmission" plugin="plugin" scroll-handle="{{scrollHandle}}"></mma-mod-assign-submission-plugin>
 
     <div ng-if="feedback">
         <div class="item item-divider">{{ 'mma.mod_assign.feedback' | translate }}</div>
