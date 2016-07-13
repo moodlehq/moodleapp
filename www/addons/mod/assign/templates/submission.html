@@ -125,9 +125,12 @@
 
     <div ng-if="feedback">
         <div class="item item-divider">{{ 'mma.mod_assign.feedback' | translate }}</div>
-        <div ng-if="feedback.gradefordisplay" class="item item-text-wrap">
+        <div ng-if="feedback.gradefordisplay" class="item item-text-wrap mm-grading-summary">
             <h2>{{ 'mma.grades.grade' | translate }}</h2>
-            <p><mm-format-text watch="true">{{ feedback.gradefordisplay }}</mm-format-text></p>
+            <p><mm-format-text watch="true">
+                {{ feedback.gradefordisplay }}
+            </mm-format-text></p>
+            <a ng-if="feedback.advancedgrade" class="button button-block" ng-click="showAdvancedGrade()">{{ 'mm.core.showmore' | translate }}</a>
         </div>
         <div ng-if="feedback.gradefordisplay" class="item item-text-wrap">
             <h2>{{ 'mma.mod_assign.gradedon' | translate }}</h2>
