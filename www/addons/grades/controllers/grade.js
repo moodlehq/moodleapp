@@ -15,54 +15,54 @@
 angular.module('mm.addons.grades')
 
 /**
- * Controller to handle course grades.
+ * Controller to handle activity grades.
  *
  * @module mm.addons.grades
  * @ngdoc controller
- * @name mmaGradesTableCtrl
+ * @name mmaGradesGradeCtrl
  */
-.controller('mmaGradesTableCtrl', function($scope, $stateParams, $mmUtil, $mmaGrades, $mmSite, $ionicPlatform, $mmaGradesHelper,
-        $state) {
+.controller('mmaGradesGradeCtrl', function($scope, $stateParams, $mmUtil, $mmaGrades, $mmSite, $mmaGradesHelper, $log,
+        $mmContentLinksHelper) {
 
-    var course = $stateParams.course || {},
-        courseId = course.id,
+    $log = $log.getInstance('mmaGradesGradeCtrl');
+
+    var courseId = $stateParams.courseid,
         userId = $stateParams.userid || $mmSite.getUserId();
 
-    function fetchGrades() {
+    function fetchGrade() {
         return $mmaGrades.getGradesTable(courseId, userId).then(function(table) {
-            table = $mmaGradesHelper.formatGradesTable(table, !$ionicPlatform.isTablet());
-            return $mmaGradesHelper.translateGradesTable(table).then(function(table) {
-                $scope.gradesTable = table
-            });
+            $scope.grade = $mmaGradesHelper.getGradeRow(table, $stateParams.gradeid);
         }, function(message) {
             $mmUtil.showErrorModal(message);
             $scope.errormessage = message;
         });
     }
 
-    fetchGrades().then(function() {
-        // Add log in Moodle.
-        $mmSite.write('gradereport_user_view_grade_report', {
-            courseid: courseId,
-            userid: userId
-        });
-    }).finally(function() {
-        $scope.gradesLoaded = true;
+
+    fetchGrade().finally(function() {
+        $scope.gradeLoaded = true;
     });
 
-    $scope.expandGradeInfo = function(gradeid) {
-        if (gradeid) {
-            $state.go('site.grade', {
-                courseid: courseId,
-                userid: userId,
-                gradeid: gradeid
+    $scope.refreshGrade = function() {
+        fetchGrade().finally(function() {
+            $scope.$broadcast('scroll.refreshComplete');
+        });
+    };
+
+    $scope.gotoActivity = function() {
+        if ($scope.grade.link) {
+            $mmContentLinksHelper.handleLink($scope.grade.link).then(function(treated) {
+                if (!treated) {
+                    $log.debug('Link not being handled ' + $scope.grade.link + ' opening in browser...');
+                    $mmUtil.openInBrowser($scope.grade.link);
+                }
             });
         }
     };
 
-    $scope.refreshGrades = function() {
+    $scope.refreshGrade = function() {
         $mmaGrades.invalidateGradesTableData(courseId, userId).finally(function() {
-            fetchGrades().finally(function() {
+            fetchGrade().finally(function() {
                 $scope.$broadcast('scroll.refreshComplete');
             });
         });

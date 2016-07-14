@@ -34,7 +34,22 @@ angular.module('mm.addons.grades', [])
             course: null,
             userid: null
         }
-    });
+    })
+
+    .state('site.grade', {
+        url: '/grade',
+        views: {
+            'site': {
+                templateUrl: 'addons/grades/templates/grade.html',
+                controller: 'mmaGradesGradeCtrl'
+            }
+        },
+        params: {
+            courseid: null,
+            userid: null,
+            gradeid: null
+        }
+    });;
 
 
     // Register plugin on user profile.
