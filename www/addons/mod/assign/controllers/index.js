@@ -145,6 +145,10 @@ angular.module('mm.addons.mod_assign')
             $mmaModAssign.logSubmissionView($scope.assign.id).catch(function() {
                 // Fail silently for Moodle < 3.1.
             });
+        } else {
+            $mmaModAssign.logGradingView($scope.assign.id).catch(function() {
+                // Fail silently for Moodle < 3.0.
+            });
         }
     }).finally(function() {
         $scope.assignmentLoaded = true;

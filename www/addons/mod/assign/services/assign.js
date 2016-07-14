@@ -644,24 +644,43 @@ angular.module('mm.addons.mod_assign')
      * @module mm.addons.mod_assign
      * @ngdoc method
      * @name $mmaModAssign#logSubmissionView
-     * @param {Number} assignid     Assignment ID.
+     * @param {Number} assignId     Assignment ID.
      * @param {String} [siteId]     Site ID. If not defined, current site.
      * @return {Promise}  Promise resolved when the WS call is successful.
      */
-    self.logSubmissionView = function(assignid, siteId) {
-        if (assignid) {
+    self.logSubmissionView = function(assignId, siteId) {
+        if (assignId) {
             siteId = siteId || $mmSite.getId();
 
             return $mmSitesManager.getSite(siteId).then(function(site) {
-                if (!site.wsAvailable('mod_assign_view_submission_status')) {
-                    // Silently fail if is not available. (needs Moodle version >= 3.1)
-                    return $q.reject();
-                }
-
                 var params = {
-                    assignid: assignid
+                    assignid: assignId
                 };
                 return site.write('mod_assign_view_submission_status', params);
+            });
+        }
+        return $q.reject();
+    };
+
+    /**
+     * Report an assignment grading table is being viewed.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssign#logGradingView
+     * @param {Number} assignId     Assignment ID.
+     * @param {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}  Promise resolved when the WS call is successful.
+     */
+    self.logGradingView = function(assignId, siteId) {
+        if (assignId) {
+            siteId = siteId || $mmSite.getId();
+
+            return $mmSitesManager.getSite(siteId).then(function(site) {
+                var params = {
+                    assignid: assignId
+                };
+                return site.write('mod_assign_view_grading_table', params);
             });
         }
         return $q.reject();
