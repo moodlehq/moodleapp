@@ -404,6 +404,7 @@ angular.module('mm.core')
          *                                        flag the cache entry, it doesn't affect the data retrieved in this call.
          *                    - getCacheUsingCacheKey (boolean) True if it should retrieve cached data by cacheKey,
          *                                        false if it should get the data based on the params passed (usual behavior).
+         *                    - filter boolean (true) True to filter WS response (moodlewssettingfilter), false otherwise.
          * @param {Boolean} retrying True if we're retrying the call for some reason. This is to prevent infinite loops.
          * @return {Promise}
          * @description
@@ -442,8 +443,8 @@ angular.module('mm.core')
             preSets.wstoken = site.token;
             preSets.siteurl = site.siteurl;
 
-            // Enable text filtering.
-            data.moodlewssettingfilter = true;
+            // Enable text filtering by default.
+            data.moodlewssettingfilter = preSets.filter === false ? false : true;
 
             return getFromCache(site, method, data, preSets).catch(function() {
                 // Do not pass those options to the core WS factory.
