@@ -742,17 +742,28 @@ angular.module('mm.core')
         };
 
         /**
-         * Check if local_mobile has been installed in Moodle but the app is not using it.
+         * Check if local_mobile has been installed in Moodle.
          *
-         * @return {Promise} Promise resolved it local_mobile was added, rejected otherwise.
+         * @return {Boolean} If App is able to use local_mobile plugin.
          */
-        Site.prototype.checkIfLocalMobileInstalledAndNotUsed = function() {
+        Site.prototype.checkIfAppUsesLocalMobile = function() {
             var appUsesLocalMobile = false;
             angular.forEach(this.infos.functions, function(func) {
                 if (func.name.indexOf(mmCoreWSPrefix) != -1) {
                     appUsesLocalMobile = true;
                 }
             });
+
+            return appUsesLocalMobile;
+        };
+
+        /**
+         * Check if local_mobile has been installed in Moodle but the app is not using it.
+         *
+         * @return {Promise} Promise resolved it local_mobile was added, rejected otherwise.
+         */
+        Site.prototype.checkIfLocalMobileInstalledAndNotUsed = function() {
+            var appUsesLocalMobile = this.checkIfAppUsesLocalMobile();
 
             if (appUsesLocalMobile) {
                 // App already uses local_mobile, it wasn't added.

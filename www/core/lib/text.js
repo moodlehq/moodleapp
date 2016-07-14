@@ -169,13 +169,15 @@ angular.module('mm.core')
      * @name $mmText#expandText
      * @param  {String} title Title of the new state.
      * @param  {String} text  Content of the text to be expanded.
+     * @param  {Boolean} replaceLineBreaks  Replace line breaks by br tag. Default: false.
      */
-    self.expandText = function(title, text) {
+    self.expandText = function(title, text, replaceLineBreaks) {
         if (text.length > 0) {
             // Open a new state with the interpolated contents.
             $state.go('site.mm_textviewer', {
                 title: title,
-                content: text
+                content: text,
+                replacelinebreaks: replaceLineBreaks
             });
         }
     };
