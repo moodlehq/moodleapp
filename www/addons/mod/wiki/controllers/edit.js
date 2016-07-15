@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_wiki')
  * @name mmaModWikiEditCtrl
  */
 .controller('mmaModWikiEditCtrl', function($q, $scope, $stateParams, $mmUtil, $state, $mmaModWiki, $translate, $ionicHistory,
-        $mmCourse, $ionicPlatform, $rootScope, mmaModWikiRenewLockTimeout, $interval, $mmText) {
+        $mmCourse, $ionicPlatform, $rootScope, mmaModWikiRenewLockTimeout, $interval, $mmText, mmaModWikiComponent) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         subwikiId = $stateParams.subwikiid || null,
@@ -42,6 +42,8 @@ angular.module('mm.addons.mod_wiki')
         renderTime = new Date().getTime();
 
     $scope.saveAndGoParams = false; // See $ionicView.afterLeave.
+    $scope.component = mmaModWikiComponent;
+    $scope.componentId = module.id;
 
     $scope.page = {
         title: $stateParams.pagetitle,
@@ -228,6 +230,7 @@ angular.module('mm.addons.mod_wiki')
 
         return promise.then(function(info) {
             module = info;
+            $scope.componentId = module.id;
             if (!courseId && module.course) {
                 courseId = module.course;
             } else if (!courseId) {

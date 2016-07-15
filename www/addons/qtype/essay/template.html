@@ -8,7 +8,7 @@
         <!-- Plain text textarea. -->
         <textarea ng-if="isPlainText" class="mm-question-textarea" ng-class='{"mm-monospaced": isMonospaced}' placeholder="{{ 'mm.question.answer' | translate }}" name="{{textarea.name}}" aria-multiline="true">{{textarea.text}}</textarea>
         <!-- Rich text editor. -->
-        <mm-rich-text-editor ng-if="!isPlainText" model="textarea" placeholder="{{ 'mm.question.answer' | translate }}" name="{{textarea.name}}" scroll-handle="{{scrollHandle}}"></mm-rich-text-editor>
+        <mm-rich-text-editor ng-if="!isPlainText" model="textarea" placeholder="{{ 'mm.question.answer' | translate }}" name="{{textarea.name}}" scroll-handle="{{scrollHandle}}" component="{{component}}" component-id="{{componentId}}"></mm-rich-text-editor>
     </label>
     <div class="item item-text-wrap" ng-if="allowsAttachments">
         <p class="mm-question-warning">{{ 'mm.question.errorattachmentsnotsupported' | translate }}</p>

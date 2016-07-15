@@ -90,22 +90,24 @@ angular.module('mm.core')
     /**
      * Search WYSIWYG iframe and format its contents.
      *
-     * @param  {Object} element Directive DOM element.
-     * @param  {Number} [tries] Number of retries done until now.
-     * @return {Promise}        Promise resolved with the WYSIWYG iframe or undefined if not found.
+     * @param  {Object} element      Directive DOM element.
+     * @param  {String} [component]  The component to link the files to.
+     * @param  {Mixed} [componentId] An ID to use in conjunction with the component.
+     * @param  {Number} [tries]      Number of retries done until now.
+     * @return {Promise}             Promise resolved with the WYSIWYG iframe or undefined if not found.
      */
-    function searchAndFormatWysiwyg(element, tries) {
+    function searchAndFormatWysiwyg(element, component, componentId, tries) {
         if (typeof tries == 'undefined') {
             tries = 0;
         }
 
         var wysiwygIframe = element.querySelector('.cke_wysiwyg_frame');
         if (wysiwygIframe) {
-            treatFrame(wysiwygIframe);
+            treatFrame(wysiwygIframe, component, componentId);
             return $q.when(wysiwygIframe);
         } else if (tries < 5) {
             return $timeout(function() {
-                return searchAndFormatWysiwyg(element, tries+1);
+                return searchAndFormatWysiwyg(element, component, componentId, tries+1);
             }, 100);
         }
     }
@@ -115,10 +117,12 @@ angular.module('mm.core')
      * Search links (<a>) and open them in browser.
      * Searches images and media and fixes their URLs.
      *
-     * @param  {DOMElement} element Element to treat.
+     * @param  {DOMElement} element  Element to treat.
+     * @param  {String} [component]  The component to link the files to.
+     * @param  {Mixed} [componentId] An ID to use in conjunction with the component.
      * @return {Void}
      */
-    function treatFrame(element) {
+    function treatFrame(element, component, componentId) {
         if (element) {
             var loaded = false;
 
@@ -129,8 +133,8 @@ angular.module('mm.core')
                 if (!loaded) {
                     // Element loaded, treat external content and subframes.
                     loaded = true;
-                    treatExternalContent(element);
-                    treatSubframes(element);
+                    treatExternalContent(element, component, componentId);
+                    treatSubframes(element, component, componentId);
                 }
             });
 
@@ -138,8 +142,8 @@ angular.module('mm.core')
             $timeout(function() {
                 if (!loaded) {
                     loaded = true;
-                    treatExternalContent(element);
-                    treatSubframes(element);
+                    treatExternalContent(element, component, componentId);
+                    treatSubframes(element, component, componentId);
                 }
             }, 1000);
         }
@@ -148,10 +152,12 @@ angular.module('mm.core')
     /**
      * Redefine the open method in the contentWindow of an element and the sub frames.
      *
-     * @param  {DOMElement} element Element to treat.
+     * @param  {DOMElement} element  Element to treat.
+     * @param  {String} [component]  The component to link the files to.
+     * @param  {Mixed} [componentId] An ID to use in conjunction with the component.
      * @return {Void}
      */
-    function treatSubframes(element) {
+    function treatSubframes(element, component, componentId) {
         var el = element[0],
             contentWindow = element.contentWindow || el.contentWindow,
             contents = element.contents();
@@ -172,7 +178,7 @@ angular.module('mm.core')
         // Search sub frames.
         angular.forEach(frameTags, function(tag) {
             angular.forEach(contents.find(tag), function(subelement) {
-                treatFrame(angular.element(subelement));
+                treatFrame(angular.element(subelement), component, componentId);
             });
         });
     }
@@ -182,10 +188,12 @@ angular.module('mm.core')
      * We only search for images because the editor should receive unfiltered text, so the multimedia filter won't be applied.
      * Treating videos and audios in here is complex, so if a user manually adds one he won't be able to play it in the editor.
      *
-     * @param  {DOMElement} element Element to treat.
+     * @param  {DOMElement} element  Element to treat.
+     * @param  {String} [component]  The component to link the files to.
+     * @param  {Mixed} [componentId] An ID to use in conjunction with the component.
      * @return {Void}
      */
-    function treatExternalContent(element) {
+    function treatExternalContent(element, component, componentId) {
         var elements = element.contents().find('img');
         angular.forEach(elements, function(el) {
             var url = el.src,
@@ -197,7 +205,7 @@ angular.module('mm.core')
             }
 
             // Check if it's downloaded.
-            return $mmFilepool.getSrcByUrl(siteId, url).then(function(finalUrl) {
+            return $mmFilepool.getSrcByUrl(siteId, url, component, componentId).then(function(finalUrl) {
                 el.setAttribute('src', finalUrl);
             });
         });
@@ -214,7 +222,9 @@ angular.module('mm.core')
             phoneOptions: '=?',
             scrollHandle: '@?',
             name: '@?',
-            textChange: '&?'
+            textChange: '&?',
+            component: '@?',
+            componentId: '@?'
         },
         link: function(scope, element) {
             element = element[0];
@@ -241,7 +251,9 @@ angular.module('mm.core')
                 },
                 scrollView,
                 resized = false,
-                fixedBarsHeight;
+                fixedBarsHeight,
+                component = scope.component,
+                componentId = scope.componentId;
 
             if (scope.scrollHandle) {
                 scrollView = $ionicScrollDelegate.$getByHandle(scope.scrollHandle);
@@ -280,7 +292,7 @@ angular.module('mm.core')
                     unregisterDialogListener;
 
                 // Search and format contents of wysiwygIframe.
-                searchAndFormatWysiwyg(element).then(function(iframe) {
+                searchAndFormatWysiwyg(element, component, componentId).then(function(iframe) {
                     wysiwygIframe = iframe;
                 });
 
@@ -310,7 +322,7 @@ angular.module('mm.core')
                             seeingSourceCode = !seeingSourceCode;
                             if (!seeingSourceCode) {
                                 // User is switching from source code to wysiwyg, re-compile the content once it's done.
-                                searchAndFormatWysiwyg(element).then(function(iframe) {
+                                searchAndFormatWysiwyg(element, component, componentId).then(function(iframe) {
                                     wysiwygIframe = iframe;
                                 });
                             }
