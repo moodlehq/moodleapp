@@ -469,5 +469,63 @@ angular.module('mm.core')
         return text.split(/\w\b/gi).length - 1;
     };
 
+    /**
+     * Get the pluginfile URL to replace @@PLUGINFILE@@ wildcards.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#getTextPluginfileUrl
+     * @param  {Object[]} files Files to extract the URL from. They need to have the URL in a 'fileurl' attribute.
+     * @return {String}         Pluginfile URL, false if no files found.
+     */
+    self.getTextPluginfileUrl = function(files) {
+        if (files && files.length) {
+            var fileURL = files[0].fileurl;
+            return fileURL.substr(0, fileURL.lastIndexOf('/')).replace('pluginfile.php/', 'pluginfile.php?file=/');
+        }
+
+        return false;
+    };
+
+    /**
+     * Replace @@PLUGINFILE@@ wildcards with the real URL in a text.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#replacePluginfileUrls
+     * @param  {String} text    Text to treat.
+     * @param  {Object[]} files Files to extract the pluginfile URL from. They need to have the URL in a 'fileurl' attribute.
+     * @return {String}         Treated text.
+     */
+    self.replacePluginfileUrls = function(text, files) {
+        if (text) {
+            var fileURL = self.getTextPluginfileUrl(files);
+            if (fileURL) {
+                return text.replace(/@@PLUGINFILE@@/g, fileURL);
+            }
+        }
+        return text;
+    };
+
+    /**
+     * Replace pluginfile URLs with @@PLUGINFILE@@ wildcards.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#restorePluginfileUrls
+     * @param  {String} text    Text to treat.
+     * @param  {Object[]} files Files to extract the pluginfile URL from.  They need to have the URL in a 'fileurl' attribute.
+     * @return {String}         Treated text.
+     */
+    self.restorePluginfileUrls = function(text, files) {
+        if (text) {
+            var fileURL = self.getTextPluginfileUrl(files);
+            if (fileURL) {
+                return text.replace(new RegExp(self.escapeForRegex(fileURL), 'g'), '@@PLUGINFILE@@');
+            }
+        }
+        return text;
+    };
+
     return self;
 });

@@ -3,15 +3,14 @@
     <ion-nav-buttons side="secondary">
         <a class="button button-clear" ng-click="save()" mm-link aria-label="{{ 'mm.core.save' | translate }}"> {{ 'mm.core.save' | translate }}</a>
     </ion-nav-buttons>
-    <ion-content padding="true" mm-state-class>
+    <ion-content padding="true" mm-state-class delegate-handle="mmaModWikiEditPage">
         <mm-loading hide-until="wikiLoaded">
             <form>
                 <div class="item-title" ng-if="canEditTitle">
                     <input type="text" placeholder="{{ 'mma.mod_wiki.newpagetitle' | translate }}" ng-model="page.title">
                 </div>
-                <div class="item item-noborder mma-mod_wiki-textarea">
-                    <textarea placeholder="{{ 'mma.mod_wiki.content' | translate }}" ng-model="page.content" aria-multiline="true">
-                    </textarea>
+                <div class="item item-noborder mm-item-has-rich-text-editor">
+                    <mm-rich-text-editor model="page" placeholder="{{ 'mma.mod_wiki.content' | translate }}" name="wiki_page_content" scroll-handle="mmaModWikiEditPage" text-change="onChange()"></mm-rich-text-editor>
                 </div>
                 <div class="badge badge-inline badge-assertive" ng-if="wrongVersionLock">{{ 'mma.mod_wiki.wrongversionlock' | translate }}</div>
             </form>

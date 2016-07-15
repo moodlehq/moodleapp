@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_assign')
  * @name $mmaModAssign
  */
 .factory('$mmaModAssign', function($mmSite, $q, $mmUser, $mmSitesManager, mmaModAssignComponent, $mmFilepool, $mmComments,
-        $mmaModAssignSubmissionDelegate, mmaModAssignSubmissionStatusNew, mmaModAssignSubmissionStatusSubmitted) {
+        $mmaModAssignSubmissionDelegate, mmaModAssignSubmissionStatusNew, mmaModAssignSubmissionStatusSubmitted, $mmText) {
     var self = {};
 
     /**
@@ -210,34 +210,12 @@ angular.module('mm.addons.mod_assign')
                 text += field.text;
             });
 
-            if (!keepUrls) {
-                var fileURL = self.getSubmissionPluginTextPluginfileUrl(submissionPlugin);
-                if (fileURL) {
-                    text = text.replace(/@@PLUGINFILE@@/g, fileURL);
-                }
+            if (!keepUrls && submissionPlugin.fileareas && submissionPlugin.fileareas[0]) {
+                text = $mmText.replacePluginfileUrls(text, submissionPlugin.fileareas[0].files);
             }
         }
 
         return text;
-    };
-
-    /**
-     * Get the pluginfile URL to replace in a text submission plugin to make pluginfile URLs work.
-     *
-     * @module mm.addons.mod_assign
-     * @ngdoc method
-     * @name $mmaModAssign#getSubmissionPluginTextPluginfileUrl
-     * @param  {Object} submissionPlugin Submission Plugin.
-     * @return {String}                  Pluginfile URL, false if not found.
-     */
-    self.getSubmissionPluginTextPluginfileUrl = function(submissionPlugin) {
-        if (submissionPlugin.fileareas && submissionPlugin.fileareas[0] &&
-                    submissionPlugin.fileareas[0].files && submissionPlugin.fileareas[0].files[0]) {
-            var fileURL = submissionPlugin.fileareas[0].files[0].fileurl;
-            return fileURL.substr(0, fileURL.lastIndexOf('/')).replace('pluginfile.php/', 'pluginfile.php?file=/');
-        }
-
-        return false;
     };
 
     /**

@@ -187,14 +187,10 @@ angular.module('mm.addons.mod_assign')
      * @return {String}           Text to submit.
      */
     function getTextToSubmit(plugin, inputData) {
-        var url = $mmaModAssign.getSubmissionPluginTextPluginfileUrl(plugin),
-            text = inputData.onlinetext_editor_text;
+        var text = inputData.onlinetext_editor_text,
+            files = plugin.fileareas && plugin.fileareas[0] ? plugin.fileareas[0].files : [];
 
-        if (url) {
-            return text.replace(new RegExp($mmText.escapeForRegex(url), 'g'), '@@PLUGINFILE@@');
-        }
-
-        return text;
+        return $mmText.restorePluginfileUrls(text, files);
     }
 
     return self;
