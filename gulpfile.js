@@ -453,6 +453,10 @@ gulp.task('e2e-build', function() {
       describe: 'Indicate that the tests are run on a tablet',
       type: 'boolean'
     })
+    .option('filter', {
+      alias: 'f',
+      describe: 'To filter the tests to be executed (i.e www/messages/e2e/*)'
+    })
     .option('help', {   // Fake the help option.
       alias: 'h',
       describe: 'Show help',
@@ -566,12 +570,17 @@ gulp.task('e2e-build', function() {
         }
       };
 
-  // Preparing specs.
+  // Preparing specs. Checking first if we are filtering per specs.
   for (i in paths.e2e.libs) {
     config.specs.push(npmPath.join(paths.e2e.buildToRoot, paths.e2e.libs[i]));
   }
-  for (i in paths.e2e.specs) {
-    config.specs.push(npmPath.join(paths.e2e.buildToRoot, paths.e2e.specs[i]));
+
+  if (argv.filter) {
+    config.specs.push(npmPath.join(paths.e2e.buildToRoot, argv.filter));
+  } else {
+    for (i in paths.e2e.specs) {
+      config.specs.push(npmPath.join(paths.e2e.buildToRoot, paths.e2e.specs[i]));
+    }
   }
 
   // Browser.
