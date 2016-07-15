@@ -1,0 +1,15 @@
+<div class="item" ng-if="name">
+    <p class="item-heading">{{ name }}</p>
+    <p ng-if="type == 'checkbox' && value != 0">
+        {{ 'mm.core.yes' | translate }}
+    </p>
+    <p ng-if="type == 'checkbox' && value == 0">
+        {{ 'mm.core.no' | translate }}
+    </p>
+    <p ng-if="type == 'datetime'">
+        {{ value * 1000 | mmFormatDate:"dfmediumdate"}}
+    </p>
+    <p ng-if="type != 'checkbox' && type != 'datetime'">
+        <mm-format-text watch="true">{{ value }}</mm-format-text>
+    </p>
+</div>
