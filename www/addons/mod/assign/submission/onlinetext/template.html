@@ -14,6 +14,6 @@
 		<p>{{ 'mm.core.numwords' | translate: {'$a': words + ' / ' + configs.wordlimit} }}</p>
 	</div>
 	<div class="item item-text-wrap mm-item-has-rich-text-editor">
-        <mm-rich-text-editor model="model" placeholder="{{ plugin.name }}" name="onlinetext_editor_text" scroll-handle="{{scrollHandle}}" text-change="onChange()" component="{{assignComponent}}" component-id="{{assign.id}}"></mm-rich-text-editor>
+        <mm-rich-text-editor model="model" placeholder="{{ plugin.name }}" name="onlinetext_editor_text" scroll-handle="{{scrollHandle}}" text-change="onChange()" component="{{assignComponent}}" component-id="{{assign.id}}" first-render="firstRender()"></mm-rich-text-editor>
     </div>
 </div>

@@ -37,9 +37,7 @@ angular.module('mm.addons.mod_wiki')
         groupId,
         userId,
         rteEnabled,
-        subwikiFiles,
-        firstChange = true,
-        renderTime = new Date().getTime();
+        subwikiFiles;
 
     $scope.saveAndGoParams = false; // See $ionicView.afterLeave.
     $scope.component = mmaModWikiComponent;
@@ -188,7 +186,6 @@ angular.module('mm.addons.mod_wiki')
                     }
                 }).finally(function() {
                     $scope.wikiLoaded = true;
-                    renderTime = new Date().getTime();
                 });
             } else {
                 // New page
@@ -243,15 +240,8 @@ angular.module('mm.addons.mod_wiki')
     }
 
     // Text changed.
-    $scope.onChange = function() {
-        if (rteEnabled && firstChange && new Date().getTime() - renderTime < 1500) {
-            // On change triggered by first rendering. Store the value as the initial text.
-            // This is because rich text editor performs some minor changes (like new lines),
-            // and we don't want to detect those as real user changes.
-            originalContent = $scope.page.text;
-        }
-        firstChange = false;
-        delete $scope.onChange;
+    $scope.firstRender = function() {
+        originalContent = $scope.page.text;
     };
 
     // removeBackView is no available so if entering from forward view,

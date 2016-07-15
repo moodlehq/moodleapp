@@ -51,9 +51,6 @@ angular.module('mm.addons.mod_assign')
                 var text = $mmaModAssign.getSubmissionPluginText(scope.plugin, scope.edit && !rteEnabled);
                 return text;
             }).then(function(text) {
-                var firstChange = true,
-                    now = new Date().getTime();
-
                 // We receive them as strings, convert to int.
                 scope.configs.wordlimit = parseInt(scope.configs.wordlimit, 10);
                 scope.configs.wordlimitenabled = parseInt(scope.configs.wordlimitenabled, 10);
@@ -62,6 +59,7 @@ angular.module('mm.addons.mod_assign')
                 scope.model = {
                     text: text
                 };
+                scope.plugin.rteInitialText = text;
 
                 if (!scope.edit) {
                     // Not editing, see full text when clicked.
@@ -77,14 +75,6 @@ angular.module('mm.addons.mod_assign')
 
                 // Text changed.
                 scope.onChange = function() {
-                    if (rteEnabled && firstChange && new Date().getTime() - now < 1000) {
-                        // On change triggered by first rendering. Store the value as the initial text.
-                        // This is because rich text editor performs some minor changes (like new lines),
-                        // and we don't want to detect those as real user changes.
-                        scope.plugin.rteInitialText = scope.model.text;
-                    }
-                    firstChange = false;
-
                     // Count words if needed.
                     if (scope.configs.wordlimitenabled) {
                         // Cancel previous wait.
@@ -95,6 +85,11 @@ angular.module('mm.addons.mod_assign')
                             scope.words = $mmText.countWords(scope.model.text);
                         }, 1500);
                     }
+                };
+
+                // Text changed in first render.
+                scope.firstRender = function() {
+                    scope.plugin.rteInitialText = scope.model.text;
                 };
             });
         }
