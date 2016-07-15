@@ -92,6 +92,19 @@ angular.module('mm.core')
     }
 
     /**
+     * Get CKEditor controller.
+     *
+     * @param  {Object} element Directive element.
+     * @return {Object}         Controller (or undefined if not found).
+     */
+    function getCKEditorController(element) {
+        var ckeditorEl = element.querySelector('textarea[ckeditor]');
+        if (ckeditorEl) {
+            return angular.element(ckeditorEl).controller('ckeditor');
+        }
+    }
+
+    /**
      * Search WYSIWYG iframe and format its contents.
      *
      * @param  {Object} element      Directive DOM element.
@@ -297,7 +310,8 @@ angular.module('mm.core')
                     sourceCodeButton = element.querySelector('.cke_button__source'),
                     seeingSourceCode = false,
                     wysiwygIframe,
-                    unregisterDialogListener;
+                    unregisterDialogListener,
+                    editorController;
 
                 // Search and format contents of wysiwygIframe.
                 searchAndFormatWysiwyg(element, component, componentId).then(function(iframe) {
@@ -338,14 +352,24 @@ angular.module('mm.core')
                     });
                 }
 
+                // Get editor controller.
+                editorController = getCKEditorController(element);
+
                 // Listen for event resize.
                 ionic.on('resize', onResize, window);
 
                 scope.$on('$destroy', function() {
+                    // Destroy instance. It's already done in angular-ckeditor, but it does it too late.
+                    if (editorController && editorController.instance) {
+                        editorController.instance.destroy(false);
+                    }
+
                     ionic.off('resize', onResize, window);
                     if (unregisterDialogListener) {
                         unregisterDialogListener();
                     }
+
+
                 });
 
                 // Window resized.
