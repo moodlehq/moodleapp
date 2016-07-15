@@ -24,10 +24,17 @@ li.mm-question-answer-correct,
 .mm-question-answer-correct input,
 .mm-question-answer-correct select,
 .mm-question-answer-correct .item-radio input:checked + .radio-content .item-content,
+.mm-question-answer-correct.item-radio input:checked + .radio-content .item-content,
 .mm-question-comment,
 .mm-question-comment p {
   color: $mm-question-correct-color;
   background-color: #dff0d8;
+}
+
+.mm-question-answer-correct .checkbox input:disabled:checked:before,
+.mm-question-answer-correct .checkbox input:disabled:checked + .checkbox-icon:before {
+  background-color: $mm-question-correct-color;
+  border-color: $mm-question-correct-color;
 }
 
 .mm-question-answer-incorrect,
@@ -42,10 +49,17 @@ li.mm-question-answer-incorrect,
 .mm-question-answer-incorrect input,
 .mm-question-answer-incorrect select,
 .mm-question-answer-incorrect .item-radio input:checked + .radio-content .item-content,
+.mm-question-answer-incorrect.item-radio input:checked + .radio-content .item-content,
 .mm-question-incorrect,
 .mm-question-incorrect p {
   color: $mm-question-incorrect-color;
   background-color: #f2dede;
+}
+
+.mm-question-answer-incorrect .checkbox input:disabled:checked:before,
+.mm-question-answer-incorrect .checkbox input:disabled:checked + .checkbox-icon:before {
+  background-color: $mm-question-incorrect-color;
+  border-color: $mm-question-incorrect-color;
 }
 
 .mm-question-feedback-container {

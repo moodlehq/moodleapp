@@ -494,6 +494,11 @@ mm-timer {
   }
 }
 
+// Squared checkboxes.
+.checkbox input:before, .checkbox-icon:before {
+  border-radius: 0;
+}
+
 .item-title {
   border: 0;
   border-bottom: 1px solid #ddd;
