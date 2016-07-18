@@ -7,12 +7,14 @@
             <div ng-if="gradesTable" class="card">
                 <table cellspacing="0" cellpadding="0" class="mma-grades-table">
                     <thead>
-                        <th ng-repeat="column in gradesTable.columns track by $index" id="{{column.id}}" class="header" colspan="{{column.width}}">
-                            {{column.name | translate}}
-                        </th>
+                        <tr>
+                            <th ng-repeat="column in gradesTable.columns track by $index" id="{{column.id}}" class="header" ng-class="{'hidden-phone': !column.showAlways}"" colspan="{{column.width}}">
+                                {{column.name | translate}}
+                            </th>
+                        </tr>
                     </thead>
                     <tbody>
-                        <tr ng-repeat="myrow in gradesTable.rows track by $index" ng-bind-html="myrow"></tr>
+                        <tr ng-repeat="myrow in gradesTable.rows track by $index" ng-bind-html="myrow.text" ng-click="expandGradeInfo(myrow.id)"></tr>
                     </tbody>
                 </table>
             </div>
