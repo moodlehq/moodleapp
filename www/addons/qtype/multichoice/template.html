@@ -11,10 +11,8 @@
         <p id="mma-question-multi-{{option.id}}"><mm-format-text watch="true" class="mm-content-with-float">{{option.text}}</mm-format-text></p>
         <p class="mm-question-feedback-container" ng-if="option.feedback"><mm-format-text watch="true" class="mm-content-with-float">{{ option.feedback }}</mm-format-text></p>
     </li>
-    <label ng-if="!question.multi" ng-repeat="option in question.options" class="item item-radio" ng-class='{"mm-question-answer-correct": option.isCorrect === 1, "mm-question-answer-incorrect": option.isCorrect === 0}'>
-        <ion-radio-fix name="{{option.name}}" ng-model="mcAnswers[option.name]" ng-value="option.value" ng-disabled="option.disabled">
-            <p><mm-format-text watch="true" class="mm-content-with-float">{{option.text}}</mm-format-text></p>
-            <p class="mm-question-feedback-container" ng-if="option.feedback"><mm-format-text watch="true" class="mm-content-with-float">{{ option.feedback }}</mm-format-text></p>
-        </ion-radio-fix>
-    </label>
+    <ion-radio-fix name="{{option.name}}" ng-model="mcAnswers[option.name]" ng-value="option.value" ng-disabled="option.disabled" ng-if="!question.multi" ng-repeat="option in question.options" ng-class='{"mm-question-answer-correct": option.isCorrect === 1, "mm-question-answer-incorrect": option.isCorrect === 0}'>
+        <p><mm-format-text watch="true" class="mm-content-with-float">{{option.text}}</mm-format-text></p>
+        <p class="mm-question-feedback-container" ng-if="option.feedback"><mm-format-text watch="true" class="mm-content-with-float">{{ option.feedback }}</mm-format-text></p>
+    </ion-radio-fix>
 </section>
