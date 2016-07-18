@@ -22,7 +22,7 @@ angular.module('mm.core.question')
  * @name $mmQuestionHelper
  */
 .factory('$mmQuestionHelper', function($mmUtil, $mmText, $ionicModal, mmQuestionComponent, $mmSitesManager, $mmFilepool, $q,
-            $mmQuestion) {
+            $mmQuestion, $mmSite) {
 
     var self = {},
         lastErrorShown = 0;
@@ -525,6 +525,25 @@ angular.module('mm.core.question')
      */
     self.getValidationErrorFromHtml = function(html) {
         return $mmUtil.getContentsOfElement(angular.element(html), '.validationerror');
+    };
+
+    /**
+     * Check if some HTML contains draft file URLs for the current site.
+     *
+     * @module mm.core.question
+     * @ngdoc method
+     * @name $mmQuestionHelper#hasDraftFileUrls
+     * @param  {String} html Question's HTML.
+     * @return {Boolean}     True if contains draft files URLs, false otherwise.
+     */
+    self.hasDraftFileUrls = function(html) {
+        var url = $mmSite.getURL();
+        if (url.slice(-1) != '/') {
+            url = url += '/';
+        }
+        url += 'draftfile.php';
+
+        return html.indexOf(url) != -1;
     };
 
     /**
