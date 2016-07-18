@@ -18,7 +18,7 @@
                     </div>
                 </label>
             </li>
-             <li class="item item-toggle item-text-wrap">
+             <li ng-if="rteSupported" class="item item-toggle item-text-wrap">
                 <p id="mm-settings-richtexteditorlabel" class="item-heading">{{ 'mm.settings.enablerichtexteditor' | translate }}</p>
                 <p>{{ 'mm.settings.enablerichtexteditordescription' | translate }}</p>
                 <label class="toggle" aria-labelledby="mm-settings-richtexteditorlabel">

@@ -1614,6 +1614,33 @@ angular.module('mm.core')
         };
 
         /**
+         * Check if rich text editor is supported in the platform.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#isRichTextEditorSupported
+         * @return {Boolean} True if supported, false otherwise.
+         */
+        self.isRichTextEditorSupported = function() {
+            // Enabled for all platforms different from iOS and Android.
+            if (!ionic.Platform.isIOS() && !ionic.Platform.isAndroid()) {
+                return true;
+            }
+
+            // Check Android version >= 4.4
+            if (ionic.Platform.isAndroid() && ionic.Platform.version() >= 4.4) {
+                return true;
+            }
+
+            // Check iOS version > 6
+            if (ionic.Platform.isIOS() && ionic.Platform.version() > 6) {
+                return true;
+            }
+
+            return false;
+        };
+
+        /**
          * Check if rich text editor is enabled.
          *
          * @module mm.core
@@ -1622,18 +1649,7 @@ angular.module('mm.core')
          * @return {Promise} Promise resolved with boolean: true if enabled, false otherwise.
          */
         self.isRichTextEditorEnabled = function() {
-            // Enabled for all platforms different from iOS and Android.
-            if (!ionic.Platform.isIOS() && !ionic.Platform.isAndroid()) {
-                return $mmConfig.get(mmCoreSettingsRichTextEditor, true);
-            }
-
-            // Check Android version >= 4.4
-            if (ionic.Platform.isAndroid() && ionic.Platform.version() >= 4.4) {
-                return $mmConfig.get(mmCoreSettingsRichTextEditor, true);
-            }
-
-            // Check iOS version > 6
-            if (ionic.Platform.isIOS() && ionic.Platform.version() > 6) {
+            if (self.isRichTextEditorSupported()) {
                 return $mmConfig.get(mmCoreSettingsRichTextEditor, true);
             }
 
