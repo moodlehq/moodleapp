@@ -59,8 +59,29 @@
                         <mm-format-text watch="true" clean="true">{{user.country}}</mm-format-text>
                     </p>
                 </div>
+            </div>
+
+            <div class="item text-center item-borderless" ng-if="(!profileHandlers || !profileHandlers.length) && isLoadingHandlers">
+                <ion-spinner></ion-spinner>
+            </div>
+            <div ng-repeat="handler in profileHandlers | orderBy:'-priority'" ng-controller="handler.controller" class="mm-user-profile-handler {{class}}">
+                <a class="button button-block" ng-click="action($event)" ng-hide="hidden" title="{{ title | translate }}">
+                    {{ title | translate }} <ion-spinner class="icon" ng-if="spinner"></ion-spinner>
+                </a>
+            </div>
+
+            <div class="list" ng-if="user && !isDeleted">
+                <div class="item item-divider" ng-if="hasCourseDetails">
+                    <h2>{{ 'mm.user.coursedetails' | translate}}</h2>
+                </div>
+                <div class="item" ng-if="user.roles">
+                    <p class="item-heading">{{ 'mm.user.roles' | translate}}</p>
+                    <p>
+                        <mm-format-text watch="true" clean="true">{{user.roles}}</mm-format-text>
+                    </p>
+                </div>
                 <div class="item item-divider" ng-if="hasDetails">
-                    <h2>{{ 'mm.user.details' | translate}}</h2>
+                    <h2>{{ 'mm.user.userdetails' | translate}}</h2>
                 </div>
                 <div class="item" ng-if="user.url">
                     <p class="item-heading">{{ 'mm.user.webpage' | translate}}</p>
@@ -70,32 +91,18 @@
                         </a>
                     </p>
                 </div>
-                <div class="item" ng-if="user.roles">
-                    <p class="item-heading">{{ 'mm.user.roles' | translate}}</p>
-                    <p>
-                        <mm-format-text watch="true" clean="true">{{user.roles}}</mm-format-text>
-                    </p>
-                </div>
                 <div class="item" ng-if="user.interests">
                     <p class="item-heading">{{ 'mm.user.interests' | translate}}</p>
                     <p>
                         <mm-format-text watch="true" clean="true">{{user.interests}}</mm-format-text>
                     </p>
                 </div>
+                <mm-user-custom-field ng-repeat="field in user.customfields" field="field"></mm-user-custom-field>
                 <div class="item item-divider" ng-if="user.description">
                     <h2>{{ 'mm.user.description' | translate}}</h2>
                 </div>
                 <div class="item item-text-wrap" ng-if="user.description">
                     <mm-format-text class="mm-content-with-float" watch="true">{{user.description}}</mm-format-text>
-                </div>
-
-                <div class="item text-center" ng-if="(!profileHandlers || !profileHandlers.length) && isLoadingHandlers">
-                    <ion-spinner></ion-spinner>
-                </div>
-                <div ng-repeat="handler in profileHandlers | orderBy:'-priority'" ng-controller="handler.controller" class="mm-user-profile-handler {{class}}">
-                    <a class="button button-block" ng-click="action($event)" ng-hide="hidden" title="{{ title | translate }}">
-                        {{ title | translate }} <ion-spinner class="icon" ng-if="spinner"></ion-spinner>
-                    </a>
                 </div>
             </div>
 
