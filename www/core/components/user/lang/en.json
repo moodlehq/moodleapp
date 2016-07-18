@@ -3,7 +3,6 @@
     "city": "City",
     "contact": "Contact",
     "country": "Country",
-    "coursedetails": "Course details",
     "description": "Description",
     "details": "Details",
     "detailsnotavailable": "The details of this user are not available to you.",
@@ -18,6 +17,5 @@
     "student": "Student",
     "teacher": "Non-editing teacher",
     "viewprofile": "View profile",
-    "userdetails": "User details",
     "webpage": "Web page"
 }
