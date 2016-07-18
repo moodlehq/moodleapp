@@ -21,8 +21,7 @@ angular.module('mm.addons.grades')
  * @ngdoc controller
  * @name mmaGradesTableCtrl
  */
-.controller('mmaGradesTableCtrl', function($scope, $stateParams, $mmUtil, $mmaGrades, $mmSite, $ionicPlatform, $mmaGradesHelper,
-        $state) {
+.controller('mmaGradesTableCtrl', function($scope, $stateParams, $mmUtil, $mmaGrades, $mmSite, $mmaGradesHelper, $state) {
 
     var course = $stateParams.course || {},
         courseId = course.id,
@@ -30,9 +29,9 @@ angular.module('mm.addons.grades')
 
     function fetchGrades() {
         return $mmaGrades.getGradesTable(courseId, userId).then(function(table) {
-            table = $mmaGradesHelper.formatGradesTable(table, !$ionicPlatform.isTablet());
+            table = $mmaGradesHelper.formatGradesTable(table);
             return $mmaGradesHelper.translateGradesTable(table).then(function(table) {
-                $scope.gradesTable = table
+                $scope.gradesTable = table;
             });
         }, function(message) {
             $mmUtil.showErrorModal(message);

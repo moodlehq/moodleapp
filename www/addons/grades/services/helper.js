@@ -32,18 +32,28 @@ angular.module('mm.addons.grades')
      * @ngdoc method
      * @name $mmaGradesHelper#formatGradesTable
      * @param  {Object}  table      JSON object representing a table with data.
-     * @param  {Boolean} showSimple True if simple table should be shown, false for full table.
      * @return {Object}             Formatted HTML table.
      */
-    self.formatGradesTable = function(table, showSimple) {
+    self.formatGradesTable = function(table) {
         var formatted = {
             columns: [],
             rows: []
         };
 
         // Columns, in order.
-        var columns = [ "itemname", "weight", "grade", "range", "percentage", "lettergrade", "rank",
-                        "average", "feedback", "contributiontocoursetotal"];
+        var columns = {
+            itemname: true,
+            weight: false,
+            grade: false,
+            range: false,
+            percentage: false,
+            lettergrade: false,
+            rank: false,
+            average: false,
+            feedback: false,
+            contributiontocoursetotal: false
+        };
+
         var returnedColumns = [];
 
         var tabledata = [];
@@ -65,37 +75,32 @@ angular.module('mm.addons.grades')
 
         if (returnedColumns.length > 0) {
 
-            // Reduce the returned columns for phone version.
-            if (showSimple) {
-                returnedColumns = ["itemname"];
-
-                // Add grade or percentage if needed.
-                var columnAdded = false;
-                for (var i = 0; i < tabledata.length && !columnAdded; i++) {
-                    if (typeof(tabledata[i]["grade"]) != "undefined" &&
-                            typeof(tabledata[i]["grade"]["content"]) != "undefined") {
-                        returnedColumns.push("grade");
-                        columnAdded = true;
-                    } else if (typeof(tabledata[i]["percentage"]) != "undefined" &&
-                            typeof(tabledata[i]["percentage"]["content"]) != "undefined") {
-                        returnedColumns.push("percentage");
-                        columnAdded = true;
-                    }
-                }
-                if (!columnAdded) {
-                    // Add one of those.
-                    returnedColumns.push("grade");
+            // Reduce the returned columns for phone version. Add grade or percentage if needed.
+            var columnAdded = false;
+            for (var i = 0; i < tabledata.length && !columnAdded; i++) {
+                if (typeof(tabledata[i]["grade"]) != "undefined" &&
+                        typeof(tabledata[i]["grade"]["content"]) != "undefined") {
+                    columns.grade = true;
+                    columnAdded = true;
+                } else if (typeof(tabledata[i]["percentage"]) != "undefined" &&
+                        typeof(tabledata[i]["percentage"]["content"]) != "undefined") {
+                    columns.percentage = true;
+                    columnAdded = true;
                 }
             }
+            if (!columnAdded) {
+                // Add one of those.
+                columns.grade = true;
+            }
 
-            for (var el in columns) {
-                var colName = columns[el];
+            for (var colName in columns) {
                 if (returnedColumns.indexOf(colName) > -1) {
                     var width = colName == "itemname" ? maxDepth : 1;
                     var column = {
                         id: colName,
                         name: colName,
-                        width: width
+                        width: width,
+                        showAlways: columns[colName]
                     };
                     formatted.columns.push(column);
                 }
@@ -116,6 +121,7 @@ angular.module('mm.addons.grades')
 
                     if (typeof(tabledata[i][name]) != "undefined") {
                         tclass = (typeof(tabledata[i][name]['class']) != "undefined")? tabledata[i][name]['class'] : '';
+                        tclass += columns[name] ? '' : ' hidden-phone';
                         colspan = (typeof(tabledata[i][name]['colspan']) != "undefined")? "colspan='"+tabledata[i][name]['colspan']+"'" : '';
                         content = (typeof(tabledata[i][name]['content']) != "undefined")? tabledata[i][name]['content'] : null;
                         celltype = (typeof(tabledata[i][name]['celltype']) != "undefined")? tabledata[i][name]['celltype'] : 'td';

@@ -551,6 +551,11 @@ mm-timer {
   bottom: 20px;
 }
 
+@media only screen and (max-width: 768px) {
+  .hidden-phone {
+    display: none !important;
+  }
+}
 /**
  * RichTextEditor.
  */
