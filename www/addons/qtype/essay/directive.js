@@ -39,6 +39,8 @@ angular.module('mm.addons.qtype_essay')
                 textarea = questionEl.querySelector('textarea[name*=_answer]');
                 scope.allowsAttachments = !!questionEl.querySelector('div[id*=filemanager]');
                 scope.isMonospaced = !!questionEl.querySelector('.qtype_essay_monospaced');
+                scope.isPlainText = scope.isMonospaced || !!questionEl.querySelector('.qtype_essay_plain');
+                scope.hasDraftFiles = $mmQuestionHelper.hasDraftFileUrls(questionEl.innerHTML);
 
                 if (!textarea) {
                     // Textarea not found, we might be in review. Search the answer and the attachments.
@@ -53,7 +55,7 @@ angular.module('mm.addons.qtype_essay')
                     scope.textarea = {
                         id: textarea.id,
                         name: textarea.name,
-                        value: content ? $mmText.decodeHTML(content) : ''
+                        text: content ? $mmText.decodeHTML(content) : ''
                     };
 
                     if (input) {

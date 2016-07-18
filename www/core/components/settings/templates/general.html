@@ -18,6 +18,16 @@
                     </div>
                 </label>
             </li>
+             <li ng-if="rteSupported" class="item item-toggle item-text-wrap">
+                <p id="mm-settings-richtexteditorlabel" class="item-heading">{{ 'mm.settings.enablerichtexteditor' | translate }}</p>
+                <p>{{ 'mm.settings.enablerichtexteditordescription' | translate }}</p>
+                <label class="toggle" aria-labelledby="mm-settings-richtexteditorlabel">
+                    <input id="mm-settings-richtexteditorcheckbox" type="checkbox" ng-model="richTextEditor" ng-change="richTextEditorChanged(richTextEditor)">
+                    <div class="track">
+                        <div class="handle"></div>
+                    </div>
+                </label>
+            </li>
              <li class="item item-toggle item-text-wrap" ng-if="showReport">
                 <p id="mm-settings-reportlabel" class="item-heading">{{ 'mm.settings.reportinbackground' | translate }}</p>
                 <label class="toggle" aria-labelledby="mm-settings-reportlabel">

@@ -30,7 +30,7 @@ angular.module('mm.addons.mod_forum')
 
     $scope.newdiscussion = {
         subject: '',
-        message: '',
+        text: '',
         subscribe: true
     };
 
@@ -160,7 +160,7 @@ angular.module('mm.addons.mod_forum')
     // Add a new discussion.
     $scope.add = function() {
         var subject = $scope.newdiscussion.subject,
-            message = $scope.newdiscussion.message,
+            message = $scope.newdiscussion.text,
             subscribe = $scope.newdiscussion.subscribe,
             groupid = $scope.newdiscussion.groupid;
 
@@ -172,9 +172,20 @@ angular.module('mm.addons.mod_forum')
             $mmUtil.showErrorModal('mma.mod_forum.erroremptymessage', true);
             return;
         }
-        message = '<p>' + message + '<p>';
 
-        $mmaModForum.addNewDiscussion(forumid, subject, message, subscribe, groupid).then(function(discussionid) {
+        // Check if rich text editor is enabled or not.
+        $mmUtil.isRichTextEditorEnabled().then(function(enabled) {
+            if (!enabled) {
+                // Rich text editor not enabled, add some HTML to the message if needed.
+                if (mesage.indexOf('<p>') == -1) {
+                    // Wrap the text in <p> tags.
+                    message = '<p>' + message + '/<p>';
+                }
+                message = message.replace(/\n/g, '<br>');
+            }
+
+            return $mmaModForum.addNewDiscussion(forumid, subject, message, subscribe, groupid);
+        }).then(function(discussionid) {
             var data = {
                 forumid: forumid,
                 discussionid: discussionid,
@@ -185,7 +196,7 @@ angular.module('mm.addons.mod_forum')
             if ($ionicPlatform.isTablet()) {
                 // Empty form.
                 $scope.newdiscussion.subject = '';
-                $scope.newdiscussion.message = '';
+                $scope.newdiscussion.text = '';
             } else {
                 // Go back to discussions list.
                 $ionicHistory.goBack();

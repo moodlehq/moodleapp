@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_wiki')
  * @name mmaModWikiEditCtrl
  */
 .controller('mmaModWikiEditCtrl', function($q, $scope, $stateParams, $mmUtil, $state, $mmaModWiki, $translate, $ionicHistory,
-        $mmCourse, $ionicPlatform, $rootScope, mmaModWikiRenewLockTimeout, $interval) {
+        $mmCourse, $ionicPlatform, $rootScope, mmaModWikiRenewLockTimeout, $interval, $mmText, mmaModWikiComponent) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         subwikiId = $stateParams.subwikiid || null,
@@ -33,9 +33,15 @@ angular.module('mm.addons.mod_wiki')
         unregisterHardwareBack,
         originalContent = null,
         editing = false,
-        version = false
+        version = false,
+        groupId,
+        userId,
+        rteEnabled,
+        subwikiFiles;
 
     $scope.saveAndGoParams = false; // See $ionicView.afterLeave.
+    $scope.component = mmaModWikiComponent;
+    $scope.componentId = module.id;
 
     $scope.page = {
         title: $stateParams.pagetitle,
@@ -48,8 +54,13 @@ angular.module('mm.addons.mod_wiki')
         $translate.instant('mma.mod_wiki.newpagehdr');
 
     $scope.save = function() {
+        var text = $scope.page.text;
+        if (rteEnabled) {
+            text = $mmText.restorePluginfileUrls(text, subwikiFiles);
+        }
+
         if (editing) {
-            return $mmaModWiki.editPage(pageId, $scope.page.content, section).then(function() {
+            return $mmaModWiki.editPage(pageId, text, section).then(function() {
                 // Invalidate page since it changed.
                 return $mmaModWiki.invalidatePage(pageId).then(function() {
                     return gotoPage();
@@ -60,7 +71,7 @@ angular.module('mm.addons.mod_wiki')
                 return $mmUtil.showModal('mm.core.notice', 'mma.mod_wiki.titleshouldnotbeempty');
             }
 
-            return $mmaModWiki.newPage(subwikiId, $scope.page.title, $scope.page.content).then(function(createdId) {
+            return $mmaModWiki.newPage(subwikiId, $scope.page.title, text).then(function(createdId) {
                 pageId = createdId;
 
                 return $mmaModWiki.getPageContents(pageId).then(function(pageContents) {
@@ -79,7 +90,7 @@ angular.module('mm.addons.mod_wiki')
     function cancel() {
         var promise;
 
-        if ((editing && originalContent == $scope.page.content) || (!editing && !$scope.page.content && !$scope.page.title)) {
+        if ((editing && originalContent == $scope.page.text) || (!editing && !$scope.page.text && !$scope.page.title)) {
             promise = $q.when();
         } else {
             // Show confirmation if some data has been modified.
@@ -142,19 +153,37 @@ angular.module('mm.addons.mod_wiki')
                     subwikiId = pageContents.subwikiid;
                     $scope.title = $translate.instant('mma.mod_wiki.editingpage', {'$a': $scope.page.title});
                     canEdit = pageContents.caneditpage;
+                    groupId = pageContents.groupid;
+                    userId = pageContents.userid;
+
+                    // Check if rich text editor is enabled.
+                    return $mmUtil.isRichTextEditorEnabled();
+                }).then(function(enabled) {
+                    rteEnabled = enabled;
+
+                    if (enabled) {
+                        // Get subwiki files, needed to replace URLs for rich text editor.
+                        return $mmaModWiki.getSubwikiFiles(wikiId, groupId, userId);
+                    }
+                }).then(function(files) {
+                    subwikiFiles = files;
 
                     // Get editable text of the page/section.
-                    return $mmaModWiki.getPageForEditing(pageId, section).then(function(editContents) {
-                        originalContent = editContents.content;
-                        $scope.page.content = editContents.content;
-                        version = editContents.version;
+                    return $mmaModWiki.getPageForEditing(pageId, section);
+                }).then(function(editContents) {
+                    if (rteEnabled) {
+                        $scope.page.text = $mmText.replacePluginfileUrls(editContents.content, subwikiFiles);
+                    } else {
+                        $scope.page.text = editContents.content;
+                    }
+                    originalContent = $scope.page.text;
+                    version = editContents.version;
 
-                        if (canEdit) {
-                            $interval(function() {
-                                renewLock();
-                            }, mmaModWikiRenewLockTimeout * 1000);
-                        }
-                    });
+                    if (canEdit) {
+                        $interval(function() {
+                            renewLock();
+                        }, mmaModWikiRenewLockTimeout * 1000);
+                    }
                 }).finally(function() {
                     $scope.wikiLoaded = true;
                 });
@@ -198,6 +227,7 @@ angular.module('mm.addons.mod_wiki')
 
         return promise.then(function(info) {
             module = info;
+            $scope.componentId = module.id;
             if (!courseId && module.course) {
                 courseId = module.course;
             } else if (!courseId) {
@@ -209,6 +239,10 @@ angular.module('mm.addons.mod_wiki')
         });
     }
 
+    // Text changed.
+    $scope.firstRender = function() {
+        originalContent = $scope.page.text;
+    };
 
     // removeBackView is no available so if entering from forward view,
     // we want to "delete" the previous view (going back) and then go to the new/edited page.

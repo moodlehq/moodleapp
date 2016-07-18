@@ -16,18 +16,18 @@
         <i class="icon ion-reply"></i> {{ 'mma.mod_forum.reply' | translate }}
     </a>
 </div>
-<div id="mma-forum-reply-form-{{post.id}}" class="item" ng-show="newpost.replyingto === post.id">
+<div id="mma-forum-reply-form-{{post.id}}" class="item" ng-if="newpost.replyingto === post.id">
     <form class="list mma-forum-border">
         <label class="item item-input item-stacked-label">
             <span class="input-label">{{ 'mma.mod_forum.subject' | translate }}</span>
             <input type="text" placeholder="{{ 'mma.mod_forum.subject' | translate }}" ng-model="newpost.subject">
         </label>
-        <label class="item item-input item-stacked-label">
+        <label class="item item-input item-stacked-label mm-item-has-rich-text-editor">
             <span class="input-label">{{ 'mma.mod_forum.message' | translate }}</span>
-            <textarea class="mma-forum-textarea" placeholder="{{ 'mma.mod_forum.message' | translate }}" ng-model="newpost.message" aria-multiline="true"></textarea>
+            <mm-rich-text-editor model="newpost" placeholder="{{ 'mma.mod_forum.message' | translate }}" scroll-handle="{{scrollHandle}}" name="mod_forum_reply_{{post.id}}" component="{{component}}" component-id="{{post.id}}"></mm-rich-text-editor>
         </label>
         <div class="item button-bar">
-            <button class="button" ng-click="reply()" ng-disabled="newpost.subject == '' || newpost.message == ''">{{ 'mma.mod_forum.posttoforum' | translate }}</button>
+            <button class="button" ng-click="reply()" ng-disabled="newpost.subject == '' || newpost.text == ''">{{ 'mma.mod_forum.posttoforum' | translate }}</button>
             <button class="button" ng-click="cancel()">{{ 'mm.core.cancel' | translate }}</button>
         </div>
     </form>

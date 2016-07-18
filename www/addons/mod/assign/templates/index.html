@@ -7,7 +7,7 @@
             <mm-context-menu-item priority="700" content="{{'mm.core.refresh' | translate }}" action="refreshAssignment()" icon-action="{{refreshIcon}}" icon-action="ion-refresh" close-on-click="false"></mm-context-menu-item>
         </mm-context-menu>
     </ion-nav-buttons>
-    <ion-content padding="true" mm-state-class>
+    <ion-content padding="true" mm-state-class delegate-handle="mmaModAssignIndexScroll">
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="assignmentLoaded" on-refresh="refreshAssignment()"></ion-refresher>
         <mm-loading hide-until="assignmentLoaded">
             <div class="card" ng-if="description" ng-click="expandDescription()">
@@ -63,7 +63,7 @@
                 </div>
             </div>
 
-            <mma-mod-assign-submission ng-if="!canviewsubmissions" courseid="{{courseid}}" moduleid="{{moduleid}}"></mma-mod-assign-submission>
+            <mma-mod-assign-submission ng-if="!canviewsubmissions" courseid="{{courseid}}" moduleid="{{moduleid}}" scroll-handle="mmaModAssignIndexScroll"></mma-mod-assign-submission>
 
             <!-- Submit through app not supported. -->
             <div class="list card" ng-if="!canviewsubmissions && !submitSupported">

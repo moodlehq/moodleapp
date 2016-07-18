@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_assign')
  * @name $mmaModAssign
  */
 .factory('$mmaModAssign', function($mmSite, $q, $mmUser, $mmSitesManager, mmaModAssignComponent, $mmFilepool, $mmComments,
-        $mmaModAssignSubmissionDelegate, mmaModAssignSubmissionStatusNew, mmaModAssignSubmissionStatusSubmitted) {
+        $mmaModAssignSubmissionDelegate, mmaModAssignSubmissionStatusNew, mmaModAssignSubmissionStatusSubmitted, $mmText) {
     var self = {};
 
     /**
@@ -204,19 +204,14 @@ angular.module('mm.addons.mod_assign')
      * @return {String}                  Submission text.
      */
     self.getSubmissionPluginText = function(submissionPlugin, keepUrls) {
-
-        // Helper data and fallback.
         var text = '';
         if (submissionPlugin.editorfields) {
             angular.forEach(submissionPlugin.editorfields, function(field) {
                 text += field.text;
             });
 
-            if (!keepUrls && submissionPlugin.fileareas && submissionPlugin.fileareas[0] &&
-                        submissionPlugin.fileareas[0].files && submissionPlugin.fileareas[0].files[0]) {
-                var fileURL =  submissionPlugin.fileareas[0].files[0].fileurl;
-                fileURL = fileURL.substr(0, fileURL.lastIndexOf('/')).replace('pluginfile.php/', 'pluginfile.php?file=/');
-                text = text.replace(/@@PLUGINFILE@@/g, fileURL);
+            if (!keepUrls && submissionPlugin.fileareas && submissionPlugin.fileareas[0]) {
+                text = $mmText.replacePluginfileUrls(text, submissionPlugin.fileareas[0].files);
             }
         }
 
@@ -428,12 +423,17 @@ angular.module('mm.addons.mod_assign')
      * @param {Number}  assignId      Assignment instance id.
      * @param {Number}  [userId]      User id (empty for current user).
      * @param {Number}  [isBlind]     If blind marking is enabled or not.
+     * @param {Number}  [filter=true] True to filter WS response, false otherwise.
      * @param {Boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @param {Number}  [siteId]      Site id (empty for current site).
      * @return {Promise}              Promise always resolved with the user submission status.
      */
-    self.getSubmissionStatus = function(assignId, userId, isBlind, ignoreCache, siteId) {
+    self.getSubmissionStatus = function(assignId, userId, isBlind, filter, ignoreCache, siteId) {
         siteId = siteId || $mmSite.getId();
+
+        if (typeof filter == 'undefined') {
+            filter = true;
+        }
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
             if (!site.wsAvailable('mod_assign_get_submission_status')) {
@@ -450,6 +450,7 @@ angular.module('mm.addons.mod_assign')
                 preSets = {
                     cacheKey: getSubmissionStatusCacheKey(assignId, userId, isBlind),
                     getCacheUsingCacheKey: true, // We use the cache key to take isBlind into account.
+                    filter: filter
                 };
 
             if (ignoreCache) {

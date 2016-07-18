@@ -2,16 +2,25 @@
     <div class="item item-text-wrap">
         <p><mm-format-text watch="true" class="mm-content-with-float">{{ question.text }}</mm-format-text></p>
     </div>
-    <label class="item item-input" ng-if="textarea">
+    <label class="item item-input" ng-if="textarea && !hasDraftFiles" ng-class='{"mm-item-has-rich-text-editor": !isPlainText}'>
 		<!-- "Format" hidden input -->
 		<input ng-if="formatInput" type="hidden" name="{{formatInput.name}}" value="{{formatInput.value}}" >
-        <textarea class="mm-question-textarea" ng-class='{"mm-monospaced": isMonospaced}' placeholder="{{ 'mm.question.answer' | translate }}" name="{{textarea.name}}" aria-multiline="true">{{textarea.value}}</textarea>
+        <!-- Plain text textarea. -->
+        <textarea ng-if="isPlainText" class="mm-question-textarea" ng-class='{"mm-monospaced": isMonospaced}' placeholder="{{ 'mm.question.answer' | translate }}" name="{{textarea.name}}" aria-multiline="true">{{textarea.text}}</textarea>
+        <!-- Rich text editor. -->
+        <mm-rich-text-editor ng-if="!isPlainText" model="textarea" placeholder="{{ 'mm.question.answer' | translate }}" name="{{textarea.name}}" scroll-handle="{{scrollHandle}}" component="{{component}}" component-id="{{componentId}}"></mm-rich-text-editor>
     </label>
+    <div ng-if="textarea && hasDraftFiles" class="item item-text-wrap">
+        <p class="mm-question-warning">{{ 'mm.question.errorinlinefilesnotsupported' | translate }}</p>
+    </div>
+    <div ng-if="textarea && hasDraftFiles" class="item item-text-wrap">
+        <p><mm-format-text watch="true" class="mm-content-with-float">{{textarea.text}}</mm-format-text></p>
+    </div>
     <div class="item item-text-wrap" ng-if="allowsAttachments">
         <p class="mm-question-warning">{{ 'mm.question.errorattachmentsnotsupported' | translate }}</p>
     </div>
     <div class="item item-text-wrap" ng-if="!textarea && (answer || (!attachments.length && !allowsAttachments))">
-    	<p><mm-format-text watch="true" ng-class='{"mm-monospaced": isMonospaced}'>{{answer}}</mm-format-text></p>
+    	<p><mm-format-text watch="true" ng-class='{"mm-monospaced": isMonospaced}' class="mm-content-with-float">{{answer}}</mm-format-text></p>
     </div>
     <div class="item" ng-if="!textarea && attachments && attachments.length">
     	<mm-file ng-repeat="attachment in attachments" file="attachment" component="{{component}}" component-id="{{componentId}}"></mm-file>

@@ -6,11 +6,11 @@
         </ion-refresher>
         <mm-loading hide-until="discussionLoaded">
             <article class="card" ng-if="discussion">
-                <mma-mod-forum-discussion-post post="discussion" courseid="courseid" title="discussion.subject" subject="discussion.userfullname" component="component" newpost="newpost" replyingto="replyingto" showdivider="false" titleimportant="true" postadded="newPostAdded()" defaultsubject="defaultSubject"></mma-mod-forum-discussion-post>
+                <mma-mod-forum-discussion-post post="discussion" courseid="courseid" title="discussion.subject" subject="discussion.userfullname" component="component" newpost="newpost" replyingto="replyingto" showdivider="false" titleimportant="true" postadded="newPostAdded()" defaultsubject="defaultSubject" scroll-handle="mmaModForumPostsScroll"></mma-mod-forum-discussion-post>
             </article>
             <div class="card" ng-if="posts && posts.length">
                 <article ng-repeat="post in posts track by $index">
-                    <mma-mod-forum-discussion-post post="post" courseid="courseid" title="post.userfullname" subject="post.subject" component="component" newpost="newpost" replyingto="replyingto" showdivider="$index > 0" titleimportant="false" postadded="newPostAdded()" defaultsubject="defaultSubject"></mma-mod-forum-discussion-post>
+                    <mma-mod-forum-discussion-post post="post" courseid="courseid" title="post.userfullname" subject="post.subject" component="component" newpost="newpost" replyingto="replyingto" showdivider="$index > 0" titleimportant="false" postadded="newPostAdded()" defaultsubject="defaultSubject" scroll-handle="mmaModForumPostsScroll"></mma-mod-forum-discussion-post>
                 </article>
             </div>
         </mm-loading>
