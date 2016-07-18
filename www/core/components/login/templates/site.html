@@ -1,6 +1,6 @@
 <ion-view view-title="{{ 'mm.login.connecttomoodle' | translate }}">
   <ion-nav-buttons side="secondary">
-      <button class="button button-icon ion-ios-help-outline" ng-click="showHelp()" aria-label="{{ 'mm.core.help' | translate }}"></button>
+      <button class="button button-icon ion-help-circled" ng-click="showHelp()" aria-label="{{ 'mm.core.help' | translate }}"></button>
   </ion-nav-buttons>
   <ion-content id="mm-login-site" mm-state-class>
       <div class="list">
@@ -10,7 +10,7 @@
             <span class="input-label">{{ 'mm.login.siteaddress' | translate }}</span>
             <input type="url" placeholder="moodle.org" ng-model="siteurl" mm-no-input-validation mm-auto-focus >
           </label>
-          <div class="item">
+          <div class="padding">
               <button class="button button-block" ng-click="connect(siteurl)" ng-disabled="!siteurl">{{ 'mm.login.connect' | translate }}</button>
               <!-- <input type="submit" class="button button-block" value="{{ 'mm.login.connect' | translate }}" > -->
           </div>

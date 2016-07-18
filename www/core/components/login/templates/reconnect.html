@@ -15,11 +15,9 @@
                     <span class="input-label">{{ 'mm.login.password' | translate }}</span>
                     <input type="password" placeholder="{{ 'mm.login.password' | translate }}" ng-model="credentials.password" mm-auto-focus>
                 </label>
-                <div class="item">
-                    <button class="button button-block" ng-click="login()">{{ 'mm.login.loginbutton' | translate }}</button>
-                </div>
-                <div class="item">
-                    <button class="button button-block" ng-click="cancel()">{{ 'mm.login.cancel' | translate }}</button>
+                <div class="padding">
+                    <button class="button button-block button-positive" ng-click="login()">{{ 'mm.login.loginbutton' | translate }}</button>
+                    <button class="button button-block button-outline button-positive" ng-click="cancel()">{{ 'mm.login.cancel' | translate }}</button>
                 </div>
             </form>
         </div>
