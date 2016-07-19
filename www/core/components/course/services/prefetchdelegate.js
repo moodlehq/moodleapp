@@ -569,7 +569,8 @@ angular.module('mm.core')
                 });
             }
 
-            return $q.reject();
+            // No handler found, module not downloadable.
+            return $q.when(mmCoreNotDownloadable);
         };
 
         /**
