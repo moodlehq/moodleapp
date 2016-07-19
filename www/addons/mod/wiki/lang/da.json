@@ -1,4 +1,12 @@
 {
+    "cannoteditpage": "Du kan ikke redigere denne side.",
+    "createpage": "Opret side",
+    "editingpage": "Redigering af denne side '{{$a}}'",
     "map": "Kort",
-    "notingroup": "Ikke i gruppe"
+    "newpagehdr": "Ny side",
+    "newpagetitle": "Ny sidetitel",
+    "nocontent": "Der er intet indhold til denne side",
+    "notingroup": "Ikke i gruppe",
+    "pagename": "Sidenavn",
+    "wrongversionlock": "En anden bruger har redigeret denne side mens du redigerede og dit indhold er forældet."
 }

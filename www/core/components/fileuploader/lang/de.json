@@ -12,6 +12,7 @@
     "errorwhileuploading": "Fehler beim Hochladen der Datei",
     "file": "Datei",
     "fileuploaded": "Datei hochgeladen",
+    "maxbytesfile": "Die Datei {{$a.file}} ist zu groß. Die maximale Größe zum Hochladen ist {{$a.size}}.",
     "photoalbums": "Fotoalbum",
     "readingfile": "Datei lesen",
     "success": "Fertig!",

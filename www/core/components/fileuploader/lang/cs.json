@@ -12,6 +12,7 @@
     "errorwhileuploading": "Při pokusu o nahrání souboru došlo k chybě .",
     "file": "Soubor",
     "fileuploaded": "Soubor nahrán",
+    "maxbytesfile": "Soubor {{$a.file}} je příliš velký. Maximální velikost, kterou můžete nahrát, je  {{$a.size}}.",
     "photoalbums": "Fotoalba",
     "readingfile": "Čtení souboru",
     "success": "Úspěch!",

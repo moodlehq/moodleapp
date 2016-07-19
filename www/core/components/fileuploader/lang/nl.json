@@ -12,6 +12,7 @@
     "errorwhileuploading": "Er is een fout opgetreden tijdens het uploaden van het bestand.",
     "file": "Bestand",
     "fileuploaded": "Bestand geüploaded",
+    "maxbytesfile": "Het bestand {{$a.file}} is te groot. De maximale grootte die je kunt uploaden is {{$a.size}}.",
     "photoalbums": "Foto-albums",
     "readingfile": "Bestand aan het lezen",
     "success": "Succes!",

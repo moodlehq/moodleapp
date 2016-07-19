@@ -1,9 +1,17 @@
 {
+    "cannoteditpage": "Je kunt deze pagina niet bewerken.",
+    "createpage": "Maak pagina",
+    "editingpage": "Pagina '{{$a}}' aan het bewerken",
     "errorloadingpage": "Er is een fout opgetreden tijdens het laden van de pagina.",
     "errornowikiavailable": "De wiki heeft nog geen inhoud",
     "gowikihome": "Wiki startpagina",
     "map": "Map",
+    "newpagehdr": "Nieuwe pagina",
+    "newpagetitle": "Nieuwe paginatitel",
+    "nocontent": "Er is geen inhoud voor deze pagina",
     "notingroup": "Niet in groep",
+    "pagename": "Paginanaam",
     "subwiki": "Subwiki",
-    "viewpage": "Bekijk pagina"
+    "viewpage": "Bekijk pagina",
+    "wrongversionlock": "Een andere gebruiker heeft deze pagina bewerkt terwijl jij er ook aan bezig was en jouw inhoud is verloren gegaan."
 }

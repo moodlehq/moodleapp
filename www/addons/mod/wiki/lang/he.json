@@ -1,4 +1,12 @@
 {
+    "cannoteditpage": "לא ניתן לערוך עמוד זה",
+    "createpage": "יצירת דף חדש",
+    "editingpage": "עריכת עמוד זה {{$a}}",
     "map": "דפים מיוחדים",
-    "notingroup": "לא בקבוצה"
+    "newpagehdr": "דף חדש",
+    "newpagetitle": "כותרת דף חדש",
+    "nocontent": "אין תוכן לדף זה",
+    "notingroup": "לא בקבוצה",
+    "pagename": "שם העמוד",
+    "wrongversionlock": "משתמש אחר ערך את הדף הזה בזמן שאת/ה ערכת/ה. התוכן שלך לא ישמר."
 }

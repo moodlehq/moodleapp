@@ -1,7 +1,7 @@
 {
     "attemptfirst": "Prima încercare",
     "attemptlast": "Ultima încercare",
-    "attemptnumber": "Numărul încercării",
+    "attemptnumber": "Încercare",
     "attemptquiznow": "Lansează testul acum",
     "comment": "Comentariu",
     "completedon": "Completat la",
@@ -22,13 +22,16 @@
     "preview": "Afişare",
     "previewquiznow": "Afişare test acum",
     "question": "Întrebare",
+    "quizpassword": "Parola chestionarului",
+    "requirepasswordmessage": "Pentru a putea răspunde la acest test aveţi nevoie de parolă",
     "review": "Verificare",
     "showall": "Afişează toate întrebările pe o singură pagină",
     "startedon": "Început la",
+    "statefinished": "Terminat",
     "status": "Status",
     "submitallandfinish": "Trimite tot şi termină",
     "summaryofattempts": "Rezumatul încercărilor anterioare efectuate de dumneavoastră",
     "timeleft": "Timp rămas",
-    "timetaken": "Timp luat",
+    "timetaken": "Timp necesar",
     "yourfinalgradeis": "Nota ta finală la acest test este {{$a}}"
 }

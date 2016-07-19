@@ -1,4 +1,12 @@
 {
+    "cannoteditpage": "Você não pode editar esta página.",
+    "createpage": "Criar página",
+    "editingpage": "Editando a página '{{$a}}'",
     "map": "Mapa",
-    "notingroup": "Não existe no grupo"
+    "newpagehdr": "Nova página",
+    "newpagetitle": "Novo título da página",
+    "nocontent": "Não existe conteúdo para esta página",
+    "notingroup": "Não existe no grupo",
+    "pagename": "Nome da página",
+    "wrongversionlock": "Outro usuário editou esta página enquanto você estava editando e seu conteúdo é obsoleto."
 }

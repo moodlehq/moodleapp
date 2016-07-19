@@ -1,4 +1,12 @@
 {
+    "cannoteditpage": "Nie możesz edytować tej strony.",
+    "createpage": "Utwórz stronę",
+    "editingpage": "Edycja strony: '{{$a}}'",
     "map": "Mapa stron",
-    "notingroup": "Nie w grupie"
+    "newpagehdr": "Nowa strona",
+    "newpagetitle": "Nowy tytuł strony",
+    "nocontent": "Brak zawartości dla tej strony",
+    "notingroup": "Nie w grupie",
+    "pagename": "Nazwa strony",
+    "wrongversionlock": "Inny użytkownik edytował tę stronę w czasie, kiedy ty ją edytowałeś i twoja zawartość jest przestarzała."
 }

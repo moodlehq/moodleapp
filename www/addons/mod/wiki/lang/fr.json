@@ -1,9 +1,17 @@
 {
+    "cannoteditpage": "Vous ne pouvez pas modifier cette page",
+    "createpage": "Créer une page",
+    "editingpage": "Modification de cette page « {{$a}} »",
     "errorloadingpage": "Une erreur est survenue lors du chargement de la page.",
     "errornowikiavailable": "Ce wiki n'a pas encore de contenu.",
     "gowikihome": "Vers l'accueil du wiki",
     "map": "Carte",
+    "newpagehdr": "Nouvelle page",
+    "newpagetitle": "Titre de la nouvelle page",
+    "nocontent": "Cette page n'a pas de contenu",
     "notingroup": "Pas dans le groupe",
+    "pagename": "Nom de page",
     "subwiki": "Sous-wiki",
-    "viewpage": "Consulter la page"
+    "viewpage": "Consulter la page",
+    "wrongversionlock": "Un autre utilisateur a modifié cette page pendant que vous la modifiiez. Vos modifications sont obsolètes."
 }

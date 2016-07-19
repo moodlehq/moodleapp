@@ -12,6 +12,7 @@
     "errorwhileuploading": "Si è verificato un errore durante il caricamento del file.",
     "file": "File",
     "fileuploaded": "File caricato correttamente",
+    "maxbytesfile": "Il file {{$a.file}} è troppo grande. La dimensione massima che è possibile caricare è pari a {{$a.size}}.",
     "photoalbums": "Album fotografico",
     "readingfile": "Letture file in corso",
     "success": "Effettuato correttamente!",

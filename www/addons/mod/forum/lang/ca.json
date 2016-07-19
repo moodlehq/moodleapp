@@ -1,8 +1,8 @@
 {
-    "addanewdiscussion": "Afegeix un nou tema de debat",
+    "addanewdiscussion": "Afegeix un tema de debat nou",
     "cannotadddiscussion": "Afegir debats en aquest fòrum requereix pertànyer al grup.",
-    "cannotadddiscussionall": "No teniu permís per a afegir un nou tema de debat per a tots els participants.",
-    "cannotcreatediscussion": "No s'ha pogut obrir un nou debat",
+    "cannotadddiscussionall": "No teniu permís per a afegir un tema de debat nou per a tots els participants.",
+    "cannotcreatediscussion": "No s'ha pogut obrir un debat nou",
     "couldnotadd": "Un error desconegut ha impedit afegir el vostre missatge",
     "discussionsubscription": "Subcripció a les discussions",
     "erroremptymessage": "El missatge no pot estar buit",
