@@ -79,9 +79,9 @@ angular.module('mm.addons.mod_forum')
                 $mmUtil.isRichTextEditorEnabled().then(function(enabled) {
                     if (!enabled) {
                         // Rich text editor not enabled, add some HTML to the message if needed.
-                        if (mesage.indexOf('<p>') == -1) {
+                        if (message.indexOf('<p>') == -1) {
                             // Wrap the text in <p> tags.
-                            message = '<p>' + message + '/<p>';
+                            message = '<p>' + message + '</p>';
                         }
                         message = message.replace(/\n/g, '<br>');
                     }
