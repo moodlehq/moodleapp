@@ -2,9 +2,15 @@
     "answer": "Odpověď",
     "complete": "Podrobný",
     "correct": "Správná odpověď",
+    "errorattachmentsnotsupported": "Aplikace ještě nepodporuje připojování souborů k odpovědím.",
+    "errorinlinefilesnotsupported": "Aplikace ještě nepodporuje úpravy vložených souborů.",
+    "errorquestionnotsupported": "Tento typ úlohy není aplikací podporován: {{$a}}.",
     "feedback": "Komentář",
+    "howtodraganddrop": "Klepnutím vyberte potom klepněte na místo umístění.",
     "incorrect": "Nesprávná odpověď",
     "notanswered": "Dosud nezodpovězeno",
     "notyetanswered": "Dosud nezodpovězeno",
-    "partiallycorrect": "Částečně správná odpověď"
+    "partiallycorrect": "Částečně správná odpověď",
+    "questionmessage": "Úloha {{$a}}: {{$b}}",
+    "unknown": "Stav nelze určit"
 }

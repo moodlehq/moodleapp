@@ -1,3 +1,7 @@
 {
-    "browsemode": "النمط العرضي"
+    "browsemode": "النمط العرضي",
+    "byauthor": "التجميع طبقا للمؤلف",
+    "bynewestfirst": "الأحدث أولا",
+    "byrecentlyupdated": "تم تحديثه مؤخرا",
+    "bysearch": "بحث"
 }

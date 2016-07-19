@@ -2,6 +2,7 @@
     "activitynotyetviewable": "Tato činnost nebo zdroj ještě není v aplikaci zobrazitelná.",
     "activitynotyetviewablegothere": "Tato činnost nebo zdroj ještě není v aplikaci zobrazitelná, pro přístup z webu klikněte na tlačítko dole.",
     "allsections": "Všechny sekce",
+    "confirmdeletemodulefiles": "Jste si jisti, že chcete odstranit tyto soubory modulu?",
     "confirmdownload": "Chystáte se stahovat {{velikost}}. Jste si jisti, že chcete pokračovat?",
     "confirmdownloadsection": "Chystáte se stahovat {{velikost}}. Jste si jisti, že chcete pokračovat?",
     "confirmdownloadunknownsize": "Nebyli jsme schopni vypočítat velikost stahování. Jste si jisti, že stahování chcete?",

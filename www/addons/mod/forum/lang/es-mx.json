@@ -6,7 +6,7 @@
     "couldnotadd": "No se puede colocar su mensaje debido a un problema desconocido.",
     "discussionsubscription": "Suscripción a discusión",
     "erroremptymessage": "El mensaje no puede estar vacío",
-    "erroremptysubject": "El asunto del mensaje no puede estar vacío.",
+    "erroremptysubject": "El asunto de la publicación no puede estar vacío",
     "errorgetforum": "Error al obtener datos del foro.",
     "errorgetgroups": "Error al obtener configuraciones de grupo.",
     "forumnodiscussionsyet": "Todavía no hay tópicos de discusión en este foro.",

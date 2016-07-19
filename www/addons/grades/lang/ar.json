@@ -1,12 +1,13 @@
 {
     "average": "متوسط",
-    "feedback": "إفادة",
+    "feedback": "التغذية الراجعة",
     "grade": "الدرجة",
-    "grades": "درجات",
+    "grades": "الدرجات",
     "itemname": "اسم البند",
-    "lettergrade": "درجة حرفية",
-    "percentage": "النسبة",
-    "range": "مجال",
+    "lettergrade": "خطاب الدرجات",
+    "percentage": "النسبة المئوية",
+    "range": "المدى",
+    "rank": "المرتبة",
     "viewgrades": "عرض الدرجات",
-    "weight": "الوزن"
+    "weight": "وزن الدرجات"
 }

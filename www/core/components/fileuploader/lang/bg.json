@@ -1,7 +1,9 @@
 {
     "audio": "Аудио",
     "camera": "Камера",
+    "chooseaccountuploadfile": "Изберете акаунт в който да качите файла.",
     "confirmuploadfile": "Предстои Ви да качите {{size}}. Искате ли да продължите?",
+    "downloading": "Изтегляне",
     "errorcapturingaudio": "Грешка при прихващане на звук",
     "errorcapturingimage": "Грешка при снимане на изображение",
     "errorcapturingvideo": "Грешка при записване на видео",
@@ -9,6 +11,8 @@
     "errormustbeonlinetoupload": "Трябва да сте онлайн, за да качвате файлове.",
     "errornoapp": "Нямате инсталирано приложение, което да извърши това действие.",
     "errorreadingfile": "Грешка при четенето на файла.",
+    "errorwhiledownloading": "Възникна грешка при опита за изтегляне на файла.",
+    "errorwhilerecordingaudio": "Възникна грешка при опита за запис на аудио.",
     "errorwhileuploading": "Възникна грешка при качването на файла.",
     "file": "Файл",
     "fileuploaded": "Файлът е качен",
@@ -16,6 +20,7 @@
     "readingfile": "Четене на файл",
     "success": "Успех!",
     "uploadafile": "Качване на файл",
+    "uploadfiles": "Качване на файлове",
     "uploading": "Качване",
     "video": "Видео"
 }

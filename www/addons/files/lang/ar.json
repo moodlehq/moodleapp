@@ -1,5 +1,9 @@
 {
-    "myfiles": "ملفاتي الخاصة",
+    "couldnotloadfiles": "لا يمكن تحميل قائمة الملفات",
+    "emptyfilelist": "لا يوجد ملفات للعرض",
+    "myfiles": "ملفاتي",
+    "myprivatefiles": "ملفاتي الخاصة",
     "sitefiles": "ملفات الموقع",
+    "success": "تم بنجاح",
     "uploadfiles": "إرسل ملفات التغذية الراجعة"
 }

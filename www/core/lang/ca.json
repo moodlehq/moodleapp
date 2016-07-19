@@ -288,7 +288,7 @@
     "errorchangecompletion": "S'ha produït un error en carregar l'estat de la compleció. Si us plau torneu a intentar-ho.",
     "errordownloading": "S'ha produït un error en baixar el fitxer.",
     "errordownloadingsomefiles": "S'ha produït un error en descarregar els fitxers del mòdul. Potser s'han perdut alguns fitxers.",
-    "errorinvalidresponse": "S'ha rebut una resposta no vàlida. Si us plau contacteu amb l'administrador de Moodel si l'error persisteix.",
+    "errorinvalidresponse": "S'ha rebut una resposta no vàlida. Contacteu amb l'administrador de Moodle si l'error persisteix.",
     "erroropenfilenoapp": "S'ha produït un error en obrir el fitxer: no s'ha trobat cap aplicació per obrir aquest tipus de fitxer.",
     "erroropenfilenoextension": "S'ha produït un error obrint el fitxer: el fitxer no té extensió.",
     "erroropenpopup": "Aquesta activitat està intentant obrir una finestra emergent. Aquesta aplicació no ho suporta.",
