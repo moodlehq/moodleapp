@@ -9,6 +9,6 @@
     "messageexit": "{{$a}} opuścił czat",
     "nomessages": "Brak wiadomości",
     "send": "Wyślij",
-    "sessionstart": "Sesja czatu rozpocznie się za:  {{$a}}",
+    "sessionstart": "Sesja czatu rozpocznie się za:  {$ a}}",
     "talk": "Dyskusja"
 }

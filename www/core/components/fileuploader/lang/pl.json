@@ -5,6 +5,7 @@
     "errorreadingfile": "Błąd podczas odczytu pliku \"{$a}\"",
     "file": "Plik",
     "fileuploaded": "Plik wysłany",
+    "maxbytesfile": "Plik {{$a.file}} jest za duży Maksymalny rozmiar pliku, który możesz przesłać, może wynosić {{$a.size}}.",
     "readingfile": "Odczytywanie pliku",
     "success": "Gotowe",
     "uploadafile": "Prześlij plik",

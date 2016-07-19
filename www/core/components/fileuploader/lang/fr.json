@@ -12,6 +12,7 @@
     "errorwhileuploading": "Une erreur est survenue lors du dépôt du fichier.",
     "file": "Fichier",
     "fileuploaded": "Fichier envoyé",
+    "maxbytesfile": "La taille du fichier {{$a.file}} est trop grande. La taille maximale d'un fichier à déposer est de {{$a.size}}.",
     "photoalbums": "Albums de photos",
     "readingfile": "Lecture du fichier",
     "success": "Succès !",

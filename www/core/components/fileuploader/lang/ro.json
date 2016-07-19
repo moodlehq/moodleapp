@@ -12,6 +12,7 @@
     "errorwhileuploading": "A apărut o eroare în timpul încărcării fișierului.",
     "file": "Fișier",
     "fileuploaded": "Fișierul a fost încărcat cu succes.",
+    "maxbytesfile": "Fișierul {{$a.file}} este prea mare. Dimensiunea maximă pe care o puteți încărca este {{$a.size}}.",
     "photoalbums": "Albume foto",
     "readingfile": "Se citește fișierul",
     "success": "Succes!",

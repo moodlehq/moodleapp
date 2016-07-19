@@ -6,7 +6,7 @@
     "couldnotadd": "Não foi possível publicar a sua mensagem. Infelizmente a causa do erro não foi identificada.",
     "discussionsubscription": "Assinatura de discussão",
     "erroremptymessage": "A mensagem não pode ser vazia.",
-    "erroremptysubject": "O assunto da mensagem não pode ser vazio",
+    "erroremptysubject": "Assunto não pode estar vazio",
     "errorgetforum": "Erro ao buscar dados de fórum.",
     "errorgetgroups": "Erro ao obter configurações do grupo.",
     "forumnodiscussionsyet": "Não existem tópicos neste fórum ainda",

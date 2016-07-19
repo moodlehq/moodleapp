@@ -14,6 +14,6 @@
     "mustbeonlinetosendmessages": "Heu d'estar connectat per poder enviar missatges",
     "nomessages": "No hi ha missatges encara",
     "send": "Envia",
-    "sessionstart": "La sessió de xat començarà en: {{$a}}",
+    "sessionstart": "La propera sessió de xat començarà en: {{$a}}",
     "talk": "Parla"
 }
