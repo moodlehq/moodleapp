@@ -5,6 +5,7 @@ information provided here is intended especially for developers.
 
  * Most of the upload file logic has been moved from the addon "files" to the component "fileuploader". This includes controllers, templates, service functions and language strings.
  * The function uploadGenericFile inside "fileuploader" component now accepts a new parameter "itemId".
+ * The function uploadMedia inside "fileuploader" now only accepts 1 file instead of an array.
  * New libraries were installed, please run:
     bower install
 

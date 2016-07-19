@@ -1,5 +1,5 @@
 <ion-view view-title="{{ 'mma.calendar.calendarevents' | translate }}">
-    <mm-split-view load-when="eventsLoaded" component="mmaCalendarEventsList">
+    <mm-split-view load-when="eventsLoaded" component="mmaCalendarEventsList" menu-state="site.calendar">
         <ion-content mm-state-class>
             <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="eventsLoaded" on-refresh="refreshEvents()">
             </ion-refresher>

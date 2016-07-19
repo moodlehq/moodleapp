@@ -60,6 +60,8 @@ angular.module('mm.core')
  *
  * @param {Number} [load] Link to load. If not set then the first link will be loaded by default. If it's set then it will
  *                        try to load the nth link. E.g. load=2 will load the second link in the page.
+ *
+ * @param {String} [menuState] Name of the state loaded in the left pane (menu). If not defined it will use $state.$current.name.
  */
 .directive('mmSplitView', function($log, $state, $ionicPlatform, $timeout, $mmUtil, $interpolate, mmCoreSplitViewLoad) {
 
@@ -200,7 +202,7 @@ angular.module('mm.core')
         link: function(scope, element, attrs, controller) {
             var el = element[0],
                 menu = angular.element(el.querySelector('.mm-split-pane-menu')),
-                menuState = $state.$current.name,
+                menuState = attrs.menuState || $state.$current.name,
                 menuParams = $state.params,
                 menuWidth = attrs.menuWidth,
                 component = attrs.component || 'tablet';
