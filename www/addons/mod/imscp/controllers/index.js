@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_imscp')
  * @name mmaModImscpIndexCtrl
  */
 .controller('mmaModImscpIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModImscp, $log, mmaModImscpComponent,
-            $ionicPopover, $timeout, $q, $mmCourse, $mmApp, $mmText, $translate) {
+            $ionicPopover, $timeout, $q, $mmCourse, $mmApp, $mmText, $translate, $timeout) {
     $log = $log.getInstance('mmaModImscpIndexCtrl');
 
     var module = $stateParams.module || {},
@@ -115,10 +115,16 @@ angular.module('mm.addons.mod_imscp')
         $mmText.expandText($translate.instant('mm.core.description'), $scope.description);
     };
 
-    $ionicPopover.fromTemplateUrl('addons/mod/imscp/templates/toc.html', {
-        scope: $scope,
-    }).then(function(popover) {
-        $scope.popover = popover;
+    $timeout(function() {
+        $ionicPopover.fromTemplateUrl('addons/mod/imscp/templates/toc.html', {
+            scope: $scope
+        }).then(function(popover) {
+            $scope.popover = popover;
+
+            $scope.openToc = function($event) {
+                popover.show($event);
+            };
+        });
     });
 
     fetchContent().then(function() {
