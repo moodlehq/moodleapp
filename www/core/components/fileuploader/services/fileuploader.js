@@ -94,31 +94,27 @@ angular.module('mm.core.fileuploader')
      * @module mm.core.fileuploader
      * @ngdoc method
      * @name $mmFileUploader#uploadMedia
-     * @param  {Array} mediaFiles Array of file objects.
-     * @return {Promise}          Promise resolved once all files have been uploaded.
+     * @param  {Object} mediaFile File object to upload.
+     * @return {Promise}          Promise resolved once the file has been uploaded.
      */
-    self.uploadMedia = function(mediaFiles) {
+    self.uploadMedia = function(mediaFile) {
         $log.debug('Uploading media');
-        var promises = [];
-        angular.forEach(mediaFiles, function(mediaFile) {
-            var options = {},
-                filename = mediaFile.name,
-                split;
+        var options = {},
+            filename = mediaFile.name,
+            split;
 
-            if (ionic.Platform.isIOS()) {
-                // In iOS we'll add a timestamp to the filename to make it unique.
-                split = filename.split('.');
-                split[0] += '_' + new Date().getTime();
-                filename = split.join('.');
-            }
+        if (ionic.Platform.isIOS()) {
+            // In iOS we'll add a timestamp to the filename to make it unique.
+            split = filename.split('.');
+            split[0] += '_' + new Date().getTime();
+            filename = split.join('.');
+        }
 
-            options.fileKey = null;
-            options.fileName = filename;
-            options.mimeType = null;
-            options.deleteAfterUpload = true;
-            promises.push(self.uploadFile(mediaFile.fullPath, options));
-        });
-        return $q.all(promises);
+        options.fileKey = null;
+        options.fileName = filename;
+        options.mimeType = null;
+        options.deleteAfterUpload = true;
+        return self.uploadFile(mediaFile.fullPath, options);
     };
 
     /**
