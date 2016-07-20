@@ -281,7 +281,7 @@ angular.module('mm.core')
 
             // Check if we should use rich text editor.
             $mmUtil.isRichTextEditorEnabled().then(function(enabled) {
-                scope.richTextEditor = enabled;
+                scope.richTextEditor = !!enabled;
                 renderTime = new Date().getTime();
 
                 if (enabled) {
