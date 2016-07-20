@@ -254,9 +254,9 @@ angular.module('mm.addons.grades')
      */
     function getModuleLink(text) {
         var el = angular.element(text)[0],
-            link = el.attributes['href'].value;
+            link = el.attributes['href'] ? el.attributes['href'].value : false;
 
-        if (link.indexOf("/mod/") < 0) {
+        if (!link || link.indexOf("/mod/") < 0) {
             return false;
         }
 
