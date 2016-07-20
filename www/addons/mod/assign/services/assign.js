@@ -618,6 +618,19 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Check if assignments plugin prefetch is enabled in a certain site.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssign#isPrefetchEnabled
+     * @return {Boolean}         if plugin prefetch is enabled.
+     */
+    self.isPrefetchEnabled = function() {
+        return $mmSite.wsAvailable('mod_assign_get_assignments') && $mmSite.wsAvailable('mod_assign_get_submissions') &&
+            $mmSite.wsAvailable('mod_assign_get_submission_status');
+    };
+
+    /**
      * Check if save and submit assignments is enabled in site.
      *
      * @module mm.addons.mod_assign

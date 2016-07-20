@@ -85,7 +85,7 @@ angular.module('mm.addons.mod_assign')
                 $scope.title = module.name;
                 $scope.icon = $mmCourse.getModuleIconSrc('assign');
                 $scope.class = 'mma-mod_assign-handler';
-                $scope.buttons = [downloadBtn, refreshBtn];
+                $scope.buttons = $mmaModAssign.isPrefetchEnabled() ? [downloadBtn, refreshBtn] :  [];
                 $scope.spinner = true; // Show spinner while calculating status.
 
                 $scope.action = function(e) {
