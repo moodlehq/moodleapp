@@ -44,8 +44,8 @@ angular.module('mm.addons.mod_wiki')
     $scope.componentId = module.id;
 
     $scope.page = {
-        title: $stateParams.pagetitle,
-        content: ""
+        title: $stateParams.pagetitle ? $stateParams.pagetitle.replace(/\+/g, " ") : null,
+        text: ""
     };
 
     $scope.canEditTitle = !$stateParams.pagetitle;
@@ -59,8 +59,10 @@ angular.module('mm.addons.mod_wiki')
             text = $mmText.restorePluginfileUrls(text, subwikiFiles);
         }
 
+        var promise;
+
         if (editing) {
-            return $mmaModWiki.editPage(pageId, text, section).then(function() {
+            promise = $mmaModWiki.editPage(pageId, text, section).then(function() {
                 // Invalidate page since it changed.
                 return $mmaModWiki.invalidatePage(pageId).then(function() {
                     return gotoPage();
@@ -71,7 +73,7 @@ angular.module('mm.addons.mod_wiki')
                 return $mmUtil.showModal('mm.core.notice', 'mma.mod_wiki.titleshouldnotbeempty');
             }
 
-            return $mmaModWiki.newPage(subwikiId, $scope.page.title, text).then(function(createdId) {
+            promise = $mmaModWiki.newPage(subwikiId, $scope.page.title, text).then(function(createdId) {
                 pageId = createdId;
 
                 return $mmaModWiki.getPageContents(pageId).then(function(pageContents) {
@@ -84,6 +86,16 @@ angular.module('mm.addons.mod_wiki')
                 });
             });
         }
+
+        return promise.catch(function(message) {
+            if (message) {
+                $mmUtil.showErrorModal(message);
+            } else {
+                $mmUtil.showErrorModal('Error saving wiki data.');
+            }
+
+            return $ionicHistory.goBack();
+        });
     };
 
     // Just ask to confirm the lost of data.

@@ -123,6 +123,13 @@ angular.module('mm.core', ['pascalprecht.translate'])
     imglist = addProtocolIfMissing(imglist, 'file');
     imglist = addProtocolIfMissing(imglist, 'cdvfile');
 
+    // Set thresholds on app init to avoid duration roundings.
+    moment.relativeTimeThreshold('M', 12);
+    moment.relativeTimeThreshold('d', 31);
+    moment.relativeTimeThreshold('h', 24);
+    moment.relativeTimeThreshold('m', 60);
+    moment.relativeTimeThreshold('s', 60);
+
     $compileProvider.aHrefSanitizationWhitelist(hreflist);
     $compileProvider.imgSrcSanitizationWhitelist(imglist);
 
