@@ -182,11 +182,16 @@ angular.module('mm.addons.mod_quiz')
         // Get best grade.
         promises.push($mmaModQuiz.getUserBestGrade(quiz.id).then(function(best) {
             bestGrade = best;
-        }));
 
-        // Get gradebook grade.
-        promises.push($mmaModQuiz.getGradeFromGradebook(courseId, module.id).then(function(data) {
-            gradebookData = data;
+            // Get gradebook grade.
+            return $mmaModQuiz.getGradeFromGradebook(courseId, module.id).then(function(data) {
+                gradebookData = data;
+            }).catch(function() {
+                // Fallback to quiz best grade if failure or not found.
+                gradebookData = {
+                    grade: bestGrade.grade
+                };
+            });
         }));
 
         return $q.all(promises).then(function() {
