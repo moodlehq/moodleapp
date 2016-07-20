@@ -72,6 +72,11 @@ angular.module('mm.core.sharedfiles')
         $ionicScrollDelegate.resize(); // Resize scroll area.
     };
 
+    // Called when a file is renamed. Update the list.
+    $scope.fileRenamed = function(index, file) {
+        $scope.files[index] = file;
+    };
+
     // Open a subfolder.
     $scope.openFolder = function(folder) {
         $state.go('site.sharedfiles-list', {path: $mmFS.concatenatePaths(path, folder.name), manage: manage, pick: pick});
