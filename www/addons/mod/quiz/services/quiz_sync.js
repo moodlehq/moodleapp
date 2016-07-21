@@ -365,7 +365,8 @@ angular.module('mm.addons.mod_quiz')
                 // Get the data stored in offline.
                 return $mmaModQuizOffline.getAttemptAnswers(offlineAttempt.id, siteId).then(function(answers) {
                     var offlineQuestions,
-                        pages;
+                        pages,
+                        finish;
 
                     if (!answers.length) {
                         // No answers stored, finish.
@@ -389,8 +390,8 @@ angular.module('mm.addons.mod_quiz')
                         return self.validateQuestions(onlineAttempt.id, onlineQuestions, offlineQuestions, siteId);
                     }).then(function(discardedData) {
                         // Get the answers to send.
-                        var answers = $mmaModQuizOffline.extractAnswersFromQuestions(offlineQuestions),
-                            finish = offlineAttempt.finished && !discardedData;
+                        var answers = $mmaModQuizOffline.extractAnswersFromQuestions(offlineQuestions);
+                        finish = offlineAttempt.finished && !discardedData;
 
                         if (discardedData) {
                             if (offlineAttempt.finished) {
@@ -401,6 +402,14 @@ angular.module('mm.addons.mod_quiz')
                         }
 
                         return $mmaModQuiz.processAttempt(quiz, onlineAttempt, answers, preflightData, finish, false, false, siteId);
+                    }).then(function() {
+                        // Answers sent, now set the current page if the attempt isn't finished.
+                        if (!finish) {
+                            return $mmaModQuiz.logViewAttempt(onlineAttempt.id, offlineAttempt.currentpage, preflightData, false)
+                                    .catch(function() {
+                                // Ignore errors.
+                            });
+                        }
                     }).then(function() {
                         // Data sent. Finish the sync.
                         return finishSync(lastAttemptId, true);

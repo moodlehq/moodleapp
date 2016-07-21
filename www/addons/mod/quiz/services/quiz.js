@@ -2003,19 +2003,21 @@ angular.module('mm.addons.mod_quiz')
      * @module mm.addons.mod_quiz
      * @ngdoc method
      * @name $mmaModQuiz#logViewAttempt
-     * @param {String} attemptId Attempt ID.
-     * @param {Number} [page=0]  Page number.
-     * @param {Boolean} offline  True if attempt is offline.
-     * @return {Promise}         Promise resolved when the WS call is successful.
+     * @param {String} attemptId     Attempt ID.
+     * @param {Number} [page=0]      Page number.
+     * @param {Object} preflightData Preflight required data (like password).
+     * @param {Boolean} offline      True if attempt is offline.
+     * @return {Promise}             Promise resolved when the WS call is successful.
      */
-    self.logViewAttempt = function(attemptId, page, offline) {
+    self.logViewAttempt = function(attemptId, page, preflightData, offline) {
         if (typeof page == 'undefined') {
             page = 0;
         }
 
         var params = {
                 attemptid: attemptId,
-                page: page
+                page: page,
+                preflightdata: $mmUtil.objectToArrayOfObjects(preflightData, 'name', 'value', true)
             },
             promises = [];
 
@@ -2049,12 +2051,14 @@ angular.module('mm.addons.mod_quiz')
      * @module mm.addons.mod_quiz
      * @ngdoc method
      * @name $mmaModQuiz#logViewAttemptSummary
-     * @param {String} attemptId Attempt ID.
-     * @return {Promise}         Promise resolved when the WS call is successful.
+     * @param {String} attemptId     Attempt ID.
+     * @param {Object} preflightData Preflight required data (like password).
+     * @return {Promise}             Promise resolved when the WS call is successful.
      */
-    self.logViewAttemptSummary = function(attemptId) {
+    self.logViewAttemptSummary = function(attemptId, preflightData) {
         var params = {
-            attemptid: attemptId
+            attemptid: attemptId,
+            preflightdata: $mmUtil.objectToArrayOfObjects(preflightData, 'name', 'value', true)
         };
         return $mmSite.write('mod_quiz_view_attempt_summary', params);
     };
