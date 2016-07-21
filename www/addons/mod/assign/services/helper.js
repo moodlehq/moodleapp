@@ -262,7 +262,7 @@ angular.module('mm.addons.mod_assign')
 
         return promise.then(function(fileEntry) {
             // Now upload the file.
-            return $mmFileUploader.uploadGenericFile(fileEntry.toURL(), fileName, fileEntry.type, true, itemId, siteId)
+            return $mmFileUploader.uploadGenericFile(fileEntry.toURL(), fileName, fileEntry.type, true, 'draft', itemId, siteId)
                     .then(function(result) {
                 return result.itemid;
             });
