@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_assign')
  * @name $mmaModAssignSubmissionFileHandler
  */
 .factory('$mmaModAssignSubmissionFileHandler', function($mmaModAssignSubmissionFileSession, $mmaModAssign, $mmSite, $q,
-            $mmaModAssignHelper, $mmWS, $mmFS, $mmFilepool) {
+            $mmaModAssignHelper, $mmWS, $mmFS, $mmFilepool, $mmUtil) {
 
     var self = {};
 
@@ -224,7 +224,12 @@ angular.module('mm.addons.mod_assign')
 
         if (self.hasDataChanged(assign, submission, plugin, inputData)) {
             // Data has changed, we need to upload new files and re-upload all the existing files.
-            var currentFiles = $mmaModAssignSubmissionFileSession.getFiles(assign.id);
+            var currentFiles = $mmaModAssignSubmissionFileSession.getFiles(assign.id),
+                error = $mmUtil.hasRepeatedFilenames(currentFiles);
+
+            if (error) {
+                return $q.reject(error);
+            }
 
             return $mmaModAssignHelper.uploadFiles(assign.id, currentFiles, siteId).then(function(itemId) {
                 pluginData.files_filemanager = itemId;

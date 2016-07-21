@@ -1656,6 +1656,35 @@ angular.module('mm.core')
             return $q.when(false);
         };
 
+        /**
+         * Given a list of files, check if there are repeated names.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#hasRepeatedFilenames
+         * @param  {Object[]} files List of files.
+         * @return {Mixed}          String with error message if repeated, false if no repeated.
+         */
+        self.hasRepeatedFilenames = function(files) {
+            if (!files || !files.length) {
+                return false;
+            }
+
+            var names = [];
+
+            // Check if there are 2 files with the same name.
+            for (var i = 0; i < files.length; i++) {
+                var name = files[i].filename || files[i].name;
+                if (names.indexOf(name) > -1) {
+                    return $translate.instant('mm.core.filenameexist', {$a: name});
+                } else {
+                    names.push(name);
+                }
+            }
+
+            return false;
+        };
+
         return self;
     };
 });

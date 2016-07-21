@@ -319,8 +319,8 @@ angular.module('mm.core')
 
             if (typeof data.exception !== 'undefined') {
                 return $q.reject(data.message);
-            } else if (typeof data.error !== 'undefined') {
-                return $q.reject(data.error);
+            } else if (data[0] && typeof data[0].error !== 'undefined') {
+                return $q.reject(data[0].error);
             }
 
             // We uploaded only 1 file, so we only return the first file returned.
