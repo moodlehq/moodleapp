@@ -127,17 +127,20 @@ angular.module('mm.core.fileuploader')
      * @param  {String} name               File name.
      * @param  {String} type               File type.
      * @param  {Boolean} deleteAfterUpload Whether the file should be deleted after upload.
+     * @param  {String} [fileArea]         File area to upload the file to.
+     *                                     In Moodle 3.1 or higher defaults to 'draft', in previous versions defaults to 'private'.
      * @param  {Number} [itemId]           Draft ID to upload the file to, 0 to create new. Only for draft files.
      * @param  {String} [siteId]           Id of the site to upload the file to. If not defined, use current site.
      * @return {Promise}                   Promise resolved when the file is uploaded.
      */
-    self.uploadGenericFile = function(uri, name, type, deleteAfterUpload, itemId, siteId) {
+    self.uploadGenericFile = function(uri, name, type, deleteAfterUpload, fileArea, itemId, siteId) {
         var options = {};
         options.fileKey = null;
         options.fileName = name;
         options.mimeType = type;
         options.deleteAfterUpload = deleteAfterUpload;
         options.itemId = itemId;
+        options.fileArea = fileArea;
 
         return self.uploadFile(uri, options, siteId);
     };

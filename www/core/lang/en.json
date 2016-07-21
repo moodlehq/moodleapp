@@ -51,6 +51,7 @@
     "erroropenpopup": "This activity is trying to open a popup. This is not supported in this app.",
     "errorrenamefile": "Error renaming the file. Please try again.",
     "filename": "Filename",
+    "filenameexist": "File name already exists: {{$a}}",
     "folder": "Folder",
     "fullnameandsitename": "{{fullname}} ({{sitename}})",
     "help" : "Help",
