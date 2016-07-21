@@ -365,7 +365,8 @@ angular.module('mm.addons.mod_quiz')
                 // Get the data stored in offline.
                 return $mmaModQuizOffline.getAttemptAnswers(offlineAttempt.id, siteId).then(function(answers) {
                     var offlineQuestions,
-                        pages;
+                        pages,
+                        finish;
 
                     if (!answers.length) {
                         // No answers stored, finish.
@@ -383,14 +384,14 @@ angular.module('mm.addons.mod_quiz')
                         // Now get the online questions data.
                         pages = $mmaModQuiz.getPagesFromLayoutAndQuestions(onlineAttempt.layout, offlineQuestions);
 
-                        return $mmaModQuiz.getAllQuestionsData(onlineAttempt, preflightData, pages, false, true, siteId);
+                        return $mmaModQuiz.getAllQuestionsData(quiz, onlineAttempt, preflightData, pages, false, true, siteId);
                     }).then(function(onlineQuestions) {
                         // Validate questions, discarding the offline answers that can't be synchronized.
                         return self.validateQuestions(onlineAttempt.id, onlineQuestions, offlineQuestions, siteId);
                     }).then(function(discardedData) {
                         // Get the answers to send.
-                        var answers = $mmaModQuizOffline.extractAnswersFromQuestions(offlineQuestions),
-                            finish = offlineAttempt.finished && !discardedData;
+                        var answers = $mmaModQuizOffline.extractAnswersFromQuestions(offlineQuestions);
+                        finish = offlineAttempt.finished && !discardedData;
 
                         if (discardedData) {
                             if (offlineAttempt.finished) {
@@ -401,6 +402,14 @@ angular.module('mm.addons.mod_quiz')
                         }
 
                         return $mmaModQuiz.processAttempt(quiz, onlineAttempt, answers, preflightData, finish, false, false, siteId);
+                    }).then(function() {
+                        // Answers sent, now set the current page if the attempt isn't finished.
+                        if (!finish) {
+                            return $mmaModQuiz.logViewAttempt(onlineAttempt.id, offlineAttempt.currentpage, preflightData, false)
+                                    .catch(function() {
+                                // Ignore errors.
+                            });
+                        }
                     }).then(function() {
                         // Data sent. Finish the sync.
                         return finishSync(lastAttemptId, true);
@@ -432,31 +441,31 @@ angular.module('mm.addons.mod_quiz')
      *                                   The promise is rejected if an offline question isn't found in online questions.
      */
     self.validateQuestions = function(attemptId, onlineQuestions, offlineQuestions, siteId) {
-        var error = false,
-            discardedData = false,
+        var discardedData = false,
             promises = [];
 
         angular.forEach(offlineQuestions, function(offlineQuestion, slot) {
             var onlineQuestion = onlineQuestions[slot],
                 offlineSequenceCheck = offlineQuestion.answers[':sequencecheck'];
 
-            if (onlineQuestion && !error) {
+            if (onlineQuestion) {
                 if (!$mmQuestionDelegate.validateSequenceCheck(onlineQuestion, offlineSequenceCheck)) {
                     discardedData = true;
-                    promises.push($mmaModQuizOffline.removeQuestionAndAnswers(attemptId, onlineQuestion.slot, siteId));
+                    promises.push($mmaModQuizOffline.removeQuestionAndAnswers(attemptId, slot, siteId));
                     delete offlineQuestions[slot];
                 } else {
                     // Sequence check is valid. Use the online one to prevent synchronization errors.
                     offlineQuestion.answers[':sequencecheck'] = onlineQuestion.sequencecheck;
                 }
             } else {
-                error = true;
+                // Online question not found, it can happen for 2 reasons:
+                // 1- It's a sequential quiz and the question is in a page already passed.
+                // 2- Quiz layout has changed (shouldn't happen since it's blocked if there are attempts).
+                discardedData = true;
+                promises.push($mmaModQuizOffline.removeQuestionAndAnswers(attemptId, slot, siteId));
+                delete offlineQuestions[slot];
             }
         });
-
-        if (error) {
-            return $q.reject();
-        }
 
         return $q.all(promises).then(function() {
             return discardedData;
