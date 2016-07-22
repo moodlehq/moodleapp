@@ -83,8 +83,7 @@ angular.module('mm.addons.mod_assign')
                                 submitId == $mmSite.getUserId();
                         scope.showErrorStatementSubmit = submissionStatementMissing && assign.submissiondrafts;
 
-                        scope.userSubmission = assign.teamsubmission ?
-                            response.lastattempt.teamsubmission : response.lastattempt.submission;
+                        scope.userSubmission = $mmaModAssign.getSubmissionObjectFromAttempt(assign, response.lastattempt);
 
                         if (assign.attemptreopenmethod != mmaModAssignAttemptReopenMethodNone) {
                             if (scope.userSubmission) {
@@ -355,8 +354,7 @@ angular.module('mm.addons.mod_assign')
 
                 var modal = $mmUtil.showModalLoading(),
                     previousAttempt = scope.previousAttempts[scope.previousAttempts.length - 1],
-                    previousSubmission = scope.assign.teamsubmission ?
-                            previousAttempt.teamsubmission : previousAttempt.submission;
+                    previousSubmission = $mmaModAssign.getSubmissionObjectFromAttempt(scope.assign, previousAttempt);
 
                 $mmaModAssignHelper.getSubmissionSizeForCopy(scope.assign, previousSubmission).catch(function() {
                     // Error calculating size, return -1.

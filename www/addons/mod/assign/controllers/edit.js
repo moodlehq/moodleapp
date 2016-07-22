@@ -51,8 +51,7 @@ angular.module('mm.addons.mod_assign')
                     return $q.reject($translate.instant('mm.core.nopermissions', {$a: editStr}));
                 }
 
-                $scope.userSubmission = assign.teamsubmission ?
-                        response.lastattempt.teamsubmission : response.lastattempt.submission;
+                $scope.userSubmission = $mmaModAssign.getSubmissionObjectFromAttempt(assign, response.lastattempt);
 
                 // Only show submission statement if we are editing our own submission.
                 if (assign.requiresubmissionstatement && !assign.submissiondrafts && userId == $mmSite.getUserId()) {

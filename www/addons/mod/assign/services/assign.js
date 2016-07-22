@@ -169,6 +169,20 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Get the submission object from an attempt.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssign#getSubmissionObjectFromAttempt
+     * @param  {Object} assign  Assign.
+     * @param  {Object} attempt Attempt.
+     * @return {Object}         Submission object.
+     */
+    self.getSubmissionObjectFromAttempt = function(assign, attempt) {
+        return assign.teamsubmission ? attempt.teamsubmission : attempt.submission;
+    };
+
+    /**
      * Get attachments of a submission Submission.
      *
      * @module mm.addons.mod_assign

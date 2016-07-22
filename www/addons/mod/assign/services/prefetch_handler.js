@@ -113,8 +113,7 @@ angular.module('mm.addons.mod_assign')
             var promises = [];
 
             if (response.lastattempt) {
-                var userSubmission = assign.teamsubmission ?
-                                response.lastattempt.teamsubmission : response.lastattempt.submission;
+                var userSubmission = $mmaModAssign.getSubmissionObjectFromAttempt(assign, response.lastattempt);
                 if (userSubmission) {
 
                     // Add User Submission files.
@@ -218,8 +217,7 @@ angular.module('mm.addons.mod_assign')
             var lastModified = 0;
 
             if (response.lastattempt) {
-                var userSubmission = assign.teamsubmission ?
-                                response.lastattempt.teamsubmission : response.lastattempt.submission;
+                var userSubmission = $mmaModAssign.getSubmissionObjectFromAttempt(assign, response.lastattempt);
                 if (userSubmission && lastModified < userSubmission.timemodified) {
                     lastModified = userSubmission.timemodified;
                 }
@@ -279,107 +277,28 @@ angular.module('mm.addons.mod_assign')
      */
     self.prefetch = function(module, courseId, single) {
         var siteId = $mmSite.getId(),
-            userId = $mmSite.getUserId();
-
-        var promises = [];
+            userId = $mmSite.getUserId(),
+            promises = [];
 
         promises.push($mmCourse.getModuleBasicInfo(module.id, siteId));
 
         // Get Assignment to retrieve all its submissions.
         promises.push($mmaModAssign.getAssignment(courseId, module.id, siteId).then(function(assign) {
-            var promises = [];
+            var subPromises = [],
+                blindMarking = assign.blindmarking && !assign.revealidentities;
 
-            var blindMarking = assign.blindmarking && !assign.revealidentities;
             if (blindMarking) {
-                promises.push($mmaModAssign.getAssignmentUserMappings(assign.id, false, siteId).catch(function() {
+                subPromises.push($mmaModAssign.getAssignmentUserMappings(assign.id, false, siteId).catch(function() {
                     // Fail silently (Moodle < 2.6)
                 }));
             }
 
-            promises.push($mmaModAssign.getSubmissions(assign.id, siteId).then(function(data) {
-                var promise, altPromises = [];
-                if (data.canviewsubmissions) {
-                    // Teacher.
-                    // Do not send participants to getSubmissionsUserData to retrieve user profiles.
-                    promise = $mmaModAssign.getSubmissionsUserData(data.submissions, courseId, assign.id, blindMarking, false,
-                            siteId).then(function(submissions) {
-                        var promises = [];
-                        angular.forEach(submissions, function(submission) {
-                            promises.push($mmaModAssign.getSubmissionStatus(
-                                assign.id, submission.submitid, !!submission.blindid, true, false, siteId));
-                        });
-                        return $q.all(promises).catch(function(error) {
-                            // Fail silently (Moodle < 3.1)
-                        });
-                    });
+            subPromises.push(prefetchSubmissions(assign, courseId, siteId, userId));
 
-                    // Get list participants.
-                    altPromises.push($mmaModAssign.listParticipants(assign.id, 0, siteId).then(function (participants) {
-                        angular.forEach(participants, function(participant) {
-                            if (participant.profileimageurl) {
-                                $mmFilepool.addToQueueByUrl(siteId, participant.profileimageurl);
-                            }
-                        });
-                    }).catch(function() {
-                        // Fail silently (Moodle < 3.2)
-                    }));
-                } else {
-                    // Student.
-                    promise = $q.all([$mmaModAssign.getSubmissionStatus(assign.id, userId, false, true, false, siteId)]);
-                }
-
-                altPromises.push($mmGroups.getActivityAllowedGroups(assign.cmid, false, siteId));
-
-                return $q.all(altPromises).then(function() {
-                    // Fetch user and group info.
-                    return promise.then(function(submissions) {
-                        var promises = [];
-
-                        angular.forEach(submissions, function(submission) {
-                            if (submission.lastattempt) {
-                                if (!blindMarking && submission.lastattempt.submissiongroupmemberswhoneedtosubmit) {
-                                    angular.forEach(submission.lastattempt.submissiongroupmemberswhoneedtosubmit, function(member) {
-                                        promises.push($mmUser.getProfile(member, courseId).then(function(profile) {
-                                            if (profile.profileimageurl) {
-                                                return $mmFilepool.addToQueueByUrl(siteId, profile.profileimageurl);
-                                            }
-                                        }));
-                                    });
-                                }
-
-                                // Probably we should move that to a prefetch handler but, not really sure about it.
-                                if (submission.lastattempt.submission.id) {
-                                    angular.forEach(submission.lastattempt.submission.plugins, function(plugin) {
-                                        if (plugin.type == "comments") {
-                                            promises.push($mmComments.getComments('module', assign.cmid, 'assignsubmission_comments',
-                                                submission.lastattempt.submission.id, 'submission_comments', 0, siteId).catch(function() {
-                                                    // Fail silently (Moodle < 3.1.1, 3.2)
-                                            }));
-                                        }
-                                    });
-
-                                }
-                            }
-
-                            if (submission.feedback) {
-                                if (submission.feedback.grade && submission.feedback.grade.grader) {
-                                    promises.push($mmUser.getProfile(submission.feedback.grade.grader, courseId)
-                                            .then(function(profile) {
-                                        return $mmFilepool.addToQueueByUrl(siteId, profile.profileimageurl);
-                                    }));
-                                }
-                            }
-                        });
-
-                        return $q.all(promises);
-                    });
-                });
-            }));
-
-            promises.push($mmCourseHelper.getModuleCourseIdByInstance(assign.id, 'assign', siteId));
+            subPromises.push($mmCourseHelper.getModuleCourseIdByInstance(assign.id, 'assign', siteId));
 
             // Get related submissions files and fetch them.
-            promises.push(self.getFiles(module, courseId, siteId).then(function (files) {
+            subPromises.push(self.getFiles(module, courseId, siteId).then(function (files) {
                 var revision = $mmFilepool.getRevisionFromFileList(files),
                     timemodified = $mmFilepool.getTimemodifiedFromFileList(files);
 
@@ -387,11 +306,124 @@ angular.module('mm.addons.mod_assign')
                 return $mmFilepool.prefetchPackage(siteId, files, mmaModAssignComponent, module.id, revision, timemodified);
             }));
 
-            return $q.all(promises);
+            return $q.all(subPromises);
         }));
 
         return $q.all(promises);
     };
+
+    /**
+     * Prefetch assign submissions.
+     *
+     * @param  {Object} assign     Assign.
+     * @param  {Number} courseId   Course ID.
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @param  {Number} [userId]   User ID. If not defined, current user.
+     * @return {Promise}           Promise resolved when prefetched, rejected otherwise.
+     */
+    function prefetchSubmissions(assign, courseId, siteId, userId) {
+        siteId = siteId || $mmSite.getId();
+        userId = userId || $mmSite.getUserId();
+
+        // Get submissions.
+        return $mmaModAssign.getSubmissions(assign.id, siteId).then(function(data) {
+            var promises = [],
+                blindMarking = assign.blindmarking && !assign.revealidentities;
+
+            if (data.canviewsubmissions) {
+                // Teacher.
+                // Do not send participants to getSubmissionsUserData to retrieve user profiles.
+                promises.push($mmaModAssign.getSubmissionsUserData(data.submissions, courseId, assign.id, blindMarking, false, siteId)
+                        .then(function(submissions) {
+                    var subPromises = [];
+                    angular.forEach(submissions, function(submission) {
+                        subPromises.push($mmaModAssign.getSubmissionStatus(
+                                assign.id, submission.submitid, !!submission.blindid, true, false, siteId).then(function(subm) {
+                            return prefetchSubmission(assign, courseId, subm, siteId);
+                        }));
+                    });
+                    return $q.all(subPromises).catch(function() {
+                        // Fail silently (Moodle < 3.1)
+                    });
+                }));
+
+                // Get list participants.
+                promises.push($mmaModAssign.listParticipants(assign.id, 0, siteId).then(function (participants) {
+                    angular.forEach(participants, function(participant) {
+                        if (participant.profileimageurl) {
+                            $mmFilepool.addToQueueByUrl(siteId, participant.profileimageurl);
+                        }
+                    });
+                }).catch(function() {
+                    // Fail silently (Moodle < 3.2)
+                }));
+            } else {
+                // Student.
+                promises.push($mmaModAssign.getSubmissionStatus(assign.id, userId, false, true, false, siteId).then(function(subm) {
+                    return prefetchSubmission(assign, courseId, subm, siteId);
+                }));
+            }
+
+            promises.push($mmGroups.getActivityAllowedGroups(assign.cmid, false, siteId));
+
+            return $q.all(promises);
+        });
+    }
+
+    /**
+     * Prefetch a submission.
+     *
+     * @param  {Object} assign     Assign.
+     * @param  {Number} courseId   Course ID.
+     * @param  {Object} submission Data returned by getSubmissionStatus.
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved when prefetched, rejected otherwise.
+     */
+    function prefetchSubmission(assign, courseId, submission, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        var promises = [],
+            blindMarking = assign.blindmarking && !assign.revealidentities;
+
+        if (submission.lastattempt) {
+            var userSubmission = $mmaModAssign.getSubmissionObjectFromAttempt(assign, submission.lastattempt);
+
+            // Get profile and images of the member who need to submit.
+            if (!blindMarking && submission.lastattempt.submissiongroupmemberswhoneedtosubmit) {
+                angular.forEach(submission.lastattempt.submissiongroupmemberswhoneedtosubmit, function(member) {
+                    promises.push($mmUser.getProfile(member, courseId).then(function(profile) {
+                        if (profile.profileimageurl) {
+                            $mmFilepool.addToQueueByUrl(siteId, profile.profileimageurl);
+                        }
+                    }));
+                });
+            }
+
+            // Prefetch submission plugins data.
+            if (userSubmission && userSubmission.id) {
+                angular.forEach(userSubmission.plugins, function(plugin) {
+                    if (plugin.type == "comments") {
+                        promises.push($mmComments.getComments('module', assign.cmid, 'assignsubmission_comments',
+                            userSubmission.id, 'submission_comments', 0, siteId).catch(function() {
+                                // Fail silently (Moodle < 3.1.1, 3.2)
+                        }));
+                    }
+                });
+
+            }
+        }
+
+        // Get profile and image of the grader.
+        if (submission.feedback) {
+            if (submission.feedback.grade && submission.feedback.grade.grader) {
+                promises.push($mmUser.getProfile(submission.feedback.grade.grader, courseId).then(function(profile) {
+                    $mmFilepool.addToQueueByUrl(siteId, profile.profileimageurl);
+                }));
+            }
+        }
+
+        return $q.all(promises);
+    }
 
     return self;
 });
