@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_assign')
  * @name $mmaModAssignSubmissionFileHandler
  */
 .factory('$mmaModAssignSubmissionFileHandler', function($mmaModAssignSubmissionFileSession, $mmaModAssign, $mmSite, $q,
-            $mmaModAssignHelper, $mmWS, $mmFS, $mmFilepool, $mmUtil) {
+            $mmaModAssignHelper, $mmWS, $mmFS, $mmFilepool, $mmUtil, mmaModAssignComponent) {
 
     var self = {};
 
@@ -177,6 +177,20 @@ angular.module('mm.addons.mod_assign')
      */
     self.getDirectiveName = function(plugin, edit) {
         return 'mma-mod-assign-submission-file';
+    };
+
+    /**
+     * Get files used by this plugin.
+     * The files returned by this function will be prefetched when the user prefetches the assign.
+     *
+     * @param  {Object} assign     Assignment.
+     * @param  {Object} submission Submission to check data.
+     * @param  {Object} plugin     Plugin.
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved when prefetch is done.
+     */
+    self.getPluginFiles = function(assign, submission, plugin, siteId) {
+        return $mmaModAssign.getSubmissionPluginAttachments(plugin);
     };
 
     /**

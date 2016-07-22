@@ -57,6 +57,20 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Get files used by this plugin.
+     * The files returned by this function will be prefetched when the user prefetches the assign.
+     *
+     * @param  {Object} assign     Assignment.
+     * @param  {Object} submission Submission to check data.
+     * @param  {Object} plugin     Plugin.
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved when prefetch is done.
+     */
+    self.getPluginFiles = function(assign, submission, plugin, siteId) {
+        return $mmaModAssign.getSubmissionPluginAttachments(plugin);
+    };
+
+    /**
      * Get the size of data (in bytes) this plugin will send to copy a previous attempt.
      *
      * @param  {Object} assign Assignment.
