@@ -90,7 +90,17 @@ angular.module('mm.addons.mod_assign')
                 // Text changed in first render.
                 scope.firstRender = function() {
                     scope.plugin.rteInitialText = scope.model.text;
+
+                    // Calculate words.
+                    if (scope.configs.wordlimitenabled) {
+                        scope.words = $mmText.countWords(scope.model.text);
+                    }
                 };
+
+                // Rte not enabled, calculate words since firstRender won't be called.
+                if (!rteEnabled && scope.configs.wordlimitenabled) {
+                    scope.words = $mmText.countWords(scope.model.text);
+                }
             });
         }
     };

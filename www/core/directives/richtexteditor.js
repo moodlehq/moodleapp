@@ -44,7 +44,6 @@ angular.module('mm.core')
  * @param {String} [name]          Name to set to the hidden textarea.
  * @param {Function} [textChange]  Function to call when the editor text changes.
  * @param {Function} [firstRender] Function to call when the editor text is first rendered. Only called with rich text editor.
- *                                 This function will only be called if the editor changes the text when rendering it.
  * @param  {String} [component]    The component to link the files to.
  * @param  {Mixed} [componentId]   An ID to use in conjunction with the component.
  */
@@ -352,6 +351,16 @@ angular.module('mm.core')
                     });
                 }
 
+                // If text isn't changed we won't throw firstRender, so throw it manually.
+                if (scope.richTextEditor && scope.firstRender) {
+                    $timeout(function() {
+                        if (firstChange) {
+                            scope.firstRender();
+                            firstChange = false;
+                        }
+                    }, 1000);
+                }
+
                 // Get editor controller.
                 editorController = getCKEditorController(element);
 
@@ -389,9 +398,7 @@ angular.module('mm.core')
             // Text changed.
             scope.onChange = function() {
                 if (scope.richTextEditor && firstChange && scope.firstRender && new Date().getTime() - renderTime < 1000) {
-                    // On change triggered by first rendering. Store the value as the initial text.
-                    // This is because rich text editor performs some minor changes (like new lines),
-                    // and we don't want to detect those as real user changes.
+                    // On change triggered by first rendering, call firstRender.
                     scope.firstRender();
                 }
                 firstChange = false;
