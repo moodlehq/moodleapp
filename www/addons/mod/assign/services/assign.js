@@ -756,7 +756,7 @@ angular.module('mm.addons.mod_assign')
         return $mmSite.write('mod_assign_save_submission', params).then(function(warnings) {
             if (warnings && warnings.length) {
                 // The WebService returned warnings, reject.
-                return $q.reject(warnings[0].message);
+                return $q.reject(warnings[0].item);
             }
         });
     };
