@@ -8,7 +8,7 @@
             <p><mm-format-text ng-if="text" expand-title="{{plugin.name}}" shorten fullview-on-click="true" newlines-on-fullview="true" watch="true" component="{{assignComponent}}" component-id="{{assign.id}}">
                 {{text}}
             </mm-format-text></p>
-            <mm-file ng-repeat="file in files" file="file" component="{{assignComponent}}" component-id="{{assign.id}}"></mm-file>
+            <mm-file ng-repeat="file in files" file="file" component="{{assignComponent}}" component-id="{{assign.id}}" always-download="true"></mm-file>
         </div>
     </span>
 </span>
