@@ -310,14 +310,19 @@ angular.module('mm.addons.mod_assign')
         controller: controller,
         templateUrl: 'addons/mod/assign/templates/submission.html',
         link: function(scope, element, attributes, controller) {
-            scope.isGrading = !!attributes.submitid;
+            var moduleId = parseInt(attributes.moduleid, 10),
+                courseId = parseInt(attributes.courseid, 10),
+                submitId = parseInt(attributes.submitid, 10),
+                blindId = parseInt(attributes.blindid, 10);
+
+            scope.isGrading = !!submitId;
             scope.statusNew = mmaModAssignSubmissionStatusNew;
             scope.statusReopened = mmaModAssignSubmissionStatusReopened;
             scope.loaded = false;
             scope.submitModel = {};
 
             var obsLoaded = scope.$on(mmaModAssignSubmissionInvalidatedEvent, function() {
-                controller.load(scope, attributes.moduleid, attributes.courseid, attributes.submitid, attributes.blindid);
+                controller.load(scope, moduleId, courseId, submitId, blindId);
             });
 
             // Check if submit through app is supported.
@@ -327,15 +332,15 @@ angular.module('mm.addons.mod_assign')
 
             scope.$on('$destroy', obsLoaded);
 
-            controller.load(scope, attributes.moduleid, attributes.courseid, attributes.submitid, attributes.blindid);
+            controller.load(scope, moduleId, courseId, submitId, blindId);
 
             // Add or edit submission.
             scope.goToEdit = function() {
                 $state.go('site.mod_assign-submission-edit', {
-                    moduleid: attributes.moduleid,
-                    courseid: attributes.courseid,
-                    userid: attributes.submitid,
-                    blindid: attributes.blindid
+                    moduleid: moduleId,
+                    courseid: courseId,
+                    userid: submitId,
+                    blindid: blindId
                 });
             };
 
@@ -427,14 +432,14 @@ angular.module('mm.addons.mod_assign')
             function invalidateAndRefresh() {
                 scope.loaded = false;
 
-                var promises = [$mmaModAssign.invalidateAssignmentData(attributes.courseid)];
+                var promises = [$mmaModAssign.invalidateAssignmentData(courseId)];
                 if (scope.assign) {
                     promises.push($mmaModAssign.invalidateAllSubmissionData(scope.assign.id));
                     promises.push($mmaModAssign.invalidateAssignmentUserMappingsData(scope.assign.id));
                 }
 
                 $q.all(promises).finally(function() {
-                    controller.load(scope, attributes.moduleid, attributes.courseid, attributes.submitid, attributes.blindid);
+                    controller.load(scope, moduleId, courseId, submitId, blindId);
                 });
             }
         }
