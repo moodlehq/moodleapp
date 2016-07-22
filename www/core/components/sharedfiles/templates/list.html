@@ -13,7 +13,10 @@
                         {{ file.name }}
                     </a>
                 </li>
-                <li ng-if="files && !files.length" class="item">{{ 'mm.sharedfiles.nosharedfiles' | translate }}</li>
+                <li ng-if="files && !files.length" class="item item-text-wrap">
+                    <p ng-if="manage">{{ 'mm.sharedfiles.nosharedfiles' | translate }}</p>
+                    <p ng-if="!manage">{{ 'mm.sharedfiles.nosharedfilestoupload' | translate }}</p>
+                </li>
             </ul>
         </mm-loading>
     </ion-content>

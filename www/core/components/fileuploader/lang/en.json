@@ -17,6 +17,7 @@
     "maxbytesfile": "The file {{$a.file}} is too large. The maximum size you can upload is {{$a.size}}.",
     "photoalbums": "Photo albums",
     "readingfile": "Reading file",
+    "selectafile": "Select a file",
     "uploadafile": "Upload a file",
     "uploading": "Uploading",
     "uploadingperc": "Uploading: {{$a}}%",
