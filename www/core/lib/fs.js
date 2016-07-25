@@ -1185,6 +1185,9 @@ angular.module('mm.core')
                 newName,
                 number = 1;
 
+            // Clean the file name.
+            fileNameWithoutExtension = $mmText.removeSpecialCharactersForFiles(decodeURIComponent(fileNameWithoutExtension));
+
             // Index the files by name.
             angular.forEach(entries, function(entry) {
                 files[entry.name] = entry;
@@ -1212,8 +1215,8 @@ angular.module('mm.core')
                 return newName;
             }
         }).catch(function() {
-            // Folder doesn't exist, name is unique.
-            return fileName;
+            // Folder doesn't exist, name is unique. Clean it and return it.
+            return $mmText.removeSpecialCharactersForFiles(decodeURIComponent(fileName));
         });
     };
 
