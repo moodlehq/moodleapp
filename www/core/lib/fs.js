@@ -939,6 +939,11 @@ angular.module('mm.core')
      * @return {String}           Extension.
      */
     self.getExtension = function(mimetype, url) {
+        if (mimetype == 'application/x-forcedownload' || mimetype == 'application/forcedownload') {
+            // Couldn't get the right mimetype (old Moodle), try to guess it.
+            return $mmText.guessExtensionFromUrl(url);
+        }
+
         var extensions = mimeToExt[mimetype];
         if (extensions && extensions.length) {
             if (extensions.length > 1 && url) {
