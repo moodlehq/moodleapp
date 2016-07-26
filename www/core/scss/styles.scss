@@ -511,6 +511,13 @@ mm-timer {
   }
 }
 
+// This is to allow clicks in radio/checkbox content.
+mm-format-text {
+  audio, video, a {
+    pointer-events: auto;
+  }
+}
+
 // Squared checkboxes.
 .checkbox input:before, .checkbox-icon:before {
   border-radius: 0;
