@@ -6,7 +6,7 @@
     "couldnotadd": "Impossible d'ajouter votre message à cause d'une erreur indéterminée",
     "discussionsubscription": "Abonnement à la discussion",
     "erroremptymessage": "Un message ne peut pas être vide",
-    "erroremptysubject": "L'objet d'un message ne peut pas être vide",
+    "erroremptysubject": "L'objet du message ne peut pas être vide",
     "errorgetforum": "Erreur de récupération des données de forum.",
     "errorgetgroups": "Erreur lors de l'obtention des réglages de groupe.",
     "forumnodiscussionsyet": "Il n'y a pas encore de message dans ce forum",

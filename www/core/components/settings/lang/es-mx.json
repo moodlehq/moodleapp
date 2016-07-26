@@ -20,6 +20,8 @@
     "enabledebugging": "Activar modo depuración (debug)",
     "enabledownloadsection": "Habilitar descargar secciones",
     "enabledownloadsectiondescription": "Deshabilitar ésta opción para acelerar la carga de secciones de curso.",
+    "enablerichtexteditor": "Habilitar editor de texto enriquecido",
+    "enablerichtexteditordescription": "Si se habilita, se mostrará un editor de texto enriquecido en los lugares que lo permitan.",
     "enablesyncwifi": "Permitir sincronización solamente cuando esté en Wi-Fi",
     "errordeletesitefiles": "Error al eliminar archivos del sitio.",
     "errorsyncsite": "Error al sincronizarlos datos del sitio; por favor revise su conexión de Internet e inténtelo de nuevo.",

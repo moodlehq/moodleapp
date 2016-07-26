@@ -1,4 +1,7 @@
 {
+    "nosharedfiles": "Il n'y a pas de fichier partagés sur ce site.",
     "rename": "Renommer",
-    "replace": "Remplacer"
+    "replace": "Remplacer",
+    "sharedfiles": "Fichiers partagés",
+    "successstorefile": "Fichier enregistré. Vous pouvez maintenant le sélectionner pour le déposer dans vos fichiers privés ou le joindre à des activités."
 }

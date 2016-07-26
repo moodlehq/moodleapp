@@ -6,7 +6,7 @@
     "couldnotadd": "Door een onbekende fout was het niet mogelijk om je bericht toe te voegen .",
     "discussionsubscription": "Inschrijving discussie",
     "erroremptymessage": "Bericht kan niet leeg zijn",
-    "erroremptysubject": "Onderwerp kan niet leeg zijn",
+    "erroremptysubject": "Onderwerp mag niet leeg zijn",
     "errorgetforum": "Fout bij het ophalen van forumgegevens",
     "errorgetgroups": "Fout bij het ophalen van groepinstellingen.",
     "forumnodiscussionsyet": "Er zijn nog geen discussies in dit forum",

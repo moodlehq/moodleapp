@@ -1,4 +1,10 @@
 {
+    "chooseaccountstorefile": "Elija una cuenta en la cual almacenar el archivo.",
+    "chooseactionrepeatedfile": "Ya existe un archivo con este nombre. ¿Desea Usted remplazar el archivo existente o renombrarlo a  \"{{$a}}\"?",
+    "errorreceivefilenosites": "No hay sitios almacenados. Por favor, añada un sitio antes de compartir un archivo con la Appp.",
+    "nosharedfiles": "No hay archivos compartidos en este sitio.",
     "rename": "Renombrar",
-    "replace": "Reemplazar"
+    "replace": "Remplazar",
+    "sharedfiles": "Archivos compartidos",
+    "successstorefile": "Archivo almacenado exitosamente. Ahora Usted puede seleccionar a este archivo para subirlo a sus archivos privados, o anexarlo a algunas actividades."
 }

@@ -1,7 +1,9 @@
 {
+    "addfiletext": "Aggiungi file",
     "audio": "Audio",
     "camera": "Camera",
     "confirmuploadfile": "Stai per caricare {{size}}. Sei sicuro di continuare?",
+    "confirmuploadunknownsize": "Non è stato possibile calcolare la dimensione del caricamento. Sei sicuro di continuare?",
     "errorcapturingaudio": "Si è verificato un errore durante la registrazione dell'audio",
     "errorcapturingimage": "Si è verificato un errore durante l'acquisizione dell'immagine.",
     "errorcapturingvideo": "Si è verificato un errore durante l'acquisizione del video",
@@ -12,11 +14,12 @@
     "errorwhileuploading": "Si è verificato un errore durante il caricamento del file.",
     "file": "File",
     "fileuploaded": "File caricato correttamente",
-    "maxbytesfile": "Il file {{$a.file}} è troppo grande. La dimensione massima che è possibile caricare è pari a {{$a.size}}.",
+    "maxbytesfile": "Il file {{$a.file}} è troppo grande. La dimensione massima consentita è {{$a.size}}.",
     "photoalbums": "Album fotografico",
     "readingfile": "Letture file in corso",
     "success": "Effettuato correttamente!",
     "uploadafile": "Carica un file",
     "uploading": "Caricamento in corso",
+    "uploadingperc": "Caricamento: {{$a}}%",
     "video": "Video"
 }

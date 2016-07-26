@@ -12,6 +12,7 @@
     "notingroup": "No está en un grupo",
     "pagename": "Nombre de página",
     "subwiki": "Sub-wiki",
+    "titleshouldnotbeempty": "El título no debería de estar vacío",
     "viewpage": "Ver página",
     "wrongversionlock": "Otro usuario ha editado esta página mientras usted estaba editando: su contenido es obsoleto."
 }

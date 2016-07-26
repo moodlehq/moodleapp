@@ -3,10 +3,12 @@
     "clicktoupload": "Clic en el botón inferior para subir archivos a su zona de archivos privados.",
     "couldnotloadfiles": "La lista de archivos no ha podido cargarse.",
     "emptyfilelist": "No hay archivos que mostrar",
+    "errorreceivefilenosites": "No hay archivos almacenados. Por favor, añada un sitio antes de intentar subir un archivo.",
     "myfiles": "Mis archivos",
     "myprivatefiles": "Mis archivos privados",
     "myprivatefilesdesc": "Los archivos que están disponibles en su área privada en este sitio Moodle.",
     "sitefiles": "Archivos del sitio",
     "sitefilesdesc": "Los otros archivos que están disponibles  para Usted en este sitio Moodle.",
+    "success": "Éxito",
     "uploadfiles": "Puede subir ficheros"
 }

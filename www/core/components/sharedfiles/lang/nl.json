@@ -1,4 +1,10 @@
 {
+    "chooseaccountstorefile": "Kies een account om het bestand in te bewaren.",
+    "chooseactionrepeatedfile": "Er is al een bestand met die naam. Wil je het bestaande bestand vervangen of wil je het hernoemen naar \"{{$a}}\"?",
+    "errorreceivefilenosites": "Er zijn geen sites bewaard. Voeg een site toe voor je een bestand deelt via de app.",
+    "nosharedfiles": "Er zijn geen gedeelde bestanden bewaard op deze site.",
     "rename": "Hernoem",
-    "replace": "Vervang"
+    "replace": "Vervang",
+    "sharedfiles": "Gedeelde bestanden",
+    "successstorefile": "Bestand bewaard. Je kunt dit bestand nu selecteren om het te uploaden naar je privé-bestanden of het als bijlage gebruiken in activiteiten."
 }
