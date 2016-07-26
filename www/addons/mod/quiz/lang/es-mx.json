@@ -14,6 +14,7 @@
     "confirmstartheader": "Examen cronometrado",
     "connectionerror": "Se perdió la conexión de red. (Falló auto-guardar).\n\nTome nota de todas las respuestas escritas en esta página en los últimos minutos,  y después, intente re-conectar.\n\nUna vez que se haya restablecido la reconexión, sus respuestas deberían de guardarse y este mensaje desaparecerá.",
     "continueattemptquiz": "Continuar el último intento",
+    "continuepreview": "Continuar la previsualización anterior",
     "errorbehaviournotsupported": "Este examen no puede intentarse en la App porque el comportamiento no está soportado por la App:",
     "errordownloading": "Error al descargar datos necesarios.",
     "errorgetattempt": "Error al obtener datos del intento.",

@@ -14,6 +14,7 @@
     "confirmstartheader": "Test met tijdslimiet",
     "connectionerror": "Netwerkverbinding verloren (Automatisch bewaren mislukt).\n\nNeem nota van wat je op deze pagina ingetikt hebt tijdens de laatste minuten en probeer opnieuw te verbinden.\n\nAls de connectie terug lukt, dan zou je antwoord bewaard moeten worden en zal dit bericht verdwijnen.",
     "continueattemptquiz": "Ga verder met de laatste poging",
+    "continuepreview": "Ga verder met controleren",
     "errorbehaviournotsupported": "Deze test kan niet gemaakt worden in de app omdat het gedrag ervan niet ondersteund wordt door de app:",
     "errordownloading": "Fout bij het downloaden van vereiste data",
     "errorgetattempt": "Fout bij het ophalen van de poginggegevens.",

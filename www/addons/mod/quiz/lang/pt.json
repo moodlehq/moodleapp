@@ -11,6 +11,7 @@
     "confirmstartheader": "Teste com limite de tempo",
     "connectionerror": "Ligação à rede perdida (gravação automática falhou).\n\nAnote quaisquer respostas inseridas nesta página nos últimos minutos e tente ligar novamente à rede.\n\nQuando a ligação for restabelecida, as suas respostas devem ser guardadas e esta mensagem irá desaparecer.",
     "continueattemptquiz": "Continuar a última tentativa",
+    "continuepreview": "Continuar a última pré-visualização",
     "feedback": "Feedback",
     "finishattemptdots": "Terminar tentativa",
     "grade": "Nota",

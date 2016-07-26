@@ -11,6 +11,7 @@
     "confirmstartheader": "計時的測驗",
     "connectionerror": "網路連結中斷。(自動儲存失敗)\n\n系統會紀錄最後幾分鐘在這一頁所做的任何回應，然後嘗試重新連結。\n\n一旦重新建立起連結，你的回應將會被儲存，且這一訊息將會消失。",
     "continueattemptquiz": "繼續上一次作答",
+    "continuepreview": "繼續上一次的預覽",
     "feedback": "回饋",
     "finishattemptdots": "完成作答....",
     "grade": "分數",

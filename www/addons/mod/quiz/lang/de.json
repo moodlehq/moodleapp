@@ -14,6 +14,7 @@
     "confirmstartheader": "Zeitlimitierter Test",
     "connectionerror": "Sie haben die Netzwerkverbindung verloren. Das automatische Speichern konnte daher nicht ausgeführt werden.\n\nMachen Sie sich eine Notiz über alle in den letzten Minuten  eingegebenen Antworten und versuchen Sie die Vernindung wieder herzustellen.\n\nSobald die Verbindung wieder hergestellt wurde, sollten Sie die Antworten erneut speichern. Diese Nachricht verschwindet dann.",
     "continueattemptquiz": "Letzten Versuch fortsetzen",
+    "continuepreview": "Letzte Vorschau fortsetzen",
     "errorbehaviournotsupported": "Der Test kann in der App nicht versucht werden, weil das Verhalten von der App nicht unterstützt wird:",
     "errordownloading": "Fehler beim Laden der notwendigen Daten",
     "errorgetattempt": "Fehler beim Laden der Versuche",

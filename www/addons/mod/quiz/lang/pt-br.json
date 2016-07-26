@@ -9,6 +9,7 @@
     "confirmclose": "Uma vez enviada, você não poderá alterar as respostas para esta tentativa.",
     "connectionerror": "Conexão de rede perdida. (Salvamento automático falhou). Anote quaisquer respostas registradas nesta página nos últimos minutos e tente conectar-se novamente. Quando a conexão for restabelecida, suas respostas devem ser salvas e esta mensagem irá desaparecer.",
     "continueattemptquiz": "Continuar a última tentativa",
+    "continuepreview": "Continuar a última prévia",
     "feedback": "Comentários",
     "finishattemptdots": "Tentativas encerradas",
     "grade": "Avaliar",

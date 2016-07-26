@@ -12,6 +12,7 @@
     "confirmleavequizonerror": "S'ha produït un error en desar les respostes. Esteu segur que voleu abandonar el qüestionari?",
     "connectionerror": "S'ha perdut la connexió a la xarxa. (Ha fallat l'autodesament.)\n\nPreneu nota de les respostes introduïdes en aquesta pàgina en els últims minuts i, després, procureu tornar a connectar-vos-hi.\n\nUna vegada que la connexió s'hagi restablert, les vostres respostes s'haurien d'haver desat, i aquest missatge desapareixerà.",
     "continueattemptquiz": "Continua el darrer intent",
+    "continuepreview": "Continua la darrera previsualització",
     "errorbehaviournotsupported": "No es pot intentar aquest qüestionari a l'aplicació perquè aquest comportament no està admès:",
     "errordownloading": "S'ha produït un error en descarregar les dades requerides.",
     "errorgetattempt": "S'ha produït un error en obtenir els intents.",

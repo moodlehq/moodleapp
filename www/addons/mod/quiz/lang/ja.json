@@ -11,6 +11,7 @@
     "confirmstartheader": "時間制限小テスト",
     "connectionerror": "ネットワークコネクションが切断されました (自動保存失敗)。\n\nこのページで入力した最後の数分間の解答をメモした後、再接続を試みてください。\n\n接続が再確立された場合、あなたの解答は保存され、このメッセージは表示されなくなります。",
     "continueattemptquiz": "前回の受験を続ける",
+    "continuepreview": "前回受験のプレビューを続ける",
     "feedback": "フィードバック",
     "finishattemptdots": "受験を終了する ...",
     "grade": "評点",

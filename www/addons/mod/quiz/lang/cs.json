@@ -14,6 +14,7 @@
     "confirmstartheader": "Test s limitem",
     "connectionerror": "Ztráta připojení k síti, automatické ukládání selhalo.\n\nPoznamenejte si odpovědi na této stránce a pokuste se znovu připojit.\n\nPokud se spojení samo obnoví, vaše odpovědi budou uloženy a tato zpráva zmizí.",
     "continueattemptquiz": "Pokračovat v posledním pokusu",
+    "continuepreview": "Pokračovat v poslední prohlídce",
     "errorbehaviournotsupported": "Tento test nelze v aplikaci spustit, protože chování není aplikací podporováno:",
     "errordownloading": "Chyba při stahování požadovaných dat.",
     "errorgetattempt": "Chyba při získávání dat pokusu.",
