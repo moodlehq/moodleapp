@@ -513,7 +513,7 @@ mm-timer {
 
 // This is to allow clicks in radio/checkbox content.
 mm-format-text {
-  audio, video, a {
+  audio, video, a, iframe {
     pointer-events: auto;
   }
 }
