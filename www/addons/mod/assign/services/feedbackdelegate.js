@@ -84,6 +84,29 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Get files used by this plugin.
+     * The files returned by this function will be prefetched when the user prefetches the assign.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignFeedbackDelegate#getPluginFiles
+     * @param  {Object} assign     Assignment.
+     * @param  {Object} submission Data returned by $mmaModAssign#getSubmissionStatus.
+     * @param  {Object} plugin     Plugin.
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved with the files.
+     */
+    self.getPluginFiles = function(assign, submission, plugin, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        var handler = self.getPluginHandler(plugin.type);
+        if (handler && handler.getPluginFiles) {
+            return $q.when(handler.getPluginFiles(assign, submission, plugin, siteId));
+        }
+        return $q.when([]);
+    };
+
+    /**
      * Check if a time belongs to the last update handlers call.
      * This is to handle the cases where updateHandlers don't finish in the same order as they're called.
      *
@@ -111,6 +134,28 @@ angular.module('mm.addons.mod_assign')
      */
     self.isPluginSupported = function(pluginType) {
         return typeof enabledHandlers[pluginType] != 'undefined';
+    };
+
+    /**
+     * Prefetch any required data for a feedback plugin.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignFeedbackDelegate#prefetch
+     * @param  {Object} assign     Assignment.
+     * @param  {Object} submission Data returned by $mmaModAssign#getSubmissionStatus.
+     * @param  {Object} plugin     Plugin.
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved when data has been prefetched.
+     */
+    self.prefetch = function(assign, submission, plugin, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        var handler = self.getPluginHandler(plugin.type);
+        if (handler && handler.prefetch) {
+            return $q.when(handler.prefetch(assign, submission, plugin, siteId));
+        }
+        return $q.when();
     };
 
     /**

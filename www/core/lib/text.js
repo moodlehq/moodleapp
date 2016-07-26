@@ -483,7 +483,8 @@ angular.module('mm.core')
     self.getTextPluginfileUrl = function(files) {
         if (files && files.length) {
             var fileURL = files[0].fileurl;
-            return fileURL.substr(0, fileURL.lastIndexOf('/')).replace('pluginfile.php/', 'pluginfile.php?file=/');
+            // Remove text after last slash (encoded or not).
+            return fileURL.substr(0, Math.max(fileURL.lastIndexOf('/'), fileURL.lastIndexOf('%2F')));
         }
 
         return false;

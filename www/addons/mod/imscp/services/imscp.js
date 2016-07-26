@@ -78,16 +78,16 @@ angular.module('mm.addons.mod_imscp')
      * @protected
      */
     self.getPreviousItem = function(items, itemId) {
-        var previous = '';
-
-        for (var i = 0, len = items.length; i < len; i++) {
-            if (items[i].href == itemId) {
-                break;
+        var position = getItemPosition(items, itemId);
+        if (position != -1) {
+            for (var i = position - 1; i >= 0; i--) {
+                if (items[i] && items[i].href) {
+                    return items[i].href;
+                }
             }
-            previous = items[i].href;
         }
 
-        return previous;
+        return '';
     };
 
     /**
@@ -102,19 +102,33 @@ angular.module('mm.addons.mod_imscp')
      * @protected
      */
     self.getNextItem = function(items, itemId) {
-        var next = '';
-
-        for (var i = 0, len = items.length; i < len; i++) {
-            if (items[i].href == itemId) {
-                if (typeof items[i + 1] != 'undefined') {
-                    next = items[i + 1].href;
-                    break;
+        var position = getItemPosition(items, itemId);
+        if (position != -1) {
+            for (var i = position + 1, len = items.length; i < len; i++) {
+                if (items[i] && items[i].href) {
+                    return items[i].href;
                 }
             }
         }
-        return next;
+
+        return '';
     };
 
+    /**
+     * Get the position of a item.
+     *
+     * @param  {Object[]} items The items list.
+     * @param  {String} itemId  The item to search
+     * @return {Number}         The item position.
+     */
+    function getItemPosition(items, itemId) {
+        for (var i = 0, len = items.length; i < len; i++) {
+            if (items[i].href == itemId) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
     /**
      * Check if we should ommit the file download.

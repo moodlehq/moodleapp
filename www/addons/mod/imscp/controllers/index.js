@@ -102,6 +102,11 @@ angular.module('mm.addons.mod_imscp')
     };
 
     $scope.loadItem = function(itemId) {
+        if (!itemId) {
+            // Not valid, probably a category.
+            return;
+        }
+
         $scope.popover.hide();
         loadItem(itemId);
     };
@@ -120,10 +125,6 @@ angular.module('mm.addons.mod_imscp')
             scope: $scope
         }).then(function(popover) {
             $scope.popover = popover;
-
-            $scope.openToc = function($event) {
-                popover.show($event);
-            };
         });
     });
 

@@ -51,8 +51,7 @@ angular.module('mm.addons.mod_assign')
                     return $q.reject($translate.instant('mm.core.nopermissions', {$a: editStr}));
                 }
 
-                $scope.userSubmission = assign.teamsubmission ?
-                        response.lastattempt.teamsubmission : response.lastattempt.submission;
+                $scope.userSubmission = $mmaModAssign.getSubmissionObjectFromAttempt(assign, response.lastattempt);
 
                 // Only show submission statement if we are editing our own submission.
                 if (assign.requiresubmissionstatement && !assign.submissiondrafts && userId == $mmSite.getUserId()) {
@@ -138,7 +137,7 @@ angular.module('mm.addons.mod_assign')
     // Function called when user wants to leave view without saving.
     function leaveView() {
         // Check that we're leaving the current view, since the user can navigate to other views from here.
-        if ($ionicHistory.currentView() !== currentView) {
+        if ($ionicHistory.currentView() !== currentView || !$scope.userSubmission) {
             // It's another view.
             originalBackFunction();
             return;

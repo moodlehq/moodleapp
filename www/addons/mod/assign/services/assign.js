@@ -169,6 +169,20 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Get the submission object from an attempt.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssign#getSubmissionObjectFromAttempt
+     * @param  {Object} assign  Assign.
+     * @param  {Object} attempt Attempt.
+     * @return {Object}         Submission object.
+     */
+    self.getSubmissionObjectFromAttempt = function(assign, attempt) {
+        return assign.teamsubmission ? attempt.teamsubmission : attempt.submission;
+    };
+
+    /**
      * Get attachments of a submission Submission.
      *
      * @module mm.addons.mod_assign
@@ -742,7 +756,7 @@ angular.module('mm.addons.mod_assign')
         return $mmSite.write('mod_assign_save_submission', params).then(function(warnings) {
             if (warnings && warnings.length) {
                 // The WebService returned warnings, reject.
-                return $q.reject(warnings[0].message);
+                return $q.reject(warnings[0].item);
             }
         });
     };

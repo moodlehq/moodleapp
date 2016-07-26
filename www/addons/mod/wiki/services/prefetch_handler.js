@@ -22,9 +22,10 @@ angular.module('mm.addons.mod_wiki')
  * @name $mmaModWikiPrefetchHandler
  */
 .factory('$mmaModWikiPrefetchHandler', function($mmaModWiki, mmaModWikiComponent, $mmSite, $mmFilepool, $q, $mmGroups,
-        $mmCourseHelper, $mmCourse) {
+        $mmCourseHelper, $mmCourse, mmCoreDownloading, mmCoreDownloaded) {
 
-    var self = {};
+    var self = {},
+        downloadPromises = {}; // Store download promises to prevent duplicate requests.
 
     self.component = mmaModWikiComponent;
 
@@ -206,10 +207,25 @@ angular.module('mm.addons.mod_wiki')
      */
     self.prefetch = function(module, courseId, single) {
         var siteId = $mmSite.getId(),
-            userid = userid || $mmSite.getUserId();
+            userid = userid || $mmSite.getUserId(),
+            prefetchPromise,
+            deleted = false,
+            component = mmaModWikiComponent,
+            revision,
+            timemod;
 
-        // Get Package timemodified in order to retrieve only updated pages.
-        return $mmFilepool.getPackageTimemodified(siteId, mmaModWikiComponent, module.id).then(function (packageModified) {
+        if (downloadPromises[siteId] && downloadPromises[siteId][module.id]) {
+            // There's already a download ongoing for this package, return the promise.
+            return downloadPromises[siteId][module.id];
+        } else if (!downloadPromises[siteId]) {
+            downloadPromises[siteId] = {};
+        }
+
+        // Mark package as downloading.
+        prefetchPromise = $mmFilepool.storePackageStatus(siteId, component, module.id, mmCoreDownloading).then(function() {
+            // Get Package timemodified in order to retrieve only updated pages.
+            return $mmFilepool.getPackageTimemodified(siteId, component, module.id);
+        }).then(function(packageModified) {
             // Get Page list to be retrieved. getWiki and getSubwikis done in getAllPages.
             return getAllPages(module, courseId, siteId).then(function(pages) {
                 var promises = [];
@@ -241,19 +257,42 @@ angular.module('mm.addons.mod_wiki')
 
                 // Get related page files and fetch them.
                 promises.push(self.getFiles(module, courseId, siteId).then(function (files) {
-                    var revision = $mmFilepool.getRevisionFromFileList(files),
-                        pagesTimemodified = getTimemodifiedFromPages(pages),
-                        filesTimemodified = $mmFilepool.getTimemodifiedFromFileList(files),
-                        timemodified = Math.max(pagesTimemodified, filesTimemodified);
+                    var filePromises = [];
 
-                    // Download related files and update package info.
-                    return $mmFilepool.prefetchPackage(siteId, files, mmaModWikiComponent, module.id, revision,
-                        timemodified);
+                    revision = $mmFilepool.getRevisionFromFileList(files);
+
+                    angular.forEach(files, function(file) {
+                        var url = file.fileurl;
+                        filePromises.push($mmFilepool.addToQueueByUrl(siteId, url, component, module.id, file.timemodified));
+                    });
+
+                    return $q.all(filePromises);
+                }));
+
+                // Get timemodified.
+                promises.push(self.getTimemodified(module, courseId, siteId).then(function(timemodified) {
+                    timemod = timemodified;
                 }));
 
                 return $q.all(promises);
             });
+        }).then(function() {
+            // Prefetch finished, mark as downloaded.
+            return $mmFilepool.storePackageStatus(siteId, component, module.id, mmCoreDownloaded, revision, timemod);
+        }).catch(function(error) {
+            // Error prefetching, go back to previous status and reject the promise.
+            return $mmFilepool.setPackagePreviousStatus(siteId, component, module.id).then(function() {
+                return $q.reject(error);
+            });
+        }).finally(function() {
+            deleted = true;
+            delete downloadPromises[siteId][module.id];
         });
+
+        if (!deleted) {
+            downloadPromises[siteId][module.id] = prefetchPromise;
+        }
+        return prefetchPromise;
     };
 
     return self;

@@ -56,6 +56,22 @@ angular.module('mm.addons.mod_assign')
         return edit ? false : 'mma-mod-assign-submission-comments';
     };
 
+    /**
+     * Prefetch submission data.
+     *
+     * @param  {Object} assign     Assignment.
+     * @param  {Object} submission Submission to check data.
+     * @param  {Object} plugin     Plugin.
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved when prefetch is done.
+     */
+    self.prefetch = function(assign, submission, plugin, siteId) {
+        return $mmComments.getComments('module', assign.cmid, 'assignsubmission_comments', submission.id,
+                    'submission_comments', 0, siteId).catch(function() {
+            // Fail silently (Moodle < 3.1.1, 3.2)
+        });
+    };
+
     return self;
 })
 

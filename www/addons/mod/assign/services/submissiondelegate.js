@@ -144,6 +144,29 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Get files used by this plugin.
+     * The files returned by this function will be prefetched when the user prefetches the assign.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionDelegate#getPluginFiles
+     * @param  {Object} assign     Assignment.
+     * @param  {Object} submission Submission to check data.
+     * @param  {Object} plugin     Plugin.
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved with the files.
+     */
+    self.getPluginFiles = function(assign, submission, plugin, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        var handler = self.getPluginHandler(plugin.type);
+        if (handler && handler.getPluginFiles) {
+            return $q.when(handler.getPluginFiles(assign, submission, plugin, siteId));
+        }
+        return $q.when([]);
+    };
+
+    /**
      * Get the size of data (in bytes) this plugin will send to copy a previous attempt.
      *
      * @module mm.addons.mod_assign
@@ -250,6 +273,29 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Prefetch any required data for a submission plugin.
+     * This should NOT prefetch files. Files to be prefetched should be returned by the getPluginFiles function.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionDelegate#prefetch
+     * @param  {Object} assign     Assignment.
+     * @param  {Object} submission Submission to check data.
+     * @param  {Object} plugin     Plugin.
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved when data has been prefetched.
+     */
+    self.prefetch = function(assign, submission, plugin, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        var handler = self.getPluginHandler(plugin.type);
+        if (handler && handler.prefetch) {
+            return $q.when(handler.prefetch(assign, submission, plugin, siteId));
+        }
+        return $q.when();
+    };
+
+    /**
      * Register a submission plugin handler. The handler will be used when submitting an assign.
      *
      * @module mm.addons.mod_assign
@@ -276,6 +322,16 @@ angular.module('mm.addons.mod_assign')
      *                                                           submission data has changed for this plugin.
      *                             - clearTmpData(assign, submission, plugin, inputData). Optional. Should clear temporary data
      *                                                           for a cancelled submission.
+     *                             - getSizeForCopy(assign, plugin). Optional. Get the size of data (in bytes) this plugin will
+     *                                                           send to copy a previous attempt.
+     *                             - getSizeForEdit(assign, submission, plugin, inputData). Optional. Get the size of data (in
+     *                                                           bytes) this plugin will send to add or edit a submission.
+     *                             - getPluginFiles(assign, submission, plugin, siteId). Optional. Get files used by this plugin.
+     *                                                           The files returned by this function will be prefetched when the
+     *                                                           user prefetches the assign.
+     *                             - prefetch(assign, submission, plugin, siteId). Optional. Prefetch any required data for the
+     *                                                           plugin. This should NOT prefetch files. Files to be prefetched
+     *                                                           should be returned by the getPluginFiles function.
      */
     self.registerHandler = function(addon, pluginType, handler) {
         if (typeof handlers[pluginType] !== 'undefined') {

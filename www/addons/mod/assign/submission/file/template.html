@@ -6,5 +6,5 @@
 
 <div class="item item-text-wrap" ng-if="files.length && !edit">
     <h2>{{plugin.name}}</h2>
-    <mm-file ng-repeat="file in files" file="file" component="{{assignComponent}}" component-id="{{assign.id}}"></mm-file>
+    <mm-file ng-repeat="file in files" file="file" component="{{assignComponent}}" component-id="{{assign.id}}" always-download="true"></mm-file>
 </div>

@@ -37,7 +37,8 @@ angular.module('mm.addons.mod_wiki')
         groupId,
         userId,
         rteEnabled,
-        subwikiFiles;
+        subwikiFiles,
+        renewLockInterval;
 
     $scope.saveAndGoParams = false; // See $ionicView.afterLeave.
     $scope.component = mmaModWikiComponent;
@@ -195,7 +196,7 @@ angular.module('mm.addons.mod_wiki')
                     version = editContents.version;
 
                     if (canEdit) {
-                        $interval(function() {
+                        renewLockInterval = $interval(function() {
                             renewLock();
                         }, mmaModWikiRenewLockTimeout * 1000);
                     }
@@ -283,5 +284,6 @@ angular.module('mm.addons.mod_wiki')
         // Restore original back functions.
         unregisterHardwareBack();
         $rootScope.$ionicGoBack = originalBackFunction;
+        $interval.cancel(renewLockInterval);
     });
 });
