@@ -143,7 +143,7 @@ angular.module('mm.addons.mod_quiz')
     self.linksHandler = function() {
 
         var self = {},
-            patterns = ['/mod/quiz/view.php', '/mod/quiz/review.php'];
+            patterns = ['/mod/quiz/view.php', '/mod/quiz/review.php', '/mod/quiz/grade.php'];
 
         /**
          * Whether or not the handler is enabled for a certain site.
@@ -245,7 +245,13 @@ angular.module('mm.addons.mod_quiz')
                         }
                     });
                 }
+            } else if (url.indexOf(patterns[2]) > -1) {
+                // Quiz grade.
+                // @todo Go to review user best attempt if it isn't current user.
+                return $mmContentLinksHelper.treatModuleGradeUrl(siteIds, url, isEnabled, courseId);
             }
+
+
             return $q.when([]);
         };
 
