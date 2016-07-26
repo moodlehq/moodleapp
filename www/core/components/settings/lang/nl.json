@@ -20,6 +20,8 @@
     "enabledebugging": "Foutopsporing inschakelen",
     "enabledownloadsection": "Downloadsecties inschakelen",
     "enabledownloadsectiondescription": "Schakel deze optie uit om het laden van cursussecties te versnellen.",
+    "enablerichtexteditor": "Editor voor opgemaakte tekst inschakelen",
+    "enablerichtexteditordescription": "Indien ingeschakeld, zal er een tekst editor voor opgemaakte tekst getoond worden op plaatsen waar het kan.",
     "enablesyncwifi": "Synchronisatie alleen over WI-FI toestaan.",
     "errordeletesitefiles": "Fout bij het verwijderen van bestanden",
     "errorsyncsite": "Fout bij het synchroniseren van sitegegevens. Controleer je internetverbinding en probeer opnieuw.",

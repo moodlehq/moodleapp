@@ -14,6 +14,7 @@
     "confirmstartheader": "Test avec limite de temps",
     "connectionerror": "Connexion réseau perdue (échec de l'enregistrement automatique).\n\nVeuillez prendre note de toutes les réponses que vous avez saisies sur cette page au cours des quelques dernières minutes, puis essayez de vous reconnecter.\n\nUne fois la connexion rétablie, vos réponses devraient être enregistrées et ce message disparaîtra.",
     "continueattemptquiz": "Continuer la dernière tentative",
+    "continuepreview": "Continuer la dernière prévisualisation",
     "errorbehaviournotsupported": "Ce test ne peut être tenté dans l'app, car le comportement n'est pas supporté par l'app :",
     "errordownloading": "Erreur lors du téléchargement des données requises.",
     "errorgetattempt": "Erreur lors de l'obtention des données de tentative.",

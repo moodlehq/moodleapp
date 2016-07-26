@@ -11,6 +11,7 @@
     "confirmstartheader": "Időkorlátos teszt",
     "connectionerror": "A hálózati kapcsolat megszűnt (az automatikus mentés nem sikerült).\n\nJegyezze fel az oldalon megadott esetleges válaszokat, majd próbáljon meg újból kapcsolódni.\n\nHa sikerül. válaszainak mentése után ez az üzenet eltűnik.",
     "continueattemptquiz": "Utolsó próbálkozás folytatása",
+    "continuepreview": "Utolsó megtekintés folytatása",
     "feedback": "Visszajelzés",
     "finishattemptdots": "Próbálkozás befejezése...",
     "grade": "Pont",

@@ -6,7 +6,7 @@
     "errorcapturingimage": "Ошибка захвата изображения",
     "errorcapturingvideo": "Ошибка захвата видео",
     "errorgettingimagealbum": "Ошибка получения изображения из альбома",
-    "errormustbeonlinetoupload": "Вы должны на сайте, чтобы загружать файлы.",
+    "errormustbeonlinetoupload": "Вы должны быть на сайте, чтобы загружать файлы.",
     "errornoapp": "У Вас не установлено приложение для выполнения этого действия.",
     "errorreadingfile": "Ошибка при чтении файла",
     "errorwhileuploading": "Произошла ошибка во время загрузки файла",

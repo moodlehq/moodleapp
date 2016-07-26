@@ -9,6 +9,7 @@
     "confirmclose": "Bu uygulamayı gönderdikten sonra, cevaplarınızı bir daha değiştiremezsiniz.",
     "connectionerror": "Ağ bağlantısı kesildi. (Otomatik kaydetme başarısız oldu).\n\nBu sayfada son birkaç dakika içinde girilen cevaplarınız not edin, sonra yeniden bağlanmayı deneyin.\n\nBağlantı yeniden kurulduktan sonra cevaplarınızı  kaydedilir ve bu ileti kaybolur.",
     "continueattemptquiz": "Son uygulamadan devam et",
+    "continuepreview": "Son gözden geçirmeden itibaren devam et",
     "feedback": "Geribildirim",
     "finishattemptdots": "Uyuluma bitiyor...",
     "grade": "Not",

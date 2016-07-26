@@ -9,6 +9,7 @@
     "confirmclose": "Når du har afleveret, kan du ikke længere ændre dine svar i dette forsøg.",
     "connectionerror": "Har mistet forbindelse til netværket. (Autosave slog fejl).\n\nNoter alle svar, der er skrevet på denne side i løbet af de sidste par minutter, og prøv så at genoprette forbindelsen.\n\nNår forbindelsen er genoprettet, skulle dine svar være gemt, og denne besked forsvinder.",
     "continueattemptquiz": "Fortsæt fra sidste forsøg",
+    "continuepreview": "Fortsæt sidste gennemsyn",
     "feedback": "Tilbagemelding",
     "finishattemptdots": "Afslut quizzen...",
     "grade": "Karakter",

@@ -20,6 +20,8 @@
     "enabledebugging": "Activer débogage",
     "enabledownloadsection": "Activer le téléchargement des sections",
     "enabledownloadsectiondescription": "La désactivation de cette option accélère le chargement des sections de cours.",
+    "enablerichtexteditor": "Activer l'éditeur WYSIWYG",
+    "enablerichtexteditordescription": "Si ce réglage est activé, un éditeur WYSIWYG sera affiché aux emplacements permis.",
     "enablesyncwifi": "Ne permettre la synchronisation que sur Wi-Fi",
     "errordeletesitefiles": "Erreur lors de la suppression des fichiers de site.",
     "errorsyncsite": "Erreur de synchronisation des données. Veuillez vérifier votre connexion internet et essayer plus tard.",

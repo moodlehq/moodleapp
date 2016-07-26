@@ -2,6 +2,7 @@
     "activitynotyetviewable": "Cette activité ou ressource n'est pas encore accessible via l'app.",
     "activitynotyetviewablegothere": "Cette activité ou ressource n'est pas encore accessible via l'app ; cliquer sur le bouton ci-dessous pour y accéder sur la plateforme.",
     "allsections": "Toutes les sections",
+    "confirmdeletemodulefiles": "Voulez-vous vraiment supprimer ces fichiers de module ?",
     "confirmdownload": "Vous allez télécharger {{size}}. Voulez-vous vraiment continuer ?",
     "confirmdownloadsection": "Vous allez télécharger {{size}}. Voulez-vous vraiment continuer ?",
     "confirmdownloadunknownsize": "Il n'a pas été possible de calculer la taille du téléchargement. Voulez-vous vraiment effectuer le téléchargement ?",

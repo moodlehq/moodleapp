@@ -9,6 +9,7 @@
     "confirmclose": "Behin saiakera itxitakoan ezingo duzu bertako erantzunetan aldaketarik egin.",
     "connectionerror": "Galdu egin da sarearen konexioa (Ez du berez gordeko)\n\nGorde idatziz azken minutuetan orri honetan egin dituzun erantzunak eta ondoren saiatu berriz konektatzen.\n\nKonexioa berriz ezartzen denean, zure erantzunak gordetzeko modua izango da eta mezu hau desagertu egingo da.",
     "continueattemptquiz": "Jarraitu azken saiakerarekin",
+    "continuepreview": "Jarraitu aurreko aurrebistarekin",
     "feedback": "Feedbacka",
     "finishattemptdots": "Amaitu saiakera...",
     "grade": "Nota",

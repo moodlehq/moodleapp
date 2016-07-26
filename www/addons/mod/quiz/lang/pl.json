@@ -9,6 +9,7 @@
     "confirmclose": "Zakończenie podejścia. Jeżeli zakończysz to podejście, nie będziesz mógł zmienić swoich odpowiedzi.",
     "connectionerror": "Utracono połączenie. (Automatyczny zapis nie powiódł się).\n\nZanotuj wszystkie odpowiedzi jakich udzieliłeś na tej stronie w ciągu ostatnich kilku minut i spróbuj połączyć się z siecią ponownie.\n\nKiedy połączenie zostanie nawiązane twoje odpowiedzi zostaną zapisane a ten komunikat zniknie.",
     "continueattemptquiz": "Kontynuuj ostatnie podejście",
+    "continuepreview": "Kontynuuj ostatni podgląd",
     "feedback": "Informacja zwrotna",
     "finishattemptdots": "Zakończ próbę ...",
     "grade": "Ocena",

@@ -11,6 +11,7 @@
     "confirmstartheader": "限时测验",
     "connectionerror": "网络连接断开（自动保存失败）。\n\n请记录下最近几分钟在本页面所键入的答题结果，然后尝试重新连接。\n\n一旦连接被重新建立，你的答题结果将会被自动保存，同时这个消息会消失。",
     "continueattemptquiz": "继续上次答题",
+    "continuepreview": "继续上次预览",
     "feedback": "反馈",
     "finishattemptdots": "结束答题…",
     "grade": "成绩",
