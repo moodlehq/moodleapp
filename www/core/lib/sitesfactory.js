@@ -405,6 +405,7 @@ angular.module('mm.core')
          *                    - getCacheUsingCacheKey (boolean) True if it should retrieve cached data by cacheKey,
          *                                        false if it should get the data based on the params passed (usual behavior).
          *                    - filter boolean (true) True to filter WS response (moodlewssettingfilter), false otherwise.
+         *                    - rewriteurls boolean (true) True to rewrite URLs (moodlewssettingfileurl), false otherwise.
          * @param {Boolean} retrying True if we're retrying the call for some reason. This is to prevent infinite loops.
          * @return {Promise}
          * @description
@@ -445,6 +446,7 @@ angular.module('mm.core')
 
             // Enable text filtering by default.
             data.moodlewssettingfilter = preSets.filter === false ? false : true;
+            data.moodlewssettingfileurl = preSets.rewriteurls === false ? false : true;
 
             return getFromCache(site, method, data, preSets).catch(function() {
                 // Do not pass those options to the core WS factory.

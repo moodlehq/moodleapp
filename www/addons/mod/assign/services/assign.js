@@ -437,7 +437,7 @@ angular.module('mm.addons.mod_assign')
      * @param {Number}  assignId      Assignment instance id.
      * @param {Number}  [userId]      User id (empty for current user).
      * @param {Number}  [isBlind]     If blind marking is enabled or not.
-     * @param {Number}  [filter=true] True to filter WS response, false otherwise.
+     * @param {Number}  [filter=true] True to filter WS response and rewrite URLs, false otherwise.
      * @param {Boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
      * @param {Number}  [siteId]      Site id (empty for current site).
      * @return {Promise}              Promise always resolved with the user submission status.
@@ -464,7 +464,8 @@ angular.module('mm.addons.mod_assign')
                 preSets = {
                     cacheKey: getSubmissionStatusCacheKey(assignId, userId, isBlind),
                     getCacheUsingCacheKey: true, // We use the cache key to take isBlind into account.
-                    filter: filter
+                    filter: filter,
+                    rewriteurls: filter
                 };
 
             if (ignoreCache) {
