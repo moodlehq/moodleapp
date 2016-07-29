@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_survey')
  * @ngdoc service
  * @name $mmaModSurvey
  */
-.factory('$mmaModSurvey', function($q, $mmSite, $translate, $mmSitesManager) {
+.factory('$mmaModSurvey', function($q, $mmSite, $translate, $mmSitesManager, $mmFilepool, mmaModSurveyComponent) {
     var self = {};
 
     /**
@@ -217,6 +217,34 @@ angular.module('mm.addons.mod_survey')
     }
 
     /**
+     * Invalidate the prefetched content.
+     *
+     * @module mm.addons.mod_survey
+     * @ngdoc method
+     * @name $mmaModSurvey#invalidateContent
+     * @param {Object} moduleId The module ID.
+     * @param {Number} courseId Course ID.
+     * @return {Promise}
+     */
+    self.invalidateContent = function(moduleId, courseId) {
+        var promises = [],
+            siteId = $mmSite.getId();
+
+        promises.push(self.getSurvey(courseId, moduleId).then(function(survey) {
+            var ps = [];
+            // Do not invalidate wiki data before getting wiki info, we need it!
+            ps.push(self.invalidateSurveyData(courseId));
+            ps.push(self.invalidateQuestions(survey.id));
+
+            return $q.all(ps);
+        }));
+
+        promises.push($mmFilepool.invalidateFilesByComponent(siteId, mmaModSurveyComponent, moduleId));
+
+        return $q.all(promises);
+    };
+
+    /**
      * Invalidates survey questions.
      *
      * @module mm.addons.mod_survey
@@ -225,8 +253,8 @@ angular.module('mm.addons.mod_survey')
      * @param {Number} id Survey ID.
      * @return {Promise}  Promise resolved when the data is invalidated.
      */
-    self.invalidateQuestions = function(courseid) {
-        return $mmSite.invalidateWsCacheForKey(getQuestionsCacheKey(courseid));
+    self.invalidateQuestions = function(id) {
+        return $mmSite.invalidateWsCacheForKey(getQuestionsCacheKey(id));
     };
 
     /**

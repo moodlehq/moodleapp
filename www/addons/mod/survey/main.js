@@ -14,6 +14,8 @@
 
 angular.module('mm.addons.mod_survey', [])
 
+.constant('mmaModSurveyComponent', 'mmaModSurvey')
+
 .config(function($stateProvider) {
 
     $stateProvider
@@ -34,7 +36,8 @@ angular.module('mm.addons.mod_survey', [])
 
 })
 
-.config(function($mmCourseDelegateProvider, $mmContentLinksDelegateProvider) {
+.config(function($mmCourseDelegateProvider, $mmContentLinksDelegateProvider, $mmCoursePrefetchDelegateProvider) {
     $mmCourseDelegateProvider.registerContentHandler('mmaModSurvey', 'survey', '$mmaModSurveyHandlers.courseContent');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModSurvey', '$mmaModSurveyHandlers.linksHandler');
+    $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModSurvey', 'survey', '$mmaModSurveyPrefetchHandler');
 });

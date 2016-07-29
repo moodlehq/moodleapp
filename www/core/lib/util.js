@@ -1456,12 +1456,31 @@ angular.module('mm.core')
 
             angular.forEach(elements, function(element) {
                 var url = element.tagName === 'A' ? element.href : element.src;
-                if (url && self.isDownloadableUrl(url)) {
+                if (url && self.isDownloadableUrl(url) && urls.indexOf(url) == -1) {
                     urls.push(url);
                 }
             });
 
             return urls;
+        };
+
+        /**
+         * Extract the downloadable URLs from an HTML and returns them in fake file objects.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#extractDownloadableFilesFromHtmlAsFakeFileObjects
+         * @param  {String} html HTML code.
+         * @return {Object[]}    List of fake file objects with file URLs.
+         */
+        self.extractDownloadableFilesFromHtmlAsFakeFileObjects = function(html) {
+            var urls = self.extractDownloadableFilesFromHtml(html);
+            // Convert them to fake file objects.
+            return urls.map(function(url) {
+                return {
+                    fileurl: url
+                };
+            });
         };
 
         /**
