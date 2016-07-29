@@ -50,7 +50,7 @@ angular.module('mm.addons.mod_assign', ['mm.core'])
     .state('site.mod_assign-description', {
         url: '/mod_assign-description',
         params: {
-            assignid: null,
+            moduleid: null,
             description: null,
             files: null
 

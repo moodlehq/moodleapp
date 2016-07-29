@@ -10,7 +10,7 @@
     <ion-content delegate-handle="mmaModSurveyScroll" mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="surveyLoaded" on-refresh="refreshSurvey()"></ion-refresher>
         <mm-loading hide-until="surveyLoaded">
-            <mm-course-mod-description description="description" watch="true"></mm-course-mod-description>
+            <mm-course-mod-description description="description" watch="true" component="{{component}}" component-id="{{componentId}}"></mm-course-mod-description>
 
             <!-- Survey already done -->
             <section class="card padding" ng-if="survey.surveydone">

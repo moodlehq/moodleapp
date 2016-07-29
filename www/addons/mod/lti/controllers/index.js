@@ -21,7 +21,8 @@ angular.module('mm.addons.mod_lti')
  * @ngdoc controller
  * @name mmaModLtiIndexCtrl
  */
-.controller('mmaModLtiIndexCtrl', function($scope, $stateParams, $mmaModLti, $mmUtil, $q, $mmCourse, $mmText, $translate) {
+.controller('mmaModLtiIndexCtrl', function($scope, $stateParams, $mmaModLti, $mmUtil, $q, $mmCourse, $mmText, $translate,
+            mmaModLtiComponent) {
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
         lti;
@@ -31,6 +32,8 @@ angular.module('mm.addons.mod_lti')
     $scope.moduleUrl = module.url;
     $scope.courseid = courseid;
     $scope.refreshIcon = 'spinner';
+    $scope.component = mmaModLtiComponent;
+    $scope.componentId = module.id;
 
     // Convenience function to get LTI data.
     function fetchLTI(refresh) {
@@ -101,6 +104,6 @@ angular.module('mm.addons.mod_lti')
 
     // Context Menu Description action.
     $scope.expandDescription = function() {
-        $mmText.expandText($translate.instant('mm.core.description'), $scope.description);
+        $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false, mmaModLtiComponent, module.id);
     };
 });

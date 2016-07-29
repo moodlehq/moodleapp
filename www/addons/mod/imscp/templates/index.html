@@ -11,7 +11,7 @@
     </ion-nav-buttons>
     <ion-content mm-state-class>
         <mm-loading hide-until="loaded">
-            <mm-navigation-bar previous="previousItem" next="nextItem" action="loadItem" info="description" title="{{ 'mm.core.description' | translate }}"></mm-navigation-bar>
+            <mm-navigation-bar previous="previousItem" next="nextItem" action="loadItem" info="description" title="{{ 'mm.core.description' | translate }}" component="{{component}}" component-id="{{componentId}}"></mm-navigation-bar>
             <mm-iframe src="src" ng-class='{"mm-has-navigation-bar": previousItem || nextItem || description}'></mm-iframe>
         </mm-loading>
     </ion-content>

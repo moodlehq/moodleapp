@@ -160,7 +160,7 @@ angular.module('mm.addons.mod_assign')
         if ($scope.assign.id && ($scope.description || $scope.assign.introattachments)) {
             // Open a new state with the interpolated contents.
             $state.go('site.mod_assign-description', {
-                assignid: $scope.assign.id,
+                moduleid: module.id,
                 description: $scope.description,
                 files: $scope.assign.introattachments
             });

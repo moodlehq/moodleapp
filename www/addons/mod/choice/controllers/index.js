@@ -22,7 +22,8 @@ angular.module('mm.addons.mod_choice')
  * @name mmaModChoiceIndexCtrl
  * @todo Delete answer if user can update the answer, show selected if choice is closed (WS returns empty options).
  */
-.controller('mmaModChoiceIndexCtrl', function($scope, $stateParams, $mmaModChoice, $mmUtil, $q, $mmCourse, $translate, $mmText) {
+.controller('mmaModChoiceIndexCtrl', function($scope, $stateParams, $mmaModChoice, $mmUtil, $q, $mmCourse, $translate, $mmText,
+            mmaModChoiceComponent) {
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
         choice,
@@ -33,6 +34,8 @@ angular.module('mm.addons.mod_choice')
     $scope.moduleUrl = module.url;
     $scope.courseid = courseid;
     $scope.refreshIcon = 'spinner';
+    $scope.component = mmaModChoiceComponent;
+    $scope.componentId = module.id;
 
     // Convenience function to get choice data.
     function fetchChoiceData(refresh) {
@@ -188,7 +191,7 @@ angular.module('mm.addons.mod_choice')
 
     // Context Menu Description action.
     $scope.expandDescription = function() {
-        $mmText.expandText($translate.instant('mm.core.description'), $scope.description);
+        $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false, mmaModChoiceComponent, module.id);
     };
 
     // Pull to refresh.

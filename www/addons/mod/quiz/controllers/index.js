@@ -47,6 +47,8 @@ angular.module('mm.addons.mod_quiz')
     $scope.isTablet = $ionicPlatform.isTablet();
     $scope.courseId = courseId;
     $scope.refreshIcon = 'spinner';
+    $scope.component = mmaModQuizComponent;
+    $scope.componentId = module.id;
 
     // Convenience function to get Quiz data.
     function fetchQuizData(refresh) {
@@ -475,7 +477,7 @@ angular.module('mm.addons.mod_quiz')
 
     // Context Menu Description action.
     $scope.expandDescription = function() {
-        $mmText.expandText($translate.instant('mm.core.description'), $scope.description);
+        $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false, mmaModQuizComponent, module.id);
     };
 
 

@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_assign')
  */
 .controller('mmaModAssignDescriptionCtrl', function($scope, $stateParams, mmaModAssignComponent) {
     $scope.description = $stateParams.description;
-    $scope.assignId = $stateParams.assignid;
+    $scope.moduleId = $stateParams.moduleid;
     $scope.assignComponent = mmaModAssignComponent;
     $scope.files = $stateParams.files;
 });

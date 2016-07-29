@@ -14,6 +14,8 @@
 
 angular.module('mm.addons.mod_glossary', ['mm.core'])
 
+.constant('mmaModGlossaryComponent', 'mmaModGlossary')
+
 .config(function($stateProvider) {
 
     $stateProvider

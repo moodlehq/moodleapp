@@ -174,7 +174,7 @@ angular.module('mm.core')
                         } else {
                             // Open a new state with the interpolated contents.
                             $mmText.expandText(attrs.expandTitle || $translate.instant('mm.core.description'), text,
-                                attrs.newlinesOnFullview);
+                                attrs.newlinesOnFullview, attrs.component, attrs.componentId);
                         }
                     }
                 });

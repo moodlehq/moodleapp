@@ -239,7 +239,7 @@ angular.module('mm.addons.mod_wiki')
 
     // Context Menu Description action.
     $scope.expandDescription = function() {
-        $mmText.expandText($translate.instant('mm.core.description'), $scope.description);
+        $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false, mmaModWikiComponent, module.id);
     };
 
     // Context Menu File size action.
