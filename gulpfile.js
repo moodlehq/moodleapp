@@ -296,6 +296,7 @@ var paths = {
     './www/addons/**/*.js',
     '!./www/**/tests/*.js',
     '!./www/**/e2e/*.js',
+    '!./www/**/workers/*.js',
     '!./www/**/' + remoteAddonPackageFolder + '/*.js',
     '!./www/**/' + remoteAddonPackageFolder + '/**/*.js',
   ],
