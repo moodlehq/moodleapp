@@ -2169,6 +2169,8 @@ angular.module('mm.addons.mod_quiz')
                 if (typeof gradebookData.grade != 'undefined') {
                     return self.getFeedbackForGrade(quiz.id, gradebookData.grade, true, siteId);
                 }
+            }).catch(function() {
+                // Ignore failures.
             }));
             promises.push(self.getAttemptAccessInformation(quiz.id, 0, false, true, siteId)); // Last attempt.
 
