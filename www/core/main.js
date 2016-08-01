@@ -143,7 +143,8 @@ angular.module('mm.core', ['pascalprecht.translate'])
     $mmInitDelegateProvider.registerProcess('mmFSClearTmp', '$mmFS.clearTmpFolder', mmInitDelegateMaxAddonPriority + 150, false);
 })
 
-.run(function($ionicPlatform, $ionicBody, $window, $mmEvents, $mmInitDelegate, mmCoreEventKeyboardShow, mmCoreEventKeyboardHide) {
+.run(function($ionicPlatform, $ionicBody, $window, $mmEvents, $mmInitDelegate, mmCoreEventKeyboardShow, mmCoreEventKeyboardHide,
+        $mmApp, $timeout, mmCoreEventOnline) {
     // Execute all the init processes.
     $mmInitDelegate.executeInitProcesses();
 
@@ -163,4 +164,25 @@ angular.module('mm.core', ['pascalprecht.translate'])
             $mmEvents.trigger(mmCoreEventKeyboardHide, e);
         });
     });
+
+    // Send event when device goes online.
+    var lastExecution = 0;
+
+    $mmApp.ready().then(function() {
+        document.addEventListener('online', sendOnlineEvent, false); // Cordova event.
+        window.addEventListener('online', sendOnlineEvent, false); // HTML5 event.
+    });
+
+    function sendOnlineEvent() {
+        // The online function can be called several times in a row, prevent consecutive executions.
+        var now = new Date().getTime();
+        if (now - lastExecution < 5000) {
+            return;
+        }
+        lastExecution = now;
+
+        $timeout(function() { // Minor delay just to make sure network is fully established.
+            $mmEvents.trigger(mmCoreEventOnline);
+        }, 1000);
+    }
 });
