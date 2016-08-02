@@ -163,7 +163,7 @@ angular.module('mm.core.user')
             // Not logged in, we can't get the site DB. User logged out or session expired while an operation was ongoing.
             return $q.reject();
         }
-        return $mmSite.getDb().get(mmCoreUsersStore, parseInt(id));
+        return $mmSite.getDb().get(mmCoreUsersStore, parseInt(id, 10));
     };
 
     /**
@@ -177,6 +177,9 @@ angular.module('mm.core.user')
      * @return {Promise}           Promise resolve when the user is retrieved.
      */
     self.getUserFromWS = function(userid, courseid) {
+        userid = parseInt(userid, 10);
+        courseid = parseInt(courseid, 10);
+
         var wsName,
             data,
             preSets ={
