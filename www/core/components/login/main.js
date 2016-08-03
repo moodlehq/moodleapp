@@ -213,6 +213,10 @@ angular.module('mm.core.login', [])
         if (url.indexOf(ssoScheme) == -1) {
             return false;
         }
+        if ($mmApp.isSSOAuthenticationOngoing()) {
+            // Authentication ongoing, probably duplicated request.
+            return true;
+        }
 
         // App opened using custom URL scheme. Probably an SSO authentication.
         $mmApp.startSSOAuthentication();
