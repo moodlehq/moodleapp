@@ -40,6 +40,9 @@ angular.module('mm.addons.messages')
     $scope.messages = [];
     $scope.userId = userId;
     $scope.currentUserId = $mmSite.getUserId();
+    $scope.data = {
+        showDelete: false
+    };
 
     // Disable the profile button if we're already coming from a profile.
     if (backView && backView.stateName === mmUserProfileState) {
@@ -116,6 +119,7 @@ angular.module('mm.addons.messages')
 
     // Fetch the messages for the first time.
     $mmaMessages.getDiscussion(userId).then(function(messages) {
+        $scope.data['hasMessages'] = messages.length > 0;
         $scope.messages = $mmaMessages.sortMessages(messages);
         if (!$scope.title && messages && messages.length > 0) {
             // When we did not receive the fullname via argument. Also it is possible that
@@ -145,6 +149,10 @@ angular.module('mm.addons.messages')
                 setScrollWithKeyboard();
             });
         }
+    };
+
+    $scope.toggleDelete = function() {
+        $scope.data.showDelete = !$scope.data.showDelete;
     };
 
     // Convenience function to fetch messages.
