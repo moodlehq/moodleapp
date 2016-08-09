@@ -9,6 +9,6 @@
     "wsextservice" : "local_mobile",
     "demo_sites": {},
     "gcmpn": "694767596569",
-    "siteurl" : "http://moodle.headsafrica.com/moodle/"
+    "siteurl" : "http://moodle.headsafrica.com/moodle/",
     "customurlscheme": "moodlemobile"
 }
