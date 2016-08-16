@@ -802,10 +802,11 @@ angular.module('mm.core')
      */
     self._downloadForPoolByUrl = function(siteId, fileUrl, revision, timemodified, filePath, poolFileObject) {
         var fileId = self._getFileIdByUrl(fileUrl),
+            extension = $mmFS.guessExtensionFromUrl(fileUrl),
             addExtension = typeof filePath == "undefined",
-            pathPromise = filePath ? $q.when(filePath) : self._getFilePath(siteId, fileId);
+            pathPromise = filePath ? filePath : self._getFilePath(siteId, fileId, extension);
 
-        return pathPromise.then(function(filePath) {
+        return $q.when(pathPromise).then(function(filePath) {
             if (poolFileObject && poolFileObject.fileId !== fileId) {
                 $log.error('Invalid object to update passed');
                 return $q.reject();
@@ -1273,7 +1274,7 @@ angular.module('mm.core')
             // web intents. The easiest way to provide such information is to keep the extension
             // in the file ID. Developers should not care about it, but as we are using the
             // file ID in the file path, devs and system can guess it.
-            candidate = $mmText.guessExtensionFromUrl(url);
+            candidate = $mmFS.guessExtensionFromUrl(url);
             if (candidate && candidate !== 'php') {
                 extension = '.' + candidate;
             }
@@ -1779,10 +1780,7 @@ angular.module('mm.core')
         }
 
         // Remove the extension from the filename.
-        var position = filename.lastIndexOf('.');
-        if (position != -1) {
-            filename = filename.substr(0, position);
-        }
+        filename = $mmFS.removeExtension(filename);
 
         return $mmText.removeSpecialCharactersForFiles(filename);
     };
