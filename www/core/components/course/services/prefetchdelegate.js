@@ -62,6 +62,10 @@ angular.module('mm.core')
      *                             - (Optional) invalidateModule(module, courseId) (Promise) Invalidates WS calls needed to
      *                                                                 determine module status. This should NOT invalidate files
      *                                                                 nor all the prefetched data.
+     *                             - (Optional) getDownloadedSize(module, courseId) (Number|Promise) Get downloaded size. If not
+     *                                                                 defined, we'll use getFiles to calculate it (slow).
+     *                             - (Optional) removeFiles(module, courseId) (Promise) Remove module downloaded files. If not
+     *                                                                 defined, we'll use getFiles to remove them (slow).
      */
     self.registerPrefetchHandler = function(addon, handles, handler) {
         if (typeof prefetchHandlers[handles] !== 'undefined') {
@@ -329,8 +333,10 @@ angular.module('mm.core')
             // Check if the module has a prefetch handler.
             if (handler) {
                 return self.isModuleDownloadable(module, courseid).then(function(downloadable) {
+                    var promise;
+
                     if (!downloadable) {
-                        return;
+                        return 0;
                     }
 
                     downloadedSize = statusCache.getValue(handler.component, module.id, 'downloadedSize');
@@ -338,32 +344,40 @@ angular.module('mm.core')
                         return downloadedSize;
                     }
 
-                    return self.getModuleFiles(module, courseid).then(function(files) {
-                        var siteId = $mmSite.getId(),
-                            promises = [],
-                            size = 0;
+                    if (handler.getDownloadedSize) {
+                        // Handler implements a method to calculate the downloaded size, use it.
+                        promise = $q.when(handler.getDownloadedSize(module, courseid));
+                    } else {
+                        // Handler doesn't implement it, get the module files and check if they're downloaded.
+                        promise = self.getModuleFiles(module, courseid).then(function(files) {
+                            var siteId = $mmSite.getId(),
+                                promises = [],
+                                size = 0;
 
-                        // Retrieve file size if it's downloaded.
-                        angular.forEach(files, function(file) {
-                            promises.push($mmFilepool.getFilePathByUrl(siteId, file.fileurl).then(function(path) {
-                                return $mmFS.getFileSize(path).catch(function () {
-                                    return $mmFilepool.isFileDownloadingByUrl(siteId, file.fileurl).then(function() {
-                                        // If downloading, count as downloaded.
-                                        return file.filesize;
-                                    }).catch(function() {
-                                        // Not downloading and not found files count like 0 used space.
-                                        return 0;
+                            // Retrieve file size if it's downloaded.
+                            angular.forEach(files, function(file) {
+                                promises.push($mmFilepool.getFilePathByUrl(siteId, file.fileurl).then(function(path) {
+                                    return $mmFS.getFileSize(path).catch(function () {
+                                        return $mmFilepool.isFileDownloadingByUrl(siteId, file.fileurl).then(function() {
+                                            // If downloading, count as downloaded.
+                                            return file.filesize;
+                                        }).catch(function() {
+                                            // Not downloading and not found files count like 0 used space.
+                                            return 0;
+                                        });
+                                    }).then(function(fs) {
+                                        size += fs;
                                     });
-                                }).then(function(fs) {
-                                    size += fs;
-                                });
-                            }));
-                        });
+                                }));
+                            });
 
-                        return $q.all(promises).then(function() {
-                            return size;
+                            return $q.all(promises).then(function() {
+                                return size;
+                            });
                         });
-                    }).then(function(size) {
+                    }
+
+                    return promise.then(function(size) {
                         return statusCache.setValue(handler.component, module.id, 'downloadedSize', size);
                     }).catch(function() {
                         return statusCache.getValue(handler.component, module.id, 'downloadedSize', true);
@@ -437,7 +451,7 @@ angular.module('mm.core')
                 }
 
                 if (handler.getRevision) {
-                    promise = handler.getRevision(module, courseid).then();
+                    promise = handler.getRevision(module, courseid);
                 } else {
                     // Get files if not sent.
                     promise = files ? $q.when(files) : self.getModuleFiles(module, courseid);
@@ -472,7 +486,7 @@ angular.module('mm.core')
             module.contents = module.contents || [];
 
             // If the handler doesn't define a function to get the files, use module.contents.
-            return handler.getFiles ? $q.when(handler.getFiles(module, courseid)) : $q.when(module.contents);
+            return $q.when(handler.getFiles ? handler.getFiles(module, courseid) : module.contents);
         };
 
         /**
@@ -487,19 +501,26 @@ angular.module('mm.core')
          */
         self.removeModuleFiles = function(module, courseid) {
             var handler = enabledHandlers[module.modname],
-                siteId = $mmSite.getId();
+                siteId = $mmSite.getId(),
+                promise;
 
-            // Some files cannot be associated with the component+componentId, so the following function cannot be done.
-            // $mmFilepool.removeFilesByComponent(siteId, handler.component, module.id);
-
-            // Try to delete all files on content (downloaded or not).
-            return self.getModuleFiles(module, courseid).then(function(files) {
-                angular.forEach(files, function(file) {
-                    return $mmFilepool.removeFileByUrl(siteId, file.fileurl).catch(function() {
-                        // Ignore errors.
+            if (handler && handler.removeFiles) {
+                // Handler implements a method to remove the files, use it.
+                promise = handler.removeFiles(module, courseid);
+            } else {
+                // No method to remove files, use get files to try to remove the files.
+                promise = self.getModuleFiles(module, courseid).then(function(files) {
+                    var promises = [];
+                    angular.forEach(files, function(file) {
+                        promises.push($mmFilepool.removeFileByUrl(siteId, file.fileurl).catch(function() {
+                            // Ignore errors.
+                        }));
                     });
+                    return $q.all(promises);
                 });
+            }
 
+            return promise.then(function() {
                 if (handler) {
                     // Update Status of the module.
                     statusCache.setValue(handler.component, module.id, 'downloadedSize', 0);
@@ -531,12 +552,25 @@ angular.module('mm.core')
                         return mmCoreNotDownloadable;
                     }
 
-                    var status = statusCache.getValue(handler.component, module.id, 'status');
+                    var status = statusCache.getValue(handler.component, module.id, 'status'),
+                        promise;
                     if (status) {
                         return self.determineModuleStatus(module, status, true);
                     }
 
-                    return self.getModuleFiles(module, courseid).then(function(files) {
+                    // Call getModuleFiles only if it's needed.
+                    var revisionNeedsFiles = typeof revision == 'undefined' && !handler.getRevision &&
+                                    !statusCache.getValue(handler.component, module.id, 'revision'),
+                        timemodifiedNeedsFiles = typeof timemodified == 'undefined' && !handler.getTimemodified &&
+                                    !statusCache.getValue(handler.component, module.id, 'timemodified');
+
+                    if (revisionNeedsFiles || timemodifiedNeedsFiles) {
+                        promise = self.getModuleFiles(module, courseid);
+                    } else {
+                        promise = $q.when();
+                    }
+
+                    return promise.then(function(files) {
 
                         // Get revision and timemodified if they aren't defined.
                         // If handler doesn't define a function to get them, get them from file list.

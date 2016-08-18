@@ -1501,6 +1501,82 @@ angular.module('mm.core')
     };
 
     /**
+     * Get all the matching files from a component. Returns objects containing properties like path, extension and url.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#getFilesByComponent
+     * @param {String} siteId       The site ID.
+     * @param {String} component    The component to get.
+     * @param {Mixed} [componentId] An ID to use in conjunction with the component.
+     * @return {Promise}            Promise resolved with the files on success.
+     */
+    self.getFilesByComponent = function(siteId, component, componentId) {
+        var where;
+        if (typeof componentId !== 'undefined') {
+            where = ['componentAndId', '=', [component, self._fixComponentId(componentId)]];
+        } else {
+            where = ['component', '=', component];
+        }
+
+        return getSiteDb(siteId).then(function(db) {
+            return db.query(mmFilepoolLinksStore, where).then(function(items) {
+                var promises = [],
+                    files = [];
+
+                angular.forEach(items, function(item) {
+                    promises.push(db.get(mmFilepoolStore, item.fileId).then(function(fileEntry) {
+                        if (!fileEntry) {
+                            return;
+                        }
+                        files.push({
+                            url: fileEntry.url,
+                            path: fileEntry.path,
+                            extension: fileEntry.extension,
+                            revision: fileEntry.revision,
+                            timemodified: fileEntry.timemodified
+                        });
+                    }));
+                });
+
+                return $q.all(promises).then(function() {
+                    return files;
+                });
+            });
+        });
+    };
+
+    /**
+     * Get the size of all the files from a component.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#getFilesSizeByComponent
+     * @param {String} siteId       The site ID.
+     * @param {String} component    The component to get.
+     * @param {Mixed} [componentId] An ID to use in conjunction with the component.
+     * @return {Promise}            Promise resolved with the size on success.
+     */
+    self.getFilesSizeByComponent = function(siteId, component, componentId) {
+        return self.getFilesByComponent(siteId, component, componentId).then(function(files) {
+            var promises = [],
+                size = 0;
+
+            angular.forEach(files, function(file) {
+                promises.push($mmFS.getFileSize(file.path).then(function(fs) {
+                    size += fs;
+                }).catch(function() {
+                    // Ignore failures, maybe some file was deleted.
+                }));
+            });
+
+            return $q.all(promises).then(function() {
+                return size;
+            });
+        });
+    };
+
+    /**
      * Returns the file state: mmCoreDownloaded, mmCoreDownloading, mmCoreNotDownloaded or mmCoreOutdated.
      *
      * @module mm.core
