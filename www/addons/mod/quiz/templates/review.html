@@ -42,7 +42,7 @@
                 </div>
                 <div class="item item-text-wrap" ng-repeat="data in additionalData">
                     <p class="item-heading">{{ data.title }}</p>
-                    <mm-format-text watch="true">{{ data.content }}</mm-format-text>
+                    <mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{ data.content }}</mm-format-text>
                 </div>
             </section>
             <!-- Questions -->

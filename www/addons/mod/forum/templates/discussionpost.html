@@ -8,8 +8,8 @@
     <p>{{subject}}</p>
 </div>
 <div class="item item-body">
-    <mm-format-text class="mm-content-with-float" watch="true">{{post.message}}</mm-format-text>
-    <mm-file ng-repeat="attachment in post.attachments" file="attachment" component="{{component}}" component-id="{{post.id}}"></mm-file>
+    <mm-format-text class="mm-content-with-float" watch="true" component="{{component}}" component-id="{{componentId}}">{{post.message}}</mm-format-text>
+    <mm-file ng-repeat="attachment in post.attachments" file="attachment" component="{{component}}" component-id="{{componentId}}"></mm-file>
 </div>
 <div class="item tabs tabs-icon-left mma-forum-align-right" ng-if="isReplyEnabled && post.canreply">
     <a class="tab-item" title="{{ 'mma.mod_forum.reply' | translate }}" ng-click="showReply()" role="button" aria-controls="mma-forum-reply-form-{{post.id}}" aria-expanded="{{ newpost.replyingto === post.id }}">

@@ -31,6 +31,7 @@ angular.module('mm.addons.mod_forum')
         scrollView;
 
     $scope.component = mmaModForumComponent;
+    $scope.componentId = cmid;
     $scope.courseid = courseid;
     $scope.newpost = {
         replyingto: undefined,
