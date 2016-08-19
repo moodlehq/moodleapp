@@ -38,6 +38,9 @@ angular.module('mm.core', ['pascalprecht.translate'])
     $ionicConfigProvider.platform.android.tabs.position('bottom');
     $ionicConfigProvider.form.checkbox('circle');
 
+    // Use JS scrolling.
+    $ionicConfigProvider.scrolling.jsScrolling(true);
+
     // Decorate $ionicPlatform.
     $provide.decorator('$ionicPlatform', ['$delegate', '$window', function($delegate, $window) {
         $delegate.isTablet = function() {
