@@ -11,6 +11,7 @@ information provided here is intended especially for developers.
  * Now the messages returned by $mmaMessages#getDiscussion and $mmaMessages#getDiscussions have their times in milliseconds, not in seconds like before.
  * Ionic and some other libraries have been updated, please run:
     bower update
+ * The CSS files inside www/css folder have been deleted because they weren't used. That is, www/css/app.css and www/css/app.min.css.
 
 === 3.1.2 ===
 
