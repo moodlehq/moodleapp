@@ -2,7 +2,7 @@
 	<p>{{ 'mm.question.certainty' | translate }}</p>
 </div>
 <div ng-repeat="option in question.behaviourCertaintyOptions" class="item item-radio">
-    <ion-radio-fix id="{{option.id}}" name="{{option.name}}" ng-model="question.behaviourCertaintySelected" ng-value="option.value" ng-disabled="option.disabled">
+    <ion-radio id="{{option.id}}" name="{{option.name}}" ng-model="question.behaviourCertaintySelected" ng-value="option.value" ng-disabled="option.disabled">
         <p><mm-format-text watch="true" class="mm-content-with-float">{{option.text}}</mm-format-text></p>
-    </ion-radio-fix>
+    </ion-radio>
 </div>

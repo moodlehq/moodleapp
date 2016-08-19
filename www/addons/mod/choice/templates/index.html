@@ -31,9 +31,9 @@
                     <p><mm-format-text watch="true">{{option.text}}</mm-format-text> <span ng-if="choice.limitanswers && option.countanswers >= option.maxanswers">{{ 'mma.mod_choice.full' | translate }}</span></p>
                 </li>
                 <label ng-if="!choice.allowmultiple" ng-repeat="option in options" class="item item-radio">
-                    <ion-radio-fix ng-model="selectedOption.id" ng-value="option.id" ng-disabled="option.disabled || !canEdit">
+                    <ion-radio ng-model="selectedOption.id" ng-value="option.id" ng-disabled="option.disabled || !canEdit">
                         <p><mm-format-text watch="true">{{option.text}}</mm-format-text> <span ng-if="choice.limitanswers && option.countanswers >= option.maxanswers">{{ 'mma.mod_choice.full' | translate }}</span></p>
-                    </ion-radio-fix>
+                    </ion-radio>
                 </label>
                 <div class="item" ng-if="canEdit">
                     <button class="button button-block" ng-click="save()" ng-disabled="(!choice.allowmultiple && selectedOption.id == -1) || (choice.allowmultiple && (options | filter:{checked: true}).length == 0)">{{ 'mma.mod_choice.savemychoice' | translate }}</button>
