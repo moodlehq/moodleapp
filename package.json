@@ -64,7 +64,7 @@
       "locator": "https://github.com/ti8m/DocumentHandler",
       "id": "ch.ti8m.documenthandler"
     },
-    "de.appplant.cordova.plugin.local-notification",
+    "cordova-plugin-local-notifications-mm",
     "cordova-plugin-zip",
     {
       "variables": {

@@ -367,6 +367,9 @@ angular.module('mm.core')
             notification.data.siteid = siteid;
             notification.icon = notification.icon || 'res://icon';
             notification.smallIcon = notification.smallIcon || 'res://icon';
+            notification.led = notification.led || 'FF9900';
+            notification.ledOnTime = notification.ledOnTime || 1000;
+            notification.ledOffTime = notification.ledOffTime || 1000;
 
             return self.isTriggered(notification).then(function(triggered) {
                 if (!triggered) {
