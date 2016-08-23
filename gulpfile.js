@@ -68,7 +68,7 @@ function treatFile(file, data) {
     return; // ignore
   }
   try {
-    var path = file.path.substr(file.path.indexOf('/www/') + 5, file.path.length-5);
+    var path = file.path.substr(file.path.lastIndexOf('/www/') + 5);
     data[path] = JSON.parse(file.contents.toString());
   } catch (err) {
     console.log('Error parsing JSON: ' + err);
