@@ -32,6 +32,12 @@ angular.module('mm.addons.files')
         // Open the file picker.
         var maxSize = $mmSite.getInfo().usermaxuploadfilesize,
             userQuota = $mmSite.getInfo().userquota;
+
+        if (userQuota === 0) {
+            // 0 means ignore user quota. In the app it is -1.
+            userQuota = -1;
+        }
+
         if (typeof maxSize == 'undefined') {
             if (typeof userQuota != 'undefined') {
                 maxSize = userQuota;
