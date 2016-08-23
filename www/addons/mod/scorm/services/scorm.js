@@ -1461,7 +1461,10 @@ angular.module('mm.addons.mod_scorm')
                 return $mmaModScormOffline.saveTracks(siteId, scorm, scoId, attempt, tracks, userData);
             });
         } else {
-            return $mmaModScormOnline.saveTracks(siteId, scorm.id, scoId, attempt, tracks);
+            return $mmaModScormOnline.saveTracks(siteId, scorm.id, scoId, attempt, tracks).then(function() {
+                // Tracks have been saved, update cached user data.
+                self._updateUserDataAfterSave(siteId, scorm.id, attempt, tracks);
+            });
         }
     };
 
@@ -1486,8 +1489,43 @@ angular.module('mm.addons.mod_scorm')
         if (offline) {
             return $mmaModScormOffline.saveTracksSync(scorm, scoId, attempt, tracks, userData);
         } else {
-            return $mmaModScormOnline.saveTracksSync(scoId, attempt, tracks);
+            var success = $mmaModScormOnline.saveTracksSync(scoId, attempt, tracks);
+            if (success) {
+                // Tracks have been saved, update cached user data.
+                self._updateUserDataAfterSave($mmSite.getId(), scorm.id, attempt, tracks);
+            }
+            return success;
         }
+    };
+
+    /**
+     * If needed, updates cached user data after saving tracks in online.
+     *
+     * @param  {String} siteId   Site ID.
+     * @param  {Number} scormId  SCORM ID.
+     * @param  {Number} attempt  Attempt number.
+     * @param  {Object[]} tracks Tracking data saved.
+     * @return {Promise}         Promise resolved when updated.
+     * @protected
+     */
+    self._updateUserDataAfterSave = function(siteId, scormId, attempt, tracks) {
+        if (!tracks || !tracks.length) {
+            return $q.when();
+        }
+
+        // Check if we need to update. We only update if we sent some track with a dot notation.
+        var needsUpdate = false;
+        for (var i = 0, len = tracks.length; i < len && !needsUpdate; i++) {
+            var track = tracks[i];
+            if (track.element && track.element.indexOf('.') > -1) {
+                needsUpdate = true;
+            }
+        }
+
+        if (needsUpdate) {
+            return $mmaModScormOnline.getScormUserData(siteId, scormId, attempt, true);
+        }
+        return $q.when();
     };
 
     return self;
