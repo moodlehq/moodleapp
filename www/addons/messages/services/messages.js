@@ -227,7 +227,22 @@ angular.module('mm.addons.messages')
         var presets = {
                 cacheKey: self._getCacheKeyForContacts()
             };
-        return $mmSite.read('core_message_get_contacts', undefined, presets);
+        return $mmSite.read('core_message_get_contacts', undefined, presets).then(function(contacts) {
+            // Filter contacts with negative ID, they are notifications.
+            var validContacts = {};
+            angular.forEach(contacts, function(typeContacts, typeName) {
+                if (!validContacts[typeName]) {
+                    validContacts[typeName] = [];
+                }
+
+                angular.forEach(typeContacts, function(contact) {
+                    if (contact.id > 0) {
+                        validContacts[typeName].push(contact);
+                    }
+                });
+            });
+            return validContacts;
+        });
     };
 
     /**
@@ -286,8 +301,7 @@ angular.module('mm.addons.messages')
         var discussions = {},
             presets = {
                 cacheKey: self._getCacheKeyForDiscussions()
-            },
-            promise;
+            };
 
         return self._getRecentMessages({
             useridto: $mmSite.getUserId(),
