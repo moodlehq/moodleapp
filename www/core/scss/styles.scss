@@ -182,6 +182,11 @@ em {
   color: $item-disabled-color;
 }
 
+// Avoid adding too much padding.
+label.item-checkbox.item-checkbox-right {
+  padding: 0;
+}
+
 .user-with-avatar {
   position: relative;
   z-index: 2;

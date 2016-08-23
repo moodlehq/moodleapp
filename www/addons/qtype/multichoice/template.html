@@ -4,15 +4,12 @@
         <br ng-if="question.prompt" />
         <p ng-if="question.prompt"><mm-format-text watch="true">{{ question.prompt }}</mm-format-text></p>
     </div>
-    <li ng-if="question.multi" ng-repeat="option in question.options" class="item item-text-wrap item-checkbox item-checkbox-right" ng-class='{"mm-question-answer-correct": option.isCorrect === 1, "mm-question-answer-incorrect": option.isCorrect === 0}'>
-        <label class="checkbox">
-            <input type="checkbox" name="{{option.name}}" ng-checked="option.checked" ng-disabled="option.disabled" aria-labelledby="mma-question-multi-{{option.id}}" >
-        </label>
-        <p id="mma-question-multi-{{option.id}}"><mm-format-text watch="true" class="mm-content-with-float">{{option.text}}</mm-format-text></p>
-        <p class="mm-question-feedback-container" ng-if="option.feedback"><mm-format-text watch="true" class="mm-content-with-float">{{ option.feedback }}</mm-format-text></p>
-    </li>
-    <ion-radio-fix name="{{option.name}}" ng-model="mcAnswers[option.name]" ng-value="option.value" ng-disabled="option.disabled" ng-if="!question.multi" ng-repeat="option in question.options" ng-class='{"mm-question-answer-correct": option.isCorrect === 1, "mm-question-answer-incorrect": option.isCorrect === 0}'>
+    <ion-checkbox name="{{option.name}}" ng-model="option.checked" ng-disabled="option.disabled" ng-if="question.multi" ng-repeat="option in question.options" class="item-text-wrap item-checkbox-right" ng-class="{'mm-question-answer-correct': option.isCorrect === 1, 'mm-question-answer-incorrect': option.isCorrect === 0}">
         <p><mm-format-text watch="true" class="mm-content-with-float">{{option.text}}</mm-format-text></p>
         <p class="mm-question-feedback-container" ng-if="option.feedback"><mm-format-text watch="true" class="mm-content-with-float">{{ option.feedback }}</mm-format-text></p>
-    </ion-radio-fix>
+    </ion-checkbox>
+    <ion-radio name="{{option.name}}" ng-model="mcAnswers[option.name]" ng-value="option.value" ng-disabled="option.disabled" ng-if="!question.multi" ng-repeat="option in question.options" ng-class='{"mm-question-answer-correct": option.isCorrect === 1, "mm-question-answer-incorrect": option.isCorrect === 0}'>
+        <p><mm-format-text watch="true" class="mm-content-with-float">{{option.text}}</mm-format-text></p>
+        <p class="mm-question-feedback-container" ng-if="option.feedback"><mm-format-text watch="true" class="mm-content-with-float">{{ option.feedback }}</mm-format-text></p>
+    </ion-radio>
 </section>

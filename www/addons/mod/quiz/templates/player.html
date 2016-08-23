@@ -19,7 +19,7 @@
             </div>
         </div>
     </ion-header-bar>
-    <ion-content mm-state-class delegate-handle="mmaModQuizPlayerScroll" ng-class="{'has-subheader': dataLoaded && questions.length && !quizAborted && !showSummary}">
+    <ion-content padding="true" mm-state-class delegate-handle="mmaModQuizPlayerScroll" ng-class="{'has-subheader': dataLoaded && questions.length && !quizAborted && !showSummary}">
         <mm-loading hide-until="dataLoaded">
             <div class="list padding" ng-if="!attempt">
                 <button class="button button-block" ng-click="start()">{{ 'mma.mod_quiz.startattempt' | translate }}</button>
