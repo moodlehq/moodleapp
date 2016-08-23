@@ -7,11 +7,10 @@
       <ion-list ng-repeat="site in sites track by $index" show-delete='data.showDelete'>
         <ion-item class="item item-thumbnail-left item-remove-animate" ng-click="login(site.id)">
           <ion-delete-button class="ion-minus-circled" ng-click='onItemDelete($event, $index)'></ion-delete-button>
-            <img ng-src="{{site.avatar}}" mm-external-content siteid="site.id" alt="{{ 'mm.core.pictureof' | translate:{$a: site.fullname} }}" role="presentation">
-            <h2>{{site.fullname}}</h2>
-            <p><mm-format-text clean="true" watch="true">{{site.sitename}}</mm-format-text></p>
-            <p>{{site.siteurl}}</p>
-        </a>
+          <img ng-src="{{site.avatar}}" mm-external-content siteid="site.id" alt="{{ 'mm.core.pictureof' | translate:{$a: site.fullname} }}" role="presentation">
+          <h2>{{site.fullname}}</h2>
+          <p><mm-format-text clean="true" watch="true">{{site.sitename}}</mm-format-text></p>
+          <p>{{site.siteurl}}</p>
       </ion-item>
     </ion-list>
   </ion-content>

@@ -24,7 +24,7 @@ angular.module('mm.addons.messages')
 .controller('mmaMessagesDiscussionCtrl', function($scope, $stateParams, $mmApp, $mmaMessages, $mmSite, $timeout, $mmEvents, $window,
         $ionicScrollDelegate, mmUserProfileState, $mmUtil, mmaMessagesPollInterval, $interval, $log, $ionicHistory, $ionicPlatform,
         mmCoreEventKeyboardShow, mmCoreEventKeyboardHide, mmaMessagesDiscussionLoadedEvent, mmaMessagesDiscussionLeftEvent,
-        $mmUser, $translate, mmaMessagesNewMessageEvent) {
+        $mmUser, $translate, mmaMessagesNewMessageEvent, mmaMessagesToggleDeleteEvent) {
 
     $log = $log.getInstance('mmaMessagesDiscussionCtrl');
 
@@ -34,12 +34,18 @@ angular.module('mm.addons.messages')
         fetching,
         backView = $ionicHistory.backView(),
         lastMessage,
-        scrollView = $ionicScrollDelegate.$getByHandle('mmaMessagesScroll');
+        obsToggleDelete,
+        scrollView = $ionicScrollDelegate.$getByHandle('mmaMessagesScroll'),
+        canDelete = $mmaMessages.canDeleteMessages(); // Check if user can delete messages.
 
     $scope.loaded = false;
     $scope.messages = [];
     $scope.userId = userId;
     $scope.currentUserId = $mmSite.getUserId();
+    $scope.data = {
+        showDelete: false,
+        canDelete: false
+    };
 
     // Disable the profile button if we're already coming from a profile.
     if (backView && backView.stateName === mmUserProfileState) {
@@ -116,6 +122,7 @@ angular.module('mm.addons.messages')
 
     // Fetch the messages for the first time.
     $mmaMessages.getDiscussion(userId).then(function(messages) {
+        $scope.data.canDelete = canDelete && messages.length > 0;
         $scope.messages = $mmaMessages.sortMessages(messages);
         if (!$scope.title && messages && messages.length > 0) {
             // When we did not receive the fullname via argument. Also it is possible that
@@ -134,6 +141,16 @@ angular.module('mm.addons.messages')
             $mmUtil.showErrorModal('mma.messages.errorwhileretrievingmessages', true);
         }
     }).finally(function() {
+        if ($ionicPlatform.isTablet()) {
+            $mmEvents.trigger(mmaMessagesDiscussionLoadedEvent, {userId: userId, canDelete: $scope.data.canDelete});
+
+            if ($scope.data.canDelete && !obsToggleDelete) {
+                // Listen for ToggleDelete button clicked event.
+                obsToggleDelete = $mmEvents.on(mmaMessagesToggleDeleteEvent, function() {
+                    $scope.toggleDelete();
+                });
+            }
+        }
         $scope.loaded = true;
     });
 
@@ -145,6 +162,10 @@ angular.module('mm.addons.messages')
                 setScrollWithKeyboard();
             });
         }
+    };
+
+    $scope.toggleDelete = function() {
+        $scope.data.showDelete = !$scope.data.showDelete;
     };
 
     // Convenience function to fetch messages.
@@ -277,14 +298,6 @@ angular.module('mm.addons.messages')
         }
     }
 
-    // Check if user can delete messages.
-    $scope.canDelete = $mmaMessages.canDeleteMessages();
-
-    // Function to select a message to be deleted.
-    $scope.selectMessage = function(id) {
-        $scope.selectedMessage = id;
-    };
-
     // Function to delete a message.
     $scope.deleteMessage = function(message, index) {
         $mmUtil.showConfirm($translate('mma.messages.deletemessageconfirmation')).then(function() {
@@ -304,12 +317,12 @@ angular.module('mm.addons.messages')
         });
     };
 
-    if ($ionicPlatform.isTablet()) {
-        $mmEvents.trigger(mmaMessagesDiscussionLoadedEvent, userId);
-    }
     $scope.$on('$destroy', function() {
         if ($ionicPlatform.isTablet()) {
             $mmEvents.trigger(mmaMessagesDiscussionLeftEvent);
+            if (obsToggleDelete && obsToggleDelete.off) {
+                obsToggleDelete.off();
+            }
         }
     });
 

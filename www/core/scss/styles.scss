@@ -153,14 +153,20 @@ em {
   .item-note {
     color: $item-message-note-text;
     font-size: $item-message-note-font-size;
-    margin-left: 10px;
+    margin-left: 20px;
   }
+}
+
+.item-message .item-content {
+  background-color: $item-message-bg;
+  padding: 0;
 }
 
 // Defines when an item-message is the user's.
 .item-message-mine {
   background-color: $item-message-mine-bg;
   float: right;
+  max-width: 80%;
 
   .spinner {
     float: right;
@@ -174,6 +180,11 @@ em {
       height: 16px;
     }
   }
+}
+
+.item-message-mine .item-content {
+  background-color: transparent;
+  padding: 0;
 }
 
 // Defines a "disabled" item.
