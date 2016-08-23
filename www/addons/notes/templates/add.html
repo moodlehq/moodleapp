@@ -10,24 +10,22 @@
 
             <div class="row">
                 <div class="col">
-                    <label class="item item-input item-select">
-                        <div class="input-label">
-                          {{ 'mma.notes.publishstate' | translate }}
-                        </div>
+                    <div class="item item-input item-select">
+                        <ion-label>{{ 'mma.notes.publishstate' | translate }}</ion-label>
                         <select ng-model="note.publishstate" name="publishstate" mm-ios-select-fix>
                             <option value="personal">{{ 'mma.notes.personalnotes' | translate }}</option>
                             <option value="course">{{ 'mma.notes.coursenotes' | translate }}</option>
                             <option value="site">{{ 'mma.notes.sitenotes' | translate }}</option>
                         </select>
-                    </label>
+                    </div>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col">
-                    <label class="item item-input text">
+                    <ion-input class="item item-input text">
                         <textarea placeholder="{{ 'mma.notes.note' | translate }}" rows="5" ng-model="note.text" name="text" lose-focus-on-return required="required"></textarea>
-                    </label>
+                    </ion-input>
                 </div>
             </div>
 

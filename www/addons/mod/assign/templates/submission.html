@@ -48,12 +48,9 @@
 
     <!-- Submit for grading form. -->
     <div ng-if="canSubmit && submitSupported">
-        <li ng-if="submissionStatement" class="item item-text-wrap item-checkbox item-checkbox-right">
-            <label class="checkbox">
-                <input type="checkbox" aria-labelledby="mma-mod-assign-submissionstatement" ng-model="submitModel.submissionStatement">
-            </label>
-            <p id="mma-mod-assign-submissionstatement"><mm-format-text watch="true" class="mm-content-with-float">{{submissionStatement}}</mm-format-text></p>
-        </li>
+        <ion-checkbox ng-if="submissionStatement" name="submissionstatement" ng-model="submitModel.submissionStatement" class="item-text-wrap item-checkbox-right">
+            <p><mm-format-text watch="true" class="mm-content-with-float">{{submissionStatement}}</mm-format-text></p>
+        </ion-checkbox>
         <!-- Submit button. -->
         <div ng-if="!showErrorStatementSubmit" class="item item-text-wrap">
             <a class="button button-block" ng-click="submit(submitModel.submissionStatement)">{{ 'mma.mod_assign.submitassignment' | translate }}</a>

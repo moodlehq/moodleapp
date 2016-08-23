@@ -106,12 +106,9 @@
                 		</p>
                 	</div>
                		<!-- Create new attempt -->
-                	<div class="item item-checkbox item-checkbox-right" ng-if="!scorm.forcenewattempt && scorm.numAttempts > 0 && !scorm.incomplete && scorm.attemptsLeft > 0">
-	                    <p class="item-heading">{{ 'mma.mod_scorm.newattempt' | translate }}</p>
-	                    <label class="checkbox">
-	                        <input type="checkbox" ng-model="scormOptions.newAttempt">
-	                    </label>
-                	</div>
+                    <ion-checkbox ng-if="!scorm.forcenewattempt && scorm.numAttempts > 0 && !scorm.incomplete && scorm.attemptsLeft > 0" class="item-text-wrap item-checkbox-right" ng-model="scormOptions.newAttempt">
+                        <p class="item-heading">{{ 'mma.mod_scorm.newattempt' | translate }}</p>
+                    </ion-checkbox>
                 	<div class="item item-text-wrap" ng-if="!downloading">
                 		<p ng-if="statusMessage">{{ statusMessage | translate }}</p>
 	                    <button class="button button-block">{{ 'mma.mod_scorm.enter' | translate }}</button>
