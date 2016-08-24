@@ -57,7 +57,9 @@ angular.module('mm.addons.messages')
 
     // Listen for discussion loaded event to show user profile link in tablet view.
     var obsLeft = $mmEvents.on(mmaMessagesDiscussionLeftEvent, function() {
+        $scope.canDelete = false;
         $scope.profileLink = false;
+        $scope.userId = false;
     });
 
     $scope.$on('$destroy', function() {
