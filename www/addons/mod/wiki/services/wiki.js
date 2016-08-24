@@ -434,15 +434,25 @@ angular.module('mm.addons.mod_wiki')
      * @name $mmaModWiki#getPageForEditing
      * @param {Number}  pageId      Page ID.
      * @param {String}  [section]   section to get.
+     * @param {Boolean} [lockonly]  Just renew lock and not return content.
      * @return {Promise}            Promise resolved with wiki page contents.
      */
-    self.getPageForEditing = function(pageId, section) {
+    self.getPageForEditing = function(pageId, section, lockonly) {
         var params = {
                 pageid: pageId
             };
 
         if (section) {
             params.section = section;
+        }
+
+        if (lockonly) {
+            var version = $mmSite.getInfo().version;
+
+            // This parameter requires Moodle 3.2. It saves network usage.
+            if (version && parseInt(version, 10) >= 2016100700) {
+                params.lockonly = 1;
+            }
         }
 
         return $mmSite.write('mod_wiki_get_page_for_editing', params).then(function(response) {

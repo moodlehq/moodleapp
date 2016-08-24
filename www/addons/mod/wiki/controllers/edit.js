@@ -147,7 +147,7 @@ angular.module('mm.addons.mod_wiki')
 
     // Renew lock and control versions.
     function renewLock() {
-        $mmaModWiki.getPageForEditing(pageId, section).then(function(response) {
+        $mmaModWiki.getPageForEditing(pageId, section, true).then(function(response) {
             if (response.version && version != response.version) {
                 $scope.wrongVersionLock = true;
             }
