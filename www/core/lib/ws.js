@@ -253,7 +253,7 @@ angular.module('mm.core')
                         // Save the extension.
                         movedEntry.extension = extension;
                         movedEntry.path = path;
-                        $log.debug('Success downloading file ' + url + ' to ' + path);
+                        $log.debug('Success downloading file ' + url + ' to ' + path + ' with extension ' + extension);
                         return movedEntry;
                     });
                 });

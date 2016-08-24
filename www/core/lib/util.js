@@ -446,7 +446,7 @@ angular.module('mm.core')
                 $mmWS.getRemoteFileMimeType(url).then(function(mimetype) {
                     if (!mimetype) {
                         // Couldn't retireve mimetype. Try to guess it.
-                        extension = $mmText.guessExtensionFromUrl(url);
+                        extension = $mmFS.guessExtensionFromUrl(url);
                         mimetype = $mmFS.getMimeType(extension);
                     }
 
@@ -500,7 +500,7 @@ angular.module('mm.core')
             return $mmWS.getRemoteFileMimeType(url).then(function(mimetype) {
                 if (!mimetype) {
                     // Couldn't retireve mimetype. Try to guess it.
-                    extension = $mmText.guessExtensionFromUrl(url);
+                    extension = $mmFS.guessExtensionFromUrl(url);
                     mimetype = $mmFS.getMimeType(extension);
                 }
                 return mimetype || '';

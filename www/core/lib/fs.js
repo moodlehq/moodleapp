@@ -33,7 +33,8 @@ angular.module('mm.core')
         basePath = '',
         isHTMLAPI = false,
         extToMime = {},
-        mimeToExt = {};
+        mimeToExt = {},
+        extensionRegex = new RegExp('^[a-z0-9]+$');
 
     // Loading extensions to mimetypes file.
     $http.get('core/assets/mimetypes.json').then(function(response) {
@@ -139,7 +140,7 @@ angular.module('mm.core')
         // Paths cannot start with "/".
         path = self.removeStartingSlash(path);
         return self.init().then(function() {
-            $log.debug('Get file: '+path);
+            $log.debug('Get file: ' + path);
             return $cordovaFile.checkFile(basePath, path);
         });
     };
@@ -908,6 +909,11 @@ angular.module('mm.core')
 
         if (dot > -1) {
             ext = filename.substr(dot + 1).toLowerCase();
+            // Check extension corresponds to a mimetype to know if it's valid.
+            if (typeof self.getMimeType(ext) == 'undefined') {
+                $log.debug('Get file extension: Not valid extension ' + ext);
+                return;
+            }
         }
 
         return ext;
@@ -929,6 +935,45 @@ angular.module('mm.core')
     };
 
     /**
+     * Guess the extension of a file from its URL.
+     *
+     * This is very weak and unreliable.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#guessExtensionFromUrl
+     * @param {String} fileUrl The file URL.
+     * @return {String}        The lowercased extension without the dot, or undefined.
+     */
+    self.guessExtensionFromUrl = function(fileUrl) {
+        var split = fileUrl.split('.'),
+            candidate,
+            extension,
+            position;
+
+        if (split.length > 1) {
+            candidate = split.pop().toLowerCase();
+            // Remove params if any.
+            position = candidate.indexOf('?');
+            if (position > -1) {
+                candidate = candidate.substr(0, position);
+            }
+
+            if (extensionRegex.test(candidate)) {
+                extension = candidate;
+            }
+        }
+
+        // Check extension corresponds to a mimetype to know if it's valid.
+        if (extension && typeof self.getMimeType(extension) == 'undefined') {
+            $log.debug('Guess file extension: Not valid extension ' + extension);
+            return;
+        }
+
+        return extension;
+    };
+
+    /**
      * Get the extension of a mimetype. Returns undefined if not found.
      *
      * @module mm.core
@@ -941,14 +986,14 @@ angular.module('mm.core')
     self.getExtension = function(mimetype, url) {
         if (mimetype == 'application/x-forcedownload' || mimetype == 'application/forcedownload') {
             // Couldn't get the right mimetype (old Moodle), try to guess it.
-            return $mmText.guessExtensionFromUrl(url);
+            return self.guessExtensionFromUrl(url);
         }
 
         var extensions = mimeToExt[mimetype];
         if (extensions && extensions.length) {
             if (extensions.length > 1 && url) {
                 // There's more than one possible extension. Check if the URL has extension.
-                var candidate = $mmText.guessExtensionFromUrl(url);
+                var candidate = self.guessExtensionFromUrl(url);
                 if (extensions.indexOf(candidate) != -1) {
                     return candidate;
                 }
@@ -968,9 +1013,15 @@ angular.module('mm.core')
      * @return {String}      Path without extension.
      */
     self.removeExtension = function(path) {
-        var index = path.lastIndexOf('.');
-        if (index > -1) {
-            return path.substr(0, index); // Remove extension.
+        var extension,
+            position = path.lastIndexOf('.');
+        if (position > -1) {
+
+            // Check extension corresponds to a mimetype to know if it's valid.
+            extension = path.substr(position + 1);
+            if (typeof self.getMimeType(extension) != 'undefined') {
+                return path.substr(0, position); // Remove extension.
+            }
         }
         return path;
     };
