@@ -17,7 +17,7 @@
                     <p ng-if="showDate(messages[$index], messages[$index - 1])" class="mma-messages-date"><span>{{ message.timecreated * 1000 | mmFormatDate:"dfdayweekmonth" }}</span></p>
 
                     <ion-item class='item item-message item-text-wrap item-remove-animate' ng-class='{"item-message-mine": message.useridfrom == currentUserId}' >
-                        <ion-delete-button class="ion-minus-circled mma-messages-delete-button" ng-if="message.id" ng-click='deleteMessage(message, $index)'></ion-delete-button>
+                        <ion-delete-button class="ion-minus-circled mma-messages-delete-button" ng-if="!message.sending" ng-click='deleteMessage(message, $index)'></ion-delete-button>
                         <mm-format-text after-render="scrollAfterRender" watch="true">{{ message.smallmessage | mmaMessagesFormat }}</mm-format-text>
                         <span ng-if="!message.pending" class="item-note">
                             {{ message.timecreated * 1000 | mmFormatDate:"dftimedate" }}

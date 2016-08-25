@@ -56,6 +56,26 @@ angular.module('mm.addons.messages')
     var self = {};
 
     /**
+     * Delete a message.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessagesOffline#deleteMessage
+     * @param  {Number} to          User ID to send the message to.
+     * @param  {String} message     The message.
+     * @param  {Number} timecreated The time the message was created.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved if stored, rejected if failure.
+     */
+    self.deleteMessage = function(to, message, timecreated, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().remove(mmaMessagesOfflineMessagesStore, [to, message, timecreated]);
+        });
+    };
+
+    /**
      * Get all offline messages.
      *
      * @module mm.addons.messages

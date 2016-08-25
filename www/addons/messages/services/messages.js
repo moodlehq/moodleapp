@@ -74,17 +74,36 @@ angular.module('mm.addons.messages')
     };
 
     /**
-     * Check if messages can be deleted in current site.
+     * Delete a message (online or offline).
      *
      * @module mm.addons.messages
      * @ngdoc method
      * @name $mmaMessages#deleteMessage
+     * @param {Object} message Message to delete.
+     * @return {Promise}       Promise resolved when the message has been deleted.
+     */
+    self.deleteMessage = function(message) {
+        if (message.id) {
+            // Message has ID, it means it has been sent to the server.
+            return self.deleteMessageOnline(message.id, message.read);
+        } else {
+            // It's an offline message.
+            return $mmaMessagesOffline.deleteMessage(message.touserid, message.smallmessage, message.timecreated);
+        }
+    };
+
+    /**
+     * Delete a message from the server.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#deleteMessageOnline
      * @param {Number} id       Message ID.
      * @param {Number} read     1 if message is read, 0 otherwise.
      * @param {Number} [userId] User we want to delete the message for. If not defined, use current user.
      * @return {Promise}        Promise resolved when the message has been deleted.
      */
-    self.deleteMessage = function(id, read, userId) {
+    self.deleteMessageOnline = function(id, read, userId) {
         userId = userId || $mmSite.getUserId();
         var params = {
                 messageid: id,

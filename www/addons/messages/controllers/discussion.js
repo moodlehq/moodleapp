@@ -67,10 +67,6 @@ angular.module('mm.addons.messages')
         });
     }
 
-    $scope.isAppOffline = function() {
-        return !$mmApp.isOnline();
-    };
-
     $scope.showDate = function(message, prevMessage) {
         if (!prevMessage) {
             return true;
@@ -95,6 +91,7 @@ angular.module('mm.addons.messages')
         text = text.replace(/(?:\r\n|\r|\n)/g, '<br />');
         message = {
             pending: true,
+            sending: true,
             useridfrom: $scope.currentUserId,
             smallmessage: text,
             timecreated: $mmUtil.timestamp()
@@ -104,6 +101,7 @@ angular.module('mm.addons.messages')
         messagesBeingSent++;
 
         $mmaMessages.sendMessage(userId, text).then(function(sent) {
+            message.sending = false;
             if (sent) {
                 // Message sent to server, not pending anymore.
                 message.pending = false;
@@ -150,9 +148,9 @@ angular.module('mm.addons.messages')
 
     var triggerDiscussionLoadedEvent = function() {
         if (canDelete) {
-            var last = $scope.messages[$scope.messages.length - 1];
-            // Check if last message sent has id (so it can be deleted).
-            $scope.data.canDelete = (last && last.id && $scope.messages.length == 1) || $scope.messages.length > 1;
+            // Check if there's any message to be deleted. All messages being sent should be at the end of the list.
+            var first = $scope.messages[0];
+            $scope.data.canDelete = first && !first.sending;
 
             if ($ionicPlatform.isTablet()) {
                 $mmEvents.trigger(mmaMessagesDiscussionLoadedEvent, {userId: $scope.userId, canDelete: $scope.data.canDelete});
@@ -339,9 +337,10 @@ angular.module('mm.addons.messages')
 
     // Function to delete a message.
     $scope.deleteMessage = function(message, index) {
-        $mmUtil.showConfirm($translate('mma.messages.deletemessageconfirmation')).then(function() {
+        var langKey = message.pending ? 'mm.core.areyousure' : 'mma.messages.deletemessageconfirmation';
+        $mmUtil.showConfirm($translate(langKey)).then(function() {
             var modal = $mmUtil.showModalLoading('mm.core.deleting', true);
-            $mmaMessages.deleteMessage(message.id, message.read).then(function() {
+            $mmaMessages.deleteMessage(message).then(function() {
                 $scope.messages.splice(index, 1); // Remove message from the list without having to wait for re-fetch.
                 fetchMessages(); // Re-fetch messages to update cached data.
             }).catch(function(error) {
