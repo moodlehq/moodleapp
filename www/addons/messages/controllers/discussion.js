@@ -74,6 +74,8 @@ angular.module('mm.addons.messages')
     $scope.showDate = function(message, prevMessage) {
         if (!prevMessage) {
             return true;
+        } else if (message.pending) {
+            return false;
         }
 
         // Check if day has changed.
@@ -82,10 +84,8 @@ angular.module('mm.addons.messages')
 
     $scope.sendMessage = function(text) {
         var message;
-        if (!$mmApp.isOnline()) {
-            // Silent error, the view should prevent this.
-            return;
-        } else if (!text.trim()) {
+
+        if (!text.trim()) {
             // Silent error.
             return;
         }
@@ -94,16 +94,20 @@ angular.module('mm.addons.messages')
 
         text = text.replace(/(?:\r\n|\r|\n)/g, '<br />');
         message = {
-            sending: true,
+            pending: true,
             useridfrom: $scope.currentUserId,
             smallmessage: text,
-            timecreated: ((new Date()).getTime() / 1000)
+            timecreated: $mmUtil.timestamp()
         };
         $scope.messages.push(message);
 
         messagesBeingSent++;
-        $mmaMessages.sendMessage(userId, text).then(function() {
-            message.sending = false;
+
+        $mmaMessages.sendMessage(userId, text).then(function(sent) {
+            if (sent) {
+                // Message sent to server, not pending anymore.
+                message.pending = false;
+            }
             notifyNewMessage();
         }, function(error) {
 
@@ -123,18 +127,16 @@ angular.module('mm.addons.messages')
     };
 
     // Fetch the messages for the first time.
-    $mmaMessages.getDiscussion(userId).then(function(messages) {
-        $scope.messages = $mmaMessages.sortMessages(messages);
-        if (!$scope.title && messages && messages.length > 0) {
+    fetchMessages().then(function() {
+        if (!$scope.title && $scope.messages.length) {
             // When we did not receive the fullname via argument. Also it is possible that
             // we cannot resolve the name when no messages were yet exchanged.
-            if (messages[0].useridto != $scope.currentUserId) {
-                $scope.title = messages[0].usertofullname || '';
+            if ($scope.messages[0].useridto != $scope.currentUserId) {
+                $scope.title = $scope.messages[0].usertofullname || '';
             } else {
-                $scope.title = messages[0].userfromfullname || '';
+                $scope.title = $scope.messages[0].userfromfullname || '';
             }
         }
-        notifyNewMessage();
     }, function(error) {
         if (typeof error === 'string') {
             $mmUtil.showErrorModal(error);
@@ -194,9 +196,6 @@ angular.module('mm.addons.messages')
             // as his message would disappear from the list, and he'd have to wait for the
             // interval to check for new messages.
             return;
-        } else if (!$mmApp.isOnline()) {
-            // Obviously we cannot check for new messages when the app is offline.
-            return;
         } else if (fetching) {
             // Already fetching.
             return;
@@ -204,15 +203,21 @@ angular.module('mm.addons.messages')
 
         fetching = true;
 
-        // Invalidate the cache before fetching.
-        $mmaMessages.invalidateDiscussionCache(userId);
-        $mmaMessages.getDiscussion(userId).then(function(messages) {
+        // Fetch messages. Invalidate the cache before fetching.
+        return $mmaMessages.invalidateDiscussionCache(userId).catch(function() {
+            // Ignore errors.
+        }).then(function() {
+            return $mmaMessages.getDiscussion(userId);
+        }).then(function(messages) {
             if (messagesBeingSent > 0) {
-                // Ignore polling if due to a race condition.
+                // Ignore polling due to a race condition.
                 return;
             }
+
+            // Sort messages.
             $scope.messages = $mmaMessages.sortMessages(messages);
 
+            // Notify that there can be a new message.
             notifyNewMessage();
         }).finally(function() {
             fetching = false;

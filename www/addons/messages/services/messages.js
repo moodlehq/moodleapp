@@ -21,7 +21,8 @@ angular.module('mm.addons.messages')
  * @ngdoc service
  * @name $mmaMessages
  */
-.factory('$mmaMessages', function($mmSite, $mmSitesManager, $log, $q, $mmUser, mmaMessagesNewMessageEvent) {
+.factory('$mmaMessages', function($mmSite, $mmSitesManager, $log, $q, $mmUser, $mmaMessagesOffline, $mmApp,
+            mmaMessagesNewMessageEvent) {
     $log = $log.getInstance('$mmaMessages');
 
     var self = {};
@@ -263,10 +264,11 @@ angular.module('mm.addons.messages')
      * @module mm.addons.messages
      * @ngdoc method
      * @name $mmaMessages#getDiscussion
-     * @param {Number} userId The ID of the other user.
-     * @return {Promise}
+     * @param  {Number} userId          The ID of the other user.
+     * @param  {Boolean} excludePending True to exclude messages pending to be sent.
+     * @return {Promise}                Promise resolved with messages.
      */
-    self.getDiscussion = function(userId) {
+    self.getDiscussion = function(userId, excludePending) {
         var messages,
             presets = {
                 cacheKey: self._getCacheKeyForDiscussion(userId)
@@ -283,8 +285,23 @@ angular.module('mm.addons.messages')
             params.useridto = userId;
             params.useridfrom = $mmSite.getUserId();
 
-            return self._getRecentMessages(params, presets).then(function(response) {
-                return messages.concat(response);
+            return self._getRecentMessages(params, presets);
+        }).then(function(response) {
+            messages = messages.concat(response);
+
+            if (excludePending) {
+                // No need to get offline messages, return the ones we have.
+                return messages;
+            }
+
+            // Get offline messages.
+            return $mmaMessagesOffline.getMessages(userId).then(function(offlineMessages) {
+                // Mark offline messages as pending.
+                angular.forEach(offlineMessages, function(message) {
+                    message.pending = true;
+                });
+
+                return messages.concat(offlineMessages);
             });
         });
     };
@@ -299,116 +316,111 @@ angular.module('mm.addons.messages')
      */
     self.getDiscussions = function() {
         var discussions = {},
+            params = {
+                useridto: $mmSite.getUserId(),
+                useridfrom: 0,
+                limitfrom: 0,
+                limitnum: 50
+            },
             presets = {
                 cacheKey: self._getCacheKeyForDiscussions()
             };
 
-        return self._getRecentMessages({
-            useridto: $mmSite.getUserId(),
-            useridfrom: 0,
-            limitfrom: 0,
-            limitnum: 50
-        }, presets).then(function(messages) {
+        // Get recent messages sent to current user.
+        return self._getRecentMessages(params, presets).then(function(messages) {
 
             // Extract the discussions by filtering same senders.
             angular.forEach(messages, function(message) {
-                if (typeof discussions[message.useridfrom] === 'undefined') {
-                    discussions[message.useridfrom] = {
-                        fullname: message.userfromfullname,
-                        profileimageurl: ""
-                    };
+                treatRecentMessage(message, message.useridfrom, message.userfromfullname);
+            });
 
-                    if (!message.timeread) {
-                        discussions[message.useridfrom].unread = true;
-                    }
-                }
+            // Now get the last messages sent by the current user.
+            params.useridfrom = params.useridto;
+            params.useridto = 0;
+            return self._getRecentMessages(params, presets);
+        }).then(function(messages) {
 
-                // Extract the most recent message.
-                if (typeof discussions[message.useridfrom].message === 'undefined' ||
-                        discussions[message.useridfrom].message.timecreated < message.timecreated) {
+            // Extract the discussions by filtering same senders.
+            angular.forEach(messages, function(message) {
+                treatRecentMessage(message, message.useridto, message.usertofullname);
+            });
 
-                    discussions[message.useridfrom].message = {
-                        user: message.useridfrom,
-                        message: message.smallmessage,
-                        timecreated: message.timecreated
-                    };
+            // Now get the contacts.
+            return self.getContacts();
+        }).then(function(contacts) {
+            var types = ['online', 'offline', 'strangers'];
+
+            // Add contacts with unread messages.
+            angular.forEach(types, function(type) {
+                if (contacts[type] && contacts[type].length > 0) {
+                    angular.forEach(contacts[type], function(contact) {
+
+                        if (typeof discussions[contact.id] === 'undefined' && contact.unread) {
+                            // It's a contact with unread messages. Contacts without unread messages are not used.
+                            discussions[contact.id] = {
+                                fullname: contact.fullname,
+                                profileimageurl: "",
+                                message: {
+                                    user: contact.id,
+                                    message: "...",
+                                    timecreated: 0,
+                                }
+                            };
+                        }
+
+                        if (typeof discussions[contact.id] !== 'undefined') {
+                            // The contact is used in a discussion.
+                            if (contact.profileimageurl) {
+                                discussions[contact.id].profileimageurl = contact.profileimageurl;
+                            }
+                            if (typeof contact.unread !== 'undefined') {
+                                discussions[contact.id].unread = contact.unread;
+                            }
+                        }
+                    });
                 }
             });
 
-            // Now get the last messages sent from which we might not have received a reply yet.
-            return self._getRecentMessages({
-                useridfrom: $mmSite.getUserId(),
-                useridto: 0,
-                limitfrom: 0,
-                limitnum: 50
-            }, presets).then(function(messages) {
+            // Now get unsent messages.
+            return $mmaMessagesOffline.getAllMessages();
+        }).then(function(offlineMessages) {
+            angular.forEach(offlineMessages, function(message) {
+                message.pending = true;
+                treatRecentMessage(message, message.touserid, '');
+            });
 
-                // Extract the discussions by filtering same senders.
-                angular.forEach(messages, function(message) {
-                    if (typeof discussions[message.useridto] === 'undefined') {
-                        discussions[message.useridto] = {
-                            fullname: message.usertofullname,
-                            profileimageurl: ""
-                        };
-
-                        if (!message.timeread) {
-                            discussions[message.useridto].unread = true;
-                        }
-                    }
-
-                    // Extract the most recent message.
-                    if (typeof discussions[message.useridto].message === 'undefined' ||
-                            discussions[message.useridto].message.timecreated < message.timecreated) {
-
-                        discussions[message.useridto].message = {
-                            user: message.useridto,
-                            message: message.smallmessage,
-                            timecreated: message.timecreated
-                        };
-                    }
-                });
-
-                // Now get the contacts
-                return self.getContacts().then(function(contacts) {
-                    var types = ['online', 'offline', 'strangers'];
-
-                    angular.forEach(types, function(type) {
-                        if (contacts[type] && contacts[type].length > 0) {
-                            angular.forEach(contacts[type], function(contact) {
-
-                                if (typeof discussions[contact.id] === 'undefined' && contact.unread) {
-                                    // It's a contact with unread messages. Contacts without unread messages are not used.
-                                    discussions[contact.id] = {
-                                        fullname: contact.fullname,
-                                        profileimageurl: "",
-                                        message: {
-                                            user: contact.id,
-                                            message: "...",
-                                            timecreated: 0,
-                                        }
-                                    };
-                                }
-
-                                if (typeof discussions[contact.id] !== 'undefined') {
-                                    // The contact is used in a discussion.
-                                    if (contact.profileimageurl) {
-                                        discussions[contact.id].profileimageurl = contact.profileimageurl;
-                                    }
-                                    if (typeof contact.unread !== 'undefined') {
-                                        discussions[contact.id].unread = contact.unread;
-                                    }
-                                }
-                            });
-                        }
-                    });
-
-                    return self.getDiscussionsUserImg(discussions).then(function(discussions) {
-                        storeUsersFromDiscussions(discussions);
-                        return discussions;
-                    });
-                });
+            return self.getDiscussionsUserImg(discussions).then(function(discussions) {
+                storeUsersFromDiscussions(discussions);
+                return discussions;
             });
         });
+
+        // Convenience function to treat a recent message, adding it to discussions list if needed.
+        function treatRecentMessage(message, userId, userFullname) {
+            if (typeof discussions[userId] === 'undefined') {
+                discussions[userId] = {
+                    fullname: userFullname,
+                    profileimageurl: ''
+                };
+
+                if (!message.timeread && !message.pending) {
+                    discussions[userId].unread = true;
+                }
+            }
+
+            // Extract the most recent message. Pending messages are considered more recent than messages already sent.
+            var discMessage = discussions[userId].message;
+            if (typeof discMessage === 'undefined' || (!discMessage.pending && message.pending) ||
+                    (discMessage.pending == message.pending && discMessage.timecreated < message.timecreated)) {
+
+                discussions[userId].message = {
+                    user: userId,
+                    message: message.smallmessage,
+                    timecreated: message.timecreated,
+                    pending: message.pending
+                };
+            }
+        }
     };
 
     /**
@@ -512,12 +524,13 @@ angular.module('mm.addons.messages')
      * @module mm.addons.messages
      * @ngdoc method
      * @name $mmaMessages#invalidateAllContactsCache
-     * @param {Number} userId The user ID.
+     * @param {Number} userId    The user ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}
      */
-    self.invalidateAllContactsCache = function(userId) {
-        return self.invalidateContactsCache().then(function() {
-            return self.invalidateBlockedContactsCache(userId);
+    self.invalidateAllContactsCache = function(userId, siteId) {
+        return self.invalidateContactsCache(siteId).then(function() {
+            return self.invalidateBlockedContactsCache(userId, siteId);
         });
     };
 
@@ -527,11 +540,16 @@ angular.module('mm.addons.messages')
      * @module mm.addons.messages
      * @ngdoc method
      * @name $mmaMessages#invalidateBlockedContactsCache
-     * @param {Number} userId The user ID.
+     * @param {Number} userId    The user ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}
      */
-    self.invalidateBlockedContactsCache = function(userId) {
-        return $mmSite.invalidateWsCacheForKey(self._getCacheKeyForBlockedContacts(userId));
+    self.invalidateBlockedContactsCache = function(userId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(self._getCacheKeyForBlockedContacts(userId));
+        });
     };
 
 
@@ -541,10 +559,15 @@ angular.module('mm.addons.messages')
      * @module mm.addons.messages
      * @ngdoc method
      * @name $mmaMessages#invalidateContactsCache
+     * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}
      */
-    self.invalidateContactsCache = function() {
-        return $mmSite.invalidateWsCacheForKey(self._getCacheKeyForContacts());
+    self.invalidateContactsCache = function(siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(self._getCacheKeyForContacts());
+        });
     };
 
     /**
@@ -553,11 +576,16 @@ angular.module('mm.addons.messages')
      * @module mm.addons.messages
      * @ngdoc method
      * @name $mmaMessages#invalidateDiscussionCache
-     * @param {Number} userId The user ID with whom the current user is having the discussion.
+     * @param {Number} userId    The user ID with whom the current user is having the discussion.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}
      */
-    self.invalidateDiscussionCache = function(userId) {
-        return $mmSite.invalidateWsCacheForKey(self._getCacheKeyForDiscussion(userId));
+    self.invalidateDiscussionCache = function(userId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(self._getCacheKeyForDiscussion(userId));
+        });
     };
 
     /**
@@ -568,11 +596,16 @@ angular.module('mm.addons.messages')
      * @module mm.addons.messages
      * @ngdoc method
      * @name $mmaMessages#invalidateDiscussionsCache
+     * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}
      */
-    self.invalidateDiscussionsCache = function(userId) {
-        return $mmSite.invalidateWsCacheForKey(self._getCacheKeyForDiscussions()).then(function(){
-            return self.invalidateContactsCache();
+    self.invalidateDiscussionsCache = function(siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(self._getCacheKeyForDiscussions()).then(function(){
+                return self.invalidateContactsCache(siteId);
+            });
         });
     };
 
@@ -582,10 +615,15 @@ angular.module('mm.addons.messages')
      * @module mm.addons.messages
      * @ngdoc method
      * @name $mmaMessages#invalidateEnabledCache
+     * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}
      */
-    self.invalidateEnabledCache = function() {
-        return $mmSite.invalidateWsCacheForKey(self._getCacheKeyForEnabled());
+    self.invalidateEnabledCache = function(siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(self._getCacheKeyForEnabled());
+        });
     };
 
     /**
@@ -802,23 +840,92 @@ angular.module('mm.addons.messages')
      * @name $mmaMessages#sendMessage
      * @param {Number} to User ID to send the message to.
      * @param {String} message The message to send
-     * @return {Promise}
+     * @return {Promise}       Promise resolved with boolean: true if message was sent to server, false if stored in device.
      */
-    self.sendMessage = function(to, message) {
-        return $mmSite.write('core_message_send_instant_messages', {
-            messages: [
-                {
-                    touserid: to,
-                    text: message,
-                    textformat: 1
-                }
-            ]
-        }).then(function(response) {
-            if (response && response[0] && response[0].msgid === -1) {
-                // There was an error, and it should be translated already.
-                return $q.reject(response[0].errormessage);
+    self.sendMessage = function(to, message, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        if (!$mmApp.isOnline()) {
+            // App is offline, store the message.
+            return storeOffline();
+        }
+
+        // Check if this conversation already has offline messages.
+        // If so, store this message since they need to be sent in order.
+        return $mmaMessagesOffline.hasMessages(to, siteId).catch(function() {
+            // Error, it's safer to assume it has messages.
+            return true;
+        }).then(function(hasStoredMessages) {
+            if (hasStoredMessages) {
+                return storeOffline();
             }
-            return self.invalidateDiscussionCache(to);
+
+            // Online and no messages stored. Send it to server.
+            return self.sendMessageOnline(to, message).then(function() {
+                return true;
+            }).catch(function(data) {
+                if (data.wserror) {
+                    // It's a WebService error, the user cannot send the message so don't store it.
+                    return $q.reject(data.error);
+                } else {
+                    // Error sending message, store it to retry later.
+                    return storeOffline();
+                }
+            });
+        });
+
+        // Convenience function to store a message to be synchronized later.
+        function storeOffline() {
+            return $mmaMessagesOffline.saveMessage(to, message, siteId).then(function() {
+                return false;
+            });
+        }
+    };
+
+    /**
+     * Send a message to someone. It will fail if offline or cannot connect.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#sendMessageOnline
+     * @param {Number} to        User ID to send the message to.
+     * @param {String} message   The message to send
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved if success, rejected if failure. Reject param is an object with:
+     *                                   - error: The error message.
+     *                                   - wserror: True if it's an error returned by the WebService, false otherwise.
+     */
+    self.sendMessageOnline = function(to, message, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var data = {
+                    messages: [
+                        {
+                            touserid: to,
+                            text: message,
+                            textformat: 1
+                        }
+                    ]
+                };
+
+            return site.write('core_message_send_instant_messages', data).then(function(response) {
+                if (response && response[0] && response[0].msgid === -1) {
+                    // There was an error, and it should be translated already.
+                    return $q.reject({
+                        error: response[0].errormessage,
+                        wserror: true
+                    });
+                }
+                return self.invalidateDiscussionCache(to, siteId).catch(function() {
+                    // Ignore errors.
+                });
+            }).catch(function(error) {
+                return $q.reject({
+                    error: error,
+                    wserror: false
+                });
+            });
         });
     };
 
@@ -833,6 +940,13 @@ angular.module('mm.addons.messages')
      */
     self.sortMessages = function(messages) {
         return messages.sort(function (a, b) {
+            // Pending messages last.
+            if (a.pending && !b.pending) {
+                return 1;
+            } else if (!a.pending && b.pending) {
+                return -1;
+            }
+
             a = parseInt(a.timecreated, 10);
             b = parseInt(b.timecreated, 10);
             return a >= b ? 1 : -1;
