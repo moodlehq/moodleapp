@@ -29,4 +29,11 @@ angular.module('mm.core.textviewer')
     } else {
         $scope.content = $stateParams.content;
     }
+
+    if ($stateParams.component) {
+        $scope.component = $stateParams.component;
+        if ($stateParams.componentId) {
+            $scope.componentId = $stateParams.componentId;
+        }
+    }
 });

@@ -44,6 +44,8 @@ angular.module('mm.addons.mod_scorm')
         mode: $mmaModScorm.MODENORMAL
     };
     $scope.refreshIcon = 'spinner';
+    $scope.component = mmaModScormComponent;
+    $scope.componentId = module.id;
 
     $scope.modenormal = $mmaModScorm.MODENORMAL;
     $scope.modebrowse = $mmaModScorm.MODEBROWSE;
@@ -433,7 +435,7 @@ angular.module('mm.addons.mod_scorm')
 
     // Context Menu Description action.
     $scope.expandDescription = function() {
-        $mmText.expandText($translate.instant('mm.core.description'), $scope.description);
+        $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false, mmaModScormComponent, module.id);
     };
 
     // Update data when we come back from the player since it's probable that it has changed.

@@ -37,13 +37,13 @@ angular.module('mm.addons.mod_quiz')
 
     $scope.isReview = true;
     $scope.component = mmaModQuizComponent;
-    $scope.componentId = quizId;
     $scope.showAll = currentPage == -1;
 
     // Convenience function to get the quiz data.
     function fetchData() {
         return $mmaModQuiz.getQuizById(courseId, quizId).then(function(quizData) {
             quiz = quizData;
+            $scope.componentId = quiz.cmid;
 
             return $mmaModQuiz.getCombinedReviewOptions(quiz.id).then(function(result) {
                 options = result;

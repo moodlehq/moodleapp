@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_survey')
  * @name mmaModSurveyIndexCtrl
  */
 .controller('mmaModSurveyIndexCtrl', function($scope, $stateParams, $mmaModSurvey, $mmUtil, $q, $mmCourse, $translate, $mmText,
-            $ionicPlatform, $ionicScrollDelegate) {
+            $ionicPlatform, $ionicScrollDelegate, mmaModSurveyComponent) {
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
         survey,
@@ -31,10 +31,12 @@ angular.module('mm.addons.mod_survey')
     $scope.title = module.name;
     $scope.description = module.description;
     $scope.moduleUrl = module.url;
+    $scope.componentId = module.id;
     $scope.courseid = courseid;
     $scope.answers = {};
     $scope.isTablet = $ionicPlatform.isTablet();
     $scope.refreshIcon = 'spinner';
+    $scope.component = mmaModSurveyComponent;
 
     // Convenience function to get survey data.
     function fetchSurveyData(refresh) {
@@ -143,7 +145,7 @@ angular.module('mm.addons.mod_survey')
 
     // Context Menu Description action.
     $scope.expandDescription = function() {
-        $mmText.expandText($translate.instant('mm.core.description'), $scope.description);
+        $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false, mmaModSurveyComponent, module.id);
     };
 
     // Pull to refresh.

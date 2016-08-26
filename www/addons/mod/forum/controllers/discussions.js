@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_forum')
  */
 .controller('mmaModForumDiscussionsCtrl', function($q, $scope, $stateParams, $mmaModForum, $mmCourse, $mmUtil, $mmGroups,
             $mmEvents, $ionicScrollDelegate, $ionicPlatform, mmUserProfileState, mmaModForumNewDiscussionEvent,
-            mmaModForumReplyDiscussionEvent, $mmText, $translate) {
+            mmaModForumReplyDiscussionEvent, $mmText, $translate, mmaModForumComponent) {
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
         forum,
@@ -41,6 +41,8 @@ angular.module('mm.addons.mod_forum')
     $scope.userStateName = mmUserProfileState;
     $scope.isCreateEnabled = $mmaModForum.isCreateDiscussionEnabled();
     $scope.refreshIcon = 'spinner';
+    $scope.component = mmaModForumComponent;
+    $scope.componentId = module.id;
 
     // Convenience function to get forum data and discussions.
     function fetchForumDataAndDiscussions(refresh) {
@@ -171,7 +173,7 @@ angular.module('mm.addons.mod_forum')
 
     // Context Menu Description action.
     $scope.expandDescription = function() {
-        $mmText.expandText($translate.instant('mm.core.description'), $scope.description);
+        $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false, mmaModForumComponent, module.id);
     };
 
     // Listen for discussions added. When a discussion is added, we reload the data.

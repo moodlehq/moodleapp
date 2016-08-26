@@ -10,7 +10,7 @@
     <ion-content mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="choiceLoaded" on-refresh="refreshChoice()"></ion-refresher>
         <mm-loading hide-until="choiceLoaded">
-            <mm-course-mod-description description="description" watch="true"></mm-course-mod-description>
+            <mm-course-mod-description description="description" watch="true" component="{{component}}" component-id="{{componentId}}"></mm-course-mod-description>
 
             <!-- Activity availability messages -->
             <section class="card padding" ng-if="choice.timeopen != 0 && choice.timeopen > now">

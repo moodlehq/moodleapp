@@ -62,7 +62,7 @@ angular.module('mm.addons.mod_page')
 
     // Context Menu Description action.
     $scope.expandDescription = function() {
-        $mmText.expandText($translate.instant('mm.core.description'), $scope.description);
+        $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false, mmaModPageComponent, module.id);
     };
 
     $scope.doRefresh = function() {

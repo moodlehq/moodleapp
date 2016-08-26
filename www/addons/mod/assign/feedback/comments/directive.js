@@ -36,7 +36,7 @@ angular.module('mm.addons.mod_assign')
                 e.stopPropagation();
                 if (scope.text && scope.text != "") {
                     // Open a new state with the interpolated contents.
-                    $mmText.expandText(scope.plugin.name, scope.text);
+                    $mmText.expandText(scope.plugin.name, scope.text, false, scope.assignComponent, scope.assign.cmid);
                 }
             });
 

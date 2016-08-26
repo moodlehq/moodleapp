@@ -3,7 +3,7 @@
     <ion-content padding="true" mm-state-class>
         <mm-format-text class="mm-content-with-float">{{ description }}</mm-format-text>
         <div class="list card" ng-if="files">
-            <mm-file class="item item-complex" ng-repeat="attachment in files" file="attachment" component="{{assignComponent}}" component-id="{{assignId}}"></mm-file>
+            <mm-file class="item item-complex" ng-repeat="attachment in files" file="attachment" component="{{assignComponent}}" component-id="{{moduleId}}"></mm-file>
         </div>
     </ion-content>
 </ion-view>

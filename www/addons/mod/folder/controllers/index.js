@@ -21,7 +21,8 @@ angular.module('mm.addons.mod_folder')
  * @ngdoc controller
  * @name mmaModFolderIndexCtrl
  */
-.controller('mmaModFolderIndexCtrl', function($scope, $stateParams, $mmaModFolder, $mmCourse, $mmUtil, $q, $mmText, $translate) {
+.controller('mmaModFolderIndexCtrl', function($scope, $stateParams, $mmaModFolder, $mmCourse, $mmUtil, $q, $mmText, $translate,
+            mmaModFolderComponent) {
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
         sectionid = $stateParams.sectionid,
@@ -30,6 +31,8 @@ angular.module('mm.addons.mod_folder')
     $scope.description = module.description;
     $scope.moduleUrl = module.url;
     $scope.refreshIcon = 'spinner';
+    $scope.component = mmaModFolderComponent;
+    $scope.componentId = module.id;
 
     // Convenience function to set scope data using module.
     function showModuleData(module) {
@@ -81,7 +84,7 @@ angular.module('mm.addons.mod_folder')
 
     // Context Menu Description action.
     $scope.expandDescription = function() {
-        $mmText.expandText($translate.instant('mm.core.description'), $scope.description);
+        $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false, mmaModFolderComponent, module.id);
     };
 
     $scope.refreshFolder = function() {

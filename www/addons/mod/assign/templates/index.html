@@ -16,7 +16,7 @@
                 </div>
             </div>
             <div class="list card" ng-if="assign.introattachments">
-                <mm-file class="item item-complex" ng-repeat="attachment in assign.introattachments" file="attachment" component="{{assignComponent}}" component-id="{{assign.id}}"></mm-file>
+                <mm-file class="item item-complex" ng-repeat="attachment in assign.introattachments" file="attachment" component="{{assignComponent}}" component-id="{{assign.cmid}}"></mm-file>
             </div>
 
             <div ng-if="canviewsubmissions">

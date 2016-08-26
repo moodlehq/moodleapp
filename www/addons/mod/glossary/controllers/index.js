@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_glossary')
  * @name mmaModGlossaryIndexCtrl
  */
 .controller('mmaModGlossaryIndexCtrl', function($q, $scope, $stateParams, $ionicPopover, $mmUtil, $mmaModGlossary,
-        $ionicScrollDelegate, $translate, $mmText) {
+        $ionicScrollDelegate, $translate, $mmText, mmaModGlossaryComponent) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
@@ -64,6 +64,8 @@ angular.module('mm.addons.mod_glossary')
         searchQuery: ''
     };
     $scope.loadingMessage = loadingMessage;
+    $scope.component = mmaModGlossaryComponent;
+    $scope.componentId = module.id;
 
     $scope.loadMoreEntries = function() {
         loadMoreEntries().finally(function() {
@@ -102,7 +104,8 @@ angular.module('mm.addons.mod_glossary')
 
     // Context Menu Description action.
     $scope.expandDescription = function() {
-        $mmText.expandText($translate.instant('mm.core.description'), $scope.description);
+        $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false,
+                mmaModGlossaryComponent, module.id);
     };
 
     // Controller run.

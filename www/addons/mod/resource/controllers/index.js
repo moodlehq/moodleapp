@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_resource')
  * @name mmaModResourceIndexCtrl
  */
 .controller('mmaModResourceIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModResource, $log, $mmApp, $mmCourse, $timeout,
-        $mmText, $translate) {
+        $mmText, $translate, mmaModResourceComponent) {
     $log = $log.getInstance('mmaModResourceIndexCtrl');
 
     var module = $stateParams.module || {},
@@ -34,6 +34,8 @@ angular.module('mm.addons.mod_resource')
     $scope.mode = false;
     $scope.loaded = false;
     $scope.refreshIcon = 'spinner';
+    $scope.component = mmaModResourceComponent;
+    $scope.componentId = module.id;
 
     function fetchContent() {
         if (module.contents && module.contents.length) {
@@ -99,7 +101,8 @@ angular.module('mm.addons.mod_resource')
 
     // Context Menu Description action.
     $scope.expandDescription = function() {
-        $mmText.expandText($translate.instant('mm.core.description'), $scope.description);
+        $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false,
+                    mmaModResourceComponent, module.id);
     };
 
     $scope.doRefresh = function() {

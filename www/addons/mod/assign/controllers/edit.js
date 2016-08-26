@@ -193,11 +193,6 @@ angular.module('mm.addons.mod_assign')
     // Override Android's back button. We set a priority of 101 to override the "Return to previous view" action.
     unregisterHardwareBack = $ionicPlatform.registerBackButtonAction(leaveView, 101);
 
-    // Context Menu Description action.
-    $scope.expandDescription = function() {
-        $mmText.expandText($translate.instant('mm.core.description'), $scope.description);
-    };
-
     // Save the submission.
     $scope.save = function() {
         // Check if data has changed.

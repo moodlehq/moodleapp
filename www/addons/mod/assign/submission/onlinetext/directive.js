@@ -68,7 +68,7 @@ angular.module('mm.addons.mod_assign')
                         e.stopPropagation();
                         if (text) {
                             // Open a new state with the interpolated contents.
-                            $mmText.expandText(scope.plugin.name, text);
+                            $mmText.expandText(scope.plugin.name, text, false, scope.assignComponent, scope.assign.cmid);
                         }
                     });
                 }

@@ -167,17 +167,21 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmText#expandText
-     * @param  {String} title Title of the new state.
-     * @param  {String} text  Content of the text to be expanded.
-     * @param  {Boolean} replaceLineBreaks  Replace line breaks by br tag. Default: false.
+     * @param  {String} title              Title of the new state.
+     * @param  {String} text               Content of the text to be expanded.
+     * @param  {Boolean} replaceLineBreaks Replace line breaks by br tag. Default: false.
+     * @param  {String} [component]        Component to link the embedded files to.
+     * @param  {Mixed} [componentId]       An ID to use in conjunction with the component.
      */
-    self.expandText = function(title, text, replaceLineBreaks) {
+    self.expandText = function(title, text, replaceLineBreaks, component, componentId) {
         if (text.length > 0) {
             // Open a new state with the interpolated contents.
             $state.go('site.mm_textviewer', {
                 title: title,
                 content: text,
-                replacelinebreaks: replaceLineBreaks
+                replacelinebreaks: replaceLineBreaks,
+                component: component,
+                componentId: componentId
             });
         }
     };
