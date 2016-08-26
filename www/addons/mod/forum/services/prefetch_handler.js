@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_forum')
  * @name $mmaModForumPrefetchHandler
  */
 .factory('$mmaModForumPrefetchHandler', function($mmaModForum, mmaModForumComponent, $mmFilepool, $mmSite, $q, $mmUtil, $mmUser,
-            md5, mmCoreDownloading, mmCoreDownloaded) {
+            $mmGroups, md5, mmCoreDownloading, mmCoreDownloaded) {
 
     var self = {},
         downloadPromises = {}; // Store download promises to prevent duplicate requests.
@@ -326,7 +326,8 @@ angular.module('mm.addons.mod_forum')
             // Now prefetch the files.
             var promises = [],
                 files = getIntroFiles(forum),
-                userIds = [];
+                userIds = [],
+                canCreateDiscussions = $mmaModForum.isCreateDiscussionEnabled() && forum.cancreatediscussions;
 
             // Add attachments and embedded files.
             files = files.concat(getPostsFiles(posts));
@@ -350,6 +351,54 @@ angular.module('mm.addons.mod_forum')
             angular.forEach(files, function(file) {
                 promises.push($mmFilepool.addToQueueByUrl(siteId, file.fileurl, component, module.id, file.timemodified));
             });
+
+            // Prefetch groups data.
+            promises.push($mmGroups.getActivityGroupMode(forum.cmid).then(function(mode) {
+                if (mode !== $mmGroups.SEPARATEGROUPS && mode !== $mmGroups.VISIBLEGROUPS) {
+                    // Activity doesn't use groups, nothing else to prefetch.
+                    return;
+                }
+
+                return $mmGroups.getActivityAllowedGroups(forum.cmid).then(function(groups) {
+                    if (mode === $mmGroups.SEPARATEGROUPS) {
+                        // Groups are already filtered by WS, nothing else to prefetch.
+                        return;
+                    }
+
+                    if (canCreateDiscussions) {
+                        // Prefetch data to check the visible groups when creating discussions.
+                        if ($mmaModForum.isCanAddDiscussionAvailable()) {
+                            // Can add discussion WS available, prefetch the calls.
+                            promises.push($mmaModForum.canAddDiscussionToAll(forum.id).catch(function() {
+                                // The call failed, let's assume he can't.
+                                return false;
+                            }).then(function(canAdd) {
+                                if (canAdd) {
+                                    // User can post to all groups, nothing else to prefetch.
+                                    return;
+                                }
+
+                                // The user can't post to all groups, let's check which groups he can post to.
+                                var groupPromises = [];
+                                angular.forEach(groups, function(group) {
+                                    groupPromises.push($mmaModForum.canAddDiscussion(forum.id, group.id).catch(function() {
+                                        // Ignore errors.
+                                    }));
+                                });
+                                return $q.all(groupPromises);
+                            }));
+                        } else {
+                            // Prefetch the groups the user belongs to.
+                            return $mmGroups.getUserGroupsInCourse(courseId, true);
+                        }
+                    }
+                });
+            }, function(error) {
+                // Ignore errors if cannot create discussions.
+                if (canCreateDiscussions) {
+                    return $q.reject(error);
+                }
+            }));
 
             return $q.all(promises);
         }).then(function() {
