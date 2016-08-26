@@ -150,7 +150,7 @@ angular.module('mm.addons.mod_forum')
             p2 = $mmGroups.invalidateActivityAllowedGroups(cmid),
             p3 = $mmaModForum.invalidateCanAddDiscussion(forumid);
 
-        $q.all([p1, p2]).finally(function() {
+        $q.all([p1, p2, p3]).finally(function() {
             fetchGroups(true).finally(function() {
                 $scope.$broadcast('scroll.refreshComplete');
             });
