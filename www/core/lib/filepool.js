@@ -1070,6 +1070,29 @@ angular.module('mm.core')
     };
 
     /**
+     * Get a package revision.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#getPackageRevision
+     * @param {String} siteId       Site ID.
+     * @param {String} component    Package's component.
+     * @param {Mixed} [componentId] An ID to use in conjunction with the component.
+     * @return {Promise}            Promise resolved with the revision.
+     */
+    self.getPackageRevision = function(siteId, component, componentId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var db = site.getDb(),
+                packageId = self.getPackageId(component, componentId);
+
+            // Get status.
+            return db.get(mmFilepoolPackagesStore, packageId).then(function(entry) {
+                return entry.revision;
+            });
+        });
+    };
+
+    /**
      * Get a package timemodified.
      *
      * @module mm.core

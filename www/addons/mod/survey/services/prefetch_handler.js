@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_survey')
  * @ngdoc service
  * @name $mmaModSurveyPrefetchHandler
  */
-.factory('$mmaModSurveyPrefetchHandler', function($mmaModSurvey, mmaModSurveyComponent, $mmFilepool, $mmSite, $q, $mmUtil,
+.factory('$mmaModSurveyPrefetchHandler', function($mmaModSurvey, mmaModSurveyComponent, $mmFilepool, $mmSite, $q, $mmUtil, md5,
             mmCoreDownloading, mmCoreDownloaded) {
 
     var self = {},
@@ -103,19 +103,47 @@ angular.module('mm.addons.mod_survey')
      */
     self.getRevision = function(module, courseId) {
         return $mmaModSurvey.getSurvey(courseId, module.id).then(function(survey) {
-            return getRevisionFromSurvey(survey);
+            return getRevisionFromSurvey(module.id, survey);
         });
     };
 
     /**
-     * Get revision of a survey (list of questions).
+     * Get revision of a survey.
      *
-     * @param {Object} survey Survey.
-     * @return {String}       Revision.
+     * @param {Number} moduleId Module ID.
+     * @param {Object} survey   Survey.
+     * @return {Promise}        Promise resolved with the revision.
      */
-    function getRevisionFromSurvey(survey) {
+    function getRevisionFromSurvey(moduleId, survey) {
+        var promise,
+            siteId = $mmSite.getId();
+
         // We use list of questions instead of template to treat weird case where list of questions is modified in DB.
-        return survey.questions;
+        // If the survey has been answered, retrieve the revision from DB to prevent showing download again if questions change.
+        if (survey.surveydone) {
+            promise = $mmFilepool.getPackageRevision(siteId, mmaModSurveyComponent, moduleId).then(function(revision) {
+                // This is the full revision, maybe containing the files hash. We only want the questions part.
+                return revision.split('#')[0];
+            }).catch(function() {
+                // Package not found, return survey questions.
+                return md5.createHash(survey.questions);
+            });
+        } else {
+            promise = $q.when(md5.createHash(survey.questions));
+        }
+
+        return promise.then(function(revision) {
+            if (typeof survey.introfiles == 'undefined' && survey.intro) {
+                // The survey doesn't return introfiles. We'll add a hash of file URLs to detect changes in files.
+                // If the survey has introfiles there's no need to do this because they have timemodified.
+                var urls = $mmUtil.extractDownloadableFilesFromHtml(survey.intro);
+                urls = urls.sort(function (a, b) {
+                    return a > b;
+                });
+                return revision + '#' + md5.createHash(JSON.stringify(urls));
+            }
+            return revision;
+        });
     }
 
     /**
@@ -196,7 +224,6 @@ angular.module('mm.addons.mod_survey')
             var promises = [],
                 files = getFilesFromSurvey(survey);
 
-            revision = getRevisionFromSurvey(survey);
             timemod = $mmFilepool.getTimemodifiedFromFileList(files);
 
             // Prefetch files.
@@ -208,6 +235,11 @@ angular.module('mm.addons.mod_survey')
             if (!survey.surveydone) {
                 promises.push($mmaModSurvey.getQuestions(survey.id));
             }
+
+            // Get revision.
+            promises.push(getRevisionFromSurvey(module.id, survey).then(function(rev) {
+                revision = rev;
+            }));
 
             return $q.all(promises);
         }).then(function() {
