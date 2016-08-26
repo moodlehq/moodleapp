@@ -168,7 +168,7 @@ angular.module('mm.addons.mod_forum')
      * @return {String}      Revision.
      */
     function getRevisionFromForum(forum) {
-        var revision = forum.numdiscussions;
+        var revision = '' + forum.numdiscussions;
         if (typeof forum.introfiles == 'undefined' && forum.intro) {
             // The forum doesn't return introfiles. We'll add a hash of file URLs to detect changes in files.
             // If the forum has introfiles there's no need to do this because they have timemodified.
@@ -193,33 +193,58 @@ angular.module('mm.addons.mod_forum')
      */
     self.getTimemodified = function(module, courseId) {
         return $mmaModForum.getForum(courseId, module.id).then(function(forum) {
-            return getTimemodifiedFromForum(forum);
+            return getTimemodifiedFromForum(module.id, forum, false);
         });
     };
 
     /**
      * Get timemodified of a forum.
      *
-     * @param {Object} forum Forum.
-     * @return {Promise}     Promise resolved with timemodified.
+     * @param {Number} moduleId     Module ID.
+     * @param {Object} forum        Forum.
+     * @param {Boolean} getRealTime True to get the real time modified, false to get an approximation (try to minimize WS calls).
+     * @return {Promise}            Promise resolved with timemodified.
      */
-    function getTimemodifiedFromForum(forum) {
-        var timemodified = forum.timemodified || 0;
+    function getTimemodifiedFromForum(moduleId, forum, getRealTime) {
+        var timemodified = forum.timemodified || 0,
+            siteId = $mmSite.getId();
 
         // Check intro files timemodified.
         timemodified = Math.max(timemodified, $mmFilepool.getTimemodifiedFromFileList(getIntroFiles(forum)));
 
-        // Get discussions to get the most recent timemodified.
-        return $mmaModForum.getDiscussions(forum.id, 0).then(function(response) {
-            if (response.discussions && response.discussions[0]) {
-                var discussionTime =  parseInt(response.discussions[0].timemodified, 10);
-                if (!isNaN(discussionTime)) {
-                    timemodified = Math.max(timemodified, discussionTime);
-                }
+        if (getRealTime) {
+            // Get timemodified from discussions to get the real time.
+            return getTimemodifiedFromDiscussions();
+        }
+
+        // To prevent calling getDiscussions if a new discussion is added we'll check forum.numdiscussions first.
+        return $mmFilepool.getPackageRevision(siteId, mmaModForumComponent, moduleId).catch(function() {
+            return '';
+        }).then(function(revision) {
+            // Get only the new discussions number stored.
+            revision = revision.split('#')[0];
+
+            if (revision != forum.numdiscussions) {
+                // Number of discussions has changed, return current time to show refresh button.
+                return $mmUtil.timestamp();
             }
-        }).then(function() {
-            return timemodified;
+
+            // Number of discussions hasn't changed.
+            return getTimemodifiedFromDiscussions();
         });
+
+        // Get the time modified of the most recent discussion and check if it's higher than timemodified.
+        function getTimemodifiedFromDiscussions() {
+            return $mmaModForum.getDiscussions(forum.id, 0).then(function(response) {
+                if (response.discussions && response.discussions[0]) {
+                    var discussionTime =  parseInt(response.discussions[0].timemodified, 10);
+                    if (!isNaN(discussionTime)) {
+                        timemodified = Math.max(timemodified, discussionTime);
+                    }
+                }
+                return timemodified;
+            });
+        }
     }
 
     /**
@@ -291,7 +316,7 @@ angular.module('mm.addons.mod_forum')
 
             // Get revision and timemodified.
             revision = getRevisionFromForum(forum);
-            return getTimemodifiedFromForum(forum);
+            return getTimemodifiedFromForum(module.id, forum, true);
         }).then(function(time) {
             timemod = time;
 
