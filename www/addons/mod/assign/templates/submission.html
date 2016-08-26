@@ -134,7 +134,7 @@
         </div>
         <div ng-if="feedback.gradefordisplay" class="item item-text-wrap">
             <h2>{{ 'mma.mod_assign.gradedon' | translate }}</h2>
-            <p>{{ feedback.gradeddate | mmFormatDate:"dfmediumdate" }}</p>
+            <p>{{ feedback.gradeddate * 1000 | mmFormatDate:"dfmediumdate" }}</p>
         </div>
         <div ng-if="grader" class="item item-text-wrap">
             <h2>{{ 'mma.mod_assign.gradedby' | translate }}</h2>
