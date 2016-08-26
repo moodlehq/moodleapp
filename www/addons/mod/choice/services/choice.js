@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_choice')
  * @name $mmaModChoice
  */
 .factory('$mmaModChoice', function($q, $mmSite, $mmSitesManager, mmaModChoiceResultsAfterAnswer, mmaModChoiceResultsAfterClose,
-            mmaModChoiceResultsAlways) {
+            mmaModChoiceResultsAlways, mmaModChoiceComponent, $mmFilepool) {
     var self = {};
 
     /**
@@ -222,6 +222,34 @@ angular.module('mm.addons.mod_choice')
      */
     self.invalidateChoiceData = function(courseid) {
         return $mmSite.invalidateWsCacheForKey(getChoiceDataCacheKey(courseid));
+    };
+
+    /**
+     * Invalidate the prefetched content.
+     *
+     * @module mm.addons.mod_choice
+     * @ngdoc method
+     * @name $mmaModChoice#invalidateContent
+     * @param {Object} moduleId The module ID.
+     * @param {Number} courseId Course ID.
+     * @return {Promise}
+     */
+    self.invalidateContent = function(moduleId, courseId) {
+        var promises = [],
+            siteId = $mmSite.getId();
+
+        promises.push(self.getChoice(courseId, moduleId).then(function(choice) {
+            var ps = [];
+            ps.push(self.invalidateChoiceData(courseId));
+            ps.push(self.invalidateOptions(choice.id));
+            ps.push(self.invalidateResults(choice.id));
+
+            return $q.all(ps);
+        }));
+
+        promises.push($mmFilepool.invalidateFilesByComponent(siteId, mmaModChoiceComponent, moduleId));
+
+        return $q.all(promises);
     };
 
     /**

@@ -21,7 +21,9 @@ angular.module('mm.addons.mod_choice')
  * @ngdoc service
  * @name $mmaModChoiceHandlers
  */
-.factory('$mmaModChoiceHandlers', function($mmCourse, $mmaModChoice, $state, $mmContentLinksHelper, $q) {
+.factory('$mmaModChoiceHandlers', function($mmCourse, $mmaModChoice, $state, $mmContentLinksHelper, $q, $mmUtil, $mmEvents, $mmSite,
+            $mmaModChoicePrefetchHandler, $mmCoursePrefetchDelegate, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated,
+            mmaModChoiceComponent, mmCoreEventPackageStatusChanged, mmCoreDownloaded) {
     var self = {};
 
     /**
@@ -48,17 +50,102 @@ angular.module('mm.addons.mod_choice')
          * Get the controller.
          *
          * @param {Object} module The module info.
-         * @param {Number} courseid The course ID.
+         * @param {Number} courseId The course ID.
          * @return {Function}
          */
-        self.getController = function(module, courseid) {
+        self.getController = function(module, courseId) {
             return function($scope) {
+                var downloadBtn = {
+                        hidden: true,
+                        icon: 'ion-ios-cloud-download-outline',
+                        label: 'mm.core.download',
+                        action: function(e) {
+                            if (e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }
+                            download();
+                        }
+                    },
+                    refreshBtn = {
+                        hidden: true,
+                        icon: 'ion-android-refresh',
+                        label: 'mm.core.refresh',
+                        action: function(e) {
+                            if (e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }
+                            $mmaModChoice.invalidateContent(module.id, courseId).finally(function() {
+                                download();
+                            });
+                        }
+                    };
+
                 $scope.title = module.name;
                 $scope.icon = $mmCourse.getModuleIconSrc('choice');
                 $scope.class = 'mma-mod_choice-handler';
+                $scope.buttons = [downloadBtn, refreshBtn];
+                $scope.spinner = true; // Show spinner while calculating status.
+
                 $scope.action = function(e) {
-                    $state.go('site.mod_choice', {module: module, courseid: courseid});
+                    if (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                    $state.go('site.mod_choice', {module: module, courseid: courseId});
                 };
+
+                function download() {
+
+                    $scope.spinner = true; // Show spinner since this operation might take a while.
+
+                    // Get download size to ask for confirm if it's high.
+                    $mmaModChoicePrefetchHandler.getDownloadSize(module, courseId).then(function(size) {
+                        $mmUtil.confirmDownloadSize(size).then(function() {
+                            $mmaModChoicePrefetchHandler.prefetch(module, courseId).catch(function() {
+                                if (!$scope.$$destroyed) {
+                                    $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                                }
+                            });
+                        }).catch(function() {
+                            // User hasn't confirmed, stop spinner.
+                            $scope.spinner = false;
+                        });
+                    }).catch(function(error) {
+                        $scope.spinner = false;
+                        if (error) {
+                            $mmUtil.showErrorModal(error);
+                        } else {
+                            $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                        }
+                    });
+                }
+
+                // Show buttons according to module status.
+                function showStatus(status) {
+                    if (status) {
+                        $scope.spinner = status === mmCoreDownloading;
+                        downloadBtn.hidden = status !== mmCoreNotDownloaded;
+                        // Always show refresh button if downloaded because we can't tell if there's something new.
+                        refreshBtn.hidden = status !== mmCoreOutdated && status !== mmCoreDownloaded;
+                    }
+                }
+
+                // Listen for changes on this module status.
+                var statusObserver = $mmEvents.on(mmCoreEventPackageStatusChanged, function(data) {
+                    if (data.siteid === $mmSite.getId() && data.componentId === module.id &&
+                            data.component === mmaModChoiceComponent) {
+                        showStatus(data.status);
+                    }
+                });
+
+                // Get current status to decide which icon should be shown.
+                $mmCoursePrefetchDelegate.getModuleStatus(module, courseId).then(showStatus);
+
+                $scope.$on('$destroy', function() {
+                    statusObserver && statusObserver.off && statusObserver.off();
+                });
             };
         };
 
