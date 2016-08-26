@@ -79,7 +79,7 @@ angular.module('mm.addons.messages')
                 refreshData().finally(function() {
                     $scope.loaded = true;
                 });
-            } else if (data.timecreated > discussion.message.timecreated) {
+            } else {
                 // An existing discussion has a new message, update the last message.
                 discussion.message.message = data.message;
                 discussion.message.timecreated = data.timecreated;

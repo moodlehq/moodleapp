@@ -33,7 +33,7 @@ angular.module('mm.addons.messages')
         polling,
         fetching,
         backView = $ionicHistory.backView(),
-        lastMessage,
+        lastMessage = {message: '', timecreated: 0},
         obsToggleDelete,
         scrollView = $ionicScrollDelegate.$getByHandle('mmaMessagesScroll'),
         canDelete = $mmaMessages.canDeleteMessages(); // Check if user can delete messages.
@@ -90,6 +90,8 @@ angular.module('mm.addons.messages')
             return;
         }
 
+        $scope.data.showDelete = false;
+
         text = text.replace(/(?:\r\n|\r|\n)/g, '<br />');
         message = {
             sending: true,
@@ -122,7 +124,6 @@ angular.module('mm.addons.messages')
 
     // Fetch the messages for the first time.
     $mmaMessages.getDiscussion(userId).then(function(messages) {
-        $scope.data.canDelete = canDelete && messages.length > 0;
         $scope.messages = $mmaMessages.sortMessages(messages);
         if (!$scope.title && messages && messages.length > 0) {
             // When we did not receive the fullname via argument. Also it is possible that
@@ -141,18 +142,35 @@ angular.module('mm.addons.messages')
             $mmUtil.showErrorModal('mma.messages.errorwhileretrievingmessages', true);
         }
     }).finally(function() {
-        if ($ionicPlatform.isTablet()) {
-            $mmEvents.trigger(mmaMessagesDiscussionLoadedEvent, {userId: userId, canDelete: $scope.data.canDelete});
-
-            if ($scope.data.canDelete && !obsToggleDelete) {
-                // Listen for ToggleDelete button clicked event.
-                obsToggleDelete = $mmEvents.on(mmaMessagesToggleDeleteEvent, function() {
-                    $scope.toggleDelete();
-                });
-            }
-        }
+        triggerDiscussionLoadedEvent();
         $scope.loaded = true;
     });
+
+    var triggerDiscussionLoadedEvent = function() {
+        if (canDelete) {
+            var last = $scope.messages[$scope.messages.length - 1];
+            // Check if last message sent has id (so it can be deleted).
+            $scope.data.canDelete = (last && last.id && $scope.messages.length == 1) || $scope.messages.length > 1;
+
+            if ($ionicPlatform.isTablet()) {
+                $mmEvents.trigger(mmaMessagesDiscussionLoadedEvent, {userId: $scope.userId, canDelete: $scope.data.canDelete});
+
+                if ($scope.data.canDelete) {
+                    if (!obsToggleDelete) {
+                        // Listen for ToggleDelete button clicked event.
+                        obsToggleDelete = $mmEvents.on(mmaMessagesToggleDeleteEvent, function() {
+                            $scope.toggleDelete();
+                        });
+                    }
+                } else {
+                    if (obsToggleDelete && obsToggleDelete.off) {
+                        obsToggleDelete.off();
+                        obsToggleDelete = false;
+                    }
+                }
+            }
+        }
+    };
 
     $scope.scrollAfterRender = function(scope) {
         if (scope.$last === true) {
@@ -194,6 +212,7 @@ angular.module('mm.addons.messages')
                 return;
             }
             $scope.messages = $mmaMessages.sortMessages(messages);
+
             notifyNewMessage();
         }).finally(function() {
             fetching = false;
@@ -242,15 +261,30 @@ angular.module('mm.addons.messages')
 
     // Notify the last message found so discussions list controller can tell if last message should be updated.
     function notifyNewMessage() {
-        var last = $scope.messages[$scope.messages.length - 1];
-        if (last && last.smallmessage !== lastMessage) {
-            lastMessage = last.smallmessage;
+        var last = $scope.messages[$scope.messages.length - 1],
+            trigger = false;
+        if ((last && (last.smallmessage !== lastMessage.message || last.timecreated !== lastMessage.timecreated))) {
+            lastMessage = {message: last.smallmessage, timecreated: last.timecreated};
+            trigger = true;
+        } else if (!last) {
+            lastMessage = {message: "", timecreated: 0};
+            trigger = true;
+        }
+
+        if (trigger) {
+            // Update discussions last message.
             $mmEvents.trigger(mmaMessagesNewMessageEvent, {
                 siteid: $mmSite.getId(),
                 userid: userId,
-                message: lastMessage,
-                timecreated: last.timecreated
+                message: lastMessage.message,
+                timecreated: lastMessage.timecreated
             });
+
+            // Update navBar links and buttons.
+            var newCanDelete = (last && last.id && $scope.messages.length == 1) || $scope.messages.length > 1;
+            if (canDelete && ($scope.data.canDelete != newCanDelete)) {
+                triggerDiscussionLoadedEvent();
+            }
         }
     }
 
