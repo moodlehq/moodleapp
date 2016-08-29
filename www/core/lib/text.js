@@ -500,5 +500,47 @@ angular.module('mm.core')
         return text;
     };
 
+    /**
+     * Get the protocol from a URL.
+     * E.g. http://www.google.com returns 'http'.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#getUrlProtocol
+     * @param  {String} url URL to treat.
+     * @return {String}     Protocol, undefined if no protocol found.
+     */
+    self.getUrlProtocol = function(url) {
+        if (!url) {
+            return;
+        }
+
+        var matches = url.match(/^([^\/:\.\?]*):\/\//);
+        if (matches && matches[1]) {
+            return matches[1];
+        }
+    };
+
+    /**
+     * Get the scheme from a URL. Please notice that, if a URL has protocol, it will return the protocol.
+     * E.g. javascript:doSomething() returns 'javascript'.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#getUrlScheme
+     * @param  {String} url URL to treat.
+     * @return {String}     Scheme, undefined if no scheme found.
+     */
+    self.getUrlScheme = function(url) {
+        if (!url) {
+            return;
+        }
+
+        var matches = url.match(/^([a-z][a-z0-9+\-.]*):/);
+        if (matches && matches[1]) {
+            return matches[1];
+        }
+    };
+
     return self;
 });
