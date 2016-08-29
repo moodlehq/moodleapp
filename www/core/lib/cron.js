@@ -307,6 +307,10 @@ angular.module('mm.core')
 
         promise.then(function(nextExecution) {
             $log.debug('Scheduling next execution of hook \'' + name + '\' in: ' + nextExecution + 'ms');
+            if (nextExecution < 0) {
+                nextExecution = 0; // Big negative numbers aren't executed immediately.
+            }
+
             hooks[name].timeout = $timeout(function() {
                 self._executeHook(name);
             }, nextExecution);

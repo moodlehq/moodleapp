@@ -918,36 +918,54 @@ angular.module('mm.addons.messages')
      *                                   - wserror: True if it's an error returned by the WebService, false otherwise.
      */
     self.sendMessageOnline = function(to, message, siteId) {
+        var messages = [
+                {
+                    touserid: to,
+                    text: message,
+                    textformat: 1
+                }
+            ];
+        return self.sendMessagesOnline(messages, siteId).catch(function(error) {
+            return $q.reject({
+                error: error,
+                wserror: false
+            });
+        }).then(function(response) {
+            if (response && response[0] && response[0].msgid === -1) {
+                // There was an error, and it should be translated already.
+                return $q.reject({
+                    error: response[0].errormessage,
+                    wserror: true
+                });
+            }
+            return self.invalidateDiscussionCache(to, siteId).catch(function() {
+                // Ignore errors.
+            });
+        });
+    };
+
+    /**
+     * Send some messages. It will fail if offline or cannot connect.
+     * IMPORTANT: Sending several messages at once for the same discussions can cause problems with display order,
+     * since messages with same timecreated aren't ordered by ID.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#sendMessagesOnline
+     * @param  {Object} messages Messages to send. Each message must contain touserid, text and textformat.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved if success, rejected if failure. Promise resolved doesn't mean that messages
+     *                           have been sent, the resolve param can contain errors for messages not sent.
+     */
+    self.sendMessagesOnline = function(messages, siteId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var data = {
-                    messages: [
-                        {
-                            touserid: to,
-                            text: message,
-                            textformat: 1
-                        }
-                    ]
+                    messages: messages
                 };
 
-            return site.write('core_message_send_instant_messages', data).then(function(response) {
-                if (response && response[0] && response[0].msgid === -1) {
-                    // There was an error, and it should be translated already.
-                    return $q.reject({
-                        error: response[0].errormessage,
-                        wserror: true
-                    });
-                }
-                return self.invalidateDiscussionCache(to, siteId).catch(function() {
-                    // Ignore errors.
-                });
-            }).catch(function(error) {
-                return $q.reject({
-                    error: error,
-                    wserror: false
-                });
-            });
+            return site.write('core_message_send_instant_messages', data);
         });
     };
 

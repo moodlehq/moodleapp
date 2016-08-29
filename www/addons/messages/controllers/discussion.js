@@ -24,7 +24,8 @@ angular.module('mm.addons.messages')
 .controller('mmaMessagesDiscussionCtrl', function($scope, $stateParams, $mmApp, $mmaMessages, $mmSite, $timeout, $mmEvents, $window,
         $ionicScrollDelegate, mmUserProfileState, $mmUtil, mmaMessagesPollInterval, $interval, $log, $ionicHistory, $ionicPlatform,
         mmCoreEventKeyboardShow, mmCoreEventKeyboardHide, mmaMessagesDiscussionLoadedEvent, mmaMessagesDiscussionLeftEvent,
-        $mmUser, $translate, mmaMessagesNewMessageEvent, mmaMessagesToggleDeleteEvent) {
+        $mmUser, $translate, mmaMessagesNewMessageEvent, mmaMessagesToggleDeleteEvent, mmaMessagesAutomSyncedEvent,
+        $mmaMessagesSync) {
 
     $log = $log.getInstance('mmaMessagesDiscussionCtrl');
 
@@ -36,7 +37,8 @@ angular.module('mm.addons.messages')
         lastMessage = {message: '', timecreated: 0},
         obsToggleDelete,
         scrollView = $ionicScrollDelegate.$getByHandle('mmaMessagesScroll'),
-        canDelete = $mmaMessages.canDeleteMessages(); // Check if user can delete messages.
+        canDelete = $mmaMessages.canDeleteMessages(), // Check if user can delete messages.
+        syncObserver;
 
     $scope.loaded = false;
     $scope.messages = [];
@@ -124,26 +126,31 @@ angular.module('mm.addons.messages')
         });
     };
 
-    // Fetch the messages for the first time.
-    fetchMessages().then(function() {
-        if (!$scope.title && $scope.messages.length) {
-            // When we did not receive the fullname via argument. Also it is possible that
-            // we cannot resolve the name when no messages were yet exchanged.
-            if ($scope.messages[0].useridto != $scope.currentUserId) {
-                $scope.title = $scope.messages[0].usertofullname || '';
-            } else {
-                $scope.title = $scope.messages[0].userfromfullname || '';
+    // Synchronize messages if needed.
+    $mmaMessagesSync.syncDiscussion(userId).catch(function() {
+        // Ignore errors.
+    }).then(function() {
+        // Fetch the messages for the first time.
+        fetchMessages().then(function() {
+            if (!$scope.title && $scope.messages.length) {
+                // Didn't receive the fullname via argument. Try to get it from messages.
+                // It's possible that name cannot be resolved when no messages were yet exchanged.
+                if ($scope.messages[0].useridto != $scope.currentUserId) {
+                    $scope.title = $scope.messages[0].usertofullname || '';
+                } else {
+                    $scope.title = $scope.messages[0].userfromfullname || '';
+                }
             }
-        }
-    }, function(error) {
-        if (typeof error === 'string') {
-            $mmUtil.showErrorModal(error);
-        } else {
-            $mmUtil.showErrorModal('mma.messages.errorwhileretrievingmessages', true);
-        }
-    }).finally(function() {
-        triggerDiscussionLoadedEvent();
-        $scope.loaded = true;
+        }, function(error) {
+            if (typeof error === 'string') {
+                $mmUtil.showErrorModal(error);
+            } else {
+                $mmUtil.showErrorModal('mma.messages.errorwhileretrievingmessages', true);
+            }
+        }).finally(function() {
+            triggerDiscussionLoadedEvent();
+            $scope.loaded = true;
+        });
     });
 
     var triggerDiscussionLoadedEvent = function() {
@@ -201,9 +208,12 @@ angular.module('mm.addons.messages')
 
         fetching = true;
 
-        // Fetch messages. Invalidate the cache before fetching.
-        return $mmaMessages.invalidateDiscussionCache(userId).catch(function() {
-            // Ignore errors.
+        // Wait for synchronization process to finish.
+        return $mmaMessagesSync.waitForSync(userId).then(function() {
+            // Fetch messages. Invalidate the cache before fetching.
+            return $mmaMessages.invalidateDiscussionCache(userId).catch(function() {
+                // Ignore errors.
+            });
         }).then(function() {
             return $mmaMessages.getDiscussion(userId);
         }).then(function(messages) {
@@ -355,12 +365,28 @@ angular.module('mm.addons.messages')
         });
     };
 
+    // Refresh data if this discussion is synchronized automatically.
+    syncObserver = $mmEvents.on(mmaMessagesAutomSyncedEvent, function(data) {
+        if (data && data.siteid == $mmSite.getId() && data.userid == userId) {
+            // Fetch messages.
+            fetchMessages();
+
+            // Show first warning if any.
+            if (data.warnings && data.warnings[0]) {
+                $mmUtil.showErrorModal(data.warnings[0]);
+            }
+        }
+    });
+
     $scope.$on('$destroy', function() {
         if ($ionicPlatform.isTablet()) {
             $mmEvents.trigger(mmaMessagesDiscussionLeftEvent);
             if (obsToggleDelete && obsToggleDelete.off) {
                 obsToggleDelete.off();
             }
+        }
+        if (syncObserver && syncObserver.off) {
+            syncObserver.off();
         }
     });
 
