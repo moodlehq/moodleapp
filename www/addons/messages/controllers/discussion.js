@@ -75,7 +75,7 @@ angular.module('mm.addons.messages')
         }
 
         // Check if day has changed.
-        return !moment(message.timecreated * 1000).isSame(prevMessage.timecreated * 1000, 'day');
+        return !moment(message.timecreated).isSame(prevMessage.timecreated, 'day');
     };
 
     $scope.sendMessage = function(text) {
@@ -94,7 +94,7 @@ angular.module('mm.addons.messages')
             sending: true,
             useridfrom: $scope.currentUserId,
             smallmessage: text,
-            timecreated: $mmUtil.timestamp()
+            timecreated: new Date().getTime()
         };
         $scope.messages.push(message);
 

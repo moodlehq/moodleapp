@@ -490,6 +490,9 @@ angular.module('mm.addons.messages')
         return $mmSite.read('core_message_get_messages', params, presets).then(function(response) {
             angular.forEach(response.messages, function(message) {
                 message.read = params.read == 0 ? 0 : 1;
+                // Convert times to milliseconds.
+                message.timecreated = message.timecreated ? message.timecreated * 1000 : 0;
+                message.timeread = message.timeread ? message.timeread * 1000 : 0;
             });
             return response;
         });
