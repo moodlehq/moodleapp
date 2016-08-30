@@ -17,5 +17,7 @@
     "posttoforum": "Post to forum",
     "re": "Re:",
     "reply": "Reply",
+    "sortnewestfirst": "Display newest first",
+    "sortoldestfirst": "Display oldest first",
     "subject": "Subject"
 }

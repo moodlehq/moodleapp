@@ -174,7 +174,7 @@ angular.module('mm.addons.mod_forum')
         // Last post wasn't the starting one. Let's search all the posts until we find the first one.
         for (var i = 0; i < posts.length; i++) {
             if (posts[i].parent == 0) {
-                array.splice(i, 1); // Remove it from the array.
+                posts.splice(i, 1); // Remove it from the array.
                 return posts[i];
             }
         }
@@ -303,6 +303,24 @@ angular.module('mm.addons.mod_forum')
                 return response.posts;
             } else {
                 return $q.reject();
+            }
+        });
+    };
+
+    /**
+     * Sort forum discussion posts by an specified field.
+     * @param  {Array}  posts     Discussion posts to be sorted.
+     * @param  {String} direction Direction of the sorting (ASC / DESC).
+     * @return {Array}            Discussion posts sorted.
+     */
+    self.sortDiscussionPosts = function(posts, direction) {
+        return posts.sort(function (a, b) {
+            a = parseInt(a.created, 10);
+            b = parseInt(b.created, 10);
+            if (direction == 'ASC') {
+                return a >= b ? 1 : -1;
+            } else {
+                return a <= b ? 1 : -1;
             }
         });
     };
