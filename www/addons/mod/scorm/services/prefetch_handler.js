@@ -133,6 +133,30 @@ angular.module('mm.addons.mod_scorm')
     };
 
     /**
+     * Check if a SCORM is downloadable.
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScormPrefetchHandler#isDownloadable
+     * @param {Object} module    Module to check.
+     * @param {Number} courseId  Course ID the module belongs to.
+     * @return {Promise}         Promise resolved with true if downloadable, resolved with false otherwise.
+     */
+    self.isDownloadable = function(module, courseId) {
+        return $mmaModScorm.getScorm(courseId, module.id, module.url).then(function(scorm) {
+            if (scorm.warningmessage) {
+                // SCORM closed or not opened yet.
+                return false;
+            }
+            if ($mmaModScorm.isScormSupported(scorm) !== true) {
+                return false;
+            }
+
+            return true;
+        });
+    };
+
+    /**
      * Whether or not the module is enabled for the site.
      *
      * @module mm.addons.mod_scorm
