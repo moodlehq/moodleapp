@@ -2211,21 +2211,33 @@ angular.module('mm.core')
      */
     self._removeFileById = function(siteId, fileId) {
         return getSiteDb(siteId).then(function(db) {
-            var p1, p2, p3;
-            p1 = db.remove(mmFilepoolStore, fileId);
-            p2 = db.where(mmFilepoolLinksStore, 'fileId', '=', fileId).then(function(entries) {
-                return $q.all(entries.map(function(entry) {
-                    return db.remove(mmFilepoolLinksStore, [entry.fileId, entry.component, entry.componentId]);
+            // Get the path to the file first since it relies on the file object stored in the pool.
+            return self._getFilePath(siteId, fileId).then(function(path) {
+                var promises = [];
+
+                // Remove entry from filepool store.
+                promises.push(db.remove(mmFilepoolStore, fileId));
+
+                // Remove links.
+                promises.push(db.where(mmFilepoolLinksStore, 'fileId', '=', fileId).then(function(entries) {
+                    return $q.all(entries.map(function(entry) {
+                        return db.remove(mmFilepoolLinksStore, [entry.fileId, entry.component, entry.componentId]);
+                    }));
                 }));
+
+                // Remove the file.
+                if ($mmFS.isAvailable()) {
+                    promises.push($mmFS.removeFile(path).catch(function(error) {
+                        if (error && error.code == 1) {
+                            // Not found, ignore error since maybe it was deleted already.
+                        } else {
+                            return $q.reject(error);
+                        }
+                    }));
+                }
+
+                return $q.all(promises);
             });
-            if ($mmFS.isAvailable()) {
-                p3 = self._getFilePath(siteId, fileId).then(function(path) {
-                    return $mmFS.removeFile(path);
-                });
-            } else {
-                p3 = $q.when();
-            }
-            return $q.all([p1, p2, p3]);
         });
     };
 
