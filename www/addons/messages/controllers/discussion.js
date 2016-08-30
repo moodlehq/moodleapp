@@ -129,7 +129,11 @@ angular.module('mm.addons.messages')
     // Synchronize messages if needed.
     $mmaMessagesSync.syncDiscussion(userId).catch(function() {
         // Ignore errors.
-    }).then(function() {
+    }).then(function(warnings) {
+        if (warnings && warnings[0]) {
+            $mmUtil.showErrorModal(warnings[0]);
+        }
+
         // Fetch the messages for the first time.
         fetchMessages().then(function() {
             if (!$scope.title && $scope.messages.length) {

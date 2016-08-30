@@ -49,10 +49,11 @@ angular.module('mm.addons.messages')
      * @module mm.addons.messages
      * @ngdoc method
      * @name $mmaMessagesSync#syncAllDiscussions
-     * @param  {String} [siteId] Site ID to sync. If not defined, sync all sites.
-     * @return {Promise}         Promise resolved if sync is successful, rejected if sync fails.
+     * @param  {String} [siteId]           Site ID to sync. If not defined, sync all sites.
+     * @param  {Boolean} onlyDeviceOffline True to only sync discussions that failed because device was offline, false to sync all.
+     * @return {Promise}                   Promise resolved if sync is successful, rejected if sync fails.
      */
-    self.syncAllDiscussions = function(siteId) {
+    self.syncAllDiscussions = function(siteId, onlyDeviceOffline) {
         if (!$mmApp.isOnline()) {
             $log.debug('Cannot sync all discussions because device is offline.');
             return $q.reject();
@@ -61,10 +62,10 @@ angular.module('mm.addons.messages')
         var promise;
         if (!siteId) {
             // No site ID defined, sync all sites.
-            $log.debug('Try to sync discussions in all sites.');
+            $log.debug('Try to sync discussions in all sites.' + (onlyDeviceOffline ? ' Only offline.' : ''));
             promise = $mmSitesManager.getSitesIds();
         } else {
-            $log.debug('Try to sync discussions in site ' + siteId);
+            $log.debug('Try to sync discussions in site ' + siteId + (onlyDeviceOffline ? '. Only offline.' : ''));
             promise = $q.when([siteId]);
         }
 
@@ -73,7 +74,8 @@ angular.module('mm.addons.messages')
 
             angular.forEach(siteIds, function(siteId) {
                 // Get all messages pending to be sent in the site.
-                sitePromises.push($mmaMessagesOffline.getAllMessages(siteId).then(function(messages) {
+                var fn = onlyDeviceOffline ? $mmaMessagesOffline.getAllDeviceOfflineMessages : $mmaMessagesOffline.getAllMessages;
+                sitePromises.push(fn(siteId).then(function(messages) {
                     var userIds = [],
                         promises = [];
 
@@ -137,6 +139,10 @@ angular.module('mm.addons.messages')
             if (!messages.length) {
                 // Nothing to sync.
                 return [];
+            } else if (!$mmApp.isOnline()) {
+                // Cannot sync in offline. Mark messages as device offline.
+                $mmaMessagesOffline.setMessagesDeviceOffline(messages, true);
+                return $q.reject();
             }
 
             var promise = $q.when(),
@@ -159,6 +165,10 @@ angular.module('mm.addons.messages')
                             }
                         } else {
                             // Error sending, stop execution.
+                            if ($mmApp.isOnline()) {
+                                // App is online, unmark deviceoffline if marked.
+                                $mmaMessagesOffline.setMessagesDeviceOffline(messages, false);
+                            }
                             return $q.reject(data.error);
                         }
                     }).then(function() {
