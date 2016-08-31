@@ -52,15 +52,16 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmCronDelegate#_executeHook
-     * @param  {String} name Name of the hook.
-     * @return {Void}
+     * @param  {String} name     Name of the hook.
+     * @param  {String} [siteId] Site ID. If not defined, all sites.
+     * @return {Promise}         Promise resolved if hook is executed successfully, rejected otherwise.
      * @protected
      */
-    self._executeHook = function(name) {
+    self._executeHook = function(name, siteId) {
         if (!hooks[name] || !hooks[name].instance || !angular.isFunction(hooks[name].instance.execute)) {
             // Invalid hook.
             $log.debug('Cannot execute hook because is invalid: ' + name);
-            return;
+            return $q.reject();
         }
 
         var usesNetwork = self._hookUsesNetwork(name),
@@ -71,7 +72,7 @@ angular.module('mm.core')
             // Offline, stop executing.
             $log.debug('Cannot execute hook because device is offline: ' + name);
             self._stopHook(name);
-            return;
+            return $q.reject();
         }
 
         if (isSync) {
@@ -85,17 +86,19 @@ angular.module('mm.core')
             promise = $q.when(true);
         }
 
-        promise.then(function(execute) {
+        return promise.then(function(execute) {
             if (!execute) {
                 // Cannot execute in this network connection, retry soon.
                 $log.debug('Cannot execute hook because device is using limited connection: ' + name);
                 scheduleNextExecution(name, mmCoreCronMinInterval);
-                return;
+                return $q.reject();
             }
 
             // Add the execution to the queue.
-            queuePromise = queuePromise.finally(function() {
-                return executeHook(name).then(function() {
+            queuePromise = queuePromise.catch(function() {
+                // Ignore errors in previous hooks.
+            }).then(function() {
+                return executeHook(name, siteId).then(function() {
                     $log.debug('Execution of hook \'' + name + '\' was a success.');
                     return self._setHookLastExecutionTime(name, new Date().getTime()).then(function() {
                         scheduleNextExecution(name);
@@ -104,23 +107,27 @@ angular.module('mm.core')
                     // Hook call failed. Retry soon.
                     $log.debug('Execution of hook \'' + name + '\' failed.');
                     scheduleNextExecution(name, mmCoreCronMinInterval);
+                    return $q.reject();
                 });
             });
+
+            return queuePromise;
         });
     };
 
     /**
      * Execute a hook, cancelling the execution if it takes more than mmCoreCronMaxTimeProcess.
      *
-     * @param  {String} name Name of the hook.
-     * @return {Promise}     Promise resolved when the hook finishes or reaches max time, rejected if it fails.
+     * @param  {String} name     Name of the hook.
+     * @param  {String} [siteId] Site ID. If not defined, all sites.
+     * @return {Promise}         Promise resolved when the hook finishes or reaches max time, rejected if it fails.
      */
-    function executeHook(name) {
+    function executeHook(name, siteId) {
         var deferred = $q.defer(),
             cancelPromise;
 
         $log.debug('Executing hook: ' + name);
-        $q.when(hooks[name].instance.execute()).then(function() {
+        $q.when(hooks[name].instance.execute(siteId)).then(function() {
             deferred.resolve();
         }).catch(function() {
             deferred.reject();
@@ -136,6 +143,35 @@ angular.module('mm.core')
 
         return deferred.promise;
     }
+
+    /**
+     * Force execution of synchronization cron tasks without waiting for the scheduled time.
+     * Please notice that some tasks may not be executed depending on the network connection and sync settings.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmCronDelegate#forceSyncExecution
+     * @param  {String} [siteId] Site ID. If not defined, all sites.
+     * @return {Promise}         Promise resolved if all hooks are executed successfully, rejected otherwise.
+     */
+    self.forceSyncExecution = function(siteId) {
+        var promises = [];
+
+        angular.forEach(hooks, function(hook, name) {
+            if (self._isHookSync(name)) {
+                // Mark the hook as running (it might be running already).
+                hook.running = true;
+
+                // Cancel pending timeout.
+                $timeout.cancel(hook.timeout);
+
+                // Now force the execution of the hook.
+                promises.push(self._executeHook(name, siteId));
+            }
+        });
+
+        return $mmUtil.allPromises(promises);
+    };
 
     /**
      * Get a hook's interval.
