@@ -22,14 +22,14 @@ angular.module('mm.addons.mod_glossary')
  * @name mmaModGlossaryIndexCtrl
  */
 .controller('mmaModGlossaryIndexCtrl', function($q, $scope, $stateParams, $ionicPopover, $mmUtil, $mmaModGlossary,
-        $ionicScrollDelegate, $translate, $mmText, mmaModGlossaryComponent) {
+        $ionicScrollDelegate, $translate, $mmText, mmaModGlossaryComponent, mmaModGlossaryLimitEntriesNum) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         glossary,
         noop = function(){},
         limitFrom = 0,
-        limitNum = 25,
+        limitNum = mmaModGlossaryLimitEntriesNum,
         popover,
         viewMode,   // The archetype of view (letter, date, author, cat).
         fetchMode = 'letter_all',       // Default.

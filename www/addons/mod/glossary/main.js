@@ -15,6 +15,7 @@
 angular.module('mm.addons.mod_glossary', ['mm.core'])
 
 .constant('mmaModGlossaryComponent', 'mmaModGlossary')
+.constant('mmaModGlossaryLimitEntriesNum', 25)
 
 .config(function($stateProvider) {
 
@@ -51,7 +52,8 @@ angular.module('mm.addons.mod_glossary', ['mm.core'])
 
 })
 
-.config(function($mmCourseDelegateProvider, $mmContentLinksDelegateProvider) {
+.config(function($mmCourseDelegateProvider, $mmContentLinksDelegateProvider, $mmCoursePrefetchDelegateProvider) {
     $mmCourseDelegateProvider.registerContentHandler('mmaModGlossary', 'glossary', '$mmaModGlossaryHandlers.courseContent');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModGlossary', '$mmaModGlossaryHandlers.linksHandler');
+    $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModGlossary', 'glossary', '$mmaModGlossaryPrefetchHandler');
 });
