@@ -27,7 +27,7 @@ angular.module('mm.core')
  * @param {Mixed} [width=100%]  Width of the iframe. If not defined, use 100%.
  * @param {Mixed} [height=100%] Height of the iframe. If not defined, use 100%.
  */
-.directive('mmIframe', function($mmUtil) {
+.directive('mmIframe', function($mmUtil, $mmText) {
 
     var errorShownTime = 0,
         tags = ['iframe', 'frame', 'object', 'embed'];
@@ -107,6 +107,7 @@ angular.module('mm.core')
 
     /**
      * Search links (<a>) and open them in browser or InAppBrowser if needed.
+     * Only links that haven't been treated by SCORM Javascript will be treated.
      *
      * @param  {DOMElement} element Element to treat.
      * @return {Void}
@@ -118,10 +119,15 @@ angular.module('mm.core')
 
             // Check that href is not null.
             if (href) {
-                if (href.indexOf('http') === 0) {
-                    // Link has protocol http(s), open it in browser.
+                var scheme = $mmText.getUrlScheme(href);
+                if (scheme && scheme == 'javascript') {
+                    // Javascript links should be treated by the SCORM Javascript.
+                    // There's nothing to be done with these links, so they'll be ignored.
+                    return;
+                } else if (scheme && scheme != 'file' && scheme != 'filesystem') {
+                    // Scheme suggests it's an external resource, open it in browser.
                     angular.element(el).on('click', function(e) {
-                        // If the link's already prevented then we won't open it in browser.
+                        // If the link's already prevented by SCORM JS then we won't open it in browser.
                         if (!e.defaultPrevented) {
                             e.preventDefault();
                             $mmUtil.openInBrowser(href);
@@ -130,7 +136,7 @@ angular.module('mm.core')
                 } else if (el.target == '_parent' || el.target == '_top' || el.target == '_blank') {
                     // Opening links with _parent, _top or _blank can break the app. We'll open it in InAppBrowser.
                     angular.element(el).on('click', function(e) {
-                        // If the link's already prevented then we won't open it in InAppBrowser.
+                        // If the link's already prevented by SCORM JS then we won't open it in InAppBrowser.
                         if (!e.defaultPrevented) {
                             e.preventDefault();
                             $mmUtil.openInApp(href);
@@ -139,7 +145,7 @@ angular.module('mm.core')
                 } else if (ionic.Platform.isIOS() && (!el.target || el.target == '_self')) {
                     // In cordova ios 4.1.0 links inside iframes stopped working. We'll manually treat them.
                     angular.element(el).on('click', function(e) {
-                        // If the link's already prevented then we won't treat it.
+                        // If the link's already prevented by SCORM JS then we won't treat it.
                         if (!e.defaultPrevented) {
                             if (element[0].tagName.toLowerCase() == 'object') {
                                 e.preventDefault();
