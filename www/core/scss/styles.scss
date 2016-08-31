@@ -557,6 +557,12 @@ mm-format-text {
   padding: 0;
 }
 
+.padding .mm-searchbox .item-input-inset {
+  padding-top: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
 /**
  * This CSS uses adjacent selectors instead of general sibling (~) selectors
  * for ion radio that are broken in iOS 9 UIWebView.

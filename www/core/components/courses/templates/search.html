@@ -1,14 +1,6 @@
 <ion-view view-title="{{ 'mm.courses.searchcourses' | translate }}">
     <ion-content padding="true" mm-state-class>
-        <form class="list">
-            <label class="item item-input">
-                <i class="icon ion-search placeholder-icon"></i>
-                <input type="text" placeholder="{{ 'mm.courses.search' | translate}}" ng-model="searchText" mm-auto-focus>
-            </label>
-            <button class="button button-block" ng-click="search(searchText)" ng-disabled="searchText.length < 3">
-                {{ 'mm.courses.search' | translate }}
-            </button>
-        </form>
+        <mm-searchbox submit-action="search" placeholder="{{ 'mm.courses.search' | translate }}" initial-value="{{searchText}}" search-label="{{ 'mm.courses.search' | translate}}" autofocus="true"></mm-searchbox>
         <div ng-if="courses">
             <div class="list">
                 <li class="item">{{ 'mm.courses.totalcoursesearchresults' | translate:{$a: total} }}</li>

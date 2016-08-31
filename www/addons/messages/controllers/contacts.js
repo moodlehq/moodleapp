@@ -48,13 +48,6 @@ angular.module('mm.addons.messages')
     };
 
     $scope.search = function(query) {
-        if (query.length < 3) {
-            // The view should handle this case, but adding this check here to document that
-            // we do not want users to query on less than 3 characters as they could retrieve
-            // too many users!
-            return;
-        }
-
         $mmApp.closeKeyboard();
 
         $scope.loaded = false;

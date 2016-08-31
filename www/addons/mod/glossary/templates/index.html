@@ -17,17 +17,7 @@
 
             <mm-course-mod-description watch="true" description="description" component="{{component}}" component-id="{{componentId}}"></mm-course-mod-description>
 
-            <form ng-if="isSearch" ng-submit="search(searchData.searchQuery);">
-                <div class="list">
-                    <div class="item-input-inset">
-                        <label class="item-input-wrapper">
-                            <i class="icon ion-search placeholder-icon"></i>
-                            <input type="text" placeholder="{{ 'mma.mod_glossary.searchquery' | translate}}" ng-model="searchData.searchQuery">
-                        </label>
-                        <button type="submit" class="button button-clear" ng-disabled="!searchData.searchQuery || searchData.searchQuery.length < 2">{{ 'mm.core.search' | translate}}</button>
-                    </div>
-                </div>
-            </form>
+            <mm-searchbox ng-if="isSearch" submit-action="search" placeholder="{{ 'mma.mod_glossary.searchquery' | translate}}" initial-value="{{searchData.searchQuery}}" autofocus="true" length-check="2"></mm-searchbox>
 
             <mm-loading hide-until="loaded" dyn-message="loadingMessage">
                 <div class="list" ng-if="entries && entries.length > 0">
