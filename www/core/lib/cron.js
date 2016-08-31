@@ -228,6 +228,23 @@ angular.module('mm.core')
     };
 
     /**
+     * Check if there is any sync hook registered.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmCronDelegate#hasSyncHooks
+     * @return {Boolean} True if has at least 1 sync hook, false othewise.
+     */
+    self.hasSyncHooks = function() {
+        for (var name in hooks) {
+            if (self._isHookSync(name)) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    /**
      * Check if a hook uses network. Defaults to true.
      *
      * @module mm.core

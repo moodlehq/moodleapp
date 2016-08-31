@@ -3,6 +3,8 @@
     "appname": "Moodle Mobile {{version}}",
     "appready": "App ready",
     "cacheexpirationtime": "Cache expiration time (miliseconds)",
+    "cannotsyncoffline": "Cannot synchronize offline.",
+    "cannotsyncwithoutwifi": "Cannot synchronize because the current settings only allow to synchronize when connected to Wi-Fi. Please connect to a Wi-Fi network.",
     "cordovadevicemodel": "Cordova Device model",
     "cordovadeviceosversion": "Cordova Device OS version",
     "cordovadeviceplatform": "Cordova Device platform",

@@ -21,12 +21,20 @@ angular.module('mm.core.settings')
  * @ngdoc controller
  * @name mmSettingsSynchronizationCtrl
  */
-.controller('mmSettingsSynchronizationCtrl', function($log, $scope, $mmSitesManager, $mmUtil, $mmFilepool, $mmEvents,
-            $mmLang, $mmConfig, mmCoreEventSessionExpired, mmCoreSettingsSyncOnlyOnWifi) {
+.controller('mmSettingsSynchronizationCtrl', function($log, $scope, $mmUtil, $mmConfig, $mmSettingsHelper,
+            mmCoreSettingsSyncOnlyOnWifi) {
     $log = $log.getInstance('mmSettingsSynchronizationCtrl');
 
-    $mmSitesManager.getSites().then(function(sites) {
+    // Get the sites to show.
+    $mmSettingsHelper.getSites().then(function(sites) {
         $scope.sites = sites;
+
+        // If a site is being synchronized, show error modal if it fails.
+        angular.forEach(sites, function(site) {
+            if (site.synchronizing) {
+                $mmSettingsHelper.getSiteSyncPromise(site.id).catch(errorSyncing);
+            }
+        });
     });
 
     $mmConfig.get(mmCoreSettingsSyncOnlyOnWifi, true).then(function(syncOnlyOnWifi) {
@@ -37,37 +45,19 @@ angular.module('mm.core.settings')
         $mmConfig.set(mmCoreSettingsSyncOnlyOnWifi, syncOnlyOnWifi);
     };
 
-    $scope.synchronize = function(siteData) {
-        if (siteData) {
-            var siteid = siteData.id,
-                modal = $mmUtil.showModalLoading('mm.settings.synchronizing', true);
-            $mmFilepool.invalidateAllFiles(siteid).finally(function() {
-                $mmSitesManager.getSite(siteid).then(function(site) {
-                    return site.invalidateWsCache().then(function() {
-                        // Check if local_mobile was installed to Moodle.
-                        return site.checkIfLocalMobileInstalledAndNotUsed().then(function() {
-                            // Local mobile was added. Throw invalid session to force reconnect and create a new token.
-                            $mmEvents.trigger(mmCoreEventSessionExpired, siteid);
-                            return $mmLang.translateAndReject('mm.core.lostconnection');
-                        }, function() {
-                            // Update site info.
-                            return $mmSitesManager.updateSiteInfo(siteid);
-                        });
-                    }).then(function() {
-                        siteData.fullname = site.getInfo().fullname;
-                        siteData.sitename = site.getInfo().sitename;
-                        $mmUtil.showModal('mm.core.success', 'mm.settings.syncsitesuccess');
-                    });
-                }).catch(function(error) {
-                    if (error) {
-                        $mmUtil.showErrorModal(error);
-                    } else {
-                        $mmUtil.showErrorModal('mm.settings.errorsyncsite', true);
-                    }
-                }).finally(function() {
-                    modal.dismiss();
-                });
-            });
+    $scope.synchronize = function(siteId) {
+        if ($scope.sites[siteId] && !$scope.sites[siteId].synchronizing) {
+            $mmSettingsHelper.synchronizeSite($scope.syncOnlyOnWifi, siteId).catch(errorSyncing);
         }
     };
+
+    function errorSyncing(error) {
+        if (!$scope.$$destroyed) {
+            if (error) {
+                $mmUtil.showErrorModal(error);
+            } else {
+                $mmUtil.showErrorModal('mm.settings.errorsyncsite', true);
+            }
+        }
+    }
 });
