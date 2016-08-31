@@ -14,15 +14,15 @@
             <section class="mma-messages-discussion-container" aria-live="polite">
                 <ion-list ng-repeat="message in messages track by $index" show-delete="data.showDelete">
 
-                    <p ng-if="showDate(messages[$index], messages[$index - 1])" class="mma-messages-date"><span>{{ message.timecreated * 1000 | mmFormatDate:"dfdayweekmonth" }}</span></p>
+                    <p ng-if="showDate(messages[$index], messages[$index - 1])" class="mma-messages-date"><span>{{ message.timecreated | mmFormatDate:"dfdayweekmonth" }}</span></p>
 
                     <ion-item class='item item-message item-text-wrap item-remove-animate' ng-class='{"item-message-mine": message.useridfrom == currentUserId}' >
-                        <ion-delete-button class="ion-minus-circled mma-messages-delete-button" ng-if="message.id" ng-click='deleteMessage(message, $index)'></ion-delete-button>
+                        <ion-delete-button class="ion-minus-circled mma-messages-delete-button" ng-if="!message.sending" ng-click='deleteMessage(message, $index)'></ion-delete-button>
                         <mm-format-text after-render="scrollAfterRender" watch="true">{{ message.smallmessage | mmaMessagesFormat }}</mm-format-text>
-                        <ion-spinner ng-if="message.sending"></ion-spinner>
-                        <span class="item-note">
-                            {{ message.timecreated * 1000 | mmFormatDate:"dftimedate" }}
+                        <span ng-if="!message.pending" class="item-note">
+                            {{ message.timecreated | mmFormatDate:"dftimedate" }}
                         </span>
+                        <span ng-if="message.pending" class="item-note"><i class="icon ion-clock"></i></span>
 
                     </ion-item>
 
@@ -39,11 +39,10 @@
 </ion-view>
 
 <ion-footer-bar>
-    <p class="mma-messages-footer-note" ng-if="isAppOffline()">{{ 'mma.messages.mustbeonlinetosendmessages' | translate }}</p>
-    <form  ng-if="!isAppOffline()" ng-submit="sendMessage(newMessage); newMessage = '';" style="width: 100%">
+    <form class="mma-messages-send-message-bar" ng-submit="sendMessage(newMessage); newMessage = '';">
         <div class="mma-messages-input-inset item-input-inset">
             <label class="item-input-wrapper">
-                <input type="text" mm-auto-focus placeholder="{{ 'mma.messages.newmessage' | translate }}" ng-model="newMessage" style="width: 100%;">
+                <input type="text" mm-auto-focus placeholder="{{ 'mma.messages.newmessage' | translate }}" ng-model="newMessage">
             </label>
             <button type="submit" class="button button-clear" ng-disabled="!newMessage">{{ 'mma.messages.send' | translate}}</button>
         </div>

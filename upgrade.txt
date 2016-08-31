@@ -7,6 +7,8 @@ information provided here is intended especially for developers.
  * New event mmaMessagesToggleDeleteEvent triggered when the toggle delete button is clicked on split view.
  * Event mmaMessagesDiscussionLoadedEvent changes its parameters from userId to and object {userId: Number, canDelete: Boolean}.
  * $mmText#guessExtensionFromUrl has been moved to $mmFS#guessExtensionFromUrl. Old function has been removed.
+ * The parameters of the function $mmaMessages#deleteMessage have changed to support offline messaging. The implementation of $mmaMessages#sendMessage has changed too, but the parameters haven't changed. The old implementations are now in $mmaMessages#deleteMessageOnline and $mmaMessages#sendMessageOnline.
+ * Now the messages returned by $mmaMessages#getDiscussion and $mmaMessages#getDiscussions have their times in milliseconds, not in seconds like before.
 
 === 3.1.2 ===
 
