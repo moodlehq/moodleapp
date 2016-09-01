@@ -2,6 +2,7 @@
     "cannotsubmitsurvey": "Sorry, there was a problem submitting your survey. Please try again.",
     "clicktocontinue": "Click here to continue",
     "errorgetsurvey": "Error getting survey data.",
+    "hasdatatosync": "This survey has offline answers to be synchronized.",
     "ifoundthat": "I found that",
     "ipreferthat": "I prefer that",
     "responses": "Responses",

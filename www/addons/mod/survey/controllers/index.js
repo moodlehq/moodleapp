@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_survey')
  * @name mmaModSurveyIndexCtrl
  */
 .controller('mmaModSurveyIndexCtrl', function($scope, $stateParams, $mmaModSurvey, $mmUtil, $q, $mmCourse, $translate, $mmText,
-            $ionicPlatform, $ionicScrollDelegate, mmaModSurveyComponent) {
+            $ionicPlatform, $ionicScrollDelegate, $mmaModSurveyOffline, mmaModSurveyComponent) {
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
         survey,
@@ -47,7 +47,17 @@ angular.module('mm.addons.mod_survey')
             $scope.description = survey.intro || $scope.description;
             $scope.survey = survey;
 
-            if (!survey.surveydone) {
+
+            // Check if there are answers stored in offline.
+            return $mmaModSurveyOffline.hasAnswers(survey.id);
+        }).then(function(hasOffline) {
+            if (survey.surveydone) {
+                $scope.hasOffline = false;
+            } else {
+                $scope.hasOffline = hasOffline;
+            }
+
+            if (!survey.surveydone && !hasOffline) {
                 return fetchQuestions();
             }
         }).catch(function(message) {
@@ -125,7 +135,7 @@ angular.module('mm.addons.mod_survey')
                 });
             });
 
-            $mmaModSurvey.submitAnswers(survey.id, answers).then(function() {
+            $mmaModSurvey.submitAnswers(survey.id, survey.name, courseid, answers).then(function() {
                 if (!scrollView) {
                     scrollView = $ionicScrollDelegate.$getByHandle('mmaModSurveyScroll');
                 }

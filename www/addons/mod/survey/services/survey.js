@@ -21,7 +21,8 @@ angular.module('mm.addons.mod_survey')
  * @ngdoc service
  * @name $mmaModSurvey
  */
-.factory('$mmaModSurvey', function($q, $mmSite, $translate, $mmSitesManager, $mmFilepool, mmaModSurveyComponent) {
+.factory('$mmaModSurvey', function($q, $mmSite, $translate, $mmSitesManager, $mmFilepool, $mmApp, $mmaModSurveyOffline,
+            mmaModSurveyComponent) {
     var self = {};
 
     /**
@@ -309,24 +310,70 @@ angular.module('mm.addons.mod_survey')
     };
 
     /**
-     * Send survey answers to Moodle.
+     * Send survey answers. If cannot send them to Moodle, they'll be stored in offline to be sent later.
      *
      * @module mm.addons.mod_survey
      * @ngdoc method
      * @name $mmaModSurvey#submitAnswers
-     * @param {Number} surveyid  urvey ID.
-     * @param {Object[]} answers Answers.
-     * @return {Promise}         Promise resolved when answers are successfully submitted.
+     * @param  {Number} surveyId  Survey ID.
+     * @param  {String} name      Survey name.
+     * @param  {Number} courseId  Course ID the survey belongs to.
+     * @param  {Object[]} answers Answers.
+     * @return {Promise}          Promise resolved with boolean if success: true if answers were sent to server,
+     *                            false if stored in device.
      */
-    self.submitAnswers = function(surveyid, answers) {
-        var params = {
-            surveyid: surveyid,
-            answers: answers
-        };
-        return $mmSite.write('mod_survey_submit_answers', params).then(function(response) {
-            if (!response.status) {
-                return $q.reject();
+    self.submitAnswers = function(surveyId, name, courseId, answers, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        if (!$mmApp.isOnline()) {
+            // App is offline, store the message.
+            return storeOffline();
+        }
+
+        // Device is online, try to send them to server.
+        return self.submitAnswersOnline(surveyId, answers, siteId).then(function() {
+            return true;
+        }).catch(function(error) {
+            if ($mmUtil.isWebServiceError(error)) {
+                // The WebService has thrown an error, this means that answers cannot be submitted.
+                return $q.reject(error);
+            } else {
+                // Couldn't connect to server, store in offline.
+                return storeOffline();
             }
+        });
+
+        // Convenience function to store a message to be synchronized later.
+        function storeOffline() {
+            return $mmaModSurveyOffline.saveAnswers(surveyId, name, courseId, answers, siteId).then(function() {
+                return false;
+            });
+        }
+    };
+
+    /**
+     * Send survey answers to Moodle.
+     *
+     * @module mm.addons.mod_survey
+     * @ngdoc method
+     * @name $mmaModSurvey#submitAnswersOnline
+     * @param  {Number} surveyId  Survey ID.
+     * @param  {Object[]} answers Answers.
+     * @return {Promise}          Promise resolved when answers are successfully submitted.
+     */
+    self.submitAnswersOnline = function(surveyId, answers, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                surveyid: surveyId,
+                answers: answers
+            };
+            return site.write('mod_survey_submit_answers', params).then(function(response) {
+                if (!response.status) {
+                    return $q.reject();
+                }
+            });
         });
     };
 
