@@ -4,30 +4,20 @@
         </ion-refresher>
         <mm-loading hide-until="groupsLoaded">
             <form ng-if="showForm" class="list mma-forum-border">
-                <label class="item item-input item-stacked-label">
-                    <span class="input-label">{{ 'mma.mod_forum.subject' | translate }}</span>
+                <ion-input class="item item-input item-stacked-label">
+                    <ion-label>{{ 'mma.mod_forum.subject' | translate }}</ion-label>
                     <input type="text" placeholder="{{ 'mma.mod_forum.subject' | translate }}" ng-model="newdiscussion.subject">
-                </label>
-                <label class="item item-input item-stacked-label mm-item-has-rich-text-editor">
-                    <span class="input-label">{{ 'mma.mod_forum.message' | translate }}</span>
+                </ion-input>
+                <ion-input class="item item-input item-stacked-label mm-item-has-rich-text-editor">
+                    <ion-label>{{ 'mma.mod_forum.message' | translate }}</ion-label>
                     <mm-rich-text-editor model="newdiscussion" placeholder="{{ 'mma.mod_forum.message' | translate }}" scroll-handle="mmaModForumNewDiscussion" name="mod_forum_new_discussion"></mm-rich-text-editor>
-                </label>
+                </ion-input>
                 <div class="item item-input item-select" ng-if="showGroups">
-                    <div class="input-label" id="mma-forum-groupslabel">
-                        {{ 'mma.mod_forum.group' | translate }}
-                    </div>
+                    <ion-label id="mma-forum-groupslabel">{{ 'mma.mod_forum.group' | translate }}</ion-label>
                     <select ng-model="newdiscussion.groupid" ng-options="group.id as group.name for group in groups" aria-labelledby="mma-forum-groupslabel" mm-ios-select-fix>
                     </select>
                 </div>
-                <li class="item item-toggle item-text-wrap">
-                    <div id="mma-forum-subscribelabel">{{ 'mma.mod_forum.discussionsubscription' | translate }}</div>
-                    <label class="toggle" aria-labelledby="mma-forum-subscribelabel">
-                        <input type="checkbox" ng-model="newdiscussion.subscribe">
-                        <div class="track">
-                            <div class="handle"></div>
-                        </div>
-                    </label>
-                </li>
+                <ion-toggle ng-model="newdiscussion.subscribe">{{ 'mma.mod_forum.discussionsubscription' | translate }}</ion-toggle>
                 <div class="item">
                     <button class="button button-block" ng-click="add()" ng-disabled="newdiscussion.subject == '' || newdiscussion.text == ''">{{ 'mma.mod_forum.posttoforum' | translate }}</button>
                 </div>

@@ -52,9 +52,9 @@
     <p class="mma-chat-footer-note" ng-if="isAppOffline()">{{ 'mma.mod_chat.mustbeonlinetosendmessages' | translate }}</p>
     <form ng-if="!isAppOffline() && polling && loaded" class="mma-chat-send-form" ng-submit="sendMessage(newMessage.text);">
         <div class="mma-chat-input-inset item-input-inset">
-            <label class="item-input-wrapper">
+            <ion-input class="item-input-wrapper">
                 <input type="text" placeholder="{{ 'mma.mod_chat.entermessage' | translate }}" ng-model="newMessage.text" style="width: 100%;">
-            </label>
+            </ion-input>
             <button type="submit" class="button button-clear" ng-disabled="!newMessage.text">{{ 'mma.mod_chat.send' | translate}}</button>
         </div>
     </form>
