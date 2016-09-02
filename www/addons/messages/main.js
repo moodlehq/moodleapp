@@ -16,7 +16,6 @@ angular.module('mm.addons.messages', ['mm.core'])
 
 .constant('mmaMessagesDiscussionLoadedEvent', 'mma_messages_discussion_loaded')
 .constant('mmaMessagesDiscussionLeftEvent', 'mma_messages_discussion_left')
-.constant('mmaMessagesToggleDeleteEvent', 'mma_messages_toggle_delete')
 .constant('mmaMessagesPollInterval', 5000)
 .constant('mmaMessagesPriority', 600)
 .constant('mmaMessagesSendMessagePriority', 1000)
@@ -34,8 +33,7 @@ angular.module('mm.addons.messages', ['mm.core'])
         url: '/messages',
         views: {
             'site': {
-                templateUrl: 'addons/messages/templates/index.html',
-                controller: 'mmaMessagesIndexCtrl'
+                templateUrl: 'addons/messages/templates/index.html'
             }
         }
     })
