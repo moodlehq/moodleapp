@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_survey')
  * @ngdoc service
  * @name $mmaModSurvey
  */
-.factory('$mmaModSurvey', function($q, $mmSite, $translate, $mmSitesManager, $mmFilepool, $mmApp, $mmaModSurveyOffline,
+.factory('$mmaModSurvey', function($q, $mmSite, $translate, $mmSitesManager, $mmFilepool, $mmApp, $mmaModSurveyOffline, $mmUtil,
             mmaModSurveyComponent) {
     var self = {};
 
@@ -174,37 +174,70 @@ angular.module('mm.addons.mod_survey')
     }
 
     /**
-     * Get a survey.
+     * Get a survey with key=value. If more than one is found, only the first will be returned.
+     *
+     * @param  {String} siteId    Site ID.
+     * @param  {Number} courseId  Course ID.
+     * @param  {String} key       Name of the property to check.
+     * @param  {Mixed} value      Value to search.
+     * @return {Promise}          Promise resolved when the survey is retrieved.
+     */
+    function getSurvey(siteId, courseId, key, value) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    courseids: [courseId]
+                },
+                preSets = {
+                    cacheKey: getSurveyDataCacheKey(courseId)
+                };
+
+            return site.read('mod_survey_get_surveys_by_courses', params, preSets).then(function(response) {
+                if (response && response.surveys) {
+                    var currentSurvey;
+                    angular.forEach(response.surveys, function(survey) {
+                        if (!currentSurvey && survey[key] == value) {
+                            currentSurvey = survey;
+                        }
+                    });
+                    if (currentSurvey) {
+                        return currentSurvey;
+                    }
+                }
+                return $q.reject();
+            });
+        });
+    }
+
+    /**
+     * Get a survey by course module ID.
      *
      * @module mm.addons.mod_survey
      * @ngdoc method
      * @name $mmaModSurvey#getSurvey
-     * @param {Number} courseid Course ID.
-     * @param {Number} cmid     Course module ID.
+     * @param {Number} courseId Course ID.
+     * @param {Number} cmId     Course module ID.
+     * @param {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}        Promise resolved when the survey is retrieved.
      */
-    self.getSurvey = function(courseid, cmid) {
-        var params = {
-                courseids: [courseid]
-            },
-            preSets = {
-                cacheKey: getSurveyDataCacheKey(courseid)
-            };
+    self.getSurvey = function(courseId, cmId, siteId) {
+        siteId = siteId || $mmSite.getId();
+        return getSurvey(siteId, courseId, 'coursemodule', cmId);
+    };
 
-        return $mmSite.read('mod_survey_get_surveys_by_courses', params, preSets).then(function(response) {
-            if (response.surveys) {
-                var currentSurvey;
-                angular.forEach(response.surveys, function(survey) {
-                    if (survey.coursemodule == cmid) {
-                        currentSurvey = survey;
-                    }
-                });
-                if (currentSurvey) {
-                    return currentSurvey;
-                }
-            }
-            return $q.reject();
-        });
+    /**
+     * Get a survey by ID.
+     *
+     * @module mm.addons.mod_survey
+     * @ngdoc method
+     * @name $mmaModSurvey#getSurveyById
+     * @param {Number} courseId  Course ID.
+     * @param {Number} id        Survey ID.
+     * @param {String} [siteId]  Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when the survey is retrieved.
+     */
+    self.getSurveyById = function(courseId, id, siteId) {
+        siteId = siteId || $mmSite.getId();
+        return getSurvey(siteId, courseId, 'id', id);
     };
 
     /**
@@ -334,9 +367,9 @@ angular.module('mm.addons.mod_survey')
         return self.submitAnswersOnline(surveyId, answers, siteId).then(function() {
             return true;
         }).catch(function(error) {
-            if ($mmUtil.isWebServiceError(error)) {
+            if (error && error.wserror) {
                 // The WebService has thrown an error, this means that answers cannot be submitted.
-                return $q.reject(error);
+                return $q.reject(error.error);
             } else {
                 // Couldn't connect to server, store in offline.
                 return storeOffline();
@@ -359,7 +392,8 @@ angular.module('mm.addons.mod_survey')
      * @name $mmaModSurvey#submitAnswersOnline
      * @param  {Number} surveyId  Survey ID.
      * @param  {Object[]} answers Answers.
-     * @return {Promise}          Promise resolved when answers are successfully submitted.
+     * @return {Promise}          Promise resolved when answers are successfully submitted. Rejected with object containing
+     *                            the error message (if any) and a boolean indicating if the error was returned by WS.
      */
     self.submitAnswersOnline = function(surveyId, answers, siteId) {
         siteId = siteId || $mmSite.getId();
@@ -369,9 +403,16 @@ angular.module('mm.addons.mod_survey')
                 surveyid: surveyId,
                 answers: answers
             };
-            return site.write('mod_survey_submit_answers', params).then(function(response) {
+            return site.write('mod_survey_submit_answers', params).catch(function(error) {
+                return $q.reject({
+                    error: error,
+                    wserror: $mmUtil.isWebServiceError(error)
+                });
+            }).then(function(response) {
                 if (!response.status) {
-                    return $q.reject();
+                    return $q.reject({
+                        wserror: true
+                    });
                 }
             });
         });
