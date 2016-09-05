@@ -2196,7 +2196,7 @@ angular.module('mm.addons.mod_quiz')
             }
             $mmaModQuizSync.hasDataToSync(quiz.id, siteId).then(function(hasData) {
                 if (!hasData) {
-                    $mmaModQuizSync.setQuizSyncTime(quiz.id, siteId);
+                    $mmaModQuizSync.setSyncTime(quiz.id, siteId);
                 }
             });
         }).catch(function(error) {
