@@ -22,6 +22,12 @@
                 <p>{{ 'mma.mod_choice.expired' | translate:{$a: choice.closeTimeReadable} }}</p>
             </section>
 
+            <!-- Choice done in offline but not synchronized -->
+            <section class="card padding" ng-if="hasOffline">
+                <p class="padding">{{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}</p>
+                <button class="button button-block icon-right ion-loop" ng-click="sync()">{{ 'mm.settings.synchronizenow' | translate }}</button>
+            </section>
+
             <!-- Choice options -->
             <section class="card list" ng-if="options && options.length">
                 <div ng-if="choice.allowmultiple">
@@ -45,6 +51,13 @@
             <!-- Choice results -->
             <section class="card text-center" ng-if="canSeeResults">
                 <h3>{{ 'mma.mod_choice.responses' | translate }}</h3>
+
+                <div class="padding" ng-if="hasOffline">
+                    <p class="badge badge-inline badge-assertive padding">
+                        <i class="icon ion-alert-circled padding"></i> {{ 'mma.mod_choice.resultsnotsynced' | translate }}
+                    </p>
+                </div>
+
                 <div class="row">
                     <p class="col"><b>{{ 'mma.mod_choice.choiceoptions' | translate }}</b></p>
                     <p class="col"><b>{{ 'mma.mod_choice.numberofuser' | translate }}</b></p>
