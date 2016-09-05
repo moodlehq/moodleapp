@@ -56,19 +56,22 @@ angular.module('mm.core')
         priority: 100,
         link: function(scope, element, attrs) {
             element.on('click', function(event) {
-                var href = element[0].getAttribute('href');
-                if (href) {
-                    event.preventDefault();
-                    event.stopPropagation();
+                // If the event prevented default action, do nothing.
+                if (!event.defaultPrevented) {
+                    var href = element[0].getAttribute('href');
+                    if (href) {
+                        event.preventDefault();
+                        event.stopPropagation();
 
-                    if (attrs.captureLink && attrs.captureLink !== 'false') {
-                        $mmContentLinksHelper.handleLink(href).then(function(treated) {
-                            if (!treated) {
-                               navigate(href);
-                            }
-                        });
-                    } else {
-                        navigate(href);
+                        if (attrs.captureLink && attrs.captureLink !== 'false') {
+                            $mmContentLinksHelper.handleLink(href).then(function(treated) {
+                                if (!treated) {
+                                   navigate(href);
+                                }
+                            });
+                        } else {
+                            navigate(href);
+                        }
                     }
                 }
             });

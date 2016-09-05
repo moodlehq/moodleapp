@@ -49,8 +49,10 @@ angular.module('mm.core')
                 });
             };
 
-            $scope.contextMenuItemClicked = function(item) {
+            $scope.contextMenuItemClicked = function($event, item) {
                 if (typeof item.action == 'function') {
+                    $event.preventDefault();
+                    $event.stopPropagation();
                     if (!item.iconAction || item.iconAction == 'spinner') {
                         return false;
                     }
@@ -144,7 +146,7 @@ angular.module('mm.core')
             scope.priority = scope.priority || 1;
 
             if (scope.action) {
-                scope.href = false;
+                scope.href = "";
             } else if (scope.href) {
                 scope.action = false;
             }
