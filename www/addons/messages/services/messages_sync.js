@@ -22,26 +22,11 @@ angular.module('mm.addons.messages')
  * @name $mmaMessagesSync
  */
 .factory('$mmaMessagesSync', function($log, $mmSite, $q, $timeout, $mmUser, $mmApp, $translate, $mmaMessages, $mmaMessagesOffline,
-            $mmSitesManager, $mmEvents, mmaMessagesAutomSyncedEvent) {
+            $mmSitesManager, $mmEvents, mmaMessagesAutomSyncedEvent, $mmSync, mmaMessagesComponent) {
     $log = $log.getInstance('$mmaMessagesSync');
 
-    var self = {},
-        syncPromises = {}; // Store sync promises.
-
-    /**
-     * Check if a discussion is being synchronized.
-     *
-     * @module mm.addons.messages
-     * @ngdoc method
-     * @name $mmaMessagesSync#isSyncingDiscussion
-     * @param  {Number} userId   User ID of the discussion.
-     * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Boolean}         True if synchronizing, false otherwise.
-     */
-    self.isSyncingDiscussion = function(userId, siteId) {
-        siteId = siteId || $mmSite.getId();
-        return !!(syncPromises[siteId] && syncPromises[siteId][userId]);
-    };
+    // Inherit self from $mmSync.
+    var self = $mmSync.createChild(mmaMessagesComponent);
 
     /**
      * Try to synchronize all the discussions in a certain site or in all sites.
@@ -122,14 +107,11 @@ angular.module('mm.addons.messages')
         siteId = siteId || $mmSite.getId();
 
         var syncPromise,
-            deleted = false,
             warnings = [];
 
-        if (syncPromises[siteId] && syncPromises[siteId][userId]) {
-            // There's already a sync ongoing for this discussion, return the promise.
-            return syncPromises[siteId][userId];
-        } else if (!syncPromises[siteId]) {
-            syncPromises[siteId] = {};
+        if (self.isSyncing(userId, siteId)) {
+            // There's already a sync ongoing for this SCORM, return the promise.
+            return self.getOngoingSync(userId, siteId);
         }
 
         $log.debug('Try to sync discussion with user ' + userId);
@@ -205,35 +187,9 @@ angular.module('mm.addons.messages')
         }).then(function() {
             // All done, return the warnings.
             return warnings;
-        }).finally(function() {
-            deleted = true;
-            delete syncPromises[siteId][userId];
         });
 
-        if (!deleted) {
-            syncPromises[siteId][userId] = syncPromise;
-        }
-        return syncPromise;
-    };
-
-    /**
-     * If there's an ongoing sync for a certain discussion, wait for it to end.
-     * If there's no sync ongoing the promise will be resolved right away.
-     *
-     * @module mm.addons.messages
-     * @ngdoc method
-     * @name $mmaMessagesSync#waitForSync
-     * @param  {Number} userId   User ID of the discussion.
-     * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved when there's no sync going on for the discussion.
-     */
-    self.waitForSync = function(userId, siteId) {
-        siteId = siteId || $mmSite.getId();
-        if (syncPromises[siteId] && syncPromises[siteId][userId]) {
-            // There's a sync ongoing for this discussion.
-            return syncPromises[siteId][userId].catch(function() {});
-        }
-        return $q.when();
+        return self.addOngoingSync(userId, syncPromise, siteId);
     };
 
     return self;
