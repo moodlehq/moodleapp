@@ -12,6 +12,7 @@ information provided here is intended especially for developers.
  * Ionic and some other libraries have been updated, please run:
     bower update
  * The CSS files inside www/css folder have been deleted because they weren't used. That is, www/css/app.css and www/css/app.min.css.
+ * Downloadable modules can now implement functions getDownloadedSize and removeFiles for better performance. See $mmCoursePrefetchDelegateProvider#registerPrefetchHandler.
 
 === 3.1.2 ===
 

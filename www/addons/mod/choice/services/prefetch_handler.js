@@ -77,6 +77,20 @@ angular.module('mm.addons.mod_choice')
     };
 
     /**
+     * Get the downloaded size of a module.
+     *
+     * @module mm.addons.mod_choice
+     * @ngdoc method
+     * @name $mmaModChoicePrefetchHandler#getDownloadedSize
+     * @param {Object} module   Module to get the downloaded size.
+     * @param {Number} courseId Course ID the module belongs to.
+     * @return {Promise}        Promise resolved with the size.
+     */
+    self.getDownloadedSize = function(module, courseId) {
+        return $mmFilepool.getFilesSizeByComponent($mmSite.getId(), self.component, module.id);
+    };
+
+    /**
      * Get the list of downloadable files.
      *
      * @module mm.addons.mod_choice
@@ -109,6 +123,34 @@ angular.module('mm.addons.mod_choice')
         }
         return [];
     }
+
+    /**
+     * Get revision of a choice. Right now we'll always show it outdated, so we always return 0.
+     *
+     * @module mm.addons.mod_choice
+     * @ngdoc method
+     * @name $mmaModChoicePrefetchHandler#getRevision
+     * @param {Object} module   Module to get the revision.
+     * @param {Number} courseId Course ID the module belongs to.
+     * @return {String}         Revision.
+     */
+    self.getRevision = function(module, courseId) {
+        return "0";
+    };
+
+    /**
+     * Get timemodified of a choice. Right now we'll always show it outdated, so we always return 0.
+     *
+     * @module mm.addons.mod_choice
+     * @ngdoc method
+     * @name $mmaModChoicePrefetchHandler#getTimemodified
+     * @param {Object} module   Module to get the timemodified.
+     * @param {Number} courseId Course ID the module belongs to.
+     * @return {Number}         Timemodified.
+     */
+    self.getTimemodified = function(module, courseId) {
+        return 0;
+    };
 
     /**
      * Invalidates WS calls needed to determine module status.
@@ -234,6 +276,20 @@ angular.module('mm.addons.mod_choice')
             downloadPromises[siteId][module.id] = prefetchPromise;
         }
         return prefetchPromise;
+    };
+
+    /**
+     * Remove module downloaded files.
+     *
+     * @module mm.addons.mod_choice
+     * @ngdoc method
+     * @name $mmaModChoicePrefetchHandler#removeFiles
+     * @param {Object} module   Module to remove the files.
+     * @param {Number} courseId Course ID the module belongs to.
+     * @return {Promise}        Promise resolved when done.
+     */
+    self.removeFiles = function(module, courseId) {
+        return $mmFilepool.removeFilesByComponent($mmSite.getId(), self.component, module.id);
     };
 
     return self;

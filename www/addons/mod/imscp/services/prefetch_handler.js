@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_imscp')
  * @ngdoc service
  * @name $mmaModImscpPrefetchHandler
  */
-.factory('$mmaModImscpPrefetchHandler', function($mmaModImscp, mmaModImscpComponent) {
+.factory('$mmaModImscpPrefetchHandler', function($mmaModImscp, $mmSite, $mmFilepool, mmaModImscpComponent) {
 
     var self = {};
 
@@ -44,6 +44,20 @@ angular.module('mm.addons.mod_imscp')
             }
         });
         return size;
+    };
+
+    /**
+     * Get the downloaded size of a module.
+     *
+     * @module mm.addons.mod_imscp
+     * @ngdoc method
+     * @name $mmaModImscpPrefetchHandler#getDownloadedSize
+     * @param {Object} module   Module to get the downloaded size.
+     * @param {Number} courseId Course ID the module belongs to.
+     * @return {Promise}        Promise resolved with the size.
+     */
+    self.getDownloadedSize = function(module, courseId) {
+        return $mmFilepool.getFilesSizeByComponent($mmSite.getId(), self.component, module.id);
     };
 
     /**
@@ -71,6 +85,20 @@ angular.module('mm.addons.mod_imscp')
      */
     self.prefetch = function(module, courseId, single) {
         return $mmaModImscp.prefetchContent(module);
+    };
+
+    /**
+     * Remove module downloaded files.
+     *
+     * @module mm.addons.mod_imscp
+     * @ngdoc method
+     * @name $mmaModImscpPrefetchHandler#removeFiles
+     * @param {Object} module   Module to remove the files.
+     * @param {Number} courseId Course ID the module belongs to.
+     * @return {Promise}        Promise resolved when done.
+     */
+    self.removeFiles = function(module, courseId) {
+        return $mmFilepool.removeFilesByComponent($mmSite.getId(), self.component, module.id);
     };
 
     return self;

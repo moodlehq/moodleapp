@@ -59,11 +59,11 @@
                 <p class="item item-text-wrap" ng-if="gradeOverridden">{{ 'mm.course.overriddennotice' | translate }}</p>
                 <div class="item item-text-wrap" ng-if="gradebookFeedback">
                     <p class="item-heading">{{ 'mma.mod_quiz.comment' | translate }}</p>
-                    <p><mm-format-text watch="true">{{ gradebookFeedback }}</mm-format-text></p>
+                    <p><mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{ gradebookFeedback }}</mm-format-text></p>
                 </div>
                 <div class="item item-text-wrap" ng-if="quiz.showFeedbackColumn && overallFeedback">
                     <p class="item-heading">{{ 'mma.mod_quiz.overallfeedback' | translate }}</p>
-                    <p><mm-format-text watch="true">{{ overallFeedback }}</mm-format-text></p>
+                    <p><mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{ overallFeedback }}</mm-format-text></p>
                 </div>
             </div>
 

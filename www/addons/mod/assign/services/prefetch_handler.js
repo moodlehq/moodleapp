@@ -61,6 +61,20 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Get the downloaded size of a module.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignPrefetchHandler#getDownloadedSize
+     * @param {Object} module   Module to get the downloaded size.
+     * @param {Number} courseId Course ID the module belongs to.
+     * @return {Promise}        Promise resolved with the size.
+     */
+    self.getDownloadedSize = function(module, courseId) {
+        return $mmFilepool.getFilesSizeByComponent($mmSite.getId(), self.component, module.id);
+    };
+
+    /**
      * Get the list of downloadable files.
      *
      * @module mm.addons.mod_assign
@@ -171,6 +185,20 @@ angular.module('mm.addons.mod_assign')
             return files;
         });
     }
+
+    /**
+     * Get revision of an assign. Right now assignment files don't have revision, so we'll always return 0.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignPrefetchHandler#getRevision
+     * @param {Object} module   Module to get the revision.
+     * @param {Number} courseId Course ID the module belongs to.
+     * @return {String}         Revision.
+     */
+    self.getRevision = function(module, courseId) {
+        return "0";
+    };
 
     /**
      * Get timemodified of a Assign.
@@ -358,7 +386,7 @@ angular.module('mm.addons.mod_assign')
                 subPromises.push(self.getFiles(module, courseId, siteId).then(function(files) {
                     var filePromises = [];
 
-                    revision = $mmFilepool.getRevisionFromFileList(files);
+                    revision = self.getRevision(module, courseId);
 
                     angular.forEach(files, function(file) {
                         var url = file.fileurl;
@@ -519,6 +547,20 @@ angular.module('mm.addons.mod_assign')
 
         return $q.all(promises);
     }
+
+    /**
+     * Remove module downloaded files.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignPrefetchHandler#removeFiles
+     * @param {Object} module   Module to remove the files.
+     * @param {Number} courseId Course ID the module belongs to.
+     * @return {Promise}        Promise resolved when done.
+     */
+    self.removeFiles = function(module, courseId) {
+        return $mmFilepool.removeFilesByComponent($mmSite.getId(), self.component, module.id);
+    };
 
     return self;
 });

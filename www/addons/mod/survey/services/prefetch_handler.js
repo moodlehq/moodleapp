@@ -58,6 +58,20 @@ angular.module('mm.addons.mod_survey')
     };
 
     /**
+     * Get the downloaded size of a module.
+     *
+     * @module mm.addons.mod_survey
+     * @ngdoc method
+     * @name $mmaModSurveyPrefetchHandler#getDownloadedSize
+     * @param {Object} module   Module to get the downloaded size.
+     * @param {Number} courseId Course ID the module belongs to.
+     * @return {Promise}        Promise resolved with the size.
+     */
+    self.getDownloadedSize = function(module, courseId) {
+        return $mmFilepool.getFilesSizeByComponent($mmSite.getId(), self.component, module.id);
+    };
+
+    /**
      * Get the list of downloadable files.
      *
      * @module mm.addons.mod_survey
@@ -259,6 +273,20 @@ angular.module('mm.addons.mod_survey')
             downloadPromises[siteId][module.id] = prefetchPromise;
         }
         return prefetchPromise;
+    };
+
+    /**
+     * Remove module downloaded files.
+     *
+     * @module mm.addons.mod_survey
+     * @ngdoc method
+     * @name $mmaModSurveyPrefetchHandler#removeFiles
+     * @param {Object} module   Module to remove the files.
+     * @param {Number} courseId Course ID the module belongs to.
+     * @return {Promise}        Promise resolved when done.
+     */
+    self.removeFiles = function(module, courseId) {
+        return $mmFilepool.removeFilesByComponent($mmSite.getId(), self.component, module.id);
     };
 
     return self;

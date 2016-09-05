@@ -43,7 +43,7 @@ angular.module('mm.addons.mod_quiz')
     function fetchData() {
         return $mmaModQuiz.getQuizById(courseId, quizId).then(function(quizData) {
             quiz = quizData;
-            $scope.componentId = quiz.cmid;
+            $scope.componentId = quiz.coursemodule;
 
             return $mmaModQuiz.getCombinedReviewOptions(quiz.id).then(function(result) {
                 options = result;

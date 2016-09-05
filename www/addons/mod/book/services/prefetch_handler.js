@@ -21,7 +21,8 @@ angular.module('mm.addons.mod_book')
  * @ngdoc service
  * @name $mmaModBookPrefetchHandler
  */
-.factory('$mmaModBookPrefetchHandler', function($mmaModBook, mmCoreDownloaded, mmCoreOutdated, mmaModBookComponent) {
+.factory('$mmaModBookPrefetchHandler', function($mmaModBook, $mmSite, $mmFilepool, mmCoreDownloaded, mmCoreOutdated,
+            mmaModBookComponent) {
 
     var self = {};
 
@@ -65,6 +66,20 @@ angular.module('mm.addons.mod_book')
     };
 
     /**
+     * Get the downloaded size of a module.
+     *
+     * @module mm.addons.mod_book
+     * @ngdoc method
+     * @name $mmaModBookPrefetchHandler#getDownloadedSize
+     * @param {Object} module   Module to get the downloaded size.
+     * @param {Number} courseId Course ID the module belongs to.
+     * @return {Promise}        Promise resolved with the size.
+     */
+    self.getDownloadedSize = function(module, courseId) {
+        return $mmFilepool.getFilesSizeByComponent($mmSite.getId(), self.component, module.id);
+    };
+
+    /**
      * Whether or not the module is enabled for the site.
      *
      * @module mm.addons.mod_book
@@ -89,6 +104,20 @@ angular.module('mm.addons.mod_book')
      */
     self.prefetch = function(module, courseId, single) {
         return $mmaModBook.prefetchContent(module);
+    };
+
+    /**
+     * Remove module downloaded files.
+     *
+     * @module mm.addons.mod_book
+     * @ngdoc method
+     * @name $mmaModBookPrefetchHandler#removeFiles
+     * @param {Object} module   Module to remove the files.
+     * @param {Number} courseId Course ID the module belongs to.
+     * @return {Promise}        Promise resolved when done.
+     */
+    self.removeFiles = function(module, courseId) {
+        return $mmFilepool.removeFilesByComponent($mmSite.getId(), self.component, module.id);
     };
 
     return self;

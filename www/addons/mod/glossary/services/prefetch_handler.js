@@ -76,6 +76,20 @@ angular.module('mm.addons.mod_glossary')
     };
 
     /**
+     * Get the downloaded size of a module.
+     *
+     * @module mm.addons.mod_glossary
+     * @ngdoc method
+     * @name $mmaModGlossaryPrefetchHandler#getDownloadedSize
+     * @param {Object} module   Module to get the downloaded size.
+     * @param {Number} courseId Course ID the module belongs to.
+     * @return {Promise}        Promise resolved with the size.
+     */
+    self.getDownloadedSize = function(module, courseId) {
+        return $mmFilepool.getFilesSizeByComponent($mmSite.getId(), self.component, module.id);
+    };
+
+    /**
      * Get the list of downloadable files.
      *
      * @module mm.addons.mod_glossary
@@ -137,40 +151,13 @@ angular.module('mm.addons.mod_glossary')
      * @name $mmaModGlossaryPrefetchHandler#getRevision
      * @param {Object} module   Module to get the revision.
      * @param {Number} courseId Course ID the module belongs to.
-     * @return {Promise}        Promise resolved with revision.
+     * @return {String}         Revision.
      */
     self.getRevision = function(module, courseId) {
-        return $mmaModGlossary.getGlossary(courseId, module.id).then(function(glossary) {
-            return getRevisionFromGlossary(glossary);
-        });
+        // Right now glossaries are always shown as outdated because determining their status requires too many WS calls.
+        // Return a fake revision since it won't be used. This will be improved in the future.
+        return "0";
     };
-
-    /**
-     * Get revision of a glossary.
-     *
-     * @param {Object} glossary Glossary.
-     * @return {Promise}        Promise resolved with revision.
-     */
-    function getRevisionFromGlossary(glossary) {
-
-        return $mmaModGlossary.getEntriesByLetter(glossary.id, 'ALL', 0, mmaModGlossaryLimitEntriesNum).then(function(result) {
-            // This is not very reliable. Revision converted to String.
-            var revision = result.count + "";
-
-            if (typeof glossary.introfiles == 'undefined' && glossary.intro) {
-                // The glossary doesn't return introfiles. We'll add a hash of file URLs to detect changes in files.
-                // If the glossary has introfiles there's no need to do this because they have timemodified.
-                var urls = $mmUtil.extractDownloadableFilesFromHtml(glossary.intro);
-                urls = urls.sort(function (a, b) {
-                    return a > b;
-                });
-
-                return revision + '#' + md5.createHash(JSON.stringify(urls));
-            }
-            return revision;
-
-        });
-    }
 
     /**
      * Get timemodified of a glossary.
@@ -180,33 +167,13 @@ angular.module('mm.addons.mod_glossary')
      * @name $mmaModGlossaryPrefetchHandler#getTimemodified
      * @param {Object} module   Module to get the timemodified.
      * @param {Number} courseId Course ID the module belongs to.
-     * @return {Promise}        Promise resolved with timemodified.
+     * @return {Number}         Timemodified.
      */
     self.getTimemodified = function(module, courseId) {
-        return $mmaModGlossary.getGlossary(courseId, module.id).then(function(glossary) {
-            return $mmaModGlossary.fetchAllEntries($mmaModGlossary.getEntriesByLetter, [glossary.id, 'ALL'])
-                    .then(function(entries) {
-                var files = getFilesFromGlossaryEntries(glossary, entries);
-                return getTimemodifiedFromGlossary(glossary, entries, files);
-            });
-        });
+        // Right now glossaries are always shown as outdated because determining their status requires too many WS calls.
+        // Return a fake timemodified since it won't be used. This will be improved in the future.
+        return 0;
     };
-
-    /**
-     * Get timemodified of a glossary.
-     *
-     * @param {Object} glossary Glossary.
-     * @param {Object} entries  entries from Glossary.
-     * @param {Object} files    files from Glossary to be fetched.
-     * @return {Promise}        Promise resolved with timemodified.
-     */
-    function getTimemodifiedFromGlossary(glossary, entries, files) {
-        var lastModified = glossary.timemodified;
-        angular.forEach(entries, function(entry) {
-            lastModified = Math.max(lastModified, entry.timemodified);
-        });
-        return Math.max(lastModified, $mmFilepool.getTimemodifiedFromFileList(files));
-    }
 
     /**
      * Invalidates WS calls needed to determine module status.
@@ -310,8 +277,6 @@ angular.module('mm.addons.mod_glossary')
                         }));
                     });
 
-                    timemod = getTimemodifiedFromGlossary(glossary, entries, files);
-
                     angular.forEach(files, function(file) {
                         promises.push($mmFilepool.addToQueueByUrl(siteId, file.fileurl, component, module.id, file.timemodified));
                     });
@@ -319,9 +284,9 @@ angular.module('mm.addons.mod_glossary')
                     return $q.all(promises);
                 }));
 
-                promises.push(getRevisionFromGlossary(glossary).then(function(rev) {
-                    revision = rev;
-                }));
+                // Get revision and timemodified.
+                revision = self.getRevision(module, courseId);
+                timemod = self.getTimemodified(module, courseId);
 
                 return $q.all(promises);
             });
@@ -342,6 +307,20 @@ angular.module('mm.addons.mod_glossary')
             downloadPromises[siteId][module.id] = prefetchPromise;
         }
         return prefetchPromise;
+    };
+
+    /**
+     * Remove module downloaded files.
+     *
+     * @module mm.addons.mod_glossary
+     * @ngdoc method
+     * @name $mmaModGlossaryPrefetchHandler#removeFiles
+     * @param {Object} module   Module to remove the files.
+     * @param {Number} courseId Course ID the module belongs to.
+     * @return {Promise}        Promise resolved when done.
+     */
+    self.removeFiles = function(module, courseId) {
+        return $mmFilepool.removeFilesByComponent($mmSite.getId(), self.component, module.id);
     };
 
     return self;

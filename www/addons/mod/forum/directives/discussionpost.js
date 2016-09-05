@@ -28,6 +28,7 @@ angular.module('mm.addons.mod_forum')
  * @param {String} title            Post's title.
  * @param {String} subject          Post's subject.
  * @param {String} component        Component this post belong to.
+ * @param {Mixed} componentId       Component ID.
  * @param {Object} newpost          Object with the new post data. Usually shared between posts.
  * @param {Boolean} showdivider     True if it should have a list divider before the post.
  * @param {Boolean} titleimportant  True if title should be "important" (bold).
@@ -44,6 +45,7 @@ angular.module('mm.addons.mod_forum')
             title: '=',
             subject: '=',
             component: '=',
+            componentId: '=',
             newpost: '=',
             showdivider: '=?',
             titleimportant: '=?',

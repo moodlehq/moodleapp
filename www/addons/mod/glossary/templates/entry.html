@@ -20,9 +20,9 @@
                 </div>
 
                 <div class="item item-body">
-                    <mm-format-text watch="true">{{ entry.definition }}</mm-format-text>
+                    <mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{ entry.definition }}</mm-format-text>
                     <div class="list" ng-if="entry.attachment">
-                        <mm-file ng-repeat="file in entry.attachments track by $index" file="file"></mm-file>
+                        <mm-file ng-repeat="file in entry.attachments track by $index" file="file" component="{{component}}" component-id="{{componentId}}"></mm-file>
                     </div>
                 </div>
 

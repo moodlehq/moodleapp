@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_quiz')
  * @ngdoc service
  * @name $mmaModQuizPrefetchHandler
  */
-.factory('$mmaModQuizPrefetchHandler', function($mmaModQuiz, $q, mmaModQuizComponent) {
+.factory('$mmaModQuizPrefetchHandler', function($mmaModQuiz, $q, $mmFilepool, $mmSite, mmaModQuizComponent) {
 
     var self = {};
 
@@ -41,6 +41,20 @@ angular.module('mm.addons.mod_quiz')
     self.getDownloadSize = function(module, courseId, siteId) {
         // We return 1 because 0 is considered as "cannot calculate".
         return 1;
+    };
+
+    /**
+     * Get the downloaded size of a module.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizPrefetchHandler#getDownloadedSize
+     * @param {Object} module   Module to get the downloaded size.
+     * @param {Number} courseId Course ID the module belongs to.
+     * @return {Promise}        Promise resolved with the size.
+     */
+    self.getDownloadedSize = function(module, courseId) {
+        return $mmFilepool.getFilesSizeByComponent($mmSite.getId(), self.component, module.id);
     };
 
     /**
@@ -164,6 +178,20 @@ angular.module('mm.addons.mod_quiz')
      */
     self.prefetch = function(module, courseId, single) {
         return $mmaModQuiz.prefetch(module, courseId, single);
+    };
+
+    /**
+     * Remove module downloaded files.
+     *
+     * @module mm.addons.mod_quiz
+     * @ngdoc method
+     * @name $mmaModQuizPrefetchHandler#removeFiles
+     * @param {Object} module   Module to remove the files.
+     * @param {Number} courseId Course ID the module belongs to.
+     * @return {Promise}        Promise resolved when done.
+     */
+    self.removeFiles = function(module, courseId) {
+        return $mmFilepool.removeFilesByComponent($mmSite.getId(), self.component, module.id);
     };
 
     return self;
