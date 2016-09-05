@@ -34,14 +34,13 @@ angular.module('mm.core')
  *
  * IMPORTANT: This directive has some limitations:
  *
- * - Left pane buttons will be overridden. If the left pane of a split view defines some header buttons and the right pane view
- *   has this directive, the left view buttons won't be shown. If you need to show buttons from both views you cannot use this
- *   directive, you'll have to add the right buttons to both views and communicate the views using events. This is how it was done
- *   before this directive was implemented. You can see an example in old messages implementation:
- *       https://github.com/moodlehq/moodlemobile2/tree/4ca16896c5511451b06123f288184cd4ffeeed76/www/addons/messages
- * - The buttons added to the header bar will have access to the scopes of BOTH views, the left one and the right one. This means
- *   that, if you add a button with ng-click="myFunction" and both views have myFunction in the scope, then BOTH functions will
- *   be called. We recommend using unique named variables in these buttons.
+ * - If this directive is used in a right pane view, the left pane view header buttons CANNOT use ng-if. Use ng-show instead.
+ *   The reason is that, by default, this directive would override the left view buttons. To prevent doing so, the left view
+ *   buttons are copied and merged with the right view ones. If you use ng-if in the left pane view and the button isn't seen
+ *   when the copy is done, the hidden button won't be copied and it won't be added to the header bar. ng-show works fine.
+ * - The elements defined inside of this directive will have access to the scopes of BOTH views, the left one and the right one.
+ *   This means that, if you add a button with ng-click="myFunction" and both views have myFunction in the scope, then BOTH
+ *   functions will be called. Please use unique named variables/functions in the buttons.
  *
  */
 .directive('mmNavButtons', function($document, $mmUtil, $compile) {
@@ -70,33 +69,59 @@ angular.module('mm.core')
                     // Check if the element is inside a split-view.
                     var splitView = $mmUtil.closest($element[0], 'mm-split-view'),
                         ionView,
-                        unregisterViewListener;
+                        unregisterViewListener,
+                        parentViewCtrl;
 
                     // Search the ion-view to apply the buttons.
                     if (splitView) {
-                        // There's a split view, we want the ion-view outside the split view.
+                        // There's a split view, get the ion-view outside the split view.
                         ionView = $mmUtil.closest(splitView, 'ion-view');
                     } else {
                         ionView = $mmUtil.closest($element[0], 'ion-view');
                     }
 
                     if (!ionView) {
-                        // Error.
+                        // Error. Shouldn't happen.
                         return;
                     }
 
                     // Get the ion view controller.
-                    var parentViewCtrl = angular.element(ionView).data('$ionViewController');
+                    parentViewCtrl = angular.element(ionView).data('$ionViewController');
                     if (parentViewCtrl) {
                         // The buttons are for JUST this ion-view.
-                        // In splitView we compile the buttons HTML so they have access to this scope.
-                        var element = splitView ? $compile(spanEle.outerHTML)($scope) : spanEle.outerHTML;
-                        parentViewCtrl.navElement(navElementType, element);
-
                         if (splitView) {
-                            // Call beforeEnter manually since the scope event has been fired already.
                             var svController = angular.element(splitView).controller('mmSplitView'),
-                                eventData = svController.getIonicViewEventData();
+                                eventData = svController.getIonicViewEventData(),
+                                leftPaneButtons,
+                                leftPaneButtonsHtml;
+
+                            if (!svController) {
+                                // Error. Shouldn't happen.
+                                return;
+                            }
+
+                            // Get buttons defined by the left pane view to avoid overriding them.
+                            leftPaneButtonsHtml = svController.getHeaderBarButtonsHtml(spanEle.className);
+                            if (leftPaneButtonsHtml && leftPaneButtonsHtml.trim()) {
+                                leftPaneButtons = angular.element(leftPaneButtonsHtml);
+                            }
+
+                            // Compile the right pane buttons HTML so they have access to this scope.
+                            spanEle = $compile(spanEle.outerHTML)($scope);
+
+                            // Now add the left pane buttons if any.
+                            if (leftPaneButtons && leftPaneButtons.length) {
+                                if (side == 'secondary' || side == 'right') {
+                                    spanEle.prepend(leftPaneButtons);
+                                } else {
+                                    spanEle.append(leftPaneButtons);
+                                }
+                            }
+
+                            // Add them to the $ionViewController.
+                            parentViewCtrl.navElement(navElementType, spanEle);
+
+                            // Call beforeEnter manually since the scope event has been fired already.
                             parentViewCtrl.beforeEnter(undefined, {
                                 navBarTransition: eventData.navBarTransition,
                                 transitionId: eventData.transitionId
@@ -110,6 +135,9 @@ angular.module('mm.core')
                                     transitionId: eventData.transitionId
                                 });
                             });
+                        } else {
+                            // No split view, just add the buttons.
+                            parentViewCtrl.navElement(navElementType, spanEle.outerHTML);
                         }
                     } else {
                         // These are buttons for all views that do not have their own ion-nav-buttons.

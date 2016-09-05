@@ -23,7 +23,9 @@ angular.module('mm.core')
         linkToLoad,
         component,
         ionicViewEventData,
-        viewEventListeners = [];
+        viewEventListeners = [],
+        headerBarButtons = {},
+        headerButtonTypes = ['primary-buttons', 'secondary-buttons', 'left-buttons', 'right-buttons'];
 
     /**
      * Trigger click on a DOM element.
@@ -56,6 +58,49 @@ angular.module('mm.core')
     };
 
     /**
+     * Get the stored header bar buttons of a certain type.
+     *
+     * @param  {String} [type] Type to get. Undefined to get all.
+     * @return {Object}        Buttons (DOMElement).
+     */
+    this.getHeaderBarButtons = function(type) {
+        if (!type) {
+            return headerBarButtons;
+        } else {
+            return headerBarButtons[type];
+        }
+    };
+
+    /**
+     * Get the inner HTML of stored header bar buttons of a certain type.
+     *
+     * @param  {String} type Type to get.
+     * @return {String}      HTML.
+     */
+    this.getHeaderBarButtonsHtml = function(type) {
+        if (headerBarButtons[type]) {
+            return headerBarButtons[type].innerHTML;
+        }
+    };
+
+    /**
+     * Get header bar with a certain state.
+     *
+     * @param  {String} state State to search.
+     * @return {Object}       Header bar (DOMElement).
+     */
+    this.getHeaderBarWithState = function(state) {
+        var bars = document.querySelectorAll('ion-header-bar');
+        for (var i = 0; i < bars.length; i++) {
+            var bar = bars[i],
+                barState = bar.parentElement && bar.parentElement.getAttribute('nav-bar');
+            if (barState == state) {
+                return bar;
+            }
+        }
+    };
+
+    /**
      * Get data received by afterEvent.
      *
      * @return {Object} data Event data.
@@ -71,6 +116,30 @@ angular.module('mm.core')
      */
     this.getMenuState = function() {
         return menuState || $state.current.name;
+    };
+
+    /**
+     * Get header bar that's not active. This will only return a header bar if one of them is active.
+     *
+     * @return {Object} Header bar (DOMElement).
+     */
+    this.getInactiveHeaderBar = function() {
+        var bars = document.querySelectorAll('ion-header-bar'),
+            activePosition = -1;
+
+        for (var i = 0; i < bars.length; i++) {
+            var bar = bars[i],
+                barState = bar.parentElement && bar.parentElement.getAttribute('nav-bar');
+            if (barState == 'active') {
+                activePosition = i;
+            }
+        }
+
+        if (activePosition === 0) {
+            return bars[1];
+        } else if (activePosition > 0) {
+            return bars[0];
+        }
     };
 
     /**
@@ -134,6 +203,27 @@ angular.module('mm.core')
             viewEventListeners.splice(position, 1);
           }
         };
+    };
+
+    /**
+     * Save header bar buttons.
+     *
+     * @return {Void}
+     */
+    self.saveHeaderBarButtons = function() {
+        var headerBar = this.getHeaderBarWithState('entering');
+        if (!headerBar) {
+            // No header bar with 'entering' state. Get the one that isn't active (bar isn't active until the view is loaded).
+            headerBar = this.getInactiveHeaderBar();
+            if (!headerBar) {
+                // Not found, stop.
+                return;
+            }
+        }
+
+        headerButtonTypes.forEach(function(type) {
+            headerBarButtons[type] = headerBar.querySelector('.' + type);
+        });
     };
 
     /**
@@ -250,6 +340,9 @@ angular.module('mm.core')
                 menuParams = $state.params,
                 menuWidth = attrs.menuWidth,
                 component = attrs.component || 'tablet';
+
+            // Save header bar buttons (needed for mm-nav-buttons).
+            controller.saveHeaderBarButtons();
 
             scope.component = component;
 
