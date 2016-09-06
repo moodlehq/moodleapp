@@ -1651,11 +1651,6 @@ angular.module('mm.core')
                 return true;
             }
 
-            // Check iOS version > 6
-            if (ionic.Platform.isIOS() && ionic.Platform.version() > 6) {
-                return true;
-            }
-
             return false;
         };
 
