@@ -14,6 +14,7 @@
 
 angular.module('mm.addons.messages', ['mm.core'])
 
+.constant('mmaMessagesComponent', 'mmaMessages')
 .constant('mmaMessagesDiscussionLoadedEvent', 'mma_messages_discussion_loaded')
 .constant('mmaMessagesDiscussionLeftEvent', 'mma_messages_discussion_left')
 .constant('mmaMessagesToggleDeleteEvent', 'mma_messages_toggle_delete')

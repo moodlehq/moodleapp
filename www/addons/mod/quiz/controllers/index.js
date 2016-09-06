@@ -61,11 +61,11 @@ angular.module('mm.addons.mod_quiz')
             $scope.description = quiz.intro || $scope.description;
 
             // Try to get warnings from automatic sync.
-            return $mmaModQuizSync.getQuizSyncWarnings(quiz.id).then(function(warnings) {
+            return $mmaModQuizSync.getSyncWarnings(quiz.id).then(function(warnings) {
                 if (warnings && warnings.length) {
                     // Show warnings and delete them so they aren't shown again.
                     $mmUtil.showErrorModal($mmText.buildMessage(warnings));
-                    return $mmaModQuizSync.setQuizSyncWarnings(quiz.id, []);
+                    return $mmaModQuizSync.setSyncWarnings(quiz.id, []);
                 }
             });
         }).then(function() {

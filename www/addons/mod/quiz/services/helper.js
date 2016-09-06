@@ -50,7 +50,7 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}         Promise resolved with the readable time.
      */
     self.getQuizReadableSyncTime = function(quizId, siteId) {
-        return $mmaModQuizSync.getQuizSyncTime(quizId, siteId).then(function(time) {
+        return $mmaModQuizSync.getSyncTime(quizId, siteId).then(function(time) {
             return self.getReadableTimeFromTimestamp(time);
         });
     };

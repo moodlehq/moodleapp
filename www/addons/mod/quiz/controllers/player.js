@@ -114,7 +114,7 @@ angular.module('mm.addons.mod_quiz')
                 newAttempt = $mmaModQuiz.isAttemptFinished(attempt.state);
 
                 // Load quiz last sync time. We set it to the attempt so it's accessible in access rules handlers.
-                promises.push($mmaModQuizSync.getQuizSyncTime(quiz.id).then(function(time) {
+                promises.push($mmaModQuizSync.getSyncTime(quiz.id).then(function(time) {
                     attempt.quizSyncTime = time;
                     quiz.syncTimeReadable = $mmaModQuizHelper.getReadableTimeFromTimestamp(time);
                 }));
