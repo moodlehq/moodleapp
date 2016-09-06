@@ -56,22 +56,13 @@ angular.module('mm.addons.mod_glossary')
      * @name $mmaModGlossaryPrefetchHandler#getDownloadSize
      * @param {Object} module   Module to get the size.
      * @param {Number} courseId Course ID the module belongs to.
-     * @return {Promise}        Promise resolved with the size.
+     * @return {Promise}        With the file size and a boolean to indicate if it is the total size or only partial.
      */
     self.getDownloadSize = function(module, courseId) {
         return self.getFiles(module, courseId).then(function(files) {
-            var size = 1; // We start with 1 because 0 is treated as cannot calculate.
-
-            for (var i = 0, len = files.length; i < len; i++) {
-                var file = files[i];
-                if (typeof file.filesize == 'undefined') {
-                    // We don't have the file size, cannot calculate the size.
-                    return 0;
-                } else {
-                    size += file.filesize;
-                }
-            }
-            return size;
+            return $mmUtil.sumFileSizes(files);
+        }).catch(function() {
+            return {size: -1, total: false};
         });
     };
 

@@ -33,14 +33,13 @@ angular.module('mm.addons.mod_quiz')
      * @module mm.addons.mod_quiz
      * @ngdoc method
      * @name $mmaModQuizPrefetchHandler#getDownloadSize
-     * @param {Object} module    Module to get the size.
-     * @param {Number} courseId  Course ID the module belongs to.
+     * @param  {Object} module   Module to get the size.
+     * @param  {Number} courseId Course ID the module belongs to.
      * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Number}          Size.
+     * @return {Object}          With the file size and a boolean to indicate if it is the total size or only partial.
      */
     self.getDownloadSize = function(module, courseId, siteId) {
-        // We return 1 because 0 is considered as "cannot calculate".
-        return 1;
+        return {size: 0, total: true};
     };
 
     /**

@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_assign')
  * @name $mmaModAssignPrefetchHandler
  */
 .factory('$mmaModAssignPrefetchHandler', function($mmaModAssign, mmaModAssignComponent, $mmSite, $mmFilepool, $q, $mmCourseHelper,
-        $mmCourse, $mmGroups, $mmUser, $mmaModAssignSubmissionDelegate, $mmaModAssignFeedbackDelegate, mmCoreDownloading,
+        $mmCourse, $mmGroups, $mmUser, $mmaModAssignSubmissionDelegate, $mmaModAssignFeedbackDelegate, mmCoreDownloading, $mmUtil,
         mmCoreDownloaded) {
 
     var self = {},
@@ -36,27 +36,18 @@ angular.module('mm.addons.mod_assign')
      * @module mm.addons.mod_assign
      * @ngdoc method
      * @name $mmaModAssignPrefetchHandler#getDownloadSize
-     * @param {Object} module Module to get the size.
-     * @param {Number} courseId Course ID the module belongs to.
-     * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}       Size.
+     * @param  {Object} module    Module to get the size.
+     * @param  {Number} courseId  Course ID the module belongs to.
+     * @param  {String} [siteId]  Site ID. If not defined, current site.
+     * @return {Promise}          With the file size and a boolean to indicate if it is the total size or only partial.
      */
     self.getDownloadSize = function(module, courseId, siteId) {
         siteId = siteId || $mmSite.getId();
 
         return self.getFiles(module, courseId, siteId).then(function(files) {
-            var size = 0;
-            angular.forEach(files, function(file) {
-                if (file.filesize) {
-                    size = size + file.filesize;
-                }
-            });
-
-            // Avoid failing.
-            if (size == 0) {
-                return 1;
-            }
-            return size;
+            return $mmUtil.sumFileSizes(files);
+        }).catch(function() {
+            return {size: -1, total: false};
         });
     };
 

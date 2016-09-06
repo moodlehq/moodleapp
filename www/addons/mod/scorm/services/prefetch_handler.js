@@ -33,19 +33,21 @@ angular.module('mm.addons.mod_scorm')
      * @module mm.addons.mod_scorm
      * @ngdoc method
      * @name $mmaModScormPrefetchHandler#getDownloadSize
-     * @param {Object} module   Module to get the size.
-     * @param {Number} courseid Course ID the module belongs to.
-     * @return {Promise}        Promise resolved with the size.
+     * @param {Object}  module    Module to get the size.
+     * @param {Number}  courseId  Course ID the module belongs to.
+     * @return {Promise}          With the file size and a boolean to indicate if it is the total size or only partial.
      */
-    self.getDownloadSize = function(module, courseid) {
-        return $mmaModScorm.getScorm(courseid, module.id, module.url).then(function(scorm) {
+    self.getDownloadSize = function(module, courseId) {
+        return $mmaModScorm.getScorm(courseId, module.id, module.url).then(function(scorm) {
             if ($mmaModScorm.isScormSupported(scorm) !== true) {
-                return 0;
+                return {size: -1, total: false};
             } else if (!scorm.packagesize) {
                 // We don't have package size, try to calculate it.
-                return $mmaModScorm.calculateScormSize(scorm);
+                return $mmaModScorm.calculateScormSize(scorm).then(function(size) {
+                    return {size: size, total: true};
+                });
             } else {
-                return scorm.packagesize;
+                return {size: scorm.packagesize, total: true};
             }
         });
     };

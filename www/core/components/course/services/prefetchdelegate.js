@@ -45,7 +45,11 @@ angular.module('mm.core')
      * @param {String|Object|Function} handler Must be resolved to an object defining the following functions. Or to a function
      *                           returning an object defining these properties. See {@link $mmUtil#resolveObject}.
      *                             - component (String) Handler's component.
-     *                             - getDownloadSize(module, courseid) (Number|Promise) Get the download size of a module.
+     *                             - getDownloadSize(module, courseid) (Object|Promise) Get the download size of a module.
+     *                                                                  The returning object should have size field with file size
+     *                                                                  in bytes and and total field which indicates if it's been
+     *                                                                  able to calculate the total size (true) or only partial size
+     *                                                                  (false).
      *                             - isEnabled() (Boolean|Promise) Whether or not the handler is enabled on a site level.
      *                             - prefetch(module, courseid, single) (Promise) Prefetches a module.
      *                             - (Optional) getFiles(module, courseid) (Object[]|Promise) Get list of files. If not defined,
@@ -239,15 +243,19 @@ angular.module('mm.core')
          * @return {Promise}          Promise resolved with the download size.
          */
         self.getDownloadSize = function(modules, courseid) {
-            var size = 0,
-                promises = [];
+            var promises = [],
+                results = {
+                    size: 0,
+                    total: true
+                };
 
             angular.forEach(modules, function(module) {
                 promises.push(self.getModuleStatus(module, courseid).then(function(modstatus) {
                     // Add the size of the downloadable files if need to be downloaded.
                     if (modstatus === mmCoreNotDownloaded || modstatus === mmCoreOutdated) {
                         return self.getModuleDownloadSize(module, courseid).then(function(modulesize) {
-                            size = size + modulesize;
+                            results.total = results.total && modulesize.total;
+                            results.size += modulesize.size;
                         });
                     }
                     return $q.when();
@@ -255,7 +263,7 @@ angular.module('mm.core')
             });
 
             return $q.all(promises).then(function() {
-                return size;
+                return results;
             });
         };
 

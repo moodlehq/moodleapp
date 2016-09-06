@@ -33,8 +33,8 @@ angular.module('mm.addons.mod_folder')
      * @module mm.addons.mod_folder
      * @ngdoc method
      * @name $mmaModFolderPrefetchHandler#getDownloadSize
-     * @param {Object} module Module to get the size.
-     * @return {Number}       Size.
+     * @param  {Object} module Module to get the size.
+     * @return {Object}        With the file size and a boolean to indicate if it is the total size or only partial.
      */
     self.getDownloadSize = function(module) {
         var size = 0;
@@ -43,7 +43,7 @@ angular.module('mm.addons.mod_folder')
                 size = size + content.filesize;
             }
         });
-        return size;
+        return {size: size, total: true};
     };
 
     /**
