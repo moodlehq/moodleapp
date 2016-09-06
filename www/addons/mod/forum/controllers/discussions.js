@@ -22,8 +22,9 @@ angular.module('mm.addons.mod_forum')
  * @name mmaModForumDiscussionsCtrl
  */
 .controller('mmaModForumDiscussionsCtrl', function($q, $scope, $stateParams, $mmaModForum, $mmCourse, $mmUtil, $mmGroups,
-            $mmEvents, $ionicScrollDelegate, $ionicPlatform, mmUserProfileState, mmaModForumNewDiscussionEvent,
-            mmaModForumReplyDiscussionEvent, $mmText, $translate, mmaModForumComponent) {
+            $mmEvents, $ionicScrollDelegate, $ionicPlatform, mmUserProfileState, mmaModForumNewDiscussionEvent, $rootScope,
+            mmaModForumReplyDiscussionEvent, $mmText, $translate, mmaModForumComponent, mmaModForumSortDiscussionEvent,
+            mmaModForumDiscussionSortedEvent) {
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
         forum,
@@ -32,7 +33,8 @@ angular.module('mm.addons.mod_forum')
         shouldScrollTop = false,
         usesGroups = false,
         obsNewDisc,
-        obsReply;
+        obsReply,
+        obsSort;
 
     $scope.title = module.name;
     $scope.description = module.description;
@@ -43,6 +45,12 @@ angular.module('mm.addons.mod_forum')
     $scope.refreshIcon = 'spinner';
     $scope.component = mmaModForumComponent;
     $scope.componentId = module.id;
+    $scope.sort = {
+        enabled: false,
+        icon: 'ion-arrow-up-c',
+        direction: 'DESC',
+        text: $translate.instant('mma.mod_forum.sortnewestfirst')
+    };
 
     // Convenience function to get forum data and discussions.
     function fetchForumDataAndDiscussions(refresh) {
@@ -153,8 +161,10 @@ angular.module('mm.addons.mod_forum')
     // Pull to refresh.
     $scope.refreshDiscussions = function() {
         if ($scope.discussionsLoaded) {
+            $scope.discussionsLoaded = false;
             $scope.refreshIcon = 'spinner';
             refreshData().finally(function() {
+                $scope.discussionsLoaded = true;
                 $scope.refreshIcon = 'ion-refresh';
                 $scope.$broadcast('scroll.refreshComplete');
             });
@@ -165,6 +175,30 @@ angular.module('mm.addons.mod_forum')
     $scope.expandDescription = function() {
         $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false, mmaModForumComponent, module.id);
     };
+
+    // Change sorting of the discussion in split view.
+    $scope.changeSort = function() {
+        if ($scope.sort.enabled) {
+            $mmEvents.trigger(mmaModForumSortDiscussionEvent);
+        }
+    };
+
+    // Listen to posts discussion sort change.
+    obsSort = $mmEvents.on(mmaModForumDiscussionSortedEvent, function(direction) {
+        $scope.sort.direction = direction;
+        if (direction == 'DESC') {
+            $scope.sort.icon = 'ion-arrow-up-c';
+            $scope.sort.text = $translate.instant('mma.mod_forum.sortnewestfirst');
+        } else {
+            $scope.sort.icon = 'ion-arrow-down-c';
+            $scope.sort.text = $translate.instant('mma.mod_forum.sortoldestfirst');
+        }
+    });
+
+    // When split view change the state, sorting should change.
+    var stateChangeObs = $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
+        $scope.sort.enabled = toState.name == "site.mod_forum.mod_forum-discussion" && $ionicPlatform.isTablet();
+    });
 
     // Listen for discussions added. When a discussion is added, we reload the data.
     obsNewDisc = $mmEvents.on(mmaModForumNewDiscussionEvent, eventReceived);
@@ -185,5 +219,10 @@ angular.module('mm.addons.mod_forum')
         if (obsReply && obsReply.off) {
             obsReply.off();
         }
+        if (obsSort && obsSort.off) {
+            obsSort.off();
+        }
+
+        stateChangeObs();
     });
 });
