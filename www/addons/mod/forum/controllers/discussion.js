@@ -22,8 +22,7 @@ angular.module('mm.addons.mod_forum')
  * @name mmaModForumDiscussionCtrl
  */
 .controller('mmaModForumDiscussionCtrl', function($q, $scope, $stateParams, $mmaModForum, $mmSite, $mmUtil, $translate,
-            $ionicScrollDelegate, $mmEvents, mmaModForumComponent, mmaModForumReplyDiscussionEvent, $ionicPlatform,
-            mmaModForumSortDiscussionEvent, mmaModForumDiscussionSortedEvent) {
+            $ionicScrollDelegate, $mmEvents, mmaModForumComponent, mmaModForumReplyDiscussionEvent) {
 
     var discussionid = $stateParams.discussionid,
         courseid = $stateParams.cid,
@@ -34,7 +33,7 @@ angular.module('mm.addons.mod_forum')
     $scope.component = mmaModForumComponent;
     $scope.componentId = cmid;
     $scope.courseid = courseid;
-    $scope.refreshIcon = 'spinner';
+    $scope.refreshPostsIcon = 'spinner';
     $scope.newpost = {
         replyingto: undefined,
         subject: '',
@@ -64,7 +63,7 @@ angular.module('mm.addons.mod_forum')
             return $q.reject();
         }).finally(function() {
             $scope.discussionLoaded = true;
-            $scope.refreshIcon = 'ion-refresh';
+            $scope.refreshPostsIcon = 'ion-refresh';
         });
     }
 
@@ -86,22 +85,14 @@ angular.module('mm.addons.mod_forum')
                 $scope.sort.icon = 'ion-arrow-down-c';
                 $scope.sort.text = $translate.instant('mma.mod_forum.sortoldestfirst');
             }
-            $mmEvents.trigger(mmaModForumDiscussionSortedEvent, $scope.sort.direction);
         });
     };
-
-    // Listen for sort discussion event to change sorting in tablet view.
-    var obsSort = $mmEvents.on(mmaModForumSortDiscussionEvent, function(newSort) {
-        if ($ionicPlatform.isTablet()) {
-            $scope.changeSort();
-        }
-    });
 
     // Refresh posts.
     function refreshPosts() {
         if ($scope.discussionLoaded) {
             $scope.discussionLoaded = false;
-            $scope.refreshIcon = 'spinner';
+            $scope.refreshPostsIcon = 'spinner';
             return $mmaModForum.invalidateDiscussionPosts(discussionid).finally(function() {
                 return fetchPosts();
             });
@@ -127,7 +118,7 @@ angular.module('mm.addons.mod_forum')
 
     // Pull to refresh.
     $scope.refreshPosts = function() {
-        refreshPosts().finally(function() {
+        return refreshPosts().finally(function() {
             $scope.$broadcast('scroll.refreshComplete');
         });
     };
@@ -150,10 +141,4 @@ angular.module('mm.addons.mod_forum')
             $scope.discussionLoaded = true;
         });
     };
-
-    $scope.$on('$destroy', function() {
-        if (obsSort && obsSort.off) {
-            obsSort.off();
-        }
-    });
 });
