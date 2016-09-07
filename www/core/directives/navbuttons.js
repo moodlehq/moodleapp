@@ -43,7 +43,39 @@ angular.module('mm.core')
  *   functions will be called. Please use unique named variables/functions in the buttons.
  *
  */
-.directive('mmNavButtons', function($document, $mmUtil, $compile) {
+.directive('mmNavButtons', function($document, $mmUtil, $compile, $timeout) {
+
+    /**
+     * Call beforeEnter function of a $ionViewController.
+     *
+     * @param  {Object} controller Instance of $ionViewController.
+     * @param  {Object} eventData  Event data to pass to the function.
+     * @return {Void}
+     */
+    function callBeforeEnter(controller, eventData) {
+        // Copy and format event data.
+        var data = angular.copy(eventData);
+        delete data.navBarItems;
+        data.viewNotified = false;
+        data.shouldAnimate = false;
+
+        // Hide back button previous title to prevent showing it while updating the bar.
+        var titles = document.querySelectorAll('ion-header-bar .back-button .back-text .previous-title');
+        angular.forEach(titles, function(title) {
+            angular.element(title).css('display', 'none');
+        });
+
+        // Call beforeEnter.
+        controller.beforeEnter(undefined, data);
+
+        // Remove styles added to back button text.
+        $timeout(function() {
+            angular.forEach(titles, function(title) {
+                angular.element(title).css('display', '');
+            });
+        }, 1000);
+    }
+
     return {
         restrict: 'E',
         require: '^ionNavBar',
@@ -129,18 +161,12 @@ angular.module('mm.core')
                             parentViewCtrl.navElement(navElementType, spanEle);
 
                             // Call beforeEnter manually since the scope event has been fired already.
-                            parentViewCtrl.beforeEnter(undefined, {
-                                navBarTransition: eventData.navBarTransition,
-                                transitionId: eventData.transitionId
-                            });
+                            callBeforeEnter(parentViewCtrl, eventData);
 
                             // Listen for view events, maybe we're using an old transition because event hasn't been fired yet.
                             unregisterViewListener = svController.onViewEvent(function(eventData) {
                                 // Transition ID has changed, call beforeEvent again with the right transition ID.
-                                parentViewCtrl.beforeEnter(undefined, {
-                                    navBarTransition: eventData.navBarTransition,
-                                    transitionId: eventData.transitionId
-                                });
+                                callBeforeEnter(parentViewCtrl, eventData);
                             });
                         } else {
                             // No split view, just add the buttons.
