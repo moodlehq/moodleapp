@@ -93,7 +93,7 @@ angular.module('mm.addons.mod_imscp')
     $scope.doRefresh = function() {
         if ($scope.loaded) {
             $scope.refreshIcon = 'spinner';
-            $mmaModImscp.invalidateContent(module.id).then(function() {
+            return $mmaModImscp.invalidateContent(module.id).then(function() {
                 return fetchContent();
             }).finally(function() {
                 $scope.$broadcast('scroll.refreshComplete');

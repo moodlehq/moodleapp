@@ -375,7 +375,7 @@ angular.module('mm.addons.mod_scorm')
     $scope.refreshScorm = function() {
         if ($scope.scormLoaded) {
             $scope.refreshIcon = 'spinner';
-            refreshData().finally(function() {
+            return refreshData().finally(function() {
                 $scope.refreshIcon = 'ion-refresh';
                 $scope.$broadcast('scroll.refreshComplete');
             });

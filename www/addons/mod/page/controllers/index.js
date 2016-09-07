@@ -68,7 +68,7 @@ angular.module('mm.addons.mod_page')
     $scope.doRefresh = function() {
         if ($scope.loaded) {
             $scope.refreshIcon = 'spinner';
-            $mmaModPage.invalidateContent(module.id).then(function() {
+            return $mmaModPage.invalidateContent(module.id).then(function() {
                 return fetchContent();
             }).finally(function() {
                 $scope.$broadcast('scroll.refreshComplete');

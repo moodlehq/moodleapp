@@ -75,7 +75,7 @@ angular.module('mm.addons.mod_glossary')
     $scope.refreshEntries = function() {
         if ($scope.loaded) {
             $scope.refreshIcon = 'spinner';
-            refreshEntries().finally(function() {
+            return refreshEntries().finally(function() {
                 $scope.refreshIcon = 'ion-refresh';
                 $scope.$broadcast('scroll.refreshComplete');
             });
