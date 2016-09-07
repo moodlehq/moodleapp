@@ -13,6 +13,7 @@ information provided here is intended especially for developers.
     bower update
  * The CSS files inside www/css folder have been deleted because they weren't used. That is, www/css/app.css and www/css/app.min.css.
  * Downloadable modules can now implement functions getDownloadedSize and removeFiles for better performance. See $mmCoursePrefetchDelegateProvider#registerPrefetchHandler.
+ * Most of the attributes of the directive mm-context-menu-item have changed from text binding (@) to two-way binding (=) to make it work with mm-nav-buttons.
 
 === 3.1.2 ===
 

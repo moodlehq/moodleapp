@@ -109,6 +109,13 @@ angular.module('mm.core')
                             // Compile the right pane buttons HTML so they have access to this scope.
                             spanEle = $compile(spanEle.outerHTML)($scope);
 
+                            // Span has been compiled. Remove context menus (if any) since context menu already adds items
+                            // to the left pane context menu. Leaving it in the span will cause errors.
+                            var contextMenus = spanEle[0].querySelectorAll('mm-context-menu');
+                            if (contextMenus.length) {
+                                angular.element(contextMenus).remove();
+                            }
+
                             // Now add the left pane buttons if any.
                             if (leftPaneButtons && leftPaneButtons.length) {
                                 if (side == 'secondary' || side == 'right') {
