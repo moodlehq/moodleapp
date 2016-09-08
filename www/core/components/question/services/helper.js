@@ -172,7 +172,7 @@ angular.module('mm.core.question')
     self.extractQbehaviourRedoButton = function(question) {
         // Create a fake div element so we can search using querySelector.
         var div = document.createElement('div'),
-            redoSelector = 'input[type="submit"][name*=redoslot]';
+            redoSelector = 'input[type="submit"][name*=redoslot], input[type="submit"][name*=tryagain]';
 
         // Search redo button in feedback (Moodle 3.1+).
         if (!searchButton('html', '.outcome ' + redoSelector)) {
@@ -186,7 +186,7 @@ angular.module('mm.core.question')
             }
 
             // Button still not found. Now search in the info box if it exists.
-            if (!question.infoHtml) {
+            if (question.infoHtml) {
                 searchButton('infoHtml', redoSelector);
             }
         }
