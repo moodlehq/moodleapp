@@ -1,6 +1,5 @@
 {
     "about": "Über Moodle Mobile",
-    "appname": "Moodle Mobile {{version}}",
     "appready": "Mit der App nutzbar",
     "cacheexpirationtime": "Speicherdauer im Cache (Millisekunden)",
     "cordovadevicemodel": "Cordova Device Model",

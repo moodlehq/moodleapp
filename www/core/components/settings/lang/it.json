@@ -1,6 +1,5 @@
 {
     "about": "Informazioni",
-    "appname": "Moodle Mobile {{version}}",
     "appready": "App ready",
     "cacheexpirationtime": "Durata cache (millisecondi)",
     "cordovadevicemodel": "Modello del dispositivo Cordova",

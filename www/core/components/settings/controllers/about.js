@@ -25,10 +25,7 @@ angular.module('mm.core.settings')
             $mmLocalNotifications, mmCoreConfigConstants) {
 
     $scope.versionname = mmCoreConfigConstants.versionname;
-    $translate('mm.settings.appname', {version: $scope.versionname}).then(function(appName) {
-        $scope.appname = appName;
-    });
-
+    $scope.appname = mmCoreConfigConstants.appname;
     $scope.versioncode = mmCoreConfigConstants.versioncode;
 
     $scope.navigator = $window.navigator;

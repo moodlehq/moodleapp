@@ -1,6 +1,5 @@
 {
     "about": "About",
-    "appname": "Moodle Mobile {{version}}",
     "appready": "App ready",
     "cacheexpirationtime": "Cache expiration time (miliseconds)",
     "cannotsyncoffline": "Cannot synchronize offline.",

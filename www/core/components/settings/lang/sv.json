@@ -1,6 +1,5 @@
 {
     "about": "Om",
-    "appname": "Moodle Mobile {{version}}",
     "appready": "Appen är redo",
     "cacheexpirationtime": "Cache utgångs tid (millisekunder)",
     "cordovadevicemodel": "",
