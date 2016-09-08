@@ -14,9 +14,10 @@
                 <p class="item-heading"><mm-format-text>{{site.sitename}}</mm-format-text></p>
                 <p>{{site.fullname}}</p>
                 <p>{{site.siteurl}}</p>
-                <button class="button button-icon" ng-click="synchronize(site)" title="{{site.sitename}}" aria-label="{{ 'mm.settings.synchronizenow' | translate }}">
+                <button ng-if="!site.synchronizing" class="button button-icon" ng-click="synchronize(site.id)" title="{{site.sitename}}" aria-label="{{ 'mm.settings.synchronizenow' | translate }}">
                     <i class="icon ion-android-sync positive"></i>
                 </button>
+                <ion-spinner ng-if="site.synchronizing"></ion-spinner>
             </li>
         </ul>
     </ion-content>
