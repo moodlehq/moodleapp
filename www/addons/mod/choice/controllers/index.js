@@ -23,22 +23,27 @@ angular.module('mm.addons.mod_choice')
  * @todo Delete answer if user can update the answer, show selected if choice is closed (WS returns empty options).
  */
 .controller('mmaModChoiceIndexCtrl', function($scope, $stateParams, $mmaModChoice, $mmUtil, $q, $mmCourse, $translate, $mmText,
-            mmaModChoiceComponent) {
+            mmaModChoiceComponent, mmaModChoiceAutomSyncedEvent, $mmSite, $mmEvents, $mmaModChoiceSync, $ionicScrollDelegate,
+            $mmaModChoiceOffline) {
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
         choice,
-        hasAnswered = false;
+        userId = $mmSite.getUserId(),
+        scrollView,
+        syncObserver,
+        hasAnsweredOnline = false;
 
     $scope.title = module.name;
     $scope.description = module.description;
     $scope.moduleUrl = module.url;
+    $scope.moduleName = $translate.instant('mm.core.mod_choice');
     $scope.courseid = courseid;
     $scope.refreshIcon = 'spinner';
     $scope.component = mmaModChoiceComponent;
     $scope.componentId = module.id;
 
     // Convenience function to get choice data.
-    function fetchChoiceData(refresh) {
+    function fetchChoiceData(refresh, sync) {
         $scope.now = new Date().getTime();
         return $mmaModChoice.getChoice(courseid, module.id).then(function(choicedata) {
             choice = choicedata;
@@ -51,14 +56,26 @@ angular.module('mm.addons.mod_choice')
             $scope.description = choice.intro || $scope.description;
             $scope.choice = choice;
 
-            // We need fetchOptions to finish before calling fetchResults because it needs hasAnswered variable.
-            return fetchOptions().then(function() {
+            if (sync) {
+                // Try to synchronize the choice.
+                return syncChoice(false).catch(function() {
+                    // Ignore errors.
+                });
+            }
+        }).then(function() {
+            // Check if there are responses stored in offline.
+            return $mmaModChoiceOffline.hasResponse(choice.id);
+        }).then(function(hasOffline) {
+            $scope.hasOffline = hasOffline;
+
+            // We need fetchOptions to finish before calling fetchResults because it needs hasAnsweredOnline variable.
+            return fetchOptions(hasOffline).then(function() {
                 return fetchResults();
             });
         }).catch(function(message) {
             if (!refresh) {
                 // Some call failed, retry without using cache since it might be a new activity.
-                return refreshAllData();
+                return refreshAllData(sync);
             }
 
             if (message) {
@@ -71,22 +88,83 @@ angular.module('mm.addons.mod_choice')
     }
 
     // Convenience function to get choice options.
-    function fetchOptions() {
+    function fetchOptions(hasOffline) {
         return $mmaModChoice.getOptions(choice.id).then(function(options) {
-            var isOpen = isChoiceOpen();
-            hasAnswered = false;
-            $scope.selectedOption = {id: -1}; // Single choice model.
+            var promise;
+
+            // Check if the user has answered (synced) to allow show results.
+            hasAnsweredOnline = false;
             angular.forEach(options, function(option) {
-                if (option.checked) {
-                    hasAnswered = true;
-                    if (!choice.allowmultiple) {
-                        $scope.selectedOption.id = option.id;
-                    }
-                }
+                hasAnsweredOnline = hasAnsweredOnline || option.checked;
             });
-            $scope.canEdit = isOpen && (choice.allowupdate || !hasAnswered);
-            $scope.canDelete = $mmaModChoice.isDeleteResponsesEnabled() && isOpen && choice.allowupdate && hasAnswered;
-            $scope.options = options;
+
+            if (hasOffline) {
+                promise = $mmaModChoiceOffline.getResponse(choice.id).then(function(response) {
+                    var optionsKeys = {};
+                    angular.forEach(options, function(option) {
+                        optionsKeys[option.id] = option;
+                    });
+
+                    // Update options with the offline data.
+                    if (response.deleting) {
+                        // Uncheck selected options.
+                        if (response.responses.length > 0) {
+                            // Uncheck all options selected in responses.
+                            angular.forEach(response.responses, function(selected) {
+                                if (optionsKeys[selected] && optionsKeys[selected].checked) {
+                                    optionsKeys[selected].checked = false;
+                                    optionsKeys[selected].countanswers--;
+                                }
+                            });
+                        } else {
+                            // On empty responses, uncheck all selected.
+                            angular.forEach(optionsKeys, function(option) {
+                                if (option.checked) {
+                                    option.checked = false;
+                                    option.countanswers--;
+                                }
+                            });
+                        }
+                    } else {
+                        // Uncheck all options to check again the offlines'.
+                        angular.forEach(optionsKeys, function(option) {
+                            if (option.checked) {
+                                option.checked = false;
+                                option.countanswers--;
+                            }
+                        });
+                        // Then check selected ones.
+                        angular.forEach(response.responses, function(selected) {
+                            if (optionsKeys[selected]) {
+                                optionsKeys[selected].checked = true;
+                                optionsKeys[selected].countanswers++;
+                            }
+                        });
+                    }
+                    // Convert it again to array.
+                    return Object.keys(optionsKeys).map(function (key) {return optionsKeys[key]});
+                });
+            } else {
+                promise = $q.when(options);
+            }
+
+            promise.then(function(options) {
+                var isOpen = isChoiceOpen();
+
+                var hasAnswered = false;
+                $scope.selectedOption = {id: -1}; // Single choice model.
+                angular.forEach(options, function(option) {
+                    if (option.checked) {
+                        hasAnswered = true;
+                        if (!choice.allowmultiple) {
+                            $scope.selectedOption.id = option.id;
+                        }
+                    }
+                });
+                $scope.canEdit = isOpen && (choice.allowupdate || !hasAnswered);
+                $scope.canDelete = $mmaModChoice.isDeleteResponsesEnabled() && isOpen && choice.allowupdate && hasAnswered;
+                $scope.options = options;
+            });
         });
     }
 
@@ -100,7 +178,7 @@ angular.module('mm.addons.mod_choice')
                 }
                 result.percentageamount = parseFloat(result.percentageamount).toFixed(1);
             });
-            $scope.canSeeResults = hasVotes || $mmaModChoice.canStudentSeeResults(choice, hasAnswered);
+            $scope.canSeeResults = hasVotes || $mmaModChoice.canStudentSeeResults(choice, hasAnsweredOnline);
             $scope.results = results;
         });
     }
@@ -116,17 +194,17 @@ angular.module('mm.addons.mod_choice')
     }
 
     // Convenience function to refresh all the data.
-    function refreshAllData() {
+    function refreshAllData(sync) {
         var p1 = $mmaModChoice.invalidateChoiceData(courseid),
             p2 = choice ? $mmaModChoice.invalidateOptions(choice.id) : $q.when(),
             p3 = choice ? $mmaModChoice.invalidateResults(choice.id) : $q.when();
 
         return $q.all([p1, p2, p3]).finally(function() {
-            return fetchChoiceData(true);
+            return fetchChoiceData(true, sync);
         });
     }
 
-    fetchChoiceData().then(function() {
+    fetchChoiceData(false, true).then(function() {
         $mmaModChoice.logView(choice.id).then(function() {
             $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
         });
@@ -152,12 +230,13 @@ angular.module('mm.addons.mod_choice')
             }
 
             var modal = $mmUtil.showModalLoading('mm.core.sending', true);
-            $mmaModChoice.submitResponse(choice.id, responses).then(function() {
+            $mmaModChoice.submitResponse(choice.id, choice.name, courseid, responses).then(function() {
                 // Success!
                 // Check completion since it could be configured to complete once the user answers the choice.
                 $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
+                scrollTop();
                 // Let's refresh the data.
-                return refreshAllData();
+                return refreshAllData(false);
             }).catch(function(message) {
                 if (message) {
                     $mmUtil.showErrorModal(message);
@@ -174,9 +253,10 @@ angular.module('mm.addons.mod_choice')
     $scope.delete = function() {
         $mmUtil.showConfirm($translate('mm.core.areyousure')).then(function() {
             var modal = $mmUtil.showModalLoading('mm.core.sending', true);
-            $mmaModChoice.deleteResponses(choice.id).then(function() {
+            $mmaModChoice.deleteResponses(choice.id, choice.name, courseid).then(function() {
+                scrollTop();
                 // Success! Let's refresh the data.
-                return refreshAllData();
+                return refreshAllData(false);
             }).catch(function(message) {
                 if (message) {
                     $mmUtil.showErrorModal(message);
@@ -204,4 +284,65 @@ angular.module('mm.addons.mod_choice')
             });
         }
     };
+
+    $scope.sync = function() {
+        var modal = $mmUtil.showModalLoading('mm.settings.synchronizing', true);
+        syncChoice(true).then(function() {
+            // Refresh the data.
+            $scope.choiceLoaded = false;
+            $scope.refreshIcon = 'spinner';
+            scrollTop();
+            refreshAllData(false).finally(function() {
+                $scope.choiceLoaded = true;
+                $scope.refreshIcon = 'ion-refresh';
+            });
+        }).finally(function() {
+            modal.dismiss();
+        });
+    };
+
+    function scrollTop() {
+        if (!scrollView) {
+            scrollView = $ionicScrollDelegate.$getByHandle('mmaModChoiceScroll');
+        }
+        scrollView && scrollView.scrollTop && scrollView.scrollTop();
+    }
+
+    // Tries to synchronize the choice.
+    function syncChoice(showErrors) {
+        return $mmaModChoiceSync.syncChoice(choice.id, userId).then(function(result) {
+            if (result.warnings && result.warnings.length) {
+                $mmUtil.showErrorModal(result.warnings[0]);
+            }
+
+            return result.updated;
+        }).catch(function(error) {
+            if (showErrors) {
+                if (error) {
+                    $mmUtil.showErrorModal(error);
+                } else {
+                    $mmUtil.showErrorModal('mm.core.errorsync', true);
+                }
+            }
+            return $q.reject();
+        });
+    }
+
+    // Refresh data if this choice is synchronized automatically.
+    syncObserver = $mmEvents.on(mmaModChoiceAutomSyncedEvent, function(data) {
+        if (choice && data && data.siteid == $mmSite.getId() && data.choiceid == choice.id && data.userid == userId) {
+            // Refresh the data.
+            $scope.choiceLoaded = false;
+            $scope.refreshIcon = 'spinner';
+            scrollTop();
+            refreshAllData(false).finally(function() {
+                $scope.choiceLoaded = true;
+                $scope.refreshIcon = 'ion-refresh';
+            });
+        }
+    });
+
+    $scope.$on('$destroy', function() {
+        syncObserver && syncObserver.off && syncObserver.off();
+    });
 });
