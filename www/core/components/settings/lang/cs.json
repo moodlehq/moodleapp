@@ -1,6 +1,5 @@
 {
     "about": "O aplikaci",
-    "appname": "Moodle Mobile {{version}}",
     "appready": "Aplikace je připravena",
     "cacheexpirationtime": "Vypršení platnosti vyrovnávací paměti (milisekundy)",
     "cordovadevicemodel": "Cordova Device model",
