@@ -80,7 +80,7 @@ angular.module('mm.addons.mod_lti')
     $scope.doRefresh = function() {
         if ($scope.ltiLoaded) {
             $scope.refreshIcon = 'spinner';
-            refreshAllData().finally(function() {
+            return refreshAllData().finally(function() {
                 $scope.refreshIcon = 'ion-refresh';
                 $scope.$broadcast('scroll.refreshComplete');
             });

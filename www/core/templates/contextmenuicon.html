@@ -1,2 +1,2 @@
-<button ng-if="ctxtMenuItems.length > 0" class="button button-icon {{contextMenuIcon}}" aria-label="{{contextMenuAria}}" ng-click="showContextMenu($event)"></button>
-<ng-transclude></ng-transclude>
+<button ng-show="ctxtMenuItems.length > 0" class="button button-icon {{contextMenuIcon}}" aria-label="{{contextMenuAria}}" ng-click="showContextMenu($event)"></button>
+<div ng-transclude></div>

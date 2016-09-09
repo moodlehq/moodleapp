@@ -584,7 +584,7 @@ angular.module('mm.addons.mod_wiki')
     $scope.refreshWiki = function() {
         if ($scope.wikiLoaded) {
             $scope.refreshIcon = 'spinner';
-            refreshAllData().finally(function() {
+            return refreshAllData().finally(function() {
                 $scope.refreshIcon = 'ion-refresh';
                 $scope.$broadcast('scroll.refreshComplete');
             });

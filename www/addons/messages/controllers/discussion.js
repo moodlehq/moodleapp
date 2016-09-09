@@ -24,8 +24,7 @@ angular.module('mm.addons.messages')
 .controller('mmaMessagesDiscussionCtrl', function($scope, $stateParams, $mmApp, $mmaMessages, $mmSite, $timeout, $mmEvents, $window,
         $ionicScrollDelegate, mmUserProfileState, $mmUtil, mmaMessagesPollInterval, $interval, $log, $ionicHistory, $ionicPlatform,
         mmCoreEventKeyboardShow, mmCoreEventKeyboardHide, mmaMessagesDiscussionLoadedEvent, mmaMessagesDiscussionLeftEvent,
-        $mmUser, $translate, mmaMessagesNewMessageEvent, mmaMessagesToggleDeleteEvent, mmaMessagesAutomSyncedEvent,
-        $mmaMessagesSync) {
+        $mmUser, $translate, mmaMessagesNewMessageEvent, mmaMessagesAutomSyncedEvent, $mmaMessagesSync) {
 
     $log = $log.getInstance('mmaMessagesDiscussionCtrl');
 
@@ -35,7 +34,6 @@ angular.module('mm.addons.messages')
         fetching,
         backView = $ionicHistory.backView(),
         lastMessage = {message: '', timecreated: 0},
-        obsToggleDelete,
         scrollView = $ionicScrollDelegate.$getByHandle('mmaMessagesScroll'),
         canDelete = $mmaMessages.canDeleteMessages(), // Check if user can delete messages.
         syncObserver;
@@ -162,24 +160,10 @@ angular.module('mm.addons.messages')
             // Check if there's any message to be deleted. All messages being sent should be at the end of the list.
             var first = $scope.messages[0];
             $scope.data.canDelete = first && !first.sending;
+        }
 
-            if ($ionicPlatform.isTablet()) {
-                $mmEvents.trigger(mmaMessagesDiscussionLoadedEvent, {userId: $scope.userId, canDelete: $scope.data.canDelete});
-
-                if ($scope.data.canDelete) {
-                    if (!obsToggleDelete) {
-                        // Listen for ToggleDelete button clicked event.
-                        obsToggleDelete = $mmEvents.on(mmaMessagesToggleDeleteEvent, function() {
-                            $scope.toggleDelete();
-                        });
-                    }
-                } else {
-                    if (obsToggleDelete && obsToggleDelete.off) {
-                        obsToggleDelete.off();
-                        obsToggleDelete = false;
-                    }
-                }
-            }
+        if ($ionicPlatform.isTablet()) {
+            $mmEvents.trigger(mmaMessagesDiscussionLoadedEvent, {userId: $scope.userId, canDelete: $scope.data.canDelete});
         }
     };
 
@@ -385,9 +369,6 @@ angular.module('mm.addons.messages')
     $scope.$on('$destroy', function() {
         if ($ionicPlatform.isTablet()) {
             $mmEvents.trigger(mmaMessagesDiscussionLeftEvent);
-            if (obsToggleDelete && obsToggleDelete.off) {
-                obsToggleDelete.off();
-            }
         }
         if (syncObserver && syncObserver.off) {
             syncObserver.off();

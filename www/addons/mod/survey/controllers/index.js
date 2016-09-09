@@ -152,7 +152,7 @@ angular.module('mm.addons.mod_survey')
     $scope.refreshSurvey = function() {
         if ($scope.surveyLoaded) {
             $scope.refreshIcon = 'spinner';
-            refreshAllData().finally(function() {
+            return refreshAllData().finally(function() {
                 $scope.refreshIcon = 'ion-refresh';
                 $scope.$broadcast('scroll.refreshComplete');
             });

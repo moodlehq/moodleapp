@@ -18,8 +18,6 @@ angular.module('mm.addons.mod_forum', [])
 .constant('mmaModForumComponent', 'mmaModForum')
 .constant('mmaModForumNewDiscussionEvent', 'mma-mod_forum_new_discussion')
 .constant('mmaModForumReplyDiscussionEvent', 'mma-mod_forum_reply_discussion')
-.constant('mmaModForumSortDiscussionEvent', 'mma-mod_forum_sort_discussion')
-.constant('mmaModForumDiscussionSortedEvent', 'mma-mod_forum_discussion_sorted')
 
 .config(function($stateProvider) {
 

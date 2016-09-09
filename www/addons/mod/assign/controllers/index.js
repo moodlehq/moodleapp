@@ -170,7 +170,7 @@ angular.module('mm.addons.mod_assign')
     $scope.refreshAssignment = function() {
         if ($scope.assignmentLoaded) {
             $scope.refreshIcon = 'spinner';
-            refreshAllData().finally(function() {
+            return refreshAllData().finally(function() {
                 $scope.refreshIcon = 'ion-refresh';
                 $scope.$broadcast('scroll.refreshComplete');
             });

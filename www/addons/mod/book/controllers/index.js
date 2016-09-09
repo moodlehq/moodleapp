@@ -87,7 +87,7 @@ angular.module('mm.addons.mod_book')
     $scope.doRefresh = function() {
         if ($scope.loaded) {
             $scope.refreshIcon = 'spinner';
-            $mmaModBook.invalidateContent(module.id).then(function() {
+            return $mmaModBook.invalidateContent(module.id).then(function() {
                 return fetchContent(currentChapter);
             }).finally(function() {
                 $scope.refreshIcon = 'ion-refresh';

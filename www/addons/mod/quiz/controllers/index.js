@@ -417,7 +417,7 @@ angular.module('mm.addons.mod_quiz')
     $scope.refreshQuiz = function() {
         if ($scope.quizLoaded) {
             $scope.refreshIcon = 'spinner';
-            refreshData().finally(function() {
+            return refreshData().finally(function() {
                 $scope.refreshIcon = 'ion-refresh';
                 $scope.$broadcast('scroll.refreshComplete');
             });

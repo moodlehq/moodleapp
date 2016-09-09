@@ -86,7 +86,7 @@ angular.module('mm.addons.mod_chat')
     $scope.refreshChat = function() {
         if ($scope.chatLoaded) {
             $scope.refreshIcon = 'spinner';
-            fetchChatData(true).finally(function() {
+            return fetchChatData(true).finally(function() {
                 $scope.refreshIcon = 'ion-refresh';
                 $scope.$broadcast('scroll.refreshComplete');
             });

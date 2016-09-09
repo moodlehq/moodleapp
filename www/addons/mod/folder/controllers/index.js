@@ -90,8 +90,8 @@ angular.module('mm.addons.mod_folder')
     $scope.refreshFolder = function() {
         if ($scope.canReload) {
             $scope.refreshIcon = 'spinner';
-            $mmCourse.invalidateModule(module.id).finally(function() {
-                fetchFolder().finally(function() {
+            return $mmCourse.invalidateModule(module.id).finally(function() {
+                return fetchFolder().finally(function() {
                     $scope.refreshIcon = 'ion-refresh';
                     $scope.$broadcast('scroll.refreshComplete');
                 });
