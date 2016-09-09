@@ -1051,7 +1051,8 @@ angular.module('mm.core')
          * @module mm.core
          * @ngdoc method
          * @name $mmUtil#confirmDownloadSize
-         * @param {Number} size                 Size to download (in bytes).
+         * @param {Object|Number} sizeCalc      Containing size to download (in bytes) and a boolean to indicate if its
+         *                                      totaly or partialy calculated.
          * @param {String} [message]            Code of the message to show. Default: 'mm.course.confirmdownload'.
          * @param {String} [unknownsizemessage] Code of the message to show if size is unknown.
          *                                      Default: 'mm.course.confirmdownloadunknownsize'.
@@ -1059,21 +1060,56 @@ angular.module('mm.core')
          * @param {Number} [limitedThreshold]   Threshold to show confirm in limited connection. Default: mmCoreDownloadThreshold.
          * @return {Promise}                   Promise resolved when the user confirms or if no confirm needed.
          */
-        self.confirmDownloadSize = function(size, message, unknownsizemessage, wifiThreshold, limitedThreshold) {
+        self.confirmDownloadSize = function(sizeCalc, message, unknownsizemessage, wifiThreshold, limitedThreshold) {
             wifiThreshold = typeof wifiThreshold == 'undefined' ? mmCoreWifiDownloadThreshold : wifiThreshold;
             limitedThreshold = typeof limitedThreshold == 'undefined' ? mmCoreDownloadThreshold : limitedThreshold;
-            message = message || 'mm.course.confirmdownload';
-            unknownsizemessage = unknownsizemessage || 'mm.course.confirmdownloadunknownsize';
 
-            if (size <= 0) {
-                // Seems size was unable to be calculated. Show a warning.
-                return self.showConfirm($translate(unknownsizemessage));
+            // Backward compatibility conversion.
+            if (typeof sizeCalc == 'number') {
+                sizeCalc = {size: sizeCalc, total: false};
             }
-            else if (size >= wifiThreshold || ($mmApp.isNetworkAccessLimited() && size >= limitedThreshold)) {
-                var readableSize = $mmText.bytesToSize(size, 2);
+
+            if (sizeCalc.size < 0 || (sizeCalc.size == 0 && !sizeCalc.total)) {
+                // Seems size was unable to be calculated. Show a warning.
+                unknownsizemessage = unknownsizemessage || 'mm.course.confirmdownloadunknownsize';
+                return self.showConfirm($translate(unknownsizemessage));
+            } else if (!sizeCalc.total) {
+                // Filesize is only partial.
+                var readableSize = $mmText.bytesToSize(sizeCalc.size, 2);
+                return self.showConfirm($translate('mm.course.confirmpartialdownloadsize', {size: readableSize}));
+            } else if (sizeCalc.size >= wifiThreshold || ($mmApp.isNetworkAccessLimited() && sizeCalc.size >= limitedThreshold)) {
+                message = message || 'mm.course.confirmdownload';
+                var readableSize = $mmText.bytesToSize(sizeCalc.size, 2);
                 return self.showConfirm($translate(message, {size: readableSize}));
             }
             return $q.when();
+        };
+
+        /**
+         * Sum the filesizes from a list of files checking if the size will be partial or totally calculated.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#sumFileSizes
+         * @param  {Array} files  List of files to sum its filesize.
+         * @return {Object}       With the file size and a boolean to indicate if it is the total size or only partial.
+         */
+        self.sumFileSizes = function(files) {
+            var results = {
+                size: 0,
+                total: true
+            };
+
+            angular.forEach(files, function(file) {
+                if (typeof file.filesize == 'undefined') {
+                    // We don't have the file size, cannot calculate its total size.
+                    results.total = false;
+                } else {
+                    results.size += file.filesize;
+                }
+            });
+
+            return results;
         };
 
         /**

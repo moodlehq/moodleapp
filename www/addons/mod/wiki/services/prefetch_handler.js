@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_wiki')
  * @ngdoc service
  * @name $mmaModWikiPrefetchHandler
  */
-.factory('$mmaModWikiPrefetchHandler', function($mmaModWiki, mmaModWikiComponent, $mmSite, $mmFilepool, $q, $mmGroups,
+.factory('$mmaModWikiPrefetchHandler', function($mmaModWiki, mmaModWikiComponent, $mmSite, $mmFilepool, $q, $mmGroups, $mmUtil,
         $mmCourseHelper, $mmCourse, mmCoreDownloading, mmCoreDownloaded) {
 
     var self = {},
@@ -35,23 +35,17 @@ angular.module('mm.addons.mod_wiki')
      * @module mm.addons.mod_wiki
      * @ngdoc method
      * @name $mmaModWikiPrefetchHandler#getDownloadSize
-     * @param {Object} module Module to get the size.
-     * @param {Number} courseId Course ID the module belongs to.
-     * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}       Size.
+     * @param  {Object} module    Module to get the size.
+     * @param  {Number} courseId  Course ID the module belongs to.
+     * @param  {String} [siteId]  Site ID. If not defined, current site.
+     * @return {Promise}          With the file size and a boolean to indicate if it is the total size or only partial.
      */
     self.getDownloadSize = function(module, courseId, siteId) {
         var promises = [];
         siteId = siteId || $mmSite.getId();
 
         promises.push(self.getFiles(module, courseId, siteId).then(function(files) {
-            var size = 0;
-            angular.forEach(files, function(file) {
-                if (file.filesize) {
-                    size = size + file.filesize;
-                }
-            });
-            return size;
+            return $mmUtil.sumFileSizes(files);
         }));
 
         promises.push(getAllPages(module, courseId, siteId).then(function(pages) {
@@ -61,12 +55,14 @@ angular.module('mm.addons.mod_wiki')
                     size = size + page.contentsize;
                 }
             });
-            return size;
+            return {size: size, total: true};
         }));
 
         return $q.all(promises).then(function(sizes) {
             // Sum values in the array.
-            return sizes.reduce(function(a, b) { return a + b; }, 0);
+            return sizes.reduce(function(a, b) {
+                return {size: a.size + b.size, total: a.total && b.total};
+            }, {size: 0, total: true});
         });
     };
 

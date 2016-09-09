@@ -134,7 +134,7 @@ angular.module('mm.addons.mod_scorm')
         }
 
         return promise.then(function(size) {
-            return $mmUtil.confirmDownloadSize(size);
+            return $mmUtil.confirmDownloadSize({size: size, total: true});
         });
     };
 
