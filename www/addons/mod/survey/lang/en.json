@@ -6,6 +6,5 @@
     "ipreferthat": "I prefer that",
     "responses": "Responses",
     "results": "Results",
-    "surveycompletednograph": "You have completed this survey.",
-    "warningofflinedatadeleted": "Offline answers of survey '{{name}}' have been deleted. {{error}}"
+    "surveycompletednograph": "You have completed this survey."
 }

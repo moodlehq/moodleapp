@@ -153,6 +153,7 @@
     "unzipping": "Unzipping",
     "view": "View",
     "viewprofile": "View profile",
+    "warningofflinedatadeleted": "Offline data of {{component}} '{{name}}' has been deleted. {{error}}",
     "windowsphone": "Windows Phone",
     "wsfunctionnotavailable": "The webservice function is not available.",
     "year" : "year",

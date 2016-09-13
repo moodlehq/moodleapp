@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_survey')
  * @ngdoc service
  * @name $mmaModSurveySync
  */
-.factory('$mmaModSurveySync', function($log, $mmSite, $q, $mmApp, $translate, $mmaModSurvey, $mmSitesManager, $mmUtil, $mmSync,
+.factory('$mmaModSurveySync', function($log, $mmSite, $q, $mmApp, $translate, $mmaModSurvey, $mmSitesManager, $mmCourse, $mmSync,
             $mmaModSurveyOffline, $mmEvents, mmaModSurveyAutomSyncedEvent, mmaModSurveyComponent, mmaModSurveySyncTime) {
     $log = $log.getInstance('$mmaModSurveySync');
 
@@ -192,7 +192,8 @@ angular.module('mm.addons.mod_survey')
                     result.answersSent = true;
                     return $mmaModSurveyOffline.deleteSurveyAnswers(surveyId, siteId, userId).then(function() {
                         // Answers deleted, add a warning.
-                        result.warnings.push($translate.instant('mma.mod_survey.warningofflinedatadeleted', {
+                        result.warnings.push($translate.instant('mm.core.warningofflinedatadeleted', {
+                            component: $mmCourse.translateModuleName('survey'),
                             name: data.name,
                             error: error.error
                         }));
