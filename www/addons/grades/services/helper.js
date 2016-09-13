@@ -21,7 +21,7 @@ angular.module('mm.addons.grades')
  * @ngdoc service
  * @name $mmaGradesHelper
  */
-.factory('$mmaGradesHelper', function($q, $mmText, $translate, $mmCourse) {
+.factory('$mmaGradesHelper', function($q, $mmText, $translate, $mmCourse, $sce) {
 
     var self = {};
 
@@ -147,6 +147,8 @@ angular.module('mm.addons.grades')
                         // Get Grade Object ID from itemname ID.
                         row.id = tabledata[i].itemname.id.split('_')[1];
                     }
+                    // Trust the HTML.
+                    row.text = $sce.trustAsHtml(row.text);
                     formatted.rows.push(row);
                 }
             }
