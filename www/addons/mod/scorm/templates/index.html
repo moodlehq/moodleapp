@@ -54,6 +54,7 @@
 	            </div>
                 <!-- Synchronize button -->
             	<div class="item item-text-wrap" ng-if="!errorMessage && showSyncButton">
+                    <p class="padding">{{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}</p>
                     <button class="button button-block" ng-click="sync()">{{ 'mm.settings.synchronizenow' | translate }}</button>
             	</div>
 	            <!-- TOC -->

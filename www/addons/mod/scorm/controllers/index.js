@@ -39,6 +39,7 @@ angular.module('mm.addons.mod_scorm')
     $scope.title = module.name;
     $scope.description = module.description;
     $scope.moduleUrl = module.url;
+    $scope.moduleName = $mmCourse.translateModuleName('scorm');
     $scope.currentOrganization = {};
     $scope.scormOptions = {
         mode: $mmaModScorm.MODENORMAL

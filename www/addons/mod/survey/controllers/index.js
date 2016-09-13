@@ -34,6 +34,7 @@ angular.module('mm.addons.mod_survey')
     $scope.title = module.name;
     $scope.description = module.description;
     $scope.moduleUrl = module.url;
+    $scope.moduleName = $mmCourse.translateModuleName('survey');
     $scope.componentId = module.id;
     $scope.courseid = courseid;
     $scope.answers = {};

@@ -36,7 +36,7 @@ angular.module('mm.addons.mod_choice')
     $scope.title = module.name;
     $scope.description = module.description;
     $scope.moduleUrl = module.url;
-    $scope.moduleName = $translate.instant('mm.core.mod_choice');
+    $scope.moduleName = $mmCourse.translateModuleName('choice');
     $scope.courseid = courseid;
     $scope.refreshIcon = 'spinner';
     $scope.component = mmaModChoiceComponent;
