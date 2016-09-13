@@ -189,6 +189,8 @@ angular.module('mm.core')
                         if (!retry && data.errorcode == "requirecorrectaccess") {
                             siteurl = $mmText.addOrRemoveWWW(siteurl);
                             return self.getUserToken(siteurl, username, password, service, true);
+                        } else if (typeof data.errorcode != 'undefined') {
+                            return $q.reject({error: data.error, errorcode: data.errorcode});
                         } else {
                             return $q.reject(data.error);
                         }

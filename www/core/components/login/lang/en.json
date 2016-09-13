@@ -32,5 +32,6 @@
     "siteurlrequired": "Site URL required, i.e <i>http://www.yourmoodlesite.abc or https://www.yourmoodlesite.efg</i>",
     "username": "Username",
     "usernamerequired": "Username required",
+    "visitchangepassword": "Do you want to visit the site to change the password?",
     "webservicesnotenabled": "Web Services are not enabled in your site. Please, contact your Moodle site administrator if you think mobile access should be enabled."
 }
