@@ -27,96 +27,64 @@ angular.module('mm.addons.mod_book')
     var self = {};
 
     /**
-     * Download all the content.
+     * Get cache key for book data WS calls.
      *
-     * @module mm.addons.mod_book
-     * @ngdoc method
-     * @name $mmaModBook#downloadAllContent
-     * @param {Object} module The module object.
-     * @return {Promise}      Promise resolved when all content is downloaded. Data returned is not reliable.
+     * @param {Number} courseId Course ID.
+     * @return {String}         Cache key.
      */
-    self.downloadAllContent = function(module) {
-        var files = self.getDownloadableFiles(module),
-            revision = $mmFilepool.getRevisionFromFileList(module.contents),
-            timemod = $mmFilepool.getTimemodifiedFromFileList(module.contents);
-        return $mmFilepool.downloadPackage($mmSite.getId(), files, mmaModBookComponent, module.id, revision, timemod);
-    };
+    function getBookDataCacheKey(courseId) {
+        return 'mmaModBook:book:' + courseId;
+    }
 
     /**
-     * Get event names of files being downloaded.
+     * Get a book with key=value. If more than one is found, only the first will be returned.
      *
-     * @module mm.addons.mod_book
-     * @ngdoc method
-     * @name $mmaModBook#getDownloadingFilesEventNames
-     * @param {Object} module The module object returned by WS.
-     * @return {Promise} Resolved with an array of event names.
+     * @param  {String} siteId    Site ID.
+     * @param  {Number} courseId  Course ID.
+     * @param  {String} key       Name of the property to check.
+     * @param  {Mixed}  value     Value to search.
+     * @return {Promise}          Promise resolved when the book is retrieved.
      */
-    self.getDownloadingFilesEventNames = function(module) {
-        var promises = [],
-            eventNames = [],
-            siteid = $mmSite.getId();
+    function getBook(siteId, courseId, key, value) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    courseids: [courseId]
+                },
+                preSets = {
+                    cacheKey: getBookDataCacheKey(courseId)
+                };
 
-        angular.forEach(module.contents, function(content) {
-            var url = content.fileurl;
-            if (!self.isFileDownloadable(content)) {
-                return;
-            }
-            promises.push($mmFilepool.isFileDownloadingByUrl(siteid, url).then(function() {
-                return $mmFilepool.getFileEventNameByUrl(siteid, url).then(function(eventName) {
-                    eventNames.push(eventName);
-                });
-            }, function() {
-                // Ignore fails.
-            }));
+            return site.read('mod_book_get_books_by_courses', params, preSets).then(function(response) {
+                if (response && response.books) {
+                    var currentBook;
+                    angular.forEach(response.books, function(book) {
+                        if (!currentBook && book[key] == value) {
+                            currentBook = book;
+                        }
+                    });
+                    if (currentBook) {
+                        return currentBook;
+                    }
+                }
+                return $q.reject();
+            });
         });
-
-        return $q.all(promises).then(function() {
-            return eventNames;
-        });
-    };
+    }
 
     /**
-     * Returns a list of file event names.
+     * Get a book by course module ID.
      *
      * @module mm.addons.mod_book
      * @ngdoc method
-     * @name $mmaModBook#getFileEventNames
-     * @param {Object} module The module object returned by WS.
-     * @return {Promise} Promise resolved with array of $mmEvent names.
+     * @name $mmaModBook#getBook
+     * @param {Number} courseId Course ID.
+     * @param {Number} cmId     Course module ID.
+     * @param {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the book is retrieved.
      */
-    self.getFileEventNames = function(module) {
-        var promises = [];
-        angular.forEach(module.contents, function(content) {
-            var url = content.fileurl;
-            if (!self.isFileDownloadable(content)) {
-                return;
-            }
-            promises.push($mmFilepool.getFileEventNameByUrl($mmSite.getId(), url));
-        });
-        return $q.all(promises).then(function(eventNames) {
-            return eventNames;
-        });
-    };
-
-    /**
-     * Returns a list of files that can be downloaded.
-     *
-     * @module mm.addons.mod_book
-     * @ngdoc method
-     * @name $mmaModBook#getDownloadableFiles
-     * @param {Object} module The module object returned by WS.
-     * @return {Object[]}     List of files.
-     */
-    self.getDownloadableFiles = function(module) {
-        var files = [];
-
-        angular.forEach(module.contents, function(content) {
-            if (self.isFileDownloadable(content)) {
-                files.push(content);
-            }
-        });
-
-        return files;
+    self.getBook = function(courseId, cmId, siteId) {
+        siteId = siteId || $mmSite.getId();
+        return getBook(siteId, courseId, 'coursemodule', cmId);
     };
 
     /**
@@ -319,16 +287,42 @@ angular.module('mm.addons.mod_book')
     };
 
     /**
+     * Invalidates book data.
+     *
+     * @module mm.addons.mod_book
+     * @ngdoc method
+     * @name $mmaModBook#invalidateBookData
+     * @param {Number} courseId Course ID.
+     * @param {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateBookData = function(courseId, siteId) {
+        siteId = siteId || $mmSite.getId();
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getBookDataCacheKey(courseId));
+        });
+    };
+
+    /**
      * Invalidate the prefetched content.
      *
      * @module mm.addons.mod_book
      * @ngdoc method
      * @name $mmaModBook#invalidateContent
-     * @param {Object} moduleId The module ID.
+     * @param  {Number} moduleId The module ID.
+     * @param  {Number} courseId Course ID of the module.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}
      */
-    self.invalidateContent = function(moduleId) {
-        return $mmFilepool.invalidateFilesByComponent($mmSite.getId(), mmaModBookComponent, moduleId);
+    self.invalidateContent = function(moduleId, courseId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        var promises = [];
+
+        promises.push(self.invalidateBookData(courseId, siteId));
+        promises.push($mmFilepool.invalidateFilesByComponent(siteId, mmaModBookComponent, moduleId));
+
+        return $mmUtil.allPromises(promises);
     };
 
     /**
@@ -386,22 +380,6 @@ angular.module('mm.addons.mod_book')
             });
         }
         return $q.reject();
-    };
-
-    /**
-     * Prefetch the content.
-     *
-     * @module mm.addons.mod_book
-     * @ngdoc method
-     * @name $mmaModBook#prefetchContent
-     * @param {Object} module The module object returned by WS.
-     * @return {Promise}      Promise resolved when all content is downloaded. Data returned is not reliable.
-     */
-    self.prefetchContent = function(module) {
-        var files = self.getDownloadableFiles(module),
-            revision = $mmFilepool.getRevisionFromFileList(module.contents),
-            timemod = $mmFilepool.getTimemodifiedFromFileList(module.contents);
-        return $mmFilepool.prefetchPackage($mmSite.getId(), files, mmaModBookComponent, module.id, revision, timemod);
     };
 
     return self;

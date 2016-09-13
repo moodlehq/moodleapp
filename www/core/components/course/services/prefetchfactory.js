@@ -352,7 +352,7 @@ angular.module('mm.core.course')
             /**
              * Invalidate the prefetched content.
              *
-             * @param {Object} moduleId The module ID.
+             * @param {Number} moduleId The module ID.
              * @return {Promise}
              */
             this.invalidateContent = function(moduleId) {
