@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_folder')
  */
 .factory('$mmaModFolderHandlers', function($mmCourse, $mmaModFolder, $mmEvents, $state, $mmSite, $mmCourseHelper, $mmFilepool,
             $mmCoursePrefetchDelegate, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated, mmCoreEventPackageStatusChanged,
-            mmaModFolderComponent, $mmContentLinksHelper, $q, $mmaModFolderPrefetchHandler) {
+            mmaModFolderComponent, $mmContentLinksHelper, $q, $mmaModFolderPrefetchHandler, $mmUtil) {
     var self = {};
 
     /**
@@ -62,18 +62,42 @@ angular.module('mm.addons.mod_folder')
         self.getController = function(module, courseid, sectionid) {
             return function($scope) {
                 var downloadBtn,
-                    refreshBtn,
-                    revision = $mmFilepool.getRevisionFromFileList(module.contents),
-                    timemodified = $mmFilepool.getTimemodifiedFromFileList(module.contents);
+                    refreshBtn;
 
                 // Prefetch folder contents.
                 function prefetchFolder(e) {
                     e.preventDefault();
                     e.stopPropagation();
 
-                    // Check size and show confirmation if needed.
-                    var size = $mmaModFolderPrefetchHandler.getDownloadSize(module);
-                    $mmCourseHelper.prefetchModule($scope, $mmaModFolder, module, size, false);
+                    var dwnBtnHidden = downloadBtn.hidden,
+                        rfrshBtnHidden = refreshBtn.hidden;
+
+                    // Show spinner since this operation might take a while.
+                    $scope.spinner = true;
+                    downloadBtn.hidden = true;
+                    refreshBtn.hidden = true;
+
+                    // Get download size to ask for confirm if it's high.
+                    $mmaModFolderPrefetchHandler.getDownloadSize(module, courseid).then(function(size) {
+                        $mmCourseHelper.prefetchModule($scope, $mmaModFolderPrefetchHandler, module, size, false, courseid)
+                                .catch(function() {
+                            // Error or cancelled, leave the buttons as they were.
+                            $scope.spinner = false;
+                            downloadBtn.hidden = dwnBtnHidden;
+                            refreshBtn.hidden = rfrshBtnHidden;
+                        });
+                    }).catch(function(error) {
+                        // Error, leave the buttons as they were.
+                        $scope.spinner = false;
+                        downloadBtn.hidden = dwnBtnHidden;
+                        refreshBtn.hidden = rfrshBtnHidden;
+
+                        if (error) {
+                            $mmUtil.showErrorModal(error);
+                        } else {
+                            $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                        }
+                    });
                 }
 
                 downloadBtn = {
@@ -121,7 +145,7 @@ angular.module('mm.addons.mod_folder')
                 });
 
                 // Get current status to decide which icon should be shown.
-                $mmCoursePrefetchDelegate.getModuleStatus(module, courseid, revision, timemodified).then(showStatus);
+                $mmCoursePrefetchDelegate.getModuleStatus(module, courseid).then(showStatus);
 
                 $scope.$on('$destroy', function() {
                     statusObserver && statusObserver.off && statusObserver.off();
