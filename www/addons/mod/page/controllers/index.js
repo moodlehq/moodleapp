@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_page')
  * @name mmaModPageIndexCtrl
  */
 .controller('mmaModPageIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModPage, $mmCourse, $q, $log, $mmApp,
-            mmaModPageComponent, $mmText, $translate) {
+            mmaModPageComponent, $mmText, $translate, $mmaModPagePrefetchHandler) {
     $log = $log.getInstance('mmaModPageIndexCtrl');
 
     var module = $stateParams.module || {},
@@ -39,7 +39,7 @@ angular.module('mm.addons.mod_page')
     function fetchContent() {
         var downloadFailed = false;
         // Prefetch the content so ALL files are downloaded, not just the ones shown in the page.
-        return $mmaModPage.downloadAllContent(module).catch(function(err) {
+        return $mmaModPagePrefetchHandler.download(module).catch(function(err) {
             // Mark download as failed but go on since the main files could have been downloaded.
             downloadFailed = true;
         }).then(function() {
@@ -68,7 +68,7 @@ angular.module('mm.addons.mod_page')
     $scope.doRefresh = function() {
         if ($scope.loaded) {
             $scope.refreshIcon = 'spinner';
-            return $mmaModPage.invalidateContent(module.id).then(function() {
+            return $mmaModPagePrefetchHandler.invalidateContent(module.id).then(function() {
                 return fetchContent();
             }).finally(function() {
                 $scope.$broadcast('scroll.refreshComplete');

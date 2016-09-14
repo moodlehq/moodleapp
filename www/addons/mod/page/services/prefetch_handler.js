@@ -21,85 +21,9 @@ angular.module('mm.addons.mod_page')
  * @ngdoc service
  * @name $mmaModPagePrefetchHandler
  */
-.factory('$mmaModPagePrefetchHandler', function($mmaModPage, $mmSite, $mmFilepool, mmaModPageComponent) {
+.factory('$mmaModPagePrefetchHandler', function($mmPrefetchFactory, mmaModPageComponent) {
 
-    var self = {};
-
-    self.component = mmaModPageComponent;
-
-    /**
-     * Get the download size of a module.
-     *
-     * @module mm.addons.mod_page
-     * @ngdoc method
-     * @name $mmaModPagePrefetchHandler#getDownloadSize
-     * @param  {Object} module Module to get the size.
-     * @return {Object}        With the file size and a boolean to indicate if it is the total size or only partial.
-     */
-    self.getDownloadSize = function(module) {
-        var size = 0;
-        angular.forEach(module.contents, function(content) {
-            if ($mmaModPage.isFileDownloadable(content) && content.filesize) {
-                size = size + content.filesize;
-            }
-        });
-        return {size: size, total: true};
-    };
-
-    /**
-     * Get the downloaded size of a module.
-     *
-     * @module mm.addons.mod_page
-     * @ngdoc method
-     * @name $mmaModPagePrefetchHandler#getDownloadedSize
-     * @param {Object} module   Module to get the downloaded size.
-     * @param {Number} courseId Course ID the module belongs to.
-     * @return {Promise}        Promise resolved with the size.
-     */
-    self.getDownloadedSize = function(module, courseId) {
-        return $mmFilepool.getFilesSizeByComponent($mmSite.getId(), self.component, module.id);
-    };
-
-    /**
-     * Whether or not the module is enabled for the site.
-     *
-     * @module mm.addons.mod_page
-     * @ngdoc method
-     * @name $mmaModPagePrefetchHandler#isEnabled
-     * @return {Boolean}
-     */
-    self.isEnabled = function() {
-        return $mmSite.canDownloadFiles();
-    };
-
-    /**
-     * Prefetch the module.
-     *
-     * @module mm.addons.mod_page
-     * @ngdoc method
-     * @name $mmaModPagePrefetchHandler#prefetch
-     * @param  {Object} module   The module object returned by WS.
-     * @param  {Number} courseId Course ID the module belongs to.
-     * @param  {Boolean} single  True if we're downloading a single module, false if we're downloading a whole section.
-     * @return {Promise}         Promise resolved when all files have been downloaded. Data returned is not reliable.
-     */
-    self.prefetch = function(module, courseId, single) {
-        return $mmaModPage.prefetchContent(module);
-    };
-
-    /**
-     * Remove module downloaded files.
-     *
-     * @module mm.addons.mod_page
-     * @ngdoc method
-     * @name $mmaModPagePrefetchHandler#removeFiles
-     * @param {Object} module   Module to remove the files.
-     * @param {Number} courseId Course ID the module belongs to.
-     * @return {Promise}        Promise resolved when done.
-     */
-    self.removeFiles = function(module, courseId) {
-        return $mmFilepool.removeFilesByComponent($mmSite.getId(), self.component, module.id);
-    };
+    var self = $mmPrefetchFactory.createPrefetchHandler(mmaModPageComponent, true);
 
     return self;
 });
