@@ -429,7 +429,7 @@ angular.module('mm.core.course')
      * @param  {Object|Number}  size     Containing size to download (in bytes) and a boolean to indicate if its totaly or
      *                                   partialy calculated.
      * @param  {Boolean}        refresh True if refreshing, false otherwise.
-     * @return {Promise}         Promise resolved when downloaded.
+     * @return {Promise}        Promise resolved when downloaded.
      */
     self.prefetchModule = function(scope, service, module, size, refresh) {
         // Show confirmation if needed.
@@ -439,7 +439,18 @@ angular.module('mm.core.course')
             return promise.catch(function() {
                 // Ignore errors.
             }).then(function() {
-                return service.prefetchContent(module).catch(function() {
+                var promise;
+
+                if (service.prefetch) {
+                    promise = service.prefetch(module);
+                } else if (service.prefetchContent) {
+                    // Check 'prefetchContent' for backwards compatibility.
+                    promise = service.prefetchContent(module);
+                } else {
+                    return $q.reject();
+                }
+
+                return promise.catch(function() {
                     if (!scope.$$destroyed) {
                         $mmUtil.showErrorModal('mm.core.errordownloading', true);
                     }
