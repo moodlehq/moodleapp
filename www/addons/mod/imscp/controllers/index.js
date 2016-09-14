@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_imscp')
  * @name mmaModImscpIndexCtrl
  */
 .controller('mmaModImscpIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModImscp, $log, mmaModImscpComponent,
-            $ionicPopover, $timeout, $q, $mmCourse, $mmApp, $mmText, $translate, $timeout) {
+            $ionicPopover, $timeout, $q, $mmCourse, $mmApp, $mmText, $translate, $timeout, $mmaModImscpPrefetchHandler) {
     $log = $log.getInstance('mmaModImscpIndexCtrl');
 
     var module = $stateParams.module || {},
@@ -65,10 +65,20 @@ angular.module('mm.addons.mod_imscp')
     function fetchContent() {
         if (module.contents && module.contents.length) {
             var downloadFailed = false;
-            return $mmaModImscp.downloadAllContent(module).catch(function() {
+
+            // Try to get the imscp data.
+            return $mmaModImscp.getImscp(courseid, module.id).then(function(imscp) {
+                $scope.title = imscp.name || $scope.title;
+                $scope.description = imscp.intro || $scope.description;
+            }).catch(function() {
+                // Ignore errors since this WS isn't available in some Moodle versions.
+            }).then(function() {
+                // Download content.
+                return $mmaModImscpPrefetchHandler.download(module);
+            }).catch(function() {
                 // Mark download as failed but go on since the main files could have been downloaded.
                 downloadFailed = true;
-            }).finally(function() {
+            }).then(function() {
                 return $mmaModImscp.getIframeSrc(module).then(function() {
                     loadItem(currentItem);
 
@@ -93,7 +103,7 @@ angular.module('mm.addons.mod_imscp')
     $scope.doRefresh = function() {
         if ($scope.loaded) {
             $scope.refreshIcon = 'spinner';
-            return $mmaModImscp.invalidateContent(module.id).then(function() {
+            return $mmaModImscp.invalidateContent(module.id, courseid).finally(function() {
                 return fetchContent();
             }).finally(function() {
                 $scope.$broadcast('scroll.refreshComplete');

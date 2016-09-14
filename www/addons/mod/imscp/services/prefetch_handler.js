@@ -21,43 +21,83 @@ angular.module('mm.addons.mod_imscp')
  * @ngdoc service
  * @name $mmaModImscpPrefetchHandler
  */
-.factory('$mmaModImscpPrefetchHandler', function($mmaModImscp, $mmSite, $mmFilepool, mmaModImscpComponent) {
+.factory('$mmaModImscpPrefetchHandler', function($mmaModImscp, $mmSite, $mmFilepool, $mmPrefetchFactory, mmaModImscpComponent) {
 
-    var self = {};
-
-    self.component = mmaModImscpComponent;
+    var self = $mmPrefetchFactory.createPrefetchHandler(mmaModImscpComponent, true);
 
     /**
-     * Get the download size of a module.
+     * Download the module.
      *
      * @module mm.addons.mod_imscp
      * @ngdoc method
-     * @name $mmaModImscpPrefetchHandler#getDownloadSize
-     * @param  {Object} module Module to get the size.
-     * @return {Object}        With the file size and a boolean to indicate if it is the total size or only partial.
+     * @name $mmaModImscpPrefetchHandler#download
+     * @param  {Object} module   The module object returned by WS.
+     * @param  {Number} courseId Course ID the module belongs to.
+     * @param  {Boolean} single  True if we're downloading a single module, false if we're downloading a whole section.
+     * @return {Promise}         Promise resolved when all files have been downloaded. Data returned is not reliable.
      */
-    self.getDownloadSize = function(module) {
-        var size = 0;
-        angular.forEach(module.contents, function(content) {
-            if ($mmaModImscp.isFileDownloadable(content) && content.filesize) {
-                size = size + content.filesize;
-            }
-        });
-        return {size: size, total: true};
+    self.download = function(module, courseId, single) {
+        return downloadOrPrefetch(module, courseId, true);
     };
 
     /**
-     * Get the downloaded size of a module.
+     * Download or prefetch the module.
+     *
+     * @param  {Object} module    The module object returned by WS.
+     * @param  {Number} courseId  Course ID the module belongs to.
+     * @param  {Boolean} prefetch True to prefetch, false to download right away.
+     * @return {Promise}          Promise resolved when all files have been downloaded. Data returned is not reliable.
+     */
+    function downloadOrPrefetch(module, courseId, prefetch) {
+        return $mmFilepool.getPackageDirPathByUrl($mmSite.getId(), module.url).then(function(dirPath) {
+            return self.downloadOrPrefetch(module, courseId, prefetch, dirPath);
+        });
+    }
+
+    /**
+     * Returns imscp intro files.
      *
      * @module mm.addons.mod_imscp
      * @ngdoc method
-     * @name $mmaModImscpPrefetchHandler#getDownloadedSize
-     * @param {Object} module   Module to get the downloaded size.
-     * @param {Number} courseId Course ID the module belongs to.
-     * @return {Promise}        Promise resolved with the size.
+     * @name $mmaModImscpPrefetchHandler#getIntroFiles
+     * @param  {Object} module   The module object returned by WS.
+     * @param  {Number} courseId Course ID.
+     * @return {Promise}         Promise resolved with list of intro files.
      */
-    self.getDownloadedSize = function(module, courseId) {
-        return $mmFilepool.getFilesSizeByComponent($mmSite.getId(), self.component, module.id);
+    self.getIntroFiles = function(module, courseId) {
+        return $mmaModImscp.getImscp(courseId, module.id).catch(function() {
+            // Not found, return undefined so module description is used.
+        }).then(function(imscp) {
+            return self.getIntroFilesFromInstance(module, imscp);
+        });
+    };
+
+    /**
+     * Invalidate the prefetched content.
+     *
+     * @module mm.addons.mod_imscp
+     * @ngdoc method
+     * @name $mmaModImscpPrefetchHandler#invalidateContent
+     * @param  {Number} moduleId The module ID.
+     * @param  {Number} courseId Course ID of the module.
+     * @return {Promise}
+     */
+    self.invalidateContent = function(moduleId, courseId) {
+        return $mmaModImscp.invalidateContent(moduleId, courseId);
+    };
+
+    /**
+     * Invalidates WS calls needed to determine module status.
+     *
+     * @module mm.addons.mod_imscp
+     * @ngdoc method
+     * @name $mmaModImscpPrefetchHandler#invalidateModule
+     * @param  {Object} module   Module to invalidate.
+     * @param  {Number} courseId Course ID the module belongs to.
+     * @return {Promise}         Promise resolved when done.
+     */
+    self.invalidateModule = function(module, courseId) {
+        return $mmaModImscp.invalidateImscpData(courseId);
     };
 
     /**
@@ -69,7 +109,25 @@ angular.module('mm.addons.mod_imscp')
      * @return {Boolean}
      */
     self.isEnabled = function() {
+        if (!$mmSite.canDownloadFiles()) {
+            return false;
+        }
+
         return $mmaModImscp.isPluginEnabled();
+    };
+
+    /**
+     * Check if a file is downloadable. The file param must have 'type' and 'filename' attributes
+     * like in core_course_get_contents response.
+     *
+     * @module mm.addons.mod_imscp
+     * @ngdoc method
+     * @name $mmaModImscp#isFileDownloadable
+     * @param {Object} file File to check.
+     * @return {Boolean}    True if downloadable, false otherwise.
+     */
+    self.isFileDownloadable = function(file) {
+        return $mmaModImscp.isFileDownloadable(file);
     };
 
     /**
@@ -84,21 +142,7 @@ angular.module('mm.addons.mod_imscp')
      * @return {Promise}         Promise resolved when all files have been downloaded. Data returned is not reliable.
      */
     self.prefetch = function(module, courseId, single) {
-        return $mmaModImscp.prefetchContent(module);
-    };
-
-    /**
-     * Remove module downloaded files.
-     *
-     * @module mm.addons.mod_imscp
-     * @ngdoc method
-     * @name $mmaModImscpPrefetchHandler#removeFiles
-     * @param {Object} module   Module to remove the files.
-     * @param {Number} courseId Course ID the module belongs to.
-     * @return {Promise}        Promise resolved when done.
-     */
-    self.removeFiles = function(module, courseId) {
-        return $mmFilepool.removeFilesByComponent($mmSite.getId(), self.component, module.id);
+        return downloadOrPrefetch(module, courseId, true);
     };
 
     return self;
