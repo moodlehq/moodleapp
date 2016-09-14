@@ -31,7 +31,9 @@ angular.module('mm.core')
 
     var self = {},
         mimeTypeCache = {}, // A "cache" to store file mimetypes to prevent performing too many HEAD requests.
-        ongoingCalls = {};
+        ongoingCalls = {},
+        retryCalls = [],
+        retryTimeout = 0;
 
     /**
      * A wrapper function for a moodle WebService call.
@@ -75,56 +77,138 @@ angular.module('mm.core')
         var promise = getPromiseHttp('post', preSets.siteurl, ajaxData);
 
         if (!promise) {
-            promise = $http.post(siteurl, ajaxData, {timeout: mmWSTimeout}).then(function(data) {
-
-                // Some moodle web services return null.
-                // If the responseExpected value is set then so long as no data
-                // is returned, we create a blank object.
-                if ((!data || !data.data) && !preSets.responseExpected) {
-                    data = {};
-                } else {
-                    data = data.data;
-                }
-
-                if (!data) {
-                    return $mmLang.translateAndReject('mm.core.serverconnection');
-                } else if (typeof data != preSets.typeExpected) {
-                    $log.warn('Response of type "' + typeof data + '" received, expecting "' + preSets.typeExpected + '"');
-                    return $mmLang.translateAndReject('mm.core.errorinvalidresponse');
-                }
-
-                if (typeof(data.exception) !== 'undefined') {
-                    if (data.errorcode == 'invalidtoken' ||
-                            (data.errorcode == 'accessexception' && data.message.indexOf('Invalid token - token expired') > -1)) {
-                        $log.error("Critical error: " + JSON.stringify(data));
-                        return $q.reject(mmCoreSessionExpired);
-                    } else if (data.errorcode === 'userdeleted') {
-                        return $q.reject(mmCoreUserDeleted);
-                    } else {
-                        return $q.reject(data.message);
-                    }
-                }
-
-                if (typeof(data.debuginfo) != 'undefined') {
-                    return $q.reject('Error. ' + data.message);
-                }
-
-                $log.info('WS: Data received from WS ' + typeof(data));
-
-                if (typeof(data) == 'object' && typeof(data.length) != 'undefined') {
-                    $log.info('WS: Data number of elements '+ data.length);
-                }
-
-                return data;
-            }, function() {
-                return $mmLang.translateAndReject('mm.core.serverconnection');
-            });
-
-            setPromiseHttp(promise, 'post', preSets.siteurl, ajaxData);
+            // There are some ongoing retry calls, wait for timeout.
+            if (retryCalls.length > 0) {
+                $log.warn('Calls locked, trying later...');
+                promise = addToRetryQueue(method, siteurl, ajaxData, preSets)
+            } else {
+                promise = performPost(method, siteurl, ajaxData, preSets);
+            }
         }
 
         return promise;
     };
+
+    /**
+     * Perform the post call and save the promise while waiting to be resolved.
+     *
+     * @param {string} method   The WebService method to be called.
+     * @param {string} siteurl  Complete site url to perform the call.
+     * @param {Object} ajaxData Arguments to pass to the method.
+     * @param {Object} preSets  Extra settings and information. See $mmWS#call.
+     * @return {Promise} Promise resolved with the response data in success and rejected with the error message if it fails.
+     */
+    function performPost(method, siteurl, ajaxData, preSets) {
+        var promise = $http.post(siteurl, ajaxData, {timeout: mmWSTimeout}).then(function(data) {
+
+            // Some moodle web services return null.
+            // If the responseExpected value is set then so long as no data
+            // is returned, we create a blank object.
+            if ((!data || !data.data) && !preSets.responseExpected) {
+                data = {};
+            } else {
+                data = data.data;
+            }
+
+            if (!data) {
+                return $mmLang.translateAndReject('mm.core.serverconnection');
+            } else if (typeof data != preSets.typeExpected) {
+                $log.warn('Response of type "' + typeof data + '" received, expecting "' + preSets.typeExpected + '"');
+                return $mmLang.translateAndReject('mm.core.errorinvalidresponse');
+            }
+
+            if (typeof(data.exception) !== 'undefined') {
+                if (data.errorcode == 'invalidtoken' ||
+                        (data.errorcode == 'accessexception' && data.message.indexOf('Invalid token - token expired') > -1)) {
+                    $log.error("Critical error: " + JSON.stringify(data));
+                    return $q.reject(mmCoreSessionExpired);
+                } else if (data.errorcode === 'userdeleted') {
+                    return $q.reject(mmCoreUserDeleted);
+                } else {
+                    return $q.reject(data.message);
+                }
+            }
+
+            if (typeof(data.debuginfo) != 'undefined') {
+                return $q.reject('Error. ' + data.message);
+            }
+
+            $log.info('WS: Data received from WS ' + typeof(data));
+
+            if (typeof(data) == 'object' && typeof(data.length) != 'undefined') {
+                $log.info('WS: Data number of elements '+ data.length);
+            }
+
+            return data;
+        }, function(data) {
+            // If server has heavy load, retry after some seconds.
+            if (data.status == 429) {
+                var retryPromise = addToRetryQueue(method, siteurl, ajaxData, preSets);
+
+                // Only process the queue one time.
+                if (retryTimeout == 0) {
+                    retryTimeout = parseInt(data.headers('Retry-After'), 10) || 5;
+                    $log.warn(data.statusText + '. Retrying in ' + retryTimeout + ' seconds. ' + retryCalls.length + ' calls left.');
+
+                    $timeout(function() {
+                        $log.warn('Retrying now with ' + retryCalls.length + ' calls to process.');
+                        // Finish timeout.
+                        retryTimeout = 0;
+                        processRetryQueue();
+                    }, retryTimeout * 1000);
+                } else {
+                    $log.warn('Calls locked, trying later...');
+                }
+
+                return retryPromise;
+            }
+
+            return $mmLang.translateAndReject('mm.core.serverconnection');
+        });
+
+        setPromiseHttp(promise, 'post', preSets.siteurl, ajaxData);
+
+        return promise;
+    }
+
+    /**
+     * Retry all requests in the queue.
+     * This function uses recursion in order to add a delay between requests to reduce stress.
+     */
+    function processRetryQueue() {
+        if (retryCalls.length > 0 && retryTimeout == 0) {
+            var call = retryCalls.shift();
+            // Add a delay between calls.
+            $timeout(function() {
+                call.deferred.resolve(performPost(call.method, call.siteurl, call.ajaxData, call.preSets));
+                processRetryQueue();
+            }, 200);
+        } else {
+            $log.warn('Retry queue has stopped with ' + retryCalls.length + ' calls and ' + retryTimeout + ' timeout seconds.');
+        }
+    }
+
+    /**
+     * Adds the call data to an special queue to be processed when retrying.
+     *
+     * @param {string} method   The WebService method to be called.
+     * @param {string} siteurl  Complete site url to perform the call.
+     * @param {Object} ajaxData Arguments to pass to the method.
+     * @param {Object} preSets  Extra settings and information. See $mmWS#call.
+     * @return {Promise} Deferrend promise resolved with the response data in success and rejected with the error message if it fails.
+     */
+    function addToRetryQueue(method, siteurl, ajaxData, preSets) {
+        var call = {
+            method: method,
+            siteurl: siteurl,
+            ajaxData: ajaxData,
+            preSets: preSets,
+            deferred: $q.defer()
+        };
+
+        retryCalls.push(call);
+        return call.deferred.promise;
+    }
 
     /**
      * Save promise on the cache.
