@@ -28,111 +28,6 @@ angular.module('mm.addons.mod_resource')
     var self = {};
 
     /**
-     * Download all the content. All the files are downloaded inside a folder in filepool, keeping their folder structure.
-     *
-     * @module mm.addons.mod_resource
-     * @ngdoc method
-     * @name $mmaModResource#downloadAllContent
-     * @param {Object} module The module object.
-     * @return {Promise}      Promise resolved when content is downloaded. Data returned is not reliable.
-     */
-    self.downloadAllContent = function(module) {
-        var files = self.getDownloadableFiles(module),
-            siteid = $mmSite.getId(),
-            promise,
-            revision = $mmFilepool.getRevisionFromFileList(module.contents),
-            timemod = $mmFilepool.getTimemodifiedFromFileList(module.contents);
-
-        if (self.isDisplayedInIframe(module)) {
-            // Get path of the module folder in filepool.
-            promise = $mmFilepool.getPackageDirPathByUrl(siteid, module.url);
-        } else {
-            promise = $q.when();
-        }
-
-        return promise.then(function(dirPath) {
-            return $mmFilepool.downloadPackage(siteid, files, mmaModResourceComponent, module.id, revision, timemod, dirPath);
-        });
-    };
-
-    /**
-     * Returns a list of files that can be downloaded.
-     *
-     * @module mm.addons.mod_resource
-     * @ngdoc method
-     * @name $mmaModresource#getDownloadableFiles
-     * @param {Object} module The module object returned by WS.
-     * @return {Object[]}     List of files.
-     */
-    self.getDownloadableFiles = function(module) {
-        var files = [];
-
-        angular.forEach(module.contents, function(content) {
-            if (self.isFileDownloadable(content)) {
-                files.push(content);
-            }
-        });
-
-        return files;
-    };
-
-    /**
-     * Get event names of files being downloaded.
-     *
-     * @module mm.addons.mod_resource
-     * @ngdoc method
-     * @name $mmaModResource#getDownloadingFilesEventNames
-     * @param {Object} module The module object returned by WS.
-     * @return {Promise} Resolved with an array of event names.
-     */
-    self.getDownloadingFilesEventNames = function(module) {
-        var promises = [],
-            eventNames = [],
-            siteid = $mmSite.getId();
-
-        angular.forEach(module.contents, function(content) {
-            var url = content.fileurl;
-            if (!self.isFileDownloadable(content)) {
-                return;
-            }
-            promises.push($mmFilepool.isFileDownloadingByUrl(siteid, url).then(function() {
-                return $mmFilepool.getFileEventNameByUrl(siteid, url).then(function(eventName) {
-                    eventNames.push(eventName);
-                });
-            }, function() {
-                // Ignore fails.
-            }));
-        });
-
-        return $q.all(promises).then(function() {
-            return eventNames;
-        });
-    };
-
-    /**
-     * Returns a list of file event names.
-     *
-     * @module mm.addons.mod_resource
-     * @ngdoc method
-     * @name $mmaModResource#getFileEventNames
-     * @param {Object} module The module object returned by WS.
-     * @return {Promise} Promise resolved with array of $mmEvent names.
-     */
-    self.getFileEventNames = function(module) {
-        var promises = [];
-        angular.forEach(module.contents, function(content) {
-            var url = content.fileurl;
-            if (!self.isFileDownloadable(content)) {
-                return;
-            }
-            promises.push($mmFilepool.getFileEventNameByUrl($mmSite.getId(), url));
-        });
-        return $q.all(promises).then(function(eventNames) {
-            return eventNames;
-        });
-    };
-
-    /**
      * Download all the files needed and returns the src of the iframe.
      *
      * @module mm.addons.mod_resource
@@ -243,19 +138,6 @@ angular.module('mm.addons.mod_resource')
     };
 
     /**
-     * Invalidate the prefetched content.
-     *
-     * @module mm.addons.mod_resource
-     * @ngdoc method
-     * @name $mmaModResource#invalidateContent
-     * @param {Number} moduleId The module ID.
-     * @return {Promise}
-     */
-    self.invalidateContent = function(moduleId) {
-        return $mmFilepool.invalidateFilesByComponent($mmSite.getId(), mmaModResourceComponent, moduleId);
-    };
-
-    /**
      * Whether the resource has to be displayed in an iframe.
      *
      * @module mm.addons.mod_resource
@@ -286,19 +168,6 @@ angular.module('mm.addons.mod_resource')
      */
     self.isDisplayedInline = function(module) {
         return self.isDisplayedInIframe(module);
-    };
-
-    /**
-     * Check if a file is downloadable. The file param must have a 'type' attribute like in core_course_get_contents response.
-     *
-     * @module mm.addons.mod_resource
-     * @ngdoc method
-     * @name $mmaModResource#isFileDownloadable
-     * @param {Object} file File to check.
-     * @return {Boolean}    True if downloadable, false otherwise.
-     */
-    self.isFileDownloadable = function(file) {
-        return file.type === 'file';
     };
 
     /**
@@ -411,34 +280,6 @@ angular.module('mm.addons.mod_resource')
             } else {
                 return $mmUtil.openFile(url);
             }
-        });
-    };
-
-    /**
-     * Prefetch the content.
-     *
-     * @module mm.addons.mod_resource
-     * @ngdoc method
-     * @name $mmaModResource#prefetchContent
-     * @param {Object} module The module object returned by WS.
-     * @return {Promise}      Promise resolved when content is downloaded. Data returned is not reliable.
-     */
-    self.prefetchContent = function(module) {
-        var files = self.getDownloadableFiles(module),
-            siteid = $mmSite.getId(),
-            promise,
-            revision = $mmFilepool.getRevisionFromFileList(module.contents),
-            timemod = $mmFilepool.getTimemodifiedFromFileList(module.contents);
-
-        if (self.isDisplayedInIframe(module)) {
-            // Get path of the module folder in filepool.
-            promise = $mmFilepool.getPackageDirPathByUrl(siteid, module.url);
-        } else {
-            promise = $q.when();
-        }
-
-        return promise.then(function(dirPath) {
-            return $mmFilepool.prefetchPackage(siteid, files, mmaModResourceComponent, module.id, revision, timemod, dirPath);
         });
     };
 
