@@ -18,8 +18,14 @@
                 <a class="button button-block" ng-href="{{moduleUrl}}" mm-link>{{ 'mma.mod_survey.results' | translate }}</a>
             </section>
 
+            <!-- Survey done in offline but not synchronized -->
+            <section class="card padding" ng-if="hasOffline">
+                <p class="padding">{{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}</p>
+                <button class="button button-block" ng-click="sync()">{{ 'mm.settings.synchronizenow' | translate }}</button>
+            </section>
+
             <!-- Survey questions -->
-            <section class="card padding" ng-if="!survey.surveydone && questions && questions.length">
+            <section class="card padding" ng-if="!survey.surveydone && !hasOffline && questions && questions.length">
                 <div ng-repeat="question in questions">
                     <!-- Parent question (Category header) -->
                     <div ng-if="question.multi && question.multi.length" ng-class="{'mma-mod_survey-padding-top': !$first}">

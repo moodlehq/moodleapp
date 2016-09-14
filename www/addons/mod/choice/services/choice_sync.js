@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_choice')
  * @name $mmaModChoiceSync
  */
 .factory('$mmaModChoiceSync', function($q, $log, $mmApp, $mmSitesManager, $mmaModChoiceOffline, $mmSite, $mmEvents, $mmSync,
-        mmaModChoiceComponent, $mmaModChoice, $translate, mmaModChoiceAutomSyncedEvent) {
+        mmaModChoiceComponent, $mmaModChoice, $translate, $mmCourse, mmaModChoiceAutomSyncedEvent) {
 
     $log = $log.getInstance('$mmaModChoiceSync');
 
@@ -149,7 +149,8 @@ angular.module('mm.addons.mod_choice')
                     result.updated = true;
                     return $mmaModChoiceOffline.deleteResponse(choiceId, siteId, userId).then(function() {
                         // Responses deleted, add a warning.
-                        result.warnings.push($translate.instant('mma.mod_choice.warningofflinedatadeleted', {
+                        result.warnings.push($translate.instant('mm.core.warningofflinedatadeleted', {
+                            component: $mmCourse.translateModuleName('choice'),
                             name: data.name,
                             error: error.error
                         }));

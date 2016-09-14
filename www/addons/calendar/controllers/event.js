@@ -37,11 +37,10 @@ angular.module('mm.addons.calendar')
 
             if (e.moduleicon) {
                 // It's a module event, translate the module name to the current language.
-                $mmCourse.translateModuleName(e.modulename).then(function(name) {
-                    if (name.indexOf('mm.core.mod') === -1) {
-                        e.modulename = name;
-                    }
-                });
+                var name = $mmCourse.translateModuleName(e.modulename);
+                if (name.indexOf('mm.core.mod') === -1) {
+                    e.modulename = name;
+                }
             }
 
             if (e.courseid > 1) {

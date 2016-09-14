@@ -506,17 +506,17 @@ angular.module('mm.core.course')
      * @ngdoc method
      * @name $mmCourse#translateModuleName
      * @param {String} moduleName The module name.
-     * @return {Promise}          Promise resolved with the translated name.
+     * @return {String}           Translated name.
      */
     self.translateModuleName = function(moduleName) {
         if (mods.indexOf(moduleName) < 0) {
             moduleName = "external-tool";
         }
 
-        var langkey = 'mm.core.mod_'+moduleName;
-        return $translate(langkey).then(function(translated) {
-            return translated !== langkey ? translated : moduleName;
-        });
+        var langKey = 'mm.core.mod_' + moduleName,
+            translated = $translate.instant(langKey);
+
+        return translated !== langKey ? translated : moduleName;
     };
 
 
