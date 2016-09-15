@@ -438,7 +438,7 @@ angular.module('mm.addons.mod_forum')
      * @module mm.addons.mod_forum
      * @ngdoc method
      * @name $mmaModForum#invalidateContent
-     * @param {Object} moduleId The module ID.
+     * @param {Number} moduleId The module ID.
      * @param {Number} courseId Course ID.
      * @return {Promise}        Promise resolved when data is invalidated.
      */
@@ -495,7 +495,7 @@ angular.module('mm.addons.mod_forum')
      * @module mm.addons.mod_forum
      * @ngdoc method
      * @name $mmaModForum#invalidateFiles
-     * @param {Object} moduleId The module ID.
+     * @param {Number} moduleId The module ID.
      * @return {Promise}        Promise resolved when the files are invalidated.
      */
     self.invalidateFiles = function(moduleId) {
