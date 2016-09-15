@@ -329,7 +329,7 @@ angular.module('mm.addons.mod_choice')
      * @module mm.addons.mod_choice
      * @ngdoc method
      * @name $mmaModChoice#invalidateContent
-     * @param {Object} moduleId The module ID.
+     * @param {Number} moduleId The module ID.
      * @param {Number} courseId Course ID.
      * @return {Promise}
      */
