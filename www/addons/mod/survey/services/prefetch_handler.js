@@ -22,43 +22,23 @@ angular.module('mm.addons.mod_survey')
  * @name $mmaModSurveyPrefetchHandler
  */
 .factory('$mmaModSurveyPrefetchHandler', function($mmaModSurvey, mmaModSurveyComponent, $mmFilepool, $mmSite, $q, $mmUtil, md5,
-            mmCoreDownloading, mmCoreDownloaded) {
+            $mmPrefetchFactory) {
 
-    var self = {},
-        downloadPromises = {}; // Store download promises to prevent duplicate requests.
-
-    self.component = mmaModSurveyComponent;
+    var self = $mmPrefetchFactory.createPrefetchHandler(mmaModSurveyComponent);
 
     /**
-     * Get the download size of a module.
+     * Download the module.
      *
      * @module mm.addons.mod_survey
      * @ngdoc method
-     * @name $mmaModSurveyPrefetchHandler#getDownloadSize
-     * @param  {Object} module   Module to get the size.
+     * @name $mmaModSurveyPrefetchHandler#download
+     * @param  {Object} module   The module object returned by WS.
      * @param  {Number} courseId Course ID the module belongs to.
-     * @return {Promise}         With the file size and a boolean to indicate if it is the total size or only partial.
+     * @return {Promise}         Promise resolved when all files have been downloaded. Data returned is not reliable.
      */
-    self.getDownloadSize = function(module, courseId) {
-        return self.getFiles(module, courseId).then(function(files) {
-            return $mmUtil.sumFileSizes(files);
-        }).catch(function() {
-            return {size: -1, total: false};
-        });
-    };
-
-    /**
-     * Get the downloaded size of a module.
-     *
-     * @module mm.addons.mod_survey
-     * @ngdoc method
-     * @name $mmaModSurveyPrefetchHandler#getDownloadedSize
-     * @param {Object} module   Module to get the downloaded size.
-     * @param {Number} courseId Course ID the module belongs to.
-     * @return {Promise}        Promise resolved with the size.
-     */
-    self.getDownloadedSize = function(module, courseId) {
-        return $mmFilepool.getFilesSizeByComponent($mmSite.getId(), self.component, module.id);
+    self.download = function(module, courseId) {
+        // Surveys cannot be downloaded right away, only prefetched.
+        return self.prefetch(module, courseId);
     };
 
     /**
@@ -72,28 +52,26 @@ angular.module('mm.addons.mod_survey')
      * @return {Promise}        Promise resolved with the list of files.
      */
     self.getFiles = function(module, courseId) {
-        return $mmaModSurvey.getSurvey(courseId, module.id).then(function(survey) {
-            return getFilesFromSurvey(survey);
-        }).catch(function() {
-            // Survey not found, return empty list.
-            return [];
-        });
+        return self.getIntroFiles(module, courseId);
     };
 
     /**
-     * Get the list of downloadable files.
+     * Returns survey intro files.
      *
-     * @param {Object} survey Survey.
-     * @return {Object[]}     Files.
+     * @module mm.addons.mod_survey
+     * @ngdoc method
+     * @name $mmaModSurveyPrefetchHandler#getIntroFiles
+     * @param  {Object} module   The module object returned by WS.
+     * @param  {Number} courseId Course ID.
+     * @return {Promise}         Promise resolved with list of intro files.
      */
-    function getFilesFromSurvey(survey) {
-        if (typeof survey.introfiles != 'undefined') {
-            return survey.introfiles;
-        } else if (survey.intro) {
-            return $mmUtil.extractDownloadableFilesFromHtmlAsFakeFileObjects(survey.intro);
-        }
-        return [];
-    }
+    self.getIntroFiles = function(module, courseId) {
+        return $mmaModSurvey.getSurvey(courseId, module.id).catch(function() {
+            // Not found, return undefined so module description is used.
+        }).then(function(survey) {
+            return self.getIntroFilesFromInstance(module, survey);
+        });
+    };
 
     /**
      * Get revision of a survey (list of questions).
@@ -127,6 +105,7 @@ angular.module('mm.addons.mod_survey')
         if (survey.surveydone) {
             promise = $mmFilepool.getPackageRevision(siteId, mmaModSurveyComponent, moduleId).then(function(revision) {
                 // This is the full revision, maybe containing the files hash. We only want the questions part.
+                revision = '' + revision;
                 return revision.split('#')[0];
             }).catch(function() {
                 // Package not found, return survey questions.
@@ -167,6 +146,20 @@ angular.module('mm.addons.mod_survey')
     };
 
     /**
+     * Invalidate the prefetched content.
+     *
+     * @module mm.addons.mod_survey
+     * @ngdoc method
+     * @name $mmaModSurveyPrefetchHandler#invalidateContent
+     * @param  {Number} moduleId The module ID.
+     * @param  {Number} courseId Course ID of the module.
+     * @return {Promise}
+     */
+    self.invalidateContent = function(moduleId, courseId) {
+        return $mmaModSurvey.invalidateContent(moduleId, courseId);
+    };
+
+    /**
      * Invalidates WS calls needed to determine module status.
      *
      * @module mm.addons.mod_survey
@@ -204,29 +197,27 @@ angular.module('mm.addons.mod_survey')
      * @return {Promise}         Promise resolved when all files have been downloaded. Data returned is not reliable.
      */
     self.prefetch = function(module, courseId, single) {
-        var siteId = $mmSite.getId(),
-            prefetchPromise,
-            deleted = false,
-            component = mmaModSurveyComponent,
-            revision,
+        return self.prefetchPackage(module, courseId, single, prefetchSurvey);
+    };
+
+    /**
+     * Prefetch a survey.
+     *
+     * @param  {Object} module   The module object returned by WS.
+     * @param  {Number} courseId Course ID the module belongs to.
+     * @param  {Boolean} single  True if we're downloading a single module, false if we're downloading a whole section.
+     * @param  {String} siteId   Site ID.
+     * @return {Promise}         Promise resolved with an object with 'revision' and 'timemod'.
+     */
+    function prefetchSurvey(module, courseId, single, siteId) {
+        var revision,
             timemod;
 
-        if (downloadPromises[siteId] && downloadPromises[siteId][module.id]) {
-            // There's already a download ongoing for this package, return the promise.
-            return downloadPromises[siteId][module.id];
-        } else if (!downloadPromises[siteId]) {
-            downloadPromises[siteId] = {};
-        }
-
-        // Mark package as downloading.
-        prefetchPromise = $mmFilepool.storePackageStatus(siteId, component, module.id, mmCoreDownloading).then(function() {
-
-            // Now we can prefetch the survey data.
-            return $mmaModSurvey.getSurvey(courseId, module.id);
-        }).then(function(survey) {
+        // Prefetch the survey data.
+        return $mmaModSurvey.getSurvey(courseId, module.id).then(function(survey) {
             // Get revision, timemodified and files.
             var promises = [],
-                files = getFilesFromSurvey(survey);
+                files = self.getIntroFilesFromInstance(module, survey);
 
             timemod = $mmFilepool.getTimemodifiedFromFileList(files);
 
@@ -247,23 +238,13 @@ angular.module('mm.addons.mod_survey')
 
             return $q.all(promises);
         }).then(function() {
-            // Prefetch finished, mark as downloaded.
-            return $mmFilepool.storePackageStatus(siteId, component, module.id, mmCoreDownloaded, revision, timemod);
-        }).catch(function(error) {
-            // Error prefetching, go back to previous status and reject the promise.
-            return $mmFilepool.setPackagePreviousStatus(siteId, component, module.id).then(function() {
-                return $q.reject(error);
-            });
-        }).finally(function() {
-            deleted = true;
-            delete downloadPromises[siteId][module.id];
+            // Return revision and timemodified.
+            return {
+                revision: revision,
+                timemod: timemod
+            };
         });
-
-        if (!deleted) {
-            downloadPromises[siteId][module.id] = prefetchPromise;
-        }
-        return prefetchPromise;
-    };
+    }
 
     /**
      * Remove module downloaded files.

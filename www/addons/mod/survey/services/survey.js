@@ -256,7 +256,7 @@ angular.module('mm.addons.mod_survey')
      * @module mm.addons.mod_survey
      * @ngdoc method
      * @name $mmaModSurvey#invalidateContent
-     * @param {Object} moduleId The module ID.
+     * @param {Number} moduleId The module ID.
      * @param {Number} courseId Course ID.
      * @return {Promise}
      */
