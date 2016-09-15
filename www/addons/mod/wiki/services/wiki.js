@@ -606,21 +606,21 @@ angular.module('mm.addons.mod_wiki')
     };
 
     /**
-     * Invalidate the prefetched content.
+     * Invalidate the prefetched content except files.
+     * To invalidate files, use $mmaModWiki#invalidateFiles.
      *
      * @module mm.addons.mod_wiki
      * @ngdoc method
      * @name $mmaModWiki#invalidateContent
-     * @param {Object} moduleId The module ID.
+     * @param {Number} moduleId The module ID.
      * @param {Number} courseId Course ID.
      * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}
      */
     self.invalidateContent = function(moduleId, courseId, siteId) {
-        var promises = [];
         siteId = siteId || $mmSite.getId();
 
-        promises.push(self.getWiki(courseId, moduleId, 'coursemodule', siteId).then(function(wiki) {
+        return self.getWiki(courseId, moduleId, 'coursemodule', siteId).then(function(wiki) {
             var ps = [];
             // Do not invalidate wiki data before getting wiki info, we need it!
             ps.push(self.invalidateWikiData(courseId, siteId));
@@ -629,11 +629,22 @@ angular.module('mm.addons.mod_wiki')
             ps.push(self.invalidateSubwikiFiles(wiki.id, siteId));
 
             return $q.all(ps);
-        }));
+        });
+    };
 
-        promises.push($mmFilepool.invalidateFilesByComponent(siteId, mmaModWikiComponent, moduleId));
-
-        return $q.all(promises);
+    /**
+     * Invalidate the prefetched files.
+     *
+     * @module mm.addons.mod_wiki
+     * @ngdoc method
+     * @name $mmaModWiki#invalidateFiles
+     * @param {Number} moduleId  The module ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when the files are invalidated.
+     */
+    self.invalidateFiles = function(moduleId, siteId) {
+        siteId = siteId || $mmSite.getId();
+        return $mmFilepool.invalidateFilesByComponent($mmSite.getId(), mmaModWikiComponent, moduleId);
     };
 
     /**
