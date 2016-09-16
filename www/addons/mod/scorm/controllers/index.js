@@ -24,7 +24,7 @@ angular.module('mm.addons.mod_scorm')
 .controller('mmaModScormIndexCtrl', function($scope, $stateParams, $mmaModScorm, $mmUtil, $q, $mmCourse, $ionicScrollDelegate,
             $mmCoursePrefetchDelegate, $mmaModScormHelper, $mmEvents, $mmSite, $state, mmCoreOutdated, mmCoreNotDownloaded,
             mmCoreDownloading, mmaModScormComponent, mmCoreEventPackageStatusChanged, $ionicHistory, mmaModScormEventAutomSynced,
-            $mmaModScormSync, $timeout, $mmText, $translate) {
+            $mmaModScormSync, $timeout, $mmText, $translate, $mmaModScormPrefetchHandler) {
 
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
@@ -302,7 +302,7 @@ angular.module('mm.addons.mod_scorm')
     // Download a SCORM package or restores an ongoing download.
     function downloadScormPackage() {
         $scope.downloading = true;
-        return $mmaModScorm.download(scorm).then(undefined, undefined, function(progress) {
+        return $mmaModScormPrefetchHandler.download(module, courseid).then(undefined, undefined, function(progress) {
 
             if (!progress) {
                 return;
@@ -398,7 +398,8 @@ angular.module('mm.addons.mod_scorm')
             // SCORM needs to be downloaded.
             $mmaModScormHelper.confirmDownload(scorm).then(function() {
                 // Invalidate file if SCORM is outdated.
-                var promise = currentStatus == mmCoreOutdated ? $mmaModScorm.invalidateContent(scorm.coursemodule) : $q.when();
+                var promise = currentStatus == mmCoreOutdated ?
+                                $mmaModScorm.invalidateContent(scorm.coursemodule, courseid) : $q.when();
                 promise.finally(function() {
                     downloadScormPackage().then(function() {
                         // Success downloading, open scorm if user hasn't left the view.
