@@ -21,13 +21,10 @@ angular.module('mm.addons.mod_glossary')
  * @ngdoc service
  * @name $mmaModGlossaryPrefetchHandler
  */
-.factory('$mmaModGlossaryPrefetchHandler', function($mmaModGlossary, mmaModGlossaryComponent, $mmFilepool, $mmSite, $q, $mmUser,
-            mmCoreDownloading, mmCoreDownloaded, mmCoreOutdated, mmaModGlossaryLimitEntriesNum, $mmUtil, md5) {
+.factory('$mmaModGlossaryPrefetchHandler', function($mmaModGlossary, mmaModGlossaryComponent, $mmFilepool, $q, $mmUser,
+            mmCoreDownloaded, mmCoreOutdated, $mmUtil, $mmPrefetchFactory) {
 
-    var self = {},
-        downloadPromises = {}; // Store download promises to prevent duplicate requests.
-
-    self.component = mmaModGlossaryComponent;
+    var self = $mmPrefetchFactory.createPrefetchHandler(mmaModGlossaryComponent, false);
 
     /**
      * Determine the status of a module based on the current status detected.
@@ -49,35 +46,18 @@ angular.module('mm.addons.mod_glossary')
     };
 
     /**
-     * Get the download size of a module.
+     * Download the module.
      *
      * @module mm.addons.mod_glossary
      * @ngdoc method
-     * @name $mmaModGlossaryPrefetchHandler#getDownloadSize
-     * @param {Object} module   Module to get the size.
-     * @param {Number} courseId Course ID the module belongs to.
-     * @return {Promise}        With the file size and a boolean to indicate if it is the total size or only partial.
+     * @name $mmaModGlossaryPrefetchHandler#download
+     * @param  {Object} module   The module object returned by WS.
+     * @param  {Number} courseId Course ID the module belongs to.
+     * @return {Promise}         Promise resolved when all files have been downloaded. Data returned is not reliable.
      */
-    self.getDownloadSize = function(module, courseId) {
-        return self.getFiles(module, courseId).then(function(files) {
-            return $mmUtil.sumFileSizes(files);
-        }).catch(function() {
-            return {size: -1, total: false};
-        });
-    };
-
-    /**
-     * Get the downloaded size of a module.
-     *
-     * @module mm.addons.mod_glossary
-     * @ngdoc method
-     * @name $mmaModGlossaryPrefetchHandler#getDownloadedSize
-     * @param {Object} module   Module to get the downloaded size.
-     * @param {Number} courseId Course ID the module belongs to.
-     * @return {Promise}        Promise resolved with the size.
-     */
-    self.getDownloadedSize = function(module, courseId) {
-        return $mmFilepool.getFilesSizeByComponent($mmSite.getId(), self.component, module.id);
+    self.download = function(module, courseId) {
+        // Glossaries cannot be downloaded right away, only prefetched.
+        return self.prefetch(module, courseId);
     };
 
     /**
@@ -94,7 +74,7 @@ angular.module('mm.addons.mod_glossary')
         return $mmaModGlossary.getGlossary(courseId, module.id).then(function(glossary) {
             return $mmaModGlossary.fetchAllEntries($mmaModGlossary.getEntriesByLetter, [glossary.id, 'ALL'])
                     .then(function(entries) {
-                return getFilesFromGlossaryEntries(glossary, entries);
+                return getFilesFromGlossaryAndEntries(module, glossary, entries);
             });
         }).catch(function() {
             // Glossary not found, return empty list.
@@ -103,30 +83,16 @@ angular.module('mm.addons.mod_glossary')
     };
 
     /**
-     * Get glossary intro files.
+     * Get the list of downloadable files. It includes entry embedded files.
      *
-     * @param  {Object}     glossary Glossary.
-     * @return {Object[]}       Attachments.
+     * @param  {Object} module   Module to get the files.
+     * @param  {Object} glossary Glossary
+     * @param  {Array}  entries  Entries of the Glossary.
+     * @return {Array}           List of Files.
      */
-    function getIntroFiles(glossary) {
-        if (typeof glossary.introfiles != 'undefined') {
-            return glossary.introfiles;
-        } else if (glossary.intro) {
-            return $mmUtil.extractDownloadableFilesFromHtmlAsFakeFileObjects(glossary.intro);
-        }
-        return [];
-    }
-
-    /**
-     * Get the list of downloadable files. It does not include entry embedded files.
-     *
-     * @param {Object}  glossary    Glossary
-     * @param {Array}   entries     Entries of the Glossary.
-     * @return {Array}              List of Files.
-     */
-    function getFilesFromGlossaryEntries(glossary, entries) {
-        var files = getIntroFiles(glossary);
-        // Get entries to get related files.
+    function getFilesFromGlossaryAndEntries(module, glossary, entries) {
+        var files = self.getIntroFilesFromInstance(module, glossary);
+        // Get entries files.
         angular.forEach(entries, function(entry) {
             files = files.concat($mmUtil.extractDownloadableFilesFromHtmlAsFakeFileObjects(entry.definition));
             files = files.concat(entry.attachments);
@@ -164,6 +130,20 @@ angular.module('mm.addons.mod_glossary')
         // Right now glossaries are always shown as outdated because determining their status requires too many WS calls.
         // Return a fake timemodified since it won't be used. This will be improved in the future.
         return 0;
+    };
+
+    /**
+     * Invalidate the prefetched content.
+     *
+     * @module mm.addons.mod_glossary
+     * @ngdoc method
+     * @name $mmaModGlossaryPrefetchHandler#invalidateContent
+     * @param  {Number} moduleId The module ID.
+     * @param  {Number} courseId Course ID of the module.
+     * @return {Promise}
+     */
+    self.invalidateContent = function(moduleId, courseId) {
+        return $mmaModGlossary.invalidateContent(moduleId, courseId);
     };
 
     /**
@@ -211,108 +191,82 @@ angular.module('mm.addons.mod_glossary')
      * @return {Promise}         Promise resolved when all files have been downloaded. Data returned is not reliable.
      */
     self.prefetch = function(module, courseId, single) {
-        var siteId = $mmSite.getId(),
-            prefetchPromise,
-            deleted = false,
-            component = mmaModGlossaryComponent,
-            revision,
-            timemod;
-
-        if (downloadPromises[siteId] && downloadPromises[siteId][module.id]) {
-            // There's already a download ongoing for this package, return the promise.
-            return downloadPromises[siteId][module.id];
-        } else if (!downloadPromises[siteId]) {
-            downloadPromises[siteId] = {};
-        }
-
-        // Mark package as downloading.
-        prefetchPromise = $mmFilepool.storePackageStatus(siteId, component, module.id, mmCoreDownloading).then(function() {
-
-            // Now we can prefetch the glossary data.
-            return $mmaModGlossary.getGlossary(courseId, module.id).then(function(glossary) {
-                var promises = [];
-
-                angular.forEach(glossary.browsemodes, function(mode) {
-                    switch(mode) {
-                        case 'letter': // Always done. Look bellow.
-                        case 'cat': // Not implemented.
-                            break;
-                        case 'date':
-                            promises.push($mmaModGlossary.fetchAllEntries($mmaModGlossary.getEntriesByDate,
-                                [glossary.id, 'CREATION', 'DESC']));
-                            promises.push($mmaModGlossary.fetchAllEntries($mmaModGlossary.getEntriesByDate,
-                                [glossary.id, 'UPDATE', 'DESC']));
-                            break;
-                        case 'author':
-                            promises.push($mmaModGlossary.fetchAllEntries($mmaModGlossary.getEntriesByAuthor,
-                                [glossary.id, 'ALL', 'LASTNAME', 'ASC']));
-                            break;
-                    }
-                });
-
-                // Fetch all entries to get information from.
-                promises.push($mmaModGlossary.fetchAllEntries($mmaModGlossary.getEntriesByLetter,[glossary.id, 'ALL'])
-                        .then(function(entries) {
-                    var promises = [],
-                        files = getFilesFromGlossaryEntries(glossary, entries);
-
-                    // Fetch user avatars.
-                    angular.forEach(entries, function(entry) {
-                        // Fetch individual entries.
-                        promises.push($mmaModGlossary.getEntry(entry.id));
-
-                        promises.push($mmUser.getProfile(entry.userid, courseId).then(function(profile) {
-                            if (profile.profileimageurl) {
-                                $mmFilepool.addToQueueByUrl(siteId, profile.profileimageurl);
-                            }
-                        }));
-                    });
-
-                    angular.forEach(files, function(file) {
-                        promises.push($mmFilepool.addToQueueByUrl(siteId, file.fileurl, component, module.id, file.timemodified));
-                    });
-
-                    return $q.all(promises);
-                }));
-
-                // Get revision and timemodified.
-                revision = self.getRevision(module, courseId);
-                timemod = self.getTimemodified(module, courseId);
-
-                return $q.all(promises);
-            });
-        }).then(function() {
-            // Prefetch finished, mark as downloaded.
-            return $mmFilepool.storePackageStatus(siteId, component, module.id, mmCoreDownloaded, revision, timemod);
-        }).catch(function(error) {
-            // Error prefetching, go back to previous status and reject the promise.
-            return $mmFilepool.setPackagePreviousStatus(siteId, component, module.id).then(function() {
-                return $q.reject(error);
-            });
-        }).finally(function() {
-            deleted = true;
-            delete downloadPromises[siteId][module.id];
-        });
-
-        if (!deleted) {
-            downloadPromises[siteId][module.id] = prefetchPromise;
-        }
-        return prefetchPromise;
+        return self.prefetchPackage(module, courseId, single, prefetchGlossary);
     };
 
     /**
-     * Remove module downloaded files.
+     * Prefetch a glossary.
      *
-     * @module mm.addons.mod_glossary
-     * @ngdoc method
-     * @name $mmaModGlossaryPrefetchHandler#removeFiles
-     * @param {Object} module   Module to remove the files.
-     * @param {Number} courseId Course ID the module belongs to.
-     * @return {Promise}        Promise resolved when done.
+     * @param  {Object} module   The module object returned by WS.
+     * @param  {Number} courseId Course ID the module belongs to.
+     * @param  {Boolean} single  True if we're downloading a single module, false if we're downloading a whole section.
+     * @param  {String} siteId   Site ID.
+     * @return {Promise}         Promise resolved with an object with 'revision' and 'timemod'.
      */
-    self.removeFiles = function(module, courseId) {
-        return $mmFilepool.removeFilesByComponent($mmSite.getId(), self.component, module.id);
-    };
+    function prefetchGlossary(module, courseId, single, siteId) {
+        var revision,
+            timemod;
+
+        // Prefetch the glossary data.
+        return $mmaModGlossary.getGlossary(courseId, module.id).then(function(glossary) {
+            var promises = [];
+
+            angular.forEach(glossary.browsemodes, function(mode) {
+                switch(mode) {
+                    case 'letter': // Always done. Look bellow.
+                    case 'cat': // Not implemented.
+                        break;
+                    case 'date':
+                        promises.push($mmaModGlossary.fetchAllEntries($mmaModGlossary.getEntriesByDate,
+                            [glossary.id, 'CREATION', 'DESC']));
+                        promises.push($mmaModGlossary.fetchAllEntries($mmaModGlossary.getEntriesByDate,
+                            [glossary.id, 'UPDATE', 'DESC']));
+                        break;
+                    case 'author':
+                        promises.push($mmaModGlossary.fetchAllEntries($mmaModGlossary.getEntriesByAuthor,
+                            [glossary.id, 'ALL', 'LASTNAME', 'ASC']));
+                        break;
+                }
+            });
+
+            // Fetch all entries to get information from.
+            promises.push($mmaModGlossary.fetchAllEntries($mmaModGlossary.getEntriesByLetter, [glossary.id, 'ALL'])
+                    .then(function(entries) {
+                var promises = [],
+                    files = getFilesFromGlossaryAndEntries(module, glossary, entries);
+
+                // Fetch user avatars.
+                angular.forEach(entries, function(entry) {
+                    // Fetch individual entries.
+                    promises.push($mmaModGlossary.getEntry(entry.id));
+
+                    promises.push($mmUser.getProfile(entry.userid, courseId).then(function(profile) {
+                        if (profile.profileimageurl) {
+                            $mmFilepool.addToQueueByUrl(siteId, profile.profileimageurl);
+                        }
+                    }));
+                });
+
+                angular.forEach(files, function(file) {
+                    promises.push($mmFilepool.addToQueueByUrl(siteId, file.fileurl, self.component, module.id, file.timemodified));
+                });
+
+                return $q.all(promises);
+            }));
+
+            // Get revision and timemodified.
+            revision = self.getRevision(module, courseId);
+            timemod = self.getTimemodified(module, courseId);
+
+            return $q.all(promises);
+        }).then(function() {
+            // Return revision and timemodified.
+            return {
+                revision: revision,
+                timemod: timemod
+            };
+        });
+    }
 
     return self;
 });
