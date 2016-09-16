@@ -196,7 +196,14 @@ angular.module('mm.addons.mod_assign')
         if (submissionPlugin.fileareas) {
             angular.forEach(submissionPlugin.fileareas, function(filearea) {
                 angular.forEach(filearea.files, function(file) {
-                    var filename = file.filepath[0] == '/' ? file.filepath.substr(1) : file.filepath;
+                    var filename;
+                    if (file.filename) {
+                        filename = file.filename;
+                    } else {
+                        // We don't have filename, extract it from the path.
+                        filename = file.filepath[0] == '/' ? file.filepath.substr(1) : file.filepath;
+                    }
+
                     files.push({
                         'filename' : filename,
                         'fileurl': file.fileurl
@@ -584,12 +591,13 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
-     * Invalidate the prefetched content.
+     * Invalidate the prefetched content except files.
+     * To invalidate files, use $mmaModAssign#invalidateFiles.
      *
      * @module mm.addons.mod_assign
      * @ngdoc method
      * @name $mmaModAssign#invalidateContent
-     * @param {Object} moduleId The module ID.
+     * @param {Number} moduleId The module ID.
      * @param {Number} courseId Course ID.
      * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}
@@ -610,10 +618,21 @@ angular.module('mm.addons.mod_assign')
             return $q.all(ps);
         }));
 
-        promises.push($mmFilepool.invalidateFilesByComponent(siteId, mmaModAssignComponent, moduleId));
-
         return $q.all(promises);
     };
+
+    /**
+     * Invalidate the prefetched files.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssign#invalidateFiles
+     * @param {Number} moduleId The module ID.
+     * @return {Promise}        Promise resolved when the files are invalidated.
+     */
+     self.invalidateFiles = function(moduleId) {
+         return $mmFilepool.invalidateFilesByComponent($mmSite.getId(), mmaModAssignComponent, moduleId);
+     };
 
     /**
      * Check if assignments plugin is enabled in a certain site.

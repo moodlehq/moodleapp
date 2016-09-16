@@ -22,47 +22,23 @@ angular.module('mm.addons.mod_assign')
  * @name $mmaModAssignPrefetchHandler
  */
 .factory('$mmaModAssignPrefetchHandler', function($mmaModAssign, mmaModAssignComponent, $mmSite, $mmFilepool, $q, $mmCourseHelper,
-        $mmCourse, $mmGroups, $mmUser, $mmaModAssignSubmissionDelegate, $mmaModAssignFeedbackDelegate, mmCoreDownloading, $mmUtil,
-        mmCoreDownloaded) {
+        $mmCourse, $mmGroups, $mmUser, $mmaModAssignSubmissionDelegate, $mmaModAssignFeedbackDelegate, $mmPrefetchFactory) {
 
-    var self = {},
-        downloadPromises = {}; // Store download promises to prevent duplicate requests.
-
-    self.component = mmaModAssignComponent;
+    var self = $mmPrefetchFactory.createPrefetchHandler(mmaModAssignComponent, false);
 
     /**
-     * Get the download size of a module.
+     * Download the module.
      *
      * @module mm.addons.mod_assign
      * @ngdoc method
-     * @name $mmaModAssignPrefetchHandler#getDownloadSize
-     * @param  {Object} module    Module to get the size.
-     * @param  {Number} courseId  Course ID the module belongs to.
-     * @param  {String} [siteId]  Site ID. If not defined, current site.
-     * @return {Promise}          With the file size and a boolean to indicate if it is the total size or only partial.
+     * @name $mmaModAssignPrefetchHandler#download
+     * @param  {Object} module   The module object returned by WS.
+     * @param  {Number} courseId Course ID the module belongs to.
+     * @return {Promise}         Promise resolved when all files have been downloaded. Data returned is not reliable.
      */
-    self.getDownloadSize = function(module, courseId, siteId) {
-        siteId = siteId || $mmSite.getId();
-
-        return self.getFiles(module, courseId, siteId).then(function(files) {
-            return $mmUtil.sumFileSizes(files);
-        }).catch(function() {
-            return {size: -1, total: false};
-        });
-    };
-
-    /**
-     * Get the downloaded size of a module.
-     *
-     * @module mm.addons.mod_assign
-     * @ngdoc method
-     * @name $mmaModAssignPrefetchHandler#getDownloadedSize
-     * @param {Object} module   Module to get the downloaded size.
-     * @param {Number} courseId Course ID the module belongs to.
-     * @return {Promise}        Promise resolved with the size.
-     */
-    self.getDownloadedSize = function(module, courseId) {
-        return $mmFilepool.getFilesSizeByComponent($mmSite.getId(), self.component, module.id);
+    self.download = function(module, courseId) {
+        // Assigns cannot be downloaded right away, only prefetched.
+        return self.prefetch(module, courseId);
     };
 
     /**
@@ -80,7 +56,9 @@ angular.module('mm.addons.mod_assign')
         siteId = siteId || $mmSite.getId();
 
         return $mmaModAssign.getAssignment(courseId, module.id, siteId).then(function(assign) {
+            // Get intro files and attachments.
             var files = assign.introattachments || [];
+            files = files.concat(self.getIntroFilesFromInstance(module, assign));
 
             return $mmaModAssign.getSubmissions(assign.id, siteId).then(function(data) {
                 var blindMarking = assign.blindmarking && !assign.revealidentities;
@@ -286,15 +264,40 @@ angular.module('mm.addons.mod_assign')
     }
 
     /**
-     * Whether or not the module is enabled for the site.
+     * Invalidate the prefetched content.
      *
      * @module mm.addons.mod_assign
      * @ngdoc method
-     * @name $mmaModAssignPrefetchHandler#isEnabled
-     * @return {Boolean}
+     * @name $mmaModAssignPrefetchHandler#invalidateContent
+     * @param  {Number} moduleId The module ID.
+     * @param  {Number} courseId Course ID of the module.
+     * @return {Promise}
      */
-    self.isEnabled = function() {
-        return $mmaModAssign.isPluginEnabled();
+    self.invalidateContent = function(moduleId, courseId) {
+        return $mmaModAssign.invalidateContent(moduleId, courseId);
+    };
+
+    /**
+     * Invalidates WS calls needed to determine module status.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignPrefetchHandler#invalidateModule
+     * @param  {Object} module   Module to invalidate.
+     * @param  {Number} courseId Course ID the module belongs to.
+     * @return {Promise}         Promise resolved when done.
+     */
+    self.invalidateModule = function(module, courseId) {
+        var siteId = $mmSite.getId();
+        return $mmaModAssign.getAssignment(courseId, module.id, siteId).then(function(assign) {
+            var promises = [];
+
+            promises.push(self.invalidateAssignmentData(courseId, siteId));
+            promises.push(self.invalidateAllSubmissionData(assign.id, siteId));
+            promises.push(self.invalidateAssignmentUserMappingsData(assign.id, siteId));
+
+            return $q.all(promises);
+        });
     };
 
     /**
@@ -312,17 +315,15 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
-     * Invalidates WS calls needed to determine module status.
+     * Whether or not the module is enabled for the site.
      *
      * @module mm.addons.mod_assign
      * @ngdoc method
-     * @name $mmaModAssignPrefetchHandler#invalidateModule
-     * @param  {Object} module   Module to invalidate.
-     * @param  {Number} courseId Course ID the module belongs to.
-     * @return {Promise}         Promise resolved when done.
+     * @name $mmaModAssignPrefetchHandler#isEnabled
+     * @return {Boolean}
      */
-    self.invalidateModule = function(module, courseId) {
-        return $mmaModAssign.invalidateContent(module.id, courseId);
+    self.isEnabled = function() {
+        return $mmaModAssign.isPluginEnabled();
     };
 
     /**
@@ -337,83 +338,71 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}         Promise resolved when all files have been downloaded. Data returned is not reliable.
      */
     self.prefetch = function(module, courseId, single) {
-        var siteId = $mmSite.getId(),
-            userId = $mmSite.getUserId(),
-            prefetchPromise,
-            deleted = false,
+        return self.prefetchPackage(module, courseId, single, prefetchAssign);
+    };
+
+    /**
+     * Prefetch an assign.
+     *
+     * @param  {Object} module   The module object returned by WS.
+     * @param  {Number} courseId Course ID the module belongs to.
+     * @param  {Boolean} single  True if we're downloading a single module, false if we're downloading a whole section.
+     * @param  {String} siteId   Site ID.
+     * @return {Promise}         Promise resolved with an object with 'revision' and 'timemod'.
+     */
+    function prefetchAssign(module, courseId, single, siteId) {
+        var userId = $mmSite.getUserId(),
             revision,
             timemod,
-            component = mmaModAssignComponent;
+            promises = [];
 
-        if (downloadPromises[siteId] && downloadPromises[siteId][module.id]) {
-            // There's already a download ongoing for this package, return the promise.
-            return downloadPromises[siteId][module.id];
-        } else if (!downloadPromises[siteId]) {
-            downloadPromises[siteId] = {};
-        }
+        promises.push($mmCourse.getModuleBasicInfo(module.id, siteId));
 
-        // Mark package as downloading.
-        prefetchPromise = $mmFilepool.storePackageStatus(siteId, component, module.id, mmCoreDownloading).then(function() {
-            var promises = [];
+        // Get Assignment to retrieve all its submissions.
+        promises.push($mmaModAssign.getAssignment(courseId, module.id, siteId).then(function(assign) {
+            var subPromises = [],
+                blindMarking = assign.blindmarking && !assign.revealidentities;
 
-            promises.push($mmCourse.getModuleBasicInfo(module.id, siteId));
-
-            // Get Assignment to retrieve all its submissions.
-            promises.push($mmaModAssign.getAssignment(courseId, module.id, siteId).then(function(assign) {
-                var subPromises = [],
-                    blindMarking = assign.blindmarking && !assign.revealidentities;
-
-                if (blindMarking) {
-                    subPromises.push($mmaModAssign.getAssignmentUserMappings(assign.id, false, siteId).catch(function() {
-                        // Fail silently (Moodle < 2.6)
-                    }));
-                }
-
-                subPromises.push(prefetchSubmissions(assign, courseId, siteId, userId));
-
-                subPromises.push($mmCourseHelper.getModuleCourseIdByInstance(assign.id, 'assign', siteId));
-
-                // Get related submissions files and fetch them.
-                subPromises.push(self.getFiles(module, courseId, siteId).then(function(files) {
-                    var filePromises = [];
-
-                    revision = self.getRevision(module, courseId);
-
-                    angular.forEach(files, function(file) {
-                        var url = file.fileurl;
-                        filePromises.push($mmFilepool.addToQueueByUrl(siteId, url, component, module.id, file.timemodified));
-                    });
-
-                    return $q.all(filePromises);
+            if (blindMarking) {
+                subPromises.push($mmaModAssign.getAssignmentUserMappings(assign.id, false, siteId).catch(function() {
+                    // Fail silently (Moodle < 2.6)
                 }));
+            }
 
-                return $q.all(subPromises);
+            subPromises.push(prefetchSubmissions(assign, courseId, siteId, userId));
+
+            subPromises.push($mmCourseHelper.getModuleCourseIdByInstance(assign.id, 'assign', siteId));
+
+            // Get related submissions files and fetch them.
+            subPromises.push(self.getFiles(module, courseId, siteId).then(function(files) {
+                var filePromises = [];
+
+                revision = self.getRevision(module, courseId);
+
+                angular.forEach(files, function(file) {
+                    var url = file.fileurl;
+                    filePromises.push($mmFilepool.addToQueueByUrl(siteId, url, self.component, module.id, file.timemodified));
+                });
+
+                return $q.all(filePromises);
             }));
 
-            // Get timemodified.
-            promises.push(self.getTimemodified(module, courseId, siteId).then(function(timemodified) {
-                timemod = timemodified;
-            }));
+            return $q.all(subPromises);
+        }));
 
-            return $q.all(promises);
-        }).then(function() {
-            // Prefetch finished, mark as downloaded.
-            return $mmFilepool.storePackageStatus(siteId, component, module.id, mmCoreDownloaded, revision, timemod);
-        }).catch(function(error) {
-            // Error prefetching, go back to previous status and reject the promise.
-            return $mmFilepool.setPackagePreviousStatus(siteId, component, module.id).then(function() {
-                return $q.reject(error);
-            });
-        }).finally(function() {
-            deleted = true;
-            delete downloadPromises[siteId][module.id];
+        // Get timemodified.
+        promises.push(self.getTimemodified(module, courseId, siteId).then(function(timemodified) {
+            timemod = timemodified;
+        }));
+
+        return $q.all(promises).then(function() {
+            // Return revision and timemodified.
+            return {
+                revision: revision,
+                timemod: timemod
+            };
         });
-
-        if (!deleted) {
-            downloadPromises[siteId][module.id] = prefetchPromise;
-        }
-        return prefetchPromise;
-    };
+    }
 
     /**
      * Prefetch assign submissions.
@@ -538,20 +527,6 @@ angular.module('mm.addons.mod_assign')
 
         return $q.all(promises);
     }
-
-    /**
-     * Remove module downloaded files.
-     *
-     * @module mm.addons.mod_assign
-     * @ngdoc method
-     * @name $mmaModAssignPrefetchHandler#removeFiles
-     * @param {Object} module   Module to remove the files.
-     * @param {Number} courseId Course ID the module belongs to.
-     * @return {Promise}        Promise resolved when done.
-     */
-    self.removeFiles = function(module, courseId) {
-        return $mmFilepool.removeFilesByComponent($mmSite.getId(), self.component, module.id);
-    };
 
     return self;
 });
