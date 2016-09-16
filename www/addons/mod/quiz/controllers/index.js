@@ -25,7 +25,7 @@ angular.module('mm.addons.mod_quiz')
             $mmaModQuizHelper, $ionicHistory, $ionicScrollDelegate, $mmEvents, mmaModQuizEventAttemptFinished, $state,
             $mmQuestionBehaviourDelegate, $mmaModQuizSync, $mmText, $mmUtil, mmaModQuizEventAutomSynced, $mmSite,
             $mmCoursePrefetchDelegate, mmCoreDownloaded, mmCoreDownloading, mmCoreEventPackageStatusChanged,
-            mmaModQuizComponent) {
+            mmaModQuizComponent, $mmaModQuizPrefetchHandler) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         quiz,
@@ -374,8 +374,8 @@ angular.module('mm.addons.mod_quiz')
 
     // Get status of the quiz.
     function getStatus() {
-        var revision = $mmaModQuiz.getQuizRevisionFromAttempts(attempts),
-            timemodified = $mmaModQuiz.getQuizTimemodifiedFromAttempts(attempts);
+        var revision = $mmaModQuizPrefetchHandler.getRevisionFromAttempts(attempts),
+            timemodified = $mmaModQuizPrefetchHandler.getTimemodifiedFromAttempts(attempts);
 
         return $mmCoursePrefetchDelegate.getModuleStatus(module, courseId, revision, timemodified);
     }
@@ -459,7 +459,7 @@ angular.module('mm.addons.mod_quiz')
             if (currentStatus != mmCoreDownloaded) {
                 // Prefetch the quiz.
                 $scope.showSpinner = true;
-                return $mmaModQuiz.prefetch(module, courseId, true).then(function() {
+                return $mmaModQuizPrefetchHandler.prefetch(module, courseId, true).then(function() {
                     // Success downloading, open quiz.
                     openQuiz();
                 }).catch(function(error) {

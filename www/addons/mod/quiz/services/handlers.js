@@ -118,11 +118,7 @@ angular.module('mm.addons.mod_quiz')
                 });
 
                 // Get current status to decide which icon should be shown.
-                $mmaModQuizPrefetchHandler.getRevision(module, courseId).then(function(revision) {
-                    $mmaModQuizPrefetchHandler.getTimemodified(module, courseId).then(function(timemodified) {
-                        $mmCoursePrefetchDelegate.getModuleStatus(module, courseId, revision, timemodified).then(showStatus);
-                    });
-                });
+                $mmCoursePrefetchDelegate.getModuleStatus(module, courseId).then(showStatus);
 
                 $scope.$on('$destroy', function() {
                     statusObserver && statusObserver.off && statusObserver.off();
