@@ -19,7 +19,8 @@
                 </div>
                 <ion-toggle ng-model="newdiscussion.subscribe">{{ 'mma.mod_forum.discussionsubscription' | translate }}</ion-toggle>
                 <div class="item">
-                    <button class="button button-block" ng-click="add()" ng-disabled="newdiscussion.subject == '' || newdiscussion.text == ''">{{ 'mma.mod_forum.posttoforum' | translate }}</button>
+                    <button class="button button-block button-positive" ng-click="add()" ng-disabled="newdiscussion.subject == '' || newdiscussion.text == ''">{{ 'mma.mod_forum.posttoforum' | translate }}</button>
+                    <button ng-if="hasOffline" class="button button-block button-outline button-positive" ng-click="discard()">{{ 'mm.core.discard' | translate }}</button>
                 </div>
             </form>
         </mm-loading>

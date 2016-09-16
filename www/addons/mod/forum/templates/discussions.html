@@ -13,11 +13,40 @@
             </ion-refresher>
             <mm-loading hide-until="discussionsLoaded">
                 <mm-course-mod-description watch="true" description="description" note="'mma.mod_forum.numdiscussions' | translate:{numdiscussions: forum.numdiscussions}" component="{{component}}" component-id="{{componentId}}"></mm-course-mod-description>
+
+                <!-- Forum discussions found to be synchronized -->
+                <div class="card padding" ng-if="hasOffline">
+                    <p class="padding">{{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}</p>
+                    <button class="button button-block icon-right ion-loop" ng-click="sync()">{{ 'mm.settings.synchronizenow' | translate }}</button>
+                </div>
+
                 <ul class="list" ng-if="forum">
                     <li class="item" ng-if="isCreateEnabled && forum.cancreatediscussions">
                         <button class="button button-block" mm-split-view-link="site.mod_forum-newdiscussion({forumid: forum.id, cmid: forum.cmid, cid: courseid})">
                             {{ 'mma.mod_forum.addanewdiscussion' | translate }}
                         </button>
+                    </li>
+                    <li class="card" ng-repeat="discussion in offlineDiscussions | orderBy:'-timecreated'">
+                        <a class="mma-forum-discussion-link" mm-split-view-link="site.mod_forum-newdiscussion({cid: courseid, forumid: forum.id, cmid: forum.cmid, userid: discussion.userid, timecreated: discussion.timecreated})">
+                            <article>
+                                <div class="item item-avatar item-text-wrap">
+                                    <img ng-if="discussion.userpictureurl" ng-src="{{discussion.userpictureurl}}" mm-external-content mm-split-view-link="{{userStateName}}({courseid: courseid, userid: discussion.userid})" alt="{{ 'mm.core.pictureof' | translate:{$a: discussion.userfullname} }}" role="presentation">
+                                    <img ng-if="!discussion.userpictureurl" src="img/user-avatar.png" alt="{{ 'mm.core.pictureof' | translate:{$a: discussion.userfullname} }}" role="presentation">
+                                    <h2><summary>{{discussion.subject}}</summary></h2>
+                                    <div class="item-note"><i class="icon ion-clock"></i> {{ 'mm.core.notsent' | translate }}</div>
+                                    <p>{{discussion.userfullname}}</p>
+                                </div>
+                                <div class="item item-body">
+                                    <p><mm-format-text watch="true" clean="true" shorten component="{{component}}" component-id="{{componentId}}">{{discussion.message}}</mm-format-text></p>
+                                    <span class="item-note text-right">
+                                        <span ng-if="discussion.groupname">
+                                            <i class="icon ion-ios-people"></i> {{ discussion.groupname }}
+                                            <br />
+                                        </span>
+                                    </span>
+                                </div>
+                            </article>
+                        </a>
                     </li>
                     <li class="card" ng-repeat="discussion in discussions track by $index">
                         <a class="mma-forum-discussion-link" mm-split-view-link="site.mod_forum-discussion({cid: courseid, discussionid: discussion.discussion, forumid: forum.id, cmid: forum.cmid})">
