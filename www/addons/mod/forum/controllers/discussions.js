@@ -24,7 +24,7 @@ angular.module('mm.addons.mod_forum')
 .controller('mmaModForumDiscussionsCtrl', function($q, $scope, $stateParams, $mmaModForum, $mmCourse, $mmUtil, $mmGroups, $mmUser,
             $mmEvents, $ionicScrollDelegate, $ionicPlatform, mmUserProfileState, mmaModForumNewDiscussionEvent, $mmSite, $translate,
             mmaModForumReplyDiscussionEvent, $mmText, mmaModForumComponent, $mmaModForumOffline, $mmaModForumSync,
-            mmaModForumAutomSyncedEvent) {
+            mmaModForumAutomSyncedEvent, mmaModForumManualSyncedEvent) {
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
         forum,
@@ -136,6 +136,23 @@ angular.module('mm.addons.mod_forum')
                 $scope.count = $scope.discussions.length;
                 $scope.canLoadMore = response.canLoadMore;
                 page++;
+
+                // Check if there are replies for discussions stored in offline.
+                return $mmaModForumOffline.hasForumReplies(forum.id).then(function(hasOffline) {
+                    var offlinePromises = [];
+                    $scope.hasOffline = $scope.hasOffline || hasOffline;
+
+                    if (hasOffline) {
+                        // Only update new fetched discussions.
+                        angular.forEach(discussions, function(discussion) {
+                            // Get offline discussions.
+                            offlinePromises.push($mmaModForumOffline.getDiscussionReplies(discussion.discussion).then(function(replies) {
+                                discussion.numreplies = parseInt(discussion.numreplies, 10) + parseInt(replies.length, 10);
+                            }));
+                        });
+                    }
+                    return $q.all(offlinePromises);
+                });
             });
         }, function(message) {
             $mmUtil.showErrorModal(message);
@@ -146,15 +163,17 @@ angular.module('mm.addons.mod_forum')
 
     $scope.sync = function() {
         var modal = $mmUtil.showModalLoading('mm.settings.synchronizing', true);
-        syncForum(true).then(function() {
-            // Refresh the data.
-            $scope.discussionsLoaded = false;
-            $scope.refreshIcon = 'spinner';
-            scrollTop();
-            refreshData(false).finally(function() {
-                $scope.discussionsLoaded = true;
-                $scope.refreshIcon = 'ion-refresh';
-            });
+        syncForum(true).then(function(updated) {
+            if (updated) {
+                // Refresh the data.
+                $scope.discussionsLoaded = false;
+                $scope.refreshIcon = 'spinner';
+                scrollTop();
+                refreshData(false).finally(function() {
+                    $scope.discussionsLoaded = true;
+                    $scope.refreshIcon = 'ion-refresh';
+                });
+            }
         }).finally(function() {
             modal.dismiss();
         });
@@ -162,12 +181,37 @@ angular.module('mm.addons.mod_forum')
 
     // Tries to synchronize the forum.
     function syncForum(showErrors) {
-        return $mmaModForumSync.syncForumDiscussions(forum.id).then(function(result) {
+        var promises = [];
+        promises.push($mmaModForumSync.syncForumDiscussions(forum.id).then(function(result) {
             if (result.warnings && result.warnings.length) {
                 $mmUtil.showErrorModal(result.warnings[0]);
             }
 
             return result.updated;
+        }));
+
+        promises.push($mmaModForumSync.syncForumReplies(forum.id).then(function(result) {
+            if (result.warnings && result.warnings.length) {
+                $mmUtil.showErrorModal(result.warnings[0]);
+            }
+
+            if (result && result.updated) {
+                // Sync successful, send event.
+                $mmEvents.trigger(mmaModForumManualSyncedEvent, {
+                    siteid: $mmSite.getId(),
+                    forumid: forum.id,
+                    userid: $mmSite.getUserId(),
+                    warnings: result.warnings
+                });
+            }
+
+            return result.updated;
+        }));
+
+        return $q.all(promises).then(function(results) {
+            return results.reduce(function(a, b) {
+                return a || b;
+            }, false);
         }).catch(function(error) {
             if (showErrors) {
                 if (error) {

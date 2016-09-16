@@ -19,6 +19,7 @@ angular.module('mm.addons.mod_forum', [])
 .constant('mmaModForumNewDiscussionEvent', 'mma-mod_forum_new_discussion')
 .constant('mmaModForumReplyDiscussionEvent', 'mma-mod_forum_reply_discussion')
 .constant('mmaModForumAutomSyncedEvent', 'mma-mod_forum_autom_synced')
+.constant('mmaModForumManualSyncedEvent', 'mma-mod_forum_manual_synced')
 .constant('mmaModForumSyncTime', 300000) // In milliseconds.
 
 .config(function($stateProvider) {

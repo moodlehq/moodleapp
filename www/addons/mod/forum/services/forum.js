@@ -120,7 +120,8 @@ angular.module('mm.addons.mod_forum')
 
         // Convenience function to store a message to be synchronized later.
         function storeOffline() {
-            return $mmaModForumOffline.addNewDiscussion(forumId, name, courseId, subject, message, subscribe, groupId, siteId).then(function() {
+            return $mmaModForumOffline.addNewDiscussion(forumId, name, courseId, subject, message, subscribe, groupId, siteId)
+                    .then(function() {
                 return false;
             });
         }
@@ -372,11 +373,16 @@ angular.module('mm.addons.mod_forum')
 
     /**
      * Sort forum discussion posts by an specified field.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#sortDiscussionPosts
      * @param  {Array}  posts     Discussion posts to be sorted.
      * @param  {String} direction Direction of the sorting (ASC / DESC).
      * @return {Array}            Discussion posts sorted.
      */
     self.sortDiscussionPosts = function(posts, direction) {
+        // @todo: Check children when sorting.
         return posts.sort(function (a, b) {
             a = parseInt(a.created, 10);
             b = parseInt(b.created, 10);
@@ -649,24 +655,84 @@ angular.module('mm.addons.mod_forum')
      * @module mm.addons.mod_forum
      * @ngdoc method
      * @name $mmaModForum#replyPost
-     * @param {Number} postid  ID of the post being replied.
-     * @param {String} subject New post's subject.
-     * @param {String} message New post's message.
-     * @return {Promise}       Promise resolved when the post is created.
+     * @param {Number} postId           ID of the post being replied.
+     * @param {Number} discussionId     ID of the discussion the user is replying to.
+     * @param {Number} forumId          ID of the forum the user is replying to.
+     * @param {String} name             Forum name.
+     * @param {Number} courseId         Course ID the forum belongs to.
+     * @param {String} subject          New post's subject.
+     * @param {String} message          New post's message.
+     * @param {String} [siteId]         Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved when the post is created.
      */
-    self.replyPost = function(postid, subject, message) {
-        var params = {
-            postid: postid,
-            subject: subject,
-            message: message
-        };
+    self.replyPost = function(postId, discussionId, forumId, name, courseId, subject, message, siteId) {
+        siteId = siteId || $mmSite.getId();
 
-        return $mmSite.write('mod_forum_add_discussion_post', params).then(function(response) {
-            if (!response || !response.postid) {
-                return $q.reject();
-            } else {
-                return response.postid;
-            }
+        if (!$mmApp.isOnline()) {
+            // App is offline, store the action.
+            return storeOffline();
+        }
+
+        // If there's already a reply to be sent to the server, discard it first.
+        return $mmaModForumOffline.deleteReply(postId, siteId).then(function() {
+            return self.replyPostOnline(postId, subject, message, siteId).then(function() {
+                return true;
+            }).catch(function(error) {
+                if (error && error.wserror) {
+                    // The WebService has thrown an error, this means that responses cannot be deleted.
+                    return $q.reject(error.error);
+                } else {
+                    // Couldn't connect to server, store in offline.
+                    return storeOffline();
+                }
+            });
+        });
+
+        // Convenience function to store a message to be synchronized later.
+        function storeOffline() {
+            return $mmaModForumOffline.replyPost(postId, discussionId, forumId, name, courseId, subject, message, siteId)
+                    .then(function() {
+                return false;
+            });
+        }
+    };
+
+    /**
+     * Reply to a certain post. It will fail if offline or cannot connect.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#replyPostOnline
+     * @param {Number} postId   ID of the post being replied.
+     * @param {String} subject  New post's subject.
+     * @param {String} message  New post's message.
+     * @param {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the post is created.
+     */
+    self.replyPostOnline = function(postId, subject, message, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                postid: postId,
+                subject: subject,
+                message: message
+            };
+
+            return site.write('mod_forum_add_discussion_post', params).catch(function(error) {
+                return $q.reject({
+                    error: error,
+                    wserror: $mmUtil.isWebServiceError(error)
+                });
+            }).then(function(response) {
+                if (!response || !response.postid) {
+                    return $q.reject({
+                        wserror: true
+                    });
+                } else {
+                    return response.postid;
+                }
+            });
         });
     };
 

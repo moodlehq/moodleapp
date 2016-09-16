@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_forum')
  * @name $mmaModForumSync
  */
 .factory('$mmaModForumSync', function($q, $log, $mmApp, $mmSitesManager, $mmaModForumOffline, $mmSite, $mmEvents, $mmSync,
-        mmaModForumComponent, $mmaModForum, $translate, mmaModForumAutomSyncedEvent, mmaModForumSyncTime) {
+        mmaModForumComponent, $mmaModForum, $translate, mmaModForumAutomSyncedEvent, mmaModForumSyncTime, $mmCourse) {
 
     $log = $log.getInstance('$mmaModForumSync');
 
@@ -62,6 +62,7 @@ angular.module('mm.addons.mod_forum')
                 sitePromises.push($mmaModForumOffline.getAllNewDiscussions(siteId).then(function(discussions) {
                     var promises = {};
 
+                    // Do not sync same forum twice.
                     for (var i in discussions) {
                         var discussion = discussions[i];
 
@@ -82,6 +83,41 @@ angular.module('mm.addons.mod_forum')
                             }
                         });
                     }
+                    // Promises will be an object so, convert to an array first;
+                    promises = Object.keys(promises).map(function (key) {return promises[key];});
+
+                    return $q.all(promises);
+                }));
+
+                // Sync all discussion replies.
+                sitePromises.push($mmaModForumOffline.getAllReplies(siteId).then(function(replies) {
+                    var promises = {};
+
+                    // Do not sync same discussion twice.
+                    for (var i in replies) {
+                        var reply = replies[i];
+
+                        if (typeof promises[reply.discussionid] != 'undefined') {
+                            continue;
+                        }
+
+                        promises[reply.discussionid] = self.syncDiscussionRepliesIfNeeded(reply.discussionid, reply.userid, siteId)
+                                .then(function(result) {
+                            if (result && result.updated) {
+                                // Sync successful, send event.
+                                $mmEvents.trigger(mmaModForumAutomSyncedEvent, {
+                                    siteid: siteId,
+                                    forumid: reply.forumid,
+                                    discussionid: reply.discussionid,
+                                    userid: reply.userid,
+                                    warnings: result.warnings
+                                });
+                            }
+                        });
+                    }
+
+                    // Promises will be an object so, convert to an array first;
+                    promises = Object.keys(promises).map(function (key) {return promises[key];});
 
                     return $q.all(promises);
                 }));
@@ -215,6 +251,181 @@ angular.module('mm.addons.mod_forum')
     };
 
     /**
+     * Synchronize all offline discussion replies of a forum.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForumSync#syncForumReplies
+     * @param  {Number}     forumId                 Forum ID to be synced.
+     * @param  {Number}     [userId]                User the discussions belong to.
+     * @param  {String}     [siteId]                Site ID. If not defined, current site.
+     * @return {Promise}                            Promise resolved if sync is successful, rejected otherwise.
+     */
+    self.syncForumReplies = function(forumId, userId, siteId) {
+        // Get offline forum replies to be sent.
+        return $mmaModForumOffline.getForumReplies(forumId, siteId, userId).catch(function() {
+            // No offline data found, return empty object.
+            return {};
+        }).then(function(replies) {
+            if (!replies.length) {
+                // Nothing to sync.
+                return { warnings: [], updated: false };
+            } else if (!$mmApp.isOnline()) {
+                // Cannot sync in offline.
+                return $q.reject();
+            }
+
+            var promises = {};
+
+            // Do not sync same discussion twice.
+            for (var i in replies) {
+                var reply = replies[i];
+
+                if (typeof promises[reply.discussionid] != 'undefined') {
+                    continue;
+                }
+                promises[reply.discussionid] = self.syncDiscussionReplies(reply.discussionid, userId, siteId);
+            }
+
+            // Promises will be an object so, convert to an array first;
+            promises = Object.keys(promises).map(function (key) {return promises[key];});
+
+            return $q.all(promises).then(function(results) {
+                return results.reduce(function(a, b) {
+                    a.warnings = a.warnings.concat(b.warnings);
+                    a.updated = a.updated || b.updated;
+                    return a;
+                }, { warnings: [], updated: false });
+            });
+        });
+    };
+
+    /**
+     * Sync a forum discussion replies only if a certain time has passed since the last time.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForumSync#syncDiscussionRepliesIfNeeded
+     * @param  {Number} discussionId  Discussion ID to be synced.
+     * @param  {Number} [userId]      User the posts belong to.
+     * @param  {String} [siteId]      Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved when the forum discussion is synced or if it doesn't need to be synced.
+     */
+    self.syncDiscussionRepliesIfNeeded = function(discussionId, userId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        var syncId = self._getDiscussionSyncId(discussionId, userId);
+        return self.isSyncNeeded(syncId, siteId).then(function(needed) {
+            if (needed) {
+                return self.syncDiscussionReplies(discussionId, userId, siteId);
+            }
+        });
+    };
+
+    /**
+     * Synchronize all offline replies from a discussion.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForumSync#syncDiscussionReplies
+     * @param  {Number} discussionId  Discussion ID to be synced.
+     * @param  {Number} [userId]      User the posts belong to.
+     * @param  {String} [siteId]      Site ID. If not defined, current site.
+     * @return {Promise}              Promise resolved if sync is successful, rejected otherwise.
+     */
+    self.syncDiscussionReplies = function(discussionId, userId, siteId) {
+        userId = userId || $mmSite.getUserId();
+        siteId = siteId || $mmSite.getId();
+
+        var syncPromise,
+            courseId,
+            forumId,
+            syncId = self._getDiscussionSyncId(discussionId, userId),
+            result = {
+                warnings: [],
+                updated: false
+            };
+
+        if (self.isSyncing(syncId, siteId)) {
+            // There's already a sync ongoing for this discussion, return the promise.
+            return self.getOngoingSync(syncId, siteId);
+        }
+
+        $log.debug('Try to sync forum discussion ' + discussionId + ' for user ' + userId);
+
+        // Get offline responses to be sent.
+        syncPromise = $mmaModForumOffline.getDiscussionReplies(discussionId, siteId, userId).catch(function() {
+            // No offline data found, return empty object.
+            return [];
+        }).then(function(replies) {
+            if (!replies.length) {
+                // Nothing to sync.
+                return;
+            } else if (!$mmApp.isOnline()) {
+                // Cannot sync in offline.
+                return $q.reject();
+            }
+
+            var promises = [];
+
+            angular.forEach(replies, function(data) {
+                var promise;
+
+                courseId = data.courseid;
+                forumId = data.forumid;
+
+                // A user has added some discussions.
+                promise = $mmaModForum.replyPostOnline(data.postid, data.subject, data.message, siteId);
+
+                promises.push(promise.then(function() {
+                    result.updated = true;
+
+                    return $mmaModForumOffline.deleteReply(data.postid, siteId, userId);
+                }).catch(function(error) {
+                    if (error && error.wserror) {
+                        // The WebService has thrown an error, this means that responses cannot be submitted. Delete them.
+                        result.updated = true;
+                        return $mmaModForumOffline.deleteReply(data.postid, siteId, userId).then(function() {
+                            // Responses deleted, add a warning.
+                            result.warnings.push($translate.instant('mm.core.warningofflinedatadeleted', {
+                                component: $mmCourse.translateModuleName('forum'),
+                                name: data.name,
+                                error: error.error
+                            }));
+                        });
+                    } else {
+                        // Couldn't connect to server, reject.
+                        return $q.reject(error && error.error);
+                    }
+                }));
+            });
+
+            return $q.all(promises);
+        }).then(function() {
+            // Data has been sent to server. Now invalidate the WS calls.
+            var promises = [];
+            if (forumId) {
+                promises.push($mmaModForum.invalidateDiscussionsList(forumId, siteId));
+            }
+            promises.push($mmaModForum.invalidateDiscussionPosts(discussionId, siteId));
+
+            return $q.all(promises).catch(function() {
+                // Ignore errors.
+            });
+        }).then(function() {
+            // Sync finished, set sync time.
+            return self.setSyncTime(syncId, siteId).catch(function() {
+                // Ignore errors.
+            });
+        }).then(function() {
+            // All done, return the warnings.
+            return result;
+        });
+
+        return self.addOngoingSync(syncId, syncPromise, siteId);
+    };
+
+    /**
      * Get the ID of a forum sync.
      *
      * @module mm.addons.mod_forum
@@ -227,6 +438,21 @@ angular.module('mm.addons.mod_forum')
      */
     self._getForumSyncId = function(forumId, userId) {
         return 'forum#' + forumId + '#' + userId;
+    };
+
+    /**
+     * Get the ID of a discussion sync.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForumSync#_getDiscussionSyncId
+     * @param  {Number} discussionId    Discussion ID.
+     * @param  {Number} userId          User the responses belong to.
+     * @return {String}                 Sync ID.
+     * @protected
+     */
+    self._getDiscussionSyncId = function(discussionId, userId) {
+        return 'discussion#' + discussionId + '#' + userId;
     };
 
     return self;

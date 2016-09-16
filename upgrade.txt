@@ -18,6 +18,7 @@ information provided here is intended especially for developers.
  * A new field appname was added to config.json, if you have a custom app you must add there your custom app name since the language string in the settings components has been deleted.
  * $mmUtil#confirmDownloadSize Now accepts an object with the file sizes and a boolean to indicate if it is the total size or only partial.
  * $mmCourse#translateModuleName now returns the translated name immediately, without using promises.
+ * mmaForumDiscussionPost postadded directive has been renamed to onpostchange.
 
 === 3.1.2 ===
 
