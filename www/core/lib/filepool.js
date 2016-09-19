@@ -2740,12 +2740,13 @@ angular.module('mm.core')
     return self;
 })
 
-.run(function($log, $ionicPlatform, $timeout, $mmFilepool) {
-    $log = $log.getInstance('$mmFilepool');
-
+.run(function($ionicPlatform, $timeout, $mmFilepool, $mmEvents, mmCoreEventOnline) {
     $ionicPlatform.ready(function() {
         // Waiting for the platform to be ready, and a few more before we start processing the queue.
         $timeout($mmFilepool.checkQueueProcessing, 1000);
+
+        // Start queue when device goes online.
+        $mmEvents.on(mmCoreEventOnline, $mmFilepool.checkQueueProcessing);
     });
 
 });
