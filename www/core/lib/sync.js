@@ -15,7 +15,7 @@
 angular.module('mm.core')
 
 .constant('mmCoreSynchronizationStore', 'sync')
-.constant('mmCoreSynchronizationWarningsStore', 'sync')
+.constant('mmCoreSynchronizationWarningsStore', 'sync_warnings')
 
 .config(function($mmSitesFactoryProvider, mmCoreSynchronizationStore, mmCoreSynchronizationWarningsStore) {
     var stores = [
