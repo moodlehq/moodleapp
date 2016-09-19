@@ -1,4 +1,5 @@
 {
+    "accounts": "Accounts",
     "allparticipants": "All participants",
     "android": "Android",
     "areyousure": "Are you sure?",
@@ -151,6 +152,7 @@
     "unknown": "Unknown",
     "unlimited": "Unlimited",
     "unzipping": "Unzipping",
+    "users": "Users",
     "view": "View",
     "viewprofile": "View profile",
     "warningofflinedatadeleted": "Offline data of {{component}} '{{name}}' has been deleted. {{error}}",
