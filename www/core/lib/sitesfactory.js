@@ -873,9 +873,17 @@ angular.module('mm.core')
 
             if (preSets.getCacheUsingCacheKey) {
                 promise = db.whereEqual(mmCoreWSCacheStore, 'key', preSets.cacheKey).then(function(entries) {
-                    if (entries.length == 0) {
+                    if (!entries.length) {
                         // Cache key not found, get by params sent.
                         return db.get(mmCoreWSCacheStore, id);
+                    } else if (entries.length > 1) {
+                        // More than one entry found. Search the one with same ID as this call.
+                        for (var i = 0, len = entries.length; i < len; i++) {
+                            var entry = entries[i];
+                            if (entry.id == id) {
+                                return entry;
+                            }
+                        }
                     }
                     return entries[0];
                 });
