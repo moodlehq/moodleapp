@@ -16,6 +16,9 @@ angular.module('mm.addons.notes', [])
 
 .constant('mmaNotesPriority', 200)
 .constant('mmaNotesAddNotePriority', 200)
+.constant('mmaNotesComponent', 'mmaNotes')
+.constant('mmaNotesAutomSyncedEvent', 'mma_notes_autom_synced')
+.constant('mmaModNotesSyncTime', 300000) // In milliseconds.
 
 .config(function($stateProvider, $mmUserDelegateProvider, $mmCoursesDelegateProvider, mmaNotesPriority, mmaNotesAddNotePriority) {
 
@@ -53,4 +56,9 @@ angular.module('mm.addons.notes', [])
 
     // Register courses handler.
     $mmCoursesDelegateProvider.registerNavHandler('mmaNotes', '$mmaNotesHandlers.coursesNav', mmaNotesPriority);
+})
+
+.run(function($mmCronDelegate) {
+    // Register sync process.
+    $mmCronDelegate.register('mmaNotes', '$mmaNotesHandlers.syncHandler');
 });

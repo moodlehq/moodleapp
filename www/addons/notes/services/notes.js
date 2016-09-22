@@ -346,6 +346,29 @@ angular.module('mm.addons.notes')
     };
 
     /**
+     * Given a list of notes, check if any of them is an offline note.
+     *
+     * @module mm.addons.notes
+     * @ngdoc method
+     * @name $mmaNotes#hasOfflineNote
+     * @param  {Object[]}  notes List of notes.
+     * @return {Boolean}         True if at least 1 note is offline, false otherwise.
+     */
+    self.hasOfflineNote = function(notes) {
+        if (!notes || !notes.length) {
+            return false;
+        }
+
+        for (var i = 0, len = notes.length; i < len; i++) {
+            if (notes[i].offline) {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+    /**
      * Invalidate get notes WS call.
      *
      * @module mm.addons.notes
