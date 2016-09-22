@@ -524,7 +524,8 @@ angular.module('mm.core')
          */
         self.showModalLoading = function(text, needsTranslate) {
             var modalClosed = false,
-                modalShown = false;
+                modalShown = false,
+                showModalPromise;
 
             if (!text) {
                 text = 'mm.core.loading';
@@ -537,7 +538,15 @@ angular.module('mm.core')
                         template:   '<ion-spinner></ion-spinner>' +
                                     '<p>'+text+'</p>'
                     });
-                    modalShown = true;
+
+                    // Leave some delay before setting modalShown to true.
+                    // @todo In Ionic 1.3.1 $ionicLoading returns a promise, we should use that promise instead of a delay.
+                    showModalPromise = $timeout(function() {
+                        showModalPromise = null;
+                        if (!modalClosed) {
+                            modalShown = true;
+                        }
+                    }, 200);
                 }
             }
 
@@ -550,7 +559,13 @@ angular.module('mm.core')
             return {
                 dismiss: function() {
                     modalClosed = true;
-                    if (modalShown) {
+                    if (showModalPromise) {
+                        // Modal is being shown. Wait for it to be shown and hide it.
+                        showModalPromise.finally(function() {
+                            $ionicLoading.hide();
+                        });
+                    } else if (modalShown) {
+                        // Modal shown, hide it.
                         $ionicLoading.hide();
                     }
                 }
