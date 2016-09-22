@@ -11,7 +11,8 @@
                         <div class="item item-avatar">
                             <img ng-if="note.userprofileimageurl" ng-src="{{note.userprofileimageurl}}" mm-external-content mm-user-link courseid="{{courseid}}" userid="{{note.userid}}" alt="{{ 'mm.core.pictureof' | translate:{$a: note.userfullname} }}" role="presentation">
                             <img ng-if="!note.userprofileimageurl" src="img/user-avatar.png" alt="{{ 'mm.core.pictureof' | translate:{$a: note.userfullname} }}" role="presentation">
-                            <div class="item-note">{{note.lastmodified | mmDateDayOrTime}}</div>
+                            <div class="item-note" ng-if="!note.offline">{{note.lastmodified | mmDateDayOrTime}}</div>
+                            <div class="item-note" ng-if="note.offline"><i class="icon ion-clock"></i> {{ 'mm.core.notsent' | translate }}</div>
                             <p>{{note.userfullname}}</p>
                         </div>
                         <div class="item item-body">

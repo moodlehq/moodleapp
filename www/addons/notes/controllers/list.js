@@ -28,13 +28,10 @@ angular.module('mm.addons.notes')
 
     $scope.courseid = courseid;
     $scope.type = type;
+    $scope.title = $translate.instant('mma.notes.' + type + 'notes');
 
-    $translate('mma.notes.' + type + 'notes').then(function(string) {
-        $scope.title = string;
-    });
-
-    function fetchNotes(refresh) {
-        return $mmaNotes.getNotes(courseid, refresh).then(function(notes) {
+    function fetchNotes() {
+        return $mmaNotes.getNotes(courseid).then(function(notes) {
             notes = notes[type + 'notes'];
 
             return $mmaNotes.getNotesUserData(notes, courseid).then(function(notes) {
@@ -58,8 +55,10 @@ angular.module('mm.addons.notes')
     });
 
     $scope.refreshNotes = function() {
-        fetchNotes(true).finally(function() {
-            $scope.$broadcast('scroll.refreshComplete');
+        $mmaNotes.invalidateNotes(courseid).finally(function() {
+            fetchNotes().finally(function() {
+                $scope.$broadcast('scroll.refreshComplete');
+            });
         });
     };
 });

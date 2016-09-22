@@ -72,7 +72,7 @@ angular.module('mm.addons.notes')
         /**
          * Check if handler is enabled.
          *
-         * @return {Boolean} True if handler is enabled, false otherwise.
+         * @return {Promise} Promise resolved with true if enabled, resolved with false or rejected otherwise.
          */
         self.isEnabled = function() {
             return $mmaNotes.isPluginAddNoteEnabled();
@@ -140,8 +140,9 @@ angular.module('mm.addons.notes')
                     // Freeze the add note button.
                     $scope.processing = true;
 
-                    $mmaNotes.addNote(user.id, courseid, $scope.note.publishstate, $scope.note.text).then(function() {
-                        $mmUtil.showModal('mm.core.success', 'mma.notes.eventnotecreated');
+                    $mmaNotes.addNote(user.id, courseid, $scope.note.publishstate, $scope.note.text).then(function(sent) {
+                        var message = sent ? 'mma.notes.eventnotecreated' : 'mm.core.datastoredoffline';
+                        $mmUtil.showModal('mm.core.success', message);
                         $scope.closeModal();
                     }, function(error) {
                         $mmUtil.showErrorModal(error);
@@ -185,7 +186,7 @@ angular.module('mm.addons.notes')
         /**
          * Check if handler is enabled.
          *
-         * @return {Boolean} True if handler is enabled, false otherwise.
+         * @return {Promise} Promise resolved with true if enabled, resolved with false or rejected otherwise.
          */
         self.isEnabled = function() {
             return $mmaNotes.isPluginViewNotesEnabled();
