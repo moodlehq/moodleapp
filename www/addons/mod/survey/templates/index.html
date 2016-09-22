@@ -21,7 +21,7 @@
             <!-- Survey done in offline but not synchronized -->
             <section class="card padding" ng-if="hasOffline">
                 <p class="padding">{{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}</p>
-                <button class="button button-block" ng-click="sync()">{{ 'mm.settings.synchronizenow' | translate }}</button>
+                <button class="button button-block icon-right ion-loop" ng-click="sync()">{{ 'mm.settings.synchronizenow' | translate }}</button>
             </section>
 
             <!-- Survey questions -->

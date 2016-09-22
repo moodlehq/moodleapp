@@ -55,7 +55,7 @@
                 <!-- Synchronize button -->
             	<div class="item item-text-wrap" ng-if="!errorMessage && showSyncButton">
                     <p class="padding">{{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}</p>
-                    <button class="button button-block" ng-click="sync()">{{ 'mm.settings.synchronizenow' | translate }}</button>
+                    <button class="button button-block icon-right ion-loop" ng-click="sync()">{{ 'mm.settings.synchronizenow' | translate }}</button>
             	</div>
 	            <!-- TOC -->
 	            <div class="card" ng-if="(scorm.displaycoursestructure && organizations.length) || (organizations && organizations.length > 1)">
