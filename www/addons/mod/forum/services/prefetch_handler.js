@@ -22,43 +22,23 @@ angular.module('mm.addons.mod_forum')
  * @name $mmaModForumPrefetchHandler
  */
 .factory('$mmaModForumPrefetchHandler', function($mmaModForum, mmaModForumComponent, $mmFilepool, $mmSite, $q, $mmUtil, $mmUser,
-            $mmGroups, md5, mmCoreDownloading, mmCoreDownloaded) {
+            $mmGroups, md5, $mmPrefetchFactory) {
 
-    var self = {},
-        downloadPromises = {}; // Store download promises to prevent duplicate requests.
-
-    self.component = mmaModForumComponent;
+    var self = $mmPrefetchFactory.createPrefetchHandler(mmaModForumComponent);
 
     /**
-     * Get the download size of a module.
+     * Download the module.
      *
      * @module mm.addons.mod_forum
      * @ngdoc method
-     * @name $mmaModForumPrefetchHandler#getDownloadSize
-     * @param {Object} module   Module to get the size.
-     * @param {Number} courseId Course ID the module belongs to.
-     * @return {Promise}        With the file size and a boolean to indicate if it is the total size or only partial.
+     * @name $mmaModForumPrefetchHandler#download
+     * @param  {Object} module   The module object returned by WS.
+     * @param  {Number} courseId Course ID the module belongs to.
+     * @return {Promise}         Promise resolved when all files have been downloaded. Data returned is not reliable.
      */
-    self.getDownloadSize = function(module, courseId) {
-        return self.getFiles(module, courseId).then(function(files) {
-            return $mmUtil.sumFileSizes(files);
-        }).catch(function() {
-            return {size: -1, total: false};
-        });
-    };
-
-    /**
-     * Get the downloaded size of a module.
-     *
-     * @module mm.addons.mod_forum
-     * @ngdoc method
-     * @name $mmaModForumPrefetchHandler#getDownloadedSize
-     * @param {Object} module   Module to get the downloaded size.
-     * @param {Number} courseId Course ID the module belongs to.
-     * @return {Promise}        Promise resolved with the size.
-     */
-    self.getDownloadedSize = function(module, courseId) {
-        return $mmFilepool.getFilesSizeByComponent($mmSite.getId(), self.component, module.id);
+    self.download = function(module, courseId) {
+        // Forums cannot be downloaded right away, only prefetched.
+        return self.prefetch(module, courseId);
     };
 
     /**
@@ -74,7 +54,7 @@ angular.module('mm.addons.mod_forum')
     self.getFiles = function(module, courseId) {
         var files;
         return $mmaModForum.getForum(courseId, module.id).then(function(forum) {
-            files = getIntroFiles(forum);
+            files = self.getIntroFilesFromInstance(module, forum);
 
             // Get posts.
             return getPostsForPrefetch(forum.id);
@@ -88,21 +68,6 @@ angular.module('mm.addons.mod_forum')
     };
 
     /**
-     * Get a forum intro files.
-     *
-     * @param  {Object[]} posts Forum posts.
-     * @return {Object[]}       Attachments.
-     */
-    function getIntroFiles(forum) {
-        if (typeof forum.introfiles != 'undefined') {
-            return forum.introfiles;
-        } else if (forum.intro) {
-            return $mmUtil.extractDownloadableFilesFromHtmlAsFakeFileObjects(forum.intro);
-        }
-        return [];
-    }
-
-    /**
      * Given a list of forum posts, return a list with all the files (attachments and embedded files).
      *
      * @param  {Object[]} posts Forum posts.
@@ -114,6 +79,8 @@ angular.module('mm.addons.mod_forum')
         angular.forEach(posts, function(post) {
             if (post.attachments && post.attachments.length) {
                 files = files.concat(post.attachments);
+            }
+            if (post.message) {
                 files = files.concat($mmUtil.extractDownloadableFilesFromHtmlAsFakeFileObjects(post.message));
             }
         });
@@ -197,24 +164,25 @@ angular.module('mm.addons.mod_forum')
      */
     self.getTimemodified = function(module, courseId) {
         return $mmaModForum.getForum(courseId, module.id).then(function(forum) {
-            return getTimemodifiedFromForum(module.id, forum, false);
+            return getTimemodifiedFromForum(module, forum, false);
         });
     };
 
     /**
      * Get timemodified of a forum.
      *
-     * @param {Number} moduleId     Module ID.
+     * @param {Object} module       Module.
      * @param {Object} forum        Forum.
      * @param {Boolean} getRealTime True to get the real time modified, false to get an approximation (try to minimize WS calls).
      * @return {Promise}            Promise resolved with timemodified.
      */
-    function getTimemodifiedFromForum(moduleId, forum, getRealTime) {
+    function getTimemodifiedFromForum(module, forum, getRealTime) {
         var timemodified = forum.timemodified || 0,
-            siteId = $mmSite.getId();
+            siteId = $mmSite.getId(),
+            introFiles = self.getIntroFilesFromInstance(module, forum);
 
         // Check intro files timemodified.
-        timemodified = Math.max(timemodified, $mmFilepool.getTimemodifiedFromFileList(getIntroFiles(forum)));
+        timemodified = Math.max(timemodified, $mmFilepool.getTimemodifiedFromFileList(introFiles));
 
         if (getRealTime) {
             // Get timemodified from discussions to get the real time.
@@ -222,13 +190,14 @@ angular.module('mm.addons.mod_forum')
         }
 
         // To prevent calling getDiscussions if a new discussion is added we'll check forum.numdiscussions first.
-        return $mmFilepool.getPackageRevision(siteId, mmaModForumComponent, moduleId).catch(function() {
+        return $mmFilepool.getPackageRevision(siteId, self.component, module.id).catch(function() {
             return '';
         }).then(function(revision) {
             // Get only the new discussions number stored.
+            revision = '' + revision; // Make sure it's a string.
             revision = revision.split('#')[0];
 
-            if (revision != forum.numdiscussions) {
+            if (parseInt(revision, 10) != forum.numdiscussions) {
                 // Number of discussions has changed, return current time to show refresh button.
                 return $mmUtil.timestamp();
             }
@@ -250,6 +219,20 @@ angular.module('mm.addons.mod_forum')
             });
         }
     }
+
+    /**
+     * Invalidate the prefetched content.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForumPrefetchHandler#invalidateContent
+     * @param  {Number} moduleId The module ID.
+     * @param  {Number} courseId Course ID of the module.
+     * @return {Promise}
+     */
+    self.invalidateContent = function(moduleId, courseId) {
+        return $mmaModForum.invalidateContent(moduleId, courseId);
+    };
 
     /**
      * Invalidates WS calls needed to determine module status.
@@ -295,32 +278,30 @@ angular.module('mm.addons.mod_forum')
      * @return {Promise}         Promise resolved when all files have been downloaded. Data returned is not reliable.
      */
     self.prefetch = function(module, courseId, single) {
-        var siteId = $mmSite.getId(),
-            prefetchPromise,
-            deleted = false,
-            component = mmaModForumComponent,
-            revision,
+        return self.prefetchPackage(module, courseId, single, prefetchForum);
+    };
+
+    /**
+     * Prefetch a forum.
+     *
+     * @param  {Object} module   The module object returned by WS.
+     * @param  {Number} courseId Course ID the module belongs to.
+     * @param  {Boolean} single  True if we're downloading a single module, false if we're downloading a whole section.
+     * @param  {String} siteId   Site ID.
+     * @return {Promise}         Promise resolved with an object with 'revision' and 'timemod'.
+     */
+    function prefetchForum(module, courseId, single, siteId) {
+        var revision,
             timemod,
             forum;
 
-        if (downloadPromises[siteId] && downloadPromises[siteId][module.id]) {
-            // There's already a download ongoing for this package, return the promise.
-            return downloadPromises[siteId][module.id];
-        } else if (!downloadPromises[siteId]) {
-            downloadPromises[siteId] = {};
-        }
-
-        // Mark package as downloading.
-        prefetchPromise = $mmFilepool.storePackageStatus(siteId, component, module.id, mmCoreDownloading).then(function() {
-
-            // Get the forum data.
-            return $mmaModForum.getForum(courseId, module.id);
-        }).then(function(f) {
+        // Get the forum data.
+        return $mmaModForum.getForum(courseId, module.id).then(function(f) {
             forum = f;
 
             // Get revision and timemodified.
             revision = getRevisionFromForum(forum);
-            return getTimemodifiedFromForum(module.id, forum, true);
+            return getTimemodifiedFromForum(module, forum, true);
         }).then(function(time) {
             timemod = time;
 
@@ -329,7 +310,7 @@ angular.module('mm.addons.mod_forum')
         }).then(function(posts) {
             // Now prefetch the files.
             var promises = [],
-                files = getIntroFiles(forum),
+                files = self.getIntroFilesFromInstance(module, forum),
                 userIds = [],
                 canCreateDiscussions = $mmaModForum.isCreateDiscussionEnabled() && forum.cancreatediscussions;
 
@@ -353,90 +334,80 @@ angular.module('mm.addons.mod_forum')
 
             // Prefetch files.
             angular.forEach(files, function(file) {
-                promises.push($mmFilepool.addToQueueByUrl(siteId, file.fileurl, component, module.id, file.timemodified));
+                promises.push($mmFilepool.addToQueueByUrl(siteId, file.fileurl, self.component, module.id, file.timemodified));
             });
 
             // Prefetch groups data.
-            promises.push($mmGroups.getActivityGroupMode(forum.cmid).then(function(mode) {
-                if (mode !== $mmGroups.SEPARATEGROUPS && mode !== $mmGroups.VISIBLEGROUPS) {
-                    // Activity doesn't use groups, nothing else to prefetch.
-                    return;
-                }
-
-                return $mmGroups.getActivityAllowedGroups(forum.cmid).then(function(groups) {
-                    if (mode === $mmGroups.SEPARATEGROUPS) {
-                        // Groups are already filtered by WS, nothing else to prefetch.
-                        return;
-                    }
-
-                    if (canCreateDiscussions) {
-                        // Prefetch data to check the visible groups when creating discussions.
-                        if ($mmaModForum.isCanAddDiscussionAvailable()) {
-                            // Can add discussion WS available, prefetch the calls.
-                            promises.push($mmaModForum.canAddDiscussionToAll(forum.id).catch(function() {
-                                // The call failed, let's assume he can't.
-                                return false;
-                            }).then(function(canAdd) {
-                                if (canAdd) {
-                                    // User can post to all groups, nothing else to prefetch.
-                                    return;
-                                }
-
-                                // The user can't post to all groups, let's check which groups he can post to.
-                                var groupPromises = [];
-                                angular.forEach(groups, function(group) {
-                                    groupPromises.push($mmaModForum.canAddDiscussion(forum.id, group.id).catch(function() {
-                                        // Ignore errors.
-                                    }));
-                                });
-                                return $q.all(groupPromises);
-                            }));
-                        } else {
-                            // Prefetch the groups the user belongs to.
-                            return $mmGroups.getUserGroupsInCourse(courseId, true);
-                        }
-                    }
-                });
-            }, function(error) {
-                // Ignore errors if cannot create discussions.
-                if (canCreateDiscussions) {
-                    return $q.reject(error);
-                }
-            }));
+            promises.push(prefetchGroupsInfo(forum, courseId, canCreateDiscussions));
 
             return $q.all(promises);
         }).then(function() {
-            // Prefetch finished, mark as downloaded.
-            return $mmFilepool.storePackageStatus(siteId, component, module.id, mmCoreDownloaded, revision, timemod);
-        }).catch(function(error) {
-            // Error prefetching, go back to previous status and reject the promise.
-            return $mmFilepool.setPackagePreviousStatus(siteId, component, module.id).then(function() {
-                return $q.reject(error);
-            });
-        }).finally(function() {
-            deleted = true;
-            delete downloadPromises[siteId][module.id];
+            // Return revision and timemodified.
+            return {
+                revision: revision,
+                timemod: timemod
+            };
         });
-
-        if (!deleted) {
-            downloadPromises[siteId][module.id] = prefetchPromise;
-        }
-        return prefetchPromise;
-    };
+    }
 
     /**
-     * Remove module downloaded files.
+     * Prefetch groups info for a forum.
      *
-     * @module mm.addons.mod_forum
-     * @ngdoc method
-     * @name $mmaModForumPrefetchHandler#removeFiles
-     * @param {Object} module   Module to remove the files.
-     * @param {Number} courseId Course ID the module belongs to.
-     * @return {Promise}        Promise resolved when done.
+     * @param  {Object} module                The module object returned by WS.
+     * @param  {Number} courseId              Course ID the module belongs to.
+     * @param  {Boolean} canCreateDiscussions Whether the user can create discussions in the forum.
+     * @return {Promise}                      Promise resolved when group data has been prefetched.
      */
-    self.removeFiles = function(module, courseId) {
-        return $mmFilepool.removeFilesByComponent($mmSite.getId(), self.component, module.id);
-    };
+    function prefetchGroupsInfo(forum, courseId, canCreateDiscussions) {
+        // Check group mode.
+        return $mmGroups.getActivityGroupMode(forum.cmid).then(function(mode) {
+            if (mode !== $mmGroups.SEPARATEGROUPS && mode !== $mmGroups.VISIBLEGROUPS) {
+                // Activity doesn't use groups, nothing else to prefetch.
+                return;
+            }
+
+            // Activity uses groups, prefetch allowed groups.
+            return $mmGroups.getActivityAllowedGroups(forum.cmid).then(function(groups) {
+                if (mode === $mmGroups.SEPARATEGROUPS) {
+                    // Groups are already filtered by WS, nothing else to prefetch.
+                    return;
+                }
+
+                if (canCreateDiscussions) {
+                    // Prefetch data to check the visible groups when creating discussions.
+                    if ($mmaModForum.isCanAddDiscussionAvailable()) {
+                        // Can add discussion WS available, prefetch the calls.
+                        return $mmaModForum.canAddDiscussionToAll(forum.id).catch(function() {
+                            // The call failed, let's assume he can't.
+                            return false;
+                        }).then(function(canAdd) {
+                            if (canAdd) {
+                                // User can post to all groups, nothing else to prefetch.
+                                return;
+                            }
+
+                            // The user can't post to all groups, let's check which groups he can post to.
+                            var groupPromises = [];
+                            angular.forEach(groups, function(group) {
+                                groupPromises.push($mmaModForum.canAddDiscussion(forum.id, group.id).catch(function() {
+                                    // Ignore errors.
+                                }));
+                            });
+                            return $q.all(groupPromises);
+                        });
+                    } else {
+                        // Prefetch the groups the user belongs to.
+                        return $mmGroups.getUserGroupsInCourse(courseId, true);
+                    }
+                }
+            });
+        }, function(error) {
+            // Ignore errors if cannot create discussions.
+            if (canCreateDiscussions) {
+                return $q.reject(error);
+            }
+        });
+    }
 
     return self;
 });

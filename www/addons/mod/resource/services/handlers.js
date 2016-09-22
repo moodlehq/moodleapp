@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_resource')
  * @name $mmaModResourceHandlers
  */
 .factory('$mmaModResourceHandlers', function($mmCourse, $mmaModResource, $mmEvents, $state, $mmSite, $mmCourseHelper,
-            $mmCoursePrefetchDelegate, $mmFilepool, $mmFS, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated,
+            $mmCoursePrefetchDelegate, $mmUtil, $mmFS, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated,
             mmCoreEventPackageStatusChanged, mmaModResourceComponent, $q, $mmContentLinksHelper, $mmaModResourcePrefetchHandler) {
     var self = {};
 
@@ -56,9 +56,7 @@ angular.module('mm.addons.mod_resource')
         self.getController = function(module, courseid) {
             return function($scope) {
                 var downloadBtn,
-                    refreshBtn,
-                    revision = $mmFilepool.getRevisionFromFileList(module.contents),
-                    timemodified = $mmFilepool.getTimemodifiedFromFileList(module.contents);
+                    refreshBtn;
 
                 downloadBtn = {
                     hidden: true,
@@ -67,8 +65,7 @@ angular.module('mm.addons.mod_resource')
                     action: function(e) {
                         e.preventDefault();
                         e.stopPropagation();
-                        var size = $mmaModResourcePrefetchHandler.getDownloadSize(module);
-                        $mmCourseHelper.prefetchModule($scope, $mmaModResource, module, size, false);
+                        download(false);
                     }
                 };
 
@@ -79,8 +76,7 @@ angular.module('mm.addons.mod_resource')
                     action: function(e) {
                         e.preventDefault();
                         e.stopPropagation();
-                        var size = $mmaModResourcePrefetchHandler.getDownloadSize(module);
-                        $mmCourseHelper.prefetchModule($scope, $mmaModResource, module, size, true);
+                        download(true);
                     }
                 };
 
@@ -109,6 +105,38 @@ angular.module('mm.addons.mod_resource')
                     $state.go('site.mod_resource', {module: module, courseid: courseid});
                 };
 
+                function download(refresh) {
+                    var dwnBtnHidden = downloadBtn.hidden,
+                        rfrshBtnHidden = refreshBtn.hidden;
+
+                    // Show spinner since this operation might take a while.
+                    $scope.spinner = true;
+                    downloadBtn.hidden = true;
+                    refreshBtn.hidden = true;
+
+                    // Get download size to ask for confirm if it's high.
+                    $mmaModResourcePrefetchHandler.getDownloadSize(module, courseid).then(function(size) {
+                        $mmCourseHelper.prefetchModule($scope, $mmaModResourcePrefetchHandler, module, size, refresh, courseid)
+                                .catch(function() {
+                            // Error or cancelled, leave the buttons as they were.
+                            $scope.spinner = false;
+                            downloadBtn.hidden = dwnBtnHidden;
+                            refreshBtn.hidden = rfrshBtnHidden;
+                        });
+                    }).catch(function(error) {
+                        // Error, leave the buttons as they were.
+                        $scope.spinner = false;
+                        downloadBtn.hidden = dwnBtnHidden;
+                        refreshBtn.hidden = rfrshBtnHidden;
+
+                        if (error) {
+                            $mmUtil.showErrorModal(error);
+                        } else {
+                            $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                        }
+                    });
+                }
+
                 // Show buttons according to module status.
                 function showStatus(status) {
                     if (status) {
@@ -127,7 +155,7 @@ angular.module('mm.addons.mod_resource')
                 });
 
                 // Get current status to decide which icon should be shown.
-                $mmCoursePrefetchDelegate.getModuleStatus(module, courseid, revision, timemodified).then(showStatus);
+                $mmCoursePrefetchDelegate.getModuleStatus(module, courseid).then(showStatus);
 
                 $scope.$on('$destroy', function() {
                     statusObserver && statusObserver.off && statusObserver.off();

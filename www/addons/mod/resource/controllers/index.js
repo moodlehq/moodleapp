@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_resource')
  * @name mmaModResourceIndexCtrl
  */
 .controller('mmaModResourceIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModResource, $log, $mmApp, $mmCourse, $timeout,
-        $mmText, $translate, mmaModResourceComponent) {
+        $mmText, $translate, mmaModResourceComponent, $mmaModResourcePrefetchHandler) {
     $log = $log.getInstance('mmaModResourceIndexCtrl');
 
     var module = $stateParams.module || {},
@@ -42,7 +42,7 @@ angular.module('mm.addons.mod_resource')
             if ($mmaModResource.isDisplayedInIframe(module)) {
                 $scope.mode = 'iframe';
                 var downloadFailed = false;
-                return $mmaModResource.downloadAllContent(module).catch(function(err) {
+                return $mmaModResourcePrefetchHandler.download(module).catch(function(err) {
                     // Mark download as failed but go on since the main files could have been downloaded.
                     downloadFailed = true;
                 }).finally(function() {
@@ -108,7 +108,7 @@ angular.module('mm.addons.mod_resource')
     $scope.doRefresh = function() {
         if ($scope.loaded) {
             $scope.refreshIcon = 'spinner';
-            return $mmaModResource.invalidateContent(module.id).then(function() {
+            return $mmaModResourcePrefetchHandler.invalidateContent(module.id).then(function() {
                 return fetchContent();
             }).finally(function() {
                 $scope.$broadcast('scroll.refreshComplete');

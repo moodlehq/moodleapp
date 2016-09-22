@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_quiz')
  */
 .factory('$mmaModQuizSync', function($log, $mmaModQuiz, $mmSite, $mmSitesManager, $q, $mmaModQuizOffline, $mmQuestion, $mmLang,
             $mmQuestionDelegate, $mmApp, $mmEvents, $translate, mmaModQuizSyncTime, $mmSync, mmaModQuizEventAutomSynced,
-            mmaModQuizComponent) {
+            mmaModQuizComponent, $mmaModQuizPrefetchHandler) {
 
     $log = $log.getInstance('$mmaModQuizSync');
 
@@ -192,7 +192,7 @@ angular.module('mm.addons.mod_quiz')
                 }
             }).then(function() {
                 // Update data.
-                return $mmaModQuiz.prefetchQuizAndLastAttempt(quiz, siteId);
+                return $mmaModQuizPrefetchHandler.prefetchQuizAndLastAttempt(quiz, siteId);
             }).then(function() {
                 return self.setSyncTime(quiz.id, siteId).catch(function() {
                     // Ignore errors.
@@ -262,7 +262,7 @@ angular.module('mm.addons.mod_quiz')
 
                     // We're going to need preflightData, get it.
                     return $mmaModQuiz.getQuizAccessInformation(quiz.id, false, true, siteId).then(function(info) {
-                        return $mmaModQuiz.gatherPreflightData(quiz, info, onlineAttempt,
+                        return $mmaModQuizPrefetchHandler.gatherPreflightData(quiz, info, onlineAttempt,
                                                 preflightData, siteId, askPreflight, 'mm.settings.synchronization');
                     }).then(function() {
                         // Now get the online questions data.

@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_scorm')
  */
 .factory('$mmaModScormHandlers', function($mmCourse, $mmaModScorm, $mmEvents, $state, $mmSite, $mmaModScormHelper,
         $mmCoursePrefetchDelegate, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated, mmCoreEventPackageStatusChanged,
-        mmaModScormComponent, $q, $mmContentLinksHelper, $mmUtil, $mmaModScormSync) {
+        mmaModScormComponent, $q, $mmContentLinksHelper, $mmUtil, $mmaModScormSync, $mmaModScormPrefetchHandler) {
     var self = {};
 
     /**
@@ -95,7 +95,7 @@ angular.module('mm.addons.mod_scorm')
                         $scope.spinner = true; // Show spinner since this operation might take a while.
                         $mmaModScorm.getScorm(courseid, module.id, module.url).then(function(scorm) {
                             $mmaModScormHelper.confirmDownload(scorm).then(function() {
-                                $mmaModScorm.prefetch(scorm).catch(function() {
+                                $mmaModScormPrefetchHandler.prefetch(module, courseid).catch(function() {
                                     if (!$scope.$$destroyed) {
                                         $mmaModScormHelper.showDownloadError(scorm);
                                     }
@@ -128,7 +128,7 @@ angular.module('mm.addons.mod_scorm')
                             e.preventDefault();
                             e.stopPropagation();
                         }
-                        $mmaModScorm.invalidateContent(scorm.coursemodule).finally(function() {
+                        $mmaModScorm.invalidateContent(scorm.coursemodule, courseid).finally(function() {
                             download();
                         });
                     };

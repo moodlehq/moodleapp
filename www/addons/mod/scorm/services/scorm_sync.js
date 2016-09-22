@@ -22,7 +22,8 @@ angular.module('mm.addons.mod_scorm')
  * @name $mmaModScormSync
  */
 .factory('$mmaModScormSync', function($mmaModScorm, $mmSite, $q, $translate, $mmaModScormOnline, $mmaModScormOffline, $mmUtil, $log,
-            mmaModScormSyncTime, $mmApp, $mmEvents, mmaModScormEventAutomSynced, $mmSitesManager, $mmSync, mmaModScormComponent) {
+            mmaModScormSyncTime, $mmApp, $mmEvents, mmaModScormEventAutomSynced, $mmSitesManager, $mmSync, mmaModScormComponent,
+            $mmaModScormPrefetchHandler) {
 
     $log = $log.getInstance('$mmaModScormSync');
 
@@ -264,7 +265,7 @@ angular.module('mm.addons.mod_scorm')
         // Prefetches data , set sync time and return warnings.
         function finishSync() {
             return $mmaModScorm.invalidateAllScormData(scorm.id, siteId).catch(function() {}).then(function() {
-                return $mmaModScorm.prefetchData(scorm, siteId);
+                return $mmaModScormPrefetchHandler.downloadWSData(scorm, siteId);
             }).then(function() {
                 return self.setSyncTime(scorm.id, siteId).catch(function() {
                     // Ignore errors.

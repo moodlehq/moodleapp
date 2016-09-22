@@ -821,12 +821,19 @@ angular.module('mm.core.question')
      * @module mm.core.question
      * @ngdoc method
      * @name $mmQuestionHelper#prefetchQuestionFiles
-     * @param  {Object} question Question.
-     * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved when all the files have been downloaded.
+     * @param  {Object} question     Question.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @param  {String} component    The component to link the files to. If not defined, question component.
+     * @param  {Mixed} [componentId] An ID to use in conjunction with the component. If not defined, question ID.
+     * @return {Promise}             Promise resolved when all the files have been downloaded.
      */
-    self.prefetchQuestionFiles = function(question, siteId) {
+    self.prefetchQuestionFiles = function(question, siteId, component, componentId) {
         var urls = $mmUtil.extractDownloadableFilesFromHtml(question.html);
+
+        if (!component) {
+            component = mmQuestionComponent;
+            componentId = question.id;
+        }
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var promises = [];
@@ -840,7 +847,7 @@ angular.module('mm.core.question')
                     return;
                 }
 
-                promises.push($mmFilepool.addToQueueByUrl(siteId, url, mmQuestionComponent, question.id));
+                promises.push($mmFilepool.addToQueueByUrl(siteId, url, component, componentId));
             });
 
             return $q.all(promises);

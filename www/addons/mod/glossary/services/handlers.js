@@ -81,9 +81,7 @@ angular.module('mm.addons.mod_glossary')
                                 download();
                             });
                         }
-                    },
-                    revision = 0,
-                    timemodified = 0;
+                    };
 
                 $scope.title = module.name;
                 $scope.icon = $mmCourse.getModuleIconSrc('glossary');
@@ -144,7 +142,7 @@ angular.module('mm.addons.mod_glossary')
                 });
 
                 // Get current status to decide which icon should be shown.
-                $mmCoursePrefetchDelegate.getModuleStatus(module, courseId, revision, timemodified).then(showStatus);
+                $mmCoursePrefetchDelegate.getModuleStatus(module, courseId).then(showStatus);
 
                 $scope.$on('$destroy', function() {
                     statusObserver && statusObserver.off && statusObserver.off();

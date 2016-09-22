@@ -22,12 +22,9 @@ angular.module('mm.addons.mod_choice')
  * @name $mmaModChoicePrefetchHandler
  */
 .factory('$mmaModChoicePrefetchHandler', function($mmaModChoice, mmaModChoiceComponent, $mmFilepool, $mmSite, $q, $mmUtil,
-            mmCoreDownloading, mmCoreDownloaded, mmCoreOutdated, $mmUser) {
+            mmCoreDownloaded, mmCoreOutdated, $mmUser, $mmPrefetchFactory) {
 
-    var self = {},
-        downloadPromises = {}; // Store download promises to prevent duplicate requests.
-
-    self.component = mmaModChoiceComponent;
+    var self = $mmPrefetchFactory.createPrefetchHandler(mmaModChoiceComponent);
 
     /**
      * Determine the status of a module based on the current status detected.
@@ -49,35 +46,18 @@ angular.module('mm.addons.mod_choice')
     };
 
     /**
-     * Get the download size of a module.
+     * Download the module.
      *
      * @module mm.addons.mod_choice
      * @ngdoc method
-     * @name $mmaModChoicePrefetchHandler#getDownloadSize
-     * @param {Object} module   Module to get the size.
-     * @param {Number} courseId Course ID the module belongs to.
-     * @return {Promise}        With the file size and a boolean to indicate if it is the total size or only partial.
+     * @name $mmaModChoicePrefetchHandler#download
+     * @param  {Object} module   The module object returned by WS.
+     * @param  {Number} courseId Course ID the module belongs to.
+     * @return {Promise}         Promise resolved when all files have been downloaded. Data returned is not reliable.
      */
-    self.getDownloadSize = function(module, courseId) {
-        return self.getFiles(module, courseId).then(function(files) {
-            return $mmUtil.sumFileSizes(files);
-        }).catch(function() {
-            return {size: -1, total: false};
-        });
-    };
-
-    /**
-     * Get the downloaded size of a module.
-     *
-     * @module mm.addons.mod_choice
-     * @ngdoc method
-     * @name $mmaModChoicePrefetchHandler#getDownloadedSize
-     * @param {Object} module   Module to get the downloaded size.
-     * @param {Number} courseId Course ID the module belongs to.
-     * @return {Promise}        Promise resolved with the size.
-     */
-    self.getDownloadedSize = function(module, courseId) {
-        return $mmFilepool.getFilesSizeByComponent($mmSite.getId(), self.component, module.id);
+    self.download = function(module, courseId) {
+        // Choices cannot be downloaded right away, only prefetched.
+        return self.prefetch(module, courseId);
     };
 
     /**
@@ -91,28 +71,26 @@ angular.module('mm.addons.mod_choice')
      * @return {Promise}        Promise resolved with the list of files.
      */
     self.getFiles = function(module, courseId) {
-        return $mmaModChoice.getChoice(courseId, module.id).then(function(choice) {
-            return getFilesFromChoice(choice);
-        }).catch(function() {
-            // Choice not found, return empty list.
-            return [];
-        });
+        return self.getIntroFiles(module, courseId);
     };
 
     /**
-     * Get the list of downloadable files.
+     * Returns choice intro files.
      *
-     * @param {Object} choice Choice.
-     * @return {Object[]}     Files.
+     * @module mm.addons.mod_choice
+     * @ngdoc method
+     * @name $mmaModChoicePrefetchHandler#getIntroFiles
+     * @param  {Object} module   The module object returned by WS.
+     * @param  {Number} courseId Course ID.
+     * @return {Promise}         Promise resolved with list of intro files.
      */
-    function getFilesFromChoice(choice) {
-        if (typeof choice.introfiles != 'undefined') {
-            return choice.introfiles;
-        } else if (choice.intro) {
-            return $mmUtil.extractDownloadableFilesFromHtmlAsFakeFileObjects(choice.intro);
-        }
-        return [];
-    }
+    self.getIntroFiles = function(module, courseId) {
+        return $mmaModChoice.getChoice(courseId, module.id).catch(function() {
+            // Not found, return undefined so module description is used.
+        }).then(function(choice) {
+            return self.getIntroFilesFromInstance(module, choice);
+        });
+    };
 
     /**
      * Get revision of a choice. Right now we'll always show it outdated, so we always return 0.
@@ -140,6 +118,20 @@ angular.module('mm.addons.mod_choice')
      */
     self.getTimemodified = function(module, courseId) {
         return 0;
+    };
+
+    /**
+     * Invalidate the prefetched content.
+     *
+     * @module mm.addons.mod_choice
+     * @ngdoc method
+     * @name $mmaModChoicePrefetchHandler#invalidateContent
+     * @param  {Number} moduleId The module ID.
+     * @param  {Number} courseId Course ID of the module.
+     * @return {Promise}
+     */
+    self.invalidateContent = function(moduleId, courseId) {
+        return $mmaModChoice.invalidateContent(moduleId, courseId);
     };
 
     /**
@@ -202,29 +194,27 @@ angular.module('mm.addons.mod_choice')
      * @return {Promise}         Promise resolved when all files have been downloaded. Data returned is not reliable.
      */
     self.prefetch = function(module, courseId, single) {
-        var siteId = $mmSite.getId(),
-            prefetchPromise,
-            deleted = false,
-            component = mmaModChoiceComponent;
+        return self.prefetchPackage(module, courseId, single, prefetchChoice);
+    };
 
-        if (downloadPromises[siteId] && downloadPromises[siteId][module.id]) {
-            // There's already a download ongoing for this package, return the promise.
-            return downloadPromises[siteId][module.id];
-        } else if (!downloadPromises[siteId]) {
-            downloadPromises[siteId] = {};
-        }
-
-        // Mark package as downloading.
-        prefetchPromise = $mmFilepool.storePackageStatus(siteId, component, module.id, mmCoreDownloading).then(function() {
-            // Now we can prefetch the choice data.
-            return $mmaModChoice.getChoice(courseId, module.id);
-        }).then(function(choice) {
+    /**
+     * Prefetch a choice.
+     *
+     * @param  {Object} module   The module object returned by WS.
+     * @param  {Number} courseId Course ID the module belongs to.
+     * @param  {Boolean} single  True if we're downloading a single module, false if we're downloading a whole section.
+     * @param  {String} siteId   Site ID.
+     * @return {Promise}         Promise resolved with an object with 'revision' and 'timemod'.
+     */
+    function prefetchChoice(module, courseId, single, siteId) {
+        // Prefetch the choice data.
+        return $mmaModChoice.getChoice(courseId, module.id).then(function(choice) {
             var promises = [],
-                files = getFilesFromChoice(choice);
+                files = self.getIntroFilesFromInstance(module, choice);
 
             // Prefetch files.
             angular.forEach(files, function(file) {
-                promises.push($mmFilepool.addToQueueByUrl(siteId, file.fileurl, component, module.id, file.timemodified));
+                promises.push($mmFilepool.addToQueueByUrl(siteId, file.fileurl, self.component, module.id, file.timemodified));
             });
 
             // Get the options and results.
@@ -249,38 +239,10 @@ angular.module('mm.addons.mod_choice')
 
             return $q.all(promises);
         }).then(function() {
-            // Prefetch finished, mark as downloaded. We don't store revision and timemodified because
-            // we'll always show choices as outdated since we cannot determine the right status without calling all WS.
-            return $mmFilepool.storePackageStatus(siteId, component, module.id, mmCoreDownloaded);
-        }).catch(function(error) {
-            // Error prefetching, go back to previous status and reject the promise.
-            return $mmFilepool.setPackagePreviousStatus(siteId, component, module.id).then(function() {
-                return $q.reject(error);
-            });
-        }).finally(function() {
-            deleted = true;
-            delete downloadPromises[siteId][module.id];
+            // Don't return revision and timemodified because choices are always shown as outdated.
+            return {};
         });
-
-        if (!deleted) {
-            downloadPromises[siteId][module.id] = prefetchPromise;
-        }
-        return prefetchPromise;
-    };
-
-    /**
-     * Remove module downloaded files.
-     *
-     * @module mm.addons.mod_choice
-     * @ngdoc method
-     * @name $mmaModChoicePrefetchHandler#removeFiles
-     * @param {Object} module   Module to remove the files.
-     * @param {Number} courseId Course ID the module belongs to.
-     * @return {Promise}        Promise resolved when done.
-     */
-    self.removeFiles = function(module, courseId) {
-        return $mmFilepool.removeFilesByComponent($mmSite.getId(), self.component, module.id);
-    };
+    }
 
     return self;
 });

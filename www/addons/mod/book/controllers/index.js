@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_book')
  * @name mmaModBookIndexCtrl
  */
 .controller('mmaModBookIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModBook, $log, mmaModBookComponent, $mmText,
-            $ionicPopover, $mmApp, $q, $mmCourse, $ionicScrollDelegate, $translate, $timeout) {
+            $ionicPopover, $mmApp, $q, $mmCourse, $ionicScrollDelegate, $translate, $timeout, $mmaModBookPrefetchHandler) {
     $log = $log.getInstance('mmaModBookIndexCtrl');
 
     var module = $stateParams.module || {},
@@ -70,10 +70,20 @@ angular.module('mm.addons.mod_book')
     // Convenience function to download book contents and load the current chapter.
     function fetchContent(chapterId) {
         var downloadFailed = false;
-        return $mmaModBook.downloadAllContent(module).catch(function() {
+
+        // Try to get the book data.
+        return $mmaModBook.getBook(courseid, module.id).then(function(book) {
+            $scope.title = book.name || $scope.title;
+            $scope.description = book.intro || $scope.description;
+        }).catch(function() {
+            // Ignore errors since this WS isn't available in some Moodle versions.
+        }).then(function() {
+            // Download content.
+            return $mmaModBookPrefetchHandler.download(module);
+        }).catch(function() {
             // Mark download as failed but go on since the main files could have been downloaded.
             downloadFailed = true;
-        }).finally(function() {
+        }).then(function() {
             // Show chapter.
             return loadChapter(chapterId).then(function() {
                 if (downloadFailed && $mmApp.isOnline()) {
@@ -87,7 +97,8 @@ angular.module('mm.addons.mod_book')
     $scope.doRefresh = function() {
         if ($scope.loaded) {
             $scope.refreshIcon = 'spinner';
-            return $mmaModBook.invalidateContent(module.id).then(function() {
+
+            return $mmaModBook.invalidateContent(module.id, courseid).finally(function() {
                 return fetchContent(currentChapter);
             }).finally(function() {
                 $scope.refreshIcon = 'ion-refresh';
