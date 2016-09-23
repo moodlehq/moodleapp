@@ -730,3 +730,13 @@ mm-format-text {
     margin: 0;
   }
 }
+
+.offline img {
+  border: solid 2px red;
+}
+.online img {
+  border: solid 2px limegreen;
+}
+.away img {
+  border: solid 2px orange;
+}

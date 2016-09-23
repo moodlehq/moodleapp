@@ -410,6 +410,13 @@ angular.module('mm.addons.messages')
 
             return self.getDiscussionsUserImg(discussions).then(function(discussions) {
                 storeUsersFromDiscussions(discussions);
+
+                angular.forEach(discussions, function(discussion) {
+                    $mmUser.getUserFromWS(discussion.message.user, 0).then(function(user) {
+                        discussion['userStatus'] = $mmUser.getUserOnlineStatus(user);
+                    });
+                });
+
                 return discussions;
             });
         });

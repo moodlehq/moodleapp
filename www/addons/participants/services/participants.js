@@ -96,6 +96,9 @@ angular.module('mm.addons.participants')
                 if (typeof user.profileimageurl == 'undefined' && typeof user.profileimgurl != 'undefined') {
                     user.profileimageurl = user.profileimgurl;
                 }
+
+                user.status = $mmUser.getUserOnlineStatus(user);
+
             });
 
             var canLoadMore = users.length >= limitNumber;

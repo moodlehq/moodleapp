@@ -140,6 +140,34 @@ angular.module('mm.core.user')
     };
 
     /**
+     * Get the availability status of the user. The availability depends on the last access timestamp of the user.
+     * ONLINE_LIMIT and AWAY_LIMIT represent the interval from which the status changes.
+     *
+     * @module mm.core.user
+     * @ngdoc method
+     * @name $mmUser#getUserOnlineStatus
+     * @param  {Number} userid      User object.
+     * @return {String}             The string indicating the status of the user.
+     */
+    self.getUserOnlineStatus = function(user) {
+        var currentDate = new Date();
+        var currentDateTime = Math.floor(currentDate.getTime()/1000);
+        var difference = currentDateTime - user.lastaccess;
+
+        var ONLINE_LIMIT = 300; // A.k.a. 5 Minutes
+        var AWAY_LIMIT = 600; // A.k.a. 10 Minutes
+        var onlineStatus = 'offline';
+
+        if (difference <= ONLINE_LIMIT) {
+            onlineStatus = 'online';
+        }
+        else if (difference > ONLINE_LIMIT && difference <= AWAY_LIMIT) {
+            onlineStatus = 'away';
+        }
+        return onlineStatus;
+    }
+
+    /**
      * Invalidates user WS calls.
      *
      * @param  {Number} userid User ID.
