@@ -58,25 +58,7 @@
                     </p>
                 </div>
 
-                <div class="row">
-                    <p class="col"><b>{{ 'mma.mod_choice.choiceoptions' | translate }}</b></p>
-                    <p class="col"><b>{{ 'mma.mod_choice.numberofuser' | translate }}</b></p>
-                    <p class="col"><b>{{ 'mma.mod_choice.numberofuserinpercentage' | translate }}</b></p>
-                    <p class="col" ng-if="!choice.publish"><b>{{ 'mma.mod_choice.responsesresultgraphheader' | translate }}</b></p>
-                    <p class="col" ng-if="choice.publish"><b>{{ 'mma.mod_choice.userchoosethisoption' | translate }}</b></p>
-                </div>
-                <div class="row" ng-repeat="result in results">
-                    <p class="col"><b><mm-format-text watch="true">{{ result.text }}</mm-format-text></b></p>
-                    <p class="col">{{ result.numberofuser }}</p>
-                    <p class="col">{{ 'mm.core.percentagenumber' | translate:{$a: result.percentageamount} }}</p>
-                    <div class="col text-left">
-                        <img ng-if="!choice.publish" class="mma-mod_choice-graph-horizontal" src="addons/mod/choice/img/row.png" alt="{{ 'mma.mod_choice.responsesresultgraphdescription' | translate:{number: result.percentageamount, text: result.text} }}" ng-style="{'width': result.percentageamount+'%'}">
-                        <a ng-if="choice.publish" class="padding mma-mod_choice-user" ng-repeat="user in result.userresponses" mm-user-link courseid="{{courseid}}" userid="{{user.userid}}" title="{{user.fullname}}">
-                            <img ng-src="{{user.profileimageurl}}" alt="{{user.fullname}}" mm-external-content>
-                            <p>{{user.fullname}}</p>
-                        </a>
-                    </div>
-                </div>
+                <canvas id="choiceResults" class="chart chart-pie" chart-data="data" chart-labels="labels" ></canvas>
             </section>
             <section class="card padding" ng-if="!canSeeResults">
                 <p>{{ 'mma.mod_choice.noresultsviewable' | translate }}</p>
