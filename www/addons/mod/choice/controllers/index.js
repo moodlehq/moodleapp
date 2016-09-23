@@ -174,11 +174,15 @@ angular.module('mm.addons.mod_choice')
     function fetchResults() {
         return $mmaModChoice.getResults(choice.id).then(function(results) {
             var hasVotes = false;
+            $scope.data = [];
+            $scope.labels = [];
             angular.forEach(results, function(result) {
                 if (result.numberofuser > 0) {
                     hasVotes = true;
                 }
                 result.percentageamount = parseFloat(result.percentageamount).toFixed(1);
+                $scope.data.push(result.numberofuser);
+                $scope.labels.push(result.text);
             });
             $scope.canSeeResults = hasVotes || $mmaModChoice.canStudentSeeResults(choice, hasAnsweredOnline);
             $scope.results = results;
