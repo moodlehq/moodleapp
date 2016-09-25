@@ -58,7 +58,20 @@
                     </p>
                 </div>
 
-                <canvas id="choiceResults" class="chart chart-pie" chart-data="data" chart-labels="labels" ></canvas>
+                <canvas class="chart chart-pie" chart-data="data" chart-labels="labels" ></canvas>
+                
+                <div ng-repeat="result in results">
+                    <div class="row">
+                        <p class="row"><b><mm-format-text watch="true">{{ result.text }}</mm-format-text></b></p>
+                    </div>
+                     <div class="col text-center">
+                         <a ng-if="choice.publish" class="padding mma-mod_choice-user fixed-width" ng-repeat="user in result.userresponses" mm-user-link courseid="{{courseid}}" userid="{{user.userid}}" title="{{user.fullname}}">
+                             <img ng-src="{{user.profileimageurl}}" alt="{{user.fullname}}" mm-external-content>
+                             <p>{{user.fullname}}</p>
+                         </a>
+                     </div>
+                     
+                 </div>
             </section>
             <section class="card padding" ng-if="!canSeeResults">
                 <p>{{ 'mma.mod_choice.noresultsviewable' | translate }}</p>
