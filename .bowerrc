@@ -1,3 +1,6 @@
 {
-  "directory": "www/lib"
+  "directory": "www/lib",
+  "resolvers": [
+    "bower-npm-resolver"
+  ]
 }

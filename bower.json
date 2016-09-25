@@ -18,5 +18,9 @@
   },
   "resolutions": {
     "angular": "1.5.3"
+  },
+  "dependencies": {
+    "chart.js": "npm:chart.js#^2.2.2",
+    "angular-chart.js": "^1.0.2"
   }
 }
