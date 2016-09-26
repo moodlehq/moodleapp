@@ -23,16 +23,18 @@ angular.module('mm.addons.mod_wiki')
  */
 .controller('mmaModWikiIndexCtrl', function($q, $scope, $stateParams, $mmCourse, $mmUser, $mmGroups, $ionicPopover, $mmUtil, $state,
         $mmSite, $mmaModWiki, $ionicTabsDelegate, $ionicHistory, $translate, mmaModWikiSubwikiPagesLoaded, $mmCourseHelper,
-        $mmCoursePrefetchDelegate, $mmText, mmaModWikiComponent, $mmEvents, mmCoreEventPackageStatusChanged, $ionicScrollDelegate) {
+        $mmCoursePrefetchDelegate, $mmText, mmaModWikiComponent, $mmEvents, mmCoreEventPackageStatusChanged, $ionicScrollDelegate,
+        $mmaModWikiOffline, mmaModWikiPageCreated) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         action = $stateParams.action || 'page',
         currentPage = $stateParams.pageid || false,
-        popover, wiki, currentSubwiki, loadedSubwikis, tabsDelegate, statusObserver, currentPageObj;
+        pageTitle = $stateParams.pagetitle,
+        popover, wiki, currentSubwiki, loadedSubwikis, tabsDelegate, statusObserver, currentPageObj, newPageObserver;
 
-    $scope.title = $stateParams.pagetitle || module.name;
+    $scope.title = pageTitle || module.name;
     $scope.description = module.description;
-    $scope.mainpage = !currentPage;
+    $scope.mainpage = !currentPage && !pageTitle;
     $scope.moduleUrl = module.url;
     $scope.courseId = courseId;
     $scope.component = mmaModWikiComponent;
@@ -43,6 +45,7 @@ angular.module('mm.addons.mod_wiki')
         count: 0
     };
     $scope.refreshIcon = 'spinner';
+    $scope.pageStr = $translate.instant('mma.mod_wiki.page');
 
     $scope.tabsDelegateName = 'mmaModWikiTabs_'+(module.id || 0) + '_' + (currentPage || 0) + '_' +  new Date().getTime();
     tabsDelegate = $ionicTabsDelegate.$getByHandle($scope.tabsDelegateName);
@@ -57,10 +60,22 @@ angular.module('mm.addons.mod_wiki')
         $ionicHistory.goBack(backTimes);
     };
 
-    $scope.gotoPage = function(pageId) {
-        if (currentPage != pageId) {
+    $scope.gotoPage = function(page) {
+        if (!page.id) {
+            // It's an offline page.
+            var stateParams = {
+                module: module,
+                moduleid: module.id,
+                courseid: courseId,
+                pagetitle: page.title,
+                wikiid: wiki.id,
+                subwikiid: page.subwikiid,
+                action: 'page'
+            };
+            return $state.go('site.mod_wiki', stateParams);
+        } else if (currentPage != page.id) {
             // Add a new State.
-            return fetchPageContents(pageId).then(function(page) {
+            return fetchPageContents(page.id).then(function(page) {
                 var stateParams = {
                     module: module,
                     moduleid: module.id,
@@ -302,7 +317,7 @@ angular.module('mm.addons.mod_wiki')
             otherGroupsTitle = $translate.instant('mm.core.othergroups');
 
         $scope.subwikiData.subwikis = [];
-        $scope.subwikiData.selected = false;
+        $scope.subwikiData.selected = $stateParams.subwikiid || false;
         $scope.subwikiData.count = 0;
 
         // Group mode available.
@@ -369,9 +384,10 @@ angular.module('mm.addons.mod_wiki')
                 }
             }
 
-            // Select always the current user, or the first subwiki if not previously selected
-            if (subwiki.id > 0 && ((userId > 0 && currentUserId == userId) ||
-                !$scope.subwikiData.selected)) {
+            // If no subwikiid received as view param, select always the current user
+            // or the first subwiki if not previously selected.
+            if (!$stateParams.subwikiid && subwiki.id > 0 &&
+                ((userId > 0 && currentUserId == userId) || !$scope.subwikiData.selected)) {
                 $scope.subwikiData.selected = subwiki.id;
             }
         });
@@ -523,28 +539,76 @@ angular.module('mm.addons.mod_wiki')
     function fetchSubwikiPages(subwiki) {
         return $mmaModWiki.getSubwikiPages(subwiki.wikiid, subwiki.groupid, subwiki.userid).then(function(subwikiPages) {
 
-            angular.forEach(subwikiPages, function(subwikiPage) {
-                if (!currentPage && subwikiPage.firstpage) {
-                    currentPage = subwikiPage.id;
-                }
-            });
-            $scope.subwikiPages = subwikiPages;
-
-            if (!currentPage) {
-                return $q.reject();
+            // If no page specified, search first page.
+            if (!currentPage && !pageTitle) {
+                angular.forEach(subwikiPages, function(subwikiPage) {
+                    if (!currentPage && subwikiPage.firstpage) {
+                        currentPage = subwikiPage.id;
+                    }
+                });
             }
 
-            $scope.$broadcast(mmaModWikiSubwikiPagesLoaded, $scope.subwikiPages);
+            // Now get the offline pages.
+            return $mmaModWikiOffline.getSubwikiNewPages(subwiki.id).then(function(offlinePages) {
+
+                // If no page specified, search first page in the offline pages.
+                if (!currentPage && !pageTitle) {
+                    angular.forEach(offlinePages, function(subwikiPage) {
+                        if (!currentPage && subwikiPage.title == wiki.firstpagetitle) {
+                            currentPage = subwikiPage.id;
+                        }
+                    });
+                }
+
+                $scope.subwikiPages = $mmaModWiki.sortPagesByTitle(subwikiPages.concat(offlinePages));
+                $scope.$broadcast(mmaModWikiSubwikiPagesLoaded, $scope.subwikiPages);
+
+                if (!currentPage && !pageTitle) {
+                    return $q.reject();
+                }
+            });
         });
     }
 
     // Convenience function to get wiki page contents.
     function fetchPageContents(pageId) {
-        return $mmaModWiki.getPageContents(pageId).then(function(pageContents) {
-            return pageContents;
-        });
-    }
+        if (!pageId && pageTitle) {
+            // No page ID but we received a title. This means we're trying to load an offline page.
+            $scope.isOffline = true;
+            return $mmaModWikiOffline.getNewPage(currentSubwiki.id, pageTitle).then(function(offlinePage) {
+                if (!newPageObserver) {
+                    // It's an offline page, listen for new pages event to detect if the user goes to Edit and submits the page.
+                    newPageObserver = $mmEvents.on(mmaModWikiPageCreated, function(data) {
+                        if (data.courseid == courseId && data.subwikiid == currentSubwiki.id && data.pagetitle == pageTitle) {
+                            // The page has been submitted. Get the page from the server.
+                            currentPage = data.pageid;
 
+                            $scope.wikiLoaded = false;
+                            $scope.refreshIcon = 'spinner';
+                            fetchWikiData(true).then(function() {
+                                $mmaModWiki.logPageView(currentPage);
+                            }).finally(function() {
+                                $scope.wikiLoaded = true;
+                                $scope.refreshIcon = 'ion-refresh';
+                            });
+
+                            // Stop listening for new page events.
+                            newPageObserver.off && newPageObserver.off();
+                            newPageObserver = false;
+                        }
+                    });
+                }
+
+                return offlinePage;
+            }).catch(function() {
+                // Page not found, reject.
+                return $q.reject();
+            });
+        }
+
+        $scope.isOffline = false;
+        return $mmaModWiki.getPageContents(pageId);
+    }
 
     // Convenience function to refresh all the data.
     function refreshAllData() {
@@ -615,5 +679,6 @@ angular.module('mm.addons.mod_wiki')
     $scope.$on('$destroy', function() {
         statusObserver && statusObserver.off && statusObserver.off();
         popover && popover.remove();
+        newPageObserver && newPageObserver.off && newPageObserver.off();
     });
 });

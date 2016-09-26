@@ -21,7 +21,8 @@ angular.module('mm.addons.mod_wiki')
  * @ngdoc service
  * @name $mmaModWiki
  */
-.factory('$mmaModWiki', function($q, $mmSite, $mmSitesManager, $mmFilepool, mmaModWikiComponent) {
+.factory('$mmaModWiki', function($q, $mmSite, $mmSitesManager, $mmFilepool, $mmApp, $mmaModWikiOffline, $mmUtil,
+            mmaModWikiComponent) {
     var self = {},
         subwikiListsCache = {};
 
@@ -464,29 +465,87 @@ angular.module('mm.addons.mod_wiki')
     };
 
     /**
-     * Create a new page on a subwiki. It does not cache calls.
+     * Create a new page on a subwiki.
      *
      * @module mm.addons.mod_wiki
      * @ngdoc method
      * @name $mmaModWiki#newPage
-     * @param {Number} subwikiId    Subwiki ID.
-     * @param {String} title        title to create the page.
-     * @param {String} content      content to save on the page.
-     * @return {Promise}            Promise resolved with wiki page contents.
+     * @param  {Number} subwikiId Subwiki ID.
+     * @param  {String} title     Title to create the page.
+     * @param  {String} content   Content to save on the page.
+     * @param  {String} [siteId]  Site ID. If not defined, current site.
+     * @return {Promise}          Promise resolved with page ID if page was created in server, false if stored in device.
      */
-    self.newPage = function(subwikiId, title, content) {
-        var params = {
-                title: title,
-                content: content,
-                contentformat: 'html',
-                subwikiid: subwikiId
-            };
+    self.newPage = function(subwikiId, title, content, siteId) {
+        siteId = siteId || $mmSite.getId();
 
-        return $mmSite.write('mod_wiki_new_page', params).then(function(response) {
-            if (response.pageid) {
-                return response.pageid;
-            }
-            return $q.reject();
+        if (!$mmApp.isOnline()) {
+            // App is offline, store the action.
+            return storeOffline();
+        }
+
+        // Discard stored content for this page. If it exists it means the user is editing it.
+        return $mmaModWikiOffline.deleteNewPage(subwikiId, title, siteId).then(function() {
+            // Try to create it in online.
+            return self.newPageOnline(subwikiId, title, content, siteId).then(function(pageId) {
+                return pageId;
+            }).catch(function(error) {
+                if (error && error.wserror) {
+                    // The WebService has thrown an error, this means that responses cannot be deleted.
+                    return $q.reject(error.error);
+                } else {
+                    // Couldn't connect to server, store in offline.
+                    return storeOffline();
+                }
+            });
+        });
+
+        // Convenience function to store a new page to be synchronized later.
+        function storeOffline() {
+            return $mmaModWikiOffline.saveNewPage(subwikiId, title, content, siteId).then(function() {
+                return false;
+            });
+        }
+    };
+
+    /**
+     * Create a new page on a subwiki. It does not cache calls. It will fail if offline or cannot connect.
+     *
+     * @module mm.addons.mod_wiki
+     * @ngdoc method
+     * @name $mmaModWiki#newPageOnline
+     * @param  {Number} subwikiId Subwiki ID.
+     * @param  {String} title     Title to create the page.
+     * @param  {String} content   Content to save on the page.
+     * @param  {String} [siteId]  Site ID. If not defined, current site.
+     * @return {Promise}          Promise resolved if created, rejected otherwise. Reject param is an object with:
+     *                                   - error: The error message.
+     *                                   - wserror: True if it's an error returned by the WebService, false otherwise.
+     */
+    self.newPageOnline = function(subwikiId, title, content, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    title: title,
+                    content: content,
+                    contentformat: 'html',
+                    subwikiid: subwikiId
+                };
+
+            return site.write('mod_wiki_new_page', params).catch(function(error) {
+                return $q.reject({
+                    error: error,
+                    wserror: $mmUtil.isWebServiceError(error)
+                });
+            }).then(function(response) {
+                if (response.pageid) {
+                    return response.pageid;
+                }
+                return $q.reject({
+                    wserror: true
+                });
+            });
         });
     };
 
@@ -693,6 +752,26 @@ angular.module('mm.addons.mod_wiki')
             });
         }
         return $q.reject();
+    };
+
+    /**
+     * Sort an array of wiki pages by title.
+     *
+     * @module mm.addons.mod_wiki
+     * @ngdoc method
+     * @name $mmaModWiki#sortPagesByTitle
+     * @param  {Object[]} pages Pages to sort.
+     * @param  {Boolean} [desc] True to sort in descendent order, false to sort in ascendent order. Defaults to false.
+     * @return {Promise}        Promise resolved with the pages.
+     */
+    self.sortPagesByTitle = function(pages, desc) {
+        return pages.sort(function (a, b) {
+            var result = a.title >= b.title ? 1 : -1;
+            if (!!desc) {
+                result = -result;
+            }
+            return result;
+        });
     };
 
     return self;

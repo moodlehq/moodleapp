@@ -10,6 +10,8 @@
     "newpagehdr": "New page",
     "newpagetitle": "New page title",
     "nocontent": "There is no content for this page",
+    "page": "Page",
+    "pageexists": "This page already exists.",
     "pagename": "Page name",
     "subwiki": "Subwiki",
     "titleshouldnotbeempty": "Title should not be empty",

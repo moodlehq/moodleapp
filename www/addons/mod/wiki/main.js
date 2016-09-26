@@ -15,6 +15,7 @@
 angular.module('mm.addons.mod_wiki', [])
 
 .constant('mmaModWikiSubwikiPagesLoaded', 'mma_mod_wiki_subwiki_pages_loaded')
+.constant('mmaModWikiPageCreated', 'mma_mod_wiki_page_created')
 
 .constant('mmaModWikiComponent', 'mmaModWiki')
 // Renew Lock Timeout in seconds.
