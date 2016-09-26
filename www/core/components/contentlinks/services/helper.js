@@ -188,13 +188,8 @@ angular.module('mm.core.contentlinks')
                     modal.dismiss(); // Dismiss modal so it doesn't collide with confirms.
 
                     if (!$mmSite.isLoggedIn()) {
-                        if (ssoNeeded) {
-                            // Ask SSO confirmation.
-                            promise = $mmUtil.showConfirm($translate('mm.login.logininsiterequired'));
-                        } else {
-                            // Not logged in and no SSO, no need to confirm.
-                            promise = $q.when();
-                        }
+                        // Not logged in, no need to confirm. If SSO the confirm will be shown later.
+                        promise = $q.when();
                     } else {
                         // Ask the user before changing site.
                         promise = $mmUtil.showConfirm($translate('mm.contentlinks.confirmurlothersite')).then(function() {
@@ -208,7 +203,7 @@ angular.module('mm.core.contentlinks')
 
                     return promise.then(function() {
                         if (ssoNeeded) {
-                            $mmLoginHelper.openBrowserForSSOLogin(result.siteurl, result.code);
+                            $mmLoginHelper.confirmAndOpenBrowserForSSOLogin(result.siteurl, result.code);
                         } else {
                             $state.go('mm_login.credentials', {
                                 siteurl: result.siteurl,

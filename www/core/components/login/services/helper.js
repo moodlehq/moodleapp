@@ -35,6 +35,25 @@ angular.module('mm.core.login')
     var self = {};
 
     /**
+     * Show a confirm modal if needed and open a browser to perform SSO login.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#confirmAndOpenBrowserForSSOLogin
+     * @param {String} siteurl     URL of the site where the SSO login will be performed.
+     * @param {Number} typeOfLogin mmLoginSSOCode or mmLoginSSOInAppCode
+     */
+    self.confirmAndOpenBrowserForSSOLogin = function(siteurl, typeOfLogin) {
+        // Show confirm only if it's needed. Treat "false" (string) as false to prevent typing errors.
+        var skipConfirmation = mmCoreConfigConstants.skipssoconfirmation && mmCoreConfigConstants.skipssoconfirmation !== 'false',
+            promise = skipConfirmation ? $q.when() : $mmUtil.showConfirm($translate('mm.login.logininsiterequired'));
+
+        promise.then(function() {
+            self.openBrowserForSSOLogin(siteurl, typeOfLogin);
+        });
+    };
+
+    /**
      * Go to the view to add a new site.
      * If a fixed URL is configured, go to credentials instead.
      *
