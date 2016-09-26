@@ -89,7 +89,7 @@
                 <!-- Synchronize button -->
                 <div class="item item-text-wrap" ng-if="buttonText && showSyncButton && !showSpinner">
                     <p class="mma-mod-quiz-warning">{{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}</p>
-                    <button class="button button-block" ng-click="sync()">{{ 'mm.settings.synchronizenow' | translate }}</button>
+                    <button class="button button-block icon-right ion-loop" ng-click="sync()">{{ 'mm.settings.synchronizenow' | translate }}</button>
                 </div>
                 <div class="item" ng-if="buttonText && !showSpinner">
                     <a class="button button-block" ng-click="attemptQuiz()">{{ buttonText | translate }}</a>
