@@ -104,9 +104,9 @@ angular.module('mm.addons.mod_forum')
             });
         }).finally(function() {
             var posts = onlinePosts.concat(offlineReplies);
+            $scope.discussion = $mmaModForum.extractStartingPost(posts);
             // Set default reply subject.
             $scope.posts = $mmaModForum.sortDiscussionPosts(posts, $scope.sort.direction);
-            $scope.discussion = $mmaModForum.extractStartingPost($scope.posts);
 
             return $translate('mma.mod_forum.re').then(function(strReplyPrefix) {
                 $scope.defaultSubject = strReplyPrefix + ' ' + $scope.discussion.subject;
@@ -127,8 +127,6 @@ angular.module('mm.addons.mod_forum')
 
         if (!init) {
             $scope.sort.direction = $scope.sort.direction == 'DESC' ? 'ASC' : 'DESC';
-        } else {
-            $scope.sort.direction = 'DESC';
         }
 
         return fetchPosts(init).then(function() {

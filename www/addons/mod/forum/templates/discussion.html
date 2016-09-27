@@ -17,7 +17,7 @@
                 <button class="button button-block icon-right ion-loop" ng-click="syncDiscussion()">{{ 'mm.settings.synchronizenow' | translate }}</button>
             </div>
 
-            <article class="card" ng-if="discussion">
+            <article class="card highlight" ng-if="discussion">
                 <mma-mod-forum-discussion-post post="discussion" courseid="courseid" discussion-id="discussionId" title="discussion.subject" subject="discussion.userfullname" component="component" component-id="componentId" newpost="newpost" replyingto="replyingto" showdivider="false" titleimportant="true" onpostchange="postListChanged()" defaultsubject="defaultSubject" scroll-handle="mmaModForumPostsScroll"></mma-mod-forum-discussion-post>
             </article>
 
