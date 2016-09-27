@@ -176,14 +176,14 @@ angular.module('mm.addons.mod_wiki')
 
             return $ionicHistory.goBack();
         }).catch(function() {
-            //Go back if fails.
+            // Go back if fails.
             return $ionicHistory.goBack();
         });
     }
 
     // Navigate to a new offline page.
     function gotoNewOfflinePage() {
-        if (module.id || wikiId) {
+        if (courseId && (module.id || wikiId)) {
             // We have enough data to navigate to the page.
             if (!editOffline || backViewPageIsDifferentOffline()) {
                 $scope.saveAndGoParams = {

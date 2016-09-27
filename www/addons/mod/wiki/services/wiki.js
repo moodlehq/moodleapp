@@ -774,5 +774,31 @@ angular.module('mm.addons.mod_wiki')
         });
     };
 
+    /**
+     * Check if a wiki has a certain subwiki.
+     *
+     * @module mm.addons.mod_wiki
+     * @ngdoc method
+     * @name $mmaModWiki#wikiHasSubwiki
+     * @param  {Number} wikiId    Wiki ID.
+     * @param  {Number} subwikiId Subwiki ID to search.
+     * @param  {String} [siteId]  Site ID. If not defined, current site.
+     * @return {Promise}          Promise resolved with true if it has subwiki, resolved with false otherwise.
+     */
+    self.wikiHasSubwiki = function(wikiId, subwikiId, siteId) {
+        // Get the subwikis to check if any of them matches the current one.
+        return self.getSubwikis(wikiId, siteId).then(function(subwikis) {
+            for (var i = 0; i < subwikis.length; i++) {
+                if (subwikis[i].id == subwikiId) {
+                    return true;
+                }
+            }
+            return false;
+        }).catch(function() {
+            // Not found, return false.
+            return false;
+        });
+    };
+
     return self;
 });
