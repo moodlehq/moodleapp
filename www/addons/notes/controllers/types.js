@@ -21,8 +21,11 @@ angular.module('mm.addons.notes')
  * @ngdoc controller
  * @name mmaNotesTypesCtrl
  */
-.controller('mmaNotesTypesCtrl', function($scope, $stateParams) {
+.controller('mmaNotesTypesCtrl', function($scope, $stateParams, $mmaNotes) {
     var course = $stateParams.course,
         courseid = course.id;
     $scope.courseid = courseid;
+
+    // Cache data about add notes.
+    $mmaNotes.isPluginAddNoteEnabledForCourse(courseid);
 });

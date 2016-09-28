@@ -23,7 +23,8 @@ angular.module('mm.addons.notes')
  * @ngdoc service
  * @name $mmaNotesHandlers
  */
-.factory('$mmaNotesHandlers', function($mmaNotes, $mmSite, $mmApp, $ionicModal, $mmUtil, $q, mmCoursesAccessMethods) {
+.factory('$mmaNotesHandlers', function($mmaNotes, $mmSite, $mmApp, $ionicModal, $mmUtil, $q, $mmaNotesSync,
+            mmCoursesAccessMethods) {
 
     // We use "caches" to decrease network usage.
     var self = {},
@@ -72,7 +73,7 @@ angular.module('mm.addons.notes')
         /**
          * Check if handler is enabled.
          *
-         * @return {Boolean} True if handler is enabled, false otherwise.
+         * @return {Promise} Promise resolved with true if enabled, resolved with false or rejected otherwise.
          */
         self.isEnabled = function() {
             return $mmaNotes.isPluginAddNoteEnabled();
@@ -140,8 +141,9 @@ angular.module('mm.addons.notes')
                     // Freeze the add note button.
                     $scope.processing = true;
 
-                    $mmaNotes.addNote(user.id, courseid, $scope.note.publishstate, $scope.note.text).then(function() {
-                        $mmUtil.showModal('mm.core.success', 'mma.notes.eventnotecreated');
+                    $mmaNotes.addNote(user.id, courseid, $scope.note.publishstate, $scope.note.text).then(function(sent) {
+                        var message = sent ? 'mma.notes.eventnotecreated' : 'mm.core.datastoredoffline';
+                        $mmUtil.showModal('mm.core.success', message);
                         $scope.closeModal();
                     }, function(error) {
                         $mmUtil.showErrorModal(error);
@@ -185,7 +187,7 @@ angular.module('mm.addons.notes')
         /**
          * Check if handler is enabled.
          *
-         * @return {Boolean} True if handler is enabled, false otherwise.
+         * @return {Promise} Promise resolved with true if enabled, resolved with false or rejected otherwise.
          */
         self.isEnabled = function() {
             return $mmaNotes.isPluginViewNotesEnabled();
@@ -238,6 +240,58 @@ angular.module('mm.addons.notes')
                     });
                 };
             };
+        };
+
+        return self;
+    };
+
+    /**
+     * Synchronization handler.
+     *
+     * @module mm.addons.notes
+     * @ngdoc method
+     * @name $mmaNotesHandlers#syncHandler
+     */
+    self.syncHandler = function() {
+
+        var self = {};
+
+        /**
+         * Execute the process.
+         * Receives the ID of the site affected, undefined for all sites.
+         *
+         * @param  {String} [siteId] ID of the site affected, undefined for all sites.
+         * @return {Promise}         Promise resolved when done, rejected if failure.
+         */
+        self.execute = function(siteId) {
+            return $mmaNotesSync.syncAllNotes(siteId);
+        };
+
+        /**
+         * Get the time between consecutive executions.
+         *
+         * @return {Number} Time between consecutive executions (in ms).
+         */
+        self.getInterval = function() {
+            return 600000; // 10 minutes.
+        };
+
+        /**
+         * Whether it's a synchronization process or not.
+         *
+         * @return {Boolean} True if is a sync process, false otherwise.
+         */
+        self.isSync = function() {
+            return true;
+        };
+
+        /**
+         * Whether the process uses network or not.
+         *
+         * @return {Boolean} True if uses network, false otherwise.
+         */
+        self.usesNetwork = function() {
+            return true;
         };
 
         return self;
