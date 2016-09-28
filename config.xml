@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.moodle.moodlemobile" version="3.1.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>Moodle Mobile</name>
-  <description>Official Moodle Mobile app</description>
-  <author href="http://moodle.com" email="juan@moodle.com">Juan Leyva</author>
+<widget id="net.moodlesabes.sabes" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <name>Moodle Sabes</name>
+  <description>Official Sabes Moodle Mobile</description>
+  <author href="http://sabes.edu.mx" email="juan.urrutiar@sabes.edu.mx">Juan Urrutia</author>
   <content src="index.html"/>
   <access origin="*"/>
 
