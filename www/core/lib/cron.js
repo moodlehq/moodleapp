@@ -16,7 +16,7 @@ angular.module('mm.core')
 
 .constant('mmCoreCronInterval', 3600000) // Default interval is 1 hour.
 .constant('mmCoreCronMinInterval', 300000) // Minimum interval is 5 minutes.
-.constant('mmCoreCronMaxTimeProcess', 10000) // Max time a process can block the queue. Defaults to 2 minutes.
+.constant('mmCoreCronMaxTimeProcess', 120000) // Max time a process can block the queue. Defaults to 2 minutes.
 .constant('mmCoreCronStore', 'cron')
 
 .config(function($mmAppProvider, mmCoreCronStore) {

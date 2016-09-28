@@ -60,9 +60,10 @@ angular.module('mm.core')
              */
             this.getSyncTime = function(id, siteId) {
                 siteId = siteId || $mmSite.getId();
+                var that = this;
 
                 return $mmSitesManager.getSiteDb(siteId).then(function(db) {
-                    return db.get(mmCoreSynchronizationStore, [this.component, id]).then(function(entry) {
+                    return db.get(mmCoreSynchronizationStore, [that.component, id]).then(function(entry) {
                         return entry.time;
                     }).catch(function() {
                         return 0;
@@ -80,11 +81,12 @@ angular.module('mm.core')
              */
             this.setSyncTime = function(id, siteId, time) {
                 siteId = siteId || $mmSite.getId();
+                var that = this;
 
                 return $mmSitesManager.getSiteDb(siteId).then(function(db) {
                     var entry = {
                             id: id,
-                            component: this.component,
+                            component: that.component,
                             time: typeof time != 'undefined' ? time : new Date().getTime()
                         };
                     return db.insert(mmCoreSynchronizationStore, entry);
@@ -100,8 +102,10 @@ angular.module('mm.core')
              */
             this.isSyncNeeded = function(id, siteId) {
                 siteId = siteId || $mmSite.getId();
+                var that = this;
+
                 return this.getSyncTime(id, siteId).then(function(time) {
-                    return new Date().getTime() - this.syncInterval >= time;
+                    return new Date().getTime() - that.syncInterval >= time;
                 });
             };
 
@@ -195,8 +199,10 @@ angular.module('mm.core')
              */
             this.getSyncWarnings = function(id, siteId) {
                 siteId = siteId || $mmSite.getId();
+                var that = this;
+
                 return $mmSitesManager.getSiteDb(siteId).then(function(db) {
-                    return db.get(mmCoreSynchronizationWarningsStore, [this.component, id]).then(function(entry) {
+                    return db.get(mmCoreSynchronizationWarningsStore, [that.component, id]).then(function(entry) {
                         return entry.warnings;
                     }).catch(function() {
                         return [];
@@ -214,10 +220,12 @@ angular.module('mm.core')
              */
             this.setSyncWarnings = function(id, warnings, siteId) {
                 siteId = siteId || $mmSite.getId();
+                var that = this;
+
                 return $mmSitesManager.getSiteDb(siteId).then(function(db) {
                     var entry = {
                         id: id,
-                        component: this.component,
+                        component: that.component,
                         warnings: typeof warnings != 'undefined' ? warnings : []
                     };
                     return db.insert(mmCoreSynchronizationWarningsStore, entry);
