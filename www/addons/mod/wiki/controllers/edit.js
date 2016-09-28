@@ -91,7 +91,8 @@ angular.module('mm.addons.mod_wiki')
 
             promise = promise.then(function() {
                 // Try to send the page.
-                return $mmaModWiki.newPage(subwikiId, $scope.page.title, text).then(function(createdId) {
+                var instanceId = module && module.instance;
+                return $mmaModWiki.newPage(subwikiId, $scope.page.title, text, instanceId).then(function(createdId) {
                     if (createdId) {
                         // Page was created, get its data and go to the page.
                         pageId = createdId;

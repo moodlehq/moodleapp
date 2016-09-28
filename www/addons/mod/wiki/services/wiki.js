@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_wiki')
  * @ngdoc service
  * @name $mmaModWiki
  */
-.factory('$mmaModWiki', function($q, $mmSite, $mmSitesManager, $mmFilepool, $mmApp, $mmaModWikiOffline, $mmUtil,
+.factory('$mmaModWiki', function($q, $mmSite, $mmSitesManager, $mmFilepool, $mmApp, $mmaModWikiOffline, $mmUtil, $mmLang,
             mmaModWikiComponent) {
     var self = {},
         subwikiListsCache = {};
@@ -465,6 +465,40 @@ angular.module('mm.addons.mod_wiki')
     };
 
     /**
+     * Check if a page title is already used.
+     *
+     * @param  {Number} wikiId    Wiki ID.
+     * @param  {Number} subwikiId Subwiki ID.
+     * @param  {String} title     Page title.
+     * @param  {String} [siteId]  Site ID. If not defined, current site.
+     * @return {Promise}          Promise resolved with true if used, resolved with false if not used, rejected if error.
+     */
+    self.isTitleUsed = function(wikiId, subwikiId, title, siteId) {
+        // First get the subwiki.
+        return self.getSubwikis(wikiId, siteId).then(function(subwikis) {
+            // Search the subwiki.
+            for (var i = 0, len = subwikis.length; i < len; i++) {
+                var subwiki = subwikis[i];
+                if (subwiki.id == subwikiId) {
+                    return subwiki;
+                }
+            }
+            return $q.reject();
+        }).then(function(subwiki) {
+            return self.getSubwikiPages(wikiId, subwiki.groupid, subwiki.userid, null, null, false, siteId);
+        }).then(function(pages) {
+            // Check if there's any page with the same title.
+            for (var i = 0, len = pages.length; i < len; i++) {
+                var page = pages[i];
+                if (page.title == title) {
+                    return true;
+                }
+            }
+            return false;
+        });
+    };
+
+    /**
      * Create a new page on a subwiki.
      *
      * @module mm.addons.mod_wiki
@@ -473,10 +507,11 @@ angular.module('mm.addons.mod_wiki')
      * @param  {Number} subwikiId Subwiki ID.
      * @param  {String} title     Title to create the page.
      * @param  {String} content   Content to save on the page.
+     * @param  {Number} [wikiId]  Wiki ID. Optional, will be used to provide a better error handling if page cannot be sent.
      * @param  {String} [siteId]  Site ID. If not defined, current site.
      * @return {Promise}          Promise resolved with page ID if page was created in server, false if stored in device.
      */
-    self.newPage = function(subwikiId, title, content, siteId) {
+    self.newPage = function(subwikiId, title, content, wikiId, siteId) {
         siteId = siteId || $mmSite.getId();
 
         if (!$mmApp.isOnline()) {
@@ -502,8 +537,26 @@ angular.module('mm.addons.mod_wiki')
 
         // Convenience function to store a new page to be synchronized later.
         function storeOffline() {
-            return $mmaModWikiOffline.saveNewPage(subwikiId, title, content, siteId).then(function() {
-                return false;
+            var promise;
+
+            if (wikiId) {
+                // We have wiki ID, check if there's already an online page with this title and subwiki.
+                promise = self.isTitleUsed(wikiId, subwikiId, title, siteId).catch(function() {
+                    // Error, assume not used.
+                    return false;
+                }).then(function(used) {
+                    if (used) {
+                        return $mmLang.translateAndReject('mma.mod_wiki.pageexists');
+                    }
+                });
+            } else {
+                promise = $q.when();
+            }
+
+            return promise.then(function() {
+                return $mmaModWikiOffline.saveNewPage(subwikiId, title, content, siteId).then(function() {
+                    return false;
+                });
             });
         }
     };
