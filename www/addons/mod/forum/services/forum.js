@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_forum')
  * @name $mmaModForum
  */
 .factory('$mmaModForum', function($q, $mmSite, $mmUser, $mmGroups, $translate, $mmSitesManager, mmaModForumDiscPerPage,
-            mmaModForumComponent) {
+            mmaModForumComponent, $mmaModForumOffline, $mmApp, $mmUtil) {
     var self = {};
 
     /**
@@ -82,35 +82,99 @@ angular.module('mm.addons.mod_forum')
      * @module mm.addons.mod_forum
      * @ngdoc method
      * @name $mmaModForum#addNewDiscussion
-     * @param {Number} forumid   Forum ID.
+     * @param {Number} forumId        Forum ID.
+     * @param {String} name           Forum name.
+     * @param {Number} courseId       Course ID the forum belongs to.
+     * @param {String} subject        New discussion's subject.
+     * @param {String} message        New discussion's message.
+     * @param {String} subscribe      True if should subscribe to the discussion, false otherwise.
+     * @param {String} [groupId]      Group this discussion belongs to.
+     * @param {String} [siteId]       Site ID. If not defined, current site.
+     * @param {Number} [timecreated]  The time the discussion was created. Only used when editing discussion.
+     * @return {Promise}              Promise resolved when the discussion is created.
+     */
+    self.addNewDiscussion = function(forumId, name, courseId, subject, message, subscribe, groupId, siteId, timecreated) {
+        siteId = siteId || $mmSite.getId();
+
+        if (!$mmApp.isOnline()) {
+            // App is offline, store the action.
+            return storeOffline();
+        }
+
+        // If we are editing an offline discussion, discard previous first.
+        var discardPromise = timecreated ? $mmaModForumOffline.deleteNewDiscussion(forumId, timecreated, siteId) : $q.when();
+
+        return discardPromise.then(function() {
+            return self.addNewDiscussionOnline(forumId, subject, message, subscribe, groupId, siteId).then(function() {
+                return true;
+            }).catch(function(error) {
+                if (error && error.wserror) {
+                    // The WebService has thrown an error, this means that responses cannot be deleted.
+                    return $q.reject(error.error);
+                } else {
+                    // Couldn't connect to server, store in offline.
+                    return storeOffline();
+                }
+            });
+        });
+
+        // Convenience function to store a message to be synchronized later.
+        function storeOffline() {
+            return $mmaModForumOffline.addNewDiscussion(forumId, name, courseId, subject, message, subscribe, groupId, siteId)
+                    .then(function() {
+                return false;
+            });
+        }
+    };
+
+    /**
+     * Add a new discussion. It will fail if offline or cannot connect.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#addNewDiscussionOnline
+     * @param {Number} forumId   Forum ID.
      * @param {String} subject   New discussion's subject.
      * @param {String} message   New discussion's message.
      * @param {String} subscribe True if should subscribe to the discussion, false otherwise.
-     * @param {String} [groupid] Group this discussion belongs to.
+     * @param {String} [groupId] Group this discussion belongs to.
+     * @param {String} [siteId]  Site ID. If not defined, current site.
      * @return {Promise}         Promise resolved when the discussion is created.
      */
-    self.addNewDiscussion = function(forumid, subject, message, subscribe, groupid) {
-        var params = {
-            forumid: forumid,
-            subject: subject,
-            message: message,
-            options: [
-                {
-                    name: 'discussionsubscribe',
-                    value: !!subscribe
-                }
-            ]
-        };
-        if (groupid) {
-            params.groupid = groupid;
-        }
+    self.addNewDiscussionOnline = function(forumId, subject, message, subscribe, groupId, siteId) {
+        siteId = siteId || $mmSite.getId();
 
-        return $mmSite.write('mod_forum_add_discussion', params).then(function(response) {
-            if (!response || !response.discussionid) {
-                return $q.reject();
-            } else {
-                return response.discussionid;
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                forumid: forumId,
+                subject: subject,
+                message: message,
+                options: [
+                    {
+                        name: 'discussionsubscribe',
+                        value: !!subscribe
+                    }
+                ]
+            };
+            if (groupId) {
+                params.groupid = groupId;
             }
+
+            return site.write('mod_forum_add_discussion', params).catch(function(error) {
+                return $q.reject({
+                    error: error,
+                    wserror: $mmUtil.isWebServiceError(error)
+                });
+            }).then(function(response) {
+                // Other errors ocurring.
+                if (!response || !response.discussionid) {
+                    return $q.reject({
+                        wserror: true
+                    });
+                } else {
+                    return response.discussionid;
+                }
+            });
         });
     };
 
@@ -249,34 +313,34 @@ angular.module('mm.addons.mod_forum')
     };
 
     /**
-     * Get a forum.
+     * Get a forum by course module ID.
      *
      * @module mm.addons.mod_forum
      * @ngdoc method
      * @name $mmaModForum#getForum
-     * @param {Number} courseid Course ID.
-     * @param {Number} cmid     Course module ID.
+     * @param {Number} courseId Course ID.
+     * @param {Number} cmId     Course module ID.
+     * @param {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}        Promise resolved when the forum is retrieved.
      */
-    self.getForum = function(courseid, cmid) {
-        var params = {
-                courseids: [courseid]
-            },
-            preSets = {
-                cacheKey: getForumDataCacheKey(courseid)
-            };
+    self.getForum = function(courseId, cmId, siteId) {
+        siteId = siteId || $mmSite.getId();
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    courseids: [courseId]
+                },
+                preSets = {
+                    cacheKey: getForumDataCacheKey(courseId)
+                };
 
-        return $mmSite.read('mod_forum_get_forums_by_courses', params, preSets).then(function(forums) {
-            var currentForum;
-            angular.forEach(forums, function(forum) {
-                if (forum.cmid == cmid) {
-                    currentForum = forum;
+            return site.read('mod_forum_get_forums_by_courses', params, preSets).then(function(forums) {
+                for (var x in forums) {
+                    if (forums[x].cmid == cmId) {
+                        return forums[x];
+                    }
                 }
+                return $q.reject();
             });
-            if (currentForum) {
-                return currentForum;
-            }
-            return $q.reject();
         });
     };
 
@@ -309,11 +373,16 @@ angular.module('mm.addons.mod_forum')
 
     /**
      * Sort forum discussion posts by an specified field.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#sortDiscussionPosts
      * @param  {Array}  posts     Discussion posts to be sorted.
      * @param  {String} direction Direction of the sorting (ASC / DESC).
      * @return {Array}            Discussion posts sorted.
      */
     self.sortDiscussionPosts = function(posts, direction) {
+        // @todo: Check children when sorting.
         return posts.sort(function (a, b) {
             a = parseInt(a.created, 10);
             b = parseInt(b.created, 10);
@@ -331,37 +400,41 @@ angular.module('mm.addons.mod_forum')
      * @module mm.addons.mod_forum
      * @ngdoc method
      * @name $mmaModForum#getDiscussions
-     * @param {Number} forumid     Forum ID.
-     * @param {Number} page        Page.
-     * @param {Boolean} forceCache True to always get the value from cache, false otherwise.
-     * @return {Promise}           Promise resolved with forum discussions.
+     * @param {Number}  forumId     Forum ID.
+     * @param {Number}  page        Page.
+     * @param {Boolean} forceCache  True to always get the value from cache, false otherwise.
+     * @param {String}  [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with forum discussions.
      */
-    self.getDiscussions = function(forumid, page, forceCache) {
-        page = page || 0;
+    self.getDiscussions = function(forumId, page, forceCache, siteId) {
+        siteId = siteId || $mmSite.getId();
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            page = page || 0;
 
-        var params = {
-                forumid: forumid,
-                sortby:  'timemodified',
-                sortdirection:  'DESC',
-                page: page,
-                perpage: mmaModForumDiscPerPage
-            },
-            preSets = {
-                cacheKey: getDiscussionsListCacheKey(forumid)
-            };
+            var params = {
+                    forumid: forumId,
+                    sortby:  'timemodified',
+                    sortdirection:  'DESC',
+                    page: page,
+                    perpage: mmaModForumDiscPerPage
+                },
+                preSets = {
+                    cacheKey: getDiscussionsListCacheKey(forumId)
+                };
 
-        if (forceCache) {
-            preSets.omitExpires = true;
-        }
-
-        return $mmSite.read('mod_forum_get_forum_discussions_paginated', params, preSets).then(function(response) {
-            if (response) {
-                var canLoadMore = response.discussions.length >= mmaModForumDiscPerPage;
-                storeUserData(response.discussions);
-                return {discussions: response.discussions, canLoadMore: canLoadMore};
-            } else {
-                return $q.reject();
+            if (forceCache) {
+                preSets.omitExpires = true;
             }
+
+            return site.read('mod_forum_get_forum_discussions_paginated', params, preSets).then(function(response) {
+                if (response) {
+                    var canLoadMore = response.discussions.length >= mmaModForumDiscPerPage;
+                    storeUserData(response.discussions);
+                    return {discussions: response.discussions, canLoadMore: canLoadMore};
+                } else {
+                    return $q.reject();
+                }
+            });
         });
     };
 
@@ -372,15 +445,16 @@ angular.module('mm.addons.mod_forum')
      * @module mm.addons.mod_forum
      * @ngdoc method
      * @name $mmaModForum#getDiscussionsInPages
-     * @param  {Number} forumId     Forum ID.
-     * @param  {Boolean} forceCache True to always get the value from cache, false otherwise.
-     * @param  {Number} [numPages]  Number of pages to get. If not defined, all pages.
-     * @param  {Number} [startPage] Page to start. If not defined, first page.
-     * @return {Promise}            Promise resolved with an object with:
-     *                                - discussions: List of discussions.
-     *                                - error: True if an error occurred, false otherwise.
+     * @param  {Number}  forumId     Forum ID.
+     * @param  {Boolean} forceCache  True to always get the value from cache, false otherwise.
+     * @param  {Number}  [numPages]  Number of pages to get. If not defined, all pages.
+     * @param  {Number}  [startPage] Page to start. If not defined, first page.
+     * @param  {String}  [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}             Promise resolved with an object with:
+     *                                 - discussions: List of discussions.
+     *                                 - error: True if an error occurred, false otherwise.
      */
-    self.getDiscussionsInPages = function(forumId, forceCache, numPages, startPage) {
+    self.getDiscussionsInPages = function(forumId, forceCache, numPages, startPage, siteId) {
         if (typeof numPages == 'undefined') {
             numPages = -1;
         }
@@ -401,7 +475,7 @@ angular.module('mm.addons.mod_forum')
 
         function getPage(page) {
             // Get page discussions.
-            return self.getDiscussions(forumId, page, forceCache).then(function(response) {
+            return self.getDiscussions(forumId, page, forceCache, siteId).then(function(response) {
                 result.discussions = result.discussions.concat(response.discussions);
                 numPages--;
 
@@ -424,11 +498,16 @@ angular.module('mm.addons.mod_forum')
      * @module mm.addons.mod_forum
      * @ngdoc method
      * @name $mmaModForum#invalidateCanAddDiscussion
-     * @param  {Number} forumid Forum ID.
-     * @return {Promise}        Promise resolved when the data is invalidated.
+     * @param  {Number} forumId   Forum ID.
+     * @param  {String} [siteId]  Site ID. If not defined, current site.
+     * @return {Promise}          Promise resolved when the data is invalidated.
      */
-    self.invalidateCanAddDiscussion = function(forumid) {
-        return $mmSite.invalidateWsCacheForKeyStartingWith(getCommonCanAddDiscussionCacheKey(forumid));
+    self.invalidateCanAddDiscussion = function(forumId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKeyStartingWith(getCommonCanAddDiscussionCacheKey(forumId));
+        });
     };
 
     /**
@@ -469,11 +548,16 @@ angular.module('mm.addons.mod_forum')
      * @module mm.addons.mod_forum
      * @ngdoc method
      * @name $mmaModForum#invalidateDiscussionPosts
-     * @param {Number} discussionid Discussion ID.
+     * @param {Number} discussionId Discussion ID.
+     * @param {String} [siteId]     Site ID. If not defined, current site.
      * @return {Promise}            Promise resolved when the data is invalidated.
      */
-    self.invalidateDiscussionPosts = function(discussionid) {
-        return $mmSite.invalidateWsCacheForKey(getDiscussionPostsCacheKey(discussionid));
+    self.invalidateDiscussionPosts = function(discussionId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getDiscussionPostsCacheKey(discussionId));
+        });
     };
 
     /**
@@ -482,11 +566,16 @@ angular.module('mm.addons.mod_forum')
      * @module mm.addons.mod_forum
      * @ngdoc method
      * @name $mmaModForum#invalidateDiscussionsList
-     * @param  {Number} forumid Forum ID.
-     * @return {Promise}        Promise resolved when the data is invalidated.
+     * @param  {Number} forumId  Forum ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when the data is invalidated.
      */
-    self.invalidateDiscussionsList = function(forumid) {
-        return $mmSite.invalidateWsCacheForKey(getDiscussionsListCacheKey(forumid));
+    self.invalidateDiscussionsList = function(forumId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getDiscussionsListCacheKey(forumId));
+        });
     };
 
     /**
@@ -566,24 +655,84 @@ angular.module('mm.addons.mod_forum')
      * @module mm.addons.mod_forum
      * @ngdoc method
      * @name $mmaModForum#replyPost
-     * @param {Number} postid  ID of the post being replied.
-     * @param {String} subject New post's subject.
-     * @param {String} message New post's message.
-     * @return {Promise}       Promise resolved when the post is created.
+     * @param {Number} postId           ID of the post being replied.
+     * @param {Number} discussionId     ID of the discussion the user is replying to.
+     * @param {Number} forumId          ID of the forum the user is replying to.
+     * @param {String} name             Forum name.
+     * @param {Number} courseId         Course ID the forum belongs to.
+     * @param {String} subject          New post's subject.
+     * @param {String} message          New post's message.
+     * @param {String} [siteId]         Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved when the post is created.
      */
-    self.replyPost = function(postid, subject, message) {
-        var params = {
-            postid: postid,
-            subject: subject,
-            message: message
-        };
+    self.replyPost = function(postId, discussionId, forumId, name, courseId, subject, message, siteId) {
+        siteId = siteId || $mmSite.getId();
 
-        return $mmSite.write('mod_forum_add_discussion_post', params).then(function(response) {
-            if (!response || !response.postid) {
-                return $q.reject();
-            } else {
-                return response.postid;
-            }
+        if (!$mmApp.isOnline()) {
+            // App is offline, store the action.
+            return storeOffline();
+        }
+
+        // If there's already a reply to be sent to the server, discard it first.
+        return $mmaModForumOffline.deleteReply(postId, siteId).then(function() {
+            return self.replyPostOnline(postId, subject, message, siteId).then(function() {
+                return true;
+            }).catch(function(error) {
+                if (error && error.wserror) {
+                    // The WebService has thrown an error, this means that responses cannot be deleted.
+                    return $q.reject(error.error);
+                } else {
+                    // Couldn't connect to server, store in offline.
+                    return storeOffline();
+                }
+            });
+        });
+
+        // Convenience function to store a message to be synchronized later.
+        function storeOffline() {
+            return $mmaModForumOffline.replyPost(postId, discussionId, forumId, name, courseId, subject, message, siteId)
+                    .then(function() {
+                return false;
+            });
+        }
+    };
+
+    /**
+     * Reply to a certain post. It will fail if offline or cannot connect.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#replyPostOnline
+     * @param {Number} postId   ID of the post being replied.
+     * @param {String} subject  New post's subject.
+     * @param {String} message  New post's message.
+     * @param {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the post is created.
+     */
+    self.replyPostOnline = function(postId, subject, message, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                postid: postId,
+                subject: subject,
+                message: message
+            };
+
+            return site.write('mod_forum_add_discussion_post', params).catch(function(error) {
+                return $q.reject({
+                    error: error,
+                    wserror: $mmUtil.isWebServiceError(error)
+                });
+            }).then(function(response) {
+                if (!response || !response.postid) {
+                    return $q.reject({
+                        wserror: true
+                    });
+                } else {
+                    return response.postid;
+                }
+            });
         });
     };
 

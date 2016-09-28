@@ -278,7 +278,7 @@ angular.module('mm.addons.mod_choice')
     $scope.refreshChoice = function() {
         if ($scope.choiceLoaded) {
             $scope.refreshIcon = 'spinner';
-            return refreshAllData().finally(function() {
+            return refreshAllData(true).finally(function() {
                 $scope.refreshIcon = 'ion-refresh';
                 $scope.$broadcast('scroll.refreshComplete');
             });

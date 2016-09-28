@@ -4,19 +4,23 @@
     <img ng-if="!post.userpictureurl" src="img/user-avatar.png"  alt="{{ 'mm.core.pictureof' | translate:{$a: post.userfullname} }}" role="presentation">
     <h2 ng-if="titleimportant">{{title}}</h2>
     <p ng-if="!titleimportant">{{title}}</p>
-    <div class="item-note">{{post.modified | mmDateDayOrTime}}</div>
+    <div class="item-note" ng-if="!post.modified"><i class="icon ion-clock"></i> {{ 'mm.core.notsent' | translate }}</div>
+    <div class="item-note" ng-if="post.modified">{{post.modified | mmDateDayOrTime}}</div>
     <p>{{subject}}</p>
 </div>
-<div class="item item-body">
+<div class="item item-body" ng-if="newpost.editing !== uniqueid || !newpost.isEditing">
     <mm-format-text class="mm-content-with-float" watch="true" component="{{component}}" component-id="{{componentId}}">{{post.message}}</mm-format-text>
     <mm-file ng-repeat="attachment in post.attachments" file="attachment" component="{{component}}" component-id="{{componentId}}"></mm-file>
 </div>
-<div class="item tabs tabs-icon-left mma-forum-align-right" ng-if="isReplyEnabled && post.canreply">
-    <a class="tab-item" title="{{ 'mma.mod_forum.reply' | translate }}" ng-click="showReply()" role="button" aria-controls="mma-forum-reply-form-{{post.id}}" aria-expanded="{{ newpost.replyingto === post.id }}">
+<div class="item tabs tabs-icon-left mma-forum-align-right" ng-if="((isReplyEnabled && post.canreply) || !post.id) && (newpost.editing !== uniqueid || !newpost.isEditing)">
+    <a ng-if="isReplyEnabled && post.canreply" class="tab-item" title="{{ 'mma.mod_forum.reply' | translate }}" ng-click="showReply()" role="button" aria-controls="mma-forum-reply-edit-form-{{uniqueid}}" aria-expanded="{{ newpost.replyingto === post.id }}">
         <i class="icon ion-reply"></i> {{ 'mma.mod_forum.reply' | translate }}
     </a>
+    <a ng-if="!post.id" class="tab-item" title="{{ 'mma.mod_forum.edit' | translate }}" ng-click="editReply()" role="button" aria-controls="mma-forum-reply-edit-form-{{uniqueid}}" aria-expanded="{{ newpost.replyingto === post.parent }}">
+        <i class="icon ion-edit"></i> {{ 'mma.mod_forum.edit' | translate }}
+    </a>
 </div>
-<div id="mma-forum-reply-form-{{post.id}}" class="item" ng-if="newpost.replyingto === post.id">
+<div id="mma-forum-reply-edit-form-{{uniqueid}}" class="item" ng-if="newpost.editing === uniqueid">
     <form class="list mma-forum-border">
         <ion-input class="item item-input item-stacked-label">
             <ion-label>{{ 'mma.mod_forum.subject' | translate }}</ion-label>
@@ -29,6 +33,9 @@
         <div class="item button-bar">
             <button class="button" ng-click="reply()" ng-disabled="newpost.subject == '' || newpost.text == ''">{{ 'mma.mod_forum.posttoforum' | translate }}</button>
             <button class="button" ng-click="cancel()">{{ 'mm.core.cancel' | translate }}</button>
+        </div>
+        <div class="item button-bar" ng-if="newpost.isEditing">
+            <button class="button button-outline button-positive" ng-click="discard()">{{ 'mm.core.discard' | translate }}</button>
         </div>
     </form>
 </div>
