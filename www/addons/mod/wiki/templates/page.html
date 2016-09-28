@@ -3,9 +3,17 @@
     <mm-loading hide-until="wikiLoaded">
         <mm-course-mod-description description="description" watch="true" ng-if="mainpage" component="{{component}}" component-id="{{componentId}}"></mm-course-mod-description>
 
-        <div class="padding" ng-if="isOffline">
+        <!-- Wiki has something offline. -->
+        <section class="card padding" ng-if="isOffline || wikiHasOffline">
+            <p class="padding" ng-if="isOffline">{{ 'mm.core.hasdatatosync' | translate:{$a: pageStr} }}</p>
+            <p class="padding" ng-if="!isOffline && wikiHasOffline">{{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}</p>
+            <button class="button button-block icon-right ion-loop" ng-click="sync()">{{ 'mm.settings.synchronizenow' | translate }}</button>
+        </section>
+
+        <!-- Page warning. -->
+        <div class="padding" ng-if="pageWarning">
             <p class="badge badge-inline badge-assertive padding">
-                <i class="icon ion-alert-circled padding"></i> {{ 'mm.core.hasdatatosync' | translate:{$a: pageStr} }}
+                <i class="icon ion-alert-circled padding"></i> {{ pageWarning }}
             </p>
         </div>
 

@@ -16,5 +16,6 @@
     "subwiki": "Subwiki",
     "titleshouldnotbeempty": "Title should not be empty",
     "viewpage": "View page",
+    "wikipage": "Wiki page",
     "wrongversionlock": "Another user has edited this page while you were editing and your content is obsolete."
 }

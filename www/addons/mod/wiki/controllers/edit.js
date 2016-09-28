@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_wiki')
  */
 .controller('mmaModWikiEditCtrl', function($q, $scope, $stateParams, $mmUtil, $state, $mmaModWiki, $translate, $ionicHistory,
         $mmCourse, $ionicPlatform, $rootScope, mmaModWikiRenewLockTimeout, $interval, $mmText, $mmaModWikiOffline,
-        $mmEvents, $mmLang, mmaModWikiComponent, mmaModWikiPageCreated) {
+        $mmEvents, $mmLang, $mmSite, mmaModWikiComponent, mmaModWikiPageCreatedEvent) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         subwikiId = $stateParams.subwikiid || null,
@@ -105,12 +105,11 @@ angular.module('mm.addons.mod_wiki')
                             });
                         }).finally(function() {
                             // Notify page created.
-                            $mmEvents.trigger(mmaModWikiPageCreated, {
+                            $mmEvents.trigger(mmaModWikiPageCreatedEvent, {
                                 pageid: pageId,
                                 subwikiid: subwikiId,
-                                wikiid: wikiId,
-                                courseid: courseId,
-                                pagetitle: $scope.page.title
+                                pagetitle: $scope.page.title,
+                                siteid: $mmSite.getId()
                             });
                         });
                     } else {

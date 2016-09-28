@@ -41,7 +41,7 @@ angular.module('mm.addons.mod_wiki')
  * @ngdoc service
  * @name $mmaModWikiOffline
  */
-.factory('$mmaModWikiOffline', function($mmSitesManager, $log, $mmSite, mmaModWikiNewPagesStore) {
+.factory('$mmaModWikiOffline', function($mmSitesManager, $log, $mmSite, $q, mmaModWikiNewPagesStore) {
     $log = $log.getInstance('$mmaModWikiOffline');
 
     var self = {};
@@ -206,6 +206,9 @@ angular.module('mm.addons.mod_wiki')
     self.subwikisHaveOfflineData = function(subwikis, siteId) {
         return self.getSubwikisNewPages(subwikis, siteId).then(function(pages) {
             return !!pages.length;
+        }).catch(function() {
+            // Error, return false.
+            return false;
         });
     };
 
