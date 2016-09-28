@@ -280,6 +280,7 @@
     "application/vnd.shana.informed.interchange": ["iif"],
     "application/vnd.accpac.simply.imp": ["imp"],
     "application/vnd.ms-ims": ["ims"],
+    "application/x-ibooks+zip": ["ibooks"],
     "application/inkml+xml": ["ink", "inkml"],
     "application/x-install-instructions": ["install"],
     "application/vnd.astraea-software.iota": ["iota"],
