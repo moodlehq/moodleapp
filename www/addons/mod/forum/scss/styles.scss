@@ -12,3 +12,12 @@
     border-width: $item-border-width;
     border-style: solid;
 }
+
+.mm-site_mod_forum-discussion .card.highlight .item.item-avatar {
+    background-color: $stable;
+    font-weight: bold;
+}
+
+.mm-site_mod_forum-discussion .card.highlight .item.item-avatar h2 {
+    font-weight: bold;
+}
