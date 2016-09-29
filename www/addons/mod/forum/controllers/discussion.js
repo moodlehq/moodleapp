@@ -46,7 +46,7 @@ angular.module('mm.addons.mod_forum')
     };
     $scope.sort = {
         icon: 'ion-arrow-up-c',
-        direction: 'DESC',
+        direction: 'ASC',
         text: $translate.instant('mma.mod_forum.sortnewestfirst')
     };
 
@@ -126,11 +126,11 @@ angular.module('mm.addons.mod_forum')
         $scope.discussionLoaded = false;
 
         if (!init) {
-            $scope.sort.direction = $scope.sort.direction == 'DESC' ? 'ASC' : 'DESC';
+            $scope.sort.direction = $scope.sort.direction == 'ASC' ? 'DESC' : 'ASC';
         }
 
         return fetchPosts(init).then(function() {
-            if ($scope.sort.direction == 'DESC') {
+            if ($scope.sort.direction == 'ASC') {
                 $scope.sort.icon = 'ion-arrow-up-c';
                 $scope.sort.text = $translate.instant('mma.mod_forum.sortnewestfirst');
             } else {
