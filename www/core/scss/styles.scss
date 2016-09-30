@@ -39,8 +39,11 @@ $completion-img-width: 24px !default;
 // Disabled items.
 $item-disabled-color: #999 !default;
 
-// Warnings (red).
-$mm-warning-color: #c00 !default;
+// Warnings (energized).
+$mm-warning-color: $energized !default;
+
+// Errors (red).
+$mm-error-color: #c00 !default;
 
 // Timer variables.
 $mm-timer-warn-color:     #f00 !default;
@@ -470,9 +473,21 @@ mm-navigation-bar {
   padding: $item-padding;
 }
 
-// Red color for paragraphs.
-p.mm-warning {
-  color: $mm-warning-color;
+p.mm-error {
+  color: $mm-error-color;
+}
+
+.mm-warning {
+  border-bottom: 3px solid $mm-warning-color;
+  padding: $card-padding;
+  box-shadow: $card-box-shadow;
+  margin: 20px 10px;
+  background-color: #fff;
+
+  i.icon:before {
+      color: $mm-warning-color;
+      font-size: 125%;
+  }
 }
 
 // Extra attributes to ionic classes to force frames via directive 100% height.
