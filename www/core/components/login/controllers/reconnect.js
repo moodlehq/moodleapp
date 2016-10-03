@@ -75,7 +75,7 @@ angular.module('mm.core.login')
             });
         }, function(error) {
             modal.dismiss();
-            $mmUtil.showErrorModal(error);
+            $mmLoginHelper.treatUserTokenError(siteurl, error);
         });
     };
 

@@ -231,5 +231,28 @@ angular.module('mm.core.login')
         }
     };
 
+    /**
+     * Convenient helper to handle get User Token error. It redirects to change password page ig forcepassword is set.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#treatUserTokenError
+     * @param {String}          siteurl  Site URL to construct change password URL.
+     * @param {Object|String}   error    Error object containing errorcode and error message.
+     */
+    self.treatUserTokenError = function(siteurl, error) {
+        if (typeof error == 'string') {
+            $mmUtil.showErrorModal(error);
+        } else if (error.errorcode == 'forcepasswordchangenotice') {
+            var message = error.error + "<br>" + $translate.instant('mm.login.visitchangepassword');
+            $mmUtil.showConfirm(message, $translate.instant('mm.core.notice')).then(function() {
+                var changepasswordurl = siteurl + "/login/change_password.php";
+                $mmUtil.openInApp(changepasswordurl);
+            });
+        } else {
+            $mmUtil.showErrorModal(error.error);
+        }
+    };
+
     return self;
 });
