@@ -292,9 +292,9 @@ angular.module('mm.addons.mod_assign')
         return $mmaModAssign.getAssignment(courseId, module.id, siteId).then(function(assign) {
             var promises = [];
 
-            promises.push(self.invalidateAssignmentData(courseId, siteId));
-            promises.push(self.invalidateAllSubmissionData(assign.id, siteId));
-            promises.push(self.invalidateAssignmentUserMappingsData(assign.id, siteId));
+            promises.push($mmaModAssign.invalidateAssignmentData(courseId, siteId));
+            promises.push($mmaModAssign.invalidateAllSubmissionData(assign.id, siteId));
+            promises.push($mmaModAssign.invalidateAssignmentUserMappingsData(assign.id, siteId));
 
             return $q.all(promises);
         });

@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_assign')
  * @name mmaModAssignEditCtrl
  */
 .controller('mmaModAssignEditCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $translate, mmaModAssignComponent, $q,
-        $mmText, $mmSite, $mmaModAssignHelper, $rootScope, $ionicPlatform, $timeout, $mmEvents, $ionicHistory,
+        $mmSite, $mmaModAssignHelper, $rootScope, $ionicPlatform, $timeout, $mmEvents, $ionicHistory, $mmaModAssignOffline,
         mmaModAssignSubmissionSavedEvent, mmaModAssignSubmittedForGradingEvent, $mmFileUploaderHelper) {
 
     var courseId = $stateParams.courseid,
@@ -31,12 +31,15 @@ angular.module('mm.addons.mod_assign')
         editStr = $translate.instant('mma.mod_assign.editsubmission'),
         originalBackFunction = $rootScope.$ionicGoBack,
         unregisterHardwareBack,
-        currentView = $ionicHistory.currentView();
+        currentView = $ionicHistory.currentView(),
+        saveOffline = false,
+        hasOffline = false;
 
     $scope.title = editStr; // Temporary title.
     $scope.assignComponent = mmaModAssignComponent;
     $scope.courseId = courseId;
     $scope.moduleId = $stateParams.moduleid;
+    $scope.allowOffline = false;
 
     function fetchAssignment() {
         // Get assignment data.
@@ -45,13 +48,26 @@ angular.module('mm.addons.mod_assign')
             $scope.assign = assign;
 
             // Get submission status. Ignore cache to get the latest data.
-            return $mmaModAssign.getSubmissionStatus(assign.id, userId, isBlind, false, true).then(function(response) {
+            return $mmaModAssign.getSubmissionStatus(assign.id, userId, isBlind, false, true).catch(function(error) {
+                // Cannot connect. Get cached data.
+                return $mmaModAssign.getSubmissionStatus(assign.id, userId, isBlind).then(function(response) {
+                    var userSubmission = $mmaModAssign.getSubmissionObjectFromAttempt(assign, response.lastattempt);
+                    if (userSubmission && (userSubmission.status == 'new' || userSubmission.status == 'reopened')) {
+                        // It's a new submission, allow creating it in offline.
+                        return response;
+                    } else {
+                        // User is editing a submission, we don't allow it in offline for now so reject.
+                        return $q.reject(error);
+                    }
+                });
+            }).then(function(response) {
                 if (!response.lastattempt.canedit) {
                     // Can't edit. Reject.
                     return $q.reject($translate.instant('mm.core.nopermissions', {$a: editStr}));
                 }
 
                 $scope.userSubmission = $mmaModAssign.getSubmissionObjectFromAttempt(assign, response.lastattempt);
+                $scope.allowOffline = $scope.userSubmission.status == 'new';
 
                 // Only show submission statement if we are editing our own submission.
                 if (assign.requiresubmissionstatement && !assign.submissiondrafts && userId == $mmSite.getUserId()) {
@@ -59,6 +75,14 @@ angular.module('mm.addons.mod_assign')
                 } else {
                     $scope.submissionStatement = false;
                 }
+
+                // Check if there's any offline data for this submission.
+                return $mmaModAssignOffline.getSubmission(assign.id, userId).then(function(data) {
+                    hasOffline = data && data.plugindata && Object.keys(data.plugindata).length;
+                }).catch(function() {
+                    // No offline data found.
+                    hasOffline = false;
+                });
             });
         }).catch(function(message) {
             if (message) {
@@ -66,6 +90,7 @@ angular.module('mm.addons.mod_assign')
             } else {
                 $mmUtil.showErrorModal('Error getting assigment data.');
             }
+            leaveView();
             return $q.reject();
         });
     }
@@ -77,7 +102,16 @@ angular.module('mm.addons.mod_assign')
 
     // Get submission data.
     function prepareSubmissionData(inputData) {
-        return $mmaModAssignHelper.prepareSubmissionPluginData($scope.assign, $scope.userSubmission, inputData);
+        saveOffline = hasOffline;
+        return $mmaModAssignHelper.prepareSubmissionPluginData($scope.assign, $scope.userSubmission, inputData, hasOffline)
+                .catch(function(e) {
+            if ($scope.allowOffline && !saveOffline) {
+                // Cannot submit in online, prepare for offline usage.
+                saveOffline = true;
+                return $mmaModAssignHelper.prepareSubmissionPluginData($scope.assign, $scope.userSubmission, inputData, true);
+            }
+            return $q.reject(e);
+        });
     }
 
     // Check if data has changed.
@@ -87,8 +121,15 @@ angular.module('mm.addons.mod_assign')
 
     // Save the submission.
     function saveSubmission() {
-        var modal = $mmUtil.showModalLoading(),
+        var modal,
             inputData = getInputData();
+
+        if ($scope.assign.requiresubmissionstatement && !inputData.submissionstatement) {
+            $mmUtil.showErrorModal('mma.mod_assign.acceptsubmissionstatement', true);
+            return $q.reject();
+        }
+
+        modal = $mmUtil.showModalLoading();
 
         // Get size to ask for confirmation.
         return $mmaModAssignHelper.getSubmissionSizeForEdit($scope.assign, $scope.userSubmission, inputData).catch(function() {
@@ -98,29 +139,50 @@ angular.module('mm.addons.mod_assign')
             modal.dismiss();
 
             // Confirm action.
-            return $mmFileUploaderHelper.confirmUploadFile(size, true);
+            return $mmFileUploaderHelper.confirmUploadFile(size, true, $scope.allowOffline).catch(function(message) {
+                if (message) {
+                    $mmUtil.showErrorModal(message);
+                }
+                return $q.reject();
+            });
         }).then(function() {
             modal = $mmUtil.showModalLoading('mm.core.sending', true);
 
             return prepareSubmissionData(inputData).then(function(pluginData) {
-                if (Object.keys(pluginData).length) {
-                    // There's something to save.
-                    return $mmaModAssign.saveSubmission($scope.assign.id, pluginData).then(function() {
-                        // Submission saved, trigger event.
-                        var params = {
-                            assignmentId: $scope.assign.id,
-                            submissionId: $scope.userSubmission.id,
-                            userId: $mmSite.getUserId(),
-                            siteId: $mmSite.getId()
-                        };
-                        $mmEvents.trigger(mmaModAssignSubmissionSavedEvent, params);
-
-                        if (!$scope.assign.submissiondrafts) {
-                            // No drafts allowed, so it was submitted. Trigger event.
-                            $mmEvents.trigger(mmaModAssignSubmittedForGradingEvent, params);
-                        }
-                    });
+                if (!Object.keys(pluginData).length) {
+                    // Nothing something to save.
+                    return;
                 }
+
+                var assignId = $scope.assign.id,
+                    timemod = $scope.userSubmission.timemodified,
+                    drafts = $scope.assign.submissiondrafts,
+                    promise;
+
+                if (saveOffline) {
+                    // Save submission in offline.
+                    promise = $mmaModAssignOffline.saveSubmission(assignId, courseId, pluginData, timemod, !drafts, userId);
+                } else {
+                    // Try to send it to server.
+                    promise = $mmaModAssign.saveSubmission(
+                                assignId, courseId, pluginData, $scope.allowOffline, timemod, drafts, userId);
+                }
+
+                return promise.then(function() {
+                    // Submission saved, trigger event.
+                    var params = {
+                        assignmentId: assignId,
+                        submissionId: $scope.userSubmission.id,
+                        userId: userId,
+                        siteId: $mmSite.getId()
+                    };
+                    $mmEvents.trigger(mmaModAssignSubmissionSavedEvent, params);
+
+                    if (!drafts) {
+                        // No drafts allowed, so it was submitted. Trigger event.
+                        $mmEvents.trigger(mmaModAssignSubmittedForGradingEvent, params);
+                    }
+                });
             }).catch(function(message) {
                 if (message) {
                     $mmUtil.showErrorModal(message);

@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_assign')
  * @name $mmaModAssignHelper
  */
 .factory('$mmaModAssignHelper', function($mmUtil, $mmaModAssignSubmissionDelegate, $q, $mmSite, $mmFS, $mmFilepool, $mmaModAssign,
-            $mmFileUploader, mmaModAssignComponent) {
+            $mmFileUploader, mmaModAssignComponent, $mmaModAssignOffline) {
 
     var self = {};
 
@@ -70,7 +70,7 @@ angular.module('mm.addons.mod_assign')
             // We got the plugin data. Now we need to submit it.
             if (Object.keys(pluginData).length) {
                 // There's something to save.
-                return $mmaModAssign.saveSubmission(assign.id, pluginData);
+                return $mmaModAssign.saveSubmissionOnline(assign.id, pluginData);
             }
         }).catch(function() {
             return $q.reject(errorMessage);
@@ -114,6 +114,26 @@ angular.module('mm.addons.mod_assign')
         });
 
         return answers;
+    };
+
+    /**
+     * Get a list of stored submission files. See $mmaModAssignHelper#storeSubmissionFiles.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignHelper#getStoredSubmissionFiles
+     * @param  {Number} assignId   Assignment ID.
+     * @param  {String} pluginName Name of the plugin. Must be unique (both in submission and feedback plugins).
+     * @param  {Number} [userId]   User ID. If not defined, site's current user.
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved with the files.
+     */
+    self.getStoredSubmissionFiles = function(assignId, pluginName, userId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmaModAssignOffline.getSubmissionPluginFolder(assignId, pluginName, userId, siteId).then(function(folderPath) {
+            return $mmFS.getDirectoryContents(folderPath);
+        });
     };
 
     /**
@@ -208,16 +228,17 @@ angular.module('mm.addons.mod_assign')
      * @param  {Object} assign     Assignment.
      * @param  {Object} submission Submission to check data.
      * @param  {Object} inputData  Data entered in the submission form.
+     * @param  {Boolean} offline   True to prepare the data for an offline submission, false otherwise.
      * @return {Promise}           Promise resolved with plugin data to send to server.
      */
-    self.prepareSubmissionPluginData = function(assign, submission, inputData) {
+    self.prepareSubmissionPluginData = function(assign, submission, inputData, offline) {
         var pluginData = {},
             promises = [],
             error;
 
         angular.forEach(submission.plugins, function(plugin) {
             promises.push($mmaModAssignSubmissionDelegate.preparePluginSubmissionData(
-                    assign, submission, plugin, inputData, pluginData).catch(function(message) {
+                    assign, submission, plugin, inputData, pluginData, offline).catch(function(message) {
                 error = message;
                 return $q.reject();
             }));
@@ -227,6 +248,67 @@ angular.module('mm.addons.mod_assign')
             return pluginData;
         }).catch(function() {
             return $q.reject(error);
+        });
+    };
+
+    /**
+     * Given a list of files (either online files or local files), store the local files in a local folder
+     * to be submitted later.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignHelper#storeSubmissionFiles
+     * @param  {Number} assignId   Assignment ID.
+     * @param  {String} pluginName Name of the plugin. Must be unique (both in submission and feedback plugins).
+     * @param  {Object[]} files    List of files.
+     * @param  {Number} [userId]   User ID. If not defined, site's current user.
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved if success, rejected otherwise.
+     */
+    self.storeSubmissionFiles = function(assignId, pluginName, files, userId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        var result = {
+            online: [],
+            offline: 0
+        };
+
+        if (!files || !files.length) {
+            return $q.when(result);
+        }
+
+        return $mmaModAssignOffline.getSubmissionPluginFolder(assignId, pluginName, userId, siteId).then(function(folderPath) {
+            // Remove unused files from previous submissions.
+            return $mmFS.removeUnusedFiles(folderPath, files).then(function() {
+                var promises = [];
+
+                angular.forEach(files, function(file) {
+                    if (file.filename && !file.name) {
+                        // It's an online file, add it to the result and ignore it.
+                        result.online.push({
+                            filename: file.filename,
+                            fileurl: file.fileurl
+                        });
+                        return;
+                    } else if (!file.name) {
+                        // Error.
+                        promises.push($q.reject());
+                    } else if (file.fullPath && file.fullPath.indexOf(folderPath) != -1) {
+                        // File already in the submission folder.
+                        result.offline++;
+                    } else {
+                        // Local file, copy it. Use copy instead of move to prevent having a unstable state if
+                        // some copies succeed and others don't.
+                        var destFile = $mmFS.concatenatePaths(folderPath, file.name);
+                        promises.push($mmFS.copyFile(file.fullPath, destFile));
+                        result.offline++;
+                    }
+                });
+
+                return $q.all(promises).then(function() {
+                    return result;
+                });
+            });
         });
     };
 
@@ -248,7 +330,7 @@ angular.module('mm.addons.mod_assign')
         var promise,
             fileName;
 
-        if (file.filename) {
+        if (file.filename && !file.name) {
             // It's an online file. We need to download it and re-upload it.
             fileName = file.filename;
             promise = $mmFilepool.downloadUrl(siteId, file.fileurl, false, mmaModAssignComponent, assignId).then(function(path) {
@@ -313,6 +395,28 @@ angular.module('mm.addons.mod_assign')
                 return $q.reject(error);
             });
         });
+    };
+
+    /**
+     * Upload or store some files, depending if the user is offline or not.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignHelper#uploadOrStoreFiles
+     * @param  {Number} assignId   Assignment ID.
+     * @param  {String} pluginName Name of the plugin. Must be unique (both in submission and feedback plugins).
+     * @param  {Object[]} files    List of files.
+     * @param  {Boolean} offline   True if files sould be stored for offline, false to upload them.
+     * @param  {Number} [userId]   User ID. If not defined, site's current user.
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved if success.
+     */
+    self.uploadOrStoreFiles = function(assignId, pluginName, files, offline, userId, siteId) {
+        if (offline) {
+            return self.storeSubmissionFiles(assignId, pluginName, files, userId, siteId);
+        } else {
+            return self.uploadFiles(assignId, files, siteId);
+        }
     };
 
     return self;

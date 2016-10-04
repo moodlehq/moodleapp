@@ -77,7 +77,7 @@ angular.module('mm.addons.mod_assign')
 
 .run(function($mmAddonManager) {
     // Use addon manager to inject $mmaModAssignSubmissionDelegate. This is to provide an example for remote addons,
-    // since they cannot assume that the quiz addon will be packaged in custom apps.
+    // since they cannot assume that the assign addon will be packaged in custom apps.
     var $mmaModAssignSubmissionDelegate = $mmAddonManager.get('$mmaModAssignSubmissionDelegate');
     if ($mmaModAssignSubmissionDelegate) {
         $mmaModAssignSubmissionDelegate.registerHandler('mmaModAssignSubmissionComments', 'comments',

@@ -21,9 +21,48 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc controller
  * @name $mmaModAssign
  */
-.factory('$mmaModAssign', function($mmSite, $q, $mmUser, $mmSitesManager, mmaModAssignComponent, $mmFilepool, $mmComments,
-        $mmaModAssignSubmissionDelegate, mmaModAssignSubmissionStatusNew, mmaModAssignSubmissionStatusSubmitted, $mmText) {
+.factory('$mmaModAssign', function($mmSite, $q, $mmUser, $mmSitesManager, mmaModAssignComponent, $mmFilepool, $mmComments, $mmUtil,
+        $mmaModAssignSubmissionDelegate, mmaModAssignSubmissionStatusNew, mmaModAssignSubmissionStatusSubmitted, $mmText, $mmApp,
+        $mmaModAssignOffline) {
     var self = {};
+
+    /**
+     * Check if the user can submit in offline. This should only be used if submissionStatus.lastattempt.cansubmit cannot
+     * be used (offline usage).
+     * This function doesn't check if the submission is empty, it should be checked before calling this function.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssign#canSubmitOffline
+     * @param  {Object} assign           Assignment instance.
+     * @param  {Object} submissionStatus Submission status returned by $mmaModAssign#getSubmissionStatus.
+     * @return {Boolean}                 True if can submit, false otherwise.
+     */
+    self.canSubmitOffline = function(assign, submissionStatus) {
+        if (!self.isSubmissionOpen(assign, submissionStatus)) {
+            return false;
+        }
+
+        var submission = self.getSubmissionObjectFromAttempt(assign, submissionStatus.lastattempt);
+
+        if (!submission) {
+            // We've not got a valid submission or team submission.
+            return false;
+        } else if (submission.status === mmaModAssignSubmissionStatusSubmitted) {
+            // The assignment submission has been completed.
+            return false;
+        } else if (assign.teamsubmission) {
+            if (attempt.submission && attempt.submission.status === mmaModAssignSubmissionStatusSubmitted) {
+                // The user has already clicked the submit button on the team submission.
+                return false;
+            } else if (assign.preventsubmissionnotingroup && !submissionStatus.lastattempt.submissiongroup) {
+                return false;
+            }
+        }
+
+        // Last check is that this instance allows drafts.
+        return assign.submissiondrafts;
+    };
 
     /**
      * Get cache key for assignment data WS calls.
@@ -480,9 +519,13 @@ angular.module('mm.addons.mod_assign')
                 preSets.emergencyCache = 0;
             }
 
-            return site.read('mod_assign_get_submission_status', params, preSets).then(function(response) {
-                return response;
-            });
+            if (!filter) {
+                // Don't cache when getting text without filters.
+                // @todo Change this to support offline editing.
+                preSets.saveToCache = 0;
+            }
+
+            return site.read('mod_assign_get_submission_status', params, preSets);
         });
     };
 
@@ -687,6 +730,65 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Check if a submission is open. This function is based on Moodle's submissions_open.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssign#isSubmissionOpen
+     * @param  {Object} assign           Assignment instance.
+     * @param  {Object} submissionStatus Submission status returned by $mmaModAssign#getSubmissionStatus.
+     * @return {Boolean}                 True if open, false otherwise.
+     */
+    self.isSubmissionOpen = function(assign, submissionStatus) {
+        if (!assign || !submissionStatus) {
+            return false;
+        }
+
+        var time = $mmUtil.timestamp(),
+            dateOpen = true,
+            finalDate = false,
+            lastAttempt = submissionStatus.lastattempt,
+            submission = self.getSubmissionObjectFromAttempt(assign, lastAttempt);
+
+        if (assign.cutoffdate) {
+            finalDate = assign.cutoffdate;
+        }
+
+        if (lastAttempt && lastAttempt.locked) {
+            return false;
+        }
+
+        // User extensions.
+        if (finalDate) {
+            if (lastAttempt && lastAttempt.extensionduedate) {
+                // Extension can be before cut off date.
+                if (lastAttempt.extensionduedate > finalDate) {
+                    finalDate = lastAttempt.extensionduedate;
+                }
+            }
+        }
+
+        if (finalDate) {
+            dateOpen = assign.allowsubmissionsfromdate <= time && time <= finalDate;
+        } else {
+            dateOpen = assign.allowsubmissionsfromdate <= time;
+        }
+
+        if (!dateOpen) {
+            return false;
+        }
+
+        if (submission) {
+            if (assign.submissiondrafts && submission.status == mmaModAssignSubmissionStatusSubmitted) {
+                // Drafts are tracked and the student has submitted the assignment.
+                return false;
+            }
+        }
+
+        return true;
+    };
+
+    /**
      * Report an assignment submission as being viewed.
      *
      * @module mm.addons.mod_assign
@@ -764,20 +866,77 @@ angular.module('mm.addons.mod_assign')
      * @module mm.addons.mod_assign
      * @ngdoc method
      * @name $mmaModAssign#saveSubmission
+     * @param  {Number} assignmentId  Assign ID.
+     * @param  {Number} courseId      Course ID the assign belongs to.
+     * @param  {Object} pluginData    Data to save.
+     * @param  {Boolean} allowOffline True to allow offline usage.
+     * @param  {Number} timemodified  The time the submission was last modified in online.
+     * @param  {Boolean} allowsDrafts True if assignment allows submission drafts, false otherwise.
+     * @param  {Number} [userId]      User ID. If not defined, site's current user.
+     * @param  {String} [siteId]      Site ID. If not defined, current site.
+     * @return {Promise}              Promise resolved with true if sent to server, resolved with false if stored in offline.
+     */
+    self.saveSubmission = function(assignmentId, courseId, pluginData, allowOffline, timemodified, allowsDrafts, userId, siteId) {
+        if (allowOffline && !$mmApp.isOnline()) {
+            // App is offline, store the action.
+            return storeOffline();
+        }
+
+        return self.saveSubmissionOnline(assignmentId, pluginData, siteId).then(function() {
+            return true;
+        }).catch(function(error) {
+            if (allowOffline && error && !error.wserror) {
+                // Couldn't connect to server, store in offline.
+                return storeOffline();
+            } else {
+                // The WebService has thrown an error or offline not supported, reject.
+                return $q.reject(error.error);
+            }
+        });
+
+        // Store the submission to be synchronized later.
+        function storeOffline() {
+            return $mmaModAssignOffline.saveSubmission(assignmentId, courseId, pluginData,
+                    timemodified, !allowsDrafts, userId, siteId).then(function() {
+                return false;
+            });
+        }
+    };
+
+    /**
+     * Save current user submission for a certain assignment. It will fail if offline or cannot connect.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssign#saveSubmissionOnline
      * @param  {Number} assignmentId Assign ID.
      * @param  {Object} pluginData   Data to save.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
      * @return {Promise}             Promise resolved when saved, rejected otherwise.
      */
-    self.saveSubmission = function(assignmentId, pluginData) {
-        var params = {
-            assignmentid: assignmentId,
-            plugindata: pluginData
-        };
-        return $mmSite.write('mod_assign_save_submission', params).then(function(warnings) {
-            if (warnings && warnings.length) {
-                // The WebService returned warnings, reject.
-                return $q.reject(warnings[0].item);
-            }
+    self.saveSubmissionOnline = function(assignmentId, pluginData, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                assignmentid: assignmentId,
+                plugindata: pluginData
+            };
+
+            return site.write('mod_assign_save_submission', params).catch(function(error) {
+                return $q.reject({
+                    error: error,
+                    wserror: $mmUtil.isWebServiceError(error)
+                });
+            }).then(function(warnings) {
+                if (warnings && warnings.length) {
+                    // The WebService returned warnings, reject.
+                    return $q.reject({
+                        wserror: true,
+                        error: warnings[0].message
+                    });
+                }
+            });
         });
     };
 
@@ -789,18 +948,69 @@ angular.module('mm.addons.mod_assign')
      * @name $mmaModAssign#submitForGrading
      * @param  {Number} assignmentId     Assign ID.
      * @param  {Boolean} acceptStatement True if submission statement is accepted, false otherwise.
+     * @param  {Boolean} forceOffline    True to always mark it in offline.
+     * @param  {String} [siteId]         Site ID. If not defined, current site.
+     * @return {Promise}                 Promise resolved with true if sent to server, resolved with false if stored in offline.
+     */
+    self.submitForGrading = function(assignmentId, acceptStatement, forceOffline, siteId) {
+        if (forceOffline || !$mmApp.isOnline()) {
+            // App is offline, store the action.
+            return storeOffline();
+        }
+
+        return self.submitForGradingOnline(assignmentId, acceptStatement, siteId).then(function() {
+            return true;
+        }).catch(function(error) {
+            if (error && !error.wserror) {
+                // Couldn't connect to server, store in offline.
+                return storeOffline();
+            } else {
+                // The WebService has thrown an error or offline not supported, reject.
+                return $q.reject(error.error);
+            }
+        });
+
+        // Store the submission to be synchronized later.
+        function storeOffline() {
+            return $mmaModAssignOffline.markSubmitted(assignmentId, true, acceptStatement, undefined, siteId).then(function() {
+                return false;
+            });
+        }
+    };
+
+    /**
+     * Submit the current user assignment for grading. It will fail if offline or cannot connect.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssign#submitForGradingOnline
+     * @param  {Number} assignmentId     Assign ID.
+     * @param  {Boolean} acceptStatement True if submission statement is accepted, false otherwise.
+     * @param  {String} [siteId]         Site ID. If not defined, current site.
      * @return {Promise}                 Promise resolved when submitted, rejected otherwise.
      */
-    self.submitForGrading = function(assignmentId, acceptStatement) {
-        var params = {
-            assignmentid: assignmentId,
-            acceptsubmissionstatement: acceptStatement ? 1 : 0
-        };
-        return $mmSite.write('mod_assign_submit_for_grading', params).then(function(warnings) {
-            if (warnings && warnings.length) {
-                // The WebService returned warnings, reject.
-                return $q.reject(warnings[0].message);
-            }
+    self.submitForGradingOnline = function(assignmentId, acceptStatement, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                assignmentid: assignmentId,
+                acceptsubmissionstatement: acceptStatement ? 1 : 0
+            };
+            return site.write('mod_assign_submit_for_grading', params).catch(function(error) {
+                return $q.reject({
+                    error: error,
+                    wserror: $mmUtil.isWebServiceError(error)
+                });
+            }).then(function(warnings) {
+                if (warnings && warnings.length) {
+                    // The WebService returned warnings, reject.
+                    return $q.reject({
+                        wserror: true,
+                        error: warnings[0].message
+                    });
+                }
+            });
         });
     };
 

@@ -11,7 +11,7 @@
                     <ion-checkbox ng-if="submissionStatement" name="submissionstatement" class="item-text-wrap item-checkbox-right">
                         <p><mm-format-text watch="true" class="mm-content-with-float">{{submissionStatement}}</mm-format-text></p>
                     </ion-checkbox>
-                    <mma-mod-assign-submission-plugin ng-repeat="plugin in userSubmission.plugins" assign="assign" submission="userSubmission" plugin="plugin" edit="true" scroll-handle="mmaModAssignEditScroll"></mma-mod-assign-submission-plugin>
+                    <mma-mod-assign-submission-plugin ng-repeat="plugin in userSubmission.plugins" assign="assign" submission="userSubmission" plugin="plugin" edit="true" scroll-handle="mmaModAssignEditScroll" allow-offline="{{allowOffline}}"></mma-mod-assign-submission-plugin>
                 </form>
             </div>
         </mm-loading>

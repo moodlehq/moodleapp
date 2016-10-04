@@ -262,12 +262,16 @@ angular.module('mm.addons.mod_assign')
      * @param  {Object} plugin     Plugin to get the data for.
      * @param  {Object} inputData  Data entered in the submission form.
      * @param  {Object} pluginData Object where to add the plugin data.
+     * @param  {Boolean} offline   True to prepare the data for an offline submission, false otherwise.
+     * @param  {Number} [userId]   User ID. If not defined, site's current user.
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
      * @return {Promise}           Promise resolved when data has been gathered.
      */
-    self.preparePluginSubmissionData = function(assign, submission, plugin, inputData, pluginData) {
+    self.preparePluginSubmissionData = function(assign, submission, plugin, inputData, pluginData, offline, userId, siteId) {
         var handler = self.getPluginHandler(plugin.type);
         if (handler && handler.prepareSubmissionData) {
-            return $q.when(handler.prepareSubmissionData(assign, submission, plugin, inputData, pluginData));
+            return $q.when(handler.prepareSubmissionData(
+                    assign, submission, plugin, inputData, pluginData, offline, userId, siteId));
         }
         return $q.when();
     };
@@ -312,9 +316,9 @@ angular.module('mm.addons.mod_assign')
      *                                                           This should return true if the plugin has no submission component.
      *                             - getDirectiveName(plugin, edit) (String) Optional. Returns the name of the directive to render
      *                                                           the plugin.
-     *                             - prepareSubmissionData(assign, submission, plugin, inputData, pluginData). Should prepare and
-     *                                                           add to pluginData the data to send to server based in the input.
-     *                                                           Return promise if async.
+     *                             - prepareSubmissionData(assign, submission, plugin, inputData, pluginData, offline, userId, siteId).
+     *                                                           Should prepare and add to pluginData the data to send to server
+     *                                                           based in the input. Return promise if async.
      *                             - copySubmissionData(assign, plugin, pluginData). Function meant to copy a submission. Should
      *                                                           add to pluginData the data to send to server based in the data
      *                                                           in plugin (previous attempt).

@@ -1283,5 +1283,46 @@ angular.module('mm.core')
         return self.removeDir(mmFsTmpFolder);
     };
 
+    /**
+     * Given a folder path and a list of used files, remove all the files of the folder that aren't on the list of used files.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFS#removeUnusedFiles
+     * @param  {String} dirPath Folder path.
+     * @param  {Object[]} files List of used files.
+     * @return {Promise}        Promise resolved when done, rejected if failure.
+     */
+    self.removeUnusedFiles = function(dirPath, files) {
+        // Get the directory contents.
+        return self.getDirectoryContents(dirPath).then(function(contents) {
+            if (!contents.length) {
+                return;
+            }
+
+            var filesMap = {},
+                promises = [];
+
+            // Index the received files by fullPath and ignore the invalid ones.
+            angular.forEach(files, function(file) {
+                if (file.fullPath) {
+                    filesMap[file.fullPath] = file;
+                }
+            });
+
+            // Check which of the content files aren't used anymore and delete them.
+            angular.forEach(contents, function(file) {
+                if (!filesMap[file.fullPath]) {
+                    // File isn't used, delete it.
+                    promises.push(self.removeFileByFileEntry(file));
+                }
+            });
+
+            return $q.all(promises);
+        }).catch(function() {
+            // Ignore errors, maybe it doesn't exist.
+        });
+    };
+
     return self;
 });
