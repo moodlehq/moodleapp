@@ -54,6 +54,38 @@ $mm-text-with-icon-height: 22px !default;
 $mm-button-icon-small-height: 22px !default;
 
 /**
+ * App Branding
+ */
+.mm-bglogo {
+  background-color: white; /* Change this to add a bg image or change color */
+  background-repeat: no-repeat;
+  background-position: center center;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.mm-logo {
+  background-image: url('../img/moodle.png'); /* Change logo here */
+  background-repeat: no-repeat;
+  background-position: center center;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  text-align: center;
+}
+
+.mm-logo:before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+  margin-top: 120px; /* Change this to place spinner under the logo (usually double of the logo size) */
+}
+
+/**
  * Styles revert.
  */
 
