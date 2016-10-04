@@ -97,12 +97,21 @@ angular.module('mm.core')
             // Now, replace the siteurl with the protocol.
             siteurl = siteurl.replace(/^http(s)?\:\/\//i, protocol);
 
-            return self.siteExists(siteurl).catch(function() {
+            return self.siteExists(siteurl).catch(function(error) {
+                if (error.errorcode && error.errorcode == 'enablewsdescription') {
+                    return $q.reject(error.error);
+                }
+
                 // Site doesn't exist. Try to add or remove 'www'.
                 var treatedUrl = $mmText.addOrRemoveWWW(siteurl);
                 return self.siteExists(treatedUrl).then(function() {
                     // Success, use this new URL as site url.
                     siteurl = treatedUrl;
+                }).catch(function(error) {
+                    if (error.errorcode && error.errorcode == 'enablewsdescription') {
+                        return $q.reject(error.error);
+                    }
+                    return $q.reject(error);
                 });
             }).then(function() {
                 // Create a temporary site to check if local_mobile is installed.
@@ -119,7 +128,7 @@ angular.module('mm.core')
                     // Retry without HTTPS.
                     return self.checkSite(siteurl, "http://");
                 } else{
-                    return $mmLang.translateAndReject('mm.core.cannotconnect');
+                    return $mmLang.translateAndReject('mm.login.checksiteversion');
                 }
             });
         }
@@ -135,12 +144,22 @@ angular.module('mm.core')
      * @return {Promise}        A promise to be resolved if the site exists.
      */
     self.siteExists = function(siteurl) {
-        var url = siteurl + '/login/token.php';
-        if (!ionic.Platform.isWebView()) {
-            // We pass fake parameters to make CORS work (without params, the script stops before allowing CORS).
-            url = url + '?username=a&password=b&service=c';
-        }
-        return $http.get(url, {timeout: 30000});
+        var data = {
+            username: 'a',
+            password: 'b',
+            service: determineService(siteurl)
+        };
+
+        return $http.post(siteurl + '/login/token.php', data, {timeout: 30000}).then(function(data) {
+            data = data.data;
+
+            if (data.errorcode && data.errorcode == 'enablewsdescription') {
+                return $q.reject({errorcode: data.errorcode, error: data.error});
+            } else if (data.error && data.error == 'Web services must be enabled in Advanced features.') {
+                return $q.reject({errorcode: 'enablewsdescription', error: data.error});
+            }
+            return $q.when();
+        });
     };
 
     /**
