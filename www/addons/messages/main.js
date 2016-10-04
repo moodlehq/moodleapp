@@ -64,8 +64,8 @@ angular.module('mm.addons.messages', ['mm.core'])
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaMessages', '$mmaMessagesHandlers.linksHandler');
 })
 
-.run(function($mmaMessages, $mmEvents, $state, $mmAddonManager, $mmUtil, mmCoreEventLogin, $mmCronDelegate, mmCoreEventOnline,
-            $mmaMessagesSync) {
+.run(function($mmaMessages, $mmEvents, $state, $mmAddonManager, $mmUtil, mmCoreEventLogin, $mmCronDelegate, $mmaMessagesSync,
+            mmCoreEventOnlineStatusChanged) {
 
     // Invalidate messaging enabled WS calls.
     $mmEvents.on(mmCoreEventLogin, function() {
@@ -91,7 +91,9 @@ angular.module('mm.addons.messages', ['mm.core'])
     $mmCronDelegate.register('mmaMessages', '$mmaMessagesHandlers.syncHandler');
 
     // Sync some discussions when device goes online.
-    $mmEvents.on(mmCoreEventOnline, function() {
-        $mmaMessagesSync.syncAllDiscussions(undefined, true);
+    $mmEvents.on(mmCoreEventOnlineStatusChanged, function(online) {
+        if (online) {
+            $mmaMessagesSync.syncAllDiscussions(undefined, true);
+        }
     });
 });
