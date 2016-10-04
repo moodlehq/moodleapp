@@ -32,10 +32,11 @@ angular.module('mm.core.fileuploader')
      * @name $mmFileUploaderHelper#confirmUploadFile
      * @param  {Number} size           File's size.
      * @param  {Boolean} alwaysConfirm True to show a confirm even if the size isn't high, false otherwise.
+     * @param  {Boolean} allowOffline  True to allow uploading in offline, false to require connection.
      * @return {Promise}               Promise resolved when the user confirms or if there's no need to show a modal.
      */
-    self.confirmUploadFile = function(size, alwaysConfirm) {
-        if (!$mmApp.isOnline()) {
+    self.confirmUploadFile = function(size, alwaysConfirm, allowOffline) {
+        if (!allowOffline && !$mmApp.isOnline()) {
             return $mmLang.translateAndReject('mm.fileuploader.errormustbeonlinetoupload');
         }
 
@@ -166,13 +167,14 @@ angular.module('mm.core.fileuploader')
      * @module mm.core.fileuploader
      * @ngdoc method
      * @name $mmFileUploaderHelper#selectFile
-     * @param  {Number} [maxSize] Max size of the file. If not defined or -1, no max size.
+     * @param  {Number} [maxSize]     Max size of the file. If not defined or -1, no max size.
+     * @param  {Boolean} allowOffline True to allow selecting in offline, false to require connection.
      * @return {Promise} Promise resolved when a file is selected, rejected if file picker is closed without selecting a file.
      *                   The resolve value should be the FileEntry of a copy of the picked file, so it can be deleted afterwards.
      */
-    self.selectFile = function(maxSize) {
+    self.selectFile = function(maxSize, allowOffline) {
         filePickerDeferred = $q.defer();
-        $state.go('site.fileuploader-picker', {maxsize: maxSize, upload: false});
+        $state.go('site.fileuploader-picker', {maxsize: maxSize, upload: false, allowOffline: allowOffline});
         return filePickerDeferred.promise;
     };
 
