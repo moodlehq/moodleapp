@@ -21,10 +21,9 @@ angular.module('mm.addons.mod_quiz')
  * @ngdoc controller
  * @name mmaModQuizPlayerCtrl
  */
-.controller('mmaModQuizPlayerCtrl', function($log, $scope, $stateParams, $mmaModQuiz, $mmaModQuizHelper, $q, $mmUtil,
+.controller('mmaModQuizPlayerCtrl', function($log, $scope, $stateParams, $mmaModQuiz, $mmaModQuizHelper, $q, $mmUtil, $mmSyncBlock,
             $ionicPopover, $ionicScrollDelegate, $rootScope, $ionicPlatform, $translate, $timeout, $mmQuestionHelper,
-            $mmaModQuizAutoSave, $mmEvents, mmaModQuizEventAttemptFinished, $mmSideMenu, mmaModQuizComponent,
-            $mmaModQuizSync) {
+            $mmaModQuizAutoSave, $mmEvents, mmaModQuizEventAttemptFinished, $mmSideMenu, mmaModQuizComponent, $mmaModQuizSync) {
     $log = $log.getInstance('mmaModQuizPlayerCtrl');
 
     var quizId = $stateParams.quizid,
@@ -41,6 +40,9 @@ angular.module('mm.addons.mod_quiz')
         timeUpCalled = false,
         scrollView = $ionicScrollDelegate.$getByHandle('mmaModQuizPlayerScroll'),
         offline;
+
+    // Block the quiz so it cannot be synced.
+    $mmSyncBlock.blockOperation(mmaModQuizComponent, quizId, 'playerCtrl');
 
     $scope.moduleUrl = moduleUrl;
     $scope.component = mmaModQuizComponent;
@@ -453,5 +455,7 @@ angular.module('mm.addons.mod_quiz')
         // Stop auto save.
         $mmaModQuizAutoSave.stopAutoSaving();
         $mmaModQuizAutoSave.stopCheckChangesProcess();
+        // Unblock the quiz so it can be synced.
+        $mmSyncBlock.unblockOperation(mmaModQuizComponent, quizId, 'playerCtrl');
     });
 });

@@ -22,13 +22,12 @@ angular.module('mm.addons.mod_quiz')
  * @name $mmaModQuiz
  */
 .factory('$mmaModQuiz', function($log, $mmSite, $mmSitesManager, $q, $translate, $mmUtil, $mmText, $mmQuestionDelegate,
-            $mmaModQuizAccessRulesDelegate, $mmFilepool, $mmaModQuizOnline, $mmaModQuizOffline, $state,
-            mmaModQuizComponent, $ionicModal, $timeout) {
+            $mmaModQuizAccessRulesDelegate, $mmFilepool, $mmaModQuizOnline, $mmaModQuizOffline, $mmSyncBlock, mmaModQuizComponent,
+            $ionicModal, $timeout) {
 
     $log = $log.getInstance('$mmaModQuiz');
 
-    var self = {},
-        blockedQuizzes = {};
+    var self = {};
 
     // Constants.
 
@@ -50,23 +49,6 @@ angular.module('mm.addons.mod_quiz')
 
     // Show the countdown timer if there is less than this amount of time left before the the quiz close date.
     self.QUIZ_SHOW_TIME_BEFORE_DEADLINE = 3600;
-
-    /**
-     * Block a quiz so it cannot be synced.
-     *
-     * @module mm.addons.mod_quiz
-     * @ngdoc method
-     * @name $mmaModQuiz#blockQuiz
-     * @param  {String} siteId Site ID.
-     * @param  {Number} quizId Quiz ID.
-     * @return {Void}
-     */
-    self.blockQuiz = function(siteId, quizId) {
-        if (!blockedQuizzes[siteId]) {
-            blockedQuizzes[siteId] = {};
-        }
-        blockedQuizzes[siteId][quizId] = true;
-    };
 
     /**
      * Validate a preflight data or show a modal to input the preflight data if required.
@@ -163,23 +145,6 @@ angular.module('mm.addons.mod_quiz')
                 }
             });
         });
-    };
-
-    /**
-     * Clear blocked quizzes.
-     *
-     * @module mm.addons.mod_quiz
-     * @ngdoc method
-     * @name $mmaModQuiz#clearBlockedQuizzes
-     * @param {String} [siteId] If set, clear the blocked quizzes only for this site. Otherwise clear all quizzes.
-     * @return {Void}
-     */
-    self.clearBlockedQuizzes = function(siteId) {
-        if (siteId) {
-            delete blockedQuizzes[siteId];
-        } else {
-            blockedQuizzes = {};
-        }
     };
 
     /**
@@ -1931,38 +1896,6 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
-     * Check if a quiz is being played right now.
-     *
-     * @module mm.addons.mod_quiz
-     * @ngdoc method
-     * @name $mmaModQuiz#isQuizBeingPlayed
-     * @param  {Number} quizId   Quiz ID.
-     * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Boolean}         True if it's being played, false otherwise.
-     */
-    self.isQuizBeingPlayed = function(quizId, siteId) {
-        siteId = siteId || $mmSite.getId();
-        return $mmSite.getId() == siteId && $state.current.name == 'site.mod_quiz-player' && $state.params.quizid == quizId;
-    };
-
-    /**
-     * Check if a quiz is blocked by a writing function.
-     *
-     * @module mm.addons.mod_quiz
-     * @ngdoc method
-     * @name $mmaModQuiz#isQuizBlocked
-     * @param  {String} siteId Site ID.
-     * @param  {Number} quizId Quiz ID.
-     * @return {Boolean}         True if blocked, false otherwise.
-     */
-    self.isQuizBlocked = function(siteId, quizId) {
-        if (!blockedQuizzes[siteId]) {
-            return false;
-        }
-        return !!blockedQuizzes[siteId][quizId];
-    };
-
-    /**
      * Check if a quiz is enabled to be used in offline.
      *
      * @module mm.addons.mod_quiz
@@ -2101,7 +2034,7 @@ angular.module('mm.addons.mod_quiz')
         var promise;
 
         try {
-            self.blockQuiz(siteId, quiz.id); // Block quiz so it cannot be synced.
+            $mmSyncBlock.blockOperation(mmaModQuizComponent, quiz.id, 'processAttempt', siteId); // Block quiz so it cannot be synced.
 
             if (offline) {
                 promise = processOfflineAttempt(quiz, attempt, data, preflightData, finish, siteId);
@@ -2110,10 +2043,10 @@ angular.module('mm.addons.mod_quiz')
             }
 
             return promise.finally(function() {
-                self.unblockQuiz(siteId, quiz.id);
+                $mmSyncBlock.unblockOperation(mmaModQuizComponent, quiz.id, 'processAttempt', siteId);
             });
         } catch(ex) {
-            self.unblockQuiz(siteId, quiz.id);
+            $mmSyncBlock.unblockOperation(mmaModQuizComponent, quiz.id, 'processAttempt', siteId);
             console.error(ex);
             return $q.reject();
         }
@@ -2209,7 +2142,7 @@ angular.module('mm.addons.mod_quiz')
         var promise;
 
         try {
-            self.blockQuiz(siteId, quiz.id); // Block quiz so it cannot be synced.
+            $mmSyncBlock.blockOperation(mmaModQuizComponent, quiz.id, 'saveAttempt', siteId); // Block quiz so it cannot be synced.
 
             if (offline) {
                 promise = processOfflineAttempt(quiz, attempt, data, preflightData, false, siteId);
@@ -2218,10 +2151,10 @@ angular.module('mm.addons.mod_quiz')
             }
 
             return promise.finally(function() {
-                self.unblockQuiz(siteId, quiz.id);
+                $mmSyncBlock.unblockOperation(mmaModQuizComponent, quiz.id, 'saveAttempt', siteId);
             });
         } catch(ex) {
-            self.unblockQuiz(siteId, quiz.id);
+            $mmSyncBlock.unblockOperation(mmaModQuizComponent, quiz.id, 'saveAttempt', siteId);
             console.error(ex);
             return $q.reject();
         }
@@ -2277,22 +2210,6 @@ angular.module('mm.addons.mod_quiz')
                 return $q.reject();
             });
         });
-    };
-
-    /**
-     * Unblock a quiz so it can be synced.
-     *
-     * @module mm.addons.mod_quiz
-     * @ngdoc method
-     * @name $mmaModQuiz#unblockQuiz
-     * @param  {String} siteId Site ID.
-     * @param  {Number} quizId Quiz ID.
-     * @return {Void}
-     */
-    self.unblockQuiz = function(siteId, quizId) {
-        if (blockedQuizzes[siteId]) {
-            blockedQuizzes[siteId][quizId] = false;
-        }
     };
 
     return self;
