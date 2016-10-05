@@ -76,7 +76,7 @@ angular.module('mm.addons.mod_forum')
             }).finally(function() {
                 // Check if there are responses stored in offline.
                 return $mmaModForumOffline.hasDiscussionReplies(discussionId).then(function(hasOffline) {
-                    $scope.hasOffline = hasOffline;
+                    $scope.postHasOffline = hasOffline;
 
                     if (hasOffline) {
                         return $mmaModForumOffline.getDiscussionReplies(discussionId).then(function(replies) {
