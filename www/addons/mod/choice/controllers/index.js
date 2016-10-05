@@ -24,13 +24,13 @@ angular.module('mm.addons.mod_choice')
  */
 .controller('mmaModChoiceIndexCtrl', function($scope, $stateParams, $mmaModChoice, $mmUtil, $q, $mmCourse, $translate, $mmText,
             mmaModChoiceComponent, mmaModChoiceAutomSyncedEvent, $mmSite, $mmEvents, $mmaModChoiceSync, $ionicScrollDelegate,
-            $mmaModChoiceOffline) {
+            $mmaModChoiceOffline, $mmApp, $mmEvents, mmCoreEventOnlineStatusChanged) {
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
         choice,
         userId = $mmSite.getUserId(),
         scrollView,
-        syncObserver,
+        syncObserver, onlineObserver,
         hasAnsweredOnline = false;
 
     $scope.title = module.name;
@@ -39,11 +39,13 @@ angular.module('mm.addons.mod_choice')
     $scope.moduleName = $mmCourse.translateModuleName('choice');
     $scope.courseid = courseid;
     $scope.refreshIcon = 'spinner';
+    $scope.syncIcon = 'spinner';
     $scope.component = mmaModChoiceComponent;
     $scope.componentId = module.id;
 
     // Convenience function to get choice data.
-    function fetchChoiceData(refresh, sync) {
+    function fetchChoiceData(refresh, sync, showErrors) {
+        $scope.isOnline = $mmApp.isOnline();
         $scope.now = new Date().getTime();
         return $mmaModChoice.getChoice(courseid, module.id).then(function(choicedata) {
             choice = choicedata;
@@ -58,7 +60,7 @@ angular.module('mm.addons.mod_choice')
 
             if (sync) {
                 // Try to synchronize the choice.
-                return syncChoice(false).catch(function() {
+                return syncChoice(showErrors).catch(function() {
                     // Ignore errors.
                 });
             }
@@ -194,13 +196,13 @@ angular.module('mm.addons.mod_choice')
     }
 
     // Convenience function to refresh all the data.
-    function refreshAllData(sync) {
+    function refreshAllData(sync, showErrors) {
         var p1 = $mmaModChoice.invalidateChoiceData(courseid),
             p2 = choice ? $mmaModChoice.invalidateOptions(choice.id) : $q.when(),
             p3 = choice ? $mmaModChoice.invalidateResults(choice.id) : $q.when();
 
         return $q.all([p1, p2, p3]).finally(function() {
-            return fetchChoiceData(true, sync);
+            return fetchChoiceData(true, sync, showErrors);
         });
     }
 
@@ -211,6 +213,7 @@ angular.module('mm.addons.mod_choice')
     }).finally(function() {
         $scope.choiceLoaded = true;
         $scope.refreshIcon = 'ion-refresh';
+        $scope.syncIcon = 'ion-loop';
     });
 
     // Save options selected.
@@ -275,30 +278,16 @@ angular.module('mm.addons.mod_choice')
     };
 
     // Pull to refresh.
-    $scope.refreshChoice = function() {
+    $scope.refreshChoice = function(showErrors) {
         if ($scope.choiceLoaded) {
             $scope.refreshIcon = 'spinner';
-            return refreshAllData(true).finally(function() {
+            $scope.syncIcon = 'spinner';
+            return refreshAllData(true, showErrors).finally(function() {
                 $scope.refreshIcon = 'ion-refresh';
+                $scope.syncIcon = 'ion-loop';
                 $scope.$broadcast('scroll.refreshComplete');
             });
         }
-    };
-
-    $scope.sync = function() {
-        var modal = $mmUtil.showModalLoading('mm.settings.synchronizing', true);
-        syncChoice(true).then(function() {
-            // Refresh the data.
-            $scope.choiceLoaded = false;
-            $scope.refreshIcon = 'spinner';
-            scrollTop();
-            refreshAllData(false).finally(function() {
-                $scope.choiceLoaded = true;
-                $scope.refreshIcon = 'ion-refresh';
-            });
-        }).finally(function() {
-            modal.dismiss();
-        });
     };
 
     function scrollTop() {
@@ -328,21 +317,29 @@ angular.module('mm.addons.mod_choice')
         });
     }
 
+    // Refresh online status when changes.
+    onlineObserver = $mmEvents.on(mmCoreEventOnlineStatusChanged, function(online) {
+        $scope.isOnline = online;
+    });
+
     // Refresh data if this choice is synchronized automatically.
     syncObserver = $mmEvents.on(mmaModChoiceAutomSyncedEvent, function(data) {
         if (choice && data && data.siteid == $mmSite.getId() && data.choiceid == choice.id && data.userid == userId) {
             // Refresh the data.
             $scope.choiceLoaded = false;
             $scope.refreshIcon = 'spinner';
+            $scope.syncIcon = 'spinner';
             scrollTop();
             refreshAllData(false).finally(function() {
                 $scope.choiceLoaded = true;
                 $scope.refreshIcon = 'ion-refresh';
+                $scope.syncIcon = 'ion-loop';
             });
         }
     });
 
     $scope.$on('$destroy', function() {
         syncObserver && syncObserver.off && syncObserver.off();
+        onlineObserver && onlineObserver.off && onlineObserver.off();
     });
 });

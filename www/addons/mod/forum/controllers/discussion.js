@@ -21,15 +21,16 @@ angular.module('mm.addons.mod_forum')
  * @ngdoc controller
  * @name mmaModForumDiscussionCtrl
  */
-.controller('mmaModForumDiscussionCtrl', function($q, $scope, $stateParams, $mmaModForum, $mmSite, $mmUtil, $translate,
-            $ionicScrollDelegate, $mmEvents, mmaModForumComponent, mmaModForumReplyDiscussionEvent, $mmaModForumOffline,
-            $mmaModForumSync, mmaModForumAutomSyncedEvent, mmaModForumManualSyncedEvent) {
+.controller('mmaModForumDiscussionCtrl', function($q, $scope, $stateParams, $mmaModForum, $mmSite, $mmUtil, $translate, $mmEvents,
+            $ionicScrollDelegate, mmaModForumComponent, mmaModForumReplyDiscussionEvent, $mmaModForumOffline, $mmaModForumSync,
+            mmaModForumAutomSyncedEvent, mmaModForumManualSyncedEvent, $mmApp, $ionicPlatform, mmCoreEventOnlineStatusChanged) {
 
     var discussionId = $stateParams.discussionid,
         courseid = $stateParams.cid,
         forumId = $stateParams.forumid,
         cmid = $stateParams.cmid,
-        scrollView;
+        scrollView,
+        syncObserver, syncManualObserver, onlineObserver;
 
     $scope.discussionId = discussionId;
     $scope.component = mmaModForumComponent;
@@ -37,6 +38,7 @@ angular.module('mm.addons.mod_forum')
     $scope.componentId = cmid;
     $scope.courseid = courseid;
     $scope.refreshPostsIcon = 'spinner';
+    $scope.syncIcon = 'spinner';
     $scope.newpost = {
         replyingto: undefined,
         editing: undefined,
@@ -51,14 +53,16 @@ angular.module('mm.addons.mod_forum')
     };
 
     // Convenience function to get forum discussions.
-    function fetchPosts(sync) {
+    function fetchPosts(sync, showErrors) {
         var syncPromise,
-            onlinePosts = {},
+            onlinePosts = [],
             offlineReplies = [];
 
+        $scope.isOnline = $mmApp.isOnline();
+        $scope.isTablet = $ionicPlatform.isTablet();
         if (sync) {
             // Try to synchronize the forum.
-            syncPromise = syncDiscussion(false).catch(function() {
+            syncPromise = syncDiscussion(showErrors).catch(function() {
                 // Ignore errors.
             });
         } else {
@@ -72,7 +76,7 @@ angular.module('mm.addons.mod_forum')
             }).finally(function() {
                 // Check if there are responses stored in offline.
                 return $mmaModForumOffline.hasDiscussionReplies(discussionId).then(function(hasOffline) {
-                    $scope.hasOffline = hasOffline;
+                    $scope.postHasOffline = hasOffline;
 
                     if (hasOffline) {
                         return $mmaModForumOffline.getDiscussionReplies(discussionId).then(function(replies) {
@@ -103,7 +107,7 @@ angular.module('mm.addons.mod_forum')
                 });
             });
         }).finally(function() {
-            var posts = onlinePosts.concat(offlineReplies);
+            var posts = offlineReplies.concat(onlinePosts);
             $scope.discussion = $mmaModForum.extractStartingPost(posts);
             // Set default reply subject.
             $scope.posts = $mmaModForum.sortDiscussionPosts(posts, $scope.sort.direction);
@@ -118,6 +122,7 @@ angular.module('mm.addons.mod_forum')
         }).finally(function() {
             $scope.discussionLoaded = true;
             $scope.refreshPostsIcon = 'ion-refresh';
+            $scope.syncIcon = 'ion-loop';
         });
     }
 
@@ -140,24 +145,21 @@ angular.module('mm.addons.mod_forum')
         });
     };
 
-    $scope.syncDiscussion = function() {
-        var modal = $mmUtil.showModalLoading('mm.settings.synchronizing', true);
-        syncDiscussion(true).then(function(updated) {
-            if (updated) {
-                // Refresh the data.
-                $scope.discussionLoaded = false;
-                return refreshPosts(false);
-            }
-        }).finally(function() {
-            modal.dismiss();
-        });
-    };
-
     // Tries to synchronize the posts discussion.
     function syncDiscussion(showErrors) {
         return $mmaModForumSync.syncDiscussionReplies(discussionId).then(function(result) {
             if (result.warnings && result.warnings.length) {
                 $mmUtil.showErrorModal(result.warnings[0]);
+            }
+
+            if (result && result.updated) {
+                // Sync successful, send event.
+                $mmEvents.trigger(mmaModForumManualSyncedEvent, {
+                    siteid: $mmSite.getId(),
+                    forumid: forumId,
+                    userid: $mmSite.getUserId(),
+                    warnings: result.warnings
+                });
             }
 
             return result.updated;
@@ -174,11 +176,12 @@ angular.module('mm.addons.mod_forum')
     }
 
     // Refresh posts.
-    function refreshPosts(sync) {
+    function refreshPosts(sync, showErrors) {
         scrollTop();
         $scope.refreshPostsIcon = 'spinner';
+        $scope.syncIcon = 'spinner';
         return $mmaModForum.invalidateDiscussionPosts(discussionId).finally(function() {
-            return fetchPosts(sync);
+            return fetchPosts(sync, showErrors);
         });
     }
 
@@ -200,9 +203,9 @@ angular.module('mm.addons.mod_forum')
     });
 
     // Pull to refresh.
-    $scope.refreshPosts = function() {
+    $scope.refreshPosts = function(showErrors) {
         if ($scope.discussionLoaded) {
-            return refreshPosts(true).finally(function() {
+            return refreshPosts(true, showErrors).finally(function() {
                 $scope.$broadcast('scroll.refreshComplete');
             });
         }
@@ -216,6 +219,11 @@ angular.module('mm.addons.mod_forum')
             $scope.discussionLoaded = false;
             refreshPosts(false);
         }
+    });
+
+    // Refresh online status when changes.
+    onlineObserver = $mmEvents.on(mmCoreEventOnlineStatusChanged, function(online) {
+        $scope.isOnline = online;
     });
 
     // Refresh data if this forum discussion is synchronized from discussions list.
@@ -254,5 +262,6 @@ angular.module('mm.addons.mod_forum')
     $scope.$on('$destroy', function(){
         syncObserver && syncObserver.off && syncObserver.off();
         syncManualObserver && syncManualObserver.off && syncManualObserver.off();
+        onlineObserver && onlineObserver.off && onlineObserver.off();
     });
 });

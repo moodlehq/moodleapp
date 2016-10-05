@@ -29,7 +29,9 @@ angular.module('mm.core')
 .constant('mmCoreEventPackageStatusChanged', 'filepool_package_status_changed')
 .constant('mmCoreEventSectionStatusChanged', 'section_status_changed')
 .constant('mmCoreEventRemoteAddonsLoaded', 'remote_addons_loaded')
-.constant('mmCoreEventOnline', 'online')
+.constant('mmCoreEventOnline', 'online') // Deprecated on version 3.1.3.
+.constant('mmCoreEventOnlineStatusChanged', 'online_status_changed')
+
 
 /**
  * Service to send and listen to events.
