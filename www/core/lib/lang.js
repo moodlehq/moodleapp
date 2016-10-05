@@ -117,11 +117,12 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmLang#translateAndReject
-     * @param  {String} errorkey Key of the message to show.
-     * @return {Promise}         Rejected promise.
+     * @param  {String} errorkey            Key of the message to show.
+     * @param  {Object} [translateParams]   Translate params to use when translating.
+     * @return {Promise}                    Rejected promise.
      */
-    self.translateAndReject = function(errorkey) {
-        return $translate(errorkey).then(function(errorMessage) {
+    self.translateAndReject = function(errorkey, translateParams) {
+        return $translate(errorkey, translateParams).then(function(errorMessage) {
             return $q.reject(errorMessage);
         }, function() {
             return $q.reject(errorkey);
