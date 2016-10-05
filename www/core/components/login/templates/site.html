@@ -3,14 +3,16 @@
       <button class="button button-icon ion-help-circled" ng-click="showHelp()" aria-label="{{ 'mm.core.help' | translate }}"></button>
   </ion-nav-buttons>
   <ion-content id="mm-login-site" mm-state-class>
-      <div class="list">
+      <div class="card">
         <div class="item item-text-wrap">{{ 'mm.login.newsitedescription' | translate }}</div>
+      </div>
+      <div class="list list-inset">
         <form>
           <ion-input class="item item-input item-stacked-label">
             <ion-label>{{ 'mm.login.siteaddress' | translate }}</ion-label>
             <input type="url" placeholder="moodle.org" ng-model="siteurl" mm-no-input-validation mm-auto-focus >
           </ion-input>
-          <div class="padding">
+          <div class="item item-input padding">
               <button class="button button-block" ng-click="connect(siteurl)" ng-disabled="!siteurl">{{ 'mm.login.connect' | translate }}</button>
               <!-- <input type="submit" class="button button-block" value="{{ 'mm.login.connect' | translate }}" > -->
           </div>

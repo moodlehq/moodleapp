@@ -31,6 +31,17 @@ angular.module('mm.core.login')
         password: ''
     };
 
+    $mmSitesManager.getSite($stateParams.siteid).then(function(site) {
+        $scope.site = {
+            id: site.id,
+            fullname: site.infos.fullname,
+            avatar: site.infos.userpictureurl
+        };
+
+        $scope.credentials.username = site.infos.username;
+        $scope.siteurl = site.infos.siteurl;
+    });
+
     $scope.cancel = function() {
         $mmSitesManager.logout().finally(function() {
             $ionicHistory.nextViewOptions({
