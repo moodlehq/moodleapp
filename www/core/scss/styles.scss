@@ -97,6 +97,10 @@ em {
  * Styles.
  */
 
+.item-stacked-label{
+  background-color: $item-default-bg;
+}
+
 // Default bar.
 .bar-content {
   @include bar-style($bar-content-bg, $bar-content-border, $bar-content-text);
