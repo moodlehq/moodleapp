@@ -150,6 +150,7 @@
     "teachers": "Teachers",
     "timesup": "Time is up!",
     "twoparagraphs": "{{p1}}<br><br>{{p2}}",
+    "tryagain": "Try again",
     "unexpectederror": "Unexepected error. Please close and reopen the application to try again",
     "userdeleted": "This user account has been deleted",
     "userdetails": "User details",
@@ -164,5 +165,6 @@
     "wsfunctionnotavailable": "The webservice function is not available.",
     "year" : "year",
     "years": "years",
-    "yes": "Yes"
+    "yes": "Yes",
+    "whoops": "Whoops!"
 }
