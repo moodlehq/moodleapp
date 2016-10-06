@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_wiki')
  * @name $mmaModWikiSync
  */
 .factory('$mmaModWikiSync', function($q, $log, $mmApp, $mmSitesManager, $mmaModWikiOffline, $mmSite, $mmEvents, $mmSync, $mmLang,
-        mmaModWikiComponent, $mmaModWiki, $translate, mmaModWikiSubwikiAutomSyncedEvent, mmaModWikiSyncTime) {
+        mmaModWikiComponent, $mmaModWiki, $translate, mmaModWikiSubwikiAutomSyncedEvent, mmaModWikiSyncTime, $mmGroups) {
 
     $log = $log.getInstance('$mmaModWikiSync');
 
@@ -215,11 +215,13 @@ angular.module('mm.addons.mod_wiki')
      * @module mm.addons.mod_wiki
      * @ngdoc method
      * @name $mmaModWikiSync#syncWiki
-     * @param  {Number} wikiId   Wiki ID.
-     * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved if sync is successful, rejected otherwise.
+     * @param  {Number} wikiId     Wiki ID.
+     * @param  {Number} [courseId] Course ID.
+     * @param  {Number} [cmId]     Wiki course module ID.
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved if sync is successful, rejected otherwise.
      */
-    self.syncWiki = function(wikiId, siteId) {
+    self.syncWiki = function(wikiId, courseId, cmId, siteId) {
         siteId = siteId || $mmSite.getId();
 
         // Sync is done at subwiki level, get all the subwikis.
@@ -246,7 +248,29 @@ angular.module('mm.addons.mod_wiki')
             });
 
             return $q.all(promises).then(function() {
-                return result;
+                promises = [];
+
+                if (result.updated) {
+                    // Something has changed, invalidate data.
+                    if (wikiId) {
+                        promises.push($mmaModWiki.invalidateSubwikis(wikiId));
+                        promises.push($mmaModWiki.invalidateSubwikiPages(wikiId));
+                        promises.push($mmaModWiki.invalidateSubwikiFiles(wikiId));
+                    }
+                    if (courseId) {
+                        promises.push($mmaModWiki.invalidateWikiData(courseId));
+                    }
+                    if (cmId) {
+                        promises.push($mmGroups.invalidateActivityAllowedGroups(cmId));
+                        promises.push($mmGroups.invalidateActivityGroupMode(cmId));
+                    }
+                }
+
+                return $q.all(promises).catch(function() {
+                    // Ignore errors.
+                }).then(function() {
+                    return result;
+                });
             });
         });
     };

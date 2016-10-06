@@ -4,11 +4,11 @@
         <mm-course-mod-description description="description" watch="true" ng-if="mainpage" component="{{component}}" component-id="{{componentId}}"></mm-course-mod-description>
 
         <!-- Wiki has something offline. -->
-        <section class="card padding" ng-if="isOffline || wikiHasOffline">
-            <p class="padding" ng-if="isOffline">{{ 'mm.core.hasdatatosync' | translate:{$a: pageStr} }}</p>
-            <p class="padding" ng-if="!isOffline && wikiHasOffline">{{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}</p>
-            <button class="button button-block icon-right ion-loop" ng-click="sync()">{{ 'mm.settings.synchronizenow' | translate }}</button>
-        </section>
+        <div class="mm-warning" ng-if="pageIsOffline || wikiHasOffline">
+            <i class="icon ion-alert-circled padding"></i>
+            <span ng-if="pageIsOffline">{{ 'mm.core.hasdatatosync' | translate:{$a: pageStr} }}</span>
+            <span ng-if="!pageIsOffline && wikiHasOffline">{{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}</span>
+        </div>
 
         <!-- Page warning. -->
         <div class="padding" ng-if="pageWarning">

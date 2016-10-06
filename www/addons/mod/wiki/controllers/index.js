@@ -25,14 +25,14 @@ angular.module('mm.addons.mod_wiki')
         $mmSite, $mmaModWiki, $ionicTabsDelegate, $ionicHistory, $translate, mmaModWikiSubwikiPagesLoaded, $mmCourseHelper,
         $mmCoursePrefetchDelegate, $mmText, mmaModWikiComponent, $mmEvents, mmCoreEventPackageStatusChanged, $ionicScrollDelegate,
         $mmaModWikiOffline, mmaModWikiPageCreatedEvent, mmaModWikiSubwikiAutomSyncedEvent, $mmaModWikiSync,
-        mmaModWikiManualSyncedEvent) {
+        mmaModWikiManualSyncedEvent, $mmApp, mmCoreEventOnlineStatusChanged) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         action = $stateParams.action || 'page',
         currentPage = $stateParams.pageid || false,
         pageTitle = $stateParams.pagetitle,
         isCurrentView = true,
-        popover, wiki, currentSubwiki, loadedSubwikis, tabsDelegate, statusObserver,
+        popover, wiki, currentSubwiki, loadedSubwikis, tabsDelegate, statusObserver, onlineObserver,
         currentPageObj, newPageObserver, syncObserver, syncObserverManual, scrollView, ignoreManualSyncEvent;
 
     $scope.title = pageTitle || module.name;
@@ -48,6 +48,7 @@ angular.module('mm.addons.mod_wiki')
         count: 0
     };
     $scope.refreshIcon = 'spinner';
+    $scope.syncIcon = 'spinner';
     $scope.pageStr = $translate.instant('mma.mod_wiki.page');
     $scope.moduleName = $mmCourse.translateModuleName('wiki');
 
@@ -150,7 +151,9 @@ angular.module('mm.addons.mod_wiki')
     };
 
     // Convenience function to get wiki data.
-    function fetchWikiData(refresh, sync) {
+    function fetchWikiData(refresh, sync, showErrors) {
+        $scope.isOnline = $mmApp.isOnline();
+
         var id = module.id || $stateParams.wikiid,
             paramName = module.id ? 'coursemodule' : 'id';
 
@@ -160,7 +163,7 @@ angular.module('mm.addons.mod_wiki')
 
             if (sync) {
                 // Try to synchronize the wiki.
-                return syncWiki(false).catch(function() {
+                return syncWiki(showErrors).catch(function() {
                     // Ignore errors.
                 });
             }
@@ -256,7 +259,7 @@ angular.module('mm.addons.mod_wiki')
 
             if (!refresh && !wiki) {
                 // Some call failed, retry without using cache since it might be a new activity.
-                return refreshAllData(sync);
+                return refreshAllData(sync, showErrors);
             }
 
             if (message) {
@@ -604,7 +607,7 @@ angular.module('mm.addons.mod_wiki')
     function fetchPageContents(pageId) {
         if (!pageId && pageTitle) {
             // No page ID but we received a title. This means we're trying to load an offline page.
-            $scope.isOffline = true;
+            $scope.pageIsOffline = true;
             return $mmaModWikiOffline.getNewPage(currentSubwiki.id, pageTitle).then(function(offlinePage) {
                 if (!newPageObserver) {
                     // It's an offline page, listen for new pages event to detect if the user goes to Edit and submits the page.
@@ -631,12 +634,12 @@ angular.module('mm.addons.mod_wiki')
             });
         }
 
-        $scope.isOffline = false;
+        $scope.pageIsOffline = false;
         return $mmaModWiki.getPageContents(pageId);
     }
 
     // Convenience function to refresh all the data.
-    function refreshAllData(sync) {
+    function refreshAllData(sync, showErrors) {
         var promises = [$mmaModWiki.invalidateWikiData(courseId)];
         if (wiki) {
             promises.push($mmaModWiki.invalidateSubwikis(wiki.id));
@@ -652,23 +655,25 @@ angular.module('mm.addons.mod_wiki')
         }
 
         return $q.all(promises).finally(function() {
-            return fetchWikiData(true, sync);
+            return fetchWikiData(true, sync, showErrors);
         });
     }
 
     // Show spinner and fetch or refresh the data.
-    function showSpinnerAndFetch(refresh, sync) {
+    function showSpinnerAndFetch(refresh, sync, showErrors) {
         var promise;
 
         $scope.wikiLoaded = false;
         $scope.refreshIcon = 'spinner';
+        $scope.syncIcon = 'spinner';
         scrollTop();
 
-        promise = refresh ? refreshAllData(sync) : fetchWikiData(true, sync);
+        promise = refresh ? refreshAllData(sync, showErrors) : fetchWikiData(true, sync, showErrors);
 
         return promise.finally(function() {
             $scope.wikiLoaded = true;
             $scope.refreshIcon = 'ion-refresh';
+            $scope.syncIcon = 'ion-loop';
         });
     }
 
@@ -679,7 +684,7 @@ angular.module('mm.addons.mod_wiki')
         scrollView && scrollView.scrollTop && scrollView.scrollTop();
     }
 
-    fetchWikiData(false, true).then(function() {
+    fetchWikiData(false, true, false).then(function() {
         if (!currentPage && !pageTitle) {
             $mmaModWiki.logView(wiki.id).then(function() {
                 $mmCourse.checkModuleCompletion(courseId, module.completionstatus);
@@ -690,33 +695,25 @@ angular.module('mm.addons.mod_wiki')
     }).finally(function() {
         $scope.wikiLoaded = true;
         $scope.refreshIcon = 'ion-refresh';
+        $scope.syncIcon = 'ion-loop';
     });
 
     // Pull to refresh.
-    $scope.refreshWiki = function() {
+    $scope.refreshWiki = function(showErrors) {
         if ($scope.wikiLoaded) {
             $scope.refreshIcon = 'spinner';
-            return refreshAllData(true).finally(function() {
+            $scope.syncIcon = 'spinner';
+            return refreshAllData(true, showErrors).finally(function() {
                 $scope.refreshIcon = 'ion-refresh';
+                $scope.syncIcon = 'ion-loop';
                 $scope.$broadcast('scroll.refreshComplete');
             });
         }
     };
 
-    // Sync wiki.
-    $scope.sync = function() {
-        var modal = $mmUtil.showModalLoading('mm.settings.synchronizing', true);
-        syncWiki(true).then(function() {
-            // Refresh the data.
-            showSpinnerAndFetch(true, false);
-        }).finally(function() {
-            modal.dismiss();
-        });
-    };
-
     // Tries to synchronize the wiki.
     function syncWiki(showErrors) {
-        return $mmaModWikiSync.syncWiki(wiki.id).then(function(result) {
+        return $mmaModWikiSync.syncWiki(wiki.id, courseId, wiki.coursemodule).then(function(result) {
             result.wikiid = wiki.id;
 
             if (result.updated) {
@@ -772,7 +769,7 @@ angular.module('mm.addons.mod_wiki')
                         // Page discarded, show warning.
                         $scope.pageWarning = page.warning;
                         $scope.pageContent = '';
-                        $scope.isOffline = false;
+                        $scope.pageIsOffline = false;
                         $scope.wikiHasOffline = false;
                     }
                 }
@@ -800,6 +797,11 @@ angular.module('mm.addons.mod_wiki')
     // Update isCurrentView when leaving the view.
     $scope.$on('$ionicView.beforeLeave', function() {
         isCurrentView = false;
+    });
+
+    // Refresh online status when changes.
+    onlineObserver = $mmEvents.on(mmCoreEventOnlineStatusChanged, function(online) {
+        $scope.isOnline = online;
     });
 
     // Refresh data if this subwiki is synchronized automatically.
@@ -832,7 +834,7 @@ angular.module('mm.addons.mod_wiki')
             }
 
             if (!$scope.pageWarning) {
-                showSpinnerAndFetch(true, false);
+                showSpinnerAndFetch(false, false);
             }
         }
     });
@@ -843,5 +845,6 @@ angular.module('mm.addons.mod_wiki')
         newPageObserver && newPageObserver.off && newPageObserver.off();
         syncObserver && syncObserver.off && syncObserver.off();
         syncObserverManual && syncObserverManual.off && syncObserverManual.off();
+        onlineObserver && onlineObserver.off && onlineObserver.off();
     });
 });
