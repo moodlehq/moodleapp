@@ -28,7 +28,7 @@ angular.module('mm.addons.mod_assign')
         mmaModMarkingWorkflowStateReleased, mmaModAssignSubmissionStatusNew, mmaModAssignSubmissionStatusSubmitted, $mmUtil,
         mmaModAssignSubmissionInvalidatedEvent, $mmGroups, $state, $mmaModAssignHelper, mmaModAssignSubmissionStatusReopened,
         $mmEvents, mmaModAssignSubmittedForGradingEvent, $mmFileUploaderHelper, $mmApp, $mmText, mmaModAssignComponent,
-        $mmaModAssignOffline) {
+        $mmaModAssignOffline, mmaModAssignEventManualSynced) {
 
     /**
      * Set the submission status name and class.
@@ -348,7 +348,8 @@ angular.module('mm.addons.mod_assign')
             var moduleId = parseInt(attributes.moduleid, 10),
                 courseId = parseInt(attributes.courseid, 10),
                 submitId = parseInt(attributes.submitid, 10),
-                blindId = parseInt(attributes.blindid, 10);
+                blindId = parseInt(attributes.blindid, 10),
+                obsLoaded, obsManualSync;
 
             scope.isGrading = !!submitId;
             scope.statusNew = mmaModAssignSubmissionStatusNew;
@@ -356,8 +357,14 @@ angular.module('mm.addons.mod_assign')
             scope.loaded = false;
             scope.submitModel = {};
 
-            var obsLoaded = scope.$on(mmaModAssignSubmissionInvalidatedEvent, function() {
+            obsLoaded = scope.$on(mmaModAssignSubmissionInvalidatedEvent, function() {
                 controller.load(scope, moduleId, courseId, submitId, blindId);
+            });
+
+            obsManualSync = $mmEvents.on(mmaModAssignEventManualSynced, function(data) {
+                if (data && scope.assign && data.siteid == $mmSite.getId() && data.assignid == scope.assign.id) {
+                    controller.load(scope, moduleId, courseId, submitId, blindId);
+                }
             });
 
             // Check if submit through app is supported.
@@ -365,7 +372,10 @@ angular.module('mm.addons.mod_assign')
                 scope.submitSupported = enabled;
             });
 
-            scope.$on('$destroy', obsLoaded);
+            scope.$on('$destroy', function() {
+                obsLoaded && obsLoaded();
+                obsManualSync && obsManualSync.off && obsManualSync.off();
+            });
 
             controller.load(scope, moduleId, courseId, submitId, blindId);
 
@@ -452,7 +462,8 @@ angular.module('mm.addons.mod_assign')
 
                     var modal = $mmUtil.showModalLoading('mm.core.sending', true);
 
-                    $mmaModAssign.submitForGrading(scope.assign.id, acceptStatement, scope.hasOffline).then(function() {
+                    $mmaModAssign.submitForGrading(scope.assign.id, courseId, acceptStatement,
+                                scope.userSubmission.timemodified, scope.hasOffline).then(function() {
                         // Invalidate and refresh data.
                         invalidateAndRefresh();
 

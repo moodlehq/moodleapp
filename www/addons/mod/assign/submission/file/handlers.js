@@ -70,6 +70,23 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Delete offline data stored for a certain submission.
+     *
+     * @param  {Object} assign      Assignment.
+     * @param  {Object} submission  Submission affected.
+     * @param  {Object} plugin      Plugin to delete the data for.
+     * @param  {Object} offlineData Offline data stored for the submission.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved when deleted.
+     */
+    self.deleteOfflineData = function(assign, submission, plugin, offlineData, siteId) {
+        return $mmaModAssignHelper.deleteStoredSubmissionFiles(assign.id,
+                mmaModAssignSubmissionFileName, submission.userid, siteId).catch(function() {
+            // Ignore errors, maybe the folder doesn't exist.
+        });
+    };
+
+    /**
      * Get the size of data (in bytes) this plugin will send to copy a previous attempt.
      *
      * @param  {Object} assign Assignment.
@@ -242,7 +259,7 @@ angular.module('mm.addons.mod_assign')
      * Should prepare and add to pluginData the data to send to server based in the input data.
      *
      * @param  {Object} assign     Assignment.
-     * @param  {Object} submission Submission to check data.
+     * @param  {Object} submission Submission affected.
      * @param  {Object} plugin     Plugin to get the data for.
      * @param  {Object} inputData  Data entered in the submission form.
      * @param  {Object} pluginData Object where to add the plugin data.
@@ -266,6 +283,44 @@ angular.module('mm.addons.mod_assign')
             return $mmaModAssignHelper.uploadOrStoreFiles(assign.id, mmaModAssignSubmissionFileName,
                         currentFiles, offline, userId, siteId).then(function(result) {
                 pluginData.files_filemanager = result;
+            });
+        }
+    };
+
+    /**
+     * Should prepare and add to pluginData the data to send to server to synchronize an offline submission.
+     *
+     * @param  {Object} assign      Assignment.
+     * @param  {Object} submission  Submission affected.
+     * @param  {Object} plugin      Plugin to get the data for.
+     * @param  {Object} offlineData Offline data stored for the submission.
+     * @param  {Object} pluginData  Object where to add the plugin data.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise|Void}
+     */
+    self.prepareSyncData = function(assign, submission, plugin, offlineData, pluginData, siteId) {
+        var filesData = offlineData && offlineData.plugindata && offlineData.plugindata.files_filemanager;
+        if (filesData) {
+            // Has some data to sync.
+            var files = filesData.online || [],
+                promise;
+
+            if (filesData.offline) {
+                // Has offline files.
+                promise = $mmaModAssignHelper.getStoredSubmissionFiles(assign.id,
+                            mmaModAssignSubmissionFileName, submission.userid, siteId).then(function(result) {
+                    files = files.concat(result);
+                }).catch(function() {
+                    // Folder not found, no files to add.
+                });
+            } else {
+                promise = $q.when();
+            }
+
+            return promise.then(function() {
+                return $mmaModAssignHelper.uploadFiles(assign.id, files, siteId).then(function(itemId) {
+                    pluginData.files_filemanager = itemId;
+                });
             });
         }
     };

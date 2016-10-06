@@ -133,22 +133,18 @@ angular.module('mm.addons.mod_assign')
     }
 
     /**
-     * Get an assignment.
+     * Get an assigment with key=value. If more than one is found, only the first will be returned.
      *
-     * @module mm.addons.mod_assign
-     * @ngdoc method
-     * @name $mmaModAssign#getAssignment
-     * @param {Number} courseId   Course ID the assignment belongs to.
-     * @param {Number} cmid       Assignment module ID.
-     * @param {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}          Promise resolved with the assignment.
+     * @param  {String} siteId   Site ID.
+     * @param  {Number} courseId Course ID.
+     * @param  {String} key      Name of the property to check.
+     * @param  {Mixed} value     Value to search.
+     * @return {Promise}         Promise resolved when the assignment is retrieved.
      */
-    self.getAssignment = function(courseId, cmid, siteId) {
-        siteId = siteId || $mmSite.getId();
-
+    function getAssignment(siteId, courseId, key, value) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
-                    "courseids": [courseId]
+                    'courseids': [courseId]
                 },
                 preSets = {
                     cacheKey: getAssignmentCacheKey(courseId)
@@ -158,7 +154,7 @@ angular.module('mm.addons.mod_assign')
                 if (response.courses && response.courses.length) {
                     var assignments = response.courses[0].assignments;
                     for (var i = 0; i < assignments.length; i++) {
-                        if (assignments[i].cmid == cmid) {
+                        if (assignments[i][key] == value) {
                             return assignments[i];
                         }
                     }
@@ -166,6 +162,38 @@ angular.module('mm.addons.mod_assign')
                 return $q.reject();
             });
         });
+    }
+
+    /**
+     * Get an assignment by course module ID.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssign#getAssignment
+     * @param {Number} courseId Course ID the assignment belongs to.
+     * @param {Number} cmId     Assignment module ID.
+     * @param {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved with the assignment.
+     */
+    self.getAssignment = function(courseId, cmId, siteId) {
+        siteId = siteId || $mmSite.getId();
+        return getAssignment(siteId, courseId, 'cmid', cmId);
+    };
+
+    /**
+     * Get an assignment by instance ID.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssign#getAssignmentById
+     * @param {Number} courseId Course ID the assignment belongs to.
+     * @param {Number} cmId     Assignment instance ID.
+     * @param {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved with the assignment.
+     */
+    self.getAssignmentById = function(courseId, id, siteId) {
+        siteId = siteId || $mmSite.getId();
+        return getAssignment(siteId, courseId, 'id', id);
     };
 
     /**
@@ -947,12 +975,14 @@ angular.module('mm.addons.mod_assign')
      * @ngdoc method
      * @name $mmaModAssign#submitForGrading
      * @param  {Number} assignmentId     Assign ID.
+     * @param  {Number} courseId         Course ID the assign belongs to.
      * @param  {Boolean} acceptStatement True if submission statement is accepted, false otherwise.
+     * @param  {Number} timemodified     The time the submission was last modified in online.
      * @param  {Boolean} forceOffline    True to always mark it in offline.
      * @param  {String} [siteId]         Site ID. If not defined, current site.
      * @return {Promise}                 Promise resolved with true if sent to server, resolved with false if stored in offline.
      */
-    self.submitForGrading = function(assignmentId, acceptStatement, forceOffline, siteId) {
+    self.submitForGrading = function(assignmentId, courseId, acceptStatement, timemodified, forceOffline, siteId) {
         if (forceOffline || !$mmApp.isOnline()) {
             // App is offline, store the action.
             return storeOffline();
@@ -972,7 +1002,8 @@ angular.module('mm.addons.mod_assign')
 
         // Store the submission to be synchronized later.
         function storeOffline() {
-            return $mmaModAssignOffline.markSubmitted(assignmentId, true, acceptStatement, undefined, siteId).then(function() {
+            return $mmaModAssignOffline.markSubmitted(
+                        assignmentId, courseId, true, acceptStatement, timemodified, undefined, siteId).then(function() {
                 return false;
             });
         }

@@ -80,5 +80,6 @@
     "userwithid": "User with Id {{id}}",
     "userswhoneedtosubmit": "Users who need to submit: {{$a}}",
     "viewsubmission": "View submission",
+    "warningsubmissionmodified": "The user submission was modified in the site.",
     "wordlimit": "Word limit"
 }

@@ -28,6 +28,9 @@ angular.module('mm.addons.mod_assign', ['mm.core'])
 .constant('mmaModAssignSubmissionInvalidatedEvent', 'mma_mod_assign_submission_invalidated')
 .constant('mmaModAssignSubmissionSavedEvent', 'mma_mod_assign_submission_saved')
 .constant('mmaModAssignSubmittedForGradingEvent', 'mma_mod_assign_submitted_for_grading')
+.constant('mmaModAssignEventAutomSynced', 'mma_mod_assign_autom_synced')
+.constant('mmaModAssignEventManualSynced', 'mma_mod_assign_manual_synced')
+.constant('mmaModAssignSyncTime', 300000) // In milliseconds.
 
 .config(function($stateProvider) {
 
@@ -117,4 +120,9 @@ angular.module('mm.addons.mod_assign', ['mm.core'])
     $mmCourseDelegateProvider.registerContentHandler('mmaModAssign', 'assign', '$mmaModAssignHandlers.courseContent');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModAssign', '$mmaModAssignHandlers.linksHandler');
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModAssign', 'assign', '$mmaModAssignPrefetchHandler');
+})
+
+.run(function($mmCronDelegate) {
+    // Register sync handler.
+    $mmCronDelegate.register('mmaModAssign', '$mmaModAssignHandlers.syncHandler');
 });

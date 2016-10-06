@@ -23,11 +23,13 @@ angular.module('mm.addons.mod_assign')
  */
 .controller('mmaModAssignIndexCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $translate, mmaModAssignComponent, $q,
         $state, $ionicPlatform, mmaModAssignSubmissionInvalidatedEvent, $mmEvents, $mmSite, mmaModAssignSubmissionSavedEvent,
-        mmaModAssignSubmittedForGradingEvent, $mmCourse) {
+        mmaModAssignSubmittedForGradingEvent, $mmCourse, $mmApp, $mmaModAssignSync, $mmText, mmaModAssignEventAutomSynced,
+        mmCoreEventOnlineStatusChanged, $mmaModAssignOffline, $ionicScrollDelegate, mmaModAssignEventManualSynced) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         siteId = $mmSite.getId(),
-        userId = $mmSite.getUserId();
+        userId = $mmSite.getUserId(),
+        scrollView, obsSaved, obsSubmitted, syncObserver, onlineObserver;
 
     $scope.title = module.name;
     $scope.description = module.description;
@@ -36,6 +38,8 @@ angular.module('mm.addons.mod_assign')
     $scope.courseid = courseId;
     $scope.moduleid = module.id;
     $scope.refreshIcon = 'spinner';
+    $scope.syncIcon = 'spinner';
+    $scope.moduleName = $mmCourse.translateModuleName('assign');
 
     // Check if submit through app is supported.
     $mmaModAssign.isSaveAndSubmitSupported().then(function(enabled) {
@@ -52,13 +56,34 @@ angular.module('mm.addons.mod_assign')
         }
     };
 
-    function fetchAssignment() {
+    function fetchAssignment(refresh, sync, showErrors) {
+        $scope.isOnline = $mmApp.isOnline();
+
+        var assign;
+
         // Get assignment data.
-        return $mmaModAssign.getAssignment(courseId, module.id).then(function(assign) {
+        return $mmaModAssign.getAssignment(courseId, module.id).then(function(assignData) {
+            assign = assignData;
+
             $scope.title = assign.name || $scope.title;
             $scope.description = assign.intro || $scope.description;
             $scope.assign = assign;
             $scope.haveAllParticipants = false;
+
+            if (sync) {
+                // Try to synchronize the assign.
+                return syncAssign(showErrors).catch(function() {
+                    // Ignore errors.
+                });
+            }
+        }).then(function() {
+            // Check if there's any offline data for this assign.
+            return $mmaModAssignOffline.getAssignSubmissions(assign.id).catch(function() {
+                // No offline data found.
+                return [];
+            });
+        }).then(function(submissions) {
+            $scope.hasOffline = submissions.length;
 
             // Get assignment submissions.
             return $mmaModAssign.getSubmissions(assign.id).then(function(data) {
@@ -116,6 +141,11 @@ angular.module('mm.addons.mod_assign')
                 }
             });
         }).catch(function(message) {
+            if (!refresh && !assign) {
+                // Some call failed, retry without using cache since it might be a new activity.
+                return refreshAllData(sync, showErrors);
+            }
+
             if (message) {
                 $mmUtil.showErrorModal(message);
             } else {
@@ -126,7 +156,7 @@ angular.module('mm.addons.mod_assign')
     }
 
     // Convenience function to refresh all the data.
-    function refreshAllData() {
+    function refreshAllData(sync, showErrors) {
         var promises = [$mmaModAssign.invalidateAssignmentData(courseId)];
         if ($scope.assign) {
             promises.push($mmaModAssign.invalidateAllSubmissionData($scope.assign.id));
@@ -136,11 +166,11 @@ angular.module('mm.addons.mod_assign')
 
         return $q.all(promises).finally(function() {
             $scope.$broadcast(mmaModAssignSubmissionInvalidatedEvent);
-            return fetchAssignment();
+            return fetchAssignment(true, sync, showErrors);
         });
     }
 
-    fetchAssignment().then(function() {
+    fetchAssignment(false, true, false).then(function() {
         if (!$scope.canviewsubmissions) {
             $mmaModAssign.logSubmissionView($scope.assign.id).catch(function() {
                 // Fail silently for Moodle < 3.1.
@@ -153,6 +183,7 @@ angular.module('mm.addons.mod_assign')
     }).finally(function() {
         $scope.assignmentLoaded = true;
         $scope.refreshIcon = 'ion-refresh';
+        $scope.syncIcon = 'ion-loop';
     });
 
     // Context Menu Description action.
@@ -167,43 +198,106 @@ angular.module('mm.addons.mod_assign')
         }
     };
 
-    $scope.refreshAssignment = function() {
+    $scope.refreshAssignment = function(showErrors) {
         if ($scope.assignmentLoaded) {
             $scope.refreshIcon = 'spinner';
-            return refreshAllData().finally(function() {
+            $scope.syncIcon = 'spinner';
+            return refreshAllData(true, showErrors).finally(function() {
                 $scope.refreshIcon = 'ion-refresh';
+                $scope.syncIcon = 'ion-loop';
                 $scope.$broadcast('scroll.refreshComplete');
             });
         }
     };
 
+    // Tries to synchronize the assign.
+    function syncAssign(showErrors) {
+        return $mmaModAssignSync.syncAssign($scope.assign.id).then(function(result) {
+            if (result.warnings && result.warnings.length) {
+                $mmUtil.showErrorModal($mmText.buildMessage(result.warnings));
+            }
+
+            if (result.updated) {
+                // Sync done, trigger event.
+                $mmEvents.trigger(mmaModAssignEventManualSynced, {
+                    siteid: $mmSite.getId(),
+                    assignid: $scope.assign.id,
+                    warnings: result.warnings
+                });
+            }
+
+            return result.updated;
+        }).catch(function(error) {
+            if (showErrors) {
+                if (error) {
+                    $mmUtil.showErrorModal(error);
+                } else {
+                    $mmUtil.showErrorModal('mm.core.errorsync', true);
+                }
+            }
+            return $q.reject();
+        });
+    }
+
+    // Show spinners and refresh the data.
+    function showSpinnerAndRefresh(sync, showErrors) {
+        $scope.refreshIcon = 'spinner';
+        $scope.syncIcon = 'spinner';
+        $scope.assignmentLoaded = false;
+        scrollTop();
+
+        refreshAllData(sync, showErrors).finally(function() {
+            $scope.refreshIcon = 'ion-refresh';
+            $scope.syncIcon = 'ion-loop';
+            $scope.assignmentLoaded = true;
+        });
+    }
+
+    // Scroll to top.
+    function scrollTop() {
+        if (!scrollView) {
+            scrollView = $ionicScrollDelegate.$getByHandle('mmaModAssignIndexScroll');
+        }
+        scrollView && scrollView.scrollTop && scrollView.scrollTop();
+    }
+
     // Listen for submission saved event to refresh data.
-    var obsSaved = $mmEvents.on(mmaModAssignSubmissionSavedEvent, function(data) {
+    obsSaved = $mmEvents.on(mmaModAssignSubmissionSavedEvent, function(data) {
         if ($scope.assign && data.assignmentId == $scope.assign.id && data.siteId == siteId && data.userId == userId) {
             // Assignment submission saved, refresh data.
-            $scope.refreshIcon = 'spinner';
-            $scope.assignmentLoaded = false;
-            refreshAllData().finally(function() {
-                $scope.refreshIcon = 'ion-refresh';
-                $scope.assignmentLoaded = true;
-            });
+            showSpinnerAndRefresh(true, false);
         }
     });
 
     // Listen for submitted for grading event to refresh data.
-    var obsSubmitted = $mmEvents.on(mmaModAssignSubmittedForGradingEvent, function(data) {
+    obsSubmitted = $mmEvents.on(mmaModAssignSubmittedForGradingEvent, function(data) {
         if ($scope.assign && data.assignmentId == $scope.assign.id && data.siteId == siteId && data.userId == userId) {
             // Assignment submitted, check completion.
             $mmCourse.checkModuleCompletion(courseId, module.completionstatus);
         }
     });
 
+    // Refresh data if this assign is synchronized automatically.
+    syncObserver = $mmEvents.on(mmaModAssignEventAutomSynced, function(data) {
+        if (data && $scope.assign && data.siteid == $mmSite.getId() && data.assignid == $scope.assign.id) {
+            if (data.warnings && data.warnings.length) {
+                // Show warnings.
+                $mmUtil.showErrorModal($mmText.buildMessage(data.warnings));
+            }
+
+            showSpinnerAndRefresh(false, false);
+        }
+    });
+
+    // Refresh online status when changes.
+    onlineObserver = $mmEvents.on(mmCoreEventOnlineStatusChanged, function(online) {
+        $scope.isOnline = online;
+    });
+
     $scope.$on('$destroy', function() {
-        if (obsSaved && obsSaved.off) {
-            obsSaved.off();
-        }
-        if (obsSubmitted && obsSubmitted.off) {
-            obsSubmitted.off();
-        }
+        obsSaved && obsSaved.off && obsSaved.off();
+        obsSubmitted && obsSubmitted.off && obsSubmitted.off();
+        syncObserver && syncObserver.off && syncObserver.off();
+        onlineObserver && onlineObserver.off && onlineObserver.off();
     });
 });

@@ -92,6 +92,27 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Delete offline data stored for a certain submission and plugin.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionDelegate#deletePluginOfflineData
+     * @param  {Object} assign      Assignment.
+     * @param  {Object} submission  Submission.
+     * @param  {Object} plugin      Online plugin data.
+     * @param  {Object} offlineData Offline data stored for the submission.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved when data has been gathered.
+     */
+    self.deletePluginOfflineData = function(assign, submission, plugin, offlineData, siteId) {
+        var handler = self.getPluginHandler(plugin.type);
+        if (handler && handler.deleteOfflineData) {
+            return $q.when(handler.deleteOfflineData(assign, submission, plugin, offlineData, siteId));
+        }
+        return $q.when();
+    };
+
+    /**
      * Get the directive to use for a certain submission plugin.
      *
      * @module mm.addons.mod_assign
@@ -252,6 +273,29 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Prefetch any required data for a submission plugin.
+     * This should NOT prefetch files. Files to be prefetched should be returned by the getPluginFiles function.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionDelegate#prefetch
+     * @param  {Object} assign     Assignment.
+     * @param  {Object} submission Submission to check data.
+     * @param  {Object} plugin     Plugin.
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved when data has been prefetched.
+     */
+    self.prefetch = function(assign, submission, plugin, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        var handler = self.getPluginHandler(plugin.type);
+        if (handler && handler.prefetch) {
+            return $q.when(handler.prefetch(assign, submission, plugin, siteId));
+        }
+        return $q.when();
+    };
+
+    /**
      * Prepare and return the data to submit for a certain submission plugin.
      *
      * @module mm.addons.mod_assign
@@ -277,24 +321,23 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
-     * Prefetch any required data for a submission plugin.
-     * This should NOT prefetch files. Files to be prefetched should be returned by the getPluginFiles function.
+     * Prepare and add to pluginData the data to send to server to synchronize an offline submission.
      *
      * @module mm.addons.mod_assign
      * @ngdoc method
-     * @name $mmaModAssignSubmissionDelegate#prefetch
-     * @param  {Object} assign     Assignment.
-     * @param  {Object} submission Submission to check data.
-     * @param  {Object} plugin     Plugin.
-     * @param  {String} [siteId]   Site ID. If not defined, current site.
-     * @return {Promise}           Promise resolved when data has been prefetched.
+     * @name $mmaModAssignSubmissionDelegate#preparePluginSyncData
+     * @param  {Object} assign      Assignment.
+     * @param  {Object} submission  Submission.
+     * @param  {Object} plugin      Online plugin data.
+     * @param  {Object} offlineData Offline data stored for the submission.
+     * @param  {Object} pluginData  Object where to add the plugin data.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved when data has been gathered.
      */
-    self.prefetch = function(assign, submission, plugin, siteId) {
-        siteId = siteId || $mmSite.getId();
-
+    self.preparePluginSyncData = function(assign, submission, plugin, offlineData, pluginData, siteId) {
         var handler = self.getPluginHandler(plugin.type);
-        if (handler && handler.prefetch) {
-            return $q.when(handler.prefetch(assign, submission, plugin, siteId));
+        if (handler && handler.prepareSyncData) {
+            return $q.when(handler.prepareSyncData(assign, submission, plugin, offlineData, pluginData, siteId));
         }
         return $q.when();
     };
@@ -336,6 +379,11 @@ angular.module('mm.addons.mod_assign')
      *                             - prefetch(assign, submission, plugin, siteId). Optional. Prefetch any required data for the
      *                                                           plugin. This should NOT prefetch files. Files to be prefetched
      *                                                           should be returned by the getPluginFiles function.
+     *                             - deleteOfflineData(assign, submission, plugin, offlineData, siteId). Optional. Delete any
+     *                                                           stored data for the plugin and submission.
+     *                             - prepareSyncData(assign, submission, plugin, offlineData, pluginData, siteId). Optional. Should
+     *                                                           prepare and add to pluginData the data to send to server based in
+     *                                                           the offline data stored. This is to perform a synchronziation.
      */
     self.registerHandler = function(addon, pluginType, handler) {
         if (typeof handlers[pluginType] !== 'undefined') {

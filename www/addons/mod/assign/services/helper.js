@@ -78,6 +78,26 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Delete stored submission files for a plugin. See $mmaModAssignHelper#storeSubmissionFiles.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignHelper#deleteStoredSubmissionFiles
+     * @param  {Number} assignId   Assignment ID.
+     * @param  {String} pluginName Name of the plugin. Must be unique (both in submission and feedback plugins).
+     * @param  {Number} [userId]   User ID. If not defined, site's current user.
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved with the files.
+     */
+    self.deleteStoredSubmissionFiles = function(assignId, pluginName, userId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmaModAssignOffline.getSubmissionPluginFolder(assignId, pluginName, userId, siteId).then(function(folderPath) {
+            return $mmFS.removeDir(folderPath);
+        });
+    };
+
+    /**
      * Retrieve the answers entered in a form.
      * We don't use ng-model because it doesn't detect changes done by JavaScript.
      *

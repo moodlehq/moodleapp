@@ -44,7 +44,7 @@ angular.module('mm.addons.mod_assign')
 })
 
 /**
- * Offline wiki factory.
+ * Offline assign factory.
  *
  * @module mm.addons.mod_assign
  * @ngdoc service
@@ -179,13 +179,15 @@ angular.module('mm.addons.mod_assign')
      * @ngdoc method
      * @name $mmaModAssignOffline#markSubmitted
      * @param  {Number} assignId         Assignment ID.
+     * @param  {Number} courseId         Course ID the assign belongs to.
      * @param  {Boolean} submitted       True to mark as submitted, false to mark as not submitted.
      * @param  {Boolean} acceptStatement True to accept the submission statement, false otherwise.
+     * @param  {Number} timemodified     The time the submission was last modified in online.
      * @param  {Number} [userId]         User ID. If not defined, site's current user.
      * @param  {String} [siteId]         Site ID. If not defined, current site.
      * @return {Promise}                 Promise resolved if marked, rejected if failure.
      */
-    self.markSubmitted = function(assignId, submitted, acceptStatement, userId, siteId) {
+    self.markSubmitted = function(assignId, courseId, submitted, acceptStatement, timemodified, userId, siteId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -194,10 +196,15 @@ angular.module('mm.addons.mod_assign')
             // Check if there's a submission stored.
             return self.getSubmission(assignId, userId, siteId).catch(function() {
                 // No submission, create an empty one.
+                var now = new Date().getTime();
                 return {
                     assignmentid: assignId,
+                    courseid: courseId,
                     plugindata: {},
-                    userid: userId
+                    userid: userId,
+                    onlinetimemodified: timemodified,
+                    timecreated: now,
+                    timemodified: now
                 };
             }).then(function(submission) {
                 // Mark the submission.

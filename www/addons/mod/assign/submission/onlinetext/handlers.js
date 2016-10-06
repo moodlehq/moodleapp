@@ -221,6 +221,25 @@ angular.module('mm.addons.mod_assign')
         return $mmText.restorePluginfileUrls(text, files);
     }
 
+    /**
+     * Should prepare and add to pluginData the data to send to server to synchronize an offline submission.
+     *
+     * @param  {Object} assign      Assignment.
+     * @param  {Object} submission  Submission to check data.
+     * @param  {Object} plugin      Plugin to get the data for.
+     * @param  {Object} offlineData Offline data stored for the submission.
+     * @param  {Object} pluginData  Object where to add the plugin data.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Void}
+     */
+    self.prepareSyncData = function(assign, submission, plugin, offlineData, pluginData, siteId) {
+        var textData = offlineData && offlineData.plugindata && offlineData.plugindata.onlinetext_editor;
+        if (textData) {
+            // Has some data to sync.
+            pluginData.onlinetext_editor = textData;
+        }
+    };
+
     return self;
 })
 
