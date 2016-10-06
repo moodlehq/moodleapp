@@ -82,7 +82,6 @@ angular.module('mm.core')
      *                            {String} [warning] Code of the warning message to show to the user.
      */
     self.checkSite = function(siteurl, protocol) {
-
         // formatURL adds the protocol if is missing.
         siteurl = $mmUtil.formatURL(siteurl);
 
@@ -91,47 +90,75 @@ angular.module('mm.core')
         } else if (!$mmApp.isOnline()) {
             return $mmLang.translateAndReject('mm.core.networkerrormsg');
         } else {
-
             protocol = protocol || "https://";
 
-            // Now, replace the siteurl with the protocol.
-            siteurl = siteurl.replace(/^http(s)?\:\/\//i, protocol);
-
-            return self.siteExists(siteurl).catch(function(error) {
+            return checkSite(siteurl, protocol, false).catch(function(error) {
+                // Do not continue checking if WS are not enabled.
                 if (error.errorcode && error.errorcode == 'enablewsdescription') {
                     return $q.reject(error.error);
                 }
 
-                // Site doesn't exist. Try to add or remove 'www'.
-                var treatedUrl = $mmText.addOrRemoveWWW(siteurl);
-                return self.siteExists(treatedUrl).then(function() {
-                    // Success, use this new URL as site url.
-                    siteurl = treatedUrl;
-                }).catch(function(error) {
-                    if (error.errorcode && error.errorcode == 'enablewsdescription') {
+                // Retry with the other protocol.
+                var checkPromise = protocol == "https://" ? checkSite(siteurl, "http://", error) :
+                                                            checkSite(siteurl, "https://", error);
+
+                return checkPromise.catch(function(error){
+                    // Site doesn't exist.
+                    if (error.error) {
                         return $q.reject(error.error);
                     }
-                    return $q.reject(error);
-                });
-            }).then(function() {
-                // Create a temporary site to check if local_mobile is installed.
-                var temporarySite = $mmSitesFactory.makeSite(undefined, siteurl);
-                return temporarySite.checkLocalMobilePlugin().then(function(data) {
-                    siteurl = temporarySite.getURL();
-                    services[siteurl] = data.service; // No need to store it in DB.
-                    return {siteurl: siteurl, code: data.code, warning: data.warning};
-                });
-            }, function() {
-                // Site doesn't exist.
-
-                if (siteurl.indexOf("https://") === 0) {
-                    // Retry without HTTPS.
-                    return self.checkSite(siteurl, "http://");
-                } else{
                     return $mmLang.translateAndReject('mm.login.checksiteversion');
-                }
-            });
+                });
+            });;
         }
+    };
+
+    /**
+     * Helper function to check if a site is valid and if it has specifics settings for authentication
+     * (like force to log in using the browser).
+     *
+     * @param {String} siteurl       URL of the site to check.
+     * @param {String} protocol      Protocol to use. If not defined, use https.
+     * @param {Object} previousError Previous error to get the most important error information among checks.
+     * @return {Promise}        A promise to be resolved when the site is checked. Resolve params:
+     *                            {Number} code      Code to identify the authentication method to use.
+     *                            {String} siteurl   Site url to use (might have changed during the process).
+     *                            {String} [warning] Code of the warning message to show to the user.
+     */
+    function checkSite(siteurl, protocol, previousError) {
+        // Now, replace the siteurl with the protocol.
+        siteurl = siteurl.replace(/^http(s)?\:\/\//i, protocol);
+
+        return self.siteExists(siteurl).catch(function(error) {
+            previousError = error.error ? error : previousError;
+            // Do not continue checking if WS are not enabled.
+            if (error.errorcode && error.errorcode == 'enablewsdescription') {
+                return $q.reject(previousError);
+            }
+
+            // Site doesn't exist. Try to add or remove 'www'.
+            var treatedUrl = $mmText.addOrRemoveWWW(siteurl);
+            return self.siteExists(treatedUrl).then(function() {
+                // Success, use this new URL as site url.
+                siteurl = treatedUrl;
+            }).catch(function(error) {
+                // Do not continue checking if WS are not enabled.
+                if (error.errorcode && error.errorcode == 'enablewsdescription') {
+                    return $q.reject(error);
+                }
+
+                previousError = error.error ? error : previousError;
+                return $q.reject(previousError);
+            });
+        }).then(function() {
+            // Create a temporary site to check if local_mobile is installed.
+            var temporarySite = $mmSitesFactory.makeSite(undefined, siteurl);
+            return temporarySite.checkLocalMobilePlugin().then(function(data) {
+                siteurl = temporarySite.getURL();
+                services[siteurl] = data.service; // No need to store it in DB.
+                return {siteurl: siteurl, code: data.code, warning: data.warning};
+            });
+        });
     };
 
     /**
@@ -150,14 +177,15 @@ angular.module('mm.core')
             service: determineService(siteurl)
         };
 
-        return $http.post(siteurl + '/login/token.php', data, {timeout: 30000}).then(function(data) {
+        return $http.post(siteurl + '/login/token.php', data, {timeout: 30000, responseType: 'json'}).then(function(data) {
             data = data.data;
 
-            if (data.errorcode && data.errorcode == 'enablewsdescription') {
+            if (data.errorcode && (data.errorcode == 'enablewsdescription' || data.errorcode == 'requirecorrectaccess')) {
                 return $q.reject({errorcode: data.errorcode, error: data.error});
             } else if (data.error && data.error == 'Web services must be enabled in Advanced features.') {
                 return $q.reject({errorcode: 'enablewsdescription', error: data.error});
             }
+            // Other errors are not being checked because invalid login will be always raised and we cannot differ them.
             return $q.when();
         });
     };
