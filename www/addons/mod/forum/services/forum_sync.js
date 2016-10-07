@@ -21,8 +21,8 @@ angular.module('mm.addons.mod_forum')
  * @ngdoc service
  * @name $mmaModForumSync
  */
-.factory('$mmaModForumSync', function($q, $log, $mmApp, $mmSitesManager, $mmaModForumOffline, $mmSite, $mmEvents, $mmSync,
-        mmaModForumComponent, $mmaModForum, $translate, mmaModForumAutomSyncedEvent, mmaModForumSyncTime, $mmCourse) {
+.factory('$mmaModForumSync', function($q, $log, $mmApp, $mmSitesManager, $mmaModForumOffline, $mmSite, $mmEvents, $mmSync, $mmLang,
+        mmaModForumComponent, $mmaModForum, $translate, mmaModForumAutomSyncedEvent, mmaModForumSyncTime, $mmCourse, $mmSyncBlock) {
 
     $log = $log.getInstance('$mmaModForumSync');
 
@@ -142,7 +142,7 @@ angular.module('mm.addons.mod_forum')
     self.syncForumDiscussionsIfNeeded = function(forumId, userId, siteId) {
         siteId = siteId || $mmSite.getId();
 
-        var syncId = self._getForumSyncId(forumId, userId);
+        var syncId = self.getForumSyncId(forumId, userId);
         return self.isSyncNeeded(syncId, siteId).then(function(needed) {
             if (needed) {
                 return self.syncForumDiscussions(forumId, userId, siteId);
@@ -167,7 +167,7 @@ angular.module('mm.addons.mod_forum')
 
         var syncPromise,
             courseId,
-            syncId = self._getForumSyncId(forumId, userId),
+            syncId = self.getForumSyncId(forumId, userId),
             result = {
                 warnings: [],
                 updated: false
@@ -176,6 +176,13 @@ angular.module('mm.addons.mod_forum')
         if (self.isSyncing(syncId, siteId)) {
             // There's already a sync ongoing for this discussion, return the promise.
             return self.getOngoingSync(syncId, siteId);
+        }
+
+        // Verify that forum isn't blocked.
+        if ($mmSyncBlock.isBlocked(mmaModForumComponent, syncId, siteId)) {
+            $log.debug('Cannot sync forum ' + forumId + ' because it is blocked.');
+            var modulename = $mmCourse.translateModuleName('forum');
+            return $mmLang.translateAndReject('mm.core.errorsyncblocked', {$a: modulename});
         }
 
         $log.debug('Try to sync forum ' + forumId + ' for user ' + userId);
@@ -314,7 +321,7 @@ angular.module('mm.addons.mod_forum')
     self.syncDiscussionRepliesIfNeeded = function(discussionId, userId, siteId) {
         siteId = siteId || $mmSite.getId();
 
-        var syncId = self._getDiscussionSyncId(discussionId, userId);
+        var syncId = self.getDiscussionSyncId(discussionId, userId);
         return self.isSyncNeeded(syncId, siteId).then(function(needed) {
             if (needed) {
                 return self.syncDiscussionReplies(discussionId, userId, siteId);
@@ -340,7 +347,7 @@ angular.module('mm.addons.mod_forum')
         var syncPromise,
             courseId,
             forumId,
-            syncId = self._getDiscussionSyncId(discussionId, userId),
+            syncId = self.getDiscussionSyncId(discussionId, userId),
             result = {
                 warnings: [],
                 updated: false
@@ -349,6 +356,13 @@ angular.module('mm.addons.mod_forum')
         if (self.isSyncing(syncId, siteId)) {
             // There's already a sync ongoing for this discussion, return the promise.
             return self.getOngoingSync(syncId, siteId);
+        }
+
+        // Verify that forum isn't blocked.
+        if ($mmSyncBlock.isBlocked(this.component, syncId, siteId)) {
+            $log.debug('Cannot sync forum discussion ' + discussionId + ' because it is blocked.');
+            var modulename = $mmCourse.translateModuleName('forum');
+            return $mmLang.translateAndReject('mm.core.errorsyncblocked', {$a: modulename});
         }
 
         $log.debug('Try to sync forum discussion ' + discussionId + ' for user ' + userId);
@@ -430,13 +444,14 @@ angular.module('mm.addons.mod_forum')
      *
      * @module mm.addons.mod_forum
      * @ngdoc method
-     * @name $mmaModForumSync#_getForumSyncId
+     * @name $mmaModForumSync#getForumSyncId
      * @param  {Number} forumId  Forum ID.
-     * @param  {Number} userId   User the responses belong to.
+     * @param  {Number} [userId] User the responses belong to.. If not defined, current user.
      * @return {String}          Sync ID.
      * @protected
      */
-    self._getForumSyncId = function(forumId, userId) {
+    self.getForumSyncId = function(forumId, userId) {
+        userId = userId || $mmSite.getUserId();
         return 'forum#' + forumId + '#' + userId;
     };
 
@@ -445,13 +460,14 @@ angular.module('mm.addons.mod_forum')
      *
      * @module mm.addons.mod_forum
      * @ngdoc method
-     * @name $mmaModForumSync#_getDiscussionSyncId
+     * @name $mmaModForumSync#getDiscussionSyncId
      * @param  {Number} discussionId    Discussion ID.
-     * @param  {Number} userId          User the responses belong to.
+     * @param  {Number} [userId]        User the responses belong to.. If not defined, current user.
      * @return {String}                 Sync ID.
      * @protected
      */
-    self._getDiscussionSyncId = function(discussionId, userId) {
+    self.getDiscussionSyncId = function(discussionId, userId) {
+        userId = userId || $mmSite.getUserId();
         return 'discussion#' + discussionId + '#' + userId;
     };
 

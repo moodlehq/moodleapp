@@ -22,15 +22,16 @@ angular.module('mm.addons.mod_forum')
  * @name mmaModForumNewDiscussionCtrl
  */
 .controller('mmaModForumNewDiscussionCtrl', function($scope, $stateParams, $mmGroups, $q, $mmaModForum, $mmEvents, $ionicPlatform,
-            $mmUtil, $ionicHistory, $translate, mmaModForumNewDiscussionEvent, $mmaModForumOffline, $mmSite,
-            mmaModForumAutomSyncedEvent) {
+            $mmUtil, $ionicHistory, $translate, mmaModForumNewDiscussionEvent, $mmaModForumOffline, $mmSite, mmaModForumComponent,
+            mmaModForumAutomSyncedEvent, $mmSyncBlock, $mmaModForumSync) {
 
     var courseid = $stateParams.cid,
         forumid = $stateParams.forumid,
         cmid = $stateParams.cmid,
         timecreated = $stateParams.timecreated,
         forumName,
-        syncObserver;
+        syncObserver,
+        syncId;
 
     $scope.newdiscussion = {
         subject: '',
@@ -83,12 +84,19 @@ angular.module('mm.addons.mod_forum')
 
             // If editing a discussion, get offline data.
             if (timecreated && !refresh) {
-                promises.push($mmaModForumOffline.getNewDiscussion(forumid, timecreated).then(function(discussion) {
-                    $scope.hasOffline = true;
-                    $scope.newdiscussion.groupid = discussion.groupid ? discussion.groupid : $scope.newdiscussion.groupid;
-                    $scope.newdiscussion.subject = discussion.subject;
-                    $scope.newdiscussion.text = discussion.message;
-                    $scope.newdiscussion.subscribe = discussion.subscribe;
+                syncId = $mmaModForumSync.getForumSyncId(forumid);
+                promises.push($mmaModForumSync.waitForSync(syncId).then(function() {
+                    // Do not block if the scope is already destroyed.
+                    if (!$scope.$$destroyed) {
+                        $mmSyncBlock.blockOperation(mmaModForumComponent, syncId);
+                    }
+                    return $mmaModForumOffline.getNewDiscussion(forumid, timecreated).then(function(discussion) {
+                        $scope.hasOffline = true;
+                        $scope.newdiscussion.groupid = discussion.groupid ? discussion.groupid : $scope.newdiscussion.groupid;
+                        $scope.newdiscussion.subject = discussion.subject;
+                        $scope.newdiscussion.text = discussion.message;
+                        $scope.newdiscussion.subscribe = discussion.subscribe;
+                    });
                 }));
             }
             return $q.all(promises);
@@ -270,5 +278,8 @@ angular.module('mm.addons.mod_forum')
 
     $scope.$on('$destroy', function(){
         syncObserver && syncObserver.off && syncObserver.off();
+        if (syncId) {
+            $mmSyncBlock.unblockOperation(mmaModForumComponent, syncId);
+        }
     });
 });

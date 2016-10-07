@@ -37,7 +37,8 @@ angular.module('mm.addons.mod_forum')
  * @param {String}   [defaultsubject] Default subject to set to new posts.
  * @param {String}   [scrollHandle]   Name of the scroll handle of the page containing the post.
  */
-.directive('mmaModForumDiscussionPost', function($mmaModForum, $mmUtil, $translate, $q, $mmaModForumOffline) {
+.directive('mmaModForumDiscussionPost', function($mmaModForum, $mmUtil, $translate, $q, $mmaModForumOffline, $mmSyncBlock,
+        mmaModForumComponent, $mmaModForumSync) {
     return {
         restrict: 'E',
         scope: {
@@ -58,6 +59,8 @@ angular.module('mm.addons.mod_forum')
         templateUrl: 'addons/mod/forum/templates/discussionpost.html',
         transclude: true,
         link: function(scope) {
+            var syncId;
+
             scope.isReplyEnabled = $mmaModForum.isReplyPostEnabled();
 
             scope.uniqueid = scope.post.id ? 'reply' + scope.post.id : 'edit' + scope.post.parent;
@@ -73,6 +76,9 @@ angular.module('mm.addons.mod_forum')
 
             // Set this post as being edited to.
             scope.editReply = function() {
+                syncId = $mmaModForumSync.getDiscussionSyncId(scope.discussionId);
+                $mmSyncBlock.blockOperation(mmaModForumComponent, syncId);
+
                 scope.newpost.replyingto = scope.post.parent;
                 scope.newpost.editing = 'edit' + scope.post.parent;
                 scope.newpost.isEditing = true;
@@ -121,6 +127,9 @@ angular.module('mm.addons.mod_forum')
                     });
                 }).finally(function() {
                     modal.dismiss();
+                    if (syncId) {
+                        $mmSyncBlock.unblockOperation(mmaModForumComponent, syncId);
+                    }
                 });
             };
 
@@ -140,6 +149,10 @@ angular.module('mm.addons.mod_forum')
                     scope.newpost.text = '';
                     scope.newpost.isEditing = false;
                 });
+
+                if (syncId) {
+                    $mmSyncBlock.unblockOperation(mmaModForumComponent, syncId);
+                }
             };
 
             // Discard reply.
@@ -156,7 +169,17 @@ angular.module('mm.addons.mod_forum')
                         }
                     });
                 });
+
+                if (syncId) {
+                    $mmSyncBlock.unblockOperation(mmaModForumComponent, syncId);
+                }
             };
+
+            scope.$on('$destroy', function(){
+                if (syncId) {
+                    $mmSyncBlock.unblockOperation(mmaModForumComponent, syncId);
+                }
+            });
         }
     };
 });
