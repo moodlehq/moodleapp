@@ -42,7 +42,7 @@ angular.module('mm.addons.mod_quiz')
         offline;
 
     // Block the quiz so it cannot be synced.
-    $mmSyncBlock.blockOperation(mmaModQuizComponent, quizId, 'playerCtrl');
+    $mmSyncBlock.blockOperation(mmaModQuizComponent, quizId);
 
     $scope.moduleUrl = moduleUrl;
     $scope.component = mmaModQuizComponent;
@@ -456,6 +456,6 @@ angular.module('mm.addons.mod_quiz')
         $mmaModQuizAutoSave.stopAutoSaving();
         $mmaModQuizAutoSave.stopCheckChangesProcess();
         // Unblock the quiz so it can be synced.
-        $mmSyncBlock.unblockOperation(mmaModQuizComponent, quizId, 'playerCtrl');
+        $mmSyncBlock.unblockOperation(mmaModQuizComponent, quizId);
     });
 });

@@ -2031,22 +2031,13 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}              Promise resolved in success, rejected otherwise.
      */
     self.processAttempt = function(quiz, attempt, data, preflightData, finish, timeup, offline, siteId) {
-        var promise;
-
         try {
-            $mmSyncBlock.blockOperation(mmaModQuizComponent, quiz.id, 'processAttempt', siteId); // Block quiz so it cannot be synced.
-
             if (offline) {
-                promise = processOfflineAttempt(quiz, attempt, data, preflightData, finish, siteId);
-            } else {
-                promise = $mmaModQuizOnline.processAttempt(attempt.id, data, preflightData, finish, timeup, siteId);
+                return processOfflineAttempt(quiz, attempt, data, preflightData, finish, siteId);
             }
 
-            return promise.finally(function() {
-                $mmSyncBlock.unblockOperation(mmaModQuizComponent, quiz.id, 'processAttempt', siteId);
-            });
+            return $mmaModQuizOnline.processAttempt(attempt.id, data, preflightData, finish, timeup, siteId);
         } catch(ex) {
-            $mmSyncBlock.unblockOperation(mmaModQuizComponent, quiz.id, 'processAttempt', siteId);
             console.error(ex);
             return $q.reject();
         }
@@ -2139,22 +2130,13 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}              Promise resolved in success, rejected otherwise.
      */
     self.saveAttempt = function(quiz, attempt, data, preflightData, offline, siteId) {
-        var promise;
-
         try {
-            $mmSyncBlock.blockOperation(mmaModQuizComponent, quiz.id, 'saveAttempt', siteId); // Block quiz so it cannot be synced.
-
             if (offline) {
-                promise = processOfflineAttempt(quiz, attempt, data, preflightData, false, siteId);
-            } else {
-                promise = $mmaModQuizOnline.saveAttempt(attempt.id, data, preflightData, siteId);
+                return processOfflineAttempt(quiz, attempt, data, preflightData, false, siteId);
             }
 
-            return promise.finally(function() {
-                $mmSyncBlock.unblockOperation(mmaModQuizComponent, quiz.id, 'saveAttempt', siteId);
-            });
+            return $mmaModQuizOnline.saveAttempt(attempt.id, data, preflightData, siteId);
         } catch(ex) {
-            $mmSyncBlock.unblockOperation(mmaModQuizComponent, quiz.id, 'saveAttempt', siteId);
             console.error(ex);
             return $q.reject();
         }
