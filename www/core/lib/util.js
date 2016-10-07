@@ -1644,8 +1644,9 @@ angular.module('mm.core')
                 $translate.instant('mm.core.unexpectederror'),
                 $translate.instant('mm.core.networkerrormsg'),
                 $translate.instant('mm.core.serverconnection'),
-                $translate.instant('mm.core.errorinvalidresponse')
-
+                $translate.instant('mm.core.errorinvalidresponse'),
+                $translate.instant('mm.core.sitemaintenance'),
+                $translate.instant('mm.core.upgraderunning')
             ];
             return error && localErrors.indexOf(error) == -1;
         };
