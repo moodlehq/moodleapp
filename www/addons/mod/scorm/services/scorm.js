@@ -1087,22 +1087,6 @@ angular.module('mm.addons.mod_scorm')
     };
 
     /**
-     * Check if a SCORM is being played right now.
-     *
-     * @module mm.addons.mod_scorm
-     * @ngdoc method
-     * @name $mmaModScorm#isScormBeingPlayed
-     * @param  {Number}  scormId SCORM ID.
-     * @param {String} [siteId]  Site ID. If not defined, current site.
-     * @return {Boolean}         True if it's being played, false otherwise.
-     */
-    self.isScormBeingPlayed = function(scormId, siteId) {
-        siteId = siteId || $mmSite.getId();
-        return $mmSite.getId() == siteId && $state.current.name == 'site.mod_scorm-player' &&
-                        $state.params.scorm && $state.params.scorm.id == scormId;
-    };
-
-    /**
      * Check if the given SCORM is closed.
      *
      * @module mm.addons.mod_scorm

@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_scorm')
  */
 .factory('$mmaModScormSync', function($mmaModScorm, $mmSite, $q, $translate, $mmaModScormOnline, $mmaModScormOffline, $mmUtil, $log,
             mmaModScormSyncTime, $mmApp, $mmEvents, mmaModScormEventAutomSynced, $mmSitesManager, $mmSync, mmaModScormComponent,
-            $mmaModScormPrefetchHandler) {
+            $mmaModScormPrefetchHandler, $mmCourse, $mmSyncBlock, $mmLang) {
 
     $log = $log.getInstance('$mmaModScormSync');
 
@@ -77,7 +77,7 @@ angular.module('mm.addons.mod_scorm')
 
                     // Sync all SCORMs that haven't been synced for a while and that aren't played right now.
                     angular.forEach(scorms, function(scorm) {
-                        if (!$mmaModScorm.isScormBeingPlayed(scorm.id, siteId)) {
+                        if (!$mmSyncBlock.isBlocked(mmaModScormComponent, scorm.id, siteId)) {
                             promises.push($mmaModScorm.getScormById(scorm.courseid, scorm.id, '', siteId).then(function(scorm) {
                                 return self.syncScormIfNeeded(scorm, siteId).then(function(data) {
                                     if (typeof data != 'undefined') {
@@ -255,9 +255,10 @@ angular.module('mm.addons.mod_scorm')
             return self.getOngoingSync(scorm.id, siteId);
         }
 
-        if ($mmaModScormOnline.isScormBlocked(siteId, scorm.id) || $mmaModScormOffline.isScormBlocked(siteId, scorm.id)) {
+        if ($mmSyncBlock.isBlocked(mmaModScormComponent, scorm.id, siteId)) {
             $log.debug('Cannot sync SCORM ' + scorm.id + ' because it is blocked.');
-            return $q.reject();
+            var modulename = $mmCourse.translateModuleName('scorm');
+            return $mmLang.translateAndReject('mm.core.errorsyncblocked', {$a: modulename});
         }
 
         $log.debug('Try to sync SCORM ' + scorm.id + ' in site ' + siteId);
