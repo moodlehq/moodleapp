@@ -124,6 +124,8 @@ angular.module('mm.core')
                     return $q.reject(mmCoreSessionExpired);
                 } else if (data.errorcode === 'userdeleted') {
                     return $q.reject(mmCoreUserDeleted);
+                } else if (data.errorcode === 'sitemaintenance' || data.errorcode === 'upgraderunning') {
+                    return $mmLang.translateAndReject('mm.core.' + data.errorcode);
                 } else {
                     return $q.reject(data.message);
                 }
