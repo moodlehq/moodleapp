@@ -602,9 +602,11 @@ angular.module('mm.core')
      * @return {Promise} Promise to be resolved when the user is logged out.
      */
     self.logout = function() {
+        var siteId = currentSite.getId();
+
         currentSite = undefined;
         return $mmApp.getDB().remove(mmCoreCurrentSiteStore, 1).finally(function() {
-            $mmEvents.trigger(mmCoreEventLogout);
+            $mmEvents.trigger(mmCoreEventLogout, siteId);
         });
     };
 

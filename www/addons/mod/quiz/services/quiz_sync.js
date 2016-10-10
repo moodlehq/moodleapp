@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_quiz')
  */
 .factory('$mmaModQuizSync', function($log, $mmaModQuiz, $mmSite, $mmSitesManager, $q, $mmaModQuizOffline, $mmQuestion, $mmLang,
             $mmQuestionDelegate, $mmApp, $mmEvents, $translate, mmaModQuizSyncTime, $mmSync, mmaModQuizEventAutomSynced,
-            mmaModQuizComponent, $mmaModQuizPrefetchHandler) {
+            mmaModQuizComponent, $mmaModQuizPrefetchHandler, $mmCourse, $mmSyncBlock) {
 
     $log = $log.getInstance('$mmaModQuizSync');
 
@@ -95,7 +95,7 @@ angular.module('mm.addons.mod_quiz')
 
                     // Sync all quizzes that haven't been synced for a while and that aren't played right now.
                     angular.forEach(quizzes, function(quiz) {
-                        if (!$mmaModQuiz.isQuizBeingPlayed(quiz.id, siteId)) {
+                        if (!$mmSyncBlock.isBlocked(mmaModQuizComponent, quiz.id, siteId)) {
                             promises.push($mmaModQuiz.getQuizById(quiz.courseid, quiz.id, siteId).then(function(quiz) {
                                 return self.syncQuizIfNeeded(quiz, false, siteId).then(function(data) {
                                     if (data && data.warnings && data.warnings.length) {
@@ -177,9 +177,10 @@ angular.module('mm.addons.mod_quiz')
         }
 
         // Verify that quiz isn't blocked.
-        if ($mmaModQuiz.isQuizBlocked(siteId, quiz.id)) {
+        if ($mmSyncBlock.isBlocked(mmaModQuizComponent, quiz.id, siteId)) {
             $log.debug('Cannot sync quiz ' + quiz.id + ' because it is blocked.');
-            return $mmLang.translateAndReject('mma.mod_quiz.errorsyncquizblocked');
+            var modulename = $mmCourse.translateModuleName('quiz');
+            return $mmLang.translateAndReject('mm.core.errorsyncblocked', {$a: modulename});
         }
 
         $log.debug('Try to sync quiz ' + quiz.id + ' in site ' + siteId);

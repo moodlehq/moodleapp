@@ -22,28 +22,11 @@ angular.module('mm.addons.mod_scorm')
  * @ngdoc service
  * @name $mmaModScormOnline
  */
-.factory('$mmaModScormOnline', function($mmSitesManager, $mmSite, $q, $mmWS, $log, mmCoreWSPrefix) {
+.factory('$mmaModScormOnline', function($mmSitesManager, $mmSite, $q, $mmWS, $log, mmCoreWSPrefix, $mmSyncBlock,
+        mmaModScormComponent) {
     $log = $log.getInstance('$mmaModScormOnline');
 
-    var self = {},
-        blockedScorms = {};
-
-    /**
-     * Clear blocked SCORMs.
-     *
-     * @module mm.addons.mod_scorm
-     * @ngdoc method
-     * @name $mmaModScormOnline#clearBlockedScorms
-     * @param {String} [siteId] If set, clear the blocked SCORMs only for this site. Otherwise clear all SCORMs.
-     * @return {Void}
-     */
-    self.clearBlockedScorms = function(siteId) {
-        if (siteId) {
-            delete blockedScorms[siteId];
-        } else {
-            blockedScorms = {};
-        }
-    };
+    var self = {};
 
     /**
      * Get cache key for SCORM attempt count WS calls.
@@ -207,23 +190,6 @@ angular.module('mm.addons.mod_scorm')
     };
 
     /**
-     * Check if a SCORM is blocked by a writing function.
-     *
-     * @module mm.addons.mod_scorm
-     * @ngdoc method
-     * @name $mmaModScormOnline#isScormBlocked
-     * @param  {String} siteId   Site ID. If not set, use current site.
-     * @param  {Number} scormId  SCORM ID.
-     * @return {Boolean}         True if blocked, false otherwise.
-     */
-    self.isScormBlocked = function(siteId, scormId) {
-        if (!blockedScorms[siteId]) {
-            return false;
-        }
-        return !!blockedScorms[siteId][scormId];
-    };
-
-    /**
      * Saves a SCORM tracking record.
      *
      * @module mm.addons.mod_scorm
@@ -248,10 +214,7 @@ angular.module('mm.addons.mod_scorm')
                 return $q.when(); // Nothing to save.
             }
 
-            if (!blockedScorms[siteId]) {
-                blockedScorms[siteId] = {};
-            }
-            blockedScorms[siteId][scormId] = true;
+            $mmSyncBlock.blockOperation(mmaModScormComponent, scormId, 'saveTracksOnline', siteId);
 
             return site.write('mod_scorm_insert_scorm_tracks', params).then(function(response) {
                 if (response && response.trackids) {
@@ -259,7 +222,7 @@ angular.module('mm.addons.mod_scorm')
                 }
                 return $q.reject();
             }).finally(function() {
-                blockedScorms[siteId][scormId] = false;
+                $mmSyncBlock.unblockOperation(mmaModScormComponent, scormId, 'saveTracksOnline', siteId);
             });
         });
     };
