@@ -15,10 +15,13 @@
 angular.module('mm.addons.mod_wiki', [])
 
 .constant('mmaModWikiSubwikiPagesLoaded', 'mma_mod_wiki_subwiki_pages_loaded')
-
+.constant('mmaModWikiPageCreatedEvent', 'mma_mod_wiki_page_created')
+.constant('mmaModWikiManualSyncedEvent', 'mma_mod_wiki_manual_synced')
+.constant('mmaModWikiSubwikiAutomSyncedEvent', 'mma_mod_wiki_subwiki_autom_synced')
 .constant('mmaModWikiComponent', 'mmaModWiki')
 // Renew Lock Timeout in seconds.
 .constant('mmaModWikiRenewLockTimeout', 30)
+.constant('mmaModWikiSyncTime', 300000) // In milliseconds.
 
 .config(function($stateProvider) {
 
@@ -70,7 +73,9 @@ angular.module('mm.addons.mod_wiki', [])
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModWiki', 'wiki', '$mmaModWikiPrefetchHandler');
 })
 
-.run(function($mmEvents, mmCoreEventLogout, $mmaModWiki) {
+.run(function($mmEvents, mmCoreEventLogout, $mmaModWiki, $mmCronDelegate) {
     // Clear cache for SubwikiLists
     $mmEvents.on(mmCoreEventLogout, $mmaModWiki.clearSubwikiList);
+    // Register sync handler.
+    $mmCronDelegate.register('mmaModWiki', '$mmaModWikiHandlers.syncHandler');
 });

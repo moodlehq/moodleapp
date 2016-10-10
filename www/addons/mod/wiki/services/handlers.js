@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_wiki')
  */
 .factory('$mmaModWikiHandlers', function($mmCourse, $mmaModWiki, $state, $mmContentLinksHelper, $mmCourseHelper, $mmUtil, $q,
         mmaModWikiComponent, $mmaModWikiPrefetchHandler, mmCoreDownloading, mmCoreNotDownloaded, mmCoreEventPackageStatusChanged,
-        mmCoreOutdated, $mmCoursePrefetchDelegate, $mmSite, $mmEvents) {
+        mmCoreOutdated, $mmCoursePrefetchDelegate, $mmSite, $mmEvents, $mmaModWikiSync) {
     var self = {};
 
     /**
@@ -309,20 +309,81 @@ angular.module('mm.addons.mod_wiki')
                         icon: 'ion-eye',
                         sites: ids,
                         action: function(siteId) {
-                            var stateParams = {
-                                module: null,
-                                moduleid: null,
-                                courseid: courseId,
-                                pagetitle: params.title,
-                                subwikiid: parseInt(params.swid, 10)
-                            };
-                            return $mmContentLinksHelper.goInSite('site.mod_wiki-edit', stateParams, siteId);
+                            // Get the state params.
+                            params.swid = parseInt(params.swid, 10);
+                            getCreateLinkStateParams(params, courseId, siteId).then(function(stateParams) {
+                                return $mmContentLinksHelper.goInSite('site.mod_wiki-edit', stateParams, siteId);
+                            });
                         }
                     }];
                 });
             } else {
                 return $q.when([]);
             }
+        }
+
+        // Get state params for create link, trying to get data from the current state.
+        function getCreateLinkStateParams(params, courseId, siteId) {
+            var modal = $mmUtil.showModalLoading();
+
+            return currentStateIsSameWiki(params.swid, siteId).then(function(isSameWiki) {
+                if (isSameWiki) {
+                    if ($state.params.module && $state.params.module.id) {
+                        // We have the module.
+                        return $state.params.module;
+                    } else if ($state.params.wikiid) {
+                        return $mmCourse.getModuleBasicInfoByInstance($state.params.wikiid, 'wiki', siteId).catch(function() {
+                            // Not found.
+                        });
+                    }
+                }
+            }).then(function(module) {
+                // Return the params.
+                return {
+                    module: module,
+                    moduleid: module && module.id,
+                    courseid: courseId || (module && module.course) || $state.params.courseid,
+                    pagetitle: params.title,
+                    subwikiid: params.swid
+                };
+            }).finally(function() {
+                modal.dismiss();
+            });
+        }
+
+        // Check if the current state is a wiki page of the same wiki.
+        function currentStateIsSameWiki(subwikiId, siteId) {
+            if ($state.current.name == 'site.mod_wiki') {
+                if ($state.params.subwikiid == subwikiId) {
+                    // Same wiki.
+                    return $q.when(true);
+                } else if ($state.params.pageid) {
+                    // Get the page contents to check the subwiki.
+                    return $mmaModWiki.getPageContents($state.params.pageid, siteId).then(function(page) {
+                        return page.subwikiid == subwikiId;
+                    }).catch(function() {
+                        // Not found, return false.
+                        return false;
+                    });
+                } else if ($state.params.wikiid) {
+                    // Check if the subwiki belongs to this wiki.
+                    return $mmaModWiki.wikiHasSubwiki($state.params.wikiid, subwikiId, siteId);
+                } else if ($state.params.courseid && $state.params.module) {
+                    var moduleId = $state.params.moduleid || ($state.params.module && $state.params.module.id);
+                    if (moduleId) {
+                        // Get the wiki.
+                        return $mmaModWiki.getWiki($state.params.courseid, moduleId, 'coursemodule', siteId).then(function(wiki) {
+                            // Check if the subwiki belongs to this wiki.
+                            return $mmaModWiki.wikiHasSubwiki(wiki.id, subwikiId, siteId);
+                        }).catch(function() {
+                            // Not found, return false.
+                            return false;
+                        });
+                    }
+                }
+            }
+
+            return $q.when(false);
         }
 
         /**
@@ -408,6 +469,58 @@ angular.module('mm.addons.mod_wiki')
                     return url.substr(0, position);
                 }
             }
+        };
+
+        return self;
+    };
+
+    /**
+     * Synchronization handler.
+     *
+     * @module mm.addons.mod_wiki
+     * @ngdoc method
+     * @name $mmaModWikiHandlers#syncHandler
+     */
+    self.syncHandler = function() {
+
+        var self = {};
+
+        /**
+         * Execute the process.
+         * Receives the ID of the site affected, undefined for all sites.
+         *
+         * @param  {String} [siteId] ID of the site affected, undefined for all sites.
+         * @return {Promise}         Promise resolved when done, rejected if failure.
+         */
+        self.execute = function(siteId) {
+            return $mmaModWikiSync.syncAllWikis(siteId);
+        };
+
+        /**
+         * Get the time between consecutive executions.
+         *
+         * @return {Number} Time between consecutive executions (in ms).
+         */
+        self.getInterval = function() {
+            return 600000; // 10 minutes.
+        };
+
+        /**
+         * Whether it's a synchronization process or not.
+         *
+         * @return {Boolean} True if is a sync process, false otherwise.
+         */
+        self.isSync = function() {
+            return true;
+        };
+
+        /**
+         * Whether the process uses network or not.
+         *
+         * @return {Boolean} True if uses network, false otherwise.
+         */
+        self.usesNetwork = function() {
+            return true;
         };
 
         return self;
