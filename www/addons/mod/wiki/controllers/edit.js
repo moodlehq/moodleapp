@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_wiki')
  */
 .controller('mmaModWikiEditCtrl', function($q, $scope, $stateParams, $mmUtil, $state, $mmaModWiki, $translate, $ionicHistory,
         $mmCourse, $ionicPlatform, $rootScope, mmaModWikiRenewLockTimeout, $interval, $mmText, $mmaModWikiOffline,
-        $mmEvents, $mmLang, $mmSite, mmaModWikiComponent, mmaModWikiPageCreatedEvent) {
+        $mmEvents, $mmLang, $mmSite, mmaModWikiComponent, mmaModWikiPageCreatedEvent, $mmaModWikiSync, $mmSyncBlock) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         subwikiId = $stateParams.subwikiid || null,
@@ -55,6 +55,11 @@ angular.module('mm.addons.mod_wiki')
 
     $scope.title = $scope.page.title ? $translate.instant('mma.mod_wiki.editingpage', {'$a': $scope.page.title}) :
         $translate.instant('mma.mod_wiki.newpagehdr');
+
+    if (subwikiId) {
+        // Block the subwiki ASAP.
+        $mmSyncBlock.blockOperation(mmaModWikiComponent, subwikiId);
+    }
 
     $scope.save = function() {
         var text = $scope.page.text,
@@ -247,6 +252,9 @@ angular.module('mm.addons.mod_wiki')
                     groupId = pageContents.groupid;
                     userId = pageContents.userid;
 
+                    // Wait for sync to be over (if any).
+                    return $mmaModWikiSync.waitForSync(subwikiId);
+                }).then(function() {
                     // Check if rich text editor is enabled.
                     return $mmUtil.isRichTextEditorEnabled();
                 }).then(function(enabled) {
@@ -279,9 +287,14 @@ angular.module('mm.addons.mod_wiki')
                     $scope.wikiLoaded = true;
                 });
             } else {
-                // New page. Check if there's already some offline data for this page.
+                // New page. Wait for sync to be over (if any).
+                promise = $mmaModWikiSync.waitForSync(subwikiId);
+
                 if ($scope.page.title) {
-                    promise = $mmaModWikiOffline.getNewPage(subwikiId, $scope.page.title).then(function(page) {
+                    // Check if there's already some offline data for this page.
+                    promise = promise.then(function() {
+                        return $mmaModWikiOffline.getNewPage(subwikiId, $scope.page.title);
+                    }).then(function(page) {
                         // Load offline content.
                         $scope.page.text = page.cachedcontent;
                         originalContent = $scope.page.text;
@@ -292,7 +305,6 @@ angular.module('mm.addons.mod_wiki')
                     });
                 } else {
                     editOffline = false;
-                    promise = $q.when();
                 }
 
                 promise.then(function() {
@@ -366,7 +378,12 @@ angular.module('mm.addons.mod_wiki')
     // Override Android's back button. We set a priority of 101 to override the "Return to previous view" action.
     unregisterHardwareBack = $ionicPlatform.registerBackButtonAction(cancel, 101);
 
-    fetchWikiPageData().finally(function() {
+    fetchWikiPageData().then(function() {
+        if (subwikiId && !$scope.$$destroyed) {
+            // Block the subwiki now that we have subwikiId for sure.
+            $mmSyncBlock.blockOperation(mmaModWikiComponent, subwikiId);
+        }
+    }).finally(function() {
         $scope.wikiLoaded = true;
     });
 
@@ -376,5 +393,8 @@ angular.module('mm.addons.mod_wiki')
         unregisterHardwareBack();
         $rootScope.$ionicGoBack = originalBackFunction;
         $interval.cancel(renewLockInterval);
+        if (subwikiId) {
+            $mmSyncBlock.unblockOperation(mmaModWikiComponent, subwikiId);
+        }
     });
 });

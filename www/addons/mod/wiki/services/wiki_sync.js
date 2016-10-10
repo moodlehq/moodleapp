@@ -22,7 +22,8 @@ angular.module('mm.addons.mod_wiki')
  * @name $mmaModWikiSync
  */
 .factory('$mmaModWikiSync', function($q, $log, $mmApp, $mmSitesManager, $mmaModWikiOffline, $mmSite, $mmEvents, $mmSync, $mmLang,
-        mmaModWikiComponent, $mmaModWiki, $translate, mmaModWikiSubwikiAutomSyncedEvent, mmaModWikiSyncTime, $mmGroups) {
+        mmaModWikiComponent, $mmaModWiki, $translate, mmaModWikiSubwikiAutomSyncedEvent, mmaModWikiSyncTime, $mmGroups,
+        $mmCourse, $mmSyncBlock) {
 
     $log = $log.getInstance('$mmaModWikiSync');
 
@@ -136,6 +137,13 @@ angular.module('mm.addons.mod_wiki')
         if (self.isSyncing(subwikiId, siteId)) {
             // There's already a sync ongoing for this subwiki, return the promise.
             return self.getOngoingSync(subwikiId, siteId);
+        }
+
+        // Verify that subwiki isn't blocked.
+        if ($mmSyncBlock.isBlocked(mmaModWikiComponent, subwikiId, siteId)) {
+            $log.debug('Cannot sync subwiki ' + subwikiId + ' because it is blocked.');
+            var modulename = $mmCourse.translateModuleName('wiki');
+            return $mmLang.translateAndReject('mm.core.errorsyncblocked', {$a: modulename});
         }
 
         $log.debug('Try to sync subwiki ' + subwikiId);
