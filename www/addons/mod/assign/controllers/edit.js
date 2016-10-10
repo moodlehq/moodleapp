@@ -23,7 +23,8 @@ angular.module('mm.addons.mod_assign')
  */
 .controller('mmaModAssignEditCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $translate, mmaModAssignComponent, $q,
         $mmSite, $mmaModAssignHelper, $rootScope, $ionicPlatform, $timeout, $mmEvents, $ionicHistory, $mmaModAssignOffline,
-        mmaModAssignSubmissionSavedEvent, mmaModAssignSubmittedForGradingEvent, $mmFileUploaderHelper) {
+        mmaModAssignSubmissionSavedEvent, mmaModAssignSubmittedForGradingEvent, $mmFileUploaderHelper, $mmaModAssignSync,
+        $mmSyncBlock) {
 
     var courseId = $stateParams.courseid,
         userId = $mmSite.getUserId(), // Right now we can only edit current user's submissions.
@@ -42,11 +43,23 @@ angular.module('mm.addons.mod_assign')
     $scope.allowOffline = false;
 
     function fetchAssignment() {
+        var assign;
+
         // Get assignment data.
-        return $mmaModAssign.getAssignment(courseId, $scope.moduleId).then(function(assign) {
+        return $mmaModAssign.getAssignment(courseId, $scope.moduleId).then(function(assignData) {
+            assign = assignData;
+
             $scope.title = assign.name || $scope.title;
             $scope.assign = assign;
 
+            if (!$scope.$$destroyed) {
+                // Block the assignment.
+                $mmSyncBlock.blockOperation(mmaModAssignComponent, assign.id);
+            }
+
+            // Wait for sync to be over (if any).
+            return $mmaModAssignSync.waitForSync(assign.id);
+        }).then(function() {
             // Get submission status. Ignore cache to get the latest data.
             return $mmaModAssign.getSubmissionStatus(assign.id, userId, isBlind, false, true).catch(function(error) {
                 // Cannot connect. Get cached data.
@@ -279,5 +292,8 @@ angular.module('mm.addons.mod_assign')
         // Restore original back functions.
         unregisterHardwareBack();
         $rootScope.$ionicGoBack = originalBackFunction;
+        if ($scope.assign) {
+            $mmSyncBlock.unblockOperation(mmaModAssignComponent, $scope.assign.id);
+        }
     });
 });

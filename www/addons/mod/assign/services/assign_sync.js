@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_assign')
  */
 .factory('$mmaModAssignSync', function($log, $mmaModAssign, $mmSite, $mmSitesManager, $q, $mmaModAssignOffline, $mmCourse, $mmUtil,
             $mmApp, $mmEvents, $translate, mmaModAssignSyncTime, $mmSync, mmaModAssignEventAutomSynced, mmaModAssignComponent,
-            $mmaModAssignSubmissionDelegate) {
+            $mmaModAssignSubmissionDelegate, $mmSyncBlock, $mmLang) {
 
     $log = $log.getInstance('$mmaModAssignSync');
 
@@ -152,6 +152,13 @@ angular.module('mm.addons.mod_assign')
         if (self.isSyncing(assignId, siteId)) {
             // There's already a sync ongoing for this discussion, return the promise.
             return self.getOngoingSync(assignId, siteId);
+        }
+
+        // Verify that assign isn't blocked.
+        if ($mmSyncBlock.isBlocked(mmaModAssignComponent, assignId, siteId)) {
+            $log.debug('Cannot sync assign ' + assignId + ' because it is blocked.');
+            var modulename = $mmCourse.translateModuleName('assign');
+            return $mmLang.translateAndReject('mm.core.errorsyncblocked', {$a: modulename});
         }
 
         $log.debug('Try to sync assign ' + assignId);
