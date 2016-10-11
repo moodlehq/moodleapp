@@ -14,7 +14,6 @@
 
 angular.module('mm.core.settings', [])
 
-.constant('mmCoreSettingsDownloadSection', 'mmCoreSettingsDownloadSection')
 .constant('mmCoreSettingsReportInBackground', 'mmCoreReportInBackground')
 .constant('mmCoreSettingsRichTextEditor', 'mmCoreSettingsRichTextEditor')
 .constant('mmCoreSettingsSyncOnlyOnWifi', 'mmCoreSyncOnlyOnWifi')

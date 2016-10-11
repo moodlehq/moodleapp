@@ -22,7 +22,7 @@ angular.module('mm.core.settings')
  * @name mmSettingsGeneralCtrl
  */
 .controller('mmSettingsGeneralCtrl', function($scope, $mmLang, $ionicHistory, $mmEvents, $mmConfig, mmCoreEventLanguageChanged,
-            mmCoreSettingsReportInBackground, mmCoreConfigConstants, mmCoreSettingsDownloadSection, mmCoreSettingsRichTextEditor,
+            mmCoreSettingsReportInBackground, mmCoreConfigConstants, mmCoreSettingsRichTextEditor,
             $mmUtil) {
 
     $scope.langs = mmCoreConfigConstants.languages;
@@ -37,14 +37,6 @@ angular.module('mm.core.settings')
             $ionicHistory.clearCache();
             $mmEvents.trigger(mmCoreEventLanguageChanged);
         });
-    };
-
-    $mmConfig.get(mmCoreSettingsDownloadSection, true).then(function(downloadSectionEnabled) {
-        $scope.downloadSection = downloadSectionEnabled;
-    });
-
-    $scope.downloadSectionChanged = function(downloadSection) {
-        $mmConfig.set(mmCoreSettingsDownloadSection, downloadSection);
     };
 
     $scope.rteSupported = $mmUtil.isRichTextEditorSupported();

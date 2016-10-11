@@ -24,7 +24,35 @@ angular.module('mm.core.course')
 .factory('$mmCourseHelper', function($q, $mmCoursePrefetchDelegate, $mmFilepool, $mmUtil, $mmCourse, $mmSite, $state,
             mmCoreNotDownloaded, mmCoreOutdated, mmCoreDownloading, mmCoreCourseAllSectionsId, $mmText, $translate) {
 
-    var self = {};
+    var self = {},
+        calculateSectionStatus = false;
+
+
+    /**
+     * Get the current value to show section status and allow section downloads.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourseHelper#isDownloadSectionsEnabled
+     * @return {Boolean}    If section status and downloads are enabled.
+     */
+    self.isDownloadSectionsEnabled = function() {
+        return calculateSectionStatus;
+    };
+
+
+    /**
+     * Set the current value to show section status and allow section downloads.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourseHelper#setDownloadSectionsEnabled
+     * @param {Boolean}     status  If section status and downloads are enabled.
+     */
+    self.setDownloadSectionsEnabled = function(status) {
+        calculateSectionStatus = status;
+        return calculateSectionStatus;
+    };
 
     /**
      * Calculate the status of a section.
@@ -546,4 +574,10 @@ angular.module('mm.core.course')
     };
 
     return self;
+})
+
+.run(function($mmEvents, mmCoreEventLogout, $mmCourseHelper) {
+    $mmEvents.on(mmCoreEventLogout, function() {
+        $mmCourseHelper.setDownloadSectionsEnabled(false);
+    });
 });
