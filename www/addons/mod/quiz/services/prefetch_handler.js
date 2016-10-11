@@ -288,7 +288,7 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}         Promise resolved with true if downloadable, resolved with false otherwise.
      */
     self.isDownloadable = function(module, courseId) {
-        return $mmaModQuiz.getQuiz(courseId, module.id).then(function(quiz) {
+        return $mmaModQuiz.getQuiz(courseId, module.id, false, true).then(function(quiz) {
             if (quiz.allowofflineattempts !== 1 || quiz.hasquestions === 0) {
                 return false;
             }

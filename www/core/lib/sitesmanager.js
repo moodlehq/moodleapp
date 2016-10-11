@@ -495,13 +495,12 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmSitesManager#getSite
-     * @param  {Number} siteId The site ID.
+     * @param  {Number} [siteId] The site ID. If not defined, current site (if available).
      * @return {Promise}
      */
     self.getSite = function(siteId) {
         if (!siteId) {
-            // Site ID not valid, reject.
-            return $q.reject();
+            return currentSite ? $q.when(currentSite) : $q.reject();
         } else if (currentSite && currentSite.getId() === siteId) {
             return $q.when(currentSite);
         } else if (typeof sites[siteId] != 'undefined') {
@@ -521,7 +520,7 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmSitesManager#getSiteDb
-     * @param  {Number} siteId The site ID.
+     * @param  {Number} [siteId] The site ID. If not defined, current site (if available).
      * @return {Promise}
      */
     self.getSiteDb = function(siteId) {

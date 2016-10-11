@@ -359,7 +359,7 @@ angular.module('mm.addons.mod_scorm')
      * @return {Promise}         Promise resolved with true if downloadable, resolved with false otherwise.
      */
     self.isDownloadable = function(module, courseId) {
-        return $mmaModScorm.getScorm(courseId, module.id, module.url).then(function(scorm) {
+        return $mmaModScorm.getScorm(courseId, module.id, module.url, false, true).then(function(scorm) {
             if (scorm.warningmessage) {
                 // SCORM closed or not opened yet.
                 return false;

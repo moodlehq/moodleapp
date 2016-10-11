@@ -161,7 +161,7 @@ angular.module('mm.addons.mod_choice')
      * @return {Promise}         Promise resolved with true if downloadable, resolved with false otherwise.
      */
     self.isDownloadable = function(module, courseId) {
-        return $mmaModChoice.getChoice(courseId, module.id).then(function(choice) {
+        return $mmaModChoice.getChoice(courseId, module.id, false, true).then(function(choice) {
             var now = $mmUtil.timestamp();
             if (choice.timeopen && choice.timeopen > now) {
                 return false;
