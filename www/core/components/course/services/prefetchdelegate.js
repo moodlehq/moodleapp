@@ -566,45 +566,54 @@ angular.module('mm.core')
                         return self.determineModuleStatus(module, status, true);
                     }
 
-                    // Call getModuleFiles only if it's needed.
-                    var revisionNeedsFiles = typeof revision == 'undefined' && !handler.getRevision &&
-                                    typeof statusCache.getValue(handler.component, module.id, 'revision') == 'undefined',
-                        timemodifiedNeedsFiles = typeof timemodified == 'undefined' && !handler.getTimemodified &&
-                                    typeof statusCache.getValue(handler.component, module.id, 'timemodified') == 'undefined';
-
-                    if (revisionNeedsFiles || timemodifiedNeedsFiles) {
-                        promise = self.getModuleFiles(module, courseid);
-                    } else {
-                        promise = $q.when();
-                    }
-
-                    return promise.then(function(files) {
-
-                        // Get revision and timemodified if they aren't defined.
-                        // If handler doesn't define a function to get them, get them from file list.
-                        var promises = [];
-
-                        if (typeof revision == 'undefined') {
-                            promises.push(self.getModuleRevision(module, courseid, files).then(function(rev) {
-                                revision = rev;
-                            }));
+                    // Get the saved package status.
+                    return $mmFilepool.getPackageCurrentStatus(siteid, handler.component, module.id).then(function(status) {
+                        status = handler.determineStatus ? handler.determineStatus(status) : status;
+                        if (status == mmCoreNotDownloaded || status == mmCoreOutdated || status == mmCoreDownloading) {
+                            status = statusCache.setValue(handler.component, module.id, 'status', status);
+                            return self.determineModuleStatus(module, status, true);
                         }
 
-                        if (typeof timemodified == 'undefined') {
-                            promises.push(self.getModuleTimemodified(module, courseid, files).then(function(timemod) {
-                                timemodified = timemod;
-                            }));
+                        // Call getModuleFiles only if it's needed.
+                        var revisionNeedsFiles = typeof revision == 'undefined' && !handler.getRevision &&
+                                        typeof statusCache.getValue(handler.component, module.id, 'revision') == 'undefined',
+                            timemodifiedNeedsFiles = typeof timemodified == 'undefined' && !handler.getTimemodified &&
+                                        typeof statusCache.getValue(handler.component, module.id, 'timemodified') == 'undefined';
+
+                        if (revisionNeedsFiles || timemodifiedNeedsFiles) {
+                            promise = self.getModuleFiles(module, courseid);
+                        } else {
+                            promise = $q.when();
                         }
 
-                        return $q.all(promises).then(function() {
-                            // Now get the status.
-                            return $mmFilepool.getPackageStatus(siteid, handler.component, module.id, revision, timemodified)
-                                    .then(function(status) {
-                                status = statusCache.setValue(handler.component, module.id, 'status', status);
-                                return self.determineModuleStatus(module, status, true);
-                            }).catch(function() {
-                                status = statusCache.getValue(handler.component, module.id, 'status', true);
-                                return self.determineModuleStatus(module, status, true);
+                        return promise.then(function(files) {
+
+                            // Get revision and timemodified if they aren't defined.
+                            // If handler doesn't define a function to get them, get them from file list.
+                            var promises = [];
+
+                            if (typeof revision == 'undefined') {
+                                promises.push(self.getModuleRevision(module, courseid, files).then(function(rev) {
+                                    revision = rev;
+                                }));
+                            }
+
+                            if (typeof timemodified == 'undefined') {
+                                promises.push(self.getModuleTimemodified(module, courseid, files).then(function(timemod) {
+                                    timemodified = timemod;
+                                }));
+                            }
+
+                            return $q.all(promises).then(function() {
+                                // Now get the status.
+                                return $mmFilepool.getPackageStatus(siteid, handler.component, module.id, revision, timemodified)
+                                        .then(function(status) {
+                                    status = statusCache.setValue(handler.component, module.id, 'status', status);
+                                    return self.determineModuleStatus(module, status, true);
+                                }).catch(function() {
+                                    status = statusCache.getValue(handler.component, module.id, 'status', true);
+                                    return self.determineModuleStatus(module, status, true);
+                                });
                             });
                         });
                     });
