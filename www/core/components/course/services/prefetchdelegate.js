@@ -156,7 +156,7 @@ angular.module('mm.core')
              * @param {Mixed}   [componentId]       An ID to use in conjunction with the component.
              * @param {String}  name                Name of the value to be set.
              * @param {Boolean} [ignoreInvalidate]  If ignore or not the lastupdate value that invalidates data.
-             * @return {Mixed}  Cached value.
+             * @return {Mixed}  Cached value. Undefined if not cached.
              */
             this.getValue = function(component, componentId, name, ignoreInvalidate) {
                 var cache = this.get(component, componentId);
@@ -169,7 +169,7 @@ angular.module('mm.core')
                     }
                 }
 
-                return false;
+                return undefined;
             };
 
             /**
@@ -309,7 +309,7 @@ angular.module('mm.core')
                     }
 
                     downloadSize = statusCache.getValue(handler.component, module.id, 'downloadSize');
-                    if (downloadSize !== false) {
+                    if (typeof downloadSize != 'undefined') {
                         return downloadSize;
                     }
 
@@ -348,7 +348,7 @@ angular.module('mm.core')
                     }
 
                     downloadedSize = statusCache.getValue(handler.component, module.id, 'downloadedSize');
-                    if (downloadedSize !== false) {
+                    if (typeof downloadedSize != 'undefined') {
                         return downloadedSize;
                     }
 
@@ -413,7 +413,7 @@ angular.module('mm.core')
 
             if (handler) {
                 timemodified = statusCache.getValue(handler.component, module.id, 'timemodified');
-                if (timemodified) {
+                if (typeof timemodified != 'undefined') {
                     return $q.when(timemodified);
                 }
 
@@ -454,7 +454,7 @@ angular.module('mm.core')
 
             if (handler) {
                 revision = statusCache.getValue(handler.component, module.id, 'revision');
-                if (revision) {
+                if (typeof revision != 'undefined') {
                     return $q.when(revision);
                 }
 
@@ -562,15 +562,15 @@ angular.module('mm.core')
 
                     var status = statusCache.getValue(handler.component, module.id, 'status'),
                         promise;
-                    if (status) {
+                    if (typeof status != 'undefined') {
                         return self.determineModuleStatus(module, status, true);
                     }
 
                     // Call getModuleFiles only if it's needed.
                     var revisionNeedsFiles = typeof revision == 'undefined' && !handler.getRevision &&
-                                    !statusCache.getValue(handler.component, module.id, 'revision'),
+                                    typeof statusCache.getValue(handler.component, module.id, 'revision') == 'undefined',
                         timemodifiedNeedsFiles = typeof timemodified == 'undefined' && !handler.getTimemodified &&
-                                    !statusCache.getValue(handler.component, module.id, 'timemodified');
+                                    typeof statusCache.getValue(handler.component, module.id, 'timemodified') == 'undefined';
 
                     if (revisionNeedsFiles || timemodifiedNeedsFiles) {
                         promise = self.getModuleFiles(module, courseid);
@@ -658,7 +658,7 @@ angular.module('mm.core')
 
                 if (handler) {
                     var cacheStatus = statusCache.getValue(handler.component, module.id, 'status');
-                    if (!refresh && cacheStatus) {
+                    if (!refresh && typeof cacheStatus != 'undefined') {
                         promise = $q.when(self.determineModuleStatus(module, cacheStatus, restoreDownloads));
                     } else {
                         promise = self.getModuleStatus(module, courseid);
@@ -677,7 +677,7 @@ angular.module('mm.core')
                             }
                         }).catch(function() {
                             modstatus = statusCache.getValue(handler.component, module.id, 'status', true);
-                            if (!modstatus) {
+                            if (typeof modstatus == 'undefined') {
                                 return $q.reject();
                             }
                             if (modstatus != mmCoreNotDownloadable) {
@@ -785,7 +785,15 @@ angular.module('mm.core')
 
             if (handler) {
                 if (typeof handler.isDownloadable == 'function') {
-                    promise = $q.when(handler.isDownloadable(module, courseid));
+                    var downloadable = statusCache.getValue(handler.component, module.id, 'downloadable');
+                    if (typeof downloadable != 'undefined') {
+                        promise = $q.when(downloadable);
+                    } else {
+                        promise = $q.when(handler.isDownloadable(module, courseid)).then(function(downloadable) {
+                            statusCache.setValue(handler.component, module.id, 'downloadable', downloadable);
+                            return downloadable;
+                        });
+                    }
                 } else {
                     promise = $q.when(true); // Function not defined, assume all modules are downloadable.
                 }
@@ -948,7 +956,7 @@ angular.module('mm.core')
                 cachedStatus = statusCache.getValue(component, componentId, 'status', true);
 
             // If the status has changed, notify that the section has changed.
-            notify = cachedStatus && cachedStatus !== status;
+            notify = typeof cachedStatus != 'undefined' && cachedStatus !== status;
 
             if (notify) {
                 var sectionId = statusCache.getValue(component, componentId, 'sectionid', true);
