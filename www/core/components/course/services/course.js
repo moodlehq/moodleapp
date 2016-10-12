@@ -36,14 +36,14 @@ angular.module('mm.core.course')
 .factory('$mmCourse', function($mmSite, $translate, $q, $log, $mmEvents, $mmSitesManager, mmCoreEventCompletionModuleViewed) {
 
     $log = $log.getInstance('$mmCourse');
-
+    //@DM Vonk
     var self = {},
         mods = ["assign", "assignment", "book", "chat", "choice", "data", "database", "date", "external-tool",
-            "feedback", "file", "folder", "forum", "glossary", "ims", "imscp", "label", "lesson", "lti", "page", "quiz",
+            "feedback", "file", "folder", "forum", "glossary", "ims", "imscp", "label", "lesson", "lti", "page", "premiumvideo", "quiz", "regularvideo",
             "resource", "scorm", "survey", "url", "wiki", "workshop"
         ],
-        modsWithContent = ['book', 'folder', 'imscp', 'page', 'resource', 'url'];
-
+        modsWithContent = ['book', 'folder', 'imscp', 'page', "premiumvideo",'resource', "regularvideo", 'url'];
+    //end DM VK
     /**
      * Add a 'contents' property if the module needs it and it doesn't have it already. In some weird cases the site
      * doesn't return this property and it's needed. See MOBILE-1381.
