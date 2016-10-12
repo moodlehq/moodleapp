@@ -8,10 +8,6 @@
                 <select ng-model="selectedLanguage" ng-options="code as name for (code, name) in langs" ng-change="languageChanged(selectedLanguage)" aria-labelledby="mm-settings-languagelabel" mm-ios-select-fix>
                 </select>
             </li>
-            <ion-toggle ng-model="downloadSection" ng-change="downloadSectionChanged(downloadSection)">
-                <p class="item-heading">{{ 'mm.settings.enabledownloadsection' | translate }}</p>
-                <p>{{ 'mm.settings.enabledownloadsectiondescription' | translate }}</p>
-            </ion-toggle>
             <ion-toggle ng-if="rteSupported" ng-model="richTextEditor" ng-change="richTextEditorChanged(richTextEditor)">
                 <p class="item-heading">{{ 'mm.settings.enablerichtexteditor' | translate }}</p>
                 <p>{{ 'mm.settings.enablerichtexteditordescription' | translate }}</p>

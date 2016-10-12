@@ -23,25 +23,17 @@ angular.module('mm.core.course')
  */
 .controller('mmCourseSectionsCtrl', function($mmCourse, $mmUtil, $scope, $stateParams, $translate, $mmCourseHelper, $mmEvents,
             $mmSite, $mmCoursePrefetchDelegate, $mmCourses, $q, $ionicHistory, $ionicPlatform, mmCoreCourseAllSectionsId,
-            mmCoreEventSectionStatusChanged, $mmConfig, mmCoreSettingsDownloadSection, $state, $timeout) {
+            mmCoreEventSectionStatusChanged, $state, $timeout) {
     var courseId = $stateParams.courseid,
         sectionId = $stateParams.sid,
         moduleId = $stateParams.moduleid,
-        courseFullName = $stateParams.coursefullname,
-        downloadSectionsEnabled;
+        courseFullName = $stateParams.coursefullname;
 
     $scope.courseId = courseId;
     $scope.sectionToLoad = 2; // Load "General" section by default.
     $scope.fullname = courseFullName;
-
-    function checkDownloadSectionsEnabled() {
-        return $mmConfig.get(mmCoreSettingsDownloadSection, true).then(function(enabled) {
-            downloadSectionsEnabled = enabled;
-        }).catch(function() {
-            // Shouldn't happen.
-            downloadSectionsEnabled = false;
-        });
-    }
+    $scope.downloadSectionsEnabled = $mmCourseHelper.isDownloadSectionsEnabled();
+    $scope.downloadSectionsIcon = getDownloadSectionIcon();
 
     function loadSections(refresh) {
         var promise;
@@ -78,26 +70,8 @@ angular.module('mm.core.course')
 
                     $scope.sections = result;
 
-                    if (downloadSectionsEnabled) {
-                        // Calculate status of the sections. We don't return the promise because
-                        // we don't want to block the rendering of the sections.
-                        $mmCourseHelper.calculateSectionsStatus(result, courseId, true, refresh).catch(function() {
-                            // Ignore errors (shouldn't happen).
-                        }).then(function(downloadpromises) {
-                            // If we restored any download we'll recalculate the status once all of them have finished.
-                            if (downloadpromises && downloadpromises.length) {
-                                $mmUtil.allPromises(downloadpromises).catch(function() {
-                                    if (!$scope.$$destroyed) {
-                                        $mmUtil.showErrorModal('mm.course.errordownloadingsection', true);
-                                    }
-                                }).finally(function() {
-                                    if (!$scope.$$destroyed) {
-                                        // Recalculate the status.
-                                        $mmCourseHelper.calculateSectionsStatus($scope.sections, courseId, false);
-                                    }
-                                });
-                            }
-                        });
+                    if ($scope.downloadSectionsEnabled) {
+                        calculateSectionStatus(refresh);
                     }
                 });
             });
@@ -106,6 +80,42 @@ angular.module('mm.core.course')
                 $mmUtil.showErrorModal(error);
             } else {
                 $mmUtil.showErrorModal('mm.course.couldnotloadsections', true);
+            }
+        });
+    }
+
+    $scope.toggleDownloadSections = function() {
+        $scope.downloadSectionsEnabled = !$scope.downloadSectionsEnabled;
+        $mmCourseHelper.setDownloadSectionsEnabled($scope.downloadSectionsEnabled);
+        $scope.downloadSectionsIcon = getDownloadSectionIcon();
+        if ($scope.downloadSectionsEnabled) {
+            calculateSectionStatus(false);
+        }
+    };
+
+    // Convenience function to calculate icon for the contextual menu.
+    function getDownloadSectionIcon() {
+        return $scope.downloadSectionsEnabled ? 'ion-android-checkbox-outline' : 'ion-android-checkbox-outline-blank';
+    }
+
+    // Calculate status of the sections. We don't return the promise because
+    // we don't want to block the rendering of the sections.
+    function calculateSectionStatus(refresh) {
+        $mmCourseHelper.calculateSectionsStatus($scope.sections, $scope.courseId, true, refresh).catch(function() {
+            // Ignore errors (shouldn't happen).
+        }).then(function(downloadpromises) {
+            // If we restored any download we'll recalculate the status once all of them have finished.
+            if (downloadpromises && downloadpromises.length) {
+                $mmUtil.allPromises(downloadpromises).catch(function() {
+                    if (!$scope.$$destroyed) {
+                        $mmUtil.showErrorModal('mm.course.errordownloadingsection', true);
+                    }
+                }).finally(function() {
+                    if (!$scope.$$destroyed) {
+                        // Recalculate the status.
+                        $mmCourseHelper.calculateSectionsStatus($scope.sections, $scope.courseId, false);
+                    }
+                });
             }
         });
     }
@@ -191,17 +201,15 @@ angular.module('mm.core.course')
         });
     };
 
-    checkDownloadSectionsEnabled().then(function() {
-        loadSections().finally(function() {
-            autoloadSection();
-            $scope.sectionsLoaded = true;
-        });
+    loadSections().finally(function() {
+        autoloadSection();
+        $scope.sectionsLoaded = true;
     });
 
     // Listen for section status changes.
     var statusObserver = $mmEvents.on(mmCoreEventSectionStatusChanged, function(data) {
-        if (downloadSectionsEnabled && $scope.sections && $scope.sections.length && data.siteid === $mmSite.getId() &&
-                    !$scope.$$destroyed&& data.sectionid) {
+        if ($scope.downloadSectionsEnabled && $scope.sections && $scope.sections.length && data.siteid === $mmSite.getId() &&
+                    !$scope.$$destroyed && data.sectionid) {
             // Check if the affected section is being downloaded. If so, we don't update section status
             // because it'll already be updated when the download finishes.
             if ($mmCoursePrefetchDelegate.isBeingDownloaded($mmCourseHelper.getSectionDownloadId({id: data.sectionid}))) {
