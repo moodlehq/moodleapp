@@ -24,8 +24,8 @@ angular.module('mm.addons.mod_folder')
 .controller('mmaModFolderIndexCtrl', function($scope, $stateParams, $mmaModFolder, $mmCourse, $mmUtil, $q, $mmText, $translate,
             mmaModFolderComponent) {
     var module = $stateParams.module || {},
-        courseid = $stateParams.courseid,
-        sectionid = $stateParams.sectionid,
+        courseId = $stateParams.courseid,
+        sectionId = $stateParams.sectionid,
         path = $stateParams.path;
 
     $scope.description = module.description;
@@ -47,7 +47,7 @@ angular.module('mm.addons.mod_folder')
 
     // Convenience function to fetch folder data from Moodle.
     function fetchFolder() {
-        return $mmCourse.getModule(module.id, courseid, sectionid).then(function(module) {
+        return $mmCourse.getModule(module.id, courseId, sectionId).then(function(module) {
             showModuleData(module);
         }, function(error) {
             if (error) {
@@ -73,7 +73,7 @@ angular.module('mm.addons.mod_folder')
     } else {
         fetchFolder().then(function() {
             $mmaModFolder.logView(module.instance).then(function() {
-                $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
+                $mmCourse.checkModuleCompletion(courseId, module.completionstatus);
             });
         }).finally(function() {
             $scope.folderLoaded = true;
