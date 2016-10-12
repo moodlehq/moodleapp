@@ -21,7 +21,8 @@ angular.module('mm.core.course')
  * @ngdoc service
  * @name $mmPrefetchFactory
  */
-.factory('$mmPrefetchFactory', function($mmSite, $mmFilepool, $mmUtil, $q, $mmLang, $mmApp, mmCoreDownloading, mmCoreDownloaded) {
+.factory('$mmPrefetchFactory', function($mmSite, $mmFilepool, $mmUtil, $q, $mmLang, $mmApp, mmCoreDownloading, mmCoreDownloaded,
+            $mmCourse) {
 
     var self = {},
         modulePrefetchHandler = (function () {
@@ -86,8 +87,11 @@ angular.module('mm.core.course')
                 var siteId = $mmSite.getId(),
                     that = this;
 
-                // Get the intro files.
-                return that.getIntroFiles(module, courseId).then(function(introFiles) {
+                // Load module contents if needed.
+                return that.loadContents(module, courseId).then(function() {
+                    // Get the intro files.
+                    return that.getIntroFiles(module, courseId);
+                }).then(function(introFiles) {
                     // Get revision and timemodified.
                     return that.getRevisionAndTimemodified(module, courseId, introFiles).then(function(data) {
                         var downloadFn = prefetch ? $mmFilepool.prefetchPackage : $mmFilepool.downloadPackage,
@@ -169,56 +173,66 @@ angular.module('mm.core.course')
             /**
              * Get event names of content files being downloaded.
              *
-             * @param {Object} module The module object returned by WS.
-             * @return {Promise}      Resolved with an array of event names.
+             * @param {Object} module    The module object returned by WS.
+             * @param  {Number} courseId Course ID.
+             * @return {Promise}         Resolved with an array of event names.
              */
-            this.getDownloadingFilesEventNames = function(module) {
-                var promises = [],
-                    eventNames = [],
-                    siteId = $mmSite.getId(),
-                    that = this;
+            this.getDownloadingFilesEventNames = function(module, courseId) {
+                var that = this,
+                    siteId = $mmSite.getId();
 
-                angular.forEach(module.contents, function(content) {
-                    var url = content.fileurl;
-                    if (!that.isFileDownloadable(content)) {
-                        return;
-                    }
+                // Load module contents if needed.
+                return that.loadContents(module, courseId).then(function() {
+                    var promises = [],
+                        eventNames = [];
 
-                    promises.push($mmFilepool.isFileDownloadingByUrl(siteId, url).then(function() {
-                        return $mmFilepool.getFileEventNameByUrl(siteId, url).then(function(eventName) {
-                            eventNames.push(eventName);
-                        });
-                    }).catch(function() {
-                        // Ignore fails.
-                    }));
-                });
+                    angular.forEach(module.contents, function(content) {
+                        var url = content.fileurl;
+                        if (!that.isFileDownloadable(content)) {
+                            return;
+                        }
 
-                return $q.all(promises).then(function() {
-                    return eventNames;
+                        promises.push($mmFilepool.isFileDownloadingByUrl(siteId, url).then(function() {
+                            return $mmFilepool.getFileEventNameByUrl(siteId, url).then(function(eventName) {
+                                eventNames.push(eventName);
+                            });
+                        }).catch(function() {
+                            // Ignore fails.
+                        }));
+                    });
+
+                    return $q.all(promises).then(function() {
+                        return eventNames;
+                    });
                 });
             };
 
             /**
              * Returns a list of content file event names.
              *
-             * @param {Object} module The module object returned by WS.
-             * @return {Promise}      Promise resolved with array of event names.
+             * @param {Object} module    The module object returned by WS.
+             * @param  {Number} courseId Course ID.
+             * @return {Promise}         Promise resolved with array of event names.
              */
-            this.getFileEventNames = function(module) {
-                var promises = [],
-                    siteId = $mmSite.getId(),
-                    that = this;
+            this.getFileEventNames = function(module, courseId) {
+                var that = this,
+                    siteId = $mmSite.getId();
 
-                angular.forEach(module.contents, function(content) {
-                    var url = content.fileurl;
-                    if (!that.isFileDownloadable(content)) {
-                        return;
-                    }
+                // Load module contents if needed.
+                return that.loadContents(module, courseId).then(function() {
+                    var promises = [];
 
-                    promises.push($mmFilepool.getFileEventNameByUrl(siteId, url));
+                    angular.forEach(module.contents, function(content) {
+                        var url = content.fileurl;
+                        if (!that.isFileDownloadable(content)) {
+                            return;
+                        }
+
+                        promises.push($mmFilepool.getFileEventNameByUrl(siteId, url));
+                    });
+
+                    return $q.all(promises);
                 });
-
-                return $q.all(promises);
             };
 
             /**
@@ -230,8 +244,12 @@ angular.module('mm.core.course')
              */
             this.getFiles = function(module, courseId) {
                 var that = this;
-                return that.getIntroFiles(module, courseId).then(function(files) {
-                    return files.concat(that.getContentDownloadableFiles(module));
+
+                // Load module contents if needed.
+                return that.loadContents(module, courseId).then(function() {
+                    return that.getIntroFiles(module, courseId).then(function(files) {
+                        return files.concat(that.getContentDownloadableFiles(module));
+                    });
                 });
             };
 
@@ -313,16 +331,21 @@ angular.module('mm.core.course')
              * @return {Promise}               Promise resolved with revision and timemodified.
              */
             this.getRevisionAndTimemodified = function(module, courseId, introFiles) {
-                // Get the intro files if needed.
-                var promise = introFiles ? $q.when(introFiles) : this.getIntroFiles(module, courseId);
-                return promise.then(function(files) {
-                    // Add all the module contents since some non-downloadable content can have revision/timemodified.
-                    files = files.concat(module.contents || []);
+                var that = this;
 
-                    return {
-                        timemod: $mmFilepool.getTimemodifiedFromFileList(files),
-                        revision: $mmFilepool.getRevisionFromFileList(files)
-                    };
+                // Load module contents if needed.
+                return that.loadContents(module, courseId).then(function() {
+                    // Get the intro files if needed.
+                    var promise = introFiles ? $q.when(introFiles) : that.getIntroFiles(module, courseId);
+                    return promise.then(function(files) {
+                        // Add all the module contents since some non-downloadable content can have revision/timemodified.
+                        files = files.concat(module.contents || []);
+
+                        return {
+                            timemod: $mmFilepool.getTimemodifiedFromFileList(files),
+                            revision: $mmFilepool.getRevisionFromFileList(files)
+                        };
+                    });
                 });
             };
 
@@ -356,7 +379,23 @@ angular.module('mm.core.course')
              * @return {Promise}
              */
             this.invalidateContent = function(moduleId) {
-                return $mmFilepool.invalidateFilesByComponent($mmSite.getId(), this.component, moduleId);
+                var promises = [];
+
+                promises.push($mmCourse.invalidateModule(module.id));
+                promises.push($mmFilepool.invalidateFilesByComponent($mmSite.getId(), this.component, moduleId));
+
+                return $q.all(promises);
+            };
+
+            /**
+             * Invalidates WS calls needed to determine module status.
+             *
+             * @param  {Object} module   Module to invalidate.
+             * @param  {Number} courseId Course ID the module belongs to.
+             * @return {Promise}         Promise resolved when done.
+             */
+            self.invalidateModule = function(module, courseId) {
+                return $mmCourse.invalidateModule(module.id);
             };
 
             /**
@@ -368,7 +407,10 @@ angular.module('mm.core.course')
              */
             this.isDownloadable = function(module, courseId) {
                 if (this.isResource) {
-                    return $q.when(module.contents && module.contents.length > 0);
+                    // Load module contents if needed.
+                    return this.loadContents(module, courseId).then(function() {
+                        return module.contents && module.contents.length > 0;
+                    });
                 } else {
                     return $q.when(true);
                 }
@@ -404,6 +446,20 @@ angular.module('mm.core.course')
              */
             this.isFileDownloadable = function(file) {
                 return file.type === 'file';
+            };
+
+            /**
+             * Load module contents into module.contents if they aren't loaded already.
+             *
+             * @param  {Object} module     Module to load the contents.
+             * @param  {Number} [courseId] The course ID. Recommended to speed up the process and minimize data usage.
+             * @return {Promise}           Promise resolved when loaded.
+             */
+            this.loadContents = function(module, courseId) {
+                if (this.isResource) {
+                    return $mmCourse.loadModuleContents(module, courseId);
+                }
+                return $q.when();
             };
 
             /**

@@ -73,11 +73,11 @@ angular.module('mm.core.courses')
                         });
                     }, function() {
                         // User cancelled. Check if the user can view the course contents (guest access or similar).
-                        return $mmCourse.getSections(courseId);
+                        return $mmCourse.getSections(courseId, false, true);
                     });
                 }, function(error) {
                     // Can't self enrol. Check if the user can view the course contents (guest access or similar).
-                    return $mmCourse.getSections(courseId).catch(function() {
+                    return $mmCourse.getSections(courseId, false, true).catch(function() {
                         // Error. Show error message and allow the user to open the link in browser.
                         modal.dismiss();
                         if (typeof error != 'string') {

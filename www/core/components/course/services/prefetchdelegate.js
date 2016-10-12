@@ -70,6 +70,8 @@ angular.module('mm.core')
      *                                                                 defined, we'll use getFiles to calculate it (slow).
      *                             - (Optional) removeFiles(module, courseId) (Promise) Remove module downloaded files. If not
      *                                                                 defined, we'll use getFiles to remove them (slow).
+     *                             - (Optional) loadContents(module, courseId) (Promise) Load module contents in module.contents if
+     *                                                                  needed. Only needed if getFiles isn't implemeneted.
      */
     self.registerPrefetchHandler = function(addon, handles, handler) {
         if (typeof prefetchHandlers[handles] !== 'undefined') {
@@ -484,17 +486,26 @@ angular.module('mm.core')
          * @ngdoc method
          * @name $mmCoursePrefetchDelegate#getModuleFiles
          * @param  {Object} module      Module to be get info from.
-         * @param  {Number} courseid    Course ID the module belongs to.
+         * @param  {Number} courseId    Course ID the module belongs to.
          * @return {Promise}            Promise with the lastest revision.
          */
-        self.getModuleFiles = function(module, courseid) {
+        self.getModuleFiles = function(module, courseId) {
             var handler = enabledHandlers[module.modname];
 
             // Prevent null contents.
             module.contents = module.contents || [];
 
-            // If the handler doesn't define a function to get the files, use module.contents.
-            return $q.when(handler.getFiles ? handler.getFiles(module, courseid) : module.contents);
+            if (handler.getFiles) {
+                // The handler defines a function to getFiles, use it.
+                return $q.when(handler.getFiles(module, courseId));
+            } else if (handler.loadContents) {
+                // The handler defines a function to load contents, use it before returning module contents.
+                return handler.loadContents(module, courseId).then(function() {
+                    return module.contents;
+                });
+            } else {
+                return $q.when(module.contents);
+            }
         };
 
         /**
