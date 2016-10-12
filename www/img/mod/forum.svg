@@ -1,71 +1,55 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 15.1.0, SVG Export Plug-In  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" [
-	<!ENTITY ns_flows "http://ns.adobe.com/Flows/1.0/">
-]>
-<svg version="1.1"
-	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
-	 x="0px" y="0px" width="24px" height="24px" viewBox="0 0 24 24" style="overflow:visible;enable-background:new 0 0 24 24;"
-	 xml:space="preserve" preserveAspectRatio="xMinYMid meet">
-<defs>
-</defs>
-<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="10.4995" y1="0" x2="10.4995" y2="19.4312">
-	<stop  offset="0" style="stop-color:#76A1F0"/>
-	<stop  offset="1" style="stop-color:#6B90D5"/>
-	<a:midPointStop  offset="0" style="stop-color:#76A1F0"/>
-	<a:midPointStop  offset="0.5" style="stop-color:#76A1F0"/>
-	<a:midPointStop  offset="1" style="stop-color:#6B90D5"/>
-</linearGradient>
-<path style="fill:url(#SVGID_1_);" d="M19,0H2C0.9,0,0,0.9,0,2v11.3C0,14.4,0.9,15,2,15h0v4.4L6.1,15H19c1.1,0,2-0.5,2-1.6V2
-	C21,0.9,20,0,19,0z"/>
-<linearGradient id="SVGID_2_" gradientUnits="userSpaceOnUse" x1="10.4995" y1="0.9531" x2="10.4995" y2="16.8384">
-	<stop  offset="0" style="stop-color:#BBE0F7"/>
-	<stop  offset="1" style="stop-color:#82B4FB"/>
-	<a:midPointStop  offset="0" style="stop-color:#BBE0F7"/>
-	<a:midPointStop  offset="0.5" style="stop-color:#BBE0F7"/>
-	<a:midPointStop  offset="1" style="stop-color:#82B4FB"/>
-</linearGradient>
-<path style="fill:url(#SVGID_2_);" d="M3,14H2c-0.4,0-1-0.1-1-0.6V2c0-0.6,0.5-1,1-1H19c0.5,0,1,0.5,1,1v11.3c0,0.6-0.8,0.6-1,0.6
-	H5.7L3,16.8V14z"/>
-<linearGradient id="SVGID_3_" gradientUnits="userSpaceOnUse" x1="10.4985" y1="1.9775" x2="10.4985" y2="14.314">
-	<stop  offset="0" style="stop-color:#95BFF8"/>
-	<stop  offset="0.5569" style="stop-color:#84ADEF"/>
-	<stop  offset="1" style="stop-color:#7CA4EB"/>
-	<a:midPointStop  offset="0" style="stop-color:#95BFF8"/>
-	<a:midPointStop  offset="0.4" style="stop-color:#95BFF8"/>
-	<a:midPointStop  offset="1" style="stop-color:#7CA4EB"/>
-</linearGradient>
-<path style="fill:url(#SVGID_3_);" d="M4,13c0,0-2,0-2,0V2l17,0l0,11c0,0-13.8,0-13.8,0L4,14.3V13z"/>
-<path style="fill:#FFFFFF;" d="M17,11H4v-1h13V11z M17,8H4v1h13V8z M17,6H4v1h13V6z M17,4H4v1h13V4z"/>
-<linearGradient id="SVGID_4_" gradientUnits="userSpaceOnUse" x1="15" y1="7.8955" x2="15" y2="23.897">
-	<stop  offset="0" style="stop-color:#90C50E"/>
-	<stop  offset="1" style="stop-color:#70A034"/>
-	<a:midPointStop  offset="0" style="stop-color:#90C50E"/>
-	<a:midPointStop  offset="0.5" style="stop-color:#90C50E"/>
-	<a:midPointStop  offset="1" style="stop-color:#70A034"/>
-</linearGradient>
-<path style="fill:url(#SVGID_4_);" d="M22,7.9H8c-1.1,0-2,0.7-2,1.8v9c0,1.1,0.9,2,2,2v3.2l3.1-3H22c1.1,0,2-1.1,2-2.2v-9
-	C24,8.6,23.1,7.9,22,7.9z"/>
-<linearGradient id="SVGID_5_" gradientUnits="userSpaceOnUse" x1="15" y1="8.8955" x2="15" y2="21.3911">
-	<stop  offset="0" style="stop-color:#D9F991"/>
-	<stop  offset="0.2388" style="stop-color:#D7F88D"/>
-	<stop  offset="0.4501" style="stop-color:#D1F383"/>
-	<stop  offset="0.6509" style="stop-color:#C6EC71"/>
-	<stop  offset="0.844" style="stop-color:#B7E257"/>
-	<stop  offset="1" style="stop-color:#A8D73D"/>
-	<a:midPointStop  offset="0" style="stop-color:#D9F991"/>
-	<a:midPointStop  offset="0.7317" style="stop-color:#D9F991"/>
-	<a:midPointStop  offset="1" style="stop-color:#A8D73D"/>
-</linearGradient>
-<path style="fill:url(#SVGID_5_);" d="M9,19.9H8c-0.6,0-1-0.7-1-1.2v-9c0-0.6,0.4-0.8,1-0.8h14c0.6,0,1,0.2,1,0.8v9
-	c0,0.6-0.4,1.2-1,1.2H10.6L9,21.4V19.9z"/>
-<linearGradient id="SVGID_6_" gradientUnits="userSpaceOnUse" x1="15" y1="9.8955" x2="15" y2="18.896">
-	<stop  offset="0" style="stop-color:#B3E810"/>
-	<stop  offset="1" style="stop-color:#90C60D"/>
-	<a:midPointStop  offset="0" style="stop-color:#B3E810"/>
-	<a:midPointStop  offset="0.5" style="stop-color:#B3E810"/>
-	<a:midPointStop  offset="1" style="stop-color:#90C60D"/>
-</linearGradient>
-<polygon style="fill:url(#SVGID_6_);" points="10,18.9 8,18.9 8,9.9 22,9.9 22,18.9 10.2,18.9 10,18.9 "/>
-<path style="fill:#FFFFFF;" d="M20,16.9H10v-1h10V16.9z M20,13.9H10v1h10V13.9z M20,11.9H10v1h10V11.9z"/>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1792"
+   height="1792"
+   viewBox="0 0 1792 1792"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="comments-o.svg">
+  <metadata
+     id="metadata10">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs8" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="753"
+     inkscape:window-height="480"
+     id="namedview6"
+     showgrid="false"
+     inkscape:zoom="0.13169643"
+     inkscape:cx="896"
+     inkscape:cy="896"
+     inkscape:window-x="162"
+     inkscape:window-y="118"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg2" />
+  <path
+     d="M704 384q-153 0-286 52t-211.5 141-78.5 191q0 82 53 158t149 132l97 56-35 84q34-20 62-39l44-31 53 10q78 14 153 14 153 0 286-52t211.5-141 78.5-191-78.5-191-211.5-141-286-52zm0-128q191 0 353.5 68.5t256.5 186.5 94 257-94 257-256.5 186.5-353.5 68.5q-86 0-176-16-124 88-278 128-36 9-86 16h-3q-11 0-20.5-8t-11.5-21q-1-3-1-6.5t.5-6.5 2-6l2.5-5 3.5-5.5 4-5 4.5-5 4-4.5q5-6 23-25t26-29.5 22.5-29 25-38.5 20.5-44q-124-72-195-177t-71-224q0-139 94-257t256.5-186.5 353.5-68.5zm822 1169q10 24 20.5 44t25 38.5 22.5 29 26 29.5 23 25q1 1 4 4.5t4.5 5 4 5 3.5 5.5l2.5 5 2 6 .5 6.5-1 6.5q-3 14-13 22t-22 7q-50-7-86-16-154-40-278-128-90 16-176 16-271 0-472-132 58 4 88 4 161 0 309-45t264-129q125-92 192-212t67-254q0-77-23-152 129 71 204 178t75 230q0 120-71 224.5t-195 176.5z"
+     fill="#f00"
+     id="path4"
+     style="fill:#676767;fill-opacity:1" />
 </svg>
