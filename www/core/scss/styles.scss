@@ -15,8 +15,29 @@
  * Variables
  */
 
+ /**
+ * Vonk
+ */
+
+ @font-face {
+    font-family: 'fontawesome' !important;
+    src:url('fontawesome-webfont.eot');
+    src:url('fontawesome-webfont.eot') format('embedded-opentype'),
+        url('fontawesome-webfont.woff') format('woff'),
+        url('fontawesome-webfont.ttf') format('truetype'),
+        url('fontawesome-webfont.svg') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/*
+.ion-ios-bell::before {
+    content: "\f3e4" !important;
+}
+*/
+
 // Bar content.
-$bar-content-bg: #f70 !default;
+$bar-content-bg: #17181d !default;
 $bar-content-border: transparent !default;
 $bar-content-text: #fff !default;
 
@@ -39,11 +60,8 @@ $completion-img-width: 24px !default;
 // Disabled items.
 $item-disabled-color: #999 !default;
 
-// Warnings (energized).
-$mm-warning-color: $energized !default;
-
-// Errors (red).
-$mm-error-color: #c00 !default;
+// Warnings (red).
+$mm-warning-color: #c00 !default;
 
 // Timer variables.
 $mm-timer-warn-color:     #f00 !default;
@@ -57,38 +75,6 @@ $mm-text-with-icon-height: 22px !default;
 $mm-button-icon-small-height: 22px !default;
 
 /**
- * App Branding
- */
-.mm-bglogo {
-  background-color: white; /* Change this to add a bg image or change color */
-  background-repeat: no-repeat;
-  background-position: center center;
-  width: 100%;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-}
-
-.mm-logo {
-  background-image: url('../img/moodle.png'); /* Change logo here */
-  background-repeat: no-repeat;
-  background-position: center center;
-  width: 100%;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  text-align: center;
-}
-
-.mm-logo:before {
-  content: '';
-  display: inline-block;
-  height: 100%;
-  vertical-align: middle;
-  margin-top: 120px; /* Change this to place spinner under the logo (usually double of the logo size) */
-}
-
-/**
  * Styles revert.
  */
 
@@ -99,10 +85,6 @@ em {
 /**
  * Styles.
  */
-
-.item-stacked-label{
-  background-color: $item-default-bg;
-}
 
 // Default bar.
 .bar-content {
@@ -235,30 +217,6 @@ em {
 // Avoid adding too much padding.
 .item-complex .item-checkbox .item-content {
   padding: 0;
-}
-
-// Large centered avatar.
-.item-avatar-center {
-    @extend .item-avatar;
-    text-align: center;
-    padding-left: 16px;
-    &.item-complex .item-content {
-        text-align: center;
-        padding-left: 49px;
-    }
-    > img:first-child,
-    &.item-complex .item-content > img:first-child,
-    img.avatar {
-        position: static;
-        width: 100px;
-        height: 100px;
-        max-width: 100px;
-        max-height: 100px;
-        margin-bottom: 10px;
-        border-radius : 50%;
-        padding: 4px;
-        border: 1px solid #ddd;
-    }
 }
 
 .user-with-avatar {
@@ -473,21 +431,9 @@ mm-navigation-bar {
   padding: $item-padding;
 }
 
-p.mm-error {
-  color: $mm-error-color;
-}
-
-.mm-warning {
-  border-bottom: 3px solid $mm-warning-color;
-  padding: $card-padding;
-  box-shadow: $card-box-shadow;
-  margin: 20px 10px;
-  background-color: #fff;
-
-  i.icon:before {
-      color: $mm-warning-color;
-      font-size: 125%;
-  }
+// Red color for paragraphs.
+p.mm-warning {
+  color: $mm-warning-color;
 }
 
 // Extra attributes to ionic classes to force frames via directive 100% height.
