@@ -853,13 +853,14 @@ angular.module('mm.addons.mod_quiz')
     /**
      * Get a Quiz with key=value. If more than one is found, only the first will be returned.
      *
-     * @param  {String} siteId   Site ID.
-     * @param  {Number} courseId Course ID.
-     * @param  {String} key      Name of the property to check.
-     * @param  {Mixed} value     Value to search.
-     * @return {Promise}         Promise resolved when the Quiz is retrieved.
+     * @param  {String}     siteId          Site ID.
+     * @param  {Number}     courseId        Course ID.
+     * @param  {String}     key             Name of the property to check.
+     * @param  {Mixed}      value           Value to search.
+     * @param  {Boolean}    [forceCache]    True to always get the value from cache, false otherwise. Default false.
+     * @return {Promise}                    Promise resolved when the Quiz is retrieved.
      */
-    function getQuiz(siteId, courseId, key, value) {
+    function getQuiz(siteId, courseId, key, value, forceCache) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     courseids: [courseId]
@@ -867,6 +868,10 @@ angular.module('mm.addons.mod_quiz')
                 preSets = {
                     cacheKey: getQuizDataCacheKey(courseId)
                 };
+
+            if (forceCache) {
+                preSets.omitExpires = true;
+            }
 
             return site.read('mod_quiz_get_quizzes_by_courses', params, preSets).then(function(response) {
                 if (response && response.quizzes) {
@@ -891,14 +896,15 @@ angular.module('mm.addons.mod_quiz')
      * @module mm.addons.mod_quiz
      * @ngdoc method
      * @name $mmaModQuiz#getQuiz
-     * @param {Number} courseId Course ID.
-     * @param {Number} cmid     Course module ID.
-     * @param {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}        Promise resolved when the Quiz is retrieved.
+     * @param {Number}  courseId        Course ID.
+     * @param {Number}  cmid            Course module ID.
+     * @param {String}  [siteId]        Site ID. If not defined, current site.
+     * @param {Boolean} [forceCache]    True to always get the value from cache, false otherwise. Default false.
+     * @return {Promise}                Promise resolved when the Quiz is retrieved.
      */
-    self.getQuiz = function(courseId, cmid, siteId) {
+    self.getQuiz = function(courseId, cmid, siteId, forceCache) {
         siteId = siteId || $mmSite.getId();
-        return getQuiz(siteId, courseId, 'coursemodule', cmid);
+        return getQuiz(siteId, courseId, 'coursemodule', cmid, forceCache);
     };
 
     /**
@@ -907,14 +913,15 @@ angular.module('mm.addons.mod_quiz')
      * @module mm.addons.mod_quiz
      * @ngdoc method
      * @name $mmaModQuiz#getQuizById
-     * @param {Number} courseId Course ID.
-     * @param {Number} id       Quiz ID.
-     * @param {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}        Promise resolved when the Quiz is retrieved.
+     * @param {Number}  courseId        Course ID.
+     * @param {Number}  id              Quiz ID.
+     * @param {String}  [siteId]        Site ID. If not defined, current site.
+     * @param {Boolean} [forceCache]    True to always get the value from cache, false otherwise. Default false.
+     * @return {Promise}                Promise resolved when the Quiz is retrieved.
      */
-    self.getQuizById = function(courseId, id, siteId) {
+    self.getQuizById = function(courseId, id, siteId, forceCache) {
         siteId = siteId || $mmSite.getId();
-        return getQuiz(siteId, courseId, 'id', id);
+        return getQuiz(siteId, courseId, 'id', id, forceCache);
     };
 
     /**

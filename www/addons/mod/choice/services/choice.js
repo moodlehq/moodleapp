@@ -196,13 +196,14 @@ angular.module('mm.addons.mod_choice')
     /**
      * Get a choice with key=value. If more than one is found, only the first will be returned.
      *
-     * @param  {String} siteId    Site ID.
-     * @param  {Number} courseId  Course ID.
-     * @param  {String} key       Name of the property to check.
-     * @param  {Mixed}  value     Value to search.
-     * @return {Promise}          Promise resolved when the choice is retrieved.
+     * @param  {String}     siteId          Site ID.
+     * @param  {Number}     courseId        Course ID.
+     * @param  {String}     key             Name of the property to check.
+     * @param  {Mixed}      value           Value to search.
+     * @param  {Boolean}    [forceCache]    True to always get the value from cache, false otherwise. Default false.
+     * @return {Promise}                    Promise resolved when the choice is retrieved.
      */
-    function getChoice(siteId, courseId, key, value) {
+    function getChoice(siteId, courseId, key, value, forceCache) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     courseids: [courseId]
@@ -210,6 +211,10 @@ angular.module('mm.addons.mod_choice')
                 preSets = {
                     cacheKey: getChoiceDataCacheKey(courseId)
                 };
+
+            if (forceCache) {
+                preSets.omitExpires = true;
+            }
 
             return site.read('mod_choice_get_choices_by_courses', params, preSets).then(function(response) {
                 if (response && response.choices) {
@@ -234,14 +239,15 @@ angular.module('mm.addons.mod_choice')
      * @module mm.addons.mod_choice
      * @ngdoc method
      * @name $mmaModChoice#getChoice
-     * @param {Number} courseId Course ID.
-     * @param {Number} cmId     Course module ID.
-     * @param {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}        Promise resolved when the choice is retrieved.
+     * @param   {Number}    courseId        Course ID.
+     * @param   {Number}    cmId            Course module ID.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @param   {Boolean}   [forceCache]    True to always get the value from cache, false otherwise. Default false.
+     * @return  {Promise}                   Promise resolved when the choice is retrieved.
      */
-    self.getChoice = function(courseId, cmId, siteId) {
+    self.getChoice = function(courseId, cmId, siteId, forceCache) {
         siteId = siteId || $mmSite.getId();
-        return getChoice(siteId, courseId, 'coursemodule', cmId);
+        return getChoice(siteId, courseId, 'coursemodule', cmId, forceCache);
     };
 
     /**
@@ -250,14 +256,15 @@ angular.module('mm.addons.mod_choice')
      * @module mm.addons.mod_choice
      * @ngdoc method
      * @name $mmaModChoice#getChoiceById
-     * @param {Number} courseId  Course ID.
-     * @param {Number} id        Choice ID.
-     * @param {String} [siteId]  Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved when the choice is retrieved.
+     * @param   {Number}    courseId        Course ID.
+     * @param   {Number}    id              Choice ID.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @param   {Boolean}   [forceCache]    True to always get the value from cache, false otherwise. Default false.
+     * @return  {Promise}                   Promise resolved when the choice is retrieved.
      */
-    self.getChoiceById = function(courseId, id, siteId) {
+    self.getChoiceById = function(courseId, id, siteId, forceCache) {
         siteId = siteId || $mmSite.getId();
-        return getChoice(siteId, courseId, 'id', id);
+        return getChoice(siteId, courseId, 'id', id, forceCache);
     };
 
     /**
