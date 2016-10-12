@@ -21,7 +21,8 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc service
  * @name $mmaModAssignSubmissionOnlinetextHandler
  */
-.factory('$mmaModAssignSubmissionOnlinetextHandler', function($mmSite, $mmaModAssign, $q, $mmaModAssignHelper, $mmWS, $mmText) {
+.factory('$mmaModAssignSubmissionOnlinetextHandler', function($mmSite, $mmaModAssign, $q, $mmaModAssignHelper, $mmWS, $mmText,
+            $mmaModAssignOffline) {
 
     var self = {};
 
@@ -162,9 +163,12 @@ angular.module('mm.addons.mod_assign')
      * @param  {Object} plugin     Plugin to get the data for.
      * @param  {Object} inputData  Data entered in the submission form.
      * @param  {Object} pluginData Object where to add the plugin data.
+     * @param  {Boolean} offline   True to prepare the data for an offline submission, false otherwise.
+     * @param  {Number} [userId]   User ID. If not defined, site's current user.
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
      * @return {Void}
      */
-    self.prepareSubmissionData = function(assign, submission, plugin, inputData, pluginData) {
+    self.prepareSubmissionData = function(assign, submission, plugin, inputData, pluginData, offline, userId, siteId) {
         pluginData.onlinetext_editor = {
             text: getTextToSubmit(plugin, inputData),
             format: 1,
@@ -187,11 +191,19 @@ angular.module('mm.addons.mod_assign')
             // We have the initial text from the rich text editor, compare it with the new text.
             return plugin.rteInitialText != inputData.onlinetext_editor_text;
         } else {
-            // Not using rich text editor or weren't able to get its initial text. Get it from plugin.
-            var initialText = plugin.editorfields && plugin.editorfields[0] ? plugin.editorfields[0].text : '',
-                newText = getTextToSubmit(plugin, inputData);
-
-            return initialText != newText;
+            // Not using rich text editor or weren't able to get its initial text.
+            // Get it from plugin or offline.
+            return $mmaModAssignOffline.getSubmission(assign.id, submission.userid).catch(function() {
+                // No offline data found.
+            }).then(function(data) {
+                if (data && data.plugindata && data.plugindata.onlinetext_editor) {
+                    return data.plugindata.onlinetext_editor.text;
+                }
+                // No offline data found, get text from plugin.
+                return plugin.editorfields && plugin.editorfields[0] ? plugin.editorfields[0].text : '';
+            }).then(function(initialText) {
+                return initialText != getTextToSubmit(plugin, inputData);
+            });
         }
     };
 
@@ -209,12 +221,31 @@ angular.module('mm.addons.mod_assign')
         return $mmText.restorePluginfileUrls(text, files);
     }
 
+    /**
+     * Should prepare and add to pluginData the data to send to server to synchronize an offline submission.
+     *
+     * @param  {Object} assign      Assignment.
+     * @param  {Object} submission  Submission to check data.
+     * @param  {Object} plugin      Plugin to get the data for.
+     * @param  {Object} offlineData Offline data stored for the submission.
+     * @param  {Object} pluginData  Object where to add the plugin data.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Void}
+     */
+    self.prepareSyncData = function(assign, submission, plugin, offlineData, pluginData, siteId) {
+        var textData = offlineData && offlineData.plugindata && offlineData.plugindata.onlinetext_editor;
+        if (textData) {
+            // Has some data to sync.
+            pluginData.onlinetext_editor = textData;
+        }
+    };
+
     return self;
 })
 
 .run(function($mmAddonManager) {
     // Use addon manager to inject $mmaModAssignSubmissionDelegate. This is to provide an example for remote addons,
-    // since they cannot assume that the quiz addon will be packaged in custom apps.
+    // since they cannot assume that the assign addon will be packaged in custom apps.
     var $mmaModAssignSubmissionDelegate = $mmAddonManager.get('$mmaModAssignSubmissionDelegate');
     if ($mmaModAssignSubmissionDelegate) {
         $mmaModAssignSubmissionDelegate.registerHandler('mmaModAssignSubmissionOnlinetext', 'onlinetext',

@@ -21,7 +21,8 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc directive
  * @name mmaModAssignSubmissionFile
  */
-.directive('mmaModAssignSubmissionFile', function($mmaModAssign, $mmaModAssignSubmissionFileSession) {
+.directive('mmaModAssignSubmissionFile', function($mmaModAssign, $mmaModAssignSubmissionFileSession, $mmaModAssignHelper,
+            $mmaModAssignOffline, mmaModAssignSubmissionFileName) {
     return {
         restrict: 'A',
         priority: 100,
@@ -32,7 +33,25 @@ angular.module('mm.addons.mod_assign')
             }
 
             scope.files = $mmaModAssign.getSubmissionPluginAttachments(scope.plugin);
-            $mmaModAssignSubmissionFileSession.setFiles(scope.assign.id, scope.files);
+
+            // Get the offline data.
+            $mmaModAssignOffline.getSubmission(scope.assign.id).then(function(offlineData) {
+                if (offlineData && offlineData.plugindata && offlineData.plugindata.files_filemanager &&
+                        offlineData.plugindata.files_filemanager.offline) {
+                    // Has offline files.
+                    return $mmaModAssignHelper.getStoredSubmissionFiles(scope.assign.id, mmaModAssignSubmissionFileName)
+                            .then(function(result) {
+                        // Mark the files as pending offline.
+                        angular.forEach(result, function(file) {
+                            file.offline = true;
+                            file.filename = file.name;
+                        });
+                        scope.files = scope.files.concat(result);
+                    });
+                }
+            }).finally(function() {
+                $mmaModAssignSubmissionFileSession.setFiles(scope.assign.id, scope.files);
+            });
         }
     };
 });
