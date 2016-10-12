@@ -50,6 +50,7 @@ angular.module('mm.core.login')
             $mmUtil.showConfirm($translate('mm.login.confirmdeletesite', {sitename: sitename})).then(function() {
                 $mmSitesManager.deleteSite(site.id).then(function() {
                     $scope.sites.splice(index, 1);
+                    $scope.data.showDelete = false;
                     $mmSitesManager.hasNoSites().then(function() {
                         // No sites left, go to add a new site state.
                         $ionicHistory.nextViewOptions({disableBack: true});
