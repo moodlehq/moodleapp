@@ -2,11 +2,12 @@
     "attemptfirst": "Pierwsze podejście",
     "attemptlast": "Ostatnie podejście",
     "attemptnumber": "Próba",
-    "attemptquiznow": "Spróbuj teraz rozwiązać quiz",
+    "attemptquiznow": "Spróbuj teraz rozwiązać test",
     "attemptstate": "Stan",
     "comment": "Komentarz",
     "completedon": "Ukończono",
     "confirmclose": "Zakończenie podejścia. Jeżeli zakończysz to podejście, nie będziesz mógł zmienić swoich odpowiedzi.",
+    "confirmstartheader": "Test na czas",
     "connectionerror": "Utracono połączenie. (Automatyczny zapis nie powiódł się).\n\nZanotuj wszystkie odpowiedzi jakich udzieliłeś na tej stronie w ciągu ostatnich kilku minut i spróbuj połączyć się z siecią ponownie.\n\nKiedy połączenie zostanie nawiązane twoje odpowiedzi zostaną zapisane a ten komunikat zniknie.",
     "continueattemptquiz": "Kontynuuj ostatnie podejście",
     "continuepreview": "Kontynuuj ostatni podgląd",
@@ -28,10 +29,10 @@
     "overallfeedback": "Całościowa informacja zwrotna",
     "overdue": "Zaległy",
     "preview": "Podgląd",
-    "previewquiznow": "Pokaż podgląd quizu",
+    "previewquiznow": "Pokaż podgląd testu",
     "question": "Pytanie",
     "quizpassword": "Hasło dostępu do quizu",
-    "reattemptquiz": "Ponownie rozwiąż quiz",
+    "reattemptquiz": "Ponownie rozwiąż test",
     "requirepasswordmessage": "Aby wziąć udział w tym quizie, musisz znać hasło",
     "returnattempt": "Powrót do podejścia",
     "review": "Przegląd",
@@ -53,5 +54,5 @@
     "summaryofattempts": "Podsumowanie twoich poprzednich podejść",
     "timeleft": "Pozostały czas",
     "timetaken": "Wykorzystany czas",
-    "yourfinalgradeis": "Twoja końcowa ocena za ten quiz wynosi {{$a}}"
+    "yourfinalgradeis": "Twoja końcowa ocena za ten test wynosi {{$a}}"
 }

@@ -7,6 +7,8 @@
     "newpagetitle": "新页面标题",
     "nocontent": "此页面无内容",
     "notingroup": "不在小组内",
+    "page": "页",
+    "pageexists": "页面已存在。重定向到它",
     "pagename": "页码",
     "wrongversionlock": "在您正编辑此页面时，另一个人已经做了编辑，所以您的修改已过时。"
 }

@@ -10,6 +10,8 @@
     "confirmclose": "Una vegada enviat ja no podreu canviar les respostes d'aquest intent.",
     "confirmcontinueoffline": "Aquest intent no s'ha sincronitzat des de {{$a}}. Si heu continuat aquest intent en un altre dispositiu després d'aquesta data es podrien perdre dades.",
     "confirmleavequizonerror": "S'ha produït un error en desar les respostes. Esteu segur que voleu abandonar el qüestionari?",
+    "confirmstart": "El qüestionari té un temps màxim de {{$a}}. El temps començarà a comptar des del moment en què inicieu l'intent i s'ha d'enviar abans que el temps expiri. Confirmeu que voleu començar ara?",
+    "confirmstartheader": "Qüestionari cronometrat",
     "connectionerror": "S'ha perdut la connexió a la xarxa. (Ha fallat l'autodesament.)\n\nPreneu nota de les respostes introduïdes en aquesta pàgina en els últims minuts i, després, procureu tornar a connectar-vos-hi.\n\nUna vegada que la connexió s'hagi restablert, les vostres respostes s'haurien d'haver desat, i aquest missatge desapareixerà.",
     "continueattemptquiz": "Continua el darrer intent",
     "continuepreview": "Continua la darrera previsualització",

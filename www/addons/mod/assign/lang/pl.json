@@ -67,6 +67,6 @@
     "submittedlate": "Zadanie zostało złożone {{$a}} po terminie",
     "timemodified": "Ostatnio modyfikowane",
     "timeremaining": "Pozostały czas",
-    "userswhoneedtosubmit": "Użytkownicy, którzy muszą przesłać zadanie: {{$a}}",
+    "userswhoneedtosubmit": "Użytkownicy, którzy muszą potwierdzić zadanie: {{$a}}",
     "viewsubmission": "Wyświetl pracę domową"
 }
