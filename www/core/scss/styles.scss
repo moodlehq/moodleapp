@@ -805,3 +805,8 @@ mm-format-text {
     margin: 0;
   }
 }
+
+// InApp notifications.
+.mm-inapp-notification {
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+}
