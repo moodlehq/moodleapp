@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_book')
  * @name $mmaModBookPrefetchHandler
  */
 .factory('$mmaModBookPrefetchHandler', function($mmaModBook, $mmSite, $mmPrefetchFactory, $q, mmCoreDownloaded, mmCoreOutdated,
-            mmaModBookComponent) {
+            mmaModBookComponent, $mmCourse) {
 
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModBookComponent, true);
 
@@ -105,7 +105,12 @@ angular.module('mm.addons.mod_book')
      * @return {Promise}         Promise resolved when done.
      */
     self.invalidateModule = function(module, courseId) {
-        return $mmaModBook.invalidateBookData(courseId);
+        var promises = [];
+
+        promises.push($mmaModBook.invalidateBookData(courseId));
+        promises.push($mmCourse.invalidateModule(module.id));
+
+        return $q.all(promises);
     };
 
     /**

@@ -21,7 +21,8 @@ angular.module('mm.addons.mod_book')
  * @ngdoc service
  * @name $mmaModBook
  */
-.factory('$mmaModBook', function($mmFilepool, $mmSite, $mmFS, $http, $log, $q, $mmSitesManager, $mmUtil, mmaModBookComponent) {
+.factory('$mmaModBook', function($mmFilepool, $mmSite, $mmFS, $http, $log, $q, $mmSitesManager, $mmUtil, mmaModBookComponent,
+            $mmCourse) {
     $log = $log.getInstance('$mmaModBook');
 
     var self = {};
@@ -321,6 +322,7 @@ angular.module('mm.addons.mod_book')
 
         promises.push(self.invalidateBookData(courseId, siteId));
         promises.push($mmFilepool.invalidateFilesByComponent(siteId, mmaModBookComponent, moduleId));
+        promises.push($mmCourse.invalidateModule(moduleId, siteId));
 
         return $mmUtil.allPromises(promises);
     };

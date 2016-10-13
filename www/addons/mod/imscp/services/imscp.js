@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_imscp')
  * @ngdoc service
  * @name $mmaModImscp
  */
-.factory('$mmaModImscp', function($mmFilepool, $mmSite, $mmFS, $log, $q, $sce, $mmApp, $mmSitesManager, $mmUtil,
+.factory('$mmaModImscp', function($mmFilepool, $mmSite, $mmFS, $log, $q, $sce, $mmApp, $mmSitesManager, $mmUtil, $mmCourse,
             mmaModImscpComponent) {
     $log = $log.getInstance('$mmaModImscp');
 
@@ -308,6 +308,7 @@ angular.module('mm.addons.mod_imscp')
 
         promises.push(self.invalidateImscpData(courseId, siteId));
         promises.push($mmFilepool.invalidateFilesByComponent(siteId, mmaModImscpComponent, moduleId));
+        promises.push($mmCourse.invalidateModule(moduleId, siteId));
 
         return $mmUtil.allPromises(promises);
     };

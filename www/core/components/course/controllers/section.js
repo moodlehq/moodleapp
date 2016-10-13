@@ -64,10 +64,10 @@ angular.module('mm.core.course')
 
                 if (sectionId < 0) {
                     sectionnumber = 0;
-                    promise = $mmCourse.getSections(courseId);
+                    promise = $mmCourse.getSections(courseId, false, true);
                 } else {
                     sectionnumber = sectionId;
-                    promise = $mmCourse.getSection(courseId, sectionId).then(function(section) {
+                    promise = $mmCourse.getSection(courseId, false, true, sectionId).then(function(section) {
                         $scope.title = section.name;
                         $scope.summary = section.summary;
                         return [section];

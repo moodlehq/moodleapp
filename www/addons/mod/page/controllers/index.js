@@ -26,7 +26,7 @@ angular.module('mm.addons.mod_page')
     $log = $log.getInstance('mmaModPageIndexCtrl');
 
     var module = $stateParams.module || {},
-        courseid = $stateParams.courseid;
+        courseId = $stateParams.courseid;
 
     $scope.title = module.name;
     $scope.description = module.description;
@@ -37,26 +37,29 @@ angular.module('mm.addons.mod_page')
     $scope.refreshIcon = 'spinner';
 
     function fetchContent() {
-        var downloadFailed = false;
-        // Prefetch the content so ALL files are downloaded, not just the ones shown in the page.
-        return $mmaModPagePrefetchHandler.download(module).catch(function(err) {
-            // Mark download as failed but go on since the main files could have been downloaded.
-            downloadFailed = true;
-        }).then(function() {
-            return $mmaModPage.getPageHtml(module.contents, module.id).then(function(content) {
-                $scope.content = content;
+        // Load module contents if needed.
+        return $mmCourse.loadModuleContents(module, courseId).then(function() {
+            var downloadFailed = false;
+            // Prefetch the content so ALL files are downloaded, not just the ones shown in the page.
+            return $mmaModPagePrefetchHandler.download(module).catch(function() {
+                // Mark download as failed but go on since the main files could have been downloaded.
+                downloadFailed = true;
+            }).then(function() {
+                return $mmaModPage.getPageHtml(module.contents, module.id).then(function(content) {
+                    $scope.content = content;
 
-                if (downloadFailed && $mmApp.isOnline()) {
-                    // We could load the main file but the download failed. Show error message.
-                    $mmUtil.showErrorModal('mm.core.errordownloadingsomefiles', true);
-                }
-            }).catch(function() {
-                $mmUtil.showErrorModal('mma.mod_page.errorwhileloadingthepage', true);
-                return $q.reject();
-            }).finally(function() {
-                $scope.loaded = true;
-                $scope.refreshIcon = 'ion-refresh';
+                    if (downloadFailed && $mmApp.isOnline()) {
+                        // We could load the main file but the download failed. Show error message.
+                        $mmUtil.showErrorModal('mm.core.errordownloadingsomefiles', true);
+                    }
+                });
             });
+        }).catch(function() {
+            $mmUtil.showErrorModal('mma.mod_page.errorwhileloadingthepage', true);
+            return $q.reject();
+        }).finally(function() {
+            $scope.loaded = true;
+            $scope.refreshIcon = 'ion-refresh';
         });
     }
 
@@ -78,7 +81,7 @@ angular.module('mm.addons.mod_page')
 
     fetchContent().then(function() {
         $mmaModPage.logView(module.instance).then(function() {
-            $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
+            $mmCourse.checkModuleCompletion(courseId, module.completionstatus);
         });
     });
 });
