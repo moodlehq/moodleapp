@@ -1,5 +1,5 @@
 {
-    "audio": "Audio",
+    "audio": "Audioa",
     "camera": "Kamera",
     "confirmuploadfile": "{{size}} igotzear zaude. Ziur al zaude aurrera egin nahi duzula?",
     "errorcapturingaudio": "Errorea audioa kapturatzean",
@@ -15,7 +15,7 @@
     "photoalbums": "Argazki-bildumak",
     "readingfile": "Fitxategia irakurtzen",
     "success": "Ondo!",
-    "uploadafile": "Fitxategi bat igo",
+    "uploadafile": "Igo fitxategia",
     "uploading": "Igotzen",
     "video": "Bideoa"
 }

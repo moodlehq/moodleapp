@@ -1,7 +1,12 @@
 {
     "admindisableddownload": "Teniu en compte que l'administrador de Moodle ha desactivat la descàrrega d'arxius; podeu visualitzar els arxius, però no descarregar-los.",
+    "audio": "Àudio",
+    "camera": "Càmera",
+    "chooseaccountuploadfile": "Escolliu un compte on pujar el fitxer",
     "clicktoupload": "Feu clic al botó del dessota per pujar arxius a l'àrea del vostres fitxers.",
+    "confirmuploadfile": "Esteu a punt de pujar {{size}}. Voleu continuar?",
     "couldnotloadfiles": "La llista d'arxius no s'ha pogut carregar.",
+    "downloading": "S'està descarregant",
     "emptyfilelist": "No hi ha fitxers per mostrar.",
     "errorcapturingaudio": "S'ha produït un error en capturar l'àudio.",
     "errorcapturingvideo": "S'ha produït un error en capturar el vídeo.",

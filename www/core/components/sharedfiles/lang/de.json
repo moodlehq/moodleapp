@@ -1,4 +1,10 @@
 {
+    "chooseaccountstorefile": "Wählen Sie ein Nutzerkonto, um die Datei dort zu speichern.",
+    "chooseactionrepeatedfile": "Es gibt bereits eine Datei mit diesem Namen. Möchten Sie die vorhandene Datei ersetzen oder möchten Sie sie umbenennen in '{{$a}}'?",
+    "errorreceivefilenosites": "Bisher sind keine Websites gespeichert. Fügen Sie zuerst eine Website hinzu, bevor Sie eine Datei über die App teilen.",
+    "nosharedfiles": "Bisher sind keine Dateien für diese Website gespeichert.",
     "rename": "Umbenennen",
-    "replace": "Ersetze"
+    "replace": "Ersetzen",
+    "sharedfiles": "Gespeicherte Dateien",
+    "successstorefile": "Die Datei wurde erfolgreich gespeichert. Sie können die Datei jetzt verwenden, um Sie in 'Meine Dateien' hochzuladen oder bei Aktivitäten anzuhängen."
 }

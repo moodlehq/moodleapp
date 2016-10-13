@@ -2,5 +2,8 @@
     "activities": "فعالیت‌ها",
     "duedate": "مهلت تحویل",
     "path": "مسیر",
-    "status": "وضعیت"
+    "progress": "پیشروی شاگردان",
+    "rating": "امتیاز",
+    "status": "وضعیت",
+    "template": "الگو"
 }

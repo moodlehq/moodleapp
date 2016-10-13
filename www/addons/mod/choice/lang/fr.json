@@ -8,7 +8,7 @@
     "notopenyet": "Désolé, cette activité ne sera disponible que le {{$a}}",
     "numberofuser": "Nombre de participants",
     "numberofuserinpercentage": "Pourcentage de participants",
-    "previewonly": "Cette affichage est une prévisualisation des options disponibles pour cette activité. Vous ne pourrez pas enregistrer votre choix avant le {{$a}}.",
+    "previewonly": "Cet affichage est une prévisualisation des options disponibles pour cette activité. Vous ne pourrez pas enregistrer votre choix avant le {{$a}}.",
     "removemychoice": "Retirer mon vote",
     "responses": "Réponses",
     "responsesresultgraphdescription": "{{number}} % des participants ont choisi l'option : {{text}}.",

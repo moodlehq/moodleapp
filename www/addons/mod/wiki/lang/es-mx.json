@@ -10,6 +10,8 @@
     "newpagetitle": "Título nuevo de la página",
     "nocontent": "No hay contenido para esta página",
     "notingroup": "No está en un grupo",
+    "page": "Página",
+    "pageexists": "Esta página ya existe.",
     "pagename": "Nombre de página",
     "subwiki": "Sub-wiki",
     "titleshouldnotbeempty": "El título no debería de estar vacío",

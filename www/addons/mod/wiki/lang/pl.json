@@ -7,6 +7,8 @@
     "newpagetitle": "Nowy tytuł strony",
     "nocontent": "Brak zawartości dla tej strony",
     "notingroup": "Nie w grupie",
+    "page": "Strona",
+    "pageexists": "Ta strona już istnieje. Przekierowuje do niej.",
     "pagename": "Nazwa strony",
     "wrongversionlock": "Inny użytkownik edytował tę stronę w czasie, kiedy ty ją edytowałeś i twoja zawartość jest przestarzała."
 }
