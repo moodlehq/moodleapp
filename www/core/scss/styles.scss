@@ -805,3 +805,55 @@ mm-format-text {
     margin: 0;
   }
 }
+
+// InApp notifications.
+
+.mm-inapp-notification-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 11;
+  width: 100%;
+  opacity: 0;
+  margin-top: -130px;
+  -webkit-transition: 0.5s all ease-in-out;
+  transition: 0.5s all ease-in-out;
+
+  &.active {
+    opacity: 1;
+    margin-top: 0;
+  }
+
+  &.hide {
+    opacity: 0;
+    margin-top: -130px;
+    display: block;
+    pointer-events: none;
+  }
+
+  .mm-inapp-notification {
+    position: static;
+    height: auto;
+    width: auto;
+    max-width: 400px;
+    margin-left: auto  !important;
+    margin-right: auto  !important;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+    padding: 2px 0;
+
+    .scroll-content {
+      position: relative;
+      top: auto;
+      bottom: auto;
+      left: auto;
+      right: auto;
+    }
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  .mm-inapp-notification-backdrop .mm-inapp-notification {
+    margin-left: 6px !important;
+    margin-right: 6px !important;
+  }
+}
