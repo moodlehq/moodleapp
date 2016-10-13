@@ -1,5 +1,6 @@
 {
     "about": "Sobre",
+    "appname": "Moodle Mobile {{version}}",
     "appready": "Aplicativo pronto",
     "cacheexpirationtime": "Tempo de expiração do cache (milisegundos)",
     "cordovadevicemodel": "Cordova do modelo do dispositivo",
@@ -19,6 +20,8 @@
     "enabledebugging": "Ativar a depuração",
     "enabledownloadsection": "Ativar seções de download",
     "enabledownloadsectiondescription": "Desativar essa opção para acelerar o carregamento das seções do curso.",
+    "enablerichtexteditor": "Habilitar editor de texto rico",
+    "enablerichtexteditordescription": "Se habilitado, o editor de texto rico será exibido em lugares em que ele é permitido.",
     "enablesyncwifi": "Permitir sincronização apenas quando em Wifi",
     "errordeletesitefiles": "Erro ao excluir os arquivos do site.",
     "errorsyncsite": "Erro ao sincronizar os dados do site, por favor verifique sua conexão de internet e tente novamente.",

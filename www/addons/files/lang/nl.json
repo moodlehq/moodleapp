@@ -1,12 +1,18 @@
 {
     "admindisableddownload": "Je Moodle beheerder heeft het downloaden van bestanden uitgeschakeld. Je kunt door de bestandenlijst bladeren, maar ze niet downloaden.",
     "clicktoupload": "Klik op onderstaande knop om bestanden naar je privé-bestanden te uploaden.",
+    "confirmuploadfile": "Je gaat {{size}} uploaden. Wil je verder gaan?",
     "couldnotloadfiles": "De bestandenlijst kon niet geladen worden.",
     "emptyfilelist": "Er zijn geen bestanden te tonen.",
+    "errornoapp": "Je hebt geen app geïnstalleerd om deze actie mee uit te voeren.",
+    "errorreadingfile": "Fout bij het lezen van bestand \"{{$a}}\"",
+    "errorreceivefilenosites": "Er zijn geen sites bewaard. Voeg een site toe voor je een bestand probeert te uploaden.",
+    "erroruploadnotworking": "Jammer genoeg kun je op dit ogenblik geen bestanden uploaden naar de site.",
     "myfiles": "Mijn bestanden",
     "myprivatefiles": "Mijn privé-bestanden",
     "myprivatefilesdesc": "Jouw bestanden op deze Moodle-site.",
     "sitefiles": "Sitebestanden",
     "sitefilesdesc": "Andere bestanden op deze Moodle-site.",
+    "success": "Succes!",
     "uploadfiles": "Upload bestanden"
 }

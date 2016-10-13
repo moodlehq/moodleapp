@@ -3,10 +3,12 @@
     "clicktoupload": "Klik på knappen nedenfor for at uploade filer til dine private filer.",
     "couldnotloadfiles": "Listen af filer kunne ikke læses ind.",
     "emptyfilelist": "Der er ingen filer at vise.",
+    "errorreceivefilenosites": "Der er ingen gemte websider. Tilføj en webside inden du prøver at uploade en fil.",
     "myfiles": "Mine filer",
     "myprivatefiles": "Mine private filer",
     "myprivatefilesdesc": "Filerne som findes i dit private område på dette Moodle websted.",
     "sitefiles": "Webside filer",
     "sitefilesdesc": "De andre filer som er tilgængelige for dig på denne Moodle webside.",
+    "success": "Succes!",
     "uploadfiles": "Upload filer"
 }

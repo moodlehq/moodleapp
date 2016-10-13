@@ -1,5 +1,6 @@
 {
     "about": "Honi buruz",
+    "appname": "Moodle Mobile {{version}}",
     "appready": "App-a prest",
     "cacheexpirationtime": "Cache-aren iraungitze denbora (milisegundotan)",
     "cordovadevicemodel": "Cordova Device eredua",
@@ -32,7 +33,7 @@
     "navigatorlanguage": "Nabigatzailearen hizkuntza",
     "navigatoruseragent": "Nabigatzailearen userAgent-a",
     "networkstatus": "Internet konexioaren egoera",
-    "reportinbackground": "Errorrak automatikoki jakinarazi",
+    "reportinbackground": "Erroreak automatikoki jakinarazi",
     "settings": "Ezarpenak",
     "sites": "Guneak",
     "spaceusage": "Lekuaren erabilera",

@@ -2,6 +2,9 @@
     "cannoteditpage": "Você não pode editar esta página.",
     "createpage": "Criar página",
     "editingpage": "Editando a página '{{$a}}'",
+    "errorloadingpage": "Aconteceu um erro ao carregar a página.",
+    "errornowikiavailable": "Essa wiki não tem nenhum conteúdo ainda.",
+    "gowikihome": "Ir para o ínicio da Wiki",
     "map": "Mapa",
     "newpagehdr": "Nova página",
     "newpagetitle": "Novo título da página",
@@ -10,5 +13,8 @@
     "page": "Página",
     "pageexists": "Esta página já existe. Redirecionado para ela.",
     "pagename": "Nome da página",
+    "subwiki": "Subwiki",
+    "titleshouldnotbeempty": "O título não pode ser vazio",
+    "viewpage": "Ver página",
     "wrongversionlock": "Outro usuário editou esta página enquanto você estava editando e seu conteúdo é obsoleto."
 }

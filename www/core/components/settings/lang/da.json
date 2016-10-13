@@ -1,5 +1,6 @@
 {
     "about": "Om",
+    "appname": "Moodle Mobile {{version}}",
     "appready": "App klar",
     "cacheexpirationtime": "Cache udløbstid (milisekunder)",
     "cordovadevicemodel": "Cordova Device model",

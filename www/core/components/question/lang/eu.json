@@ -2,9 +2,14 @@
     "answer": "Erantzun",
     "complete": "Osoa",
     "correct": "Zuzena",
+    "errorattachmentsnotsupported": "App-ak oraindik ez du erantzunei fitxategiak eranstea onartzen.",
+    "errorquestionnotsupported": "Galdera mota hau ez da zure gunearen app-an onartzen: {{$a}}",
     "feedback": "Feedbacka",
+    "howtodraganddrop": "Sakatu aukeratzeko eta ondoren sakatu ezabatzeko.",
     "incorrect": "Ez zuzena",
     "notanswered": "Oraindik erantzun gabe",
     "notyetanswered": "Erantzun gabea",
-    "partiallycorrect": "Zuzena zati batean"
+    "partiallycorrect": "Zuzena zati batean",
+    "questionmessage": "{{$a}} galdera: {{$b}}",
+    "unknown": "Ezin da egoera zehaztu"
 }

@@ -366,6 +366,7 @@
     "pulltorefresh": "Estira per actualitzar",
     "refresh": "Refresca",
     "requireduserdatamissing": "En aquest perfil d'usuari hi manquen dades requerides. Si us plau ompliu aquestes dades i torneu a intentar-ho.<br>{{$a}}",
+    "retry": "Reintenta",
     "save": "Desa",
     "search": "Cerca",
     "searching": "S'està cercant",
