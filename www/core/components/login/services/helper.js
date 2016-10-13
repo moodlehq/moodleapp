@@ -84,7 +84,11 @@ angular.module('mm.core.login')
             // Configured to go to Site Home. Check if plugin is installed in the app.
             var $mmaFrontpage = $mmAddonManager.get('$mmaFrontpage');
             if ($mmaFrontpage) {
-                return $state.go('site.mm_course-section');
+                return $mmaFrontpage.isFrontpageAvailable().then(function() {
+                    return $state.go('site.mm_course-section');
+                }).catch(function() {
+                    return $state.go('site.mm_courses');
+                });
             }
         }
 
