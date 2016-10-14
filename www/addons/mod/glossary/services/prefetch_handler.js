@@ -233,19 +233,19 @@ angular.module('mm.addons.mod_glossary')
             promises.push($mmaModGlossary.fetchAllEntries($mmaModGlossary.getEntriesByLetter, [glossary.id, 'ALL'])
                     .then(function(entries) {
                 var promises = [],
-                    files = getFilesFromGlossaryAndEntries(module, glossary, entries);
+                    files = getFilesFromGlossaryAndEntries(module, glossary, entries),
+                    userIds = [];
 
                 // Fetch user avatars.
                 angular.forEach(entries, function(entry) {
                     // Fetch individual entries.
                     promises.push($mmaModGlossary.getEntry(entry.id));
 
-                    promises.push($mmUser.getProfile(entry.userid, courseId).then(function(profile) {
-                        if (profile.profileimageurl) {
-                            $mmFilepool.addToQueueByUrl(siteId, profile.profileimageurl);
-                        }
-                    }));
+                    userIds.push(entry.userid);
                 });
+
+                // Prefetch user profiles.
+                promises.push($mmUser.prefetchProfiles(userIds, courseId, siteId));
 
                 angular.forEach(files, function(file) {
                     promises.push($mmFilepool.addToQueueByUrl(siteId, file.fileurl, self.component, module.id, file.timemodified));
