@@ -25,7 +25,7 @@ angular.module('mm.core')
  * @name $mmWS
  */
 .factory('$mmWS', function($http, $q, $log, $mmLang, $cordovaFileTransfer, $mmApp, $mmFS, mmCoreSessionExpired,
-            mmCoreUserDeleted, $translate, $window, md5, $timeout, mmWSTimeout) {
+            mmCoreUserDeleted, $translate, $window, md5, $timeout, mmWSTimeout, mmCoreUserPasswordChangeForced) {
 
     $log = $log.getInstance('$mmWS');
 
@@ -126,6 +126,8 @@ angular.module('mm.core')
                     return $q.reject(mmCoreUserDeleted);
                 } else if (data.errorcode === 'sitemaintenance' || data.errorcode === 'upgraderunning') {
                     return $mmLang.translateAndReject('mm.core.' + data.errorcode);
+                } else if (data.errorcode === 'nopasswordchangeforced') {
+                    return $q.reject(mmCoreUserPasswordChangeForced);
                 } else {
                     return $q.reject(data.message);
                 }

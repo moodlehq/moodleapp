@@ -248,11 +248,7 @@ angular.module('mm.core.login')
         if (typeof error == 'string') {
             $mmUtil.showErrorModal(error);
         } else if (error.errorcode == 'forcepasswordchangenotice') {
-            var message = error.error + "<br>" + $translate.instant('mm.login.visitchangepassword');
-            $mmUtil.showConfirm(message, $translate.instant('mm.core.notice')).then(function() {
-                var changepasswordurl = siteurl + "/login/change_password.php";
-                $mmUtil.openInApp(changepasswordurl);
-            });
+            $mmUtil.openChangePassword(siteurl, error.error);
         } else {
             $mmUtil.showErrorModal(error.error);
         }
