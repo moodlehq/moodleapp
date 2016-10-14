@@ -18,9 +18,9 @@
         <div class="card">
             <div class="item item-text-wrap">
                 <h2>{{ 'mm.core.whyisthishappening' | translate }}</h2>
-                <p ng-if="isSupportedByTheApp && !isRemoteAddon">{{ 'mm.course.activitynotyetviewablesiteupgradeneeded' | translate }}</p>
-                <p ng-if="!isSupportedByTheApp && !isRemoteAddon">{{ 'mm.course.activitynotyetviewableinapp' | translate:{$a: moduleName} }}</p>
-                <p ng-if="!isSupportedByTheApp && isRemoteAddon">{{ 'mm.course.activitynotyetviewableremoteaddon' | translate }}</p>
+                <p ng-if="isSupportedByTheApp && !isContributedPlugin">{{ 'mm.course.activitynotyetviewablesiteupgradeneeded' | translate }}</p>
+                <p ng-if="!isSupportedByTheApp && !isContributedPlugin">{{ 'mm.course.activitynotyetviewableinapp' | translate:{$a: moduleName} }}</p>
+                <p ng-if="!isSupportedByTheApp && isContributedPlugin">{{ 'mm.course.activitynotyetviewableremoteaddon' | translate }}</p>
             </div>
         </div>
 
