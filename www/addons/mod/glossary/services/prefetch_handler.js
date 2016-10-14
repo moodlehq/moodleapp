@@ -157,11 +157,11 @@ angular.module('mm.addons.mod_glossary')
      * @return {Promise}         Promise resolved when done.
      */
     self.invalidateModule = function(module, courseId) {
-        return self.getGlossary(courseId, module.id).then(function(glossary) {
+        return $mmaModGlossary.getGlossary(courseId, module.id).then(function(glossary) {
             var promises = [];
 
-            promises.push(self.invalidateEntriesByLetter(glossary.id, 'ALL'));
-            promises.push(self.invalidateCourseGlossaries(courseId));
+            promises.push($mmaModGlossary.invalidateEntriesByLetter(glossary.id, 'ALL'));
+            promises.push($mmaModGlossary.invalidateCourseGlossaries(courseId));
 
             return $q.all(promises);
         });
