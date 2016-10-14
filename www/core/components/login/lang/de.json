@@ -1,7 +1,7 @@
 {
     "authenticating": "Authentifizieren",
     "cancel": "Abbrechen",
-    "cannotdownloadfiles": "Das Herunterladen von Dateien ist für den mobilen Webservice deaktiviert. Die App funktioniert nicht ohne diese Option. Wenden Sie sich an den Administrator.",
+    "cannotdownloadfiles": "Das Herunterladen von Dateien ist für den mobilen Webservice deaktiviert. Diese Option ist aber für die App unbedingt notwendig. Wenden Sie sich an den Administrator.",
     "confirmdeletesite": "Möchten Sie wirklich die Website '{{sitename}}' aus der Liste löschen?",
     "connect": "Verbinden!",
     "connecttomoodle": "Website verbinden",
@@ -9,13 +9,13 @@
     "credentialsdescription": "Geben Sie Ihren Anmeldenamen und Ihr Kennwort ein, um sich einzuloggen auf ",
     "erroraccesscontrolalloworigin": "Der Cross-Origin Aufruf wurde zurückgewiesen. Weitere Informationen: https://docs.moodle.org/dev/Moodle_Mobile_development_using_Chrome_or_Chromium",
     "errordeletesite": "Fehler beim Löschen der Website aus der Liste. Versuchen Sie es nochmal.",
-    "errorupdatesite": "Fehler beim Aktualisieren des Authentifizierungstokens",
+    "errorupdatesite": "Fehler beim Aktualisieren der Authentifizierung",
     "help": "Hilfe",
-    "helpmelogin": "<p>Die App 'Moodle Mobile' funktioniert mit Moodle-Websites, sobald diese für mobile Dienste freigegeben wurden. Bei Problemen mit der Verbindung wenden Sie sich an Ihren Moodle-Administrator.</p>\n<p>Lesen Sie die aktuellen Informationen auf <a href=\"http://docs.moodle.org/de/Mobile_App\" target=\"_blank\">http://docs.moodle.org/de/Mobile_App</a>.</p>\n<p>Um die App mit einer Demo-Website zu testen, tragen Sie bitte <i>teacher</i> oder <i>student</i> in das Feld <i>URL der Website</i> ein. Tippen Sie dann auf die Taste <b>Hinzufügen</b>.</p>",
+    "helpmelogin": "<p>Die Moodle Mobile App funktioniert nur mit Moodle-Websites, die speziell für mobile Apps freigegeben wurden.</p>\n<p>Alle Möglichkeiten finden Sie unter <a href=\"http://docs.moodle.org/de/Mobile_app\" target=\"_blank\">http://docs.moodle.org/de/Mobile_app</a>.</p>\n<p><br>Wenn Sie die App mit einer Demo-Website testen möchten, tragen Sie bitte <i>teacher</i> oder <i>student</i> in das Feld <i>URL der Website</i> ein. Tippen Sie anschließend auf die Taste <b>Hinzufügen</b>.</p>",
     "invalidaccount": "Prüfen Sie Ihre Anmeldedaten oder wenden Sie sich an den Administrator.",
     "invalidmoodleversion": "Falsche Version. Notwendig ist mindestens Moodle 2.4.",
     "invalidsite": "Die URL der Website ist ungültig.",
-    "localmobileunexpectedresponse": "Der Verbindungsversuch mit dem Plugin 'Moodle Mobile - Zusatzfeatures' ist fehlgeschlagen. Sie werden über den standardmäßigen mobilen Webservices authentifiziert.",
+    "localmobileunexpectedresponse": "Die Verbindung mit dem Plugin 'Moodle Mobile - Zusatzfeatures' ist fehlgeschlagen. Sie werden über den standardmäßigen mobilen Webservice authentifiziert.",
     "login": "Login",
     "loginbutton": "Login!",
     "logininsiterequired": "Sie müssen sich für diese Website im Browser anmelden.",
@@ -30,8 +30,8 @@
     "siteaddress": "URL der Website",
     "siteinmaintenance": "Die Website ist im Wartungsmodus",
     "siteurl": "URL der Website",
-    "siteurlrequired": "Die URL der Website ist notwendig, z.B. https://www.website.de",
+    "siteurlrequired": "Die URL der Website ist notwendig, z.B. https://www.yourwebsite.de",
     "username": "Anmeldename",
     "usernamerequired": "Anmeldename fehlt",
-    "webservicesnotenabled": "Die Webservices sind für diese Website nicht aktiviert. Wenden Sie sich an den Administrator, wenn Sie den mobilen Zugriff aktiviert haben möchten."
+    "webservicesnotenabled": "Die mobilen Webservices sind für diese Website nicht aktiviert. Wenden Sie sich an den Administrator, wenn Sie den mobilen Zugriff aktiviert haben möchten."
 }

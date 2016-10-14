@@ -103,6 +103,19 @@ angular.module('mm.core.course')
         };
 
         /**
+         * Check if the controller a content handler is avalaible (not necessarily enabled).
+         *
+         * @module mm.core.course
+         * @ngdoc method
+         * @name $mmCourseDelegate#hasContentHandler
+         * @param {String} handles   The module to work on
+         * @return {Boolean} If the controller is installed or not.
+         */
+        self.hasContentHandler = function(handles) {
+            return typeof contentHandlers[handles] !== 'undefined';
+        };
+
+        /**
          * Check if a time belongs to the last update handlers call.
          * This is to handle the cases where updateContentHandlers don't finish in the same order as they're called.
          *

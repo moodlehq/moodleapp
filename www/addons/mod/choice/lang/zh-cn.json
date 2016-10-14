@@ -7,6 +7,7 @@
     "notopenyet": "对于起，此活动在 {{$a}} 之后才可用",
     "numberofuser": "用户数",
     "numberofuserinpercentage": "用户数百分比",
+    "previewonly": "这只是该活动的可用选项的预览。你要等到{{$a}}才可以进行投票。",
     "removemychoice": "删除我的投票",
     "responses": "回复",
     "responsesresultgraphheader": "图示",

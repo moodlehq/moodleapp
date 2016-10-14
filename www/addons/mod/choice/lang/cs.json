@@ -5,7 +5,7 @@
     "expired": "Je nám líto, tato činnost byla uzavřena {{$a}} a není nadále dostupná",
     "full": "(Obsazeno)",
     "noresultsviewable": "Výsledky nejsou momentálně k dispozici",
-    "notopenyet": "Je mi líto, tato činnost není až do {{$a}} dostupná",
+    "notopenyet": "Je nám líto, tato činnost není až do {{$a}} dostupná.",
     "numberofuser": "Počet účastníků",
     "numberofuserinpercentage": "Procentní podíl účastníků",
     "previewonly": "Toto je náhled dostupných možností v této anketě. Hlasovat budete moci od {{$a}}.",

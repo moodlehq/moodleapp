@@ -12,6 +12,7 @@
     "errorwhileuploading": "En fejl opstod under upload af filen.",
     "file": "Fil",
     "fileuploaded": "Filen er uploaded.",
+    "maxbytesfile": "Filen {{$a.file}} er for stor. Maksimal upload-størrelse er {{$a.size}}.",
     "photoalbums": "Fotoalbum",
     "readingfile": "Læser fil",
     "success": "Succes!",

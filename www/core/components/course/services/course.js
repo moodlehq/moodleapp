@@ -224,13 +224,15 @@ angular.module('mm.core.course')
      * @module mm.core.course
      * @ngdoc method
      * @name $mmCourse#getModule
-     * @param {Number} moduleId    The module ID.
-     * @param {Number} [courseId]  The course ID. Recommended to speed up the process and minimize data usage.
-     * @param {Number} [sectionId] The section ID.
+     * @param {Number} moduleId             The module ID.
+     * @param {Number} [courseId]           The course ID. Recommended to speed up the process and minimize data usage.
+     * @param {Number} [sectionId]          The section ID.
      * @param {Boolean} [preferCache=false] True if shouldn't call WS if data is cached, false otherwise.
-     * @return {Promise}
+     * @param  {String} [siteId]            Site ID. If not defined, current site.
+     * @return {Promise}                    Promise resolved with the module.
      */
-    self.getModule = function(moduleId, courseId, sectionId, preferCache) {
+    self.getModule = function(moduleId, courseId, sectionId, preferCache, siteId) {
+        siteId = siteId || $mmSite.getId();
 
         if (!moduleId) {
             return $q.reject();
@@ -244,14 +246,19 @@ angular.module('mm.core.course')
 
         if (!courseId) {
             // No courseId passed, try to retrieve it.
-            promise = self.getModuleBasicInfo(moduleId).then(function(module) {
+            promise = self.getModuleBasicInfo(moduleId, siteId).then(function(module) {
                 return module.course;
             });
         } else {
             promise = $q.when(courseId);
         }
 
-        return promise.then(function(courseId) {
+        return promise.then(function(cid) {
+            courseId = cid;
+
+            // Get the site.
+            return $mmSitesManager.getSite(siteId);
+        }).then(function(site) {
             // We have courseId, we can use core_course_get_contents for compatibility.
             $log.debug('Getting module ' + moduleId + ' in course ' + courseId);
 
@@ -276,11 +283,9 @@ angular.module('mm.core.course')
                 });
             }
 
-            return $mmSite.read('core_course_get_contents', params, preSets).catch(function() {
-                // Error getting the module. Try to get all contents (without filtering).
-                params.options = [];
-                preSets.cacheKey = getSectionsCacheKey(courseId);
-                return $mmSite.read('core_course_get_contents', params, preSets);
+            return site.read('core_course_get_contents', params, preSets).catch(function() {
+                // Error getting the module. Try to get all contents (without filtering by module).
+                return self.getSections(courseId, false, false, preSets, siteId);
             }).then(function(sections) {
                 var section,
                     module;
@@ -365,7 +370,7 @@ angular.module('mm.core.course')
             }
 
             // Get all the sections in the course and iterate over them to find it.
-            return self.getSections(courseId, {}, siteId).then(function(sections) {
+            return self.getSections(courseId, false, true, {}, siteId).then(function(sections) {
                 for (var i = 0, seclen = sections.length; i < seclen; i++) {
                     var section = sections[i];
                     for (var j = 0, modlen = section.modules.length; j < modlen; j++) {
@@ -386,31 +391,26 @@ angular.module('mm.core.course')
      * @module mm.core.course
      * @ngdoc method
      * @name $mmCourse#getSection
-     * @param {Number} courseid The course ID.
-     * @param {Number} sectionid The section ID.
-     * @return {Promise} The reject contains the error message, else contains the section.
+     * @param {Number} courseId         The course ID.
+     * @param {Boolean} excludeModules  Do not return modules, return only the sections structure.
+     * @param {Boolean} excludeContents Do not return module contents (i.e: files inside a resource).
+     * @param {Number} sectionId        The section ID.
+     * @return {Promise}                Promise resolved with the section.
      */
-    self.getSection = function(courseid, sectionid) {
-        var deferred = $q.defer();
-
-        if (sectionid < 0) {
-            deferred.reject('Invalid section ID');
-            return deferred.promise;
+    self.getSection = function(courseId, excludeModules, excludeContents, sectionId) {
+        if (sectionId < 0) {
+            return $q.reject('Invalid section ID');
         }
 
-        self.getSections(courseid).then(function(sections) {
+        return self.getSections(courseId, excludeModules, excludeContents).then(function(sections) {
             for (var i = 0; i < sections.length; i++) {
-                if (sections[i].id == sectionid) {
-                    deferred.resolve(sections[i]);
-                    return;
+                if (sections[i].id == sectionId) {
+                    return sections[i];
                 }
             }
-            deferred.reject('Unkown section');
-        }, function(error) {
-            deferred.reject(error);
-        });
 
-        return deferred.promise;
+            return $q.reject('Unkown section');
+        });
     };
 
     /**
@@ -419,20 +419,34 @@ angular.module('mm.core.course')
      * @module mm.core.course
      * @ngdoc method
      * @name $mmCourse#getSections
-     * @param {Number} courseid  The course ID.
-     * @param {Object} [preSets] Optional. Presets to use.
-     * @param {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise} The reject contains the error message, else contains the sections.
+     * @param {Number} courseId         The course ID.
+     * @param {Boolean} excludeModules  Do not return modules, return only the sections structure.
+     * @param {Boolean} excludeContents Do not return module contents (i.e: files inside a resource).
+     * @param {Object} [preSets]        Optional. Presets to use.
+     * @param {String} [siteId]         Site ID. If not defined, current site.
+     * @return {Promise}                The reject contains the error message, else contains the sections.
      */
-    self.getSections = function(courseid, preSets, siteId) {
+    self.getSections = function(courseId, excludeModules, excludeContents, preSets, siteId) {
         preSets = preSets || {};
         siteId = siteId || $mmSite.getId();
-        preSets.cacheKey = getSectionsCacheKey(courseid);
+        preSets.cacheKey = getSectionsCacheKey(courseId);
+        preSets.getCacheUsingCacheKey = true; // This is to make sure users don't lose offline access when updating.
+
+        var options = [
+                {
+                    name: 'excludemodules',
+                    value: excludeModules ? 1 : 0
+                },
+                {
+                    name: 'excludecontents',
+                    value: excludeContents ? 1 : 0
+                }
+            ];
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.read('core_course_get_contents', {
-                courseid: courseid,
-                options: []
+                courseid: courseId,
+                options: options
             }, preSets).then(function(sections) {
                 angular.forEach(sections, function(section) {
                     angular.forEach(section.modules, function(module) {
@@ -460,11 +474,16 @@ angular.module('mm.core.course')
      * @module mm.core.course
      * @ngdoc method
      * @name $mmCourse#invalidateModule
-     * @param {Number} moduleid Module ID.
+     * @param {Number} moduleId Module ID.
+     * @param {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
-    self.invalidateModule = function(moduleid) {
-        return $mmSite.invalidateWsCacheForKey(getModuleCacheKey(moduleid));
+    self.invalidateModule = function(moduleId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getModuleCacheKey(moduleId));
+        });
     };
 
     /**
@@ -497,6 +516,39 @@ angular.module('mm.core.course')
         var p1 = $mmSite.invalidateWsCacheForKey(getSectionsCacheKey(courseid)),
             p2 = $mmSite.invalidateWsCacheForKey(getActivitiesCompletionCacheKey(courseid, userid));
         return $q.all([p1, p2]);
+    };
+
+    /**
+     * Load module contents into module.contents if they aren't loaded already.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#loadModuleContents
+     * @param  {Object} module      Module to load the contents.
+     * @param  {Number} [courseId]  The course ID. Recommended to speed up the process and minimize data usage.
+     * @param  {Number} [sectionId] The section ID.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved when loaded.
+     */
+    self.loadModuleContents = function(module, courseId, sectionId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        if (module.contents && module.contents.length) {
+            // Already loaded.
+            return $q.when();
+        }
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var version = parseInt(site.getInfo().version, 10);
+
+            if (version >= 2015051100) {
+                // From Moodle 2.9 the course contents can be filtered, so maybe the module doesn't have contents
+                // because they were filtered. Try to get its contents.
+                return self.getModule(module.id, courseId, sectionId, false, siteId).then(function(mod) {
+                    module.contents = mod.contents;
+                });
+            }
+        });
     };
 
     /**

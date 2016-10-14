@@ -9,10 +9,20 @@
     <ion-content padding="true" mm-state-class>
         <mm-course-mod-description description="description"></mm-course-mod-description>
         <div class="card">
-            <h2 class="item-body">{{ 'mm.core.whoops' | translate }}</h2>
-            <p ng-if="url" class="item-body">{{ 'mm.course.activitynotyetviewablegothere' | translate }}</p>
-            <p ng-if="!url" class="item-body">{{ 'mm.course.activitynotyetviewable' | translate }}</p>
+            <div class="item-body">
+                <h2>{{ 'mm.core.whoops' | translate }}</h2>
+                <p>{{ 'mm.course.activitynotyetviewable' | translate }}</p>
+            </div>
         </div>
-        <a ng-if="url" href="{{ url }}" mm-link class="button button-block icon-right ion-share">{{ 'mm.course.gotothesite' | translate }}</a>
+        <a ng-if="url" href="{{ url }}" mm-link class="button button-block icon-right ion-share">{{ 'mm.core.openinbrowser' | translate }}</a>
+        <div class="card">
+            <div class="item item-text-wrap">
+                <h2>{{ 'mm.core.whyisthishappening' | translate }}</h2>
+                <p ng-if="isSupportedByTheApp && !isContributedPlugin">{{ 'mm.course.activitynotyetviewablesiteupgradeneeded' | translate }}</p>
+                <p ng-if="!isSupportedByTheApp && !isContributedPlugin">{{ 'mm.course.activitynotyetviewableinapp' | translate:{$a: moduleName} }}</p>
+                <p ng-if="!isSupportedByTheApp && isContributedPlugin">{{ 'mm.course.activitynotyetviewableremoteaddon' | translate }}</p>
+            </div>
+        </div>
+
     </ion-content>
 </ion-view>

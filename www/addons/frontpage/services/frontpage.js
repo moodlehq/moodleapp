@@ -57,11 +57,11 @@ angular.module('mm.addons.frontpage')
      * @return {Promise} Resolved when enabled, otherwise rejected.
      */
     self.isFrontpageAvailable = function() {
-
         // On older version we cannot check other than calling a WS. If the request
         // fails there is a very high chance that frontpage is not available.
         $log.debug('Using WS call to check if frontpage is available.');
-        return $mmCourse.getSections(1, {emergencyCache: false}).then(function(data) {
+
+        return $mmCourse.getSections(1, false, true, {emergencyCache: false}).then(function(data) {
             if (!angular.isArray(data) || data.length == 0) {
                 return $q.reject();
             }

@@ -26,7 +26,7 @@ angular.module('mm.addons.mod_resource')
     $log = $log.getInstance('mmaModResourceIndexCtrl');
 
     var module = $stateParams.module || {},
-        courseid = $stateParams.courseid;
+        courseId = $stateParams.courseid;
 
     $scope.title = module.name;
     $scope.description = module.description;
@@ -38,11 +38,17 @@ angular.module('mm.addons.mod_resource')
     $scope.componentId = module.id;
 
     function fetchContent() {
-        if (module.contents && module.contents.length) {
+        // Load module contents if needed.
+        return $mmCourse.loadModuleContents(module, courseId).then(function() {
+            if (!module.contents || !module.contents.length) {
+                $mmUtil.showErrorModal('mma.mod_resource.errorwhileloadingthecontent', true);
+                return $q.reject();
+            }
+
             if ($mmaModResource.isDisplayedInIframe(module)) {
                 $scope.mode = 'iframe';
                 var downloadFailed = false;
-                return $mmaModResourcePrefetchHandler.download(module).catch(function(err) {
+                return $mmaModResourcePrefetchHandler.download(module).catch(function() {
                     // Mark download as failed but go on since the main files could have been downloaded.
                     downloadFailed = true;
                 }).finally(function() {
@@ -58,7 +64,7 @@ angular.module('mm.addons.mod_resource')
                             $scope.src = src;
                         }
                         $mmaModResource.logView(module.instance).then(function() {
-                            $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
+                            $mmCourse.checkModuleCompletion(courseId, module.completionstatus);
                         });
                         if (downloadFailed && $mmApp.isOnline()) {
                             // We could load the main file but the download failed. Show error message.
@@ -81,7 +87,7 @@ angular.module('mm.addons.mod_resource')
 
                     $mmaModResource.openFile(module.contents, module.id).then(function() {
                         $mmaModResource.logView(module.instance).then(function() {
-                            $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
+                            $mmCourse.checkModuleCompletion(courseId, module.completionstatus);
                         });
                     }).catch(function(error) {
                         if (error && typeof error == 'string') {
@@ -94,9 +100,7 @@ angular.module('mm.addons.mod_resource')
                     });
                 };
             }
-        } else {
-            $mmUtil.showErrorModal('mma.mod_resource.errorwhileloadingthecontent', true);
-        }
+        });
     }
 
     // Context Menu Description action.

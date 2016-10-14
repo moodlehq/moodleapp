@@ -1,7 +1,8 @@
 {
-    "activitynotyetviewable": "Aktivität oder Material wird in der App bisher nicht angezeigt.",
-    "activitynotyetviewablegothere": "Aktivität oder Material wird in der App bisher nicht angezeigt. Tippen Sie auf die Taste, um die Website im Browser anzuzeigen.",
+    "activitynotyetviewable": "Die Aktivität oder das Material kann bisher in der App nicht angezeigt werden.",
+    "activitynotyetviewablegothere": "Die Aktivität oder das Material kann bisher in der App nicht angezeigt werden. Tippen Sie auf die Taste, um die Website im Browser anzuzeigen.",
     "allsections": "Alle Abschnitte",
+    "confirmdeletemodulefiles": "Möchten Sie diese Dateien wirklich löschen?",
     "confirmdownload": "Möchten Sie wirklich {{size}} herunterladen?",
     "confirmdownloadsection": "Möchten Sie wirklich {{size}} herunterladen?",
     "confirmdownloadunknownsize": "Die Datenmenge kann nicht berechnet werden. Möchten Sie wirklich herunterladen?",
@@ -12,6 +13,5 @@
     "errorgetmodule": "Fehler beim Laden von Moduldaten",
     "gotothesite": "Zur Website",
     "nocontentavailable": "Aktuell sind keine Inhalte verfügbar",
-    "showall": "Alles anzeigen",
-    "whoops": "Uuups!"
+    "showall": "Alles anzeigen"
 }

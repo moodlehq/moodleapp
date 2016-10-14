@@ -1,0 +1,9 @@
+<ion-popover-view class="mm-inapp-notification">
+    <ion-content>
+        <div class="item item-icon-right">
+            <h2>{{title}}</h2>
+            <p ng-repeat="text in texts track by $index"><mm-format-text watch="true">{{text}}</mm-format-text></p>
+            <a class="button button-icon icon ion-close-round" ng-click="hide()" aria-label="{{ 'mm.core.dismiss' | translate }}"></a>
+        </div>
+    </ion-content>
+</ion-popover-view>

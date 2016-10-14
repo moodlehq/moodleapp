@@ -59,7 +59,7 @@ angular.module('mm.core.course')
             }
 
             // Get the sections.
-            return $mmCourse.getSections(courseId).then(function(sections) {
+            return $mmCourse.getSections(courseId, false, true).then(function(sections) {
                 // Add a fake first section (all sections).
                 return $translate('mm.course.allsections').then(function(str) {
                     // Adding fake first section.

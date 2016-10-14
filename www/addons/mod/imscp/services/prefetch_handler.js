@@ -21,7 +21,8 @@ angular.module('mm.addons.mod_imscp')
  * @ngdoc service
  * @name $mmaModImscpPrefetchHandler
  */
-.factory('$mmaModImscpPrefetchHandler', function($mmaModImscp, $mmSite, $mmFilepool, $mmPrefetchFactory, mmaModImscpComponent) {
+.factory('$mmaModImscpPrefetchHandler', function($mmaModImscp, $mmSite, $mmFilepool, $mmPrefetchFactory, mmaModImscpComponent,
+            $mmCourse, $q) {
 
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModImscpComponent, true);
 
@@ -97,7 +98,12 @@ angular.module('mm.addons.mod_imscp')
      * @return {Promise}         Promise resolved when done.
      */
     self.invalidateModule = function(module, courseId) {
-        return $mmaModImscp.invalidateImscpData(courseId);
+        var promises = [];
+
+        promises.push($mmaModImscp.invalidateImscpData(courseId));
+        promises.push($mmCourse.invalidateModule(module.id));
+
+        return $q.all(promises);
     };
 
     /**

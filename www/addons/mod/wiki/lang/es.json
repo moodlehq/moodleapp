@@ -7,6 +7,8 @@
     "newpagetitle": "Título nuevo de la página",
     "nocontent": "No hay contenido para esta página",
     "notingroup": "No está en un grupo",
+    "page": "Página",
+    "pageexists": "Esta página ya existe. Se está redireccionando.",
     "pagename": "Nombre de la página",
     "wrongversionlock": "Otro usuario ha editado esta página mientras usted estaba editando: su contenido es obsoleto."
 }
