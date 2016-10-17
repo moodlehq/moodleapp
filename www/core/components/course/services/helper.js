@@ -96,9 +96,11 @@ angular.module('mm.core.course')
                     section.isDownloading = true;
                 } else {
                     // Restore or re-start the prefetch.
-                    var promise = self.startOrRestorePrefetch(section, result, courseid).then(function() {
-                        // Re-calculate the status of this section once finished.
-                        return self.calculateSectionStatus(section, courseid);
+                    var promise = self.startOrRestorePrefetch(section, result, courseid).then(function(prevented) {
+                        if (prevented !== true) {
+                            // Re-calculate the status of this section once finished.
+                            return self.calculateSectionStatus(section, courseid);
+                        }
                     });
                     if (dwnpromises) {
                         dwnpromises.push(promise);
@@ -535,26 +537,29 @@ angular.module('mm.core.course')
      * @name $mmCourseHelper#startOrRestorePrefetch
      * @param {Object} section Section to download.
      * @param {Object} status  Result of $mmCoursePrefetchDelegate#getModulesStatus for this section.
-     * @return {Promise}       Promise resolved when the section has been prefetched.
+     * @return {Promise}       Promise resolved when the section has been prefetched. Resolve param is true if prevented.
      */
     self.startOrRestorePrefetch = function(section, status, courseid) {
 
         if (section.id == mmCoreCourseAllSectionsId) {
-            return $q.when();
+            return $q.when(true);
+        }
+
+        if (section.total > 0) {
+            // Already being downloaded.
+            return $q.when(true);
         }
 
         // We only download modules with status notdownloaded, downloading or outdated.
         var modules = status[mmCoreOutdated].concat(status[mmCoreNotDownloaded]).concat(status[mmCoreDownloading]),
-            downloadid = self.getSectionDownloadId(section),
-            moduleids;
-
-        moduleids = modules.map(function(m) {
-            return m.id;
-        });
+            downloadid = self.getSectionDownloadId(section);
 
         // Set download data.
         section.count = 0;
         section.total = modules.length;
+        section.dwnModuleIds = modules.map(function(m) {
+            return m.id;
+        });
         section.isDownloading = true;
 
         // We prefetch all the modules to prevent incoeherences in the download count
@@ -564,10 +569,10 @@ angular.module('mm.core.course')
             return $q.reject();
         }, function(id) {
             // Progress. Check that the module downloaded is one of the expected ones.
-            var index = moduleids.indexOf(id);
+            var index = section.dwnModuleIds.indexOf(id);
             if (index > -1) {
                 // It's one of the modules we were expecting to download.
-                moduleids.splice(index, 1);
+                section.dwnModuleIds.splice(index, 1);
                 section.count++;
             }
         });
