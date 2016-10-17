@@ -23,7 +23,7 @@
     "gradedby": "Bedømt af",
     "gradedon": "Bedømt",
     "gradingstatus": "Vurderingsstatus",
-    "gradingsummary": "Bedømmer resumé",
+    "gradingsummary": "Bedømmelsesopsummering",
     "hiddenuser": "Deltager",
     "latesubmissions": "Forsinkede opgaveafleveringer",
     "latesubmissionsaccepted": "Tilladt indtil {{$a}}",
