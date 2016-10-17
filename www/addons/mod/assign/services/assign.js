@@ -43,21 +43,27 @@ angular.module('mm.addons.mod_assign')
             return false;
         }
 
-        var submission = self.getSubmissionObjectFromAttempt(assign, submissionStatus.lastattempt);
+        var userSubmission = submissionStatus.lastattempt.submission,
+            teamSubmission = submissionStatus.lastattempt.teamsubmission;
 
-        if (!submission) {
-            // We've not got a valid submission or team submission.
-            return false;
-        } else if (submission.status === mmaModAssignSubmissionStatusSubmitted) {
-            // The assignment submission has been completed.
-            return false;
-        } else if (assign.teamsubmission) {
-            if (attempt.submission && attempt.submission.status === mmaModAssignSubmissionStatusSubmitted) {
+        if (teamSubmission) {
+            if (teamSubmission.status === mmaModAssignSubmissionStatusSubmitted) {
+                // The assignment submission has been completed.
+                return false;
+            } else if (userSubmission && userSubmission.status === mmaModAssignSubmissionStatusSubmitted) {
                 // The user has already clicked the submit button on the team submission.
                 return false;
             } else if (assign.preventsubmissionnotingroup && !submissionStatus.lastattempt.submissiongroup) {
                 return false;
             }
+        } else if (userSubmission) {
+            if (userSubmission.status === mmaModAssignSubmissionStatusSubmitted) {
+                // The assignment submission has been completed.
+                return false;
+            }
+        } else {
+            // No valid submission or team submission.
+            return false;
         }
 
         // Last check is that this instance allows drafts.

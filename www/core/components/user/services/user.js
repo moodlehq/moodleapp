@@ -33,7 +33,7 @@ angular.module('mm.core.user')
  * @ngdoc service
  * @name $mmUser
  */
-.factory('$mmUser', function($log, $q, $mmSite, $mmUtil, $translate, mmCoreUsersStore) {
+.factory('$mmUser', function($log, $q, $mmSite, $mmUtil, $translate, mmCoreUsersStore, $mmFilepool) {
 
     $log = $log.getInstance('$mmUser');
 
@@ -235,6 +235,38 @@ angular.module('mm.core.user')
      */
     self.invalidateUserCache = function(userid) {
         return $mmSite.invalidateWsCacheForKey(getUserCacheKey(userid));
+    };
+
+    /**
+     * Prefetch user profiles and their images from a certain course. It prevents duplicates.
+     *
+     * @module mm.core.user
+     * @ngdoc method
+     * @name $mmUser#prefetchProfiles
+     * @param  {Number[]} userIds  List of user IDs.
+     * @param  {Number} [courseId] Course the users belong to.
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved when prefetched.
+     */
+    self.prefetchProfiles = function(userIds, courseId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        var treated = {},
+            promises = [];
+
+        angular.forEach(userIds, function(userId) {
+            if (!treated[userId]) {
+                treated[userId] = true;
+
+                promises.push(self.getProfile(userId, courseId).then(function(profile) {
+                    if (profile.profileimageurl) {
+                        $mmFilepool.addToQueueByUrl(siteId, profile.profileimageurl);
+                    }
+                }));
+            }
+        });
+
+        return $q.all(promises);
     };
 
     /**

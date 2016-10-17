@@ -389,9 +389,6 @@ angular.module('mm.addons.mod_forum')
         });
     };
 
-
-
-
     /**
      * Offline version for replying to a certain post.
      *

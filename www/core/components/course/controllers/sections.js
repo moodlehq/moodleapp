@@ -176,7 +176,7 @@ angular.module('mm.core.course')
         promises.push($mmCourses.invalidateUserCourses());
         promises.push($mmCourse.invalidateSections(courseId));
 
-        if ($scope.sections) {
+        if ($scope.sections && $scope.downloadSectionsEnabled) {
             // Invalidate modules prefetch data.
             var modules = $mmCourseHelper.getSectionsModules($scope.sections);
             promises.push($mmCoursePrefetchDelegate.invalidateModules(modules, courseId));

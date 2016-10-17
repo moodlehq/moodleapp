@@ -475,20 +475,15 @@ angular.module('mm.addons.mod_assign')
         siteId = siteId || $mmSite.getId();
 
         var promises = [],
-            blindMarking = assign.blindmarking && !assign.revealidentities;
+            blindMarking = assign.blindmarking && !assign.revealidentities,
+            userIds = [];
 
         if (submission.lastattempt) {
             var userSubmission = $mmaModAssign.getSubmissionObjectFromAttempt(assign, submission.lastattempt);
 
-            // Get profile and images of the member who need to submit.
+            // Get IDs of the members who need to submit.
             if (!blindMarking && submission.lastattempt.submissiongroupmemberswhoneedtosubmit) {
-                angular.forEach(submission.lastattempt.submissiongroupmemberswhoneedtosubmit, function(member) {
-                    promises.push($mmUser.getProfile(member, courseId).then(function(profile) {
-                        if (profile.profileimageurl) {
-                            $mmFilepool.addToQueueByUrl(siteId, profile.profileimageurl);
-                        }
-                    }));
-                });
+                userIds = userIds.concat(submission.lastattempt.submissiongroupmemberswhoneedtosubmit);
             }
 
             if (userSubmission && userSubmission.id) {
@@ -497,13 +492,9 @@ angular.module('mm.addons.mod_assign')
                     promises.push($mmaModAssignSubmissionDelegate.prefetch(assign, userSubmission, plugin, siteId));
                 });
 
-                // Prefetch user profile.
+                // Get ID of the user who did the submission.
                 if (userSubmission.userid) {
-                    promises.push($mmUser.getProfile(userSubmission.userid, courseId).then(function(profile) {
-                        if (profile.profileimageurl) {
-                            $mmFilepool.addToQueueByUrl(siteId, profile.profileimageurl);
-                        }
-                    }));
+                    userIds.push(userSubmission.userid);
                 }
             }
         }
@@ -512,11 +503,7 @@ angular.module('mm.addons.mod_assign')
         if (submission.feedback) {
             // Get profile and image of the grader.
             if (submission.feedback.grade && submission.feedback.grade.grader) {
-                promises.push($mmUser.getProfile(submission.feedback.grade.grader, courseId).then(function(profile) {
-                    if (profile.profileimageurl) {
-                        $mmFilepool.addToQueueByUrl(siteId, profile.profileimageurl);
-                    }
-                }));
+                userIds.push(submission.feedback.grade.grader);
             }
 
             // Prefetch feedback plugins data.
@@ -524,6 +511,9 @@ angular.module('mm.addons.mod_assign')
                 promises.push($mmaModAssignFeedbackDelegate.prefetch(assign, submission, plugin, siteId));
             });
         }
+
+        // Prefetch user profiles.
+        promises.push($mmUser.prefetchProfiles(userIds, courseId, siteId));
 
         return $q.all(promises);
     }

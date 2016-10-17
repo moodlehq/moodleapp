@@ -67,7 +67,7 @@
                 <div class="item item-text-wrap" ng-if="preventSubmitMessages.length">
                     <p class="item-heading">{{ 'mma.mod_quiz.cannotsubmitquizdueto' | translate }}</p>
                     <p ng-repeat="message in preventSubmitMessages">{{message}}</p>
-                    <a class="button button-block icon-right ion-share" ng-href="{{moduleUrl}}" mm-browser>{{ 'mm.core.openinbrowser' | translate }}</a>
+                    <a class="button button-block icon-right ion-share" ng-href="{{moduleUrl}}" mm-link>{{ 'mm.core.openinbrowser' | translate }}</a>
                 </div>
                 <div class="item" ng-if="!attempt.finishedOffline && !preventSubmitMessages.length">
                     <a class="button button-block" ng-click="finishAttempt()">{{ 'mma.mod_quiz.submitallandfinish' | translate }}</a>
@@ -79,7 +79,7 @@
                     <p>{{ 'mma.mod_quiz.errorparsequestions' | translate }}</p>
                 </div>
                 <div class="item">
-                    <a class="button button-block icon-right ion-share" ng-href="{{moduleUrl}}" mm-browser>{{ 'mm.core.openinbrowser' | translate }}</a>
+                    <a class="button button-block icon-right ion-share" ng-href="{{moduleUrl}}" mm-link>{{ 'mm.core.openinbrowser' | translate }}</a>
                 </div>
             </section>
         </mm-loading>

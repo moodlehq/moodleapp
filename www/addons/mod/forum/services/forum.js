@@ -96,15 +96,15 @@ angular.module('mm.addons.mod_forum')
     self.addNewDiscussion = function(forumId, name, courseId, subject, message, subscribe, groupId, siteId, timecreated) {
         siteId = siteId || $mmSite.getId();
 
-        if (!$mmApp.isOnline()) {
-            // App is offline, store the action.
-            return storeOffline();
-        }
-
         // If we are editing an offline discussion, discard previous first.
         var discardPromise = timecreated ? $mmaModForumOffline.deleteNewDiscussion(forumId, timecreated, siteId) : $q.when();
 
         return discardPromise.then(function() {
+            if (!$mmApp.isOnline()) {
+                // App is offline, store the action.
+                return storeOffline();
+            }
+
             return self.addNewDiscussionOnline(forumId, subject, message, subscribe, groupId, siteId).then(function() {
                 return true;
             }).catch(function(error) {

@@ -157,11 +157,11 @@ angular.module('mm.addons.mod_glossary')
      * @return {Promise}         Promise resolved when done.
      */
     self.invalidateModule = function(module, courseId) {
-        return self.getGlossary(courseId, module.id).then(function(glossary) {
+        return $mmaModGlossary.getGlossary(courseId, module.id).then(function(glossary) {
             var promises = [];
 
-            promises.push(self.invalidateEntriesByLetter(glossary.id, 'ALL'));
-            promises.push(self.invalidateCourseGlossaries(courseId));
+            promises.push($mmaModGlossary.invalidateEntriesByLetter(glossary.id, 'ALL'));
+            promises.push($mmaModGlossary.invalidateCourseGlossaries(courseId));
 
             return $q.all(promises);
         });
@@ -233,19 +233,19 @@ angular.module('mm.addons.mod_glossary')
             promises.push($mmaModGlossary.fetchAllEntries($mmaModGlossary.getEntriesByLetter, [glossary.id, 'ALL'])
                     .then(function(entries) {
                 var promises = [],
-                    files = getFilesFromGlossaryAndEntries(module, glossary, entries);
+                    files = getFilesFromGlossaryAndEntries(module, glossary, entries),
+                    userIds = [];
 
                 // Fetch user avatars.
                 angular.forEach(entries, function(entry) {
                     // Fetch individual entries.
                     promises.push($mmaModGlossary.getEntry(entry.id));
 
-                    promises.push($mmUser.getProfile(entry.userid, courseId).then(function(profile) {
-                        if (profile.profileimageurl) {
-                            $mmFilepool.addToQueueByUrl(siteId, profile.profileimageurl);
-                        }
-                    }));
+                    userIds.push(entry.userid);
                 });
+
+                // Prefetch user profiles.
+                promises.push($mmUser.prefetchProfiles(userIds, courseId, siteId));
 
                 angular.forEach(files, function(file) {
                     promises.push($mmFilepool.addToQueueByUrl(siteId, file.fileurl, self.component, module.id, file.timemodified));
