@@ -1,4 +1,8 @@
 <ion-view view-title="{{ 'mma.notes.notes' | translate }}">
+    <ion-nav-buttons side="secondary">
+        <!-- Add an empty context menu so the right view menu is shown in tablet (split view). -->
+        <mm-context-menu></mm-context-menu>
+    </ion-nav-buttons>
     <mm-split-view component="mmaNotesTypes">
         <ion-content mm-state-class>
             <ul>
