@@ -601,6 +601,10 @@ angular.module('mm.core')
      * @return {Promise} Promise to be resolved when the user is logged out.
      */
     self.logout = function() {
+        if (!currentSite) {
+            // Already logged out.
+            return $q.when();
+        }
         var siteId = currentSite.getId();
 
         currentSite = undefined;

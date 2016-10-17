@@ -95,7 +95,8 @@ angular.module('mm.core.login', [])
 })
 
 .run(function($log, $state, $mmUtil, $translate, $mmSitesManager, $rootScope, $mmSite, $mmURLDelegate, $ionicHistory, $timeout,
-                $mmEvents, $mmLoginHelper, mmCoreEventSessionExpired, $mmApp, $ionicPlatform, mmCoreConfigConstants) {
+                $mmEvents, $mmLoginHelper, mmCoreEventSessionExpired, $mmApp, $ionicPlatform, mmCoreConfigConstants,
+                mmCoreEventPasswordChangeForced) {
 
     $log = $log.getInstance('mmLogin');
 
@@ -104,6 +105,9 @@ angular.module('mm.core.login', [])
 
     // Listen for sessionExpired event to reconnect the user.
     $mmEvents.on(mmCoreEventSessionExpired, sessionExpired);
+
+    // Listen for sessionExpired event to reconnect the user.
+    $mmEvents.on(mmCoreEventPasswordChangeForced, passwordChangeForced);
 
     // Register observer to check if the app was launched via URL scheme.
     $mmURLDelegate.register('mmLoginSSO', appLaunchedByURL);
@@ -171,45 +175,76 @@ angular.module('mm.core.login', [])
 
         var siteurl = $mmSite.getURL();
 
-        if (typeof(siteurl) !== 'undefined') {
+        if (typeof(siteurl) === 'undefined') {
+            return;
+        }
 
-            if (siteid && siteid !== $mmSite.getId()) {
-                return; // Site that triggered the event is not current site.
+        if (siteid && siteid !== $mmSite.getId()) {
+            return; // Site that triggered the event is not current site.
+        }
+
+        // Check authentication method.
+        $mmSitesManager.checkSite(siteurl).then(function(result) {
+
+            if (result.warning) {
+                $mmUtil.showErrorModal(result.warning, true, 4000);
             }
 
-            // Check authentication method.
-            $mmSitesManager.checkSite(siteurl).then(function(result) {
-
-                if (result.warning) {
-                    $mmUtil.showErrorModal(result.warning, true, 4000);
+            if ($mmLoginHelper.isSSOLoginNeeded(result.code)) {
+                // SSO. User needs to authenticate in a browser. Prevent showing the message several times
+                // or show it again if the user is already authenticating using SSO.
+                if (!$mmApp.isSSOAuthenticationOngoing() && !isSSOConfirmShown && !waitingForBrowser) {
+                    isSSOConfirmShown = true;
+                    $mmUtil.showConfirm($translate('mm.login.reconnectssodescription')).then(function() {
+                        waitingForBrowser = true;
+                        $mmLoginHelper.openBrowserForSSOLogin(result.siteurl, result.code);
+                    }).finally(function() {
+                        isSSOConfirmShown = false;
+                    });
                 }
-
-                if ($mmLoginHelper.isSSOLoginNeeded(result.code)) {
-                    // SSO. User needs to authenticate in a browser. Prevent showing the message several times
-                    // or show it again if the user is already authenticating using SSO.
-                    if (!$mmApp.isSSOAuthenticationOngoing() && !isSSOConfirmShown && !waitingForBrowser) {
-                        isSSOConfirmShown = true;
-                        $mmUtil.showConfirm($translate('mm.login.reconnectssodescription')).then(function() {
-                            waitingForBrowser = true;
-                            $mmLoginHelper.openBrowserForSSOLogin(result.siteurl, result.code);
-                        }).finally(function() {
-                            isSSOConfirmShown = false;
-                        });
-                    }
-                } else {
-                    var info = $mmSite.getInfo();
-                    if (typeof(info) !== 'undefined' && typeof(info.username) !== 'undefined') {
-                        $ionicHistory.nextViewOptions({disableBack: true});
-                        $state.go('mm_login.reconnect', {
-                            siteurl: result.siteurl,
-                            username: info.username,
-                            infositeurl: info.siteurl,
-                            siteid: $mmSite.getId()
-                        });
-                    }
+            } else {
+                var info = $mmSite.getInfo();
+                if (typeof(info) !== 'undefined' && typeof(info.username) !== 'undefined') {
+                    $ionicHistory.nextViewOptions({disableBack: true});
+                    $state.go('mm_login.reconnect', {
+                        siteurl: result.siteurl,
+                        username: info.username,
+                        infositeurl: info.siteurl,
+                        siteid: $mmSite.getId()
+                    });
                 }
-            });
+            }
+        });
+    }
+
+    // Function to handle password change forced events.
+    function passwordChangeForced(siteId) {
+        if (!siteId) {
+            return;
         }
+
+        $mmSitesManager.getSite(siteId).then(function(site) {
+            var siteUrl = site.getURL();
+            if (typeof(siteUrl) === 'undefined') {
+                return;
+            }
+
+            // Expire user token for the site.
+            $mmSitesManager.updateSiteToken(siteUrl, site.infos.username, 'expired');
+
+            // Site that triggered the event is not current site.
+            if (siteId !== $mmSite.getId()) {
+                return;
+            }
+
+            // User password change forced, invalidate all site caches.
+            site.invalidateWsCache();
+
+            $mmEvents.trigger(mmCoreEventSessionExpired, siteId);
+            // Session expired, trigger event.
+            $mmUtil.openChangePassword(siteUrl, $translate.instant('mm.core.nopasswordchangeforced'));
+        });
+
     }
 
     // Function to handle URL received by Custom URL Scheme. If it's a SSO login, perform authentication.

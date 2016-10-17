@@ -16,6 +16,7 @@ angular.module('mm.core', ['pascalprecht.translate'])
 
 .constant('mmCoreSessionExpired', 'mmCoreSessionExpired')
 .constant('mmCoreUserDeleted', 'mmCoreUserDeleted')
+.constant('mmCoreUserPasswordChangeForced', 'mmCoreUserPasswordChangeForced')
 .constant('mmCoreSecondsYear', 31536000)
 .constant('mmCoreSecondsDay', 86400)
 .constant('mmCoreSecondsHour', 3600)

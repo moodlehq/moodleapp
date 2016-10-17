@@ -381,7 +381,7 @@ angular.module('mm.core.course')
             this.invalidateContent = function(moduleId) {
                 var promises = [];
 
-                promises.push($mmCourse.invalidateModule(module.id));
+                promises.push($mmCourse.invalidateModule(moduleId));
                 promises.push($mmFilepool.invalidateFilesByComponent($mmSite.getId(), this.component, moduleId));
 
                 return $q.all(promises);
