@@ -8,21 +8,18 @@
     </ion-nav-buttons>
     <ion-content padding="true" mm-state-class>
         <mm-course-mod-description description="description"></mm-course-mod-description>
-        <div class="card">
-            <div class="item-body">
-                <h2>{{ 'mm.core.whoops' | translate }}</h2>
-                <p>{{ 'mm.course.activitynotyetviewable' | translate }}</p>
-            </div>
-        </div>
-        <a ng-if="url" href="{{ url }}" mm-link class="button button-block icon-right ion-share">{{ 'mm.core.openinbrowser' | translate }}</a>
-        <div class="card">
-            <div class="item item-text-wrap">
-                <h2>{{ 'mm.core.whyisthishappening' | translate }}</h2>
-                <p ng-if="isSupportedByTheApp && !isContributedPlugin">{{ 'mm.course.activitynotyetviewablesiteupgradeneeded' | translate }}</p>
-                <p ng-if="!isSupportedByTheApp && !isContributedPlugin">{{ 'mm.course.activitynotyetviewableinapp' | translate:{$a: moduleName} }}</p>
-                <p ng-if="!isSupportedByTheApp && isContributedPlugin">{{ 'mm.course.activitynotyetviewableremoteaddon' | translate }}</p>
-            </div>
-        </div>
+        <h2 ng-if="isSupportedByTheApp && !isContributedPlugin">{{ 'mm.core.whoops' | translate }}</h2>
+        <h2 ng-if="!isSupportedByTheApp && !isContributedPlugin">{{ 'mm.core.sorry' | translate }}</h2>
+        <h2 ng-if="!isSupportedByTheApp && isContributedPlugin">{{ 'mm.core.uhoh' | translate }}</h2>
 
+        <p class="mm-big" ng-if="!isSupportedByTheApp && !isContributedPlugin">{{ 'mm.course.activitynotyetviewableinapp' | translate:{$a: moduleName} }}</p>
+        <p class="mm-big" ng-if="isSupportedByTheApp && !isContributedPlugin">{{ 'mm.course.activitynotyetviewablesiteupgradeneeded' | translate }}</p>
+        <p class="mm-big" ng-if="!isSupportedByTheApp && isContributedPlugin">{{ 'mm.course.activitynotyetviewableremoteaddon' | translate }}</p>
+        <p ng-if="!isSupportedByTheApp && isContributedPlugin"><strong>{{ 'mm.course.askadmintosupport' | translate }}</strong></p>
+
+        <div ng-if="url">
+            <p><strong>{{ 'mm.course.useactivityonbrowser' | translate }}</strong></p>
+            <a href="{{ url }}" mm-link class="button button-block icon-right ion-share">{{ 'mm.core.openinbrowser' | translate }}</a>
+        </div>
     </ion-content>
 </ion-view>
