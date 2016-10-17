@@ -47,7 +47,7 @@
     "numberofteams": "Grupos",
     "numwords": "{{$a}} palavra(s)",
     "overdue": "<font color=\"red\">Trabalho atrasado em: {{$a}}</font>",
-    "savechanges": "Guardar alterações",
+    "savechanges": "Gravar alterações",
     "submissioneditable": "Os alunos podem editar esta submissão",
     "submissionnoteditable": "O aluno não pode editar esta submissão",
     "submissions": "Trabalhos enviados",

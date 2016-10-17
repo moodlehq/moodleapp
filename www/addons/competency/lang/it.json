@@ -1,13 +1,20 @@
 {
     "activities": "Attività",
+    "coursecompetencies": "Competenze del corso",
     "duedate": "Termine consegne",
     "errornocompetenciesfound": "Non sono state trovate competenze",
     "evidence": "Verifica",
+    "learningplancompetencies": "Competenze del piano di formazione",
+    "learningplans": "Piani di formazione",
     "mylearningplans": "I miei piani formativi",
+    "noactivities": "Nessuna attività.",
     "nocompetencies": "Non sono presenti competenze",
+    "noevidence": "Non sono presenti attestazioni.",
+    "noplanswerecreated": "Non sono stati creati piani di formazione",
     "path": "Percorso",
     "progress": "Situazione dello studente",
     "rating": "Valutazione",
+    "reviewstatus": "Stato della revisione",
     "status": "Stato",
     "template": "Modello"
 }
