@@ -25,7 +25,8 @@ angular.module('mm.core')
         ionicViewEventData,
         viewEventListeners = [],
         headerBarButtons = {},
-        headerButtonTypes = ['primary-buttons', 'secondary-buttons', 'left-buttons', 'right-buttons'];
+        headerButtonTypes = ['primary-buttons', 'secondary-buttons', 'left-buttons', 'right-buttons'],
+        startTime = new Date().getTime();
 
     /**
      * Trigger click on a DOM element.
@@ -140,6 +141,15 @@ angular.module('mm.core')
         } else if (activePosition > 0) {
             return bars[0];
         }
+    };
+
+    /**
+     * Get controller's start time.
+     *
+     * @return {Number} Start time.
+     */
+    this.getStartTime = function() {
+        return startTime;
     };
 
     /**

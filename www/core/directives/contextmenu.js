@@ -14,7 +14,7 @@
 
 angular.module('mm.core')
 
-.controller('mmContextMenu', function($scope, $ionicPopover, $q) {
+.controller('mmContextMenu', function($scope, $ionicPopover, $q, $timeout) {
     var items = $scope.ctxtMenuItems = [];
 
     /**
@@ -95,7 +95,14 @@ angular.module('mm.core')
     });
 
     $scope.$on('$destroy', function() {
-        $scope.contextMenuPopover.remove();
+        if ($scope.contextMenuPopover) {
+            $scope.contextMenuPopover.remove();
+        } else {
+            // Directive destroyed before popover was initialized. Wait a bit and try again.
+            $timeout(function() {
+                $scope.contextMenuPopover && $scope.contextMenuPopover.remove();
+            }, 200);
+        }
     });
 })
 
@@ -126,9 +133,15 @@ angular.module('mm.core')
         transclude: true,
         templateUrl: 'core/templates/contextmenuicon.html',
         controller: 'mmContextMenu',
-        link: function(scope) {
+        link: function(scope, element) {
             scope.contextMenuIcon = scope.icon || 'ion-android-more-vertical';
             scope.contextMenuAria = scope.title || $translate.instant('mm.core.info');
+
+            // The transclude should have been executed already. Remove ng-transclude to prevent errors with mm-nav-buttons.
+            var div = element[0].querySelector('div[ng-transclude]');
+            if (div && div.removeAttribute) {
+                div.removeAttribute('ng-transclude');
+            }
         }
     };
 })
@@ -219,13 +232,6 @@ angular.module('mm.core')
             ngShow: '=?'
         },
         link: function(scope, element, attrs, CtxtMenuCtrl) {
-            // Remove ng-transclude from parent. If this directive is inside ng-transclude it means ng-transclude has been
-            // executed already and it can be removed to prevent errors with mm-nav-buttons.
-            var parent = element.parent()[0];
-            if (parent && parent.removeAttribute) {
-                parent.removeAttribute('ng-transclude');
-            }
-
             // Initialize values. Change the name of some of them to prevent being reconverted to string.
             scope.priority = scope.priority || 1;
             scope.closeOnClick = getBooleanValue(scope.closeOnClick, true);
@@ -254,7 +260,7 @@ angular.module('mm.core')
                         }
                         CtxtMenuCtrl.addContextMenuItem(scope);
                     }
-                }, 1000);
+                });
             } else {
                 CtxtMenuCtrl.addContextMenuItem(scope);
             }

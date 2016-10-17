@@ -59,10 +59,16 @@ angular.module('mm.core')
         data.viewNotified = false;
         data.shouldAnimate = false;
 
-        // Hide back button previous title to prevent showing it while updating the bar.
-        var titles = document.querySelectorAll('ion-header-bar .back-button .back-text .previous-title');
-        angular.forEach(titles, function(title) {
-            angular.element(title).css('display', 'none');
+        // Ionic can show the previous title or a default text in the back button. If the default text is shown, the
+        // previous title is 'undefined'. Hide these 'undefined' titles to prevent showing them while updating the bar.
+        var previousTitles = document.querySelectorAll('ion-header-bar .back-button .back-text .previous-title'),
+            modifiedTitles = [];
+
+        angular.forEach(previousTitles, function(title, index) {
+            if (title.innerHTML == 'undefined') {
+                angular.element(title).css('display', 'none');
+                modifiedTitles.push(title);
+            }
         });
 
         // Call beforeEnter.
@@ -70,7 +76,7 @@ angular.module('mm.core')
 
         // Remove styles added to back button text.
         $timeout(function() {
-            angular.forEach(titles, function(title) {
+            angular.forEach(modifiedTitles, function(title) {
                 angular.element(title).css('display', '');
             });
         }, 1000);
@@ -123,61 +129,71 @@ angular.module('mm.core')
                         // The buttons are for JUST this ion-view.
                         if (splitView) {
                             var svController = angular.element(splitView).controller('mmSplitView'),
-                                eventData = svController.getIonicViewEventData(),
+                                eventData,
                                 leftPaneButtons,
-                                leftPaneButtonsHtml;
+                                leftPaneButtonsHtml,
+                                timeToWait;
 
                             if (!svController) {
                                 // Error. Shouldn't happen.
                                 return;
                             }
 
-                            // Get buttons defined by the left pane view to avoid overriding them.
-                            leftPaneButtonsHtml = svController.getHeaderBarButtonsHtml(spanEle.className);
-                            if (leftPaneButtonsHtml && leftPaneButtonsHtml.trim()) {
-                                leftPaneButtons = angular.element(leftPaneButtonsHtml);
-                            }
+                            // Wait until the left view is completeley rendered. Max 1 second.
+                            timeToWait = 1000 - (new Date().getTime() - svController.getStartTime());
 
-                            // Compile the right pane buttons HTML so they have access to this scope.
-                            spanEle = $compile(spanEle.outerHTML)($scope);
+                            $timeout(function() {
+                                eventData = svController.getIonicViewEventData();
 
-                            // Span has been compiled. Remove context menus (if any) since context menu already adds items
-                            // to the left pane context menu. Leaving it in the span will cause errors.
-                            var contextMenus = spanEle[0].querySelectorAll('mm-context-menu');
-                            if (contextMenus.length) {
-                                angular.element(contextMenus).remove();
-                            }
-
-                            // Now add the left pane buttons if any.
-                            if (leftPaneButtons && leftPaneButtons.length) {
-                                if (side == 'secondary' || side == 'right') {
-                                    spanEle.prepend(leftPaneButtons);
-                                } else {
-                                    spanEle.append(leftPaneButtons);
+                                // Get buttons defined by the left pane view to avoid overriding them.
+                                leftPaneButtonsHtml = svController.getHeaderBarButtonsHtml(spanEle.className);
+                                if (leftPaneButtonsHtml && leftPaneButtonsHtml.trim()) {
+                                    leftPaneButtons = angular.element(leftPaneButtonsHtml);
                                 }
-                            }
 
-                            // Add them to the $ionViewController.
-                            parentViewCtrl.navElement(navElementType, spanEle);
+                                // Compile the right pane buttons HTML so they have access to this scope.
+                                spanEle = $compile(spanEle.outerHTML)($scope);
 
-                            // Call beforeEnter manually since the scope event has been fired already.
-                            callBeforeEnter(parentViewCtrl, eventData);
+                                // Span has been compiled. Remove context menus (if any) since context menu already adds items
+                                // to the left pane context menu. Leaving it in the span will cause errors.
+                                var contextMenus = spanEle[0].querySelectorAll('mm-context-menu');
+                                if (contextMenus.length) {
+                                    angular.element(contextMenus).remove();
+                                }
 
-                            // Listen for view events, maybe we're using an old transition because event hasn't been fired yet.
-                            unregisterViewListener = svController.onViewEvent(function(eventData) {
-                                // Transition ID has changed, call beforeEvent again with the right transition ID.
+                                // Now add the left pane buttons if any.
+                                if (leftPaneButtons && leftPaneButtons.length) {
+                                    if (side == 'secondary' || side == 'right') {
+                                        spanEle.prepend(leftPaneButtons);
+                                    } else {
+                                        spanEle.append(leftPaneButtons);
+                                    }
+                                }
+
+                                // Add them to the $ionViewController.
+                                parentViewCtrl.navElement(navElementType, spanEle);
+
+                                // Call beforeEnter manually since the scope event has been fired already.
                                 callBeforeEnter(parentViewCtrl, eventData);
-                            });
+
+                                // Listen for view events, maybe we're using an old transition because event hasn't been fired yet.
+                                unregisterViewListener = svController.onViewEvent(function(eventData) {
+                                    // Transition ID has changed, call beforeEvent again with the right transition ID.
+                                    callBeforeEnter(parentViewCtrl, eventData);
+                                });
+
+                                spanEle = null;
+                            }, timeToWait);
                         } else {
                             // No split view, just add the buttons.
                             parentViewCtrl.navElement(navElementType, spanEle.outerHTML);
+                            spanEle = null;
                         }
                     } else {
                         // These are buttons for all views that do not have their own ion-nav-buttons.
                         navBarCtrl.navElement(navElementType, spanEle.outerHTML);
+                        spanEle = null;
                     }
-
-                    spanEle = null;
 
                     $scope.$on('$destroy', function() {
                         if (unregisterViewListener) {
