@@ -50,7 +50,7 @@ angular.module('mm.core.courses')
             if (message) {
                 $mmUtil.showErrorModal(message);
             } else {
-                $mmUtil.showErrorModal('mma.searchcourses.errorsearching', true);
+                $mmUtil.showErrorModal('mm.courses.errorsearching', true);
             }
             return $q.reject();
         });
