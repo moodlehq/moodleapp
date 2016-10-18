@@ -26,8 +26,9 @@ angular.module('mm.addons.competency')
 
     var planId = parseInt($stateParams.pid) || false,
         courseId = parseInt($stateParams.cid) || false,
-        competencyId = parseInt($stateParams.compid),
-        userId = parseInt($stateParams.uid) || false;
+        competencyId = parseInt($stateParams.compid);
+
+    $scope.userId = parseInt($stateParams.uid) || false;
 
     function fetchCompetencies() {
         var promise;
@@ -49,7 +50,7 @@ angular.module('mm.addons.competency')
                 $scope.title = response.plan.name;
                 $scope.id = response.plan.id;
                 $scope.idname = 'planid';
-                userId = response.plan.userid;
+                $scope.userId = response.plan.userid;
             } else {
                 $scope.title = $translate.instant('mma.competency.coursecompetencies');
                 $scope.id = response.courseid;
@@ -72,7 +73,7 @@ angular.module('mm.addons.competency')
             // Show split view on tablet.
             $state.go('site.competency', {planid: planId, competencyid: competencyId});
         } else {
-            $state.go('site.competency', {courseid: courseId, competencyid: competencyId, userid: userId});
+            $state.go('site.competency', {courseid: courseId, competencyid: competencyId, userid: $scope.userId});
         }
     };
 
