@@ -152,6 +152,7 @@
     "success": "Success!",
     "tablet": "Tablet",
     "teachers": "Teachers",
+    "thereisdatatosync": "There are offline {{$a}} to be synchronized.",
     "timesup": "Time is up!",
     "twoparagraphs": "{{p1}}<br><br>{{p2}}",
     "tryagain": "Try again",

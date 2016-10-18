@@ -32,10 +32,12 @@ angular.module('mm.addons.notes')
     $scope.courseid = courseid;
     $scope.type = type;
     $scope.title = $translate.instant('mma.notes.' + type + 'notes');
-    $scope.courseStr = $translate.instant('mm.core.course');
+    $scope.notesStr = $scope.title.toLowerCase();
+    $scope.refreshIcon = 'spinner';
+    $scope.syncIcon = 'spinner';
 
-    function fetchNotes(sync) {
-        var promise = sync ? syncNotes(false) : $q.when();
+    function fetchNotes(sync, showErrors) {
+        var promise = sync ? syncNotes(showErrors) : $q.when();
 
         return promise.catch(function() {
             // Ignore errors.
@@ -52,39 +54,28 @@ angular.module('mm.addons.notes')
             }, function(message) {
                 $mmUtil.showErrorModal(message);
             });
+        }).finally(function() {
+            $scope.notesLoaded = true;
+            $scope.refreshIcon = 'ion-refresh';
+            $scope.syncIcon = 'ion-loop';
         });
     }
 
-    fetchNotes(true).then(function() {
+    fetchNotes(true, false).then(function() {
         // Add log in Moodle.
         $mmSite.write('core_notes_view_notes', {
             courseid: courseid,
             userid: 0
         });
-    }).finally(function() {
-        $scope.notesLoaded = true;
     });
 
-    $scope.refreshNotes = function() {
+    $scope.refreshNotes = function(showErrors) {
+        $scope.refreshIcon = 'spinner';
+        $scope.syncIcon = 'spinner';
         $mmaNotes.invalidateNotes(courseid).finally(function() {
-            fetchNotes(true).finally(function() {
+            fetchNotes(true, showErrors).finally(function() {
                 $scope.$broadcast('scroll.refreshComplete');
             });
-        });
-    };
-
-    // Synchronize the course notes.
-    $scope.sync = function() {
-        var modal = $mmUtil.showModalLoading('mm.core.sending', true);
-        syncNotes(true).then(function() {
-            // Reload the data.
-            $scope.notesLoaded = false;
-            scrollTop();
-            fetchNotes(false).finally(function() {
-                $scope.notesLoaded = true;
-            });
-        }).finally(function() {
-            modal.dismiss();
         });
     };
 
@@ -127,10 +118,11 @@ angular.module('mm.addons.notes')
 
             // Refresh the data.
             $scope.notesLoaded = false;
+            $scope.refreshIcon = 'spinner';
+            $scope.syncIcon = 'spinner';
             scrollTop();
-            fetchNotes(false).finally(function() {
-                $scope.notesLoaded = true;
-            });
+
+            fetchNotes(false);
         }
     });
 
