@@ -14,6 +14,8 @@
 
 angular.module('mm.core.login', [])
 
+.constant('mmCoreLoginTokenChangePassword', '*changepassword*')
+
 .config(function($stateProvider, $urlRouterProvider, $mmInitDelegateProvider, mmInitDelegateMaxAddonPriority) {
 
     $stateProvider
@@ -96,11 +98,12 @@ angular.module('mm.core.login', [])
 
 .run(function($log, $state, $mmUtil, $translate, $mmSitesManager, $rootScope, $mmSite, $mmURLDelegate, $ionicHistory, $timeout,
                 $mmEvents, $mmLoginHelper, mmCoreEventSessionExpired, $mmApp, $ionicPlatform, mmCoreConfigConstants,
-                mmCoreEventPasswordChangeForced) {
+                mmCoreEventPasswordChangeForced, mmCoreLoginTokenChangePassword) {
 
     $log = $log.getInstance('mmLogin');
 
-    var isSSOConfirmShown,
+    var isSSOConfirmShown = false,
+        isChangePasswordConfirmShown = false,
         waitingForBrowser = false;
 
     // Listen for sessionExpired event to reconnect the user.
@@ -230,19 +233,29 @@ angular.module('mm.core.login', [])
             }
 
             // Expire user token for the site.
-            $mmSitesManager.updateSiteToken(siteUrl, site.infos.username, 'expired');
+            $log.debug('Expiring token for site ' + siteId);
+            $mmSitesManager.updateSiteTokenBySiteId(siteId, mmCoreLoginTokenChangePassword);
 
             // Site that triggered the event is not current site.
             if (siteId !== $mmSite.getId()) {
                 return;
             }
 
-            // User password change forced, invalidate all site caches.
-            site.invalidateWsCache();
+            if (!isChangePasswordConfirmShown && !waitingForBrowser) {
+                isChangePasswordConfirmShown = true;
 
-            $mmEvents.trigger(mmCoreEventSessionExpired, siteId);
-            // Session expired, trigger event.
-            $mmUtil.openChangePassword(siteUrl, $translate.instant('mm.core.nopasswordchangeforced'));
+                // User password change forced, invalidate all site caches.
+                site.invalidateWsCache();
+
+                $mmEvents.trigger(mmCoreEventSessionExpired, siteId);
+
+                // Session expired, trigger event.
+                $mmLoginHelper.openChangePassword(siteUrl, $translate.instant('mm.core.nopasswordchangeforced')).then(function() {
+                    waitingForBrowser = true;
+                }).finally(function() {
+                    isChangePasswordConfirmShown = false;
+                });
+            }
         });
 
     }

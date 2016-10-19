@@ -109,7 +109,7 @@ angular.module('mm.core')
                     }
                     return $mmLang.translateAndReject('mm.login.checksiteversion');
                 });
-            });;
+            });
         }
     };
 
@@ -159,7 +159,7 @@ angular.module('mm.core')
                 return {siteurl: siteurl, code: data.code, warning: data.warning};
             });
         });
-    };
+    }
 
     /**
      * Check if a site exists.
@@ -410,23 +410,29 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmSitesManager#loadSite
-     * @param {String} siteid ID of the site to load.
+     * @param {String} siteId ID of the site to load.
      * @return {Promise}      Promise to be resolved when the site is loaded.
      */
-    self.loadSite = function(siteid) {
-        $log.debug('Load site '+siteid);
+    self.loadSite = function(siteId) {
+        $log.debug('Load site ' + siteId);
 
-        return self.getSite(siteid).then(function(site) {
+        return self.getSite(siteId).then(function(site) {
             currentSite = site;
-            self.login(siteid);
+            self.login(siteId);
+
+            if (site.isTokenExpired()) {
+                $log.debug('Token expired, rejecting.');
+                $mmEvents.trigger(mmCoreEventSessionExpired, siteId);
+                return $mmLang.translateAndReject('mm.login.reconnectdescription');
+            }
 
             // Check if local_mobile was installed to Moodle.
             return site.checkIfLocalMobileInstalledAndNotUsed().then(function() {
                 // Local mobile was added. Throw invalid session to force reconnect and create a new token.
-                $mmEvents.trigger(mmCoreEventSessionExpired, siteid);
+                $mmEvents.trigger(mmCoreEventSessionExpired, siteId);
             }, function() {
                 // Update site info. We don't block the UI.
-                self.updateSiteInfo(siteid).finally(function() {
+                self.updateSiteInfo(siteId).finally(function() {
                     var infos = site.getInfo(),
                         validation = validateSiteInfo(infos);
                     if (validation !== true) {
@@ -670,18 +676,32 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmSitesManager#updateSiteToken
-     * @param {String} siteurl  Site's URL.
+     * @param {String} siteUrl  Site's URL.
      * @param {String} username Username.
      * @param {String} token    User's new token.
      * @return {Promise}        A promise to be resolved when the site is updated.
      */
-    self.updateSiteToken = function(siteurl, username, token) {
-        var siteid = self.createSiteID(siteurl, username);
-        return self.getSite(siteid).then(function(site) {
+    self.updateSiteToken = function(siteUrl, username, token) {
+        var siteId = self.createSiteID(siteUrl, username);
+        return self.updateSiteTokenBySiteId(siteId, token);
+    };
+
+    /**
+     * Updates a site's token usign siteId.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#updateSiteTokenBySiteId
+     * @param {String} siteId   Site Id.
+     * @param {String} token    User's new token.
+     * @return {Promise}        A promise to be resolved when the site is updated.
+     */
+    self.updateSiteTokenBySiteId = function(siteId, token) {
+        return self.getSite(siteId).then(function(site) {
             site.token = token;
 
             return $mmApp.getDB().insert(mmCoreSitesStore, {
-                id: siteid,
+                id: siteId,
                 siteurl: site.getURL(),
                 token: token,
                 infos: site.getInfo()

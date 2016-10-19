@@ -64,14 +64,14 @@ angular.module('mm.core.login')
         });
     };
 
-    $scope.login = function(siteid) {
+    $scope.login = function(siteId) {
         var modal = $mmUtil.showModalLoading();
 
-        $mmSitesManager.loadSite(siteid).then(function() {
+        $mmSitesManager.loadSite(siteId).then(function() {
             $ionicHistory.nextViewOptions({disableBack: true});
             return $mmLoginHelper.goToSiteInitialPage();
         }, function(error) {
-            $log.error('Error loading site '+siteid);
+            $log.error('Error loading site ' + siteId);
             error = error || 'Error loading site.';
             $mmUtil.showErrorModal(error);
         }).finally(function() {

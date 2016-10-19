@@ -1653,23 +1653,6 @@ angular.module('mm.core')
         };
 
         /**
-         * Convenient helper to open change password page.
-         *
-         * @module mm.core
-         * @ngdoc method
-         * @name $mmUtil#openChangePassword
-         * @param {String}   siteurl  Site URL to construct change password URL.
-         * @param {String}   error    Error message.
-         */
-        self.openChangePassword = function(siteurl, error) {
-            var message = error + "<br>" + $translate.instant('mm.login.visitchangepassword');
-            self.showConfirm(message, $translate.instant('mm.core.notice')).then(function() {
-                var changepasswordurl = siteurl + "/login/change_password.php";
-                self.openInApp(changepasswordurl);
-            });
-        };
-
-        /**
          * Focus an element and open keyboard.
          *
          * @module mm.core
