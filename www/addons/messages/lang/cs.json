@@ -24,5 +24,6 @@
     "type_online": "Online",
     "type_search": "Výsledky hledání",
     "type_strangers": "Další",
-    "unblockcontact": "Odblokovat kontakt"
+    "unblockcontact": "Odblokovat kontakt",
+    "warningmessagenotsent": "Nelze odeslat zprávu (y) uživateli {{user}}. {{error}}"
 }

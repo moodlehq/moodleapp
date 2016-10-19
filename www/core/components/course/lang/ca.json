@@ -12,5 +12,6 @@
     "errorgetmodule": "S'ha produït un error en recuperar les dades del mòdul.",
     "gotothesite": "Vés al web",
     "nocontentavailable": "No hi ha contingut disponible en aquest moment.",
-    "showall": "Mostra-ho tot"
+    "showall": "Mostra-ho tot",
+    "whoops": "Renoi!"
 }

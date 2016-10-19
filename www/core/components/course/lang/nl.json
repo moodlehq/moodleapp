@@ -1,11 +1,15 @@
 {
     "activitynotyetviewable": "Deze activiteit of bron kan nog niet bekeken worden met deze app.",
     "activitynotyetviewablegothere": "Deze activiteit of bron kan nog niet bekeken worden met deze app. Klik op onderstaande knop om het te bekijken op de site.",
+    "activitynotyetviewableinapp": "We werken aan de ondersteuning van de activiteit {{$a}}. Probeer later opnieuw!",
+    "activitynotyetviewableremoteaddon": "Deze activiteit is geen standaardactiviteit en wordt nog niet ondersteund door de app. Probeer later opnieuw",
+    "activitynotyetviewablesiteupgradeneeded": "De site gebruikt de laatste Moodle-versie niet. Neem contact op met de site-beheerder.",
     "allsections": "Alle secties",
     "confirmdeletemodulefiles": "Weet he zeker dat je deze modulebestanden wil verwijderen?",
     "confirmdownload": "Je gaat {{size}} downloaden. Weet je zeker dat je verder wil gaan?",
     "confirmdownloadsection": "Je gaat {{size}} downloaden. Weet je zeker dat je verder wil gaan?",
     "confirmdownloadunknownsize": "We konden de grootte van de download niet berekenen. Weet je zeker dat je toch wil downloaden?",
+    "confirmpartialdownloadsize": "Je staat op het punt om <strong>minstens</strong> {{size}} te downloaden. Weet je zeker dat je verder wil gaan?",
     "contents": "Inhoud",
     "couldnotloadsectioncontent": "Kon sectie-inhoud niet laden. Probeer later opnieuw.",
     "couldnotloadsections": "Kon secties niet laden. Probeer later opnieuw",
@@ -13,5 +17,6 @@
     "errorgetmodule": "Fout bij het ophalen van modulegegevens.",
     "gotothesite": "Ga naar de site",
     "nocontentavailable": "Geen inhoud beschikbaar.",
-    "showall": "Toon alle"
+    "showall": "Toon alle",
+    "whoops": "Whoops!"
 }

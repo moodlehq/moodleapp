@@ -17,6 +17,7 @@
     "maxbytesfile": "El archivo {{$a.file}} es demasido grande. El tamaño máximo que Usted puede subir es {{$a.size}}.",
     "photoalbums": "Foto álbumes",
     "readingfile": "Leyendo archivo",
+    "selectafile": "Seleccionar un archivo",
     "success": "¡Éxito!",
     "uploadafile": "Subir un archivo",
     "uploading": "Subiendo",

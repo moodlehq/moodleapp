@@ -1,4 +1,5 @@
 {
+    "acceptsubmissionstatement": "Por favor acepte la declaratoria de envío.",
     "addnewattempt": "Añadir un nuevo intento",
     "addnewattemptfromprevious": "Añadir un nuevo intento basado en un envío anterior",
     "addsubmission": "Añadir envío",
@@ -77,5 +78,6 @@
     "ungroupedusers": "La configuración de 'Requerir grupo para hacer envío' está activada y algunos usuarios, o no son miembros de ningún grupo, o son miembros de más de un grupo, por lo que no pueden hacer envíos.",
     "userswhoneedtosubmit": "Usuarios que necesitan enviar: {{$a}}",
     "userwithid": "Usuario con ID {{id}}",
-    "viewsubmission": "Ver entrega"
+    "viewsubmission": "Ver entrega",
+    "warningsubmissionmodified": "El envío del usuario fue modificado en el sitio."
 }

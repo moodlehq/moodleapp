@@ -13,5 +13,6 @@
     "errorgetmodule": "Fehler beim Laden von Moduldaten",
     "gotothesite": "Zur Website",
     "nocontentavailable": "Aktuell sind keine Inhalte verfügbar",
-    "showall": "Alles anzeigen"
+    "showall": "Alles anzeigen",
+    "whoops": "Uuups!"
 }

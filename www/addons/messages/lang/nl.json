@@ -24,5 +24,6 @@
     "type_online": "Online",
     "type_search": "Zoekresultaten",
     "type_strangers": "Anderen",
-    "unblockcontact": "Contact deblokkeren"
+    "unblockcontact": "Contact deblokkeren",
+    "warningmessagenotsent": "Kon bericht(en) niet versturen naar gebruiker {{user}}. {{error}}"
 }

@@ -1,4 +1,5 @@
 {
+    "acceptsubmissionstatement": "Přijměte prohlášení prosím.",
     "addnewattempt": "Přidat nový pokus",
     "addnewattemptfromprevious": "Přidat nový pokus na základě posledního odevzdání",
     "addsubmission": "Přidat řešení úkolu",
@@ -77,5 +78,6 @@
     "ungroupedusers": "Nastavení \"Vyžadovat zařazení do skupiny\" je zapnuto a někteří uživatelé nejsou  zařazeni do skupiny, bude jim to bránit v odevzdání úkolu.",
     "userswhoneedtosubmit": "Uživatelé, kteří potřebují odevzdat úkol:  {{$a}}",
     "userwithid": "Uživatel s ID {{id}}",
-    "viewsubmission": "Zobrazit odevzdané úkoly"
+    "viewsubmission": "Zobrazit odevzdané úkoly",
+    "warningsubmissionmodified": "Řešení úkolu bylo na webu upraveno."
 }
