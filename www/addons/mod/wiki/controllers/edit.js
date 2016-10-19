@@ -195,6 +195,7 @@ angular.module('mm.addons.mod_wiki')
                     module: module,
                     moduleid: module.id,
                     courseid: courseId,
+                    pageid: null,
                     pagetitle: $scope.page.title,
                     wikiid: wikiId,
                     subwikiid: subwikiId
