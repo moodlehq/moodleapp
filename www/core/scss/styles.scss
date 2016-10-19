@@ -808,6 +808,18 @@ mm-format-text {
   }
 }
 
+// Disable textarea copy to prevent errors in iOS.
+
+.previous-input-focus.mm-textarea, .cloned-text-input + textarea.mm-textarea {
+  width: 100%;
+  position: relative !important;
+  left: 0px;
+}
+
+input[type="text"].cloned-text-input, textarea.cloned-text-input{
+  display: none;
+}
+
 // InApp notifications.
 
 .mm-inapp-notification-backdrop {
