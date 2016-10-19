@@ -73,6 +73,7 @@ angular.module('mm.addons.mod_wiki')
                 moduleid: module.id,
                 courseid: courseId,
                 pagetitle: page.title,
+                pageid: null,
                 wikiid: wiki.id,
                 subwikiid: page.subwikiid,
                 action: 'page'

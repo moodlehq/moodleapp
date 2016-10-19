@@ -117,7 +117,8 @@ angular.module('mm.core')
 
     this.$get = function($http, $q, $mmWS, $mmDB, $log, md5, $mmApp, $mmLang, $mmUtil, $mmFS, mmCoreWSCacheStore,
             mmCoreWSPrefix, mmCoreSessionExpired, $mmEvents, mmCoreEventSessionExpired, mmCoreUserDeleted, mmCoreEventUserDeleted,
-            $mmText, $translate, mmCoreConfigConstants, mmCoreUserPasswordChangeForced, mmCoreEventPasswordChangeForced) {
+            $mmText, $translate, mmCoreConfigConstants, mmCoreUserPasswordChangeForced, mmCoreEventPasswordChangeForced,
+            mmCoreLoginTokenChangePassword) {
 
         $log = $log.getInstance('$mmSite');
 
@@ -252,6 +253,15 @@ angular.module('mm.core')
          */
         Site.prototype.setToken = function(token) {
             this.token = token;
+        };
+
+        /**
+         * Check if token is already expired using local data.
+         *
+         * @return {Boolean} is token is expired or not.
+         */
+        Site.prototype.isTokenExpired = function() {
+            return this.token == mmCoreLoginTokenChangePassword;
         };
 
         /**
@@ -424,6 +434,13 @@ angular.module('mm.core')
             var site = this,
                 initialToken = site.token;
             data = data || {};
+
+            // Prevent calls with expired tokens.
+            if (site.isTokenExpired()) {
+                $log.debug('Token expired, rejecting.');
+                $mmEvents.trigger(mmCoreEventSessionExpired, site.id);
+                return $mmLang.translateAndReject('mm.login.reconnectdescription');
+            }
 
             // Get the method to use based on the available ones.
             method = site.getCompatibleFunction(method);

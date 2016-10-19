@@ -414,14 +414,16 @@ angular.module('mm.core')
                     editorHeightWithoutResize = editorInitialHeight + toolbarHeight,
                     contentVisibleHeight,
                     editorContentNewHeight,
-                    screenSmallerThanEditor;
+                    screenSmallerThanEditor,
+                    editorMaximized;
 
                 if (typeof fixedBarsHeight == 'undefined') {
                     fixedBarsHeight = calculateFixedBarsHeight(editorEl);
                 }
 
+                editorMaximized = !!editorEl.querySelector('.cke_maximized');
                 contentVisibleHeight = $window.innerHeight - fixedBarsHeight;
-                screenSmallerThanEditor = contentVisibleHeight > 0 && contentVisibleHeight < editorHeightWithoutResize;
+                screenSmallerThanEditor = !editorMaximized && contentVisibleHeight > 0 && contentVisibleHeight < editorHeightWithoutResize;
                 editorContentNewHeight = contentVisibleHeight - toolbarHeight;
 
                 if (resized && !screenSmallerThanEditor) {
