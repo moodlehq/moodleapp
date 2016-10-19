@@ -24,5 +24,6 @@
     "type_online": "En ligne",
     "type_search": "Résultats de recherche",
     "type_strangers": "Autres",
-    "unblockcontact": "Débloquer contact"
+    "unblockcontact": "Débloquer contact",
+    "warningmessagenotsent": "Impossible d'envoyer de message à l'utilisateur {{user}}. {{error}}"
 }

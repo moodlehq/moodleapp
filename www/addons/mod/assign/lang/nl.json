@@ -1,4 +1,5 @@
 {
+    "acceptsubmissionstatement": "Uploadvoorwaarden goedkeuren.",
     "addnewattempt": "Een nieuwe poging toevoegen",
     "addnewattemptfromprevious": "Een  nieuwe poging toevoegen, gebaseerd op de vorige inzending",
     "addsubmission": "Inzending toevoegen",
@@ -77,5 +78,6 @@
     "ungroupedusers": "De insteling \"Groeplidmaatschap vereist om een inzending te maken\" is ingeschakeld en sommige gebruikers zijn niet toegewezen aan een groep of zijn lid van meerdere groepen. Dit zal het hen onmogelijk maken om hun opdracht in te sturen.",
     "userswhoneedtosubmit": "Leerlingen die nog moeten insturen: {{$a}}",
     "userwithid": "Gebruiker met Id {{id}}",
-    "viewsubmission": "Bekijk ingestuurde opdracht"
+    "viewsubmission": "Bekijk ingestuurde opdracht",
+    "warningsubmissionmodified": "Het door de gebruiker ingestuurde bestand is gewijzigd op de site."
 }

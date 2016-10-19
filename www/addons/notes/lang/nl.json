@@ -8,5 +8,6 @@
     "personalnotes": "Persoonlijke notities",
     "publishstate": "Context",
     "sitenotes": "Site notities",
-    "userwithid": "Gebruiker met ID {{$a}}"
+    "userwithid": "Gebruiker met ID {{$a}}",
+    "warningnotenotsent": "Kon notities niet toevoegen aan cursus {{course}}. {{error}}"
 }

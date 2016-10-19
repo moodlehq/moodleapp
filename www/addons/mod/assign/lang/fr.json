@@ -1,4 +1,5 @@
 {
+    "acceptsubmissionstatement": "Veuillez accepter les conditions d'envoi.",
     "addnewattempt": "Ajouter une tentative",
     "addnewattemptfromprevious": "Ajouter une tentative basée sur le travail remis précédemment",
     "addsubmission": "Ajouter un travail",
@@ -7,6 +8,8 @@
     "allowsubmissionsfromdatesummary": "Ce devoir acceptera la remise de documents dès le <strong>{{$a}}</strong>",
     "assignmentisdue": "Devoir à effectuer",
     "attemptnumber": "Numéro de tentative",
+    "cannoteditduetostatementsubmission": "Vous ne pouvez pas ajouter, ni modifier de données dans l'app, car il n'est actuellement pas possible de récupérer les conditions d'envoi.",
+    "cannotsubmitduetostatementsubmission": "Vous ne pouvez pas déposer de travail à évaluer dans l'app, car il n'est actuellement pas possible de récupérer les conditions d'envoi.",
     "confirmsubmission": "Voulez-vous vraiment remettre votre travail pour évaluation&nbsp;? Vous ne pourrez plus effectuer de changement.",
     "currentattempt": "Ceci est la tentative {{$a}}.",
     "currentattemptof": "Ceci est la tentative {{$a.attemptnumber}} ({{$a.maxattempts}} tentatives autorisées).",
@@ -17,8 +20,11 @@
     "duedatereached": "La date de remise de ce devoir est passée",
     "editingstatus": "Statut d'édition",
     "editsubmission": "Modifier le travail",
+    "erroreditpluginsnotsupported": "Vous ne pouvez pas ajouter, ni modifier de données dans l'app, car certains plugins ne permettent pas la modification :",
+    "errorshowinginformation": "Il n'est pas possible d'afficher les informations de dépôt",
     "extensionduedate": "Date de prolongation",
     "feedback": "Feedback",
+    "feedbacknotsupported": "Le feedback n'est pas supporté par l'app et pourrait ne pas contenir la totalité des informations",
     "graded": "Noté",
     "gradedby": "Évalué par",
     "gradedon": "Évalué le",
@@ -51,6 +57,7 @@
     "savechanges": "Enregistrer",
     "submissioneditable": "L'étudiant peut modifier ce travail remis",
     "submissionnoteditable": "L'étudiant ne peut pas modifier ce travail remis",
+    "submissionnotsupported": "Le dépôt n'est pas supporté par l'app et pourrait ne pas contenir la totalité des informations",
     "submissions": "Devoirs rendus",
     "submissionslocked": "L'ajout, la modification et la suppression de travaux ont été bloqués",
     "submissionstatus": "Statut des travaux remis",
@@ -71,5 +78,6 @@
     "ungroupedusers": "Le réglage « Requiert un groupe pour remettre un devoir » est activé et certains utilisateurs ne sont membres d'aucun groupe ou membres de plusieurs groupes. Cette situation les empêchera de remettre un travail.",
     "userswhoneedtosubmit": "Utilisateurs devant valider l'envoi du devoir : {{$a}}",
     "userwithid": "Utilisateur d'Id {{id}}",
-    "viewsubmission": "Afficher le travail remis"
+    "viewsubmission": "Afficher le travail remis",
+    "warningsubmissionmodified": "Le travail remis par l'utilisateur a été modifié sur le site."
 }

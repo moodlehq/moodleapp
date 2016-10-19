@@ -21,6 +21,7 @@
     "maxbytesfile": "Het bestand {{$a.file}} is te groot. De maximale uploadgrootte is {{$a.size}}.",
     "photoalbums": "Foto-albums",
     "readingfile": "Bestand lezen",
+    "selectafile": "Selecteer een bestand",
     "success": "Succes!",
     "uploadafile": "Bestand uploaden",
     "uploadfiles": "Upload bestanden",

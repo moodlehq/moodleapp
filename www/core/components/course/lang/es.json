@@ -12,5 +12,6 @@
     "errorgetmodule": "Se ha producido un error recuperando los datos del módulo.",
     "gotothesite": "Ir al sitio",
     "nocontentavailable": "No hay contenido disponible en este momento.",
-    "showall": "Mostrar todo"
+    "showall": "Mostrar todo",
+    "whoops": "¡Vaya!"
 }

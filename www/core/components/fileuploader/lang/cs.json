@@ -21,6 +21,7 @@
     "maxbytesfile": "Soubor {{$a.file}} je příliš veliký. Maximální velikost nahrávaného souboru je {{$a.size}}.",
     "photoalbums": "Fotoalba",
     "readingfile": "Čtení souboru",
+    "selectafile": "Vyberte soubor",
     "success": "Úspěch!",
     "uploadafile": "Nahrát soubor",
     "uploadfiles": "Nahrát soubory",
