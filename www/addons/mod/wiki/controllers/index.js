@@ -67,18 +67,20 @@ angular.module('mm.addons.mod_wiki')
 
     $scope.gotoPage = function(page) {
         if (!page.id) {
-            // It's an offline page.
-            var stateParams = {
-                module: module,
-                moduleid: module.id,
-                courseid: courseId,
-                pagetitle: page.title,
-                pageid: null,
-                wikiid: wiki.id,
-                subwikiid: page.subwikiid,
-                action: 'page'
-            };
-            return $state.go('site.mod_wiki', stateParams);
+            // It's an offline page. Check if we are already in the same offline page.
+            if (currentPage || !pageTitle || page.title != pageTitle) {
+                var stateParams = {
+                    module: module,
+                    moduleid: module.id,
+                    courseid: courseId,
+                    pagetitle: page.title,
+                    pageid: null,
+                    wikiid: wiki.id,
+                    subwikiid: page.subwikiid,
+                    action: 'page'
+                };
+                return $state.go('site.mod_wiki', stateParams);
+            }
         } else if (currentPage != page.id) {
             // Add a new State.
             return fetchPageContents(page.id).then(function(page) {
