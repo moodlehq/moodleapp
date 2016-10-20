@@ -13,7 +13,7 @@ addons:
 language: node_js
 
 node_js:
-- '0.12'
+- '6.9.1'
 
 before_install:
 - npm cache clean
