@@ -7,7 +7,7 @@ var stripComments = require('gulp-strip-comments');
 var removeEmptyLines = require('gulp-remove-empty-lines');
 var clipEmptyFiles = require('gulp-clip-empty-files');
 var sass = require('gulp-sass');
-var minifyCss = require('gulp-minify-css');
+var cleanCSS = require('gulp-clean-css');
 var rename = require('gulp-rename');
 var tap = require('gulp-tap');
 var fs = require('fs');
@@ -408,7 +408,7 @@ gulp.task('sass', ['sass-build'], function(done) {
     .pipe(concat('mm.bundle.css'))
     .pipe(sass())
     .pipe(gulp.dest(paths.build))
-    .pipe(minifyCss({
+    .pipe(cleanCSS({
       keepSpecialComments: 0
     }))
     .pipe(rename({ extname: '.min.css' }))
