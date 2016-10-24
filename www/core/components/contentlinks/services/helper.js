@@ -172,8 +172,7 @@ angular.module('mm.core.contentlinks')
                 });
             } else {
                 // Get the site URL.
-                var siteUrl = $mmContentLinksDelegate.getSiteUrl(url),
-                    formatted = $mmUtil.formatURL(siteUrl);
+                var siteUrl = $mmContentLinksDelegate.getSiteUrl(url);
                 if (!siteUrl) {
                     $mmUtil.showErrorModal('mm.login.invalidsite', true);
                     return;
@@ -203,7 +202,8 @@ angular.module('mm.core.contentlinks')
 
                     return promise.then(function() {
                         if (ssoNeeded) {
-                            $mmLoginHelper.confirmAndOpenBrowserForSSOLogin(result.siteurl, result.code);
+                            $mmLoginHelper.confirmAndOpenBrowserForSSOLogin(
+                                        result.siteurl, result.code, result.service, result.config && result.config.launchurl);
                         } else {
                             $state.go('mm_login.credentials', {
                                 siteurl: result.siteurl,

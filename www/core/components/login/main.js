@@ -201,7 +201,8 @@ angular.module('mm.core.login', [])
                     isSSOConfirmShown = true;
                     $mmUtil.showConfirm($translate('mm.login.reconnectssodescription')).then(function() {
                         waitingForBrowser = true;
-                        $mmLoginHelper.confirmAndOpenBrowserForSSOLogin(result.siteurl, result.code);
+                        $mmLoginHelper.confirmAndOpenBrowserForSSOLogin(
+                                    result.siteurl, result.code, result.service, result.config && result.config.launchurl);
                     }).finally(function() {
                         isSSOConfirmShown = false;
                     });

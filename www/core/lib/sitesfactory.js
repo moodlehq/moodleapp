@@ -713,6 +713,7 @@ angular.module('mm.core')
          *                                   - {Number} code Code to identify the authentication method to use.
          *                                   - {String} [service] If defined, name of the service to use.
          *                                   - {String} [warning] If defined, code of the warning message.
+         *                                   - {Boolean} [coresupported] Whether core SSO is supported.
          */
         Site.prototype.checkLocalMobilePlugin = function(retrying) {
             var siteurl = this.siteurl,
@@ -758,7 +759,7 @@ angular.module('mm.core')
                             return $mmLang.translateAndReject('mm.core.unexpectederror');
                     }
                 } else {
-                    return {code: code, service: service};
+                    return {code: code, service: service, coresupported: !!data.coresupported};
                 }
             }, function() {
                 return {code: 0};

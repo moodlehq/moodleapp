@@ -38,7 +38,7 @@ angular.module('mm.core')
  * @ngdoc service
  * @name $mmSitesManager
  */
-.factory('$mmSitesManager', function($http, $q, $mmSitesFactory, md5, $mmLang, $mmApp, $mmUtil, $mmEvents, $state, $mmWS,
+.factory('$mmSitesManager', function($http, $q, $mmSitesFactory, md5, $mmLang, $mmApp, $mmUtil, $mmEvents, $state,
             $translate, mmCoreSitesStore, mmCoreCurrentSiteStore, mmCoreEventLogin, mmCoreEventLogout, $log, mmCoreWSPrefix,
             mmCoreEventSiteUpdated, mmCoreEventSiteAdded, mmCoreEventSessionExpired, mmCoreEventSiteDeleted, $mmText,
             mmCoreConfigConstants, mmLoginSSOCode, mmLoginSSOInAppCode) {
@@ -157,7 +157,7 @@ angular.module('mm.core')
                 data.service = data.service || mmCoreConfigConstants.wsservice;
                 services[siteurl] = data.service; // No need to store it in DB.
 
-                if (data.code != mmLoginSSOCode && data.code != mmLoginSSOInAppCode) {
+                if (data.coresupported || (data.code != mmLoginSSOCode && data.code != mmLoginSSOInAppCode)) {
                     // SSO using local_mobile not needed, try to get the site public config.
                     return temporarySite.getPublicConfig().then(function(config) {
 
