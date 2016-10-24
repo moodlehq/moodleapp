@@ -119,6 +119,9 @@ em {
 // This is done for accessibility reasons when a heading is semantically incorrect.
 .item .item-heading {
   @extend h2;
+  &.padding {
+    @extend .padding;
+  }
 }
 
 .item.item-text-wrap .item-heading {

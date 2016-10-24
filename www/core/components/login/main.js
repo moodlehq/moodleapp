@@ -63,7 +63,8 @@ angular.module('mm.core.login', [])
         params: {
             siteurl: '',
             username: '',
-            urltoopen: '' // For content links.
+            urltoopen: '', // For content links.
+            siteconfig: null
         },
         onEnter: function($state, $stateParams) {
             // Do not allow access to this page when the URL was not passed.
@@ -200,7 +201,7 @@ angular.module('mm.core.login', [])
                     isSSOConfirmShown = true;
                     $mmUtil.showConfirm($translate('mm.login.reconnectssodescription')).then(function() {
                         waitingForBrowser = true;
-                        $mmLoginHelper.openBrowserForSSOLogin(result.siteurl, result.code);
+                        $mmLoginHelper.confirmAndOpenBrowserForSSOLogin(result.siteurl, result.code);
                     }).finally(function() {
                         isSSOConfirmShown = false;
                     });

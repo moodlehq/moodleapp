@@ -819,6 +819,22 @@ angular.module('mm.core')
         };
 
         /**
+         * Get the public config of this site.
+         *
+         * @return {Promise} Promise resolved with site public config. Rejected with an object if error, see $mmWS#callAjax.
+         */
+        Site.prototype.getPublicConfig = function() {
+            var that = this;
+            return $mmWS.callAjax('tool_mobile_get_public_config', {}, {siteurl: this.siteurl}).then(function(config) {
+                // Use the wwwroot returned by the server.
+                if (config.httpswwwroot) {
+                    that.siteurl = config.httpswwwroot;
+                }
+                return config;
+            });
+        };
+
+        /**
          * Invalidate entries from the cache.
          *
          * @param  {Object} db      DB the entries belong to.

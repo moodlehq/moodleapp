@@ -66,7 +66,7 @@ angular.module('mm.core.login')
                     // SSO. User needs to authenticate in a browser.
                     $mmLoginHelper.confirmAndOpenBrowserForSSOLogin(result.siteurl, result.code);
                 } else {
-                    $state.go('mm_login.credentials', {siteurl: result.siteurl});
+                    $state.go('mm_login.credentials', {siteurl: result.siteurl, siteconfig: result.config});
                 }
             }, function(error) {
                 showLoginIssue(url, error);

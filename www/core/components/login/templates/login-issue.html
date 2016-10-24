@@ -5,4 +5,5 @@
 <button class="button button-block" ng-click="closePopup()">{{ 'mm.core.tryagain' | translate }}</button>
 <h3>{{ 'mm.login.stillcantconnect' | translate }}</h3>
 <p>{{ 'mm.login.contactyouradministrator' | translate }}</p>
-<p ng-if="issue">{{ 'mm.login.contactyouradministratorissue' | translate:{$a: issue} }}</p>
+<p ng-if="issue">{{ 'mm.login.contactyouradministratorissue' | translate }}</p>
+<p ng-if="issue"><mm-format-text>{{issue}}</mm-format-text></p>
