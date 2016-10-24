@@ -25,12 +25,13 @@ angular.module('mm.core.course')
             $mmEvents, $ionicScrollDelegate, $mmCourses, $q, mmCoreEventCompletionModuleViewed, $controller,
             $mmCoursePrefetchDelegate, $mmCourseHelper) {
 
-    // Default values are course 1 (front page) and all sections.
-    var courseId = $stateParams.cid || 1,
+    // Default values are Site Home and all sections.
+    var siteHomeId = $mmSite.getInfo().siteid || 1,
+        courseId = $stateParams.cid || siteHomeId,
         sectionId = $stateParams.sectionid || -1,
         moduleId = $stateParams.mid;
 
-    $scope.sitehome = (courseId === 1); // Are we visiting the site home?
+    $scope.sitehome = (courseId === siteHomeId); // Are we visiting the site home?
     $scope.sections = []; // Reset scope.sections, otherwise an error is shown in console with tablet view.
 
     if (sectionId < 0) {

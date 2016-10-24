@@ -564,6 +564,21 @@ angular.module('mm.core')
     };
 
     /**
+     * Returns the site home ID of a site.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#getSiteHomeId
+     * @param  {Number} [siteId] The site ID. If not defined, current site (if available).
+     * @return {Promise}         Promise resolved with site home ID.
+     */
+    self.getSiteHomeId = function(siteId) {
+        return self.getSite(siteId).then(function(site) {
+            return site.getInfo().siteid || 1;
+        });
+    };
+
+    /**
      * Get the list of sites stored.
      *
      * @module mm.core
