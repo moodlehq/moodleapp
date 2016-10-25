@@ -17,6 +17,10 @@
                 <i class="icon ion-alert-circled padding"></i> {{ 'mm.core.hasdatatosync' | translate:{$a: discussionStr} }}
             </div>
 
+            <div class="mm-warning" ng-if="locked">
+                <i class="icon ion-alert-circled padding"></i> {{ 'mma.mod_forum.discussionlocked' | translate }}
+            </div>
+
             <article class="card highlight" ng-if="discussion">
                 <mma-mod-forum-discussion-post post="discussion" courseid="courseid" discussion-id="discussionId" title="discussion.subject" subject="discussion.userfullname" component="component" component-id="componentId" newpost="newpost" replyingto="replyingto" showdivider="false" titleimportant="true" onpostchange="postListChanged()" defaultsubject="defaultSubject" scroll-handle="mmaModForumPostsScroll"></mma-mod-forum-discussion-post>
             </article>
