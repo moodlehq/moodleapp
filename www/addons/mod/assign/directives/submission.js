@@ -227,13 +227,14 @@ angular.module('mm.addons.mod_assign')
                                     scope.timeRemaining = $translate.instant('mma.mod_assign.duedatereached');
                                 }
                             } else {
-                                if (scope.userSubmission.timemodified > duedate) {
+                                var timeSubmittedDiff = scope.userSubmission.timemodified - duedate;
+                                if (timeSubmittedDiff > 0) {
                                     scope.timeRemaining = $translate.instant('mma.mod_assign.submittedlate',
-                                        {'$a': $mmUtil.formatDuration(-timeRemaining, 3) });
+                                        {'$a': $mmUtil.formatDuration(timeSubmittedDiff, 3) });
                                     scope.timeRemainingClass = 'latesubmission';
                                 } else {
                                     scope.timeRemaining = $translate.instant('mma.mod_assign.submittedearly',
-                                        {'$a': $mmUtil.formatDuration(-timeRemaining, 3) });
+                                        {'$a': $mmUtil.formatDuration(-timeSubmittedDiff, 3) });
                                     scope.timeRemainingClass = 'earlysubmission';
                                 }
                             }
