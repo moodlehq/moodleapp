@@ -21,17 +21,24 @@ angular.module('mm.core.courses')
  * @ngdoc controller
  * @name mmCoursesListCtrl
  */
-.controller('mmCoursesListCtrl', function($scope, $mmCourses, $mmCoursesDelegate, $mmUtil, $mmEvents, $mmSite,
+.controller('mmCoursesListCtrl', function($scope, $log, $mmCourses, $timeout, $mmCoursesDelegate, $mmUtil, $mmEvents, $mmSite,
             mmCoursesEventMyCoursesUpdated, mmCoursesEventMyCoursesRefreshed) {
 
     $scope.searchEnabled = $mmCourses.isSearchCoursesAvailable();
     $scope.areNavHandlersLoadedFor = $mmCoursesDelegate.areNavHandlersLoadedFor;
     $scope.filter = {};
+    $scope.courses;
+    $scope.showSortCategoryInfo = false;
+    $scope.distinct = [];
+    $scope.unique = {};
+    $scope.browsedCourses = [];
+    $scope.allCourses = [];
 
     // Convenience function to fetch courses.
     function fetchCourses(refresh) {
         return $mmCourses.getUserCourses().then(function(courses) {
-            $scope.courses = courses;
+            $scope.allCourses = courses;
+            $scope.courses = $scope.allCourses;
             angular.forEach(courses, function(course) {
                 course._handlers = $mmCoursesDelegate.getNavHandlersFor(course.id, refresh);
             });
@@ -62,4 +69,38 @@ angular.module('mm.core.courses')
             fetchCourses();
         }
     });
+    $scope.browseCategory = function(){
+        if($scope.showBrowseCategoryInfo == true){
+            $scope.showBrowseCategoryInfo = false;
+        }else{
+            $scope.showBrowseCategoryInfo = true;
+        }
+
+        console.log($scope.allCourses);
+
+        for( var i in $scope.allCourses ){
+            if( typeof($scope.unique[$scope.allCourses[i].category]) == "undefined"){
+                $scope.distinct.push($scope.allCourses[i].category);
+            }
+            $scope.unique[$scope.allCourses[i].category] = 0;
+        }
+        console.log($scope.distinct);
+    };
+    $scope.showCategory = function(uniqueCategory){
+        $scope.browsedCourses = [];
+        console.log("Category id: ", uniqueCategory);
+
+
+        for( var i in $scope.allCourses){
+            if($scope.allCourses[i].category == uniqueCategory){
+              $scope.browsedCourses.push($scope.allCourses[i]);
+            }
+        }
+        console.log($scope.browsedCourses);
+        $scope.courses = $scope.browsedCourses;
+    }
+    $scope.showAllCourses = function(){
+        $scope.courses = $scope.allCourses;
+    }
+
 });
