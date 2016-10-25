@@ -37,7 +37,7 @@ angular.module('mm.core.courses')
     // Convenience function to fetch courses.
     function fetchCourses(refresh) {
         return $mmCourses.getUserCourses().then(function(courses) {
-            $scope.allCourses = courses
+            $scope.allCourses = courses;
             $scope.courses = $scope.allCourses;
             angular.forEach(courses, function(course) {
                 course._handlers = $mmCoursesDelegate.getNavHandlersFor(course.id, refresh);
