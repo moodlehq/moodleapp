@@ -1,0 +1,8 @@
+{
+	"disableall": "Disable notifications",
+	"disabled": "Disabled",
+	"configuringnotifications": "You're configuring '{{$a}}' notifications.",
+	"loggedin": "Online",
+	"loggedoff": "Offline",
+	"notificationpreferences": "Notification preferences"
+}

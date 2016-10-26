@@ -29,6 +29,102 @@ angular.module('mm.addons.pushnotifications')
         pushID;
 
     /**
+     * Get the cache key for the get notification preferences call.
+     *
+     * @return {String} Cache key.
+     */
+    function getNotificationPreferencesCacheKey() {
+        return 'mmaPushNotifications:notificationPreferences';
+    }
+
+    /**
+     * Get notification preferences.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmaPushNotifications#getNotificationPreferences
+     * @param  {String} [siteid] Site ID. If not defined, use current site.
+     * @return {Promise}         Promise resolved with the notification preferences.
+     */
+    self.getNotificationPreferences = function(siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        $log.debug('Get notification preferences');
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var preSets = {
+                    cacheKey: getNotificationPreferencesCacheKey()
+                };
+
+            return site.read('core_message_get_user_notification_preferences', {}, preSets).then(function(data) {
+                return data.preferences;
+            });
+        });
+    };
+
+    /**
+     * Return the components and notifications that have a certain processor.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmaPushNotifications#getProcessorComponents
+     * @param  {String} processor    Name of the processor to filter.
+     * @param  {Object[]} components Array of components.
+     * @return {Object[]}            Filtered components.
+     */
+    self.getProcessorComponents = function(processor, components) {
+        var result = [];
+
+        angular.forEach(components, function(component) {
+
+            // Create a copy of the component with an empty list of notifications.
+            var componentCopy = angular.copy(component);
+            componentCopy.notifications = [];
+
+            angular.forEach(component.notifications, function(notification) {
+                var hasProcessor = false;
+                for (var i = 0, len = notification.processors.length; i < len; i++) {
+                    var proc = notification.processors[i];
+                    if (proc.name == processor) {
+                        hasProcessor = true;
+                        notification.currentProcessor = proc;
+                        break;
+                    }
+                }
+
+                if (hasProcessor) {
+                    // Add the notification.
+                    componentCopy.notifications.push(notification);
+                }
+            });
+
+            if (componentCopy.notifications.length) {
+                // At least 1 notification added, add the component to the result.
+                result.push(componentCopy);
+            }
+        });
+
+        return result;
+    };
+
+    /**
+     * Invalidate get notification preferences.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmaPushNotifications#invalidateNotificationPreferences
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when data is invalidated.
+     */
+    self.invalidateNotificationPreferences = function(siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getNotificationPreferencesCacheKey());
+        });
+    };
+
+    /**
      * Returns whether or not the plugin is enabled for the current site.
      *
      * @module mm.addons.pushnotifications
@@ -40,6 +136,20 @@ angular.module('mm.addons.pushnotifications')
         return $mmSite.wsAvailable('core_user_add_user_device')
                 && $mmSite.wsAvailable('message_airnotifier_is_system_configured')
                 && $mmSite.wsAvailable('message_airnotifier_are_notification_preferences_configured');
+    };
+
+    /**
+     * Returns whether or not the notification preferences are enabled for the current site.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmaPushNotifications#isNotificationPreferencesEnabled
+     * @return {Boolean} True if enabled, false otherwise.
+     */
+    self.isNotificationPreferencesEnabled = function() {
+        return $mmSite.wsAvailable('core_message_get_user_notification_preferences') &&
+                $mmSite.wsAvailable('message_airnotifier_enable_device') &&
+                $mmSite.wsAvailable('message_airnotifier_get_user_devices');
     };
 
     /**

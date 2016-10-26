@@ -177,9 +177,13 @@ em {
   &.item-icon-left {
     padding-left: 35px;
 
-    .icon {
+    .icon:first-child {
       left: 4px;
     }
+  }
+
+  &.item-icon-right {
+    @extend .item-icon-right;
   }
 }
 
@@ -877,5 +881,21 @@ input[type="text"].cloned-text-input, textarea.cloned-text-input{
   .mm-inapp-notification-backdrop .mm-inapp-notification {
     margin-left: 6px !important;
     margin-right: 6px !important;
+  }
+}
+
+// Toggles with relative positioning.
+
+.item-toggle-relative {
+  .item.item-toggle {
+    padding: 0px;
+    margin-top: 0px;
+    margin-left: 0px;
+
+    .toggle {
+      position: relative;
+      top: 0px;
+      right: 0px;
+    }
   }
 }
