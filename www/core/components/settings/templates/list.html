@@ -22,6 +22,14 @@
                         {{ 'mm.sharedfiles.sharedfiles' | translate }}
                     </a>
                 </li>
+                <li class="item text-center" ng-if="(!handlers || !handlers.length) && !areHandlersLoaded()">
+                    <ion-spinner></ion-spinner>
+                </li>
+                <li ng-repeat="handler in handlers | orderBy:'-priority'" ng-controller="handler.controller" class="mm-settings-handler {{class}}">
+                    <a class="item" mm-split-view-link="{{state}}" title="{{ title | translate }}">
+                        {{ title | translate }}
+                    </a>
+                </li>
                 <li>
                     <a class="item" mm-split-view-link="site.mm_settings-about" title="{{ 'mm.settings.about' | translate }}">
                         {{ 'mm.settings.about' | translate }}
