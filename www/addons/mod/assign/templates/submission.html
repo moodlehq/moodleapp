@@ -19,12 +19,25 @@
         </div>
     </div>
 
-    <div class="tabs tabs-striped tabs-free tabs-color-positive" ng-if="feedback">
+    <div class="tabs tabs-striped tabs-free tabs-color-positive" ng-if="feedback || canSaveGrades">
       <a class="tab-item" ng-class="{'active': showSubmission}" ng-click="changeShowSubmission(true)">{{ 'mma.mod_assign.submissions' | translate }}</a>
       <a class="tab-item" ng-class="{'active': !showSubmission}" ng-click="changeShowSubmission(false)">{{ 'mma.mod_assign.feedback' | translate }}</a>
     </div>
 
     <div ng-show="showSubmission">
+        <mma-mod-assign-submission-plugin ng-repeat="plugin in submissionPlugins" assign="assign" submission="userSubmission" plugin="plugin" scroll-handle="{{scrollHandle}}"></mma-mod-assign-submission-plugin>
+
+        <div ng-if="userSubmission" class="item item-text-wrap">
+            <h2>{{ 'mma.mod_assign.timemodified' | translate }}</h2>
+            <p ng-if="userSubmission.status != statusNew">{{ userSubmission.timemodified * 1000 | mmFormatDate:"dfmediumdate" }}</p>
+            <p ng-if="userSubmission.status == statusNew">-</p>
+        </div>
+
+        <div ng-if="timeRemaining" class="item item-text-wrap {{timeRemainingClass}}">
+            <h2>{{ 'mma.mod_assign.timeremaining' | translate }}</h2>
+            <p><mm-format-text watch="true">{{ timeRemaining }}</mm-format-text></p>
+        </div>
+
         <div ng-if="fromDate && !isSubmittedForGrading" class="item item-text-wrap">
             <mm-format-text watch="true" ng-if="assign.intro">
                 {{ 'mma.mod_assign.allowsubmissionsfromdatesummary' | translate: {'$a': fromDate} }}
@@ -120,33 +133,46 @@
             <p>{{ lastAttempt.extensionduedate * 1000 | mmFormatDate:"dfmediumdate" }}</p>
         </div>
 
-        <div ng-if="timeRemaining" class="item item-text-wrap {{timeRemainingClass}}">
-            <h2>{{ 'mma.mod_assign.timeremaining' | translate }}</h2>
-            <p><mm-format-text watch="true">{{ timeRemaining }}</mm-format-text></p>
+        <div ng-if="lastAttempt && isSubmittedForGrading && lastAttempt.caneditowner !== undefined" class="item item-text-wrap" ng-class="{submissioneditable: lastAttempt.caneditowner , submissionnoteditable: !lastAttempt.caneditowner}">
+            <h2>{{ 'mma.mod_assign.editingstatus' | translate }}</h2>
+            <p ng-if="lastAttempt.caneditowner">{{ 'mma.mod_assign.submissioneditable' | translate }}</p>
+            <p ng-if="!lastAttempt.caneditowner">{{ 'mma.mod_assign.submissionnoteditable' | translate }}</p>
         </div>
-
-    <div ng-if="lastAttempt && isSubmittedForGrading && lastAttempt.caneditowner !== undefined" class="item item-text-wrap" ng-class="{submissioneditable: lastAttempt.caneditowner , submissionnoteditable: !lastAttempt.caneditowner}">
-        <h2>{{ 'mma.mod_assign.editingstatus' | translate }}</h2>
-        <p ng-if="lastAttempt.caneditowner">{{ 'mma.mod_assign.submissioneditable' | translate }}</p>
-        <p ng-if="!lastAttempt.caneditowner">{{ 'mma.mod_assign.submissionnoteditable' | translate }}</p>
     </div>
 
-        <div ng-if="userSubmission" class="item item-text-wrap">
-            <h2>{{ 'mma.mod_assign.timemodified' | translate }}</h2>
-            <p ng-if="userSubmission.status != statusNew">{{ userSubmission.timemodified * 1000 | mmFormatDate:"dfmediumdate" }}</p>
-            <p ng-if="userSubmission.status == statusNew">-</p>
+    <div ng-show="!showSubmission" ng-if="feedback || canSaveGrades">
+
+        <div ng-if="feedback.gradefordisplay && (!isGrading || grade.method != 'simple')" class="item item-text-wrap mm-grading-summary" ng-class="{'item-button-right': feedback.advancedgrade}">
+            <h2>{{ 'mma.mod_assign.currentgrade' | translate }}</h2>
+            <div>
+                <p><mm-format-text watch="true">{{ feedback.gradefordisplay }}</mm-format-text></p>
+            </div>
+            <button ng-if="feedback.advancedgrade" class="button" ng-click="showAdvancedGrade()">
+                <i class="icon ion-search"></i>
+            </button>
         </div>
 
-        <mma-mod-assign-submission-plugin ng-repeat="plugin in submissionPlugins" assign="assign" submission="userSubmission" plugin="plugin" scroll-handle="{{scrollHandle}}"></mma-mod-assign-submission-plugin>
-    </div>
+        <label class="item item-input-inset item-stacked-label" ng-if="canSaveGrades">
+            <span class="input-label">{{ 'mma.mod_assign.gradeoutof' | translate: {$a: gradeInfo.grade} }}</span>
+            <div class="item-input-wrapper">
+                <input type="text" ng-model="grade.grade">
+            </div>
+        </label>
 
-    <div ng-show="!showSubmission" ng-if="feedback">
-        <div ng-if="feedback.gradefordisplay" class="item item-text-wrap mm-grading-summary">
-            <h2>{{ 'mma.grades.grade' | translate }}</h2>
-            <p><mm-format-text watch="true">
-                {{ feedback.gradefordisplay }}
-            </mm-format-text></p>
-            <a ng-if="feedback.advancedgrade" class="button button-block" ng-click="showAdvancedGrade()">{{ 'mm.core.showmore' | translate }}</a>
+        <div ng-repeat="outcome in gradeInfo.outcomes" class="item">
+            <div class="input-label">{{ outcome.name }}</div>
+            <div>
+                <p>{{ outcome.selected }}</p>
+            </div>
+        </div>
+
+        <mma-mod-assign-feedback-plugin ng-repeat="plugin in feedback.plugins" assign="assign" submission="userSubmission" plugin="plugin"></mma-mod-assign-feedback-plugin>
+
+        <div class="item" ng-if="workflowStatusTranslationId">
+            <h2>{{ 'mma.mod_assign.markingworkflowstate' | translate }}</h2>
+            <div>
+                <p>{{workflowStatusTranslationId | translate}}</p>
+            </div>
         </div>
         <div ng-if="grader" class="item item-text-wrap">
             <h2>{{ 'mma.mod_assign.gradedby' | translate }}</h2>
@@ -156,6 +182,25 @@
                 <p ng-if="feedback.gradeddate">{{ feedback.gradeddate * 1000 | mmFormatDate:"dfmediumdate" }}</p>
             </a>
         </div>
-        <mma-mod-assign-feedback-plugin ng-repeat="plugin in feedback.plugins" assign="assign" submission="userSubmission" plugin="plugin"></mma-mod-assign-feedback-plugin>
+
+        <div class="item item-divider" ng-if="assign.teamsubmission">{{ 'mma.mod_assign.groupsubmissionsettings' | translate }}</div>
+        <ion-toggle ng-if="canSaveGrades && assign.teamsubmission" ng-model="grade.applyToAll">{{ 'mma.mod_assign.applytoteam' | translate }}</ion-toggle>
+
+        <div class="item item-divider" ng-if="assign.attemptreopenmethod != attemptReopenMethodNone">{{ 'mma.mod_assign.attemptsettings' | translate }}</div>
+        <div ng-if="assign.attemptreopenmethod != attemptReopenMethodNone" class="item item-text-wrap">
+            <h2>{{ 'mma.mod_assign.attemptreopenmethod' | translate }}</h2>
+            <p>{{ 'mma.mod_assign.attemptreopenmethod_'+assign.attemptreopenmethod | translate }}</p>
+            <p ng-if="assign.maxattempts == unlimitedAttempts">{{ 'mma.mod_assign.currentattempt' | translate: {'$a': currentAttempt } }}</p>
+            <p ng-if="assign.maxattempts != unlimitedAttempts">{{ 'mma.mod_assign.currentattemptof' | translate : {'$a': {'attemptnumber': currentAttempt, 'maxattempts': assign.maxattempts} } }}</p>
+        </div>
+        <ion-toggle ng-if="canSaveGrades && allowAddAttempt" ng-model="grade.addAttempt">{{ 'mma.mod_assign.addattempt' | translate }}</ion-toggle>
+
+        <button ng-if="canSaveGrades" class="button button-block button-positive" ng-click="submitGrade()">{{ 'mm.core.save' | translate }}</button>
+
+        <div class="mm-warning" ng-if="isGrading && !canSaveGrades">
+            <i class="icon ion-alert-circled padding"></i> {{ 'mma.mod_assign.cannotgradefromapp' | translate:{$a: moduleName} }}
+        </div>
+
+
     </div>
 </mm-loading>
