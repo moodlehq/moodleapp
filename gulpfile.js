@@ -290,9 +290,17 @@ var paths = {
     './www/core/lib/*.js',
     './www/core/filters/*.js',
     './www/core/directives/*.js',
-    './www/core/components/**/main.js',
+    './www/core/components/*/main.js', // Don't use **/main.js to ensure that top level main.js are executed before lower ones.
+    './www/core/components/*/*/main.js',
+    './www/core/components/*/*/*/main.js',
+    './www/core/components/*/*/*/*/main.js',
+    './www/core/components/*/*/*/*/**/main.js', // It's unlikely there're more subaddons.
     './www/core/components/**/*.js',
-    './www/addons/**/main.js',
+    './www/addons/*/main.js', // Don't use **/main.js to ensure that top level main.js are executed before lower ones.
+    './www/addons/*/*/main.js',
+    './www/addons/*/*/*/main.js',
+    './www/addons/*/*/*/*/main.js',
+    './www/addons/*/*/*/*/**/main.js', // It's unlikely there're more subaddons.
     './www/addons/**/*.js',
     '!./www/**/tests/*.js',
     '!./www/**/e2e/*.js',
