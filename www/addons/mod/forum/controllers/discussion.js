@@ -51,6 +51,8 @@ angular.module('mm.addons.mod_forum')
         direction: 'ASC',
         text: $translate.instant('mma.mod_forum.sortnewestfirst')
     };
+    // Receive locked as param since it's returned by getDiscussions. This means that PullToRefresh won't update this value.
+    $scope.locked = !!$stateParams.locked;
 
     // Convenience function to get forum discussions.
     function fetchPosts(sync, showErrors) {
