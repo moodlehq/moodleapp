@@ -187,6 +187,34 @@ angular.module('mm.core.course')
     };
 
     /**
+     * Gets a module basic grade info by module ID.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#getModuleBasicInfo
+     * @param  {Number} moduleId Module ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with the module's grade info.
+     */
+    self.getModuleBasicGradeInfo = function(moduleId, siteId) {
+        return self.getModuleBasicInfo(moduleId, siteId).then(function(info) {
+            var grade = {
+                advancedgrading: info.advancedgrading || false,
+                grade: info.grade || false,
+                gradecat: info.gradecat || false,
+                gradepass: info.gradepass || false,
+                outcomes: info.outcomes || false,
+                scale: info.scale || false
+            };
+
+            if (grade.grade !== false || grade.advancedgrading !== false || grade.outcomes !== false) {
+                return grade;
+            }
+            return false;
+        });
+    };
+
+    /**
      * Gets a module basic info by instance.
      *
      * @module mm.core.course
@@ -479,8 +507,6 @@ angular.module('mm.core.course')
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
     self.invalidateModule = function(moduleId, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getModuleCacheKey(moduleId));
         });
@@ -492,12 +518,15 @@ angular.module('mm.core.course')
      * @module mm.core.course
      * @ngdoc method
      * @name $mmCourse#invalidateModuleByInstance
-     * @param {Number} id     Instance ID.
-     * @param {String} module Name of the module. E.g. 'glossary'.
+     * @param {Number} id        Instance ID.
+     * @param {String} module    Name of the module. E.g. 'glossary'.
+     * @param {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}      Promise resolved when the data is invalidated.
      */
-    self.invalidateModuleByInstance = function(id, module) {
-        return $mmSite.invalidateWsCacheForKey(getModuleByInstanceCacheKey(id, module));
+    self.invalidateModuleByInstance = function(id, module, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getModuleByInstanceCacheKey(id, module));
+        });
     };
 
     /**
