@@ -4,5 +4,6 @@
 	"configuringnotifications": "You're configuring '{{$a}}' notifications.",
 	"loggedin": "Online",
 	"loggedoff": "Offline",
-	"notificationpreferences": "Notification preferences"
+	"notificationpreferences": "Notification preferences",
+	"processorsettings": "Processor settings"
 }

@@ -21,7 +21,8 @@ angular.module('mm.addons.pushnotifications')
  * @ngdoc controller
  * @name mmaPushNotificationsNotifPreferencesCtrl
  */
-.controller('mmaPushNotificationsNotifPreferencesCtrl', function($scope, $mmaPushNotifications, $mmUtil, $ionicPlatform) {
+.controller('mmaPushNotificationsNotifPreferencesCtrl', function($scope, $mmaPushNotifications, $mmUtil, $ionicPlatform,
+            $mmaPushNotificationsPreferencesDelegate) {
 
     $scope.isTablet = $ionicPlatform.isTablet();
 
@@ -39,6 +40,8 @@ angular.module('mm.addons.pushnotifications')
             preferences.disableall = !!preferences.disableall; // Convert to boolean.
             $scope.preferences = preferences;
             $scope.components = $mmaPushNotifications.getProcessorComponents($scope.currentProcessor.name, preferences.components);
+            $scope.currentProcessor.supported =
+                        $mmaPushNotificationsPreferencesDelegate.hasPreferenceHandler($scope.currentProcessor.name);
         }).catch(function(message) {
             $mmUtil.showErrorModal(message);
         }).finally(function() {
@@ -77,5 +80,15 @@ angular.module('mm.addons.pushnotifications')
     $scope.changeProcessor = function(processor) {
         $scope.currentProcessor = processor;
         $scope.components = $mmaPushNotifications.getProcessorComponents(processor.name, $scope.preferences.components);
+        $scope.currentProcessor.supported =
+                    $mmaPushNotificationsPreferencesDelegate.hasPreferenceHandler($scope.currentProcessor.name);
+    };
+
+    $scope.openProcessorPreferences = function() {
+        if (!$scope.currentProcessor || !$scope.currentProcessor.hassettings || !$scope.currentProcessor.supported) {
+            return;
+        }
+
+        $mmaPushNotificationsPreferencesDelegate.openPreferencesViewFor($scope.currentProcessor);
     };
 });

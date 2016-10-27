@@ -1,0 +1,14 @@
+<ion-view>
+    <ion-nav-title>{{title}}</ion-nav-title>
+    <ion-content mm-state-class delegate-handle="mmaPushNotificationsPreferencesAirnotifierScroll">
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="devicesLoaded" on-refresh="refreshDevices()">
+        </ion-refresher>
+        <mm-loading hide-until="devicesLoaded">
+            <ul class="list">
+                <ion-toggle ng-repeat="device in devices" class="item-text-wrap" ng-model="device.enable">
+                    <span ng-class="{'mm-bold': device.current}">{{ device.model }} <span ng-if="device.current">({{ 'mm.core.currentdevice' | translate }})</span></span>
+                </ion-toggle>
+            </ul>
+        </mm-loading>
+    </ion-content>
+</ion-view>

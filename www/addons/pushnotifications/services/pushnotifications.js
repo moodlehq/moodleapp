@@ -21,8 +21,8 @@ angular.module('mm.addons.pushnotifications')
  * @ngdoc service
  * @name $mmaPushNotifications
  */
-.factory('$mmaPushNotifications', function($mmSite, $log, $cordovaPushV5, $mmText, $q, $cordovaDevice, $mmUtil, mmCoreConfigConstants,
-            $mmApp, $mmLocalNotifications, $mmPushNotificationsDelegate, $mmSitesManager, mmaPushNotificationsComponent) {
+.factory('$mmaPushNotifications', function($mmSite, $log, $cordovaPushV5, $mmText, $q, $cordovaDevice, $mmUtil, $mmSitesManager,
+            mmCoreConfigConstants, $mmApp, $mmLocalNotifications, $mmPushNotificationsDelegate, mmaPushNotificationsComponent) {
     $log = $log.getInstance('$mmaPushNotifications');
 
     var self = {},
@@ -108,6 +108,18 @@ angular.module('mm.addons.pushnotifications')
     };
 
     /**
+     * Get the pushID for this device.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmaPushNotifications#getPushId
+     * @return {String} Push ID.
+     */
+    self.getPushId = function() {
+        return pushID;
+    };
+
+    /**
      * Invalidate get notification preferences.
      *
      * @module mm.addons.pushnotifications
@@ -147,9 +159,7 @@ angular.module('mm.addons.pushnotifications')
      * @return {Boolean} True if enabled, false otherwise.
      */
     self.isNotificationPreferencesEnabled = function() {
-        return $mmSite.wsAvailable('core_message_get_user_notification_preferences') &&
-                $mmSite.wsAvailable('message_airnotifier_enable_device') &&
-                $mmSite.wsAvailable('message_airnotifier_get_user_devices');
+        return $mmSite.wsAvailable('core_message_get_user_notification_preferences');
     };
 
     /**
