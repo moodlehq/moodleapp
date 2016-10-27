@@ -395,6 +395,9 @@ angular.module('mm.core')
             if (typeof(preSets.sync) === 'undefined') {
                 preSets.sync = 0;
             }
+            if (typeof(preSets.emergencyCache) === 'undefined') {
+                preSets.emergencyCache = 0;
+            }
             return this.request(method, data, preSets);
         };
 
