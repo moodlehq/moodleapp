@@ -21,7 +21,7 @@ angular.module('mm.addons.pushnotifications')
  * @ngdoc controller
  * @name mmaPushNotificationsNotifPreferencesCtrl
  */
-.controller('mmaPushNotificationsNotifPreferencesCtrl', function($scope, $mmaPushNotifications, $mmUtil, $ionicPlatform,
+.controller('mmaPushNotificationsNotifPreferencesCtrl', function($scope, $mmaPushNotifications, $mmUtil, $ionicPlatform, $mmUser,
             $mmaPushNotificationsPreferencesDelegate) {
 
     $scope.isTablet = $ionicPlatform.isTablet();
@@ -69,6 +69,7 @@ angular.module('mm.addons.pushnotifications')
 
     fetchPreferences();
 
+    // Refresh the list of preferences.
     $scope.refreshPreferences = function() {
         $mmaPushNotifications.invalidateNotificationPreferences().finally(function() {
             fetchPreferences().finally(function() {
@@ -77,6 +78,7 @@ angular.module('mm.addons.pushnotifications')
         });
     };
 
+    // Change the current processor.
     $scope.changeProcessor = function(processor) {
         $scope.currentProcessor = processor;
         $scope.components = $mmaPushNotifications.getProcessorComponents(processor.name, $scope.preferences.components);
@@ -84,11 +86,54 @@ angular.module('mm.addons.pushnotifications')
                     $mmaPushNotificationsPreferencesDelegate.hasPreferenceHandler($scope.currentProcessor.name);
     };
 
+    // Open current processor's extra preferences.
     $scope.openProcessorPreferences = function() {
         if (!$scope.currentProcessor || !$scope.currentProcessor.hassettings || !$scope.currentProcessor.supported) {
             return;
         }
 
         $mmaPushNotificationsPreferencesDelegate.openPreferencesViewFor($scope.currentProcessor);
+    };
+
+    // Change the value of a certain preference.
+    $scope.changePreference = function(notification, state) {
+        var processorState = notification.currentProcessor[state],
+            preferenceName = notification.preferencekey + '_' + processorState.name,
+            value;
+
+        angular.forEach(notification.processors, function(processor) {
+            if (processor[state].checked) {
+                if (!value) {
+                    value = processor.name;
+                } else {
+                    value += ',' + processor.name;
+                }
+            }
+        });
+
+        if (!value) {
+            value = 'none';
+        }
+
+        processorState.updating = true;
+        $mmUser.updateUserPreference(preferenceName, value).catch(function(message) {
+            // Show error and revert change.
+            $mmUtil.showErrorModal(message);
+            notification.currentProcessor[state].checked = !notification.currentProcessor[state].checked;
+        }).finally(function() {
+            processorState.updating = false;
+        });
+    };
+
+    // Disable all notifications changed.
+    $scope.disableAll = function(disable) {
+        var modal = $mmUtil.showModalLoading('mm.core.sending', true);
+        $mmUser.updateUserPreferences([], disable).catch(function(message) {
+            // Show error and revert change.
+            $mmUtil.showErrorModal(message);
+            $scope.preferences.disableall = !$scope.preferences.disableall;
+        }).finally(function() {
+            modal.dismiss();
+        });
     };
 });

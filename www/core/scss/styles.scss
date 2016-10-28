@@ -899,3 +899,21 @@ input[type="text"].cloned-text-input, textarea.cloned-text-input{
     }
   }
 }
+
+// Spinner aligned right.
+
+ion-spinner.mm-spinner-right {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}
+
+.item-toggle.has-spinner-right {
+  .mm-spinner-right {
+    top: ($item-padding / 2) + 2; // Same top as toggle.
+  }
+
+  .toggle {
+    right: $item-padding + 14px;
+  }
+}
