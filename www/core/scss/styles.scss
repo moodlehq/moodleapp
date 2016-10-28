@@ -263,6 +263,10 @@ em {
         border-radius : 50%;
         padding: 4px;
         border: 1px solid #ddd;
+
+        &.no-border-radius {
+          border-radius: 0%;
+        }
     }
 }
 

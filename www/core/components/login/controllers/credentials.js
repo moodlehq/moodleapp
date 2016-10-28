@@ -35,6 +35,7 @@ angular.module('mm.core.login')
 
     if (siteConfig) {
         $scope.sitename = siteConfig.sitename;
+        $scope.logourl = siteConfig.logourl || siteConfig.compactlogourl;
     }
 
     // Function to check if a site uses local_mobile, requires SSO login, etc.
@@ -50,6 +51,7 @@ angular.module('mm.core.login')
 
             if (result.config) {
                 $scope.sitename = result.config.sitename;
+                $scope.logourl = siteConfig.logourl || siteConfig.compactlogourl;
             }
 
             if (result && result.warning) {
