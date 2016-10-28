@@ -81,20 +81,31 @@ angular.module('mm.addons.mod_resource')
                 $scope.loaded = true;
                 $scope.refreshIcon = 'ion-refresh';
                 $scope.mode = 'external';
+                $scope.downloadProgress = '0';
 
                 $scope.open = function() {
-                    var modal = $mmUtil.showModalLoading();
+                    var modal = $mmUtil.showModalLoadingWithTemplate('<ion-spinner></ion-spinner><p>{{downloadProgress}} %</p>', {scope: $scope});
 
-                    $mmaModResource.openFile(module.contents, module.id).then(function() {
-                        $mmaModResource.logView(module.instance).then(function() {
-                            $mmCourse.checkModuleCompletion(courseId, module.completionstatus);
-                        });
-                    }).catch(function(error) {
+                    displayError = function(error) {
                         if (error && typeof error == 'string') {
                             $mmUtil.showErrorModal(error);
                         } else {
                             $mmUtil.showErrorModal('mma.mod_resource.errorwhileloadingthecontent', true);
                         }
+                        $log.debug('Error, failed opening file in mmaModResourceIndexCtrl ' + error);
+                    }
+
+                    $mmaModResource.openFile(module.contents, module.id).then(function() {
+                        $mmaModResource.logView(module.instance).then(function() {
+                            $mmCourse.checkModuleCompletion(courseId, module.completionstatus);
+                        });
+                    }, function(error) {
+                        displayError(error);
+                    }, function(progress) {
+                        var percent = (progress.fileProgress.loaded / progress.fileProgress.total) * 100;
+                        $scope.downloadProgress = (percent | 0);
+                    }).catch(function(error) {
+                        displayError(error);
                     }).finally(function() {
                         modal.dismiss();
                     });

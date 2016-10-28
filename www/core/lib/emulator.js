@@ -15,6 +15,26 @@
 angular.module('mm.core')
 
 /**
+ * @name $xhrFactory
+ * @module mm.core
+ * @description 
+ * XHR Factory to enable progress events on HTTP requests.
+ * This can be removed when Angular is updated to 1.5.4 or higher where the onProgress is exposed through the $http service.
+ */
+.decorator('$xhrFactory', ['$delegate', '$injector', function($delegate, $injector) {
+        return function(method, url) {
+            var xhr = $delegate(method, url);
+            var $http = $injector.get('$http');
+            var callConfig = $http.pendingRequests[$http.pendingRequests.length - 1];
+            if (angular.isFunction(callConfig.onProgress)) {
+                xhr.addEventListener('progress', callConfig.onProgress);
+            }
+            return xhr;
+        };
+    }
+])
+
+/**
  * @ngdoc service
  * @name $mmEmulatorManager
  * @module mm.core
@@ -57,10 +77,13 @@ angular.module('mm.core')
         };
 
         // FileTransfer API.
-        $window.FileTransfer = function() {};
+        $window.FileTransfer = function() {
+            this.onprogress = null;
+        };
 
         $window.FileTransfer.prototype.download = function(url, filePath, successCallback, errorCallback) {
-            $http.get(url, {responseType: 'blob'}).then(function(data) {
+            var progressCallback = this.onprogress;
+            $http({method: 'GET', url: url, options: {responseType: 'blob'}, onProgress: progressCallback}).then(function(data) {
                 if (!data || !data.data) {
                     errorCallback();
                 } else {

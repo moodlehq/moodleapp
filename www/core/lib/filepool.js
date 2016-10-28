@@ -658,10 +658,10 @@ angular.module('mm.core')
             $q.all(promises).then(function() {
                 // Success prefetching, store package as downloaded.
                 return self.storePackageStatus(siteId, component, componentId, mmCoreDownloaded, revision, timemod);
-            }).catch(function() {
+            }).catch(function(error) {
                 // Error downloading, go back to previous status and reject the promise.
                 return self.setPackagePreviousStatus(siteId, component, componentId).then(function() {
-                    return $q.reject();
+                    return $q.reject(error);
                 });
             }).then(deferred.resolve, deferred.reject);
 
