@@ -905,6 +905,9 @@ angular.module('mm.addons.mod_assign')
      * @return {String}           The class name.
      */
     self.getSubmissionGradingStatusClass = function(status) {
+        if (!status) {
+            return '';
+        }
         if (status == mmaModAssignGradingStatusGraded || status == mmaModMarkingWorkflowStateReleased) {
             return 'badge-balanced';
         }
@@ -921,6 +924,9 @@ angular.module('mm.addons.mod_assign')
      * @return {String}           The status translation identifier.
      */
     self.getSubmissionGradingStatusTranslationId = function(status) {
+        if (!status) {
+            return false;
+        }
         if (status == mmaModAssignGradingStatusGraded || status == mmaModAssignGradingStatusNotGraded) {
             return 'mma.mod_assign.' + status;
         }

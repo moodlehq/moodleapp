@@ -23,22 +23,24 @@ angular.module('mm.addons.mod_assign')
  */
 .controller('mmaModAssignSubmissionReviewCtrl', function($scope, $stateParams, $mmUser, $q, $mmaModAssign,
         mmaModAssignSubmissionInvalidatedEvent) {
-    var assign;
+    var assign,
+        blindMarking;
 
     $scope.courseid = $stateParams.courseid;
     $scope.moduleid = $stateParams.moduleid;
     $scope.submitid = $stateParams.submitid;
     $scope.blindid = $stateParams.blindid;
+    $scope.showSubmission = typeof $stateParams.showSubmission != 'undefined' ? $stateParams.showSubmission : true;
 
     function fetchSubmission() {
         return $mmaModAssign.getAssignment($scope.courseid, $scope.moduleid).then(function(assignment) {
             assign = assignment;
 
-            $scope.blindMarking = assign.blindmarking && !assign.revealidentities;
+            blindMarking = assign.blindmarking && !assign.revealidentities;
 
-            if (!$scope.blindMarking) {
+            if (!blindMarking) {
                 return $mmUser.getProfile($scope.submitid, $scope.courseid).then(function(profile) {
-                    $scope.user = profile;
+                    $scope.userFullname = profile.fullname;
                 });
             }
 
@@ -52,7 +54,7 @@ angular.module('mm.addons.mod_assign')
         if (assign) {
             promises.push($mmaModAssign.invalidateSubmissionData(assign.id));
             promises.push($mmaModAssign.invalidateAssignmentUserMappingsData(assign.id));
-            promises.push($mmaModAssign.invalidateSubmissionStatusData(assign.id, $scope.submitid, $scope.blindMarking));
+            promises.push($mmaModAssign.invalidateSubmissionStatusData(assign.id, $scope.submitid, blindMarking));
         }
         return $q.all(promises).finally(function() {
             $scope.$broadcast(mmaModAssignSubmissionInvalidatedEvent);

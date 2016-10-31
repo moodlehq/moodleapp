@@ -89,7 +89,8 @@ angular.module('mm.addons.mod_assign')
             return $mmaModAssign.getAssignment(courseId, moduleId).then(function(assignData) {
                 assign = assignData;
 
-                var time = parseInt(Date.now() / 1000);
+                var time = parseInt(Date.now() / 1000),
+                    promises = [];
 
                 scope.assign = assign;
 
@@ -99,16 +100,25 @@ angular.module('mm.addons.mod_assign')
                 }
                 scope.currentAttempt = 0;
                 scope.unlimitedAttempts = mmaModAssignUnlimitedAttempts;
+                scope.blindMarking = scope.isSubmittedForGrading && assign.blindmarking && !assign.revealidentities;
+
+                if (!scope.blindMarking && submitId != $mmSite.getUserId()) {
+                    promises.push($mmUser.getProfile(submitId, courseId).then(function(profile) {
+                        scope.user = profile;
+                    }));
+                }
 
                 // Check if there's any offline data for this submission.
-                return $mmaModAssignOffline.getSubmission(assign.id, submitId).then(function(data) {
+                promises.push($mmaModAssignOffline.getSubmission(assign.id, submitId).then(function(data) {
                     scope.hasOffline = data && data.plugindata && Object.keys(data.plugindata).length;
                     scope.submittedOffline = data && data.submitted;
                 }).catch(function() {
                     // No offline data found.
                     scope.hasOffline = false;
                     scope.submittedOffline = false;
-                });
+                }));
+
+                return $q.all(promises);
             }).then(function() {
                 // Get submission status.
                 return $mmaModAssign.getSubmissionStatus(assign.id, submitId, isBlind).then(function(response) {
@@ -122,11 +132,10 @@ angular.module('mm.addons.mod_assign')
                     scope.previousAttempts = response.previousattempts;
                     scope.membersToSubmit = [];
                     if (response.lastattempt) {
-                        var blindMarking = scope.isGrading && response.lastattempt.blindmarking && !assign.revealidentities;
-
-                        scope.canSubmit = !scope.isGrading && !scope.submittedOffline && (response.lastattempt.cansubmit ||
+                        scope.canSubmit = !scope.isSubmittedForGrading && !scope.submittedOffline &&
+                            (response.lastattempt.cansubmit ||
                                 (scope.hasOffline && $mmaModAssign.canSubmitOffline(assign, response)));
-                        scope.canEdit = !scope.isGrading && response.lastattempt.canedit &&
+                        scope.canEdit = !scope.isSubmittedForGrading && response.lastattempt.canedit &&
                                 (!scope.submittedOffline || !assign.submissiondrafts);
 
                         // Get submission statement if needed.
@@ -169,7 +178,7 @@ angular.module('mm.addons.mod_assign')
                                 scope.userStateName = mmUserProfileState;
 
                                 angular.forEach(response.lastattempt.submissiongroupmemberswhoneedtosubmit, function(member) {
-                                    if (blindMarking) {
+                                    if (scope.blindMarking) {
                                         // Users not blinded! (Moodle < 3.1.1, 3.2)
                                         promises.push($mmaModAssign.getAssignmentUserMappings(assign.id, member).then(function(blindId) {
                                             scope.membersToSubmit.push(blindId);
@@ -188,11 +197,12 @@ angular.module('mm.addons.mod_assign')
                             }
                         }
 
-                        scope.gradingStatus = $mmaModAssign.getSubmissionGradingStatusTranslationId(response.lastattempt.gradingstatus);
+                        scope.gradingStatusTranslationId =
+                                    $mmaModAssign.getSubmissionGradingStatusTranslationId(response.lastattempt.gradingstatus);
                         scope.gradingClass = $mmaModAssign.getSubmissionGradingStatusClass(response.lastattempt.gradingstatus);
 
                         if (scope.userSubmission) {
-                            if (!assign.teamsubmission || response.lastattempt.submissiongroup != false ||
+                            if (!assign.teamsubmission || !response.lastattempt.submissiongroup ||
                                     !assign.preventsubmissionnotingroup) {
                                 scope.submissionPlugins = scope.userSubmission.plugins;
                             }
@@ -246,6 +256,9 @@ angular.module('mm.addons.mod_assign')
                                 scope.feedback.advancedgrade = true;
                             }
                         }
+                    } else {
+                        // If no feedback, always show Submission.
+                        scope.showSubmission = true;
                     }
 
                     // Check if there's any unsupported plugin for editing.
@@ -328,7 +341,8 @@ angular.module('mm.addons.mod_assign')
             moduleid: '@',
             submitid: '@?',
             blindid: '@?',
-            scrollHandle: '@?'
+            scrollHandle: '@?',
+            showSubmission: '@?'
         },
         restrict: 'E',
         controller: controller,
@@ -338,16 +352,20 @@ angular.module('mm.addons.mod_assign')
                 courseId = parseInt(attributes.courseid, 10),
                 submitId = parseInt(attributes.submitid, 10),
                 blindId = parseInt(attributes.blindid, 10),
-                obsLoaded, obsManualSync;
+                obsInvalidated, obsManualSync;
 
-            scope.isGrading = !!submitId;
+            scope.isSubmittedForGrading = !!submitId;
             scope.statusNew = mmaModAssignSubmissionStatusNew;
             scope.statusReopened = mmaModAssignSubmissionStatusReopened;
+            scope.showSubmission = typeof attributes.showSubmission != 'undefined' ? attributes.showSubmission : true;
+            scope.submitId = submitId;
+            scope.courseId = courseId;
+            scope.blindId = blindId;
             scope.loaded = false;
             scope.submitModel = {};
 
-            obsLoaded = scope.$on(mmaModAssignSubmissionInvalidatedEvent, function() {
-                controller.load(scope, moduleId, courseId, submitId, blindId);
+            obsInvalidated = scope.$on(mmaModAssignSubmissionInvalidatedEvent, function() {
+                invalidateAndRefresh();
             });
 
             obsManualSync = $mmEvents.on(mmaModAssignEventManualSynced, function(data) {
@@ -362,7 +380,7 @@ angular.module('mm.addons.mod_assign')
             });
 
             scope.$on('$destroy', function() {
-                obsLoaded && obsLoaded();
+                obsInvalidated && obsInvalidated();
                 obsManualSync && obsManualSync.off && obsManualSync.off();
             });
 
@@ -431,12 +449,16 @@ angular.module('mm.addons.mod_assign')
                 });
             };
 
-            // Context Menu Description action.
+            // Show advanced grade action.
             scope.showAdvancedGrade = function() {
                 if (scope.feedback.advancedgrade) {
                     $mmText.expandText($translate.instant('mma.grades.grade'), scope.feedback.gradefordisplay, false,
                             mmaModAssignComponent, moduleId);
                 }
+            };
+
+            scope.changeShowSubmission = function(show) {
+                scope.showSubmission = show;
             };
 
             // Submit for grading.
