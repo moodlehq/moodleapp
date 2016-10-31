@@ -61,8 +61,10 @@ angular.module('mm.addons.frontpage')
         // fails there is a very high chance that frontpage is not available.
         $log.debug('Using WS call to check if frontpage is available.');
 
-        return $mmCourse.getSections(1, false, true, {emergencyCache: false}).then(function(data) {
-            if (!angular.isArray(data) || data.length == 0) {
+        var siteHomeId = $mmSite.getInfo().siteid || 1;
+
+        return $mmCourse.getSections(siteHomeId, false, true, {emergencyCache: false}).then(function(data) {
+            if (!angular.isArray(data) || !data.length) {
                 return $q.reject();
             }
         });
