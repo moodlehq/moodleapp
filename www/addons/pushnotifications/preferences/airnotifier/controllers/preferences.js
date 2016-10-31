@@ -54,4 +54,16 @@ angular.module('mm.addons.pushnotifications')
         });
     };
 
+    // Enable or disable a certain device.
+    $scope.enableDevice = function(device, enable) {
+        device.updating = true;
+        $mmaPushNotificationPreferencesAirnotifier.enableDevice(device.id, enable).catch(function(message) {
+            // Show error and revert change.
+            $mmUtil.showErrorModal(message);
+            device.enable = !device.enable;
+        }).finally(function() {
+            device.updating = false;
+        });
+    };
+
 });

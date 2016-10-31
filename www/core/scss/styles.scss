@@ -911,6 +911,18 @@ ion-spinner.mm-spinner-right {
 .item-toggle.has-spinner-right {
   .mm-spinner-right {
     top: ($item-padding / 2) + 2; // Same top as toggle.
+    right: 5px;
+  }
+
+  .toggle {
+    right: $item-padding + 19px;
+  }
+}
+
+// If the item-toggle is nested inside another item then the spinner can be aligned to the right.
+.item .item-toggle.has-spinner-right {
+  .mm-spinner-right {
+    right: 0px;
   }
 
   .toggle {

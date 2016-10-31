@@ -21,10 +21,40 @@ angular.module('mm.addons.pushnotifications')
  * @ngdoc service
  * @name $mmaPushNotificationPreferencesAirnotifier
  */
-.factory('$mmaPushNotificationPreferencesAirnotifier', function($mmSite, $log, $mmSitesManager, mmCoreConfigConstants) {
+.factory('$mmaPushNotificationPreferencesAirnotifier', function($mmSite, $log, $mmSitesManager, $q, mmCoreConfigConstants) {
     $log = $log.getInstance('$mmaPushNotificationPreferencesAirnotifier');
 
     var self = {};
+
+    /**
+     * Enables or disables a device.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmaPushNotificationPreferencesAirnotifier#enableDevice
+     * @param  {Number} deviceId Device ID.
+     * @param  {Boolean} enable  True to enable, false to disable.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved if success.
+     */
+    self.enableDevice = function(deviceId, enable, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var data = {
+                    deviceid: deviceId,
+                    enable: enable ? 1 : 0
+                };
+
+            return site.write('message_airnotifier_enable_device', data).then(function(result) {
+                if (!result.success) {
+                    // Fail. Reject with warning message if any.
+                    if (result.warnings && result.warnings.length) {
+                        return $q.reject(result.warnings[0].message);
+                    }
+                    return $q.reject();
+                }
+            });
+        });
+    };
 
     /**
      * Get the cache key for the get user devices call.
