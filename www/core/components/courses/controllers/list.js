@@ -31,7 +31,7 @@ angular.module('mm.core.courses')
     $scope.showSortCategoryInfo = false;
     $scope.distinct = [];
     $scope.unique = {};
-    $scope.browsedCourses = []
+    $scope.browsedCourses = [];
     $scope.allCourses = [];
 
     // Convenience function to fetch courses.
