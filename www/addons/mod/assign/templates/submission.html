@@ -84,7 +84,7 @@
 
     <div ng-if="gradingStatus" class="item item-text-wrap">
         <h2>{{ 'mma.mod_assign.gradingstatus' | translate }}</h2>
-        <p ng-class="{'badge-balanced': lastAttempt.gradingstatus == 'graded', 'badge-assertive': lastAttempt.gradingstatus != 'graded'}" class="badge badge-inline">{{gradingStatus}}</p>
+        <p class="badge badge-inline {{gradingClass}}">{{gradingStatus |translate}}</p>
     </div>
 
     <div ng-if="assign.duedate && !isGrading" class="item item-text-wrap">

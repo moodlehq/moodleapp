@@ -23,7 +23,8 @@ angular.module('mm.addons.mod_assign')
  */
 .factory('$mmaModAssign', function($mmSite, $q, $mmUser, $mmSitesManager, mmaModAssignComponent, $mmFilepool, $mmComments, $mmUtil,
         $mmaModAssignSubmissionDelegate, mmaModAssignSubmissionStatusNew, mmaModAssignSubmissionStatusSubmitted, $mmText, $mmApp,
-        $mmaModAssignOffline) {
+        $mmaModAssignOffline, mmaModAssignGradingStatusGraded, mmaModAssignGradingStatusNotGraded,
+        mmaModMarkingWorkflowStateReleased) {
     var self = {};
 
     /**
@@ -892,6 +893,38 @@ angular.module('mm.addons.mod_assign')
                 return 'badge-assertive';
         }
         return "";
+    };
+
+    /**
+     * Returns the class for a given grading status name.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssign#getSubmissionGradingStatusClass
+     * @param {Number}  status    Grading Status name
+     * @return {String}           The class name.
+     */
+    self.getSubmissionGradingStatusClass = function(status) {
+        if (status == mmaModAssignGradingStatusGraded || status == mmaModMarkingWorkflowStateReleased) {
+            return 'badge-balanced';
+        }
+        return 'badge-assertive';
+    };
+
+    /**
+     * Returns the translation id for a given grading status name.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssign#getSubmissionGradingStatusTranslationId
+     * @param {Number}  status    Grading Status name
+     * @return {String}           The status translation identifier.
+     */
+    self.getSubmissionGradingStatusTranslationId = function(status) {
+        if (status == mmaModAssignGradingStatusGraded || status == mmaModAssignGradingStatusNotGraded) {
+            return 'mma.mod_assign.' + status;
+        }
+        return 'mma.mod_assign.markingworkflowstate' + status;
     };
 
     /**

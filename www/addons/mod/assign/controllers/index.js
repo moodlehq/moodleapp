@@ -132,6 +132,9 @@ angular.module('mm.addons.mod_assign')
                                 submission.statusTranslated = $translate.instant('mma.mod_assign.submissionstatus_' +
                                     submission.status);
                                 submission.statusClass = $mmaModAssign.getSubmissionStatusClass(submission.status);
+                                submission.gradingStatusTranslationId =
+                                    $mmaModAssign.getSubmissionGradingStatusTranslationId(submission.gradingstatus);
+                                submission.gradingClass = $mmaModAssign.getSubmissionGradingStatusClass(submission.gradingstatus);
                             });
                             $scope.submissions = submissions;
                         });
