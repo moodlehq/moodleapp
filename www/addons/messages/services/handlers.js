@@ -23,7 +23,8 @@ angular.module('mm.addons.messages')
  * @ngdoc service
  * @name $mmaMessagesHandlers
  */
-.factory('$mmaMessagesHandlers', function($log, $mmaMessages, $mmSite, $state, $mmUtil, $mmContentLinksHelper, $mmaMessagesSync) {
+.factory('$mmaMessagesHandlers', function($log, $mmaMessages, $mmSite, $state, $mmUtil, $mmContentLinksHelper, $mmaMessagesSync,
+            $mmSitesManager) {
     $log = $log.getInstance('$mmaMessagesHandlers');
 
     var self = {};
@@ -343,7 +344,12 @@ angular.module('mm.addons.messages')
                                         stateParams = {userId: parseInt(params.user1, 10)};
                                     } else {
                                         // He isn't, open in browser.
-                                        $mmUtil.openInBrowser(url);
+                                        var modal = $mmUtil.showModalLoading();
+                                        $mmSitesManager.getSite(siteId).then(function(site) {
+                                            return site.openInBrowserWithAutoLogin(url);
+                                        }).finally(function() {
+                                            modal.dismiss();
+                                        });
                                         return;
                                     }
                                 } else if (typeof params.id != 'undefined') {

@@ -87,7 +87,7 @@ angular.module('mm.core.courses')
                         var body = $translate('mm.core.twoparagraphs',
                                         {p1: error, p2: $translate.instant('mm.core.confirmopeninbrowser')});
                         $mmUtil.showConfirm(body).then(function() {
-                            $mmUtil.openInBrowser(url);
+                            $mmSite.openInBrowserWithAutoLogin(url);
                         });
                         return $q.reject();
                     });

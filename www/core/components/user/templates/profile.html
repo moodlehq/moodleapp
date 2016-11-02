@@ -19,7 +19,7 @@
                     <div class="item" ng-if="user.email">
                         <p class="item-heading">{{ 'mm.user.email' | translate}}</p>
                         <p>
-                            <a href="mailto:{{user.email}}" mm-link>
+                            <a href="mailto:{{user.email}}" mm-link auto-login="no">
                                 <mm-format-text watch="true" clean="true">{{user.email}}</mm-format-text>
                             </a>
                         </p>
@@ -27,7 +27,7 @@
                     <div class="item" ng-if="user.phone1">
                         <p class="item-heading">{{ 'mm.user.phone1' | translate}}</p>
                         <p>
-                            <a href="tel:{{user.phone1}}" mm-link>
+                            <a href="tel:{{user.phone1}}" mm-link auto-login="no">
                                 <mm-format-text watch="true" clean="true">{{user.phone1}}</mm-format-text>
                             </a>
                         </p>
@@ -35,7 +35,7 @@
                     <div class="item" ng-if="user.phone2">
                         <p class="item-heading">{{ 'mm.user.phone2' | translate}}</p>
                         <p>
-                            <a href="tel:{{user.phone2}}" mm-link>
+                            <a href="tel:{{user.phone2}}" mm-link auto-login="no">
                                 <mm-format-text watch="true" clean="true">{{user.phone2}}</mm-format-text>
                             </a>
                         </p>
@@ -43,10 +43,10 @@
                     <div class="item" ng-if="user.address">
                         <p class="item-heading">{{ 'mm.user.address' | translate}}</p>
                         <p>
-                            <a ng-if="isAndroid" href="geo:0,0?q={{user.encodedAddress}}" mm-link>
+                            <a ng-if="isAndroid" href="geo:0,0?q={{user.encodedAddress}}" mm-link auto-login="no">
                                 <mm-format-text watch="true" clean="true">{{user.address}}</mm-format-text>
                             </a>
-                            <a ng-if="!isAndroid" href="http://maps.google.com?q={{user.encodedAddress}}" mm-link>
+                            <a ng-if="!isAndroid" href="http://maps.google.com?q={{user.encodedAddress}}" mm-link auto-login="no">
                                 <mm-format-text watch="true" clean="true">{{user.address}}</mm-format-text>
                             </a>
                         </p>

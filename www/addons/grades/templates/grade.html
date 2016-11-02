@@ -5,9 +5,9 @@
         </ion-refresher>
         <mm-loading hide-until="gradeLoaded">
             <div ng-if="grade" class="card">
-                <div ng-if="grade.itemname" class="item item-divider" ng-click="gotoActivity()">
+                <a ng-if="grade.itemname" mm-link capture-link="true" class="item item-divider" href="{{ grade.link }}" title="{{ grade.itemname }}">
                     <h2><mm-format-text watch="true" class="mm-content-with-float">{{ grade.itemname }}</mm-format-text></h2>
-                </div>
+                </a>
 
                 <div ng-if="grade.weight" class="item item-text-wrap">
                     <h2>{{ 'mma.grades.weight' | translate}}</h2>
