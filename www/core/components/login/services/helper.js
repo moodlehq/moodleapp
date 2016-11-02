@@ -104,7 +104,7 @@ angular.module('mm.core.login')
      * @return {Boolean} True if set, false otherwise.
      */
     self.isFixedUrlSet = function() {
-        return typeof mmCoreConfigConstants.siteurl != 'undefined';
+        return !!mmCoreConfigConstants.siteurl;
     };
 
     /**
