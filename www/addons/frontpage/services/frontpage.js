@@ -67,6 +67,17 @@ angular.module('mm.addons.frontpage')
             if (!angular.isArray(data) || !data.length) {
                 return $q.reject();
             }
+
+            var hasData = false;
+            angular.forEach(data, function(section) {
+                if (section.summary || (section.modules && section.modules.length)) {
+                    hasData = true;
+                }
+            });
+
+            if (!hasData) {
+                return $q.reject();
+            }
         });
     };
 
