@@ -136,6 +136,17 @@ angular.module('mm.addons.mod_assign')
                         // Grades can be saved if simple grading.
                         scope.canSaveGrades = scope.grade.method == 'simple';
 
+                        if ($mmaModAssign.isOutcomesEditEnabled()) {
+                            angular.forEach(scope.gradeInfo.outcomes, function(outcome) {
+                                if (outcome.scale) {
+                                    outcome.options = outcome.scale.split(",");
+                                    outcome.options = outcome.options.map(function (value) {return value.trim()});
+                                    outcome.options.unshift($translate.instant('mma.grades.nooutcome'));
+                                }
+                                outcome.selectedId = 0;
+                            });
+                        }
+
                         return $mmaGrades.getGradeModuleItems(courseId, moduleId, userId).then(function(grades) {
                             var outcomes = {};
                             angular.forEach(grades, function(grade) {
@@ -146,6 +157,13 @@ angular.module('mm.addons.mod_assign')
                                     angular.forEach(scope.gradeInfo.outcomes, function(outcome) {
                                         if (outcome.id == grade.outcomeid) {
                                             outcome.selected = grade.gradeformatted;
+                                            if (outcome.options) {
+                                                outcome.selectedId = outcome.options.indexOf(outcome.selected) || 0;
+                                                if (outcome.selectedId < 0) {
+                                                    outcome.selectedId = 0;
+                                                }
+                                                outcome.itemNumber = grade.itemnumber;
+                                            }
                                             outcomes[outcome.id] = outcome;
                                         }
                                     });
@@ -552,10 +570,17 @@ angular.module('mm.addons.mod_assign')
                 }
 
                 var modal = $mmUtil.showModalLoading('mm.core.sending', true),
-                    attemptNumber = scope.userSubmission ? scope.userSubmission.attemptnumber : -1;
+                    attemptNumber = scope.userSubmission ? scope.userSubmission.attemptnumber : -1,
+                    outcomes = {};
+
+                angular.forEach(scope.gradeInfo.outcomes, function(outcome) {
+                    if (outcome.itemNumber) {
+                        outcomes[outcome.itemNumber] = outcome.selectedId;
+                    }
+                });
 
                 return $mmaModAssign.submitGradingForm(scope.assign.id, submitId, scope.grade.grade, attemptNumber,
-                        scope.grade.addAttempt, scope.grade.gradingStatus, scope.grade.applyToAll).then(function() {
+                        scope.grade.addAttempt, scope.grade.gradingStatus, scope.grade.applyToAll, outcomes).then(function() {
 
                     // Invalidate and refresh data.
                     invalidateAndRefresh();

@@ -610,6 +610,20 @@ mm-timer {
   padding: 0;
 }
 
+.item-input-inset.item-stacked-label .item-input-wrapper.item-select {
+  display: block;
+
+  select {
+    background: transparent;
+    padding: 12px;
+    margin: 0;
+    width: 100%;
+    position: relative;
+    max-width: 100%;
+    direction: ltr;
+  }
+}
+
 .button.mm-button-icon-small {
   padding: 0 3px;
   min-height: $mm-button-icon-small-height;

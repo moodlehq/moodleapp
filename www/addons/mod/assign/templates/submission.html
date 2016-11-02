@@ -159,9 +159,12 @@
             </div>
         </label>
 
-        <div ng-repeat="outcome in gradeInfo.outcomes" class="item">
+        <div ng-repeat="outcome in gradeInfo.outcomes" class="item" ng-class="{ 'item-input-inset item-stacked-label': outcome.options }">
             <div class="input-label">{{ outcome.name }}</div>
-            <div>
+            <div class="item-select item-input-wrapper" ng-if="canSaveGrades && outcome.itemNumber">
+                <select ng-model="outcome.selectedId" ng-options="outcome.options.indexOf(option) as option for option in outcome.options | orderBy:'$index':true" mm-ios-select-fix></select>
+            </div>
+            <div ng-if="!canSaveGrades || !outcome.itemNumber">
                 <p>{{ outcome.selected }}</p>
             </div>
         </div>
@@ -200,7 +203,6 @@
         <div class="mm-warning" ng-if="isGrading && !canSaveGrades">
             <i class="icon ion-alert-circled padding"></i> {{ 'mma.mod_assign.cannotgradefromapp' | translate:{$a: moduleName} }}
         </div>
-
 
     </div>
 </mm-loading>
