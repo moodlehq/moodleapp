@@ -119,6 +119,9 @@ em {
 // This is done for accessibility reasons when a heading is semantically incorrect.
 .item .item-heading {
   @extend h2;
+  &.padding {
+    @extend .padding;
+  }
 }
 
 .item.item-text-wrap .item-heading {
@@ -260,6 +263,10 @@ em {
         border-radius : 50%;
         padding: 4px;
         border: 1px solid #ddd;
+
+        &.no-border-radius {
+          border-radius: 0%;
+        }
     }
 }
 

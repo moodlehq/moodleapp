@@ -21,7 +21,7 @@ angular.module('mm.core.login')
  * @ngdoc controller
  * @name mmLoginCredentialsCtrl
  */
-.controller('mmLoginCredentialsCtrl', function($scope, $state, $stateParams, $mmSitesManager, $mmUtil, $ionicHistory, $mmApp,
+.controller('mmLoginCredentialsCtrl', function($scope, $stateParams, $mmSitesManager, $mmUtil, $ionicHistory, $mmApp,
             $q, $mmLoginHelper, $mmContentLinksDelegate, $mmContentLinksHelper) {
 
     $scope.siteurl = $stateParams.siteurl;
@@ -30,7 +30,13 @@ angular.module('mm.core.login')
     };
 
     var siteChecked = false,
-        urlToOpen = $stateParams.urltoopen;
+        urlToOpen = $stateParams.urltoopen,
+        siteConfig = $stateParams.siteconfig;
+
+    if (siteConfig) {
+        $scope.sitename = siteConfig.sitename;
+        $scope.logourl = siteConfig.logourl || siteConfig.compactlogourl;
+    }
 
     // Function to check if a site uses local_mobile, requires SSO login, etc.
     // This should be used only if a fixed URL is set, otherwise this check is already performed in mmLoginSiteCtrl.
@@ -43,6 +49,11 @@ angular.module('mm.core.login')
             siteChecked = true;
             $scope.siteurl = result.siteurl;
 
+            if (result.config) {
+                $scope.sitename = result.config.sitename;
+                $scope.logourl = siteConfig.logourl || siteConfig.compactlogourl;
+            }
+
             if (result && result.warning) {
                 $mmUtil.showErrorModal(result.warning, true, 4000);
             }
@@ -53,7 +64,8 @@ angular.module('mm.core.login')
 
                 // Check that there's no SSO authentication ongoing and the view hasn't changed.
                 if (!$mmApp.isSSOAuthenticationOngoing() && !$scope.$$destroyed) {
-                    $mmLoginHelper.confirmAndOpenBrowserForSSOLogin(result.siteurl, result.code);
+                    $mmLoginHelper.confirmAndOpenBrowserForSSOLogin(
+                                result.siteurl, result.code, result.service, result.config && result.config.launchurl);
                 }
             } else {
                 $scope.isBrowserSSO = false;
