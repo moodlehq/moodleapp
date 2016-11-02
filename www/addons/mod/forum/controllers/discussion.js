@@ -52,6 +52,11 @@ angular.module('mm.addons.mod_forum')
         direction: 'ASC',
         text: $translate.instant('mma.mod_forum.sortnewestfirst')
     };
+    $scope.nested = {
+        icon: 'ion-arrow-swap',
+        isnested: false,
+        text: $translate.instant('mma.mod_forum.nestposts')
+    };
     // Receive locked as param since it's returned by getDiscussions. This means that PullToRefresh won't update this value.
     $scope.locked = !!$stateParams.locked;
 
@@ -134,8 +139,13 @@ angular.module('mm.addons.mod_forum')
             var posts = offlineReplies.concat(onlinePosts);
             $scope.discussion = $mmaModForum.extractStartingPost(posts);
 
-            // Set default reply subject.
-            $scope.posts = $mmaModForum.sortDiscussionPosts(posts, $scope.sort.direction);
+            // If $scope.nested.isnested is true, normal sorting is disabled and nested posts will be displayed.
+            if ($scope.nested.isnested) {
+                $scope.posts = $mmaModForum.constructDiscussionTree(posts, $scope.discussion.id);
+            } else {
+                // Set default reply subject.
+                $scope.posts = $mmaModForum.sortDiscussionPosts(posts, $scope.sort.direction);
+            }
             $scope.defaultSubject = $translate.instant('mma.mod_forum.re') + ' ' + $scope.discussion.subject;
             $scope.newpost.subject = $scope.defaultSubject;
 
@@ -165,6 +175,10 @@ angular.module('mm.addons.mod_forum')
     // Function to change posts sorting.
     $scope.changeSort = function(init) {
         $scope.discussionLoaded = false;
+        // Set $scope.nested attributes to default.
+        $scope.nested.icon = 'ion-arrow-swap';
+        $scope.nested.isnested = false;
+        $scope.nested.text = $translate.instant('mma.mod_forum.nestposts');
 
         if (!init) {
             $scope.sort.direction = $scope.sort.direction == 'ASC' ? 'DESC' : 'ASC';
@@ -177,6 +191,21 @@ angular.module('mm.addons.mod_forum')
             } else {
                 $scope.sort.icon = 'ion-arrow-down-c';
                 $scope.sort.text = $translate.instant('mma.mod_forum.sortoldestfirst');
+            }
+        });
+    };
+
+    // Function to change nested posts.
+    $scope.nestPosts = function(init) {
+        $scope.nested.isnested = !$scope.nested.isnested;
+
+        return fetchPosts(init).then(function() {
+            if ($scope.nested.isnested) {
+                $scope.nested.icon = 'ion-navicon';
+                $scope.nested.text = $translate.instant('mma.mod_forum.flatposts');
+            } else {
+                $scope.nested.icon = 'ion-arrow-swap';
+                $scope.nested.text = $translate.instant('mma.mod_forum.nestposts');
             }
         });
     };
