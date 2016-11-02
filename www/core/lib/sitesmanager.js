@@ -251,7 +251,7 @@ angular.module('mm.core')
      * @param {String} [service] Service to use. If not defined, it will be searched in memory.
      * @param {Boolean} retry    We are retrying with a prefixed URL.
      * @return {Promise}         A promise to be resolved when the token is retrieved. If success, returns an object
-     *                           with the token and the siteurl to use.
+     *                           with the token, private token and the siteurl to use.
      */
     self.getUserToken = function(siteurl, username, password, service, retry) {
         retry = retry || false;
@@ -278,7 +278,7 @@ angular.module('mm.core')
                 return $mmLang.translateAndReject('mm.core.cannotconnect');
             } else {
                 if (typeof data.token != 'undefined') {
-                    return {token: data.token, siteurl: siteurl};
+                    return {token: data.token, siteurl: siteurl, privatetoken: data.privatetoken};
                 } else {
                     if (typeof data.error != 'undefined') {
                         // We only allow one retry (to avoid loops).
@@ -306,13 +306,15 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmSitesManager#newSite
-     * @param {String} siteurl  The site url.
-     * @param {String} token    User's token.
-     * @return {Promise}        A promise to be resolved when the site is added and the user is authenticated.
+     * @param  {String} siteurl        The site url.
+     * @param  {String} token          User's token.
+     * @param  {String} [privateToken] User's private token.
+     * @return {Promise}               A promise to be resolved when the site is added and the user is authenticated.
      */
-    self.newSite = function(siteurl, token) {
+    self.newSite = function(siteurl, token, privateToken) {
+        privateToken = privateToken || '';
 
-        var candidateSite = $mmSitesFactory.makeSite(undefined, siteurl, token);
+        var candidateSite = $mmSitesFactory.makeSite(undefined, siteurl, token, undefined, privateToken);
 
         return candidateSite.fetchSiteInfo().then(function(infos) {
             if (isValidMoodleVersion(infos)) {
@@ -320,7 +322,7 @@ angular.module('mm.core')
                 if (validation === true) {
                     var siteid = self.createSiteID(infos.siteurl, infos.username);
                     // Add site to sites list.
-                    self.addSite(siteid, siteurl, token, infos);
+                    self.addSite(siteid, siteurl, token, infos, privateToken);
                     // Turn candidate site into current site.
                     candidateSite.setId(siteid);
                     candidateSite.setInfo(infos);
@@ -439,17 +441,21 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmSitesManager#addSite
-     * @param {String} id      Site ID.
-     * @param {String} siteurl Site URL.
-     * @param {String} token   User's token in the site.
-     * @param {Object} infos   Site's info.
+     * @param  {String} id             Site ID.
+     * @param  {String} siteurl        Site URL.
+     * @param  {String} token          User's token in the site.
+     * @param  {Object} infos          Site's info.
+     * @param  {String} [privateToken] User's private token.
+     * @return {Promise}               Promise resolved when done.
      */
-    self.addSite = function(id, siteurl, token, infos) {
+    self.addSite = function(id, siteurl, token, infos, privateToken) {
+        privateToken = privateToken || '';
         return $mmApp.getDB().insert(mmCoreSitesStore, {
             id: id,
             siteurl: siteurl,
             token: token,
-            infos: infos
+            infos: infos,
+            privatetoken: privateToken
         });
     };
 
@@ -590,7 +596,7 @@ angular.module('mm.core')
             return $q.when(sites[siteId]);
         } else {
             return $mmApp.getDB().get(mmCoreSitesStore, siteId).then(function(data) {
-                var site = $mmSitesFactory.makeSite(siteId, data.siteurl, data.token, data.infos);
+                var site = $mmSitesFactory.makeSite(siteId, data.siteurl, data.token, data.infos, data.privatetoken);
                 sites[siteId] = site;
                 return site;
             });
@@ -740,14 +746,15 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmSitesManager#updateSiteToken
-     * @param {String} siteUrl  Site's URL.
-     * @param {String} username Username.
-     * @param {String} token    User's new token.
-     * @return {Promise}        A promise to be resolved when the site is updated.
+     * @param  {String} siteUrl        Site's URL.
+     * @param  {String} username       Username.
+     * @param  {String} token          User's new token.
+     * @param  {String} [privateToken] User's private token.
+     * @return {Promise}               A promise to be resolved when the site is updated.
      */
-    self.updateSiteToken = function(siteUrl, username, token) {
+    self.updateSiteToken = function(siteUrl, username, token, privateToken) {
         var siteId = self.createSiteID(siteUrl, username);
-        return self.updateSiteTokenBySiteId(siteId, token);
+        return self.updateSiteTokenBySiteId(siteId, token, privateToken);
     };
 
     /**
@@ -756,19 +763,23 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmSitesManager#updateSiteTokenBySiteId
-     * @param {String} siteId   Site Id.
-     * @param {String} token    User's new token.
-     * @return {Promise}        A promise to be resolved when the site is updated.
+     * @param  {String} siteId         Site Id.
+     * @param  {String} token          User's new token.
+     * @param  {String} [privateToken] User's private token.
+     * @return {Promise}               A promise to be resolved when the site is updated.
      */
-    self.updateSiteTokenBySiteId = function(siteId, token) {
+    self.updateSiteTokenBySiteId = function(siteId, token, privateToken) {
+        privateToken = privateToken || '';
         return self.getSite(siteId).then(function(site) {
             site.token = token;
+            site.privatetoken = privateToken;
 
             return $mmApp.getDB().insert(mmCoreSitesStore, {
                 id: siteId,
                 siteurl: site.getURL(),
                 token: token,
-                infos: site.getInfo()
+                infos: site.getInfo(),
+                privatetoken: privateToken
             });
         });
     };
@@ -790,7 +801,8 @@ angular.module('mm.core')
                     id: siteid,
                     siteurl: site.getURL(),
                     token: site.getToken(),
-                    infos: infos
+                    infos: infos,
+                    privatetoken: site.getPrivateToken()
                 }).finally(function() {
                     $mmEvents.trigger(mmCoreEventSiteUpdated, siteid);
                 });
@@ -854,7 +866,7 @@ angular.module('mm.core')
             var ids = [];
             angular.forEach(sites, function(site) {
                 if (!sites[site.id]) {
-                    sites[site.id] = $mmSitesFactory.makeSite(site.id, site.siteurl, site.token, site.infos);
+                    sites[site.id] = $mmSitesFactory.makeSite(site.id, site.siteurl, site.token, site.infos, site.privatetoken);
                 }
                 if (sites[site.id].containsUrl(url)) {
                     if (!username || sites[site.id].getInfo().username == username) {
