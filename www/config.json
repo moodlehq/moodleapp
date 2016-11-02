@@ -12,5 +12,6 @@
     "gcmpn": "694767596569",
     "customurlscheme": "moodlemobile",
     "siteurl": "",
-    "skipssoconfirmation": "false"
+    "skipssoconfirmation": "false",
+    "forcedefaultlanguage": "false"
 }
