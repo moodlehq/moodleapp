@@ -24,5 +24,7 @@
     "reply": "Reply",
     "sortnewestfirst": "Display newest first",
     "sortoldestfirst": "Display oldest first",
-    "subject": "Subject"
+    "subject": "Subject",
+    "flatposts": "Display replies flat",
+    "nestposts": "Display replies nested"
 }
