@@ -62,6 +62,7 @@ angular.module('mm.addons.calendar')
     // Get event.
     fetchEvent().finally(function() {
         $scope.eventLoaded = true;
+        getEventFromLocalCalendar();
     });
 
     // Pull to refresh.
@@ -86,5 +87,26 @@ angular.module('mm.addons.calendar')
                 $mmaCalendar.updateNotificationTime($scope.event, time);
             }
         };
+    }
+
+    // Takes a specific event in the moodle calendar and adds it to the local calendar(only on ios and android).
+    $scope.addEvent = function(event) {
+        $mmaCalendar.syncEventToLocalCalendar(event).then(function() {
+            $scope.status = true;
+        });
+    };
+
+    // Finds a specific event in the local calendar and if it exist it disables the sync button.
+    function getEventFromLocalCalendar() {
+        var syncedEvent = [];
+        return $mmaCalendar.findEventInLocalCalendar($scope.event).then(function(event) {
+            syncedEvent = event;
+
+            if (!syncedEvent[0]) {
+                $scope.status = false;
+            } else {
+                $scope.status = true;
+            }
+        });
     }
 });

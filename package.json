@@ -48,6 +48,7 @@
     "cordova-plugin-splashscreen",
     "cordova-plugin-statusbar",
     "cordova-plugin-whitelist",
+    "cordova-plugin-calendar",
     {
       "locator": "https://github.com/Tunts/WebIntent",
       "id": "net.tunts.webintent"

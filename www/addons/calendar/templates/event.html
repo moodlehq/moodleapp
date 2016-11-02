@@ -25,6 +25,14 @@
                     <li class="item item-text-wrap" ng-if="event.description">
                         <mm-format-text class="mm-content-with-float" watch="true">{{event.description}}</mm-format-text>
                     </li>
+                    <li class="item item-text-wrap" ng-if="status">
+                        <mm-format-text class="mm-content-with-float" watch="true">{{ 'mma.calendar.eventissyncronized' | translate }}</mm-format-text>
+                    </li>
+                    <li ng-if="!status" >
+                        <button ng-click="addEvent(event)" class="button button-clear button-block button-dark">
+                            <div class="title ion-loop"> {{ 'mma.calendar.syncronizeevent' | translate }}</div>
+                        </button>
+                    </li>
                 </ul>
             </article>
             <div class="card" ng-if="notificationsEnabled">

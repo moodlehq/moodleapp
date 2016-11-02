@@ -21,7 +21,7 @@ angular.module('mm.addons.calendar')
  * @ngdoc controller
  * @name mmaCalendarListCtrl
  */
-.controller('mmaCalendarListCtrl', function($scope, $stateParams, $log, $state, $mmaCalendar, $mmUtil, $ionicHistory,
+.controller('mmaCalendarListCtrl', function($scope, $stateParams, $translate, $q, $log, $cordovaToast, $cordovaCalendar, $timeout, $state, $mmaCalendar, $mmUtil, $ionicHistory,
         mmaCalendarDaysInterval) {
 
     $log = $log.getInstance('mmaCalendarListCtrl');
@@ -105,5 +105,23 @@ angular.module('mm.addons.calendar')
                 $scope.$broadcast('scroll.refreshComplete');
             });
         });
+    };
+
+    // Syncronize all events in the moodle calender to local calender(only on ios and android).
+    $scope.syncAllEvents = function(events) {
+        $scope.eventsToSync = [];
+        $scope.eventsToSync = events;
+        if (events && events.length) {
+            $translate('mma.calendar.alleventshasbeensynced').then(function (message) {
+                $cordovaToast.show(message, 'short', 'center');
+            });
+            return events.reduce(function(promise, event) {
+                return promise.then(function() {
+                    return $mmaCalendar.syncEventToLocalCalendar(event);
+                });
+            }, $q.when());
+        } else {
+            return $q.resolve();
+        }
     };
 });

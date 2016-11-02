@@ -38,7 +38,7 @@ angular.module('mm.addons.calendar')
  * @ngdoc service
  * @name $mmaCalendar
  */
-.factory('$mmaCalendar', function($log, $q, $mmSite, $mmUtil, $mmCourses, $mmGroups, $mmCourse, $mmLocalNotifications,
+.factory('$mmaCalendar', function($log, $q, $mmSite, $cordovaCalendar, $mmUtil, $mmCourses, $mmGroups, $mmCourse, $mmLocalNotifications,
         $mmSitesManager, mmCoreSecondsDay, mmaCalendarDaysInterval, mmaCalendarEventsStore, mmaCalendarDefaultNotifTime,
         mmaCalendarComponent) {
 
@@ -440,6 +440,63 @@ angular.module('mm.addons.calendar')
 
         return db.insert(mmaCalendarEventsStore, event).then(function() {
             return self.scheduleEventNotification(event, time);
+        });
+    };
+
+    // First checks if the event is already in the local calender.
+    // If it is not in the local calender it gets synced to the local calendar.
+    self.syncEventToLocalCalendar = function(event) {
+        var deferred = $q.defer();
+        var syncedEvent = [];
+
+        return self.findEventInLocalCalendar(event).then(function(e) {
+            syncedEvent = e;
+            if (!syncedEvent[0]) {
+                if (event.timestart == (event.timestart + event.timeduration)) {
+                    event.timeduration += 900;
+                }
+
+                var startDate = new Date(event.timestart * 1000);
+                var endDate = new Date((event.timestart + event.timeduration) * 1000);
+
+                $cordovaCalendar.createCalendar({
+                    calendarName: 'Moodle Calendar',
+                    calendarColor: '#ff8c00'
+                });
+
+                $cordovaCalendar.createEventInNamedCalendar({
+                    title: event.name,
+                    notes: event.description,
+                    startDate: startDate,
+                    endDate: endDate,
+                    calendarName: 'Moodle Calendar'
+                }).then(function () {
+                    deferred.resolve();
+                }, function () {
+                    deferred.reject();
+                });
+                return deferred.promise;
+            }
+        });
+    };
+
+    // First format the time of the event to the same as in the local calender.
+    // Then searches the local calender for a specific event and returns it.
+    self.findEventInLocalCalendar = function(event) {
+        if (event.timestart == (event.timestart + event.timeduration)) {
+            event.timeduration += 900;
+        }
+
+        var startDate = new Date(event.timestart * 1000);
+        var endDate = new Date((event.timestart + event.timeduration) * 1000);
+
+        return $cordovaCalendar.findEvent({
+            title: event.name,
+            notes: event.description,
+            startDate: startDate,
+            endDate: endDate
+        }).then(function (result) {
+            return result;
         });
     };
 

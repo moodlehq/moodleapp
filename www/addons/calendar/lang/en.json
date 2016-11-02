@@ -3,5 +3,9 @@
     "errorloadevent": "Error loading event.",
     "errorloadevents": "Error loading events.",
     "noevents": "There are no events",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "syncronizeallevents": "Syncronize all events",
+    "alleventshasbeensynced": "All events has been syncronized",
+    "syncronizeevent": "Syncronize event",
+    "eventissyncronized": "This event is syncronized"
 }

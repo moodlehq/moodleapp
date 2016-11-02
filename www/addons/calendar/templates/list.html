@@ -20,6 +20,9 @@
                         on-infinite="loadMoreEvents()" >
                  </ion-infinite-scroll>
             </mm-loading>
+            <div ng-click="syncAllEvents(events)" class="bar bar-footer bar-dark">
+                <div class="title ion-loop"> {{ 'mma.calendar.syncronizeallevents' | translate }}</div>
+            </div>
         </ion-content>
     </mm-split-view>
 </ion-view>
