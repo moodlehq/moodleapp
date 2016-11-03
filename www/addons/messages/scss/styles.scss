@@ -83,3 +83,37 @@ $mma-messages-date-badge: "stable" !default;
     left: initial;
   }
 }
+
+.mma-messages-discussions-item {
+  position: relative;
+
+  a {
+    z-index: 5;
+  }
+
+  .mma-messages-discussions-options {
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 3;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+      display: block;
+      float: left;
+      height: 100%;
+      width: 50px;
+
+      button {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        border: none;
+        font-size: 20px;
+      }
+    }
+  }
+}

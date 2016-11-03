@@ -22,12 +22,18 @@ angular.module('mm.addons.messages')
  * @name mmaMessagesDiscussionsCtrl
  */
 .controller('mmaMessagesDiscussionsCtrl', function($scope, $mmUtil, $mmaMessages, $rootScope, $mmEvents, $mmSite,
-            mmCoreSplitViewLoad, mmaMessagesNewMessageEvent) {
+            $ionicScrollDelegate, $ionicSideMenuDelegate, mmCoreSplitViewLoad, mmaMessagesNewMessageEvent) {
     var newMessagesObserver,
         siteId = $mmSite.getId(),
         discussions;
 
     $scope.loaded = false;
+
+    var discussionOptionsWidth;
+    var swiping = false;
+    var pulling = false;
+    var swipeStartOffset;
+    var swipeOffset = 0;
 
     function fetchDiscussions() {
         return $mmaMessages.getDiscussions().then(function(discs) {
@@ -92,5 +98,70 @@ angular.module('mm.addons.messages')
             newMessagesObserver.off();
         }
     });
+
+    $scope.onDragStart = function(event) {
+        var element = angular.element(event.currentTarget);
+        var optionsElement = event.currentTarget.parentElement.getElementsByClassName('mma-messages-discussions-options')[0];
+        discussionOptionsWidth = optionsElement.clientWidth;
+
+        var rightStr = element.css('right');
+        if (rightStr) {
+            var rightStrPx = rightStr.substr(0, rightStr.length - 'px'.length); // Remove 'px' from value (e.g. 10px => 10)
+            swipeStartOffset = parseInt(rightStrPx, 10);
+        } else {
+            swipeStartOffset = 0;
+        }
+    };
+
+    $scope.onDrag = function(event) {
+        var horizontalMovement = event.gesture.center.pageX - event.gesture.startEvent.center.pageX;
+
+        if (!pulling && !swiping) {
+            var verticalMovement = event.gesture.center.pageY - event.gesture.startEvent.center.pageY;
+
+            if (Math.abs(horizontalMovement) > Math.abs(verticalMovement)) {
+                swiping = true;
+                $ionicScrollDelegate.freezeScroll(true);
+            } else if (Math.abs(verticalMovement) > 0) {
+                pulling = true;
+            }
+        }
+
+        if (swiping) {
+            swipeOffset = swipeStartOffset - horizontalMovement;
+
+            if (swipeOffset > 0) {
+                $ionicSideMenuDelegate.canDragContent(false);
+            }
+
+            var element = angular.element(event.currentTarget);
+
+            if (swipeOffset >= discussionOptionsWidth) {
+                element.css('right', discussionOptionsWidth + 'px');
+            } else if (swipeOffset < 0) {
+                element.css('right', '0px');
+            } else {
+                element.css('right', swipeOffset + 'px');
+            }
+        }
+    };
+
+    $scope.onDragStop = function(event) {
+        var element = angular.element(event.currentTarget);
+
+        if (swipeOffset >= discussionOptionsWidth / 2) {
+            element.css('right', discussionOptionsWidth + 'px');
+        } else {
+            element.css('right', '0px');
+        }
+
+        if (swiping) {
+            $ionicScrollDelegate.freezeScroll(false);
+            $ionicSideMenuDelegate.canDragContent(true);
+        }
+
+        swiping = false;
+        pulling = false;
+    };
 });
 
