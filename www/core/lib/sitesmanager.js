@@ -217,11 +217,14 @@ angular.module('mm.core')
      * @return {Promise}        A promise to be resolved if the site exists.
      */
     self.siteExists = function(siteurl) {
-        var data = {
-            username: 'a',
-            password: 'b',
-            service: determineService(siteurl)
-        };
+        var data = {};
+
+        if (!ionic.Platform.isWebView()) {
+            // Send fake parameters for CORS. This is only needed in browser.
+            data.username = 'a';
+            data.password = 'b';
+            data.service = 'c';
+        }
 
         return $http.post(siteurl + '/login/token.php', data, {timeout: 30000, responseType: 'json'}).then(function(data) {
             data = data.data;
