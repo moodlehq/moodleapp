@@ -118,7 +118,7 @@ angular.module('mm.core')
     this.$get = function($http, $q, $mmWS, $mmDB, $log, md5, $mmApp, $mmLang, $mmUtil, $mmFS, mmCoreWSCacheStore,
             mmCoreWSPrefix, mmCoreSessionExpired, $mmEvents, mmCoreEventSessionExpired, mmCoreUserDeleted, mmCoreEventUserDeleted,
             $mmText, $translate, mmCoreConfigConstants, mmCoreUserPasswordChangeForced, mmCoreEventPasswordChangeForced,
-            mmCoreLoginTokenChangePassword) {
+            mmCoreLoginTokenChangePassword, mmCoreSecondsMinute) {
 
         $log = $log.getInstance('$mmSite');
 
@@ -907,25 +907,30 @@ angular.module('mm.core')
          * @return {Promise}        Promise resolved when done, rejected otherwise.
          */
         Site.prototype.openWithAutoLogin = function(inApp, url, options) {
-            if (!this.privateToken || !this.wsAvailable('tool_mobile_get_autologin_key')) {
-                // No private token or WS not available, open the final URL without auto-login.
+            if (!this.privateToken || !this.wsAvailable('tool_mobile_get_autologin_key') ||
+                    (this.lastAutoLogin && $mmUtil.timestamp() - this.lastAutoLogin < 6 * mmCoreSecondsMinute)) {
+                // No private token, WS not available or last auto-login was less than 6 minutes ago.
+                // Open the final URL without auto-login.
                 open(url);
                 return $q.when();
             }
 
-            var userId = this.getUserId(),
+            var that = this,
+                userId = that.getUserId(),
                 params = {
-                    privatetoken: this.privateToken
+                    privatetoken: that.privateToken
                 },
                 modal = $mmUtil.showModalLoading();
 
             // Use write to not use cache.
-            return this.write('tool_mobile_get_autologin_key', params).then(function(data) {
+            return that.write('tool_mobile_get_autologin_key', params).then(function(data) {
                 if (!data.autologinurl || !data.key) {
                     // Not valid data, open the final URL without auto-login.
                     open(url);
                     return;
                 }
+
+                that.lastAutoLogin = $mmUtil.timestamp();
 
                 open(data.autologinurl + '?userid=' + userId + '&key=' + data.key + '&urltogo=' + url);
             }).catch(function() {
