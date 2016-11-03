@@ -455,33 +455,53 @@ angular.module('mm.core.course')
      * @return {Promise}                The reject contains the error message, else contains the sections.
      */
     self.getSections = function(courseId, excludeModules, excludeContents, preSets, siteId) {
-        preSets = preSets || {};
-        siteId = siteId || $mmSite.getId();
-        preSets.cacheKey = getSectionsCacheKey(courseId);
-        preSets.getCacheUsingCacheKey = true; // This is to make sure users don't lose offline access when updating.
-
-        var options = [
-                {
-                    name: 'excludemodules',
-                    value: excludeModules ? 1 : 0
-                },
-                {
-                    name: 'excludecontents',
-                    value: excludeContents ? 1 : 0
-                }
-            ];
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
+            preSets = preSets || {};
+            preSets.cacheKey = getSectionsCacheKey(courseId);
+            preSets.getCacheUsingCacheKey = true; // This is to make sure users don't lose offline access when updating.
+
+            var options = [
+                    {
+                        name: 'excludemodules',
+                        value: excludeModules ? 1 : 0
+                    },
+                    {
+                        name: 'excludecontents',
+                        value: excludeContents ? 1 : 0
+                    }
+                ];
+
             return site.read('core_course_get_contents', {
                 courseid: courseId,
                 options: options
             }, preSets).then(function(sections) {
-                angular.forEach(sections, function(section) {
-                    angular.forEach(section.modules, function(module) {
-                        addContentsIfNeeded(module);
+                var promise,
+                    siteHomeId = site.getInfo().siteid || 1;
+
+                if (courseId == siteHomeId) {
+                    // Check if frontpage sections should be shown.
+                    promise = site.getConfig('numsections').catch(function() {
+                        // Ignore errors for not present settings assuming numsections will be true.
+                        return $q.when(true);
                     });
+                } else {
+                    promise = $q.when(true);
+                }
+
+                return promise.then(function(showSections) {
+                    if (!showSections && sections.length > 0) {
+                        // Get only the last section (Main menu block section).
+                        sections.pop();
+                    }
+
+                    angular.forEach(sections, function(section) {
+                        angular.forEach(section.modules, function(module) {
+                            addContentsIfNeeded(module);
+                        });
+                    });
+                    return sections;
                 });
-                return sections;
+
             });
         });
     };
@@ -535,16 +555,25 @@ angular.module('mm.core.course')
      * @module mm.core.course
      * @ngdoc method
      * @name $mmCourse#invalidateSections
-     * @param {Number} courseid  Course ID.
-     * @param  {Number} [userid] User ID. If not defined, current user.
+     * @param {Number} courseId  Course ID.
+     * @param  {Number} [userId] User ID. If not defined, current user.
+     * @param {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}         Promise resolved when the data is invalidated.
      */
-    self.invalidateSections = function(courseid, userid) {
-        userid = userid || $mmSite.getUserId();
+    self.invalidateSections = function(courseId, userId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var promises = [],
+                siteHomeId = site.getInfo().siteid || 1;
 
-        var p1 = $mmSite.invalidateWsCacheForKey(getSectionsCacheKey(courseid)),
-            p2 = $mmSite.invalidateWsCacheForKey(getActivitiesCompletionCacheKey(courseid, userid));
-        return $q.all([p1, p2]);
+            userId = userId || site.getUserId();
+
+            promises.push(site.invalidateWsCacheForKey(getSectionsCacheKey(courseId)));
+            promises.push(site.invalidateWsCacheForKey(getActivitiesCompletionCacheKey(courseId, userId)));
+            if (courseId == siteHomeId) {
+                promises.push(site.invalidateConfig());
+            }
+            return $q.all(promises);
+        });
     };
 
     /**
