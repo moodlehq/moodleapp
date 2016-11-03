@@ -1036,5 +1036,84 @@ angular.module('mm.addons.messages')
         });
     };
 
+    /**
+     * Check if discussions can be deleted in current site.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#canDeleteDiscussion
+     * @return {Boolean} True if can delete discussions, false otherwise.
+     */
+    self.canDeleteDiscussion = function() {
+        return $mmSite.wsAvailable('core_message_delete_conversation')
+            && $mmSite.wsAvailable('core_message_mark_all_messages_as_read');
+    };
+
+    /**
+     * Delete a discussion (online or offline).
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#deleteDiscussion
+     * @param {Object} discussion Discussion to delete.
+     * @return {Promise}       Promise resolved when the discussion has been deleted.
+     */
+    self.deleteDiscussion = function(discussion) {
+        // Need to mark messages as read, otherwise and empty discussion
+        // may show when refetching messages.
+        return self.markAllMessagesAsRead(discussion.message.user).then(function() {
+            return self.deleteDiscussionOnline(discussion.message.user).then(function() {
+                // Delete offline messages only if online deletion succeeded.
+                // This is to prevent the case where only offline messages (pending) are
+                // deleted, and online messages (sent) remain.
+                return $mmaMessagesOffline.deleteMessagesToUser(discussion.user);
+            });
+        });
+    };
+
+    /**
+     * Delete a discussion from the server.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#deleteDiscussionOnline
+     * @param {Number} usertoId ID of user conversation is with.
+     * @param {Number} [userId] User we want to delete the conversation for. If not defined, use current user.
+     * @return {Promise}        Promise resolved when the discussion has been deleted.
+     */
+    self.deleteDiscussionOnline = function(usertoId, userId) {
+        userId = userId || $mmSite.getUserId();
+        var params = {
+                userid: userId,
+                otheruserid: usertoId
+            };
+        return $mmSite.write('core_message_delete_conversation', params).then(function() {
+            return self.invalidateDiscussionsCache();
+        });
+    };
+
+    /** Mark all messages in a discussion as read.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#markAllMessagesAsRead
+     * @param {Number} usertoId ID of user discussion is with.
+     * @param {Number} [userId] User we want to mark the messages as read for. If not defined, use current user.
+     * @return {Promise}        Promise resolved when the messages have been marked as read.
+     */
+    self.markAllMessagesAsRead = function(usertoId, userId) {
+        userId = userId || $mmSite.getUserId();
+        var params = {
+            useridfrom: usertoId,
+            useridto: userId
+        };
+        var preSets = {
+            typeExpected: 'boolean'
+        };
+        return $mmSite.write('core_message_mark_all_messages_as_read', params, preSets).then(function() {
+            return self.invalidateDiscussionCache(userId);
+        });
+    };
+
     return self;
 });

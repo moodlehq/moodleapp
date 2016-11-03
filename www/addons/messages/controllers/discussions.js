@@ -22,11 +22,12 @@ angular.module('mm.addons.messages')
  * @name mmaMessagesDiscussionsCtrl
  */
 .controller('mmaMessagesDiscussionsCtrl', function($scope, $mmUtil, $mmaMessages, $rootScope, $mmEvents, $mmSite,
-            $ionicScrollDelegate, $ionicSideMenuDelegate, mmCoreSplitViewLoad, mmaMessagesNewMessageEvent) {
+            $translate, $ionicScrollDelegate, $ionicSideMenuDelegate, mmCoreSplitViewLoad, mmaMessagesNewMessageEvent) {
     var newMessagesObserver,
         siteId = $mmSite.getId(),
         discussions;
 
+    $scope.canDelete = $mmaMessages.canDeleteDiscussion();
     $scope.loaded = false;
 
     var discussionOptionsWidth;
@@ -162,6 +163,25 @@ angular.module('mm.addons.messages')
 
         swiping = false;
         pulling = false;
+    };
+
+    $scope.deleteDiscussion = function(discussion) {
+        var langKey = 'mma.messages.deletediscussionconfirmation';
+        $mmUtil.showConfirm($translate(langKey)).then(function() {
+            var modal = $mmUtil.showModalLoading('mm.core.deleting', true);
+            $mmaMessages.deleteDiscussion(discussion).then(function() {
+                $scope.discussions.splice($scope.discussions.indexOf(discussion), 1); // Remove discussion from the list without having to wait for re-fetch.
+                fetchDiscussions(); // Re-fetch discussions to update cached data.
+            }).catch(function(error) {
+                if (typeof error === 'string') {
+                    $mmUtil.showErrorModal(error);
+                } else {
+                    $mmUtil.showErrorModal('mma.messages.errordeletediscussion', true);
+                }
+            }).finally(function() {
+                modal.dismiss();
+            });
+        });
     };
 });
 

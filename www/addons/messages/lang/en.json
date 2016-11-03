@@ -7,6 +7,8 @@
     "deletemessage": "Delete message",
     "deletemessageconfirmation": "Are you sure you want to delete this message? It will only be deleted from your messaging history and will still be viewable by the user who sent or received the message.",
     "errordeletemessage": "Error while deleting the message.",
+    "deletediscussionconfirmation": "Are you sure you want to delete this conversation? It will only be deleted from your messaging history and will still be viewable by the other user.",
+    "errordeletediscussion": "Error while deleting the conversation.",
     "errorwhileretrievingcontacts": "Error while retrieving the contacts from the server.",
     "errorwhileretrievingdiscussions": "Error while retrieving the discussions from the server.",
     "errorwhileretrievingmessages": "Error while retrieving the messages from the server.",

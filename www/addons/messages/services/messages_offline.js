@@ -76,6 +76,41 @@ angular.module('mm.addons.messages')
     };
 
     /**
+     * Delete all messages sent to a user.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessagesOffline#deleteMessagesToUser
+     * @param  {Number} to          User ID the messages were sent to.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved if deleted, rejected if failure.
+     */
+    self.deleteMessagesToUser = function(to, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var db = site.getDb();
+
+            return db.whereEqual(mmaMessagesOfflineMessagesStore, 'touserid', to).then(function(messages) {
+                if (messages && messages.length) {
+                    return messages.reduce(function(promise, message) {
+                        return promise.then(function() {
+                            var id = [
+                                message.touserid,
+                                message.smallmessage,
+                                message.timecreated
+                            ];
+                            return db.remove(mmaMessagesOfflineMessagesStore, id);
+                        });
+                    }, $q.when());
+                } else {
+                    return $q.resolve();
+                }
+            });
+        });
+    };
+
+    /**
      * Get all messages where deviceoffline is set to 1.
      *
      * @module mm.addons.messages

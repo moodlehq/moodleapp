@@ -115,5 +115,13 @@ $mma-messages-date-badge: "stable" !default;
         font-size: 20px;
       }
     }
+
+    .mma-messages-discussions-delete {
+      background-color: red;
+
+      i {
+        color: white;
+      }
+    }
   }
 }
