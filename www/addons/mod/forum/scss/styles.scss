@@ -13,11 +13,11 @@
     border-style: solid;
 }
 
-.mm-site_mod_forum-discussion .card.highlight .item.item-avatar {
+.mm-site_mod_forum-discussion .card.highlight .item.item-heading {
     background-color: $stable;
     font-weight: bold;
-}
 
-.mm-site_mod_forum-discussion .card.highlight .item.item-avatar h2 {
-    font-weight: bold;
+    h2 {
+        font-weight: bold;
+    }
 }
