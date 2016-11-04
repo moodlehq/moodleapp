@@ -110,7 +110,7 @@ angular.module('mm.addons.mod_assign')
 
             // Do not override already loaded grade.
             if (feedbackStatus.grade && feedbackStatus.grade.grade && !scope.grade.grade) {
-                scope.grade.grade = feedbackStatus.grade.grade;
+                scope.grade.grade = $mmUtil.formatFloat(feedbackStatus.grade.grade);
             }
         } else {
             // If no feedback, always show Submission.
@@ -140,7 +140,7 @@ angular.module('mm.addons.mod_assign')
                             var outcomes = {};
                             angular.forEach(grades, function(grade) {
                                 if (!grade.outcomeid && !grade.scaleid) {
-                                    scope.grade.grade = grade.graderaw;
+                                    scope.grade.grade = $mmUtil.formatFloat(grade.gradeformatted);
                                 } else if (grade.outcomeid) {
                                     // Only show outcomes with info on it outcomeid could be null if outcomes are disabled on site.
                                     angular.forEach(scope.gradeInfo.outcomes, function(outcome) {

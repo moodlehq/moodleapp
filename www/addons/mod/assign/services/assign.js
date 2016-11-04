@@ -1095,6 +1095,7 @@ angular.module('mm.addons.mod_assign')
      */
     self.submitGradingForm = function(assignmentId, userId, grade, attemptNumber, addAttempt, workflowState, applyToAll, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
+            grade = $mmUtil.unformatFloat(grade);
             if (site.wsAvailable('mod_assign_submit_grading_form')) {
                 return submitGradingForm(assignmentId, userId, grade, attemptNumber, addAttempt, workflowState, applyToAll, site);
             } else if(site.wsAvailable('mod_assign_save_grade')) {
@@ -1121,7 +1122,12 @@ angular.module('mm.addons.mod_assign')
                 responseExpected: false
             };
 
-        return site.write('mod_assign_save_grade', params, preSets);
+        return site.write('mod_assign_save_grade', params, preSets).catch(function(error) {
+            return $q.reject({
+                error: error,
+                wserror: $mmUtil.isWebServiceError(error)
+            });
+        });
     }
 
     // New grading WS for Moodle >= 3.2.
@@ -1145,7 +1151,20 @@ angular.module('mm.addons.mod_assign')
             jsonformdata: JSON.stringify(serialized)
         };
 
-        return site.write('mod_assign_submit_grading_form', params);
+        return site.write('mod_assign_submit_grading_form', params).catch(function(error) {
+            return $q.reject({
+                error: error,
+                wserror: $mmUtil.isWebServiceError(error)
+            });
+        }).then(function(warnings) {
+            if (warnings && warnings.length) {
+                // The WebService returned warnings, reject.
+                return $q.reject({
+                    wserror: true,
+                    error: warnings[0].message
+                });
+            }
+        });
     }
 
     return self;
