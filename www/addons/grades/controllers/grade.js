@@ -21,8 +21,7 @@ angular.module('mm.addons.grades')
  * @ngdoc controller
  * @name mmaGradesGradeCtrl
  */
-.controller('mmaGradesGradeCtrl', function($scope, $stateParams, $mmUtil, $mmaGrades, $mmSite, $mmaGradesHelper, $log,
-        $mmContentLinksHelper) {
+.controller('mmaGradesGradeCtrl', function($scope, $stateParams, $mmUtil, $mmaGrades, $mmSite, $mmaGradesHelper, $log) {
 
     $log = $log.getInstance('mmaGradesGradeCtrl');
 
@@ -47,17 +46,6 @@ angular.module('mm.addons.grades')
         fetchGrade().finally(function() {
             $scope.$broadcast('scroll.refreshComplete');
         });
-    };
-
-    $scope.gotoActivity = function() {
-        if ($scope.grade.link) {
-            $mmContentLinksHelper.handleLink($scope.grade.link).then(function(treated) {
-                if (!treated) {
-                    $log.debug('Link not being handled ' + $scope.grade.link + ' opening in browser...');
-                    $mmUtil.openInBrowser($scope.grade.link);
-                }
-            });
-        }
     };
 
     $scope.refreshGrade = function() {

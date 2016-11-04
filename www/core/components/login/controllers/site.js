@@ -41,7 +41,7 @@ angular.module('mm.core.login')
         if (sitedata) {
             // It's a demo site.
             $mmSitesManager.getUserToken(sitedata.url, sitedata.username, sitedata.password).then(function(data) {
-                $mmSitesManager.newSite(data.siteurl, data.token).then(function() {
+                $mmSitesManager.newSite(data.siteurl, data.token, data.privatetoken).then(function() {
                     $ionicHistory.nextViewOptions({disableBack: true});
                     return $mmLoginHelper.goToSiteInitialPage();
                 }, function(error) {

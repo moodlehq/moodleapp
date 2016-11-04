@@ -27,7 +27,7 @@ angular.module('mm.core')
  * @param {Mixed} [width=100%]  Width of the iframe. If not defined, use 100%.
  * @param {Mixed} [height=100%] Height of the iframe. If not defined, use 100%.
  */
-.directive('mmIframe', function($mmUtil, $mmText) {
+.directive('mmIframe', function($mmUtil, $mmText, $mmSite) {
 
     var errorShownTime = 0,
         tags = ['iframe', 'frame', 'object', 'embed'];
@@ -130,7 +130,11 @@ angular.module('mm.core')
                         // If the link's already prevented by SCORM JS then we won't open it in browser.
                         if (!e.defaultPrevented) {
                             e.preventDefault();
-                            $mmUtil.openInBrowser(href);
+                            if (!$mmSite.isLoggedIn()) {
+                                $mmUtil.openInBrowser(href);
+                            } else {
+                                $mmSite.openInBrowserWithAutoLoginIfSameSite(href);
+                            }
                         }
                     });
                 } else if (el.target == '_parent' || el.target == '_top' || el.target == '_blank') {
@@ -139,7 +143,11 @@ angular.module('mm.core')
                         // If the link's already prevented by SCORM JS then we won't open it in InAppBrowser.
                         if (!e.defaultPrevented) {
                             e.preventDefault();
-                            $mmUtil.openInApp(href);
+                            if (!$mmSite.isLoggedIn()) {
+                                $mmUtil.openInApp(href);
+                            } else {
+                                $mmSite.openInAppWithAutoLoginIfSameSite(href);
+                            }
                         }
                     });
                 } else if (ionic.Platform.isIOS() && (!el.target || el.target == '_self')) {

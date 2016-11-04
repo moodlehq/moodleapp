@@ -21,7 +21,7 @@ angular.module('mm.core.course')
  * @ngdoc service
  * @name $mmCourseContentHandler
  */
-.factory('$mmCourseContentHandler', function($mmCourse, $mmUtil) {
+.factory('$mmCourseContentHandler', function($mmCourse, $mmSite) {
     return {
         getController: function(module) {
             return function($scope, $state) {
@@ -40,9 +40,9 @@ angular.module('mm.core.course')
                         icon: 'ion-share',
                         label: 'mm.core.openinbrowser',
                         action: function(e) {
-                            $mmUtil.openInBrowser(module.url);
                             e.preventDefault();
                             e.stopPropagation();
+                            $mmSite.openInBrowserWithAutoLoginIfSameSite(module.url);
                         }
                     }];
                 }

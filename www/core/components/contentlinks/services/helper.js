@@ -309,7 +309,7 @@ angular.module('mm.core.contentlinks')
                                     gotoReview(url, params, courseId, siteId);
                                 } else {
                                     // Not current user and no gotoReview function specified, open it in browser.
-                                    $mmUtil.openInBrowser(url);
+                                    return site.openInBrowserWithAutoLogin(url);
                                 }
                             }).finally(function() {
                                 modal.dismiss();

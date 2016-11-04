@@ -121,7 +121,7 @@ angular.module('mm.core.login')
 
         // Start the authentication process.
         return $mmSitesManager.getUserToken(siteurl, username, password).then(function(data) {
-            return $mmSitesManager.newSite(data.siteurl, data.token).then(function() {
+            return $mmSitesManager.newSite(data.siteurl, data.token, data.privatetoken).then(function() {
                 delete $scope.credentials; // Delete username and password from the scope.
                 $ionicHistory.nextViewOptions({disableBack: true});
 

@@ -171,6 +171,7 @@ angular.module('mm.core')
  * @param {Function} [action]              Javascript action to be taken on click. Only works if iconAction is set and is not an spinner.
  * @param {String}   [href]                Link to go if no action provided.
  * @param {Boolean}  [captureLink=false]   If the link needs to be captured by the app.
+ * @param {Boolean}  [autoLogin=check]     If the link needs to be opened using auto-login. See mmLink.
  * @param {Boolean}  [closeOnClick=true]   If close the popover when clicked. Only works if action or href is provided.
  * @param {Boolean}  [closeWhenDone=false] Close popover when action is done. Only if action is supplied and closeOnClick=false.
  * @param {Number}   [priority]            Used to sort items. The highest priority, the highest position.
@@ -226,6 +227,7 @@ angular.module('mm.core')
             action: '&?',
             href: '=?',
             captureLink: '=?',
+            autoLogin: '=?',
             closeOnClick: '=?',
             closeWhenDone: '=?',
             priority: '=?',
@@ -248,6 +250,7 @@ angular.module('mm.core')
 
             // Navigation help if href provided.
             scope.captureLink = scope.href && scope.captureLink ? scope.captureLink : "false";
+            scope.autoLogin = scope.autoLogin || 'check';
 
             if (CtxtMenuCtrl.shouldMerge() && $ionicPlatform.isTablet()) {
                 // Item should be merged with an outer context-menu in tablet view.
