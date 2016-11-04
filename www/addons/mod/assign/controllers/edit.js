@@ -137,7 +137,7 @@ angular.module('mm.addons.mod_assign')
         var modal,
             inputData = getInputData();
 
-        if ($scope.assign.requiresubmissionstatement && !inputData.submissionstatement) {
+        if ($scope.submissionStatement && !inputData.submissionstatement) {
             $mmUtil.showErrorModal('mma.mod_assign.acceptsubmissionstatement', true);
             return $q.reject();
         }
