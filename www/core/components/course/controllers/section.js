@@ -111,10 +111,12 @@ angular.module('mm.core.course')
                     $scope.sections = sections;
                     $scope.hasContent = hasContent;
 
-                    // Add log in Moodle.
-                    $mmSite.write('core_course_view_course', {
-                        courseid: courseId
-                    });
+                    // Add log in Moodle. The 'section' attribute was added in Moodle 3.2 so maybe it isn't available.
+                    if (sectionId > 0 && sections[0] && typeof sections[0].section != 'undefined') {
+                        $mmCourse.logView(courseId, sections[0].section);
+                    } else {
+                        $mmCourse.logView(courseId);
+                    }
                 }, function(error) {
                     if (error) {
                         $mmUtil.showErrorModal(error);

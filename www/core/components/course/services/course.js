@@ -552,6 +552,31 @@ angular.module('mm.core.course')
     };
 
     /**
+     * Report a course (and section) as being viewed.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#logView
+     * @param {Number} courseId  Course ID.
+     * @param {Number} [section] Section number.
+     * @return {Promise}         Promise resolved when the WS call is successful.
+     */
+    self.logView = function(courseId, section) {
+        var params = {
+            courseid: courseId
+        };
+        if (typeof section != 'undefined') {
+            params.sectionnumber = section;
+        }
+
+        return $mmSite.write('core_course_view_course', params).then(function(response) {
+            if (!response.status) {
+                return $q.reject();
+            }
+        });
+    };
+
+    /**
      * Translate a module name to current language.
      *
      * @module mm.core.course
