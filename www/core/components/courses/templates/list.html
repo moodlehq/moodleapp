@@ -3,11 +3,19 @@
         <a ui-sref="site.mm_searchcourses" ng-if="searchEnabled" class="button button-icon ion-ios-search-strong"></a>
     </ion-nav-buttons>
     <ion-content padding="true" mm-state-class>
-        <button ng-click="browseCategory()">Browse Categories</button>
-        <div ng-if="showBrowseCategoryInfo == true">
-            <button ng-click="showCategory(uniqueCategory)" ng-repeat="uniqueCategory in distinct">{{uniqueCategory}}</button>
-            <button ng-click="showAllCourses()">Show All Courses</button>
-        </div>
+        <ul class="list">
+            <li class="item item-input item-select">
+                <div class="input-label" id="mm-courses-categorylabel">
+                    {{ 'mm.courses.coursecategory' | translate }}
+                </div>
+                <select ng-model="selectedCategory"
+                        ng-options='c.categoryID as c.categoryName for c in distinct'
+                        ng-change='showCategory(selectedCategory)'
+                        aria-labelledby="mm-courses-categorylabel"
+                        mm-ios-select-fix>
+                </select>
+            </li>
+        </ul>
         <!-- ion-refresher needs to be direct child of ion-content to work with native scrolling -->
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="coursesLoaded" on-refresh="refreshCourses()">
         </ion-refresher>

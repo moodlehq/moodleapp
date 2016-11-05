@@ -29,7 +29,8 @@ angular.module('mm.core.courses')
     $scope.filter = {};
     $scope.courses;
     $scope.showSortCategoryInfo = false;
-    $scope.distinct = [];
+    $scope.selectedCategory = 0;
+    $scope.distinct = [{'categoryID':0, 'categoryName':"All Categories"}];
     $scope.unique = {};
     $scope.browsedCourses = [];
     $scope.allCourses = [];
@@ -43,6 +44,8 @@ angular.module('mm.core.courses')
                 course._handlers = $mmCoursesDelegate.getNavHandlersFor(course.id, refresh);
             });
             $scope.filter.filterText = ''; // Filter value MUST be set after courses are shown.
+
+            $scope.browseCategory();
         }, function(error) {
             if (typeof error != 'undefined' && error !== '') {
                 $mmUtil.showErrorModal(error);
@@ -69,6 +72,7 @@ angular.module('mm.core.courses')
             fetchCourses();
         }
     });
+
     $scope.browseCategory = function(){
         if($scope.showBrowseCategoryInfo == true){
             $scope.showBrowseCategoryInfo = false;
@@ -76,31 +80,41 @@ angular.module('mm.core.courses')
             $scope.showBrowseCategoryInfo = true;
         }
 
-        console.log($scope.allCourses);
-
         for( var i in $scope.allCourses ){
             if( typeof($scope.unique[$scope.allCourses[i].category]) == "undefined"){
-                $scope.distinct.push($scope.allCourses[i].category);
+                $mmCourses.search($scope.allCourses[i].shortname).then(function(response) {
+                    //List will always contain one object, therefore we get the first course object from list
+                    var arr = {};
+                    arr['categoryID'] = response.courses[0].categoryid;
+                    arr['categoryName'] = response.courses[0].categoryname;
+                    $scope.distinct.push(arr);
+                }).catch(function(message) {
+                    $scope.canLoadMore = false;
+                    if (message) {
+                        $mmUtil.showErrorModal(message);
+                    } else {
+                        $mmUtil.showErrorModal('mm.courses.errorsearching', true);
+                    }
+                    return $q.reject();
+                });
+
             }
             $scope.unique[$scope.allCourses[i].category] = 0;
         }
-        console.log($scope.distinct);
     };
-    $scope.showCategory = function(uniqueCategory){
-        $scope.browsedCourses = [];
-        console.log("Category id: ", uniqueCategory);
 
+    $scope.showCategory = function(uniqueCategory){
+        if(uniqueCategory == 0) {
+            $scope.courses = $scope.allCourses;
+            return;
+        }
+        $scope.browsedCourses = [];
 
         for( var i in $scope.allCourses){
             if($scope.allCourses[i].category == uniqueCategory){
               $scope.browsedCourses.push($scope.allCourses[i]);
             }
         }
-        console.log($scope.browsedCourses);
         $scope.courses = $scope.browsedCourses;
     }
-    $scope.showAllCourses = function(){
-        $scope.courses = $scope.allCourses;
-    }
-
 });

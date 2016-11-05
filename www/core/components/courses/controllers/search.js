@@ -41,7 +41,6 @@ angular.module('mm.core.courses')
                 $scope.courses = $scope.courses.concat(response.courses);
             }
             $scope.total = response.total;
-            console.log($scope.courses);
 
             page++;
             $scope.canLoadMore = $scope.courses.length < $scope.total;
