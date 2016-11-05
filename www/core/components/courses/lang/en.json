@@ -16,5 +16,6 @@
 	"searchcourses": "Search courses",
 	"searchcoursesadvice": "You can use the search courses button to access as guest or enrol yourself in courses that allow it.",
 	"selfenrolment": "Self-enrolment",
-	"totalcoursesearchresults": "Total courses: {{$a}}"
+	"totalcoursesearchresults": "Total courses: {{$a}}",
+	"coursecategory": "Course Category"
 }
