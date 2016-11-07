@@ -46,13 +46,11 @@ angular.module('mm.addons.mod_assign')
         $scope.submitSupported = enabled;
     });
 
-    $scope.gotoSubmission = function(submit, blind) {
-        if ($ionicPlatform.isTablet()) {
-            // Show split view on tablet.
-            $state.go('site.mod_assign-submission-list', {sid: submit, courseid: courseId, moduleid: module.id,
-                modulename: module.name});
-        } else {
-            $state.go('site.mod_assign-submission', {submitid: submit, blindid: blind, courseid: courseId, moduleid: module.id});
+    $scope.gotoSubmissionList = function(status, count) {
+        if (typeof status == 'undefined') {
+            $state.go('site.mod_assign-submission-list', {courseid: courseId, moduleid: module.id, modulename: module.name});
+        } else if (count > 0) {
+            $state.go('site.mod_assign-submission-list', {status: status, courseid: courseId, moduleid: module.id, modulename: module.name});
         }
     };
 
@@ -68,7 +66,6 @@ angular.module('mm.addons.mod_assign')
             $scope.title = assign.name || $scope.title;
             $scope.description = assign.intro || $scope.description;
             $scope.assign = assign;
-            $scope.haveAllParticipants = false;
 
             if (sync) {
                 // Try to synchronize the assign.
@@ -87,21 +84,11 @@ angular.module('mm.addons.mod_assign')
 
             // Get assignment submissions.
             return $mmaModAssign.getSubmissions(assign.id).then(function(data) {
-                var promises = [],
-                    time = parseInt(Date.now() / 1000);
+                var time = parseInt(Date.now() / 1000);
 
                 $scope.canviewsubmissions = data.canviewsubmissions;
                 if (data.canviewsubmissions) {
                     // We want to show the user data on each submission.
-                    var blindMarking = assign.blindmarking && !assign.revealidentities,
-                        participants = false;
-
-                    promises.push($mmaModAssign.getSubmissionStatus(assign.id).then(function(response) {
-                        $scope.summary = response.gradingsummary;
-                    }).catch(function() {
-                        // Fail silently (WS is not available, fallback).
-                        return $q.when();
-                    }));
 
                     if (assign.duedate > 0) {
                         if (assign.duedate - time <= 0) {
@@ -119,28 +106,12 @@ angular.module('mm.addons.mod_assign')
                         }
                     }
 
-                    promises.push($mmaModAssign.listParticipants(assign.id).then(function(p) {
-                        participants = p;
-                        $scope.haveAllParticipants = true;
+                    return $mmaModAssign.getSubmissionStatus(assign.id).then(function(response) {
+                        $scope.summary = response.gradingsummary;
                     }).catch(function() {
-                        // Silently fail!
+                        // Fail silently (WS is not available, fallback).
                         return $q.when();
-                    }).finally(function() {
-                        return $mmaModAssign.getSubmissionsUserData(data.submissions, courseId, assign.id, blindMarking,
-                                participants).then(function(submissions) {
-                            angular.forEach(submissions, function(submission) {
-                                submission.statusTranslated = $translate.instant('mma.mod_assign.submissionstatus_' +
-                                    submission.status);
-                                submission.statusClass = $mmaModAssign.getSubmissionStatusClass(submission.status);
-                                submission.gradingStatusTranslationId =
-                                    $mmaModAssign.getSubmissionGradingStatusTranslationId(submission.gradingstatus);
-                                submission.gradingClass = $mmaModAssign.getSubmissionGradingStatusClass(submission.gradingstatus);
-                            });
-                            $scope.submissions = submissions;
-                        });
-                    }));
-
-                    return $q.all(promises);
+                    });
                 }
             });
         }).catch(function(message) {
@@ -163,8 +134,9 @@ angular.module('mm.addons.mod_assign')
         var promises = [$mmaModAssign.invalidateAssignmentData(courseId)];
         if ($scope.assign) {
             promises.push($mmaModAssign.invalidateAllSubmissionData($scope.assign.id));
-            promises.push($mmaModAssign.invalidateAssignmentUserMappingsData($scope.assign.id));
-            promises.push($mmaModAssign.invalidateListParticipantsData($scope.assign.id));
+            if (data.canviewsubmissions) {
+                promises.push($mmaModAssign.invalidateSubmissionStatusData($scope.assign.id));
+            }
         }
 
         return $q.all(promises).finally(function() {

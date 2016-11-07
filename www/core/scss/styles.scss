@@ -270,6 +270,25 @@ em {
     }
 }
 
+/* Show buttons as tabs */
+.tabs.tabs-free {
+  position: initial;
+  background: transparent;
+  border: 0;
+  margin-bottom: 0;
+
+  .tab-item {
+    margin-top: -1px;
+    max-width: initial;
+
+    &.active, &.activated {
+      margin-top: -1px;
+      border-top-width: 0;
+      border-bottom-width: 3px;
+    }
+  }
+}
+
 .user-with-avatar {
   position: relative;
   z-index: 2;

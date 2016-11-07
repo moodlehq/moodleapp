@@ -31,6 +31,7 @@
     "datastoredoffline": "Data stored in the device because it couldn't be sent. It will automatically be sent later.",
     "day": "day",
     "days": "days",
+    "decsep": ".",
     "delete": "Delete",
     "deleting": "Deleting",
     "description": "Description",

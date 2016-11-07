@@ -39,6 +39,19 @@ angular.module('mm.addons.grades')
     }
 
     /**
+     * Get cache key for grade table data WS calls.
+     *
+     * @param {Number} courseId     ID of the course to get the grades from.
+     * @param {Number} userId       ID of the user to get the grades from.
+     * @param {Number} [groupId]    ID of the group to get the grades from. Default: 0.
+     * @return {String}         Cache key.
+     */
+    function getGradeItemsCacheKey(courseId, userId, groupId) {
+        groupId = groupId || 0;
+        return 'mmaGrades:items:' + courseId + ':' + userId + ':' + groupId;
+    }
+
+    /**
      * Invalidates grade table data WS calls.
      *
      * @module mm.addons.grades
@@ -50,9 +63,26 @@ angular.module('mm.addons.grades')
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
     self.invalidateGradesTableData = function(courseId, userId, siteId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getGradesTableCacheKey(courseId, userId));
+        });
+    };
+
+    /**
+     * Invalidates grade items data WS calls.
+     *
+     * @module mm.addons.grades
+     * @ngdoc method
+     * @name $mmaGrades#invalidateGradeItemsData
+     * @param {Number}  courseId   Course ID.
+     * @param {Number}  userId     User ID.
+     * @param {Number}  [groupId]  Group ID. Default 0.
+     * @param {Number}  [siteId]   Site id (empty for current site).
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateGradeItemsData = function(courseId, userId, groupId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getGradeItemsCacheKey(courseId, userId, groupId));
         });
     };
 
@@ -66,8 +96,6 @@ angular.module('mm.addons.grades')
      * @return {Boolean}         True if plugin is enabled, false otherwise.
      */
     self.isPluginEnabled = function(siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.wsAvailable('gradereport_user_get_grades_table');
         });
@@ -133,8 +161,6 @@ angular.module('mm.addons.grades')
      * @return {Promise}        Promise to be resolved when the grades table is retrieved.
      */
     self.getGradesTable = function(courseId, userId, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
 
             $log.debug('Get grades for course ' + courseId + ' and user ' + userId);
@@ -147,12 +173,76 @@ angular.module('mm.addons.grades')
                     cacheKey: getGradesTableCacheKey(courseId, userId)
                 };
 
-            return $mmSite.read('gradereport_user_get_grades_table', data, preSets).then(function (table) {
+            return site.read('gradereport_user_get_grades_table', data, preSets).then(function (table) {
                 if (table && table.tables && table.tables[0]) {
                     return table.tables[0];
                 }
                 return $q.reject();
             });
+        });
+    };
+
+    /**
+     * Get the grade items for a certain course.
+     *
+     * @module mm.addons.grades
+     * @ngdoc method
+     * @name $mmaGrades#getGradeItems
+     * @param {Number} courseId     ID of the course to get the grades from.
+     * @param {Number} userId       ID of the user to get the grades from.
+     * @param {Number} [groupId]    ID of the group to get the grades from. Default 0.
+     * @param {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}            Promise to be resolved when the grades are retrieved.
+     */
+    self.getGradeItems = function(courseId, userId, groupId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            $log.debug('Get grades for course ' + courseId + ', user ' + userId);
+
+            var data = {
+                    courseid : courseId,
+                    userid   : userId,
+                    groupid  : groupId || 0
+                },
+                preSets = {
+                    cacheKey: getGradeItemsCacheKey(courseId, userId, groupId)
+                };
+
+            return site.read('gradereport_user_get_grade_items', data, preSets).then(function(grades) {
+                if (grades && grades.usergrades && grades.usergrades[0]) {
+                    return grades.usergrades[0];
+                }
+                return $q.reject();
+            });
+        });
+    };
+
+    /**
+     * Get the grade items for a certain module. Keep in mind that may have more than one item to include outcomes and scales.
+     *
+     * @module mm.addons.grades
+     * @ngdoc method
+     * @name $mmaGrades#getGradeModuleItems
+     * @param {Number} courseId     ID of the course to get the grades from.
+     * @param {Number} moduleId     ID of the module to get the grades from.
+     * @param {Number} userId       ID of the user to get the grades from.
+     * @param {Number} [groupId]    ID of the group to get the grades from.
+     * @param {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}            Promise to be resolved when the grades are retrieved.
+     */
+    self.getGradeModuleItems = function(courseId, moduleId, userId, groupId, siteId) {
+        return self.getGradeItems(courseId, userId, groupId, siteId).then(function(grades) {
+            if (grades && grades.gradeitems) {
+                var items = [];
+                for (var x in grades.gradeitems) {
+                    if (grades.gradeitems[x].cmid == moduleId) {
+                        items.push(grades.gradeitems[x]);
+                    }
+                }
+                if (items.length > 0) {
+                    return items;
+                }
+            }
+            return $q.reject();
         });
     };
 

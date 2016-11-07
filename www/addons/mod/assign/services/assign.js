@@ -183,7 +183,6 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}        Promise resolved with the assignment.
      */
     self.getAssignment = function(courseId, cmId, siteId) {
-        siteId = siteId || $mmSite.getId();
         return getAssignment(siteId, courseId, 'cmid', cmId);
     };
 
@@ -199,7 +198,6 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}        Promise resolved with the assignment.
      */
     self.getAssignmentById = function(courseId, id, siteId) {
-        siteId = siteId || $mmSite.getId();
         return getAssignment(siteId, courseId, 'id', id);
     };
 
@@ -215,8 +213,6 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}          Promise resolved with the user blind id.
      */
     self.getAssignmentUserMappings = function(assignmentId, userId, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     "assignmentids": [assignmentId]
@@ -326,8 +322,6 @@ angular.module('mm.addons.mod_assign')
      *                                    - submissions: Array of submissions.
      */
     self.getSubmissions = function(assignId, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     "assignmentids": [assignId]
@@ -486,8 +480,6 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}            Promise resolved with the list of participants and summary of submissions.
      */
     self.listParticipants = function(assignId, groupId, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             if (!site.wsAvailable('mod_assign_list_participants')) {
                 // Silently fail if is not available. (needs Moodle version >= 3.2)
@@ -524,8 +516,6 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}              Promise always resolved with the user submission status.
      */
     self.getSubmissionStatus = function(assignId, userId, isBlind, filter, ignoreCache, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         if (typeof filter == 'undefined') {
             filter = true;
         }
@@ -575,7 +565,6 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
     self.invalidateAssignmentData = function(courseId, siteId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getAssignmentCacheKey(courseId));
         });
@@ -592,7 +581,6 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}            Promise resolved when the data is invalidated.
      */
     self.invalidateAssignmentUserMappingsData = function(assignmentId, siteId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getAssignmentUserMappingsCacheKey(assignmentId));
         });
@@ -609,7 +597,6 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
     self.invalidateSubmissionData = function(assignId, siteId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getSubmissionsCacheKey(assignId));
         });
@@ -626,7 +613,6 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
     self.invalidateAllSubmissionData = function(assignId, siteId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKeyStartingWith(getSubmissionsCacheKey(assignId));
         });
@@ -645,7 +631,6 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
     self.invalidateSubmissionStatusData = function(assignId, userId, isBlind, siteId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getSubmissionStatusCacheKey(assignId, userId, isBlind));
         });
@@ -662,7 +647,6 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
     self.invalidateListParticipantsData = function(assignId, siteId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKeyStartingWith(listParticipantsPrefixCacheKey(assignId));
         });
@@ -722,10 +706,23 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}         Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
     self.isPluginEnabled = function(siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.wsAvailable('mod_assign_get_assignments') && site.wsAvailable('mod_assign_get_submissions');
+        });
+    };
+
+    /**
+     * Check if assignments grading is enabled in a certain site.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssign#isGradingEnabled
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with true if grading is enabled, rejected or resolved with false otherwise.
+     */
+    self.isGradingEnabled = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.wsAvailable('mod_assign_submit_grading_form') || site.wsAvailable('mod_assign_save_grade');
         });
     };
 
@@ -752,8 +749,6 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}         Promise resolved with true if enabled, false otherwise.
      */
     self.isSaveAndSubmitSupported = function(siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             // Even if save & submit WS were introduced in 2.6, we'll also check get_submission_status WS
             // to make sure we have all the WS to provide the whole submit experience.
@@ -835,8 +830,6 @@ angular.module('mm.addons.mod_assign')
      */
     self.logSubmissionView = function(assignId, siteId) {
         if (assignId) {
-            siteId = siteId || $mmSite.getId();
-
             return $mmSitesManager.getSite(siteId).then(function(site) {
                 var params = {
                     assignid: assignId
@@ -859,8 +852,6 @@ angular.module('mm.addons.mod_assign')
      */
     self.logGradingView = function(assignId, siteId) {
         if (assignId) {
-            siteId = siteId || $mmSite.getId();
-
             return $mmSitesManager.getSite(siteId).then(function(site) {
                 var params = {
                     assignid: assignId
@@ -905,6 +896,9 @@ angular.module('mm.addons.mod_assign')
      * @return {String}           The class name.
      */
     self.getSubmissionGradingStatusClass = function(status) {
+        if (!status) {
+            return '';
+        }
         if (status == mmaModAssignGradingStatusGraded || status == mmaModMarkingWorkflowStateReleased) {
             return 'badge-balanced';
         }
@@ -921,6 +915,9 @@ angular.module('mm.addons.mod_assign')
      * @return {String}           The status translation identifier.
      */
     self.getSubmissionGradingStatusTranslationId = function(status) {
+        if (!status) {
+            return false;
+        }
         if (status == mmaModAssignGradingStatusGraded || status == mmaModAssignGradingStatusNotGraded) {
             return 'mma.mod_assign.' + status;
         }
@@ -982,8 +979,6 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}             Promise resolved when saved, rejected otherwise.
      */
     self.saveSubmissionOnline = function(assignmentId, pluginData, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                 assignmentid: assignmentId,
@@ -1060,8 +1055,6 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}                 Promise resolved when submitted, rejected otherwise.
      */
     self.submitForGradingOnline = function(assignmentId, acceptStatement, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                 assignmentid: assignmentId,
@@ -1083,6 +1076,96 @@ angular.module('mm.addons.mod_assign')
             });
         });
     };
+
+    /**
+     * Submit the grading for the current user and assignment. It will use old or new WS depending on availability.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssign#submitGradingForm
+     * @param  {Number}  assignmentId   Assign ID.
+     * @param  {Number}  userId         User ID.
+     * @param  {Number}  grade          Grade to submit.
+     * @param  {Number}  attemptNumber  Number of the attempt number being graded.
+     * @param  {Number}  addAttempt     Admit the user to attempt again.
+     * @param  {String}  workflowState  Next workflow State.
+     * @param  {Boolean} applyToAll     If it's a team submission, if the grade applies to all group members.
+     * @param  {String}  [siteId]       Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved when submitted, rejected otherwise.
+     */
+    self.submitGradingForm = function(assignmentId, userId, grade, attemptNumber, addAttempt, workflowState, applyToAll, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            grade = $mmUtil.unformatFloat(grade);
+            if (site.wsAvailable('mod_assign_submit_grading_form')) {
+                return submitGradingForm(assignmentId, userId, grade, attemptNumber, addAttempt, workflowState, applyToAll, site);
+            } else if(site.wsAvailable('mod_assign_save_grade')) {
+                return saveGrade(assignmentId, userId, grade, attemptNumber, addAttempt, workflowState, applyToAll, site);
+            } else {
+                return $q.reject();
+            }
+        });
+    };
+
+    // Legacy grading WS for Moodle < 3.2 when mod_assign_submit_grading_form is not avalaible.
+    // See params on $mmaModAssign#submitGradingForm
+    function saveGrade(assignmentId, userId, grade, attemptNumber, addAttempt, workflowState, applyToAll, site) {
+        var params = {
+                assignmentid: assignmentId,
+                userid: userId ? userId : site.getUserId(),
+                grade: grade,
+                attemptnumber: attemptNumber,
+                addattempt: addAttempt ? 1 : 0,
+                workflowstate: workflowState,
+                applytoall: applyToAll ? 1 : 0
+            },
+            preSets = {
+                responseExpected: false
+            };
+
+        return site.write('mod_assign_save_grade', params, preSets).catch(function(error) {
+            return $q.reject({
+                error: error,
+                wserror: $mmUtil.isWebServiceError(error)
+            });
+        });
+    }
+
+    // New grading WS for Moodle >= 3.2.
+    // See params on $mmaModAssign#submitGradingForm
+    function submitGradingForm(assignmentId, userId, grade, attemptNumber, addAttempt, workflowState, applyToAll, site) {
+        var jsondata, serialized, params;
+
+        jsondata = {
+                grade: grade,
+                attemptnumber: attemptNumber,
+                addattempt: addAttempt ? 1 : 0,
+                workflowstate: workflowState,
+                applytoall: applyToAll ? 1 : 0
+            };
+
+        serialized = $mmUtil.param(jsondata);
+
+        params = {
+            assignmentid: assignmentId,
+            userid: userId || site.getUserId(),
+            jsonformdata: JSON.stringify(serialized)
+        };
+
+        return site.write('mod_assign_submit_grading_form', params).catch(function(error) {
+            return $q.reject({
+                error: error,
+                wserror: $mmUtil.isWebServiceError(error)
+            });
+        }).then(function(warnings) {
+            if (warnings && warnings.length) {
+                // The WebService returned warnings, reject.
+                return $q.reject({
+                    wserror: true,
+                    error: warnings[0].message
+                });
+            }
+        });
+    }
 
     return self;
 });

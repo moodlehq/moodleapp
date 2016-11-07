@@ -19,6 +19,9 @@ $button-default-border: $positive;
 $button-default-active-bg: $positive;
 $button-default-active-border: $positive;
 
+$tabs-off-opacity:                0.6;
+$tabs-striped-off-opacity:        $tabs-off-opacity;
+
 // The path to the font icons.
 $ionicons-font-path: "../lib/ionic/release/fonts" !default;
 
@@ -46,6 +49,11 @@ $button-default-active-border: $positive;
   &.activated, &.active  {
     border-color: $button-default-active-border;
   }
+}
+
+.button.button-light, .button.button-stable, .button.button-calm, .button.button-assertive, .button.button-balanced,
+.button.button-energized, .button.button-royal, .button.button-dark {
+  color: $button-default-text;
 }
 
 .button-clear, .button.button-clear {
