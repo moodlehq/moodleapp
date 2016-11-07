@@ -29,12 +29,12 @@ angular.module('mm.core.courses')
         guestWSAvailable = $mmCourses.isGuestWSAvailable(),
         isGuestEnabled = false,
         guestInstanceId,
-        handlersShouldBeShown = true,
         enrollmentMethods;
 
     $scope.course = course;
     $scope.title = course.fullname;
     $scope.component = mmCoursesSearchComponent;
+    $scope.handlersShouldBeShown = true;
     $scope.selfEnrolInstances = [];
     $scope.enroldata = {
         password: ''
@@ -42,7 +42,7 @@ angular.module('mm.core.courses')
 
     // Function to determine if handlers are being loaded.
     $scope.loadingHandlers = function() {
-        return handlersShouldBeShown && !$mmCoursesDelegate.areNavHandlersLoadedFor(course.id);
+        return $scope.handlersShouldBeShown && !$mmCoursesDelegate.areNavHandlersLoadedFor(course.id);
     };
 
     // Convenience function to get course. We use this to determine if a user can see the course or not.
@@ -91,11 +91,11 @@ angular.module('mm.core.courses')
                         course._handlers = $mmCoursesDelegate.getNavHandlersForGuest(course.id, refresh);
                     } else {
                         course._handlers = [];
-                        handlersShouldBeShown = false;
+                        $scope.handlersShouldBeShown = false;
                     }
                 }).catch(function() {
                     course._handlers = [];
-                    handlersShouldBeShown = false;
+                    $scope.handlersShouldBeShown = false;
                 });
             });
         });

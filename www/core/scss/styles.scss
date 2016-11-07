@@ -667,6 +667,14 @@ mm-format-text {
   padding-right: 0;
 }
 
+.item.mm-course-handlers {
+  padding: 6px 2px;
+
+  .item {
+    border: 0;
+  }
+}
+
 /**
  * This CSS uses adjacent selectors instead of general sibling (~) selectors
  * for ion radio that are broken in iOS 9 UIWebView.
