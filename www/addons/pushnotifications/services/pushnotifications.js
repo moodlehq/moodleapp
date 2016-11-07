@@ -22,11 +22,72 @@ angular.module('mm.addons.pushnotifications')
  * @name $mmaPushNotifications
  */
 .factory('$mmaPushNotifications', function($mmSite, $log, $cordovaPushV5, $mmText, $q, $cordovaDevice, $mmUtil, $mmSitesManager,
-            mmCoreConfigConstants, $mmApp, $mmLocalNotifications, $mmPushNotificationsDelegate, mmaPushNotificationsComponent) {
+            mmCoreConfigConstants, $mmApp, $mmLocalNotifications, $mmPushNotificationsDelegate, mmaPushNotificationsComponent,
+            $translate) {
     $log = $log.getInstance('$mmaPushNotifications');
 
     var self = {},
         pushID;
+
+    self.MESSAGE_CATEGORY       = 'message';
+    self.NOTIFICATION_CATEGORY  = 'notification';
+
+    /**
+     * Get message and notification preferences.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmaPushNotifications#getAllPreferences
+     * @param  {String} [siteid] Site ID. If not defined, use current site.
+     * @return {Promise}         Promise resolved with all the preferences.
+     */
+    self.getAllPreferences = function(siteId) {
+        var promises = [],
+            messageData,
+            notificationData;
+
+        promises.push(self.getMessagePreferences(siteId).then(function(data) {
+            messageData = data;
+        }));
+
+        promises.push(self.getNotificationPreferences(siteId).then(function(data) {
+            notificationData = data;
+        }));
+
+        return $q.all(promises).then(function() {
+            return self.mergePreferences(messageData, notificationData);
+        });
+    };
+
+    /**
+     * Get the cache key for the get message preferences call.
+     *
+     * @return {String} Cache key.
+     */
+    function getMessagePreferencesCacheKey() {
+        return 'mmaPushNotifications:messagePreferences';
+    }
+
+    /**
+     * Get message preferences.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmaPushNotifications#getMessagePreferences
+     * @param  {String} [siteid] Site ID. If not defined, use current site.
+     * @return {Promise}         Promise resolved with the message preferences.
+     */
+    self.getMessagePreferences = function(siteId) {
+        $log.debug('Get message preferences');
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var preSets = {
+                    cacheKey: getMessagePreferencesCacheKey()
+                };
+
+            return site.read('core_message_get_user_message_preferences', {}, preSets);
+        });
+    };
 
     /**
      * Get the cache key for the get notification preferences call.
@@ -47,8 +108,6 @@ angular.module('mm.addons.pushnotifications')
      * @return {Promise}         Promise resolved with the notification preferences.
      */
     self.getNotificationPreferences = function(siteId) {
-        siteId = siteId || $mmSite.getId();
-
         $log.debug('Get notification preferences');
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -56,10 +115,36 @@ angular.module('mm.addons.pushnotifications')
                     cacheKey: getNotificationPreferencesCacheKey()
                 };
 
-            return site.read('core_message_get_user_notification_preferences', {}, preSets).then(function(data) {
-                return data.preferences;
-            });
+            return site.read('core_message_get_user_notification_preferences', {}, preSets);
         });
+    };
+
+    /**
+     * Return the categories with components that have a certain processor.
+     * The categories are created by $mmaPushNotifications#mergePreferences.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmaPushNotifications#getProcessorCategories
+     * @param  {String} processor  Name of the processor to filter.
+     * @param  {Object} categories Categories to filter.
+     * @return {Object}            Filtered categories.
+     */
+    self.getProcessorCategories = function(processor, categories) {
+        var result = {};
+
+        angular.forEach(categories, function(category) {
+            var components = self.getProcessorComponents(processor, category.components);
+            if (components.length) {
+                result[category.name] = {
+                    name: category.name,
+                    displayname: category.displayname,
+                    components: components
+                };
+            }
+        });
+
+        return result;
     };
 
     /**
@@ -120,6 +205,37 @@ angular.module('mm.addons.pushnotifications')
     };
 
     /**
+     * Invalidate message and notification preferences.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmaPushNotifications#invalidateAllPreferences
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when data is invalidated.
+     */
+    self.invalidateAllPreferences = function(siteId) {
+        var promises = [];
+        promises.push(self.invalidateMessagePreferences(siteId));
+        promises.push(self.invalidateNotificationPreferences(siteId));
+        return $q.all(promises);
+    };
+
+    /**
+     * Invalidate get message preferences.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmaPushNotifications#invalidateMessagePreferences
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when data is invalidated.
+     */
+    self.invalidateMessagePreferences = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getMessagePreferencesCacheKey());
+        });
+    };
+
+    /**
      * Invalidate get notification preferences.
      *
      * @module mm.addons.pushnotifications
@@ -129,8 +245,6 @@ angular.module('mm.addons.pushnotifications')
      * @return {Promise}         Promise resolved when data is invalidated.
      */
     self.invalidateNotificationPreferences = function(siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getNotificationPreferencesCacheKey());
         });
@@ -159,7 +273,48 @@ angular.module('mm.addons.pushnotifications')
      * @return {Boolean} True if enabled, false otherwise.
      */
     self.isNotificationPreferencesEnabled = function() {
-        return $mmSite.wsAvailable('core_message_get_user_notification_preferences');
+        return $mmSite.wsAvailable('core_message_get_user_notification_preferences') &&
+                $mmSite.wsAvailable('core_message_get_user_message_preferences');
+    };
+
+    /**
+     * Given the response of getMessagePreferences and getNotificationPreferences, merge their preferences into a single object.
+     * The components will be split into categories.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmaPushNotifications#mergePreferences
+     * @param  {Object} messageData Response of getMessagePreferences.
+     * @param  {Object} notifData   Response of getNotificationPreferences.
+     * @return {Object}             Object with all the notifications.
+     */
+    self.mergePreferences = function(messageData, notifData) {
+        var preferences = {
+                categories: {}
+            },
+            messagePrefs = messageData.preferences,
+            notifPrefs = notifData.preferences;
+
+        preferences.disableall = !!notifPrefs.disableall; // Convert to boolean.
+        preferences.blocknoncontacts = !!messageData.blocknoncontacts;
+        preferences.userid = notifPrefs.userid;
+
+        // Get notif processors since message processors will always be a subset.
+        preferences.processors = notifPrefs.processors;
+
+        // Add the components into categories.
+        preferences.categories[self.MESSAGE_CATEGORY] = {
+            name: self.MESSAGE_CATEGORY,
+            displayname: $translate.instant('mma.pushnotifications.messagepreferences'),
+            components: messagePrefs.components
+        };
+        preferences.categories[self.NOTIFICATION_CATEGORY] = {
+            name: self.NOTIFICATION_CATEGORY,
+            displayname: $translate.instant('mma.pushnotifications.notificationpreferences'),
+            components: notifPrefs.components
+        };
+
+        return preferences;
     };
 
     /**

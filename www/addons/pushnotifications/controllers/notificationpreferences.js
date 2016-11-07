@@ -22,12 +22,12 @@ angular.module('mm.addons.pushnotifications')
  * @name mmaPushNotificationsNotifPreferencesCtrl
  */
 .controller('mmaPushNotificationsNotifPreferencesCtrl', function($scope, $mmaPushNotifications, $mmUtil, $ionicPlatform, $mmUser,
-            $mmaPushNotificationsPreferencesDelegate) {
+            $mmaPushNotificationsPreferencesDelegate, $q) {
 
     $scope.isTablet = $ionicPlatform.isTablet();
 
     function fetchPreferences() {
-        return $mmaPushNotifications.getNotificationPreferences().then(function(preferences) {
+        return $mmaPushNotifications.getAllPreferences().then(function(preferences) {
             if (!$scope.currentProcessor) {
                 initCurrentProcessor(preferences.processors);
             }
@@ -37,9 +37,8 @@ angular.module('mm.addons.pushnotifications')
                 return $q.reject('No processor found');
             }
 
-            preferences.disableall = !!preferences.disableall; // Convert to boolean.
             $scope.preferences = preferences;
-            $scope.components = $mmaPushNotifications.getProcessorComponents($scope.currentProcessor.name, preferences.components);
+            $scope.categories = $mmaPushNotifications.getProcessorCategories($scope.currentProcessor.name, preferences.categories);
             $scope.currentProcessor.supported =
                         $mmaPushNotificationsPreferencesDelegate.hasPreferenceHandler($scope.currentProcessor.name);
         }).catch(function(message) {
@@ -71,7 +70,7 @@ angular.module('mm.addons.pushnotifications')
 
     // Refresh the list of preferences.
     $scope.refreshPreferences = function() {
-        $mmaPushNotifications.invalidateNotificationPreferences().finally(function() {
+        $mmaPushNotifications.invalidateAllPreferences().finally(function() {
             fetchPreferences().finally(function() {
                 $scope.$broadcast('scroll.refreshComplete');
             });
@@ -81,9 +80,8 @@ angular.module('mm.addons.pushnotifications')
     // Change the current processor.
     $scope.changeProcessor = function(processor) {
         $scope.currentProcessor = processor;
-        $scope.components = $mmaPushNotifications.getProcessorComponents(processor.name, $scope.preferences.components);
-        $scope.currentProcessor.supported =
-                    $mmaPushNotificationsPreferencesDelegate.hasPreferenceHandler($scope.currentProcessor.name);
+        $scope.categories = $mmaPushNotifications.getProcessorCategories(processor.name, $scope.preferences.categories);
+        $scope.currentProcessor.supported = $mmaPushNotificationsPreferencesDelegate.hasPreferenceHandler(processor.name);
     };
 
     // Open current processor's extra preferences.
@@ -132,6 +130,18 @@ angular.module('mm.addons.pushnotifications')
             // Show error and revert change.
             $mmUtil.showErrorModal(message);
             $scope.preferences.disableall = !$scope.preferences.disableall;
+        }).finally(function() {
+            modal.dismiss();
+        });
+    };
+
+    // Block non-contacts changed.
+    $scope.blockNonContacts = function(block) {
+        var modal = $mmUtil.showModalLoading('mm.core.sending', true);
+        $mmUser.updateUserPreference('message_blocknoncontacts', block ? 1 : 0).catch(function(message) {
+            // Show error and revert change.
+            $mmUtil.showErrorModal(message);
+            $scope.preferences.blocknoncontacts = !$scope.preferences.blocknoncontacts;
         }).finally(function() {
             modal.dismiss();
         });
