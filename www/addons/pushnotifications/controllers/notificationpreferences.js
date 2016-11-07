@@ -22,7 +22,9 @@ angular.module('mm.addons.pushnotifications')
  * @name mmaPushNotificationsNotifPreferencesCtrl
  */
 .controller('mmaPushNotificationsNotifPreferencesCtrl', function($scope, $mmaPushNotifications, $mmUtil, $ionicPlatform, $mmUser,
-            $mmaPushNotificationsPreferencesDelegate, $q) {
+            $mmaPushNotificationsPreferencesDelegate, $q, $timeout) {
+
+    var updateTimeouts = {};
 
     $scope.isTablet = $ionicPlatform.isTablet();
 
@@ -66,6 +68,30 @@ angular.module('mm.addons.pushnotifications')
         $scope.currentProcessor = processors[0];
     }
 
+    // Update a category after a certain time. The purpose is to store the updated data, it won't be reflected in the view.
+    function updateCategoryAfterDelay(name) {
+        // Cancel pending updates.
+        $timeout.cancel(updateTimeouts[name]);
+
+        updateTimeouts[name] = $timeout(function() {
+            delete updateTimeouts[name];
+            updateCategory(name);
+        }, 5000);
+    }
+
+    // Update a category. The purpose is to store the updated data, it won't be reflected in the view.
+    function updateCategory(name) {
+        if (name == $mmaPushNotifications.MESSAGE_CATEGORY) {
+            $mmaPushNotifications.invalidateMessagePreferences().finally(function() {
+                $mmaPushNotifications.getMessagePreferences();
+            });
+        } else if (name == $mmaPushNotifications.NOTIFICATION_CATEGORY) {
+            $mmaPushNotifications.invalidateNotificationPreferences().finally(function() {
+                $mmaPushNotifications.getNotificationPreferences();
+            });
+        }
+    }
+
     fetchPreferences();
 
     // Refresh the list of preferences.
@@ -94,7 +120,7 @@ angular.module('mm.addons.pushnotifications')
     };
 
     // Change the value of a certain preference.
-    $scope.changePreference = function(notification, state) {
+    $scope.changePreference = function(notification, state, categoryName) {
         var processorState = notification.currentProcessor[state],
             preferenceName = notification.preferencekey + '_' + processorState.name,
             value;
@@ -114,7 +140,10 @@ angular.module('mm.addons.pushnotifications')
         }
 
         processorState.updating = true;
-        $mmUser.updateUserPreference(preferenceName, value).catch(function(message) {
+        $mmUser.updateUserPreference(preferenceName, value).then(function() {
+            // Update the category since it was modified.
+            updateCategoryAfterDelay(categoryName);
+        }).catch(function(message) {
             // Show error and revert change.
             $mmUtil.showErrorModal(message);
             notification.currentProcessor[state].checked = !notification.currentProcessor[state].checked;
@@ -126,7 +155,11 @@ angular.module('mm.addons.pushnotifications')
     // Disable all notifications changed.
     $scope.disableAll = function(disable) {
         var modal = $mmUtil.showModalLoading('mm.core.sending', true);
-        $mmUser.updateUserPreferences([], disable).catch(function(message) {
+        $mmUser.updateUserPreferences([], disable).then(function() {
+            // Disable all is present in both categories, update them both.
+            updateCategoryAfterDelay($mmaPushNotifications.MESSAGE_CATEGORY);
+            updateCategoryAfterDelay($mmaPushNotifications.NOTIFICATION_CATEGORY);
+        }).catch(function(message) {
             // Show error and revert change.
             $mmUtil.showErrorModal(message);
             $scope.preferences.disableall = !$scope.preferences.disableall;
@@ -138,7 +171,10 @@ angular.module('mm.addons.pushnotifications')
     // Block non-contacts changed.
     $scope.blockNonContacts = function(block) {
         var modal = $mmUtil.showModalLoading('mm.core.sending', true);
-        $mmUser.updateUserPreference('message_blocknoncontacts', block ? 1 : 0).catch(function(message) {
+        $mmUser.updateUserPreference('message_blocknoncontacts', block ? 1 : 0).then(function() {
+            // Update the message category since it was modified.
+            updateCategoryAfterDelay($mmaPushNotifications.MESSAGE_CATEGORY);
+        }).catch(function(message) {
             // Show error and revert change.
             $mmUtil.showErrorModal(message);
             $scope.preferences.blocknoncontacts = !$scope.preferences.blocknoncontacts;
@@ -146,4 +182,12 @@ angular.module('mm.addons.pushnotifications')
             modal.dismiss();
         });
     };
+
+    $scope.$on('$destroy', function() {
+        // If there is a pending action to update a category, execute it right now.
+        angular.forEach(updateTimeouts, function(updateTimeout, name) {
+            $timeout.cancel(updateTimeout);
+            updateCategory(name);
+        });
+    });
 });

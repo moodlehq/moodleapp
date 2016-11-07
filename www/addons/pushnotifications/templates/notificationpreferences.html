@@ -43,7 +43,7 @@
                         <div class="col col-60">{{ notification.displayname }}</div>
                         <div class="col col-20 text-center" ng-repeat="state in ['loggedin', 'loggedoff']">
                             <!-- If notifications not disabled, show toggle. -->
-                            <ion-toggle ng-if="!preferences.disableall" ng-model="notification.currentProcessor[state].checked" ng-change="changePreference(notification, state)" ng-disabled="notification.currentProcessor.locked || notification.currentProcessor[state].updating">
+                            <ion-toggle ng-if="!preferences.disableall" ng-model="notification.currentProcessor[state].checked" ng-change="changePreference(notification, state, category.name)" ng-disabled="notification.currentProcessor.locked || notification.currentProcessor[state].updating">
                                 <ion-spinner ng-if="notification.currentProcessor[state].updating" class="mm-spinner-right"></ion-spinner>
                             </ion-toggle>
                             <!-- If notifications are disabled, show "Disabled" instead of toggle. -->

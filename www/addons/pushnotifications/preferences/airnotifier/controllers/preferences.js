@@ -22,7 +22,9 @@ angular.module('mm.addons.pushnotifications')
  * @name mmaPushNotificationsAirnotifierPreferencesCtrl
  */
 .controller('mmaPushNotificationsAirnotifierPreferencesCtrl', function($stateParams, $scope, $mmUtil, $translate,
-        $mmaPushNotifications, $mmaPushNotificationPreferencesAirnotifier) {
+        $mmaPushNotifications, $mmaPushNotificationPreferencesAirnotifier, $timeout) {
+
+    var updateTimeout;
 
     $scope.title = $stateParams.title || $translate.instant('mma.pushnotifications.processorsettings');
 
@@ -44,6 +46,24 @@ angular.module('mm.addons.pushnotifications')
         });
     }
 
+    // Update list of devices after a certain time. The purpose is to store the updated data, it won't be reflected in the view.
+    function updateDevicesAfterDelay() {
+        // Cancel pending updates.
+        $timeout.cancel(updateTimeout);
+
+        updateTimeout = $timeout(function() {
+            updateTimeout = null;
+            updateDevices();
+        }, 5000);
+    }
+
+    // Fetch devices. The purpose is to store the updated data, it won't be reflected in the view.
+    function updateDevices() {
+        $mmaPushNotificationPreferencesAirnotifier.invalidateUserDevices().finally(function() {
+            $mmaPushNotificationPreferencesAirnotifier.getUserDevices();
+        });
+    }
+
     fetchDevices();
 
     $scope.refreshDevices = function() {
@@ -57,7 +77,10 @@ angular.module('mm.addons.pushnotifications')
     // Enable or disable a certain device.
     $scope.enableDevice = function(device, enable) {
         device.updating = true;
-        $mmaPushNotificationPreferencesAirnotifier.enableDevice(device.id, enable).catch(function(message) {
+        $mmaPushNotificationPreferencesAirnotifier.enableDevice(device.id, enable).then(function() {
+            // Update the list of devices since it was modified.
+            updateDevicesAfterDelay();
+        }).catch(function(message) {
             // Show error and revert change.
             $mmUtil.showErrorModal(message);
             device.enable = !device.enable;
@@ -66,4 +89,11 @@ angular.module('mm.addons.pushnotifications')
         });
     };
 
+    $scope.$on('$destroy', function() {
+        // If there is a pending action to update devices, execute it right now.
+        if (updateTimeout) {
+            $timeout.cancel(updateTimeout);
+            updateDevices();
+        }
+    });
 });
