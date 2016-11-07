@@ -39,7 +39,7 @@ angular.module('mm.addons.mod_assign')
  * @param {String} assignComponent Assignment component.
  * @param {Object} configs         Plugin configs.
  */
-.directive('mmaModAssignSubmissionPlugin', function($compile, $mmaModAssignSubmissionDelegate, $mmaModAssign,
+.directive('mmaModAssignSubmissionPlugin', function($compile, $mmaModAssignSubmissionDelegate, $mmaModAssign, $mmaModAssignHelper,
             mmaModAssignComponent) {
     return {
         restrict: 'E',
@@ -70,12 +70,7 @@ angular.module('mm.addons.mod_assign')
 
             if (directive) {
                 // Configs are only used in directives.
-                scope.configs = {};
-                angular.forEach(scope.assign.configs, function(config) {
-                    if (config.subtype == 'assignsubmission' && config.plugin == plugin.type) {
-                        scope.configs[config.name] = config.value;
-                    }
-                });
+                scope.configs = $mmaModAssignHelper.getPluginConfig(scope.assign, 'assignsubmission', plugin.type);
 
                 // Add the directive to the element.
                 container.setAttribute(directive, '');
