@@ -146,6 +146,12 @@ angular.module('mm.addons.mod_assign')
     }
 
     fetchAssignment(false, true, false).then(function() {
+        $mmaModAssign.logView($scope.assign.id).then(function() {
+            $mmCourse.checkModuleCompletion(courseId, module.completionstatus);
+        }).catch(function() {
+            // Fail silently for Moodle < 3.2.
+        });
+
         if (!$scope.canviewsubmissions) {
             $mmaModAssign.logSubmissionView($scope.assign.id).catch(function() {
                 // Fail silently for Moodle < 3.1.
