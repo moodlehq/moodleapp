@@ -98,14 +98,15 @@ angular.module('mm.core.login', [])
 })
 
 .run(function($log, $state, $mmUtil, $translate, $mmSitesManager, $rootScope, $mmSite, $mmURLDelegate, $ionicHistory, $timeout,
-                $mmEvents, $mmLoginHelper, mmCoreEventSessionExpired, $mmApp, $ionicPlatform, mmCoreConfigConstants,
+                $mmEvents, $mmLoginHelper, mmCoreEventSessionExpired, $mmApp, $ionicPlatform, mmCoreConfigConstants, $mmText,
                 mmCoreEventPasswordChangeForced, mmCoreLoginTokenChangePassword) {
 
     $log = $log.getInstance('mmLogin');
 
     var isSSOConfirmShown = false,
         isChangePasswordConfirmShown = false,
-        waitingForBrowser = false;
+        waitingForBrowser = false,
+        lastInAppUrl;
 
     // Listen for sessionExpired event to reconnect the user.
     $mmEvents.on(mmCoreEventSessionExpired, sessionExpired);
@@ -118,17 +119,38 @@ angular.module('mm.core.login', [])
 
     // Observe loaded pages in the InAppBrowser to handle SSO URLs.
     $rootScope.$on('$cordovaInAppBrowser:loadstart', function(e, event) {
-        // URLs with a custom scheme are prefixed with "http://", we need to remove this.
-        var url = event.url.replace(/^http:\/\//, '');
+        // URLs with a custom scheme can be prefixed with "http://" or "https://", we need to remove this.
+        var protocol = $mmText.getUrlProtocol(event.url),
+            url = event.url.replace(/^https?:\/\//, '');
+
         if (appLaunchedByURL(url)) {
             // Close the browser if it's a valid SSO URL.
             $mmUtil.closeInAppBrowser();
+        } else if (ionic.Platform.isAndroid()) {
+            // Check if the URL has a custom URL scheme. In Android they need to be opened manually.
+            var urlScheme = $mmText.getUrlProtocol(url);
+            if (urlScheme) {
+                // Open in browser should launch the right app if found and do nothing if not found.
+                $mmUtil.openInBrowser(url);
+
+                // At this point the InAppBrowser is showing a "Webpage not available" error message.
+                // Try to navigate to last loaded URL so this error message isn't found.
+                if (lastInAppUrl) {
+                    $mmUtil.openInApp(lastInAppUrl);
+                } else {
+                    // No last URL loaded, close the InAppBrowser.
+                    $mmUtil.closeInAppBrowser();
+                }
+            } else {
+                lastInAppUrl = protocol + '://' + url;
+            }
         }
     });
 
     // Observe InAppBrowser closed and resume events to stop waiting for browser SSO.
     $rootScope.$on('$cordovaInAppBrowser:exit', function() {
         waitingForBrowser = false;
+        lastInAppUrl = false;
     });
     $ionicPlatform.on('resume', function() {
         // Wait a second before setting it to false since in iOS there could be some frozen WS calls.
