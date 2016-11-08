@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_assign')
  * @name mmaModAssignIndexCtrl
  */
 .controller('mmaModAssignIndexCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $translate, mmaModAssignComponent, $q,
-        $state, $ionicPlatform, mmaModAssignSubmissionInvalidatedEvent, $mmEvents, $mmSite, mmaModAssignSubmissionSavedEvent,
+        $state, mmaModAssignSubmissionInvalidatedEvent, $mmEvents, $mmSite, mmaModAssignSubmissionSavedEvent,
         mmaModAssignSubmittedForGradingEvent, $mmCourse, $mmApp, $mmaModAssignSync, $mmText, mmaModAssignEventAutomSynced,
         mmCoreEventOnlineStatusChanged, $mmaModAssignOffline, $ionicScrollDelegate, mmaModAssignEventManualSynced) {
     var module = $stateParams.module || {},
@@ -134,7 +134,7 @@ angular.module('mm.addons.mod_assign')
         var promises = [$mmaModAssign.invalidateAssignmentData(courseId)];
         if ($scope.assign) {
             promises.push($mmaModAssign.invalidateAllSubmissionData($scope.assign.id));
-            if (data.canviewsubmissions) {
+            if ($scope.canviewsubmissions) {
                 promises.push($mmaModAssign.invalidateSubmissionStatusData($scope.assign.id));
             }
         }
