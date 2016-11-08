@@ -19,6 +19,7 @@ var gulpSlash = require('gulp-slash');
 var ngAnnotate = require('gulp-ng-annotate');
 var yargs = require('yargs');
 var zip = require('gulp-zip');
+var clean = require('gulp-clean');
 
 // Given a list of paths to search and the path to an addon, return the list of paths to search only inside the addon folder.
 function getRemoteAddonPaths(paths, pathToAddon) {
@@ -893,4 +894,49 @@ gulp.task('remoteaddon', ['remoteaddon-build', 'remoteaddon-sass', 'remoteaddon-
       deleteFolderRecursive(pathToPackageFolder);
       done();
     });
+});
+
+// Cleans the development environment by deleting downloaded files and libraries
+gulp.task('clean-libs', ['clean-www-libs', 'clean-ionic-platforms', 'clean-e2e-build', 'clean-sass-cache', 'clean-ionic-plugins']);
+
+// Removes the contents in the /www/lib/ directory
+gulp.task('clean-www-libs', function() {
+  return gulp.src('www/lib/', {read: false})
+    .pipe(clean());
+});
+
+// Removes the contents in the /platforms directory
+gulp.task('clean-ionic-platforms', function() {
+  return gulp.src('platforms/', {read: false})
+    .pipe(clean());
+});
+
+// Removes the contents in the /plugins directory
+gulp.task('clean-ionic-plugins', function() {
+  return gulp.src('plugins/', {read: false})
+    .pipe(clean());
+});
+
+// Removes the contents in the /www/build directory
+gulp.task('clean-build', function() {
+  return gulp.src('www/build/', {read: false})
+    .pipe(clean());
+});
+
+// Removes the contents in the /e2e/build directory
+gulp.task('clean-e2e-build', function() {
+  return gulp.src('e2e/build/', {read: false})
+    .pipe(clean());
+});
+
+// Removes the contents in the /.sass-cache directory
+gulp.task('clean-sass-cache', function() {
+  return gulp.src('.sass-cache/', {read: false})
+    .pipe(clean());
+});
+
+// Removes the contents in the /node-modules directory
+gulp.task('clean-node-modules', function() {
+  return gulp.src('node_modules/', {read: false})
+    .pipe(clean());
 });

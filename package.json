@@ -23,6 +23,7 @@
     "gulp-concat": "^2.6.0",
     "gulp-rename": "^1.2.0",
     "gulp-sass": "^2.3.2",
+    "gulp-clean": "^0.3.2",
     "gulp-clip-empty-files": "^0.1.1",
     "gulp-concat-util": "^0.5.2",
     "gulp-file": "^0.3.0",
@@ -96,7 +97,30 @@
     "nl.kingsquare.cordova.background-audio"
   ],
   "cordovaPlatforms": [
-    "ios",
-    "android"
-  ]
+    {
+      "platform": "ios",
+      "version": "4.3.0",
+      "locator": "ios@4.3.0"
+    },
+    {
+      "platform": "android",
+      "version": "6.1.2",
+      "locator": "android@6.1.2"
+    }
+  ],
+  "scripts": {
+    "setup": "npm install && ionic state restore && bower install && gulp",
+    "reinstall": "gulp clean-build && gulp clean-libs && gulp clean-node-modules && npm run-script setup",
+    "start": "ionic serve",
+    "clean": "gulp clean-build",
+    "build.e2e": "gulp e2e-build",
+    "build.dev": "gulp",
+    "build.android": "ionic build android",
+    "build.ios": "ionic build ios",
+    "ios": "ionic run ios",
+    "android": "ionic run android",
+    "serve.e2e": "ionic serve -b -a",
+    "serve.dev": "ionic serve",
+    "e2e": "protractor e2e/build/protractor.conf.js"
+  }
 }
