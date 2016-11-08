@@ -972,6 +972,59 @@ angular.module('mm.core')
         };
 
         /**
+         * Get the config of this site.
+         *
+         * @param {String}   [name]         Name of the setting to get. If not set or false, all settings will be returned.
+         * @param {Boolean}  [ignoreCache]  True if it should ignore cached data.
+         * @return {Promise} Promise resolved with site config. Rejected with an object if error.
+         */
+        Site.prototype.getConfig = function(name, ignoreCache) {
+            var site = this;
+
+            var preSets = {
+                cacheKey: getConfigCacheKey()
+            };
+
+            if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+
+            return site.read('tool_mobile_get_config', {}, preSets).then(function(config) {
+                if (name) {
+                    // Return the requested setting.
+                    for (var x in config.settings) {
+                        if (config.settings[x].name == name) {
+                            return config.settings[x].value;
+                        }
+                    }
+                    return $q.reject();
+                } else {
+                    // Return all settings in the same array.
+                    var settings = {};
+                    angular.forEach(config.settings, function(setting) {
+                        settings[setting.name] = setting.value;
+                    });
+                    return settings;
+                }
+            });
+        };
+
+        /**
+         * Invalidates config WS call.
+         *
+         * @return {Promise}        Promise resolved when the data is invalidated.
+         */
+        Site.prototype.invalidateConfig = function() {
+            var site = this;
+            return site.invalidateWsCacheForKey(getConfigCacheKey());
+        };
+
+        function getConfigCacheKey() {
+            return 'tool_mobile_get_config';
+        }
+
+        /**
          * Invalidate entries from the cache.
          *
          * @param  {Object} db      DB the entries belong to.
@@ -1029,8 +1082,7 @@ angular.module('mm.core')
          * @return {Promise}       Promise to be resolved with the WS response.
          */
         function getFromCache(site, method, data, preSets) {
-            var result,
-                db = site.db,
+            var db = site.db,
                 deferred = $q.defer(),
                 id,
                 promise;
