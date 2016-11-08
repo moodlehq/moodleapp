@@ -35,17 +35,18 @@
                         <i class="icon ion-chevron-right"></i>
                     </div>
 
-                    <div ng-if="assign.submissiondrafts && summary.submissionsenabled" class="item item-text-wrap" ng-class="{'item-icon-right': summary.submissiondraftscount}" ng-click="gotoSubmissionList('draft', summary.submissiondraftscount)">
+                    <div ng-if="assign.submissiondrafts && summary.submissionsenabled" class="item item-text-wrap" ng-class="{'item-icon-right': summary.submissiondraftscount}" ng-click="gotoSubmissionList(mmaModAssignSubmissionStatusDraft, summary.submissiondraftscount)">
                         <p>{{ 'mma.mod_assign.numberofdraftsubmissions' | translate }}: {{summary.submissiondraftscount}}</p>
                         <i class="icon ion-chevron-right" ng-if="summary.submissiondraftscount"></i>
                     </div>
 
-                    <div ng-if="summary.submissionsenabled" class="item item-text-wrap" ng-class="{'item-icon-right': summary.submissionssubmittedcount}" ng-click="gotoSubmissionList('submitted', summary.submissionssubmittedcount)">
+                    <div ng-if="summary.submissionsenabled" class="item item-text-wrap" ng-class="{'item-icon-right': summary.submissionssubmittedcount}" ng-click="gotoSubmissionList(mmaModAssignSubmissionStatusSubmitted, summary.submissionssubmittedcount)">
                         <p>{{ 'mma.mod_assign.numberofsubmittedassignments' | translate }}: {{summary.submissionssubmittedcount}}</p>
                         <i class="icon ion-chevron-right" ng-if="summary.submissionssubmittedcount"></i>
                     </div>
-                    <div ng-if="summary.submissionsenabled && !assign.teamsubmission" class="item item-text-wrap">
+                    <div ng-if="summary.submissionsenabled && !assign.teamsubmission" class="item item-text-wrap" ng-class="{'item-icon-right': needsGradingAvalaible}" ng-click="gotoSubmissionList(mmaModAssignNeedGrading, needsGradingAvalaible)">
                         <p>{{ 'mma.mod_assign.numberofsubmissionsneedgrading' | translate }}: {{summary.submissionsneedgradingcount}}</p>
+                        <i class="icon ion-chevron-right" ng-if="needsGradingAvalaible"></i>
                     </div>
 
                     <div ng-if="timeRemaining" class="item item-text-wrap">
