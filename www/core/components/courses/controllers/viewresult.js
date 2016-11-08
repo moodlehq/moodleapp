@@ -83,12 +83,12 @@ angular.module('mm.core.courses')
                 // Success retrieving the course, we can assume the user has permissions to view it.
                 course.fullname = c.fullname || course.fullname;
                 course.summary = c.summary || course.summary;
-                course._handlers = $mmCoursesDelegate.getNavHandlersFor(course.id, refresh);
+                loadCourseNavHandlers(refresh);
             }).catch(function() {
                 // The user is not an admin/manager. Check if we can provide guest access to the course.
                 return canAccessAsGuest().then(function(passwordRequired) {
                     if (!passwordRequired) {
-                        course._handlers = $mmCoursesDelegate.getNavHandlersForGuest(course.id, refresh);
+                        loadCourseNavHandlers(refresh);
                     } else {
                         course._handlers = [];
                         handlersShouldBeShown = false;
@@ -126,12 +126,24 @@ angular.module('mm.core.courses')
         return $q.reject();
     }
 
+    // Load course nav handlers.
+    function loadCourseNavHandlers(refresh) {
+        // Get user navigation options to speed up handlers loading.
+        $mmCourses.getUserNavigationOptions([course.id]).catch(function() {
+            // Couldn't get it, return empty options.
+            return {};
+        }).then(function(options) {
+            course._handlers = $mmCoursesDelegate.getNavHandlersFor(course.id, refresh, options[course.id]);
+        });
+    }
+
     function refreshData() {
         var promises = [];
 
         promises.push($mmCourses.invalidateUserCourses());
         promises.push($mmCourses.invalidateCourse(course.id));
         promises.push($mmCourses.invalidateCourseEnrolmentMethods(course.id));
+        promises.push($mmCourses.invalidateUserNavigationOptionsForCourses([course.id]));
         if (guestInstanceId) {
             promises.push($mmCourses.invalidateCourseGuestEnrolmentInfo(guestInstanceId));
         }

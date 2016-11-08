@@ -188,6 +188,50 @@ angular.module('mm.core.courses')
     };
 
     /**
+     * Get the common part of the cache keys for user administration options WS calls.
+     *
+     * @return {String} Cache key.
+     */
+    function getUserAdministrationOptionsCommonCacheKey() {
+        return 'mmCourses:administrationOptions:';
+    }
+
+    /**
+     * Get cache key for get user administration options WS call.
+     *
+     * @return {String} Cache key.
+     */
+    function getUserAdministrationOptionsCacheKey(courseIds) {
+        return getUserAdministrationOptionsCommonCacheKey() + courseIds.join(',');
+    }
+
+    /**
+     * Get user administration options for a set of courses.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#getUserAdministrationOptions
+     * @param  {Number[]} courseIds IDs of courses to get.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with administration options for each course.
+     */
+    self.getUserAdministrationOptions = function(courseIds, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    courseids: courseIds
+                },
+                preSets = {
+                    cacheKey: getUserAdministrationOptionsCacheKey(courseIds)
+                };
+
+            return site.read('core_course_get_user_administration_options', params, preSets).then(function(response) {
+                // Format returned data.
+                return formatUserOptions(response.courses);
+            });
+        });
+    };
+
+    /**
      * Get a course the user is enrolled in. This function relies on $mmCourses#getUserCourses.
      * preferCache=true will try to speed up the response, but the data returned might not be updated.
      *
@@ -271,6 +315,72 @@ angular.module('mm.core.courses')
     }
 
     /**
+     * Get the common part of the cache keys for user navigation options WS calls.
+     *
+     * @return {String} Cache key.
+     */
+    function getUserNavigationOptionsCommonCacheKey() {
+        return 'mmCourses:navigationOptions:';
+    }
+
+    /**
+     * Get cache key for get user navigation options WS call.
+     *
+     * @return {String} Cache key.
+     */
+    function getUserNavigationOptionsCacheKey(courseIds) {
+        return getUserNavigationOptionsCommonCacheKey() + courseIds.join(',');
+    }
+
+    /**
+     * Get user navigation options for a set of courses.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#getUserNavigationOptions
+     * @param  {Number[]} courseIds IDs of courses to get.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with navigation options for each course.
+     */
+    self.getUserNavigationOptions = function(courseIds, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    courseids: courseIds
+                },
+                preSets = {
+                    cacheKey: getUserNavigationOptionsCacheKey(courseIds)
+                };
+
+            return site.read('core_course_get_user_navigation_options', params, preSets).then(function(response) {
+                // Format returned data.
+                return formatUserOptions(response.courses);
+            });
+        });
+    };
+
+    /**
+     * Format user navigation or administration options.
+     *
+     * @param  {Object[]} courses Navigation or administration options for each course.
+     * @return {Object}           Formatted options.
+     */
+    function formatUserOptions(courses) {
+        var result = {};
+
+        angular.forEach(courses, function(course) {
+            var options = {};
+
+            angular.forEach(course.options, function(option) {
+                options[option.name] = option.available;
+            });
+
+            result[course.id] = options;
+        });
+
+        return result;
+    }
+
+    /**
      * Invalidates get course WS call.
      *
      * @module mm.core.courses
@@ -288,7 +398,7 @@ angular.module('mm.core.courses')
      *
      * @module mm.core.courses
      * @ngdoc method
-     * @name $mmCourses#invalidateUserCourses
+     * @name $mmCourses#invalidateCourseEnrolmentMethods
      * @param {Number} id Course ID.
      * @return {Promise}  Promise resolved when the data is invalidated.
      */
@@ -301,7 +411,7 @@ angular.module('mm.core.courses')
      *
      * @module mm.core.courses
      * @ngdoc method
-     * @name $mmCourses#invalidateUserCourses
+     * @name $mmCourses#invalidateCourseGuestEnrolmentInfo
      * @param {Number} instanceId Guest instance ID.
      * @return {Promise}          Promise resolved when the data is invalidated.
      */
@@ -327,6 +437,37 @@ angular.module('mm.core.courses')
     };
 
     /**
+     * Invalidates all user administration options.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#invalidateUserAdministrationOptions
+     * @param {String} [siteId] Site ID to invalidate. If not defined, use current site.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateUserAdministrationOptions = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKeyStartingWith(getUserAdministrationOptionsCommonCacheKey());
+        });
+    };
+
+    /**
+     * Invalidates user administration options for certain courses.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#invalidateUserAdministrationOptionsForCourses
+     * @param  {Number[]} courseIds IDs of courses.
+     * @param {String} [siteId]     Site ID to invalidate. If not defined, use current site.
+     * @return {Promise}            Promise resolved when the data is invalidated.
+     */
+    self.invalidateUserAdministrationOptionsForCourses = function(courseIds, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getUserAdministrationOptionsCacheKey(courseIds));
+        });
+    };
+
+    /**
      * Invalidates get user courses WS call.
      *
      * @module mm.core.courses
@@ -339,6 +480,37 @@ angular.module('mm.core.courses')
         siteid = siteid || $mmSite.getId();
         return $mmSitesManager.getSite(siteid).then(function(site) {
             return site.invalidateWsCacheForKey(getUserCoursesCacheKey());
+        });
+    };
+
+    /**
+     * Invalidates all user navigation options.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#invalidateUserNavigationOptions
+     * @param {String} [siteId] Site ID to invalidate. If not defined, use current site.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateUserNavigationOptions = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKeyStartingWith(getUserNavigationOptionsCommonCacheKey());
+        });
+    };
+
+    /**
+     * Invalidates user navigation options for certain courses.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#invalidateUserNavigationOptionsForCourses
+     * @param  {Number[]} courseIds IDs of courses.
+     * @param {String} [siteId]     Site ID to invalidate. If not defined, use current site.
+     * @return {Promise}            Promise resolved when the data is invalidated.
+     */
+    self.invalidateUserNavigationOptionsForCourses = function(courseIds, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getUserNavigationOptionsCacheKey(courseIds));
         });
     };
 

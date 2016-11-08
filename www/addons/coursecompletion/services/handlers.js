@@ -171,14 +171,16 @@ angular.module('mm.addons.coursecompletion')
         /**
          * Check if handler is enabled for this course.
          *
-         * @param {Number} courseId   Course ID.
-         * @param {Object} accessData Type of access to the course: default, guest, ...
-         * @return {Boolean}          True if handler is enabled, false otherwise.
+         * @param  {Number} courseId   Course ID.
+         * @param  {Object} accessData Type of access to the course: default, guest, ...
+         * @param  {Object} [options]  Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @return {Boolean}           True if handler is enabled, false otherwise.
          */
-        self.isEnabledForCourse = function(courseId, accessData) {
+        self.isEnabledForCourse = function(courseId, accessData, options) {
             if (accessData && accessData.type == mmCoursesAccessMethods.guest) {
                 return false; // Not enabled for guests.
             }
+
             return $mmaCourseCompletion.isPluginViewEnabledForCourse(courseId).then(function() {
                 // Check if the user can see his own report, teachers can't.
                 if (typeof coursesNavEnabledCache[courseId] != 'undefined') {

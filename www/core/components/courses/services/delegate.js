@@ -96,18 +96,20 @@ angular.module('mm.core.courses')
         /**
          * Get the handler for a course using a certain access type.
          *
-         * @param {Number} courseId    The course ID.
-         * @param {Boolean} refresh    True if it should refresh the list.
+         * @param  {Number} courseId   The course ID.
+         * @param  {Boolean} refresh   True if it should refresh the list.
          * @param  {Object} accessData Access type and data. Default, guest, ...
+         * @param  {Object} [options]  Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
          * @return {Array}             Array of objects containing 'priority' and 'controller'.
          */
-        function getNavHandlersForAccess(courseId, refresh, accessData) {
+        function getNavHandlersForAccess(courseId, refresh, accessData, options) {
             if (refresh || !coursesHandlers[courseId] || coursesHandlers[courseId].access.type != accessData.type) {
                 coursesHandlers[courseId] = {
                     access: accessData,
+                    options: options,
                     handlers: []
                 };
-                self.updateNavHandlersForCourse(courseId, accessData);
+                self.updateNavHandlersForCourse(courseId, accessData, options);
             }
             return coursesHandlers[courseId].handlers;
         }
@@ -118,16 +120,17 @@ angular.module('mm.core.courses')
          * @module mm.core.courses
          * @ngdoc method
          * @name $mmCoursesDelegate#getNavHandlersFor
-         * @param {Number} courseId The course ID.
-         * @param {Boolean} refresh True if it should refresh the list.
-         * @return {Array}          Array of objects containing 'priority' and 'controller'.
+         * @param  {Number} courseId  The course ID.
+         * @param  {Boolean} refresh  True if it should refresh the list.
+         * @param  {Object} [options] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @return {Array}            Array of objects containing 'priority' and 'controller'.
          */
-        self.getNavHandlersFor = function(courseId, refresh) {
+        self.getNavHandlersFor = function(courseId, refresh, options) {
             // Default access.
             var accessData = {
                 type: mmCoursesAccessMethods.default
             };
-            return getNavHandlersForAccess(courseId, refresh, accessData);
+            return getNavHandlersForAccess(courseId, refresh, accessData, options);
         };
 
         /**
@@ -136,16 +139,17 @@ angular.module('mm.core.courses')
          * @module mm.core.courses
          * @ngdoc method
          * @name $mmCoursesDelegate#getNavHandlersForGuest
-         * @param {Number} courseId The course ID.
-         * @param {Boolean} refresh True if it should refresh the list.
-         * @return {Array}          Array of objects containing 'priority' and 'controller'.
+         * @param  {Number} courseId  The course ID.
+         * @param  {Boolean} refresh  True if it should refresh the list.
+         * @param  {Object} [options] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @return {Array}            Array of objects containing 'priority' and 'controller'.
          */
-        self.getNavHandlersForGuest = function(courseId, refresh) {
+        self.getNavHandlersForGuest = function(courseId, refresh, options) {
             // Guest access.
             var accessData = {
                 type: mmCoursesAccessMethods.guest
             };
-            return getNavHandlersForAccess(courseId, refresh, accessData);
+            return getNavHandlersForAccess(courseId, refresh, accessData, options);
         };
 
         /**
@@ -262,7 +266,7 @@ angular.module('mm.core.courses')
                 if (self.isLastUpdateCall(now) && $mmSite.isLoggedIn() && $mmSite.getId() === siteId) {
                     // Update handlers for all courses.
                     angular.forEach(coursesHandlers, function(handler, courseId) {
-                        self.updateNavHandlersForCourse(parseInt(courseId), handler.access);
+                        self.updateNavHandlersForCourse(parseInt(courseId), handler.access, handler.options);
                     });
                 }
             });
@@ -276,10 +280,11 @@ angular.module('mm.core.courses')
          * @name $mmCoursesDelegate#updateNavHandlersForCourse
          * @param {Number} courseId    The course ID.
          * @param  {Object} accessData Access type and data. Default, guest, ...
+         * @param  {Object} [options]  Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
          * @return {Promise}           Resolved when updated.
          * @protected
          */
-        self.updateNavHandlersForCourse = function(courseId, accessData) {
+        self.updateNavHandlersForCourse = function(courseId, accessData, options) {
             var promises = [],
                 enabledForCourse = [],
                 siteId = $mmSite.getId(),
@@ -289,7 +294,7 @@ angular.module('mm.core.courses')
 
             angular.forEach(enabledNavHandlers, function(handler) {
                 // Checks if the handler is enabled for the user.
-                var promise = $q.when(handler.instance.isEnabledForCourse(courseId, accessData)).then(function(enabled) {
+                var promise = $q.when(handler.instance.isEnabledForCourse(courseId, accessData, options)).then(function(enabled) {
                     if (enabled) {
                         enabledForCourse.push(handler);
                     } else {
