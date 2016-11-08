@@ -14,8 +14,8 @@
 
 angular.module('mm.core.login')
 
-.constant('mmLoginSSOCode', 2) // This code is returned by local_mobile Moodle plugin if SSO in browser is required.
-.constant('mmLoginSSOInAppCode', 3)
+.constant('mmLoginSSOCode', 2) // SSO in browser window is required.
+.constant('mmLoginSSOInAppCode', 3) // SSO in embedded browser is required.
 .constant('mmLoginLaunchSiteURL', 'mmLoginLaunchSiteURL')
 .constant('mmLoginLaunchPassport', 'mmLoginLaunchPassport')
 
@@ -40,16 +40,19 @@ angular.module('mm.core.login')
      * @module mm.core.login
      * @ngdoc method
      * @name $mmLoginHelper#confirmAndOpenBrowserForSSOLogin
-     * @param {String} siteurl     URL of the site where the SSO login will be performed.
-     * @param {Number} typeOfLogin mmLoginSSOCode or mmLoginSSOInAppCode
+     * @param  {String} siteurl     URL of the site where the SSO login will be performed.
+     * @param  {Number} typeOfLogin mmLoginSSOCode or mmLoginSSOInAppCode.
+     * @param  {String} [service]   The service to use. If not defined, external service will be used.
+     * @param  {String} [launchUrl] The URL to open. If not defined, local_mobile URL will be used.
+     * @return {Void}
      */
-    self.confirmAndOpenBrowserForSSOLogin = function(siteurl, typeOfLogin) {
+    self.confirmAndOpenBrowserForSSOLogin = function(siteurl, typeOfLogin, service, launchUrl) {
         // Show confirm only if it's needed. Treat "false" (string) as false to prevent typing errors.
         var skipConfirmation = mmCoreConfigConstants.skipssoconfirmation && mmCoreConfigConstants.skipssoconfirmation !== 'false',
             promise = skipConfirmation ? $q.when() : $mmUtil.showConfirm($translate('mm.login.logininsiterequired'));
 
         promise.then(function() {
-            self.openBrowserForSSOLogin(siteurl, typeOfLogin);
+            self.openBrowserForSSOLogin(siteurl, typeOfLogin, service, launchUrl);
         });
     };
 
@@ -104,7 +107,20 @@ angular.module('mm.core.login')
      * @return {Boolean} True if set, false otherwise.
      */
     self.isFixedUrlSet = function() {
-        return typeof mmCoreConfigConstants.siteurl != 'undefined';
+        return !!mmCoreConfigConstants.siteurl;
+    };
+
+    /**
+     * Check if SSO login should use an embedded browser.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#isSSOEmbeddedBrowser
+     * @param  {Number}  code Code to check.
+     * @return {Boolean}      True if embedded browser, false othwerise.
+     */
+    self.isSSOEmbeddedBrowser = function(code) {
+        return code == mmLoginSSOInAppCode;
     };
 
     /**
@@ -126,12 +142,18 @@ angular.module('mm.core.login')
      * @module mm.core.login
      * @ngdoc method
      * @name $mmLoginHelper#openBrowserForSSOLogin
-     * @param {String} siteurl URL of the site where the SSO login will be performed.
-     * @param {Number} typeOfLogin mmLoginSSOCode or mmLoginSSOInAppCode
+     * @param  {String} siteurl     URL of the site where the SSO login will be performed.
+     * @param  {Number} typeOfLogin mmLoginSSOCode or mmLoginSSOInAppCode.
+     * @param  {String} [service]   The service to use. If not defined, external service will be used.
+     * @param  {String} [launchUrl] The URL to open. If not defined, local_mobile URL will be used.
+     * @return {Void}
      */
-    self.openBrowserForSSOLogin = function(siteurl, typeOfLogin) {
-        var passport = Math.random() * 1000;
-        var loginurl = siteurl + "/local/mobile/launch.php?service=" + mmCoreConfigConstants.wsextservice;
+    self.openBrowserForSSOLogin = function(siteurl, typeOfLogin, service, launchUrl) {
+        service = service || mmCoreConfigConstants.wsextservice;
+        launchUrl = launchUrl || siteurl + '/local/mobile/launch.php';
+
+        var passport = Math.random() * 1000,
+            loginurl = launchUrl + '?service=' + service;
         loginurl += "&passport=" + passport;
         loginurl += "&urlscheme=" + mmCoreConfigConstants.customurlscheme;
 
@@ -140,7 +162,7 @@ angular.module('mm.core.login')
         $mmConfig.set(mmLoginLaunchSiteURL, siteurl);
         $mmConfig.set(mmLoginLaunchPassport, passport);
 
-        if (typeOfLogin == mmLoginSSOInAppCode) {
+        if (self.isSSOEmbeddedBrowser(typeOfLogin)) {
             $translate('mm.login.cancel').then(function(cancelStr) {
                 var options = {
                     clearsessioncache: 'yes', // Clear the session cache to allow for multiple logins.

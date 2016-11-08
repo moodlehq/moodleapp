@@ -713,6 +713,7 @@ angular.module('mm.core')
          *                                   - {Number} code Code to identify the authentication method to use.
          *                                   - {String} [service] If defined, name of the service to use.
          *                                   - {String} [warning] If defined, code of the warning message.
+         *                                   - {Boolean} [coresupported] Whether core SSO is supported.
          */
         Site.prototype.checkLocalMobilePlugin = function(retrying) {
             var siteurl = this.siteurl,
@@ -758,7 +759,7 @@ angular.module('mm.core')
                             return $mmLang.translateAndReject('mm.core.unexpectederror');
                     }
                 } else {
-                    return {code: code, service: service};
+                    return {code: code, service: service, coresupported: !!data.coresupported};
                 }
             }, function() {
                 return {code: 0};
@@ -816,6 +817,22 @@ angular.module('mm.core')
             var siteurl = $mmText.removeProtocolAndWWW(this.siteurl);
             url = $mmText.removeProtocolAndWWW(url);
             return url.indexOf(siteurl) == 0;
+        };
+
+        /**
+         * Get the public config of this site.
+         *
+         * @return {Promise} Promise resolved with site public config. Rejected with an object if error, see $mmWS#callAjax.
+         */
+        Site.prototype.getPublicConfig = function() {
+            var that = this;
+            return $mmWS.callAjax('tool_mobile_get_public_config', {}, {siteurl: this.siteurl}).then(function(config) {
+                // Use the wwwroot returned by the server.
+                if (config.httpswwwroot) {
+                    that.siteurl = config.httpswwwroot;
+                }
+                return config;
+            });
         };
 
         /**

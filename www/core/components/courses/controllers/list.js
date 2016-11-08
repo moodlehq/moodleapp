@@ -28,7 +28,6 @@ angular.module('mm.core.courses')
     $scope.areNavHandlersLoadedFor = $mmCoursesDelegate.areNavHandlersLoadedFor;
     $scope.filter = {};
     $scope.courses;
-    $scope.showSortCategoryInfo = false;
     $scope.selectedCategory = 0;
     $scope.distinct = [{'categoryID':0, 'categoryName':"All Categories"}];
     $scope.unique = {};
@@ -74,12 +73,6 @@ angular.module('mm.core.courses')
     });
 
     $scope.browseCategory = function(){
-        if($scope.showBrowseCategoryInfo == true){
-            $scope.showBrowseCategoryInfo = false;
-        }else{
-            $scope.showBrowseCategoryInfo = true;
-        }
-
         for( var i in $scope.allCourses ){
             if( typeof($scope.unique[$scope.allCourses[i].category]) == "undefined"){
                 $mmCourses.search($scope.allCourses[i].shortname).then(function(response) {

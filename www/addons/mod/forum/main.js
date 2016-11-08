@@ -46,7 +46,8 @@ angular.module('mm.addons.mod_forum', [])
             discussionid: null,
             cid: null, // Not naming it courseid because it collides with 'site.mod_forum' param in split-view.
             forumid: null,
-            cmid: null
+            cmid: null,
+            locked: null // Whether the discussion is locked for the user.
         },
         views: {
             'site': {

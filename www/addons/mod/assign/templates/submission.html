@@ -84,7 +84,7 @@
 
     <div ng-if="gradingStatus" class="item item-text-wrap">
         <h2>{{ 'mma.mod_assign.gradingstatus' | translate }}</h2>
-        <p ng-class="{'badge-balanced': lastAttempt.gradingstatus == 'graded', 'badge-assertive': lastAttempt.gradingstatus != 'graded'}" class="badge badge-inline">{{gradingStatus}}</p>
+        <p class="badge badge-inline {{gradingClass}}">{{gradingStatus |translate}}</p>
     </div>
 
     <div ng-if="assign.duedate && !isGrading" class="item item-text-wrap">
@@ -108,10 +108,10 @@
         <p><mm-format-text watch="true">{{ timeRemaining }}</mm-format-text></p>
     </div>
 
-    <div ng-if="lastAttempt && isGrading" class="item item-text-wrap" ng-class="{submissioneditable: lastAttempt.canedit , submissionnoteditable: !lastAttempt.canedit}">
+    <div ng-if="lastAttempt && isGrading && lastAttempt.caneditowner !== undefined" class="item item-text-wrap" ng-class="{submissioneditable: lastAttempt.caneditowner , submissionnoteditable: !lastAttempt.caneditowner}">
         <h2>{{ 'mma.mod_assign.editingstatus' | translate }}</h2>
-        <p ng-if="lastAttempt.canedit">{{ 'mma.mod_assign.submissioneditable' | translate }}</p>
-        <p ng-if="!lastAttempt.canedit">{{ 'mma.mod_assign.submissionnoteditable' | translate }}</p>
+        <p ng-if="lastAttempt.caneditowner">{{ 'mma.mod_assign.submissioneditable' | translate }}</p>
+        <p ng-if="!lastAttempt.caneditowner">{{ 'mma.mod_assign.submissionnoteditable' | translate }}</p>
     </div>
 
     <div ng-if="userSubmission" class="item item-text-wrap">

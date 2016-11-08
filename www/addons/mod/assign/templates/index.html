@@ -61,6 +61,7 @@
                         <p ng-if="!submission.userfullname">{{ 'mma.mod_assign.hiddenuser' | translate }}{{submission.blindid}}</p>
                         <p ng-if="submission.timemodified">{{ submission.timemodified * 1000 | mmFormatDate:"dfmediumdate" }}</p>
                         <p class="badge badge-inline {{submission.statusClass}}">{{submission.statusTranslated}}</p>
+                        <p ng-if="submission.gradingstatus" class="badge badge-inline {{submission.gradingClass}}">{{submission.gradingStatusTranslationId | translate}}</p>
                         <i class="icon ion-chevron-right"></i>
                     </a>
                     <div class="item item-text-wrap" ng-if="!haveAllParticipants">
