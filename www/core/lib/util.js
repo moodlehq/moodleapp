@@ -658,8 +658,6 @@ angular.module('mm.core')
                     $timeout(function() {
                         popup.close();
                     }, parseInt(autocloseTime));
-                } else {
-                    delete popup;
                 }
             });
         };
@@ -670,21 +668,29 @@ angular.module('mm.core')
          * @module mm.core
          * @ngdoc method
          * @name $mmUtil#showModal
-         * @param {String} title        Language key.
-         * @param {String} message      Language key.
+         * @param {String} title           Language key.
+         * @param {String} message         Language key.
+         * @param {Number} [autocloseTime] Number of milliseconds to wait to close the modal.
+         * @return {Promise}               A promise resolved when the popup is closed. Has one additional function "close",
+         *                                 which can be called to programmatically close the popup with the given value.
          */
-        self.showModal = function(title, message) {
-            var promises = [
-                $translate(title),
-                $translate(message),
-            ];
+        self.showModal = function(title, message, autocloseTime) {
+            title = $translate.instant(title);
+            message = $translate.instant(message);
+            autocloseTime = parseInt(autocloseTime);
 
-            $q.all(promises).then(function(translations) {
-                $ionicPopup.alert({
-                    title: translations[0],
-                    template: translations[1]
-                });
+            var popup = $ionicPopup.alert({
+                title: title,
+                template: message
             });
+
+            if (autocloseTime > 0) {
+                $timeout(function() {
+                    popup.close();
+                }, autocloseTime);
+            }
+
+            return popup;
         };
 
         /**

@@ -118,7 +118,7 @@ angular.module('mm.core')
     this.$get = function($http, $q, $mmWS, $mmDB, $log, md5, $mmApp, $mmLang, $mmUtil, $mmFS, mmCoreWSCacheStore,
             mmCoreWSPrefix, mmCoreSessionExpired, $mmEvents, mmCoreEventSessionExpired, mmCoreUserDeleted, mmCoreEventUserDeleted,
             $mmText, $translate, mmCoreConfigConstants, mmCoreUserPasswordChangeForced, mmCoreEventPasswordChangeForced,
-            mmCoreLoginTokenChangePassword, mmCoreSecondsMinute) {
+            mmCoreLoginTokenChangePassword, mmCoreSecondsMinute, mmCoreUserNotFullySetup, mmCoreEventUserNotFullySetup) {
 
         $log = $log.getInstance('$mmSite');
 
@@ -533,7 +533,11 @@ angular.module('mm.core')
                     } else if (error === mmCoreUserPasswordChangeForced) {
                         // Password Change Forced, trigger event.
                         $mmEvents.trigger(mmCoreEventPasswordChangeForced, site.id);
-                        return $q.reject();
+                        return $mmLang.translateAndReject('mm.core.forcepasswordchangenotice');
+                    } else if (error === mmCoreUserNotFullySetup) {
+                        // User not fully setup, trigger event.
+                        $mmEvents.trigger(mmCoreEventUserNotFullySetup, site.id);
+                        return $mmLang.translateAndReject('mm.core.usernotfullysetup');
                     } else if (typeof preSets.emergencyCache !== 'undefined' && !preSets.emergencyCache) {
                         $log.debug('WS call ' + method + ' failed. Emergency cache is forbidden, rejecting.');
                         return $q.reject(error);
@@ -862,60 +866,64 @@ angular.module('mm.core')
         /**
          * Open a URL in browser using auto-login in the Moodle site if available.
          *
-         * @param  {String} url The URL to open.
-         * @return {Promise}    Promise resolved when done, rejected otherwise.
+         * @param  {String} url            The URL to open.
+         * @param  {String} [alertMessage] If defined, an alert will be shown before opening the browser.
+         * @return {Promise}               Promise resolved when done, rejected otherwise.
          */
-        Site.prototype.openInBrowserWithAutoLogin = function(url) {
-            return this.openWithAutoLogin(false, url);
+        Site.prototype.openInBrowserWithAutoLogin = function(url, alertMessage) {
+            return this.openWithAutoLogin(false, url, alertMessage);
         };
 
         /**
          * Open a URL in browser using auto-login in the Moodle site if available and the URL belongs to the site.
          *
-         * @param  {String} url The URL to open.
-         * @return {Promise}    Promise resolved when done, rejected otherwise.
+         * @param  {String} url            The URL to open.
+         * @param  {String} [alertMessage] If defined, an alert will be shown before opening the browser.
+         * @return {Promise}               Promise resolved when done, rejected otherwise.
          */
-        Site.prototype.openInBrowserWithAutoLoginIfSameSite = function(url) {
-            return this.openWithAutoLoginIfSameSite(false, url);
+        Site.prototype.openInBrowserWithAutoLoginIfSameSite = function(url, alertMessage) {
+            return this.openWithAutoLoginIfSameSite(false, url, alertMessage);
         };
 
         /**
          * Open a URL in inappbrowser using auto-login in the Moodle site if available.
          *
-         * @param  {String} url     The URL to open.
-         * @param  {Object} options Override default options passed to $cordovaInAppBrowser#open
-         * @return {Promise}        Promise resolved when done, rejected otherwise.
+         * @param  {String} url            The URL to open.
+         * @param  {Object} options        Override default options passed to $cordovaInAppBrowser#open
+         * @param  {String} [alertMessage] If defined, an alert will be shown before opening the inappbrowser.
+         * @return {Promise}               Promise resolved when done, rejected otherwise.
          */
-        Site.prototype.openInAppWithAutoLogin = function(url, options) {
-            return this.openWithAutoLogin(true, url, options);
+        Site.prototype.openInAppWithAutoLogin = function(url, options, alertMessage) {
+            return this.openWithAutoLogin(true, url, options, alertMessage);
         };
 
         /**
          * Open a URL in inappbrowser using auto-login in the Moodle site if available and the URL belongs to the site.
          *
-         * @param  {String} url     The URL to open.
-         * @param  {Object} options Override default options passed to $cordovaInAppBrowser#open
-         * @return {Promise}        Promise resolved when done, rejected otherwise.
+         * @param  {String} url            The URL to open.
+         * @param  {Object} options        Override default options passed to $cordovaInAppBrowser#open
+         * @param  {String} [alertMessage] If defined, an alert will be shown before opening the inappbrowser.
+         * @return {Promise}               Promise resolved when done, rejected otherwise.
          */
-        Site.prototype.openInAppWithAutoLoginIfSameSite = function(url, options) {
-            return this.openWithAutoLoginIfSameSite(true, url, options);
+        Site.prototype.openInAppWithAutoLoginIfSameSite = function(url, options, alertMessage) {
+            return this.openWithAutoLoginIfSameSite(true, url, options, alertMessage);
         };
 
         /**
          * Open a URL in browser or InAppBrowser using auto-login in the Moodle site if available.
          *
-         * @param  {Boolean} inApp  True to open it in InAppBrowser, false to open in browser.
-         * @param  {String} url     The URL to open.
-         * @param  {Object} options Override default options passed to $cordovaInAppBrowser#open.
-         * @return {Promise}        Promise resolved when done, rejected otherwise.
+         * @param  {Boolean} inApp         True to open it in InAppBrowser, false to open in browser.
+         * @param  {String} url            The URL to open.
+         * @param  {Object} options        Override default options passed to $cordovaInAppBrowser#open.
+         * @param  {String} [alertMessage] If defined, an alert will be shown before opening the browser/inappbrowser.
+         * @return {Promise}               Promise resolved when done, rejected otherwise.
          */
-        Site.prototype.openWithAutoLogin = function(inApp, url, options) {
+        Site.prototype.openWithAutoLogin = function(inApp, url, options, alertMessage) {
             if (!this.privateToken || !this.wsAvailable('tool_mobile_get_autologin_key') ||
                     (this.lastAutoLogin && $mmUtil.timestamp() - this.lastAutoLogin < 6 * mmCoreSecondsMinute)) {
                 // No private token, WS not available or last auto-login was less than 6 minutes ago.
                 // Open the final URL without auto-login.
-                open(url);
-                return $q.when();
+                return open(url);
             }
 
             var that = this,
@@ -929,26 +937,36 @@ angular.module('mm.core')
             return that.write('tool_mobile_get_autologin_key', params).then(function(data) {
                 if (!data.autologinurl || !data.key) {
                     // Not valid data, open the final URL without auto-login.
-                    open(url);
-                    return;
+                    return open(url);
                 }
 
                 that.lastAutoLogin = $mmUtil.timestamp();
 
-                open(data.autologinurl + '?userid=' + userId + '&key=' + data.key + '&urltogo=' + url);
+                return open(data.autologinurl + '?userid=' + userId + '&key=' + data.key + '&urltogo=' + url);
             }).catch(function() {
                 // Couldn't get autologin key, open the final URL without auto-login.
-                open(url);
-            }).finally(function() {
-                modal.dismiss();
+                return open(url);
             });
 
             function open(url) {
-                if (inApp) {
-                    $mmUtil.openInApp(url, options);
-                } else {
-                    $mmUtil.openInBrowser(url);
+                if (modal) {
+                    modal.dismiss();
                 }
+
+                var promise;
+                if (alertMessage) {
+                    promise = $mmUtil.showModal('mm.core.notice', alertMessage, 3000);
+                } else {
+                    promise = $q.when();
+                }
+
+                return promise.finally(function() {
+                    if (inApp) {
+                        $mmUtil.openInApp(url, options);
+                    } else {
+                        $mmUtil.openInBrowser(url);
+                    }
+                });
             }
         };
 
