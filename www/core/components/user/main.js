@@ -41,10 +41,15 @@ angular.module('mm.core.user', [])
 })
 
 .run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, $mmUserDelegate, $mmSite, mmCoreEventUserDeleted, $mmUser,
-            mmCoreEventRemoteAddonsLoaded) {
-    $mmEvents.on(mmCoreEventLogin, $mmUserDelegate.updateProfileHandlers);
-    $mmEvents.on(mmCoreEventSiteUpdated, $mmUserDelegate.updateProfileHandlers);
-    $mmEvents.on(mmCoreEventRemoteAddonsLoaded, $mmUserDelegate.updateProfileHandlers);
+            mmCoreEventRemoteAddonsLoaded, $mmUserProfileFieldsDelegate) {
+    function updateHandlers() {
+        $mmUserDelegate.updateProfileHandlers();
+        $mmUserProfileFieldsDelegate.updateFieldHandlers();
+    }
+
+    $mmEvents.on(mmCoreEventLogin, updateHandlers);
+    $mmEvents.on(mmCoreEventSiteUpdated, updateHandlers);
+    $mmEvents.on(mmCoreEventRemoteAddonsLoaded, updateHandlers);
 
     $mmEvents.on(mmCoreEventUserDeleted, function(data) {
         if (data.siteid && data.siteid === $mmSite.getId() && data.params) {

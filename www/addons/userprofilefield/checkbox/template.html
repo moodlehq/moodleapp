@@ -1,0 +1,9 @@
+<div class="item" ng-if="field && field.name">
+    <p class="item-heading">{{ field.name }}</p>
+    <p ng-if="field.value != '0'">
+        {{ 'mm.core.yes' | translate }}
+    </p>
+    <p ng-if="field.value == '0'">
+        {{ 'mm.core.no' | translate }}
+    </p>
+</div>

@@ -103,7 +103,7 @@
                             <mm-format-text watch="true" clean="true">{{user.interests}}</mm-format-text>
                         </p>
                     </div>
-                    <mm-user-custom-field ng-repeat="field in user.customfields" field="field"></mm-user-custom-field>
+                    <mm-user-profile-field ng-repeat="field in user.customfields" field="field"></mm-user-profile-field>
                 </div>
                 <div class="list">
                     <div class="item item-divider" ng-if="user.description">
