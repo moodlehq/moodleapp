@@ -356,6 +356,8 @@ var remoteAddonPaths = {
 
 gulp.task('default', ['build', 'sass', 'lang', 'config']);
 
+gulp.task('serve:before', ['default', 'watch']);
+
 gulp.task('sass-build', function(done) {
   gulp.src(paths.sass.core)
     .pipe(concat('mm.bundle.scss'))
