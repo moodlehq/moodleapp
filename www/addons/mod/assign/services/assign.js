@@ -829,15 +829,12 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}  Promise resolved when the WS call is successful.
      */
     self.logSubmissionView = function(assignId, siteId) {
-        if (assignId) {
-            return $mmSitesManager.getSite(siteId).then(function(site) {
-                var params = {
-                    assignid: assignId
-                };
-                return site.write('mod_assign_view_submission_status', params);
-            });
-        }
-        return $q.reject();
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                assignid: assignId
+            };
+            return site.write('mod_assign_view_submission_status', params);
+        });
     };
 
     /**
@@ -851,15 +848,31 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}  Promise resolved when the WS call is successful.
      */
     self.logGradingView = function(assignId, siteId) {
-        if (assignId) {
-            return $mmSitesManager.getSite(siteId).then(function(site) {
-                var params = {
-                    assignid: assignId
-                };
-                return site.write('mod_assign_view_grading_table', params);
-            });
-        }
-        return $q.reject();
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                assignid: assignId
+            };
+            return site.write('mod_assign_view_grading_table', params);
+        });
+    };
+
+    /**
+     * Report a assign as being viewed.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssign#logView
+     * @param {Number} assignId     Assignment ID.
+     * @param {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}  Promise resolved when the WS call is successful.
+     */
+    self.logView = function(assignId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                assignid: assignId
+            };
+            return site.write('mod_assign_view_assign', params);
+        });
     };
 
     /**
