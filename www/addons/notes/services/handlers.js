@@ -196,18 +196,19 @@ angular.module('mm.addons.notes')
         /**
          * Check if handler is enabled for this course.
          *
-         * @param  {Number} courseId   Course ID.
-         * @param  {Object} accessData Type of access to the course: default, guest, ...
-         * @param  {Object} [options]  Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
-         * @return {Boolean}           True if handler is enabled, false otherwise.
+         * @param  {Number} courseId     Course ID.
+         * @param  {Object} accessData   Type of access to the course: default, guest, ...
+         * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
+         * @return {Boolean}             True if handler is enabled, false otherwise.
          */
-        self.isEnabledForCourse = function(courseId, accessData, options) {
+        self.isEnabledForCourse = function(courseId, accessData, navOptions, admOptions) {
             if (accessData && accessData.type == mmCoursesAccessMethods.guest) {
                 return false; // Not enabled for guests.
             }
 
-            if (options && typeof options.notes != 'undefined') {
-                return options.notes;
+            if (navOptions && typeof navOptions.notes != 'undefined') {
+                return navOptions.notes;
             }
 
             if (typeof coursesNavEnabledCache[courseId] != 'undefined') {

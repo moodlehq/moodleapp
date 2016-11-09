@@ -83,12 +83,12 @@ angular.module('mm.core.courses')
                 // Success retrieving the course, we can assume the user has permissions to view it.
                 course.fullname = c.fullname || course.fullname;
                 course.summary = c.summary || course.summary;
-                loadCourseNavHandlers(refresh);
+                return loadCourseNavHandlers(refresh);
             }).catch(function() {
                 // The user is not an admin/manager. Check if we can provide guest access to the course.
                 return canAccessAsGuest().then(function(passwordRequired) {
                     if (!passwordRequired) {
-                        loadCourseNavHandlers(refresh);
+                        return loadCourseNavHandlers(refresh);
                     } else {
                         course._handlers = [];
                         handlersShouldBeShown = false;
@@ -128,13 +128,30 @@ angular.module('mm.core.courses')
 
     // Load course nav handlers.
     function loadCourseNavHandlers(refresh) {
-        // Get user navigation options to speed up handlers loading.
-        $mmCourses.getUserNavigationOptions([course.id]).catch(function() {
+        var promises = [],
+            navOptions,
+            admOptions;
+
+        // Get user navigation and administration options to speed up handlers loading.
+        promises.push($mmCourses.getUserNavigationOptions([course.id]).catch(function() {
             // Couldn't get it, return empty options.
             return {};
         }).then(function(options) {
-            course._handlers = $mmCoursesDelegate.getNavHandlersFor(course.id, refresh, options[course.id]);
+            navOptions = options;
+        }));
+
+        promises.push($mmCourses.getUserAdministrationOptions([course.id]).catch(function() {
+            // Couldn't get it, return empty options.
+            return {};
+        }).then(function(options) {
+            admOptions = options;
+        }));
+
+        return $q.all(promises).then(function() {
+            course._handlers = $mmCoursesDelegate.getNavHandlersFor(
+                        course.id, refresh, navOptions[course.id], admOptions[course.id]);
         });
+
     }
 
     function refreshData() {
@@ -144,6 +161,7 @@ angular.module('mm.core.courses')
         promises.push($mmCourses.invalidateCourse(course.id));
         promises.push($mmCourses.invalidateCourseEnrolmentMethods(course.id));
         promises.push($mmCourses.invalidateUserNavigationOptionsForCourses([course.id]));
+        promises.push($mmCourses.invalidateUserAdministrationOptionsForCourses([course.id]));
         if (guestInstanceId) {
             promises.push($mmCourses.invalidateCourseGuestEnrolmentInfo(guestInstanceId));
         }

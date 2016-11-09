@@ -34,19 +34,7 @@ angular.module('mm.core.courses')
             $scope.courses = courses;
             $scope.filter.filterText = ''; // Filter value MUST be set after courses are shown.
 
-            // Get user navigation options to speed up handlers loading.
-            var courseIds = courses.map(function(course) {
-                return course.id;
-            });
-
-            $mmCourses.getUserNavigationOptions(courseIds).catch(function() {
-                // Couldn't get it, return empty options.
-                return {};
-            }).then(function(options) {
-                angular.forEach(courses, function(course) {
-                    course._handlers = $mmCoursesDelegate.getNavHandlersFor(course.id, refresh, options[course.id]);
-                });
-            });
+            return loadCoursesNavHandlers(refresh);
         }, function(error) {
             if (typeof error != 'undefined' && error !== '') {
                 $mmUtil.showErrorModal(error);
@@ -55,6 +43,39 @@ angular.module('mm.core.courses')
             }
         });
     }
+
+    // Convenience function to load the handlers of each course.
+    function loadCoursesNavHandlers(refresh) {
+        var promises = [],
+            navOptions,
+            admOptions,
+            courseIds = $scope.courses.map(function(course) {
+                return course.id;
+            });
+
+        // Get user navigation and administration options to speed up handlers loading.
+        promises.push($mmCourses.getUserNavigationOptions(courseIds).catch(function() {
+            // Couldn't get it, return empty options.
+            return {};
+        }).then(function(options) {
+            navOptions = options;
+        }));
+
+        promises.push($mmCourses.getUserAdministrationOptions(courseIds).catch(function() {
+            // Couldn't get it, return empty options.
+            return {};
+        }).then(function(options) {
+            admOptions = options;
+        }));
+
+        return $q.all(promises).then(function() {
+            angular.forEach($scope.courses, function(course) {
+                course._handlers = $mmCoursesDelegate.getNavHandlersFor(
+                            course.id, refresh, navOptions[course.id], admOptions[course.id]);
+            });
+        });
+    }
+
     fetchCourses().finally(function() {
         $scope.coursesLoaded = true;
     });
@@ -66,6 +87,7 @@ angular.module('mm.core.courses')
 
         promises.push($mmCourses.invalidateUserCourses());
         promises.push($mmCourses.invalidateUserNavigationOptions());
+        promises.push($mmCourses.invalidateUserAdministrationOptions());
 
         $q.all(promises).finally(function() {
             fetchCourses(true).finally(function() {

@@ -78,18 +78,19 @@ angular.module('mm.addons.grades')
         /**
          * Check if handler is enabled for this course.
          *
-         * @param  {Number} courseId   Course ID.
-         * @param  {Object} accessData Type of access to the course: default, guest, ...
-         * @param  {Object} [options]  Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
-         * @return {Boolean}           True if handler is enabled, false otherwise.
+         * @param  {Number} courseId     Course ID.
+         * @param  {Object} accessData   Type of access to the course: default, guest, ...
+         * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
+         * @return {Boolean}             True if handler is enabled, false otherwise.
          */
-        self.isEnabledForCourse = function(courseId, accessData, options) {
+        self.isEnabledForCourse = function(courseId, accessData, navOptions, admOptions) {
             if (accessData && accessData.type == mmCoursesAccessMethods.guest) {
                 return false; // Not enabled for guests.
             }
 
-            if (options && typeof options.grades != 'undefined') {
-                return options.grades;
+            if (navOptions && typeof navOptions.grades != 'undefined') {
+                return navOptions.grades;
             }
 
             return $mmaGrades.isPluginEnabledForCourse(courseId);
