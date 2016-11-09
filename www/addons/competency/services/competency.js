@@ -130,13 +130,8 @@ angular.module('mm.addons.competency')
             return $q.when(false);
         }
 
-        return self.getCourseCompetencies(courseId, siteId).then(function(competencies) {
-            if (competencies.competencies.length <= 0) {
-                return false;
-            }
-            return competencies;
-        }).catch(function() {
-            return $q.when(false);
+        return self.getCourseCompetencies(courseId, siteId).catch(function() {
+            return false;
         });
     };
 

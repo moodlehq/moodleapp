@@ -7,7 +7,7 @@
         </ion-refresher>
         <mm-loading hide-until="competenciesLoaded">
             <article>
-                <ul class="list card" ng-if="!user">
+                <ul class="list card" ng-if="!user && competencies.statistics.competencycount > 0">
                     <li class="item item-text-wrap" ng-if="competencies.settings.pushratingstouserplans">
                         {{ 'mma.competency.coursecompetencyratingsarepushedtouserplans' | translate }}
                     </li>
