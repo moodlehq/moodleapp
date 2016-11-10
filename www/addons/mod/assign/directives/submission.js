@@ -27,7 +27,7 @@ angular.module('mm.addons.mod_assign')
         mmaModAssignUnlimitedAttempts, mmUserProfileState, mmaModAssignSubmissionStatusNew, mmaModAssignSubmissionStatusSubmitted,
         mmaModAssignSubmissionInvalidatedEvent, $mmGroups, $state, $mmaModAssignHelper, mmaModAssignSubmissionStatusReopened,
         $mmEvents, mmaModAssignSubmittedForGradingEvent, $mmFileUploaderHelper, $mmApp, $mmText, mmaModAssignComponent, $mmUtil,
-        $mmaModAssignOffline, mmaModAssignEventManualSynced, $mmCourse, $mmaGrades, mmaModAssignAttemptReopenMethodManual) {
+        $mmaModAssignOffline, mmaModAssignEventManualSynced, $mmCourse, $mmAddonManager, mmaModAssignAttemptReopenMethodManual) {
 
     /**
      * Set the submission status name and class.
@@ -145,6 +145,12 @@ angular.module('mm.addons.mod_assign')
                                 }
                                 outcome.selectedId = 0;
                             });
+                        }
+
+                        // Get grade addon if avalaible.
+                        var $mmaGrades = $mmAddonManager.get('$mmaGrades');
+                        if (!$mmaGrades) {
+                            return $q.when();
                         }
 
                         return $mmaGrades.getGradeModuleItems(courseId, moduleId, userId).then(function(grades) {
@@ -633,7 +639,11 @@ angular.module('mm.addons.mod_assign')
                     promises.push($mmaModAssign.invalidateSubmissionStatusData(scope.assign.id, submitId, !!blindId));
                     promises.push($mmaModAssign.invalidateAssignmentUserMappingsData(scope.assign.id));
                 }
-                promises.push($mmaGrades.invalidateGradeItemsData(courseId, submitId));
+                // Get grade addon if avalaible.
+                var $mmaGrades = $mmAddonManager.get('$mmaGrades');
+                if ($mmaGrades) {
+                    promises.push($mmaGrades.invalidateGradeItemsData(courseId, submitId));
+                }
                 promises.push($mmCourse.invalidateModule(moduleId));
 
                 return $q.all(promises).finally(function() {
