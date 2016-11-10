@@ -99,11 +99,14 @@ function treatMergedData(data) {
     } else if (filepath.indexOf('addons') === 0) {
 
       var split = filepath.split('/'),
-        pluginName = split[1];
+        pluginName = split[1],
+        index = 2;
 
-      // Check if it's a subplugin. If so, we'll use plugin_subplugin.
-      if (split[2] != 'lang') {
-        pluginName = pluginName + '_' + split[2];
+      // Check if it's a subplugin. If so, we'll use plugin_subfolder_subfolder2_...
+      // E.g. 'mod_assign_feedback_comments'.
+      while (split[index] && split[index] != 'lang') {
+        pluginName = pluginName + '_' + split[index];
+        index++;
       }
       addProperties(merged, data[filepath], 'mma.'+pluginName+'.');
 
