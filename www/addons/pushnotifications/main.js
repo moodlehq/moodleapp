@@ -15,26 +15,6 @@
 angular.module('mm.addons.pushnotifications', [])
 
 .constant('mmaPushNotificationsComponent', 'mmaPushNotifications')
-.constant('mmaPushNotificationsNotifPreferencesPriority', 500)
-
-.config(function($stateProvider, $mmSettingsDelegateProvider, mmaPushNotificationsNotifPreferencesPriority) {
-
-    $stateProvider
-
-    .state('site.pushnotifications-notificationpreferences', {
-        url: '/pushnotifications-notificationpreferences',
-        views: {
-            'site': {
-                controller: 'mmaPushNotificationsNotifPreferencesCtrl',
-                templateUrl: 'addons/pushnotifications/templates/notificationpreferences.html'
-            }
-        }
-    });
-
-    // Register settings handler.
-    $mmSettingsDelegateProvider.registerHandler('mmaPushNotifications:notificationPreferences',
-            '$mmaPushNotificationsHandlers.notificationPreferences', mmaPushNotificationsNotifPreferencesPriority);
-})
 
 .run(function($mmaPushNotifications, $ionicPlatform, $rootScope, $mmEvents, $mmLocalNotifications, mmCoreEventLogin,
             mmaPushNotificationsComponent, mmCoreEventSiteDeleted) {

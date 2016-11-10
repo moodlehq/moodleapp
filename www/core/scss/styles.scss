@@ -56,9 +56,6 @@ $mm-text-with-icon-height: 22px !default;
 // Smaller button icon.
 $mm-button-icon-small-height: 22px !default;
 
-// Bigger item-divider.
-$item-divider-heading-font-size: $font-size-large !default;
-
 /**
  * App Branding
  */
@@ -931,10 +928,4 @@ ion-spinner.mm-spinner-right {
   .toggle {
     right: $item-padding + 14px;
   }
-}
-
-// Bigger item divider.
-.item-divider-heading, .item-divider.item-divider-heading, .item.item-divider.item-divider-heading {
-  font-size: $item-divider-heading-font-size;
-  padding-bottom: ceil($item-padding / 2) + 2px;
 }

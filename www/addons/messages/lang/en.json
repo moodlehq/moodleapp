@@ -1,6 +1,7 @@
 {
     "addcontact": "Add contact",
     "blockcontact": "Block contact",
+    "blocknoncontacts": "Prevent non-contacts from messaging me",
     "contactname": "Contact name",
     "contactlistempty": "The contact list is empty",
     "contacts": "Contacts",
@@ -11,6 +12,7 @@
     "errorwhileretrievingdiscussions": "Error while retrieving the discussions from the server.",
     "errorwhileretrievingmessages": "Error while retrieving the messages from the server.",
     "messagenotsent": "The message was not sent, please try again later.",
+    "messagepreferences": "Message preferences",
     "messages": "Messages",
     "mustbeonlinetosendmessages": "You must be online to send messages",
     "newmessage": "New message...",

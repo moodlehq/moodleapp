@@ -178,7 +178,6 @@ angular.module('mm.addons.mod_survey')
 
     // Pull to refresh.
     $scope.refreshSurvey = function(showErrors) {
-        console.log(showErrors);
         if ($scope.surveyLoaded) {
             $scope.refreshIcon = 'spinner';
             $scope.syncIcon = 'spinner';

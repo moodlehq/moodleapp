@@ -12,22 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.addons.pushnotifications')
+angular.module('mm.addons.messageoutput')
 
 /**
- * Delegate to register notification processors (message/output) for notification preferences.
+ * Delegate to register processors (message/output) to be used in places like notification preferences.
  *
- * @module mm.addons.pushnotifications
+ * @module mm.addons.messageoutput
  * @ngdoc service
- * @name $mmaPushNotificationsPreferencesDelegate
+ * @name $mmaMessageOutputDelegate
  * @description
  *
- * Delegate to register notification preferences handlers.
- * These handlers are used to configure extra settings not returned by core_message_get_user_notification_preferences.
+ * Delegate to register processors.
+ * These handlers are used to configure extra settings for each processor.
  *
- * To register a preference handler:
+ * To register a processor handler:
  *
- * $mmaPushNotificationsPreferencesDelegate.registerHandler('mmaYourAddon', 'processorName', 'handlerName');
+ * $mmaMessageOutputDelegate.registerHandler('mmaYourAddon', 'processorName', 'handlerName');
  *
  * Please take into account that this delegate belongs to an addon so it might not be available in custom apps.
  * We recommend using $mmAddonManager to inject this delegate to avoid errors.
@@ -35,34 +35,50 @@ angular.module('mm.addons.pushnotifications')
  * Example:
  *
  * .run(function($mmAddonManager) {
- *     var $mmaPushNotificationsPreferencesDelegate = $mmAddonManager.get('$mmaPushNotificationsPreferencesDelegate');
- *     if ($mmaPushNotificationsPreferencesDelegate) {
- *         $mmaPushNotificationsPreferencesDelegate.registerHandler('mmaMessagesAirnotifier', 'airnotifier',
- *                                 '$mmaMessagesAirnotifierHandler');
+ *     var $mmaMessageOutputDelegate = $mmAddonManager.get('$mmaMessageOutputDelegate');
+ *     if ($mmaMessageOutputDelegate) {
+ *         $mmaMessageOutputDelegate.registerHandler('mmaMessageOutputAirnotifier', 'airnotifier',
+ *                 '$mmaMessageOutputAirnotifierHandlers.processorPreferences');
  *      }
  * });
  *
- * @see $mmaPushNotificationsPreferencesDelegate#registerHandler to see the methods your handle needs to implement.
+ * @see $mmaMessageOutputDelegate#registerHandler to see the methods your handle needs to implement.
  */
-.factory('$mmaPushNotificationsPreferencesDelegate', function($q, $log, $mmSite, $mmUtil) {
+.factory('$mmaMessageOutputDelegate', function($q, $log, $mmSite, $mmUtil, $translate) {
     var handlers = {},
         enabledHandlers = {},
         self = {},
         updatePromises = {},
         lastUpdateHandlersStart;
 
-    $log = $log.getInstance('$mmaPushNotificationsPreferencesDelegate');
+    $log = $log.getInstance('$mmaMessageOutputDelegate');
+
+    /**
+     * Get the label to show to open the extra preferences. Defaults to 'mm.settings.processorsettings'.
+     *
+     * @module mm.addons.messageoutput
+     * @ngdoc method
+     * @name $mmaMessageOutputDelegate#getPreferenceLabel
+     * @param  {String} processorName The name of the processor. E.g. 'airnotifier'.
+     * @return {Boolean}              Translated label for the processor preferences.
+     */
+    self.getPreferenceLabel = function(processorName) {
+        if (enabledHandlers[processorName] && enabledHandlers[processorName].getPreferenceLabel) {
+            return $translate.instant(enabledHandlers[processorName].getPreferenceLabel());
+        }
+        return $translate.instant('mm.settings.processorsettings');
+    };
 
     /**
      * Check if a processor has a preference handler enabled for the current site.
      *
-     * @module mm.addons.pushnotifications
+     * @module mm.addons.messageoutput
      * @ngdoc method
-     * @name $mmaPushNotificationsPreferencesDelegate#hasPreferenceHandler
+     * @name $mmaMessageOutputDelegate#hasHandler
      * @param  {String} processorName The name of the processor. E.g. 'airnotifier'.
      * @return {Boolean}             Whether the processor has a preference handler.
      */
-    self.hasPreferenceHandler = function(processorName) {
+    self.hasHandler = function(processorName) {
         return typeof enabledHandlers[processorName] !== 'undefined';
     };
 
@@ -70,9 +86,9 @@ angular.module('mm.addons.pushnotifications')
      * Check if a time belongs to the last update handlers call.
      * This is to handle the cases where updatePreferenceHandlers don't finish in the same order as they're called.
      *
-     * @module mm.addons.pushnotifications
+     * @module mm.addons.messageoutput
      * @ngdoc method
-     * @name $mmaPushNotificationsPreferencesDelegate#isLastUpdateCall
+     * @name $mmaMessageOutputDelegate#isLastUpdateCall
      * @param  {Number}  time Time to check.
      * @return {Boolean}      True if equal, false otherwise.
      */
@@ -86,14 +102,14 @@ angular.module('mm.addons.pushnotifications')
     /**
      * Open the preferences view for a certain handler.
      *
-     * @module mm.addons.pushnotifications
+     * @module mm.addons.messageoutput
      * @ngdoc method
-     * @name $mmaPushNotificationsPreferencesDelegate#openPreferencesViewFor
+     * @name $mmaMessageOutputDelegate#openPreferencesViewFor
      * @param  {Object} processor The processor object.
      * @return {Void}
      */
     self.openPreferencesViewFor = function(processor) {
-        if (self.hasPreferenceHandler(processor.name)) {
+        if (self.hasHandler(processor.name)) {
             enabledHandlers[processor.name].openPreferencesView(processor);
         }
     };
@@ -101,15 +117,17 @@ angular.module('mm.addons.pushnotifications')
     /**
      * Register a preference handler.
      *
-     * @module mm.addons.pushnotifications
+     * @module mm.addons.messageoutput
      * @ngdoc method
-     * @name $mmaPushNotificationsPreferencesDelegate#registerPreferenceHandler
-     * @param {String} addon           The addon's name (mmaMessageAirnotifier, mmaMessageEmail, ...)
+     * @name $mmaMessageOutputDelegate#registerPreferenceHandler
+     * @param {String} addon           The addon's name (mmaMessageOutputAirnotifier, mmaMessageOutputWeb, ...)
      * @param {String} processorName   The name of the processor. E.g. 'airnotifier'.
      * @param {String|Object|Function} handler Must be resolved to an object defining the following functions. Or to a function
      *                           returning an object defining these functions. See {@link $mmUtil#resolveObject}.
      *                             - isEnabled (Boolean|Promise) Whether or not the handler is enabled on a site level.
      *                             - openPreferencesView(processor) Should open the view to configure extra preferences.
+     *                             - getPreferenceLabel (String) Should return the language code of the label to open the extra
+     *                                         preferences. E.g. 'mma.messageoutput_airnotifier.processorsettingsdesc'.
      */
     self.registerHandler = function(addon, processorName, handler) {
         if (typeof handlers[processorName] !== 'undefined') {
@@ -133,9 +151,9 @@ angular.module('mm.addons.pushnotifications')
     /**
      * Update the enabled handlers for the current site.
      *
-     * @module mm.addons.pushnotifications
+     * @module mm.addons.messageoutput
      * @ngdoc method
-     * @name $mmaPushNotificationsPreferencesDelegate#updatePreferenceHandler
+     * @name $mmaMessageOutputDelegate#updatePreferenceHandler
      * @param  {String} processorName The name of the processor. E.g. 'airnotifier'.
      * @param  {Object} handlerInfo   The handler details.
      * @param  {Number} time          Time this update process started.
@@ -191,9 +209,9 @@ angular.module('mm.addons.pushnotifications')
     /**
      * Update the handlers for the current site.
      *
-     * @module mm.addons.pushnotifications
+     * @module mm.addons.messageoutput
      * @ngdoc method
-     * @name $mmaPushNotificationsPreferencesDelegate#updatePreferenceHandlers
+     * @name $mmaMessageOutputDelegate#updatePreferenceHandlers
      * @return {Promise} Resolved when done.
      * @protected
      */
@@ -222,9 +240,8 @@ angular.module('mm.addons.pushnotifications')
     return self;
 })
 
-.run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, mmCoreEventRemoteAddonsLoaded,
-            $mmaPushNotificationsPreferencesDelegate) {
-    $mmEvents.on(mmCoreEventLogin, $mmaPushNotificationsPreferencesDelegate.updatePreferenceHandlers);
-    $mmEvents.on(mmCoreEventSiteUpdated, $mmaPushNotificationsPreferencesDelegate.updatePreferenceHandlers);
-    $mmEvents.on(mmCoreEventRemoteAddonsLoaded, $mmaPushNotificationsPreferencesDelegate.updatePreferenceHandlers);
+.run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, mmCoreEventRemoteAddonsLoaded, $mmaMessageOutputDelegate) {
+    $mmEvents.on(mmCoreEventLogin, $mmaMessageOutputDelegate.updatePreferenceHandlers);
+    $mmEvents.on(mmCoreEventSiteUpdated, $mmaMessageOutputDelegate.updatePreferenceHandlers);
+    $mmEvents.on(mmCoreEventRemoteAddonsLoaded, $mmaMessageOutputDelegate.updatePreferenceHandlers);
 });

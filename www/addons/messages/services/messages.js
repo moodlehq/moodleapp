@@ -541,6 +541,42 @@ angular.module('mm.addons.messages')
     };
 
     /**
+     * Get the cache key for the get message preferences call.
+     *
+     * @return {String} Cache key.
+     */
+    function getMessagePreferencesCacheKey() {
+        return 'mmaMessages:messagePreferences';
+    }
+
+    /**
+     * Get message preferences.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#getMessagePreferences
+     * @param  {String} [siteid] Site ID. If not defined, use current site.
+     * @return {Promise}         Promise resolved with the message preferences.
+     */
+    self.getMessagePreferences = function(siteId) {
+        $log.debug('Get message preferences');
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var preSets = {
+                    cacheKey: getMessagePreferencesCacheKey()
+                };
+
+            return site.read('core_message_get_user_message_preferences', {}, preSets).then(function(data) {
+                if (data.preferences) {
+                    data.preferences.blocknoncontacts = data.blocknoncontacts;
+                    return data.preferences;
+                }
+                return $q.reject();
+            });
+        });
+    };
+
+    /**
      * Invalidate all contacts cache.
      *
      * @module mm.addons.messages
@@ -645,6 +681,21 @@ angular.module('mm.addons.messages')
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(self._getCacheKeyForEnabled());
+        });
+    };
+
+    /**
+     * Invalidate get message preferences.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#invalidateMessagePreferences
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when data is invalidated.
+     */
+    self.invalidateMessagePreferences = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getMessagePreferencesCacheKey());
         });
     };
 
@@ -765,6 +816,18 @@ angular.module('mm.addons.messages')
                 cacheKey: self._getCacheKeyForEnabled()
             });
         });
+    };
+
+    /**
+     * Returns whether or not the message preferences are enabled for the current site.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#isMessagePreferencesEnabled
+     * @return {Boolean} True if enabled, false otherwise.
+     */
+    self.isMessagePreferencesEnabled = function() {
+        return $mmSite.wsAvailable('core_message_get_user_message_preferences');
     };
 
     /**

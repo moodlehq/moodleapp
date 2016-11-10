@@ -12,25 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.addons.pushnotifications')
+angular.module('mm.addons.messageoutput_airnotifier')
 
 /**
- * Controller to handle notification preferences.
+ * Controller to handle airnotifier devices.
  *
- * @module mm.addons.pushnotifications
+ * @module mm.addons.messageoutput_airnotifier
  * @ngdoc controller
- * @name mmaPushNotificationsAirnotifierPreferencesCtrl
+ * @name mmaMessageOutputAirnotifierDevicesCtrl
  */
-.controller('mmaPushNotificationsAirnotifierPreferencesCtrl', function($stateParams, $scope, $mmUtil, $translate,
-        $mmaPushNotifications, $mmaPushNotificationPreferencesAirnotifier, $timeout) {
+.controller('mmaMessageOutputAirnotifierDevicesCtrl', function($stateParams, $scope, $mmUtil, $translate, $timeout, $injector,
+        $mmaMessageOutputAirnotifier) {
 
-    var updateTimeout;
+    // Use $injector since pushnotifications is an addon and it might not be in the app.
+    var $mmaPushNotifications = $injector.get('$mmaPushNotifications'),
+        updateTimeout;
 
-    $scope.title = $stateParams.title || $translate.instant('mma.pushnotifications.processorsettings');
+    $scope.title = $stateParams.title || $translate.instant('mm.settings.processorsettings');
 
     function fetchDevices() {
-        return $mmaPushNotificationPreferencesAirnotifier.getUserDevices().then(function(devices) {
-            var pushId = $mmaPushNotifications.getPushId();
+        return $mmaMessageOutputAirnotifier.getUserDevices().then(function(devices) {
+            var pushId;
+            if ($mmaPushNotifications) {
+                pushId = $mmaPushNotifications.getPushId();
+            }
 
             // Convert enabled to boolean and search current device.
             angular.forEach(devices, function(device) {
@@ -59,15 +64,15 @@ angular.module('mm.addons.pushnotifications')
 
     // Fetch devices. The purpose is to store the updated data, it won't be reflected in the view.
     function updateDevices() {
-        $mmaPushNotificationPreferencesAirnotifier.invalidateUserDevices().finally(function() {
-            $mmaPushNotificationPreferencesAirnotifier.getUserDevices();
+        $mmaMessageOutputAirnotifier.invalidateUserDevices().finally(function() {
+            $mmaMessageOutputAirnotifier.getUserDevices();
         });
     }
 
     fetchDevices();
 
     $scope.refreshDevices = function() {
-        $mmaPushNotificationPreferencesAirnotifier.invalidateUserDevices().finally(function() {
+        $mmaMessageOutputAirnotifier.invalidateUserDevices().finally(function() {
             fetchDevices().finally(function() {
                 $scope.$broadcast('scroll.refreshComplete');
             });
@@ -77,7 +82,7 @@ angular.module('mm.addons.pushnotifications')
     // Enable or disable a certain device.
     $scope.enableDevice = function(device, enable) {
         device.updating = true;
-        $mmaPushNotificationPreferencesAirnotifier.enableDevice(device.id, enable).then(function() {
+        $mmaMessageOutputAirnotifier.enableDevice(device.id, enable).then(function() {
             // Update the list of devices since it was modified.
             updateDevicesAfterDelay();
         }).catch(function(message) {

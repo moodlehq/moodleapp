@@ -1,6 +1,6 @@
 <ion-view>
     <ion-nav-title>{{title}}</ion-nav-title>
-    <ion-content mm-state-class delegate-handle="mmaPushNotificationsPreferencesAirnotifierScroll">
+    <ion-content mm-state-class delegate-handle="mmaMessageOutputAirnotifierDevicesScroll">
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="devicesLoaded" on-refresh="refreshDevices()">
         </ion-refresher>
         <mm-loading hide-until="devicesLoaded">

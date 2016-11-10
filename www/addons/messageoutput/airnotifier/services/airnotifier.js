@@ -12,26 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.addons.pushnotifications')
+angular.module('mm.addons.messageoutput_airnotifier')
 
 /**
- * Airnotifier notification preferences factory.
+ * Airnotifier factory.
  *
- * @module mm.addons.pushnotifications
+ * @module mm.addons.messageoutput_airnotifier
  * @ngdoc service
- * @name $mmaPushNotificationPreferencesAirnotifier
+ * @name $mmaMessageOutputAirnotifier
  */
-.factory('$mmaPushNotificationPreferencesAirnotifier', function($mmSite, $log, $mmSitesManager, $q, mmCoreConfigConstants) {
-    $log = $log.getInstance('$mmaPushNotificationPreferencesAirnotifier');
+.factory('$mmaMessageOutputAirnotifier', function($mmSite, $log, $mmSitesManager, $q, mmCoreConfigConstants) {
+    $log = $log.getInstance('$mmaMessageOutputAirnotifier');
 
     var self = {};
 
     /**
      * Enables or disables a device.
      *
-     * @module mm.addons.pushnotifications
+     * @module mm.addons.messageoutput_airnotifier
      * @ngdoc method
-     * @name $mmaPushNotificationPreferencesAirnotifier#enableDevice
+     * @name $mmaMessageOutputAirnotifier#enableDevice
      * @param  {Number} deviceId Device ID.
      * @param  {Boolean} enable  True to enable, false to disable.
      * @param  {String} [siteId] Site ID. If not defined, current site.
@@ -62,15 +62,15 @@ angular.module('mm.addons.pushnotifications')
      * @return {String} Cache key.
      */
     function getUserDevicesCacheKey() {
-        return 'mmaPushNotifications:userDevices';
+        return 'mmaMessageOutputAirnotifier:userDevices';
     }
 
     /**
-     * Get notification preferences.
+     * Get user devices.
      *
-     * @module mm.addons.pushnotifications
+     * @module mm.addons.messageoutput_airnotifier
      * @ngdoc method
-     * @name $mmaPushNotificationPreferencesAirnotifier#getUserDevices
+     * @name $mmaMessageOutputAirnotifier#getUserDevices
      * @param  {String} [siteid] Site ID. If not defined, use current site.
      * @return {Promise}         Promise resolved with the devices.
      */
@@ -94,9 +94,9 @@ angular.module('mm.addons.pushnotifications')
     /**
      * Invalidate get user devices.
      *
-     * @module mm.addons.pushnotifications
+     * @module mm.addons.messageoutput_airnotifier
      * @ngdoc method
-     * @name $mmaPushNotificationPreferencesAirnotifier#invalidateUserDevices
+     * @name $mmaMessageOutputAirnotifier#invalidateUserDevices
      * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}         Promise resolved when data is invalidated.
      */
@@ -109,9 +109,9 @@ angular.module('mm.addons.pushnotifications')
     /**
      * Returns whether or not the plugin is enabled for the current site.
      *
-     * @module mm.addons.pushnotifications
+     * @module mm.addons.messageoutput_airnotifier
      * @ngdoc method
-     * @name $mmaPushNotificationPreferencesAirnotifier#isEnabled
+     * @name $mmaMessageOutputAirnotifier#isEnabled
      * @return {Boolean} True if enabled, false otherwise.
      */
     self.isEnabled = function() {

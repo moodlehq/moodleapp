@@ -31,6 +31,84 @@ angular.module('mm.core')
         syncPromises = {};
 
     /**
+     * Get a certain processor from a list of processors.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSettingsHelper#getProcessor
+     * @param  {Object[]} processors     List of processors.
+     * @param  {String} name             Name of the processor to get.
+     * @param  {Boolean} [fallback=true] True to return first processor if not found, false to not return any. Defaults to true.
+     * @return {Object}                  Processor.
+     */
+    self.getProcessor = function(processors, name, fallback) {
+        if (!processors) {
+            return;
+        }
+
+        if (typeof fallback == 'undefined') {
+            fallback = true;
+        }
+
+        for (var i = 0, len = processors.length; i < len; i++) {
+            var processor = processors[i];
+            if (processor.name == name) {
+                return processor;
+            }
+        }
+
+        // Processor not found, return first if requested.
+        if (fallback) {
+            return processors[0];
+        }
+    };
+
+    /**
+     * Return the components and notifications that have a certain processor.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSettingsHelper#getProcessorComponents
+     * @param  {String} processor    Name of the processor to filter.
+     * @param  {Object[]} components Array of components.
+     * @return {Object[]}            Filtered components.
+     */
+    self.getProcessorComponents = function(processor, components) {
+        var result = [];
+
+        angular.forEach(components, function(component) {
+
+            // Create a copy of the component with an empty list of notifications.
+            var componentCopy = angular.copy(component);
+            componentCopy.notifications = [];
+
+            angular.forEach(component.notifications, function(notification) {
+                var hasProcessor = false;
+                for (var i = 0, len = notification.processors.length; i < len; i++) {
+                    var proc = notification.processors[i];
+                    if (proc.name == processor) {
+                        hasProcessor = true;
+                        notification.currentProcessor = proc;
+                        break;
+                    }
+                }
+
+                if (hasProcessor) {
+                    // Add the notification.
+                    componentCopy.notifications.push(notification);
+                }
+            });
+
+            if (componentCopy.notifications.length) {
+                // At least 1 notification added, add the component to the result.
+                result.push(componentCopy);
+            }
+        });
+
+        return result;
+    };
+
+    /**
      * Get stored sites with a flag telling if they're being synchronized.
      *
      * @module mm.core
