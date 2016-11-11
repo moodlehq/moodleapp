@@ -727,6 +727,21 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Outcomes only can be edited if mod_assign_submit_grading_form is avalaible.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssign#isOutcomesEditEnabled
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with true if outcomes edit is enabled, rejected or resolved with false otherwise.
+     */
+    self.isOutcomesEditEnabled = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.wsAvailable('mod_assign_submit_grading_form');
+        });
+    };
+
+    /**
      * Check if assignments plugin prefetch is enabled in a certain site.
      *
      * @module mm.addons.mod_assign
@@ -1136,14 +1151,17 @@ angular.module('mm.addons.mod_assign')
      * @param  {Number}  addAttempt     Admit the user to attempt again.
      * @param  {String}  workflowState  Next workflow State.
      * @param  {Boolean} applyToAll     If it's a team submission, if the grade applies to all group members.
+     * @param  {Object}  outcomes       Object including all outcomes values. If empty, any of them will be sent.
      * @param  {String}  [siteId]       Site ID. If not defined, current site.
      * @return {Promise}                Promise resolved when submitted, rejected otherwise.
      */
-    self.submitGradingForm = function(assignmentId, userId, grade, attemptNumber, addAttempt, workflowState, applyToAll, siteId) {
+    self.submitGradingForm = function(assignmentId, userId, grade, attemptNumber, addAttempt, workflowState, applyToAll, outcomes,
+            siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             grade = $mmUtil.unformatFloat(grade);
             if (site.wsAvailable('mod_assign_submit_grading_form')) {
-                return submitGradingForm(assignmentId, userId, grade, attemptNumber, addAttempt, workflowState, applyToAll, site);
+                return submitGradingForm(assignmentId, userId, grade, attemptNumber, addAttempt, workflowState, applyToAll,
+                    outcomes, site);
             } else if(site.wsAvailable('mod_assign_save_grade')) {
                 return saveGrade(assignmentId, userId, grade, attemptNumber, addAttempt, workflowState, applyToAll, site);
             } else {
@@ -1154,6 +1172,7 @@ angular.module('mm.addons.mod_assign')
 
     // Legacy grading WS for Moodle < 3.2 when mod_assign_submit_grading_form is not avalaible.
     // See params on $mmaModAssign#submitGradingForm
+    // It does not have outcomes support.
     function saveGrade(assignmentId, userId, grade, attemptNumber, addAttempt, workflowState, applyToAll, site) {
         var params = {
                 assignmentid: assignmentId,
@@ -1178,7 +1197,7 @@ angular.module('mm.addons.mod_assign')
 
     // New grading WS for Moodle >= 3.2.
     // See params on $mmaModAssign#submitGradingForm
-    function submitGradingForm(assignmentId, userId, grade, attemptNumber, addAttempt, workflowState, applyToAll, site) {
+    function submitGradingForm(assignmentId, userId, grade, attemptNumber, addAttempt, workflowState, applyToAll, outcomes, site) {
         var jsondata, serialized, params;
 
         jsondata = {
@@ -1188,6 +1207,10 @@ angular.module('mm.addons.mod_assign')
                 workflowstate: workflowState,
                 applytoall: applyToAll ? 1 : 0
             };
+
+        angular.forEach(outcomes, function(outcome, index) {
+            jsondata['outcome_' + index + '[' + userId + ']'] = outcome;
+        });
 
         serialized = $mmUtil.param(jsondata);
 
