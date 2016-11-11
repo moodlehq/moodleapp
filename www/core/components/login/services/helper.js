@@ -212,7 +212,11 @@ angular.module('mm.core.login')
 
                 if (signature == params[0]) {
                     $log.debug('Signature validated');
-                    return { siteurl: launchSiteURL, token: params[1] };
+                    return {
+                        siteurl: launchSiteURL,
+                        token: params[1],
+                        privateToken: params[2]
+                    };
                 } else {
                     $log.debug('Inalid signature in the URL request yours: ' + params[0] + ' mine: '
                                     + signature + ' for passport ' + passport);
@@ -230,30 +234,27 @@ angular.module('mm.core.login')
      * @module mm.core.login
      * @ngdoc method
      * @name $mmLoginHelper#handleSSOLoginAuthentication
-     * @param {String} siteurl Site's URL.
-     * @param {String} token   User's token.
-     * @return {Promise}       Promise resolved when the user is authenticated with the token. Reject returns an error message.
+     * @param  {String} siteurl        Site's URL.
+     * @param  {String} token          User's token.
+     * @param  {String} [privateToken] User's private token.
+     * @return {Promise}               Promise resolved when the user is authenticated with the token.
      */
-    self.handleSSOLoginAuthentication = function(siteurl, token) {
+    self.handleSSOLoginAuthentication = function(siteurl, token, privateToken) {
         if ($mmSite.isLoggedIn()) {
             // User logged in, he is reconnecting.
-            var deferred = $q.defer();
-
             // Retrieve username.
             var info = $mmSite.getInfo();
-            if (typeof(info) !== 'undefined' && typeof(info.username) !== 'undefined') {
-                $mmSitesManager.updateSiteToken(info.siteurl, info.username, token).then(function() {
-                    $mmSitesManager.updateSiteInfoByUrl(info.siteurl, info.username).finally(deferred.resolve);
-                }, function() {
+            if (typeof info != 'undefined' && typeof info.username != 'undefined') {
+                return $mmSitesManager.updateSiteToken(info.siteurl, info.username, token, privateToken).then(function() {
+                    $mmSitesManager.updateSiteInfoByUrl(info.siteurl, info.username);
+                }).catch(function() {
                     // Error updating token, return proper error message.
-                    $mmLang.translateAndRejectDeferred(deferred, 'mm.login.errorupdatesite');
+                    return $mmLang.translateAndReject('mm.login.errorupdatesite');
                 });
-            } else {
-                $mmLang.translateAndRejectDeferred(deferred, 'mm.login.errorupdatesite');
             }
-            return deferred.promise;
+            return $mmLang.translateAndReject('mm.login.errorupdatesite');
         } else {
-            return $mmSitesManager.newSite(siteurl, token);
+            return $mmSitesManager.newSite(siteurl, token, privateToken);
         }
     };
 
