@@ -938,6 +938,39 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Returns if a submissions needs to be graded.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssign#needsSubmissionToBeGraded
+     * @param {Object}  submission    submission
+     * @param {Number}  assignId      Assignment Id of the submission.
+     * @return {Boolean}              If needs to be graded or not.
+     */
+    self.needsSubmissionToBeGraded = function(submission, assignId) {
+        if (!submission.gradingstatus) {
+            // This should not happen, but it's better to show rather than not showing any of the submissions.
+            return $q.when(true);
+        }
+
+        if (submission.gradingstatus != mmaModAssignGradingStatusGraded &&
+                submission.gradingstatus != mmaModMarkingWorkflowStateReleased) {
+            // Not graded.
+            return $q.when(true);
+        }
+
+        // We need more data to decide that.
+        return self.getSubmissionStatus(assignId, submission.submitid, submission.blindid).then(function(response) {
+            if (!response.feedback || !response.feedback.gradeddate) {
+                // Not graded.
+                return true;
+            }
+            // Submitted after grading?
+            return response.feedback.gradeddate < submission.timemodified;
+        });
+    };
+
+    /**
      * Save current user submission for a certain assignment.
      *
      * @module mm.addons.mod_assign

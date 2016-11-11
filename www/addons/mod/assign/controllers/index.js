@@ -24,7 +24,8 @@ angular.module('mm.addons.mod_assign')
 .controller('mmaModAssignIndexCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $translate, mmaModAssignComponent, $q,
         $state, mmaModAssignSubmissionInvalidatedEvent, $mmEvents, $mmSite, mmaModAssignSubmissionSavedEvent,
         mmaModAssignSubmittedForGradingEvent, $mmCourse, $mmApp, $mmaModAssignSync, $mmText, mmaModAssignEventAutomSynced,
-        mmCoreEventOnlineStatusChanged, $mmaModAssignOffline, $ionicScrollDelegate, mmaModAssignEventManualSynced) {
+        mmCoreEventOnlineStatusChanged, $mmaModAssignOffline, $ionicScrollDelegate, mmaModAssignEventManualSynced,
+        mmaModAssignSubmissionStatusSubmitted, mmaModAssignSubmissionStatusDraft, mmaModAssignNeedGrading) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         siteId = $mmSite.getId(),
@@ -40,6 +41,9 @@ angular.module('mm.addons.mod_assign')
     $scope.refreshIcon = 'spinner';
     $scope.syncIcon = 'spinner';
     $scope.moduleName = $mmCourse.translateModuleName('assign');
+    $scope.mmaModAssignSubmissionStatusSubmitted = mmaModAssignSubmissionStatusSubmitted;
+    $scope.mmaModAssignSubmissionStatusDraft = mmaModAssignSubmissionStatusDraft;
+    $scope.mmaModAssignNeedGrading = mmaModAssignNeedGrading;
 
     // Check if submit through app is supported.
     $mmaModAssign.isSaveAndSubmitSupported().then(function(enabled) {
@@ -49,7 +53,7 @@ angular.module('mm.addons.mod_assign')
     $scope.gotoSubmissionList = function(status, count) {
         if (typeof status == 'undefined') {
             $state.go('site.mod_assign-submission-list', {courseid: courseId, moduleid: module.id, modulename: module.name});
-        } else if (count > 0) {
+        } else if (count) {
             $state.go('site.mod_assign-submission-list', {status: status, courseid: courseId, moduleid: module.id, modulename: module.name});
         }
     };
@@ -108,6 +112,9 @@ angular.module('mm.addons.mod_assign')
 
                     return $mmaModAssign.getSubmissionStatus(assign.id).then(function(response) {
                         $scope.summary = response.gradingsummary;
+
+                        $scope.needsGradingAvalaible = response.gradingsummary.submissionsneedgradingcount > 0 &&
+                            parseInt($mmSite.getInfo().version, 10) >= 2016110200;
                     }).catch(function() {
                         // Fail silently (WS is not available, fallback).
                         return $q.when();
