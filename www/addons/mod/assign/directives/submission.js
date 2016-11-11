@@ -27,7 +27,8 @@ angular.module('mm.addons.mod_assign')
         mmaModAssignUnlimitedAttempts, mmUserProfileState, mmaModAssignSubmissionStatusNew, mmaModAssignSubmissionStatusSubmitted,
         mmaModAssignSubmissionInvalidatedEvent, $mmGroups, $state, $mmaModAssignHelper, mmaModAssignSubmissionStatusReopened,
         $mmEvents, mmaModAssignSubmittedForGradingEvent, $mmFileUploaderHelper, $mmApp, $mmText, mmaModAssignComponent, $mmUtil,
-        $mmaModAssignOffline, mmaModAssignEventManualSynced, $mmCourse, $mmAddonManager, mmaModAssignAttemptReopenMethodManual) {
+        $mmaModAssignOffline, mmaModAssignEventManualSynced, $mmCourse, $mmAddonManager, mmaModAssignAttemptReopenMethodManual,
+        $mmLang) {
 
     /**
      * Set the submission status name and class.
@@ -91,7 +92,8 @@ angular.module('mm.addons.mod_assign')
             gradingStatus: false,
             addAttempt : false,
             applyToAll: false,
-            scale: false
+            scale: false,
+            lang: false
         };
 
         if (feedbackStatus) {
@@ -111,7 +113,7 @@ angular.module('mm.addons.mod_assign')
 
             // Do not override already loaded grade.
             if (feedbackStatus.grade && feedbackStatus.grade.grade && !scope.grade.grade) {
-                scope.grade.grade = $mmUtil.formatFloat(feedbackStatus.grade.grade);
+                scope.grade.grade = parseFloat(feedbackStatus.grade.grade);
             }
         } else {
             // If no feedback, always show Submission.
@@ -139,6 +141,11 @@ angular.module('mm.addons.mod_assign')
 
                         if (scope.gradeInfo.scale) {
                             scope.grade.scale = formatScaleOptions(scope.gradeInfo.scale, $translate.instant('mm.core.nograde'));
+                        } else {
+                            // Get current language to format grade input field.
+                            $mmLang.getCurrentLanguage().then(function(lang) {
+                                scope.grade.lang = lang;
+                            });
                         }
 
                         if ($mmaModAssign.isOutcomesEditEnabled()) {
@@ -164,7 +171,7 @@ angular.module('mm.addons.mod_assign')
                                     if (scope.grade.scale) {
                                         scope.grade.grade = getSelectedScaleId(scope.grade.scale, grade.gradeformatted);
                                     } else {
-                                        scope.grade.grade = $mmUtil.formatFloat(grade.gradeformatted);
+                                        scope.grade.grade = parseFloat(grade.gradeformatted);
                                     }
                                 } else if (grade.outcomeid) {
                                     // Only show outcomes with info on it outcomeid could be null if outcomes are disabled on site.
@@ -597,11 +604,18 @@ angular.module('mm.addons.mod_assign')
                     return;
                 }
 
-                var modal = $mmUtil.showModalLoading('mm.core.sending', true),
+                var modal,
                     attemptNumber = scope.userSubmission ? scope.userSubmission.attemptnumber : -1,
                     outcomes = {},
                     // Scale "no grade" uses -1 instead of 0.
-                    grade = scope.grade.scale && scope.grade.grade == 0 ? -1 : scope.grade.grade;
+                    grade = scope.grade.scale && scope.grade.grade == 0 ? -1 : $mmUtil.unformatFloat(scope.grade.grade);
+
+                if (grade === false) {
+                    $mmUtil.showErrorModal('mma.grades.badgrade', true);
+                    return $q.reject();
+                }
+
+                modal = $mmUtil.showModalLoading('mm.core.sending', true);
 
                 angular.forEach(scope.gradeInfo.outcomes, function(outcome) {
                     if (outcome.itemNumber) {

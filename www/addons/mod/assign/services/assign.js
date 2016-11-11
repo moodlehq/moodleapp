@@ -1158,7 +1158,6 @@ angular.module('mm.addons.mod_assign')
     self.submitGradingForm = function(assignmentId, userId, grade, attemptNumber, addAttempt, workflowState, applyToAll, outcomes,
             siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            grade = $mmUtil.unformatFloat(grade);
             if (site.wsAvailable('mod_assign_submit_grading_form')) {
                 return submitGradingForm(assignmentId, userId, grade, attemptNumber, addAttempt, workflowState, applyToAll,
                     outcomes, site);
@@ -1212,7 +1211,7 @@ angular.module('mm.addons.mod_assign')
             jsondata['outcome_' + index + '[' + userId + ']'] = outcome;
         });
 
-        serialized = $mmUtil.param(jsondata);
+        serialized = $mmUtil.param(jsondata, true);
 
         params = {
             assignmentid: assignmentId,
