@@ -621,7 +621,12 @@ mm-timer {
     position: relative;
     max-width: 100%;
     direction: ltr;
+    line-height: 14px;
   }
+}
+
+.item-input-inset .item-input-wrapper input {
+  width: 100%;
 }
 
 .button.mm-button-icon-small {

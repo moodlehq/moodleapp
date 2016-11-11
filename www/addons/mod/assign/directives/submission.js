@@ -90,7 +90,8 @@ angular.module('mm.addons.mod_assign')
             grade: false,
             gradingStatus: false,
             addAttempt : false,
-            applyToAll: false
+            applyToAll: false,
+            scale: false
         };
 
         if (feedbackStatus) {
@@ -136,12 +137,15 @@ angular.module('mm.addons.mod_assign')
                         // Grades can be saved if simple grading.
                         scope.canSaveGrades = scope.grade.method == 'simple';
 
+                        if (scope.gradeInfo.scale) {
+                            scope.grade.scale = formatScaleOptions(scope.gradeInfo.scale, $translate.instant('mm.core.nograde'));
+                        }
+
                         if ($mmaModAssign.isOutcomesEditEnabled()) {
                             angular.forEach(scope.gradeInfo.outcomes, function(outcome) {
                                 if (outcome.scale) {
-                                    outcome.options = outcome.scale.split(",");
-                                    outcome.options = outcome.options.map(function (value) {return value.trim()});
-                                    outcome.options.unshift($translate.instant('mma.grades.nooutcome'));
+                                    outcome.options =
+                                        formatScaleOptions(outcome.scale, $translate.instant('mma.grades.nooutcome'));
                                 }
                                 outcome.selectedId = 0;
                             });
@@ -157,17 +161,18 @@ angular.module('mm.addons.mod_assign')
                             var outcomes = {};
                             angular.forEach(grades, function(grade) {
                                 if (!grade.outcomeid && !grade.scaleid) {
-                                    scope.grade.grade = $mmUtil.formatFloat(grade.gradeformatted);
+                                    if (scope.grade.scale) {
+                                        scope.grade.grade = getSelectedScaleId(scope.grade.scale, grade.gradeformatted);
+                                    } else {
+                                        scope.grade.grade = $mmUtil.formatFloat(grade.gradeformatted);
+                                    }
                                 } else if (grade.outcomeid) {
                                     // Only show outcomes with info on it outcomeid could be null if outcomes are disabled on site.
                                     angular.forEach(scope.gradeInfo.outcomes, function(outcome) {
                                         if (outcome.id == grade.outcomeid) {
                                             outcome.selected = grade.gradeformatted;
                                             if (outcome.options) {
-                                                outcome.selectedId = outcome.options.indexOf(outcome.selected) || 0;
-                                                if (outcome.selectedId < 0) {
-                                                    outcome.selectedId = 0;
-                                                }
+                                                outcome.selectedId = getSelectedScaleId(outcome.options, outcome.selected);
                                                 outcome.itemNumber = grade.itemnumber;
                                             }
                                             outcomes[outcome.id] = outcome;
@@ -195,6 +200,23 @@ angular.module('mm.addons.mod_assign')
                 });
             }
         });
+    }
+
+    // Convenience function to format scale selectors options.
+    function formatScaleOptions(options, defaultOption) {
+        options = options.split(",");
+        options = options.map(function (value) {return value.trim()});
+        options.unshift(defaultOption);
+        return options;
+    }
+
+    // Convenience function to get scale selected option.
+    function getSelectedScaleId(options, selected) {
+        var index = options.indexOf(selected) || 0;
+        if (index < 0) {
+            return 0;
+        }
+        return index;
     }
 
     // Directive controller.
@@ -577,7 +599,9 @@ angular.module('mm.addons.mod_assign')
 
                 var modal = $mmUtil.showModalLoading('mm.core.sending', true),
                     attemptNumber = scope.userSubmission ? scope.userSubmission.attemptnumber : -1,
-                    outcomes = {};
+                    outcomes = {},
+                    // Scale "no grade" uses -1 instead of 0.
+                    grade = scope.grade.scale && scope.grade.grade == 0 ? -1 : scope.grade.grade;
 
                 angular.forEach(scope.gradeInfo.outcomes, function(outcome) {
                     if (outcome.itemNumber) {
@@ -585,8 +609,8 @@ angular.module('mm.addons.mod_assign')
                     }
                 });
 
-                return $mmaModAssign.submitGradingForm(scope.assign.id, submitId, scope.grade.grade, attemptNumber,
-                        scope.grade.addAttempt, scope.grade.gradingStatus, scope.grade.applyToAll, outcomes).then(function() {
+                return $mmaModAssign.submitGradingForm(scope.assign.id, submitId, grade, attemptNumber, scope.grade.addAttempt,
+                        scope.grade.gradingStatus, scope.grade.applyToAll, outcomes).then(function() {
 
                     // Invalidate and refresh data.
                     invalidateAndRefresh();
