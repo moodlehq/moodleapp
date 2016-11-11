@@ -387,6 +387,37 @@ angular.module('mm.addons.mod_forum')
     };
 
     /**
+     * Convert flat arrays of posts into a tree format.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#constructDiscussionTree
+     * @param  {Array}  posts           Discussion posts used to construct the tree.
+     * @param  {Integer} rootParentId   The id of the root topic i.e. Discussion Post ID.
+     * @return {Array}                  Discussion posts converted into a tree structure.
+     */
+    self.constructDiscussionTree = function(posts, rootParentId) {
+        posts.reverse();
+
+        var map = {},
+            node,
+            roots = [];
+        for (var i = 0; i < posts.length; i += 1) {
+            node = posts[i];
+            node.children = [];
+            // use map to look-up the parents.
+            map[node.id] = i;
+            if (node.parent != rootParentId) {
+                posts[map[node.parent]].children.push(node);
+            } else {
+                roots.push(node);
+            }
+        }
+
+        return roots;
+    }
+
+    /**
      * Get forum discussions.
      *
      * @module mm.addons.mod_forum
