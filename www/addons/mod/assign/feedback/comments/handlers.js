@@ -102,6 +102,22 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Check if the feedback draft data for this plugin.
+     *
+     * @param  {Number} assignId     Assignment ID.
+     * @param  {Number} userId       User ID.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Boolean}             If has data on draft that needs to be saved.
+     */
+    self.hasDraftData = function(assignId, userId, siteId) {
+        var draft = self.getDraft(assignId, userId, siteId);
+        if (draft) {
+            return true;
+        }
+        return false;
+    };
+
+    /**
      * Get the text to submit.
      *
      * @param  {Object} plugin    Plugin.
