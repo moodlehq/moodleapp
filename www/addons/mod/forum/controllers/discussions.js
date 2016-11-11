@@ -56,6 +56,11 @@ angular.module('mm.addons.mod_forum')
             $scope.description = forum.intro || $scope.description;
             $scope.forum = forum;
 
+            // In tablet, load first discussion skipping "Add new discussion" button.
+            if (!$scope.linkToLoad) {
+                $scope.linkToLoad = $scope.isCreateEnabled && forum.cancreatediscussions ? 2 : 1;
+            }
+
             if (sync) {
                 // Try to synchronize the forum.
                 return syncForum(showErrors).catch(function() {
