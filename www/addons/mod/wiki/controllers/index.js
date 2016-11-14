@@ -192,8 +192,8 @@ angular.module('mm.addons.mod_wiki')
                 promise = $q.when(module);
             }
 
-            return promise.then(function(mod) {
-                module = mod;
+            return promise.then(function(module) {
+                module = module;
 
                 $scope.title = $scope.title || wiki.title;
                 $scope.description = wiki.intro || module.description;
@@ -275,8 +275,8 @@ angular.module('mm.addons.mod_wiki')
     }
 
     // Convenience function that fills Context Menu Popover.
-    function fillContextMenu(mod, courseId, invalidateCache) {
-        $mmCourseHelper.getModulePrefetchInfo(mod, courseId, invalidateCache).then(function(moduleInfo) {
+    function fillContextMenu(module, courseId, invalidateCache) {
+        $mmCourseHelper.getModulePrefetchInfo(module, courseId, invalidateCache).then(function(moduleInfo) {
             $scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
             $scope.prefetchStatusIcon = moduleInfo.statusIcon;
             $scope.timemodified = moduleInfo.timemodified > 0 ? $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable : "";

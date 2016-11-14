@@ -45,6 +45,12 @@ angular.module('mm.addons.mod_assign')
     $scope.mmaModAssignSubmissionStatusDraft = mmaModAssignSubmissionStatusDraft;
     $scope.mmaModAssignNeedGrading = mmaModAssignNeedGrading;
 
+    var moduleInfo = $mmCourseHelper.getModulePrefetchInfo(module, courseId);
+    $scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
+    $scope.prefetchStatusIcon = moduleInfo.statusIcon;
+    $scope.timemodified = moduleInfo.timemodified > 0 ? $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable : "";
+
+
     // Check if submit through app is supported.
     $mmaModAssign.isSaveAndSubmitSupported().then(function(enabled) {
         $scope.submitSupported = enabled;
@@ -68,7 +74,7 @@ angular.module('mm.addons.mod_assign')
             assign = assignData;
 
             $scope.title = assign.name || $scope.title;
-            $scope.description = assign.intro || $scope.description;
+            $scope.description = assign.intro ||  $scope.description;
             $scope.assign = assign;
 
             if (sync) {
@@ -77,6 +83,8 @@ angular.module('mm.addons.mod_assign')
                     // Ignore errors.
                 });
             }
+        }).then(function() {
+          fillContextMenu(module, courseId);
         }).then(function() {
             // Check if there's any offline data for this assign.
             return $mmaModAssignOffline.getAssignSubmissions(assign.id).catch(function() {
@@ -101,8 +109,9 @@ angular.module('mm.addons.mod_assign')
                             $scope.timeRemaining = $mmUtil.formatDuration(assign.duedate - time, 3);
                             if (assign.cutoffdate) {
                                 if (assign.cutoffdate > time) {
-                                    $scope.lateSubmissions = $translate.instant('mma.mod_assign.latesubmissionsaccepted',
-                                        {'$a': moment(assign.cutoffdate*1000).format($translate.instant('mm.core.dfmediumdate'))});
+                                    $scope.lateSubmissions = $translate.instant('mma.mod_assign.latesubmissionsaccepted', {
+                                        '$a': moment(assign.cutoffdate * 1000).format($translate.instant('mm.core.dfmediumdate'))
+                                    });
                                 } else {
                                     $scope.lateSubmissions = $translate.instant('mma.mod_assign.nomoresubmissionsaccepted');
                                 }
@@ -145,7 +154,7 @@ angular.module('mm.addons.mod_assign')
                 promises.push($mmaModAssign.invalidateSubmissionStatusData($scope.assign.id));
             }
         }
-
+        fillContextMenu(module, courseId);
         return $q.all(promises).finally(function() {
             $scope.$broadcast(mmaModAssignSubmissionInvalidatedEvent);
             return fetchAssignment(true, sync, showErrors);
@@ -174,6 +183,49 @@ angular.module('mm.addons.mod_assign')
         $scope.syncIcon = 'ion-loop';
     });
 
+    // Convenience function that fills Context Menu Popover.
+    function fillContextMenu(module, courseId, invalidateCache) {
+        $mmCourseHelper.getModulePrefetchInfo(module, courseId, invalidateCache).then(function(moduleInfo) {
+            $scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
+            $scope.prefetchStatusIcon = moduleInfo.statusIcon;
+            $scope.timemodified = moduleInfo.timemodified > 0 ? $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable : "";
+        });
+    }
+
+    $scope.removeFiles = function() {
+        $mmUtil.showConfirm($translate('mm.course.confirmdeletemodulefiles')).then(function() {
+            $mmCoursePrefetchDelegate.removeModuleFiles(module, courseId);
+        });
+    };
+
+    // Context Menu Prefetch action.
+    $scope.prefetch = function() {
+        var icon = $scope.prefetchStatusIcon;
+
+        $scope.prefetchStatusIcon = 'spinner'; // Show spinner since this operation might take a while.
+
+        // We need to call getDownloadSize, the package might have been updated.
+        $mmCoursePrefetchDelegate.getModuleDownloadSize(module, courseId).then(function(size) {
+            $mmUtil.confirmDownloadSize(size).then(function() {
+                $mmCoursePrefetchDelegate.prefetchModule(module, courseId).catch(function() {
+                    if (!$scope.$$destroyed) {
+                        $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                    }
+                });
+            }).catch(function() {
+                // User hasn't confirmed, stop spinner.
+                $scope.prefetchStatusIcon = icon;
+            });
+        }).catch(function(error) {
+            $scope.prefetchStatusIcon = icon;
+            if (error) {
+                $mmUtil.showErrorModal(error);
+            } else {
+                $mmUtil.showErrorModal('mm.core.errordownloading', true);
+            }
+        });
+    };
+
     // Context Menu Description action.
     $scope.expandDescription = function() {
         if ($scope.assign.id && ($scope.description || $scope.assign.introattachments)) {
@@ -194,6 +246,7 @@ angular.module('mm.addons.mod_assign')
                 $scope.refreshIcon = 'ion-refresh';
                 $scope.syncIcon = 'ion-loop';
                 $scope.$broadcast('scroll.refreshComplete');
+
             });
         }
     };
@@ -238,6 +291,7 @@ angular.module('mm.addons.mod_assign')
             $scope.refreshIcon = 'ion-refresh';
             $scope.syncIcon = 'ion-loop';
             $scope.assignmentLoaded = true;
+            fillContextMenu(module, courseId);
         });
     }
 
