@@ -85,7 +85,7 @@ angular.module('mm.core', ['pascalprecht.translate'])
                 params: null
             },
             cache: false,
-            controller: function($scope, $state, $stateParams, $mmSite, $mmSitesManager, $ionicHistory) {
+            controller: function($scope, $state, $stateParams, $mmSite, $mmSitesManager, $ionicHistory, $mmAddonManager, $mmApp) {
 
                 $ionicHistory.nextViewOptions({disableBack: true});
 
@@ -102,9 +102,15 @@ angular.module('mm.core', ['pascalprecht.translate'])
                     if ($mmSite.isLoggedIn()) {
                         if ($stateParams.siteid && $stateParams.siteid != $mmSite.getId()) {
                             // Notification belongs to a different site. Change site.
-                            $mmSitesManager.logout().then(function() {
-                                loadSiteAndGo();
-                            });
+                            if ($mmAddonManager.hasRemoteAddonsLoaded()) {
+                                // The site has remote addons so the app will be restarted. Store the data and logout.
+                                $mmApp.storeRedirect($stateParams.siteid, $stateParams.state, $stateParams.params);
+                                $mmSitesManager.logout();
+                            } else {
+                                $mmSitesManager.logout().then(function() {
+                                    loadSiteAndGo();
+                                });
+                            }
                         } else {
                             $state.go($stateParams.state, $stateParams.params);
                         }

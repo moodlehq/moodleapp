@@ -339,6 +339,59 @@ angular.module('mm.core')
             return $q.when();
         };
 
+        /**
+         * Retrieve redirect data.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#getRedirect
+         * @return {Object} Object with siteid, state, params and timemodified.
+         */
+        self.getRedirect = function() {
+            if (localStorage && localStorage.getItem) {
+                try {
+                    var data = {
+                        siteid: localStorage.getItem('mmCoreRedirectSiteId'),
+                        state: localStorage.getItem('mmCoreRedirectState'),
+                        params: localStorage.getItem('mmCoreRedirectParams'),
+                        timemodified: localStorage.getItem('mmCoreRedirectTime')
+                    };
+
+                    if (data.params) {
+                        data.params = JSON.parse(data.params);
+                    }
+
+                    return data;
+                } catch(ex) {
+                    $log.error('Error loading redirect data:', ex);
+                }
+            }
+
+            return {};
+        };
+
+        /**
+         * Store redirect params.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#storeRedirect
+         * @param  {String} siteId Site ID.
+         * @param  {String} state  State to go.
+         * @param  {Object} params State params.
+         * @return {Void}
+         */
+        self.storeRedirect = function(siteId, state, params) {
+            if (localStorage && localStorage.setItem) {
+                try {
+                    localStorage.setItem('mmCoreRedirectSiteId', siteId);
+                    localStorage.setItem('mmCoreRedirectState', state);
+                    localStorage.setItem('mmCoreRedirectParams', JSON.stringify(params));
+                    localStorage.setItem('mmCoreRedirectTime', new Date().getTime());
+                } catch(ex) {}
+            }
+        };
+
         return self;
     };
 });
