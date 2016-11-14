@@ -153,9 +153,13 @@
         </div>
 
         <label class="item item-input-inset item-stacked-label" ng-if="canSaveGrades">
-            <span class="input-label">{{ 'mma.mod_assign.gradeoutof' | translate: {$a: gradeInfo.grade} }}</span>
-            <div class="item-input-wrapper">
-                <input type="text" ng-model="grade.grade">
+            <span class="input-label" ng-if="!grade.scale">{{ 'mma.mod_assign.gradeoutof' | translate: {$a: gradeInfo.grade} }}</span>
+            <div class="item-input-wrapper" ng-if="!grade.scale">
+                <input type="number" ng-model="grade.grade" min="0" max="{{gradeInfo.grade}}" lang="{{grade.lang}}">
+            </div>
+            <span class="input-label" ng-if="grade.scale">{{ 'mma.grades.grade' | translate }}</span>
+            <div class="item-select item-input-wrapper" ng-if="grade.scale">
+                <select ng-model="grade.grade" ng-options="grade.scale.indexOf(option) as option for option in grade.scale | orderBy:'$index':true" mm-ios-select-fix></select>
             </div>
         </label>
 
