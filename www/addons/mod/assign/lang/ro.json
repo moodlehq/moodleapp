@@ -1,11 +1,17 @@
 {
+    "addattempt": "Permite altă încercare",
     "addnewattempt": "Adaugă o nouă încercare",
     "addsubmission": "Adaugă lucrare",
     "allowsubmissionsfromdate": "Acceptați lucrări de la",
+    "applytoteam": "Aplică notele și feedback-ul întregului grup",
     "assignmentisdue": "Data predării",
     "attemptnumber": "Numărul încercării",
+    "attemptreopenmethod": "Încercările sunt disponibile din nou",
+    "attemptreopenmethod_manual": "Manual",
+    "attemptsettings": "Setări încerecre",
     "currentattempt": "Aceasta este încercarea {{$a}}.",
     "currentattemptof": "Aceasta este încercarea {{$a.attemptnumber}} ( {{$a.maxattempts}} încercări permise ).",
+    "currentgrade": "Nota actuală în catalog",
     "defaultteam": "Grup implicit",
     "duedate": "Termen de predare",
     "duedateno": "Fără termen de predare",
@@ -17,6 +23,7 @@
     "graded": "Notat",
     "gradedby": "Notat de",
     "gradedon": "Notat în data de",
+    "gradeoutof": "O notă din {{$a}}",
     "hiddenuser": "Participant",
     "latesubmissionsaccepted": "Permis până în {{$a}}",
     "markingworkflowstateinmarking": "Se notează",
@@ -45,6 +52,7 @@
     "submissionteam": "Grup",
     "submitassignment": "Trimitere temă",
     "timeremaining": "Timp rămas",
+    "unlimitedattempts": "Nelimitat",
     "userwithid": "Utilizatorul cu ID-ul {{id}}",
     "viewsubmission": "Vezi lucrările"
 }

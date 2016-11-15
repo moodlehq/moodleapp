@@ -1,11 +1,9 @@
 {
     "authenticating": "Аутентификация",
     "cancel": "Отменить",
-    "cannotdownloadfiles": "Скачивание файла отключено для мобильных служб; приложение не может работать с данной отключенной настройкой. Пожалуйста, свяжитесь с администратором сайта.",
     "confirmdeletesite": "Вы уверены, что хотите удалить сайт {{sitename}}?",
     "connect": "Подключено!",
     "connecttomoodle": "Подключение к Moodle",
-    "credentials": "Учетные данные",
     "credentialsdescription": "Пожалуйста, укажите Ваш логин и пароль для входа",
     "erroraccesscontrolalloworigin": "Запрос «Cross-Origin» отклонён. Пожалуйста, проверьте https://docs.moodle.org/dev/Moodle_Mobile_development_using_Chrome_or_Chromium",
     "errordeletesite": "При удалении этой страницы произошла ошибка. Пожалуйста, попробуйте еще раз.",

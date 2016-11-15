@@ -1,6 +1,5 @@
 {
     "about": "Acerca de",
-    "appname": "Moodle Mobile {{version}}",
     "appready": "App lista",
     "cacheexpirationtime": "Tiempo de caducidad del caché (mili segundos)",
     "cannotsyncoffline": "No puede sincronizarse fuera-de-línea.",
@@ -14,7 +13,6 @@
     "currentlanguage": "Idioma actual",
     "deletesitefiles": "¿Está seguro de que desea borrar todos los archivos descargados de este sitio?",
     "deletesitefilestitle": "Eliminar archivos del sitio",
-    "development": "Desarrollo",
     "deviceinfo": "Información del Dispositivo",
     "deviceos": "Sistema Operativo del dispositivo",
     "devicewebworkers": "Trabajadores Web del Dispositivo soportados",
@@ -42,7 +40,6 @@
     "sites": "Sitios",
     "spaceusage": "Espacio",
     "storagetype": "Tipo de almacenamiento",
-    "success": "¡Éxito!",
     "synchronization": "Sincronización",
     "synchronizenow": "Sincronizar ahorita",
     "synchronizing": "Sincronizando",

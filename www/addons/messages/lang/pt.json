@@ -7,7 +7,6 @@
     "deletemessage": "Apagar mensagem",
     "deletemessageconfirmation": "Tem a certeza que deseja apagar esta mensagem? A mesma será apagada apenas do seu histórico de mensagens, continuando visível para o utilizador que a enviou ou que recebeu a mensagem.",
     "errordeletemessage": "Erro ao eliminar a mensagem.",
-    "erroruseronlyacceptsmessagefromcontacts": "O utilizador apenas recebe mensagens dos seus contactos",
     "errorwhileretrievingcontacts": "Erro ao obter os contactos do servidor.",
     "errorwhileretrievingdiscussions": "Erro ao obter os tópicos de discussão do servidor.",
     "errorwhileretrievingmessages": "Erro ao obter as mensagens do servidor.",

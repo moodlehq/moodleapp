@@ -15,7 +15,6 @@
     "maxbytesfile": "El fitxer {{$a.file}} és massa gran. La mida màxima que podeu pujar és de {{$a.size}}.",
     "photoalbums": "Àlbums de fotos",
     "readingfile": "S'està llegint un fitxer",
-    "success": "Èxit!",
     "uploadafile": "Penja un fitxer",
     "uploading": "S'està penjant",
     "video": "Vídeo"

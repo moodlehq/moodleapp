@@ -3,7 +3,6 @@
     "cacheexpirationtime": "Gyorsítótár lejárata (ms)",
     "currentlanguage": "Aktuális nyelv",
     "deletesitefiles": "Biztosan törli a portálról a letöltött fájlokat?",
-    "development": "Fejlesztés",
     "enabledebugging": "Hibakeresés bekapcsolása",
     "estimatedfreespace": "Becsült szabad tárhely",
     "general": "Általános",
@@ -12,7 +11,6 @@
     "settings": "Beállítások",
     "sites": "Portálok",
     "spaceusage": "Tárhelyhasználat",
-    "success": "Sikerült",
     "synchronization": "Szinkronizálás",
     "total": "Összes"
 }

@@ -1,11 +1,9 @@
 {
     "authenticating": "Autenticando",
     "cancel": "Cancelar",
-    "cannotdownloadfiles": "La descarga de archivos está desactivada en el servicio móvil de Moodle, la aplicación no puede funcionar con este parámetro desactivado. Por favor, contacte con el administrador del sitio.",
     "confirmdeletesite": "¿Está seguro de que quiere eliminar el sitio {{sitename}}?",
     "connect": "Conectar",
     "connecttomoodle": "Conectar a Moodle",
-    "credentials": "Credenciales",
     "credentialsdescription": "Introduzca su nombre se usuario y contraseña para entrar",
     "erroraccesscontrolalloworigin": "La llamada Cross-Origin que está intentando ha sido rechazada. Por favor visite https://docs.moodle.org/dev/Moodle_Mobile_development_using_Chrome_or_Chromium",
     "errordeletesite": "Ha ocurrido un error eliminando este sitio. Por favor, inténtelo de nuevo.",

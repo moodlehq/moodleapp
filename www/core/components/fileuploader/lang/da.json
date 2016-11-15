@@ -15,7 +15,6 @@
     "maxbytesfile": "Filen {{$a.file}} er for stor. Maksimal upload-størrelse er {{$a.size}}.",
     "photoalbums": "Fotoalbum",
     "readingfile": "Læser fil",
-    "success": "Succes!",
     "uploadafile": "Upload en fil",
     "uploading": "Uploader",
     "video": "Video"

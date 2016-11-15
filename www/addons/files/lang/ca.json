@@ -1,23 +1,12 @@
 {
     "admindisableddownload": "Teniu en compte que l'administrador de Moodle ha desactivat la descàrrega d'arxius; podeu visualitzar els arxius, però no descarregar-los.",
-    "audio": "Àudio",
-    "camera": "Càmera",
-    "chooseaccountuploadfile": "Escolliu un compte on pujar el fitxer",
     "clicktoupload": "Feu clic al botó del dessota per pujar arxius a l'àrea del vostres fitxers.",
-    "confirmuploadfile": "Esteu a punt de pujar {{size}}. Voleu continuar?",
     "couldnotloadfiles": "La llista d'arxius no s'ha pogut carregar.",
-    "downloading": "S'està descarregant",
     "emptyfilelist": "No hi ha fitxers per mostrar.",
-    "errorcapturingaudio": "S'ha produït un error en capturar l'àudio.",
-    "errorcapturingvideo": "S'ha produït un error en capturar el vídeo.",
-    "errorreceivefilenosites": "No hi ha llocs web emmagatzemats. Afegiu un lloc abans d'intentar pujar un arxiu.",
-    "fileuploaded": "S'ha penjat el fitxer amb èxit.",
     "myfiles": "Els meus fitxers",
     "myprivatefiles": "Els meus fitxers privats",
     "myprivatefilesdesc": "Els arxius que teniu disponibles a la vostra àrea privada en aquest lloc Moodle.",
-    "readingfile": "S'està llegint un fitxer",
     "sitefiles": "Fitxers del lloc",
     "sitefilesdesc": "Els altres arxius que es troben disponibles en aquest lloc Moodle.",
-    "success": "Èxit!",
     "uploadfiles": "Penja fitxers"
 }

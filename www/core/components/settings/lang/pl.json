@@ -3,7 +3,6 @@
     "cacheexpirationtime": "Czas wygasania pamięci podręcznej (milisekundy)",
     "currentlanguage": "Aktualny język",
     "deletesitefiles": "Czy na pewno chcesz usunąć pliki pobrane z tej strony?",
-    "development": "Rozwój",
     "enabledebugging": "Włącz debugowanie",
     "estimatedfreespace": "Szacowana wolna przestrzeń",
     "general": "Ogólne",
@@ -12,6 +11,5 @@
     "settings": "Ustawienia",
     "sites": "Serwisy",
     "spaceusage": "Użyta przestrzeń",
-    "success": "Gotowe",
     "total": "Suma"
 }

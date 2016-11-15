@@ -1,11 +1,9 @@
 {
     "authenticating": "Egiaztatzen",
     "cancel": "Utzi",
-    "cannotdownloadfiles": "Fitxategiak jaistea ezgaituta dago zure Mobile zerbitzuan, app-ak ezin du ezarpen honekin funtzionatu. Mesedez zure gune kudeatzailean harremanetan jarri zaitez.",
     "confirmdeletesite": "Ziur zaude {{sitename}} gunea ezabatu nahi duzula?",
     "connect": "Konektatu!",
     "connecttomoodle": "Moodle-ra konektatu",
-    "credentials": "Egiaztagiriak",
     "credentialsdescription": "Mesedez saioa hasteko sartu zure erabiltzaile eta pasahitza",
     "erroraccesscontrolalloworigin": "Saiatzen ari zaren Cross-Origin deia ez da onartu. Ikusi mesedez https://docs.moodle.org/dev/Moodle_Mobile_development_using_Chrome_or_Chromium",
     "errordeletesite": "Errorea gertatu da gunea ezabatzean. Mesedez saiatu beranduago.",
