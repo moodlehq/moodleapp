@@ -7,7 +7,6 @@
     "fileuploaded": "アップロードしたファイル",
     "maxbytesfile": "ファイル {{$a.file}} は大きすぎます。あなたがアップロードできる最大サイズは {{$a.size}} です。",
     "readingfile": "ファイル読み取り",
-    "success": "成功",
     "uploadafile": "ファイルをアップロードする",
     "uploading": "アップロード中",
     "video": "ビデオ"

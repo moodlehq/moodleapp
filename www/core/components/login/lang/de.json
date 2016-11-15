@@ -1,11 +1,9 @@
 {
     "authenticating": "Authentifizieren",
     "cancel": "Abbrechen",
-    "cannotdownloadfiles": "Das Herunterladen von Dateien ist für den mobilen Webservice deaktiviert. Diese Option ist aber für die App unbedingt notwendig. Wenden Sie sich an den Administrator.",
     "confirmdeletesite": "Möchten Sie wirklich die Website '{{sitename}}' aus der Liste löschen?",
     "connect": "Verbinden!",
     "connecttomoodle": "Website verbinden",
-    "credentials": "Bewertungen",
     "credentialsdescription": "Geben Sie Ihren Anmeldenamen und Ihr Kennwort ein, um sich einzuloggen auf ",
     "erroraccesscontrolalloworigin": "Der Cross-Origin Aufruf wurde zurückgewiesen. Weitere Informationen: https://docs.moodle.org/dev/Moodle_Mobile_development_using_Chrome_or_Chromium",
     "errordeletesite": "Fehler beim Löschen der Website aus der Liste. Versuchen Sie es nochmal.",

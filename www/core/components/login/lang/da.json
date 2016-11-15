@@ -1,11 +1,9 @@
 {
     "authenticating": "Godkender",
     "cancel": "Afbryd",
-    "cannotdownloadfiles": "Download af filer er deaktiveret i din Moodle service. Appen virker ikke når med denne instilling. Kontakt venligst din administrator.",
     "confirmdeletesite": "Er du sikker på at du ønsker at slette websiden {{sitename}}?",
     "connect": "Tilslut!",
     "connecttomoodle": "Tilslut til Moodle",
-    "credentials": "Referencer",
     "credentialsdescription": "Skriv dit brugernavn og adgangskode for at logge på",
     "erroraccesscontrolalloworigin": "Det Cross-Origin opkald du forsøger at udføre er blevet afvist. Kontroller  venligst https://docs.moodle.org/dev/Moodle_Mobile_development_using_Chrome_or_Chromium",
     "errordeletesite": "En fejl opstod ved sletning af denne webside. Prøv venligst igen.",

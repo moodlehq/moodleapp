@@ -1,11 +1,9 @@
 {
     "authenticating": "Autentisera",
     "cancel": "Avbryt",
-    "cannotdownloadfiles": "Nedladdning av filer är avaktiverat i din mobila tjänst. Appen fungerar inte om den inställningen är inaktiverad. Vänligen kontakta administratören.",
     "confirmdeletesite": "Är du säker på att du vill ta bort webbsidan {{sitename}}?",
     "connect": "Anslut!",
     "connecttomoodle": "Anslut till Moodle",
-    "credentials": "Referenser",
     "credentialsdescription": "Ange ditt användarnamn och lösenord för att logga på",
     "errordeletesite": "Ett fel inträffade vid borttagning av denna webbsida. Var god försök igen.",
     "errorupdatesite": "Ett fel inträffade vid uppdatering av webbplatsens token.",

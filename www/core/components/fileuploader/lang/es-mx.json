@@ -18,7 +18,6 @@
     "photoalbums": "Foto álbumes",
     "readingfile": "Leyendo archivo",
     "selectafile": "Seleccionar un archivo",
-    "success": "¡Éxito!",
     "uploadafile": "Subir un archivo",
     "uploading": "Subiendo",
     "uploadingperc": "Subiendo: {{$a}}%",

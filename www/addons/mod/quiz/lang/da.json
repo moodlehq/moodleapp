@@ -23,7 +23,7 @@
     "noreviewattempt": "Du har ikke tilladelse til at gennemse denne besvarelse.",
     "notyetgraded": "Ikke vurderet endnu",
     "outof": "{{$a.grade}} ud af {{$a.maxgrade}}",
-    "outofpercent": "{{$a.grade}} ud af et maksimum på {{$a.maxgrade}} ({{$a.percent}}%)",
+    "outofpercent": "{{$a.grade}} ud af {{$a.maxgrade}} ({{$a.percent}}%)",
     "outofshort": "{{$a.grade}}/{{$a.maxgrade}}",
     "overallfeedback": "Samlet feedback",
     "overdue": "For sent",

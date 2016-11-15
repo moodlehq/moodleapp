@@ -1,11 +1,9 @@
 {
     "authenticating": "Autenticação",
     "cancel": "Cancelar",
-    "cannotdownloadfiles": "O seu serviço Mobile não permite descarregar ficheiros e a aplicação não funciona sem ativar esta configuração. Por favor, contacte o administrador do site.",
     "confirmdeletesite": "Tem a certeza que pretende remover o site {{sitename}}?",
     "connect": "Ligar!",
     "connecttomoodle": "Ligação ao Moodle",
-    "credentials": "Credenciais",
     "credentialsdescription": "Por favor digite o seu nome de utilizador e senha para entrar",
     "erroraccesscontrolalloworigin": "A acção de Cross-Origin que tentou executar foi rejeitada. Por favor, consulte mais informações em https://docs.moodle.org/dev/Moodle_Mobile_development_using_Chrome_or_Chromium",
     "errordeletesite": "Ocorreu um erro ao apagar este site. Por favor tente novamente.",

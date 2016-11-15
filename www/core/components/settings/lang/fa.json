@@ -3,7 +3,6 @@
     "cacheexpirationtime": "زمان اعتبار کشها (miliseconds)",
     "currentlanguage": "زبان فعلی",
     "deletesitefiles": "آیا از حذف کلیه فایلهای این سایت مطمئنید؟",
-    "development": "توسعه",
     "enabledebugging": "فعالسازی اشکالزدایی",
     "estimatedfreespace": "فضای آزاد تخمینی",
     "general": "عمومی",
@@ -12,6 +11,5 @@
     "settings": "تنظیمات",
     "sites": "سایت‌ها",
     "spaceusage": "فضای مورد استفاده",
-    "success": "موفق",
     "total": "مجموع"
 }

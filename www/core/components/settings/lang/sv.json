@@ -1,6 +1,5 @@
 {
     "about": "Om",
-    "appname": "Moodle Mobile {{version}}",
     "appready": "Appen är redo",
     "cacheexpirationtime": "Cache utgångs tid (millisekunder)",
     "cordovadevicemodel": "",
@@ -12,7 +11,6 @@
     "currentlanguage": "Aktuellt språk",
     "deletesitefiles": "Är du säker på att du vill ta bort de nedladdade filerna från den här webbplatsen?",
     "deletesitefilestitle": "Ta bort platsfiler",
-    "development": "Utveckling",
     "deviceinfo": "Info mobil enhet",
     "deviceos": "Mobil enhet operativsystem",
     "devicewebworkers": "Enheten stödjer Web Workers",
@@ -38,7 +36,6 @@
     "sites": "Webbsidor",
     "spaceusage": "Utrymmesanvändning",
     "storagetype": "Lagringstyp",
-    "success": "Framgång!",
     "synchronization": "Synkronisering",
     "synchronizenow": "Synkronisera nu",
     "synchronizing": "Synkronisera",

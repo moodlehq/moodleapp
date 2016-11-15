@@ -16,7 +16,6 @@
     "maxbytesfile": "Le fichier {{$a.file}} est trop gros. La taille maximale permise est de {{$a.size}}.",
     "photoalbums": "Albums de photos",
     "readingfile": "Lecture du fichier",
-    "success": "Succès !",
     "uploadafile": "Déposer un fichier",
     "uploading": "Envoi",
     "uploadingperc": "Dépôt en cours : {{$a}} %",

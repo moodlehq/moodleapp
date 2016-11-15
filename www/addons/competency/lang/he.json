@@ -14,6 +14,7 @@
     "path": "נתיב",
     "progress": "מעקב התקדמות למידה",
     "rating": "דירוג",
+    "reviewstatus": "סקירת מצב",
     "status": "מצב",
     "template": "תבנית",
     "xcompetenciesproficientoutofyincourse": "רכשתם בקיאות ב {{$a.x}} מתוך {{$a.y}} המיומנויות בקורס זה."
