@@ -56,6 +56,9 @@ $mm-text-with-icon-height: 22px !default;
 // Smaller button icon.
 $mm-button-icon-small-height: 22px !default;
 
+// Required inputs asterisk color.
+$mm-input-required-asterisk-color: #ff4136 !default;
+
 /**
  * App Branding
  */
@@ -1031,4 +1034,18 @@ ion-spinner.mm-spinner-right {
   .toggle {
     top: 0;
   }
+}
+
+// Add note below an input.
+.item .mm-input-footnote {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-style: italic;
+}
+
+// Mark input as required styles.
+.mm-input-required-asterisk {
+  color: $mm-input-required-asterisk-color !important;
+  font-size: 20px;
+  padding-left: 5px;
 }

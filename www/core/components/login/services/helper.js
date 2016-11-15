@@ -57,6 +57,38 @@ angular.module('mm.core.login')
     };
 
     /**
+     * Format profile fields, filtering the ones that shouldn't be shown on signup and classifying them in categories.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#formatProfileFieldsForSignup
+     * @param  {Object[]} profileFields Profile fields to format.
+     * @return {Object}                 Categories with the fields to show in each one.
+     */
+    self.formatProfileFieldsForSignup = function(profileFields) {
+        var categories = {};
+
+        angular.forEach(profileFields, function(field) {
+            if (!field.signup) {
+                // Not a signup field, ignore it.
+                return;
+            }
+
+            if (!categories[field.categoryid]) {
+                categories[field.categoryid] = {
+                    id: field.categoryid,
+                    name: field.categoryname,
+                    fields: []
+                };
+            }
+
+            categories[field.categoryid].fields.push(field);
+        });
+
+        return categories;
+    };
+
+    /**
      * Go to the view to add a new site.
      * If a fixed URL is configured, go to credentials instead.
      *

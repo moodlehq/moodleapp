@@ -810,6 +810,28 @@ angular.module('mm.core')
         };
 
         /**
+         * Get list of countries with their code and translated name.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#getCountryList
+         * @return {Object} List of countries.
+         */
+        self.getCountryList = function() {
+            var table = $translate.getTranslationTable(),
+                countries = {};
+
+            angular.forEach(table, function(value, name) {
+                if (name.indexOf('mm.core.country-') === 0) {
+                    name = name.replace('mm.core.country-', '');
+                    countries[name] = value;
+                }
+            });
+
+            return countries;
+        };
+
+        /**
          * Returns the URL to the documentation of the app, based on Moodle version and current language.
          *
          * @param {String} [release] Moodle release.

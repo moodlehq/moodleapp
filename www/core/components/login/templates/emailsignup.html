@@ -1,0 +1,73 @@
+<ion-view view-title="{{ 'mm.login.newaccount' | translate }}">
+    <ion-nav-buttons side="secondary">
+        <button ng-if="authInstructions" class="button button-icon ion-help-circled" ng-click="showAuthInstructions()" aria-label="{{ 'mm.login.instructions' | translate }}"></button>
+    </ion-nav-buttons>
+    <ion-content mm-state-class>
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="settingsLoaded" on-refresh="refreshSettings()">
+        </ion-refresher>
+        <mm-loading hide-until="settingsLoaded">
+            <form class="list list-inset" ng-if="settings">
+                <div class="item item-text-wrap item-avatar-center" ng-if="logourl">
+                    <img ng-src="{{logourl}}" class="no-border-radius" mm-external-content role="presentation">
+                </div>
+                <!-- Username and password. -->
+                <div class="item item-divider item-text-wrap">
+                    {{ 'mm.login.createuserandpass' | translate }}
+                </div>
+                <ion-input class="item item-input item-stacked-label item-text-wrap">
+                    <ion-label mm-mark-required>{{ 'mm.login.username' | translate }}</ion-label>
+                    <input type="text" placeholder="{{ 'mm.login.username' | translate }}" ng-model="data.username" autocapitalize="off" autocorrect="off" mm-auto-focus>
+                </ion-input>
+                <ion-input class="item item-input item-stacked-label item-text-wrap">
+                    <ion-label mm-mark-required>{{ 'mm.login.password' | translate }}</ion-label>
+                    <input type="password" placeholder="{{ 'mm.login.password' | translate }}" ng-model="data.password">
+                    <p ng-if="settings.passwordpolicy" class="mm-input-footnote">
+                        {{settings.passwordpolicy}}
+                    </p>
+                </ion-input>
+                <!-- More details. -->
+                <div class="item item-divider item-text-wrap">{{ 'mm.login.supplyinfo' | translate }}</div>
+                <ion-input class="item item-input item-stacked-label item-text-wrap">
+                    <ion-label mm-mark-required>{{ 'mm.user.email' | translate }}</ion-label>
+                    <input type="email" placeholder="{{ 'mm.user.email' | translate }}" ng-model="data.email" autocapitalize="off" autocorrect="off">
+                </ion-input>
+                <ion-input class="item item-input item-stacked-label item-text-wrap">
+                    <ion-label mm-mark-required>{{ 'mm.user.emailagain' | translate }}</ion-label>
+                    <input type="email" placeholder="{{ 'mm.user.emailagain' | translate }}" ng-model="data.email2" autocapitalize="off" autocorrect="off">
+                </ion-input>
+                <ion-input ng-repeat="namefield in settings.namefields track by $index" class="item item-input item-stacked-label item-text-wrap">
+                    <ion-label mm-mark-required>{{ 'mm.user.' + namefield | translate }}</ion-label>
+                    <input type="text" placeholder="{{ 'mm.user.' + namefield | translate }}" ng-model="data[namefield]" autocorrect="off">
+                </ion-input>
+                <ion-input class="item item-input item-stacked-label item-text-wrap">
+                    <ion-label>{{ 'mm.user.city' | translate }}</ion-label>
+                    <input type="text" placeholder="{{ 'mm.user.city' | translate }}" ng-model="data.city" autocorrect="off">
+                </ion-input>
+                <ion-input class="item item-select">
+                    <ion-label id="mm-login-signup-country">{{ 'mm.user.country' | translate }}</ion-label>
+                    <select ng-model="data.country" ng-options="code as name for (code, name) in countries" aria-labelledby="mm-login-signup-country" mm-ios-select-fix></select>
+                </ion-input>
+                <!-- Other categories. -->
+                <div ng-repeat="category in categories">
+                    <div class="item item-divider item-text-wrap">{{ category.name }}</div>
+                    <!-- TODO: profilefields -->
+                </div>
+                <!-- TODO: captcha -->
+                <!-- Site policy (if any). -->
+                <div ng-if="settings.sitepolicy">
+                    <div class="item item-divider item-text-wrap">{{ 'mm.login.policyagreement' | translate }}</div>
+                    <div class="item item-text-wrap">
+                        <p><a ng-href="{{settings.sitepolicy}}" mm-link capture-link="false">{{ 'mm.login.policyagreementclick' | translate }}</a></p>
+                    </div>
+                    <ion-checkbox class="item-text-wrap item-checkbox-right" ng-model="data.policyagreed">
+                        <p mm-mark-required>{{ 'mm.login.policyaccept' | translate }}</p>
+                    </ion-checkbox>
+                </div>
+                <!-- Submit button. -->
+                <div class="item padding">
+                    <button class="button button-block" ng-click="create()">{{ 'mm.login.createaccount' | translate }}</button>
+                </div>
+            </form>
+        </mm-loading>
+    </ion-content>
+</ion-view>
