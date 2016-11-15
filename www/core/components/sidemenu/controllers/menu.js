@@ -67,4 +67,41 @@ angular.module('mm.core.sidemenu')
             updateSiteObserver.off();
         }
     });
+
+    /**
+     * Get the button element for opening the side menu.
+     *
+     * There are always two menu buttons in the DOM. One is cached, while the other is active.
+     * When moving to another page the cached button will become staged and then active, while
+     * the active button will become cached.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @param  {String} navBarState        The value of the nav-bar attribute that it should use. Can be 'active', 'cached', 'stage'.
+     * @return {angular.element}           The button element, or null if not found.
+     */
+    function getSideMenuButton(navBarState) {
+        var navBarBlock = document.querySelector('.nav-bar-block[nav-bar="' + navBarState + '"]');
+        if (navBarBlock) {
+            return angular.element(navBarBlock.querySelector('#mm-side-menu-btn-menu'));
+        } else {
+            return null;
+        }
+    }
+
+    $scope.$on('$ionicView.beforeEnter', function (e, data) {
+        // During the beforeEnter state the nav-bar is in the 'stage' state, about to become 'active'.
+        var menuButton = getSideMenuButton('stage');
+        if (data.enableBack && menuButton && !menuButton.hasClass('hide')) {
+            menuButton.addClass('hide');
+        }
+    });
+
+    $scope.$on('$ionicView.afterEnter', function (e, data) {
+        // During the afterEnter state the nav-bar is already in the 'active' state.
+        var menuButton = getSideMenuButton('active');
+        if (!data.enableBack && menuButton && menuButton.hasClass('hide')) {
+            menuButton.removeClass('hide');
+        }
+    });
 });
