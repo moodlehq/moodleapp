@@ -754,7 +754,7 @@ angular.module('mm.core')
         privateToken = privateToken || '';
         return self.getSite(siteId).then(function(site) {
             site.token = token;
-            site.privatetoken = privateToken;
+            site.privateToken = privateToken;
 
             return $mmApp.getDB().insert(mmCoreSitesStore, {
                 id: siteId,
