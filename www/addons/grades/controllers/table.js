@@ -24,12 +24,15 @@ angular.module('mm.addons.grades')
 .controller('mmaGradesTableCtrl', function($scope, $stateParams, $mmUtil, $mmaGrades, $mmSite, $mmaGradesHelper, $state) {
 
     var course = $stateParams.course || {},
-        courseId = course.id,
-        userId = $stateParams.userid || $mmSite.getUserId();
+        courseId = $stateParams.courseid || course.id,
+        userId = $stateParams.userid || $mmSite.getUserId(),
+        forcePhoneView = $stateParams.forcephoneview || false;
+
+    $scope.forcePhoneView = !!forcePhoneView;
 
     function fetchGrades() {
         return $mmaGrades.getGradesTable(courseId, userId).then(function(table) {
-            table = $mmaGradesHelper.formatGradesTable(table);
+            table = $mmaGradesHelper.formatGradesTable(table, forcePhoneView);
             return $mmaGradesHelper.translateGradesTable(table).then(function(table) {
                 $scope.gradesTable = table;
             });

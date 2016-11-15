@@ -31,10 +31,11 @@ angular.module('mm.addons.grades')
      * @module mm.addons.grades
      * @ngdoc method
      * @name $mmaGradesHelper#formatGradesTable
-     * @param  {Object}  table      JSON object representing a table with data.
+     * @param  {Object}  table          JSON object representing a table with data.
+     * @param  {Boolean} forcePhoneView If we must force the phone view to display less columns.
      * @return {Object}             Formatted HTML table.
      */
-    self.formatGradesTable = function(table) {
+    self.formatGradesTable = function(table, forcePhoneView) {
         var formatted = {
             columns: [],
             rows: []
@@ -118,6 +119,10 @@ angular.module('mm.addons.grades')
                 }
                 for (el in returnedColumns) {
                     name = returnedColumns[el];
+
+                    if (forcePhoneView && !columns[name]) {
+                        continue;
+                    }
 
                     if (typeof(tabledata[i][name]) != "undefined") {
                         tclass = (typeof(tabledata[i][name]['class']) != "undefined")? tabledata[i][name]['class'] : '';

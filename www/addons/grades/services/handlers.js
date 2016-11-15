@@ -21,7 +21,7 @@ angular.module('mm.addons.grades')
  * @ngdoc service
  * @name $mmaGradesHandlers
  */
-.factory('$mmaGradesHandlers', function($mmaGrades, $state, $mmUtil, $mmContentLinksHelper, mmCoursesAccessMethods) {
+.factory('$mmaGradesHandlers', function($mmaGrades, $mmaCoursesGrades, $state, $mmUtil, $mmContentLinksHelper, mmCoursesAccessMethods) {
 
     var self = {},
         viewGradesEnabledCache = {}; // We use a "cache" to decrease network usage.
@@ -279,6 +279,52 @@ angular.module('mm.addons.grades')
             if (position > -1) {
                 return url.substr(0, position);
             }
+        };
+
+        return self;
+    };
+
+    /**
+     * Side menu nav handler.
+     *
+     * @module mm.addons.grades
+     * @ngdoc method
+     * @name $mmaGradesHandlers#sideMenuNav
+     */
+    self.sideMenuNav = function() {
+
+        var self = {};
+
+        /**
+         * Check if handler is enabled.
+         *
+         * @return {Promise|Boolean} If handler is enabled returns a resolved promise. If it's not it can return a
+         *                           rejected promise or false.
+         */
+        self.isEnabled = function() {
+            return $mmaCoursesGrades.isPluginEnabled();
+        };
+
+        /**
+         * Get the controller.
+         *
+         * @return {Object} Controller.
+         */
+        self.getController = function() {
+
+            /**
+             * Side menu nav handler controller.
+             *
+             * @module mm.addons.grades
+             * @ngdoc controller
+             * @name $mmaGradesHandlers#sideMenuNav:controller
+             */
+            return function($scope) {
+                $scope.icon = 'ion-stats-bars';
+                $scope.title = 'mma.grades.grades';
+                $scope.state = 'site.coursesgrades';
+                $scope.class = 'mma-grades-coursesgrades';
+            };
         };
 
         return self;
