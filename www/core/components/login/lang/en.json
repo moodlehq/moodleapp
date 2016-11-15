@@ -12,7 +12,7 @@
     "errordeletesite": "An error occurred while deleting this site. Please try again.",
     "errorupdatesite": "An error ocurred while updating the site's token.",
     "help": "Help",
-    "helpmelogin": "<p>There are many thousands of Moodle sites around the world. This app can only connect to Moodle sites that have specifically enabled Mobile app access.</p><p>If you can't connect to your Moodle site then you need to contact a Moodle administrator at the place where you want to connect and ask them to read <a href=\"http://docs.moodle.org/en/Mobile_app\" target=\"_blank\">http://docs.moodle.org/en/Mobile_app</a></p><p>To test the app in a Moodle demo site type <i>teacher</i> or <i>student</i> in the <i>Site URL</i> field and click the <b>Add button</b>.</p>",
+    "helpmelogin": "<p>There are many thousands of Moodle sites around the world. This app can only connect to Moodle sites that have specifically enabled Mobile app access.</p><p>If you can't connect to your Moodle site then you need to contact a Moodle administrator at the place where you want to connect and ask them to read <a href=\"http://docs.moodle.org/en/Mobile_app\" target=\"_blank\">http://docs.moodle.org/en/Mobile_app</a></p><p>To test the app in a Moodle demo site type <i>teacher</i> or <i>student</i> in the <i>Site address</i> field and click the <b>Connect button</b>.</p>",
     "invalidaccount": "Please check your login details or ask your site administrator to check the site configuration.",
     "invalidmoodleversion": "Invalid Moodle version. The minium version required is 2.4.",
     "invalidsite": "The site URL is invalid.",
