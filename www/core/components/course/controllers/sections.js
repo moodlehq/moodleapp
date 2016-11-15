@@ -34,6 +34,7 @@ angular.module('mm.core.course')
     $scope.fullname = courseFullName;
     $scope.downloadSectionsEnabled = $mmCourseHelper.isDownloadSectionsEnabled();
     $scope.downloadSectionsIcon = getDownloadSectionIcon();
+    $scope.sectionHasContent = $mmCourseHelper.sectionHasContent;
 
     function loadSections(refresh) {
         var promise;

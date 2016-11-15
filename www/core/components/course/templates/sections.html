@@ -10,7 +10,7 @@
            <ion-refresher on-refresh="doRefresh()" pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="sectionsLoaded"></ion-refresher>
             <mm-loading hide-until="sectionsLoaded">
                 <ul class="list">
-                    <li ng-repeat="section in sections" ng-if="section.modules.length > 0 || section.summary != ''">
+                    <li ng-repeat="section in sections" ng-if="sectionHasContent(section)">
                         <a class="item item-text-wrap item-button-right" mm-split-view-link="site.mm_course-section({cid: courseId, sectionid: section.id, mid: moduleId})" title="{{section.name}}">
                             <mm-format-text watch="true">{{section.name}}</mm-format-text>
 

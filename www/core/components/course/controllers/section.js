@@ -33,6 +33,7 @@ angular.module('mm.core.course')
 
     $scope.sitehome = (courseId === siteHomeId); // Are we visiting the site home?
     $scope.sections = []; // Reset scope.sections, otherwise an error is shown in console with tablet view.
+    $scope.sectionHasContent = $mmCourseHelper.sectionHasContent;
 
     if (sectionId < 0) {
         // Special scenario, we want all sections.
@@ -84,7 +85,7 @@ angular.module('mm.core.course')
                     var hasContent = false;
 
                     angular.forEach(sections, function(section) {
-                        if (section.summary != '' || section.modules.length) {
+                        if ($mmCourseHelper.sectionHasContent(section)) {
                             hasContent = true;
                         }
 
