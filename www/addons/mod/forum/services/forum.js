@@ -399,22 +399,63 @@ angular.module('mm.addons.mod_forum')
     self.constructDiscussionTree = function(posts, rootParentId) {
         posts.reverse();
 
-        var map = {},
+        var original = posts,
+            map = {},
+            mapDepth = {},
             node,
             roots = [];
         for (var i = 0; i < posts.length; i += 1) {
             node = posts[i];
             node.children = [];
-            // use map to look-up the parents.
+            // Use map to look-up the parents.
             map[node.id] = i;
             if (node.parent != rootParentId) {
-                posts[map[node.parent]].children.push(node);
+                // @todo: Make the depth level configurable.
+                if (mapDepth[node.parent] == 5) {
+                    // Reached max level of depth. Proceed with flat order.
+                    // Find parent object of the current node.
+                    var parentNode = findElementInArray(original, node.parent);
+                    if (parentNode != null) {
+                        /* This element will be the child of the node that is two levels up the hierarchy
+                        (i.e. the child of node.parent.parent).
+                        */
+                        posts[map[parentNode.parent]].children.push(node);
+                        // Assign depth level to the same depth as the parent (i.e. max depth level).
+                        mapDepth[node.id] = mapDepth[node.parent];
+                        // Change the parent to be the one that is two levels up the hierarchy.
+                        node.parent = parentNode.parent;
+                    }
+
+                } else {
+                    // Max depth level has not been reached yet. Continue nesting posts.
+                    posts[map[node.parent]].children.push(node);
+                    // Increase the depth level.
+                    mapDepth[node.id] = mapDepth[node.parent] + 1;
+                }
+
             } else {
                 roots.push(node);
+                // Root elements are the first elements in the tree structure, therefore have the depth level 1.
+                mapDepth[node.id] = 1;
             }
         }
 
         return roots;
+    }
+
+    /**
+     * Find an element specified by elementID in the corresponding array.
+     *
+     * @param {Object[]} list       Array of posts or discussions.
+     * @param {Number} elementID    The id of the element to be found in the list.
+     */
+    function findElementInArray(list, elementID) {
+        for (var i = 0; i < list.length; i += 1) {
+            if (list[i].id == elementID) {
+                return list[i];
+            }
+        }
+        return null;
     }
 
     /**

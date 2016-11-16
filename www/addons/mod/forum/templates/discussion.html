@@ -33,7 +33,7 @@
 
             <script type="text/ng-template" id="nestedPosts">
                 <mma-mod-forum-discussion-post post="post" courseid="courseid" discussion-id="discussionId" title="post.subject" subject="post.userfullname" component="component" component-id="componentId" newpost="newpost" replyingto="replyingto" showdivider="$index > 0" titleimportant="false" onpostchange="postListChanged()" defaultsubject="defaultSubject" scroll-handle="mmaModForumPostsScroll"></mma-mod-forum-discussion-post>
-                <div class="card" ng-if="post.children.length && post.children[0].subject">
+                <div class="card nestedStyle" ng-if="post.children.length && post.children[0].subject">
                     <article ng-repeat="post in post.children track by $index" ng-include="'nestedPosts'">
                     </article>
                 </div>
