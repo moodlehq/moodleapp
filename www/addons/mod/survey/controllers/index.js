@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_survey')
  * @ngdoc controller
  * @name mmaModSurveyIndexCtrl
  */
-.controller('mmaModSurveyIndexCtrl', function($scope, $stateParams, $mmaModSurvey, $mmUtil, $q, $mmCourse, $translate, $mmText,
+.controller('mmaModSurveyIndexCtrl', function($scope, $stateParams, $mmaModSurvey, $mmUtil, $mmCoursePrefetchDelegate,  $mmCourseHelper, $q, $mmCourse, $translate, $mmText,
             $ionicPlatform, $ionicScrollDelegate, $mmaModSurveyOffline, mmaModSurveyComponent, $mmaModSurveySync, $mmSite,
             $mmEvents, mmaModSurveyAutomSyncedEvent, $mmApp, $mmEvents, mmCoreEventOnlineStatusChanged) {
     var module = $stateParams.module || {},
@@ -46,12 +46,14 @@ angular.module('mm.addons.mod_survey')
     // Convenience function to get survey data.
     function fetchSurveyData(refresh, sync, showErrors) {
         $scope.isOnline = $mmApp.isOnline();
+        fillContextMenu(module, courseId);
         return $mmaModSurvey.getSurvey(courseid, module.id).then(function(surveydata) {
             survey = surveydata;
 
             $scope.title = survey.name || $scope.title;
             $scope.description = survey.intro || $scope.description;
             $scope.survey = survey;
+            fillContextMenu(module, courseId);
 
             if (sync) {
                 // Try to synchronize the survey.
@@ -67,7 +69,9 @@ angular.module('mm.addons.mod_survey')
                     // Ignore errors.
                 });
             }
-        }).then(function() {
+        }).then( function() {
+            fillContextMenu(module, courseId);
+        }) .then(function() {
             // Check if there are answers stored in offline.
             return $mmaModSurveyOffline.hasAnswers(survey.id);
         }).then(function(hasOffline) {
@@ -171,6 +175,49 @@ angular.module('mm.addons.mod_survey')
         });
     };
 
+    // Convenience function that fills Context Menu Popover.
+    function fillContextMenu(module, courseId, invalidateCache) {
+        $mmCourseHelper.getModulePrefetchInfo(module, courseId, invalidateCache).then(function(moduleInfo) {
+            $scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
+            $scope.prefetchStatusIcon = moduleInfo.statusIcon;
+            $scope.timemodified = moduleInfo.timemodified > 0 ? $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable : "";
+        });
+    }
+
+    $scope.removeFiles = function() {
+        $mmUtil.showConfirm($translate('mm.course.confirmdeletemodulefiles')).then(function() {
+            $mmCoursePrefetchDelegate.removeModuleFiles(module, courseId);
+        });
+    };
+
+    // Context Menu Prefetch action.
+    $scope.prefetch = function() {
+        var icon = $scope.prefetchStatusIcon;
+
+        $scope.prefetchStatusIcon = 'spinner'; // Show spinner since this operation might take a while.
+
+        // We need to call getDownloadSize, the package might have been updated.
+        $mmCoursePrefetchDelegate.getModuleDownloadSize(module, courseId).then(function(size) {
+            $mmUtil.confirmDownloadSize(size).then(function() {
+                $mmCoursePrefetchDelegate.prefetchModule(module, courseId).catch(function() {
+                    if (!$scope.$$destroyed) {
+                        $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                    }
+                });
+            }).catch(function() {
+                // User hasn't confirmed, stop spinner.
+                $scope.prefetchStatusIcon = icon;
+            });
+        }).catch(function(error) {
+            $scope.prefetchStatusIcon = icon;
+            if (error) {
+                $mmUtil.showErrorModal(error);
+            } else {
+                $mmUtil.showErrorModal('mm.core.errordownloading', true);
+            }
+        });
+    };
+    
     // Context Menu Description action.
     $scope.expandDescription = function() {
         $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false, mmaModSurveyComponent, module.id);

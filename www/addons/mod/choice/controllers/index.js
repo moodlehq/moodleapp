@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_choice')
  * @name mmaModChoiceIndexCtrl
  * @todo Delete answer if user can update the answer, show selected if choice is closed (WS returns empty options).
  */
-.controller('mmaModChoiceIndexCtrl', function($scope, $stateParams, $mmaModChoice, $mmUtil, $q, $mmCourse, $translate, $mmText,
+.controller('mmaModChoiceIndexCtrl', function($scope, $stateParams, $mmaModChoice, $mmUtil, $mmCoursePrefetchDelegate, $q, $mmCourse, $translate, $mmCourseHelper, $mmText,
             mmaModChoiceComponent, mmaModChoiceAutomSyncedEvent, $mmSite, $mmEvents, $mmaModChoiceSync, $ionicScrollDelegate,
             $mmaModChoiceOffline, $mmApp, $mmEvents, mmCoreEventOnlineStatusChanged) {
     var module = $stateParams.module || {},
@@ -43,10 +43,12 @@ angular.module('mm.addons.mod_choice')
     $scope.component = mmaModChoiceComponent;
     $scope.componentId = module.id;
 
+
     // Convenience function to get choice data.
     function fetchChoiceData(refresh, sync, showErrors) {
         $scope.isOnline = $mmApp.isOnline();
         $scope.now = new Date().getTime();
+
         return $mmaModChoice.getChoice(courseid, module.id).then(function(choicedata) {
             choice = choicedata;
             choice.timeopen = parseInt(choice.timeopen) * 1000;
@@ -57,6 +59,7 @@ angular.module('mm.addons.mod_choice')
             $scope.title = choice.name || $scope.title;
             $scope.description = choice.intro || $scope.description;
             $scope.choice = choice;
+            fillContextMenu(module, courseid);
 
             if (sync) {
                 // Try to synchronize the choice.
@@ -69,7 +72,7 @@ angular.module('mm.addons.mod_choice')
             return $mmaModChoiceOffline.hasResponse(choice.id);
         }).then(function(hasOffline) {
             $scope.hasOffline = hasOffline;
-
+            fillContextMenu(module, courseid);
             // We need fetchOptions to finish before calling fetchResults because it needs hasAnsweredOnline variable.
             return fetchOptions(hasOffline).then(function() {
                 return fetchResults();
@@ -77,6 +80,7 @@ angular.module('mm.addons.mod_choice')
         }).catch(function(message) {
             if (!refresh) {
                 // Some call failed, retry without using cache since it might be a new activity.
+                fillContextMenu(module, courseid);
                 return refreshAllData(sync);
             }
 
@@ -182,6 +186,7 @@ angular.module('mm.addons.mod_choice')
             });
             $scope.canSeeResults = hasVotes || $mmaModChoice.canStudentSeeResults(choice, hasAnsweredOnline);
             $scope.results = results;
+            fillContextMenu(module, courseid);
         });
     }
 
@@ -201,6 +206,7 @@ angular.module('mm.addons.mod_choice')
             p2 = choice ? $mmaModChoice.invalidateOptions(choice.id) : $q.when(),
             p3 = choice ? $mmaModChoice.invalidateResults(choice.id) : $q.when();
 
+        
         return $q.all([p1, p2, p3]).finally(function() {
             return fetchChoiceData(true, sync, showErrors);
         });
@@ -214,6 +220,7 @@ angular.module('mm.addons.mod_choice')
         $scope.choiceLoaded = true;
         $scope.refreshIcon = 'ion-refresh';
         $scope.syncIcon = 'ion-loop';
+        fillContextMenu(module, courseid);
     });
 
     // Save options selected.
@@ -271,6 +278,51 @@ angular.module('mm.addons.mod_choice')
             });
         });
     };
+
+    // Convenience function that fills Context Menu Popover.
+    function fillContextMenu(module, courseId, invalidateCache) {
+        $mmCourseHelper.getModulePrefetchInfo(module, courseId, invalidateCache).then(function(moduleInfo) {
+            $scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
+            $scope.prefetchStatusIcon = moduleInfo.statusIcon;
+            $scope.timemodified = moduleInfo.timemodified > 0 ? $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable : "";
+        });
+    }
+
+    $scope.removeFiles = function() {
+        $mmUtil.showConfirm($translate('mm.course.confirmdeletemodulefiles')).then(function() {
+            $mmCoursePrefetchDelegate.removeModuleFiles(module, courseId);
+        });
+    };
+
+    // Context Menu Prefetch action.
+    $scope.prefetch = function() {
+        var icon = $scope.prefetchStatusIcon;
+
+        $scope.prefetchStatusIcon = 'spinner'; // Show spinner since this operation might take a while.
+
+        // We need to call getDownloadSize, the package might have been updated.
+        $mmCoursePrefetchDelegate.getModuleDownloadSize(module, courseId).then(function(size) {
+            $mmUtil.confirmDownloadSize(size).then(function() {
+                $mmCoursePrefetchDelegate.prefetchModule(module, courseId).catch(function() {
+                    if (!$scope.$$destroyed) {
+                        $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                    }
+                });
+            }).catch(function() {
+                // User hasn't confirmed, stop spinner.
+                $scope.prefetchStatusIcon = icon;
+            });
+        }).catch(function(error) {
+            $scope.prefetchStatusIcon = icon;
+            if (error) {
+                $mmUtil.showErrorModal(error);
+            } else {
+                $mmUtil.showErrorModal('mm.core.errordownloading', true);
+            }
+        });
+    };
+
+
 
     // Context Menu Description action.
     $scope.expandDescription = function() {
