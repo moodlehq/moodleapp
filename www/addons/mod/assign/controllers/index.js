@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc controller
  * @name mmaModAssignIndexCtrl
  */
-.controller('mmaModAssignIndexCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $translate, $mmCourseHelper, mmaModAssignComponent, $q,
+.controller('mmaModAssignIndexCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $mmCoursePrefetchDelegate, $translate, $mmCourseHelper, mmaModAssignComponent, $q,
         $state, mmaModAssignSubmissionInvalidatedEvent, $mmEvents, $mmSite, mmaModAssignSubmissionSavedEvent,
         mmaModAssignSubmittedForGradingEvent, $mmCourse, $mmApp, $mmaModAssignSync, $mmText, mmaModAssignEventAutomSynced,
         mmCoreEventOnlineStatusChanged, $mmaModAssignOffline, $ionicScrollDelegate, mmaModAssignEventManualSynced,
@@ -45,10 +45,10 @@ angular.module('mm.addons.mod_assign')
     $scope.mmaModAssignSubmissionStatusDraft = mmaModAssignSubmissionStatusDraft;
     $scope.mmaModAssignNeedGrading = mmaModAssignNeedGrading;
 
-    var moduleInfo = $mmCourseHelper.getModulePrefetchInfo(module, courseId);
-    $scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
-    $scope.prefetchStatusIcon = moduleInfo.statusIcon;
-    $scope.timemodified = moduleInfo.timemodified > 0 ? $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable : "";
+    //var moduleInfo = $mmCourseHelper.getModulePrefetchInfo(module, courseId);
+    //$scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
+    //$scope.prefetchStatusIcon = moduleInfo.statusIcon;
+    //$scope.timemodified = moduleInfo.timemodified > 0 ? $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable : "";
 
 
     // Check if submit through app is supported.
