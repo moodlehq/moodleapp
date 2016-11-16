@@ -2,7 +2,7 @@
     <ion-nav-buttons side="secondary">
         <button ng-if="authInstructions" class="button button-icon ion-help-circled" ng-click="showAuthInstructions()" aria-label="{{ 'mm.login.instructions' | translate }}"></button>
     </ion-nav-buttons>
-    <ion-content mm-state-class>
+    <ion-content mm-state-class delegate-handle="mmLoginEmailSignupScroll">
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="settingsLoaded" on-refresh="refreshSettings()">
         </ion-refresher>
         <mm-loading hide-until="settingsLoaded">
@@ -45,12 +45,14 @@
                 </ion-input>
                 <ion-input class="item item-select">
                     <ion-label id="mm-login-signup-country">{{ 'mm.user.country' | translate }}</ion-label>
-                    <select ng-model="data.country" ng-options="code as name for (code, name) in countries" aria-labelledby="mm-login-signup-country" mm-ios-select-fix></select>
+                    <select ng-model="data.country" ng-options="code as name for (code, name) in countries" aria-labelledby="mm-login-signup-country" mm-ios-select-fix>
+                        <option value="">{{ 'mm.login.selectacountry' | translate }}</option>
+                    </select>
                 </ion-input>
                 <!-- Other categories. -->
                 <div ng-repeat="category in categories">
                     <div class="item item-divider item-text-wrap">{{ category.name }}</div>
-                    <!-- TODO: profilefields -->
+                    <mm-user-profile-field ng-repeat="field in category.fields" field="field" edit="true" signup="true" register-auth="email" model="data" scroll-handle="mmLoginEmailSignupScroll"></mm-user-profile-field>
                 </div>
                 <!-- TODO: captcha -->
                 <!-- Site policy (if any). -->

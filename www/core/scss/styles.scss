@@ -105,8 +105,13 @@ em {
 
 .mm-big   { font-size: 115%; }
 
-.item-stacked-label{
+.item-stacked-label {
   background-color: $item-default-bg;
+
+  .input-label {
+    max-width: 100%;
+    width: 100%;
+  }
 }
 
 // Default bar.
@@ -1048,4 +1053,14 @@ ion-spinner.mm-spinner-right {
   color: $mm-input-required-asterisk-color !important;
   font-size: 20px;
   padding-left: 5px;
+}
+
+// Allow placeholders in date inputs.
+.platform-android, .platform-ios {
+  input[type="date"], input[type="datetime"], input[type="datetime-local"], input[type="time"] {
+    &.ng-empty:before {
+      color: $input-color-placeholder;
+      content: attr(placeholder);
+    }
+  }
 }

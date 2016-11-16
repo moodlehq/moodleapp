@@ -37,8 +37,8 @@ angular.module('mm.core.user')
      *                          returning an object defining these functions. See {@link $mmUtil#resolveObject}.
      *                             - isEnabled (Boolean|Promise) Whether or not the handler is enabled on a site level.
      *                                                           When using a promise, it should return a boolean.
-     *                             - getDirectiveName(field) (String) Returns the name of the directive to render the field.
-     *                                              There's no need to check the field type in this function.
+     *                             - getDirectiveName(field, signup, method) (String) Returns the name of the directive to render
+     *                                              the field. There's no need to check the field type in this function.
      */
     self.registerHandler = function(addon, fieldType, handler) {
         if (typeof handlers[fieldType] !== 'undefined') {
@@ -68,12 +68,28 @@ angular.module('mm.core.user')
          * @module mm.core.user
          * @ngdoc method
          * @name $mmUserProfileFieldsDelegate#getDirectiveForField
-         * @param  {Object} field User field to get the directive for.
-         * @return {String}       Directive name. Undefined if no directive found.
+         * @param  {Object} field          User field to get the directive for.
+         * @param  {Boolean} signup        True if user is in signup page.
+         * @param  {String} [registerAuth] Register auth method. E.g. 'email'.
+         * @return {String}                Directive name. Undefined if no directive found.
          */
-        self.getDirectiveForField = function(field) {
-            if (typeof enabledHandlers[field.type] != 'undefined') {
-                return enabledHandlers[field.type].getDirectiveName(field);
+        self.getDirectiveForField = function(field, signup, registerAuth) {
+            var type = field.type || field.datatype,
+                handler;
+
+            if (signup) {
+                if (handlers[type]) {
+                    if (typeof handlers[type].instance === 'undefined') {
+                        handlers[type].instance = $mmUtil.resolveObject(handlers[type].handler, true);
+                    }
+                    handler = handlers[type].instance;
+                }
+            } else {
+                handler = enabledHandlers[type];
+            }
+
+            if (handler) {
+                return handler.getDirectiveName(field, signup, registerAuth);
             }
         };
 

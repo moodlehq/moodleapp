@@ -22,11 +22,43 @@ angular.module('mm.addons.userprofilefield_datetime')
  * @name mmaUserProfileFieldDatetime
  */
 .directive('mmaUserProfileFieldDatetime', function($log) {
-	$log = $log.getInstance('mmaUserProfileFieldDatetime');
+    $log = $log.getInstance('mmaUserProfileFieldDatetime');
 
     return {
         restrict: 'A',
         priority: 100,
-        templateUrl: 'addons/userprofilefield/datetime/template.html'
+        templateUrl: 'addons/userprofilefield/datetime/template.html',
+        link: function(scope, element) {
+            var field = scope.field,
+                year;
+
+            if (field && scope.edit && scope.model) {
+                scope.isIOS = ionic.Platform.isIOS();
+                field.modelName = 'profile_field_' + field.shortname;
+
+                // Use a fake model since the WS expects the value separated in day, month, year, hour, minute.
+                scope.dtModel = {};
+
+                // Check if it's only date or it has time too.
+                field.hasTime = field.param3 && field.param3 !== '0' && field.param3 !== 'false';
+                field.inputType = field.hasTime ? 'datetime-local' : 'date';
+
+                // Check min value.
+                if (field.param1) {
+                    year = parseInt(field.param1, 10);
+                    if (year) {
+                        field.min = year + '-01-01' + (field.hasTime && !scope.isIOS ? 'T00:00:00' : '');
+                    }
+                }
+
+                // Check max value.
+                if (field.param2) {
+                    year = parseInt(field.param2, 10);
+                    if (year) {
+                        field.max = year + '-12-31' + (field.hasTime&& !scope.isIOS ? 'T23:59:59' : '');
+                    }
+                }
+            }
+        }
     };
 });

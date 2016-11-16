@@ -35,7 +35,8 @@ angular.module('mm.core')
  *
  * Accepts the following attributes:
  *
- * @param {Object} model           Model where to store the text. It'll be placed in a "text" property.
+ * @param {Object} model           Model where to store the text. It'll be placed in model[property].
+ * @param {Object} [property=text] Name of the model property where to store the text. Defaults to "text".
  * @param {String} [placeholder]   Placeholder to set in textarea if rich text editor is disabled.
  * @param {Object} [options]       Options to pass to the editor. It can be used to override default options.
  * @param {Object} [tabletOptions] Options to pass to the editor when run in a tablet. Has priority over "options" param.
@@ -232,6 +233,7 @@ angular.module('mm.core')
         templateUrl: 'core/templates/richtexteditor.html',
         scope: {
             model: '=',
+            property: '@?',
             placeholder: '@?',
             options: '=?',
             tabletOptions: '=?',
@@ -273,6 +275,9 @@ angular.module('mm.core')
                 componentId = scope.componentId,
                 firstChange = true,
                 renderTime;
+
+            // Default to text.
+            scope.property = typeof scope.property == 'string' ? scope.property : 'text';
 
             if (scope.scrollHandle) {
                 scrollView = $ionicScrollDelegate.$getByHandle(scope.scrollHandle);

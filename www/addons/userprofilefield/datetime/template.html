@@ -1,4 +1,17 @@
-<div class="item" ng-if="field && field.name">
+<!-- Render (no edit). -->
+<div class="item" ng-if="!edit && field && field.name">
     <p class="item-heading">{{ field.name }}</p>
     <p>{{ field.value * 1000 | mmFormatDate:"dfmediumdate"}}</p>
 </div>
+<!-- Edit. -->
+<ion-input ng-if="edit && field && field.shortname" class="item item-input item-stacked-label item-text-wrap">
+    <ion-label>
+        <span ng-if="field.required" mm-mark-required>{{ field.name }}</span>
+        <span ng-if="!field.required">{{ field.name }}</span>
+    </ion-label>
+    <!-- In Android, show only 1 input, date or datetime-local. -->
+    <input ng-if="!isIOS" type="{{field.inputType}}" placeholder="{{field.name}}" ng-model="dtModel[field.modelName]" ng-disabled="field.locked" max="{{field.max}}" min="{{field.min}}" aria-label="{{field.name}}">
+    <!-- In iOS, show 1 input if it's only date, show 2 inputs if it's date & time. -->
+    <input ng-if="isIOS" type="date" placeholder="{{ 'mm.core.date' | translate }}" ng-model="dtModel[field.modelName + '_date']" ng-disabled="field.locked" max="{{field.max}}" min="{{field.min}}" aria-label="{{ 'mm.core.date' | translate }}">
+    <input ng-if="isIOS && field.hasTime" type="time" placeholder="{{ 'mm.core.time' | translate }}" ng-model="dtModel[field.modelName + '_time']" ng-disabled="field.locked" aria-label="{{ 'mm.core.time' | translate }}">
+</ion-input>
