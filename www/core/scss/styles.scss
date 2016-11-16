@@ -610,7 +610,11 @@ mm-timer {
   padding: 0;
 }
 
-.item-input-inset.item-stacked-label .item-input-wrapper.item-select {
+.item-input {
+  padding: 16px;
+}
+
+.item-input.item-stacked-label .item-input-wrapper.item-select {
   display: block;
 
   select {
@@ -625,8 +629,10 @@ mm-timer {
   }
 }
 
-.item-input-inset .item-input-wrapper input {
+.item-input-inset .item-input-wrapper input,
+.item-input .item-input-wrapper input {
   width: 100%;
+  background: transparent;
 }
 
 .button.mm-button-icon-small {
