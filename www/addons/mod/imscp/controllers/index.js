@@ -21,8 +21,8 @@ angular.module('mm.addons.mod_imscp')
  * @ngdoc controller
  * @name mmaModImscpIndexCtrl
  */
-.controller('mmaModImscpIndexCtrl', function($scope, $stateParams, $mmUtil, $mmCoursePrefetchDelegate,  $mmCourseHelper, $mmaModImscp, $log, mmaModImscpComponent,
-            $ionicPopover, $timeout, $q, $mmCourse, $mmApp, $mmText, $translate, $mmaModImscpPrefetchHandler) {
+.controller('mmaModImscpIndexCtrl', function($scope, $stateParams, $mmUtil, $mmCoursePrefetchDelegate, $mmCourseHelper, $mmaModImscp, $log, mmaModImscpComponent,
+    $ionicPopover, $timeout, $q, $mmCourse, $mmApp, $mmText, $translate, $mmaModImscpPrefetchHandler) {
     $log = $log.getInstance('mmaModImscpIndexCtrl');
 
     var module = $stateParams.module || {},
@@ -72,7 +72,7 @@ angular.module('mm.addons.mod_imscp')
                 // Try to get the imscp data.
                 return $mmaModImscp.getImscp(courseId, module.id).then(function(imscp) {
                     $scope.title = imscp.name || $scope.title;
-                    $scope.description = imscp.intro || $scope.description;
+                    $scope.description = imscp.intro ||  $scope.description;
                 }).catch(function() {
                     // Ignore errors since this WS isn't available in some Moodle versions.
                 }).then(function() {
@@ -133,6 +133,7 @@ angular.module('mm.addons.mod_imscp')
     // Convenience function that fills Context Menu Popover.
     function fillContextMenu(module, courseId, invalidateCache) {
         $mmCourseHelper.getModulePrefetchInfo(module, courseId, invalidateCache).then(function(moduleInfo) {
+            console.log(moduleInfo); //to check the prefetch module info in console
             $scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
             $scope.prefetchStatusIcon = moduleInfo.statusIcon;
             $scope.timemodified = moduleInfo.timemodified > 0 ? $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable : "";
@@ -172,7 +173,7 @@ angular.module('mm.addons.mod_imscp')
             }
         });
     };
-    
+
     // Context Menu Description action.
     $scope.expandDescription = function() {
         $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false, mmaModImscpComponent, module.id);

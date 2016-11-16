@@ -21,32 +21,29 @@ angular.module('mm.addons.mod_glossary')
  * @ngdoc controller
  * @name mmaModGlossaryIndexCtrl
  */
-.controller('mmaModGlossaryIndexCtrl', function($q, $scope, $stateParams, $ionicPopover, $mmUtil, $mmCoursePrefetchDelegate,  $mmCourseHelper, $mmaModGlossary,
-        $ionicScrollDelegate, $translate, $mmText, mmaModGlossaryComponent, mmaModGlossaryLimitEntriesNum) {
+.controller('mmaModGlossaryIndexCtrl', function($q, $scope, $stateParams, $ionicPopover, $mmUtil, $mmCoursePrefetchDelegate, $mmCourseHelper, $mmaModGlossary,
+    $ionicScrollDelegate, $translate, $mmText, mmaModGlossaryComponent, mmaModGlossaryLimitEntriesNum) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         glossary,
-        noop = function(){},
+        noop = function() {},
         limitFrom = 0,
         limitNum = mmaModGlossaryLimitEntriesNum,
         popover,
-        viewMode,   // The archetype of view (letter, date, author, cat).
-        fetchMode = 'letter_all',       // Default.
+        viewMode, // The archetype of view (letter, date, author, cat).
+        fetchMode = 'letter_all', // Default.
         fetchFunction,
         fetchInvalidate,
         fetchArguments,
         popoverScope = $scope.$new(true),
-        browseModes = [
-            {
-                key: 'letter_all',
-                langkey: 'mma.mod_glossary.byalphabet'
-            },
-            {
-                key: 'search',
-                langkey: 'mma.mod_glossary.bysearch'
-            }
-        ],
+        browseModes = [{
+            key: 'letter_all',
+            langkey: 'mma.mod_glossary.byalphabet'
+        }, {
+            key: 'search',
+            langkey: 'mma.mod_glossary.bysearch'
+        }],
         searchingMessage = $translate.instant('mm.core.searching'),
         loadingMessage = $translate.instant('mm.core.loading');
 
@@ -107,6 +104,7 @@ angular.module('mm.addons.mod_glossary')
     // Convenience function that fills Context Menu Popover.
     function fillContextMenu(module, courseId, invalidateCache) {
         $mmCourseHelper.getModulePrefetchInfo(module, courseId, invalidateCache).then(function(moduleInfo) {
+            console.log(moduleInfo); //to check the prefetch module info in console
             $scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
             $scope.prefetchStatusIcon = moduleInfo.statusIcon;
             $scope.timemodified = moduleInfo.timemodified > 0 ? $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable : "";
@@ -152,22 +150,30 @@ angular.module('mm.addons.mod_glossary')
     // Context Menu Description action.
     $scope.expandDescription = function() {
         $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false,
-                mmaModGlossaryComponent, module.id);
+            mmaModGlossaryComponent, module.id);
     };
 
     // Controller run.
     $mmaModGlossary.getGlossary(courseId, module.id).then(function(mod) {
         glossary = mod;
 
-        $scope.description = glossary.intro || module.description;
-
+        $scope.description = glossary.intro ||  module.description;
         // Preparing browse modes.
         if (glossary.browsemodes.indexOf('date') >= 0) {
-            browseModes.push({key: 'newest_first', langkey: 'mma.mod_glossary.bynewestfirst'});
-            browseModes.push({key: 'recently_updated', langkey: 'mma.mod_glossary.byrecentlyupdated'});
+            browseModes.push({
+                key: 'newest_first',
+                langkey: 'mma.mod_glossary.bynewestfirst'
+            });
+            browseModes.push({
+                key: 'recently_updated',
+                langkey: 'mma.mod_glossary.byrecentlyupdated'
+            });
         }
         if (glossary.browsemodes.indexOf('author') >= 0) {
-            browseModes.push({key: 'author_all', langkey: 'mma.mod_glossary.byauthor'});
+            browseModes.push({
+                key: 'author_all',
+                langkey: 'mma.mod_glossary.byauthor'
+            });
         }
 
         // Preparing the popover.
@@ -192,7 +198,9 @@ angular.module('mm.addons.mod_glossary')
             }
             popover.hide();
         };
-        popoverScope.data = { selectedMode: '' };
+        popoverScope.data = {
+            selectedMode: ''
+        };
         $ionicPopover.fromTemplateUrl('addons/mod/glossary/templates/mode_picker.html', {
             scope: popoverScope
         }).then(function(po) {
@@ -212,8 +220,6 @@ angular.module('mm.addons.mod_glossary')
             $mmaModGlossary.logView(glossary.id, viewMode);
         }).finally(function() {
             $scope.loaded = true;
-            $scope.refreshIcon = 'ion-refresh';
-            
         });
     }).catch(function() {
         $mmUtil.showErrorModal('mma.mod_glossary.errorloadingglossary', true);
@@ -231,6 +237,8 @@ angular.module('mm.addons.mod_glossary')
         var args = angular.extend([], fetchArguments);
         args.push(limitFrom);
         args.push(limitNum);
+
+        fillContextMenu(module, courseId);
 
         return fetchFunction.apply(this, args).then(function(result) {
             if (append) {
@@ -288,25 +296,29 @@ angular.module('mm.addons.mod_glossary')
                 return entry.userid != previous.userid;
             };
 
-        // Newest first.
+            // Newest first.
         } else if (mode == 'newest_first') {
             viewMode = 'date';
             fetchFunction = $mmaModGlossary.getEntriesByDate;
             fetchInvalidate = $mmaModGlossary.invalidateEntriesByDate;
             fetchArguments = [glossary.id, 'CREATION', 'DESC'];
             $scope.getDivider = noop;
-            $scope.showDivider = function() { return false; };
+            $scope.showDivider = function() {
+                return false;
+            };
 
-        // Recently updated.
+            // Recently updated.
         } else if (mode == 'recently_updated') {
             viewMode = 'date';
             fetchFunction = $mmaModGlossary.getEntriesByDate;
             fetchInvalidate = $mmaModGlossary.invalidateEntriesByDate;
             fetchArguments = [glossary.id, 'UPDATE', 'DESC'];
             $scope.getDivider = noop;
-            $scope.showDivider = function() { return false; };
+            $scope.showDivider = function() {
+                return false;
+            };
 
-        // Search for entries.
+            // Search for entries.
         } else if (mode == 'search') {
             viewMode = 'search';
             fetchFunction = $mmaModGlossary.getEntriesBySearch;
@@ -314,10 +326,12 @@ angular.module('mm.addons.mod_glossary')
             fetchArguments = false; // Dynamically set later.
             $scope.isSearch = true;
             $scope.getDivider = noop;
-            $scope.showDivider = function() { return false; };
+            $scope.showDivider = function() {
+                return false;
+            };
             instantFetch = false;
 
-        // Consider it is 'letter_all'.
+            // Consider it is 'letter_all'.
         } else {
             viewMode = 'letter';
             fetchMode = 'letter_all';

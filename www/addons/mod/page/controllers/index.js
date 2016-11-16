@@ -21,8 +21,8 @@ angular.module('mm.addons.mod_page')
  * @ngdoc controller
  * @name mmaModPageIndexCtrl
  */
-.controller('mmaModPageIndexCtrl', function($scope, $stateParams, $mmUtil, $mmCoursePrefetchDelegate,  $mmCourseHelper, $mmaModPage, $mmCourse, $q, $log, $mmApp,
-            mmaModPageComponent, $mmText, $translate, $mmaModPagePrefetchHandler) {
+.controller('mmaModPageIndexCtrl', function($scope, $stateParams, $mmUtil, $mmCoursePrefetchDelegate, $mmCourseHelper, $mmaModPage, $mmCourse, $q, $log, $mmApp,
+    mmaModPageComponent, $mmText, $translate, $mmaModPagePrefetchHandler) {
     $log = $log.getInstance('mmaModPageIndexCtrl');
 
     var module = $stateParams.module || {},
@@ -67,6 +67,7 @@ angular.module('mm.addons.mod_page')
     // Convenience function that fills Context Menu Popover.
     function fillContextMenu(module, courseId, invalidateCache) {
         $mmCourseHelper.getModulePrefetchInfo(module, courseId, invalidateCache).then(function(moduleInfo) {
+            console.log(moduleInfo); //to check the prefetch module info in console
             $scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
             $scope.prefetchStatusIcon = moduleInfo.statusIcon;
             $scope.timemodified = moduleInfo.timemodified > 0 ? $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable : "";
@@ -106,7 +107,7 @@ angular.module('mm.addons.mod_page')
             }
         });
     };
-    
+
     // Context Menu Description action.
     $scope.expandDescription = function() {
         $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false, mmaModPageComponent, module.id);

@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_folder')
  * @name mmaModFolderIndexCtrl
  */
 .controller('mmaModFolderIndexCtrl', function($scope, $stateParams, $mmUtil, $mmCourseHelper, $mmCoursePrefetchDelegate, $mmaModFolder, $mmCourse, $mmUtil, $q, $mmText, $translate,
-            mmaModFolderComponent) {
+    mmaModFolderComponent) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         sectionId = $stateParams.sectionid,
@@ -86,6 +86,7 @@ angular.module('mm.addons.mod_folder')
     // Convenience function that fills Context Menu Popover.
     function fillContextMenu(module, courseId, invalidateCache) {
         $mmCourseHelper.getModulePrefetchInfo(module, courseId, invalidateCache).then(function(moduleInfo) {
+            console.log(moduleInfo); //to check the prefetch module info in console
             $scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
             $scope.prefetchStatusIcon = moduleInfo.statusIcon;
             $scope.timemodified = moduleInfo.timemodified > 0 ? $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable : "";

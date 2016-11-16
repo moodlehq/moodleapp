@@ -21,11 +21,11 @@ angular.module('mm.addons.mod_survey')
  * @ngdoc controller
  * @name mmaModSurveyIndexCtrl
  */
-.controller('mmaModSurveyIndexCtrl', function($scope, $stateParams, $mmaModSurvey, $mmUtil, $mmCoursePrefetchDelegate,  $mmCourseHelper, $q, $mmCourse, $translate, $mmText,
-            $ionicPlatform, $ionicScrollDelegate, $mmaModSurveyOffline, mmaModSurveyComponent, $mmaModSurveySync, $mmSite,
-            $mmEvents, mmaModSurveyAutomSyncedEvent, $mmApp, $mmEvents, mmCoreEventOnlineStatusChanged) {
+.controller('mmaModSurveyIndexCtrl', function($scope, $stateParams, $mmaModSurvey, $mmUtil, $mmCoursePrefetchDelegate, $mmCourseHelper, $q, $mmCourse, $translate, $mmText,
+    $ionicPlatform, $ionicScrollDelegate, $mmaModSurveyOffline, mmaModSurveyComponent, $mmaModSurveySync, $mmSite,
+    $mmEvents, mmaModSurveyAutomSyncedEvent, $mmApp, $mmEvents, mmCoreEventOnlineStatusChanged) {
     var module = $stateParams.module || {},
-        courseid = $stateParams.courseid,
+        courseId = $stateParams.courseid,
         survey,
         userId = $mmSite.getUserId(),
         scrollView,
@@ -36,7 +36,7 @@ angular.module('mm.addons.mod_survey')
     $scope.moduleUrl = module.url;
     $scope.moduleName = $mmCourse.translateModuleName('survey');
     $scope.componentId = module.id;
-    $scope.courseid = courseid;
+    $scope.courseId = courseId;
     $scope.answers = {};
     $scope.isTablet = $ionicPlatform.isTablet();
     $scope.refreshIcon = 'spinner';
@@ -46,12 +46,11 @@ angular.module('mm.addons.mod_survey')
     // Convenience function to get survey data.
     function fetchSurveyData(refresh, sync, showErrors) {
         $scope.isOnline = $mmApp.isOnline();
-        fillContextMenu(module, courseId);
-        return $mmaModSurvey.getSurvey(courseid, module.id).then(function(surveydata) {
+        return $mmaModSurvey.getSurvey(courseId, module.id).then(function(surveydata) {
             survey = surveydata;
 
             $scope.title = survey.name || $scope.title;
-            $scope.description = survey.intro || $scope.description;
+            $scope.description = survey.intro ||  $scope.description;
             $scope.survey = survey;
             fillContextMenu(module, courseId);
 
@@ -60,7 +59,7 @@ angular.module('mm.addons.mod_survey')
                 return syncSurvey(showErrors).then(function(answersSent) {
                     if (answersSent) {
                         // Answers were sent, update the survey.
-                        return $mmaModSurvey.getSurvey(courseid, module.id).then(function(surveyData) {
+                        return $mmaModSurvey.getSurvey(courseId, module.id).then(function(surveyData) {
                             survey = surveyData;
                             $scope.survey = survey;
                         });
@@ -69,9 +68,7 @@ angular.module('mm.addons.mod_survey')
                     // Ignore errors.
                 });
             }
-        }).then( function() {
-            fillContextMenu(module, courseId);
-        }) .then(function() {
+        }).then(function() {
             // Check if there are answers stored in offline.
             return $mmaModSurveyOffline.hasAnswers(survey.id);
         }).then(function(hasOffline) {
@@ -80,7 +77,6 @@ angular.module('mm.addons.mod_survey')
             } else {
                 $scope.hasOffline = hasOffline;
             }
-
             if (!survey.surveydone && !hasOffline) {
                 return fetchQuestions();
             }
@@ -118,7 +114,7 @@ angular.module('mm.addons.mod_survey')
 
     // Convenience function to refresh all the data.
     function refreshAllData(sync, showErrors) {
-        var p1 = $mmaModSurvey.invalidateSurveyData(courseid),
+        var p1 = $mmaModSurvey.invalidateSurveyData(courseId),
             p2 = survey ? $mmaModSurvey.invalidateQuestions(survey.id) : $q.when();
 
         return $q.all([p1, p2]).finally(function() {
@@ -128,7 +124,7 @@ angular.module('mm.addons.mod_survey')
 
     fetchSurveyData(false, true).then(function() {
         $mmaModSurvey.logView(survey.id).then(function() {
-            $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
+            $mmCourse.checkModuleCompletion(courseId, module.completionstatus);
         });
     }).finally(function() {
         $scope.surveyLoaded = true;
@@ -160,7 +156,7 @@ angular.module('mm.addons.mod_survey')
                 });
             });
 
-            $mmaModSurvey.submitAnswers(survey.id, survey.name, courseid, answers).then(function() {
+            $mmaModSurvey.submitAnswers(survey.id, survey.name, courseId, answers).then(function() {
                 scrollTop();
                 return refreshAllData(false);
             }).catch(function(message) {
@@ -178,9 +174,11 @@ angular.module('mm.addons.mod_survey')
     // Convenience function that fills Context Menu Popover.
     function fillContextMenu(module, courseId, invalidateCache) {
         $mmCourseHelper.getModulePrefetchInfo(module, courseId, invalidateCache).then(function(moduleInfo) {
+            console.log(moduleInfo); //to check the prefetch module info in console
             $scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
             $scope.prefetchStatusIcon = moduleInfo.statusIcon;
             $scope.timemodified = moduleInfo.timemodified > 0 ? $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable : "";
+
         });
     }
 
@@ -217,7 +215,7 @@ angular.module('mm.addons.mod_survey')
             }
         });
     };
-    
+
     // Context Menu Description action.
     $scope.expandDescription = function() {
         $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false, mmaModSurveyComponent, module.id);

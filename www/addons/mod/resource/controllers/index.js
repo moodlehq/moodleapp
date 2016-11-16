@@ -21,8 +21,8 @@ angular.module('mm.addons.mod_resource')
  * @ngdoc controller
  * @name mmaModResourceIndexCtrl
  */
-.controller('mmaModResourceIndexCtrl', function($scope, $stateParams, $mmUtil, $mmCoursePrefetchDelegate,  $mmCourseHelper, $mmaModResource, $log, $mmApp, $mmCourse, $timeout,
-        $mmText, $translate, mmaModResourceComponent, $mmaModResourcePrefetchHandler) {
+.controller('mmaModResourceIndexCtrl', function($scope, $stateParams, $mmUtil, $mmCoursePrefetchDelegate, $mmCourseHelper, $mmaModResource, $log, $mmApp, $mmCourse, $timeout,
+    $mmText, $translate, mmaModResourceComponent, $mmaModResourcePrefetchHandler) {
     $log = $log.getInstance('mmaModResourceIndexCtrl');
 
     var module = $stateParams.module || {},
@@ -44,7 +44,7 @@ angular.module('mm.addons.mod_resource')
                 $mmUtil.showErrorModal('mma.mod_resource.errorwhileloadingthecontent', true);
                 return $q.reject();
             }
-
+            fillContextMenu(module, courseId);
             if ($mmaModResource.isDisplayedInIframe(module)) {
                 $scope.mode = 'iframe';
                 var downloadFailed = false;
@@ -77,7 +77,6 @@ angular.module('mm.addons.mod_resource')
                         $scope.loaded = true;
                         $scope.refreshIcon = 'ion-refresh';
                     });
-                    fillContextMenu(module, courseId);
                 });
             } else {
                 $scope.loaded = true;
@@ -108,6 +107,7 @@ angular.module('mm.addons.mod_resource')
     // Convenience function that fills Context Menu Popover.
     function fillContextMenu(module, courseId, invalidateCache) {
         $mmCourseHelper.getModulePrefetchInfo(module, courseId, invalidateCache).then(function(moduleInfo) {
+            console.log(moduleInfo); //to check the prefetch module info in console
             $scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
             $scope.prefetchStatusIcon = moduleInfo.statusIcon;
             $scope.timemodified = moduleInfo.timemodified > 0 ? $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable : "";
@@ -151,7 +151,7 @@ angular.module('mm.addons.mod_resource')
     // Context Menu Description action.
     $scope.expandDescription = function() {
         $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false,
-                    mmaModResourceComponent, module.id);
+            mmaModResourceComponent, module.id);
     };
 
     $scope.doRefresh = function() {

@@ -1,5 +1,7 @@
 <ion-view>
-    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-title>
+        <mm-format-text watch="true">{{ title }}</mm-format-text>
+    </ion-nav-title>
     <ion-nav-buttons side="secondary">
         <mm-context-menu>
             <mm-context-menu-item priority="900" ng-if="moduleUrl" href="moduleUrl" content="'mm.core.openinbrowser' | translate" icon-action="'ion-share'"></mm-context-menu-item>
@@ -52,10 +54,12 @@
                     </div>
 
                     <div ng-if="timeRemaining" class="item item-text-wrap">
-                        <h2>{{ 'mma.mod_assign.timeremaining' | translate }}</h2> <p>{{timeRemaining}}</p>
+                        <h2>{{ 'mma.mod_assign.timeremaining' | translate }}</h2>
+                        <p>{{timeRemaining}}</p>
                     </div>
                     <div ng-if="lateSubmissions" class="item item-text-wrap">
-                        <h2>{{ 'mma.mod_assign.latesubmissions' | translate }}</h2> <p>{{lateSubmissions}}</p>
+                        <h2>{{ 'mma.mod_assign.latesubmissions' | translate }}</h2>
+                        <p>{{lateSubmissions}}</p>
                     </div>
                 </div>
             </div>
