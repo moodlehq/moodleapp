@@ -22,9 +22,9 @@ angular.module('mm.addons.mod_forum')
  * @name mmaModForumDiscussionsCtrl
  */
 .controller('mmaModForumDiscussionsCtrl', function($q, $scope, $stateParams, $mmaModForum, $mmCourse, $mmUtil, $mmCoursePrefetchDelegate, $mmGroups, $mmUser,
-            $mmEvents, $ionicScrollDelegate, $ionicPlatform, mmUserProfileState, mmaModForumNewDiscussionEvent, $mmSite, $translate, $mmCourseHelper, 
-            mmaModForumReplyDiscussionEvent, $mmText, mmaModForumComponent, $mmaModForumOffline, $mmaModForumSync,
-            mmaModForumAutomSyncedEvent, mmaModForumManualSyncedEvent, $mmApp, mmCoreEventOnlineStatusChanged) {
+    $mmEvents, $ionicScrollDelegate, $ionicPlatform, mmUserProfileState, mmaModForumNewDiscussionEvent, $mmSite, $translate, $mmCourseHelper,
+    mmaModForumReplyDiscussionEvent, $mmText, mmaModForumComponent, $mmaModForumOffline, $mmaModForumSync,
+    mmaModForumAutomSyncedEvent, mmaModForumManualSyncedEvent, $mmApp, mmCoreEventOnlineStatusChanged) {
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
         forum,
@@ -53,7 +53,7 @@ angular.module('mm.addons.mod_forum')
             forum = forumdata;
 
             $scope.title = forum.name || $scope.title;
-            $scope.description = forum.intro || $scope.description;
+            $scope.description = forum.intro ||  $scope.description;
             $scope.forum = forum;
 
             if (sync) {
@@ -64,7 +64,7 @@ angular.module('mm.addons.mod_forum')
             }
         }).then(function() {
             fillContextMenu(module, courseid);
-        }) .then(function() {
+        }).then(function() {
             return $mmGroups.getActivityGroupMode(forum.cmid).then(function(mode) {
                 usesGroups = mode === $mmGroups.SEPARATEGROUPS || mode === $mmGroups.VISIBLEGROUPS;
             }).finally(function() {
@@ -131,7 +131,7 @@ angular.module('mm.addons.mod_forum')
 
         return $mmaModForum.getDiscussions(forum.id, page).then(function(response) {
             var promise = usesGroups ?
-                    $mmaModForum.formatDiscussionsGroups(forum.cmid, response.discussions) : $q.when(response.discussions);
+                $mmaModForum.formatDiscussionsGroups(forum.cmid, response.discussions) : $q.when(response.discussions);
             return promise.then(function(discussions) {
 
                 if (forum.type == 'single') {
@@ -303,6 +303,7 @@ angular.module('mm.addons.mod_forum')
     // Convenience function that fills Context Menu Popover.
     function fillContextMenu(module, courseId, invalidateCache) {
         $mmCourseHelper.getModulePrefetchInfo(module, courseId, invalidateCache).then(function(moduleInfo) {
+            console.log(moduleInfo); //to check the prefetch module info in console
             $scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
             $scope.prefetchStatusIcon = moduleInfo.statusIcon;
             $scope.timemodified = moduleInfo.timemodified > 0 ? $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable : "";
@@ -383,7 +384,7 @@ angular.module('mm.addons.mod_forum')
         }
     });
 
-    $scope.$on('$destroy', function(){
+    $scope.$on('$destroy', function() {
         obsNewDisc && obsNewDisc.off && obsNewDisc.off();
         obsReply && obsReply.off && obsReply.off();
         syncObserver && syncObserver.off && syncObserver.off();

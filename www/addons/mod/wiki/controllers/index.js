@@ -22,10 +22,10 @@ angular.module('mm.addons.mod_wiki')
  * @name mmaModWikiIndexCtrl
  */
 .controller('mmaModWikiIndexCtrl', function($q, $scope, $stateParams, $mmCourse, $mmUser, $mmGroups, $ionicPopover, $mmUtil, $state,
-        $mmSite, $mmaModWiki, $ionicTabsDelegate, $ionicHistory, $translate, mmaModWikiSubwikiPagesLoaded, $mmCourseHelper,
-        $mmCoursePrefetchDelegate, $mmText, mmaModWikiComponent, $mmEvents, mmCoreEventPackageStatusChanged, $ionicScrollDelegate,
-        $mmaModWikiOffline, mmaModWikiPageCreatedEvent, mmaModWikiSubwikiAutomSyncedEvent, $mmaModWikiSync,
-        mmaModWikiManualSyncedEvent, $mmApp, mmCoreEventOnlineStatusChanged) {
+    $mmSite, $mmaModWiki, $ionicTabsDelegate, $ionicHistory, $translate, mmaModWikiSubwikiPagesLoaded, $mmCourseHelper,
+    $mmCoursePrefetchDelegate, $mmText, mmaModWikiComponent, $mmEvents, mmCoreEventPackageStatusChanged, $ionicScrollDelegate,
+    $mmaModWikiOffline, mmaModWikiPageCreatedEvent, mmaModWikiSubwikiAutomSyncedEvent, $mmaModWikiSync,
+    mmaModWikiManualSyncedEvent, $mmApp, mmCoreEventOnlineStatusChanged) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         action = $stateParams.action || 'page',
@@ -52,7 +52,7 @@ angular.module('mm.addons.mod_wiki')
     $scope.pageStr = $translate.instant('mma.mod_wiki.page');
     $scope.moduleName = $mmCourse.translateModuleName('wiki');
 
-    $scope.tabsDelegateName = 'mmaModWikiTabs_'+(module.id || 0) + '_' + (currentPage || 0) + '_' +  new Date().getTime();
+    $scope.tabsDelegateName = 'mmaModWikiTabs_' + (module.id || 0) + '_' + (currentPage || 0) + '_' + new Date().getTime();
     tabsDelegate = $ionicTabsDelegate.$getByHandle($scope.tabsDelegateName);
 
     $scope.showSubwikiPicker = function(e) {
@@ -196,7 +196,7 @@ angular.module('mm.addons.mod_wiki')
                 module = module;
 
                 $scope.title = $scope.title || wiki.title;
-                $scope.description = wiki.intro || module.description;
+                $scope.description = wiki.intro ||  module.description;
                 $scope.moduleUrl = module.url;
                 $scope.componentId = module.id;
 
@@ -246,7 +246,7 @@ angular.module('mm.addons.mod_wiki')
                             // Listen for changes on this module status.
                             statusObserver = $mmEvents.on(mmCoreEventPackageStatusChanged, function(data) {
                                 if (data.siteid === $mmSite.getId() && data.componentId === module.id &&
-                                        data.component === mmaModWikiComponent) {
+                                    data.component === mmaModWikiComponent) {
                                     fillContextMenu(module, courseId);
                                 }
                             });
@@ -277,6 +277,7 @@ angular.module('mm.addons.mod_wiki')
     // Convenience function that fills Context Menu Popover.
     function fillContextMenu(module, courseId, invalidateCache) {
         $mmCourseHelper.getModulePrefetchInfo(module, courseId, invalidateCache).then(function(moduleInfo) {
+            console.log(moduleInfo); //to check the prefetch module info in console
             $scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
             $scope.prefetchStatusIcon = moduleInfo.statusIcon;
             $scope.timemodified = moduleInfo.timemodified > 0 ? $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable : "";
@@ -348,7 +349,7 @@ angular.module('mm.addons.mod_wiki')
             otherGroupsTitle = $translate.instant('mm.core.othergroups');
 
         $scope.subwikiData.subwikis = [];
-        $scope.subwikiData.selected = $stateParams.subwikiid || false;
+        $scope.subwikiData.selected = $stateParams.subwikiid ||  false;
         $scope.subwikiData.count = 0;
 
         // Group mode available.
@@ -441,7 +442,10 @@ angular.module('mm.addons.mod_wiki')
 
                     // Should we create a new grouping?
                     if (subwiki.group !== groupValue) {
-                        grouping = {label: subwiki.groupLabel, subwikis: []};
+                        grouping = {
+                            label: subwiki.groupLabel,
+                            subwikis: []
+                        };
                         groupValue = subwiki.group;
 
                         $scope.subwikiData.subwikis.push(grouping);
@@ -451,9 +455,18 @@ angular.module('mm.addons.mod_wiki')
                     grouping.subwikis.push(subwiki);
                 }
             } else if (myGroups) {
-                var noGrouping = {label: "", subwikis: []},
-                    myGroupsGrouping = {label: myGroupsTitle, subwikis: []},
-                    otherGroupsGrouping = {label: otherGroupsTitle, subwikis: []};
+                var noGrouping = {
+                        label: "",
+                        subwikis: []
+                    },
+                    myGroupsGrouping = {
+                        label: myGroupsTitle,
+                        subwikis: []
+                    },
+                    otherGroupsGrouping = {
+                        label: otherGroupsTitle,
+                        subwikis: []
+                    };
 
                 // As we loop over each subwiki, add it to the current group
                 for (var i in subwikiList) {
@@ -462,7 +475,7 @@ angular.module('mm.addons.mod_wiki')
                     // Add the subwiki to the currently active grouping.
                     if (typeof subwiki.canedit == 'undefined') {
                         noGrouping.subwikis.push(subwiki);
-                    } else if(subwiki.canedit) {
+                    } else if (subwiki.canedit) {
                         myGroupsGrouping.subwikis.push(subwiki);
                     } else {
                         otherGroupsGrouping.subwikis.push(subwiki);
@@ -480,7 +493,10 @@ angular.module('mm.addons.mod_wiki')
                     $scope.subwikiData.subwikis.push(otherGroupsGrouping);
                 }
             } else {
-                $scope.subwikiData.subwikis.push({label: "", subwikis: subwikiList});
+                $scope.subwikiData.subwikis.push({
+                    label: "",
+                    subwikis: subwikiList
+                });
             }
 
             $mmaModWiki.setSubwikiList(wiki.id, $scope.subwikiData.subwikis, $scope.subwikiData.count, $scope.subwikiData.selected);
@@ -566,7 +582,7 @@ angular.module('mm.addons.mod_wiki')
         content = content.trim();
         if (content.length > 0) {
             var url = $mmSite.getURL();
-            content = content.replace(/href="edit\.php/g, 'href="'+url+'/mod/wiki/edit.php');
+            content = content.replace(/href="edit\.php/g, 'href="' + url + '/mod/wiki/edit.php');
         }
         return content;
     }

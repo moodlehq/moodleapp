@@ -1,5 +1,7 @@
 <ion-view>
-    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-title>
+        <mm-format-text watch="true">{{ title }}</mm-format-text>
+    </ion-nav-title>
     <ion-nav-buttons side="secondary">
         <button class="button button-icon ion-bookmark" ng-click="popover.show($event)" ng-if="items && items.length > 1">
         </button>

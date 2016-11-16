@@ -1,5 +1,7 @@
 <ion-view>
-    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-title>
+        <mm-format-text watch="true">{{ title }}</mm-format-text>
+    </ion-nav-title>
     <ion-nav-buttons side="secondary">
         <mm-context-menu>
             <mm-context-menu-item priority="900" ng-if="moduleUrl" href="moduleUrl" content="'mm.core.openinbrowser' | translate" icon-action="'ion-share'"></mm-context-menu-item>

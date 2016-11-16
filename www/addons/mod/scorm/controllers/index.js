@@ -22,13 +22,13 @@ angular.module('mm.addons.mod_scorm')
  * @name mmaModScormIndexCtrl
  */
 .controller('mmaModScormIndexCtrl', function($scope, $stateParams, $mmaModScorm, $mmUtil, $mmCourseHelper, $q, $mmCourse, $ionicScrollDelegate,
-            $mmCoursePrefetchDelegate, $mmaModScormHelper, $mmEvents, $mmSite, $state, mmCoreOutdated, mmCoreNotDownloaded,
-            mmCoreDownloading, mmaModScormComponent, mmCoreEventPackageStatusChanged, $ionicHistory, mmaModScormEventAutomSynced,
-            $mmaModScormSync, $timeout, $mmText, $translate, $mmaModScormPrefetchHandler, $mmApp, $mmEvents,
-            mmCoreEventOnlineStatusChanged) {
+    $mmCoursePrefetchDelegate, $mmaModScormHelper, $mmEvents, $mmSite, $state, mmCoreOutdated, mmCoreNotDownloaded,
+    mmCoreDownloading, mmaModScormComponent, mmCoreEventPackageStatusChanged, $ionicHistory, mmaModScormEventAutomSynced,
+    $mmaModScormSync, $timeout, $mmText, $translate, $mmaModScormPrefetchHandler, $mmApp, $mmEvents,
+    mmCoreEventOnlineStatusChanged) {
 
     var module = $stateParams.module || {},
-        courseid = $stateParams.courseid,
+        courseId = $stateParams.courseid,
         scorm,
         statusObserver, syncObserver, onlineObserver,
         currentStatus,
@@ -56,12 +56,13 @@ angular.module('mm.addons.mod_scorm')
     // Convenience function to get SCORM data.
     function fetchScormData(refresh, checkCompletion, showErrors) {
         $scope.isOnline = $mmApp.isOnline();
-        return $mmaModScorm.getScorm(courseid, module.id, module.url).then(function(scormData) {
+        return $mmaModScorm.getScorm(courseId, module.id, module.url).then(function(scormData) {
             scorm = scormData;
 
             $scope.title = scorm.name || $scope.title;
-            $scope.description = scorm.intro || $scope.description;
+            $scope.description = scorm.intro ||  $scope.description;
             $scope.scorm = scorm;
+            fillContextMenu(module, courseId);
 
             var result = $mmaModScorm.isScormSupported(scorm);
             if (result === true) {
@@ -84,7 +85,7 @@ angular.module('mm.addons.mod_scorm')
                 });
 
                 if (checkCompletion) {
-                    $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
+                    $mmCourse.checkModuleCompletion(courseId, module.completionstatus);
                 }
 
                 // Get the number of attempts and check if SCORM is incomplete.
@@ -150,7 +151,7 @@ angular.module('mm.addons.mod_scorm')
 
     // Show error message and return a rejected promise.
     function showError(message, defaultMessage) {
-        defaultMessage = defaultMessage || 'mma.mod_scorm.errorgetscorm';
+        defaultMessage = defaultMessage ||  'mma.mod_scorm.errorgetscorm';
         if (message) {
             $mmUtil.showErrorModal(message);
         } else {
@@ -253,7 +254,7 @@ angular.module('mm.addons.mod_scorm')
 
     // Get status of the SCORM.
     function getStatus() {
-        return $mmCoursePrefetchDelegate.getModuleStatus(module, courseid, scorm.sha1hash, 0);
+        return $mmCoursePrefetchDelegate.getModuleStatus(module, courseId, scorm.sha1hash, 0);
     }
 
     // Set a listener to monitor changes on this SCORM status to show a message to the user.
@@ -265,7 +266,7 @@ angular.module('mm.addons.mod_scorm')
         // Listen for changes on this module status to show a message to the user.
         statusObserver = $mmEvents.on(mmCoreEventPackageStatusChanged, function(data) {
             if (data.siteid === $mmSite.getId() && data.componentId === scorm.coursemodule &&
-                    data.component === mmaModScormComponent) {
+                data.component === mmaModScormComponent) {
                 showStatus(data.status);
             }
         });
@@ -292,7 +293,7 @@ angular.module('mm.addons.mod_scorm')
     // Refreshes data.
     function refreshData(dontForceSync, checkCompletion, showErrors) {
         var promises = [];
-        promises.push($mmaModScorm.invalidateScormData(courseid));
+        promises.push($mmaModScorm.invalidateScormData(courseId));
         if (scorm) {
             promises.push($mmaModScorm.invalidateAllScormData(scorm.id));
         }
@@ -305,7 +306,7 @@ angular.module('mm.addons.mod_scorm')
     // Download a SCORM package or restores an ongoing download.
     function downloadScormPackage() {
         $scope.downloading = true;
-        return $mmaModScormPrefetchHandler.download(module, courseid).then(undefined, undefined, function(progress) {
+        return $mmaModScormPrefetchHandler.download(module, courseId).then(undefined, undefined, function(progress) {
 
             if (!progress) {
                 return;
@@ -362,7 +363,7 @@ angular.module('mm.addons.mod_scorm')
     // Fetch the SCORM data.
     fetchScormData().then(function() {
         $mmaModScorm.logView(scorm.id).then(function() {
-            $mmCourse.checkModuleCompletion(courseid, module.completionstatus);
+            $mmCourse.checkModuleCompletion(courseId, module.completionstatus);
         });
     }).finally(function() {
         $scope.scormLoaded = true;
@@ -405,7 +406,7 @@ angular.module('mm.addons.mod_scorm')
             $mmaModScormHelper.confirmDownload(scorm).then(function() {
                 // Invalidate file if SCORM is outdated.
                 var promise = currentStatus == mmCoreOutdated ?
-                                $mmaModScorm.invalidateContent(scorm.coursemodule, courseid) : $q.when();
+                    $mmaModScorm.invalidateContent(scorm.coursemodule, courseId) : $q.when();
                 promise.finally(function() {
                     downloadScormPackage().then(function() {
                         // Success downloading, open scorm if user hasn't left the view.
@@ -427,6 +428,7 @@ angular.module('mm.addons.mod_scorm')
     // Convenience function that fills Context Menu Popover.
     function fillContextMenu(module, courseId, invalidateCache) {
         $mmCourseHelper.getModulePrefetchInfo(module, courseId, invalidateCache).then(function(moduleInfo) {
+            console.log(moduleInfo); //to check the prefetch module info in console
             $scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
             $scope.prefetchStatusIcon = moduleInfo.statusIcon;
             $scope.timemodified = moduleInfo.timemodified > 0 ? $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable : "";
@@ -466,7 +468,7 @@ angular.module('mm.addons.mod_scorm')
             }
         });
     };
-    
+
     // Context Menu Description action.
     $scope.expandDescription = function() {
         $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false, mmaModScormComponent, module.id);

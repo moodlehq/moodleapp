@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_book')
  * @name mmaModBookIndexCtrl
  */
 .controller('mmaModBookIndexCtrl', function($scope, $stateParams, $mmUtil, $mmCourseHelper, $mmCoursePrefetchDelegate, $mmaModBook, $log, mmaModBookComponent, $mmText,
-            $ionicPopover, $mmApp, $q, $mmCourse, $ionicScrollDelegate, $translate, $mmaModBookPrefetchHandler) {
+    $ionicPopover, $mmApp, $q, $mmCourse, $ionicScrollDelegate, $translate, $mmaModBookPrefetchHandler) {
     $log = $log.getInstance('mmaModBookIndexCtrl');
 
     var module = $stateParams.module || {},
@@ -90,7 +90,7 @@ angular.module('mm.addons.mod_book')
             // Try to get the book data.
             return $mmaModBook.getBook(courseId, module.id).then(function(book) {
                 $scope.title = book.name || $scope.title;
-                $scope.description = book.intro || $scope.description;
+                $scope.description = book.intro ||  $scope.description;
             }).catch(function() {
                 // Ignore errors since this WS isn't available in some Moodle versions.
             });
@@ -114,7 +114,7 @@ angular.module('mm.addons.mod_book')
     $scope.doRefresh = function() {
         if ($scope.loaded) {
             $scope.refreshIcon = 'spinner';
-            
+
             return $mmaModBook.invalidateContent(module.id, courseId).finally(function() {
                 return fetchContent(currentChapter);
             }).finally(function() {
@@ -146,6 +146,7 @@ angular.module('mm.addons.mod_book')
     // Convenience function that fills Context Menu Popover.
     function fillContextMenu(module, courseId, invalidateCache) {
         $mmCourseHelper.getModulePrefetchInfo(module, courseId, invalidateCache).then(function(moduleInfo) {
+            console.log(moduleInfo); //to check the prefetch module info in console
             $scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
             $scope.prefetchStatusIcon = moduleInfo.statusIcon;
             $scope.timemodified = moduleInfo.timemodified > 0 ? $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable : "";
