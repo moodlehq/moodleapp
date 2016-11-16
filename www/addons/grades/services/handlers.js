@@ -240,11 +240,9 @@ angular.module('mm.addons.grades')
         self.getActions = function(siteIds, url) {
             // Check it's a grade URL.
             if (typeof self.handles(url) != 'undefined') {
-                var params = $mmUtil.extractUrlParams(url);
-                if (typeof params.id != 'undefined') {
-                    var courseId = parseInt(params.id, 10);
-                    // Pass false because all sites should have the same siteurl.
-                    return $mmContentLinksHelper.filterSupportedSites(siteIds, isEnabled, false, courseId).then(function(ids) {
+                // Check for the courses grades link first.
+                if (url.indexOf('overview') > -1) {
+                    return $mmContentLinksHelper.filterSupportedSites(siteIds, $mmaCoursesGrades.isPluginEnabled, false).then(function(ids) {
                         if (!ids.length) {
                             return [];
                         } else {
@@ -254,15 +252,39 @@ angular.module('mm.addons.grades')
                                 icon: 'ion-eye',
                                 sites: ids,
                                 action: function(siteId) {
-                                    var stateParams = {
-                                        course: {id: courseId},
-                                        userid: parseInt(params.userid, 10)
-                                    };
-                                    $mmContentLinksHelper.goInSite('site.grades', stateParams, siteId);
+                                    var stateParams = {};
+                                    $mmContentLinksHelper.goInSite('site.coursesgrades', stateParams, siteId);
                                 }
                             }];
                         }
                     });
+                } else {
+                    var params = $mmUtil.extractUrlParams(url);
+                    if (typeof params.id != 'undefined') {
+                        var courseId = parseInt(params.id, 10);
+                        // Pass false because all sites should have the same siteurl.
+                        return $mmContentLinksHelper.filterSupportedSites(siteIds, isEnabled, false, courseId).then(function(ids) {
+                            if (!ids.length) {
+                                return [];
+                            } else {
+                                // Return actions.
+                                return [{
+                                    message: 'mm.core.view',
+                                    icon: 'ion-eye',
+                                    sites: ids,
+                                    action: function(siteId) {
+                                        var stateParams = {
+                                            course: {id: courseId},
+                                            userid: parseInt(params.userid, 10),
+                                            courseid: courseId,
+                                            forcephoneview: false
+                                        };
+                                        $mmContentLinksHelper.goInSite('site.grades', stateParams, siteId);
+                                    }
+                                }];
+                            }
+                        });
+                    }
                 }
             }
             return [];
@@ -275,9 +297,13 @@ angular.module('mm.addons.grades')
          * @return {String}     Site URL. Undefined if the URL doesn't belong to this handler.
          */
         self.handles = function(url) {
-            var position = url.indexOf('/grade/report/user/index.php');
-            if (position > -1) {
-                return url.substr(0, position);
+            // Accept any of these patterns.
+            var patterns = ['/grade/report/user/index.php', '/grade/report/overview/index.php'];
+            for (var i = 0; i < patterns.length; i++) {
+                var position = url.indexOf(patterns[i]);
+                if (position > -1) {
+                    return url.substr(0, position);
+                }
             }
         };
 
