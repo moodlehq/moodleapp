@@ -370,5 +370,30 @@ angular.module('mm.core.user')
         });
     };
 
+    /*
+     * Change the given user profile picture.
+     *
+     * @module mm.core.user
+     * @ngdoc method
+     * @name $mmUser#changeProfilePicture
+     * @param  {Number} draftItemId New picture draft item id.
+     * @param  {Number} id          User ID.
+     * @return {Promise}            Promise resolve with the new profileimageurl
+     */
+    self.changeProfilePicture = function(draftItemId, userId) {
+        var data = {
+            'draftitemid': draftItemId,
+            'delete': 0,
+            'userid': userId
+        };
+
+        return $mmSite.write('core_user_update_picture', data).then(function(result) {
+            if (!result.success) {
+                return $q.reject();
+            }
+            return result.profileimageurl;
+        });
+    };
+
     return self;
 });
