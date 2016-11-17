@@ -22,7 +22,7 @@ angular.module('mm.core.user')
  * @name mmaParticipantsProfileCtrl
  */
 .controller('mmUserProfileCtrl', function($scope, $stateParams, $mmUtil, $mmUser, $mmUserDelegate, $mmSite, $q, $translate,
-            $mmEvents, mmUserEventProfileRefreshed) {
+            $mmEvents, $mmCourses, mmUserEventProfileRefreshed) {
 
     var courseid = $stateParams.courseid,
         userid   = $stateParams.userid;
@@ -76,8 +76,14 @@ angular.module('mm.core.user')
     });
 
     $scope.refreshUser = function() {
+        var promises = [];
         $mmEvents.trigger(mmUserEventProfileRefreshed, {courseid: courseid, userid: userid});
-        $mmUser.invalidateUserCache(userid).finally(function() {
+
+        promises.push($mmUser.invalidateUserCache(userid));
+        promises.push($mmCourses.invalidateUserNavigationOptions());
+        promises.push($mmCourses.invalidateUserAdministrationOptions());
+
+        $q.all(promises).finally(function() {
             fetchUserData().finally(function() {
                 $scope.$broadcast('scroll.refreshComplete');
             });

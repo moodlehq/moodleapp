@@ -60,7 +60,7 @@ angular.module('mm.core.user')
         return true;
     };
 
-    self.$get = function($q, $log, $mmSite, $mmUtil) {
+    self.$get = function($q, $log, $mmSite, $mmUtil, $mmCourses) {
         var enabledProfileHandlers = {},
             self = {},
             lastUpdateHandlersStart;
@@ -81,25 +81,40 @@ angular.module('mm.core.user')
             var handlers = [],
                 promises = [];
 
-            angular.forEach(enabledProfileHandlers, function(handler) {
-                // Checks if the handler is enabled for the user.
-                var promise = $q.when(handler.instance.isEnabledForUser(user, courseId)).then(function(enabled) {
-                    if (enabled) {
-                        handlers.push({
-                            controller: handler.instance.getController(user, courseId),
-                            priority: handler.priority
-                        });
-                    } else {
-                        return $q.reject();
-                    }
-                }).catch(function() {
-                    // Nothing to do here, it is not enabled for this user.
+            // Retrieve course options forcing cache.
+            return $mmCourses.getUserCourses(true).then(function(courses) {
+                var courseIds = courses.map(function(course) {
+                    return course.id;
                 });
-                promises.push(promise);
-            });
 
-            return $q.all(promises).then(function() {
-                return handlers;
+                return $mmCourses.getCoursesOptions(courseIds).then(function(options) {
+                    // For backwards compatibility we don't modify the courseId.
+                    var courseIdForOptions = courseId || $mmSite.getInfo().siteid || 1;
+                    var navOptions = options.navOptions[courseIdForOptions];
+                    var admOptions = options.admOptions[courseIdForOptions];
+
+                    angular.forEach(enabledProfileHandlers, function(handler) {
+                        // Checks if the handler is enabled for the user.
+                        var isEnabledForUser = handler.instance.isEnabledForUser(user, courseId, navOptions, admOptions);
+                        var promise = $q.when(isEnabledForUser).then(function(enabled) {
+                            if (enabled) {
+                                handlers.push({
+                                    controller: handler.instance.getController(user, courseId),
+                                    priority: handler.priority
+                                });
+                            } else {
+                                return $q.reject();
+                            }
+                        }).catch(function() {
+                            // Nothing to do here, it is not enabled for this user.
+                        });
+                        promises.push(promise);
+                    });
+
+                    return $q.all(promises).then(function() {
+                        return handlers;
+                    });
+                });
             }).catch(function() {
                 // Never fails.
                 return handlers;

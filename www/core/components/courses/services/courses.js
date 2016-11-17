@@ -187,6 +187,47 @@ angular.module('mm.core.courses')
         return currentCourses[id];
     };
 
+
+    /**
+     * Get the navigation and administration options for the given courses.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#getCoursesOptions
+     * @param  {Number[]} courseIds IDs of courses to get.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with the options for each course.
+     */
+    self.getCoursesOptions = function(courseIds, siteId) {
+        var promises = [],
+            navOptions,
+            admOptions;
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            // Add always the site id course.
+            courseIds.push(site.getInfo().siteid || 1);
+
+            // Get user navigation and administration options to speed up handlers loading.
+            promises.push(self.getUserNavigationOptions(courseIds, siteId).catch(function() {
+                // Couldn't get it, return empty options.
+                return {};
+            }).then(function(options) {
+                navOptions = options;
+            }));
+
+            promises.push(self.getUserAdministrationOptions(courseIds, siteId).catch(function() {
+                // Couldn't get it, return empty options.
+                return {};
+            }).then(function(options) {
+                admOptions = options;
+            }));
+
+            return $q.all(promises).then(function() {
+                return {navOptions: navOptions, admOptions: admOptions};
+            });
+        });
+    };
+
     /**
      * Get the common part of the cache keys for user administration options WS calls.
      *

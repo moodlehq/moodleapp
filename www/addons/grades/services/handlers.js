@@ -153,9 +153,11 @@ angular.module('mm.addons.grades')
          *
          * @param {Object} user     User to check.
          * @param {Number} courseId Course ID.
+         * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
          * @return {Promise}        Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
          */
-        self.isEnabledForUser = function(user, courseId) {
+        self.isEnabledForUser = function(user, courseId, navOptions, admOptions) {
             return $mmaGrades.isPluginEnabledForCourse(courseId).then(function() {
                 var cacheKey = getCacheKey(courseId, user.id);
                 if (typeof viewGradesEnabledCache[cacheKey] != 'undefined') {

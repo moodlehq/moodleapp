@@ -46,32 +46,14 @@ angular.module('mm.core.courses')
 
     // Convenience function to load the handlers of each course.
     function loadCoursesNavHandlers(refresh) {
-        var promises = [],
-            navOptions,
-            admOptions,
-            courseIds = $scope.courses.map(function(course) {
-                return course.id;
-            });
+        var courseIds = $scope.courses.map(function(course) {
+            return course.id;
+        });
 
-        // Get user navigation and administration options to speed up handlers loading.
-        promises.push($mmCourses.getUserNavigationOptions(courseIds).catch(function() {
-            // Couldn't get it, return empty options.
-            return {};
-        }).then(function(options) {
-            navOptions = options;
-        }));
-
-        promises.push($mmCourses.getUserAdministrationOptions(courseIds).catch(function() {
-            // Couldn't get it, return empty options.
-            return {};
-        }).then(function(options) {
-            admOptions = options;
-        }));
-
-        return $q.all(promises).then(function() {
+        return $mmCourses.getCoursesOptions(courseIds).then(function(options) {
             angular.forEach($scope.courses, function(course) {
                 course._handlers = $mmCoursesDelegate.getNavHandlersFor(
-                            course.id, refresh, navOptions[course.id], admOptions[course.id]);
+                            course.id, refresh, options.navOptions[course.id], options.admOptions[course.id]);
             });
         });
     }

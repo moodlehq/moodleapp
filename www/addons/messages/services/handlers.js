@@ -44,7 +44,16 @@ angular.module('mm.addons.messages')
             return $mmaMessages.isPluginEnabled();
         };
 
-        self.isEnabledForUser = function(user, courseId) {
+        /**
+         * Check if handler is enabled for this user in this context.
+         *
+         * @param {Object} user     User to check.
+         * @param {Number} courseId Course ID.
+         * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
+         * @return {Promise}        Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
+         */
+        self.isEnabledForUser = function(user, courseId, navOptions, admOptions) {
             return user.id != $mmSite.getUserId();
         };
 
@@ -128,7 +137,16 @@ angular.module('mm.addons.messages')
             return $mmaMessages.isPluginEnabled();
         };
 
-        self.isEnabledForUser = function(user, courseId) {
+        /**
+         * Check if handler is enabled for this user in this context.
+         *
+         * @param {Object} user     User to check.
+         * @param {Number} courseId Course ID.
+         * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
+         * @return {Promise}        Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
+         */
+        self.isEnabledForUser = function(user, courseId, navOptions, admOptions) {
             return user.id != $mmSite.getUserId();
         };
 
@@ -212,7 +230,16 @@ angular.module('mm.addons.messages')
             return $mmaMessages.isPluginEnabled();
         };
 
-        self.isEnabledForUser = function(user, courseId) {
+        /**
+         * Check if handler is enabled for this user in this context.
+         *
+         * @param {Object} user     User to check.
+         * @param {Number} courseId Course ID.
+         * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
+         * @return {Promise}        Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
+         */
+        self.isEnabledForUser = function(user, courseId, navOptions, admOptions) {
             return user.id != $mmSite.getUserId();
         };
 
