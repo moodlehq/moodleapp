@@ -91,6 +91,9 @@ angular.module('mm.addons.mod_assign')
                 };
                 $mmEvents.trigger(mmaModAssignFeedbackSavedEvent, params);
             });
+        }).catch(function(message) {
+            $mmUtil.showErrorModalDefault(message, 'Error saving feedback.');
+            return $q.reject();
         });
     }
 
