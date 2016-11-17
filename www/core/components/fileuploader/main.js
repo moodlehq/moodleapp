@@ -23,7 +23,9 @@ angular.module('mm.core.fileuploader', ['mm.core'])
         params: {
             maxsize: -1,
             upload: true, // True if file should be uploaded, false to only pick the file.
-            allowOffline: false // To allow picking files in offline. Only supported if upload=false.
+            allowOffline: false, // To allow picking files in offline. Only supported if upload=false.
+            title: null, // Page title.
+            filterMethods: null, // Allow only this upload methods.
         },
         views: {
             'site': {
