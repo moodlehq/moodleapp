@@ -368,8 +368,9 @@ angular.module('mm.addons.messages')
      */
     self.getDiscussions = function() {
         var discussions = {},
+            currentUserId = $mmSite.getUserId(),
             params = {
-                useridto: $mmSite.getUserId(),
+                useridto: currentUserId,
                 useridfrom: 0,
                 limitnum: mmaMessagesLimitMessages
             },
@@ -455,7 +456,7 @@ angular.module('mm.addons.messages')
                     profileimageurl: ''
                 };
 
-                if (!message.timeread && !message.pending) {
+                if (!message.timeread && !message.pending && message.useridfrom != currentUserId) {
                     discussions[userId].unread = true;
                 }
             }
@@ -475,6 +476,25 @@ angular.module('mm.addons.messages')
                 };
             }
         }
+    };
+
+    /**
+     * Mark message as read.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @param messageId   ID of message to mark as read
+     * @returns {Promise} Promise resolved with boolean marking success or not.
+     */
+    self.markMessageRead = function(messageId) {
+        var params = {
+                'messageid': messageId
+            },
+            preSets = {
+                typeExpected: 'boolean'
+            };
+        return $mmSite.write('core_message_mark_message_read', params);
+
     };
 
     /**

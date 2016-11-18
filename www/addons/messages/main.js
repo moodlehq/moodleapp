@@ -25,6 +25,7 @@ angular.module('mm.addons.messages', ['mm.core'])
 .constant('mmaMessagesBlockContactPriority', 600)
 .constant('mmaMessagesPreferencesPriority', 600)
 .constant('mmaMessagesNewMessageEvent', 'mma-messages_new_message')
+.constant('mmaMessagesReadChangedEvent', 'mma-messages_read_changed')
 .constant('mmaMessagesAutomSyncedEvent', 'mma_messages_autom_synced')
 
 .config(function($stateProvider, $mmUserDelegateProvider, $mmSideMenuDelegateProvider, mmaMessagesSendMessagePriority,
