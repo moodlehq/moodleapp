@@ -100,8 +100,12 @@ angular.module('mm.addons.coursecompletion')
          * @return {Boolean}        True if handler is enabled, false otherwise.
          */
         self.isEnabledForUser = function(user, courseId, navOptions, admOptions) {
-            return $mmaCourseCompletion.isPluginViewEnabledForCourse(courseId).then(function() {
+            return $mmaCourseCompletion.isPluginViewEnabledForCourse(courseId).then(function(courseEnabled) {
                 var cacheKey = getCacheKey(courseId, user.id);
+                // If is not enabled in the course, is not enabled for the user.
+                if (!courseEnabled) {
+                    viewCompletionEnabledCache[cacheKey] = false;
+                }
                 if (typeof viewCompletionEnabledCache[cacheKey] != 'undefined') {
                     return viewCompletionEnabledCache[cacheKey];
                 }
@@ -184,7 +188,11 @@ angular.module('mm.addons.coursecompletion')
                 return false; // Not enabled for guests.
             }
 
-            return $mmaCourseCompletion.isPluginViewEnabledForCourse(courseId).then(function() {
+            return $mmaCourseCompletion.isPluginViewEnabledForCourse(courseId).then(function(courseEnabled) {
+                // If is not enabled in the course, is not enabled for the user.
+                if (!courseEnabled) {
+                    coursesNavEnabledCache[courseId] = false;
+                }
                 // Check if the user can see his own report, teachers can't.
                 if (typeof coursesNavEnabledCache[courseId] != 'undefined') {
                     return coursesNavEnabledCache[courseId];
