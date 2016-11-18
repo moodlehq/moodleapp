@@ -216,11 +216,28 @@ angular.module('mm.addons.messages')
 
             // Notify that there can be a new message.
             notifyNewMessage();
+            markUnreadMessages();
         }).finally(function() {
             fetching = false;
         });
     }
 
+    function markUnreadMessages() {
+        console.log("AFTER HAVING FETCHED ALL");
+        console.log($scope.messages);
+        angular.forEach($scope.messages, function(message){
+            console.log(message.id);
+            // iF the message is unread, push it to the unreadMessages array.
+            if(message.read == 0 && message.useridto != userId) {
+                console.log("Found an unread message. Updating");
+                $mmaMessages.markMessageRead(message.id).then(function() {
+                    console.log('MARKING MESSAGE AS READ');
+                    message.read = 1;
+                    console.log(message);
+                });
+            }
+        });
+    }
     // Set a polling to get new messages every certain time.
     function setPolling() {
         if (polling) {
