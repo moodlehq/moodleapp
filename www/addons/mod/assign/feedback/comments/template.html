@@ -1,6 +1,17 @@
-<div class="item item-text-wrap" ng-if="text">
+<!-- Read only -->
+<div class="item item-text-wrap" ng-if="(model.text || canEdit) && !edit" ng-class="{'item-button-right': canEdit}">
     <h2>{{plugin.name}}</h2>
-    <p><mm-format-text expand-title="{{plugin.name}}" shorten fullview-on-click="true" newlines-on-fullview="true" watch="true" component="{{assignComponent}}" component-id="{{assign.cmid}}">
-        {{text}}
-    </mm-format-text></p>
+    <div><p><mm-format-text expand-title="{{plugin.name}}" shorten fullview-on-click="true" newlines-on-fullview="true" watch="true" component="{{assignComponent}}" component-id="{{assign.cmid}}">
+        {{model.text}}
+    </mm-format-text></p></div>
+    <button ng-if="canEdit" class="button" ng-click="goToEdit()">
+        <i class="icon ion-edit"></i>
+    </button>
 </div>
+<!-- Edit -->
+<div ng-if="edit">
+    <div class="item item-text-wrap mm-item-has-rich-text-editor">
+        <mm-rich-text-editor model="model" placeholder="{{ plugin.name }}" name="assignfeedbackcomments_editor" scroll-handle="{{scrollHandle}}" component="{{assignComponent}}" component-id="{{assign.cmid}}" first-render="firstRender()"></mm-rich-text-editor>
+    </div>
+</div>
+

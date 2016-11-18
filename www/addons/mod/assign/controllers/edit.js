@@ -197,11 +197,7 @@ angular.module('mm.addons.mod_assign')
                     }
                 });
             }).catch(function(message) {
-                if (message) {
-                    $mmUtil.showErrorModal(message);
-                } else {
-                    $mmUtil.showErrorModal('Error saving submission.');
-                }
+                $mmUtil.showErrorModalDefault(message, 'Error saving submission.');
                 return $q.reject();
             }).finally(function() {
                 modal.dismiss();

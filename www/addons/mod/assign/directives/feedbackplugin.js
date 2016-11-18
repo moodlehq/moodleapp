@@ -27,26 +27,32 @@ angular.module('mm.addons.mod_assign')
  *
  * Parameters received by this directive and shared with the directive to render the plugin (if any):
  *
- * @param {Object} assign     The assign.
- * @param {Object} submission The submission.
- * @param {Object} plugin     The plugin to render.
+ * @param {Object}  assign          The assign.
+ * @param {Object}  plugin          The plugin to render.
+ * @param {Number}  userid          User ID.
+ * @param {Object}  submission      The submission.
+ * @param {Boolean} canEdit         True if can edit, false if read only.
+ * @param {Boolean} edit            True if editing, false if read only.
  *
  * Also, the directives to render the plugin will receive the following parameters in the scope:
  *
  * @param {String} assignComponent Assignment component.
  * @param {Object} configs         Plugin configs.
  */
-.directive('mmaModAssignFeedbackPlugin', function($compile, $mmaModAssignFeedbackDelegate, $mmaModAssign, mmaModAssignComponent) {
+.directive('mmaModAssignFeedbackPlugin', function($compile, $mmaModAssignFeedbackDelegate, $mmaModAssign, mmaModAssignComponent,
+        $state, $mmaModAssignHelper) {
     return {
         restrict: 'E',
         scope: {
             assign: '=',
             plugin: '=',
-            submission: '=',
+            userid: '=',
+            submission: '=?',
+            canEdit: '=?',
             edit: '@?'
         },
         templateUrl: 'addons/mod/assign/templates/feedbackplugin.html',
-        link: function(scope, element, attributes) {
+        link: function(scope, element) {
             var plugin = scope.plugin,
                 container = element[0].querySelector('.mma-mod-assign-feedback-container'),
                 directive;
@@ -55,19 +61,35 @@ angular.module('mm.addons.mod_assign')
                 return;
             }
 
+            plugin.name = $mmaModAssignFeedbackDelegate.getPluginName(plugin);
+            if (!plugin.name) {
+                return;
+            }
+
             scope.assignComponent = mmaModAssignComponent;
+            scope.canEdit = scope.canEdit && scope.canEdit !== 'false';
+            scope.edit = scope.edit && scope.edit !== 'false';
 
             // Check if the plugin has defined its own directive to render itself.
             directive = $mmaModAssignFeedbackDelegate.getDirectiveForPlugin(plugin);
 
             if (directive) {
                 // Configs are only used in directives.
-                scope.configs = {};
-                angular.forEach(scope.assign.configs, function(config) {
-                    if (config.subtype == 'assignfeedback' && config.plugin == plugin.type) {
-                        scope.configs[config.name] = config.value;
+                scope.configs = $mmaModAssignHelper.getPluginConfig(scope.assign, 'assignfeedback', plugin.type);
+
+                // Edit feedback.
+                scope.goToEdit = function() {
+                    if (scope.canEdit) {
+                        $state.go('site.mod_assign-feedback-edit', {
+                            assignid: scope.assign.id,
+                            userid: scope.userid,
+                            plugintype: scope.plugin.type,
+                            assign: scope.assign,
+                            submission: scope.submission,
+                            plugin: scope.plugin
+                        });
                     }
-                });
+                };
 
                 // Add the directive to the element.
                 container.setAttribute(directive, '');

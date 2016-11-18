@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_assign')
  * @name $mmaModAssignHelper
  */
 .factory('$mmaModAssignHelper', function($mmUtil, $mmaModAssignSubmissionDelegate, $q, $mmSite, $mmFS, $mmFilepool, $mmaModAssign,
-            $mmFileUploader, mmaModAssignComponent, $mmaModAssignOffline) {
+            $mmFileUploader, mmaModAssignComponent, $mmaModAssignOffline, $mmaModAssignFeedbackDelegate) {
 
     var self = {};
 
@@ -272,6 +272,60 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Prepare and return the plugin data to send for a certain feedback and assign.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignHelper#prepareFeedbackPluginData
+     * @param  {Number} assignId        Assignment Id.
+     * @param  {Number} userId          User Id.
+     * @param  {Object} feedback        Feedback data.
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved with plugin data to send to server.
+     */
+    self.prepareFeedbackPluginData = function(assignId, userId, feedback, siteId) {
+        var pluginData = {},
+            promises = [],
+            error;
+
+        angular.forEach(feedback.plugins, function(plugin) {
+            promises.push($mmaModAssignFeedbackDelegate.preparePluginFeedbackData(assignId, userId, plugin, pluginData, siteId)
+                    .catch(function(message) {
+                error = message;
+                return $q.reject();
+            }));
+        });
+
+        return $mmUtil.allPromises(promises).then(function() {
+            return pluginData;
+        }).catch(function() {
+            return $q.reject(error);
+        });
+    };
+
+    /**
+     * Delete all drafts of the feedback plugin data.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignHelper#discardFeedbackPluginData
+     * @param  {Number} assignId        Assignment Id.
+     * @param  {Number} userId          User Id.
+     * @param  {Object} feedback        Feedback data.
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved with plugin data to send to server.
+     */
+    self.discardFeedbackPluginData = function(assignId, userId, feedback, siteId) {
+        var promises = [];
+
+        angular.forEach(feedback.plugins, function(plugin) {
+            promises.push($mmaModAssignFeedbackDelegate.discardPluginFeedbackData(assignId, userId, plugin, siteId));
+        });
+
+        return $q.all(promises);
+    };
+
+    /**
      * Given a list of files (either online files or local files), store the local files in a local folder
      * to be submitted later.
      *
@@ -437,6 +491,50 @@ angular.module('mm.addons.mod_assign')
         } else {
             return self.uploadFiles(assignId, files, siteId);
         }
+    };
+
+    /**
+     * Get enabled subplugins.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignHelper#getPluginsEnabled
+     * @param  {Object} assign  Assignment object including all config.
+     * @param  {String} subtype  Subtype name (assignsubmission or assignfeedback)
+     * @return {Object}          Object containing all enabled plugins for the assign.
+     */
+    self.getPluginsEnabled = function(assign, subtype) {
+        var enabled = [];
+        angular.forEach(assign.configs, function(config) {
+            if (config.subtype == subtype && config.name == 'enabled' && parseInt(config.value, 10) === 1) {
+                // Format the plugin objects.
+                enabled.push({
+                    type: config.plugin
+                });
+            }
+        });
+        return enabled;
+    };
+
+    /**
+     * Get Plugin config from assignment config.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignHelper#getPluginConfig
+     * @param  {Object} assign  Assignment object including all config.
+     * @param  {String} subtype Subtype name (assignsubmission or assignfeedback)
+     * @param  {String} type    Name of the subplugin.
+     * @return {Object}         Object containing all configurations of the subplugin selected.
+     */
+    self.getPluginConfig = function(assign, subtype, type) {
+        var configs = {};
+        angular.forEach(assign.configs, function(config) {
+            if (config.subtype == subtype && config.plugin == type) {
+                configs[config.name] = config.value;
+            }
+        });
+        return configs;
     };
 
     return self;

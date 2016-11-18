@@ -19,7 +19,7 @@
         </div>
     </div>
 
-    <div class="tabs tabs-striped tabs-free tabs-color-positive" ng-if="feedback || canSaveGrades">
+    <div class="tabs tabs-striped tabs-free tabs-color-positive" ng-if="feedback || isGrading">
       <a class="tab-item" ng-class="{'active': showSubmission}" ng-click="changeShowSubmission(true)">{{ 'mma.mod_assign.submissions' | translate }}</a>
       <a class="tab-item" ng-class="{'active': !showSubmission}" ng-click="changeShowSubmission(false)">{{ 'mma.mod_assign.feedback' | translate }}</a>
     </div>
@@ -140,7 +140,7 @@
         </div>
     </div>
 
-    <div ng-show="!showSubmission" ng-if="feedback || canSaveGrades">
+    <div ng-show="!showSubmission" ng-if="feedback || isGrading">
 
         <div ng-if="feedback.gradefordisplay && (!isGrading || grade.method != 'simple')" class="item item-text-wrap mm-grading-summary" ng-class="{'item-button-right': feedback.advancedgrade}">
             <h2>{{ 'mma.mod_assign.currentgrade' | translate }}</h2>
@@ -152,7 +152,7 @@
             </button>
         </div>
 
-        <label class="item item-input-inset item-stacked-label" ng-if="canSaveGrades">
+        <label class="item item-input-inset item-stacked-label" ng-if="grade.method == 'simple'">
             <span class="input-label" ng-if="!grade.scale">{{ 'mma.mod_assign.gradeoutof' | translate: {$a: gradeInfo.grade} }}</span>
             <div class="item-input-wrapper" ng-if="!grade.scale">
                 <input type="number" ng-model="grade.grade" min="0" max="{{gradeInfo.grade}}" lang="{{grade.lang}}">
@@ -173,7 +173,7 @@
             </div>
         </div>
 
-        <mma-mod-assign-feedback-plugin ng-repeat="plugin in feedback.plugins" assign="assign" submission="userSubmission" plugin="plugin"></mma-mod-assign-feedback-plugin>
+        <mma-mod-assign-feedback-plugin ng-repeat="plugin in feedback.plugins" assign="assign" submission="userSubmission" userid="submitId" plugin="plugin" can-edit="canSaveGrades"></mma-mod-assign-feedback-plugin>
 
         <div class="item" ng-if="workflowStatusTranslationId">
             <h2>{{ 'mma.mod_assign.markingworkflowstate' | translate }}</h2>

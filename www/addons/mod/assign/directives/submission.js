@@ -204,6 +204,13 @@ angular.module('mm.addons.mod_assign')
                     if (assign.markingworkflow && scope.grade.gradingStatus) {
                         scope.workflowStatusTranslationId =  getSubmissionGradingStatusTranslationId(scope.grade.gradingStatus);
                     }
+
+                    if (!scope.feedback) {
+                        scope.feedback = {};
+
+                        // Feedback plugins not present, we have to use assign configs to detect the plugins used.
+                        scope.feedback.plugins = $mmaModAssignHelper.getPluginsEnabled(assign, 'assignfeedback');
+                    }
                 });
             }
         });
@@ -212,7 +219,7 @@ angular.module('mm.addons.mod_assign')
     // Convenience function to format scale selectors options.
     function formatScaleOptions(options, defaultOption) {
         options = options.split(",");
-        options = options.map(function (value) {return value.trim()});
+        options = options.map(function (value) {return value.trim();});
         options.unshift(defaultOption);
         return options;
     }
@@ -398,25 +405,13 @@ angular.module('mm.addons.mod_assign')
                     promises.push(feedbackController(scope, assign, response.feedback, courseId, moduleId, submitId));
 
                     // Check if there's any unsupported plugin for editing.
-                    var plugins;
-                    if (scope.userSubmission) {
-                        plugins = scope.userSubmission.plugins;
-                    } else {
+                    if (!scope.userSubmission) {
+                        scope.userSubmission = {};
                         // Submission not created yet, we have to use assign configs to detect the plugins used.
-                        plugins = [];
-                        angular.forEach(assign.configs, function(config) {
-                            if (config.subtype == 'assignsubmission') {
-                                if (config.name == 'enabled' && parseInt(config.value, 10) === 1) {
-                                    plugins.push({
-                                        type: config.plugin,
-                                        name: config.plugin
-                                    });
-                                }
-                            }
-                        });
+                        scope.userSubmission.plugins = $mmaModAssignHelper.getPluginsEnabled(assign, 'assignsubmission');
                     }
 
-                    promises.push($mmaModAssign.getUnsupportedEditPlugins(plugins).then(function(list) {
+                    promises.push($mmaModAssign.getUnsupportedEditPlugins(scope.userSubmission.plugins).then(function(list) {
                         scope.unsupportedEditPlugins = list;
                     }));
 
@@ -604,9 +599,10 @@ angular.module('mm.addons.mod_assign')
                     return;
                 }
 
-                var modal,
-                    attemptNumber = scope.userSubmission ? scope.userSubmission.attemptnumber : -1,
+                var attemptNumber = scope.userSubmission ? scope.userSubmission.attemptnumber : -1,
                     outcomes = {},
+                    modal,
+                    pluginPromise,
                     // Scale "no grade" uses -1 instead of 0.
                     grade = scope.grade.scale && scope.grade.grade == 0 ? -1 : $mmUtil.unformatFloat(scope.grade.grade);
 
@@ -623,12 +619,27 @@ angular.module('mm.addons.mod_assign')
                     }
                 });
 
-                return $mmaModAssign.submitGradingForm(scope.assign.id, submitId, grade, attemptNumber, scope.grade.addAttempt,
-                        scope.grade.gradingStatus, scope.grade.applyToAll, outcomes).then(function() {
+                if (scope.feedback && scope.feedback.plugins) {
+                    pluginPromise = $mmaModAssignHelper.prepareFeedbackPluginData(scope.assign.id, submitId, scope.feedback);
+                } else {
+                    pluginPromise = $q.when({});
+                }
 
-                    // Invalidate and refresh data.
-                    invalidateAndRefresh();
+                return pluginPromise.then(function(pluginData) {
+                    return $mmaModAssign.submitGradingForm(scope.assign.id, submitId, grade, attemptNumber, scope.grade.addAttempt,
+                            scope.grade.gradingStatus, scope.grade.applyToAll, outcomes, pluginData).then(function() {
 
+                        var promise;
+                        if (scope.feedback && scope.feedback.plugins) {
+                            promise = $mmaModAssignHelper.discardFeedbackPluginData(scope.assign.id, submitId, scope.feedback);
+                        } else {
+                            promise = $q.when();
+                        }
+                        promise.finally(function() {
+                            // Invalidate and refresh data.
+                            invalidateAndRefresh();
+                        });
+                    });
                 }).catch(function(error) {
                     $mmUtil.showErrorModal(error);
                 }).finally(function() {

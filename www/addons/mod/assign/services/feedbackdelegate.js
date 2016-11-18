@@ -43,7 +43,7 @@ angular.module('mm.addons.mod_assign')
  *
  * @see $mmaModAssignFeedbackDelegate#registerHandler to see the methods your handle needs to implement.
  */
-.factory('$mmaModAssignFeedbackDelegate', function($log, $mmSite, $mmUtil, $q) {
+.factory('$mmaModAssignFeedbackDelegate', function($log, $mmSite, $mmUtil, $q, $translate) {
     $log = $log.getInstance('$mmaModAssignFeedbackDelegate');
 
     var handlers = {},
@@ -69,6 +69,34 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Get a readable name to use for a certain feedback plugin.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignFeedbackDelegate#getPluginName
+     * @param  {Object} plugin Plugin to get the directive for.
+     * @return {String}        Human readable name. Undefined if no directive, translation or name found.
+     */
+    self.getPluginName = function(plugin) {
+        var handler = self.getPluginHandler(plugin.type);
+        if (handler && handler.getPluginName) {
+            return handler.getPluginName(plugin);
+        }
+
+        // Fallback to translated string.
+        var translationId = 'mma.mod_assign_feedback_' + plugin.type + '.pluginname',
+            translation = $translate.instant(translationId);
+        if (translationId != translation) {
+            return translation;
+        }
+
+        // Fallback to WS string.
+        if (plugin.name) {
+            return plugin.name;
+        }
+    };
+
+    /**
      * Get the handler for a certain feedback plugin.
      *
      * @module mm.addons.mod_assign
@@ -81,6 +109,106 @@ angular.module('mm.addons.mod_assign')
         if (typeof enabledHandlers[pluginType] != 'undefined') {
             return enabledHandlers[pluginType];
         }
+    };
+
+    /**
+     * Check if the feedback data has changed for a certain plugin.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignFeedbackDelegate#hasPluginDataChanged
+     * @param  {Object} assign     Assignment.
+     * @param  {Object} plugin     Plugin.
+     * @param  {Object} inputData  Data entered in the submission form.
+     * @return {Promise}           Promise resolved with true if data has changed, resolved with false otherwise.
+     */
+    self.hasPluginDataChanged = function(assign, plugin, inputData) {
+        var handler = self.getPluginHandler(plugin.type);
+        if (handler && handler.hasDataChanged) {
+            return $q.when(handler.hasDataChanged(assign, plugin, inputData));
+        }
+        return $q.when(false);
+    };
+
+    /**
+     * Prepare and return the data to submit for a certain feedback plugin.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignFeedbackDelegate#preparePluginFeedbackData
+     * @param  {Number} assignId     Assignment ID.
+     * @param  {Number} userId       User ID.
+     * @param  {Object} plugin       Plugin to get the data for.
+     * @param  {Object} pluginData   Object where to add the plugin data.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved when data has been gathered.
+     */
+    self.preparePluginFeedbackData = function(assignId, userId, plugin, pluginData, siteId) {
+        var handler = self.getPluginHandler(plugin.type);
+        if (handler && handler.prepareFeedbackData) {
+            return $q.when(handler.prepareFeedbackData(assignId, userId, pluginData, siteId));
+        }
+        return $q.when();
+    };
+
+    /**
+     * Get feedback data in the input data to save as draft.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignFeedbackDelegate#getFeedbackDataToDraft
+     * @param  {Object} plugin     Plugin to get the data for.
+     * @param  {Object} inputData  Data entered in the feedback form.
+     * @return {Promise}           Promise resolved when data has been gathered.
+     */
+    self.getFeedbackDataToDraft = function(plugin, inputData) {
+        var handler = self.getPluginHandler(plugin.type);
+        if (handler && handler.getFeedbackDataToDraft) {
+            return $q.when(handler.getFeedbackDataToDraft(plugin, inputData));
+        }
+        return $q.when();
+    };
+
+    /**
+     * Save data to submit for a certain feedback plugin.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignFeedbackDelegate#saveFeedbackDraft
+     * @param  {Number} assignId        Assignment Id.
+     * @param  {Number} userId          User Id.
+     * @param  {Object} plugin          Plugin to get the data for.
+     * @param  {Object} inputData       Data entered in the feedback form.
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved when data has been saved.
+     */
+    self.saveFeedbackDraft = function(assignId, userId, plugin, inputData, siteId) {
+        var handler = self.getPluginHandler(plugin.type);
+        if (handler && handler.saveDraft) {
+            return $q.when(handler.saveDraft(assignId, userId, inputData, siteId));
+        }
+        return $q.when();
+    };
+
+    /**
+     * Discard draft data to submit for a certain feedback plugin.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignFeedbackDelegate#discardPluginFeedbackData
+     * @param  {Number} assignId        Assignment Id.
+     * @param  {Number} userId          User Id.
+     * @param  {Object} plugin          Plugin to get the data for.
+     * @param  {Object} inputData       Data entered in the feedback form.
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved when data has been saved.
+     */
+    self.discardPluginFeedbackData = function(assignId, userId, plugin, siteId) {
+        var handler = self.getPluginHandler(plugin.type);
+        if (handler && handler.discardDraft) {
+            return $q.when(handler.discardDraft(assignId, userId, siteId));
+        }
+        return $q.when();
     };
 
     /**
@@ -137,6 +265,23 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Check if a feedback plugin is supported for edit.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignFeedbackDelegate#isPluginSupportedForEdit
+     * @param  {String} pluginType Type of the plugin.
+     * @return {Boolean}           True if supported, false otherwise.
+     */
+    self.isPluginSupportedForEdit = function(pluginType) {
+        var handler = self.getPluginHandler(pluginType);
+        if (handler && handler.isEnabledForEdit) {
+            return handler.isEnabledForEdit();
+        }
+        return false;
+    };
+
+    /**
      * Prefetch any required data for a feedback plugin.
      *
      * @module mm.addons.mod_assign
@@ -170,7 +315,25 @@ angular.module('mm.addons.mod_assign')
      *                           returning an object defining these properties. See {@link $mmUtil#resolveObject}.
      *                             - isEnabled (Boolean|Promise) Whether or not the handler is enabled on a site level.
      *                                                           When using a promise, it should return a boolean.
+     *                             - isEnabledForEdit (Boolean|Promise) Whether or not the handler is enabled for edit on a site
+     *                                                           level. When using a promise, it should return a boolean.
      *                             - getDirectiveName() (String) Optional. Returns the name of the directive to render the plugin.
+     *                             - prepareFeedbackData(assignId, userId, pluginData, siteId). Optional.
+     *                                                           Should prepare and add to pluginData the data to send to server
+     *                                                           based in the draft data saved.
+     *                             - getFeedbackDataToDraft(plugin, inputData) Optional.
+     *                                                           Get feedback data base in the input data to save as draft.
+     *                             - hasDataChanged(assign, plugin, inputData) (Promise|Boolean) Optional.
+     *                                                           Check if the feedback data has changed for this plugin.
+     *                             - getDraft(assignId, userId, siteId) (Object|Boolean) Optional.
+     *                                                           Return the draft saved data of the feedback plugin.
+     *                             - discardDraft(assignId, userId, siteId) Optional.
+     *                                                           Discard the draft data of the feedback plugin.
+     *                             - saveDraft(assignId, userId, plugin, data, siteId) Optional.
+     *                                                           Save draft data of the feedback plugin.
+     *                             - getPluginName(plugin). Optional. Should return a human readable String. If not present, default
+     *                                                           translation will be applied, if translation not found, optional
+     *                                                           name will be used.
      */
     self.registerHandler = function(addon, pluginType, handler) {
         if (typeof handlers[pluginType] !== 'undefined') {

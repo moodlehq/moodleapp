@@ -612,10 +612,10 @@ angular.module('mm.core')
          * @module mm.core
          * @ngdoc method
          * @name $mmUtil#showErrorModal
-         * @param {String} errorMessage    Message to show.
-         * @param {Boolean} needsTranslate True if the errorMessage is a $translate key, false otherwise.
-         * @param {Number} [autocloseTime] Number of milliseconds to wait to close the modal.
-         *                                 If not defined, modal won't be automatically closed.
+         * @param {Mixed}   errorMessage     Message to show.
+         * @param {Boolean} [needsTranslate] True if the errorMessage is a $translate key, false otherwise.
+         * @param {Number}  [autocloseTime]  Number of milliseconds to wait to close the modal.
+         *                                   If not defined, modal won't be automatically closed.
          */
         self.showErrorModal = function(errorMessage, needsTranslate, autocloseTime) {
             var errorKey = 'mm.core.error',
@@ -662,6 +662,23 @@ angular.module('mm.core')
                     delete popup;
                 }
             });
+        };
+
+        /**
+         * Show a modal with an error message specifying a default message if error is empty.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#showErrorModalDefault
+         * @param {Mixed}   errorMessage      Message to show.
+         * @param {Mixed}   [defaultError]    Message to show. If errorMessage is empty.
+         * @param {Boolean} [needsTranslate]  True if the errorMessage is a $translate key, false otherwise.
+         * @param {Number}  [autocloseTime]   Number of milliseconds to wait to close the modal.
+         *                                    If not defined, modal won't be automatically closed.
+         */
+        self.showErrorModalDefault = function(errorMessage, defaultError, needsTranslate, autocloseTime) {
+            errorMessage = errorMessage ? errorMessage : defaultError;
+            return self.showErrorModal(errorMessage, needsTranslate, autocloseTime);
         };
 
         /**

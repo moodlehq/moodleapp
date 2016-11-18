@@ -1152,17 +1152,19 @@ angular.module('mm.addons.mod_assign')
      * @param  {String}  workflowState  Next workflow State.
      * @param  {Boolean} applyToAll     If it's a team submission, if the grade applies to all group members.
      * @param  {Object}  outcomes       Object including all outcomes values. If empty, any of them will be sent.
+     * @param  {Object}  pluginData     Feedback plugin data to save.
      * @param  {String}  [siteId]       Site ID. If not defined, current site.
      * @return {Promise}                Promise resolved when submitted, rejected otherwise.
      */
     self.submitGradingForm = function(assignmentId, userId, grade, attemptNumber, addAttempt, workflowState, applyToAll, outcomes,
-            siteId) {
+            pluginData, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             if (site.wsAvailable('mod_assign_submit_grading_form')) {
                 return submitGradingForm(assignmentId, userId, grade, attemptNumber, addAttempt, workflowState, applyToAll,
-                    outcomes, site);
+                    outcomes, pluginData, site);
             } else if(site.wsAvailable('mod_assign_save_grade')) {
-                return saveGrade(assignmentId, userId, grade, attemptNumber, addAttempt, workflowState, applyToAll, site);
+                return saveGrade(assignmentId, userId, grade, attemptNumber, addAttempt, workflowState, applyToAll, pluginData,
+                    site);
             } else {
                 return $q.reject();
             }
@@ -1172,7 +1174,7 @@ angular.module('mm.addons.mod_assign')
     // Legacy grading WS for Moodle < 3.2 when mod_assign_submit_grading_form is not avalaible.
     // See params on $mmaModAssign#submitGradingForm
     // It does not have outcomes support.
-    function saveGrade(assignmentId, userId, grade, attemptNumber, addAttempt, workflowState, applyToAll, site) {
+    function saveGrade(assignmentId, userId, grade, attemptNumber, addAttempt, workflowState, applyToAll, pluginData, site) {
         var params = {
                 assignmentid: assignmentId,
                 userid: userId ? userId : site.getUserId(),
@@ -1180,7 +1182,8 @@ angular.module('mm.addons.mod_assign')
                 attemptnumber: attemptNumber,
                 addattempt: addAttempt ? 1 : 0,
                 workflowstate: workflowState,
-                applytoall: applyToAll ? 1 : 0
+                applytoall: applyToAll ? 1 : 0,
+                plugindata: pluginData
             },
             preSets = {
                 responseExpected: false
@@ -1196,7 +1199,8 @@ angular.module('mm.addons.mod_assign')
 
     // New grading WS for Moodle >= 3.2.
     // See params on $mmaModAssign#submitGradingForm
-    function submitGradingForm(assignmentId, userId, grade, attemptNumber, addAttempt, workflowState, applyToAll, outcomes, site) {
+    function submitGradingForm(assignmentId, userId, grade, attemptNumber, addAttempt, workflowState, applyToAll, outcomes,
+            pluginData, site) {
         var jsondata, serialized, params;
 
         jsondata = {
@@ -1209,6 +1213,10 @@ angular.module('mm.addons.mod_assign')
 
         angular.forEach(outcomes, function(outcome, index) {
             jsondata['outcome_' + index + '[' + userId + ']'] = outcome;
+        });
+
+        angular.forEach(pluginData, function(data, index) {
+            jsondata[index] = data;
         });
 
         serialized = $mmUtil.param(jsondata, true);

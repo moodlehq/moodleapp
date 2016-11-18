@@ -29,9 +29,11 @@ angular.module('mm.addons.mod_assign', ['mm.core'])
 .constant('mmaModAssignNeedGrading', 'needgrading')
 .constant('mmaModAssignSubmissionInvalidatedEvent', 'mma_mod_assign_submission_invalidated')
 .constant('mmaModAssignSubmissionSavedEvent', 'mma_mod_assign_submission_saved')
+.constant('mmaModAssignFeedbackSavedEvent', 'mma_mod_assign_feedback_saved')
 .constant('mmaModAssignSubmittedForGradingEvent', 'mma_mod_assign_submitted_for_grading')
 .constant('mmaModAssignEventAutomSynced', 'mma_mod_assign_autom_synced')
 .constant('mmaModAssignEventManualSynced', 'mma_mod_assign_manual_synced')
+
 .constant('mmaModAssignSyncTime', 300000) // In milliseconds.
 
 .config(function($stateProvider) {
@@ -113,6 +115,24 @@ angular.module('mm.addons.mod_assign', ['mm.core'])
             'site': {
                 controller: 'mmaModAssignEditCtrl',
                 templateUrl: 'addons/mod/assign/templates/edit.html'
+            }
+        }
+    })
+
+    .state('site.mod_assign-feedback-edit', {
+        url: '/mod_assign-feedback-edit',
+        params: {
+            assignid: null,
+            userid: null,
+            plugintype: null,
+            assign: null,
+            submission: null,
+            plugin: null
+        },
+        views: {
+            'site': {
+                controller: 'mmaModAssignFeedbackEditCtrl',
+                templateUrl: 'addons/mod/assign/templates/feedbackedit.html'
             }
         }
     });
