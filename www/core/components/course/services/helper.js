@@ -581,6 +581,20 @@ angular.module('mm.core.course')
         });
     };
 
+    /**
+     * Check if a section has content.
+     * Used mostly when a section is going to be rendered.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourseHelper#sectionHasContent
+     * @param {Object} section Section to check.
+     * @return {Boolean}       True if the section has content.
+     */
+    self.sectionHasContent = function(section) {
+        return !section.hiddenbynumsections  && (section.summary != '' || section.modules.length);
+    };
+
     return self;
 })
 
