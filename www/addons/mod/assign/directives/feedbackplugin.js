@@ -61,6 +61,11 @@ angular.module('mm.addons.mod_assign')
                 return;
             }
 
+            plugin.name = $mmaModAssignFeedbackDelegate.getPluginName(plugin);
+            if (!plugin.name) {
+                return;
+            }
+
             scope.assignComponent = mmaModAssignComponent;
             scope.canEdit = scope.canEdit && scope.canEdit !== 'false';
             scope.edit = scope.edit && scope.edit !== 'false';

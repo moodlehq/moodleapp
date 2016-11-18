@@ -405,15 +405,13 @@ angular.module('mm.addons.mod_assign')
                     promises.push(feedbackController(scope, assign, response.feedback, courseId, moduleId, submitId));
 
                     // Check if there's any unsupported plugin for editing.
-                    var plugins;
-                    if (scope.userSubmission) {
-                        plugins = scope.userSubmission.plugins;
-                    } else {
+                    if (!scope.userSubmission) {
+                        scope.userSubmission = {};
                         // Submission not created yet, we have to use assign configs to detect the plugins used.
-                        plugins = $mmaModAssignHelper.getPluginsEnabled(assign, 'assignsubmission');
+                        scope.userSubmission.plugins = $mmaModAssignHelper.getPluginsEnabled(assign, 'assignsubmission');
                     }
 
-                    promises.push($mmaModAssign.getUnsupportedEditPlugins(plugins).then(function(list) {
+                    promises.push($mmaModAssign.getUnsupportedEditPlugins(scope.userSubmission.plugins).then(function(list) {
                         scope.unsupportedEditPlugins = list;
                     }));
 

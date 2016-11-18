@@ -500,8 +500,8 @@ angular.module('mm.addons.mod_assign')
      * @ngdoc method
      * @name $mmaModAssignHelper#getPluginsEnabled
      * @param  {Object} assign  Assignment object including all config.
-     * @param  {String} subtype Subtype name (assignsubmission or assignfeedback)
-     * @return {Object}         Object containing all enabled plugins for the assign.
+     * @param  {String} subtype  Subtype name (assignsubmission or assignfeedback)
+     * @return {Object}          Object containing all enabled plugins for the assign.
      */
     self.getPluginsEnabled = function(assign, subtype) {
         var enabled = [];
@@ -509,8 +509,7 @@ angular.module('mm.addons.mod_assign')
             if (config.subtype == subtype && config.name == 'enabled' && parseInt(config.value, 10) === 1) {
                 // Format the plugin objects.
                 enabled.push({
-                    type: config.plugin,
-                    name: config.plugin
+                    type: config.plugin
                 });
             }
         });

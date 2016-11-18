@@ -61,6 +61,11 @@ angular.module('mm.addons.mod_assign')
                 return;
             }
 
+            plugin.name = $mmaModAssignSubmissionDelegate.getPluginName(plugin);
+            if (!plugin.name) {
+                return;
+            }
+
             scope.assignComponent = mmaModAssignComponent;
             scope.edit = scope.edit && scope.edit !== 'false';
             scope.allowOffline = scope.allowOffline && scope.allowOffline !== 'false';

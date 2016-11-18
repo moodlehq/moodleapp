@@ -43,7 +43,7 @@ angular.module('mm.addons.mod_assign')
  *
  * @see $mmaModAssignFeedbackDelegate#registerHandler to see the methods your handle needs to implement.
  */
-.factory('$mmaModAssignFeedbackDelegate', function($log, $mmSite, $mmUtil, $q) {
+.factory('$mmaModAssignFeedbackDelegate', function($log, $mmSite, $mmUtil, $q, $translate) {
     $log = $log.getInstance('$mmaModAssignFeedbackDelegate');
 
     var handlers = {},
@@ -65,6 +65,34 @@ angular.module('mm.addons.mod_assign')
         var handler = self.getPluginHandler(plugin.type);
         if (handler && handler.getDirectiveName) {
             return handler.getDirectiveName(plugin);
+        }
+    };
+
+    /**
+     * Get a readable name to use for a certain feedback plugin.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignFeedbackDelegate#getPluginName
+     * @param  {Object} plugin Plugin to get the directive for.
+     * @return {String}        Human readable name. Undefined if no directive, translation or name found.
+     */
+    self.getPluginName = function(plugin) {
+        var handler = self.getPluginHandler(plugin.type);
+        if (handler && handler.getPluginName) {
+            return handler.getPluginName(plugin);
+        }
+
+        // Fallback to translated string.
+        var translationId = 'mma.mod_assign_feedback_' + plugin.type + '.pluginname',
+            translation = $translate.instant(translationId);
+        if (translationId != translation) {
+            return translation;
+        }
+
+        // Fallback to WS string.
+        if (plugin.name) {
+            return plugin.name;
         }
     };
 
@@ -303,6 +331,9 @@ angular.module('mm.addons.mod_assign')
      *                                                           Discard the draft data of the feedback plugin.
      *                             - saveDraft(assignId, userId, plugin, data, siteId) Optional.
      *                                                           Save draft data of the feedback plugin.
+     *                             - getPluginName(plugin). Optional. Should return a human readable String. If not present, default
+     *                                                           translation will be applied, if translation not found, optional
+     *                                                           name will be used.
      */
     self.registerHandler = function(addon, pluginType, handler) {
         if (typeof handlers[pluginType] !== 'undefined') {
