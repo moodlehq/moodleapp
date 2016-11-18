@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.core.courses', [])
+angular.module('mm.core.courses', [
+    'ion-tree-list'
+])
 
 .constant('mmCoursesSearchComponent', 'mmCoursesSearch')
 .constant('mmCoursesSearchPerPage', 20) // Max of courses per page when searching courses.
@@ -32,8 +34,7 @@ angular.module('mm.core.courses', [])
         url: '/mm_courses',
         views: {
             'site': {
-                templateUrl: 'core/components/courses/templates/list.html',
-                controller: 'mmCoursesListCtrl'
+                templateUrl: 'core/components/courses/templates/index.html'
             }
         }
     })

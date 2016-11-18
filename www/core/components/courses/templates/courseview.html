@@ -1,0 +1,15 @@
+<span class="symbol">
+    <i class="icon" ng-if="item.isCategory == true" ng-class="item.tree.collapsed ? 'ion-arrow-right-b' : 'ion-arrow-down-b'"></i>
+</span>
+<a class="item" ng-if="item.isCategory == false" ui-sref="site.mm_course({courseid: item.course.id, coursefullname: item.course.fullname})" title="{{item.name}}">
+    <h2><mm-format-text watch="true">{{item.name}}</mm-format-text></h2>
+</a>
+<div ng-if="item.isCategory == false" class="item item-text-wrap" ng-show="item.course.summary">
+    <p>
+        <summary>
+            <mm-format-text class="mm-content-with-float" watch="true" shorten="40%" expand-on-click="true">{{item.course.summary}}</mm-format-text>
+        </summary>
+    </p>
+</div>
+<span  ng-if="item.isCategory == true">{{item.name}}</span>
+

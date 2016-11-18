@@ -1,0 +1,8 @@
+<ion-view view-title="{{ 'mm.courses.categories' | translate }}">
+    <ion-content padding="true" mm-state-class>
+        <!-- ion-refresher needs to be direct child of ion-content to work with native scrolling -->
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="coursesLoaded" on-refresh="refreshCourses()">
+        </ion-refresher>
+        <ion-tree-list items="categories" collapsed="true" template-url="core/components/courses/templates/courseview.html"></ion-tree-list>
+    </ion-content>
+</ion-view>

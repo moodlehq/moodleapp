@@ -18,5 +18,8 @@
   },
   "resolutions": {
     "angular": "1.5.3"
+  },
+  "dependencies": {
+    "ion-tree-list": "^0.0.10"
   }
 }

@@ -262,12 +262,223 @@ angular.module('mm.core.courses')
     };
 
     /**
+     * Get category tree with the corresponding courses where the user is enrolled.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#getUserCourseCategories
+     * @param {Boolean} [preferCache=false] True if shouldn't call WS if data is cached, false otherwise.
+     * @param {String} [siteid]             Site to get the courses from. If not defined, use current site.
+     * @return {Object[]}                   Array of categories with the corresponding corurses to build the tree view.
+     */
+    self.getUserCourseCategories = function(preferCache, siteid) {
+        siteid = siteid || $mmSite.getId();
+        return $mmSitesManager.getSite(siteid).then(function(site) {
+            return self.getUserCourses().then(function(courses) {
+                var params = [];
+                var exploredCategories = [];
+                angular.forEach(courses, function(c) {
+                    if (exploredCategories.indexOf(c.category) == -1) {
+                        exploredCategories.push(c.category);
+                    }
+                });
+                params.criteria = [
+                    {
+                        key: 'ids',
+                        value: exploredCategories.join()
+                    }
+                ];
+
+                return self.getCategories(site, courses, params);
+            });
+        });
+    };
+
+    /**
      * Get cache key for get user courses WS call.
      *
      * @return {String}       Cache key.
      */
     function getUserCoursesCacheKey() {
         return 'mmCourses:usercourses';
+    }
+
+    /**
+     * Method that handles the construction of the category tree.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#getCategories
+     * @param {Site} [site]             The current site object.
+     * @param {Object[]} [courses]      Array of courses fetched by the getUserCourses() fucntion.
+     * @param {Object[]} [params]       Array of parameters to call the core_course_get_categories WS.
+     * @return {Object[]}               Array of categories with the corresponding courses to build the tree view.
+     */
+    self.getCategories = function(site, courses, params) {
+        var tasks = [],
+            preSets = {
+                getFromCache: true,
+                saveToCache: false
+            };
+        return self.fetchAllCourseCategories(site, params, preSets).then(function(categories) {
+            var map = {},
+                node,
+                rootCategories = [];
+            for (var i = 0; i < categories.length; i += 1) {
+                node = categories[i];
+                node.children = [];
+                // use map to look-up the parents.
+                map[node.id] = i;
+                if (node.parent != 0) {
+                    if(categories[map[node.parent]].children == null)
+                        categories[map[node.parent]].children = [];
+                    categories[map[node.parent]].children.push(node);
+                } else {
+                    rootCategories.push(node);
+                }
+            }
+
+            angular.forEach(rootCategories, function (cat) {
+                var element = [],
+                    elementAdded = false;
+                element.name = cat.name;
+                element.isCategory = true;
+                element.tree = [];
+                if (cat.children.length > 0) {
+                    element.tree = self.constructCategoryTree(cat.children, courses, element.tree);
+                    if (element.tree.length > 0) {
+                        elementAdded = true;
+                        tasks.push(element);
+                    }
+                }
+                self.addCourseToCategoryTree(courses, cat, element);
+                if (element.tree.length > 0 && !elementAdded)
+                    tasks.push(element);
+            });
+            return tasks;
+        });
+    }
+
+    /**
+     * Method makes sure to retrieve parent category objects if only sub cateogry objects are fetched from the first
+     * core_course_get_categories WS call.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#fetchAllCourseCategories
+     * @param {Site} [site]             The current site object.
+     * @param {Object[]} [params]       Array of parameters to call the core_course_get_categories WS.
+     * @param {Object[]} [preSets]      Array of preSets parameters that will make sure no cache results are fetched.
+     * @return {Object[]}               Array of categories including root categories and sub category objects
+     */
+    self.fetchAllCourseCategories = function(site, params, preSets) {
+        return site.read('core_course_get_categories', params, preSets).then(function(categories) {
+            var callCategoryWS = false,
+                exploredCategories = categories.map(function(elem) {
+                    return elem.id;
+                }).join(",");
+
+            angular.forEach(categories, function(c) {
+                var parentCategory = c.path.split("/");
+                //Loop through the path of cateogories, exclude the last one as that is the current category being browsed.
+                for (var i = 0; i < parentCategory.length - 1; i++) {
+                    if (exploredCategories.indexOf(parentCategory[i]) == -1) {
+                        exploredCategories += ","+parentCategory[i];
+                        callCategoryWS = true;
+                    }
+                }
+            });
+
+            if (callCategoryWS) {
+                var updatedParams = [];
+                updatedParams.criteria = [
+                    {
+                        key: 'ids',
+                        value: exploredCategories
+                    }
+                ];
+
+                return site.read('core_course_get_categories',updatedParams, preSets);
+            } else {
+                return categories;
+            }
+        });
+    }
+
+    /**
+     * Method that takes as parameter a flat array of categories, and recursively constructs a tree by using parent ids
+     * for each corresponding category object.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#constructCategoryTree
+     * @param {Object[]} [subcategories]    Array of category objects.
+     * @param {Object[]} [courses]          Array courses where the user is enrolled in.
+     * @param {Object} [treeElement]        Category tree branch to be populated.
+     * @return {Object}                     Category tree branch populated with sub category branches and user courses.
+     */
+    self.constructCategoryTree = function(subcategories, courses, treeElement) {
+        angular.forEach(subcategories, function(cat) {
+            var element = [],
+                elementAdded = false;
+            element.name = cat.name;
+            element.isCategory = true;
+            element.tree = [];
+            if (cat.children.length > 0) {
+                element.tree = self.constructCategoryTree(cat.children, courses, element.tree);
+                self.addCourseToCategoryTree(courses, cat, element);
+                if (element.tree.length > 0) {
+                    elementAdded = true;
+                    treeElement.push(element);
+                }
+            }
+
+            self.addCourseToCategoryTree(courses, cat, element);
+            if (element.tree.length > 0 && !elementAdded)
+                treeElement.push(element);
+
+        });
+        return treeElement;
+    }
+
+    /**
+     * Method that adds a course object to the category tree branch.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#addCourseToCategoryTree
+     * @param {Object[]} [courses]  Array courses where the user is enrolled in.
+     * @param {Object} [category]   Category object to add the course to.
+     * @param {Object} [element]    Category tree branch to be populated.
+     * @return {Object}             Category tree branch populated with courses that belong to the specified category.
+     */
+    self.addCourseToCategoryTree = function(courses, category, element) {
+        angular.forEach(courses, function(course) {
+            if (course.category == category.id) {
+                element.tree.push({'name': course.fullname, 'course': course, 'isCategory': false});
+                self.removeCourseFromArray(courses, course);
+                return element;
+            }
+        });
+    }
+
+    /**
+     * Method that removes a course object from the courses array (this is a performane function that makes sure that
+     * the courses that have already been added to the tree are not iterated again in the recursive process).
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#addCourseToCategoryTree
+     * @param {Object[]} [courses]          Array courses where the user is enrolled in.
+     * @param {Object} [courseToRemove]     Course object to be removed from the array.
+     */
+    self.removeCourseFromArray = function(courses, courseToRemove) {
+        for (var i = 0; i < courses.length; i++) {
+            if (courses[i].id === courseToRemove.id) {
+                courses.splice(i,1);
+                return;
+            }
+        }
     }
 
     /**

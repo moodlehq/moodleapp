@@ -1,0 +1,16 @@
+<ion-view view-title="{{ 'mm.courses.courses' | translate }}">
+    <mm-split-view component="mmaMessagesIndex">
+        <ion-tabs class="tabs-icon-top">
+            <ion-tab title="{{ 'mm.courses.courses' | translate }}" icon="ion-navicon-round">
+                <ion-pane ng-controller="mmCoursesListCtrl">
+                    <ng-include src="'core/components/courses/templates/list.html'"></ng-include>
+                </ion-pane>
+            </ion-tab>
+            <ion-tab title="{{ 'mm.courses.categories' | translate }}" icon="ion-ios-list-outline">
+                <ion-pane ng-controller="mmCourseCategoriesCtrl">
+                    <ng-include src="'core/components/courses/templates/categories.html'"></ng-include>
+                </ion-pane>
+            </ion-tab>
+        </ion-tabs>
+    </mm-split-view>
+</ion-view>
