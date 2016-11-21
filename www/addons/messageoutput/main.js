@@ -12,17 +12,4 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.core.settings')
-
-/**
- * Controller to handle the list of sections in App settings.
- *
- * @module mm.core.settings
- * @ngdoc controller
- * @name mmSettingsListCtrl
- */
-.controller('mmSettingsListCtrl', function($scope, $mmSettingsDelegate) {
-    $scope.isIOS = ionic.Platform.isIOS();
-    $scope.handlers = $mmSettingsDelegate.getHandlers();
-    $scope.areHandlersLoaded = $mmSettingsDelegate.areHandlersLoaded;
-});
+angular.module('mm.addons.messageoutput', []);

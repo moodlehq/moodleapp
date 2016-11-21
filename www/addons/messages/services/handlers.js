@@ -443,5 +443,41 @@ angular.module('mm.addons.messages')
         return self;
     };
 
+    /**
+     * Message preferences handler.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessagesHandlers#preferences
+     */
+    self.preferences = function() {
+
+        var self = {};
+
+        /**
+         * Check if handler is enabled.
+         *
+         * @return {Boolean} True if handler is enabled, false otherwise.
+         */
+        self.isEnabled = function() {
+            return $mmaMessages.isMessagePreferencesEnabled();
+        };
+
+        /**
+         * Get the controller.
+         *
+         * @return {Object} Controller.
+         */
+        self.getController = function() {
+            return function($scope) {
+                $scope.title = 'mma.messages.messagepreferences';
+                $scope.class = 'mma-messages-messagepreferences-handler';
+                $scope.state = 'site.messages-preferences';
+            };
+        };
+
+        return self;
+    };
+
     return self;
 });

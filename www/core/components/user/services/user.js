@@ -33,7 +33,7 @@ angular.module('mm.core.user')
  * @ngdoc service
  * @name $mmUser
  */
-.factory('$mmUser', function($log, $q, $mmSite, $mmUtil, $translate, mmCoreUsersStore, $mmFilepool) {
+.factory('$mmUser', function($log, $q, $mmSite, $mmUtil, $translate, mmCoreUsersStore, $mmFilepool, $mmSitesManager) {
 
     $log = $log.getInstance('$mmUser');
 
@@ -296,6 +296,9 @@ angular.module('mm.core.user')
     /**
      * Store users basic information in local DB.
      *
+     * @module mm.core.user
+     * @ngdoc method
+     * @name $mmUser#storeUsers
      * @param  {Object[]} users Users to store. Fields stored: id, fullname, profileimageurl.
      * @return {Promise}        Promise resolve when the user is stored.
      */
@@ -311,6 +314,60 @@ angular.module('mm.core.user')
         });
 
         return $q.all(promises);
+    };
+
+    /**
+     * Update a preference for a user.
+     *
+     * @module mm.core.user
+     * @ngdoc method
+     * @name $mmUser#updateUserPreference
+     * @param  {String} name     Preference name.
+     * @param  {Mixed} value     Preference new value.
+     * @param  {Number} [userId] User ID. If not defined, site's current user.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved if success.
+     */
+    self.updateUserPreference = function(name, value, userId, siteId) {
+        var preferences = [
+            {
+                type: name,
+                value: value
+            }
+        ];
+        return self.updateUserPreferences(preferences, undefined, userId, siteId);
+    };
+
+    /**
+     * Update some preferences for a user.
+     *
+     * @module mm.core.user
+     * @ngdoc method
+     * @name $mmUser#updateUserPreferences
+     * @param  {Object[]} preferences           List of preferences.
+     * @param  {Boolean} [disableNotifications] Whether to disable all notifications. Undefined to not update this value.
+     * @param  {Number} [userId]                User ID. If not defined, site's current user.
+     * @param  {String} [siteId]                Site ID. If not defined, current site.
+     * @return {Promise}                        Promise resolved if success.
+     */
+    self.updateUserPreferences = function(preferences, disableNotifications, userId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            userId = userId || site.getUserId();
+
+            var data = {
+                    userid: userId,
+                    preferences: preferences
+                },
+                preSets = {
+                    responseExpected: false
+                };
+
+            if (typeof disableNotifications != 'undefined') {
+                data.emailstop = disableNotifications ? 1 : 0;
+            }
+
+            return site.write('core_user_update_user_preferences', data, preSets);
+        });
     };
 
     return self;
