@@ -276,7 +276,7 @@ angular.module('mm.addons.messages')
              * @name $mmaMessagesHandlers#sideMenuNav:controller
              */
             return function($scope) {
-                $scope.icon = 'ion-chatbox';
+                $scope.icon = 'ion-chatbubbles';
                 $scope.title = 'mma.messages.messages';
                 $scope.state = 'site.messages';
                 $scope.class = 'mma-messages-handler';

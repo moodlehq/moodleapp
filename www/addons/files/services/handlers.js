@@ -63,7 +63,7 @@ angular.module('mm.addons.files')
              * @name $mmaFilesHandlers#sideMenuNav:controller
              */
             return function($scope) {
-                $scope.icon = 'ion-folder';
+                $scope.icon = 'ion-ios-box-outline';
                 $scope.title = 'mma.files.myfiles';
                 $scope.state = 'site.files';
                 $scope.class = 'mma-files-handler';

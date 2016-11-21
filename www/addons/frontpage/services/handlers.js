@@ -69,7 +69,7 @@ angular.module('mm.addons.frontpage')
              * @name $mmaFrontPageHandlers#sideMenuNav:controller
              */
             return function($scope) {
-                $scope.icon = 'ion-home';
+                $scope.icon = 'ion-ios-home-outline';
                 $scope.title = 'mma.frontpage.sitehome';
                 $scope.state = 'site.mm_course-section';
                 $scope.class = 'mma-frontpage-handler';

@@ -30,6 +30,9 @@
     font-style: normal;
 }
 
+.dark, a.dark {
+  color: #313540; }
+  
 /*
 .ion-ios-bell::before {
     content: "\f3e4" !important;
@@ -37,7 +40,7 @@
 */
 
 // Bar content.
-$bar-content-bg: #17181d !default;
+$bar-content-bg: #313540 !default;
 $bar-content-border: transparent !default;
 $bar-content-text: #fff !default;
 
