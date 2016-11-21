@@ -45,8 +45,9 @@ angular.module('mm.core')
  * @param {String} [name]          Name to set to the hidden textarea.
  * @param {Function} [textChange]  Function to call when the editor text changes.
  * @param {Function} [firstRender] Function to call when the editor text is first rendered. Only called with rich text editor.
- * @param  {String} [component]    The component to link the files to.
- * @param  {Mixed} [componentId]   An ID to use in conjunction with the component.
+ * @param {String} [component]     The component to link the files to.
+ * @param {Mixed} [componentId]    An ID to use in conjunction with the component.
+ * @param {Boolean} [required]     Whether the input is required.
  */
 .directive('mmRichTextEditor', function($ionicPlatform, $mmLang, $timeout, $q, $window, $ionicScrollDelegate, $mmUtil,
             $mmSite, $mmFilepool) {
@@ -243,7 +244,8 @@ angular.module('mm.core')
             textChange: '&?',
             firstRender: '&?',
             component: '@?',
-            componentId: '@?'
+            componentId: '@?',
+            required: '@?'
         },
         link: function(scope, element) {
             element = element[0];

@@ -89,6 +89,54 @@ angular.module('mm.core.login')
     };
 
     /**
+     * Builds an object with error messages for some common errors.
+     * Please notice that this function doesn't support all possible error types.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#getErrorMessages
+     * @param  {String} [requiredMsg]  Code of the string for required error.
+     * @param  {String} [emailMsg]     Code of the string for invalid email error.
+     * @param  {String} [patternMsg]   Code of the string for pattern not match error.
+     * @param  {String} [urlMsg]       Code of the string for invalid url error.
+     * @param  {String} [minlengthMsg] Code of the string for "too short" error.
+     * @param  {String} [maxlengthMsg] Code of the string for "too long" error.
+     * @param  {String} [minMsg]       Code of the string for min value error.
+     * @param  {String} [maxMsg]       Code of the string for max value error.
+     * @return {Object}                Object with the errors.
+     */
+    self.getErrorMessages = function(requiredMsg, emailMsg, patternMsg, urlMsg, minlengthMsg, maxlengthMsg, minMsg, maxMsg) {
+        var errors = {};
+
+        if (requiredMsg) {
+            errors.required = $translate.instant(requiredMsg);
+        }
+        if (emailMsg) {
+            errors.email = $translate.instant(emailMsg);
+        }
+        if (patternMsg) {
+            errors.pattern = $translate.instant(patternMsg);
+        }
+        if (urlMsg) {
+            errors.url = $translate.instant(urlMsg);
+        }
+        if (minlengthMsg) {
+            errors.minlength = $translate.instant(minlengthMsg);
+        }
+        if (maxlengthMsg) {
+            errors.maxlength = $translate.instant(maxlengthMsg);
+        }
+        if (minMsg) {
+            errors.min = $translate.instant(minMsg);
+        }
+        if (maxMsg) {
+            errors.max = $translate.instant(maxMsg);
+        }
+
+        return errors;
+    };
+
+    /**
      * Go to the view to add a new site.
      * If a fixed URL is configured, go to credentials instead.
      *

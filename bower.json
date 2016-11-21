@@ -14,7 +14,8 @@
     "jszip": "~2.5.0",
     "oclazyload": "~1.0.9",
     "ckeditor": "=4.5.9",
-    "angular-ckeditor": "=1.0.3"
+    "angular-ckeditor": "=1.0.3",
+    "angular-messages": "1.5.3"
   },
   "resolutions": {
     "angular": "1.5.3"

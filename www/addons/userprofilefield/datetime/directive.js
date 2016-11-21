@@ -36,9 +36,6 @@ angular.module('mm.addons.userprofilefield_datetime')
                 scope.isIOS = ionic.Platform.isIOS();
                 field.modelName = 'profile_field_' + field.shortname;
 
-                // Use a fake model since the WS expects the value separated in day, month, year, hour, minute.
-                scope.dtModel = {};
-
                 // Check if it's only date or it has time too.
                 field.hasTime = field.param3 && field.param3 !== '0' && field.param3 !== 'false';
                 field.inputType = field.hasTime ? 'datetime-local' : 'date';

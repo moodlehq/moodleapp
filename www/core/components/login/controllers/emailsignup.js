@@ -22,13 +22,21 @@ angular.module('mm.core.login')
  * @name mmLoginEmailSignupCtrl
  */
 .controller('mmLoginEmailSignupCtrl', function($scope, $stateParams, $mmUtil, $ionicHistory, $mmLoginHelper, $mmWS, $q,
-            $ionicModal) {
+            $ionicModal, $ionicScrollDelegate) {
 
     var siteConfig = $stateParams.siteconfig,
-        modalInitialized = false;
+        modalInitialized = false,
+        scrollView = $ionicScrollDelegate.$getByHandle('mmLoginEmailSignupScroll');
 
     $scope.siteurl = $stateParams.siteurl;
     $scope.data = {};
+
+    // Setup validation errors.
+    $scope.usernameErrors = $mmLoginHelper.getErrorMessages('mm.login.usernamerequired');
+    $scope.passwordErrors = $mmLoginHelper.getErrorMessages('mm.login.passwordrequired');
+    $scope.emailErrors = $mmLoginHelper.getErrorMessages('mm.login.missingemail');
+    $scope.email2Errors = $mmLoginHelper.getErrorMessages('mm.login.missingemail', null, 'mm.login.emailnotmatch');
+    $scope.policyErrors = $mmLoginHelper.getErrorMessages('mm.login.policyagree');
 
     // Treat the site's config, setting scope variables.
     function treatSiteConfig(siteConfig) {
@@ -57,6 +65,11 @@ angular.module('mm.core.login')
             if (settings.country && !$scope.data.country) {
                 $scope.data.country = settings.country;
             }
+
+            $scope.namefieldsErrors = {};
+            angular.forEach(settings.namefields, function(field) {
+                $scope.namefieldsErrors[field] = $mmLoginHelper.getErrorMessages('mm.login.missing' + field);
+            });
         }).catch(function(err) {
             $mmUtil.showErrorModal(err);
             return $q.reject();
@@ -96,5 +109,20 @@ angular.module('mm.core.login')
         getSignupSettings().finally(function() {
             $scope.$broadcast('scroll.refreshComplete');
         });
+    };
+
+    // Create account.
+    $scope.create = function(signupForm) {
+        if (!signupForm.$valid) {
+            // Form not valid. Scroll to the first element with errors.
+            return $mmUtil.scrollToInputError(document, scrollView).then(function(found) {
+                if (!found) {
+                    // Input not found, show an error modal.
+                    $mmUtil.showErrorModal('mm.core.errorinvalidform', true);
+                }
+            });
+        } else {
+            // TODO: Send the data.
+        }
     };
 });

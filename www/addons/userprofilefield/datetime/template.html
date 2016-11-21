@@ -6,12 +6,17 @@
 <!-- Edit. -->
 <ion-input ng-if="edit && field && field.shortname" class="item item-input item-stacked-label item-text-wrap">
     <ion-label>
-        <span ng-if="field.required" mm-mark-required>{{ field.name }}</span>
-        <span ng-if="!field.required">{{ field.name }}</span>
+        <span mm-mark-required="{{field.required}}">{{ field.name }}</span>
     </ion-label>
     <!-- In Android, show only 1 input, date or datetime-local. -->
-    <input ng-if="!isIOS" type="{{field.inputType}}" placeholder="{{field.name}}" ng-model="dtModel[field.modelName]" ng-disabled="field.locked" max="{{field.max}}" min="{{field.min}}" aria-label="{{field.name}}">
+    <div ng-if="!isIOS" mm-input-errors field-name="{{field.modelName + '_date'}}">
+        <input name="{{field.modelName + '_date'}}" type="{{field.inputType}}" placeholder="{{field.name}}" ng-model="model[field.modelName + '_date']" ng-disabled="field.locked" max="{{field.max}}" min="{{field.min}}" aria-label="{{field.name}}" ng-required="{{field.required}}">
+    </div>
     <!-- In iOS, show 1 input if it's only date, show 2 inputs if it's date & time. -->
-    <input ng-if="isIOS" type="date" placeholder="{{ 'mm.core.date' | translate }}" ng-model="dtModel[field.modelName + '_date']" ng-disabled="field.locked" max="{{field.max}}" min="{{field.min}}" aria-label="{{ 'mm.core.date' | translate }}">
-    <input ng-if="isIOS && field.hasTime" type="time" placeholder="{{ 'mm.core.time' | translate }}" ng-model="dtModel[field.modelName + '_time']" ng-disabled="field.locked" aria-label="{{ 'mm.core.time' | translate }}">
+    <div ng-if="isIOS" mm-input-errors field-name="{{field.modelName + '_date'}}">
+        <input name="{{field.modelName + '_date'}}" type="date" placeholder="{{ 'mm.core.date' | translate }}" ng-model="model[field.modelName + '_date']" ng-disabled="field.locked" max="{{field.max}}" min="{{field.min}}" aria-label="{{ 'mm.core.date' | translate }}" ng-required="{{field.required}}">
+    </div>
+    <div ng-if="isIOS && field.hasTime" mm-input-errors field-name="{{field.modelName + '_time'}}">
+        <input name="{{field.modelName + '_time'}}" type="time" placeholder="{{ 'mm.core.time' | translate }}" ng-model="model[field.modelName + '_time']" ng-disabled="field.locked" aria-label="{{ 'mm.core.time' | translate }}" ng-required="{{field.required}}">
+    </div>
 </ion-input>

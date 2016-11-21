@@ -25,13 +25,21 @@ angular.module('mm.core')
  *
  * This directive needs to be applied in the label. Example:
  *
- * <ion-label mm-mark-required>{{ 'mm.login.username' | translate }}</ion-label>
+ * <ion-label mm-mark-required="{{field.required}}">{{ 'mm.login.username' | translate }}</ion-label>
  */
 .directive('mmMarkRequired', function() {
     return {
         restrict: 'A',
         link: function(scope, element, attrs) {
-            element.append('<span class="mm-input-required-asterisk">*</span>');
+            var mark = attrs.mmMarkRequired && attrs.mmMarkRequired !== 'false' && attrs.mmMarkRequired !== '0';
+            if (mark) {
+                element.append('<span class="mm-input-required-asterisk">*</span>');
+            } else {
+                var asterisk = element[0].querySelector('.mm-input-required-asterisk');
+                if (asterisk) {
+                    angular.element(asterisk).remove();
+                }
+            }
         }
     };
 });

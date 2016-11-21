@@ -1411,6 +1411,29 @@ angular.module('mm.core')
         };
 
         /**
+         * Search for an input with error (mm-input-error directive) and scrolls to it if found.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#scrollToInputError
+         * @param  {Object} container           Element to search in.
+         * @param  {Object} [scrollDelegate]    Scroll delegate. If not defined, use $ionicScrollDelegate.
+         * @param  {String} [scrollParentClass] Scroll Parent Class where to stop calculating the position. Default scroll-content.
+         * @return {Boolean}                    True if the element is found, false otherwise.
+         */
+        self.scrollToInputError = function(container, scrollDelegate, scrollParentClass) {
+            // Wait an instant to make sure errors are shown and scroll to the element.
+            return $timeout(function() {
+                if (!scrollDelegate) {
+                    scrollDelegate = $ionicScrollDelegate;
+                }
+
+                scrollDelegate.resize();
+                return self.scrollToElement(container, '.mm-input-has-errors', scrollDelegate, scrollParentClass);
+            }, 100);
+        };
+
+        /**
          * Retrieve the position of a element relative to another element.
          *
          * @module mm.core
