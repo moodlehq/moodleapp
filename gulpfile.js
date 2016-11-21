@@ -41,9 +41,13 @@ function getRemoteAddonPaths(paths, pathToAddon) {
 
 // Get the names of the JSON files inside a directory.
 function getFilenames(dir) {
-  return fs.readdirSync(dir).filter(function(file) {
-    return file.indexOf('.json') > -1;
-  });
+  if (fs.existsSync(dir)) {
+    return fs.readdirSync(dir).filter(function(file) {
+      return file.indexOf('.json') > -1;
+    });
+  } else {
+    return [];
+  }
 }
 
 /**
@@ -341,7 +345,9 @@ var remoteAddonPaths = {
     '*',
     '**/*',
   ],
-  js: [
+  js: [ // Treat main.js files first.
+    '*/main.js',
+    '**/main.js',
     '*.js',
     '**/*.js',
   ],
@@ -773,6 +779,10 @@ gulp.task('remoteaddon-lang', ['remoteaddon-copy'], function(done) {
   langPaths = getRemoteAddonPaths(remoteAddonPaths.lang, path);
   addonPackagePath = npmPath.join(path, remoteAddonPackageFolder);
   buildDest = npmPath.join(addonPackagePath, 'lang');
+  if (!fs.existsSync(langPaths[0])) {
+    // No lang folder, stop.
+    return;
+  }
 
   // Get filenames to know which languages are available.
   filenames = filenames.concat(getFilenames(langPaths[0]));
