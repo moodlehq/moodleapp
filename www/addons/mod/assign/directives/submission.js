@@ -211,6 +211,12 @@ angular.module('mm.addons.mod_assign')
                         // Feedback plugins not present, we have to use assign configs to detect the plugins used.
                         scope.feedback.plugins = $mmaModAssignHelper.getPluginsEnabled(assign, 'assignfeedback');
                     }
+
+                    if (!scope.canSaveGrades) {
+                        return $mmCourse.getModule(moduleId, courseId, false, true).then(function(mod) {
+                            scope.gradeUrl = mod.url + "&action=grader&userid="+userId;
+                        });
+                    }
                 });
             }
         });
