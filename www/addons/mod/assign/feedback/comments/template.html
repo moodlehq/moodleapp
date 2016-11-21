@@ -4,9 +4,12 @@
     <div><p><mm-format-text expand-title="{{plugin.name}}" shorten fullview-on-click="true" newlines-on-fullview="true" watch="true" component="{{assignComponent}}" component-id="{{assign.cmid}}">
         {{model.text}}
     </mm-format-text></p></div>
-    <button ng-if="canEdit" class="button" ng-click="goToEdit()">
-        <i class="icon ion-edit"></i>
-    </button>
+    <div class="buttons buttons-vertical">
+        <button ng-if="canEdit" class="button" ng-click="goToEdit()">
+            <i class="icon ion-edit"></i>
+        </button>
+        <div class="item-note" ng-if="!isSent"><i class="icon ion-clock"></i> {{ 'mm.core.notsent' | translate }}</div>
+    </div>
 </div>
 <!-- Edit -->
 <div ng-if="edit">

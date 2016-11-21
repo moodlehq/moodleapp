@@ -79,12 +79,9 @@ angular.module('mm.addons.mod_assign')
             }
         }).then(function() {
             // Check if there's any offline data for this assign.
-            return $mmaModAssignOffline.getAssignSubmissions(assign.id).catch(function() {
-                // No offline data found.
-                return [];
-            });
-        }).then(function(submissions) {
-            $scope.hasOffline = submissions.length;
+            return $mmaModAssignOffline.hasAssignOfflineData(assign.id);
+        }).then(function(hasOffline) {
+            $scope.hasOffline = hasOffline;
 
             // Get assignment submissions.
             return $mmaModAssign.getSubmissions(assign.id).then(function(data) {
