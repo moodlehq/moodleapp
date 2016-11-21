@@ -63,6 +63,67 @@ angular.module('mm.core.user')
         $log = $log.getInstance('$mmUserProfileFieldsDelegate');
 
         /**
+         * Get the data to send for a certain field based on the input data.
+         *
+         * @module mm.core.user
+         * @ngdoc method
+         * @name $mmUserProfileFieldsDelegate#getDataForField
+         * @param  {Object} field          User field to get the data for.
+         * @param  {Boolean} signup        True if user is in signup page.
+         * @param  {String} [registerAuth] Register auth method. E.g. 'email'.
+         * @param  {Object} model          Model with the input data.
+         * @return {Object}                Data to send for the field.
+         */
+        self.getDataForField = function(field, signup, registerAuth, model) {
+            var handler = self.getHandlerInstance(field, signup),
+                name = 'profile_field_' + field.shortname;
+
+            if (handler) {
+                if (handler.getData) {
+                    return $q.when(handler.getData(field, signup, registerAuth, model));
+                } else if (field.shortname && typeof model[name] != 'undefined') {
+                    // Handler doesn't implement the function, but the model has data for the field.
+                    return $q.when({
+                        type: field.type || field.datatype,
+                        name: name,
+                        value: model[name]
+                    });
+                }
+            }
+
+            return $q.when();
+        };
+
+        /**
+         * Get the data to send for a list of fields based on the input data.
+         *
+         * @module mm.core.user
+         * @ngdoc method
+         * @name $mmUserProfileFieldsDelegate#getDataForFields
+         * @param  {Object[]} fields       User fields to get the data for.
+         * @param  {Boolean} signup        True if user is in signup page.
+         * @param  {String} [registerAuth] Register auth method. E.g. 'email'.
+         * @param  {Object} model          Model with the input data.
+         * @return {Object[]}              Data to send.
+         */
+        self.getDataForFields = function(fields, signup, registerAuth, model) {
+            var result = [],
+                promises = [];
+
+            angular.forEach(fields, function(field) {
+                promises.push(self.getDataForField(field, signup, registerAuth, model).then(function(data) {
+                    if (data) {
+                        result.push(data);
+                    }
+                }));
+            });
+
+            return $q.all(promises).then(function() {
+                return result;
+            });
+        };
+
+        /**
          * Get the directive to use for a certain user profile field.
          *
          * @module mm.core.user
@@ -74,22 +135,34 @@ angular.module('mm.core.user')
          * @return {String}                Directive name. Undefined if no directive found.
          */
         self.getDirectiveForField = function(field, signup, registerAuth) {
-            var type = field.type || field.datatype,
-                handler;
+            var handler = self.getHandlerInstance(field, signup);
+            if (handler) {
+                return handler.getDirectiveName(field, signup, registerAuth);
+            }
+        };
+
+        /**
+         * Get a handler instance.
+         *
+         * @module mm.core.user
+         * @ngdoc method
+         * @name $mmUserProfileFieldsDelegate#getHandlerInstance
+         * @param  {Object} field          User field to get the directive for.
+         * @param  {Boolean} signup        True if user is in signup page.
+         * @return {Object}                Handler instance, undefined if not found.
+         */
+        self.getHandlerInstance = function(field, signup) {
+            var type = field.type || field.datatype;
 
             if (signup) {
                 if (handlers[type]) {
                     if (typeof handlers[type].instance === 'undefined') {
                         handlers[type].instance = $mmUtil.resolveObject(handlers[type].handler, true);
                     }
-                    handler = handlers[type].instance;
+                    return handlers[type].instance;
                 }
             } else {
-                handler = enabledHandlers[type];
-            }
-
-            if (handler) {
-                return handler.getDirectiveName(field, signup, registerAuth);
+                return enabledHandlers[type];
             }
         };
 

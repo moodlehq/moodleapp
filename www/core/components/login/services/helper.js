@@ -229,18 +229,7 @@ angular.module('mm.core.login')
      * @return {Void}
      */
     self.openBrowserForSSOLogin = function(siteurl, typeOfLogin, service, launchUrl) {
-        service = service || mmCoreConfigConstants.wsextservice;
-        launchUrl = launchUrl || siteurl + '/local/mobile/launch.php';
-
-        var passport = Math.random() * 1000,
-            loginurl = launchUrl + '?service=' + service;
-        loginurl += "&passport=" + passport;
-        loginurl += "&urlscheme=" + mmCoreConfigConstants.customurlscheme;
-
-        // Store the siteurl and passport in $mmConfig for persistence. We are "configuring"
-        // the app to wait for an SSO. $mmConfig shouldn't be used as a temporary storage.
-        $mmConfig.set(mmLoginLaunchSiteURL, siteurl);
-        $mmConfig.set(mmLoginLaunchPassport, passport);
+        var loginUrl = self.prepareForSSOLogin(siteurl, service, launchUrl);
 
         if (self.isSSOEmbeddedBrowser(typeOfLogin)) {
             $translate('mm.login.cancel').then(function(cancelStr) {
@@ -248,14 +237,43 @@ angular.module('mm.core.login')
                     clearsessioncache: 'yes', // Clear the session cache to allow for multiple logins.
                     closebuttoncaption: cancelStr,
                 };
-                $mmUtil.openInApp(loginurl, options);
+                $mmUtil.openInApp(loginUrl, options);
             });
         } else {
-            $mmUtil.openInBrowser(loginurl);
+            $mmUtil.openInBrowser(loginUrl);
             if (navigator.app) {
                 navigator.app.exitApp();
             }
         }
+    };
+
+    /**
+     * Prepare the app to perform SSO login.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#prepareForSSOLogin
+     * @param  {String} siteurl     URL of the site where the SSO login will be performed.
+     * @param  {String} [service]   The service to use. If not defined, external service will be used.
+     * @param  {String} [launchUrl] The URL to open. If not defined, local_mobile URL will be used.
+     * @return {Void}
+     */
+    self.prepareForSSOLogin = function(siteurl, service, launchUrl) {
+        service = service || mmCoreConfigConstants.wsextservice;
+        launchUrl = launchUrl || siteurl + '/local/mobile/launch.php';
+
+        var passport = Math.random() * 1000,
+            loginUrl = launchUrl + '?service=' + service;
+
+        loginUrl += "&passport=" + passport;
+        loginUrl += "&urlscheme=" + mmCoreConfigConstants.customurlscheme;
+
+        // Store the siteurl and passport in $mmConfig for persistence. We are "configuring"
+        // the app to wait for an SSO. $mmConfig shouldn't be used as a temporary storage.
+        $mmConfig.set(mmLoginLaunchSiteURL, siteurl);
+        $mmConfig.set(mmLoginLaunchPassport, passport);
+
+        return loginUrl;
     };
 
     /**

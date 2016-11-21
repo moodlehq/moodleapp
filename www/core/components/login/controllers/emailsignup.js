@@ -21,8 +21,8 @@ angular.module('mm.core.login')
  * @ngdoc controller
  * @name mmLoginEmailSignupCtrl
  */
-.controller('mmLoginEmailSignupCtrl', function($scope, $stateParams, $mmUtil, $ionicHistory, $mmLoginHelper, $mmWS, $q,
-            $ionicModal, $ionicScrollDelegate) {
+.controller('mmLoginEmailSignupCtrl', function($scope, $stateParams, $mmUtil, $ionicHistory, $mmLoginHelper, $mmWS, $q, $translate,
+            $ionicModal, $ionicScrollDelegate, $mmUserProfileFieldsDelegate, $mmSitesManager) {
 
     var siteConfig = $stateParams.siteconfig,
         modalInitialized = false,
@@ -122,7 +122,48 @@ angular.module('mm.core.login')
                 }
             });
         } else {
-            // TODO: Send the data.
+            var fields = $scope.settings.profilefields,
+                params = {
+                    username: $scope.data.username,
+                    password: $scope.data.password,
+                    firstname: $scope.data.firstname,
+                    lastname: $scope.data.lastname,
+                    email: $scope.data.email,
+                    city: $scope.data.city,
+                    country: $scope.data.country
+                },
+                modal = $mmUtil.showModalLoading('mm.core.sending', true);
+
+
+            if (siteConfig.launchurl) {
+                var service = $mmSitesManager.determineService($scope.siteurl);
+                params.redirect = $mmLoginHelper.prepareForSSOLogin($scope.siteurl, service, siteConfig.launchurl);
+            }
+
+            // Get the data for the custom profile fields.
+            $mmUserProfileFieldsDelegate.getDataForFields(fields, true, 'email', $scope.data).then(function(fieldsData) {
+                params.customprofilefields = fieldsData;
+
+                return $mmWS.callAjax('auth_email_signup_user', params, {siteurl: $scope.siteurl}).then(function(result) {
+                    if (result.success) {
+                        var message = $translate.instant('mm.login.emailconfirmsent', {$a: $scope.data.email});
+                        $mmUtil.showModal('mm.core.success', message);
+                        $ionicHistory.goBack();
+                    } else if (result.warnings && result.warnings.length) {
+                        $mmUtil.showErrorModal(result.warnings[0].message);
+                    } else {
+                        $mmUtil.showErrorModal('mm.login.usernotaddederror', true);
+                    }
+                });
+            }).catch(function(error) {
+                if (error) {
+                    $mmUtil.showErrorModal(error);
+                } else {
+                    $mmUtil.showErrorModal('mm.login.usernotaddederror', true);
+                }
+            }).finally(function() {
+                modal.dismiss();
+            });
         }
     };
 });

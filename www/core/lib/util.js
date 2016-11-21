@@ -651,9 +651,9 @@ angular.module('mm.core')
             }
 
             $translate(langKeys).then(function(translations) {
-                var message = needsTranslate ? translations[errorMessage] : errorMessage,
+                var message = $mmText.decodeHTML(needsTranslate ? translations[errorMessage] : errorMessage),
                     popup = $ionicPopup.alert({
-                        title: translations[errorKey],
+                        title: $mmText.decodeHTML(translations[errorKey]),
                         template: addFormatTextIfNeeded(message) // Add format-text to handle links.
                     });
 
