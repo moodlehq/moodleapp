@@ -131,135 +131,141 @@ angular.module('mm.addons.mod_assign')
         scope.grade.gradingStatus = scope.lastAttempt.gradingstatus;
 
         return $mmaModAssign.isGradingEnabled().then(function(enabled) {
-            if (enabled) {
-                return $mmCourse.getModuleBasicGradeInfo(moduleId).then(function(gradeInfo) {
-                    if (gradeInfo) {
-
-                        scope.gradeInfo = gradeInfo;
-                        if (gradeInfo.advancedgrading && gradeInfo.advancedgrading[0] &&
-                                typeof gradeInfo.advancedgrading[0].method != 'undefined') {
-                            scope.grade.method = gradeInfo.advancedgrading[0].method || 'simple';
-                        } else {
-                            scope.grade.method = 'simple';
-                        }
-                        scope.isGrading = true;
-
-                        // Grades can be saved if simple grading.
-                        scope.canSaveGrades = scope.grade.method == 'simple';
-
-                        if (scope.gradeInfo.scale) {
-                            scope.grade.scale = formatScaleOptions(scope.gradeInfo.scale, $translate.instant('mm.core.nograde'));
-                        } else {
-                            // Get current language to format grade input field.
-                            $mmLang.getCurrentLanguage().then(function(lang) {
-                                scope.grade.lang = lang;
-                            });
-                        }
-
-                        if ($mmaModAssign.isOutcomesEditEnabled()) {
-                            angular.forEach(scope.gradeInfo.outcomes, function(outcome) {
-                                if (outcome.scale) {
-                                    outcome.options =
-                                        formatScaleOptions(outcome.scale, $translate.instant('mma.grades.nooutcome'));
-                                }
-                                outcome.selectedId = 0;
-                                originalGrades.outcomes[outcome.id] = outcome.selectedId;
-                            });
-                        }
-
-                        // Get grade addon if avalaible.
-                        var $mmaGrades = $mmAddonManager.get('$mmaGrades');
-                        if (!$mmaGrades) {
-                            return $q.when();
-                        }
-
-                        return $mmaGrades.getGradeModuleItems(courseId, moduleId, userId).then(function(grades) {
-                            var outcomes = {};
-
-                            angular.forEach(grades, function(grade) {
-                                if (!grade.outcomeid && !grade.scaleid) {
-                                    if (scope.grade.scale) {
-                                        scope.grade.grade = getSelectedScaleId(scope.grade.scale, grade.gradeformatted);
-                                    } else {
-                                        scope.grade.grade = parseFloat(grade.gradeformatted) || null;
-                                    }
-                                    scope.grade.modified = grade.gradedategraded;
-                                    originalGrades.grade = scope.grade.grade;
-                                } else if (grade.outcomeid) {
-                                    // Only show outcomes with info on it outcomeid could be null if outcomes are disabled on site.
-                                    angular.forEach(scope.gradeInfo.outcomes, function(outcome) {
-                                        if (outcome.id == grade.outcomeid) {
-                                            outcome.selected = grade.gradeformatted;
-                                            outcome.modified = grade.gradedategraded;
-                                            if (outcome.options) {
-                                                outcome.selectedId = getSelectedScaleId(outcome.options, outcome.selected);
-                                                originalGrades.outcomes[outcome.id] = outcome.selectedId;
-                                                outcome.itemNumber = grade.itemnumber;
-                                            }
-                                            outcomes[outcome.id] = outcome;
-                                        }
-                                    });
-                                }
-                            });
-                            scope.gradeInfo.outcomes = outcomes;
-                        });
-                    }
-                }).then(function() {
-                    var isManual = assign.attemptreopenmethod == mmaModAssignAttemptReopenMethodManual,
-                        isUnlimited = assign.maxattempts == mmaModAssignUnlimitedAttempts,
-                        isLessThanMaxAttempts = scope.userSubmission &&
-                            (scope.userSubmission.attemptnumber < (assign.maxattempts - 1));
-
-                    scope.allowAddAttempt = isManual && (!scope.userSubmission || isUnlimited || isLessThanMaxAttempts);
-
-                    if (assign.teamsubmission) {
-                        scope.grade.applyToAll = true;
-                        originalGrades.applyToAll = true;
-                    }
-                    if (assign.markingworkflow && scope.grade.gradingStatus) {
-                        scope.workflowStatusTranslationId =  getSubmissionGradingStatusTranslationId(scope.grade.gradingStatus);
-                    }
-
-                    if (!scope.feedback) {
-                        scope.feedback = {};
-
-                        // Feedback plugins not present, we have to use assign configs to detect the plugins used.
-                        scope.feedback.plugins = $mmaModAssignHelper.getPluginsEnabled(assign, 'assignfeedback');
-                    }
-
-                    // Check if there's any offline data for this submission.
-                    if (scope.canSaveGrades) {
-                        // Submission grades are not identified using attempt number so it can retrieve the feedback for a previous
-                        // attempt. The app will not treat that as an special case.
-                        return $mmaModAssignOffline.getSubmissionGrade(assign.id, userId).then(function(data) {
-                            // Load offline grades.
-                            if (data && (!feedbackStatus.gradeddate || feedbackStatus.gradeddate < data.timemodified)) {
-                                // If grade has been modified from gradebook, do not use offline.
-                                if (scope.grade.modified < data.timemodified) {
-                                    scope.grade.grade = data.grade;
-                                }
-                                scope.grade.applyToAll = data.applytoall;
-                                scope.grade.addAttempt = data.addattempt;
-
-                                if (data.outcomes && Object.keys(data.outcomes).length) {
-                                    angular.forEach(scope.gradeInfo.outcomes, function(outcome) {
-                                        if (typeof data.outcomes[outcome.itemNumber] != "undefined") {
-                                            // If outcome has been modified from gradebook, do not use offline.
-                                            if (outcome.modified < data.timemodified) {
-                                                outcome.selectedId = data.outcomes[outcome.itemNumber];
-                                            }
-                                        }
-                                    });
-                                }
-                            }
-                        });
-                    } else {
-                        return $mmCourse.getModule(moduleId, courseId, false, true).then(function(mod) {
-                            scope.gradeUrl = mod.url + "&action=grader&userid=" + userId;
-                        });
-                    }
-                });
+            if (!enabled) {
+                return $q.when();
             }
+            return $mmCourse.getModuleBasicGradeInfo(moduleId).then(function(gradeInfo) {
+                if (!gradeInfo) {
+                    return $q.when();
+                }
+
+                scope.gradeInfo = gradeInfo;
+                if (gradeInfo.advancedgrading && gradeInfo.advancedgrading[0] &&
+                        typeof gradeInfo.advancedgrading[0].method != 'undefined') {
+                    scope.grade.method = gradeInfo.advancedgrading[0].method || 'simple';
+                } else {
+                    scope.grade.method = 'simple';
+                }
+                scope.isGrading = true;
+
+                // Grades can be saved if simple grading.
+                scope.canSaveGrades = scope.grade.method == 'simple';
+
+                if (scope.gradeInfo.scale) {
+                    scope.grade.scale = formatScaleOptions(scope.gradeInfo.scale, $translate.instant('mm.core.nograde'));
+                } else {
+                    // Get current language to format grade input field.
+                    $mmLang.getCurrentLanguage().then(function(lang) {
+                        scope.grade.lang = lang;
+                    });
+                }
+
+                if ($mmaModAssign.isOutcomesEditEnabled()) {
+                    angular.forEach(scope.gradeInfo.outcomes, function(outcome) {
+                        if (outcome.scale) {
+                            outcome.options =
+                                formatScaleOptions(outcome.scale, $translate.instant('mma.grades.nooutcome'));
+                        }
+                        outcome.selectedId = 0;
+                        originalGrades.outcomes[outcome.id] = outcome.selectedId;
+                    });
+                }
+
+                // Get grade addon if avalaible.
+                var $mmaGrades = $mmAddonManager.get('$mmaGrades');
+                if (!$mmaGrades) {
+                    return $q.when();
+                }
+
+                return $mmaGrades.getGradeModuleItems(courseId, moduleId, userId).then(function(grades) {
+                    var outcomes = {};
+
+                    angular.forEach(grades, function(grade) {
+                        if (!grade.outcomeid && !grade.scaleid) {
+                            if (scope.grade.scale) {
+                                scope.grade.grade = getSelectedScaleId(scope.grade.scale, grade.gradeformatted);
+                            } else {
+                                scope.grade.grade = parseFloat(grade.gradeformatted) || null;
+                            }
+                            scope.grade.modified = grade.gradedategraded;
+                            originalGrades.grade = scope.grade.grade;
+                        } else if (grade.outcomeid) {
+                            // Only show outcomes with info on it outcomeid could be null if outcomes are disabled on site.
+                            angular.forEach(scope.gradeInfo.outcomes, function(outcome) {
+                                if (outcome.id == grade.outcomeid) {
+                                    outcome.selected = grade.gradeformatted;
+                                    outcome.modified = grade.gradedategraded;
+                                    if (outcome.options) {
+                                        outcome.selectedId = getSelectedScaleId(outcome.options, outcome.selected);
+                                        originalGrades.outcomes[outcome.id] = outcome.selectedId;
+                                        outcome.itemNumber = grade.itemnumber;
+                                    }
+                                    outcomes[outcome.id] = outcome;
+                                }
+                            });
+                        }
+                    });
+                    scope.gradeInfo.outcomes = outcomes;
+                });
+            }).then(function() {
+                if (!scope.isGrading) {
+                    return $q.when();
+                }
+
+                var isManual = assign.attemptreopenmethod == mmaModAssignAttemptReopenMethodManual,
+                    isUnlimited = assign.maxattempts == mmaModAssignUnlimitedAttempts,
+                    isLessThanMaxAttempts = scope.userSubmission &&
+                        (scope.userSubmission.attemptnumber < (assign.maxattempts - 1));
+
+                scope.allowAddAttempt = isManual && (!scope.userSubmission || isUnlimited || isLessThanMaxAttempts);
+
+                if (assign.teamsubmission) {
+                    scope.grade.applyToAll = true;
+                    originalGrades.applyToAll = true;
+                }
+                if (assign.markingworkflow && scope.grade.gradingStatus) {
+                    scope.workflowStatusTranslationId =  getSubmissionGradingStatusTranslationId(scope.grade.gradingStatus);
+                }
+
+                if (!scope.feedback) {
+                    scope.feedback = {};
+
+                    // Feedback plugins not present, we have to use assign configs to detect the plugins used.
+                    scope.feedback.plugins = $mmaModAssignHelper.getPluginsEnabled(assign, 'assignfeedback');
+                }
+
+                // Check if there's any offline data for this submission.
+                if (scope.canSaveGrades) {
+                    // Submission grades are not identified using attempt number so it can retrieve the feedback for a previous
+                    // attempt. The app will not treat that as an special case.
+                    return $mmaModAssignOffline.getSubmissionGrade(assign.id, userId).then(function(data) {
+                        // Load offline grades.
+                        if (data && (!feedbackStatus.gradeddate || feedbackStatus.gradeddate < data.timemodified)) {
+                            // If grade has been modified from gradebook, do not use offline.
+                            if (scope.grade.modified < data.timemodified) {
+                                scope.grade.grade = data.grade;
+                            }
+                            scope.grade.applyToAll = data.applytoall;
+                            scope.grade.addAttempt = data.addattempt;
+
+                            if (data.outcomes && Object.keys(data.outcomes).length) {
+                                angular.forEach(scope.gradeInfo.outcomes, function(outcome) {
+                                    if (typeof data.outcomes[outcome.itemNumber] != "undefined") {
+                                        // If outcome has been modified from gradebook, do not use offline.
+                                        if (outcome.modified < data.timemodified) {
+                                            outcome.selectedId = data.outcomes[outcome.itemNumber];
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
+                } else {
+                    return $mmCourse.getModule(moduleId, courseId, false, true).then(function(mod) {
+                        scope.gradeUrl = mod.url + "&action=grader&userid=" + userId;
+                    });
+                }
+            });
         });
     }
 
@@ -313,6 +319,7 @@ angular.module('mm.addons.mod_assign')
                 scope.currentAttempt = 0;
                 scope.attemptReopenMethodNone = mmaModAssignAttemptReopenMethodNone;
                 scope.unlimitedAttempts = mmaModAssignUnlimitedAttempts;
+                scope.maxAttemptsText = $translate.instant('mma.mod_assign.unlimitedattempts');
                 scope.blindMarking = scope.isSubmittedForGrading && assign.blindmarking && !assign.revealidentities;
 
                 if (!scope.blindMarking && submitId != $mmSite.getUserId()) {
@@ -712,7 +719,7 @@ angular.module('mm.addons.mod_assign')
             }
 
             // Submit for grading.
-            scope.submit = function(acceptStatement) {
+            scope.submitForGrading = function(acceptStatement) {
                 if (scope.assign.requiresubmissionstatement && !acceptStatement) {
                     $mmUtil.showErrorModal('mma.mod_assign.acceptsubmissionstatement', true);
                     return $q.reject();
