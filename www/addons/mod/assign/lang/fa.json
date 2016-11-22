@@ -21,7 +21,6 @@
     "gradedon": "تاریخ ثبت نمره",
     "gradeoutof": "نمره از {{$a}}",
     "gradingstatus": "وضعیت تصحیح",
-    "gradingsummary": "خلاصه نمره‌دهی",
     "hiddenuser": "شاگرد شماره",
     "markingworkflowstateinreview": "درحال بازبینی",
     "markingworkflowstatenotmarked": "نمره داده نشده است",

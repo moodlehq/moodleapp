@@ -31,7 +31,6 @@
     "gradedon": "评分时间",
     "gradeoutof": "成绩（满分 {{$a}} ）",
     "gradingstatus": "评分状态",
-    "gradingsummary": "作业评分情况汇总",
     "groupsubmissionsettings": "分组提交设置",
     "hiddenuser": "参与者",
     "latesubmissions": "迟交的作业",

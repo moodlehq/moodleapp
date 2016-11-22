@@ -10,7 +10,6 @@
     "graded": "تم رصد درجة",
     "gradeoutof": "الدرجة من {{$a}}",
     "gradingstatus": "حالة التقييم",
-    "gradingsummary": "خلاصة التقييم",
     "noattempt": "لا توجد محاولات",
     "notgraded": "لم يتم التقييم",
     "numberofdraftsubmissions": "مسودات",
