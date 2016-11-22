@@ -30,14 +30,64 @@
     font-style: normal;
 }
 
+
+.tabs-bottom .tabs {
+  margin-bottom:7%;
+}
+
 .dark, a.dark {
   color: #313540; }
   
-/*
-.ion-ios-bell::before {
-    content: "\f3e4" !important;
+.mm-sidemenu-handler .ion-chatbubbles {
+    font-size:32px;
+    color: rgba(0, 0, 0, 0);
+    -webkit-text-stroke: 1px #313540;
 }
-*/
+
+.ion-chatbubbles, .ion-person-stalker {
+    color: #313540;
+}
+
+.ion-android-apps {
+    font-size:136px;
+    color: rgba(0, 0, 0, 0);
+    -webkit-text-stroke: 1px #313540;
+}
+
+.ion-ios-bell {
+    font-size:136px;
+    color: rgba(0, 0, 0, 0);
+    -webkit-text-stroke: 1px #313540;
+}
+
+.verdeprazuliu {
+  color: #a4ca3c !important;
+  font-weight: lighter;
+}
+
+.companyfooter {
+  width:100%;
+}
+
+.companyfooter .companyname {
+  text-align: center;
+  font-weight: lighter;
+  padding-top: 5px;
+  color: #FFF;
+}
+
+.companyname {
+  text-align: center;
+  font-weight: lighter;
+}
+
+#vocal, #vocal2 {
+  font-size:1.5em;
+}
+
+.vonkchat .tab-item.tab-item-active, .vonkchat .tab-item.active, .vonkchat .tab-item.activated {
+    border-top: 2px solid;
+}
 
 // Bar content.
 $bar-content-bg: #313540 !default;

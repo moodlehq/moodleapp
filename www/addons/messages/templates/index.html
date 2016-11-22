@@ -1,7 +1,7 @@
 <ion-view view-title="{{ 'mma.messages.messages' | translate }}">
-    <mm-split-view component="mmaMessagesIndex">
+    <mm-split-view component="mmaMessagesIndex" class="vonkchat">
         <ion-tabs class="tabs-icon-top">
-            <ion-tab title="{{ 'mma.messages.messages' | translate }}" icon="ion-chatbox">
+            <ion-tab title="{{ 'mma.messages.messages' | translate }}" icon="ion-chatbubbles">
                 <ion-pane ng-controller="mmaMessagesDiscussionsCtrl">
                     <ng-include src="'addons/messages/templates/discussions.html'"></ng-include>
                 </ion-pane>
@@ -13,4 +13,9 @@
             </ion-tab>
         </ion-tabs>
     </mm-split-view>
+    <div class="bar bar-footer bar-side-menu">
+        <div class="companyfooter">
+            <h2 class="companyname"><span id="vocal">V</span>ON<span id="vocal2">K</span>ELEMEN LEARN</h2>
+        </div>
+    </div>
 </ion-view>

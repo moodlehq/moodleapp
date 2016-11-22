@@ -99,7 +99,7 @@ angular.module('mm.addons.competency')
              * @name $mmaCompetencyHandlers#sideMenuNav:controller
              */
             return function($scope) {
-                $scope.icon = 'ion-map';
+                $scope.icon = 'ion-android-apps';
                 $scope.title = 'mma.competency.mylearningplans';
                 $scope.state = 'site.learningplans';
                 $scope.class = 'mma-competency-handler';
