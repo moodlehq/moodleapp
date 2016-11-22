@@ -1,22 +1,20 @@
 <mm-loading hide-until="loaded" class="mm-loading-noheight">
 
-    <div class="card">
-        <a ng-if="!blindMarking && user" class="item item-avatar item-text-wrap" mm-user-link userid="{{submitId}}" courseid="{{courseId}}" title="{{user.fullname}}">
-            <img ng-src="{{user.profileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: user.fullname} }}" role="presentation">
-            <p>{{user.fullname}}</p>
-            <p ng-if="statusTranslated" class="badge badge-inline {{statusClass}}">{{statusTranslated}}</p>
-            <p ng-if="gradingStatusTranslationId" class="badge badge-inline {{gradingClass}}">{{gradingStatusTranslationId |translate}}</p>
-        </a>
-        <div ng-if="blindMarking && !user" class="item item-text-wrap">
-            <p>{{ 'mma.mod_assign.hiddenuser' | translate }}{{blindId}}</p>
-            <p ng-if="statusTranslated" class="badge badge-inline {{statusClass}}">{{statusTranslated}}</p>
-            <p ng-if="gradingStatusTranslationId" class="badge badge-inline {{gradingClass}}">{{gradingStatusTranslationId |translate}}</p>
-        </div>
-        <div ng-if="(blindMarking && user) || (!blindMarking && !user)" class="item item-text-wrap">
-            <h2>{{ 'mma.mod_assign.submissionstatus' | translate }}</h2>
-            <p ng-if="statusTranslated" class="badge badge-inline {{statusClass}}">{{statusTranslated}}</p>
-            <p ng-if="gradingStatusTranslationId" class="badge badge-inline {{gradingClass}}">{{gradingStatusTranslationId |translate}}</p>
-        </div>
+    <a ng-if="!blindMarking && user" class="item item-avatar item-text-wrap" mm-user-link userid="{{submitId}}" courseid="{{courseId}}" title="{{user.fullname}}">
+        <img ng-src="{{user.profileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: user.fullname} }}" role="presentation">
+        <p>{{user.fullname}}</p>
+        <p ng-if="statusTranslated" class="badge badge-inline {{statusClass}}">{{statusTranslated}}</p>
+        <p ng-if="gradingStatusTranslationId" class="badge badge-inline {{gradingClass}}">{{gradingStatusTranslationId |translate}}</p>
+    </a>
+    <div ng-if="blindMarking && !user" class="item item-text-wrap">
+        <p>{{ 'mma.mod_assign.hiddenuser' | translate }}{{blindId}}</p>
+        <p ng-if="statusTranslated" class="badge badge-inline {{statusClass}}">{{statusTranslated}}</p>
+        <p ng-if="gradingStatusTranslationId" class="badge badge-inline {{gradingClass}}">{{gradingStatusTranslationId |translate}}</p>
+    </div>
+    <div ng-if="(blindMarking && user) || (!blindMarking && !user)" class="item item-text-wrap">
+        <h2>{{ 'mma.mod_assign.submissionstatus' | translate }}</h2>
+        <p ng-if="statusTranslated" class="badge badge-inline {{statusClass}}">{{statusTranslated}}</p>
+        <p ng-if="gradingStatusTranslationId" class="badge badge-inline {{gradingClass}}">{{gradingStatusTranslationId |translate}}</p>
     </div>
 
     <div class="tabs tabs-striped tabs-free tabs-color-positive" ng-if="feedback || isGrading">
@@ -201,8 +199,6 @@
             <p ng-if="assign.maxattempts != unlimitedAttempts">{{ 'mma.mod_assign.currentattemptof' | translate : {'$a': {'attemptnumber': currentAttempt, 'maxattempts': assign.maxattempts} } }}</p>
         </div>
         <ion-toggle ng-if="canSaveGrades && allowAddAttempt" ng-model="grade.addAttempt">{{ 'mma.mod_assign.addattempt' | translate }}</ion-toggle>
-
-        <button ng-if="canSaveGrades" class="button button-block button-positive" ng-click="submitGrade()">{{ 'mm.core.save' | translate }}</button>
 
         <div class="mm-warning" ng-if="isGrading && !canSaveGrades">
             <i class="icon ion-alert-circled padding"></i> {{ 'mma.mod_assign.cannotgradefromapp' | translate:{$a: moduleName} }}

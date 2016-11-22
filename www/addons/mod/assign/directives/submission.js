@@ -28,7 +28,7 @@ angular.module('mm.addons.mod_assign')
         mmaModAssignSubmissionInvalidatedEvent, $mmGroups, $state, $mmaModAssignHelper, mmaModAssignSubmissionStatusReopened,
         $mmEvents, mmaModAssignSubmittedForGradingEvent, $mmFileUploaderHelper, $mmApp, $mmText, mmaModAssignComponent, $mmUtil,
         $mmaModAssignOffline, mmaModAssignEventManualSynced, $mmCourse, $mmAddonManager, mmaModAssignAttemptReopenMethodManual,
-        $mmLang, $mmSyncBlock) {
+        $mmLang, $mmSyncBlock, mmaModAssignEventSubmitGrade, $ionicHistory) {
 
     var originalGrades =  {
         grade: false,
@@ -214,6 +214,7 @@ angular.module('mm.addons.mod_assign')
 
                     if (assign.teamsubmission) {
                         scope.grade.applyToAll = true;
+                        originalGrades.applyToAll = true;
                     }
                     if (assign.markingworkflow && scope.grade.gradingStatus) {
                         scope.workflowStatusTranslationId =  getSubmissionGradingStatusTranslationId(scope.grade.gradingStatus);
@@ -534,10 +535,11 @@ angular.module('mm.addons.mod_assign')
                 courseId = parseInt(attributes.courseid, 10),
                 submitId = parseInt(attributes.submitid, 10),
                 blindId = parseInt(attributes.blindid, 10),
-                obsInvalidated, obsManualSync;
+                blockData,
+                obsInvalidated, obsManualSync, obsSubmitGrade;
 
             // Block leaving the view, we want to show a confirm to the user if there's unsaved data.
-            $mmUtil.blockLeaveView(scope, cancel);
+            blockData = $mmUtil.blockLeaveView(scope, cancel);
 
             scope.isSubmittedForGrading = !!submitId;
             scope.statusNew = mmaModAssignSubmissionStatusNew;
@@ -559,6 +561,12 @@ angular.module('mm.addons.mod_assign')
                 }
             });
 
+            obsSubmitGrade = $mmEvents.on(mmaModAssignEventSubmitGrade, function() {
+                submitGrade().then(function() {
+                    blockData && blockData.back();
+                });
+            });
+
             // Check if submit through app is supported.
             $mmaModAssign.isSaveAndSubmitSupported().then(function(enabled) {
                 scope.submitSupported = enabled;
@@ -567,6 +575,7 @@ angular.module('mm.addons.mod_assign')
             scope.$on('$destroy', function() {
                 obsInvalidated && obsInvalidated();
                 obsManualSync && obsManualSync.off && obsManualSync.off();
+                obsSubmitGrade && obsSubmitGrade.off && obsSubmitGrade.off();
 
                 if (scope.assign) {
                     $mmSyncBlock.unblockOperation(mmaModAssignComponent, scope.assign.id);
@@ -652,7 +661,7 @@ angular.module('mm.addons.mod_assign')
             };
 
             // Submit grade action.
-            scope.submitGrade = function() {
+            function submitGrade() {
                 return hasDataToSave().then(function(modified) {
                     if (!modified) {
                         return $q.when();
@@ -700,7 +709,7 @@ angular.module('mm.addons.mod_assign')
                         modal.dismiss();
                     });
                 });
-            };
+            }
 
             // Submit for grading.
             scope.submit = function(acceptStatement) {
@@ -742,6 +751,7 @@ angular.module('mm.addons.mod_assign')
                 if (scope.assign) {
                     promises.push($mmaModAssign.invalidateSubmissionStatusData(scope.assign.id, submitId, !!blindId));
                     promises.push($mmaModAssign.invalidateAssignmentUserMappingsData(scope.assign.id));
+                    promises.push($mmaModAssign.invalidateListParticipantsData(scope.assign.id));
                 }
                 // Get grade addon if avalaible.
                 var $mmaGrades = $mmAddonManager.get('$mmaGrades');
