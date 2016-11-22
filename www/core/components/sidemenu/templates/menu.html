@@ -18,11 +18,12 @@
     <ion-side-menu side="left" id="mm-side-menu-left">
         <header>
             <div class="bar bar-header bar-side-menu">
-                <div class="item item-avatar">
+                <a menu-close mm-user-link userid="{{siteinfo.userid}}" class="item item-avatar item-icon-right full-image">
                     <img ng-src="{{siteinfo.userpictureurl}}" alt="{{ 'mm.core.pictureof' | translate:{$a: siteinfo.fullname} }}" role="presentation" mm-external-content>
                     <h2>{{siteinfo.fullname}}</h2>
                     <p><mm-format-text watch="true">{{siteinfo.sitename}}</mm-format-text></p>
-                </div>
+                    <i class="icon ion-ios-arrow-right"></i>
+                </a>
             </div>
         </header>
         <ion-content class="has-side-menu-header mm-sidemenu-menu">

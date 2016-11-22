@@ -84,9 +84,11 @@ angular.module('mm.addons.notes')
          *
          * @param {Object} user     User to check.
          * @param {Number} courseId Course ID.
+         * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
          * @return {Promise}        Promise resolved with true if enabled, resolved with false otherwise.
          */
-        self.isEnabledForUser = function(user, courseId) {
+        self.isEnabledForUser = function(user, courseId, navOptions, admOptions) {
             // Active course required.
             if (!courseId || user.id == $mmSite.getUserId()) {
                 return $q.when(false);
