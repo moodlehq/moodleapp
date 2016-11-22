@@ -111,6 +111,15 @@ angular.module('mm.core.login')
         });
     };
 
+    // Request another captcha.
+    $scope.requestCaptcha = function() {
+        var modal = $mmUtil.showModalLoading();
+        $scope.data.recaptcharesponse = '';
+        getSignupSettings().finally(function() {
+            modal.dismiss();
+        });
+    };
+
     // Create account.
     $scope.create = function(signupForm) {
         if (!signupForm.$valid) {
@@ -134,10 +143,14 @@ angular.module('mm.core.login')
                 },
                 modal = $mmUtil.showModalLoading('mm.core.sending', true);
 
-
             if (siteConfig.launchurl) {
                 var service = $mmSitesManager.determineService($scope.siteurl);
                 params.redirect = $mmLoginHelper.prepareForSSOLogin($scope.siteurl, service, siteConfig.launchurl);
+            }
+
+            if ($scope.settings.recaptchachallengehash && $scope.settings.recaptchachallengeimage) {
+                params.recaptchachallengehash = $scope.settings.recaptchachallengehash;
+                params.recaptcharesponse = $scope.data.recaptcharesponse;
             }
 
             // Get the data for the custom profile fields.
@@ -149,10 +162,15 @@ angular.module('mm.core.login')
                         var message = $translate.instant('mm.login.emailconfirmsent', {$a: $scope.data.email});
                         $mmUtil.showModal('mm.core.success', message);
                         $ionicHistory.goBack();
-                    } else if (result.warnings && result.warnings.length) {
-                        $mmUtil.showErrorModal(result.warnings[0].message);
                     } else {
-                        $mmUtil.showErrorModal('mm.login.usernotaddederror', true);
+                        if (result.warnings && result.warnings.length) {
+                            $mmUtil.showErrorModal(result.warnings[0].message);
+                        } else {
+                            $mmUtil.showErrorModal('mm.login.usernotaddederror', true);
+                        }
+
+                        // Error sending, request another capctha since the current one is probably invalid now.
+                        $scope.requestCaptcha();
                     }
                 });
             }).catch(function(error) {
@@ -161,6 +179,8 @@ angular.module('mm.core.login')
                 } else {
                     $mmUtil.showErrorModal('mm.login.usernotaddederror', true);
                 }
+                // Error sending, request another capctha since the current one is probably invalid now.
+                $scope.requestCaptcha();
             }).finally(function() {
                 modal.dismiss();
             });

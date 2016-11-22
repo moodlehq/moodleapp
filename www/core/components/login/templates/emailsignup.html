@@ -54,7 +54,21 @@
                     <div class="item item-divider item-text-wrap">{{ category.name }}</div>
                     <mm-user-profile-field ng-repeat="field in category.fields" field="field" edit="true" signup="true" register-auth="email" model="data" scroll-handle="mmLoginEmailSignupScroll"></mm-user-profile-field>
                 </div>
-                <!-- TODO: captcha -->
+                <!-- ReCAPTCHA -->
+                <div ng-if="settings.recaptchachallengehash && settings.recaptchachallengeimage">
+                    <div class="item item-divider item-text-wrap">{{ 'mm.login.security_question' | translate }}</div>
+                    <div class="item">
+                        <img ng-src="{{settings.recaptchachallengeimage}}" alt="reCAPTCHA challenge image">
+                    </div>
+                    <ion-input class="item item-input item-stacked-label item-text-wrap" mm-input-errors>
+                        <ion-label mm-mark-required="true">{{ 'mm.login.enterthewordsabove' | translate }}</ion-label>
+                        <input type="text" name="recaptcharesponse" placeholder="{{ 'mm.login.enterthewordsabove' | translate }}" ng-model="data.recaptcharesponse" autocapitalize="off" autocorrect="off" required>
+                    </ion-input>
+                    <div class="item padding">
+                        <!-- Use anchor instead of button to prevent marking form as submitted. -->
+                        <a class="button button-block" ng-click="requestCaptcha()">{{ 'mm.login.getanothercaptcha' | translate }}</a>
+                    </div>
+                </div>
                 <!-- Site policy (if any). -->
                 <div ng-if="settings.sitepolicy">
                     <div class="item item-divider item-text-wrap">{{ 'mm.login.policyagreement' | translate }}</div>
@@ -67,7 +81,7 @@
                 </div>
                 <!-- Submit button. -->
                 <div class="item padding">
-                    <button class="button button-block" ng-click="create(signupForm)">{{ 'mm.login.createaccount' | translate }}</button>
+                    <button class="button button-block button-positive" ng-click="create(signupForm)">{{ 'mm.login.createaccount' | translate }}</button>
                 </div>
             </form>
         </mm-loading>
