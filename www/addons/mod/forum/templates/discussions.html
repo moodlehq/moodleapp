@@ -8,7 +8,7 @@
             <mm-context-menu-item priority="600" ng-show="discussionsLoaded && hasOffline && isOnline" content="'mm.settings.synchronizenow' | translate" action="refreshDiscussions(true)" icon-action="syncIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
         </mm-context-menu>
     </ion-nav-buttons>
-    <mm-split-view load-when="discussionsLoaded" component="mmaModForumDiscussionsList">
+    <mm-split-view load-when="discussionsLoaded" load="{{linkToLoad}}" component="mmaModForumDiscussionsList">
         <ion-content delegate-handle="mmaModForumDiscussionsScroll" mm-state-class>
             <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="discussionsLoaded" on-refresh="refreshDiscussions(false)">
             </ion-refresher>
