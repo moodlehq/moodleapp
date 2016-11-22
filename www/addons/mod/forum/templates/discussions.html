@@ -54,7 +54,12 @@
                                 <div class="item item-text-wrap clearfix" ng-class="{'item-avatar': discussion.userfullname}">
                                     <img ng-if="discussion.userpictureurl && discussion.userfullname" ng-src="{{discussion.userpictureurl}}" mm-external-content mm-split-view-link="{{userStateName}}({courseid: courseid, userid: discussion.userid})" alt="{{ 'mm.core.pictureof' | translate:{$a: discussion.userfullname} }}" role="presentation">
                                     <img ng-if="!discussion.userpictureurl && discussion.userfullname" src="img/user-avatar.png" alt="{{ 'mm.core.pictureof' | translate:{$a: discussion.userfullname} }}" role="presentation">
-                                    <h2><summary>{{discussion.subject}}</summary></h2>
+                                    <h2>
+                                        <summary>
+                                            <i class="icon ion-pin" ng-if="discussion.pinned"></i>
+                                            {{discussion.subject}}
+                                        </summary>
+                                    </h2>
                                     <div class="item-note">{{discussion.created | mmDateDayOrTime}}</div>
                                     <p ng-if="discussion.userfullname">{{discussion.userfullname}}</p>
                                 </div>
