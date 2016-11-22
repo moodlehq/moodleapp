@@ -87,12 +87,27 @@ angular.module('mm.addons.mod_assign')
                                     if (!add) {
                                         return;
                                     }
-                                    submission.statusTranslated = $translate.instant('mma.mod_assign.submissionstatus_' +
-                                        submission.status);
                                     submission.statusClass = $mmaModAssign.getSubmissionStatusClass(submission.status);
-                                    submission.gradingStatusTranslationId =
-                                        $mmaModAssign.getSubmissionGradingStatusTranslationId(submission.gradingstatus);
-                                    submission.gradingClass = $mmaModAssign.getSubmissionGradingStatusClass(submission.gradingstatus);
+                                    submission.gradingClass =
+                                        $mmaModAssign.getSubmissionGradingStatusClass(submission.gradingstatus);
+
+                                    // Show submission status if not submitted for grading.
+                                    if (submission.statusClass != 'badge-balanced' || !submission.gradingstatus) {
+                                        submission.statusTranslated = $translate.instant('mma.mod_assign.submissionstatus_' +
+                                            submission.status);
+                                    } else {
+                                        submission.statusTranslated = false;
+                                    }
+
+                                    // Show grading status if one of the statuses is not done.
+                                    if (submission.statusClass != 'badge-assertive' ||
+                                            submission.gradingClass != 'badge-assertive') {
+                                        submission.gradingStatusTranslationId =
+                                            $mmaModAssign.getSubmissionGradingStatusTranslationId(submission.gradingstatus);
+                                    } else {
+                                        submission.gradingStatusTranslationId = false;
+                                    }
+
                                     $scope.submissions.push(submission);
                                 }));
                             }

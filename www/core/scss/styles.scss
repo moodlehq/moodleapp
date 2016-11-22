@@ -634,22 +634,22 @@ mm-timer {
   padding: 0;
 }
 
-.item-input {
+.item-input.item-stacked-label {
   padding: 16px;
-}
 
-.item-input.item-stacked-label .item-input-wrapper.item-select {
-  display: block;
+  .item-input-wrapper.item-select {
+    display: block;
 
-  select {
-    background: transparent;
-    padding: 12px;
-    margin: 0;
-    width: 100%;
-    position: relative;
-    max-width: 100%;
-    direction: ltr;
-    line-height: 14px;
+    select {
+      background: transparent;
+      padding: 12px;
+      margin: 0;
+      width: 100%;
+      position: relative;
+      max-width: 100%;
+      direction: ltr;
+      line-height: 14px;
+    }
   }
 }
 

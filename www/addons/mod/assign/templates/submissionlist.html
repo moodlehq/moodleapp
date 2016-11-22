@@ -7,12 +7,17 @@
                     <li ng-repeat="submission in submissions">
                         <a ng-class="{'item-avatar': submission.userprofileimageurl}" class="item item-text-wrap item-icon-right" mm-split-view-link="site.mod_assign-submission({'submitid': submission.submitid, 'blindid': submission.blindid, 'courseid': courseId, 'moduleid': moduleId})">
                             <img ng-if="submission.userprofileimageurl" ng-src="{{submission.userprofileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: submission.userfullname} }}" role="presentation">
-                            <p ng-if="submission.userfullname">{{submission.userfullname}}</p>
-                            <p ng-if="!submission.userfullname">{{ 'mma.mod_assign.hiddenuser' | translate }}{{submission.blindid}}</p>
-                            <p ng-if="submission.timemodified">{{ submission.timemodified * 1000 | mmFormatDate:"dfmediumdate" }}</p>
-                            <p class="badge badge-inline {{submission.statusClass}}">{{submission.statusTranslated}}</p>
-                            <p ng-if="submission.gradingstatus" class="badge badge-inline {{submission.gradingClass}}">{{submission.gradingStatusTranslationId | translate}}</p>
-                            <i class="icon ion-chevron-right"></i>
+                            <h2 ng-if="submission.userfullname">{{submission.userfullname}}</h2>
+                            <h2 ng-if="!submission.userfullname">{{ 'mma.mod_assign.hiddenuser' | translate }}{{submission.blindid}}</h2>
+                            <p ng-if="assign.teamsubmission">
+                                <span ng-if="submission.groupname">{{submission.groupname}}</span>
+                                <span ng-if="assign.preventsubmissionnotingroup && !submission.groupname && !submission.manyGroups && !submission.blindid">{{ 'mma.mod_assign.noteam' | translate }}</span>
+                                <span ng-if="assign.preventsubmissionnotingroup && !submission.groupname && submission.manyGroups && !submission.blindid">{{ 'mma.mod_assign.multipleteams' | translate }}</span>
+                                <span ng-if="!assign.preventsubmissionnotingroup && !submission.groupname">{{ 'mma.mod_assign.defaultteam' | translate }}</span>
+                            </p>
+                            <p ng-if="submission.statusTranslated" class="badge badge-inline {{submission.statusClass}}">{{submission.statusTranslated}}</p>
+                            <p ng-if="submission.gradingStatusTranslationId" class="badge badge-inline {{submission.gradingClass}}">{{submission.gradingStatusTranslationId | translate}}</p>
+                            <i class="icon icon-accessory ion-chevron-right"></i>
                         </a>
                     </li>
                     <li class="mm-warning item item-text-wrap" ng-if="!haveAllParticipants">
