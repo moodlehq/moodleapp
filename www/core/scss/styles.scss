@@ -94,6 +94,29 @@
   border-top:0px;
 }
 
+.vonkchat .vonkother {
+  text-align:center;
+}
+
+.vonkcontacts .item {
+    border-style: none;
+}
+
+.vonkcontacts .vonkcontactsearch .item-input-inset .item-input-wrapper input {
+  height:40px;
+}
+
+.vonkcontacts .vonkcontactsearch .item-input-wrapper {
+    border: 1px solid;
+    border-radius: 0px;
+    background-color: #FFF;
+    border-color: #BBB;
+}
+
+.vonkcontacts .vonkcontactsearch .button-clear, .vonkcontacts .vonkcontactsearch .button.button-clear {
+    color: #313540;
+}
+
 // Bar content.
 $bar-content-bg: #313540 !default;
 $bar-content-border: transparent !default;
