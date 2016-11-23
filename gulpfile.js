@@ -31,9 +31,14 @@ function getRemoteAddonPaths(paths, pathToAddon) {
 
   paths.forEach(function(path) {
     // Search only inside the addon folder.
-    result.push(npmPath.join(pathToAddon, path));
-    // Ignore the files inside the addon "package" (tmp) folder.
-    result.push('!' + npmPath.join(pathToPackageFolder, path));
+    // Check if the path needs to be ignored.
+    if (path[0] == '!') {
+      result.push('!' + npmPath.join(pathToAddon, path.substr(1)));
+    } else {
+      result.push(npmPath.join(pathToAddon, path));
+      // Ignore the files inside the addon "package" (tmp) folder.
+      result.push('!' + npmPath.join(pathToPackageFolder, path));
+    }
   });
 
   return result;
@@ -355,12 +360,16 @@ var remoteAddonPaths = {
   all: [
     '*',
     '**/*',
+    '!e2e/*',
+    '!**/e2e/*',
   ],
   js: [ // Treat main.js files first.
     '*/main.js',
     '**/main.js',
     '*.js',
     '**/*.js',
+    '!e2e/*.js',
+    '!**/e2e/*.js',
   ],
   sass: [
     '*.scss',
