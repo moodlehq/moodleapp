@@ -68,14 +68,16 @@ angular.module('mm.core')
 
     this.$get = function($ionicLoading, $ionicPopup, $injector, $translate, $http, $log, $q, $mmLang, $mmFS, $timeout, $mmApp,
                 $mmText, mmCoreWifiDownloadThreshold, mmCoreDownloadThreshold, $ionicScrollDelegate, $mmWS, $cordovaInAppBrowser,
-                $mmConfig, mmCoreSettingsRichTextEditor) {
+                $mmConfig, mmCoreSettingsRichTextEditor, $rootScope, $ionicPlatform, $ionicHistory) {
 
         $log = $log.getInstance('$mmUtil');
 
         var self = {}, // Use 'self' to be coherent with the rest of services.
             matchesFn,
             inputSupportKeyboard = ['date', 'datetime', 'datetime-local', 'email', 'month', 'number', 'password',
-                'search', 'tel', 'text', 'time', 'url', 'week'];
+                'search', 'tel', 'text', 'time', 'url', 'week'],
+            originalBackFunction = $rootScope.$ionicGoBack,
+            backFunctionsStack = [originalBackFunction];
 
         /**
          * Formats a URL, trim, lowercase, etc...
@@ -1834,6 +1836,91 @@ angular.module('mm.core')
             }
 
             return false;
+        };
+
+        /**
+         * Blocks leaving a view. This function should be used in views that want to perform a certain action before
+         * leaving (usually, ask the user if he wants to leave because some data isn't saved).
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#blockLeaveView
+         * @param  {Object} scope         View's scope.
+         * @param  {Function} canLeaveFn  Function called when the user wants to leave the view. Must return a promise
+         *                                resolved if the view should be left, rejected if the user should stay in the view.
+         * @param  {Object} [currentView] Current view. Defaults to $ionicHistory.currentView().
+         * @return {Object}               Object with:
+         *                                       -back: Original back function.
+         *                                       -unblock: Function to unblock. It is called automatically when scope is destroyed.
+         */
+        self.blockLeaveView = function(scope, canLeaveFn, currentView) {
+            if (!currentView) {
+                currentView = $ionicHistory.currentView();
+            }
+
+            var unregisterHardwareBack,
+                leaving = false;
+
+            // Override Ionic's back button behavior.
+            $rootScope.$ionicGoBack = leaveView;
+
+            // Override Android's back button. We set a priority of 101 to override the "Return to previous view" action.
+            unregisterHardwareBack = $ionicPlatform.registerBackButtonAction(leaveView, 101);
+
+            // Add function to the stack.
+            backFunctionsStack.push(leaveView);
+
+            scope.$on('$destroy', unblock);
+
+            return {
+                back: originalBackFunction,
+                unblock: unblock
+            };
+
+            // Function called when the user wants to leave the view.
+            function leaveView() {
+                // Check that we're leaving the current view, since the user can navigate to other views from here.
+                if ($ionicHistory.currentView() !== currentView) {
+                    // It's another view.
+                    originalBackFunction();
+                    return;
+                }
+
+                if (leaving) {
+                    // Leave view pending, don't call again.
+                    return;
+                }
+                leaving = true;
+
+                canLeaveFn().then(function() {
+                    // User confirmed to leave or there was no need to confirm, go back.
+                    originalBackFunction();
+                }).finally(function() {
+                    leaving = false;
+                });
+            }
+
+            // Restore original back functions.
+            function unblock() {
+                unregisterHardwareBack();
+
+                // Remove function from the stack.
+                var position = backFunctionsStack.indexOf(leaveView);
+                if (position > -1) {
+                    backFunctionsStack.splice(position, 1);
+                }
+
+                // Revert go back only if it hasn't been overridden by another view.
+                if ($rootScope.$ionicGoBack === leaveView) {
+                    if (!backFunctionsStack.length) {
+                        // Shouldn't happen. Reset stack.
+                        backFunctionsStack = [originalBackFunction];
+                        $rootScope.$ionicGoBack = originalBackFunction;
+                    } else {
+                        $rootScope.$ionicGoBack = backFunctionsStack[backFunctionsStack.length - 1];
+                    }
+                }
+            }
         };
 
         return self;

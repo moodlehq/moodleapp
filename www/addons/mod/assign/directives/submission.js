@@ -28,7 +28,7 @@ angular.module('mm.addons.mod_assign')
         mmaModAssignSubmissionInvalidatedEvent, $mmGroups, $state, $mmaModAssignHelper, mmaModAssignSubmissionStatusReopened,
         $mmEvents, mmaModAssignSubmittedForGradingEvent, $mmFileUploaderHelper, $mmApp, $mmText, mmaModAssignComponent, $mmUtil,
         $mmaModAssignOffline, mmaModAssignEventManualSynced, $mmCourse, $mmAddonManager, mmaModAssignAttemptReopenMethodManual,
-        $mmLang, $mmSyncBlock, $rootScope, $ionicPlatform, $ionicHistory) {
+        $mmLang, $mmSyncBlock) {
 
     var originalGrades =  {
         grade: false,
@@ -534,10 +534,10 @@ angular.module('mm.addons.mod_assign')
                 courseId = parseInt(attributes.courseid, 10),
                 submitId = parseInt(attributes.submitid, 10),
                 blindId = parseInt(attributes.blindid, 10),
-                obsInvalidated, obsManualSync,
-                originalBackFunction = $rootScope.$ionicGoBack,
-                unregisterHardwareBack,
-                currentView = $ionicHistory.currentView();
+                obsInvalidated, obsManualSync;
+
+            // Block leaving the view, we want to show a confirm to the user if there's unsaved data.
+            $mmUtil.blockLeaveView(scope, cancel);
 
             scope.isSubmittedForGrading = !!submitId;
             scope.statusNew = mmaModAssignSubmissionStatusNew;
@@ -564,18 +564,9 @@ angular.module('mm.addons.mod_assign')
                 scope.submitSupported = enabled;
             });
 
-            // Override Ionic's back button behavior.
-            $rootScope.$ionicGoBack = cancel;
-
-            // Override Android's back button. We set a priority of 101 to override the "Return to previous view" action.
-            unregisterHardwareBack = $ionicPlatform.registerBackButtonAction(cancel, 101);
-
             scope.$on('$destroy', function() {
                 obsInvalidated && obsInvalidated();
                 obsManualSync && obsManualSync.off && obsManualSync.off();
-                // Restore original back functions.
-                unregisterHardwareBack();
-                $rootScope.$ionicGoBack = originalBackFunction;
 
                 if (scope.assign) {
                     $mmSyncBlock.unblockOperation(mmaModAssignComponent, scope.assign.id);
@@ -807,24 +798,15 @@ angular.module('mm.addons.mod_assign')
 
             // Just ask to confirm the lost of data.
             function cancel() {
-                // Check that we're leaving the current view, since the user can navigate to other views from here.
-                if ($ionicHistory.currentView() !== currentView) {
-                    // It's another view.
-                    originalBackFunction();
-                    return;
-                }
-
                 return hasDataToSave().then(function(modified) {
                     if (modified) {
                         // Modified, confirm user wants to go back.
                         return $mmUtil.showConfirm($translate('mm.core.confirmcanceledit')).then(function() {
-                            return discardDrafts().finally(function() {
-                                return $ionicHistory.goBack();
+                            return discardDrafts().catch(function() {
+                                // Ignore errors.
                             });
                         });
                     }
-                    // No modified, go back.
-                    originalBackFunction();
                 });
             }
         }
