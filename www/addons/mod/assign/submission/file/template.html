@@ -8,8 +8,8 @@
     <h2>{{plugin.name}}</h2>
 	<div ng-repeat="file in files">
 	    <!-- Files already attached to the submission. -->
-	    <mm-file ng-if="!file.name" file="file" component="{{assignComponent}}" component-id="{{assign.cmid}}" always-download="true"></mm-file>
+	    <mm-file ng-if="!file.name" file="file" component="{{assignComponent}}" component-id="{{assign.cmid}}" always-download="true" no-border="true"></mm-file>
 	    <!-- Files stored in offline to be sent later. -->
-	    <mm-local-file ng-if="file.name" file="file"></mm-local-file>
+	    <mm-local-file ng-if="file.name" file="file" no-border="true"></mm-local-file>
 	</div>
 </div>
