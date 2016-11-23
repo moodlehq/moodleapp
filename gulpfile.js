@@ -202,6 +202,12 @@ function buildJS(jsPaths, buildDest, buildFile, license, buildingApp, replace, d
  * @return {Void}
  */
 function buildLangs(filenames, langPaths, buildDest, done) {
+  if (!filenames || !filenames.length) {
+    // If no filenames supplied, stop. Maybe it's an empty lang folder.
+    done();
+    return;
+  }
+
   var count = 0;
 
   function taskFinished() {
@@ -801,6 +807,7 @@ gulp.task('remoteaddon-lang', ['remoteaddon-copy'], function(done) {
   buildDest = npmPath.join(addonPackagePath, 'lang');
   if (!fs.existsSync(langPaths[0])) {
     // No lang folder, stop.
+    done();
     return;
   }
 
