@@ -93,8 +93,7 @@ angular.module('mm.core.login', [])
         controller: 'mmLoginEmailSignupCtrl',
         cache: false,
         params: {
-            siteurl: '',
-            siteconfig: null
+            siteurl: ''
         }
     });
 

@@ -880,6 +880,20 @@ angular.module('mm.core')
         });
     };
 
+    /**
+     * Get the public config of a certain site.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#getSitePublicConfig
+     * @param {String} siteUrl URL of the site.
+     * @return {Promise}       Promise resolved with the public config.
+     */
+    self.getSitePublicConfig = function(siteUrl) {
+        var temporarySite = $mmSitesFactory.makeSite(undefined, siteUrl);
+        return temporarySite.getPublicConfig();
+    };
+
     return self;
 
 });

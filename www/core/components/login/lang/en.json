@@ -1,4 +1,5 @@
 {
+    "auth_email": "Email-based self-registration",
     "authenticating": "Authenticating",
     "cancel": "Cancel",
     "checksiteversion": "Check that your site uses Moodle 2.4 or later.",
@@ -56,6 +57,7 @@
     "reconnectssodescription": "Your authentication token is invalid or has expired, you have to reconnect to the site. You need to log in to the site in a browser window.",
     "security_question": "Security question",
     "selectacountry": "Select a country",
+    "signupplugindisabled": "{{$a}} is not enabled.",
     "siteaddress": "Site address",
     "siteinmaintenance": "Your site is in maintenance mode",
     "siteurl": "Site URL",

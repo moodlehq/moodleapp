@@ -76,13 +76,11 @@ angular.module('mm.core.login')
     // Treat the site's config, setting scope variables.
     function treatSiteConfig(siteConfig) {
         if (siteConfig) {
-            $scope.siteConfig = siteConfig;
             $scope.sitename = siteConfig.sitename;
             $scope.logourl = siteConfig.logourl || siteConfig.compactlogourl;
             $scope.authInstructions = siteConfig.authinstructions || $translate.instant('mm.login.loginsteps');
             $scope.canSignup = siteConfig.registerauth == 'email';
         } else {
-            $scope.siteConfig = null;
             $scope.sitename = null;
             $scope.logourl = null;
             $scope.authInstructions = null;

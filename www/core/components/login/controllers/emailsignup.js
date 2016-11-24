@@ -24,7 +24,7 @@ angular.module('mm.core.login')
 .controller('mmLoginEmailSignupCtrl', function($scope, $stateParams, $mmUtil, $ionicHistory, $mmLoginHelper, $mmWS, $q, $translate,
             $ionicModal, $ionicScrollDelegate, $mmUserProfileFieldsDelegate, $mmSitesManager) {
 
-    var siteConfig = $stateParams.siteconfig,
+    var siteConfig,
         modalInitialized = false,
         scrollView = $ionicScrollDelegate.$getByHandle('mmLoginEmailSignupScroll');
 
@@ -38,6 +38,20 @@ angular.module('mm.core.login')
     $scope.email2Errors = $mmLoginHelper.getErrorMessages('mm.login.missingemail', null, 'mm.login.emailnotmatch');
     $scope.policyErrors = $mmLoginHelper.getErrorMessages('mm.login.policyagree');
 
+    function fetchData() {
+        // Get site config.
+        return $mmSitesManager.getSitePublicConfig($scope.siteurl).then(function(config) {
+            siteConfig = config;
+
+            if (treatSiteConfig(siteConfig)) {
+                return getSignupSettings();
+            }
+        }).catch(function(err) {
+            $mmUtil.showErrorModal(err);
+            return $q.reject();
+        });
+    }
+
     // Treat the site's config, setting scope variables.
     function treatSiteConfig(siteConfig) {
         if (siteConfig && siteConfig.registerauth == 'email') {
@@ -46,7 +60,8 @@ angular.module('mm.core.login')
             initAuthInstructionsModal();
             return true;
         } else {
-            $mmUtil.showErrorModal('Sorry, you may not use this page.');
+            $mmUtil.showErrorModal($translate.instant('mm.login.signupplugindisabled',
+                    {$a: $translate.instant('mm.login.auth_email')}));
             $ionicHistory.goBack();
             return false;
         }
@@ -70,9 +85,6 @@ angular.module('mm.core.login')
             angular.forEach(settings.namefields, function(field) {
                 $scope.namefieldsErrors[field] = $mmLoginHelper.getErrorMessages('mm.login.missing' + field);
             });
-        }).catch(function(err) {
-            $mmUtil.showErrorModal(err);
-            return $q.reject();
         });
     }
 
@@ -98,15 +110,13 @@ angular.module('mm.core.login')
         }
     }
 
-    if (treatSiteConfig(siteConfig)) {
-        getSignupSettings().finally(function() {
-            $scope.settingsLoaded = true;
-        });
-    }
+    fetchData().finally(function() {
+        $scope.settingsLoaded = true;
+    });
 
     // Pull to refresh.
     $scope.refreshSettings = function() {
-        getSignupSettings().finally(function() {
+        fetchData().finally(function() {
             $scope.$broadcast('scroll.refreshComplete');
         });
     };
