@@ -539,7 +539,7 @@ angular.module('mm.core')
                 if (!modalClosed) {
                     $ionicLoading.show({
                         template:   '<ion-spinner></ion-spinner>' +
-                                    '<p>'+text+'</p>'
+                                    '<p>' + addFormatTextIfNeeded(text) + '</p>'
                     });
 
                     // Leave some delay before setting modalShown to true.
@@ -597,7 +597,7 @@ angular.module('mm.core')
                 template = "<ion-spinner></ion-spinner><p>{{'mm.core.loading' | translate}}</p>";
             }
 
-            options.template = template;
+            options.template = addFormatTextIfNeeded(template); // Add format-text to handle links.
 
             $ionicLoading.show(options);
 
@@ -651,10 +651,11 @@ angular.module('mm.core')
             }
 
             $translate(langKeys).then(function(translations) {
-                var popup = $ionicPopup.alert({
-                    title: translations[errorKey],
-                    template: needsTranslate ? translations[errorMessage] : errorMessage
-                });
+                var message = needsTranslate ? translations[errorMessage] : errorMessage,
+                    popup = $ionicPopup.alert({
+                        title: translations[errorKey],
+                        template: addFormatTextIfNeeded(message) // Add format-text to handle links.
+                    });
 
                 if (typeof autocloseTime != 'undefined' && !isNaN(parseInt(autocloseTime))) {
                     $timeout(function() {
@@ -700,7 +701,7 @@ angular.module('mm.core')
 
             var popup = $ionicPopup.alert({
                 title: title,
-                template: message
+                template: addFormatTextIfNeeded(message) // Add format-text to handle links.
             });
 
             if (autocloseTime > 0) {
@@ -726,7 +727,7 @@ angular.module('mm.core')
         self.showConfirm = function(template, title, options) {
             options = options || {};
 
-            options.template = template;
+            options.template = addFormatTextIfNeeded(template); // Add format-text to handle links.
             options.title = title;
             return $ionicPopup.confirm(options).then(function(confirmed) {
                 if (!confirmed) {
@@ -751,7 +752,7 @@ angular.module('mm.core')
             inputType = inputType || 'password';
 
             var options = {
-                template: body,
+                template: addFormatTextIfNeeded(body), // Add format-text to handle links.
                 title: title,
                 inputPlaceholder: inputPlaceholder,
                 inputType: inputType
@@ -763,6 +764,19 @@ angular.module('mm.core')
                 return data;
             });
         };
+
+        /**
+         * Wraps a message with mm-format-text if the message contains < and >.
+         *
+         * @param  {String} message Message to wrap.
+         * @return {String}         Result message.
+         */
+        function addFormatTextIfNeeded(message) {
+            if ($mmText.hasHTMLTags(message)) {
+                return '<mm-format-text>' + message + '</mm-format-text>';
+            }
+            return message;
+        }
 
         /**
          * Reads and parses a JSON file.

@@ -542,5 +542,18 @@ angular.module('mm.core')
         }
     };
 
+    /**
+     * Check if a text contains HTML tags.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#hasHTMLTags
+     * @param  {String} text Text to check.
+     * @return {Boolean}     True if has HTML tags, false otherwise.
+     */
+    self.hasHTMLTags = function(text) {
+        return /<[a-z][\s\S]*>/i.test(text);
+    };
+
     return self;
 });
