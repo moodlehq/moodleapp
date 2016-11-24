@@ -5,9 +5,7 @@
 </div>
 <!-- Edit. -->
 <ion-input ng-if="edit && field && field.shortname" class="item item-input item-stacked-label item-text-wrap">
-    <ion-label>
-        <span mm-mark-required="{{field.required}}">{{ field.name }}</span>
-    </ion-label>
+    <ion-label mm-mark-required="{{field.required}}">{{ field.name }}</ion-label>
     <!-- In Android, show only 1 input, date or datetime-local. -->
     <div ng-if="!isIOS" mm-input-errors field-name="{{field.modelName + '_date'}}">
         <input name="{{field.modelName + '_date'}}" type="{{field.inputType}}" placeholder="{{field.name}}" ng-model="model[field.modelName + '_date']" ng-disabled="field.locked" max="{{field.max}}" min="{{field.min}}" aria-label="{{field.name}}" ng-required="{{field.required}}">

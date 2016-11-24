@@ -76,7 +76,7 @@
                         <p><a ng-href="{{settings.sitepolicy}}" mm-link capture-link="false">{{ 'mm.login.policyagreementclick' | translate }}</a></p>
                     </div>
                     <ion-checkbox name="policyagreed" class="item-text-wrap item-checkbox-right" ng-model="data.policyagreed" required="true" mm-input-errors error-messages="policyErrors">
-                        <p mm-mark-required="true">{{ 'mm.login.policyaccept' | translate }}</p>
+                        <ion-label mm-mark-required="true">{{ 'mm.login.policyaccept' | translate }}</ion-label>
                     </ion-checkbox>
                 </div>
                 <!-- Submit button. -->

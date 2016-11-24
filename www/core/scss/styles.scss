@@ -1049,10 +1049,12 @@ ion-spinner.mm-spinner-right {
 }
 
 // Mark input as required styles.
-.mm-input-required-asterisk {
+.mm-input-required-asterisk, .icon.mm-input-required-asterisk, i.icon.mm-input-required-asterisk {
   color: $mm-input-required-asterisk-color !important;
-  font-size: 20px;
-  padding-left: 5px;
+  font-size: 8px;
+  padding-left: 4px;
+  line-height: 100%;
+  vertical-align: top;
 }
 
 // Allow placeholders in date inputs.

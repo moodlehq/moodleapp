@@ -5,8 +5,6 @@
 </div>
 <!-- Edit. -->
 <ion-input ng-if="edit && field && field.shortname" class="item item-input item-stacked-label item-text-wrap" mm-input-errors field-name="{{field.modelName}}">
-    <ion-label>
-        <span mm-mark-required="{{field.required}}">{{ field.name }}</span>
-    </ion-label>
+    <ion-label mm-mark-required="{{field.required}}">{{ field.name }}</ion-label>
     <input type="{{field.inputType}}" name="{{field.modelName}}" placeholder="{{field.name}}" ng-model="model[field.modelName]" ng-disabled="field.locked" maxlength="{{field.maxlength}}" ng-required="{{field.required}}">
 </ion-input>

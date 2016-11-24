@@ -10,5 +10,5 @@
 </div>
 <!-- Edit. -->
 <ion-checkbox ng-if="edit && field && field.shortname" name="{{field.modelName}}" class="item-text-wrap item-checkbox-right" ng-model="model[field.modelName]" ng-disabled="field.locked" ng-required="{{field.required}}" mm-input-errors field-name="{{field.modelName}}">
-    <span mm-mark-required="{{field.required}}">{{ field.name }}</span>
+    <ion-label mm-mark-required="{{field.required}}">{{ field.name }}</ion-label>
 </ion-checkbox>

@@ -27,17 +27,31 @@ angular.module('mm.core')
  *
  * <ion-label mm-mark-required="{{field.required}}">{{ 'mm.login.username' | translate }}</ion-label>
  */
-.directive('mmMarkRequired', function() {
+.directive('mmMarkRequired', function($translate, $timeout) {
     return {
         restrict: 'A',
         link: function(scope, element, attrs) {
-            var mark = attrs.mmMarkRequired && attrs.mmMarkRequired !== 'false' && attrs.mmMarkRequired !== '0';
+            var mark = attrs.mmMarkRequired && attrs.mmMarkRequired !== 'false' && attrs.mmMarkRequired !== '0',
+                requiredLabel = $translate.instant('mm.core.required');
+
             if (mark) {
-                element.append('<span class="mm-input-required-asterisk">*</span>');
+                element.append('<i class="icon ion-asterisk mm-input-required-asterisk" title="' + requiredLabel + '"></i>');
+                $timeout(function() {
+                    var ariaLabel = element.attr('aria-label') || $mmText.cleanTags(element.html(), true);
+                    if (ariaLabel) {
+                        element.attr('aria-label', ariaLabel + ' ' + requiredLabel);
+                    }
+                });
             } else {
                 var asterisk = element[0].querySelector('.mm-input-required-asterisk');
                 if (asterisk) {
                     angular.element(asterisk).remove();
+                    $timeout(function() {
+                        var ariaLabel = element.attr('aria-label');
+                        if (ariaLabel) {
+                            element.attr('aria-label', ariaLabel.replace(' ' + requiredLabel, ''));
+                        }
+                    });
                 }
             }
         }
