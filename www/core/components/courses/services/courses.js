@@ -275,19 +275,20 @@ angular.module('mm.core.courses')
         siteid = siteid || $mmSite.getId();
         return $mmSitesManager.getSite(siteid).then(function(site) {
             return self.getUserCourses().then(function(courses) {
-                var params = [];
                 var exploredCategories = [];
                 angular.forEach(courses, function(c) {
                     if (exploredCategories.indexOf(c.category) == -1) {
                         exploredCategories.push(c.category);
                     }
                 });
-                params.criteria = [
-                    {
-                        key: 'ids',
-                        value: exploredCategories.join()
-                    }
-                ];
+                var params = {
+                    criteria: [
+                        {
+                            key: 'ids',
+                            value: exploredCategories.join()
+                        }
+                    ]
+                };
 
                 return self.getCategories(site, courses, params);
             });
@@ -315,12 +316,8 @@ angular.module('mm.core.courses')
      * @return {Object[]}               Array of categories with the corresponding courses to build the tree view.
      */
     self.getCategories = function(site, courses, params) {
-        var tasks = [],
-            preSets = {
-                getFromCache: true,
-                saveToCache: false
-            };
-        return self.fetchAllCourseCategories(site, params, preSets).then(function(categories) {
+        var categoryTree = [];
+        return self.fetchAllCourseCategories(site, params).then(function(categories) {
             var map = {},
                 node,
                 rootCategories = [];
@@ -330,9 +327,11 @@ angular.module('mm.core.courses')
                 // use map to look-up the parents.
                 map[node.id] = i;
                 if (node.parent != 0) {
-                    if(categories[map[node.parent]].children == null)
-                        categories[map[node.parent]].children = [];
-                    categories[map[node.parent]].children.push(node);
+                    var mappedElement = categories[map[node.parent]];
+                    if (mappedElement.children == null) {
+                        mappedElement.children = [];
+                    }
+                    mappedElement.children.push(node);
                 } else {
                     rootCategories.push(node);
                 }
@@ -348,14 +347,15 @@ angular.module('mm.core.courses')
                     element.tree = self.constructCategoryTree(cat.children, courses, element.tree);
                     if (element.tree.length > 0) {
                         elementAdded = true;
-                        tasks.push(element);
+                        categoryTree.push(element);
                     }
                 }
                 self.addCourseToCategoryTree(courses, cat, element);
-                if (element.tree.length > 0 && !elementAdded)
-                    tasks.push(element);
+                if (element.tree.length > 0 && !elementAdded) {
+                    categoryTree.push(element);
+                }
             });
-            return tasks;
+            return categoryTree;
         });
     }
 
@@ -368,11 +368,10 @@ angular.module('mm.core.courses')
      * @name $mmCourses#fetchAllCourseCategories
      * @param {Site} [site]             The current site object.
      * @param {Object[]} [params]       Array of parameters to call the core_course_get_categories WS.
-     * @param {Object[]} [preSets]      Array of preSets parameters that will make sure no cache results are fetched.
      * @return {Object[]}               Array of categories including root categories and sub category objects
      */
-    self.fetchAllCourseCategories = function(site, params, preSets) {
-        return site.read('core_course_get_categories', params, preSets).then(function(categories) {
+    self.fetchAllCourseCategories = function(site, params) {
+        return site.read('core_course_get_categories', params).then(function(categories) {
             var callCategoryWS = false,
                 exploredCategories = categories.map(function(elem) {
                     return elem.id;
@@ -390,13 +389,14 @@ angular.module('mm.core.courses')
             });
 
             if (callCategoryWS) {
-                var updatedParams = [];
-                updatedParams.criteria = [
-                    {
-                        key: 'ids',
-                        value: exploredCategories
-                    }
-                ];
+                var updatedParams = {
+                    criteria: [
+                        {
+                            key: 'ids',
+                            value: exploredCategories
+                        }
+                    ]
+                };
 
                 return site.read('core_course_get_categories',updatedParams, preSets);
             } else {
@@ -414,10 +414,10 @@ angular.module('mm.core.courses')
      * @name $mmCourses#constructCategoryTree
      * @param {Object[]} [subcategories]    Array of category objects.
      * @param {Object[]} [courses]          Array courses where the user is enrolled in.
-     * @param {Object} [treeElement]        Category tree branch to be populated.
-     * @return {Object}                     Category tree branch populated with sub category branches and user courses.
+     * @return {Object[]}                   Category tree branch populated with sub category branches and user courses.
      */
-    self.constructCategoryTree = function(subcategories, courses, treeElement) {
+    self.constructCategoryTree = function(subcategories, courses) {
+        var treeElement = [];
         angular.forEach(subcategories, function(cat) {
             var element = [],
                 elementAdded = false;
@@ -425,7 +425,7 @@ angular.module('mm.core.courses')
             element.isCategory = true;
             element.tree = [];
             if (cat.children.length > 0) {
-                element.tree = self.constructCategoryTree(cat.children, courses, element.tree);
+                element.tree = self.constructCategoryTree(cat.children, courses);
                 self.addCourseToCategoryTree(courses, cat, element);
                 if (element.tree.length > 0) {
                     elementAdded = true;
@@ -434,8 +434,9 @@ angular.module('mm.core.courses')
             }
 
             self.addCourseToCategoryTree(courses, cat, element);
-            if (element.tree.length > 0 && !elementAdded)
+            if (element.tree.length > 0 && !elementAdded) {
                 treeElement.push(element);
+            }
 
         });
         return treeElement;
@@ -453,28 +454,14 @@ angular.module('mm.core.courses')
      * @return {Object}             Category tree branch populated with courses that belong to the specified category.
      */
     self.addCourseToCategoryTree = function(courses, category, element) {
-        angular.forEach(courses, function(course) {
-            if (course.category == category.id) {
-                element.tree.push({'name': course.fullname, 'course': course, 'isCategory': false});
-                self.removeCourseFromArray(courses, course);
-                return element;
-            }
-        });
-    }
-
-    /**
-     * Method that removes a course object from the courses array (this is a performane function that makes sure that
-     * the courses that have already been added to the tree are not iterated again in the recursive process).
-     *
-     * @module mm.core.courses
-     * @ngdoc method
-     * @name $mmCourses#addCourseToCategoryTree
-     * @param {Object[]} [courses]          Array courses where the user is enrolled in.
-     * @param {Object} [courseToRemove]     Course object to be removed from the array.
-     */
-    self.removeCourseFromArray = function(courses, courseToRemove) {
         for (var i = 0; i < courses.length; i++) {
-            if (courses[i].id === courseToRemove.id) {
+            if (courses[i].category == category.id) {
+                element.tree.push({'name': courses[i].fullname, 'course': courses[i], 'isCategory': false});
+
+                /*
+                * Remove course from the courses array (this will make sure not to iterate through the courses that
+                * are already assigned to a category.
+                */
                 courses.splice(i,1);
                 return;
             }

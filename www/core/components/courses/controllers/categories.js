@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2016 Brikend Rama
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,13 +15,13 @@
 angular.module('mm.core.courses')
 
 /**
- * Controller to handle the courses list.
+ * Controller to handle the category tree list.
  *
  * @module mm.core.courses
  * @ngdoc controller
- * @name mmCoursesListCtrl
+ * @name mmCourseCategoriesCtrl
  */
-.controller('mmCourseCategoriesCtrl', function($scope, $log, $mmCourses, $timeout, $mmCoursesDelegate, $mmUtil, $mmEvents, $mmSite,
+.controller('mmCourseCategoriesCtrl', function($scope, $mmCourses, $mmUtil, $mmEvents, $mmSite,
                                           mmCoursesEventMyCoursesUpdated, mmCoursesEventMyCoursesRefreshed) {
 
     $scope.categories = [];
