@@ -39,10 +39,10 @@ angular.module('mm.core.course')
     //@DM Vonk
     var self = {},
         mods = ["assign", "assignment", "book", "chat", "choice", "data", "database", "date", "external-tool",
-            "feedback", "file", "folder", "forum", "glossary", "ims", "imscp", "label", "lesson", "lti", "page", "premiumvideo", "quiz", "regularvideo",
+            "feedback", "file", "folder", "forum", "glossary", "ims", "imscp", "label", "lesson", "lti", "page", "premiumvideo", "quiz", "recommended", "regularvideo",
             "resource", "scorm", "survey", "url", "wiki", "workshop"
         ],
-        modsWithContent = ['book', 'folder', 'imscp', 'page', "premiumvideo",'resource', "regularvideo", 'url'];
+        modsWithContent = ['book', 'folder', 'imscp', 'page', 'premiumvideo','resource', 'recommended', 'regularvideo', 'url'];
     //end DM VK
     /**
      * Add a 'contents' property if the module needs it and it doesn't have it already. In some weird cases the site

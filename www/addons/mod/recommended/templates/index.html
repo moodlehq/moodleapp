@@ -1,0 +1,19 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <mm-context-menu>
+            <mm-context-menu-item priority="900" ng-if="externalUrl" href="externalUrl" content="'mm.core.openinbrowser' | translate" icon-action="'ion-share'"></mm-context-menu-item>
+            <mm-context-menu-item priority="800" ng-if="description" content="'mm.core.moduleintro' | translate" action="expandDescription()" icon-action="'ion-arrow-right-c'"></mm-context-menu-item>
+            <mm-context-menu-item priority="700" content="'mm.core.refresh' | translate" action="doRefresh()" icon-action="refreshIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+        </mm-context-menu>
+    </ion-nav-buttons>
+    <ion-content padding="true" mm-state-class>
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" on-refresh="doRefresh()" ng-if="loaded"></ion-refresher>
+        <mm-loading hide-until="loaded">
+            <mm-course-mod-description description="description" component="{{component}}" component-id="{{componentId}}"></mm-course-mod-description>
+            <article>
+                <mm-format-text class="mm-content-with-float" watch="true" component="{{ component }}" component-id="{{ componentId }}">{{ content }}</mm-format-text>
+            </article>
+        </mm-loading>
+    </ion-content>
+</ion-view>
