@@ -68,7 +68,7 @@ angular.module('mm.core')
 
     this.$get = function($ionicLoading, $ionicPopup, $injector, $translate, $http, $log, $q, $mmLang, $mmFS, $timeout, $mmApp,
                 $mmText, mmCoreWifiDownloadThreshold, mmCoreDownloadThreshold, $ionicScrollDelegate, $mmWS, $cordovaInAppBrowser,
-                $mmConfig, mmCoreSettingsRichTextEditor, $rootScope, $ionicPlatform, $ionicHistory) {
+                $mmConfig, mmCoreSettingsRichTextEditor, $rootScope, $ionicPlatform, $ionicHistory, mmCoreSplitViewBlock, $state) {
 
         $log = $log.getInstance('$mmUtil');
 
@@ -1044,15 +1044,17 @@ angular.module('mm.core')
          * @module mm.core
          * @ngdoc method
          * @name $mmUtil#basicLeftCompare
-         * @param {Mixed}  itemA         First object.
-         * @param {Mixed}  itemB         Second object.
-         * @param {Number} [maxLevels=0] Number of levels to reach if 2 objects are compared.
-         * @param {Number} [level=0]     Current deep level (when comparing objects).
-         * @return {Boolean}             True if equal, false otherwise.
+         * @param {Mixed}  itemA                   First object.
+         * @param {Mixed}  itemB                   Second object.
+         * @param {Number} [maxLevels=0]           Number of levels to reach if 2 objects are compared.
+         * @param {Number} [level=0]               Current deep level (when comparing objects).
+         * @param {Boolean} [undefinedIsNull=true] True if undefined is equal to null. Defaults to true.
+         * @return {Boolean}                       True if equal, false otherwise.
          */
-        self.basicLeftCompare = function(itemA, itemB, maxLevels, level) {
+        self.basicLeftCompare = function(itemA, itemB, maxLevels, level, undefinedIsNull) {
             level = level || 0;
             maxLevels = maxLevels || 0;
+            undefinedIsNull = typeof undefinedIsNull == 'undefined' ? true : undefinedIsNull;
 
             if (angular.isFunction(itemA) || angular.isFunction(itemB)) {
                 return true; // Don't compare functions.
@@ -1069,6 +1071,11 @@ angular.module('mm.core')
                 });
                 return equal;
             } else {
+                if (undefinedIsNull && (
+                        (typeof itemA == 'undefined' && itemB === null) || (itemA === null && typeof itemB == 'undefined'))) {
+                    return true;
+                }
+
                 // We'll treat "2" and 2 as the same value.
                 var floatA = parseFloat(itemA),
                     floatB = parseFloat(itemB);
@@ -1854,21 +1861,26 @@ angular.module('mm.core')
          *                                       -unblock: Function to unblock. It is called automatically when scope is destroyed.
          */
         self.blockLeaveView = function(scope, canLeaveFn, currentView) {
-            if (!currentView) {
-                currentView = $ionicHistory.currentView();
-            }
+            currentView = currentView || $ionicHistory.currentView();
 
             var unregisterHardwareBack,
-                leaving = false;
+                leaving = false,
+                hasSplitView = $ionicPlatform.isTablet() && $state.current.name.split('.').length == 3,
+                skipSplitViewLeave = false;
 
             // Override Ionic's back button behavior.
-            $rootScope.$ionicGoBack = leaveView;
+            $rootScope.$ionicGoBack = goBack;
 
             // Override Android's back button. We set a priority of 101 to override the "Return to previous view" action.
-            unregisterHardwareBack = $ionicPlatform.registerBackButtonAction(leaveView, 101);
+            unregisterHardwareBack = $ionicPlatform.registerBackButtonAction(goBack, 101);
 
             // Add function to the stack.
-            backFunctionsStack.push(leaveView);
+            backFunctionsStack.push(goBack);
+
+            if (hasSplitView) {
+                // Block split view.
+                blockSplitView(true);
+            }
 
             scope.$on('$destroy', unblock);
 
@@ -1878,7 +1890,7 @@ angular.module('mm.core')
             };
 
             // Function called when the user wants to leave the view.
-            function leaveView() {
+            function goBack() {
                 // Check that we're leaving the current view, since the user can navigate to other views from here.
                 if ($ionicHistory.currentView() !== currentView) {
                     // It's another view.
@@ -1894,24 +1906,41 @@ angular.module('mm.core')
 
                 canLeaveFn().then(function() {
                     // User confirmed to leave or there was no need to confirm, go back.
+                    // Skip next leave view from split view if there's one since we already checked if user can leave.
+                    skipSplitViewLeave = hasSplitView;
                     originalBackFunction();
                 }).finally(function() {
                     leaving = false;
                 });
             }
 
+            // Leaving current view when it's in split view.
+            function leaveViewInSplitView() {
+                if (skipSplitViewLeave) {
+                    skipSplitViewLeave = false;
+                    return $q.when();
+                }
+
+                return canLeaveFn();
+            }
+
             // Restore original back functions.
             function unblock() {
                 unregisterHardwareBack();
 
+                if (hasSplitView) {
+                    // Unblock split view.
+                    blockSplitView(false);
+                }
+
                 // Remove function from the stack.
-                var position = backFunctionsStack.indexOf(leaveView);
+                var position = backFunctionsStack.indexOf(goBack);
                 if (position > -1) {
                     backFunctionsStack.splice(position, 1);
                 }
 
                 // Revert go back only if it hasn't been overridden by another view.
-                if ($rootScope.$ionicGoBack === leaveView) {
+                if ($rootScope.$ionicGoBack === goBack) {
                     if (!backFunctionsStack.length) {
                         // Shouldn't happen. Reset stack.
                         backFunctionsStack = [originalBackFunction];
@@ -1920,6 +1949,16 @@ angular.module('mm.core')
                         $rootScope.$ionicGoBack = backFunctionsStack[backFunctionsStack.length - 1];
                     }
                 }
+            }
+
+            // Block or unblock split view.
+            function blockSplitView(block) {
+                $rootScope.$broadcast(mmCoreSplitViewBlock, {
+                    block: block,
+                    blockFunction: leaveViewInSplitView,
+                    state: currentView.stateName,
+                    stateParams: currentView.stateParams
+                });
             }
         };
 
