@@ -419,7 +419,7 @@ mm-format-text, *[mm-format-text] {
 }
 
 .mm-loading-content {
-  height: 100%;
+  padding-bottom: 1px; /* This makes height be real */
 }
 
 mm-loading.mm-loading-noheight .mm-loading-content {
@@ -523,9 +523,24 @@ p.mm-error {
 }
 
 // Extra attributes to ionic classes to force frames via directive 100% height.
-
 .scroll {
-  height: 100%;
+  top: 0;
+  bottom: 0;
+  position: absolute;
+  left: 0;
+  right: 0;
+
+  // Fix too much padding when a card is on top.
+  &.padding>.card:first-child,
+  &.padding .mm-loading-content>.card:first-child,
+  &.padding .scroll-refresher>.card:first-child {
+    margin-top: $content-padding;
+  }
+}
+
+// Fix padding for modal.
+.padding .scroll {
+  padding: $content-padding;
 }
 
 .iframe-wrapper {
