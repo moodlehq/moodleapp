@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 16.2.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -7,27 +9,21 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="1792"
-   height="1792"
-   viewBox="0 0 1792 1792"
-   id="svg2"
    version="1.1"
+   id="Layer_1"
+   x="0px"
+   y="0px"
+   width="512px"
+   height="512px"
+   viewBox="0 0 512 512"
+   enable-background="new 0 0 512 512"
+   xml:space="preserve"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="bullseye.svg">
-  <metadata
-     id="metadata10">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <defs
-     id="defs8" />
-  <sodipodi:namedview
+   sodipodi:docname="ios-compose-outline.svg"><metadata
+     id="metadata15"><rdf:RDF><cc:Work
+         rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
+     id="defs13" /><sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
      borderopacity="1"
@@ -38,18 +34,23 @@
      inkscape:pageshadow="2"
      inkscape:window-width="753"
      inkscape:window-height="480"
-     id="namedview6"
+     id="namedview11"
      showgrid="false"
-     inkscape:zoom="0.13169643"
-     inkscape:cx="896"
-     inkscape:cy="896"
-     inkscape:window-x="355"
-     inkscape:window-y="316"
+     inkscape:zoom="0.4609375"
+     inkscape:cx="256"
+     inkscape:cy="256"
+     inkscape:window-x="1640"
+     inkscape:window-y="477"
      inkscape:window-maximized="0"
-     inkscape:current-layer="svg2" />
-  <path
-     d="M1152 896q0 106-75 181t-181 75-181-75-75-181 75-181 181-75 181 75 75 181zm128 0q0-159-112.5-271.5t-271.5-112.5-271.5 112.5-112.5 271.5 112.5 271.5 271.5 112.5 271.5-112.5 112.5-271.5zm128 0q0 212-150 362t-362 150-362-150-150-362 150-362 362-150 362 150 150 362zm128 0q0-130-51-248.5t-136.5-204-204-136.5-248.5-51-248.5 51-204 136.5-136.5 204-51 248.5 51 248.5 136.5 204 204 136.5 248.5 51 248.5-51 204-136.5 136.5-204 51-248.5zm128 0q0 209-103 385.5t-279.5 279.5-385.5 103-385.5-103-279.5-279.5-103-385.5 103-385.5 279.5-279.5 385.5-103 385.5 103 279.5 279.5 103 385.5z"
-     fill="#f00"
-     id="path4"
-     style="fill:#676767;fill-opacity:1" />
-</svg>
+     inkscape:current-layer="Layer_1" /><g
+     id="g3"
+     style="fill:#313540;fill-opacity:1"><polygon
+       points="368,416 80,416 80,144 304.117,144 320.117,128 64,128 64,432 384,432 384,191.883 368,207.883  "
+       id="polygon5"
+       style="fill:#313540;fill-opacity:1" /><polygon
+       points="237.623,284.084 227.917,274.377 399.24,103.054 387.927,91.74 208,271.651 208,304 240.216,304 420.261,124.016    408.947,112.73  "
+       id="polygon7"
+       style="fill:#313540;fill-opacity:1" /><path
+       d="M444.213,80.312l-12.465-12.466C429.084,65.467,425.556,64,421.746,64c-3.812,0-7.304,1.468-9.929,3.85L399.666,80   l0.08,0.08l11.293,11.293l21.02,21.02l12.15-12.15c2.383-2.625,3.791-6.117,3.791-9.929C448,86.504,446.592,82.975,444.213,80.312z   "
+       id="path9"
+       style="fill:#313540;fill-opacity:1" /></g></svg>

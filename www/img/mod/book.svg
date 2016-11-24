@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 16.2.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -7,27 +9,21 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="1792"
-   height="1792"
-   viewBox="0 0 1792 1792"
-   id="svg2"
    version="1.1"
+   id="Layer_1"
+   x="0px"
+   y="0px"
+   width="512px"
+   height="512px"
+   viewBox="0 0 512 512"
+   enable-background="new 0 0 512 512"
+   xml:space="preserve"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="book.svg">
-  <metadata
-     id="metadata10">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <defs
-     id="defs8" />
-  <sodipodi:namedview
+   sodipodi:docname="ios-book-outline.svg"><metadata
+     id="metadata9"><rdf:RDF><cc:Work
+         rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
+     id="defs7" /><sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
      borderopacity="1"
@@ -38,18 +34,15 @@
      inkscape:pageshadow="2"
      inkscape:window-width="753"
      inkscape:window-height="480"
-     id="namedview6"
+     id="namedview5"
      showgrid="false"
-     inkscape:zoom="0.13169643"
-     inkscape:cx="896"
-     inkscape:cy="896"
-     inkscape:window-x="171"
-     inkscape:window-y="122"
+     inkscape:zoom="0.4609375"
+     inkscape:cx="256"
+     inkscape:cy="256"
+     inkscape:window-x="1704"
+     inkscape:window-y="334"
      inkscape:window-maximized="0"
-     inkscape:current-layer="svg2" />
-  <path
-     d="M1703 478q40 57 18 129l-275 906q-19 64-76.5 107.5t-122.5 43.5h-923q-77 0-148.5-53.5t-99.5-131.5q-24-67-2-127 0-4 3-27t4-37q1-8-3-21.5t-3-19.5q2-11 8-21t16.5-23.5 16.5-23.5q23-38 45-91.5t30-91.5q3-10 .5-30t-.5-28q3-11 17-28t17-23q21-36 42-92t25-90q1-9-2.5-32t.5-28q4-13 22-30.5t22-22.5q19-26 42.5-84.5t27.5-96.5q1-8-3-25.5t-2-26.5q2-8 9-18t18-23 17-21q8-12 16.5-30.5t15-35 16-36 19.5-32 26.5-23.5 36-11.5 47.5 5.5l-1 3q38-9 51-9h761q74 0 114 56t18 130l-274 906q-36 119-71.5 153.5t-128.5 34.5h-869q-27 0-38 15-11 16-1 43 24 70 144 70h923q29 0 56-15.5t35-41.5l300-987q7-22 5-57 38 15 59 43zm-1064 2q-4 13 2 22.5t20 9.5h608q13 0 25.5-9.5t16.5-22.5l21-64q4-13-2-22.5t-20-9.5h-608q-13 0-25.5 9.5t-16.5 22.5zm-83 256q-4 13 2 22.5t20 9.5h608q13 0 25.5-9.5t16.5-22.5l21-64q4-13-2-22.5t-20-9.5h-608q-13 0-25.5 9.5t-16.5 22.5z"
-     fill="#f00"
-     id="path4"
-     style="fill:#676767;fill-opacity:1" />
-</svg>
+     inkscape:current-layer="Layer_1" /><path
+     d="M347.621,64c-40.941,0-79.121,14-91.578,44.495C242.5,78,205.408,64,164.466,64C109.265,64,64,89.98,64,143v1v8.995V417v9  h6.215h10.958h4.967c12.86-26.334,44.238-42,78.325-42c40.224,0,73.877,27.528,81.617,64h19.714c7.739-36.472,41.495-64,81.722-64  c34.085,0,61.149,11.666,78.429,42h4.967h10.959H448v-17V148v-4v-1C448,89.98,402.823,64,347.621,64z M248,410.926  C230,385.055,199.27,368,164.5,368c-34.769,0-64.5,10.055-83.5,35.926l-1,0.537V142l0,0v-1c3-41.825,40.089-61,84.293-61  c45.162,0,82.145,18.708,83.363,61.808c-0.017,0.729,0.016,1.459,0.016,2.192L248,157.103V410.926z M432,148v255.926  C414,378.055,382.269,368,347.5,368c-34.77,0-65.5,17.055-83.5,42.926V145v-1c0-44.112,37.659-64,83.587-64  C391.79,80,429,91.175,432,133v1V148z"
+     id="path3"
+     style="fill:#313540;fill-opacity:1" /></svg>

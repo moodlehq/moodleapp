@@ -13,7 +13,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="play-circle.svg">
+   sodipodi:docname="premiumvideo.svg">
   <metadata
      id="metadata10">
     <rdf:RDF>
@@ -22,6 +22,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -36,20 +37,20 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="935"
-     inkscape:window-height="702"
+     inkscape:window-width="753"
+     inkscape:window-height="480"
      id="namedview6"
      showgrid="false"
      inkscape:zoom="0.13169643"
-     inkscape:cx="804.88136"
-     inkscape:cy="896.00001"
-     inkscape:window-x="147"
-     inkscape:window-y="166"
+     inkscape:cx="896"
+     inkscape:cy="896"
+     inkscape:window-x="2369"
+     inkscape:window-y="437"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg2" />
   <path
-     d="M896 128q209 0 385.5 103t279.5 279.5 103 385.5-103 385.5-279.5 279.5-385.5 103-385.5-103-279.5-279.5-103-385.5 103-385.5 279.5-279.5 385.5-103zm384 823q32-18 32-55t-32-55l-544-320q-31-19-64-1-32 19-32 56v640q0 37 32 56 16 8 32 8 17 0 32-9z"
+     d="M1312 896q0 37-32 55l-544 320q-15 9-32 9-16 0-32-8-32-19-32-56v-640q0-37 32-56 33-18 64 1l544 320q32 18 32 55zm128 0q0-148-73-273t-198-198-273-73-273 73-198 198-73 273 73 273 198 198 273 73 273-73 198-198 73-273zm224 0q0 209-103 385.5t-279.5 279.5-385.5 103-385.5-103-279.5-279.5-103-385.5 103-385.5 279.5-279.5 385.5-103 385.5 103 279.5 279.5 103 385.5z"
      fill="#f00"
      id="path4"
-     style="fill:#000000;fill-opacity:1" />
+     style="fill:#ffffff;fill-opacity:1;stroke:#313540;stroke-opacity:1;stroke-width:20;stroke-miterlimit:4;stroke-dasharray:none" />
 </svg>
