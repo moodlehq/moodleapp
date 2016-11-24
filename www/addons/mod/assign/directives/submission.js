@@ -128,7 +128,7 @@ angular.module('mm.addons.mod_assign')
             scope.showSubmission = true;
         }
 
-        scope.grade.gradingStatus = scope.gradingStatus;
+        scope.grade.gradingStatus = scope.lastAttempt.gradingstatus;
 
         return $mmaModAssign.isGradingEnabled().then(function(enabled) {
             if (enabled) {
@@ -181,7 +181,7 @@ angular.module('mm.addons.mod_assign')
                                     if (scope.grade.scale) {
                                         scope.grade.grade = getSelectedScaleId(scope.grade.scale, grade.gradeformatted);
                                     } else {
-                                        scope.grade.grade = parseFloat(grade.gradeformatted);
+                                        scope.grade.grade = parseFloat(grade.gradeformatted) || null;
                                     }
                                     scope.grade.modified = grade.gradedategraded;
                                     originalGrades.grade = scope.grade.grade;
