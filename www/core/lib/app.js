@@ -33,7 +33,7 @@ angular.module('mm.core')
  *      });
  *  })
  */
-.provider('$mmApp', function($stateProvider) {
+.provider('$mmApp', function($stateProvider, $sceDelegateProvider) {
 
     /** Define the app storage schema. */
     var DBNAME = 'MoodleMobile',
@@ -389,6 +389,24 @@ angular.module('mm.core')
                     localStorage.setItem('mmCoreRedirectParams', JSON.stringify(params));
                     localStorage.setItem('mmCoreRedirectTime', new Date().getTime());
                 } catch(ex) {}
+            }
+        };
+
+        /**
+         * Trust a wildcard of resources. Reserved for core use.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#trustResources
+         * @param  {String} wildcard Wildcard to trust.
+         * @return {Void}
+         * @protected
+         */
+        self.trustResources = function(wildcard) {
+            var currentList = $sceDelegateProvider.resourceUrlWhitelist();
+            if (currentList.indexOf(wildcard) == -1) {
+                currentList.push(wildcard);
+                $sceDelegateProvider.resourceUrlWhitelist(currentList);
             }
         };
 
