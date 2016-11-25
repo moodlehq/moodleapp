@@ -1073,10 +1073,9 @@ angular.module('mm.core')
          * @return {Array}                      Array with the formatted tree, children will be on each node under children field.
          */
         self.formatTree = function(list, parentFieldName, idFieldName, rootParentId, maxDepth) {
-            var original = list,
-                map = {},
+            var map = {},
                 mapDepth = {},
-                node, parent, id,
+                parent, id,
                 tree = [];
 
             parentFieldName = parentFieldName || 'parent';
@@ -1092,24 +1091,25 @@ angular.module('mm.core')
                 // Use map to look-up the parents.
                 map[id] = index;
                 if (parent != rootParentId) {
-                    if (mapDepth[parent] == maxDepth) {
-                        // Reached max level of depth. Proceed with flat order. Find parent object of the current node.
-                        var parentNode = list[map[parent]];
-                        if (parentNode != null) {
+                    var parentNode = list[map[parent]];
+                    if (parentNode) {
+                        if (mapDepth[parent] == maxDepth) {
+                            // Reached max level of depth. Proceed with flat order. Find parent object of the current node.
                             var parentOfParent = parentNode[parentFieldName];
-                            // This element will be the child of the node that is two levels up the hierarchy
-                            // (i.e. the child of node.parent.parent).
-                            list[map[parentOfParent]].children.push(node);
-                            // Assign depth level to the same depth as the parent (i.e. max depth level).
-                            mapDepth[id] = mapDepth[parent];
-                            // Change the parent to be the one that is two levels up the hierarchy.
-                            //node.parent = parentOfParent;
+                            if (parentOfParent) {
+                                // This element will be the child of the node that is two levels up the hierarchy
+                                // (i.e. the child of node.parent.parent).
+                                list[map[parentOfParent]].children.push(node);
+                                // Assign depth level to the same depth as the parent (i.e. max depth level).
+                                mapDepth[id] = mapDepth[parent];
+                                // Change the parent to be the one that is two levels up the hierarchy.
+                                node.parent = parentOfParent;
+                            }
+                        } else {
+                            parentNode.children.push(node);
+                            // Increase the depth level.
+                            mapDepth[id] = mapDepth[parent] + 1;
                         }
-                    } else {
-                        list[map[parent]].children.push(node);
-
-                        // Increase the depth level.
-                        mapDepth[id] = mapDepth[parent] + 1;
                     }
                 } else {
                     tree.push(node);
@@ -1351,7 +1351,7 @@ angular.module('mm.core')
             // Convert float to string.
             float += '';
             return float.replace('.', localeSeparator);
-        }
+        };
 
         /**
          * Converts locale specific floating point/comma number back to standard PHP float value
@@ -1394,7 +1394,7 @@ angular.module('mm.core')
                 return false;
             }
             return localeFloat;
-        }
+        };
 
         /**
          * Serialize an object to be used in a request.

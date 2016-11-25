@@ -26,14 +26,16 @@
                 <mma-mod-forum-discussion-post post="discussion" courseid="courseid" discussion-id="discussionId" title="discussion.subject" subject="discussion.userfullname" component="component" component-id="componentId" newpost="newpost" replyingto="replyingto" showdivider="false" titleimportant="true" onpostchange="postListChanged()" defaultsubject="defaultSubject" scroll-handle="mmaModForumPostsScroll" unread="trackPosts && !discussion.postread"></mma-mod-forum-discussion-post>
             </article>
 
-            <div class="card" ng-if="posts && posts.length">
+            <div ng-class="{'mm-nest-cards': nested.isnested, 'card': !nested.isnested}" ng-if="posts && posts.length">
                 <article ng-repeat="post in posts track by $index" ng-include="'nestedPosts'">
                 </article>
             </div>
 
             <script type="text/ng-template" id="nestedPosts">
-                <mma-mod-forum-discussion-post post="post" courseid="courseid" discussion-id="discussionId" title="post.subject" subject="post.userfullname" component="component" component-id="componentId" newpost="newpost" replyingto="replyingto" showdivider="$index > 0" titleimportant="false" onpostchange="postListChanged()" defaultsubject="defaultSubject" scroll-handle="mmaModForumPostsScroll" unread="trackPosts && !post.postread"></mma-mod-forum-discussion-post>
-                <div class="card nestedStyle" ng-if="post.children.length && post.children[0].subject">
+                <div class="mm-nested-card">
+                    <mma-mod-forum-discussion-post post="post" courseid="courseid" discussion-id="discussionId" title="post.subject" subject="post.userfullname" component="component" component-id="componentId" newpost="newpost" replyingto="replyingto" showdivider="$index > 0" titleimportant="false" onpostchange="postListChanged()" defaultsubject="defaultSubject" scroll-handle="mmaModForumPostsScroll" unread="trackPosts && !post.postread"></mma-mod-forum-discussion-post>
+                </div>
+                <div class="mm-nested" ng-if="post.children.length && post.children[0].subject">
                     <article ng-repeat="post in post.children track by $index" ng-include="'nestedPosts'">
                     </article>
                 </div>

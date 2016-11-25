@@ -141,7 +141,9 @@ angular.module('mm.addons.mod_forum')
 
             // If $scope.nested.isnested is true, normal sorting is disabled and nested posts will be displayed.
             if ($scope.nested.isnested) {
-                $scope.posts = $mmaModForum.constructDiscussionTree(posts, $scope.discussion.id);
+                // Sort first by creation date to make format tree work.
+                posts = $mmaModForum.sortDiscussionPosts(posts, 'ASC');
+                $scope.posts = $mmUtil.formatTree(posts, 'parent', 'id', $scope.discussion.id);
             } else {
                 // Set default reply subject.
                 $scope.posts = $mmaModForum.sortDiscussionPosts(posts, $scope.sort.direction);
@@ -159,7 +161,7 @@ angular.module('mm.addons.mod_forum')
                 forumId = forum.id;
                 cmid = forum.cmid;
                 $scope.componentId = cmid;
-            }).catch(function(err) {
+            }).catch(function() {
                 // Ignore errors.
             });
         }).catch(function(message) {
@@ -175,6 +177,7 @@ angular.module('mm.addons.mod_forum')
     // Function to change posts sorting.
     $scope.changeSort = function(init) {
         $scope.discussionLoaded = false;
+        scrollTop();
         // Set $scope.nested attributes to default.
         $scope.nested.icon = 'ion-arrow-swap';
         $scope.nested.isnested = false;
@@ -197,6 +200,8 @@ angular.module('mm.addons.mod_forum')
 
     // Function to change nested posts.
     $scope.nestPosts = function(init) {
+        $scope.discussionLoaded = false;
+        scrollTop();
         $scope.nested.isnested = !$scope.nested.isnested;
 
         return fetchPosts(init).then(function() {
@@ -297,7 +302,6 @@ angular.module('mm.addons.mod_forum')
             refreshPosts(false);
         }
     });
-
 
     function scrollTop() {
         if (!scrollView) {
