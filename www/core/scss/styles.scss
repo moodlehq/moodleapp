@@ -35,6 +35,33 @@
   margin-bottom:7%;
 }
 
+.item {
+  color: #313540;  
+}
+
+.ion-ios-arrow-back:before {
+  content: "\f2ca"; 
+}
+
+.ion-arrow-left-b::before, .ion-arrow-right-b::before {
+    color:#313540 ;
+}
+
+.button.button-icon, .button-icon {
+    color:#313540 ;
+}
+
+.ion-ios-cloud-download-outline::before {
+    color:#313540 ;
+}
+
+.button, .button.button-light, .button.button-stable, .button.button-positive, .button.button-calm, .button.button-assertive, .button.button-balanced, .button.button-energized, .button.button-royal, .button.button-dark {
+    border-color: #313540;
+    background-color: #313540;
+    color:#fff;
+}
+
+
 .dark, a.dark {
   color: #313540; }
   
