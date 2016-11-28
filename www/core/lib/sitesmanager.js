@@ -318,23 +318,16 @@ angular.module('mm.core')
 
         return candidateSite.fetchSiteInfo().then(function(infos) {
             if (isValidMoodleVersion(infos)) {
-                var validation = validateSiteInfo(infos);
-                if (validation === true) {
-                    var siteid = self.createSiteID(infos.siteurl, infos.username);
-                    // Add site to sites list.
-                    self.addSite(siteid, siteurl, token, infos, privateToken);
-                    // Turn candidate site into current site.
-                    candidateSite.setId(siteid);
-                    candidateSite.setInfo(infos);
-                    currentSite = candidateSite;
-                    // Store session.
-                    self.login(siteid);
-                    $mmEvents.trigger(mmCoreEventSiteAdded, siteid);
-                } else {
-                    return $translate(validation.error, validation.params).then(function(error) {
-                        return $q.reject(error);
-                    });
-                }
+                var siteid = self.createSiteID(infos.siteurl, infos.username);
+                // Add site to sites list.
+                self.addSite(siteid, siteurl, token, infos, privateToken);
+                // Turn candidate site into current site.
+                candidateSite.setId(siteid);
+                candidateSite.setInfo(infos);
+                currentSite = candidateSite;
+                // Store session.
+                self.login(siteid);
+                $mmEvents.trigger(mmCoreEventSiteAdded, siteid);
             } else {
                 return $mmLang.translateAndReject('mm.login.invalidmoodleversion');
             }
@@ -487,18 +480,7 @@ angular.module('mm.core')
                 $mmEvents.trigger(mmCoreEventSessionExpired, siteId);
             }, function() {
                 // Update site info. We don't block the UI.
-                self.updateSiteInfo(siteId).finally(function() {
-                    var infos = site.getInfo(),
-                        validation = validateSiteInfo(infos);
-                    if (validation !== true) {
-                        // Site info is not valid. Logout the user and show an error message.
-                        self.logout();
-                        $state.go('mm_login.sites');
-                        $translate(validation.error, validation.params).then(function(error) {
-                            $mmUtil.showErrorModal(error);
-                        });
-                    }
-                });
+                self.updateSiteInfo(siteId);
             });
         });
     };

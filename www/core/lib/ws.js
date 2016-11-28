@@ -24,8 +24,8 @@ angular.module('mm.core')
  * @ngdoc service
  * @name $mmWS
  */
-.factory('$mmWS', function($http, $q, $log, $mmLang, $cordovaFileTransfer, $mmApp, $mmFS, mmCoreSessionExpired,
-            mmCoreUserDeleted, $translate, $window, md5, $timeout, mmWSTimeout, mmCoreUserPasswordChangeForced) {
+.factory('$mmWS', function($http, $q, $log, $mmLang, $cordovaFileTransfer, $mmApp, $mmFS, mmCoreSessionExpired, $translate, $window,
+            mmCoreUserDeleted, md5, $timeout, mmWSTimeout, mmCoreUserPasswordChangeForced, mmCoreUserNotFullySetup) {
 
     $log = $log.getInstance('$mmWS');
 
@@ -126,8 +126,10 @@ angular.module('mm.core')
                     return $q.reject(mmCoreUserDeleted);
                 } else if (data.errorcode === 'sitemaintenance' || data.errorcode === 'upgraderunning') {
                     return $mmLang.translateAndReject('mm.core.' + data.errorcode);
-                } else if (data.errorcode === 'nopasswordchangeforced') {
+                } else if (data.errorcode === 'forcepasswordchangenotice') {
                     return $q.reject(mmCoreUserPasswordChangeForced);
+                } else if (data.errorcode === 'usernotfullysetup') {
+                    return $q.reject(mmCoreUserNotFullySetup);
                 } else {
                     return $q.reject(data.message);
                 }

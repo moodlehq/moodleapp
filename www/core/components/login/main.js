@@ -99,20 +99,25 @@ angular.module('mm.core.login', [])
 
 .run(function($log, $state, $mmUtil, $translate, $mmSitesManager, $rootScope, $mmSite, $mmURLDelegate, $ionicHistory, $timeout,
                 $mmEvents, $mmLoginHelper, mmCoreEventSessionExpired, $mmApp, $ionicPlatform, mmCoreConfigConstants, $mmText,
-                mmCoreEventPasswordChangeForced, mmCoreLoginTokenChangePassword) {
+                mmCoreEventPasswordChangeForced, mmCoreEventUserNotFullySetup) {
 
     $log = $log.getInstance('mmLogin');
 
     var isSSOConfirmShown = false,
-        isChangePasswordConfirmShown = false,
+        isOpenEditAlertShown = false,
         waitingForBrowser = false,
         lastInAppUrl;
 
     // Listen for sessionExpired event to reconnect the user.
     $mmEvents.on(mmCoreEventSessionExpired, sessionExpired);
 
-    // Listen for sessionExpired event to reconnect the user.
-    $mmEvents.on(mmCoreEventPasswordChangeForced, passwordChangeForced);
+    // Listen for passwordchange and usernotfullysetup events to open InAppBrowser.
+    $mmEvents.on(mmCoreEventPasswordChangeForced, function(siteId) {
+        openInAppForEdit(siteId, '/login/change_password.php', 'mm.core.forcepasswordchangenotice');
+    });
+    $mmEvents.on(mmCoreEventUserNotFullySetup, function(siteId) {
+        openInAppForEdit(siteId, '/user/edit.php', 'mm.core.usernotfullysetup');
+    });
 
     // Register observer to check if the app was launched via URL scheme.
     $mmURLDelegate.register('mmLoginSSO', appLaunchedByURL);
@@ -200,7 +205,6 @@ angular.module('mm.core.login', [])
     function sessionExpired(siteid) {
 
         var siteurl = $mmSite.getURL();
-
         if (typeof(siteurl) === 'undefined') {
             return;
         }
@@ -244,44 +248,32 @@ angular.module('mm.core.login', [])
         });
     }
 
-    // Function to handle password change forced events.
-    function passwordChangeForced(siteId) {
-        if (!siteId) {
+    // Function to open in app browser to change password or complete user profile.
+    function openInAppForEdit(siteId, path, alertMessage) {
+        if (!siteId || siteId !== $mmSite.getId()) {
+            // Site that triggered the event is not current site, nothing to do.
             return;
         }
 
-        $mmSitesManager.getSite(siteId).then(function(site) {
-            var siteUrl = site.getURL();
-            if (typeof(siteUrl) === 'undefined') {
-                return;
-            }
+        var siteUrl = $mmSite.getURL();
+        if (!siteUrl) {
+            return;
+        }
 
-            // Expire user token for the site.
-            $log.debug('Expiring token for site ' + siteId);
-            $mmSitesManager.updateSiteTokenBySiteId(siteId, mmCoreLoginTokenChangePassword);
+        if (!isOpenEditAlertShown && !waitingForBrowser) {
+            isOpenEditAlertShown = true;
 
-            // Site that triggered the event is not current site.
-            if (siteId !== $mmSite.getId()) {
-                return;
-            }
+            // User password change forced, invalidate all site caches.
+            $mmSite.invalidateWsCache();
 
-            if (!isChangePasswordConfirmShown && !waitingForBrowser) {
-                isChangePasswordConfirmShown = true;
-
-                // User password change forced, invalidate all site caches.
-                site.invalidateWsCache();
-
-                $mmEvents.trigger(mmCoreEventSessionExpired, siteId);
-
-                // Session expired, trigger event.
-                $mmLoginHelper.openChangePassword(siteUrl, $translate.instant('mm.core.nopasswordchangeforced')).then(function() {
-                    waitingForBrowser = true;
-                }).finally(function() {
-                    isChangePasswordConfirmShown = false;
-                });
-            }
-        });
-
+            // Open change password.
+            alertMessage = $translate.instant(alertMessage) + '<br>' + $translate.instant('mm.core.redirectingtosite');
+            return $mmSite.openInAppWithAutoLogin(siteUrl + path, undefined, alertMessage).then(function() {
+                waitingForBrowser = true;
+            }).finally(function() {
+                isOpenEditAlertShown = false;
+            });
+        }
     }
 
     // Function to handle URL received by Custom URL Scheme. If it's a SSO login, perform authentication.

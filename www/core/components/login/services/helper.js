@@ -286,11 +286,9 @@ angular.module('mm.core.login')
      * @param {String}   error    Error message.
      */
     self.openChangePassword = function(siteurl, error) {
-        var message = error + "<br>" + $translate.instant('mm.login.visitchangepassword');
-        return $mmUtil.showConfirm(message, $translate.instant('mm.core.notice')).then(function() {
-            var changepasswordurl = siteurl + "/login/change_password.php";
+        return $mmUtil.showModal('mm.core.notice', error, 3000).then(function() {
+            var changepasswordurl = siteurl + '/login/change_password.php';
             $mmUtil.openInApp(changepasswordurl);
-            return $q.when();
         });
     };
 
