@@ -242,6 +242,7 @@ angular.module('mm.core')
                 treatMedia(el, component, componentId, siteId);
             });
             angular.forEach(dom.find('video'), function(el) {
+                treatVideoFilters(el);
                 treatMedia(el, component, componentId, siteId);
                 // Set data-tap-disabled="true" to make controls work in Android (see MOBILE-1452).
                 el.setAttribute('data-tap-disabled', true);
@@ -284,6 +285,45 @@ angular.module('mm.core')
         if (afterRender && scope[afterRender]) {
             scope[afterRender](scope);
         }
+    }
+
+    // Convenience function to extract YouTube Id to translate to embedded video.
+    // Based on http://stackoverflow.com/questions/3452546/javascript-regex-how-to-get-youtube-video-id-from-url
+    function youtubeGetId(url) {
+        var regExp = /^.*youtu.be\/|v\/|\/u\/\w\/|embed\/|watch\?\??v?=?([^#\&\?]*).*/;
+        var match = url.match(regExp);
+        return (match && match[1].length == 11)? match[1] : false;
+    }
+
+    /**
+     * Treat video filters. Currently only treating youtube video using video JS.
+     *
+     * @param  {Object} el           DOM element.
+     */
+    function treatVideoFilters(el) {
+        // Treat Video JS Youtube video links and translate them to iframes.
+        if (!angular.element(el).hasClass('video-js')) {
+            return;
+        }
+
+        var data = JSON.parse(el.getAttribute('data-setup') || '{}'),
+            youtubeId = data.techOrder && data.techOrder[0] && data.techOrder[0] == 'youtube' && data.sources && data.sources[0] &&
+                data.sources[0].src && youtubeGetId(data.sources[0].src);
+
+        if (!youtubeId) {
+            return;
+        }
+
+        var iframe = document.createElement('iframe');
+        iframe.id = el.id;
+        iframe.src = 'https://www.youtube.com/embed/' + youtubeId;
+        iframe.setAttribute('frameborder', 0);
+        iframe.width = '100%';
+        iframe.height = 300;
+
+        // Replace video tag by the iframe.
+        el.parentNode.insertBefore(iframe, el);
+        el.parentNode.removeChild(el);
     }
 
     /**
