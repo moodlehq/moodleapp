@@ -87,8 +87,8 @@ angular.module('mm.core.course')
                 var siteId = $mmSite.getId(),
                     that = this;
 
-                // Load module contents if needed.
-                return that.loadContents(module, courseId).then(function() {
+                // Load module contents (ignore cache so we always have the latest data).
+                return that.loadContents(module, courseId, true).then(function() {
                     // Get the intro files.
                     return that.getIntroFiles(module, courseId);
                 }).then(function(introFiles) {
@@ -453,11 +453,12 @@ angular.module('mm.core.course')
              *
              * @param  {Object} module     Module to load the contents.
              * @param  {Number} [courseId] The course ID. Recommended to speed up the process and minimize data usage.
+             * @param  {Boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
              * @return {Promise}           Promise resolved when loaded.
              */
-            this.loadContents = function(module, courseId) {
+            this.loadContents = function(module, courseId, ignoreCache) {
                 if (this.isResource) {
-                    return $mmCourse.loadModuleContents(module, courseId);
+                    return $mmCourse.loadModuleContents(module, courseId, false, false, ignoreCache);
                 }
                 return $q.when();
             };

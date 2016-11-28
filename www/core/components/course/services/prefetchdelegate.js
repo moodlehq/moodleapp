@@ -45,15 +45,18 @@ angular.module('mm.core')
      * @param {String|Object|Function} handler Must be resolved to an object defining the following functions. Or to a function
      *                           returning an object defining these properties. See {@link $mmUtil#resolveObject}.
      *                             - component (String) Handler's component.
+     *                             - (Optional) updatesNames (RegExp) RegExp of update names to check. If getCourseUpdates returns
+     *                                                                 an update whose names matches this, the module will be marked
+     *                                                                 as outdated. Ignored if hasUpdates function is defined.
      *                             - getDownloadSize(module, courseid) (Object|Promise) Get the download size of a module.
-     *                                                                  The returning object should have size field with file size
-     *                                                                  in bytes and and total field which indicates if it's been
-     *                                                                  able to calculate the total size (true) or only partial size
-     *                                                                  (false).
+     *                                                                 The returning object should have size field with file size
+     *                                                                 in bytes and and total field which indicates if it's been
+     *                                                                 able to calculate the total size (true) or only partial size
+     *                                                                 (false).
      *                             - isEnabled() (Boolean|Promise) Whether or not the handler is enabled on a site level.
      *                             - prefetch(module, courseid, single) (Promise) Prefetches a module.
      *                             - (Optional) getFiles(module, courseid) (Object[]|Promise) Get list of files. If not defined,
-     *                                                                      we'll assume they're in module.contents.
+     *                                                                 we'll assume they're in module.contents.
      *                             - (Optional) determineStatus(status, canCheck) (String) Returns status to show based on
      *                                                                 current. E.g. for books we'll show "outdated" even if state
      *                                                                 is "downloaded" if canCheck=false.
@@ -72,7 +75,7 @@ angular.module('mm.core')
      *                             - (Optional) removeFiles(module, courseId) (Promise) Remove module downloaded files. If not
      *                                                                 defined, we'll use getFiles to remove them (slow).
      *                             - (Optional) loadContents(module, courseId) (Promise) Load module contents in module.contents if
-     *                                                                  needed. Only needed if getFiles isn't implemeneted.
+     *                                                                 needed. Only needed if getFiles isn't implemeneted.
      *                             - (Optional) hasUpdates(module, courseId, moduleUpdates) (Promise) Check if the module has
      *                                                                 updates to be downloaded based on getCourseUpdates result.
      */
@@ -104,6 +107,9 @@ angular.module('mm.core')
         /**
          * Check if current site can check updates using core_course_check_updates.
          *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmCoursePrefetchDelegate#canCheckUpdates
          * @return {Boolean} True if can check updates, false otherwise.
          */
         self.canCheckUpdates = function() {
@@ -1124,13 +1130,21 @@ angular.module('mm.core')
             if (handler && handler.hasUpdates) {
                 // Handler implements its own function to check the updates, use it.
                 return $q.when(handler.hasUpdates(module, courseId, moduleUpdates));
-            }
-
-            if (!moduleUpdates || !moduleUpdates.updates || !moduleUpdates.updates.length) {
+            } else if (!moduleUpdates || !moduleUpdates.updates || !moduleUpdates.updates.length) {
                 // Module doesn't have any update.
+                return $q.when(false);
+            } else if (handler && handler.updatesNames && handler.updatesNames.test) {
+                // Check the update names defined by the handler.
+                for (var i = 0, len = moduleUpdates.updates.length; i < len; i++) {
+                    if (handler.updatesNames.test(moduleUpdates.updates[i].name)) {
+                        return $q.when(true);
+                    }
+                }
+
                 return $q.when(false);
             }
 
+            // Handler doesn't define hasUpdates or updatesNames and there is at least 1 update. Assume it has updates.
             return $q.when(true);
         };
 
