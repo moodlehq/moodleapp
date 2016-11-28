@@ -32,13 +32,14 @@ angular.module('mm.addons.mod_choice')
      * @module mm.addons.mod_choice
      * @ngdoc method
      * @name $mmaModChoicePrefetchHandler#determineStatus
-     * @param {String} status Current status.
-     * @return {String}       Status to show.
+     * @param {String} status     Current status.
+     * @param  {Boolean} canCheck True if updates can be checked using core_course_check_updates.
+     * @return {String}           Status to show.
      */
-    self.determineStatus = function(status) {
-        if (status === mmCoreDownloaded) {
-            // Choice are always marked as outdated because we can't tell if there's something new without
-            // having to call all the WebServices. This will be improved in the future.
+    self.determineStatus = function(status, canCheck) {
+        if (!canCheck && status === mmCoreDownloaded) {
+            // Choice are always marked as outdated if updates cannot be checked because we can't tell if there's something
+            // new without having to call all the WebServices.
             return mmCoreOutdated;
         } else {
             return status;
