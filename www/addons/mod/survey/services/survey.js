@@ -363,17 +363,20 @@ angular.module('mm.addons.mod_survey')
             return storeOffline();
         }
 
-        // Device is online, try to send them to server.
-        return self.submitAnswersOnline(surveyId, answers, siteId).then(function() {
-            return true;
-        }).catch(function(error) {
-            if (error && error.wserror) {
-                // The WebService has thrown an error, this means that answers cannot be submitted.
-                return $q.reject(error.error);
-            } else {
-                // Couldn't connect to server, store in offline.
-                return storeOffline();
-            }
+        // If there's already answers to be sent to the server, discard it first.
+        return $mmaModSurveyOffline.deleteSurveyAnswers(surveyId, siteId).then(function() {
+            // Device is online, try to send them to server.
+            return self.submitAnswersOnline(surveyId, answers, siteId).then(function() {
+                return true;
+            }).catch(function(error) {
+                if (error && error.wserror) {
+                    // The WebService has thrown an error, this means that answers cannot be submitted.
+                    return $q.reject(error.error);
+                } else {
+                    // Couldn't connect to server, store in offline.
+                    return storeOffline();
+                }
+            });
         });
 
         // Convenience function to store a message to be synchronized later.

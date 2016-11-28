@@ -21,12 +21,11 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc controller
  * @name mmaModAssignFeedbackEditCtrl
  */
-.controller('mmaModAssignFeedbackEditCtrl', function($scope, $stateParams, $rootScope, $mmaModAssignHelper, $ionicHistory, $q,
-        $ionicPlatform, $mmUtil, $mmaModAssignFeedbackDelegate, $translate, $mmSite, $mmEvents, mmaModAssignFeedbackSavedEvent) {
+.controller('mmaModAssignFeedbackEditCtrl', function($scope, $stateParams, $mmaModAssignHelper, $q, $mmUtil, $translate, $mmSite,
+        $mmaModAssignFeedbackDelegate, $mmEvents, mmaModAssignFeedbackSavedEvent) {
 
-    var originalBackFunction = $rootScope.$ionicGoBack,
-        unregisterHardwareBack,
-        currentView = $ionicHistory.currentView();
+    // Block leaving the view, we want to show a confirm to the user if there's unsaved data.
+    var blockData = $mmUtil.blockLeaveView($scope, leaveView);
 
     $scope.assign = $stateParams.assign;
     $scope.plugin = $stateParams.plugin;
@@ -35,20 +34,10 @@ angular.module('mm.addons.mod_assign')
 
     // Function called when user wants to leave view without saving.
     function leaveView() {
-        // Check that we're leaving the current view, since the user can navigate to other views from here.
-        if ($ionicHistory.currentView() !== currentView) {
-            // It's another view.
-            originalBackFunction();
-            return;
-        }
-
         return hasDataChanged().then(function(changed) {
             if (changed) {
                 return $mmUtil.showConfirm($translate('mm.core.confirmcanceledit'));
             }
-        }).then(function() {
-            // Nothing has changed or user confirmed to leave.
-            originalBackFunction();
         }).catch(function(message) {
             if (message) {
                 $mmUtil.showErrorModal(message);
@@ -97,35 +86,18 @@ angular.module('mm.addons.mod_assign')
         });
     }
 
-    // Override Ionic's back button behavior.
-    $rootScope.$ionicGoBack = leaveView;
-
-    // Override Android's back button. We set a priority of 101 to override the "Return to previous view" action.
-    unregisterHardwareBack = $ionicPlatform.registerBackButtonAction(leaveView, 101);
-
     // General done function that will delegate onto the directive throught the trigger.
     $scope.done = function() {
         // Check if data has changed.
         hasDataChanged().then(function(changed) {
             if (changed) {
                 saveFeedback().then(function() {
-                    originalBackFunction();
+                    blockData && blockData.back();
                 });
             } else {
                 // Nothing to save, just go back.
-                originalBackFunction();
+                blockData && blockData.back();
             }
         });
     };
-
-    // Cancel.
-    $scope.cancel = function() {
-        leaveView();
-    };
-
-    $scope.$on('$destroy', function() {
-        // Restore original back functions.
-        unregisterHardwareBack();
-        $rootScope.$ionicGoBack = originalBackFunction;
-    });
 });

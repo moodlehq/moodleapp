@@ -22,9 +22,11 @@ angular.module('mm.addons.mod_assign')
  * @name $mmaModAssignPrefetchHandler
  */
 .factory('$mmaModAssignPrefetchHandler', function($mmaModAssign, mmaModAssignComponent, $mmSite, $mmFilepool, $q, $mmCourseHelper,
-        $mmCourse, $mmGroups, $mmUser, $mmaModAssignSubmissionDelegate, $mmaModAssignFeedbackDelegate, $mmPrefetchFactory) {
+        $mmCourse, $mmGroups, $mmUser, $mmaModAssignSubmissionDelegate, $mmaModAssignFeedbackDelegate, $mmPrefetchFactory,
+        $mmAddonManager, $mmSitesManager) {
 
-    var self = $mmPrefetchFactory.createPrefetchHandler(mmaModAssignComponent, false);
+    var self = $mmPrefetchFactory.createPrefetchHandler(mmaModAssignComponent, false),
+        $mmaGrades;
 
     /**
      * Download the module.
@@ -65,7 +67,7 @@ angular.module('mm.addons.mod_assign')
 
                 if (data.canviewsubmissions) {
                     // Teacher, get all submissions.
-                    return $mmaModAssign.getSubmissionsUserData(data.submissions, courseId, assign.id, blindMarking)
+                    return $mmaModAssign.getSubmissionsUserData(data.submissions, courseId, assign.id, blindMarking, false, siteId)
                             .then(function(submissions) {
 
                         var promises = [];
@@ -100,12 +102,12 @@ angular.module('mm.addons.mod_assign')
     /**
      * Get submission files.
      *
-     * @param  {Object} assign        Assign.
-     * @param  {Number} submitId      User ID of the submission to get.
-     * @param  {Boolean} blindMarking True if blind marking, false otherwise.
-     * @param  {Object[]} plugins     Submission plugins. Only used for legacy code.
-     * @param  {String} [siteId]      Site ID. If not defined, current site.
-     * @return {Promise}              Promise resolved with array of files.
+     * @param  {Object}     assign          Assign.
+     * @param  {Number}     submitId        User ID of the submission to get.
+     * @param  {Boolean}    blindMarking    True if blind marking, false otherwise.
+     * @param  {Object[]}   plugins         Submission plugins. Only used for legacy code.
+     * @param  {String}     siteId          Site ID. If not defined, current site.
+     * @return {Promise}                    Promise resolved with array of files.
      */
     function getSubmissionFiles(assign, submitId, blindMarking, plugins, siteId) {
         return $mmaModAssign.getSubmissionStatus(assign.id, submitId, blindMarking, true, false, siteId).then(function(response) {
@@ -175,13 +177,15 @@ angular.module('mm.addons.mod_assign')
      * @module mm.addons.mod_assign
      * @ngdoc method
      * @name $mmaModAssignPrefetchHandler#getTimemodified
-     * @param {Object} module   Module to get the timemodified.
-     * @param {Number} courseId Course ID the module belongs to.
+     * @param {Object}  module   Module to get the timemodified.
+     * @param {Number}  courseId Course ID the module belongs to.
      * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}         Timemodified.
      */
     self.getTimemodified = function(module, courseId, siteId) {
         var lastModified = 0;
+        siteId = siteId || $mmSite.getId();
+
         return $mmaModAssign.getAssignment(courseId, module.id, siteId).then(function(assign) {
             lastModified = assign.timemodified;
 
@@ -191,14 +195,14 @@ angular.module('mm.addons.mod_assign')
 
                 if (data.canviewsubmissions) {
                     // Teacher, get all submissions.
-                    promise = $mmaModAssign.getSubmissionsUserData(data.submissions, courseId, assign.id, blindMarking)
-                            .then(function(submissions) {
+                    promise = $mmaModAssign.getSubmissionsUserData(data.submissions, courseId, assign.id, blindMarking, false,
+                            siteId).then(function(submissions) {
 
                         var promises = [];
                         // Get Submission status with all files
                         angular.forEach(submissions, function(submission) {
-                            promises.push(getSubmissionTimemodified(assign, submission.submitid,
-                                    !!submission.blindid, submission.timemodified, siteId));
+                            promises.push(getSubmissionTimemodified(assign, courseId, module.id, submission.submitid,
+                                    !!submission.blindid, siteId, submission.timemodified));
                         });
 
                         return $q.all(promises).then(function(lastmodifiedTimes) {
@@ -208,7 +212,9 @@ angular.module('mm.addons.mod_assign')
                     });
                 } else {
                     // Student, get only his/her submissions.
-                    promise = getSubmissionTimemodified(assign, $mmSite.getUserId(), blindMarking, undefined, siteId);
+                    promise = $mmSitesManager.getSite(siteId).then(function(site) {
+                        return getSubmissionTimemodified(assign, courseId, module.id, site.getUserId(), blindMarking, siteId);
+                    });
                 }
 
                 return promise.then(function(submissionTimemodified) {
@@ -230,14 +236,16 @@ angular.module('mm.addons.mod_assign')
     /**
      * Get submission timemodified.
      *
-     * @param  {Object} assign         Assign.
-     * @param  {Number} submitId       User ID of the submission to get.
-     * @param  {Boolean} blindMarking  True if blind marking, false otherwise.
-     * @param  {Number} [timemodified] Submission timemodified, undefined if unknown.
-     * @param  {String} [siteId]       Site ID. If not defined, current site.
-     * @return {Promise}               Promise resolved with array of files.
+     * @param  {Object}     assign          Assign.
+     * @param  {Number}     courseId        Course ID.
+     * @param  {Number}     moduleId        Module ID.
+     * @param  {Number}     submitId        User ID of the submission to get.
+     * @param  {Boolean}    blindMarking    True if blind marking, false otherwise.
+     * @param  {String}     siteId          Site ID.
+     * @param  {Number}     [timemodified]  Submission timemodified, undefined if unknown.
+     * @return {Promise}                Promise resolved with array of files.
      */
-    function getSubmissionTimemodified(assign, submitId, blindMarking, timemodified, siteId) {
+    function getSubmissionTimemodified(assign, courseId, moduleId, submitId, blindMarking, siteId, timemodified) {
         return $mmaModAssign.getSubmissionStatus(assign.id, submitId, blindMarking, true, false, siteId)
                 .then(function(response) {
             var lastModified = 0;
@@ -251,6 +259,16 @@ angular.module('mm.addons.mod_assign')
 
             if (response.feedback && lastModified < response.feedback.gradeddate) {
                 lastModified = response.feedback.gradeddate;
+            }
+
+            // Get grade addon if avalaible.
+            $mmaGrades = typeof $mmaGrades != "undefined" ? $mmaGrades : $mmAddonManager.get('$mmaGrades');
+            if ($mmaGrades && submitId) {
+                return $mmaGrades.getGradeModuleItems(courseId, moduleId, submitId, null, siteId).then(function(gradeitems) {
+                    var lastmodifiedTimes = gradeitems.map(function (value) {return value.gradedategraded || 0;});
+                    lastmodifiedTimes.unshift(lastModified);
+                    return Math.max.apply(null, lastmodifiedTimes);
+                });
             }
 
             return lastModified;
@@ -344,17 +362,19 @@ angular.module('mm.addons.mod_assign')
     /**
      * Prefetch an assign.
      *
-     * @param  {Object} module   The module object returned by WS.
-     * @param  {Number} courseId Course ID the module belongs to.
-     * @param  {Boolean} single  True if we're downloading a single module, false if we're downloading a whole section.
-     * @param  {String} siteId   Site ID.
-     * @return {Promise}         Promise resolved with an object with 'revision' and 'timemod'.
+     * @param  {Object}  module     The module object returned by WS.
+     * @param  {Number}  courseId   Course ID the module belongs to.
+     * @param  {Boolean} single     True if we're downloading a single module, false if we're downloading a whole section.
+     * @param  {String}  [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with an object with 'revision' and 'timemod'.
      */
     function prefetchAssign(module, courseId, single, siteId) {
         var userId = $mmSite.getUserId(),
             revision,
             timemod,
             promises = [];
+
+        siteId = siteId || $mmSite.getId();
 
         promises.push($mmCourse.getModuleBasicInfo(module.id, siteId));
 
@@ -369,7 +389,7 @@ angular.module('mm.addons.mod_assign')
                 }));
             }
 
-            subPromises.push(prefetchSubmissions(assign, courseId, siteId, userId));
+            subPromises.push(prefetchSubmissions(assign, courseId, module.id, siteId, userId));
 
             subPromises.push($mmCourseHelper.getModuleCourseIdByInstance(assign.id, 'assign', siteId));
 
@@ -409,13 +429,12 @@ angular.module('mm.addons.mod_assign')
      *
      * @param  {Object} assign     Assign.
      * @param  {Number} courseId   Course ID.
-     * @param  {String} [siteId]   Site ID. If not defined, current site.
-     * @param  {Number} [userId]   User ID. If not defined, current user.
+     * @param  {Number} moduleId   Module ID.
+     * @param  {String} siteId     Site ID. If not defined, current site.
+     * @param  {Number} userId     User ID. If not defined, current user.
      * @return {Promise}           Promise resolved when prefetched, rejected otherwise.
      */
-    function prefetchSubmissions(assign, courseId, siteId, userId) {
-        siteId = siteId || $mmSite.getId();
-        userId = userId || $mmSite.getUserId();
+    function prefetchSubmissions(assign, courseId, moduleId, siteId, userId) {
 
         // Get submissions.
         return $mmaModAssign.getSubmissions(assign.id, siteId).then(function(data) {
@@ -425,13 +444,13 @@ angular.module('mm.addons.mod_assign')
             if (data.canviewsubmissions) {
                 // Teacher.
                 // Do not send participants to getSubmissionsUserData to retrieve user profiles.
-                promises.push($mmaModAssign.getSubmissionsUserData(data.submissions, courseId, assign.id, blindMarking, false, siteId)
+                promises.push($mmaModAssign.getSubmissionsUserData(data.submissions, courseId, assign.id, blindMarking, false)
                         .then(function(submissions) {
                     var subPromises = [];
                     angular.forEach(submissions, function(submission) {
                         subPromises.push($mmaModAssign.getSubmissionStatus(
                                 assign.id, submission.submitid, !!submission.blindid, true, false, siteId).then(function(subm) {
-                            return prefetchSubmission(assign, courseId, subm, siteId);
+                            return prefetchSubmission(assign, courseId, moduleId, subm, siteId, submission.submitid);
                         }));
                     });
                     return $q.all(subPromises).catch(function() {
@@ -452,7 +471,7 @@ angular.module('mm.addons.mod_assign')
             } else {
                 // Student.
                 promises.push($mmaModAssign.getSubmissionStatus(assign.id, userId, false, true, false, siteId).then(function(subm) {
-                    return prefetchSubmission(assign, courseId, subm, siteId);
+                    return prefetchSubmission(assign, courseId, moduleId, subm, siteId, userId);
                 }));
             }
 
@@ -467,12 +486,13 @@ angular.module('mm.addons.mod_assign')
      *
      * @param  {Object} assign     Assign.
      * @param  {Number} courseId   Course ID.
+     * @param  {Number} moduleId   Module ID.
      * @param  {Object} submission Data returned by $mmaModAssign#getSubmissionStatus.
-     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @param  {String} siteId     Site ID.
+     * @param  {String} userId     User submission ID.
      * @return {Promise}           Promise resolved when prefetched, rejected otherwise.
      */
-    function prefetchSubmission(assign, courseId, submission, siteId) {
-        siteId = siteId || $mmSite.getId();
+    function prefetchSubmission(assign, courseId, moduleId, submission, siteId, userId) {
 
         var promises = [],
             blindMarking = assign.blindmarking && !assign.revealidentities,
@@ -504,6 +524,12 @@ angular.module('mm.addons.mod_assign')
             // Get profile and image of the grader.
             if (submission.feedback.grade && submission.feedback.grade.grader) {
                 userIds.push(submission.feedback.grade.grader);
+            }
+
+            // Get grade addon if avalaible.
+            $mmaGrades = typeof $mmaGrades != "undefined" ? $mmaGrades : $mmAddonManager.get('$mmaGrades');
+            if ($mmaGrades && userId) {
+                promises.push($mmaGrades.getGradeModuleItems(courseId, moduleId, userId, null, siteId));
             }
 
             // Prefetch feedback plugins data.

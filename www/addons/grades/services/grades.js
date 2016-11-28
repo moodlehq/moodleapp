@@ -125,6 +125,21 @@ angular.module('mm.addons.grades')
     };
 
     /**
+     * Returns whether or not WS Grade Items is avalaible.
+     *
+     * @module mm.addons.grades
+     * @ngdoc method
+     * @name $mmaGrades#isGradeItemsAvalaible
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Boolean}         True if ws is avalaible, false otherwise.
+     */
+    self.isGradeItemsAvalaible = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.wsAvailable('gradereport_user_get_grade_items');
+        });
+    };
+
+    /**
      * Returns whether or not the grade addon is enabled for a certain user.
      *
      * @module mm.addons.grades

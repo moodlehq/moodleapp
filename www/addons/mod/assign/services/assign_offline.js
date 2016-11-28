@@ -15,8 +15,9 @@
 angular.module('mm.addons.mod_assign')
 
 .constant('mmaModAssignSubmissionsStore', 'mma_mod_assign_submissions')
+.constant('mmaModAssignSubmissionsGradeStore', 'mma_mod_assign_submissions_grading')
 
-.config(function($mmSitesFactoryProvider, mmaModAssignSubmissionsStore) {
+.config(function($mmSitesFactoryProvider, mmaModAssignSubmissionsStore, mmaModAssignSubmissionsGradeStore) {
     var stores = [
         {
             name: mmaModAssignSubmissionsStore,
@@ -38,6 +39,21 @@ angular.module('mm.addons.mod_assign')
                     name: 'onlinetimemodified'
                 }
             ]
+        },
+        {
+            name: mmaModAssignSubmissionsGradeStore,
+            keyPath: ['assignmentid', 'userid'],
+            indexes: [
+                {
+                    name: 'assignmentid'
+                },
+                {
+                    name: 'userid'
+                },
+                {
+                    name: 'timemodified'
+                }
+            ]
         }
     ];
     $mmSitesFactoryProvider.registerStores(stores);
@@ -50,10 +66,67 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc service
  * @name $mmaModAssignOffline
  */
-.factory('$mmaModAssignOffline', function($mmSitesManager, $log, $mmSite, $mmFS, mmaModAssignSubmissionsStore) {
+.factory('$mmaModAssignOffline', function($mmSitesManager, $log, $mmFS, $q, mmaModAssignSubmissionsStore,
+        mmaModAssignSubmissionsGradeStore) {
     $log = $log.getInstance('$mmaModAssignOffline');
 
     var self = {};
+
+    /**
+     * Get all the assignments ids that have something to be synced.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignOffline#getAllAssigns
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with assignments id that have something to be synced.
+     */
+    self.getAllAssigns = function(siteId) {
+        var promises = [];
+        promises.push(getAllSubmissions(siteId));
+        promises.push(getAllSubmissionsGrade(siteId));
+
+        return $q.all(promises).then(function(objects) {
+            // Flatten array.
+            objects = [].concat.apply([], objects);
+
+            // Get assignmentid.
+            objects = objects.map(function(object) {
+              return object.assignmentid;
+            });
+
+            // Get unique values.
+            objects = objects.filter(function(item, pos) {
+                return objects.indexOf(item) == pos;
+            });
+            return objects;
+        });
+    };
+
+    /**
+     * Get if the assignment have something to be synced.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignOffline#hasAssignOfflineData
+     * @param  {Number} assignId Assignment ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with true if the assignment have something to be synced.
+     */
+    self.hasAssignOfflineData = function(assignId, siteId) {
+        var promises = [];
+        promises.push(self.getAssignSubmissions(assignId, siteId));
+        promises.push(self.getAssignSubmissionsGrade(assignId, siteId));
+
+        return $q.all(promises).then(function(objects) {
+            return objects.reduce(function(a, b) {
+              return a.length > 0 || b.length > 0;
+            }, []);
+        }).catch(function() {
+            // No offline data found.
+            return false;
+        });
+    };
 
     /**
      * Delete a submission.
@@ -67,8 +140,6 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}         Promise resolved if deleted, rejected if failure.
      */
     self.deleteSubmission = function(assignId, userId, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             userId = userId || site.getUserId();
             return site.getDb().remove(mmaModAssignSubmissionsStore, [assignId, userId]);
@@ -78,15 +149,10 @@ angular.module('mm.addons.mod_assign')
     /**
      * Get all the stored submissions from all the assignments.
      *
-     * @module mm.addons.mod_assign
-     * @ngdoc method
-     * @name $mmaModAssignOffline#getAllSubmissions
      * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}         Promise resolved with submissions.
      */
-    self.getAllSubmissions = function(siteId) {
-        siteId = siteId || $mmSite.getId();
-
+    function getAllSubmissions(siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.getDb().getAll(mmaModAssignSubmissionsStore);
         });
@@ -103,8 +169,6 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}         Promise resolved with submissions.
      */
     self.getAssignSubmissions = function(assignId, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.getDb().whereEqual(mmaModAssignSubmissionsStore, 'assignmentid', assignId);
         });
@@ -122,8 +186,6 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}         Promise resolved with submission.
      */
     self.getSubmission = function(assignId, userId, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             userId = userId || site.getUserId();
             return site.getDb().get(mmaModAssignSubmissionsStore, [assignId, userId]);
@@ -142,12 +204,10 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}         Promise resolved with the path.
      */
     self.getSubmissionFolder = function(assignId, userId, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             userId = userId || site.getUserId();
 
-            var siteFolderPath = $mmFS.getSiteFolder(siteId),
+            var siteFolderPath = $mmFS.getSiteFolder(site.getId()),
                 submissionFolderPath = 'offlineassign/' + assignId + '/' + userId;
 
             return $mmFS.concatenatePaths(siteFolderPath, submissionFolderPath);
@@ -173,6 +233,71 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Delete a submission grade.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignOffline#deleteSubmissionGrade
+     * @param  {Number} assignId Assignment ID.
+     * @param  {Number} [userId] User ID. If not defined, site's current user.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved if deleted, rejected if failure.
+     */
+    self.deleteSubmissionGrade = function(assignId, userId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            userId = userId || site.getUserId();
+            return site.getDb().remove(mmaModAssignSubmissionsGradeStore, [assignId, userId]);
+        });
+    };
+
+    /**
+     * Get all the stored submissions grade from all the assignments.
+     *
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with submissions.
+     */
+    function getAllSubmissionsGrade(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().getAll(mmaModAssignSubmissionsGradeStore);
+        });
+    };
+
+    /**
+     * Get all the stored submissions grade from a certain assignment.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignOffline#getAssignSubmissionsGrade
+     * @param  {Number} assignId Assignment ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with submissions.
+     */
+    self.getAssignSubmissionsGrade = function(assignId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().whereEqual(mmaModAssignSubmissionsGradeStore, 'assignmentid', assignId);
+        });
+    };
+
+    /**
+     * Get a stored submission grade. Submission grades are not identified using attempt number so it can retrieve the feedback for
+     * a previous attempt.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignOffline#getSubmissionGrade
+     * @param  {Number} assignId Assignment ID.
+     * @param  {Number} [userId] User ID. If not defined, site's current user.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with submission.
+     */
+    self.getSubmissionGrade = function(assignId, userId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            userId = userId || site.getUserId();
+            return site.getDb().get(mmaModAssignSubmissionsGradeStore, [assignId, userId]);
+        });
+    };
+
+    /**
      * Mark/Unmark a submission as being submitted.
      *
      * @module mm.addons.mod_assign
@@ -188,13 +313,11 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}                 Promise resolved if marked, rejected if failure.
      */
     self.markSubmitted = function(assignId, courseId, submitted, acceptStatement, timemodified, userId, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             userId = userId || site.getUserId();
 
             // Check if there's a submission stored.
-            return self.getSubmission(assignId, userId, siteId).catch(function() {
+            return self.getSubmission(assignId, userId, site.getId()).catch(function() {
                 // No submission, create an empty one.
                 var now = new Date().getTime();
                 return {
@@ -231,8 +354,6 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}             Promise resolved if stored, rejected if failure.
      */
     self.saveSubmission = function(assignId, courseId, pluginData, timemodified, submitted, userId, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             userId = userId || site.getUserId();
 
@@ -249,6 +370,48 @@ angular.module('mm.addons.mod_assign')
                 };
 
             return site.getDb().insert(mmaModAssignSubmissionsStore, entry);
+        });
+    };
+
+    /**
+     * Save a grading to be sent later.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignOffline#submitGradingForm
+     * @param  {Number}  assignId       Assign ID.
+     * @param  {Number}  userId         User ID.
+     * @param  {Number}  grade          Grade to submit.
+     * @param  {Number}  attemptNumber  Number of the attempt number being graded.
+     * @param  {Number}  addAttempt     Admit the user to attempt again.
+     * @param  {String}  workflowState  Next workflow State.
+     * @param  {Boolean} applyToAll     If it's a team submission, if the grade applies to all group members.
+     * @param  {Object}  outcomes       Object including all outcomes values. If empty, any of them will be sent.
+     * @param  {Object}  pluginData     Feedback plugin data to save.
+     * @param  {Number}  courseId       Course ID the assign belongs to.
+     * @param  {String}  [siteId]       Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved if stored, rejected if failure.
+     */
+    self.submitGradingForm = function(assignId, userId, grade, attemptNumber, addAttempt, workflowState, applyToAll, outcomes,
+            pluginData, courseId, siteId) {
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var now = new Date().getTime(),
+                entry = {
+                    assignmentid: assignId,
+                    userid: userId,
+                    courseid: courseId,
+                    grade: grade,
+                    attemptnumber: attemptNumber,
+                    addattempt: !!addAttempt,
+                    workflowstate: workflowState,
+                    applytoall: !!applyToAll,
+                    outcomes: outcomes,
+                    plugindata: pluginData,
+                    timemodified: now
+                };
+
+            return site.getDb().insert(mmaModAssignSubmissionsGradeStore, entry);
         });
     };
 

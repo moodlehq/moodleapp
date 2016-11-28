@@ -380,6 +380,11 @@ button.item.item-button-right {
   }
 }
 
+.item-button-right > .buttons.buttons-vertical {
+  flex-direction: column;
+  align-items: flex-end;
+}
+
 /**
  * Core directives.
  */

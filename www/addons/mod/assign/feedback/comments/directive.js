@@ -22,14 +22,29 @@ angular.module('mm.addons.mod_assign')
  * @name mmaModAssignFeedbackComments
  */
 .directive('mmaModAssignFeedbackComments', function($mmaModAssign, $mmText, $mmUtil, $q, $mmaModAssignFeedbackCommentsHandler,
-        $mmEvents, mmaModAssignFeedbackSavedEvent, $mmSite) {
+        $mmEvents, mmaModAssignFeedbackSavedEvent, $mmSite, $mmaModAssignOffline) {
 
     // Convenience function to getContents.
     function getContents(scope, rteEnabled) {
         var draft = $mmaModAssignFeedbackCommentsHandler.getDraft(scope.assign.id, scope.userid);
         if (!draft) {
-            // Use the online text.
-            return $mmaModAssign.getSubmissionPluginText(scope.plugin, scope.edit && !rteEnabled);
+            // Get the text. Check if we have anything offline.
+            // Submission grades are not identified using attempt number so it can retrieve the feedback for a previous
+            // attempt. The app will not treat that as an special case.
+            return $mmaModAssignOffline.getSubmissionGrade(scope.assign.id, scope.userid).catch(function() {
+                // No offline data found.
+            }).then(function(offlineData) {
+                if (offlineData && offlineData.plugindata && offlineData.plugindata.assignfeedbackcomments_editor) {
+                    scope.isSent = false;
+                    return offlineData.plugindata.assignfeedbackcomments_editor.text;
+                }
+
+                scope.isSent = true;
+                // No offline data found, return online text.
+                return $mmaModAssign.getSubmissionPluginText(scope.plugin, scope.edit && !rteEnabled);
+            });
+        } else {
+            scope.isSent = false;
         }
         return $q.when(draft.text);
     }

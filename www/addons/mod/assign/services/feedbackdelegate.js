@@ -131,6 +131,26 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
+     * Check if the feedback draft data for a certain plugin.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignFeedbackDelegate#hasPluginDraftData
+     * @param  {Number} assignId     Assignment ID.
+     * @param  {Number} userId       User ID.
+     * @param  {Object} plugin       Plugin to get the data for.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}             Promise resolved with true if data has draft, resolved with false otherwise.
+     */
+    self.hasPluginDraftData = function(assignId, userId, plugin, siteId) {
+        var handler = self.getPluginHandler(plugin.type);
+        if (handler && handler.hasDraftData) {
+            return $q.when(handler.hasDraftData(assignId, userId, siteId));
+        }
+        return $q.when(false);
+    };
+
+    /**
      * Prepare and return the data to submit for a certain feedback plugin.
      *
      * @module mm.addons.mod_assign

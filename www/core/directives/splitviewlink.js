@@ -126,10 +126,17 @@ angular.module('mm.core')
                                     return;
                                 }
                             }
-                            splitViewController.setLink(element); // Set last link loaded.
-                            splitViewController.clearMarkedLinks();
-                            element.addClass('mm-split-item-selected');
-                            $state.go(tabletStateName, stateParams, {location:'replace'});
+
+                            // Set this link as candidate to load. This is used when the split view blocks view changes.
+                            splitViewController.setCandidateLink(element);
+
+                            // Load the state.
+                            $state.go(tabletStateName, stateParams, {location:'replace'}).then(function() {
+                                // State change success, now mark the link as loaded.
+                                splitViewController.setLink(element);
+                                splitViewController.clearMarkedLinks();
+                                element.addClass('mm-split-item-selected');
+                            });
                         } else {
                             $state.go(stateName, stateParams);
                         }

@@ -15,12 +15,14 @@
 angular.module('mm.core')
 
 .constant('mmCoreSplitViewLoad', 'mmSplitView:load')
+.constant('mmCoreSplitViewBlock', 'mmSplitView:block')
 
 .controller('mmSplitView', function($state, $ionicPlatform, $timeout, $interpolate) {
     var self = this,
         element,
         menuState,
         linkToLoad,
+        candidateLink,
         component,
         ionicViewEventData,
         viewEventListeners = [],
@@ -29,25 +31,21 @@ angular.module('mm.core')
         startTime = new Date().getTime();
 
     /**
-     * Trigger click on a DOM element.
-     *
-     * @param  {Object} link DOM element to trigger click.
-     * @return {Boolean}     True if success, false otherwise.
-     */
-    function triggerClick(link) {
-        if (link && link.length && link.triggerHandler) {
-            link.triggerHandler('click');
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * Clears links marked as selected.
      */
     this.clearMarkedLinks = function() {
         angular.element(element.querySelectorAll('[mm-split-view-link]')).removeClass('mm-split-item-selected');
     };
+
+    /**
+     * Get candidate link.
+     *
+     * @return {Object} Candidate link.
+     */
+    this.getCandidateLink = function() {
+        return candidateLink;
+    };
+
 
     /**
      * Get component.
@@ -183,7 +181,7 @@ angular.module('mm.core')
                 }
             }
 
-            if (!triggerClick(linkToLoad)) {
+            if (!this.triggerClick(linkToLoad)) {
                 // Link not found. Let's retry once in the next digest.
                 if (!retrying) {
                     linkToLoad = undefined;
@@ -237,6 +235,15 @@ angular.module('mm.core')
     };
 
     /**
+     * Set candidate mm-split-view-link to load. Used when split view blocks leaving the current view.
+     *
+     * @param {Object} link Link to set (DOM element).
+     */
+    this.setCandidateLink = function(link) {
+        candidateLink = link;
+    };
+
+    /**
      * Set component.
      *
      * @param {String} cmp Component.
@@ -261,6 +268,7 @@ angular.module('mm.core')
      */
     this.setLink = function(link) {
         linkToLoad = link;
+        this.setCandidateLink(null);
     };
 
     /**
@@ -284,6 +292,20 @@ angular.module('mm.core')
                 listener(data);
             }
         });
+    };
+
+    /**
+     * Trigger click on a DOM element.
+     *
+     * @param  {Object} link DOM element to trigger click.
+     * @return {Boolean}     True if success, false otherwise.
+     */
+    this.triggerClick = function(link) {
+        if (link && link.length && link.triggerHandler) {
+            link.triggerHandler('click');
+            return true;
+        }
+        return false;
     };
 })
 
@@ -334,7 +356,7 @@ angular.module('mm.core')
  *
  * @param {String} [menuState] Name of the state loaded in the left pane (menu). If not defined it will use $state.$current.name.
  */
-.directive('mmSplitView', function($log, $state, $ionicPlatform, $mmUtil, mmCoreSplitViewLoad) {
+.directive('mmSplitView', function($log, $state, $ionicPlatform, $mmUtil, mmCoreSplitViewLoad, mmCoreSplitViewBlock) {
 
     $log = $log.getInstance('mmSplitView');
 
@@ -349,7 +371,10 @@ angular.module('mm.core')
                 menuState = attrs.menuState || $state.$current.name,
                 menuParams = $state.params,
                 menuWidth = attrs.menuWidth,
-                component = attrs.component || 'tablet';
+                component = attrs.component || 'tablet',
+                stateChangeListener,
+                currentBlockFunction,
+                leaving = false;
 
             // Save header bar buttons (needed for mm-nav-buttons).
             controller.saveHeaderBarButtons();
@@ -403,10 +428,58 @@ angular.module('mm.core')
             scope.$on('$ionicView.beforeEnter', eventReceived);
             scope.$on('$ionicView.afterEnter', eventReceived);
 
+            scope.$on(mmCoreSplitViewBlock, blockEventReceived);
+
             function eventReceived(e, data) {
                 // Update data only if transition has changed.
                 if (controller.getIonicViewEventData().transitionId != data.transitionId) {
                     controller.setIonicViewEventData(data);
+                }
+            }
+
+            // Split view received an event to block/unblock leaving the view.
+            function blockEventReceived(e, data) {
+                if (!data || data.state != menuState || !$mmUtil.basicLeftCompare(data.stateParams, menuParams, 1)) {
+                    // Not the current state, ignore event.
+                    return;
+                }
+
+                if (data.block && data.blockFunction) {
+                    // Stop listening if it was listening already, we can only have 1 listener.
+                    stateChangeListener && stateChangeListener();
+
+                    // Listen for state changes.
+                    stateChangeListener = scope.$on('$stateChangeStart', function(event, toState, toParams) {
+                        // Stop state change.
+                        event.preventDefault();
+
+                        if (leaving) {
+                            // Leave view pending, don't call again.
+                            return;
+                        }
+                        leaving = true;
+
+                        // Call the block function.
+                        data.blockFunction().then(function() {
+                            // User confirmed to leave or there was no need to confirm, leave the view.
+                            // Get candidate link to load (if any).
+                            var candidateLink = controller.getCandidateLink();
+
+                            // We can unregister the listener since leaving the state in split view means it's destroyed.
+                            stateChangeListener && stateChangeListener();
+
+                            if (!controller.triggerClick(candidateLink)) {
+                                // No candidate link, the state change was triggered by another link. Go to the target state.
+                                return $state.go(toState.name, toParams);
+                            }
+                        }).finally(function() {
+                            leaving = false;
+                            controller.setCandidateLink(null);
+                        });
+                    });
+                } else if (!data.block && currentBlockFunction && currentBlockFunction === data.blockFunction) {
+                    // Current listener is requesting not to block it anymore, stop listening.
+                    stateChangeListener && stateChangeListener();
                 }
             }
         }
