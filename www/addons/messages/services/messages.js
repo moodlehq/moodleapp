@@ -442,16 +442,22 @@ angular.module('mm.addons.messages')
         }
     };
 
-    self.markMessageRead = function(message) {
+    /**
+     * Mark message as read.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @param messageId   ID of message to mark as read
+     * @returns {Promise} Promise resolved with boolean marking success or not.
+     */
+    self.markMessageRead = function(messageId) {
         var params = {
-            'messageid': message,
+            'messageid': messageId,
             'timeread': Math.floor(Date.now()/1000)
         };
         var preSets = {
             typeExpected: 'boolean'
         };
-        console.log('Parameters of mark_message_read WS call are: ');
-        console.log(params);
         return $mmSite.write('core_message_mark_message_read', params);
 
     };

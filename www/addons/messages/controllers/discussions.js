@@ -33,21 +33,14 @@ angular.module('mm.addons.messages')
     function fetchDiscussions() {
         return $mmaMessages.getDiscussions().then(function(discs) {
             discussions = discs;
+
             // Convert to an array for sorting.
             var array = [];
-            console.log(discussions);
-
             angular.forEach(discussions, function(v) {
                 v.unreadMsgs = 0;
-
-                console.log('Going THROUGH messages');
                 $mmaMessages.getDiscussion(v.message.user).then(function(messages) {
-                    console.log('PRINTING MESSAGES');
-                    console.log(messages);
-                    console.log('current user id is '+currentUserId);
                     angular.forEach(messages, function(msg) {
                         if (msg.read == 0 && msg.useridto == currentUserId) {
-                            console.log('found one unread message');
                             v.unreadMsgs += 1;
                         }
                     });
@@ -56,8 +49,6 @@ angular.module('mm.addons.messages')
                 array.push(v);
             });
             $scope.discussions = array;
-            console.log('PRINTING DISCUSSIONS AFTER')
-            console.log($scope.discussions);
         }, function(error) {
             if (typeof error === 'string') {
                 $mmUtil.showErrorModal(error);
@@ -74,7 +65,6 @@ angular.module('mm.addons.messages')
     }
 
     $scope.refresh = function() {
-        console.log('SCOPE  REFRESH');
         refreshData().finally(function() {
             $scope.$broadcast('scroll.refreshComplete');
         });
@@ -109,7 +99,6 @@ angular.module('mm.addons.messages')
 
     $scope.$on('$destroy', function() {
         if (newMessagesObserver && newMessagesObserver.off) {
-            console.log('DESTROY TRUE');
             newMessagesObserver.off();
         }
     });
