@@ -49,7 +49,12 @@ angular.module('mm.core')
             type = dom.getAttribute('type');
         e.setAttribute('src', url);
         if (type) {
-            e.setAttribute('type', type);
+            if (ionic.Platform.isAndroid() && type == 'video/quicktime') {
+                // Fix for VideoJS/Chrome bug https://github.com/videojs/video.js/issues/423 .
+                e.setAttribute('type', 'video/mp4');
+            } else {
+                e.setAttribute('type', type);
+            }
         }
         dom.parentNode.insertBefore(e, dom);
     }
