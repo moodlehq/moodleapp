@@ -323,7 +323,7 @@ angular.module('mm.addons.mod_forum')
             // Get the users.
             angular.forEach(posts, function(post) {
                 // Now treat the user.
-                if (userIds.indexOf(post.userid) == -1) {
+                if (post.userid && userIds.indexOf(post.userid) == -1) {
                     // User not treated yet. Mark it as treated and prefetch the profile and the image.
                     userIds.push(post.userid);
                     promises.push($mmUser.getProfile(post.userid, courseId));
