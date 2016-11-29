@@ -397,7 +397,7 @@ angular.module('mm.core.course')
              * @param  {Number} courseId Course ID the module belongs to.
              * @return {Promise}         Promise resolved when done.
              */
-            self.invalidateModule = function(module, courseId) {
+            this.invalidateModule = function(module, courseId) {
                 return $mmCourse.invalidateModule(module.id);
             };
 
