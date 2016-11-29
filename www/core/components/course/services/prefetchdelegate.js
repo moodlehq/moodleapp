@@ -76,8 +76,13 @@ angular.module('mm.core')
      *                                                                 defined, we'll use getFiles to remove them (slow).
      *                             - (Optional) loadContents(module, courseId) (Promise) Load module contents in module.contents if
      *                                                                 needed. Only needed if getFiles isn't implemeneted.
-     *                             - (Optional) hasUpdates(module, courseId, moduleUpdates) (Promise) Check if the module has
-     *                                                                 updates to be downloaded based on getCourseUpdates result.
+     *                             - (Optional) hasUpdates(module, courseId, moduleUpdates) (Promise|Boolean) Check if the module
+     *                                                                 has updates to download based on getCourseUpdates result.
+     *                                                                 Should return a boolean or a promise resolved with a boolean.
+     *                             - (Optional) canUseCheckUpdates(module, courseId) (Promise|Boolean) Check if a certain module can
+     *                                                                 use core_course_check_updates to check if it has updates. If
+     *                                                                 not defined, it will assume all modules can be checked.
+     *                                                                 Should return a boolean or a promise resolved with a boolean.
      */
     self.registerPrefetchHandler = function(addon, handles, handler) {
         if (typeof prefetchHandlers[handles] !== 'undefined') {
@@ -114,6 +119,32 @@ angular.module('mm.core')
          */
         self.canCheckUpdates = function() {
             return $mmSite.wsAvailable('core_course_check_updates');
+        };
+
+         /**
+         * Check if a certain module can use core_course_check_updates.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmCoursePrefetchDelegate#canModuleUseCheckUpdates
+         * @param {Object} module   Module.
+         * @param {Number} courseId Course ID the module belongs to.
+         * @return {Promise}        Promise resolved with boolean: whether the module can use check updates WS.
+         */
+        self.canModuleUseCheckUpdates = function(module, courseId) {
+            var handler = enabledHandlers[module.modname];
+
+            if (!handler) {
+                // Module not supported, cannot use check updates.
+                return $q.when(false);
+            }
+
+            if (handler.canUseCheckUpdates) {
+                return $q.when(handler.canUseCheckUpdates(module, courseId));
+            }
+
+            // By default, modules can use check updates.
+            return $q.when(true);
         };
 
         /**
@@ -276,17 +307,28 @@ angular.module('mm.core')
          * @return {Promise}          Promise resolved with the list.
          */
         function createToCheckList(modules, courseId) {
-            var result = [],
+            var result = {
+                    toCheck: [],
+                    cannotUse: []
+                },
                 promises = [];
 
             angular.forEach(modules, function(module) {
                 promises.push(getModuleStatusAndDownloadTime(module, courseId).then(function(data) {
                     if (data.status == mmCoreDownloaded) {
-                        // Module is downloaded and not outdated, add it to the list.
-                        result.push({
-                            contextlevel: 'module',
-                            id: module.id,
-                            since: data.downloadtime || 0
+                        // Module is downloaded and not outdated. Check if it can check updates.
+                        return self.canModuleUseCheckUpdates(module, courseId).then(function(canUse) {
+                            if (canUse) {
+                                // Can use check updates, add it to the tocheck list.
+                                result.toCheck.push({
+                                    contextlevel: 'module',
+                                    id: module.id,
+                                    since: data.downloadtime || 0
+                                });
+                            } else {
+                                // Cannot use check updates, add it to the cannotUse array.
+                                result.cannotUse.push(module);
+                            }
                         });
                     }
                 }).catch(function() {
@@ -295,10 +337,12 @@ angular.module('mm.core')
             });
 
             return $q.all(promises).then(function() {
-                // Sort result.
-                return result.sort(function (a, b) {
+                // Sort toCheck list.
+                result.toCheck.sort(function (a, b) {
                     return a.id > b.id;
                 });
+
+                return result;
             });
         }
 
@@ -376,28 +420,37 @@ angular.module('mm.core')
                 courseUpdatesPromises[siteId] = {};
             }
 
-            promise = createToCheckList(modules, courseId).then(function(list) {
-                if (!list || !list.length) {
-                    return [];
+            promise = createToCheckList(modules, courseId).then(function(data) {
+                var result = {},
+                    params,
+                    preSets;
+
+                // Mark as false the modules that cannot use check updates WS.
+                angular.forEach(data.cannotUse, function(module) {
+                    result[module.id] = false;
+                });
+
+                if (!data.toCheck.length) {
+                    // Nothing to check, no need to call the WS.
+                    return result;
                 }
 
-                var data = {
-                        courseid: courseId,
-                        tocheck: list
-                    },
-                    preSets = {
-                        cacheKey: getCourseUpdatesCacheKey(courseId),
-                        getEmergencyCacheUsingCacheKey: true,
-                        uniqueCacheKey: true
-                    };
+                params = {
+                    courseid: courseId,
+                    tocheck: data.toCheck
+                };
+                preSets = {
+                    cacheKey: getCourseUpdatesCacheKey(courseId),
+                    getEmergencyCacheUsingCacheKey: true,
+                    uniqueCacheKey: true
+                };
 
-                return $mmSite.read('core_course_check_updates', data, preSets).then(function(response) {
+                return $mmSite.read('core_course_check_updates', params, preSets).then(function(response) {
                     if (!response || typeof response.instances == 'undefined') {
                         return $q.reject();
                     }
 
                     // Format the response to index it by module ID.
-                    var result = {};
                     angular.forEach(response.instances, function(instance) {
                         result[instance.id] = instance;
                     });
