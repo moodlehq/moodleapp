@@ -38,6 +38,7 @@ angular.module('mm.addons.messages')
         canDelete = $mmaMessages.canDeleteMessages(), // Check if user can delete messages.
         syncObserver;
 
+    $scope.showKeyboard = $stateParams.showKeyboard;
     $scope.loaded = false;
     $scope.messages = [];
     $scope.userId = userId;
