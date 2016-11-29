@@ -106,7 +106,7 @@ angular.module('mm.core.user')
         return $mmFileUploaderHelper.selectAndUploadFile(maxSize, title, filterMethods).then(function(result) {
             return $mmUser.changeProfilePicture(result.itemid, userid).then(function(profileimageurl) {
                 $mmEvents.trigger(mmUserProfilePictureUpdated, {userId: userid, picture: profileimageurl});
-                $mmSitesManager.updateSiteInfo();
+                $mmSitesManager.updateSiteInfo($mmSite.getId());
                 $scope.refreshUser();
             });
         }).catch(function(message) {
