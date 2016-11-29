@@ -28,6 +28,9 @@ angular.module('mm.addons.mod_assign')
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModAssignComponent, false),
         $mmaGrades;
 
+    // RegExp to check if a module has updates based on the result of $mmCoursePrefetchDelegate#getCourseUpdates.
+    self.updatesNames = /^configuration$|^.*files$|^submissions$|^grades$|^gradeitems$|^outcomes$|^comments$/;
+
     /**
      * Download the module.
      *

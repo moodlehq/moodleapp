@@ -31,6 +31,9 @@ angular.module('mm.core.course')
             this.component = 'core_module';
             this.isResource = false;
 
+            // RegExp to check if a module has updates based on the result of $mmCoursePrefetchDelegate#getCourseUpdates.
+            this.updatesNames = /^.*files$/;
+
             /**
              * Add an ongoing download to the downloadPromises list. On finish the promise will be removed.
              *

@@ -26,6 +26,9 @@ angular.module('mm.addons.mod_glossary')
 
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModGlossaryComponent, false);
 
+    // RegExp to check if a module has updates based on the result of $mmCoursePrefetchDelegate#getCourseUpdates.
+    self.updatesNames = /^configuration$|^.*files$|^entries$/;
+
     /**
      * Determine the status of a module based on the current status detected.
      *

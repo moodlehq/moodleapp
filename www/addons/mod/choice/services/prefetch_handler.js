@@ -21,10 +21,13 @@ angular.module('mm.addons.mod_choice')
  * @ngdoc service
  * @name $mmaModChoicePrefetchHandler
  */
-.factory('$mmaModChoicePrefetchHandler', function($mmaModChoice, mmaModChoiceComponent, $mmFilepool, $mmSite, $q, $mmUtil,
+.factory('$mmaModChoicePrefetchHandler', function($mmaModChoice, mmaModChoiceComponent, $mmFilepool, $q, $mmUtil,
             mmCoreDownloaded, mmCoreOutdated, $mmUser, $mmPrefetchFactory) {
 
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModChoiceComponent);
+
+    // RegExp to check if a module has updates based on the result of $mmCoursePrefetchDelegate#getCourseUpdates.
+    self.updatesNames = /^configuration$|^.*files$|^answers$/;
 
     /**
      * Determine the status of a module based on the current status detected.
