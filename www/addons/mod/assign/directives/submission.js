@@ -28,7 +28,7 @@ angular.module('mm.addons.mod_assign')
         mmaModAssignSubmissionInvalidatedEvent, $mmGroups, $state, $mmaModAssignHelper, mmaModAssignSubmissionStatusReopened,
         $mmEvents, mmaModAssignSubmittedForGradingEvent, $mmFileUploaderHelper, $mmApp, $mmText, mmaModAssignComponent, $mmUtil,
         $mmaModAssignOffline, mmaModAssignEventManualSynced, $mmCourse, $mmAddonManager, mmaModAssignAttemptReopenMethodManual,
-        $mmLang, $mmSyncBlock, mmaModAssignEventSubmitGrade, $ionicHistory) {
+        $mmLang, $mmSyncBlock, mmaModAssignEventSubmitGrade, $ionicHistory, $ionicPlatform, mmaModAssignGradedEvent) {
 
     var originalGrades =  {
         grade: false,
@@ -121,7 +121,8 @@ angular.module('mm.addons.mod_assign')
 
             // Do not override already loaded grade.
             if (feedbackStatus.grade && feedbackStatus.grade.grade && !scope.grade.grade) {
-                scope.grade.grade = parseFloat(feedbackStatus.grade.grade);
+                var parsedGrade = parseFloat(feedbackStatus.grade.grade);
+                scope.grade.grade = parsedGrade || parsedGrade == 0 ? parsedGrade : null;
             }
         } else {
             // If no feedback, always show Submission.
@@ -185,7 +186,8 @@ angular.module('mm.addons.mod_assign')
                             if (scope.grade.scale) {
                                 scope.grade.grade = getSelectedScaleId(scope.grade.scale, grade.gradeformatted);
                             } else {
-                                scope.grade.grade = parseFloat(grade.gradeformatted) || null;
+                                var parsedGrade = parseFloat(grade.gradeformatted);
+                                scope.grade.grade = parsedGrade || parsedGrade == 0 ? parsedGrade : null;
                             }
                             scope.grade.modified = grade.gradedategraded;
                             originalGrades.grade = scope.grade.grade;
@@ -570,7 +572,10 @@ angular.module('mm.addons.mod_assign')
 
             obsSubmitGrade = $mmEvents.on(mmaModAssignEventSubmitGrade, function() {
                 submitGrade().then(function() {
-                    blockData && blockData.back();
+                    // Go back if not in tablet view.
+                    if (!$ionicPlatform.isTablet()) {
+                        blockData && blockData.back();
+                    }
                 });
             });
 
@@ -708,11 +713,20 @@ angular.module('mm.addons.mod_assign')
                             discardDrafts().finally(function() {
                                 // Invalidate and refresh data.
                                 invalidateAndRefresh();
+
+                                $mmEvents.trigger(mmaModAssignGradedEvent, {
+                                    assignmentId: scope.assign.id,
+                                    submissionId: submitId,
+                                    userId: $mmSite.getUserId(),
+                                    siteId: $mmSite.getId()
+                                });
                             });
                         });
                     }).catch(function(error) {
                         $mmUtil.showErrorModal(error);
                     }).finally(function() {
+                        // Keep it on submission view.
+                        scope.showSubmission = true;
                         modal.dismiss();
                     });
                 });

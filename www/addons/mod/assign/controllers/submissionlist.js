@@ -23,10 +23,11 @@ angular.module('mm.addons.mod_assign')
  */
 .controller('mmaModAssignSubmissionListCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $translate, $q,
         mmaModAssignComponent, mmaModAssignSubmissionInvalidatedEvent, mmaModAssignSubmissionStatusSubmitted,
-        mmaModAssignNeedGrading) {
+        mmaModAssignNeedGrading, $mmEvents, mmaModAssignGradedEvent, $mmSite) {
 
     var courseId = $stateParams.courseid,
-        selectedStatus = $stateParams.status;
+        selectedStatus = $stateParams.status,
+        obsGraded;
 
     if (selectedStatus) {
         if (selectedStatus == mmaModAssignNeedGrading) {
@@ -145,10 +146,21 @@ angular.module('mm.addons.mod_assign')
         $scope.assignmentLoaded = true;
     });
 
+    obsGraded = $mmEvents.on(mmaModAssignGradedEvent, function(data) {
+        if ($scope.assign && data.assignmentId == $scope.assign.id && data.siteId == $mmSite.getId() &&
+                data.userId == $mmSite.getUserId()) {
+            refreshAllData();
+        }
+    });
+
     // Pull to refresh.
     $scope.refreshSubmissionList = function() {
         refreshAllData().finally(function() {
             $scope.$broadcast('scroll.refreshComplete');
         });
     };
+
+    $scope.$on('$destroy', function() {
+        obsGraded && obsGraded.off && obsGraded.off();
+    });
 });
