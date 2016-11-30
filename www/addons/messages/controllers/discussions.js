@@ -37,15 +37,9 @@ angular.module('mm.addons.messages')
             // Convert to an array for sorting.
             var array = [];
             angular.forEach(discussions, function(v) {
-                v.unreadMsgs = 0;
-                $mmaMessages.getDiscussion(v.message.user).then(function(messages) {
-                    angular.forEach(messages, function(msg) {
-                        if (msg.read == 0 && msg.useridto == currentUserId) {
-                            v.unreadMsgs += 1;
-                        }
-                    });
-                });
-
+                if (v.unread === undefined) {
+                    v.unread = 0;
+                }
                 array.push(v);
             });
             $scope.discussions = array;
