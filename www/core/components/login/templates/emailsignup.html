@@ -58,7 +58,7 @@
                 <div ng-if="settings.recaptchachallengehash && settings.recaptchachallengeimage">
                     <div class="item item-divider item-text-wrap">{{ 'mm.login.security_question' | translate }}</div>
                     <div class="item">
-                        <img ng-src="{{settings.recaptchachallengeimage}}" alt="reCAPTCHA challenge image">
+                        <img ng-src="{{settings.recaptchachallengeimage}}" alt="{{ 'mm.login.recaptchachallengeimage' | translate }}">
                     </div>
                     <ion-input class="item item-input item-stacked-label item-text-wrap" mm-input-errors>
                         <ion-label mm-mark-required="true">{{ 'mm.login.enterthewordsabove' | translate }}</ion-label>
