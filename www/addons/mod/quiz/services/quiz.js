@@ -21,9 +21,9 @@ angular.module('mm.addons.mod_quiz')
  * @ngdoc service
  * @name $mmaModQuiz
  */
-.factory('$mmaModQuiz', function($log, $mmSite, $mmSitesManager, $q, $translate, $mmUtil, $mmText, $mmQuestionDelegate,
-            $mmaModQuizAccessRulesDelegate, $mmFilepool, $mmaModQuizOnline, $mmaModQuizOffline, $mmSyncBlock, mmaModQuizComponent,
-            $ionicModal, $timeout) {
+.factory('$mmaModQuiz', function($log, $mmSite, $mmSitesManager, $q, $translate, $mmUtil, $mmText, $mmQuestionDelegate, $timeout,
+            $mmaModQuizAccessRulesDelegate, $mmFilepool, $mmaModQuizOnline, $mmaModQuizOffline, mmaModQuizComponent, $ionicModal,
+            $mmAddonManager) {
 
     $log = $log.getInstance('$mmaModQuiz');
 
@@ -241,8 +241,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}            Promise resolved with the access information.
      */
     self.getAttemptAccessInformation = function(quizId, attemptId, offline, ignoreCache, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     quizid: quizId,
@@ -299,8 +297,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}             Promise resolved with the attempt data.
      */
     self.getAttemptData = function(attemptId, page, preflightData, offline, ignoreCache, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     attemptid: attemptId,
@@ -486,7 +482,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}            Promise resolved with the attempt review.
      */
     self.getAttemptReview = function(attemptId, page, ignoreCache, siteId) {
-        siteId = siteId || $mmSite.getId();
         if (typeof page == 'undefined') {
             page = -1;
         }
@@ -534,8 +529,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}             Promise resolved with the attempt summary.
      */
     self.getAttemptSummary = function(attemptId, preflightData, offline, ignoreCache, loadLocal, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     attemptid: attemptId,
@@ -555,7 +548,7 @@ angular.module('mm.addons.mod_quiz')
             return site.read('mod_quiz_get_attempt_summary', params, preSets).then(function(response) {
                 if (response && response.questions) {
                     if (offline && loadLocal) {
-                        return $mmaModQuizOffline.loadQuestionsLocalStates(attemptId, response.questions, siteId);
+                        return $mmaModQuizOffline.loadQuestionsLocalStates(attemptId, response.questions, site.getId());
                     }
                     return response.questions;
                 }
@@ -598,8 +591,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}            Promise resolved with the combined review options.
      */
     self.getCombinedReviewOptions = function(quizId, ignoreCache, siteId, userId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             userId = userId || site.getUserId();
 
@@ -670,8 +661,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}            Promise resolved with the feedback.
      */
     self.getFeedbackForGrade = function(quizId, grade, ignoreCache, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
 
             var params = {
@@ -715,6 +704,7 @@ angular.module('mm.addons.mod_quiz')
 
     /**
      * Get cache key for get grade from gradebook WS calls.
+     * Deprecated function. Delete when $mmaGrades become core.
      *
      * @param {Number} quizId Quiz ID.
      * @param {Number} grade  Grade.
@@ -738,8 +728,28 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}            Promise resolved with an object containing the grade and the feedback.
      */
     self.getGradeFromGradebook = function(courseId, moduleId, ignoreCache, siteId, userId) {
-        siteId = siteId || $mmSite.getId();
+        var $mmaGrades = $mmAddonManager.get('$mmaGrades');
+        if (!$mmaGrades) {
+            return getGradeFromGradebook(courseId, moduleId, ignoreCache, siteId, userId);
+        } else {
+            return $mmaGrades.getGradeModuleItems(courseId, moduleId, userId, null, siteId, ignoreCache).then(function(items) {
+                return items.shift();
+            });
+        }
+    };
 
+    /**
+     * Gets a quiz grade and feedback from the gradebook.
+     * Deprecated function. Delete when $mmaGrades become core.
+     *
+     * @param  {Number} courseId    Course ID.
+     * @param  {Number} moduleId    Quiz module ID.
+     * @param  {Boolean} ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @param  {Number} [userId]    User ID. If not defined use site's current user.
+     * @return {Promise}            Promise resolved with an object containing the grade and the feedback.
+     */
+    function getGradeFromGradebook(courseId, moduleId, ignoreCache, siteId, userId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             userId = userId || site.getUserId();
 
@@ -785,10 +795,10 @@ angular.module('mm.addons.mod_quiz')
                     } else {
                         result.feedback = '';
                     }
-                    if (quizEntry.grade) {
+                    if (quizEntry.grade && quizEntry.grade.content) {
                         grade = parseFloat(quizEntry.grade.content);
                         if (!isNaN(grade)) {
-                            result.grade = grade;
+                            result.gradeformatted = grade;
                         }
                     }
                     return result;
@@ -796,7 +806,7 @@ angular.module('mm.addons.mod_quiz')
                 return $q.reject();
             });
         });
-    };
+    }
 
     /**
      * Given a list of attempts, returns the last finished attempt.
@@ -903,7 +913,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}                Promise resolved when the Quiz is retrieved.
      */
     self.getQuiz = function(courseId, cmid, siteId, forceCache) {
-        siteId = siteId || $mmSite.getId();
         return getQuiz(siteId, courseId, 'coursemodule', cmid, forceCache);
     };
 
@@ -920,7 +929,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}                Promise resolved when the Quiz is retrieved.
      */
     self.getQuizById = function(courseId, id, siteId, forceCache) {
-        siteId = siteId || $mmSite.getId();
         return getQuiz(siteId, courseId, 'id', id, forceCache);
     };
 
@@ -947,8 +955,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}            Promise resolved with the access information.
      */
     self.getQuizAccessInformation = function(quizId, offline, ignoreCache, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     quizid: quizId
@@ -1034,8 +1040,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}            Promise resolved with the access information.
      */
     self.getQuizRequiredQtypes = function(quizId, ignoreCache, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     quizid: quizId
@@ -1200,7 +1204,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}                  Promise resolved with the attempts.
      */
     self.getUserAttempts = function(quizId, status, includePreviews, offline, ignoreCache, siteId, userId) {
-        siteId = siteId || $mmSite.getId();
         status = status || 'all';
         if (typeof includePreviews == 'undefined') {
             includePreviews = true;
@@ -1269,8 +1272,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}            Promise resolved with the attempts.
      */
     self.getUserBestGrade = function(quizId, ignoreCache, siteId, userId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             userId = userId || site.getUserId();
 
@@ -1415,7 +1416,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
     self.invalidateAttemptAccessInformation = function(quizId, siteId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKeyStartingWith(getAttemptAccessInformationCommonCacheKey(quizId));
         });
@@ -1433,7 +1433,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}         Promise resolved when the data is invalidated.
      */
     self.invalidateAttemptAccessInformationForAttempt = function(quizId, attemptId, siteId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getAttemptAccessInformationCacheKey(quizId, attemptId));
         });
@@ -1450,7 +1449,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}         Promise resolved when the data is invalidated.
      */
     self.invalidateAttemptData = function(attemptId, siteId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKeyStartingWith(getAttemptDataCommonCacheKey(attemptId));
         });
@@ -1468,7 +1466,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}         Promise resolved when the data is invalidated.
      */
     self.invalidateAttemptDataForPage = function(attemptId, page, siteId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getAttemptDataCacheKey(attemptId, page));
         });
@@ -1485,7 +1482,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}         Promise resolved when the data is invalidated.
      */
     self.invalidateAttemptReview = function(attemptId, siteId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKeyStartingWith(getAttemptReviewCommonCacheKey(attemptId));
         });
@@ -1503,7 +1499,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}         Promise resolved when the data is invalidated.
      */
     self.invalidateAttemptReviewForPage = function(attemptId, page, siteId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getAttemptReviewCacheKey(attemptId, page));
         });
@@ -1520,7 +1515,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}         Promise resolved when the data is invalidated.
      */
     self.invalidateAttemptSummary = function(attemptId, siteId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getAttemptSummaryCacheKey(attemptId));
         });
@@ -1537,7 +1531,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}         Promise resolved when the data is invalidated.
      */
     self.invalidateCombinedReviewOptions = function(quizId, siteId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKeyStartingWith(getCombinedReviewOptionsCommonCacheKey(quizId));
         });
@@ -1555,7 +1548,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
     self.invalidateCombinedReviewOptionsForUser = function(quizId, siteId, userId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             userId = userId || site.getUserId();
             return site.invalidateWsCacheForKey(getCombinedReviewOptionsCacheKey(quizId, userId));
@@ -1598,7 +1590,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
     self.invalidateFeedback = function(quizId, siteId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKeyStartingWith(getFeedbackForGradeCommonCacheKey(quizId));
         });
@@ -1616,7 +1607,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
     self.invalidateFeedbackForGrade = function(quizId, grade, siteId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getFeedbackForGradeCacheKey(quizId, grade));
         });
@@ -1631,11 +1621,11 @@ angular.module('mm.addons.mod_quiz')
      * @param {Number} moduleId The module ID.
      * @return {Promise}        Promise resolved when the files are invalidated.
      */
-     self.invalidateFiles = function(moduleId) {
-         return $mmFilepool.invalidateFilesByComponent($mmSite.getId(), mmaModQuizComponent, moduleId);
-     };
+    self.invalidateFiles = function(moduleId) {
+        return $mmFilepool.invalidateFilesByComponent($mmSite.getId(), mmaModQuizComponent, moduleId);
+    };
 
-    /**
+     /**
      * Invalidates grade from gradebook for a certain user.
      *
      * @module mm.addons.mod_quiz
@@ -1647,10 +1637,14 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
     self.invalidateGradeFromGradebook = function(courseId, siteId, userId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             userId = userId || site.getUserId();
-            return site.invalidateWsCacheForKey(getGradeFromGradebookCacheKey(courseId, userId));
+            var $mmaGrades = $mmAddonManager.get('$mmaGrades');
+            if (!$mmaGrades) {
+                return site.invalidateWsCacheForKey(getGradeFromGradebookCacheKey(courseId, userId));
+            } else {
+                return $mmaGrades.invalidateGradeModuleItems(courseId, userId, null, siteId);
+            }
         });
     };
 
@@ -1665,7 +1659,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}         Promise resolved when the data is invalidated.
      */
     self.invalidateQuizAccessInformation = function(quizId, siteId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getQuizAccessInformationCacheKey(quizId));
         });
@@ -1682,7 +1675,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}         Promise resolved when the data is invalidated.
      */
     self.invalidateQuizRequiredQtypes = function(quizId, siteId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getQuizRequiredQtypesCacheKey(quizId));
         });
@@ -1699,7 +1691,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
     self.invalidateUserAttempts = function(quizId, siteId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKeyStartingWith(getUserAttemptsCommonCacheKey(quizId));
         });
@@ -1717,7 +1708,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
     self.invalidateUserAttemptsForUser = function(quizId, siteId, userId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             userId = userId || site.getUserId();
             return site.invalidateWsCacheForKey(getUserAttemptsCacheKey(quizId, userId));
@@ -1735,7 +1725,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
     self.invalidateUserBestGrade = function(quizId, siteId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKeyStartingWith(getUserBestGradeCommonCacheKey(quizId));
         });
@@ -1753,7 +1742,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
     self.invalidateUserBestGradeForUser = function(quizId, siteId, userId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             userId = userId || site.getUserId();
             return site.invalidateWsCacheForKey(getUserBestGradeCacheKey(quizId, userId));
@@ -1771,7 +1759,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
     self.invalidateQuizData = function(courseId, siteId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getQuizDataCacheKey(courseId));
         });
@@ -1879,7 +1866,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}         Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
     self.isPluginEnabled = function(siteId) {
-        siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
             // All WS were introduced at the same time so checking one is enough.
@@ -2180,8 +2166,6 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}              Promise resolved with the attempt data.
      */
     self.startAttempt = function(quizId, preflightData, forceNew, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     quizid: quizId,

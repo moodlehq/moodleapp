@@ -25,7 +25,7 @@ angular.module('mm.addons.mod_quiz')
             $mmaModQuizHelper, $ionicHistory, $ionicScrollDelegate, $mmEvents, mmaModQuizEventAttemptFinished, $state,
             $mmQuestionBehaviourDelegate, $mmaModQuizSync, $mmText, $mmUtil, mmaModQuizEventAutomSynced, $mmSite,
             $mmCoursePrefetchDelegate, mmCoreDownloaded, mmCoreDownloading, mmCoreEventPackageStatusChanged,
-            mmaModQuizComponent, $mmaModQuizPrefetchHandler, $mmApp, $mmEvents, mmCoreEventOnlineStatusChanged) {
+            mmaModQuizComponent, $mmaModQuizPrefetchHandler, $mmApp, mmCoreEventOnlineStatusChanged) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         quiz,
@@ -191,7 +191,10 @@ angular.module('mm.addons.mod_quiz')
 
             // Get gradebook grade.
             return $mmaModQuiz.getGradeFromGradebook(courseId, module.id).then(function(data) {
-                gradebookData = data;
+                gradebookData = {
+                    grade: data.gradeformatted,
+                    feedback: data.feedback
+                };
             }).catch(function() {
                 // Fallback to quiz best grade if failure or not found.
                 gradebookData = {
