@@ -36,13 +36,14 @@ angular.module('mm.addons.mod_quiz')
         newAttempt,
         timeUpCalled = false,
         scrollView = $ionicScrollDelegate.$getByHandle('mmaModQuizPlayerScroll'),
-        offline;
+        offline,
+        blockData;
 
     // Block the quiz so it cannot be synced.
     $mmSyncBlock.blockOperation(mmaModQuizComponent, quizId);
 
     // Block leaving the view, we want to save changes before leaving.
-    $mmUtil.blockLeaveView($scope, leavePlayer);
+    blockData = $mmUtil.blockLeaveView($scope, leavePlayer);
 
     $scope.moduleUrl = moduleUrl;
     $scope.component = mmaModQuizComponent;
@@ -282,7 +283,10 @@ angular.module('mm.addons.mod_quiz')
                 $mmEvents.trigger(mmaModQuizEventAttemptFinished, {quizId: quiz.id, attemptId: attempt.id, synced: !offline});
                 // Leave the player.
                 $scope.questions = [];
-                leavePlayer();
+                leavePlayer().then(function() {
+                    // Attempt data successfully saved or user confirmed to leave. Leave player.
+                    blockData && blockData.back();
+                });
             }).catch(function(message) {
                 return $mmaModQuizHelper.showError(message, 'mma.mod_quiz.errorsaveattempt');
             });
