@@ -280,10 +280,12 @@ em {
   background: transparent;
   border: 0;
   margin-bottom: 0;
+  margin-top: 10px;
 
   .tab-item {
     margin-top: -1px;
     max-width: initial;
+    font-size: 120%;
 
     &.active, &.activated {
       margin-top: -1px;
@@ -300,6 +302,7 @@ em {
   padding: 4px;
   padding-left: 56px;
   min-height: 48px;
+  text-decoration: none;
 }
 .user-with-avatar > img:first-child {
     position: absolute;
@@ -383,6 +386,19 @@ button.item.item-button-right {
 .item-button-right > .buttons.buttons-vertical {
   flex-direction: column;
   align-items: flex-end;
+}
+
+.button.button-block {
+  line-height: 28px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+
+  .icon:before,
+  &.icon:before,
+  &.icon-left:before,
+  &.icon-right:before {
+    line-height: 28px;
+  }
 }
 
 /**
@@ -634,22 +650,22 @@ mm-timer {
   padding: 0;
 }
 
-.item-input {
+.item-input.item-stacked-label {
   padding: 16px;
-}
 
-.item-input.item-stacked-label .item-input-wrapper.item-select {
-  display: block;
+  .item-input-wrapper.item-select {
+    display: block;
 
-  select {
-    background: transparent;
-    padding: 12px;
-    margin: 0;
-    width: 100%;
-    position: relative;
-    max-width: 100%;
-    direction: ltr;
-    line-height: 14px;
+    select {
+      background: transparent;
+      padding: 12px;
+      margin: 0;
+      width: 100%;
+      position: relative;
+      max-width: 100%;
+      direction: ltr;
+      line-height: 14px;
+    }
   }
 }
 
@@ -999,5 +1015,15 @@ ion-spinner.mm-spinner-right {
 
   .toggle {
     right: $item-padding + 14px;
+  }
+}
+
+.item-borderless.item-toggle {
+  padding-left: 0;
+  padding-bottom: 5px;
+  padding-top: 5px;
+
+  .toggle {
+    top: 0;
   }
 }

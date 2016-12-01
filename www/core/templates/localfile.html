@@ -1,4 +1,4 @@
-<a class="item item-text-wrap item-button-right item-media" ng-click="open($event)">
+<a class="item item-text-wrap item-button-right item-media" ng-click="open($event)" ng-class="{'item-borderless': noBorder}">
     <img ng-src="{{fileIcon}}" alt="{{fileExtension}}" role="presentation" />
     <p ng-if="!editMode" class="mm-text-with-icon-right">{{fileName}} <i class="icon ion-edit" ng-if="manage" ng-click="activateEdit($event)" ></i></p>
     <form class="item-input-inset mm-input-inset-no-padding" ng-if="editMode" ng-submit="changeName($event, data.filename)">

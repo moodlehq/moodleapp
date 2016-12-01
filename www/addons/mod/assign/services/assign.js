@@ -349,6 +349,20 @@ angular.module('mm.addons.mod_assign')
         });
     };
 
+    // Convenience function to find participant on a list.
+    function getParticipantFromUserId(participants, id) {
+        if (participants) {
+            for (var x in participants) {
+                if (participants[x].id == id) {
+                    var participant = participants[x];
+                    delete participants[x];
+                    return participant;
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * Get user data for submissions since they only have userid.
      *
@@ -367,78 +381,83 @@ angular.module('mm.addons.mod_assign')
             subs = [];
 
         angular.forEach(submissions, function(submission) {
-            var participant = false;
-            if (submission.userid > 0) {
-                submission.submitid = submission.userid;
-
-                if (!blind && participants) {
-                    for (var x in participants) {
-                        if (participants[x].id == submission.userid) {
-                            participant = participants[x];
-                            delete participants[x];
-                            break;
-                        }
-                    }
-                    if (participant) {
-                        submission.userfullname = participant.fullname;
-                        submission.userprofileimageurl = participant.profileimageurl;
-                        subs.push(submission);
-                    }
-                } else {
-                    if (!blind) {
-                        promises.push($mmUser.getProfile(submission.userid, courseId, true).then(function(user) {
-                            submission.userfullname = user.fullname;
-                            submission.userprofileimageurl = user.profileimageurl;
-                            subs.push(submission);
-                        }).catch(function() {
-                            // Error getting profile, resolve promise without adding any extra data.
-                        }));
-                    } else {
-                        // Users not blinded! (Moodle < 3.1.1, 3.2)
-                        delete submission.userid;
-
-                        promises.push(self.getAssignmentUserMappings(assignId, submission.submitid).then(function(blindId) {
-                            submission.blindid = blindId;
-                        }).catch(function() {
-                            // Error mapping user, fail silently (Moodle < 2.6)
-                        }));
-
-                        // Add it always.
-                        subs.push(submission);
-                    }
-                }
-            } else if (submission.blindid > 0) {
-                for (var x in participants) {
-                    if (participants[x].id == submission.blindid) {
-                        participant = participants[x];
-                        delete participants[x];
-                        break;
-                    }
-                }
-                submission.submitid = submission.blindid;
-                subs.push(submission);
+            submission.submitid = submission.userid > 0 ? submission.userid : submission.blindid;
+            if (submission.submitid <= 0) {
+                return;
             }
-        });
 
-        if (participants) {
-            angular.forEach(participants, function(participant) {
-                var submission = {
-                    submitid: participant.id
-                };
+            var participant = getParticipantFromUserId(participants, submission.submitid);
+            if (participants && !participant) {
+                // Avoid permission denied error. Participant not found on list.
+                return;
+            }
 
+            if (participant) {
                 if (!blind) {
-                    submission.userid = participant.id;
                     submission.userfullname = participant.fullname;
                     submission.userprofileimageurl = participant.profileimageurl;
-                } else {
-                    submission.blindid = participant.id;
                 }
-                submission.status = participant.submitted ? mmaModAssignSubmissionStatusSubmitted : mmaModAssignSubmissionStatusNew;
-                subs.push(submission);
-            });
-        }
+
+                submission.manyGroups = !!participant.groups && participant.groups.length > 1;
+                if (participant.groupname) {
+                    submission.groupid = participant.groupid;
+                    submission.groupname = participant.groupname;
+                }
+            }
+
+            var promise = $q.when();
+            if (submission.userid > 0) {
+                if (blind) {
+                    // Blind but not blinded! (Moodle < 3.1.1, 3.2)
+                    delete submission.userid;
+
+                    promise = self.getAssignmentUserMappings(assignId, submission.submitid).then(function(blindId) {
+                        submission.blindid = blindId;
+                    }).catch(function() {
+                        // Error mapping user, fail silently (Moodle < 2.6)
+                    });
+                } else if (!participant) {
+                    // No blind, no participants.
+                    promise = $mmUser.getProfile(submission.userid, courseId, true).then(function(user) {
+                        submission.userfullname = user.fullname;
+                        submission.userprofileimageurl = user.profileimageurl;
+                    }).catch(function() {
+                        // Error getting profile, resolve promise without adding any extra data.
+                    });
+                }
+            }
+
+            promises.push(promise.then(function() {
+                // Add to the list.
+                if (submission.userfullname || submission.blindid) {
+                    subs.push(submission);
+                }
+            }));
+        });
 
         return $q.all(promises).then(function() {
+            if (participants) {
+                angular.forEach(participants, function(participant) {
+                    var submission = {
+                        submitid: participant.id
+                    };
+
+                    if (!blind) {
+                        submission.userid = participant.id;
+                        submission.userfullname = participant.fullname;
+                        submission.userprofileimageurl = participant.profileimageurl;
+                    } else {
+                        submission.blindid = participant.id;
+                    }
+
+                    if (participant.groupname) {
+                        submission.groupid = participant.groupid;
+                        submission.groupname = participant.groupname;
+                    }
+                    submission.status = participant.submitted ? mmaModAssignSubmissionStatusSubmitted : mmaModAssignSubmissionStatusNew;
+                    subs.push(submission);
+                });
+            }
             return subs;
         });
     };

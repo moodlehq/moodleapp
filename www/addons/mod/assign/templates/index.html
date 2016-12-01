@@ -25,37 +25,37 @@
                 <i class="icon ion-alert-circled padding"></i> {{ 'mm.core.hasdatatosync' | translate:{$a: moduleName} }}
             </div>
 
-            <div ng-if="canviewsubmissions">
-                <div class="list card">
-                    <div class="item item-divider">{{ 'mma.mod_assign.gradingsummary' | translate }}</div>
-                    <div ng-if="summary.participantcount" class="item item-text-wrap item-icon-right" ng-click="gotoSubmissionList()">
-                        <p ng-if="assign.teamsubmission && summary.warnofungroupedusers">{{ 'mma.mod_assign.ungroupedusers' | translate }}</p>
-                        <p ng-if="assign.teamsubmission">{{ 'mma.mod_assign.numberofteams' | translate }}: {{summary.participantcount}}</p>
-                        <p ng-if="!assign.teamsubmission">{{ 'mma.mod_assign.numberofparticipants' | translate }}: {{summary.participantcount}}</p>
-                        <i class="icon ion-chevron-right"></i>
-                    </div>
-
-                    <div ng-if="assign.submissiondrafts && summary.submissionsenabled" class="item item-text-wrap" ng-class="{'item-icon-right': summary.submissiondraftscount}" ng-click="gotoSubmissionList(mmaModAssignSubmissionStatusDraft, summary.submissiondraftscount)">
-                        <p>{{ 'mma.mod_assign.numberofdraftsubmissions' | translate }}: {{summary.submissiondraftscount}}</p>
-                        <i class="icon ion-chevron-right" ng-if="summary.submissiondraftscount"></i>
-                    </div>
-
-                    <div ng-if="summary.submissionsenabled" class="item item-text-wrap" ng-class="{'item-icon-right': summary.submissionssubmittedcount}" ng-click="gotoSubmissionList(mmaModAssignSubmissionStatusSubmitted, summary.submissionssubmittedcount)">
-                        <p>{{ 'mma.mod_assign.numberofsubmittedassignments' | translate }}: {{summary.submissionssubmittedcount}}</p>
-                        <i class="icon ion-chevron-right" ng-if="summary.submissionssubmittedcount"></i>
-                    </div>
-                    <div ng-if="summary.submissionsenabled && !assign.teamsubmission" class="item item-text-wrap" ng-class="{'item-icon-right': needsGradingAvalaible}" ng-click="gotoSubmissionList(mmaModAssignNeedGrading, needsGradingAvalaible)">
-                        <p>{{ 'mma.mod_assign.numberofsubmissionsneedgrading' | translate }}: {{summary.submissionsneedgradingcount}}</p>
-                        <i class="icon ion-chevron-right" ng-if="needsGradingAvalaible"></i>
-                    </div>
-
-                    <div ng-if="timeRemaining" class="item item-text-wrap">
-                        <h2>{{ 'mma.mod_assign.timeremaining' | translate }}</h2> <p>{{timeRemaining}}</p>
-                    </div>
-                    <div ng-if="lateSubmissions" class="item item-text-wrap">
-                        <h2>{{ 'mma.mod_assign.latesubmissions' | translate }}</h2> <p>{{lateSubmissions}}</p>
-                    </div>
+            <div ng-if="canviewsubmissions" class="list card">
+                <div ng-if="timeRemaining" class="item item-text-wrap">
+                    <h2>{{ 'mma.mod_assign.timeremaining' | translate }}</h2> <p>{{timeRemaining}}</p>
                 </div>
+                <div ng-if="lateSubmissions" class="item item-text-wrap">
+                    <h2>{{ 'mma.mod_assign.latesubmissions' | translate }}</h2> <p>{{lateSubmissions}}</p>
+                </div>
+                <div ng-if="summary.participantcount" class="item item-text-wrap item-icon-right" ng-click="gotoSubmissionList()">
+                    <h2 ng-if="assign.teamsubmission">{{ 'mma.mod_assign.numberofteams' | translate }}</h2>
+                    <h2 ng-if="!assign.teamsubmission">{{ 'mma.mod_assign.numberofparticipants' | translate }}</h2>
+                    <span class="badge badge-positive">{{summary.participantcount}}</span>
+                    <i class="icon icon-accessory ion-chevron-right"></i>
+                </div>
+
+                <div ng-if="assign.submissiondrafts && summary.submissionsenabled" class="item item-text-wrap" ng-class="{'item-icon-right': summary.submissiondraftscount}" ng-click="gotoSubmissionList(mmaModAssignSubmissionStatusDraft, summary.submissiondraftscount)">
+                    <h2>{{ 'mma.mod_assign.numberofdraftsubmissions' | translate }}</h2>
+                    <span class="badge badge-positive">{{summary.submissiondraftscount}}</span>
+                    <i class="icon icon-accessory ion-chevron-right" ng-if="summary.submissiondraftscount"></i>
+                </div>
+
+                <div ng-if="summary.submissionsenabled" class="item item-text-wrap" ng-class="{'item-icon-right': summary.submissionssubmittedcount}" ng-click="gotoSubmissionList(mmaModAssignSubmissionStatusSubmitted, summary.submissionssubmittedcount)">
+                    <h2>{{ 'mma.mod_assign.numberofsubmittedassignments' | translate }}</h2>
+                    <span class="badge badge-positive">{{summary.submissionssubmittedcount}}</span>
+                    <i class="icon icon-accessory ion-chevron-right" ng-if="summary.submissionssubmittedcount"></i>
+                </div>
+                <div ng-if="summary.submissionsenabled && !assign.teamsubmission" class="item item-text-wrap" ng-class="{'item-icon-right': needsGradingAvalaible}" ng-click="gotoSubmissionList(mmaModAssignNeedGrading, needsGradingAvalaible)">
+                    <h2>{{ 'mma.mod_assign.numberofsubmissionsneedgrading' | translate }}</h2>
+                    <span class="badge badge-positive">{{summary.submissionsneedgradingcount}}</span>
+                    <i class="icon icon-accessory ion-chevron-right" ng-if="needsGradingAvalaible"></i>
+                </div>
+                <p class="mm-warning" ng-if="assign.teamsubmission && summary.warnofungroupedusers">{{ 'mma.mod_assign.ungroupedusers' | translate }}</p>
             </div>
 
             <mma-mod-assign-submission ng-if="!canviewsubmissions" courseid="{{courseid}}" moduleid="{{moduleid}}" scroll-handle="mmaModAssignIndexScroll"></mma-mod-assign-submission>

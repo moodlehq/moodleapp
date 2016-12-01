@@ -33,7 +33,8 @@ angular.module('mm.addons.mod_assign', ['mm.core'])
 .constant('mmaModAssignSubmittedForGradingEvent', 'mma_mod_assign_submitted_for_grading')
 .constant('mmaModAssignEventAutomSynced', 'mma_mod_assign_autom_synced')
 .constant('mmaModAssignEventManualSynced', 'mma_mod_assign_manual_synced')
-
+.constant('mmaModAssignEventSubmitGrade', 'mma_mod_assign_submit_grade')
+.constant('mmaModAssignGradedEvent', 'mma_mod_assign_graded')
 .constant('mmaModAssignSyncTime', 300000) // In milliseconds.
 
 .config(function($stateProvider) {
