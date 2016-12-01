@@ -163,11 +163,11 @@ angular.module('mm.core')
             this.getValue = function(component, componentId, name, ignoreInvalidate) {
                 var cache = this.get(component, componentId);
 
-                if (typeof cache[name] != "undefined") {
+                if (cache[name] && typeof cache[name].value != "undefined") {
                     var now = new Date().getTime();
                     // Invalidate after 5 minutes.
-                    if (!ignoreInvalidate || cache.lastupdate + 300000 >= now) {
-                        return cache[name];
+                    if (ignoreInvalidate || cache[name].lastupdate + 300000 >= now) {
+                        return cache[name].value;
                     }
                 }
 
@@ -186,8 +186,10 @@ angular.module('mm.core')
             this.setValue = function(component, componentId, name, value) {
                 var cache = this.get(component, componentId);
 
-                cache[name] = value;
-                cache.lastupdate = new Date().getTime();
+                cache[name] = {
+                    value: value,
+                    lastupdate: new Date().getTime()
+                };
 
                 return value;
             };
@@ -199,8 +201,10 @@ angular.module('mm.core')
              * @param {Mixed}   [componentId]   An ID to use in conjunction with the component.
              */
             this.invalidate = function(component, componentId) {
-                var packageId = $mmFilepool.getPackageId(component, componentId);
-                delete cacheStore[packageId];
+                var cache = this.get(component, componentId);
+                angular.forEach(cache, function(entry) {
+                    entry.lastupdate = 0;
+                });
             };
         };
 
@@ -581,7 +585,7 @@ angular.module('mm.core')
                     return $mmFilepool.getPackageCurrentStatus(siteid, handler.component, module.id).then(function(status) {
                         status = handler.determineStatus ? handler.determineStatus(status) : status;
                         if (status == mmCoreNotDownloaded || status == mmCoreOutdated || status == mmCoreDownloading) {
-                            status = statusCache.setValue(handler.component, module.id, 'status', status);
+                            self.updateStatusCache(handler.component, module.id, status);
                             return self.determineModuleStatus(module, status, true);
                         }
 
@@ -619,7 +623,7 @@ angular.module('mm.core')
                                 // Now get the status.
                                 return $mmFilepool.getPackageStatus(siteid, handler.component, module.id, revision, timemodified)
                                         .then(function(status) {
-                                    status = statusCache.setValue(handler.component, module.id, 'status', status);
+                                    self.updateStatusCache(handler.component, module.id, status);
                                     return self.determineModuleStatus(module, status, true);
                                 }).catch(function() {
                                     status = statusCache.getValue(handler.component, module.id, 'status', true);
@@ -689,7 +693,7 @@ angular.module('mm.core')
                             if (modstatus != mmCoreNotDownloadable) {
                                 // Update status cache.
                                 statusCache.setValue(handler.component, module.id, 'sectionid', sectionid);
-                                modstatus = statusCache.setValue(handler.component, module.id, 'status', modstatus);
+                                self.updateStatusCache(handler.component, module.id, modstatus);
 
                                 status = $mmFilepool.determinePackagesStatus(status, modstatus);
                                 result[modstatus].push(module);
