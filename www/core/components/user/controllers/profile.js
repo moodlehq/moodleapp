@@ -22,7 +22,8 @@ angular.module('mm.core.user')
  * @name mmaParticipantsProfileCtrl
  */
 .controller('mmUserProfileCtrl', function($scope, $stateParams, $mmUtil, $mmUser, $mmUserDelegate, $mmSite, $q, $translate,
-            $mmEvents, $mmCourses, mmUserEventProfileRefreshed) {
+            $mmEvents, $mmCourses, $mmFileUploaderHelper, $mmSitesManager, mmUserEventProfileRefreshed,
+            mmUserProfilePictureUpdated) {
 
     var courseid = $stateParams.courseid,
         userid   = $stateParams.userid;
@@ -57,7 +58,7 @@ angular.module('mm.core.user')
         }, function(message) {
             $scope.user = false;
             if (message) {
-                $mmUtil.showErrorMessage(message);
+                $mmUtil.showErrorModal(message);
             }
             return $q.reject();
         });
@@ -87,6 +88,32 @@ angular.module('mm.core.user')
             fetchUserData().finally(function() {
                 $scope.$broadcast('scroll.refreshComplete');
             });
+        });
+    };
+
+    // Allow to change the profile image only in the app profile page.
+    $scope.canChangeProfilePicture =
+        (!courseid || courseid == ($mmSite.getInfo().siteid || 1)) &&
+        userid == $mmSite.getUserId() &&
+        $mmSite.canUploadFiles() &&
+        $mmSite.wsAvailable('core_user_update_picture');
+
+    $scope.changeProfilePicture = function() {
+        var maxSize = -1;
+        var title = $translate.instant('mm.user.newpicture');
+        var filterMethods = ['album', 'camera'];
+
+        return $mmFileUploaderHelper.selectAndUploadFile(maxSize, title, filterMethods).then(function(result) {
+            return $mmUser.changeProfilePicture(result.itemid, userid).then(function(profileimageurl) {
+                $mmEvents.trigger(mmUserProfilePictureUpdated, {userId: userid, picture: profileimageurl});
+                $mmSitesManager.updateSiteInfo($mmSite.getId());
+                $scope.refreshUser();
+            });
+        }).catch(function(message) {
+            if (message) {
+                $mmUtil.showErrorModal(message);
+            }
+            return $q.reject();
         });
     };
 

@@ -152,12 +152,15 @@ angular.module('mm.core.fileuploader')
      * @ngdoc method
      * @name $mmFileUploaderHelper#selectAndUploadFile
      * @param  {Number} [maxSize] Max size of the file to upload. If not defined or -1, no max size.
+     * @param  {String} [title]   File picker page title
+     * @param  {Array}  [filterMethods]   File picker available methods
      * @return {Promise} Promise resolved when a file is uploaded, rejected if file picker is closed without a file uploaded.
      *                   The resolve value should be the response of the upload request.
      */
-    self.selectAndUploadFile = function(maxSize) {
+    self.selectAndUploadFile = function(maxSize, title, filterMethods) {
         filePickerDeferred = $q.defer();
-        $state.go('site.fileuploader-picker', {maxsize: maxSize, upload: true});
+        filterMethods = (angular.isArray(filterMethods)) ? filterMethods.join() : null;
+        $state.go('site.fileuploader-picker', {maxsize: maxSize, upload: true, title: title, filterMethods: filterMethods});
         return filePickerDeferred.promise;
     };
 
@@ -169,12 +172,16 @@ angular.module('mm.core.fileuploader')
      * @name $mmFileUploaderHelper#selectFile
      * @param  {Number} [maxSize]     Max size of the file. If not defined or -1, no max size.
      * @param  {Boolean} allowOffline True to allow selecting in offline, false to require connection.
+     * @param  {String} [title]   File picker page title
+     * @param  {Array}  [filterMethods]   File picker available methods
      * @return {Promise} Promise resolved when a file is selected, rejected if file picker is closed without selecting a file.
      *                   The resolve value should be the FileEntry of a copy of the picked file, so it can be deleted afterwards.
      */
-    self.selectFile = function(maxSize, allowOffline) {
+    self.selectFile = function(maxSize, allowOffline, title, filterMethods) {
         filePickerDeferred = $q.defer();
-        $state.go('site.fileuploader-picker', {maxsize: maxSize, upload: false, allowOffline: allowOffline});
+        filterMethods = (angular.isArray(filterMethods)) ? filterMethods.join() : null;
+        var stateParams = {maxsize: maxSize, upload: false, allowOffline: allowOffline, title: title, filterMethods: filterMethods};
+        $state.go('site.fileuploader-picker', stateParams);
         return filePickerDeferred.promise;
     };
 
@@ -274,7 +281,8 @@ angular.module('mm.core.fileuploader')
         $log.debug('Trying to capture an image with camera');
         var options = {
             quality: 50,
-            destinationType: navigator.camera.DestinationType.FILE_URI
+            destinationType: navigator.camera.DestinationType.FILE_URI,
+            correctOrientation: true
         };
 
         if (fromAlbum) {
