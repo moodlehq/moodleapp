@@ -26,6 +26,9 @@ angular.module('mm.addons.mod_survey')
 
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModSurveyComponent);
 
+    // RegExp to check if a module has updates based on the result of $mmCoursePrefetchDelegate#getCourseUpdates.
+    self.updatesNames = /^configuration$|^.*files$|^answers$/;
+
     /**
      * Download the module.
      *

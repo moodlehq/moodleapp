@@ -252,14 +252,15 @@ angular.module('mm.core.course')
      * @module mm.core.course
      * @ngdoc method
      * @name $mmCourse#getModule
-     * @param {Number} moduleId             The module ID.
-     * @param {Number} [courseId]           The course ID. Recommended to speed up the process and minimize data usage.
-     * @param {Number} [sectionId]          The section ID.
-     * @param {Boolean} [preferCache=false] True if shouldn't call WS if data is cached, false otherwise.
-     * @param  {String} [siteId]            Site ID. If not defined, current site.
-     * @return {Promise}                    Promise resolved with the module.
+     * @param  {Number} moduleId       The module ID.
+     * @param  {Number} [courseId]     The course ID. Recommended to speed up the process and minimize data usage.
+     * @param  {Number} [sectionId]    The section ID.
+     * @param  {Boolean} [preferCache] True if shouldn't call WS if data is cached, false otherwise.
+     * @param  {Boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String} [siteId]       Site ID. If not defined, current site.
+     * @return {Promise}               Promise resolved with the module.
      */
-    self.getModule = function(moduleId, courseId, sectionId, preferCache, siteId) {
+    self.getModule = function(moduleId, courseId, sectionId, preferCache, ignoreCache, siteId) {
         siteId = siteId || $mmSite.getId();
 
         if (!moduleId) {
@@ -303,6 +304,11 @@ angular.module('mm.core.course')
                 cacheKey: getModuleCacheKey(moduleId),
                 omitExpires: preferCache
             };
+
+            if (!preferCache && ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
 
             if (sectionId) {
                 params.options.push({
@@ -582,16 +588,18 @@ angular.module('mm.core.course')
      * @module mm.core.course
      * @ngdoc method
      * @name $mmCourse#loadModuleContents
-     * @param  {Object} module      Module to load the contents.
-     * @param  {Number} [courseId]  The course ID. Recommended to speed up the process and minimize data usage.
-     * @param  {Number} [sectionId] The section ID.
-     * @param  {String} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise}            Promise resolved when loaded.
+     * @param  {Object} module         Module to load the contents.
+     * @param  {Number} [courseId]     The course ID. Recommended to speed up the process and minimize data usage.
+     * @param  {Number} [sectionId]    The section ID.
+     * @param  {Boolean} [preferCache] True if shouldn't call WS if data is cached, false otherwise.
+     * @param  {Boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String} [siteId]       Site ID. If not defined, current site.
+     * @return {Promise}               Promise resolved when loaded.
      */
-    self.loadModuleContents = function(module, courseId, sectionId, siteId) {
+    self.loadModuleContents = function(module, courseId, sectionId, preferCache, ignoreCache, siteId) {
         siteId = siteId || $mmSite.getId();
 
-        if (module.contents && module.contents.length) {
+        if (!ignoreCache && module.contents && module.contents.length) {
             // Already loaded.
             return $q.when();
         }
@@ -602,7 +610,7 @@ angular.module('mm.core.course')
             if (version >= 2015051100) {
                 // From Moodle 2.9 the course contents can be filtered, so maybe the module doesn't have contents
                 // because they were filtered. Try to get its contents.
-                return self.getModule(module.id, courseId, sectionId, false, siteId).then(function(mod) {
+                return self.getModule(module.id, courseId, sectionId, preferCache, ignoreCache, siteId).then(function(mod) {
                     module.contents = mod.contents;
                 });
             }

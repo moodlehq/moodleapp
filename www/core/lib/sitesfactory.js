@@ -438,6 +438,10 @@ angular.module('mm.core')
          *                                        flag the cache entry, it doesn't affect the data retrieved in this call.
          *                    - getCacheUsingCacheKey (boolean) True if it should retrieve cached data by cacheKey,
          *                                        false if it should get the data based on the params passed (usual behavior).
+         *                    - getEmergencyCacheUsingCacheKey (boolean) True to retrieve emergency cached data by cacheKey,
+         *                                        false if it should get the data based on the params passed (usual behavior).
+         *                    - uniqueCacheKey (boolean) True if there should only be 1 entry for this cache key, so all the
+         *                                        cache entries with the same cache key will be deleted.
          *                    - filter boolean (true) True to filter WS response (moodlewssettingfilter), false otherwise.
          *                    - rewriteurls boolean (true) True to rewrite URLs (moodlewssettingfileurl), false otherwise.
          * @param {Boolean} retrying True if we're retrying the call for some reason. This is to prevent infinite loops.
@@ -498,13 +502,15 @@ angular.module('mm.core')
                 delete wsPreSets.cacheKey;
                 delete wsPreSets.emergencyCache;
                 delete wsPreSets.getCacheUsingCacheKey;
+                delete wsPreSets.getEmergencyCacheUsingCacheKey;
+                delete wsPreSets.uniqueCacheKey;
 
                 // @todo Sync
 
                 return $mmWS.call(method, data, wsPreSets).then(function(response) {
 
                     if (preSets.saveToCache) {
-                        saveToCache(site, method, data, response, preSets.cacheKey);
+                        saveToCache(site, method, data, response, preSets);
                     }
 
                     // We pass back a clone of the original object, this may
@@ -546,7 +552,7 @@ angular.module('mm.core')
                     $log.debug('WS call ' + method + ' failed. Trying to use the emergency cache.');
                     preSets.omitExpires = true;
                     preSets.getFromCache = true;
-                    return getFromCache(site, method, data, preSets).catch(function() {
+                    return getFromCache(site, method, data, preSets, true).catch(function() {
                         return $q.reject(error);
                     });
                 });
@@ -1091,31 +1097,36 @@ angular.module('mm.core')
         };
 
         /**
+         * Get cache ID.
+         *
+         * @param  {String} method     The WebService method.
+         * @param  {Object} data       Arguments to pass to the method.
+         * @return {String}            Cache ID.
+         */
+        function getCacheId(method, data) {
+            return md5.createHash(method + ':' + JSON.stringify(data));
+        }
+
+        /**
          * Get a WS response from cache.
          *
-         * @param {Object} site    Site.
-         * @param {String} method  The WebService method.
-         * @param {Object} data    Arguments to pass to the method.
-         * @param {Object} preSets Extra settings.
-         * @return {Promise}       Promise to be resolved with the WS response.
+         * @param  {Object} site       Site.
+         * @param  {String} method     The WebService method.
+         * @param  {Object} data       Arguments to pass to the method.
+         * @param  {Object} preSets    Extra settings.
+         * @param  {Boolean} emergency True if it's an "emergency" cache call (WS call failed).
+         * @return {Promise}           Promise to be resolved with the WS response.
          */
-        function getFromCache(site, method, data, preSets) {
+        function getFromCache(site, method, data, preSets, emergency) {
             var db = site.db,
-                deferred = $q.defer(),
-                id,
+                id = getCacheId(method, data),
                 promise;
 
-            if (!db) {
-                deferred.reject();
-                return deferred.promise;
-            } else if (!preSets.getFromCache) {
-                deferred.reject();
-                return deferred.promise;
+            if (!db || !preSets.getFromCache) {
+                return $q.reject();
             }
 
-            id = md5.createHash(method + ':' + JSON.stringify(data));
-
-            if (preSets.getCacheUsingCacheKey) {
+            if (preSets.getCacheUsingCacheKey || (emergency && preSets.getEmergencyCacheUsingCacheKey)) {
                 promise = db.whereEqual(mmCoreWSCacheStore, 'key', preSets.cacheKey).then(function(entries) {
                     if (!entries.length) {
                         // Cache key not found, get by params sent.
@@ -1135,7 +1146,7 @@ angular.module('mm.core')
                 promise = db.get(mmCoreWSCacheStore, id);
             }
 
-            promise.then(function(entry) {
+            return promise.then(function(entry) {
                 var now = new Date().getTime();
 
                 preSets.omitExpires = preSets.omitExpires || !$mmApp.isOnline();
@@ -1143,54 +1154,93 @@ angular.module('mm.core')
                 if (!preSets.omitExpires) {
                     if (now > entry.expirationtime) {
                         $log.debug('Cached element found, but it is expired');
-                        deferred.reject();
-                        return;
+                        return $q.reject();
                     }
                 }
 
                 if (typeof entry != 'undefined' && typeof entry.data != 'undefined') {
                     var expires = (entry.expirationtime - now) / 1000;
                     $log.info('Cached element found, id: ' + id + ' expires in ' + expires + ' seconds');
-                    deferred.resolve(entry.data);
-                    return;
+                    return entry.data;
                 }
 
-                deferred.reject();
-            }, function() {
-                deferred.reject();
+                return $q.reject();
             });
-
-            return deferred.promise;
         }
 
         /**
          * Save a WS response to cache.
          *
-         * @param {Object} site    Site.
-         * @param {String} method   The WebService method.
-         * @param {Object} data     Arguments to pass to the method.
-         * @param {Object} preSets  Extra settings.
-         * @param {String} cacheKey (Optional) Extra key to add to the cache object to identify similar calls.
-         * @return {Promise}        Promise to be resolved when the response is saved.
+         * @param  {Object} site     Site.
+         * @param  {String} method   The WebService method.
+         * @param  {Object} data     Arguments to pass to the method.
+         * @param  {Object} response WS call response.
+         * @param  {Object} preSets  Extra settings.
+         * @return {Promise}         Promise to be resolved when the response is saved.
          */
-        function saveToCache(site, method, data, response, cacheKey) {
+        function saveToCache(site, method, data, response, preSets) {
             var db = site.db,
-                id = md5.createHash(method + ':' + JSON.stringify(data)),
+                id = getCacheId(method, data),
                 cacheExpirationTime = mmCoreConfigConstants.cache_expiration_time,
+                promise,
                 entry = {
-                        id: id,
-                        data: response
-                    };
+                    id: id,
+                    data: response
+                };
 
             if (!db) {
                 return $q.reject();
             } else {
-                cacheExpirationTime = isNaN(cacheExpirationTime) ? 300000 : cacheExpirationTime;
-                entry.expirationtime = new Date().getTime() + cacheExpirationTime;
-                if (cacheKey) {
-                    entry.key = cacheKey;
+                if (preSets.uniqueCacheKey) {
+                    // Cache key must be unique, delete all entries with same cache key.
+                    promise = deleteFromCache(site, method, data, preSets, true).catch(function() {
+                        // Ignore errors.
+                    });
+                } else {
+                    promise = $q.when();
                 }
-                return db.insert(mmCoreWSCacheStore, entry);
+
+                return promise.then(function() {
+                    cacheExpirationTime = isNaN(cacheExpirationTime) ? 300000 : cacheExpirationTime;
+                    entry.expirationtime = new Date().getTime() + cacheExpirationTime;
+                    if (preSets.cacheKey) {
+                        entry.key = preSets.cacheKey;
+                    }
+                    return db.insert(mmCoreWSCacheStore, entry);
+                });
+            }
+        }
+
+        /**
+         * Delete a WS cache entry or entries.
+         *
+         * @param  {Object} site         Site.
+         * @param  {String} method       The WebService method.
+         * @param  {Object} data         Arguments to pass to the method.
+         * @param  {Object} preSets      Extra settings.
+         * @param  {Boolean} allCacheKey True to delete all entries with the cache key, false to delete only by ID.
+         * @return {Promise}             Promise to be resolved when the entries are deleted.
+         */
+        function deleteFromCache(site, method, data, preSets, allCacheKey) {
+            var db = site.db,
+                id = getCacheId(method, data);
+
+            if (!db) {
+                return $q.reject();
+            } else {
+                if (allCacheKey) {
+                    return db.whereEqual(mmCoreWSCacheStore, 'key', preSets.cacheKey).then(function(entries) {
+                        var promises = [];
+
+                        angular.forEach(entries, function(entry) {
+                            promises.push(db.remove(mmCoreWSCacheStore, entry.id));
+                        });
+
+                        return $q.all(promises);
+                    });
+                } else {
+                    return db.remove(mmCoreWSCacheStore, id);
+                }
             }
         }
 

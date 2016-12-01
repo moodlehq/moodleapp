@@ -27,6 +27,9 @@ angular.module('mm.addons.mod_quiz')
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModQuizComponent, false),
         $mmaModQuizSync; // We'll inject it using $injector to prevent circular dependencies.
 
+    // RegExp to check if a module has updates based on the result of $mmCoursePrefetchDelegate#getCourseUpdates.
+    self.updatesNames = /^configuration$|^.*files$|^grades$|^gradeitems$|^questions$|^attempts$/;
+
     /**
      * Download the module.
      *

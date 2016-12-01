@@ -28,6 +28,28 @@ angular.module('mm.addons.mod_assign')
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModAssignComponent, false),
         $mmaGrades;
 
+    // RegExp to check if a module has updates based on the result of $mmCoursePrefetchDelegate#getCourseUpdates.
+    self.updatesNames = /^configuration$|^.*files$|^submissions$|^grades$|^gradeitems$|^outcomes$|^comments$/;
+
+    /**
+     * Check if a certain module can use core_course_check_updates to check if it has updates.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignPrefetchHandler#canUseCheckUpdates
+     * @param  {Object} module   The module object returned by WS.
+     * @param  {Number} courseId Course ID the module belongs to.
+     * @return {Promise}         Promise resolved with a boolean: whether the module can use core_course_check_updates.
+     */
+    self.canUseCheckUpdates = function(module, courseId) {
+        // Teachers cannot use the WS because it doesn't check student submissions.
+        return $mmaModAssign.getAssignment(courseId, module.id).then(function(assign) {
+            return $mmaModAssign.getSubmissions(assign.id);
+        }).then(function(data) {
+            return !data.canviewsubmissions;
+        });
+    };
+
     /**
      * Download the module.
      *

@@ -51,8 +51,13 @@ angular.module('mm.core.user')
             return $q.reject();
         }
 
+        id = parseInt(id, 10);
+        if (isNaN(id)) {
+            return $q.reject();
+        }
+
         self.invalidateUserCache(id); // Invalidate WS calls.
-        return $mmSite.getDb().remove(mmCoreUsersStore, parseInt(id));
+        return $mmSite.getDb().remove(mmCoreUsersStore, id);
     };
 
     /**
@@ -163,7 +168,13 @@ angular.module('mm.core.user')
             // Not logged in, we can't get the site DB. User logged out or session expired while an operation was ongoing.
             return $q.reject();
         }
-        return $mmSite.getDb().get(mmCoreUsersStore, parseInt(id, 10));
+
+        id = parseInt(id, 10);
+        if (isNaN(id)) {
+            return $q.reject();
+        }
+
+        return $mmSite.getDb().get(mmCoreUsersStore, id);
     };
 
     /**
@@ -286,8 +297,13 @@ angular.module('mm.core.user')
             return $q.reject();
         }
 
+        id = parseInt(id, 10);
+        if (isNaN(id)) {
+            return $q.reject();
+        }
+
         return $mmSite.getDb().insert(mmCoreUsersStore, {
-            id: parseInt(id),
+            id: id,
             fullname: fullname,
             profileimageurl: avatar
         });

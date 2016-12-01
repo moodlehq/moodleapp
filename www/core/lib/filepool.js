@@ -995,6 +995,33 @@ angular.module('mm.core')
     };
 
     /**
+     * Get the data stored for a package.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#getPackageData
+     * @param  {String} siteId       Site ID.
+     * @param  {String} component    Package's component.
+     * @param  {Mixed} [componentId] An ID to use in conjunction with the component.
+     * @return {Promise}             Promise resolved with the data.
+     */
+    self.getPackageData = function(siteId, component, componentId) {
+        componentId = self._fixComponentId(componentId);
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var db = site.getDb(),
+                packageId = self.getPackageId(component, componentId);
+
+            return db.get(mmFilepoolPackagesStore, packageId).then(function(entry) {
+                if (!entry) {
+                    return $q.reject();
+                }
+                return entry;
+            });
+        });
+    };
+
+    /**
      * Get a package previous status.
      *
      * @module mm.core
@@ -1006,14 +1033,10 @@ angular.module('mm.core')
      * @return {Promise}                Promise resolved with the status.
      */
     self.getPackagePreviousStatus = function(siteId, component, componentId) {
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            var db = site.getDb(),
-                packageId = self.getPackageId(component, componentId);
-            return db.get(mmFilepoolPackagesStore, packageId).then(function(entry) {
-                return entry.previous || mmCoreNotDownloaded;
-            }, function() {
-                return mmCoreNotDownloaded;
-            });
+        return self.getPackageData(siteId, component, componentId).then(function(entry) {
+            return entry.previous || mmCoreNotDownloaded;
+        }).catch(function() {
+            return mmCoreNotDownloaded;
         });
     };
 
@@ -1029,16 +1052,10 @@ angular.module('mm.core')
      * @return {Promise}            Promise resolved with the status.
      */
     self.getPackageCurrentStatus = function(siteId, component, componentId) {
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            var db = site.getDb(),
-                packageId = self.getPackageId(component, componentId);
-
-            // Get status.
-            return db.get(mmFilepoolPackagesStore, packageId).then(function(entry) {
-                return entry.status || mmCoreNotDownloaded;
-            }, function() {
-                return mmCoreNotDownloaded;
-            });
+        return self.getPackageData(siteId, component, componentId).then(function(entry) {
+            return entry.status || mmCoreNotDownloaded;
+        }).catch(function() {
+            return mmCoreNotDownloaded;
         });
     };
 
@@ -1106,14 +1123,8 @@ angular.module('mm.core')
      * @return {Promise}            Promise resolved with the revision.
      */
     self.getPackageRevision = function(siteId, component, componentId) {
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            var db = site.getDb(),
-                packageId = self.getPackageId(component, componentId);
-
-            // Get status.
-            return db.get(mmFilepoolPackagesStore, packageId).then(function(entry) {
-                return entry.revision;
-            });
+        return self.getPackageData(siteId, component, componentId).then(function(entry) {
+            return entry.revision;
         });
     };
 
@@ -1129,16 +1140,10 @@ angular.module('mm.core')
      * @return {Promise}                   Promise resolved with the timemodified.
      */
     self.getPackageTimemodified = function(siteId, component, componentId) {
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            var db = site.getDb(),
-                packageId = self.getPackageId(component, componentId);
-
-            // Get status.
-            return db.get(mmFilepoolPackagesStore, packageId).then(function(entry) {
-                return entry.timemodified;
-            }, function() {
-                return -1;
-            });
+        return self.getPackageData(siteId, component, componentId).then(function(entry) {
+            return entry.timemodified;
+        }).catch(function() {
+            return -1;
         });
     };
 
@@ -2609,6 +2614,10 @@ angular.module('mm.core')
 
             // Get current stored data, we'll only update 'status' and 'updated' fields.
             return db.get(mmFilepoolPackagesStore, packageId).then(function(entry) {
+                if (entry.status == mmCoreDownloading) {
+                    // Going back from downloading to previous status, restore previous download time.
+                    entry.downloadtime = entry.previousdownloadtime;
+                }
                 entry.status = entry.previous || mmCoreNotDownloaded;
                 entry.updated = new Date().getTime();
                 $log.debug('Set status \'' + entry.status + '\' for package ' + component + ' ' + componentId);
@@ -2673,7 +2682,14 @@ angular.module('mm.core')
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var db = site.getDb(),
-                packageId = self.getPackageId(component, componentId);
+                packageId = self.getPackageId(component, componentId),
+                downloadTime,
+                previousDownloadTime;
+
+            if (status == mmCoreDownloading) {
+                // Set download time if package is now downloading.
+                downloadTime = $mmUtil.timestamp();
+            }
 
             // Search current status to set it as previous status.
             return db.get(mmFilepoolPackagesStore, packageId).then(function(entry) {
@@ -2682,6 +2698,14 @@ angular.module('mm.core')
                 }
                 if (typeof timemodified == 'undefined') {
                     timemodified = entry.timemodified;
+                }
+                if (typeof downloadTime == 'undefined') {
+                    // Keep previous download time.
+                    downloadTime = entry.downloadtime;
+                    previousDownloadTime = entry.previousdownloadtime;
+                } else {
+                    // downloadTime will be updated, store current time as previous.
+                    previousDownloadTime = entry.downloadTime;
                 }
 
                 return entry.status;
@@ -2704,7 +2728,9 @@ angular.module('mm.core')
                         previous: previousStatus,
                         revision: revision,
                         timemodified: timemodified,
-                        updated: new Date().getTime()
+                        updated: new Date().getTime(),
+                        downloadtime: downloadTime,
+                        previousdownloadtime: previousDownloadTime
                     });
                 }
 

@@ -26,6 +26,9 @@ angular.module('mm.addons.mod_scorm')
 
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModScormComponent, false);
 
+    // RegExp to check if a module has updates based on the result of $mmCoursePrefetchDelegate#getCourseUpdates.
+    self.updatesNames = /^configuration$|^.*files$|^tracks$/;
+
     /**
      * Download the module.
      *
