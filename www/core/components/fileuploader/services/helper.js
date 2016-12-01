@@ -281,7 +281,8 @@ angular.module('mm.core.fileuploader')
         $log.debug('Trying to capture an image with camera');
         var options = {
             quality: 50,
-            destinationType: navigator.camera.DestinationType.FILE_URI
+            destinationType: navigator.camera.DestinationType.FILE_URI,
+            correctOrientation: true
         };
 
         if (fromAlbum) {
