@@ -22,10 +22,10 @@ angular.module('mm.addons.mod_quiz')
  * @name mmaModQuizIndexCtrl
  */
 .controller('mmaModQuizIndexCtrl', function($scope, $stateParams, $mmaModQuiz, $mmCourse, $ionicPlatform, $q, $translate,
-            $mmaModQuizHelper, $ionicHistory, $ionicScrollDelegate, $mmEvents, mmaModQuizEventAttemptFinished, $state,
-            $mmQuestionBehaviourDelegate, $mmaModQuizSync, $mmText, $mmUtil, mmaModQuizEventAutomSynced, $mmSite,
-            $mmCoursePrefetchDelegate, mmCoreDownloaded, mmCoreDownloading, mmCoreEventPackageStatusChanged,
-            mmaModQuizComponent, $mmaModQuizPrefetchHandler, $mmApp, $mmEvents, mmCoreEventOnlineStatusChanged) {
+    $mmaModQuizHelper, $ionicHistory, $ionicScrollDelegate, $mmEvents, mmaModQuizEventAttemptFinished, $state,
+    $mmQuestionBehaviourDelegate, $mmaModQuizSync, $mmText, $mmUtil, $mmCourseHelper, mmaModQuizEventAutomSynced, $mmSite,
+    $mmCoursePrefetchDelegate, mmCoreDownloaded, mmCoreDownloading, mmCoreEventPackageStatusChanged,
+    mmaModQuizComponent, $mmaModQuizPrefetchHandler, $mmApp, $mmEvents, mmCoreEventOnlineStatusChanged) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         quiz,
@@ -62,7 +62,7 @@ angular.module('mm.addons.mod_quiz')
 
             $scope.now = new Date().getTime();
             $scope.title = quiz.name || $scope.title;
-            $scope.description = quiz.intro || $scope.description;
+            $scope.description = quiz.intro ||  $scope.description;
 
             // Try to get warnings from automatic sync.
             return $mmaModQuizSync.getSyncWarnings(quiz.id).then(function(warnings) {
@@ -161,7 +161,7 @@ angular.module('mm.addons.mod_quiz')
 
     // Treat user attempts.
     function treatAttempts() {
-        if (!attempts || !attempts.length) {
+        if (!attempts ||  !attempts.length) {
             return $q.when();
         }
 
@@ -239,17 +239,23 @@ angular.module('mm.addons.mod_quiz')
             if (overallStats) {
                 // Show the quiz grade. The message shown is different if the quiz is finished.
                 if (moreAttempts) {
-                    $scope.gradeResult = $translate.instant('mma.mod_quiz.gradesofar', {$a: {
-                        method: quiz.gradeMethodReadable,
-                        mygrade: gradeToShow,
-                        quizgrade: quiz.gradeFormatted
-                    }});
+                    $scope.gradeResult = $translate.instant('mma.mod_quiz.gradesofar', {
+                        $a: {
+                            method: quiz.gradeMethodReadable,
+                            mygrade: gradeToShow,
+                            quizgrade: quiz.gradeFormatted
+                        }
+                    });
                 } else {
-                    var outOfShort = $translate.instant('mma.mod_quiz.outofshort', {$a: {
-                        grade: gradeToShow,
-                        maxgrade: quiz.gradeFormatted
-                    }});
-                    $scope.gradeResult = $translate.instant('mma.mod_quiz.yourfinalgradeis', {$a: outOfShort});
+                    var outOfShort = $translate.instant('mma.mod_quiz.outofshort', {
+                        $a: {
+                            grade: gradeToShow,
+                            maxgrade: quiz.gradeFormatted
+                        }
+                    });
+                    $scope.gradeResult = $translate.instant('mma.mod_quiz.yourfinalgradeis', {
+                        $a: outOfShort
+                    });
                 }
             }
 
@@ -301,7 +307,7 @@ angular.module('mm.addons.mod_quiz')
                 $scope.buttonText = '';
             } else if (quizAccessInfo.canattempt && $scope.preventMessages.length) {
                 $scope.buttonText = '';
-            } else if ($scope.unsupportedQuestions.length || $scope.unsupportedRules.length || !$scope.behaviourSupported) {
+            } else if ($scope.unsupportedQuestions.length || $scope.unsupportedRules.length  ||  !$scope.behaviourSupported) {
                 $scope.buttonText = '';
             }
         }
@@ -357,7 +363,11 @@ angular.module('mm.addons.mod_quiz')
         var attemptId = autoReview.attemptId;
         if (quizAccessInfo.canreviewmyattempts) {
             return $mmaModQuiz.getAttemptReview(attemptId, -1).then(function() {
-                return $state.go('site.mod_quiz-review', {courseid: courseId, quizid: quiz.id, attemptid: attemptId});
+                return $state.go('site.mod_quiz-review', {
+                    courseid: courseId,
+                    quizid: quiz.id,
+                    attemptid: attemptId
+                });
             }).catch(function() {
                 // Ignore errors.
             });
@@ -392,7 +402,7 @@ angular.module('mm.addons.mod_quiz')
         // Listen for changes on this module status to show a message to the user.
         statusObserver = $mmEvents.on(mmCoreEventPackageStatusChanged, function(data) {
             if (data.siteid === $mmSite.getId() && data.componentId === module.id &&
-                    data.component === mmaModQuizComponent) {
+                data.component === mmaModQuizComponent) {
                 showStatus(data.status);
             }
         });
@@ -416,6 +426,7 @@ angular.module('mm.addons.mod_quiz')
         $scope.quizLoaded = true;
         $scope.refreshIcon = 'ion-refresh';
         $scope.syncIcon = 'ion-loop';
+        fillContextMenu(module, courseId);
     });
 
     // Pull to refresh.
@@ -427,6 +438,7 @@ angular.module('mm.addons.mod_quiz')
                 $scope.refreshIcon = 'ion-refresh';
                 $scope.syncIcon = 'ion-loop';
                 $scope.$broadcast('scroll.refreshComplete');
+                fillContextMenu(module, courseId);
             });
         }
     };
@@ -458,6 +470,50 @@ angular.module('mm.addons.mod_quiz')
         } else {
             openQuiz();
         }
+    };
+
+    // Convenience function that fills Context Menu Popover.
+    function fillContextMenu(module, courseId, invalidateCache) {
+        $mmCourseHelper.getModulePrefetchInfo(module, courseId, invalidateCache).then(function(moduleInfo) {
+            console.log(moduleInfo); //to check the prefetch module info in console
+            $scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
+            $scope.prefetchStatusIcon = moduleInfo.statusIcon;
+            $scope.timemodified = moduleInfo.timemodified > 0 ? $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable : "";
+        });
+    }
+
+    $scope.removeFiles = function() {
+        $mmUtil.showConfirm($translate('mm.course.confirmdeletemodulefiles')).then(function() {
+            $mmCoursePrefetchDelegate.removeModuleFiles(module, courseId);
+        });
+    };
+
+    // Context Menu Prefetch action.
+    $scope.prefetch = function() {
+        var icon = $scope.prefetchStatusIcon;
+
+        $scope.prefetchStatusIcon = 'spinner'; // Show spinner since this operation might take a while.
+
+        // We need to call getDownloadSize, the package might have been updated.
+        $mmCoursePrefetchDelegate.getModuleDownloadSize(module, courseId).then(function(size) {
+            $mmUtil.confirmDownloadSize(size).then(function() {
+                $mmCoursePrefetchDelegate.prefetchModule(module, courseId).catch(function() {
+                    if (!$scope.$$destroyed) {
+                        $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                    }
+                });
+            }).catch(function() {
+                // User hasn't confirmed, stop spinner.
+                $scope.prefetchStatusIcon = icon;
+            });
+        }).catch(function(error) {
+            $scope.prefetchStatusIcon = icon;
+            if (error) {
+                $mmUtil.showErrorModal(error);
+            } else {
+                $mmUtil.showErrorModal('mm.core.errordownloading', true);
+            }
+        });
     };
 
     // Context Menu Description action.

@@ -183,6 +183,7 @@ angular.module('mm.core.course')
         // Calculate the size of the download.
         if (section.id != mmCoreCourseAllSectionsId) {
             sizePromise = $mmCoursePrefetchDelegate.getDownloadSize(section.modules, courseid);
+            //console.log(sizePromise);
         } else {
             var promises = [],
                 results = {
@@ -195,6 +196,8 @@ angular.module('mm.core.course')
                     promises.push($mmCoursePrefetchDelegate.getDownloadSize(s.modules, courseid).then(function(sectionsize) {
                         results.total = results.total && sectionsize.total;
                         results.size += sectionsize.size;
+                        //console.log(results.size);
+                        //logFn.apply(console, results.size)
                     }));
                 }
             });
@@ -204,9 +207,15 @@ angular.module('mm.core.course')
         }
 
         return sizePromise.then(function(size) {
-            // Show confirm modal if needed.
+             //Show confirm modal if needed.
+             //logFn.apply(console, size)
+             //console.log(size);
             return $mmUtil.confirmDownloadSize(size);
         });
+
+      //  return sizePromise.then(function(size) {
+        //  return console.log(size);
+        //})
     };
 
     /**

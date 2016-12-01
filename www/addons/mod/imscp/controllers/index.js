@@ -21,8 +21,8 @@ angular.module('mm.addons.mod_imscp')
  * @ngdoc controller
  * @name mmaModImscpIndexCtrl
  */
-.controller('mmaModImscpIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModImscp, $log, mmaModImscpComponent,
-            $ionicPopover, $timeout, $q, $mmCourse, $mmApp, $mmText, $translate, $mmaModImscpPrefetchHandler) {
+.controller('mmaModImscpIndexCtrl', function($scope, $stateParams, $mmUtil, $mmCoursePrefetchDelegate, $mmCourseHelper, $mmaModImscp, $log, mmaModImscpComponent,
+    $ionicPopover, $timeout, $q, $mmCourse, $mmApp, $mmText, $translate, $mmaModImscpPrefetchHandler) {
     $log = $log.getInstance('mmaModImscpIndexCtrl');
 
     var module = $stateParams.module || {},
@@ -61,6 +61,7 @@ angular.module('mm.addons.mod_imscp')
         // Load module contents if needed.
         return $mmCourse.loadModuleContents(module, courseId).then(function() {
             $scope.items = $mmaModImscp.createItemList(module.contents);
+            fillContextMenu(module, courseId);
             if ($scope.items.length && typeof currentItem == 'undefined') {
                 currentItem = $scope.items[0].href;
             }
@@ -71,7 +72,7 @@ angular.module('mm.addons.mod_imscp')
                 // Try to get the imscp data.
                 return $mmaModImscp.getImscp(courseId, module.id).then(function(imscp) {
                     $scope.title = imscp.name || $scope.title;
-                    $scope.description = imscp.intro || $scope.description;
+                    $scope.description = imscp.intro ||  $scope.description;
                 }).catch(function() {
                     // Ignore errors since this WS isn't available in some Moodle versions.
                 }).then(function() {
@@ -127,6 +128,50 @@ angular.module('mm.addons.mod_imscp')
 
     $scope.getNumberForPadding = function(n) {
         return new Array(n);
+    };
+
+    // Convenience function that fills Context Menu Popover.
+    function fillContextMenu(module, courseId, invalidateCache) {
+        $mmCourseHelper.getModulePrefetchInfo(module, courseId, invalidateCache).then(function(moduleInfo) {
+            console.log(moduleInfo); //to check the prefetch module info in console
+            $scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
+            $scope.prefetchStatusIcon = moduleInfo.statusIcon;
+            $scope.timemodified = moduleInfo.timemodified > 0 ? $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable : "";
+        });
+    }
+
+    $scope.removeFiles = function() {
+        $mmUtil.showConfirm($translate('mm.course.confirmdeletemodulefiles')).then(function() {
+            $mmCoursePrefetchDelegate.removeModuleFiles(module, courseId);
+        });
+    };
+
+    // Context Menu Prefetch action.
+    $scope.prefetch = function() {
+        var icon = $scope.prefetchStatusIcon;
+
+        $scope.prefetchStatusIcon = 'spinner'; // Show spinner since this operation might take a while.
+
+        // We need to call getDownloadSize, the package might have been updated.
+        $mmCoursePrefetchDelegate.getModuleDownloadSize(module, courseId).then(function(size) {
+            $mmUtil.confirmDownloadSize(size).then(function() {
+                $mmCoursePrefetchDelegate.prefetchModule(module, courseId).catch(function() {
+                    if (!$scope.$$destroyed) {
+                        $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                    }
+                });
+            }).catch(function() {
+                // User hasn't confirmed, stop spinner.
+                $scope.prefetchStatusIcon = icon;
+            });
+        }).catch(function(error) {
+            $scope.prefetchStatusIcon = icon;
+            if (error) {
+                $mmUtil.showErrorModal(error);
+            } else {
+                $mmUtil.showErrorModal('mm.core.errordownloading', true);
+            }
+        });
     };
 
     // Context Menu Description action.

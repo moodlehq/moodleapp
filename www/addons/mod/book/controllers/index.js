@@ -21,8 +21,8 @@ angular.module('mm.addons.mod_book')
  * @ngdoc controller
  * @name mmaModBookIndexCtrl
  */
-.controller('mmaModBookIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModBook, $log, mmaModBookComponent, $mmText,
-            $ionicPopover, $mmApp, $q, $mmCourse, $ionicScrollDelegate, $translate, $mmaModBookPrefetchHandler) {
+.controller('mmaModBookIndexCtrl', function($scope, $stateParams, $mmUtil, $mmCourseHelper, $mmCoursePrefetchDelegate, $mmaModBook, $log, mmaModBookComponent, $mmText,
+    $ionicPopover, $mmApp, $q, $mmCourse, $ionicScrollDelegate, $translate, $mmaModBookPrefetchHandler) {
     $log = $log.getInstance('mmaModBookIndexCtrl');
 
     var module = $stateParams.module || {},
@@ -38,6 +38,13 @@ angular.module('mm.addons.mod_book')
     $scope.externalUrl = module.url;
     $scope.loaded = false;
     $scope.refreshIcon = 'spinner';
+
+    var moduleInfo = $mmCourseHelper.getModulePrefetchInfo(module, courseId);
+    $scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
+    $scope.prefetchStatusIcon = moduleInfo.statusIcon;
+    $scope.timemodified = moduleInfo.timemodified > 0 ? $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable : "";
+
+
 
     // Convenience function to load a book chapter.
     function loadChapter(chapterId) {
@@ -69,7 +76,7 @@ angular.module('mm.addons.mod_book')
     // Convenience function to download book contents and load the current chapter.
     function fetchContent(chapterId) {
         var downloadFailed = false;
-
+        fillContextMenu(module, courseId);
         // Load module contents if needed.
         return $mmCourse.loadModuleContents(module, courseId).then(function() {
             contentsMap = $mmaModBook.getContentsMap(module.contents);
@@ -83,7 +90,7 @@ angular.module('mm.addons.mod_book')
             // Try to get the book data.
             return $mmaModBook.getBook(courseId, module.id).then(function(book) {
                 $scope.title = book.name || $scope.title;
-                $scope.description = book.intro || $scope.description;
+                $scope.description = book.intro ||  $scope.description;
             }).catch(function() {
                 // Ignore errors since this WS isn't available in some Moodle versions.
             });
@@ -135,6 +142,50 @@ angular.module('mm.addons.mod_book')
             popover.show($event);
         };
     });
+
+    // Convenience function that fills Context Menu Popover.
+    function fillContextMenu(module, courseId, invalidateCache) {
+        $mmCourseHelper.getModulePrefetchInfo(module, courseId, invalidateCache).then(function(moduleInfo) {
+            console.log(moduleInfo); //to check the prefetch module info in console
+            $scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
+            $scope.prefetchStatusIcon = moduleInfo.statusIcon;
+            $scope.timemodified = moduleInfo.timemodified > 0 ? $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable : "";
+        });
+    }
+
+    $scope.removeFiles = function() {
+        $mmUtil.showConfirm($translate('mm.course.confirmdeletemodulefiles')).then(function() {
+            $mmCoursePrefetchDelegate.removeModuleFiles(module, courseId);
+        });
+    };
+
+    // Context Menu Prefetch action.
+    $scope.prefetch = function() {
+        var icon = $scope.prefetchStatusIcon;
+
+        $scope.prefetchStatusIcon = 'spinner'; // Show spinner since this operation might take a while.
+
+        // We need to call getDownloadSize, the package might have been updated.
+        $mmCoursePrefetchDelegate.getModuleDownloadSize(module, courseId).then(function(size) {
+            $mmUtil.confirmDownloadSize(size).then(function() {
+                $mmCoursePrefetchDelegate.prefetchModule(module, courseId).catch(function() {
+                    if (!$scope.$$destroyed) {
+                        $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                    }
+                });
+            }).catch(function() {
+                // User hasn't confirmed, stop spinner.
+                $scope.prefetchStatusIcon = icon;
+            });
+        }).catch(function(error) {
+            $scope.prefetchStatusIcon = icon;
+            if (error) {
+                $mmUtil.showErrorModal(error);
+            } else {
+                $mmUtil.showErrorModal('mm.core.errordownloading', true);
+            }
+        });
+    };
 
     // Context Menu Description action.
     $scope.expandDescription = function() {

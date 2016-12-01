@@ -15,6 +15,8 @@
 angular.module('mm.addons.mod_wiki')
 
 /**
+
+
  * Wiki service.
  *
  * @module mm.addons.mod_wiki

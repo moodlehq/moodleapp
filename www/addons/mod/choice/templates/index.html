@@ -1,11 +1,15 @@
 <ion-view>
-    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-title>
+        <mm-format-text watch="true">{{ title }}</mm-format-text>
+    </ion-nav-title>
     <ion-nav-buttons side="secondary">
         <mm-context-menu>
             <mm-context-menu-item priority="900" ng-if="moduleUrl" href="moduleUrl" content="'mm.core.openinbrowser' | translate" icon-action="'ion-share'"></mm-context-menu-item>
             <mm-context-menu-item priority="800" ng-if="description" content="'mm.core.moduleintro' | translate" action="expandDescription()" icon-action="'ion-arrow-right-c'"></mm-context-menu-item>
             <mm-context-menu-item priority="700" ng-if="choiceLoaded && !hasOffline && isOnline" content="'mm.core.refresh' | translate" action="refreshChoice(false)" icon-action="refreshIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
             <mm-context-menu-item priority="600" ng-if="choiceLoaded && hasOffline && isOnline" content="'mm.settings.synchronizenow' | translate" action="refreshChoice(true)" icon-action="syncIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+            <mm-context-menu-item priority="500" ng-if="timemodified" content="timemodified" icon-action="prefetchStatusIcon" action="prefetch()" close-on-click="false"></mm-context-menu-item>
+            <mm-context-menu-item priority="400" ng-if="size" content="size" icon-description="'ion-cube'" icon-action="'ion-trash-a'" action="removeFiles()"></mm-context-menu-item>
         </mm-context-menu>
     </ion-nav-buttons>
     <ion-content mm-state-class>
@@ -19,7 +23,9 @@
                 <p ng-if="!options || !options.length">{{ 'mma.mod_choice.notopenyet' | translate:{$a: choice.openTimeReadable} }}</p>
             </section>
             <section class="card padding" ng-if="choice.timeclose != 0 && choice.timeclose <= now">
-                <p ng-if="options && options.length">{{ 'mma.mod_choice.yourselection' | translate }} <mm-format-text watch="true">{{options[0].text}}</mm-format-text></p>
+                <p ng-if="options && options.length">{{ 'mma.mod_choice.yourselection' | translate }}
+                    <mm-format-text watch="true">{{options[0].text}}</mm-format-text>
+                </p>
                 <p>{{ 'mma.mod_choice.expired' | translate:{$a: choice.closeTimeReadable} }}</p>
             </section>
 
@@ -32,12 +38,14 @@
             <section class="card list" ng-if="options && options.length">
                 <div ng-if="choice.allowmultiple">
                     <ion-checkbox ng-repeat="option in options" class="item-text-wrap item-checkbox-right" ng-model="option.checked" ng-disabled="option.disabled || !canEdit">
-                        <p><mm-format-text watch="true">{{option.text}}</mm-format-text> <span ng-if="choice.limitanswers && option.countanswers >= option.maxanswers">{{ 'mma.mod_choice.full' | translate }}</span></p>
+                        <p>
+                            <mm-format-text watch="true">{{option.text}}</mm-format-text> <span ng-if="choice.limitanswers && option.countanswers >= option.maxanswers">{{ 'mma.mod_choice.full' | translate }}</span></p>
                     </ion-checkbox>
                 </div>
                 <div ng-if="!choice.allowmultiple">
                     <ion-radio ng-repeat="option in options" ng-model="selectedOption.id" ng-value="option.id" ng-disabled="option.disabled || !canEdit">
-                        <p><mm-format-text watch="true">{{option.text}}</mm-format-text> <span ng-if="choice.limitanswers && option.countanswers >= option.maxanswers">{{ 'mma.mod_choice.full' | translate }}</span></p>
+                        <p>
+                            <mm-format-text watch="true">{{option.text}}</mm-format-text> <span ng-if="choice.limitanswers && option.countanswers >= option.maxanswers">{{ 'mma.mod_choice.full' | translate }}</span></p>
                     </ion-radio>
                 </div>
                 <div class="item" ng-if="canEdit">
