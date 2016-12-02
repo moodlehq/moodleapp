@@ -87,11 +87,17 @@ angular.module('mm.core.courses')
          * @module mm.core.courses
          * @ngdoc method
          * @name $mmCoursesDelegate#clearCoursesHandlers
+         * @param {Number} [courseId]   The course ID. If not defined, all handlers will be cleared.
          * @protected
          */
-        self.clearCoursesHandlers = function() {
-            coursesHandlers = {};
-            loaded = {};
+        self.clearCoursesHandlers = function(courseId) {
+            if (courseId) {
+                coursesHandlers[courseId] = false;
+                loaded[courseId] = false;
+            } else {
+                coursesHandlers = {};
+                loaded = {};
+            }
         };
 
         /**

@@ -34,15 +34,15 @@
                 <div class="item" ng-if="!isEnrolled && !selfEnrolInstances.length">
                     <p>{{ 'mm.courses.notenrollable' | translate }}</p>
                 </div>
-                <div class="item mm-course-handlers" ng-show="handlersShouldBeShown && course._handlers && course._handlers.length">
-                    <div class="item tabs tabs-icon-top">
+                <div class="item mm-course-handlers" ng-show="(handlersShouldBeShown && course._handlers && course._handlers.length) || loadingHandlers()">
+                    <div class="item tabs tabs-icon-top" ng-show="handlersShouldBeShown && course._handlers && course._handlers.length">
                         <a ng-repeat="handler in course._handlers | orderBy:'-priority'" ng-controller="handler.controller" ng-click="action($event, course)" class="tab-item active mm-courses-handler {{class}}" title="{{title | translate}}">
                             <i class="icon {{icon}}"></i> {{title | translate}}
                         </a>
                     </div>
-                </div>
-                <div class="item text-center" ng-if="(!course._handlers || !course._handlers.length) && loadingHandlers()">
-                    <ion-spinner></ion-spinner>
+                    <div class="mm-loading-course-handlers text-center" ng-if="!course._handlers || !course._handlers.length">
+                        <ion-spinner></ion-spinner>
+                    </div>
                 </div>
             </div>
         </mm-loading>

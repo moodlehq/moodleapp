@@ -71,6 +71,8 @@ angular.module('mm.core.courses')
         promises.push($mmCourses.invalidateUserNavigationOptions());
         promises.push($mmCourses.invalidateUserAdministrationOptions());
 
+        $mmCoursesDelegate.clearCoursesHandlers();
+
         $q.all(promises).finally(function() {
             fetchCourses(true).finally(function() {
                 $scope.$broadcast('scroll.refreshComplete');
