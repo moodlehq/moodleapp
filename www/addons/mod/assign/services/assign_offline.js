@@ -66,7 +66,7 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc service
  * @name $mmaModAssignOffline
  */
-.factory('$mmaModAssignOffline', function($mmSitesManager, $log, $mmFS, $q, mmaModAssignSubmissionsStore,
+.factory('$mmaModAssignOffline', function($mmSitesManager, $log, $mmFS, $q, mmaModAssignSubmissionsStore, $mmUtil,
         mmaModAssignSubmissionsGradeStore) {
     $log = $log.getInstance('$mmaModAssignOffline');
 
@@ -319,7 +319,7 @@ angular.module('mm.addons.mod_assign')
             // Check if there's a submission stored.
             return self.getSubmission(assignId, userId, site.getId()).catch(function() {
                 // No submission, create an empty one.
-                var now = new Date().getTime();
+                var now = $mmUtil.timestamp();
                 return {
                     assignmentid: assignId,
                     courseid: courseId,
@@ -357,7 +357,7 @@ angular.module('mm.addons.mod_assign')
         return $mmSitesManager.getSite(siteId).then(function(site) {
             userId = userId || site.getUserId();
 
-            var now = new Date().getTime(),
+            var now = $mmUtil.timestamp(),
                 entry = {
                     assignmentid: assignId,
                     courseid: courseId,
@@ -396,7 +396,7 @@ angular.module('mm.addons.mod_assign')
             pluginData, courseId, siteId) {
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            var now = new Date().getTime(),
+            var now = $mmUtil.timestamp(),
                 entry = {
                     assignmentid: assignId,
                     userid: userId,

@@ -304,7 +304,7 @@ angular.module('mm.addons.mod_assign')
             return $mmaModAssign.getAssignment(courseId, moduleId).then(function(assignData) {
                 assign = assignData;
 
-                var time = parseInt(Date.now() / 1000),
+                var time = $mmUtil.timestamp(),
                     promises = [];
 
                 scope.assign = assign;
@@ -434,7 +434,7 @@ angular.module('mm.addons.mod_assign')
                     if (assign.duedate > 0) {
                         var duedate = response.lastattempt && response.lastattempt.extensionduedate ?
                             response.lastattempt.extensionduedate: assign.duedate,
-                            time = parseInt(Date.now() / 1000);
+                            time = $mmUtil.timestamp();
                             timeRemaining = duedate - time;
                         if (timeRemaining <= 0) {
                             if (!scope.userSubmission || scope.userSubmission.status != mmaModAssignSubmissionStatusSubmitted) {
@@ -488,7 +488,7 @@ angular.module('mm.addons.mod_assign')
 
                     // Fallback. Legacy code ahead.
                     if (assign.duedate > 0) {
-                        var time = parseInt(Date.now() / 1000);
+                        var time = $mmUtil.timestamp();
                         if (assign.duedate - time <= 0) {
                             scope.timeRemaining = $translate.instant('mma.mod_assign.duedatereached');
                         } else {

@@ -1,7 +1,7 @@
 <ion-view>
     <ion-nav-title>{{ title }}</ion-nav-title>
     <mm-nav-buttons side="secondary">
-        <a ng-if="canSaveGrades" class="button button-clear" ng-click="submitGrade()" aria-label="{{ 'mm.core.done' | translate }}">
+        <a ng-show="canSaveGrades" class="button button-clear" ng-click="submitGrade()" aria-label="{{ 'mm.core.done' | translate }}">
             {{ 'mm.core.done' | translate }}
         </a>
     </mm-nav-buttons>
