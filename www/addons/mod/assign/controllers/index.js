@@ -85,7 +85,7 @@ angular.module('mm.addons.mod_assign')
 
             // Get assignment submissions.
             return $mmaModAssign.getSubmissions(assign.id).then(function(data) {
-                var time = parseInt(Date.now() / 1000);
+                var time = $mmUtil.timestamp();
 
                 $scope.canviewsubmissions = data.canviewsubmissions;
                 if (data.canviewsubmissions) {

@@ -846,7 +846,7 @@ angular.module('mm.core')
          * @return {Number} The current timestamp in seconds.
          */
         self.timestamp = function() {
-            return Math.round(new Date().getTime() / 1000);
+            return Math.round(Date.now() / 1000);
         };
 
         /**

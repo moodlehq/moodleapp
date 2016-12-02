@@ -338,7 +338,7 @@ angular.module('mm.addons.mod_assign')
             userId = offlineData.userid;
 
         return $mmaModAssign.getSubmissionStatus(assign.id, userId, false, true, true, siteId).then(function(status) {
-            var timemodified = status.lastattempt && status.lastattempt.gradeddate;
+            var timemodified = status.feedback && (status.feedback.gradeddate || (status.feedback.grade.timemodified));
 
             if (timemodified > offlineData.timemodified) {
                 // The submission grade was modified in Moodle, discard it.
