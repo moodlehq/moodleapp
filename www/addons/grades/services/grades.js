@@ -355,7 +355,10 @@ angular.module('mm.addons.grades')
 
             return self.isGradeItemsAvalaible(siteId).then(function(enabled) {
                 if (enabled) {
-                    return getGradeModuleItems(courseId, moduleId, userId, groupId, siteId, ignoreCache);
+                    return getGradeModuleItems(courseId, moduleId, userId, groupId, siteId, ignoreCache).catch(function() {
+                        // FallBack while solving MDL-57255.
+                        return getGradesItemFromTable(courseId, moduleId, userId, siteId, ignoreCache);
+                    });
                 } else {
                     return getGradesItemFromTable(courseId, moduleId, userId, siteId, ignoreCache);
                 }
