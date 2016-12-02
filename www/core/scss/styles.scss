@@ -107,7 +107,9 @@ em {
 
 .item-stacked-label {
   background-color: $item-default-bg;
+}
 
+.item-stacked-label, .item-checkbox {
   .input-label {
     max-width: 100%;
     width: 100%;

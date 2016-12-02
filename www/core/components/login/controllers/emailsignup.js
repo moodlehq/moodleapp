@@ -22,7 +22,7 @@ angular.module('mm.core.login')
  * @name mmLoginEmailSignupCtrl
  */
 .controller('mmLoginEmailSignupCtrl', function($scope, $stateParams, $mmUtil, $ionicHistory, $mmLoginHelper, $mmWS, $q, $translate,
-            $ionicModal, $ionicScrollDelegate, $mmUserProfileFieldsDelegate, $mmSitesManager) {
+            $ionicModal, $ionicScrollDelegate, $mmUserProfileFieldsDelegate, $mmSitesManager, $mmText) {
 
     var siteConfig,
         modalInitialized = false,
@@ -143,12 +143,12 @@ angular.module('mm.core.login')
         } else {
             var fields = $scope.settings.profilefields,
                 params = {
-                    username: $scope.data.username,
+                    username: $scope.data.username.trim().toLowerCase(),
                     password: $scope.data.password,
-                    firstname: $scope.data.firstname,
-                    lastname: $scope.data.lastname,
-                    email: $scope.data.email,
-                    city: $scope.data.city,
+                    firstname: $mmText.cleanTags($scope.data.firstname),
+                    lastname: $mmText.cleanTags($scope.data.lastname),
+                    email: $scope.data.email.trim(),
+                    city: $mmText.cleanTags($scope.data.city),
                     country: $scope.data.country
                 },
                 modal = $mmUtil.showModalLoading('mm.core.sending', true);
