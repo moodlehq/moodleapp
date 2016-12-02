@@ -290,7 +290,7 @@ angular.module('mm.core')
     // Convenience function to extract YouTube Id to translate to embedded video.
     // Based on http://stackoverflow.com/questions/3452546/javascript-regex-how-to-get-youtube-video-id-from-url
     function youtubeGetId(url) {
-        var regExp = /^.*youtu.be\/|v\/|\/u\/\w\/|embed\/|watch\?\??v?=?([^#\&\?]*).*/;
+        var regExp = /^.*(?:(?:youtu.be\/)|(?:v\/)|(?:\/u\/\w\/)|(?:embed\/)|(?:watch\?))\??v?=?([^#\&\?]*).*/;
         var match = url.match(regExp);
         return (match && match[1].length == 11)? match[1] : false;
     }
