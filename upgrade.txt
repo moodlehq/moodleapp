@@ -5,6 +5,8 @@ information provided here is intended especially for developers.
 
  * Now the app supports auto-login with the site if it's a Moodle 3.2 or higher. The mm-link directive already handles it automatically, but it also includes a new attribute to force or disable auto-login in links. To manually open a link with auto-login you can use any of the new functions in $mmSite: openInBrowserWithAutoLogin, openInAppWithAutoLogin, ...
  * $mmCourse#getModule now accepts a ignoreCache parameter. Also, $mmCourse#loadModuleContents now accepts preferCache and ignoreCache.
+ * Ionic and some other libraries have been updated, please run:
+    bower update
 
 === 3.1.3 ===
 
