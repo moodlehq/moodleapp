@@ -247,10 +247,11 @@ angular.module('mm.addons.mod_quiz')
     // Function called when the user wants to leave the player. Save the attempt before leaving.
     function leavePlayer() {
         var promise,
-            modal = $mmUtil.showModalLoading('mm.core.sending', true);
+            modal;
 
         if ($scope.questions && $scope.questions.length && !$scope.showSummary) {
             // Save answers.
+            modal = $mmUtil.showModalLoading('mm.core.sending', true);
             promise = processAttempt(false, false);
         } else {
             // Nothing to save.
@@ -259,10 +260,10 @@ angular.module('mm.addons.mod_quiz')
 
         return promise.catch(function() {
             // Save attempt failed. Show confirmation.
-            modal.dismiss();
+            modal && modal.dismiss();
             return $mmUtil.showConfirm($translate('mma.mod_quiz.confirmleavequizonerror'));
         }).finally(function() {
-            modal.dismiss();
+            modal && modal.dismiss();
         });
     }
 
@@ -278,17 +279,17 @@ angular.module('mm.addons.mod_quiz')
         }
 
         return promise.then(function() {
+            var modal = $mmUtil.showModalLoading('mm.core.sending', true);
+
             return processAttempt(finish, timeup).then(function() {
                 // Trigger an event to notify the attempt was finished.
                 $mmEvents.trigger(mmaModQuizEventAttemptFinished, {quizId: quiz.id, attemptId: attempt.id, synced: !offline});
                 // Leave the player.
-                $scope.questions = [];
-                leavePlayer().then(function() {
-                    // Attempt data successfully saved or user confirmed to leave. Leave player.
-                    blockData && blockData.back();
-                });
+                blockData && blockData.back();
             }).catch(function(message) {
                 return $mmaModQuizHelper.showError(message, 'mma.mod_quiz.errorsaveattempt');
+            }).finally(function() {
+                modal.dismiss();
             });
         });
     }
