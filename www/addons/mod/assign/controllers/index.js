@@ -22,15 +22,15 @@ angular.module('mm.addons.mod_assign')
  * @name mmaModAssignIndexCtrl
  */
 .controller('mmaModAssignIndexCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $translate, mmaModAssignComponent, $q,
-        $state, mmaModAssignSubmissionInvalidatedEvent, $mmEvents, $mmSite, mmaModAssignSubmissionSavedEvent,
-        mmaModAssignSubmittedForGradingEvent, $mmCourse, $mmApp, $mmaModAssignSync, $mmText, mmaModAssignEventAutomSynced,
-        mmCoreEventOnlineStatusChanged, $mmaModAssignOffline, $ionicScrollDelegate, mmaModAssignEventManualSynced,
-        mmaModAssignSubmissionStatusSubmitted, mmaModAssignSubmissionStatusDraft, mmaModAssignNeedGrading) {
+        $state, mmaModAssignSubmissionInvalidatedEvent, $mmEvents, $mmSite, mmaModAssignSubmissionSavedEvent, $mmCourse, $mmApp,
+        mmaModAssignSubmittedForGradingEvent, $mmaModAssignSync, $mmText, mmaModAssignEventAutomSynced, $ionicScrollDelegate,
+        mmCoreEventOnlineStatusChanged, $mmaModAssignOffline, mmaModAssignEventManualSynced, mmaModAssignSubmissionStatusSubmitted,
+        mmaModAssignSubmissionStatusDraft, mmaModAssignNeedGrading, mmaModAssignGradedEvent) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         siteId = $mmSite.getId(),
         userId = $mmSite.getUserId(),
-        scrollView, obsSaved, obsSubmitted, syncObserver, onlineObserver;
+        scrollView, obsSaved, obsSubmitted, syncObserver, onlineObserver, obsGraded;
 
     $scope.title = module.name;
     $scope.description = module.description;
@@ -262,6 +262,14 @@ angular.module('mm.addons.mod_assign')
         }
     });
 
+    // Listen for graded event to refresh data.
+    obsGraded = $mmEvents.on(mmaModAssignGradedEvent, function(data) {
+        if ($scope.assign && data.assignmentId == $scope.assign.id && data.siteId == siteId && data.userId == userId) {
+            // Assignment graded, refresh data.
+            showSpinnerAndRefresh(true, false);
+        }
+    });
+
     // Refresh data if this assign is synchronized automatically.
     syncObserver = $mmEvents.on(mmaModAssignEventAutomSynced, function(data) {
         if (data && $scope.assign && data.siteid == $mmSite.getId() && data.assignid == $scope.assign.id) {
@@ -282,6 +290,7 @@ angular.module('mm.addons.mod_assign')
     $scope.$on('$destroy', function() {
         obsSaved && obsSaved.off && obsSaved.off();
         obsSubmitted && obsSubmitted.off && obsSubmitted.off();
+        obsGraded  && obsGraded.off && obsGraded.off();
         syncObserver && syncObserver.off && syncObserver.off();
         onlineObserver && onlineObserver.off && onlineObserver.off();
     });
