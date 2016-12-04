@@ -25,15 +25,15 @@
                         </summary>
                     </p>
                 </div>
-                <div class="item mm-course-handlers" ng-show="course._handlers && course._handlers.length">
-                    <div class="item tabs tabs-icon-top">
+                <div class="item mm-course-handlers" ng-show="(course._handlers && course._handlers.length) || !areNavHandlersLoadedFor(course.id)">
+                    <div class="item tabs tabs-icon-top" ng-show="course._handlers && course._handlers.length">
                         <a ng-repeat="handler in course._handlers | orderBy:'-priority'" ng-controller="handler.controller" ng-click="action($event, course)" class="tab-item active mm-courses-handler {{class}}" title="{{title | translate}}">
                             <i class="icon {{icon}}"></i> {{title | translate}}
                         </a>
                     </div>
-                </div>
-                <div class="item text-center" ng-if="(!course._handlers || !course._handlers.length) && !areNavHandlersLoadedFor(course.id)">
-                    <ion-spinner></ion-spinner>
+                    <div class="mm-loading-course-handlers text-center" ng-if="!course._handlers || !course._handlers.length">
+                        <ion-spinner></ion-spinner>
+                    </div>
                 </div>
             </section>
             <div ng-if="!courses || !courses.length">

@@ -166,6 +166,8 @@ angular.module('mm.core.courses')
             promises.push($mmCourses.invalidateCourseGuestEnrolmentInfo(guestInstanceId));
         }
 
+        $mmCoursesDelegate.clearCoursesHandlers(course.id);
+
         return $q.all(promises).finally(function() {
             return getCourse(true);
         });
