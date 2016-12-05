@@ -24,7 +24,7 @@ angular.module('mm.addons.messages')
 .controller('mmaMessagesDiscussionCtrl', function($scope, $stateParams, $mmApp, $mmaMessages, $mmSite, $timeout, $mmEvents, $window,
         $ionicScrollDelegate, mmUserProfileState, $mmUtil, mmaMessagesPollInterval, $interval, $log, $ionicHistory, $ionicPlatform,
         mmCoreEventKeyboardShow, mmCoreEventKeyboardHide, mmaMessagesDiscussionLoadedEvent, mmaMessagesDiscussionLeftEvent,
-        $mmUser, $translate, mmaMessagesNewMessageEvent, mmaMessagesAutomSyncedEvent, $mmaMessagesSync) {
+        $mmUser, $translate, mmaMessagesNewMessageEvent, mmaMessagesAutomSyncedEvent, $mmaMessagesSync, $cordovaClipboard, $cordovaToast) {
 
     $log = $log.getInstance('mmaMessagesDiscussionCtrl');
 
@@ -375,6 +375,18 @@ angular.module('mm.addons.messages')
             syncObserver.off();
         }
     });
+
+    $scope.copyMessage = function(copiedMessage){
+        $cordovaClipboard.copy(copiedMessage.smallmessage).then(function() {
+            $log.debug("Message was copied");
+            $translate('mma.messages.messagecopied').then(function (message) {
+                $cordovaToast.showShortBottom(message);
+            });
+        }, function() {
+            $log.debug("There was an error copying the message");
+            $mmUtil.showErrorModal('mma.messages.messagecopyfailed', true);
+        });
+    };
 
 });
 

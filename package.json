@@ -59,6 +59,16 @@
       "locator": "cordova-plugin-customurlscheme",
       "id": "cordova-plugin-customurlscheme"
     },
+    "cordova-plugin-clipboard",
+    {
+      "locator": "https://github.com/VersoSolutions/CordovaClipboard",
+      "id": "com.verso.cordova.clipboard"
+    },
+    "cordova-plugin-toast",
+    {
+      "locator": "https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin",
+      "id": "cordova-plugin-x-toast"
+    },
     "ionic-plugin-keyboard",
     {
       "locator": "https://github.com/ti8m/DocumentHandler",

@@ -27,5 +27,7 @@
     "type_search": "Search results",
     "type_strangers": "Others",
     "unblockcontact": "Unblock contact",
-    "warningmessagenotsent": "Couldn't send message(s) to user {{user}}. {{error}}"
+    "warningmessagenotsent": "Couldn't send message(s) to user {{user}}. {{error}}",
+    "messagecopyfailed": "Could not copy the message",
+    "messagecopied": "Message was copied"
 }
