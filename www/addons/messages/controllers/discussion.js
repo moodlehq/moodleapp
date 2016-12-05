@@ -94,7 +94,7 @@ angular.module('mm.addons.messages')
             pending: true,
             sending: true,
             useridfrom: $scope.currentUserId,
-            smallmessage: text,
+            text: text,
             timecreated: new Date().getTime()
         };
         $scope.messages.push(message);
@@ -265,8 +265,8 @@ angular.module('mm.addons.messages')
     function notifyNewMessage() {
         var last = $scope.messages[$scope.messages.length - 1],
             trigger = false;
-        if ((last && (last.smallmessage !== lastMessage.message || last.timecreated !== lastMessage.timecreated))) {
-            lastMessage = {message: last.smallmessage, timecreated: last.timecreated};
+        if ((last && (last.text !== lastMessage.message || last.timecreated !== lastMessage.timecreated))) {
+            lastMessage = {message: last.text, timecreated: last.timecreated};
             trigger = true;
         } else if (!last) {
             lastMessage = {message: "", timecreated: 0};

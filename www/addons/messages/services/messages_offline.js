@@ -20,7 +20,7 @@ angular.module('mm.addons.messages')
     var stores = [
         {
             name: mmaMessagesOfflineMessagesStore,
-            keyPath: ['touserid', 'smallmessage', 'timecreated'],
+            keyPath: ['touserid', 'text', 'timecreated'],
             indexes: [
                 {
                     name: 'touserid'
@@ -29,7 +29,7 @@ angular.module('mm.addons.messages')
                     name: 'useridfrom'
                 },
                 {
-                    name: 'smallmessage'
+                    name: 'text'
                 },
                 {
                     name: 'timecreated'
@@ -182,7 +182,7 @@ angular.module('mm.addons.messages')
                 entry = {
                     touserid: to,
                     useridfrom: site.getUserId(),
-                    smallmessage: message,
+                    text: message,
                     textformat: 1,
                     timecreated: new Date().getTime(),
                     deviceoffline: $mmApp.isOnline() ? 0 : 1

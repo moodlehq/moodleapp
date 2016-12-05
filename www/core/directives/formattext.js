@@ -40,7 +40,7 @@ angular.module('mm.core')
  *     -watch: True if the variable used inside the directive should be watched for changes. If the variable data is retrieved
  *             asynchronously, this value must be set to true, or the directive should be inside a ng-if, ng-repeat or similar.
  */
-.directive('mmFormatText', function($interpolate, $mmText, $compile, $translate) {
+.directive('mmFormatText', function($interpolate, $mmText, $compile, $translate, $timeout) {
 
     var extractVariableRegex = new RegExp('{{([^|]+)(|.*)?}}', 'i'),
         tagsToIgnore = ['AUDIO', 'VIDEO', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'A'];
@@ -208,6 +208,11 @@ angular.module('mm.core')
             var el = element[0],
                 elWidth = el.offsetWidth || el.width || el.clientWidth,
                 dom = angular.element('<div>').html(formatted); // Convert the content into DOM.
+
+            if (!elWidth) {
+                // Cannot calculate element's width, use a medium number to avoid false adapt image icons appearing.
+                elWidth = 100;
+            }
 
             // Walk through the content to find the links and add our directive to it.
             // Important: We need to look for links first because in 'img' we add new links without mm-link.

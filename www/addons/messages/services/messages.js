@@ -88,7 +88,7 @@ angular.module('mm.addons.messages')
             return self.deleteMessageOnline(message.id, message.read);
         } else {
             // It's an offline message.
-            return $mmaMessagesOffline.deleteMessage(message.touserid, message.smallmessage, message.timecreated);
+            return $mmaMessagesOffline.deleteMessage(message.touserid, message.text, message.timecreated);
         }
     };
 
@@ -434,7 +434,7 @@ angular.module('mm.addons.messages')
 
                 discussions[userId].message = {
                     user: userId,
-                    message: message.smallmessage,
+                    message: message.text,
                     timecreated: message.timecreated,
                     pending: message.pending
                 };
