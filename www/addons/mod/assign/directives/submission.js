@@ -242,7 +242,8 @@ angular.module('mm.addons.mod_assign')
                     // attempt. The app will not treat that as an special case.
                     return $mmaModAssignOffline.getSubmissionGrade(assign.id, userId).then(function(data) {
                         // Load offline grades.
-                        if (data && (!feedbackStatus.gradeddate || feedbackStatus.gradeddate < data.timemodified)) {
+                        if (data &&
+                                (!feedbackStatus || !feedbackStatus.gradeddate || feedbackStatus.gradeddate < data.timemodified)) {
                             // If grade has been modified from gradebook, do not use offline.
                             if (scope.grade.modified < data.timemodified) {
                                 scope.grade.grade = data.grade;
