@@ -90,6 +90,10 @@ angular.module('mm.core')
      * @return {String}               Text cleaned.
      */
     self.cleanTags = function(text, singleLine) {
+        if (!text) {
+            return '';
+        }
+
         // First, we use a regexpr.
         text = text.replace(/(<([^>]+)>)/ig,"");
         // Then, we rely on the browser. We need to wrap the text to be sure is HTML.

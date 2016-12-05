@@ -22,11 +22,23 @@ angular.module('mm.addons.userprofilefield_checkbox')
  * @name mmaUserProfileFieldCheckbox
  */
 .directive('mmaUserProfileFieldCheckbox', function($log) {
-	$log = $log.getInstance('mmaUserProfileFieldCheckbox');
+    $log = $log.getInstance('mmaUserProfileFieldCheckbox');
 
     return {
         restrict: 'A',
         priority: 100,
-        templateUrl: 'addons/userprofilefield/checkbox/template.html'
+        templateUrl: 'addons/userprofilefield/checkbox/template.html',
+        link: function(scope, element) {
+            var field = scope.field;
+
+            if (field && scope.edit && scope.model) {
+                field.modelName = 'profile_field_' + field.shortname;
+
+                // Initialize the value.
+                if (typeof field.defaultdata != 'undefined' && typeof scope.model[field.modelName] == 'undefined') {
+                    scope.model[field.modelName] = field.defaultdata && field.defaultdata !== '0' && field.defaultdata !== 'false';
+                }
+            }
+        }
     };
 });

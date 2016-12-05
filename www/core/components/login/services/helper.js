@@ -57,6 +57,86 @@ angular.module('mm.core.login')
     };
 
     /**
+     * Format profile fields, filtering the ones that shouldn't be shown on signup and classifying them in categories.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#formatProfileFieldsForSignup
+     * @param  {Object[]} profileFields Profile fields to format.
+     * @return {Object}                 Categories with the fields to show in each one.
+     */
+    self.formatProfileFieldsForSignup = function(profileFields) {
+        var categories = {};
+
+        angular.forEach(profileFields, function(field) {
+            if (!field.signup) {
+                // Not a signup field, ignore it.
+                return;
+            }
+
+            if (!categories[field.categoryid]) {
+                categories[field.categoryid] = {
+                    id: field.categoryid,
+                    name: field.categoryname,
+                    fields: []
+                };
+            }
+
+            categories[field.categoryid].fields.push(field);
+        });
+
+        return categories;
+    };
+
+    /**
+     * Builds an object with error messages for some common errors.
+     * Please notice that this function doesn't support all possible error types.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#getErrorMessages
+     * @param  {String} [requiredMsg]  Code of the string for required error.
+     * @param  {String} [emailMsg]     Code of the string for invalid email error.
+     * @param  {String} [patternMsg]   Code of the string for pattern not match error.
+     * @param  {String} [urlMsg]       Code of the string for invalid url error.
+     * @param  {String} [minlengthMsg] Code of the string for "too short" error.
+     * @param  {String} [maxlengthMsg] Code of the string for "too long" error.
+     * @param  {String} [minMsg]       Code of the string for min value error.
+     * @param  {String} [maxMsg]       Code of the string for max value error.
+     * @return {Object}                Object with the errors.
+     */
+    self.getErrorMessages = function(requiredMsg, emailMsg, patternMsg, urlMsg, minlengthMsg, maxlengthMsg, minMsg, maxMsg) {
+        var errors = {};
+
+        if (requiredMsg) {
+            errors.required = $translate.instant(requiredMsg);
+        }
+        if (emailMsg) {
+            errors.email = $translate.instant(emailMsg);
+        }
+        if (patternMsg) {
+            errors.pattern = $translate.instant(patternMsg);
+        }
+        if (urlMsg) {
+            errors.url = $translate.instant(urlMsg);
+        }
+        if (minlengthMsg) {
+            errors.minlength = $translate.instant(minlengthMsg);
+        }
+        if (maxlengthMsg) {
+            errors.maxlength = $translate.instant(maxlengthMsg);
+        }
+        if (minMsg) {
+            errors.min = $translate.instant(minMsg);
+        }
+        if (maxMsg) {
+            errors.max = $translate.instant(maxMsg);
+        }
+
+        return errors;
+    };
+
+    /**
      * Go to the view to add a new site.
      * If a fixed URL is configured, go to credentials instead.
      *
@@ -149,18 +229,7 @@ angular.module('mm.core.login')
      * @return {Void}
      */
     self.openBrowserForSSOLogin = function(siteurl, typeOfLogin, service, launchUrl) {
-        service = service || mmCoreConfigConstants.wsextservice;
-        launchUrl = launchUrl || siteurl + '/local/mobile/launch.php';
-
-        var passport = Math.random() * 1000,
-            loginurl = launchUrl + '?service=' + service;
-        loginurl += "&passport=" + passport;
-        loginurl += "&urlscheme=" + mmCoreConfigConstants.customurlscheme;
-
-        // Store the siteurl and passport in $mmConfig for persistence. We are "configuring"
-        // the app to wait for an SSO. $mmConfig shouldn't be used as a temporary storage.
-        $mmConfig.set(mmLoginLaunchSiteURL, siteurl);
-        $mmConfig.set(mmLoginLaunchPassport, passport);
+        var loginUrl = self.prepareForSSOLogin(siteurl, service, launchUrl);
 
         if (self.isSSOEmbeddedBrowser(typeOfLogin)) {
             $translate('mm.login.cancel').then(function(cancelStr) {
@@ -168,14 +237,43 @@ angular.module('mm.core.login')
                     clearsessioncache: 'yes', // Clear the session cache to allow for multiple logins.
                     closebuttoncaption: cancelStr,
                 };
-                $mmUtil.openInApp(loginurl, options);
+                $mmUtil.openInApp(loginUrl, options);
             });
         } else {
-            $mmUtil.openInBrowser(loginurl);
+            $mmUtil.openInBrowser(loginUrl);
             if (navigator.app) {
                 navigator.app.exitApp();
             }
         }
+    };
+
+    /**
+     * Prepare the app to perform SSO login.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#prepareForSSOLogin
+     * @param  {String} siteurl     URL of the site where the SSO login will be performed.
+     * @param  {String} [service]   The service to use. If not defined, external service will be used.
+     * @param  {String} [launchUrl] The URL to open. If not defined, local_mobile URL will be used.
+     * @return {Void}
+     */
+    self.prepareForSSOLogin = function(siteurl, service, launchUrl) {
+        service = service || mmCoreConfigConstants.wsextservice;
+        launchUrl = launchUrl || siteurl + '/local/mobile/launch.php';
+
+        var passport = Math.random() * 1000,
+            loginUrl = launchUrl + '?service=' + service;
+
+        loginUrl += "&passport=" + passport;
+        loginUrl += "&urlscheme=" + mmCoreConfigConstants.customurlscheme;
+
+        // Store the siteurl and passport in $mmConfig for persistence. We are "configuring"
+        // the app to wait for an SSO. $mmConfig shouldn't be used as a temporary storage.
+        $mmConfig.set(mmLoginLaunchSiteURL, siteurl);
+        $mmConfig.set(mmLoginLaunchPassport, passport);
+
+        return loginUrl;
     };
 
     /**

@@ -651,9 +651,9 @@ angular.module('mm.core')
             }
 
             $translate(langKeys).then(function(translations) {
-                var message = needsTranslate ? translations[errorMessage] : errorMessage,
+                var message = $mmText.decodeHTML(needsTranslate ? translations[errorMessage] : errorMessage),
                     popup = $ionicPopup.alert({
-                        title: translations[errorKey],
+                        title: $mmText.decodeHTML(translations[errorKey]),
                         template: addFormatTextIfNeeded(message) // Add format-text to handle links.
                     });
 
@@ -807,6 +807,28 @@ angular.module('mm.core')
                 countryName = $translate.instant(countryKey);
 
             return countryName !== countryKey ? countryName : code;
+        };
+
+        /**
+         * Get list of countries with their code and translated name.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#getCountryList
+         * @return {Object} List of countries.
+         */
+        self.getCountryList = function() {
+            var table = $translate.getTranslationTable(),
+                countries = {};
+
+            angular.forEach(table, function(value, name) {
+                if (name.indexOf('mm.core.country-') === 0) {
+                    name = name.replace('mm.core.country-', '');
+                    countries[name] = value;
+                }
+            });
+
+            return countries;
         };
 
         /**
@@ -1386,6 +1408,29 @@ angular.module('mm.core')
 
             scrollDelegate.scrollTo(position[0], position[1]);
             return true;
+        };
+
+        /**
+         * Search for an input with error (mm-input-error directive) and scrolls to it if found.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#scrollToInputError
+         * @param  {Object} container           Element to search in.
+         * @param  {Object} [scrollDelegate]    Scroll delegate. If not defined, use $ionicScrollDelegate.
+         * @param  {String} [scrollParentClass] Scroll Parent Class where to stop calculating the position. Default scroll-content.
+         * @return {Boolean}                    True if the element is found, false otherwise.
+         */
+        self.scrollToInputError = function(container, scrollDelegate, scrollParentClass) {
+            // Wait an instant to make sure errors are shown and scroll to the element.
+            return $timeout(function() {
+                if (!scrollDelegate) {
+                    scrollDelegate = $ionicScrollDelegate;
+                }
+
+                scrollDelegate.resize();
+                return self.scrollToElement(container, '.mm-input-has-errors', scrollDelegate, scrollParentClass);
+            }, 100);
         };
 
         /**

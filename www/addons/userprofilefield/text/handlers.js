@@ -21,7 +21,7 @@ angular.module('mm.addons.userprofilefield_text')
  * @ngdoc service
  * @name $mmaUserProfileFieldTextHandler
  */
-.factory('$mmaUserProfileFieldTextHandler', function() {
+.factory('$mmaUserProfileFieldTextHandler', function($mmText) {
 
     var self = {};
 
@@ -32,6 +32,25 @@ angular.module('mm.addons.userprofilefield_text')
      */
     self.isEnabled = function() {
         return true;
+    };
+
+    /**
+     * Get the data to send for the field based on the input data.
+     *
+     * @param  {Object} field          User field to get the data for.
+     * @param  {Boolean} signup        True if user is in signup page.
+     * @param  {String} [registerAuth] Register auth method. E.g. 'email'.
+     * @param  {Object} model          Model with the input data.
+     * @return {Object}                Data to send for the field.
+     */
+    self.getData = function(field, signup, registerAuth, model) {
+        var name = 'profile_field_' + field.shortname;
+
+        return {
+            type: 'text',
+            name: name,
+            value: $mmText.cleanTags(model[name])
+        };
     };
 
     /**

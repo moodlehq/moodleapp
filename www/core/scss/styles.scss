@@ -56,6 +56,9 @@ $mm-text-with-icon-height: 22px !default;
 // Smaller button icon.
 $mm-button-icon-small-height: 22px !default;
 
+// Required inputs asterisk color.
+$mm-input-required-asterisk-color: #ff4136 !default;
+
 /**
  * App Branding
  */
@@ -102,8 +105,15 @@ em {
 
 .mm-big   { font-size: 115%; }
 
-.item-stacked-label{
+.item-stacked-label {
   background-color: $item-default-bg;
+}
+
+.item-stacked-label, .item-checkbox {
+  .input-label {
+    max-width: 100%;
+    width: 100%;
+  }
 }
 
 // Default bar.
@@ -1030,5 +1040,59 @@ ion-spinner.mm-spinner-right {
 
   .toggle {
     top: 0;
+  }
+}
+
+// Add note below an input.
+.item .mm-input-footnote {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-style: italic;
+}
+
+// Mark input as required styles.
+.mm-input-required-asterisk, .icon.mm-input-required-asterisk, i.icon.mm-input-required-asterisk {
+  color: $mm-input-required-asterisk-color !important;
+  font-size: 8px;
+  padding-left: 4px;
+  line-height: 100%;
+  vertical-align: top;
+}
+
+// Allow placeholders in date inputs.
+.platform-android, .platform-ios {
+  input[type="date"], input[type="datetime"], input[type="datetime-local"], input[type="time"] {
+    &.ng-empty:before {
+      color: $input-color-placeholder;
+      content: attr(placeholder);
+    }
+  }
+}
+
+/**
+ * Form validation.
+ */
+
+.item.mm-input-has-errors, .item .mm-input-has-errors {
+  input {
+    border-bottom: 1px solid $mm-error-color;
+  }
+  .checkbox-icon, textarea {
+    border: 1px solid $mm-error-color;
+  }
+  &.mm-item-has-rich-text-editor, .mm-item-has-rich-text-editor {
+    .mm-rich-text-editor-container {
+      border: 1px solid $mm-error-color;
+    }
+  }
+}
+
+.mm-input-error-container {
+  margin: 0;
+
+  .mm-input-error {
+    padding: 4px;
+    color: $mm-error-color;
+    font-size: 12px;
   }
 }

@@ -22,7 +22,7 @@ angular.module('mm.core.login')
  * @name mmLoginCredentialsCtrl
  */
 .controller('mmLoginCredentialsCtrl', function($scope, $stateParams, $mmSitesManager, $mmUtil, $ionicHistory, $mmApp,
-            $q, $mmLoginHelper, $mmContentLinksDelegate, $mmContentLinksHelper) {
+            $q, $mmLoginHelper, $mmContentLinksDelegate, $mmContentLinksHelper, $translate) {
 
     $scope.siteurl = $stateParams.siteurl;
     $scope.credentials = {
@@ -33,10 +33,7 @@ angular.module('mm.core.login')
         urlToOpen = $stateParams.urltoopen,
         siteConfig = $stateParams.siteconfig;
 
-    if (siteConfig) {
-        $scope.sitename = siteConfig.sitename;
-        $scope.logourl = siteConfig.logourl || siteConfig.compactlogourl;
-    }
+    treatSiteConfig(siteConfig);
 
     // Function to check if a site uses local_mobile, requires SSO login, etc.
     // This should be used only if a fixed URL is set, otherwise this check is already performed in mmLoginSiteCtrl.
@@ -49,10 +46,7 @@ angular.module('mm.core.login')
             siteChecked = true;
             $scope.siteurl = result.siteurl;
 
-            if (result.config) {
-                $scope.sitename = result.config.sitename;
-                $scope.logourl = siteConfig.logourl || siteConfig.compactlogourl;
-            }
+            treatSiteConfig(result.config);
 
             if (result && result.warning) {
                 $mmUtil.showErrorModal(result.warning, true, 4000);
@@ -77,6 +71,21 @@ angular.module('mm.core.login')
         }).finally(function() {
             checkmodal.dismiss();
         });
+    }
+
+    // Treat the site's config, setting scope variables.
+    function treatSiteConfig(siteConfig) {
+        if (siteConfig) {
+            $scope.sitename = siteConfig.sitename;
+            $scope.logourl = siteConfig.logourl || siteConfig.compactlogourl;
+            $scope.authInstructions = siteConfig.authinstructions || $translate.instant('mm.login.loginsteps');
+            $scope.canSignup = siteConfig.registerauth == 'email';
+        } else {
+            $scope.sitename = null;
+            $scope.logourl = null;
+            $scope.authInstructions = null;
+            $scope.canSignup = false;
+        }
     }
 
     if ($mmLoginHelper.isFixedUrlSet()) {

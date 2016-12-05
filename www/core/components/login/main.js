@@ -85,6 +85,16 @@ angular.module('mm.core.login', [])
             infositeurl: '',
             siteid: ''
         }
+    })
+
+    .state('mm_login.email_signup', {
+        url: '/email_signup',
+        templateUrl: 'core/components/login/templates/emailsignup.html',
+        controller: 'mmLoginEmailSignupCtrl',
+        cache: false,
+        params: {
+            siteurl: ''
+        }
     });
 
     // Default redirect to the login page.

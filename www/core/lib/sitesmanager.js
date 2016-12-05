@@ -261,7 +261,7 @@ angular.module('mm.core')
         }
 
         if (!service) {
-            service = determineService(siteurl);
+            service = self.determineService(siteurl);
         }
 
         var loginurl = siteurl + '/login/token.php';
@@ -351,10 +351,13 @@ angular.module('mm.core')
     /**
      * Function for determine which service we should use (default or extended plugin).
      *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#determineService
      * @param  {String} siteurl The site URL.
      * @return {String}         The service shortname.
      */
-    function determineService(siteurl) {
+    self.determineService = function(siteurl) {
         // We need to try siteurl in both https or http (due to loginhttps setting).
 
         // First http://
@@ -371,7 +374,7 @@ angular.module('mm.core')
 
         // Return default service.
         return mmCoreConfigConstants.wsservice;
-    }
+    };
 
     /**
      * Check for the minimum required version (Moodle 2.4).
@@ -754,7 +757,7 @@ angular.module('mm.core')
         privateToken = privateToken || '';
         return self.getSite(siteId).then(function(site) {
             site.token = token;
-            site.privatetoken = privateToken;
+            site.privateToken = privateToken;
 
             return $mmApp.getDB().insert(mmCoreSitesStore, {
                 id: siteId,
@@ -875,6 +878,20 @@ angular.module('mm.core')
         return $mmApp.getDB().get(mmCoreCurrentSiteStore, 1).then(function(current_site) {
             return current_site.siteid;
         });
+    };
+
+    /**
+     * Get the public config of a certain site.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#getSitePublicConfig
+     * @param {String} siteUrl URL of the site.
+     * @return {Promise}       Promise resolved with the public config.
+     */
+    self.getSitePublicConfig = function(siteUrl) {
+        var temporarySite = $mmSitesFactory.makeSite(undefined, siteUrl);
+        return temporarySite.getPublicConfig();
     };
 
     return self;

@@ -1,4 +1,5 @@
-<div class="item" ng-if="field && field.name">
+<!-- Render (no edit). -->
+<div class="item" ng-if="!edit && field && field.name">
     <p class="item-heading">{{ field.name }}</p>
     <p ng-if="field.value != '0'">
         {{ 'mm.core.yes' | translate }}
@@ -7,3 +8,7 @@
         {{ 'mm.core.no' | translate }}
     </p>
 </div>
+<!-- Edit. -->
+<ion-checkbox ng-if="edit && field && field.shortname" name="{{field.modelName}}" class="item-text-wrap item-checkbox-right" ng-model="model[field.modelName]" ng-disabled="field.locked" ng-required="{{field.required}}" mm-input-errors field-name="{{field.modelName}}">
+    <ion-label mm-mark-required="{{field.required}}">{{ field.name }}</ion-label>
+</ion-checkbox>

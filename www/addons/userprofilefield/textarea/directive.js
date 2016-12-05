@@ -22,11 +22,26 @@ angular.module('mm.addons.userprofilefield_textarea')
  * @name mmaUserProfileFieldTextarea
  */
 .directive('mmaUserProfileFieldTextarea', function($log) {
-	$log = $log.getInstance('mmaUserProfileFieldTextarea');
+    $log = $log.getInstance('mmaUserProfileFieldTextarea');
 
     return {
         restrict: 'A',
         priority: 100,
-        templateUrl: 'addons/userprofilefield/textarea/template.html'
+        templateUrl: 'addons/userprofilefield/textarea/template.html',
+        link: function(scope, element) {
+            var field = scope.field;
+
+            if (field && scope.edit && scope.model) {
+                field.modelName = 'profile_field_' + field.shortname;
+                scope.model[field.modelName] = {
+                    format: 1
+                };
+
+                // Initialize the value using default data.
+                if (typeof field.defaultdata != 'undefined' && typeof scope.model[field.modelName].text == 'undefined') {
+                    scope.model[field.modelName].text = field.defaultdata;
+                }
+            }
+        }
     };
 });

@@ -22,11 +22,31 @@ angular.module('mm.addons.userprofilefield_text')
  * @name mmaUserProfileFieldText
  */
 .directive('mmaUserProfileFieldText', function($log) {
-	$log = $log.getInstance('mmaUserProfileFieldText');
+    $log = $log.getInstance('mmaUserProfileFieldText');
 
     return {
         restrict: 'A',
         priority: 100,
-        templateUrl: 'addons/userprofilefield/text/template.html'
+        templateUrl: 'addons/userprofilefield/text/template.html',
+        link: function(scope, element) {
+            var field = scope.field;
+
+            if (field && scope.edit && scope.model) {
+                field.modelName = 'profile_field_' + field.shortname;
+
+                // Check max length.
+                if (field.param2) {
+                    field.maxlength = parseInt(field.param2, 10) || '';
+                }
+
+                // Check if it's a password or text.
+                field.inputType = field.param3 && field.param3 !== '0' && field.param3 !== 'false' ? 'password' : 'text';
+
+                // Initialize the value using default data.
+                if (typeof field.defaultdata != 'undefined' && typeof scope.model[field.modelName] == 'undefined') {
+                    scope.model[field.modelName] = field.defaultdata;
+                }
+            }
+        }
     };
 });
