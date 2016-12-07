@@ -5,10 +5,11 @@
     "cannotcreatediscussion": "Das neue Thema wurde leider nicht gespeichert.",
     "couldnotadd": "Der Beitrag wurde wegen eines Fehlers nicht hinzugefügt.",
     "discussion": "Thema",
+    "discussionlocked": "Dieses Thema wurde gesperrt, so dass Sie hier nicht weiter antworten können.",
     "discussionsubscription": "Themenabonnement",
     "edit": "Bearbeiten",
     "erroremptymessage": "Die Mitteilung darf nicht leer sein.",
-    "erroremptysubject": "Der Betreff darf nicht leer sein.",
+    "erroremptysubject": "Der Nachrichtenbetreff darf nicht leer sein.",
     "errorgetforum": "Fehler beim Emfang der Forumsdaten",
     "errorgetgroups": "Fehler beim Lesen der Gruppenenstellungen",
     "forumnodiscussionsyet": "Keine Themen im Forum verfügbar",
@@ -18,6 +19,10 @@
     "numreplies": "{{numreplies}} Antworten",
     "posttoforum": "Beitrag absenden",
     "re": "Re:",
+    "refreshdiscussions": "Themen aktualisieren",
+    "refreshposts": "Forumsbeiträge aktualisieren",
     "reply": "Antworten",
+    "sortnewestfirst": "Neuste zuerst",
+    "sortoldestfirst": "Älteste zuerst",
     "subject": "Betreff"
 }

@@ -1,6 +1,7 @@
 {
     "addcontact": "הוסף לרשימת אנשי קשר",
     "blockcontact": "חסימת איש קשר",
+    "blocknoncontacts": "חסימת כל המסרים החדשים מאנשים שלא נמצאים ברשימת אנשי הקשר שלי",
     "contactlistempty": "רשימת אנשי הקשר ריקה",
     "contactname": "שם איש קשר",
     "contacts": "אנשי קשר",

@@ -1,6 +1,7 @@
 {
     "addcontact": "加入通訊錄",
     "blockcontact": "封鎖聯絡人",
+    "blocknoncontacts": "僅接收通訊錄中的使用者所發送的簡訊。(其他都拒收)",
     "contactlistempty": "您的通訊錄是空的",
     "contactname": "聯絡人姓名",
     "contacts": "通訊錄",

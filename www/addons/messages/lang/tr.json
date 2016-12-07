@@ -1,6 +1,7 @@
 {
     "addcontact": "Rehbere ekle",
     "blockcontact": "Kişiyi engelle",
+    "blocknoncontacts": "Tanımadığım kullanıcıları engelle",
     "contactlistempty": "Kişi listeniz şu anda boş",
     "contactname": "Adı",
     "contacts": "Kişiler",

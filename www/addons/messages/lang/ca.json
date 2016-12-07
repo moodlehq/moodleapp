@@ -1,6 +1,7 @@
 {
     "addcontact": "Afegeix com a contacte",
     "blockcontact": "Bloca contacte",
+    "blocknoncontacts": "Impedeix que m'enviïn missatges els usuaris que no siguin a la meva llista de contactes",
     "contactlistempty": "La llista de contactes està buida",
     "contactname": "Nom del contacte",
     "contacts": "Contactes",
@@ -24,5 +25,6 @@
     "type_online": "En línia",
     "type_search": "Resultats de la cerca",
     "type_strangers": "Altres",
-    "unblockcontact": "Desbloca contacte"
+    "unblockcontact": "Desbloca contacte",
+    "warningmessagenotsent": "No s'han pogut enviar missatges a l'usuari {{user}}. {{error}}"
 }

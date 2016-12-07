@@ -56,5 +56,5 @@
     "summaryofattempts": "Síntese das tentativas anteriores",
     "timeleft": "Tempo restante",
     "timetaken": "Tempo gasto",
-    "yourfinalgradeis": "A sua nota final do teste é {{$a}}."
+    "yourfinalgradeis": "A sua nota final do teste é {{$a}}"
 }

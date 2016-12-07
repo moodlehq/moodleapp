@@ -14,6 +14,6 @@
     "mustbeonlinetosendmessages": "Du skal være online for at sende beskeder",
     "nomessages": "Ingen beskeder endnu",
     "send": "Send",
-    "sessionstart": "Næste chat starter om: {{$a}}",
+    "sessionstart": "Næste chat starter {{$a.date}}, ({{$a.fromnow}} fra nu af)",
     "talk": "Tal"
 }

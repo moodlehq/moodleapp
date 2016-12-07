@@ -1,6 +1,7 @@
 {
     "addcontact": "Tilføj kontakt",
     "blockcontact": "Bloker kontakt",
+    "blocknoncontacts": "Bloker alle beskeder fra personer der ikke er i min kontaktliste.",
     "contactlistempty": "Kontaktlisten er tom",
     "contactname": "Kontakt navn",
     "contacts": "Kontakter",
@@ -10,6 +11,7 @@
     "errorwhileretrievingdiscussions": "Fejl ved indhentning af diskussioner fra server.",
     "errorwhileretrievingmessages": "Fejl ved indhentning af beskeder fra server.",
     "messagenotsent": "Beskeden blev ikke sendt, prøv igen senere.",
+    "messagepreferences": "Indstillinger for beskeder",
     "messages": "Beskeder",
     "mustbeonlinetosendmessages": "Du skal være online for at sende beskeder",
     "newmessage": "Ny besked...",

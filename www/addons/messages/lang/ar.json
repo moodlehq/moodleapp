@@ -1,6 +1,7 @@
 {
     "addcontact": "أضف كجهة اتصال",
     "blockcontact": "أحجب عنوان  الأتصال",
+    "blocknoncontacts": "امنع المستخدمين الذين ليسوا في قائمة اتصالاتي من مراسلتي",
     "contactlistempty": "قائمة الاتصال فارغة",
     "contacts": "عناوين اتصال",
     "errordeletemessage": "خطأ عند حذف الرسالة",

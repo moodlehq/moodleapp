@@ -1,4 +1,5 @@
 {
+    "acceptsubmissionstatement": "Accepteu el compromís de tramesa.",
     "addattempt": "Permet un altre intent",
     "addnewattempt": "Afegeix un altre intent",
     "addnewattemptfromprevious": "Afegeix un intent nou basat en la tramesa anterior",
@@ -29,8 +30,8 @@
     "erroreditpluginsnotsupported": "No podeu afegir o editar una tramesa en l'aplicació perquè alguns connectors no s'admeten per editar:",
     "errorshowinginformation": "No es pot mostrar la informació de la tramesa",
     "extensionduedate": "Data de venciment de la pròrroga",
-    "feedback": "Retroacció",
     "feedbacknotsupported": "Aquesta retroacció no està admesa per l'aplicació i podria no contenir tota la informació",
+    "grade": "Qualificació",
     "graded": "Qualificada",
     "gradedby": "Qualificat per",
     "gradedon": "Qualificat el",
@@ -61,12 +62,13 @@
     "numberofsubmittedassignments": "S'han tramès",
     "numberofteams": "Grups",
     "numwords": "{{$a}} paraules",
+    "outof": "{{$a.current}} de {{$a.total}}",
     "overdue": "<font color=\"red\">La tasca ha vençut fa: {{$a}}</font>",
     "savechanges": "Desa els canvis",
+    "submission": "Tramesa",
     "submissioneditable": "L'estudiant pot editar aquesta tramesa",
     "submissionnoteditable": "L'estudiant no pot editar aquesta tramesa",
     "submissionnotsupported": "Aquesta tramesa no està admesa per l'aplicació i podria no contenir tota la informació",
-    "submissions": "Trameses",
     "submissionslocked": "Aquesta tasca no accepta trameses",
     "submissionstatus": "Estat de la tramesa",
     "submissionstatus_": "No s'ha tramès",
@@ -87,5 +89,6 @@
     "unlimitedattempts": "Il·limitats",
     "userswhoneedtosubmit": "Usuaris que manquen per trametre: {{$a}}",
     "userwithid": "Usuari amb Id {{id}}",
-    "viewsubmission": "Visualitza la tramesa"
+    "viewsubmission": "Visualitza la tramesa",
+    "warningsubmissionmodified": "La tramesa de l'usuari s'ha modificat a la web."
 }

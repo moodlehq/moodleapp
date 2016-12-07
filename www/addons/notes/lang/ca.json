@@ -8,5 +8,6 @@
     "personalnotes": "Anotacions personals",
     "publishstate": "Context",
     "sitenotes": "Anotacions del lloc",
-    "userwithid": "Usuari amb id {{id}}"
+    "userwithid": "Usuari amb id {{id}}",
+    "warningnotenotsent": "No s'han pogut afegir les notes al curs {{course}}. {{error}}"
 }

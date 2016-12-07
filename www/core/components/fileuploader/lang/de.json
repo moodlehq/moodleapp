@@ -17,6 +17,7 @@
     "maxbytesfile": "Die Datei {{$a.file}} ist zu groß. Die maximale Größe zum Hochladen ist {{$a.size}}.",
     "photoalbums": "Fotoalbum",
     "readingfile": "Datei lesen",
+    "selectafile": "Wählen Sie eine Datei.",
     "uploadafile": "Datei hochladen",
     "uploading": "Hochladen",
     "uploadingperc": "Hochladen: {{$a}}%",

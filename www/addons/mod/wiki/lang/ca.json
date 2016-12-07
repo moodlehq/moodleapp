@@ -11,9 +11,11 @@
     "nocontent": "No hi ha contingut per a aquesta pàgina",
     "notingroup": "No en grup",
     "page": "Pàgina",
-    "pageexists": "Aquesta pàgina ja existeix.",
+    "pageexists": "Aquesta pàgina ja existeix. Redirigint cap a ella.",
     "pagename": "Nom de la pàgina",
     "subwiki": "Subwiki",
+    "titleshouldnotbeempty": "El títol no pot ser buit",
     "viewpage": "Mostra la pàgina",
+    "wikipage": "Pàgina wiki",
     "wrongversionlock": "Un altre usuari ha editat aquesta pàgina wiki que esteu editant i per això el vostre contingut es obsolet."
 }

@@ -8,7 +8,7 @@
     "discussionsubscription": "Diskussions prenumeration",
     "edit": "Redigera",
     "erroremptymessage": "Meddelandet i inlägget kan inte vara tomt",
-    "erroremptysubject": "Ämnesrubriken för inlägget kan inte vara tom.",
+    "erroremptysubject": "Rubriken kan inte vara tom",
     "errorgetforum": "Fel att få forum innehåll",
     "errorgetgroups": "Fel vid hämtning av gruppinställningar",
     "forumnodiscussionsyet": "Det finns inga diskussionsämnen ännu i detta forum.",
@@ -18,6 +18,6 @@
     "numreplies": "{{numreplies}} svar",
     "posttoforum": "Publicera inlägget i forumet",
     "re": "Svar:",
-    "reply": "Svara",
+    "reply": "Svar",
     "subject": "Ämne"
 }

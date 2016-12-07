@@ -9,6 +9,6 @@
     "messageexit": "このチャットから {{$a}} が退室しました。",
     "nomessages": "メッセージがありません。",
     "send": "送信",
-    "sessionstart": "次のチャットセッションは {{$a}} に開始されます。",
+    "sessionstart": "次のチャットセッションは {{$a.date}} に開始されます (現在から {{$a.fromnow}} 後)。",
     "talk": "会話"
 }

@@ -5,6 +5,7 @@
     "cannotcreatediscussion": "新しいディスカッションを作成できませんでした。",
     "couldnotadd": "不明なエラーのため、あなたの投稿を追加できませんでした。",
     "discussion": "ディスカッション",
+    "discussionlocked": "このディスカッションはロックされているため、あなたは返信することはできません。",
     "discussionsubscription": "ディスカッション購読",
     "edit": "編集",
     "erroremptymessage": "投稿メッセージを空にすることはできません。",
