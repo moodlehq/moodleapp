@@ -941,6 +941,7 @@
 "vst"  : {"type":"application/vnd.visio"},
 "vsw"  : {"type":"application/vnd.visio"},
 "vsf"  : {"type":"application/vnd.vsf"},
+"vtt"  : {"type":"text/vtt"},
 "vtu"  : {"type":"model/vnd.vtu"},
 "vxml" : {"type":"application/voicexml+xml"},
 "wad"  : {"type":"application/x-doom"},

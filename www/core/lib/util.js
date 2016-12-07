@@ -1355,8 +1355,8 @@ angular.module('mm.core')
                 media;
             div.html(html);
 
-            // Treat img, audio, video and source.
-            media = div[0].querySelectorAll('img, video, audio, source');
+            // Treat elements with src (img, audio, video, ...).
+            media = div[0].querySelectorAll('img, video, audio, source, track');
             angular.forEach(media, function(el) {
                 var src = paths[decodeURIComponent(el.getAttribute('src'))];
                 if (typeof src !== 'undefined') {

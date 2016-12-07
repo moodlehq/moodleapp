@@ -343,6 +343,9 @@ angular.module('mm.core')
             source.removeAttribute('src');
             addExternalContent(source, component, componentId, siteId);
         });
+        angular.forEach(angular.element(el).find('track'), function(track) {
+            addExternalContent(track, component, componentId, siteId);
+        });
     }
 
     return {

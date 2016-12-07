@@ -1043,6 +1043,10 @@ ion-spinner.mm-spinner-right {
   }
 }
 
+// Video subtitles.
+.platform-ios video::cue {
+  font-size: 12px;
+}
 // Add note below an input.
 .item .mm-input-footnote {
   padding-top: 10px;
