@@ -1,6 +1,7 @@
 {
     "addcontact": "添加为联系人",
     "blockcontact": "屏蔽联系人",
+    "blocknoncontacts": "禁止不在联系人中的用户给我发消息",
     "contactlistempty": "您的联系人名单是空的",
     "contactname": "联系人",
     "contacts": "联系人",

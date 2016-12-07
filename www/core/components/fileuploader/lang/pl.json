@@ -1,4 +1,5 @@
 {
+    "addfiletext": "Dodaj plik",
     "confirmuploadfile": "Chcesz wysłać plik {$a}. Czy na pewno chcesz kontynuować?",
     "errorcapturingaudio": "Błąd poczas nagrywania dźwięku",
     "errorcapturingvideo": "Błąd podczas przechwytywania wideo",

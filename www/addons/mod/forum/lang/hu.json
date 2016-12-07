@@ -5,6 +5,7 @@
     "cannotcreatediscussion": "Nem sikerült új vitát létrehozni.",
     "couldnotadd": "Ismeretlen hiba miatt a hozzászólást nem lehetett hozzáadni",
     "discussion": "Vita",
+    "discussionlocked": "A vitát lezárták, már nem szólhat hozzá.",
     "discussionsubscription": "Megbeszélésre való feliratkozás",
     "edit": "Szerkesztés",
     "erroremptymessage": "A hozzászólás szövege nem lehet üres.",

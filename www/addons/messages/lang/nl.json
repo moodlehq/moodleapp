@@ -1,6 +1,7 @@
 {
     "addcontact": "Voeg contact toe",
     "blockcontact": "Blokkeer contact",
+    "blocknoncontacts": "Blokkeer gebruikers  die niet op mijn contactenlijst staan",
     "contactlistempty": "De contactenlijst is leeg",
     "contactname": "Naam",
     "contacts": "Contacten",
@@ -11,6 +12,7 @@
     "errorwhileretrievingdiscussions": "Fout bij het ophalen van discussies van de server",
     "errorwhileretrievingmessages": "Fout bij het ophalen van berichten van de server",
     "messagenotsent": "Het bericht is niet verzonden. Probeer later opnieuw.",
+    "messagepreferences": "Berichten voorkeuren",
     "messages": "Berichten",
     "mustbeonlinetosendmessages": "Je moet online zijn om berichten te versturen",
     "newmessage": "Nieuw bericht...",

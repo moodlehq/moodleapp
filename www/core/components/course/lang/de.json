@@ -9,5 +9,6 @@
     "errordownloadingsection": "Fehler beim Herunterladen des Abschnitts",
     "errorgetmodule": "Fehler beim Laden von Moduldaten",
     "nocontentavailable": "Aktuell sind keine Inhalte verfügbar",
+    "overriddennotice": "Die endgültige Bewertung zu dieser Aktivität wurde manuell bearbeitet.",
     "showall": "Alles anzeigen"
 }

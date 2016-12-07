@@ -1,6 +1,7 @@
 {
     "addcontact": "Adaugă prieten",
     "blockcontact": "Blochează această persoană",
+    "blocknoncontacts": "Blochează toate mesajele noi de la persoane care nu se află în lista mea de prieteni",
     "contactlistempty": "Lista de contacte este goală",
     "contactname": "Nume contact",
     "contacts": "Prieteni",

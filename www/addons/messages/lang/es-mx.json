@@ -1,6 +1,7 @@
 {
     "addcontact": "Añadir como contacto",
     "blockcontact": "Bloquear contacto",
+    "blocknoncontacts": "Bloquear mensajes de usuarios que no figuren en mi lista de contactos",
     "contactlistempty": "La lista de contactos está vacía",
     "contactname": "Nombre del contacto",
     "contacts": "Contactos",
@@ -11,6 +12,7 @@
     "errorwhileretrievingdiscussions": "Error al recuperar las discusiones del servidor.",
     "errorwhileretrievingmessages": "Error al recuperar los mensajes del servidor.",
     "messagenotsent": "El mensaje no fue enviado; por favor inténtelo nuevamente después.",
+    "messagepreferences": "Preferencias de Mensaje",
     "messages": "Mensajes",
     "mustbeonlinetosendmessages": "Usted debe de estar en-linea para enviar mensajes",
     "newmessage": "Nuevo mensaje...",

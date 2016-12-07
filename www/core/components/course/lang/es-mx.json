@@ -13,5 +13,6 @@
     "errordownloadingsection": "Error al descargar sección",
     "errorgetmodule": "Error al obtener datos del módulo.",
     "nocontentavailable": "Sin contenido disponible al momento.",
+    "overriddennotice": "La calificación final de esta actividad ha sido ajustada manualmente.",
     "showall": "Mostrar todo"
 }

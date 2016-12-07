@@ -1,6 +1,7 @@
 {
     "addcontact": "Adicionar contacto",
     "blockcontact": "Bloquear contacto",
+    "blocknoncontacts": "Bloquear mensagens de pessoas que não estão na minha lista de contactos",
     "contactlistempty": "A lista de contactos está vazia",
     "contactname": "Nome do contacto",
     "contacts": "Contactos",

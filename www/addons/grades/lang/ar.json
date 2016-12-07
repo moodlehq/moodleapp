@@ -5,6 +5,8 @@
     "grades": "الدرجات",
     "itemname": "اسم البند",
     "lettergrade": "خطاب الدرجات",
+    "nogradesreturned": "لا توجد درجات",
+    "nooutcome": "لا يوجد مخرجات تعلم",
     "percentage": "النسبة المئوية",
     "range": "المدى",
     "rank": "المرتبة",

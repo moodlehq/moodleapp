@@ -33,6 +33,6 @@
     "submitallandfinish": "Trimite tot şi termină",
     "summaryofattempts": "Rezumatul încercărilor anterioare efectuate de dumneavoastră",
     "timeleft": "Timp rămas",
-    "timetaken": "Timp necesar",
+    "timetaken": "Timp luat",
     "yourfinalgradeis": "Nota ta finală la acest test este {{$a}}"
 }

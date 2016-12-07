@@ -1,4 +1,5 @@
 {
+    "addfiletext": "Állomány hozzáadása",
     "errorcapturingaudio": "Hiba a hang rögzítélse közben.",
     "errorcapturingvideo": "Nem sikerült videofelvételt készíteni.",
     "errorreadingfile": "Hiba a(z) \"{$a}\" állomány olvasása közben",

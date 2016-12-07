@@ -1,6 +1,7 @@
 {
     "addcontact": "Kontakt hinzufügen",
     "blockcontact": "Kontakt blockieren",
+    "blocknoncontacts": "Unbekannte Personen sperren",
     "contactlistempty": "Keine Kontakte verfügbar",
     "contactname": "Name",
     "contacts": "Kontakte",
@@ -11,6 +12,7 @@
     "errorwhileretrievingdiscussions": "Fehler beim Lesen der Themen vom Server",
     "errorwhileretrievingmessages": "Fehler beim Lesen der Nachrichten vom Server",
     "messagenotsent": "Die Nachricht wurde nicht gesendet. Versuchen Sie es später nochmal.",
+    "messagepreferences": "Nachrichteneinstellungen",
     "messages": "Nachrichten",
     "mustbeonlinetosendmessages": "Sie müssen online sein, um Nachrichten zu senden",
     "newmessage": "Neue Nachnicht",

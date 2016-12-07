@@ -5,6 +5,7 @@
     "cannotcreatediscussion": "Nelze vytvořit novou diskusi",
     "couldnotadd": "Neznámá chyba! Nemohu přidat váš příspěvek.",
     "discussion": "Diskuse",
+    "discussionlocked": "Tato diskuse byla uzavřena, takže již nemůže odpovídat.",
     "discussionsubscription": "Odebírání diskuse",
     "edit": "Upravit",
     "erroremptymessage": "Text příspěvku nemůže být prázdný",

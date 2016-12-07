@@ -33,7 +33,7 @@
     "previewquiznow": "Pokaż podgląd testu",
     "question": "Pytanie",
     "quizpassword": "Hasło dostępu do quizu",
-    "reattemptquiz": "Ponownie rozwiąż test",
+    "reattemptquiz": "Ponownie rozwiąż quiz",
     "requirepasswordmessage": "Aby wziąć udział w tym quizie, musisz znać hasło",
     "returnattempt": "Powrót do podejścia",
     "review": "Przegląd",
@@ -55,5 +55,5 @@
     "summaryofattempts": "Podsumowanie twoich poprzednich podejść",
     "timeleft": "Pozostały czas",
     "timetaken": "Wykorzystany czas",
-    "yourfinalgradeis": "Twoja końcowa ocena za ten test wynosi {{$a}}"
+    "yourfinalgradeis": "Twoja końcowa ocena za ten quiz wynosi {{$a}}"
 }

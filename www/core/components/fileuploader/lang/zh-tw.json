@@ -1,4 +1,5 @@
 {
+    "addfiletext": "添加檔案",
     "confirmuploadfile": "Chcesz wysłać plik {$a}. Czy na pewno chcesz kontynuować?",
     "errorcapturingaudio": "錄製聲音時發生錯誤",
     "errorcapturingvideo": "錄製影片時發生錯誤",

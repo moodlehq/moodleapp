@@ -1,6 +1,7 @@
 {
     "addcontact": "Afegeix com a contacte",
     "blockcontact": "Bloca contacte",
+    "blocknoncontacts": "Impedeix que m'enviïn missatges els usuaris que no siguin a la meva llista de contactes",
     "contactlistempty": "La llista de contactes està buida",
     "contactname": "Nom del contacte",
     "contacts": "Contactes",

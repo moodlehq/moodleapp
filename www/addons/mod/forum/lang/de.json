@@ -5,6 +5,7 @@
     "cannotcreatediscussion": "Das neue Thema wurde leider nicht gespeichert.",
     "couldnotadd": "Der Beitrag wurde wegen eines Fehlers nicht hinzugefügt.",
     "discussion": "Thema",
+    "discussionlocked": "Dieses Thema wurde gesperrt, so dass Sie hier nicht weiter antworten können.",
     "discussionsubscription": "Themenabonnement",
     "edit": "Bearbeiten",
     "erroremptymessage": "Die Mitteilung darf nicht leer sein.",

@@ -14,6 +14,6 @@
     "mustbeonlinetosendmessages": "Per inviare messaggi devi essere online",
     "nomessages": "Non ci sono ancora messaggi",
     "send": "Invia",
-    "sessionstart": "La prossima sessione di chat inizierà in {{$a}}",
+    "sessionstart": "La prossima sessione di chat inizierà il {{$a}}, ({{$a.fromnow}} da adesso)",
     "talk": "Parla"
 }
