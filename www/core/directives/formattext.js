@@ -40,7 +40,7 @@ angular.module('mm.core')
  *     -watch: True if the variable used inside the directive should be watched for changes. If the variable data is retrieved
  *             asynchronously, this value must be set to true, or the directive should be inside a ng-if, ng-repeat or similar.
  */
-.directive('mmFormatText', function($interpolate, $mmText, $compile, $translate, $timeout) {
+.directive('mmFormatText', function($interpolate, $mmText, $compile, $translate) {
 
     var extractVariableRegex = new RegExp('{{([^|]+)(|.*)?}}', 'i'),
         tagsToIgnore = ['AUDIO', 'VIDEO', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'A'];

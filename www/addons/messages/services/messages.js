@@ -88,7 +88,7 @@ angular.module('mm.addons.messages')
             return self.deleteMessageOnline(message.id, message.read);
         } else {
             // It's an offline message.
-            return $mmaMessagesOffline.deleteMessage(message.touserid, message.text, message.timecreated);
+            return $mmaMessagesOffline.deleteMessage(message.touserid, message.smallmessage, message.timecreated);
         }
     };
 
@@ -318,6 +318,7 @@ angular.module('mm.addons.messages')
                 // Mark offline messages as pending.
                 angular.forEach(offlineMessages, function(message) {
                     message.pending = true;
+                    message.text = message.smallmessage;
                 });
 
                 return messages.concat(offlineMessages);
@@ -405,6 +406,7 @@ angular.module('mm.addons.messages')
         }).then(function(offlineMessages) {
             angular.forEach(offlineMessages, function(message) {
                 message.pending = true;
+                message.text = message.smallmessage;
                 treatRecentMessage(message, message.touserid, '');
             });
 
@@ -434,7 +436,7 @@ angular.module('mm.addons.messages')
 
                 discussions[userId].message = {
                     user: userId,
-                    message: message.text,
+                    message: message.smallmessage,
                     timecreated: message.timecreated,
                     pending: message.pending
                 };
