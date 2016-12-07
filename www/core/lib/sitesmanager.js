@@ -148,7 +148,7 @@ angular.module('mm.core')
                 }
 
                 error = secondError || error;
-                return $q.reject({error: error.error ? error.error : error});
+                return $q.reject({error: typeof error == 'object' ? error.error : error});
             });
         }).then(function() {
             // Create a temporary site to check if local_mobile is installed.
