@@ -1,4 +1,5 @@
 {
+    "acceptsubmissionstatement": "Accepteu el compromís de tramesa.",
     "addattempt": "Permet un altre intent",
     "addnewattempt": "Afegeix un altre intent",
     "addnewattemptfromprevious": "Afegeix un intent nou basat en la tramesa anterior",
@@ -88,5 +89,6 @@
     "unlimitedattempts": "Il·limitats",
     "userswhoneedtosubmit": "Usuaris que manquen per trametre: {{$a}}",
     "userwithid": "Usuari amb Id {{id}}",
-    "viewsubmission": "Visualitza la tramesa"
+    "viewsubmission": "Visualitza la tramesa",
+    "warningsubmissionmodified": "La tramesa de l'usuari s'ha modificat a la web."
 }

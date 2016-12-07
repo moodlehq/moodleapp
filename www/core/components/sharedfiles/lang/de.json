@@ -3,6 +3,7 @@
     "chooseactionrepeatedfile": "Es gibt bereits eine Datei mit diesem Namen. Möchten Sie die vorhandene Datei ersetzen oder möchten Sie sie umbenennen in '{{$a}}'?",
     "errorreceivefilenosites": "Bisher sind keine Websites gespeichert. Fügen Sie zuerst eine Website hinzu, bevor Sie eine Datei über die App teilen.",
     "nosharedfiles": "Bisher sind keine Dateien für diese Website gespeichert.",
+    "nosharedfilestoupload": "Sie haben keine Dateien zum Hochladen hier. Wenn Sie eine Datei von einer anderen App hochladen möchten, suchen Sie diese Datei und klicken Sie auf die Schaltfläche 'Öffnen mit'.",
     "rename": "Umbenennen",
     "replace": "Ersetzen",
     "sharedfiles": "Gespeicherte Dateien",

@@ -1,11 +1,13 @@
 {
     "authenticating": "Autenticação",
     "cancel": "Cancelar",
+    "cannotdownloadfiles": "O download de arquivos está desabilitado em seu serviço Mobile, o aplicativo não pode trabalhar com essa configuração desabilitada. Por favor, contate o administrador do seu site.",
     "confirmdeletesite": "Você tem certeza que quer excluir o site {{sitename}}?",
     "connect": "Conectar!",
     "connecttomoodle": "Conectar ao moodle",
     "createaccount": "Cadastrar este novo usuário",
     "createuserandpass": "Escolha seu usuário e senha",
+    "credentials": "Credenciais",
     "credentialsdescription": "Por favor, informe seu nome de usuário e senha para efetuar o login",
     "emailconfirmsent": "<p>Uma mensagem foi enviada para o seu endereço <b>{{$a}}</b></p><p>Esta mensagem contém instruções para completar a sua inscrição.</p><p>Se você encontrar dificuldades contate o administrador.</p>",
     "enterthewordsabove": "Digite as palavras acima",

@@ -1,11 +1,13 @@
 {
     "authenticating": "Autentificare",
     "cancel": "Renunță",
+    "cannotdownloadfiles": "Descărcarea de fișiere este inactivată în serviciul pentru mobil iar aplicația nu poate funcționa cu această funcție dezactivată. Contactați administratorul siteului.",
     "confirmdeletesite": "Sunteți sigur că doriți sa ștergeți siteul {{sitename}}?",
     "connect": "Conectare!",
     "connecttomoodle": "Conectare la Moodle",
     "createaccount": "Creează noul meu cont",
     "createuserandpass": "Alege un nume de utilizator şi o parolă",
+    "credentials": "Contributori",
     "credentialsdescription": "Va rugăm să  introduceți userul și parola dumneavoastră pentru a vă conecta",
     "emailconfirmsent": "<p>Un email a fost trimis la adresa Dvs. <b>{{$a}}</b></p>\n   <p>Acest mesaj conţine instrucţiuni despre finalizarea înregistrării.</p>\n   <p>În cazul în care întâmpinaţi dificultăţi contactaţi administratorul site-ului.</p>",
     "enterthewordsabove": "Introduceţi cuvintele de mai sus",

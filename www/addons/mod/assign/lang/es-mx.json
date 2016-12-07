@@ -15,6 +15,7 @@
     "attemptreopenmethod_untilpass": "Automáticamente hasta pasar",
     "attemptsettings": "Configuraciones del intento",
     "cannoteditduetostatementsubmission": "Usted no puede añadir o editar un envío en la App porque no pudimos recuperar la declaratoria de envío del sitio.",
+    "cannotgradefromapp": "Algunos métodos para calificar aun no están soportados por la App y no pueden ser modificados.",
     "cannotsubmitduetostatementsubmission": "Usted no puede enviar para calificar en la App porque no pudimos recuperar la declaratoria de envío del sitio.",
     "confirmsubmission": "¿Está Usted seguro de querer enviar su trabajo para que sea calificado? Usted ya no le podrá hacer más cambios",
     "currentattempt": "Éste es el intento {{$a}}.",
@@ -90,5 +91,6 @@
     "userswhoneedtosubmit": "Usuarios que necesitan enviar: {{$a}}",
     "userwithid": "Usuario con ID {{id}}",
     "viewsubmission": "Ver entrega",
+    "warningsubmissiongrademodified": "La calificación por el envío fue modificada en el sitio.",
     "warningsubmissionmodified": "El envío del usuario fue modificado en el sitio."
 }

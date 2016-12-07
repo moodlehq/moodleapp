@@ -1,5 +1,6 @@
 {
     "about": "O aplikaci",
+    "appname": "Moodle Mobile {{version}}",
     "appready": "Aplikace je připravena",
     "cacheexpirationtime": "Vypršení platnosti vyrovnávací paměti (milisekundy)",
     "cannotsyncoffline": "Nelze synchronizovat offline.",
@@ -13,6 +14,7 @@
     "currentlanguage": "Aktuální jazyk",
     "deletesitefiles": "Jste si jisti, že chcete odstranit stažené soubory z tohoto webu?",
     "deletesitefilestitle": "Odstranit soubory webu",
+    "development": "Vývoj",
     "deviceinfo": "Informace o zařízení",
     "deviceos": "OS zařízení",
     "devicewebworkers": "Podporovaný Web Workers zařízení",
@@ -45,6 +47,7 @@
     "sites": "Stránky",
     "spaceusage": "Použitý prostor",
     "storagetype": "Typ paměti",
+    "success": "Úspěch!",
     "synchronization": "Synchronizace",
     "synchronizenow": "Právě synchonizuji",
     "synchronizing": "Synchronizování",

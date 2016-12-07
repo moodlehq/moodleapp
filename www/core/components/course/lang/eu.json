@@ -1,13 +1,23 @@
 {
+    "activitynotyetviewable": "Jarduera hau oraindik ezin da app-ean ikusi.",
+    "activitynotyetviewablegothere": "Jarduera edo baliabide hau oraindik ezin da app-ean ikusi, sakatu beheko botoia gunearen bidez sartzeko.",
+    "activitynotyetviewableinapp": "{{$a}} jarduera onartzeko lanean ari gara. Etorri berriz laster!",
+    "activitynotyetviewableremoteaddon": "Jarduera hau bitartekoen gehigarri bat da eta oraindik ez da app-ean onartzen. Etorri berriz laster!",
+    "activitynotyetviewablesiteupgradeneeded": "Guneak ez du Moodle-ko azken bertsioa erabiltzen. Mesedez jarri harremanetan zure kudeatzailearekin.",
     "allsections": "Atal guztiak",
+    "confirmdeletemodulefiles": "Ziur zaude modulu honetako fitxategiak ezabatu nahi dituzula?",
     "confirmdownload": "{{size}} jaistear zaude. Ziur al zaude aurrera egin nahi duzula?",
+    "confirmdownloadsection": "{{size}} deskargatzera zoaz. Ziur zaude jarraitu nahi duzula?",
     "confirmdownloadunknownsize": "Ezin izan dugu deskargaren tamaina kalkulatu. Ziur zaude jaitsi nahi duzula?",
+    "confirmpartialdownloadsize": "<strong>Gutxienez</strong> {{size}} jaistera zoaz. Ziur zaude jarraitu nahi duzula?",
     "contents": "Edukiak",
     "couldnotloadsectioncontent": "Ezin izan da ataleko edukia kargatu, saiatu beranduago mesedez.",
     "couldnotloadsections": "Ezin izan dira atalak kargatu, saiatu beranduago mesedez.",
     "errordownloadingsection": "Errorea atala jaistean.",
     "errorgetmodule": "Errorea moduluaren datuak eskuratzean.",
+    "gotothesite": "Joan gunera",
     "nocontentavailable": "Ez dago edukirik eskuragarri momentu honetan.",
     "overriddennotice": "Jarduera honetako zure azken kalifikazioa eskuz egokitu da.",
-    "showall": "Erakutsi denak"
+    "showall": "Erakutsi denak",
+    "whoops": "Ups!"
 }

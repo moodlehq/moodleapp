@@ -8,6 +8,7 @@
     "deletemessage": "Nachricht löschen",
     "deletemessageconfirmation": "Möchten Sie wirklich diese Nachricht löschen? Die Nachricht wird ausschließlich aus Ihrem Nachrichtenverlauf gelöscht, ist aber weiterhin bei der Person zu sehen, die Ihnen die Nachricht geschickt hat.",
     "errordeletemessage": "Fehler beim Löschen der Nachricht",
+    "erroruseronlyacceptsmessagefromcontacts": "Fehler: Diese Person erlaubt nur eingetragenen Kontakten, ihr Nachrichten zu senden.",
     "errorwhileretrievingcontacts": "Fehler beim Lesen der Kontakte vom Server",
     "errorwhileretrievingdiscussions": "Fehler beim Lesen der Themen vom Server",
     "errorwhileretrievingmessages": "Fehler beim Lesen der Nachrichten vom Server",
@@ -15,7 +16,7 @@
     "messagepreferences": "Nachrichteneinstellungen",
     "messages": "Nachrichten",
     "mustbeonlinetosendmessages": "Sie müssen online sein, um Nachrichten zu senden",
-    "newmessage": "Neue Nachnicht",
+    "newmessage": "Neue Nachricht",
     "nomessages": "Keine Nachrichten",
     "nousersfound": "Keine Personen gefunden",
     "removecontact": "Kontakt entfernen",
@@ -26,5 +27,6 @@
     "type_online": "Online",
     "type_search": "Suchergebnisse",
     "type_strangers": "Andere Personen",
-    "unblockcontact": "Kontakt freigeben"
+    "unblockcontact": "Kontakt freigeben",
+    "warningmessagenotsent": "Konnte keine Nachricht(en) an Nutzer {{user}} senden. {{error}}"
 }

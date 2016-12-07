@@ -2,6 +2,7 @@
     "appsettings": "Configuración de la aplicación",
     "changesite": "Cambiar de sitio",
     "help": "Ayuda",
+    "logout": "Salir",
     "mycourses": "Mis cursos",
     "togglemenu": "Cambiar menú",
     "website": "Página web"

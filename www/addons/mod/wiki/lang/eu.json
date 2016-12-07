@@ -14,6 +14,8 @@
     "pageexists": "Orri hau badago dagoeneko.",
     "pagename": "Orriaren izena",
     "subwiki": "Azpiwikia",
+    "titleshouldnotbeempty": "Izenburua ezin da hutsik egon",
     "viewpage": "Ikusi orria",
+    "wikipage": "Wiki orria",
     "wrongversionlock": "Beste erabiltzaile batek editatu du orri hau zeu editatzen ari zinen bitartean: zeure edukia zaharkituta dago."
 }
