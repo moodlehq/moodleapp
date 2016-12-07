@@ -476,7 +476,7 @@ angular.module('mm.core')
      * @return {Promise}            Promise resolved when stored, rejected otherwise.
      */
     self.trigger = function(notification) {
-        if (ionic.Platform.isIOS() && ionic.Platform.version() == 10) {
+        if (ionic.Platform.isIOS() && parseInt(ionic.Platform.version(), 10) >= 10) {
             // In iOS10 show in app notification.
             self.showNotificationPopover(notification);
         }
