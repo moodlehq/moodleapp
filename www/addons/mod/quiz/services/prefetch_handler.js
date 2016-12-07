@@ -22,7 +22,8 @@ angular.module('mm.addons.mod_quiz')
  * @name $mmaModQuizPrefetchHandler
  */
 .factory('$mmaModQuizPrefetchHandler', function($mmaModQuiz, $q, $mmPrefetchFactory, mmaModQuizComponent, $mmText, $injector,
-    $mmSite, $mmaModQuizAccessRulesDelegate, $mmQuestionHelper, $mmFilepool, mmCoreDownloaded, mmCoreNotDownloaded, $rootScope) {
+    $mmSite, $mmaModQuizAccessRulesDelegate, $mmQuestionHelper, $mmFilepool, mmCoreDownloaded, mmCoreNotDownloaded, $rootScope,
+    $timeout) {
 
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModQuizComponent, false),
         $mmaModQuizSync; // We'll inject it using $injector to prevent circular dependencies.
@@ -116,7 +117,8 @@ angular.module('mm.addons.mod_quiz')
                 };
                 scope.$on('modal.hidden', function() {
                     if (!resolved) {
-                        deferred.reject();
+                        // Wait a bit to reject to prevent Ionic bug: https://github.com/driftyco/ionic/issues/9069
+                        $timeout(deferred.reject, 400);
                     }
                 });
                 scope.$on('modal.removed', function() {

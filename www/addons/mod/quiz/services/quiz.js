@@ -84,11 +84,14 @@ angular.module('mm.addons.mod_quiz')
                 });
             }
 
-            // Hide modal if needed.
-            scope.modal && scope.modal.hide();
+            // Hide modal if needed. Return the promise to avoid Ionic bug: https://github.com/driftyco/ionic/issues/9069
+            promise = scope.modal ? scope.modal.hide() : $q.when();
 
-            // Get some fixed preflight data from access rules (data that doesn't require user interaction).
-            return $mmaModQuizAccessRulesDelegate.getFixedPreflightData(rules, quiz, attempt, scope.preflightData, prefetch, siteId);
+            return promise.then(function() {
+                // Get some fixed preflight data from access rules (data that doesn't require user interaction).
+                return $mmaModQuizAccessRulesDelegate.getFixedPreflightData(
+                            rules, quiz, attempt, scope.preflightData, prefetch, siteId);
+            });
         }).then(function() {
             if (attempt) {
                 if (attempt.state != self.ATTEMPT_OVERDUE && !attempt.finishedOffline) {
