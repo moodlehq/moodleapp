@@ -95,6 +95,7 @@ angular.module('mm.addons.messages')
             sending: true,
             useridfrom: $scope.currentUserId,
             smallmessage: text,
+            text: text,
             timecreated: new Date().getTime()
         };
         $scope.messages.push(message);

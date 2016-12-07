@@ -209,6 +209,11 @@ angular.module('mm.core')
                 elWidth = el.offsetWidth || el.width || el.clientWidth,
                 dom = angular.element('<div>').html(formatted); // Convert the content into DOM.
 
+            if (!elWidth) {
+                // Cannot calculate element's width, use a medium number to avoid false adapt image icons appearing.
+                elWidth = 100;
+            }
+
             // Walk through the content to find the links and add our directive to it.
             // Important: We need to look for links first because in 'img' we add new links without mm-link.
             angular.forEach(dom.find('a'), function(anchor) {

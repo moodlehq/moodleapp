@@ -213,6 +213,10 @@ em {
     font-size: $item-message-note-font-size;
     margin-left: 20px;
   }
+
+  mm-format-text > p:only-child {
+    display: inline-block;
+  }
 }
 
 .item-message .item-content {

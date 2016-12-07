@@ -318,6 +318,7 @@ angular.module('mm.addons.messages')
                 // Mark offline messages as pending.
                 angular.forEach(offlineMessages, function(message) {
                     message.pending = true;
+                    message.text = message.smallmessage;
                 });
 
                 return messages.concat(offlineMessages);
@@ -405,6 +406,7 @@ angular.module('mm.addons.messages')
         }).then(function(offlineMessages) {
             angular.forEach(offlineMessages, function(message) {
                 message.pending = true;
+                message.text = message.smallmessage;
                 treatRecentMessage(message, message.touserid, '');
             });
 
