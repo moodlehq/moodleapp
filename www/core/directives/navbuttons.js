@@ -50,9 +50,10 @@ angular.module('mm.core')
      *
      * @param  {Object} controller Instance of $ionViewController.
      * @param  {Object} eventData  Event data to pass to the function.
+     * @param  {Object} $scope     Directive's scope.
      * @return {Void}
      */
-    function callBeforeEnter(controller, eventData) {
+    function callBeforeEnter(controller, eventData, $scope) {
         // Copy and format event data.
         var data = angular.copy(eventData);
         delete data.navBarItems;
@@ -73,6 +74,19 @@ angular.module('mm.core')
 
         // Call beforeEnter.
         controller.beforeEnter(undefined, data);
+
+        // If a watched variable has been set in the right pane before reaching this point, the watcher will receive an invalid
+        // value. This is because beforeEnter compiles the buttons with the left pane scope, so the watcher might receive
+        // "undefined" as the new value. To fix this, call the watchers with the right value. Use $timeout to force a $digest.
+        $timeout(function() {
+            angular.forEach($scope.$$watchers, function(watcher) {
+                var value = watcher.get($scope);
+                if (typeof value != 'undefined') {
+                    watcher.last = value;
+                    watcher.fn(value, undefined, $scope);
+                }
+            });
+        });
 
         // Remove styles added to back button text.
         $timeout(function() {
@@ -174,12 +188,12 @@ angular.module('mm.core')
                                 parentViewCtrl.navElement(navElementType, spanEle);
 
                                 // Call beforeEnter manually since the scope event has been fired already.
-                                callBeforeEnter(parentViewCtrl, eventData);
+                                callBeforeEnter(parentViewCtrl, eventData, $scope);
 
                                 // Listen for view events, maybe we're using an old transition because event hasn't been fired yet.
                                 unregisterViewListener = svController.onViewEvent(function(eventData) {
                                     // Transition ID has changed, call beforeEvent again with the right transition ID.
-                                    callBeforeEnter(parentViewCtrl, eventData);
+                                    callBeforeEnter(parentViewCtrl, eventData, $scope);
                                 });
 
                                 spanEle = null;
