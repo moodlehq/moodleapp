@@ -144,6 +144,11 @@
     color: #313540;
 }
 
+.bar.bar-footer.bar-side-menu.vonkfooter {
+    border-bottom: 0 none;
+    height: 8% !important;
+}
+
 // Bar content.
 $bar-content-bg: #313540 !default;
 $bar-content-border: transparent !default;
