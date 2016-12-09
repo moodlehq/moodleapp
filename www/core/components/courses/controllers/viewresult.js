@@ -194,7 +194,7 @@ angular.module('mm.core.courses')
             $scope.closeModal = function() {
                 $scope.enroldata.password = '';
                 delete $scope.currentEnrolInstance;
-                modal.hide();
+                return modal.hide();
             };
             $scope.$on('$destroy', function() {
                 modal.remove();
@@ -217,11 +217,13 @@ angular.module('mm.core.courses')
 
                 $mmCourses.selfEnrol(course.id, password, instanceId).then(function() {
                     // Close modal and refresh data.
-                    $scope.closeModal();
                     $scope.isEnrolled = true;
-                    refreshData().finally(function() {
-                        // My courses have been updated, trigger event.
-                        $mmEvents.trigger(mmCoursesEventMyCoursesUpdated, $mmSite.getId());
+                    // Don't refresh until modal is closed. See https://github.com/driftyco/ionic/issues/9069
+                    $scope.closeModal().then(function() {
+                        refreshData().finally(function() {
+                            // My courses have been updated, trigger event.
+                            $mmEvents.trigger(mmCoursesEventMyCoursesUpdated, $mmSite.getId());
+                        });
                     });
                 }).catch(function(error) {
                     if (error) {

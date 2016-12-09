@@ -266,6 +266,9 @@ angular.module('mm.addons.mod_assign')
                         // The user submitted the assign manually. Submit it for grading.
                         return $mmaModAssign.submitForGradingOnline(assign.id, offlineData.submissionstatement, siteId);
                     }
+                }).then(function() {
+                    // Submission data sent, update cached data. No need to block the user for this.
+                    $mmaModAssign.getSubmissionStatus(assign.id, userId, false, true, true, siteId);
                 }).catch(function(error) {
                     if (error && error.wserror) {
                         // The WebService has thrown an error, this means it cannot be submitted. Discard the submission.
@@ -354,8 +357,8 @@ angular.module('mm.addons.mod_assign')
             }
 
             // If grade has been modified from gradebook, do not use offline.
-            return $mmaGrades.getGradeModuleItems(courseId, assign.cmid, userId).then(function(grades) {
-                return $mmCourse.getModuleBasicGradeInfo(assign.cmid).then(function(gradeInfo) {
+            return $mmaGrades.getGradeModuleItems(courseId, assign.cmid, userId, false, siteId, true).then(function(grades) {
+                return $mmCourse.getModuleBasicGradeInfo(assign.cmid, siteId).then(function(gradeInfo) {
                     angular.forEach(grades, function(grade) {
                         if (grade.gradedategraded >= offlineData.timemodified) {
                             if (!grade.outcomeid && !grade.scaleid) {
@@ -377,7 +380,10 @@ angular.module('mm.addons.mod_assign')
             }).then(function() {
                 return $mmaModAssign.submitGradingFormOnline(assign.id, userId, offlineData.grade, offlineData.attemptnumber,
                         offlineData.addattempt, offlineData.workflowstate, offlineData.applytoall, offlineData.outcomes,
-                        offlineData.plugindata, siteId).catch(function(error) {
+                        offlineData.plugindata, siteId).then(function() {
+                    // Grades sent, update cached data. No need to block the user for this.
+                    $mmaModAssign.getSubmissionStatus(assign.id, userId, false, true, true, siteId);
+                }).catch(function(error) {
                     if (error && error.wserror) {
                         // The WebService has thrown an error, this means it cannot be submitted. Discard the offline data.
                         discardError = error.error;

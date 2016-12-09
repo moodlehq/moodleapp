@@ -145,8 +145,10 @@ angular.module('mm.addons.notes')
 
                     $mmaNotes.addNote(user.id, courseid, $scope.note.publishstate, $scope.note.text).then(function(sent) {
                         var message = sent ? 'mma.notes.eventnotecreated' : 'mm.core.datastoredoffline';
-                        $mmUtil.showModal('mm.core.success', message);
-                        $scope.closeModal();
+                        // Don't show success message until modal is closed. See https://github.com/driftyco/ionic/issues/9069
+                        $scope.modal.hide().then(function() {
+                            $mmUtil.showModal('mm.core.success', message);
+                        });
                     }, function(error) {
                         $mmUtil.showErrorModal(error);
                         $scope.processing = false;

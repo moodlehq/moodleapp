@@ -436,7 +436,7 @@ angular.module('mm.addons.messages')
 
                 discussions[userId].message = {
                     user: userId,
-                    message: message.smallmessage,
+                    message: message.text,
                     timecreated: message.timecreated,
                     pending: message.pending
                 };

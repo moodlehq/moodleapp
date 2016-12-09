@@ -461,6 +461,19 @@ mm-loading.mm-loading-noheight .mm-loading-content {
   height: auto;
 }
 
+mm-loading.mm-loading-center {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: inline-block;
+
+  .mm-loading-container {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
 // Align ion-spinner right
 .spinner-right {
   position: absolute;
@@ -974,7 +987,7 @@ textarea.cloned-text-input{
     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
     padding: 2px 0;
 
-    .scroll-content {
+    .scroll-content, .scroll {
       position: relative;
       top: auto;
       bottom: auto;

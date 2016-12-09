@@ -46,7 +46,7 @@ angular.module('mm.addons.badges')
 
     // Pull to refresh.
     $scope.refreshBadges = function() {
-        $mmaBadges.invalidateUserBadges(courseId, userId).finally(function() {
+        $mmaBadges.invalidateUserBadges($scope.courseId, $scope.userId).finally(function() {
             fetchBadges().finally(function() {
                 $scope.$broadcast('scroll.refreshComplete');
             });
