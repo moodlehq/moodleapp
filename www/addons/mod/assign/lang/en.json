@@ -35,6 +35,7 @@
     "grade": "Grade",
     "graded": "Graded",
     "gradedby": "Graded by",
+    "gradenotsynced": "Grade not synced",
     "gradedon": "Graded on",
     "gradeoutof": "Grade out of {{$a}}",
     "gradingstatus": "Grading status",

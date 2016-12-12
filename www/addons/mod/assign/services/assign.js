@@ -1218,7 +1218,7 @@ angular.module('mm.addons.mod_assign')
         return isGradingOfflineEnabled(siteId).then(function (enabled) {
             if (!enabled) {
                 return self.submitGradingFormOnline(assignmentId, userId, grade, attemptNumber, addAttempt, workflowState,
-                    applyToAll, outcomes, pluginData, siteId)
+                    applyToAll, outcomes, pluginData, siteId);
             }
 
             if (!$mmApp.isOnline()) {

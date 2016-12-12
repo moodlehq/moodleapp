@@ -21,9 +21,9 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc controller
  * @name mmaModAssignSubmissionListCtrl
  */
-.controller('mmaModAssignSubmissionListCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $translate, $q,
-        mmaModAssignComponent, mmaModAssignSubmissionInvalidatedEvent, mmaModAssignSubmissionStatusSubmitted,
-        mmaModAssignNeedGrading, $mmEvents, mmaModAssignGradedEvent, $mmSite) {
+.controller('mmaModAssignSubmissionListCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $translate, $q, $mmEvents,
+        mmaModAssignComponent, mmaModAssignSubmissionInvalidatedEvent, mmaModAssignSubmissionStatusSubmitted, $mmaModAssignOffline,
+        mmaModAssignNeedGrading, mmaModAssignGradedEvent, $mmSite) {
 
     var courseId = $stateParams.courseid,
         selectedStatus = $stateParams.status,
@@ -77,39 +77,54 @@ angular.module('mm.addons.mod_assign')
                         $scope.submissions = [];
                         angular.forEach(submissions, function(submission) {
                             if (!searchStatus || searchStatus == submission.status) {
-                                var promise;
+                                promises.push($mmaModAssignOffline.getSubmissionGrade(assign.id, submission.userid)
+                                        .catch(function() {
+                                    // Ignore failures.
+                                }).then(function(data) {
+                                    var promise,
+                                        notSynced = false;
 
-                                if (mmaModAssignNeedGrading == selectedStatus) {
-                                    promise = $mmaModAssign.needsSubmissionToBeGraded(submission, assign.id);
-                                } else {
-                                    promise = $q.when(true);
-                                }
-                                promises.push(promise.then(function(add) {
-                                    if (!add) {
-                                        return;
+                                    // Load offline grades.
+                                    if (data && submission.timemodified < data.timemodified) {
+                                        notSynced = true;
                                     }
-                                    submission.statusClass = $mmaModAssign.getSubmissionStatusClass(submission.status);
-                                    submission.gradingClass =
-                                        $mmaModAssign.getSubmissionGradingStatusClass(submission.gradingstatus);
 
-                                    // Show submission status if not submitted for grading.
-                                    if (submission.statusClass != 'badge-balanced' || !submission.gradingstatus) {
-                                        submission.statusTranslated = $translate.instant('mma.mod_assign.submissionstatus_' +
-                                            submission.status);
+                                    if (mmaModAssignNeedGrading == selectedStatus) {
+                                        promise = $mmaModAssign.needsSubmissionToBeGraded(submission, assign.id);
                                     } else {
-                                        submission.statusTranslated = false;
+                                        promise = $q.when(true);
                                     }
 
-                                    // Show grading status if one of the statuses is not done.
-                                    if (submission.statusClass != 'badge-assertive' ||
-                                            submission.gradingClass != 'badge-assertive') {
-                                        submission.gradingStatusTranslationId =
-                                            $mmaModAssign.getSubmissionGradingStatusTranslationId(submission.gradingstatus);
-                                    } else {
-                                        submission.gradingStatusTranslationId = false;
-                                    }
+                                    return promise.then(function(add) {
+                                        if (!add) {
+                                            return;
+                                        }
+                                        submission.statusClass = $mmaModAssign.getSubmissionStatusClass(submission.status);
+                                        submission.gradingClass =
+                                            $mmaModAssign.getSubmissionGradingStatusClass(submission.gradingstatus);
 
-                                    $scope.submissions.push(submission);
+                                        // Show submission status if not submitted for grading.
+                                        if (submission.statusClass != 'badge-balanced' || !submission.gradingstatus) {
+                                            submission.statusTranslated = $translate.instant('mma.mod_assign.submissionstatus_' +
+                                                submission.status);
+                                        } else {
+                                            submission.statusTranslated = false;
+                                        }
+
+                                        if (notSynced) {
+                                            submission.gradingStatusTranslationId = 'mma.mod_assign.gradenotsynced';
+                                            submission.gradingClass = "";
+                                        } else if (submission.statusClass != 'badge-assertive' ||
+                                                submission.gradingClass != 'badge-assertive') {
+                                            // Show grading status if one of the statuses is not done.
+                                            submission.gradingStatusTranslationId =
+                                                $mmaModAssign.getSubmissionGradingStatusTranslationId(submission.gradingstatus);
+                                        } else {
+                                            submission.gradingStatusTranslationId = false;
+                                        }
+
+                                        $scope.submissions.push(submission);
+                                    });
                                 }));
                             }
                         });
