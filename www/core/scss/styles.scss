@@ -265,10 +265,12 @@ em {
     @extend .item-avatar;
     text-align: center;
     padding-left: 16px;
+
     &.item-complex .item-content {
         text-align: center;
         padding-left: 49px;
     }
+
     > img:first-child,
     &.item-complex .item-content > img:first-child,
     img.avatar {
@@ -282,8 +284,13 @@ em {
         padding: 4px;
         border: 1px solid #ddd;
 
-        &.no-border-radius {
-          border-radius: 0%;
+        &.avatar-full {
+          border-radius: 2%;
+          border: 0;
+          max-width: 100%;
+          max-height: 200px;
+          width: auto;
+          height: auto;
         }
     }
 }
