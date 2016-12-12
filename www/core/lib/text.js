@@ -417,6 +417,9 @@ angular.module('mm.core')
      * @return {String}      Escaped text.
      */
     self.escapeForRegex = function(text) {
+        if (!text || !text.replace) {
+            return '';
+        }
         return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
     };
 

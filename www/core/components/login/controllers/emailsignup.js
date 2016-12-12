@@ -30,6 +30,7 @@ angular.module('mm.core.login')
 
     $scope.siteurl = $stateParams.siteurl;
     $scope.data = {};
+    $scope.escapeForRegex = $mmText.escapeForRegex;
 
     // Setup validation errors.
     $scope.usernameErrors = $mmLoginHelper.getErrorMessages('mm.login.usernamerequired');
