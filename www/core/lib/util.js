@@ -68,7 +68,8 @@ angular.module('mm.core')
 
     this.$get = function($ionicLoading, $ionicPopup, $injector, $translate, $http, $log, $q, $mmLang, $mmFS, $timeout, $mmApp,
                 $mmText, mmCoreWifiDownloadThreshold, mmCoreDownloadThreshold, $ionicScrollDelegate, $mmWS, $cordovaInAppBrowser,
-                $mmConfig, mmCoreSettingsRichTextEditor, $rootScope, $ionicPlatform, $ionicHistory, mmCoreSplitViewBlock, $state) {
+                $mmConfig, mmCoreSettingsRichTextEditor, $rootScope, $ionicPlatform, $ionicHistory, mmCoreSplitViewBlock, $state,
+                $window) {
 
         $log = $log.getInstance('$mmUtil');
 
@@ -2025,6 +2026,39 @@ angular.module('mm.core')
                     stateParams: currentView.stateParams
                 });
             }
+        };
+
+        /**
+         * Check if an element is outside of screen (viewport).
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#isElementOutsideOfScreen
+         * @param  {Object} element          DOM element to check.
+         * @param  {String} [scrollSelector] Selector to find the scroll that contains the element.
+         * @return {Boolean}                 Whether the element is outside of the viewport.
+         */
+        self.isElementOutsideOfScreen = function(element, scrollSelector) {
+            scrollSelector = scrollSelector || '.scroll-content';
+
+            var elementRect = element.getBoundingClientRect(),
+                elementMidPoint,
+                scrollEl = self.closest(element, scrollSelector),
+                scrollElRect,
+                scrollTopPos = 0;
+
+            if (!elementRect) {
+                return false;
+            }
+
+            elementMidPoint = (Math.round(elementRect.bottom) + Math.round(elementRect.top)) / 2;
+
+            if (scrollEl) {
+                scrollElRect = scrollEl.getBoundingClientRect();
+                scrollTopPos = (scrollElRect && scrollElRect.top) || 0;
+            }
+
+            return elementMidPoint > $window.innerHeight || elementMidPoint < scrollTopPos;
         };
 
         return self;
