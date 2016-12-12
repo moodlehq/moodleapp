@@ -46,7 +46,7 @@
         </mm-loading>
     </ion-content>
 
-    <ion-footer-bar keyboard-attach>
+    <ion-footer-bar>
         <p class="mma-chat-footer-note" ng-if="isAppOffline()">{{ 'mma.mod_chat.mustbeonlinetosendmessages' | translate }}</p>
         <form ng-if="!isAppOffline() && polling && loaded" class="mma-chat-send-form" ng-submit="sendMessage(newMessage.text);">
             <div class="mma-chat-input-inset item-input-inset">
