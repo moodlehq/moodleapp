@@ -35,7 +35,7 @@ angular.module('mm.addons.grades')
      * @return {String}         Cache key.
      */
     function getGradesTableCacheKey(courseId, userId) {
-        return 'mmaGrades:table:' + courseId + ':' + userId;
+        return getGradesTablePrefixCacheKey(courseId) + userId;
     }
 
     /**
@@ -48,7 +48,27 @@ angular.module('mm.addons.grades')
      */
     function getGradeItemsCacheKey(courseId, userId, groupId) {
         groupId = groupId || 0;
-        return 'mmaGrades:items:' + courseId + ':' + userId + ':' + groupId;
+        return getGradeItemsPrefixCacheKey(courseId) + userId + ':' + groupId;
+    }
+
+    /**
+     * Get prefix cache key for grade table data WS calls.
+     *
+     * @param {Number} courseId ID of the course to get the grades from.
+     * @return {String}         Cache key.
+     */
+    function getGradesTablePrefixCacheKey(courseId) {
+        return 'mmaGrades:table:' + courseId + ':';
+    }
+
+    /**
+     * Get prefix cache key for grade table data WS calls.
+     *
+     * @param {Number} courseId     ID of the course to get the grades from.
+     * @return {String}         Cache key.
+     */
+    function getGradeItemsPrefixCacheKey(courseId) {
+        return 'mmaGrades:items:' + courseId + ':';
     }
 
     /**
@@ -83,6 +103,38 @@ angular.module('mm.addons.grades')
     self.invalidateGradeItemsData = function(courseId, userId, groupId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getGradeItemsCacheKey(courseId, userId, groupId));
+        });
+    };
+
+    /**
+     * Invalidates all course  grade table data WS calls.
+     *
+     * @module mm.addons.grades
+     * @ngdoc method
+     * @name $mmaGrades#invalidateGradesTableCourseData
+     * @param {Number} courseId Course ID.
+     * @param {Number}  [siteId]   Site id (empty for current site).
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateGradesTableCourseData = function(courseId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKeyStartingWith(getGradesTablePrefixCacheKey(courseId));
+        });
+    };
+
+    /**
+     * Invalidates all course grade items data WS calls.
+     *
+     * @module mm.addons.grades
+     * @ngdoc method
+     * @name $mmaGrades#invalidateGradeCourseItemsData
+     * @param {Number}  courseId   Course ID.
+     * @param {Number}  [siteId]   Site id (empty for current site).
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateGradeCourseItemsData = function(courseId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKeyStartingWith(getGradeItemsPrefixCacheKey(courseId));
         });
     };
 
@@ -367,17 +419,16 @@ angular.module('mm.addons.grades')
     };
 
     /**
-     * Get the grade items for a certain module. Keep in mind that may have more than one item to include outcomes and scales.
+     * Invalidate the grade items for a certain module.
      *
      * @module mm.addons.grades
      * @ngdoc method
-     * @name $mmaGrades#getGradeModuleItems
-     * @param  {Number}  courseId     ID of the course to get the grades from.
-     * @param  {Number}  moduleId     ID of the module to get the grades from.
-     * @param  {Number}  [userId]     ID of the user to get the grades from. If not defined use site's current user.
-     * @param  {Number}  [groupId]    ID of the group to get the grades from. Not used for old gradebook table.
+     * @name $mmaGrades#invalidateGradeModuleItems
+     * @param  {Number}  courseId     ID of the course to invalidate the grades.
+     * @param  {Number}  [userId]     ID of the user to invalidate. If not defined use site's current user.
+     * @param  {Number}  [groupId]    ID of the group to invalidate. Not used for old gradebook table.
      * @param  {String}  [siteId]     Site ID. If not defined, current site.
-     * @return {Promise}              Promise to be resolved when the grades are retrieved.
+     * @return {Promise}              Promise to be resolved when the grades are invalidated.
      */
     self.invalidateGradeModuleItems = function(courseId, userId, groupId, siteId) {
         siteId = siteId || $mmSite.getId();
@@ -391,6 +442,27 @@ angular.module('mm.addons.grades')
                     return self.invalidateGradesTableData(courseId, userId, siteId);
                 }
             });
+        });
+    };
+
+    /**
+     * Invalidate all the grade items for a certain course.
+     *
+     * @module mm.addons.grades
+     * @ngdoc method
+     * @name $mmaGrades#invalidateGradeCourseItems
+     * @param  {Number}  courseId     ID of the course to invalidate the grades.
+     * @param  {String}  [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}              Promise to be resolved when the grades are invalidated.
+     */
+    self.invalidateGradeCourseItems = function(courseId, siteId) {
+        siteId = siteId || $mmSite.getId();
+        return self.isGradeItemsAvalaible(siteId).then(function(enabled) {
+            if (enabled) {
+                return self.invalidateGradeCourseItemsData(courseId, siteId);
+            } else {
+                return self.invalidateGradesTableCourseData(courseId, siteId);
+            }
         });
     };
 

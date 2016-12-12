@@ -685,22 +685,29 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}
      */
     self.invalidateContent = function(moduleId, courseId, siteId) {
-        var promises = [];
         siteId = siteId || $mmSite.getId();
 
-        promises.push(self.getAssignment(courseId, moduleId, siteId).then(function(assign) {
+        return self.getAssignment(courseId, moduleId, siteId).then(function(assign) {
             var ps = [];
             // Do not invalidate assignment data before getting assignment info, we need it!
-            ps.push(self.invalidateAssignmentData(courseId, siteId));
             ps.push(self.invalidateAllSubmissionData(assign.id, siteId));
             ps.push(self.invalidateAssignmentUserMappingsData(assign.id, siteId));
             ps.push(self.invalidateListParticipantsData(assign.id, siteId));
             ps.push($mmComments.invalidateCommentsByInstance('module', assign.id, siteId));
 
             return $q.all(ps);
-        }));
+        }).finally(function() {
+            var ps = [];
+            ps.push(self.invalidateAssignmentData(courseId, siteId));
 
-        return $q.all(promises);
+            // Get grade addon if avalaible.
+            var $mmaGrades = $mmAddonManager.get('$mmaGrades');
+            if ($mmaGrades) {
+                ps.push($mmaGrades.invalidateGradeCourseItems(courseId));
+            }
+
+            return $q.all(ps);
+        });
     };
 
     /**
@@ -1218,7 +1225,7 @@ angular.module('mm.addons.mod_assign')
         return isGradingOfflineEnabled(siteId).then(function (enabled) {
             if (!enabled) {
                 return self.submitGradingFormOnline(assignmentId, userId, grade, attemptNumber, addAttempt, workflowState,
-                    applyToAll, outcomes, pluginData, siteId)
+                    applyToAll, outcomes, pluginData, siteId);
             }
 
             if (!$mmApp.isOnline()) {

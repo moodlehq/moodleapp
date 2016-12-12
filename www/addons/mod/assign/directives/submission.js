@@ -30,12 +30,7 @@ angular.module('mm.addons.mod_assign')
         $mmaModAssignOffline, mmaModAssignEventManualSynced, $mmCourse, $mmAddonManager, mmaModAssignAttemptReopenMethodManual,
         $mmLang, $mmSyncBlock, mmaModAssignEventSubmitGrade, $ionicPlatform, mmaModAssignGradedEvent) {
 
-    var originalGrades =  {
-        grade: false,
-        addAttempt: false,
-        applyToAll: false,
-        outcomes: {}
-    };
+    var originalGrades =  {};
 
     /**
      * Set the submission status name and class.
@@ -102,6 +97,13 @@ angular.module('mm.addons.mod_assign')
             applyToAll: false,
             scale: false,
             lang: false
+        };
+
+        originalGrades =  {
+            grade: false,
+            addAttempt: false,
+            applyToAll: false,
+            outcomes: {}
         };
 
         if (feedbackStatus) {
@@ -247,7 +249,10 @@ angular.module('mm.addons.mod_assign')
                             // If grade has been modified from gradebook, do not use offline.
                             if (scope.grade.modified < data.timemodified) {
                                 scope.grade.grade = data.grade;
+                                scope.gradingStatusTranslationId = 'mma.mod_assign.gradenotsynced';
+                                scope.gradingClass = "";
                             }
+
                             scope.grade.applyToAll = data.applytoall;
                             scope.grade.addAttempt = data.addattempt;
 
@@ -778,7 +783,7 @@ angular.module('mm.addons.mod_assign')
                 // Get grade addon if avalaible.
                 var $mmaGrades = $mmAddonManager.get('$mmaGrades');
                 if ($mmaGrades) {
-                    promises.push($mmaGrades.invalidateGradeItemsData(courseId, submitId));
+                    promises.push($mmaGrades.invalidateGradeModuleItems(courseId, submitId));
                 }
                 promises.push($mmCourse.invalidateModule(moduleId));
 
@@ -797,14 +802,16 @@ angular.module('mm.addons.mod_assign')
                     originalGrades.addAttempt != scope.grade.addAttempt ||
                     originalGrades.applyToAll != scope.grade.applyToAll;
 
-                for (var x in scope.gradeInfo.outcomes) {
-                    if (modified) {
-                        return $q.when(true);
-                    }
-                    var outcome = scope.gradeInfo.outcomes[x];
+                if (scope.gradeInfo && scope.gradeInfo.outcomes) {
+                    for (var x in scope.gradeInfo.outcomes) {
+                        if (modified) {
+                            return $q.when(true);
+                        }
+                        var outcome = scope.gradeInfo.outcomes[x];
 
-                    modified = originalGrades.outcomes[outcome.id] == 'undefined' ||
-                        originalGrades.outcomes[outcome.id] != outcome.selectedId;
+                        modified = originalGrades.outcomes[outcome.id] == 'undefined' ||
+                            originalGrades.outcomes[outcome.id] != outcome.selectedId;
+                    }
                 }
 
                 if (modified) {
