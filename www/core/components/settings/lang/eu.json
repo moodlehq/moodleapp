@@ -5,6 +5,7 @@
     "cacheexpirationtime": "Cache-aren iraungitze denbora (milisegundotan)",
     "cannotsyncoffline": "Ezin da lineaz-kanpo sinkronizatu.",
     "cannotsyncwithoutwifi": "Ezin da sinkronizatu oraingo ezarpenek sinkronizazio Wi-Fi bidez konektaturik egonda soilik baimentzen dutelako. Mesedez konektatu Wi-Fi sare batera.",
+    "configuringnotifications": "'{{$a}}' jakinarazpen konfiguratzen ari zara.",
     "cordovadevicemodel": "Cordova Device eredua",
     "cordovadeviceosversion": "Cordova Device SE bertsioa",
     "cordovadeviceplatform": "Cordova Device plataforma",

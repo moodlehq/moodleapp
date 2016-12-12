@@ -5,6 +5,7 @@
     "cacheexpirationtime": "Temps de venciment de memòria cau (milisegons)",
     "cannotsyncoffline": "No es poden sincronitzar dades fora de línia.",
     "cannotsyncwithoutwifi": "No es pot sincronitzar perquè els paràmetres només permeten sincronitzar utilitzant xarxes Wi-Fi. Connecteu-vos a una Wi-Fi.",
+    "configuringnotifications": "Esteu configurant les notificacions per «{{$a}}».",
     "cordovadevicemodel": "Model del dispositiu Cordova",
     "cordovadeviceosversion": "Versió d'OS del dispositiu Cordova",
     "cordovadeviceplatform": "Plataforma del dispositiu Cordova",
