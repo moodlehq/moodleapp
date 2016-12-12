@@ -1117,3 +1117,8 @@ ion-spinner.mm-spinner-right {
     font-size: 12px;
   }
 }
+
+// Ionic overrides italic font-style, apply it again.
+i, cite, em, var, address, dfn {
+    font-style: italic;
+}
