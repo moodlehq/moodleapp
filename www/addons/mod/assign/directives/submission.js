@@ -249,7 +249,6 @@ angular.module('mm.addons.mod_assign')
                             // If grade has been modified from gradebook, do not use offline.
                             if (scope.grade.modified < data.timemodified) {
                                 scope.grade.grade = data.grade;
-
                                 scope.gradingStatusTranslationId = 'mma.mod_assign.gradenotsynced';
                                 scope.gradingClass = "";
                             }
@@ -784,7 +783,7 @@ angular.module('mm.addons.mod_assign')
                 // Get grade addon if avalaible.
                 var $mmaGrades = $mmAddonManager.get('$mmaGrades');
                 if ($mmaGrades) {
-                    promises.push($mmaGrades.invalidateGradeItemsData(courseId, submitId));
+                    promises.push($mmaGrades.invalidateGradeModuleItems(courseId, submitId));
                 }
                 promises.push($mmCourse.invalidateModule(moduleId));
 
