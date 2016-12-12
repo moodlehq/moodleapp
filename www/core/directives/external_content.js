@@ -72,15 +72,17 @@ angular.module('mm.core')
      */
     function handleExternalContent(siteId, dom, targetAttr, url, component, componentId) {
 
-        if (ionic.Platform.isIOS() && dom.tagName == 'VIDEO' && dom.textTracks) {
+        if (dom.tagName == 'VIDEO' && dom.textTracks) {
             // It's a video with subtitles. In iOS, subtitles position is wrong so it needs to be fixed.
             dom.textTracks.onaddtrack = function(event) {
                 if (event.track) {
                     event.track.oncuechange = function() {
+                        var line = $ionicPlatform.isTablet() || ionic.Platform.isAndroid() ? 90 : 80;
                         // Position all subtitles to a percentage of video height.
                         angular.forEach(event.track.cues, function(cue) {
                             cue.snapToLines = false;
-                            cue.line = $ionicPlatform.isTablet() ? 90 : 80;
+                            cue.line = line;
+                            cue.size = 100; // This solves some Android issue.
                         });
                         // Delete listener.
                         event.track.oncuechange = null;
