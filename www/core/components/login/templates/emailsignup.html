@@ -33,7 +33,7 @@
                 </ion-input>
                 <ion-input class="item item-input item-stacked-label item-text-wrap" mm-input-errors error-messages="email2Errors">
                     <ion-label mm-mark-required="true">{{ 'mm.user.emailagain' | translate }}</ion-label>
-                    <input type="email" name="email2" placeholder="{{ 'mm.user.emailagain' | translate }}" ng-model="data.email2" autocapitalize="off" autocorrect="off" required ng-pattern="data.email">
+                    <input type="email" name="email2" placeholder="{{ 'mm.user.emailagain' | translate }}" ng-model="data.email2" autocapitalize="off" autocorrect="off" required ng-pattern="escapeForRegex(data.email)">
                 </ion-input>
                 <ion-input ng-repeat="namefield in settings.namefields track by $index" class="item item-input item-stacked-label item-text-wrap" mm-input-errors field-name="{{namefield}}" error-messages="namefieldsErrors[namefield]">
                     <ion-label mm-mark-required="true">{{ 'mm.user.' + namefield | translate }}</ion-label>
