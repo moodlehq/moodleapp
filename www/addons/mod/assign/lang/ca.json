@@ -15,6 +15,7 @@
     "attemptreopenmethod_untilpass": "Automàticament fins superació",
     "attemptsettings": "Configuració dels intents",
     "cannoteditduetostatementsubmission": "No podeu afegir o editar la tramesa en l'aplicació perquè no s'ha pogut recuperar el compromís de tramesa del lloc.",
+    "cannotgradefromapp": "Alguns mètodes de qualificació no estan encara suportats per l'aplicació i no es poden modificar.",
     "cannotsubmitduetostatementsubmission": "No podeu enviar la tramesa a qualificar en l'aplicació perquè no s'ha pogut recuperar el compromís de tramesa del lloc.",
     "confirmsubmission": "Segur que voleu trametre el vostre treball per a qualificar? Ja no podreu realitzar més canvis.",
     "currentattempt": "Aquest és l'intent {{$a}}.",
@@ -90,5 +91,6 @@
     "userswhoneedtosubmit": "Usuaris que manquen per trametre: {{$a}}",
     "userwithid": "Usuari amb Id {{id}}",
     "viewsubmission": "Visualitza la tramesa",
+    "warningsubmissiongrademodified": "S'ha modificat la qualificació de la tramesa a la web.",
     "warningsubmissionmodified": "La tramesa de l'usuari s'ha modificat a la web."
 }

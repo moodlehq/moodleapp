@@ -1,10 +1,11 @@
 {
     "activitynotyetviewable": "Jarduera hau oraindik ezin da app-ean ikusi.",
     "activitynotyetviewablegothere": "Jarduera edo baliabide hau oraindik ezin da app-ean ikusi, sakatu beheko botoia gunearen bidez sartzeko.",
-    "activitynotyetviewableinapp": "{{$a}} jarduera onartzeko lanean ari gara. Etorri berriz laster!",
-    "activitynotyetviewableremoteaddon": "Jarduera hau bitartekoen gehigarri bat da eta oraindik ez da app-ean onartzen. Etorri berriz laster!",
-    "activitynotyetviewablesiteupgradeneeded": "Guneak ez du Moodle-ko azken bertsioa erabiltzen. Mesedez jarri harremanetan zure kudeatzailearekin.",
+    "activitynotyetviewableinapp": "{{$a}} jarduera onartzeko lanean ari gara.",
+    "activitynotyetviewableremoteaddon": "Zure erakundeak oraindik app-ean onartzen ez den gehigarri bat instalatuta dauka..",
+    "activitynotyetviewablesiteupgradeneeded": "Zure erakundeko Moodle instalazioak eguneraketa bat behar du.",
     "allsections": "Atal guztiak",
+    "askadmintosupport": "Jarri harremanetan zure guneko kudeatzailearekin eta esaiozu jarduera hau Moodle Mobile app-an erabili nahi duzula.",
     "confirmdeletemodulefiles": "Ziur zaude modulu honetako fitxategiak ezabatu nahi dituzula?",
     "confirmdownload": "{{size}} jaistear zaude. Ziur al zaude aurrera egin nahi duzula?",
     "confirmdownloadsection": "{{size}} deskargatzera zoaz. Ziur zaude jarraitu nahi duzula?",
@@ -19,5 +20,6 @@
     "nocontentavailable": "Ez dago edukirik eskuragarri momentu honetan.",
     "overriddennotice": "Jarduera honetako zure azken kalifikazioa eskuz egokitu da.",
     "showall": "Erakutsi denak",
+    "useactivityonbrowser": "Zure gailuko nabigatzailea erabilita erabili dezakezu.",
     "whoops": "Ups!"
 }

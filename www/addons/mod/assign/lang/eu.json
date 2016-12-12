@@ -15,6 +15,7 @@
     "attemptreopenmethod_untilpass": "Automatikoki gainditu arte",
     "attemptsettings": "Saiakeren ezarpenak",
     "cannoteditduetostatementsubmission": "Ezin duzu app-an bidalketa gehitu edo editatu ezin izan dugulako berreskuratu guneko bidalketa-sententzia.",
+    "cannotgradefromapp": "Kalifikazio-metodo batzuk oraindik ez daude app-an onartuta eta ezin dira aldatu.",
     "cannotsubmitduetostatementsubmission": "Ezin duzu app-an bidalketa ebaluatzeko bidali ezin izan dugulako berreskuratu guneko bidalketa-sententzia.",
     "confirmsubmission": "Ziur al zaude zure lana bidali nahi duzula kalifikatzeko? Ezin izango duzu aldaketarik egin.",
     "currentattempt": "Hau da {{$a}} saiakera.",
@@ -90,5 +91,6 @@
     "userswhoneedtosubmit": "Bidalketa egin behar duten erabiltzaileak: {{$a}}",
     "userwithid": "{{id}} IDa duen erabiltzailea",
     "viewsubmission": "Ikusi bidalketa",
+    "warningsubmissiongrademodified": "Bidalketaren kalifikazioa gunean aldatua izan da.",
     "warningsubmissionmodified": "Ikaslearen bidalketa gunean aldatua izan da."
 }

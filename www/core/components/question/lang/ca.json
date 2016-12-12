@@ -4,7 +4,7 @@
     "correct": "Correcta",
     "errorattachmentsnotsupported": "L'aplicació encara no admet l'adjunció de fitxers.",
     "errorinlinefilesnotsupported": "L'aplicació encara no és compatible amb l'edició de fitxers en línia.",
-    "errorquestionnotsupported": "Aquest tipus de pregunta no és admesa per l'aplicació al vostre lloc web: {{$a}}.",
+    "errorquestionnotsupported": "L'aplicació no accepta aquest tipus de pregunta: {{$a}}.",
     "feedback": "Retroacció",
     "howtodraganddrop": "Feu un toc per seleccionar i feu un toc de nou per deixar anar.",
     "incorrect": "Incorrecta",
