@@ -445,6 +445,26 @@ angular.module('mm.addons.messages')
     };
 
     /**
+     * Mark message as read.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @param messageId   ID of message to mark as read
+     * @returns {Promise} Promise resolved with boolean marking success or not.
+     */
+    self.markMessageRead = function(messageId) {
+        var params = {
+            'messageid': messageId,
+            'timeread': Math.floor(Date.now()/1000)
+        };
+        var preSets = {
+            typeExpected: 'boolean'
+        };
+        return $mmSite.write('core_message_mark_message_read', params);
+
+    };
+
+    /**
      * Get user images for all the discussions that don't have one already.
      *
      * @module mm.addons.messages

@@ -9,6 +9,7 @@
                     <img src="img/user-avatar.png" alt="{{ 'mm.core.pictureof' | translate:{$a: disc.fullname} }}" role="presentation" ng-if="!disc.profileimageurl">
 
                     <span class="item-note" ng-if="disc.message.timecreated > 0">{{disc.message.timecreated / 1000 | mmDateDayOrTime}}</span>
+                    <i class="mma-messages-unread-badge badge badge-assertive">{{disc.unread}}</i>
                     <p class="item-heading">{{disc.fullname}}</p>
                     <p><mm-format-text watch="true" clean="true" singleline="true">{{disc.message.message}}</mm-format-text></p>
                 </a>

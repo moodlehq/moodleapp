@@ -217,11 +217,23 @@ angular.module('mm.addons.messages')
 
             // Notify that there can be a new message.
             notifyNewMessage();
+            markMessagesAsRead();
         }).finally(function() {
             fetching = false;
         });
     }
 
+    // Mark messages as read.
+    function markMessagesAsRead() {
+        angular.forEach($scope.messages, function(message){
+            // If the message is unread, call $mmaMessages.markMessageRead.
+            if (message.read == 0 && message.useridto != userId) {
+                $mmaMessages.markMessageRead(message.id).then(function() {
+                    message.read = 1;
+                });
+            }
+        });
+    }
     // Set a polling to get new messages every certain time.
     function setPolling() {
         if (polling) {

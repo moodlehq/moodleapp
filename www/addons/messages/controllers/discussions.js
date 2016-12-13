@@ -24,6 +24,7 @@ angular.module('mm.addons.messages')
 .controller('mmaMessagesDiscussionsCtrl', function($scope, $mmUtil, $mmaMessages, $rootScope, $mmEvents, $mmSite,
             mmCoreSplitViewLoad, mmaMessagesNewMessageEvent) {
     var newMessagesObserver,
+        currentUserId = $mmSite.getUserId(),
         siteId = $mmSite.getId(),
         discussions;
 
@@ -36,6 +37,9 @@ angular.module('mm.addons.messages')
             // Convert to an array for sorting.
             var array = [];
             angular.forEach(discussions, function(v) {
+                if (v.unread === undefined) {
+                    v.unread = 0;
+                }
                 array.push(v);
             });
             $scope.discussions = array;
