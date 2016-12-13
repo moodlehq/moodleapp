@@ -27,7 +27,7 @@ angular.module('mm.addons.mod_assign')
         mmaModAssignUnlimitedAttempts, mmUserProfileState, mmaModAssignSubmissionStatusNew, mmaModAssignSubmissionStatusSubmitted,
         mmaModAssignSubmissionInvalidatedEvent, $mmGroups, $state, $mmaModAssignHelper, mmaModAssignSubmissionStatusReopened,
         $mmEvents, mmaModAssignSubmittedForGradingEvent, $mmFileUploaderHelper, $mmApp, $mmText, mmaModAssignComponent, $mmUtil,
-        $mmaModAssignOffline, mmaModAssignEventManualSynced, $mmCourse, $mmAddonManager, mmaModAssignAttemptReopenMethodManual,
+        $mmaModAssignOffline, mmaModAssignEventManualSynced, $mmCourse, $mmGrades, mmaModAssignAttemptReopenMethodManual,
         $mmLang, $mmSyncBlock, mmaModAssignEventSubmitGrade, $ionicPlatform, mmaModAssignGradedEvent) {
 
     var originalGrades =  {};
@@ -167,20 +167,14 @@ angular.module('mm.addons.mod_assign')
                     angular.forEach(scope.gradeInfo.outcomes, function(outcome) {
                         if (outcome.scale) {
                             outcome.options =
-                                formatScaleOptions(outcome.scale, $translate.instant('mma.grades.nooutcome'));
+                                formatScaleOptions(outcome.scale, $translate.instant('mm.grades.nooutcome'));
                         }
                         outcome.selectedId = 0;
                         originalGrades.outcomes[outcome.id] = outcome.selectedId;
                     });
                 }
 
-                // Get grade addon if avalaible.
-                var $mmaGrades = $mmAddonManager.get('$mmaGrades');
-                if (!$mmaGrades) {
-                    return $q.when();
-                }
-
-                return $mmaGrades.getGradeModuleItems(courseId, moduleId, userId).then(function(grades) {
+                return $mmGrades.getGradeModuleItems(courseId, moduleId, userId).then(function(grades) {
                     var outcomes = {};
 
                     angular.forEach(grades, function(grade) {
@@ -668,7 +662,7 @@ angular.module('mm.addons.mod_assign')
             // Show advanced grade action.
             scope.showAdvancedGrade = function() {
                 if (scope.feedback.advancedgrade) {
-                    $mmText.expandText($translate.instant('mma.grades.grade'), scope.feedback.gradefordisplay, false,
+                    $mmText.expandText($translate.instant('mm.grades.grade'), scope.feedback.gradefordisplay, false,
                             mmaModAssignComponent, moduleId);
                 }
             };
@@ -693,7 +687,7 @@ angular.module('mm.addons.mod_assign')
                         grade = scope.grade.scale && scope.grade.grade == 0 ? -1 : $mmUtil.unformatFloat(scope.grade.grade);
 
                     if (grade === false) {
-                        $mmUtil.showErrorModal('mma.grades.badgrade', true);
+                        $mmUtil.showErrorModal('mm.grades.badgrade', true);
                         return $q.reject();
                     }
 
@@ -780,11 +774,7 @@ angular.module('mm.addons.mod_assign')
                     promises.push($mmaModAssign.invalidateAssignmentUserMappingsData(scope.assign.id));
                     promises.push($mmaModAssign.invalidateListParticipantsData(scope.assign.id));
                 }
-                // Get grade addon if avalaible.
-                var $mmaGrades = $mmAddonManager.get('$mmaGrades');
-                if ($mmaGrades) {
-                    promises.push($mmaGrades.invalidateGradeModuleItems(courseId, submitId));
-                }
+                promises.push($mmGrades.invalidateGradeModuleItems(courseId, submitId));
                 promises.push($mmCourse.invalidateModule(moduleId));
 
                 return $q.all(promises).finally(function() {

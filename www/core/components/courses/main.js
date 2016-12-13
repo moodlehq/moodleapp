@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.core.courses', [])
+angular.module('mm.core.courses', ['mm.core.contentlinks'])
 
 .constant('mmCoursesSearchComponent', 'mmCoursesSearch')
 .constant('mmCoursesSearchPerPage', 20) // Max of courses per page when searching courses.

@@ -1,17 +1,4 @@
 {
-    "average": "Среднее",
-    "badgrade": "Указана некорректная оценка",
-    "contributiontocoursetotal": "Вклад в курс",
-    "feedback": "Отзыв",
-    "grade": "Оценка",
-    "grades": "Оценки",
-    "itemname": "Элемент оценки",
-    "lettergrade": "Буквенная оценка",
     "nogradesreturned": "Нет оценок",
-    "nooutcome": "Нет показателя",
-    "percentage": "В процентах",
-    "range": "Диапазон",
-    "rank": "Ранг",
-    "viewgrades": "Просмотр оценок",
-    "weight": "Вес"
+    "viewgrades": "Просмотр оценок"
 }

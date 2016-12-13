@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_quiz')
  */
 .factory('$mmaModQuiz', function($log, $mmSite, $mmSitesManager, $q, $translate, $mmUtil, $mmText, $mmQuestionDelegate, $timeout,
             $mmaModQuizAccessRulesDelegate, $mmFilepool, $mmaModQuizOnline, $mmaModQuizOffline, mmaModQuizComponent, $ionicModal,
-            $mmAddonManager) {
+            $mmGrades) {
 
     $log = $log.getInstance('$mmaModQuiz');
 
@@ -706,18 +706,6 @@ angular.module('mm.addons.mod_quiz')
     };
 
     /**
-     * Get cache key for get grade from gradebook WS calls.
-     * Deprecated function. Delete when $mmaGrades become core.
-     *
-     * @param {Number} quizId Quiz ID.
-     * @param {Number} grade  Grade.
-     * @return {String}       Cache key.
-     */
-    function getGradeFromGradebookCacheKey(courseId, userId) {
-        return 'mmaModQuiz:gradeFromGradebook:' + courseId + ':' + userId;
-    }
-
-    /**
      * Gets a quiz grade and feedback from the gradebook.
      *
      * @module mm.addons.mod_quiz
@@ -731,85 +719,10 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}            Promise resolved with an object containing the grade and the feedback.
      */
     self.getGradeFromGradebook = function(courseId, moduleId, ignoreCache, siteId, userId) {
-        var $mmaGrades = $mmAddonManager.get('$mmaGrades');
-        if (!$mmaGrades) {
-            return getGradeFromGradebook(courseId, moduleId, ignoreCache, siteId, userId);
-        } else {
-            return $mmaGrades.getGradeModuleItems(courseId, moduleId, userId, null, siteId, ignoreCache).then(function(items) {
-                return items.shift();
-            });
-        }
-    };
-
-    /**
-     * Gets a quiz grade and feedback from the gradebook.
-     * Deprecated function. Delete when $mmaGrades become core.
-     *
-     * @param  {Number} courseId    Course ID.
-     * @param  {Number} moduleId    Quiz module ID.
-     * @param  {Boolean} ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param  {String} [siteId]    Site ID. If not defined, current site.
-     * @param  {Number} [userId]    User ID. If not defined use site's current user.
-     * @return {Promise}            Promise resolved with an object containing the grade and the feedback.
-     */
-    function getGradeFromGradebook(courseId, moduleId, ignoreCache, siteId, userId) {
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            userId = userId || site.getUserId();
-
-            var params = {
-                    courseid: courseId,
-                    userid: userId
-                },
-                preSets = {
-                    cacheKey: getGradeFromGradebookCacheKey(courseId, userId)
-                };
-
-            if (ignoreCache) {
-                preSets.getFromCache = 0;
-                preSets.emergencyCache = 0;
-            }
-
-            return $mmSite.read('gradereport_user_get_grades_table', params, preSets).then(function(response) {
-                // Search the module we're looking for.
-                var quizEntry,
-                    regex = /href="([^"]*\/mod\/quiz\/[^"|^\.]*\.php[^"]*)/, // Find href containing "/mod/quiz/xxx.php".
-                    matches,
-                    hrefParams,
-                    result = {},
-                    grade;
-
-                angular.forEach(response.tables, function(table) {
-                    angular.forEach(table.tabledata, function(entry) {
-                        if (entry.itemname && entry.itemname.content) {
-                            matches = entry.itemname.content.match(regex);
-                            if (matches && matches.length) {
-                                hrefParams = $mmUtil.extractUrlParams(matches[1]);
-                                if (hrefParams && hrefParams.id == moduleId) {
-                                    quizEntry = entry;
-                                }
-                            }
-                        }
-                    });
-                });
-
-                if (quizEntry) {
-                    if (quizEntry.feedback && quizEntry.feedback.content) {
-                        result.feedback = $mmText.decodeHTML(quizEntry.feedback.content).trim();
-                    } else {
-                        result.feedback = '';
-                    }
-                    if (quizEntry.grade && quizEntry.grade.content) {
-                        grade = parseFloat(quizEntry.grade.content);
-                        if (!isNaN(grade)) {
-                            result.gradeformatted = grade;
-                        }
-                    }
-                    return result;
-                }
-                return $q.reject();
-            });
+        return $mmGrades.getGradeModuleItems(courseId, moduleId, userId, null, siteId, ignoreCache).then(function(items) {
+            return items.shift();
         });
-    }
+    };
 
     /**
      * Given a list of attempts, returns the last finished attempt.
@@ -1642,12 +1555,7 @@ angular.module('mm.addons.mod_quiz')
     self.invalidateGradeFromGradebook = function(courseId, siteId, userId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             userId = userId || site.getUserId();
-            var $mmaGrades = $mmAddonManager.get('$mmaGrades');
-            if (!$mmaGrades) {
-                return site.invalidateWsCacheForKey(getGradeFromGradebookCacheKey(courseId, userId));
-            } else {
-                return $mmaGrades.invalidateGradeModuleItems(courseId, userId, null, siteId);
-            }
+            return $mmGrades.invalidateGradeModuleItems(courseId, userId, null, siteId);
         });
     };
 

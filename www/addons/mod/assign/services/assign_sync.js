@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_assign')
  */
 .factory('$mmaModAssignSync', function($log, $mmaModAssign, $mmSite, $mmSitesManager, $q, $mmaModAssignOffline, $mmCourse, $mmUtil,
             $mmApp, $mmEvents, $translate, mmaModAssignSyncTime, $mmSync, mmaModAssignEventAutomSynced, mmaModAssignComponent,
-            $mmaModAssignSubmissionDelegate, $mmSyncBlock, $mmLang, $mmAddonManager) {
+            $mmaModAssignSubmissionDelegate, $mmSyncBlock, $mmLang, $mmGrades) {
 
     $log = $log.getInstance('$mmaModAssignSync');
 
@@ -349,15 +349,8 @@ angular.module('mm.addons.mod_assign')
                 return;
             }
 
-            // Get grade addon if avalaible.
-            var $mmaGrades = $mmAddonManager.get('$mmaGrades');
-            if (!$mmaGrades) {
-                // Should not happen.
-                return $q.when();
-            }
-
             // If grade has been modified from gradebook, do not use offline.
-            return $mmaGrades.getGradeModuleItems(courseId, assign.cmid, userId, false, siteId, true).then(function(grades) {
+            return $mmGrades.getGradeModuleItems(courseId, assign.cmid, userId, false, siteId, true).then(function(grades) {
                 return $mmCourse.getModuleBasicGradeInfo(assign.cmid, siteId).then(function(gradeInfo) {
                     angular.forEach(grades, function(grade) {
                         if (grade.gradedategraded >= offlineData.timemodified) {

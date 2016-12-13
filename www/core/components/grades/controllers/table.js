@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.addons.grades')
+angular.module('mm.core.grades')
 
 /**
  * Controller to handle course grades.
  *
- * @module mm.addons.grades
+ * @module mm.core.grades
  * @ngdoc controller
- * @name mmaGradesTableCtrl
+ * @name mmGradesTableCtrl
  */
-.controller('mmaGradesTableCtrl', function($scope, $stateParams, $mmUtil, $mmaGrades, $mmSite, $mmaGradesHelper, $state) {
+.controller('mmGradesTableCtrl', function($scope, $stateParams, $mmUtil, $mmGrades, $mmSite, $mmGradesHelper, $state) {
 
     var course = $stateParams.course || {},
         courseId = $stateParams.courseid || course.id,
@@ -31,9 +31,9 @@ angular.module('mm.addons.grades')
     $scope.forcePhoneView = !!forcePhoneView;
 
     function fetchGrades() {
-        return $mmaGrades.getGradesTable(courseId, userId).then(function(table) {
-            table = $mmaGradesHelper.formatGradesTable(table, forcePhoneView);
-            return $mmaGradesHelper.translateGradesTable(table).then(function(table) {
+        return $mmGrades.getGradesTable(courseId, userId).then(function(table) {
+            table = $mmGradesHelper.formatGradesTable(table, forcePhoneView);
+            return $mmGradesHelper.translateGradesTable(table).then(function(table) {
                 $scope.gradesTable = table;
             });
         }, function(message) {
@@ -63,7 +63,7 @@ angular.module('mm.addons.grades')
     };
 
     $scope.refreshGrades = function() {
-        $mmaGrades.invalidateGradesTableData(courseId, userId).finally(function() {
+        $mmGrades.invalidateGradesTableData(courseId, userId).finally(function() {
             fetchGrades().finally(function() {
                 $scope.$broadcast('scroll.refreshComplete');
             });

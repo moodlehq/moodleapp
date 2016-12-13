@@ -18,7 +18,7 @@ describe('User can see course final grade', function() {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('My courses');
         }).then(function() {
-            return $('.tab-item.active.mm-courses-handler.mma-grades-mine-handler').click();
+            return $('.tab-item.active.mm-courses-handler.mm-grades-mine-handler').click();
         }).then(function() {
             expect(MM.getNavBar().getText()).toMatch('Grades');
             expect(MM.getView().getText()).toMatch('Psychology in Cinema');
@@ -31,7 +31,7 @@ describe('User can see course final grade', function() {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('My courses');
         }).then(function() {
-            return $('.tab-item.active.mm-courses-handler.mma-grades-mine-handler').click();
+            return $('.tab-item.active.mm-courses-handler.mm-grades-mine-handler').click();
         }).then(function() {
             expect(MM.getView().getText()).toMatch('Analysis');
             expect(MM.getView().getText()).toMatch('Collaborative');
@@ -45,7 +45,7 @@ describe('User can see course final grade', function() {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('My courses');
         }).then(function() {
-            return $('.tab-item.active.mm-courses-handler.mma-grades-mine-handler').click();
+            return $('.tab-item.active.mm-courses-handler.mm-grades-mine-handler').click();
         }).then(function() {
             expect(MM.getView().getText()).toMatch('Analysis total');
             expect(MM.getView().getText()).toMatch('Group Project -');

@@ -1,17 +1,4 @@
 {
-    "average": "ממוצע",
-    "badgrade": "הציון שנמסר איננו נאות",
-    "contributiontocoursetotal": "תרומה לציון הקורס הכללי",
-    "feedback": "משוב",
-    "grade": "ציון",
-    "grades": "ציונים",
-    "itemname": "פריט ציון",
-    "lettergrade": "אות ציון",
     "nogradesreturned": "לא הוחזרו ציונים",
-    "nooutcome": "לא קיים מדד־הערכה",
-    "percentage": "אחוז",
-    "range": "טווח",
-    "rank": "דירוג",
-    "viewgrades": "צפיה בציונים",
-    "weight": "משקל"
+    "viewgrades": "צפיה בציונים"
 }
