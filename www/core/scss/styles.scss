@@ -149,6 +149,36 @@
     height: 8% !important;
 }
 
+.item-icon-left .icon, .item-icon-right .icon {
+    font-size:21px;
+}
+
+.icon.ion-android-apps, .icon.ion-ios-box-outline {
+    font-size:24px;
+}
+
+.vonkchat .ion-chatbubbles, .vonkchat .ion-person-stalker {
+    font-size: 30px !important;
+}
+
+.item-avatar > img:first-child, .item-media > img:first-child, .item-avatar .item-image, .item-media .item-image, .item-avatar .item-content > img:first-child, .item-media .item-content > img:first-child, .item-avatar .item-content .item-image, .item-media .item-content .item-image, .item-avatar-left > img:first-child, .item-avatar-left .item-image, .item-avatar-left .item-content > img:first-child, .item-avatar-left .item-content .item-image {
+    max-height: 30px;
+    max-width: 30px;
+}
+
+.item.item-icon-left.ng-binding {
+    border-width: 0;
+}
+
+.item {
+    border-width: 0;
+}
+
+.messimage .vonkfootercontainer > img {
+    margin-left: 45%;
+    margin-top: -1%;
+}
+
 // Bar content.
 $bar-content-bg: #313540 !default;
 $bar-content-border: transparent !default;
