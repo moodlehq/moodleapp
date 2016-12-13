@@ -56,6 +56,9 @@ $mm-button-icon-small-height: 22px !default;
 // Required inputs asterisk color.
 $mm-input-required-asterisk-color: #ff4136 !default;
 
+// Item padding.
+$item-input-padding: 16px !default;
+
 /**
  * App Branding
  */
@@ -698,8 +701,12 @@ mm-timer {
   padding: 0;
 }
 
+.item-input.mm-item-input-padding-right {
+  padding-right: $item-input-padding;
+}
+
 .item-input.item-stacked-label {
-  padding: 16px;
+  padding: $item-input-padding;
 
   .item-input-wrapper.item-select {
     display: block;
@@ -1159,4 +1166,24 @@ i, cite, em, var, address, dfn {
 // Footer with auto height.
 .bar-footer.bar-footer-adjustable {
   height: auto;
+}
+
+// Show password styles.
+.item,
+.card .item,
+.list-inset .item,
+.padding > .list .item,
+.padding-horizontal > .list .item {
+  &.item-input .mm-show-password-container {
+    padding: 0px;
+    width: 100%;
+
+    input {
+      padding-right: 0px;
+    }
+    button {
+      margin-left: ($item-padding / 3) * 2;
+      padding: 0 $button-clear-padding;
+    }
+  }
 }
