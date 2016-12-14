@@ -21,27 +21,20 @@ angular.module('mm.core.course')
  * @ngdoc controller
  * @name mmCourseSectionCtrl
  */
-.controller('mmCourseSectionCtrl', function($mmCourseDelegate, $mmCourse, $mmUtil, $scope, $stateParams, $translate, $mmSite,
-            $mmEvents, $ionicScrollDelegate, $mmCourses, $q, mmCoreEventCompletionModuleViewed, $controller,
-            $mmCoursePrefetchDelegate, $mmCourseHelper) {
+.controller('mmCourseSectionCtrl', function($mmCourseDelegate, $mmCourse, $mmUtil, $scope, $stateParams, $translate, $mmEvents,
+            $ionicScrollDelegate, $mmCourses, $q, mmCoreEventCompletionModuleViewed, $controller, $mmCoursePrefetchDelegate,
+            $mmCourseHelper) {
 
     // Default values are Site Home and all sections.
-    var siteHomeId = $mmSite.getInfo().siteid || 1,
-        courseId = $stateParams.cid || siteHomeId,
+    var courseId = $stateParams.cid,
         sectionId = $stateParams.sectionid || -1,
         moduleId = $stateParams.mid;
 
-    $scope.sitehome = (courseId === siteHomeId); // Are we visiting the site home?
     $scope.sections = []; // Reset scope.sections, otherwise an error is shown in console with tablet view.
     $scope.sectionHasContent = $mmCourseHelper.sectionHasContent;
 
     if (sectionId < 0) {
-        // Special scenario, we want all sections.
-        if ($scope.sitehome) {
-            $scope.title = $translate.instant('mma.frontpage.sitehome');
-        } else {
-            $scope.title = $translate.instant('mm.course.allsections');
-        }
+        $scope.title = $translate.instant('mm.course.allsections');
         $scope.summary = null;
         $scope.allSections = true;
     }
@@ -77,11 +70,6 @@ angular.module('mm.core.course')
                 }
 
                 return promise.then(function(sections) {
-                    // For the site home, we need to reverse the order to display first the site home section topic.
-                    if ($scope.sitehome) {
-                        sections.reverse();
-                    }
-
                     var hasContent = false;
 
                     angular.forEach(sections, function(section) {

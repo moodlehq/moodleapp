@@ -16,6 +16,24 @@ angular.module('mm.addons.frontpage', [])
 
 .constant('mmaFrontpagePriority', 1000)
 
+.config(function($stateProvider, $mmCoursesDelegateProvider, mmCoreCoursePriority) {
+
+    $stateProvider
+
+    .state('site.frontpage', {
+        url: '/frontpage',
+        params: {
+            mid: null // Not naming it moduleid because it collides with 'site.mm_course' param in split-view.
+        },
+        views: {
+            'site': {
+                templateUrl: 'addons/frontpage/templates/frontpage.html',
+                controller: 'mmaFrontpageCtrl'
+            }
+        }
+    });
+})
+
 .config(function($mmSideMenuDelegateProvider, $mmContentLinksDelegateProvider, mmaFrontpagePriority) {
     // Register side menu addon.
     $mmSideMenuDelegateProvider.registerNavHandler('mmaFrontpage', '$mmaFrontPageHandlers.sideMenuNav', mmaFrontpagePriority);
