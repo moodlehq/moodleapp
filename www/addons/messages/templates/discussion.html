@@ -38,11 +38,11 @@
         </mm-loading>
     </ion-content>
 
-    <ion-footer-bar class="bar-light">
+    <ion-footer-bar class="bar-light bar-footer-adjustable">
         <form class="mma-messages-send-message-bar" ng-submit="sendMessage(newMessage); newMessage = '';">
             <div class="mma-messages-input-inset item-input-inset">
                 <ion-input class="item-input-wrapper">
-                    <input type="text" mm-auto-focus="{{showKeyboard}}" placeholder="{{ 'mma.messages.newmessage' | translate }}" ng-model="newMessage">
+                    <textarea class="mm-textarea" mm-auto-focus="{{showKeyboard}}" placeholder="{{ 'mma.messages.newmessage' | translate }}" ng-model="newMessage" rows="1" mm-auto-rows></textarea>
                 </ion-input>
                 <button type="submit" class="button button-clear button-positive" ng-disabled="!newMessage">{{ 'mma.messages.send' | translate}}</button>
             </div>

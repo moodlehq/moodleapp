@@ -811,8 +811,20 @@ mm-format-text {
 
 .mm-textarea {
   width: 100%;
-  height: 200px;
   resize: none;
+
+  &[mm-auto-rows] {
+    height: auto;
+    line-height: 18px;
+    padding: 5px;
+  }
+  &:not([mm-auto-rows]) {
+    height: 200px;
+  }
+}
+
+.item-input-wrapper .mm-textarea {
+  background: transparent;
 }
 
 .item.mm-item-has-rich-text-editor {
@@ -1128,4 +1140,9 @@ ion-spinner.mm-spinner-right {
 // Ionic overrides italic font-style, apply it again.
 i, cite, em, var, address, dfn {
     font-style: italic;
+}
+
+// Footer with auto height.
+.bar-footer.bar-footer-adjustable {
+  height: auto;
 }
