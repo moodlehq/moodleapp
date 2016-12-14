@@ -53,7 +53,7 @@ angular.module('mm.core.course')
         getController: function(courseId) {
             return function($scope, $state) {
                 $scope.icon = 'ion-ios-paper-outline';
-                $scope.title = 'mm.course.contents';
+                $scope.title = ''; //Vonk
                 $scope.class = 'mm-course-handler';
 
                 $scope.action = function(e, course) {

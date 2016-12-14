@@ -179,6 +179,60 @@
     margin-top: -1%;
 }
 
+.ion-ios-cloud-download-outline {
+    display:none;
+}
+
+.mm-searchbox .item-input-wrapper {
+    background: #fff none repeat scroll 0 0;
+    border-radius: 0px;
+    display: flex;
+    flex: 1 0 0%;
+    height: 40px;
+    border: 1.5px solid #bbb;
+}
+
+.mm-searchbox .ion-search {
+  font-size: 24px;
+  color: #313540 !important;
+}
+
+.mm-searchbox .button-small .icon::before, .mm-searchbox .button-small.icon::before, .mm-searchbox .button-small.icon-left::before, .mm-searchbox .button-small.icon-right::before {
+    font-size: 24px;
+}
+
+.item.item-text-wrap.mm-course-module-handler.item-button-right.item-media > img {
+    border-radius: 0;
+    max-height: 24px !important;
+    max-width: 24px !important;
+}
+
+.item.item-text-wrap.mm-course-module-handler.mma-mod_recommended-handler.item-button-right.item-media.item-completion > img {
+    max-height: 21px !important;
+    max-width: 21px !important;
+}
+
+.mm-completion-container img {
+    float: right;
+    width: 21px;
+}
+
+.card {
+    box-shadow: none;
+}
+
+.mm-site_mm_course-section .item.item-divider > h2 {
+    text-align: center;
+}
+
+.tab-item.active.mm-courses-handler.mma-participants-handler {
+    display: none;
+}
+
+.tab-item.active.mm-courses-handler.mma-coursecompletion-mine-handler {
+  display:none;
+}
+
 // Bar content.
 $bar-content-bg: #313540 !default;
 $bar-content-border: transparent !default;
@@ -198,7 +252,7 @@ $item-message-note-font-size: $font-size-small !default;
 $item-message-mine-bg: rgba(17, 193, 243, .1) !default;
 
 // Completion
-$completion-img-width: 24px !default;
+$completion-img-width: 21px !default;
 
 // Disabled items.
 $item-disabled-color: #999 !default;
