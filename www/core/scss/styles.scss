@@ -33,9 +33,6 @@ $item-message-note-text: #999 !default;
 $item-message-note-font-size: $font-size-small !default;
 $item-message-mine-bg: rgba(17, 193, 243, .1) !default;
 
-// Completion
-$completion-img-width: 24px !default;
-
 // Disabled items.
 $item-disabled-color: #999 !default;
 
@@ -493,21 +490,36 @@ mm-loading.mm-loading-center {
   background-color: #D9D9D9;
 }
 
-.item.item-text-wrap.item-completion { // Add .item and .item-text-wrap to give more priority to the rule, otherwise it's overridden by Ionic styles.
-  padding-right: $item-icon-font-size + ($button-border-width * 2) + $item-padding * 3 + $completion-img-width;
+.mm-module-buttons {
+  float: right;
+  width: $button-height;
+  height: 30px;
+  margin-top: - ($button-padding);
+  margin-bottom: $button-padding;
+  margin-left: 2px;
+  position: relative;
+  text-align: center;
+
+  &.mm-button-completion {
+    margin-left: $button-icon-size + ($button-padding * 2) + 2;
+  }
+
+  .spinner {
+    bottom: - ($button-padding);
+    right: 7px;
+    position: absolute;
+  }
 }
 
 .mm-completion-container {
   // Based on .item-checkbox .checkbox and .item-checkbox.item-checkbox-right
   position: absolute;
-  top: 50%;
-  right: $item-padding / 2;
-  margin-right: $item-icon-font-size + ($button-border-width * 2) + ($item-padding * 2);
-  margin-top: ($completion-img-width / 2) * -1;
+  top: 0;
+  right: $button-height;
+  padding: $button-padding;
 
   img {
-    float: right;
-    width: $completion-img-width;
+    width: $button-icon-size;
   }
 }
 
@@ -520,7 +532,9 @@ img.mm-media-adapt-width {
 
 .mm-adapted-img-container {
   position: relative;
+  display: inline-block;
 }
+
 .mm-image-viewer-icon {
   position: absolute;
   right: 10px;
