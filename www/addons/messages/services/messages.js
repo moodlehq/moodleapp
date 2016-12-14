@@ -432,9 +432,11 @@ angular.module('mm.addons.messages')
             // Extract the most recent message. Pending messages are considered more recent than messages already sent.
             var discMessage = discussions[userId].message;
             if (typeof discMessage === 'undefined' || (!discMessage.pending && message.pending) ||
-                    (discMessage.pending == message.pending && discMessage.timecreated < message.timecreated)) {
+                    (discMessage.pending == message.pending && (discMessage.timecreated < message.timecreated ||
+                    (discMessage.timecreated == message.timecreated && discMessage.id < message.id)))) {
 
                 discussions[userId].message = {
+                    id: message.id,
                     user: userId,
                     message: message.text,
                     timecreated: message.timecreated,
@@ -927,7 +929,9 @@ angular.module('mm.addons.messages')
      * @name $mmaMessages#sendMessage
      * @param {Number} to User ID to send the message to.
      * @param {String} message The message to send
-     * @return {Promise}       Promise resolved with boolean: true if message was sent to server, false if stored in device.
+     * @return {Promise}       Promise resolved with:
+     *                                 - sent (Boolean) True if message was sent to server, false if stored in device.
+     *                                 - message (Object) If sent=false, contains the stored message.
      */
     self.sendMessage = function(to, message, siteId) {
         siteId = siteId || $mmSite.getId();
@@ -949,7 +953,7 @@ angular.module('mm.addons.messages')
 
             // Online and no messages stored. Send it to server.
             return self.sendMessageOnline(to, message).then(function() {
-                return true;
+                return {sent: true};
             }).catch(function(data) {
                 if (data.wserror) {
                     // It's a WebService error, the user cannot send the message so don't store it.
@@ -963,8 +967,11 @@ angular.module('mm.addons.messages')
 
         // Convenience function to store a message to be synchronized later.
         function storeOffline() {
-            return $mmaMessagesOffline.saveMessage(to, message, siteId).then(function() {
-                return false;
+            return $mmaMessagesOffline.saveMessage(to, message, siteId).then(function(entry) {
+                return {
+                    sent: false,
+                    message: entry
+                };
             });
         }
     };
@@ -1045,6 +1052,8 @@ angular.module('mm.addons.messages')
      */
     self.sortMessages = function(messages) {
         return messages.sort(function (a, b) {
+            var timecreatedA, timecreatedB;
+
             // Pending messages last.
             if (a.pending && !b.pending) {
                 return 1;
@@ -1052,9 +1061,13 @@ angular.module('mm.addons.messages')
                 return -1;
             }
 
-            a = parseInt(a.timecreated, 10);
-            b = parseInt(b.timecreated, 10);
-            return a >= b ? 1 : -1;
+            timecreatedA = parseInt(a.timecreated, 10);
+            timecreatedB = parseInt(b.timecreated, 10);
+            if (timecreatedA == timecreatedB && a.id) {
+                // Same time, sort by ID.
+                return a.id >= b.id;
+            }
+            return timecreatedA >= timecreatedB ? 1 : -1;
         });
     };
 

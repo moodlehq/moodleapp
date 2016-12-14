@@ -3,7 +3,11 @@ information provided here is intended especially for developers.
 
 === 3.2.1 ===
 
+<<<<<<< HEAD
  * mmaGrades addon has been moved to core with mmGrades name (and derivatives).
+=======
+ * The promise returned by $mmaMessages#sendMessage is now resolved with an object instead of a boolean.
+>>>>>>> MOBILE-1919 messages: Fix messages reload and sorting problems
 
 === 3.2 ===
 
