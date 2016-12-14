@@ -248,8 +248,8 @@ angular.module('mm.core')
                 addExternalContent(anchor, component, componentId, siteId);
             });
 
-            if (images) {
-                // Cannot calculate element's width, use a medium number to avoid false adapt image icons appearing.
+            if (images && images.length > 0) {
+                // If cannot calculate element's width, use a medium number to avoid false adapt image icons appearing.
                 var elWidth = getElementWidth(el) || 100;
 
                 // Walk through the content to find images, and add our directive.
