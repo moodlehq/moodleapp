@@ -107,16 +107,32 @@ angular.module('mm.addons.messages')
         // Otherwise, if a message is sent while fetching it could disappear until the next fetch.
         waitForFetch().finally(function() {
             $mmaMessages.sendMessage(userId, text).then(function(data) {
-                message.sending = false;
+                var promise;
+
+                messagesBeingSent--;
+
                 if (data.sent) {
-                    // Message sent to server, not pending anymore.
-                    message.pending = false;
-                } else if (data.message) {
-                    message.timecreated = data.message.timecreated;
+                    // Message was sent, fetch messages right now.
+                    promise = fetchMessages();
+                } else {
+                    promise = $q.reject();
                 }
 
-                notifyNewMessage();
+                promise.catch(function() {
+                    // Fetch failed or is offline message, mark the message as sent. If fetch is successful there's no need
+                    // to mark it because the fetch will already show the message received from the server.
+                    message.sending = false;
+                    if (data.sent) {
+                        // Message sent to server, not pending anymore.
+                        message.pending = false;
+                    } else if (data.message) {
+                        message.timecreated = data.message.timecreated;
+                    }
+
+                    notifyNewMessage();
+                });
             }, function(error) {
+                messagesBeingSent--;
 
                 // Only close the keyboard if an error happens, we want the user to be able to send multiple
                 // messages without the keyboard being closed.
@@ -128,8 +144,6 @@ angular.module('mm.addons.messages')
                     $mmUtil.showErrorModal('mma.messages.messagenotsent', true);
                 }
                 $scope.messages.splice($scope.messages.indexOf(message), 1);
-            }).finally(function() {
-                messagesBeingSent--;
             });
         });
     };
@@ -198,10 +212,10 @@ angular.module('mm.addons.messages')
             // We do not poll while a message is being sent or we could confuse the user
             // as his message would disappear from the list, and he'd have to wait for the
             // interval to check for new messages.
-            return;
+            return $q.reject();
         } else if (fetching) {
             // Already fetching.
-            return;
+            return $q.reject();
         }
 
         fetching = true;
@@ -217,7 +231,7 @@ angular.module('mm.addons.messages')
         }).then(function(messages) {
             if (messagesBeingSent > 0) {
                 // Ignore polling due to a race condition.
-                return;
+                return $q.reject();
             }
 
             var messagesToRemove = {};
