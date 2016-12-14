@@ -94,14 +94,9 @@ angular.module('mm.core')
             }
         }
 
-        var el = element[0],
-            elWidth = el.offsetWidth || el.width || el.clientWidth;
-        if (!elWidth) {
-            // Cannot calculate element's width, use default value.
-            return 100;
-        } else {
-            return Math.round(elWidth * multiplier);
-        }
+        var elWidth = getElementWidth(element[0]);
+        // If cannot calculate element's width, use default value.
+        return elWidth ? Math.round(elWidth * multiplier) : 100;
     }
 
     /**
@@ -111,6 +106,42 @@ angular.module('mm.core')
      */
     function addMediaAdaptClass(el) {
         angular.element(el).addClass('mm-media-adapt-width');
+    }
+
+    /**
+     * Returns the element width in pixels.
+     *
+     * @param  {Object}  element DOM element to get width from.
+     * @return {Number}          The width of the element in pixels. When 0 is returned it means the element is not visible.
+     */
+    function getElementWidth(element) {
+        var width = element.offsetWidth || element.width || element.clientWidth;
+
+        if (!width) {
+            // All elements inside are floating or inline. Change display mode to allow calculate the width.
+            var angElement = angular.element(element),
+                parentNode = element.parentNode,
+                parentWidth = parentNode.offsetWidth || parentNode.width || parentNode.clientWidth,
+                previousDisplay = angElement.css('display');
+
+            angElement.css('display', 'inline-block');
+
+            width = element.offsetWidth || element.width || element.clientWidth;
+
+            if (parentWidth > 0) {
+                var cs = getComputedStyle(parentNode);
+                parentWidth -= (parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight));
+
+                // If width is incorrectly calculated use parent width instead.
+                if (parentWidth > 0 && (!width || width > parentWidth)) {
+                    width = parentWidth;
+                }
+            }
+
+            angElement.css('display', previousDisplay);
+        }
+
+        return parseInt(width, 10);
     }
 
     /**
@@ -206,13 +237,8 @@ angular.module('mm.core')
         return $mmText.formatText(text, attrs.clean, attrs.singleline, shorten).then(function(formatted) {
 
             var el = element[0],
-                elWidth = el.offsetWidth || el.width || el.clientWidth,
-                dom = angular.element('<div>').html(formatted); // Convert the content into DOM.
-
-            if (!elWidth) {
-                // Cannot calculate element's width, use a medium number to avoid false adapt image icons appearing.
-                elWidth = 100;
-            }
+                dom = angular.element('<div>').html(formatted), // Convert the content into DOM.
+                images = dom.find('img');
 
             // Walk through the content to find the links and add our directive to it.
             // Important: We need to look for links first because in 'img' we add new links without mm-link.
@@ -222,26 +248,33 @@ angular.module('mm.core')
                 addExternalContent(anchor, component, componentId, siteId);
             });
 
-            // Walk through the content to find images, and add our directive.
-            angular.forEach(dom.find('img'), function(img) {
-                addMediaAdaptClass(img);
-                addExternalContent(img, component, componentId, siteId);
-                if (!attrs.notAdaptImg) {
-                    // Check if image width has been adapted. If so, add an icon to view the image at full size.
-                    var imgWidth = img.offsetWidth || img.width || img.clientWidth;
-                    if (imgWidth > elWidth) {
-                        // Wrap the image in a new div with position relative.
-                        var div = angular.element('<div class="mm-adapted-img-container"></div>'),
-                            jqImg = angular.element(img),
-                            label = $mmText.escapeHTML($translate.instant('mm.core.openfullimage')),
-                            imgSrc = $mmText.escapeHTML(img.getAttribute('src'));
-                        img.style.float = ''; // Disable float since image will fill the whole width.
-                        jqImg.wrap(div);
-                        jqImg.after('<a href="#" class="mm-image-viewer-icon" mm-image-viewer img="' + imgSrc +
-                                        '" aria-label="' + label + '"><i class="icon ion-ios-search-strong"></i></a>');
+            if (images) {
+                // Cannot calculate element's width, use a medium number to avoid false adapt image icons appearing.
+                var elWidth = getElementWidth(el) || 100;
+
+                // Walk through the content to find images, and add our directive.
+                angular.forEach(images, function(img) {
+                    addMediaAdaptClass(img);
+                    addExternalContent(img, component, componentId, siteId);
+                    if (!attrs.notAdaptImg) {
+                        // Check if image width has been adapted. If so, add an icon to view the image at full size.
+                        var imgWidth = getElementWidth(img),
+                            // Wrap the image in a new div with position relative.
+                            container = angular.element('<span class="mm-adapted-img-container"></span>'),
+                            jqImg = angular.element(img);
+
+                        container.css('float', img.style.float); // Copy the float to corretly position the search icon.
+                        jqImg.wrap(container);
+
+                        if (imgWidth > elWidth) {
+                            var label = $mmText.escapeHTML($translate.instant('mm.core.openfullimage')),
+                                imgSrc = $mmText.escapeHTML(img.getAttribute('src'));
+                            jqImg.after('<a href="#" class="mm-image-viewer-icon" mm-image-viewer img="' + imgSrc +
+                                            '" aria-label="' + label + '"><i class="icon ion-ios-search-strong"></i></a>');
+                        }
                     }
-                }
-            });
+                });
+            }
 
             angular.forEach(dom.find('audio'), function(el) {
                 treatMedia(el, component, componentId, siteId);
