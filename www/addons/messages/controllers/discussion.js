@@ -88,6 +88,7 @@ angular.module('mm.addons.messages')
         }
 
         $scope.data.showDelete = false;
+        $scope.newMessage = ''; // Clear new message.
 
         text = text.replace(/(?:\r\n|\r|\n)/g, '<br />');
         message = {
