@@ -23,7 +23,7 @@ angular.module('mm.addons.frontpage', [])
     .state('site.frontpage', {
         url: '/frontpage',
         params: {
-            mid: null // Not naming it moduleid because it collides with 'site.mm_course' param in split-view.
+            moduleid: null // Module to load.
         },
         views: {
             'site': {

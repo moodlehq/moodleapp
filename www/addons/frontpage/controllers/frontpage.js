@@ -15,61 +15,82 @@
 angular.module('mm.addons.frontpage')
 
 /**
- * Section view controller.
+ * Frontpage view controller.
  *
  * @module mm.addons.frontpage
  * @ngdoc controller
  * @name mmaFrontpageCtrl
  */
-.controller('mmaFrontpageCtrl', function($mmCourseDelegate, $mmCourse, $mmUtil, $scope, $stateParams, $mmSite, $q, $controller,
-            $mmCoursePrefetchDelegate, $mmCourseHelper) {
+.controller('mmaFrontpageCtrl', function($mmCourse, $mmUtil, $scope, $stateParams, $mmSite, $q, $mmCoursePrefetchDelegate,
+            $mmCourseHelper) {
 
     // Default values are Site Home and all sections.
     var courseId = $mmSite.getInfo().siteid || 1,
-        moduleId = $stateParams.mid;
+        moduleId = $stateParams.moduleid,
+        sectionsLoaded;
 
-    $scope.sections = []; // Reset scope.sections, otherwise an error is shown in console with tablet view.
+    $scope.items = [];
     $scope.sectionHasContent = $mmCourseHelper.sectionHasContent;
 
     // Convenience function to fetch section(s).
     function loadContent() {
-        return $mmCourse.getSections(courseId, false, true).then(function(sections) {
-            // For the site home, we need to reverse the order to display first the site home section topic.
-            sections.reverse();
+        return $mmSite.getConfig().catch(function() {
+            // Ignore errors for not present settings assuming numsections will be true.
+            return $q.when({
+                numsections: 1
+            });
+        }).then(function(config) {
+            if (config.frontpageloggedin) {
+                // Items with index 1 and 3 were removed on 2.5 and not being supported in the app.
+                var frontpageItems = [
+                        'mma-frontpage-item-news', // News items.
+                        false,
+                        'mma-frontpage-item-categories', // List of categories.
+                        false,
+                        'mma-frontpage-item-categories', // Combo list.
+                        'mma-frontpage-item-enrolled-course-list', // Enrolled courses.
+                        'mma-frontpage-item-all-course-list', // List of courses.
+                        'mma-frontpage-item-course-search' // Course search box.
+                    ],
+                    items = config.frontpageloggedin.split(',');
 
-            var hasContent = false;
+                $scope.items = [];
 
-            angular.forEach(sections, function(section) {
-                if ($mmCourseHelper.sectionHasContent(section)) {
-                    hasContent = true;
+                angular.forEach(items, function (itemNumber) {
+                    // Get the frontpage item directive to render itself.
+                    var item = frontpageItems[parseInt(itemNumber, 10)];
+                    if (!item || $scope.items.indexOf(item) >= 0) {
+                        return;
+                    }
+
+                    $scope.items.push(item);
+                });
+
+            }
+
+            return $mmCourse.getSections(courseId, false, true).then(function(sections) {
+                sectionsLoaded = sections;
+                // Check "Include a topic section" setting from numsections.
+                if (config.numsections && sections.length > 0) {
+                    $scope.section = sections.pop();
+                } else {
+                    $scope.section = false;
                 }
 
-                angular.forEach(section.modules, function(module) {
-                    module._controller =
-                            $mmCourseDelegate.getContentHandlerControllerFor(module.modname, module, courseId, section.id);
+                if (sections.length > 0) {
+                    $scope.block = sections.pop();
+                } else {
+                    $scope.block = false;
+                }
 
-                    if (module.id == moduleId) {
-                        // This is the module we're looking for. Open it.
-                        var scope = $scope.$new();
-                        $controller(module._controller, {$scope: scope});
-                        if (scope.action) {
-                            scope.action();
-                        }
-                    }
-                });
+                $scope.hasContent = $mmCourseHelper.addContentHandlerControllerForSectionModules([$scope.section, $scope.block],
+                    courseId, moduleId, false, $scope);
+
+                // Add log in Moodle.
+                $mmCourse.logView(courseId);
+            }, function(error) {
+                $mmUtil.showErrorModalDefault(error, 'mm.course.couldnotloadsectioncontent', true);
             });
-
-            $scope.sections = sections;
-            $scope.hasContent = hasContent;
-
-            // Add log in Moodle.
-            $mmCourse.logView(courseId);
-        }, function(error) {
-            if (error) {
-                $mmUtil.showErrorModal(error);
-            } else {
-                $mmUtil.showErrorModal('mm.course.couldnotloadsectioncontent', true);
-            }
         });
     }
 
@@ -82,9 +103,9 @@ angular.module('mm.addons.frontpage')
 
         promises.push($mmCourse.invalidateSections(courseId));
 
-        if ($scope.sections) {
+        if (sectionsLoaded) {
             // Invalidate modules prefetch data.
-            var modules = $mmCourseHelper.getSectionsModules($scope.sections);
+            var modules = $mmCourseHelper.getSectionsModules(sectionsLoaded);
             promises.push($mmCoursePrefetchDelegate.invalidateModules(modules, courseId));
         }
 

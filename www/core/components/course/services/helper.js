@@ -21,8 +21,9 @@ angular.module('mm.core.course')
  * @ngdoc service
  * @name $mmCourseHelper
  */
-.factory('$mmCourseHelper', function($q, $mmCoursePrefetchDelegate, $mmFilepool, $mmUtil, $mmCourse, $mmSite, $state,
-            mmCoreNotDownloaded, mmCoreOutdated, mmCoreDownloading, mmCoreCourseAllSectionsId, $mmText, $mmSitesManager) {
+.factory('$mmCourseHelper', function($q, $mmCoursePrefetchDelegate, $mmFilepool, $mmUtil, $mmCourse, $mmSite, $state, $mmText,
+            mmCoreNotDownloaded, mmCoreOutdated, mmCoreDownloading, mmCoreCourseAllSectionsId, $mmSitesManager, $mmAddonManager,
+            $controller, $mmCourseDelegate) {
 
     var self = {},
         calculateSectionStatus = false;
@@ -339,6 +340,50 @@ angular.module('mm.core.course')
     };
 
     /**
+     * This function treats every module on the sections provided to get the controller a content handler provides, treat completion
+     * and navigates to a module page if required. It also returns if sections has content.
+     *
+     * @param {Array}   sections            Sections to treat modules.
+     * @param {Number}  courseId            Course ID of the modules.
+     * @param {Number}  moduleId            Module to navigate to if needed.
+     * @param {Array}   completionStatus    If it needs to treat completion the status of each module.
+     * @param {Object}  scope               Scope of the view.
+     * @return {Boolean}                    If sections has content.
+     */
+    self.addContentHandlerControllerForSectionModules = function(sections, courseId, moduleId, completionStatus, scope) {
+        var hasContent = false;
+
+        angular.forEach(sections, function(section) {
+            if (!section || !self.sectionHasContent(section)) {
+                return;
+            }
+
+            hasContent = true;
+
+            angular.forEach(section.modules, function(module) {
+                module._controller =
+                        $mmCourseDelegate.getContentHandlerControllerFor(module.modname, module, courseId, section.id);
+
+                if (completionStatus && typeof completionStatus[module.id] != 'undefined') {
+                    // Check if activity has completions and if it's marked.
+                    module.completionstatus = completionStatus[module.id];
+                }
+
+                if (module.id == moduleId) {
+                    // This is the module we're looking for. Open it.
+                    var newScope = scope.$new();
+                    $controller(module._controller, {scope: newScope});
+                    if (newScope.action) {
+                        newScope.action();
+                    }
+                }
+            });
+        });
+
+        return hasContent;
+    }
+
+    /**
      * Retrieves the courseId of the module and navigates to it.
      *
      * @module mm.core.course
@@ -380,15 +425,19 @@ angular.module('mm.core.course')
                 return $mmSitesManager.getSiteHomeId(siteId);
             }).then(function(siteHomeId) {
                 if (courseId == siteHomeId) {
-                    // It's front page we go directly to course section.
-                    return $state.go('redirect', {
-                        siteid: siteId,
-                        state: 'site.mm_course-section',
-                        params: {
-                            cid: courseId,
-                            mid: moduleId
-                        }
-                    });
+                    var $mmaFrontpage = $mmAddonManager.get('$mmaFrontpage');
+                    if ($mmaFrontpage) {
+                        return $mmaFrontpage.isFrontpageAvailable().then(function() {
+                            // Frontpage is avalaible so redirect to it.
+                            return $state.go('redirect', {
+                                siteid: siteId,
+                                state: 'site.frontpage',
+                                params: {
+                                    moduleid: moduleId
+                                }
+                            });
+                        });
+                    }
                 } else {
                     return $state.go('redirect', {
                         siteid: siteId,
@@ -402,11 +451,7 @@ angular.module('mm.core.course')
                 }
             });
         }).catch(function(error) {
-            if (error) {
-                $mmUtil.showErrorModal(error);
-            } else {
-                $mmUtil.showErrorModal('mm.course.errorgetmodule', true);
-            }
+            $mmUtil.showErrorModalDefault(error, 'mm.course.errorgetmodule', true);
             return $q.reject();
         }).finally(function() {
             modal.dismiss();

@@ -21,9 +21,8 @@ angular.module('mm.core.course')
  * @ngdoc controller
  * @name mmCourseSectionCtrl
  */
-.controller('mmCourseSectionCtrl', function($mmCourseDelegate, $mmCourse, $mmUtil, $scope, $stateParams, $translate, $mmEvents,
-            $ionicScrollDelegate, $mmCourses, $q, mmCoreEventCompletionModuleViewed, $controller, $mmCoursePrefetchDelegate,
-            $mmCourseHelper) {
+.controller('mmCourseSectionCtrl', function($mmCourse, $mmUtil, $scope, $stateParams, $translate, $mmEvents, $ionicScrollDelegate,
+            $mmCourses, $q, mmCoreEventCompletionModuleViewed, $mmCoursePrefetchDelegate, $mmCourseHelper) {
 
     // Default values are Site Home and all sections.
     var courseId = $stateParams.cid,
@@ -53,7 +52,7 @@ angular.module('mm.core.course')
                 });
             }
 
-            return promise.then(function(statuses) {
+            return promise.then(function(completionStatus) {
                 var promise,
                     sectionnumber;
 
@@ -70,35 +69,10 @@ angular.module('mm.core.course')
                 }
 
                 return promise.then(function(sections) {
-                    var hasContent = false;
 
-                    angular.forEach(sections, function(section) {
-                        if ($mmCourseHelper.sectionHasContent(section)) {
-                            hasContent = true;
-                        }
-
-                        angular.forEach(section.modules, function(module) {
-                            module._controller =
-                                    $mmCourseDelegate.getContentHandlerControllerFor(module.modname, module, courseId, section.id);
-                            // Check if activity has completions and if it's marked.
-                            var status = statuses[module.id];
-                            if (typeof status != 'undefined') {
-                                module.completionstatus = status;
-                            }
-
-                            if (module.id == moduleId) {
-                                // This is the module we're looking for. Open it.
-                                var scope = $scope.$new();
-                                $controller(module._controller, {$scope: scope});
-                                if (scope.action) {
-                                    scope.action();
-                                }
-                            }
-                        });
-                    });
-
+                    $scope.hasContent = $mmCourseHelper.addContentHandlerControllerForSectionModules(sections, courseId,
+                        moduleId, completionStatus, $scope);
                     $scope.sections = sections;
-                    $scope.hasContent = hasContent;
 
                     // Add log in Moodle. The 'section' attribute was added in Moodle 3.2 so maybe it isn't available.
                     if (sectionId > 0 && sections[0] && typeof sections[0].section != 'undefined') {
