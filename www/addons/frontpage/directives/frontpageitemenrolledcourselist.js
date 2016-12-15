@@ -21,13 +21,15 @@ angular.module('mm.addons.frontpage')
  * @ngdoc directive
  * @name mmaFrontpageItemEnrolledCourseList
  */
-.directive('mmaFrontpageItemEnrolledCourseList', function() {
+.directive('mmaFrontpageItemEnrolledCourseList', function($mmCourses) {
     return {
         restrict: 'A',
         priority: 100,
         templateUrl: 'addons/frontpage/templates/frontpageitemenrolledcourselist.html',
-        link: function(scope, element, attributes) {
-
+        link: function(scope) {
+            return $mmCourses.getUserCourses().then(function(courses) {
+                scope.show = courses.length > 0;
+            });
         }
     };
 });

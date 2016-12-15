@@ -21,13 +21,43 @@ angular.module('mm.addons.frontpage')
  * @ngdoc directive
  * @name mmaFrontpageItemNews
  */
-.directive('mmaFrontpageItemNews', function() {
+.directive('mmaFrontpageItemNews', function($mmCourse, $state, $mmSite, $mmAddonManager) {
     return {
         restrict: 'A',
         priority: 100,
         templateUrl: 'addons/frontpage/templates/frontpageitemnews.html',
-        link: function(scope, element, attributes) {
+        link: function(scope) {
+            // Get number of news items to show.
+            return $mmSite.getConfig('newsitems').catch(function() {
+                // Ignore errors for not present settings assuming newsitems will be 0.
+                return $q.when(0);
+            }).then(function(newsitems) {
+                if (!newsitems) {
+                    return;
+                }
+                var courseId = $mmSite.getInfo().siteid || 1;
 
+                $mmaModForum = $mmAddonManager.get('$mmaModForum');
+                if ($mmaModForum) {
+                    return $mmaModForum.getCourseForums(courseId).then(function(forums) {
+                        for (var x in forums) {
+                            if (forums[x].type == 'news') {
+                                return forums[x];
+                            }
+                        }
+                    }).then(function(forum) {
+                        if (forum) {
+                            return $mmCourse.getModuleBasicInfo(forum.cmid).then(function(module) {
+                                scope.show = true;
+                                scope.icon = $mmCourse.getModuleIconSrc('forum');
+                                scope.action = function() {
+                                    $state.go('site.mod_forum', {module: module, courseid: courseId});
+                                };
+                            });
+                        }
+                    });
+                }
+            });
         }
     };
 });
