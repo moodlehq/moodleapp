@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.4kalars.mobile” version="3.2.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.4kalars.mobile" version="3.2.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>4Kalars Mobile</name>
   <description>Official 4Kalars Mobile app</description>
   <author email=“kumarbharathb@gmail.com”>Bharath Kumar Bavikati</author>
