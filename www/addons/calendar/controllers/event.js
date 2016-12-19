@@ -81,7 +81,7 @@ angular.module('mm.addons.calendar')
         });
 
         $scope.updateNotificationTime = function() {
-            var time = parseInt($scope.notification.time);
+            var time = parseInt($scope.notification.time, 10);
             if (!isNaN(time) && $scope.event && $scope.event.id) {
                 $mmaCalendar.updateNotificationTime($scope.event, time);
             }

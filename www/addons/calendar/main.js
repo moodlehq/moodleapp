@@ -18,6 +18,8 @@ angular.module('mm.addons.calendar', [])
 .constant('mmaCalendarDefaultNotifTime', 60)
 .constant('mmaCalendarComponent', 'mmaCalendarEvents')
 .constant('mmaCalendarPriority', 400)
+.constant('mmaCalendarDefaultNotifTimeSetting', 'mmaCalendarDefaultNotifTime')
+.constant('mmaCalendarDefaultNotifTimeChangedEvent', 'mma_calendar_default_notif_time_changed')
 
 .config(function($stateProvider, $mmSideMenuDelegateProvider, mmaCalendarPriority) {
 
@@ -42,6 +44,16 @@ angular.module('mm.addons.calendar', [])
                 'site': {
                     controller: 'mmaCalendarEventCtrl',
                     templateUrl: 'addons/calendar/templates/event.html'
+                }
+            }
+        })
+
+        .state('site.calendar-settings', {
+            url: '/calendar-settings',
+            views: {
+                'site': {
+                    controller: 'mmaCalendarSettingsCtrl',
+                    templateUrl: 'addons/calendar/templates/settings.html'
                 }
             }
         });
