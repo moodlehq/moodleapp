@@ -35,6 +35,7 @@
     "day": "day",
     "days": "days",
     "decsep": ".",
+    "defaultvalue": "Default ({{$a}})",
     "delete": "Delete",
     "deleting": "Deleting",
     "description": "Description",

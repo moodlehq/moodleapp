@@ -215,25 +215,46 @@ angular.module('mm.addons.calendar')
     };
 
     /**
-     * Get event notification time.
+     * Get event notification time. Always returns number of minutes (0 if disabled).
      *
      * @module mm.addons.calendar
      * @ngdoc method
      * @name $mmaCalendar#getEventNotificationTime
      * @param  {Number} id       Event ID.
      * @param  {String} [siteId] ID of the site the event belongs to. If not defined, use current site.
-     * @return {String}          Event icon name. If type not valid, return empty string.
+     * @return {Number}          Event notification time in minutes. 0 if disabled.
      */
     self.getEventNotificationTime = function(id, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return self.getEventNotificationTimeOption(id, siteId).then(function(time) {
+            if (time == -1) {
+                return self.getDefaultNotificationTime(siteId);
+            }
+            return time;
+        });
+    };
+
+    /**
+     * Get event notification time for options. Returns -1 for default time.
+     *
+     * @module mm.addons.calendar
+     * @ngdoc method
+     * @name $mmaCalendar#getEventNotificationTimeOption
+     * @param  {Number} id       Event ID.
+     * @param  {String} [siteId] ID of the site the event belongs to. If not defined, use current site.
+     * @return {Number}          Event notification time in minutes. 0 if disabled, -1 if default time.
+     */
+    self.getEventNotificationTimeOption = function(id, siteId) {
         siteId = siteId || $mmSite.getId();
 
         return self.getEventFromLocalDb(id, siteId).then(function(e) {
             if (typeof e.notificationtime != 'undefined') {
                 return e.notificationtime;
             }
-            return self.getDefaultNotificationTime(siteId);
+            return -1;
         }, function() {
-            return self.getDefaultNotificationTime(siteId);
+            return -1;
         });
     };
 
@@ -378,7 +399,12 @@ angular.module('mm.addons.calendar')
         if ($mmLocalNotifications.isAvailable()) {
             if (time === 0) {
                 return $mmLocalNotifications.cancel(event.id, mmaCalendarComponent, siteId); // Cancel if it was scheduled.
-            } else {
+            }
+
+            // If time is -1, get event default time.
+            var promise = time == -1 ? self.getDefaultNotificationTime(siteId) : $q.when(time);
+
+            return promise.then(function(time) {
                 var timeend = (event.timestart + event.timeduration) * 1000;
                 if (timeend <= new Date().getTime()) {
                     // The event has finished already, don't schedule it.
@@ -399,7 +425,8 @@ angular.module('mm.addons.calendar')
                     };
 
                 return $mmLocalNotifications.schedule(notification, mmaCalendarComponent, siteId);
-            }
+            });
+
         } else {
             return $q.when();
         }
