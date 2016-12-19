@@ -63,7 +63,7 @@ angular.module('mm.addons.calendar', [])
 
 })
 
-.run(function($mmaCalendar, $mmLocalNotifications, $state, $ionicPlatform, $mmApp, mmaCalendarComponent) {
+.run(function($mmaCalendar, $mmLocalNotifications, $state, $mmApp, mmaCalendarComponent) {
 
     // Listen for notification clicks.
     $mmLocalNotifications.registerClick(mmaCalendarComponent, function(data) {
@@ -74,7 +74,7 @@ angular.module('mm.addons.calendar', [])
         }
     });
 
-    $ionicPlatform.ready(function() {
+    $mmApp.ready().then(function() {
         $mmaCalendar.scheduleAllSitesEventsNotifications();
     });
 });

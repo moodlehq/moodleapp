@@ -105,7 +105,7 @@ angular.module('mm.addons.calendar')
                     return {};
                 }).then(function(e) {
                     if (typeof e.notificationtime != 'undefined') {
-                        event.notificationtime = time;
+                        event.notificationtime = e.notificationtime;
                     }
                     return db.insert(mmaCalendarEventsStore, event);
                 }));
@@ -132,6 +132,21 @@ angular.module('mm.addons.calendar')
             e.moduleicon = icon;
         }
         e.icon = icon;
+    };
+
+    /**
+     * Get all calendar events from local Db.
+     *
+     * @module mm.addons.calendar
+     * @ngdoc method
+     * @name $mmaCalendar#getAllEventsFromLocalDb
+     * @param  {String} [siteId] ID of the site. If not defined, use current site.
+     * @return {Promise}         Promise resolved with all the events.
+     */
+    self.getAllEventsFromLocalDb = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().getAll(mmaCalendarEventsStore);
+        });
     };
 
     /**
@@ -475,6 +490,22 @@ angular.module('mm.addons.calendar')
 
         var key = mmaCalendarDefaultNotifTimeSetting + '#' + siteId;
         return $mmConfig.set(key, time);
+    };
+
+    /**
+     * Store an event in local DB as it is.
+     *
+     * @module mm.addons.calendar
+     * @ngdoc method
+     * @name $mmaCalendar#storeEventInLocalDb
+     * @param  {Object} event    Event to store.
+     * @param  {String} [siteId] ID of the site the event belongs to. If not defined, use current site.
+     * @return {Promise}         Promise resolved when stored.
+     */
+    self.storeEventInLocalDb = function(event, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().insert(mmaCalendarEventsStore, event);
+        });
     };
 
     /**
