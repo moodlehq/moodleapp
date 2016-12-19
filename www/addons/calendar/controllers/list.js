@@ -22,12 +22,13 @@ angular.module('mm.addons.calendar')
  * @name mmaCalendarListCtrl
  */
 .controller('mmaCalendarListCtrl', function($scope, $stateParams, $log, $state, $mmaCalendar, $mmUtil, $ionicHistory,
-        mmaCalendarDaysInterval) {
+        mmaCalendarDaysInterval, $ionicScrollDelegate) {
 
     $log = $log.getInstance('mmaCalendarListCtrl');
 
     var daysLoaded,
-        emptyEventsTimes; // Variable to identify consecutive calls returning 0 events.
+        emptyEventsTimes, // Variable to identify consecutive calls returning 0 events.
+        scrollView = $ionicScrollDelegate.$getByHandle('mmaCalendarEventsListScroll');
 
     if ($stateParams.eventid) {
         // We arrived here via notification click, let's clear history and redirect to event details.
@@ -47,7 +48,6 @@ angular.module('mm.addons.calendar')
         if (refresh) {
             initVars();
         }
-        $scope.canLoadMore = false; // Set it to false to prevent consecutive calls.
 
         return $mmaCalendar.getEvents(daysLoaded, mmaCalendarDaysInterval, refresh).then(function(events) {
             daysLoaded += mmaCalendarDaysInterval;
@@ -75,6 +75,9 @@ angular.module('mm.addons.calendar')
                 // Schedule notifications for the events retrieved (might have new events).
                 $mmaCalendar.scheduleEventsNotifications(events);
             }
+
+            // Resize the scroll view so infinite loading is able to calculate if it should load more items or not.
+            scrollView.resize();
         }, function(error) {
             if (error) {
                 $mmUtil.showErrorModal(error);
@@ -82,6 +85,7 @@ angular.module('mm.addons.calendar')
                 $mmUtil.showErrorModal('mma.calendar.errorloadevents', true);
             }
             $scope.eventsLoaded = true;
+            $scope.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
         });
     }
 
