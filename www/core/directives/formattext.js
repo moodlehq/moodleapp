@@ -189,6 +189,8 @@ angular.module('mm.core')
                         shortened = $translate.instant(attrs.expandOnClick ? 'mm.core.clicktohideshow' : 'mm.core.clicktoseefull');
                     }
                 }
+                shortened += '<div class="mm-show-more">'+$translate.instant('mm.core.showmore')+'</div>';
+                shortened = '<div class="mm-shortened">' + shortened + '</div>';
 
                 element.on('click', function(e) {
                     e.preventDefault();

@@ -1206,3 +1206,21 @@ i, cite, em, var, address, dfn {
     }
   }
 }
+
+.mm-shortened {
+  color: #777;
+
+  .mm-show-more {
+    color: $dark;
+    text-align: right;
+    padding-top: 5px;
+    font-size: 14px;
+
+    &:after {
+      @extend .ion;
+      content: $ionicon-var-chevron-down;
+      margin-left: 10px;
+      color: $item-icon-accessory-color;
+    }
+  }
+}
