@@ -21,10 +21,13 @@ angular.module('mm.addons.frontpage')
  * @ngdoc directive
  * @name mmaFrontpageItemCategories
  */
-.directive('mmaFrontpageItemCategories', function() {
+.directive('mmaFrontpageItemCategories', function($mmCourses) {
     return {
         restrict: 'A',
         priority: 100,
-        templateUrl: 'addons/frontpage/templates/frontpageitemcategories.html'
+        templateUrl: 'addons/frontpage/templates/frontpageitemcategories.html',
+        link: function(scope) {
+            scope.show = $mmCourses.isGetCategoriesAvailable() && $mmCourses.isGetCoursesByFieldAvailable();
+        }
     };
 });

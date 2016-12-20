@@ -1013,6 +1013,72 @@ angular.module('mm.core')
         };
 
         /**
+         * Returns a tree formatted from the a plain list.
+         * List has to be sorted by depth to allow this function to work correctly. Errors can be thrown if a child node is
+         * processed before a parent node.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#formatTree
+         * @param  {Array}  list                List to format.
+         * @param  {String} [parentFieldName]   Name of the parent field to match with children. Default: parent.
+         * @param  {String} [idFieldName]       Name of the children field to match with parent. Default: id.
+         * @param  {Number} [rootParentId]      The id of the root. Default: 0.
+         * @param  {Number} [maxDepth]          Max Depth to convert to tree. Children found will be in the last level of depth.
+         *                                          Default: 5.
+         * @return {Array}                      Array with the formatted tree, children will be on each node under children field.
+         */
+        self.formatTree = function(list, parentFieldName, idFieldName, rootParentId, maxDepth) {
+            var original = list,
+                map = {},
+                mapDepth = {},
+                node, parent, id,
+                tree = [];
+
+            parentFieldName = parentFieldName || 'parent';
+            idFieldName = idFieldName || 'id';
+            rootParentId = rootParentId || 0;
+            maxDepth = maxDepth || 5;
+
+            angular.forEach(list, function(node, index) {
+                id = node[idFieldName];
+                parent = node[parentFieldName];
+                node.children = [];
+
+                // Use map to look-up the parents.
+                map[id] = index;
+                if (parent != rootParentId) {
+                    if (mapDepth[parent] == maxDepth) {
+                        // Reached max level of depth. Proceed with flat order. Find parent object of the current node.
+                        var parentNode = list[map[parent]];
+                        if (parentNode != null) {
+                            var parentOfParent = parentNode[parentFieldName];
+                            // This element will be the child of the node that is two levels up the hierarchy
+                            // (i.e. the child of node.parent.parent).
+                            list[map[parentOfParent]].children.push(node);
+                            // Assign depth level to the same depth as the parent (i.e. max depth level).
+                            mapDepth[id] = mapDepth[parent];
+                            // Change the parent to be the one that is two levels up the hierarchy.
+                            //node.parent = parentOfParent;
+                        }
+                    } else {
+                        list[map[parent]].children.push(node);
+
+                        // Increase the depth level.
+                        mapDepth[id] = mapDepth[parent] + 1;
+                    }
+                } else {
+                    tree.push(node);
+
+                    // Root elements are the first elements in the tree structure, therefore have the depth level 1.
+                    mapDepth[id] = 1;
+                }
+            });
+
+            return tree;
+        };
+
+        /**
          * Empties an array without losing its reference.
          *
          * @module mm.core

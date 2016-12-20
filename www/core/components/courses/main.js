@@ -59,6 +59,19 @@ angular.module('mm.core.courses', ['mm.core.contentlinks'])
                 controller: 'mmCoursesViewResultCtrl'
             }
         }
+    })
+
+    .state('site.mm_coursescategories', {
+        url: '/mm_coursescategories',
+        params: {
+            categoryid: null
+        },
+        views: {
+            'site': {
+                templateUrl: 'core/components/courses/templates/coursecategories.html',
+                controller: 'mmCourseCategoriesCtrl'
+            }
+        }
     });
 
 })
