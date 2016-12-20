@@ -69,6 +69,7 @@
     "filenameexist": "File name already exists: {{$a}}",
     "folder": "Folder",
     "forcepasswordchangenotice": "You must change your password to proceed.",
+    "fulllistofcourses": "All courses",
     "fullnameandsitename": "{{fullname}} ({{sitename}})",
     "hasdatatosync": "This {{$a}} has offline data to be synchronized.",
     "help" : "Help",

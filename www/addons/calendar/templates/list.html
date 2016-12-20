@@ -1,6 +1,7 @@
 <ion-view view-title="{{ 'mma.calendar.calendarevents' | translate }}">
     <ion-nav-buttons side="secondary">
         <mm-context-menu>
+            <button class="button button-icon ion-funnel" ng-show="courses && courses.length" ng-click="pickCourse($event)" aria-label="{{ 'mm.courses.filter' | translate }}"></button>
             <mm-context-menu-item priority="600" ng-show="notificationsEnabled" ui-sref="site.calendar-settings" content="'mm.settings.settings' | translate" action="openSettings()" icon-action="'ion-gear-b'"></mm-context-menu-item>
         </mm-context-menu>
     </ion-nav-buttons>
@@ -10,8 +11,8 @@
             </ion-refresher>
             <mm-loading hide-until="eventsLoaded">
                 <ul class="list">
-                    <li ng-if="count == 0" class="item">{{ 'mma.calendar.noevents' | translate }}</li>
-                    <li ng-repeat="event in events track by $index">
+                    <li ng-if="filtered.length == 0" class="item">{{ 'mma.calendar.noevents' | translate }}</li>
+                    <li ng-repeat="event in events | filter:filterEvent as filtered">
                         <a class="item item-media item-text-wrap" mm-split-view-link="site.calendar-event({id: event.id})" title="{{event.name}}">
                             <img ng-src="{{event.icon}}">
                             <h2><mm-format-text watch="true">{{event.name}}</mm-format-text></h2>
