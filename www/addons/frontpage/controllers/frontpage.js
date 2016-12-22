@@ -34,6 +34,8 @@ angular.module('mm.addons.frontpage')
 
     // Convenience function to fetch section(s).
     function loadContent() {
+        $scope.hasContent = false;
+
         return $mmSite.getConfig().catch(function() {
             // Ignore errors for not present settings assuming numsections will be true.
             return $q.when({
@@ -63,6 +65,7 @@ angular.module('mm.addons.frontpage')
                         return;
                     }
 
+                    $scope.hasContent = true;
                     $scope.items.push(item);
                 });
 
@@ -84,7 +87,7 @@ angular.module('mm.addons.frontpage')
                 }
 
                 $scope.hasContent = $mmCourseHelper.addContentHandlerControllerForSectionModules([$scope.section, $scope.block],
-                    courseId, moduleId, false, $scope);
+                    courseId, moduleId, false, $scope) || $scope.hasContent;
 
                 // Add log in Moodle.
                 $mmCourse.logView(courseId);
