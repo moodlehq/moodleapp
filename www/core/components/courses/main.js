@@ -72,6 +72,16 @@ angular.module('mm.core.courses', ['mm.core.contentlinks'])
                 controller: 'mmCourseCategoriesCtrl'
             }
         }
+    })
+
+    .state('site.mm_availablecourses', {
+        url: '/mm_availablecourses',
+        views: {
+            'site': {
+                templateUrl: 'core/components/courses/templates/availablecourses.html',
+                controller: 'mmCoursesAvailableCtrl'
+            }
+        }
     });
 
 })
