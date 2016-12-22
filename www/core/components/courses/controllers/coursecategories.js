@@ -72,6 +72,7 @@ angular.module('mm.core.courses')
         promises.push($mmCourses.invalidateUserCourses());
         promises.push($mmCourses.invalidateCategories(categoryId, true));
         promises.push($mmCourses.invalidateCoursesByField('category', categoryId));
+        promises.push($mmSite.invalidateConfig());
 
         $q.all(promises).finally(function() {
             fetchCategories(true).finally(function() {

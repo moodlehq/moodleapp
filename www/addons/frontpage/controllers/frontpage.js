@@ -102,6 +102,7 @@ angular.module('mm.addons.frontpage')
         var promises = [];
 
         promises.push($mmCourse.invalidateSections(courseId));
+        promises.push($mmSite.invalidateConfig());
 
         if (sectionsLoaded) {
             // Invalidate modules prefetch data.
