@@ -881,7 +881,7 @@ angular.module('mm.core')
          * @return {Number}     True if value is false, 0 or "0".
          */
         self.isFalseOrZero = function(value) {
-            return typeof value != 'undefined' && (value === false || parseInt(value) === 0);
+            return typeof value != 'undefined' && (value === false || value === "false" || parseInt(value) === 0);
         };
 
         /**
@@ -894,7 +894,7 @@ angular.module('mm.core')
          * @return {Number}     True if value is true, 1 or "1".
          */
         self.isTrueOrOne = function(value) {
-            return typeof value != 'undefined' && (value === true || parseInt(value) === 1);
+            return typeof value != 'undefined' && (value === true || value === "true" || parseInt(value) === 1);
         };
 
         /**

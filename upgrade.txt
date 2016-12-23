@@ -3,11 +3,9 @@ information provided here is intended especially for developers.
 
 === 3.2.1 ===
 
-<<<<<<< HEAD
  * mmaGrades addon has been moved to core with mmGrades name (and derivatives).
-=======
  * The promise returned by $mmaMessages#sendMessage is now resolved with an object instead of a boolean.
->>>>>>> MOBILE-1919 messages: Fix messages reload and sorting problems
+ * mm-format-text directive is now depending on height so new parameter max-height has been added and parameters shorten and expand-on-click have been deprecated.
 
 === 3.2 ===
 
