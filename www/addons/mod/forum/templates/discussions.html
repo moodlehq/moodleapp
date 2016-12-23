@@ -37,7 +37,7 @@
                                     <p ng-if="userfullname">{{discussion.userfullname}}</p>
                                 </div>
                                 <div class="item item-body">
-                                    <p><mm-format-text watch="true" clean="true" shorten component="{{component}}" component-id="{{componentId}}">{{discussion.message}}</mm-format-text></p>
+                                    <p><mm-format-text watch="true" clean="true" max-height="60" component="{{component}}" component-id="{{componentId}}">{{discussion.message}}</mm-format-text></p>
                                     <span class="item-note text-right">
                                         <span ng-if="discussion.groupname">
                                             <i class="icon ion-ios-people"></i> {{ discussion.groupname }}
@@ -64,7 +64,7 @@
                                     <p ng-if="discussion.userfullname">{{discussion.userfullname}}</p>
                                 </div>
                                 <div class="item item-body">
-                                    <p><mm-format-text watch="true" clean="true" shorten component="{{component}}" component-id="{{componentId}}">{{discussion.message}}</mm-format-text></p>
+                                    <p><mm-format-text watch="true" clean="true" max-height="60" component="{{component}}" component-id="{{componentId}}">{{discussion.message}}</mm-format-text></p>
                                     <span class="item-note text-right">
                                         <span ng-if="discussion.groupname">
                                             <i class="icon ion-ios-people"></i> {{ discussion.groupname }}

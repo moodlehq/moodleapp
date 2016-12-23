@@ -109,7 +109,7 @@
         <!-- Submit for grading form. -->
         <div ng-if="canSubmit && submitSupported">
             <ion-checkbox ng-if="submissionStatement" name="submissionstatement" ng-model="submitModel.submissionStatement" class="item-text-wrap item-checkbox-right">
-                <p><mm-format-text watch="true" class="mm-content-with-float">{{submissionStatement}}</mm-format-text></p>
+                <p><mm-format-text watch="true">{{submissionStatement}}</mm-format-text></p>
             </ion-checkbox>
             <!-- Submit button. -->
             <div ng-if="!showErrorStatementSubmit" class="item item-text-wrap">

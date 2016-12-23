@@ -1,7 +1,7 @@
 <!-- Read only -->
 <div class="item item-text-wrap" ng-if="(model.text || canEdit) && !edit" ng-class="{'item-button-right': canEdit}">
     <h2>{{plugin.name}}</h2>
-    <div><p><mm-format-text expand-title="{{plugin.name}}" shorten fullview-on-click="true" newlines-on-fullview="true" watch="true" component="{{assignComponent}}" component-id="{{assign.cmid}}">
+    <div><p><mm-format-text expand-title="{{plugin.name}}" max-height="80" fullview-on-click="true" newlines-on-fullview="true" watch="true" component="{{assignComponent}}" component-id="{{assign.cmid}}">
         {{model.text}}
     </mm-format-text></p></div>
     <div class="buttons buttons-vertical">

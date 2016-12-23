@@ -9,7 +9,7 @@
     <p ng-if="subject">{{subject}}</p>
 </div>
 <div class="item item-body" ng-if="newpost.editing !== uniqueid || !newpost.isEditing">
-    <mm-format-text class="mm-content-with-float" watch="true" component="{{component}}" component-id="{{componentId}}">{{post.message}}</mm-format-text>
+    <mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{post.message}}</mm-format-text>
     <mm-file ng-repeat="attachment in post.attachments" file="attachment" component="{{component}}" component-id="{{componentId}}"></mm-file>
 </div>
 <div class="item tabs tabs-icon-left mma-forum-align-right" ng-if="((isReplyEnabled && post.canreply) || !post.id) && (newpost.editing !== uniqueid || !newpost.isEditing)">

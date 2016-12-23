@@ -1,10 +1,10 @@
 <section class="list mma-qtype-match-container" ng-if="question.loaded">
     <div class="item item-text-wrap">
-        <p><mm-format-text watch="true" class="mm-content-with-float" component="{{component}}" component-id="{{componentId}}">{{ question.text }}</mm-format-text></p>
+        <p><mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{ question.text }}</mm-format-text></p>
     </div>
 	<div class="item item-text-wrap row mm-item-padding" ng-repeat="row in question.rows">
 		<div class="col">
-			<p><mm-format-text watch="true" class="mm-content-with-float" id="mma-question-{{row.id}}" component="{{component}}" component-id="{{componentId}}">{{ row.text }}</mm-format-text></p>
+			<p><mm-format-text watch="true" id="mma-question-{{row.id}}" component="{{component}}" component-id="{{componentId}}">{{ row.text }}</mm-format-text></p>
 		</div>
 		<div class="col text-center item-select" ng-class='{"mm-question-answer-correct": row.isCorrect === 1, "mm-question-answer-incorrect": row.isCorrect === 0}'>
 			<label class="accesshide" for="{{row.id}}" ng-if="row.accessibilityLabel">{{ row.accessibilityLabel }}</label>

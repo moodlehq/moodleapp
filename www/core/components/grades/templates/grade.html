@@ -6,7 +6,7 @@
         <mm-loading hide-until="gradeLoaded">
             <div ng-if="grade" class="card">
                 <a ng-if="grade.itemname" mm-link capture-link="true" class="item item-divider" href="{{ grade.link }}" title="{{ grade.itemname }}">
-                    <h2><mm-format-text watch="true" class="mm-content-with-float">{{ grade.itemname }}</mm-format-text></h2>
+                    <h2><mm-format-text watch="true">{{ grade.itemname }}</mm-format-text></h2>
                 </a>
 
                 <div ng-if="grade.weight" class="item item-text-wrap">
@@ -46,7 +46,7 @@
 
                 <div ng-if="grade.feedback" class="item item-text-wrap">
                     <h2>{{ 'mm.grades.feedback' | translate}}</h2>
-                    <p><mm-format-text expand-title="{{ 'mm.grades.feedback' | translate}}" shorten fullview-on-click="true" newlines-on-fullview="true" watch="true" >{{ grade.feedback }}</mm-format-text></p>
+                    <p><mm-format-text expand-title="{{ 'mm.grades.feedback' | translate}}" max-height="60" fullview-on-click="true" newlines-on-fullview="true" watch="true" >{{ grade.feedback }}</mm-format-text></p>
                 </div>
 
                 <div ng-if="grade.contributiontocoursetotal" class="item item-text-wrap">
