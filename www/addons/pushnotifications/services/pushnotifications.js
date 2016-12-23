@@ -119,6 +119,13 @@ angular.module('mm.addons.pushnotifications')
                         $mmLocalNotifications.schedule(localNotif, mmaPushNotificationsComponent, data.site);
                     });
                 }
+
+                // Trigger a notification received event.
+                $mmApp.ready().then(function() {
+                    data.title = notification.title;
+                    data.message = notification.message;
+                    $mmPushNotificationsDelegate.received(data);
+                });
             } else {
                 // The notification was clicked. For compatibility with old push plugin implementation
                 // we'll merge all the notification data in a single object.
