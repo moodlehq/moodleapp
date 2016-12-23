@@ -22,7 +22,7 @@ angular.module('mm.addons.messages')
  * @name $mmaMessages
  */
 .factory('$mmaMessages', function($mmSite, $mmSitesManager, $log, $q, $mmUser, $mmaMessagesOffline, $mmApp,
-            mmaMessagesNewMessageEvent) {
+            mmaMessagesNewMessageEvent, mmaMessagesLimitMessages) {
     $log = $log.getInstance('$mmaMessages');
 
     var self = {};
@@ -296,7 +296,7 @@ angular.module('mm.addons.messages')
                 useridto: $mmSite.getUserId(),
                 useridfrom: userId,
                 limitfrom: 0,
-                limitnum: 50
+                limitnum: mmaMessagesLimitMessages
             };
 
         return self._getRecentMessages(params, presets).then(function(response) {
@@ -307,6 +307,10 @@ angular.module('mm.addons.messages')
             return self._getRecentMessages(params, presets);
         }).then(function(response) {
             messages = messages.concat(response);
+
+            // Sort messages and get the more recent ones.
+            messages = self.sortMessages(messages);
+            messages = messages.slice(-mmaMessagesLimitMessages);
 
             if (excludePending) {
                 // No need to get offline messages, return the ones we have.
@@ -340,7 +344,7 @@ angular.module('mm.addons.messages')
                 useridto: $mmSite.getUserId(),
                 useridfrom: 0,
                 limitfrom: 0,
-                limitnum: 50
+                limitnum: mmaMessagesLimitMessages
             },
             presets = {
                 cacheKey: self._getCacheKeyForDiscussions()

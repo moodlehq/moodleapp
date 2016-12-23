@@ -15,6 +15,7 @@
 angular.module('mm.addons.messages', ['mm.core'])
 
 .constant('mmaMessagesComponent', 'mmaMessages')
+.constant('mmaMessagesLimitMessages', 50)
 .constant('mmaMessagesDiscussionLoadedEvent', 'mma_messages_discussion_loaded')
 .constant('mmaMessagesDiscussionLeftEvent', 'mma_messages_discussion_left')
 .constant('mmaMessagesPollInterval', 5000)
