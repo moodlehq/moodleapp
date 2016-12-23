@@ -12,25 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.addons.grades')
+angular.module('mm.core.grades')
 
 /**
  * Controller to handle activity grades.
  *
- * @module mm.addons.grades
+ * @module mm.core.grades
  * @ngdoc controller
- * @name mmaGradesGradeCtrl
+ * @name mmGradesGradeCtrl
  */
-.controller('mmaGradesGradeCtrl', function($scope, $stateParams, $mmUtil, $mmaGrades, $mmSite, $mmaGradesHelper, $log) {
+.controller('mmGradesGradeCtrl', function($scope, $stateParams, $mmUtil, $mmGrades, $mmSite, $mmGradesHelper, $log) {
 
-    $log = $log.getInstance('mmaGradesGradeCtrl');
+    $log = $log.getInstance('mmGradesGradeCtrl');
 
     var courseId = $stateParams.courseid,
         userId = $stateParams.userid || $mmSite.getUserId();
 
     function fetchGrade() {
-        return $mmaGrades.getGradesTable(courseId, userId).then(function(table) {
-            $scope.grade = $mmaGradesHelper.getGradeRow(table, $stateParams.gradeid);
+        return $mmGrades.getGradesTable(courseId, userId).then(function(table) {
+            $scope.grade = $mmGradesHelper.getGradeRow(table, $stateParams.gradeid);
         }, function(message) {
             $mmUtil.showErrorModal(message);
             $scope.errormessage = message;
@@ -49,7 +49,7 @@ angular.module('mm.addons.grades')
     };
 
     $scope.refreshGrade = function() {
-        $mmaGrades.invalidateGradesTableData(courseId, userId).finally(function() {
+        $mmGrades.invalidateGradesTableData(courseId, userId).finally(function() {
             fetchGrade().finally(function() {
                 $scope.$broadcast('scroll.refreshComplete');
             });

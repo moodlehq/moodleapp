@@ -1,14 +1,3 @@
 {
-    "average": "Средно",
-    "contributiontocoursetotal": "Дял в общата оценка",
-    "feedback": "Обратна връзка",
-    "grade": "Оценка",
-    "grades": "Оценки",
-    "itemname": "Оценяване",
-    "lettergrade": "Оценка с буква",
-    "percentage": "В проценти",
-    "range": "Обхват",
-    "rank": "Ранг",
-    "viewgrades": "Преглед на оценките",
-    "weight": "Тегло"
+    "viewgrades": "Преглед на оценките"
 }

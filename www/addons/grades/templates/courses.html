@@ -1,4 +1,4 @@
-<ion-view view-title="{{ 'mma.grades.grades' | translate }}">
+<ion-view view-title="{{ 'mm.grades.grades' | translate }}">
     <mm-split-view load-when="gradesLoaded" component="mmaCoursesGrades" menu-state="site.coursesgrades">
         <ion-content mm-state-class>
             <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="gradesLoaded" on-refresh="refreshGrades()">

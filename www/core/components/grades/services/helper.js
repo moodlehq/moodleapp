@@ -12,25 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.addons.grades')
+angular.module('mm.core.grades')
 
 /**
  * Helper to gather some common functions for grades.
  *
- * @module mm.addons.grades
+ * @module mm.core.grades
  * @ngdoc service
- * @name $mmaGradesHelper
+ * @name $mmGradesHelper
  */
-.factory('$mmaGradesHelper', function($q, $mmText, $translate, $mmCourse, $sce) {
+.factory('$mmGradesHelper', function($q, $mmText, $translate, $mmCourse, $sce) {
 
     var self = {};
 
     /**
      * Formats the response of gradereport_user_get_grades_table to be rendered.
      *
-     * @module mm.addons.grades
+     * @module mm.core.grades
      * @ngdoc method
-     * @name $mmaGradesHelper#formatGradesTable
+     * @name $mmGradesHelper#formatGradesTable
      * @param  {Object}  table          JSON object representing a table with data.
      * @param  {Boolean} forcePhoneView If we must force the phone view to display less columns.
      * @return {Object}             Formatted HTML table.
@@ -165,9 +165,9 @@ angular.module('mm.addons.grades')
     /**
      * Get a row from the grades table.
      *
-     * @module mm.addons.grades
+     * @module mm.core.grades
      * @ngdoc method
-     * @name $mmaGradesHelper#getGradeRow
+     * @name $mmGradesHelper#getGradeRow
      * @param  {Object}  table      JSON object representing a table with data.
      * @param  {Number}  gradeid    Grade Object identifier.
      * @return {Object}             Formatted HTML table.
@@ -231,15 +231,15 @@ angular.module('mm.addons.grades')
         text = text.replace("%2F", "/").replace("%2f", "/");
 
         if (text.indexOf("/agg_mean") > -1) {
-            img = '<img src="addons/grades/img/agg_mean.png" width="16">';
+            img = '<img src="core/components/grades/img/agg_mean.png" width="16">';
         } else if (text.indexOf("/agg_sum") > -1) {
-            img = '<img src="addons/grades/img/agg_sum.png" width="16">';
+            img = '<img src="core/components/grades/img/agg_sum.png" width="16">';
         } else if (text.indexOf("/outcomes") > -1) {
-            img = '<img src="addons/grades/img/outcomes.png" width="16">';
+            img = '<img src="core/components/grades/img/outcomes.png" width="16">';
         } else if (text.indexOf("i/folder") > -1) {
-            img = '<img src="addons/grades/img/folder.png" width="16">';
+            img = '<img src="core/components/grades/img/folder.png" width="16">';
         } else if (text.indexOf("/manual_item") > -1) {
-            img = '<img src="addons/grades/img/manual_item.png" width="16">';
+            img = '<img src="core/components/grades/img/manual_item.png" width="16">';
         } else if (text.indexOf("/mod/") > -1) {
             var module = text.match(/mod\/([^\/]*)\//);
             if (typeof module[1] != "undefined") {
@@ -273,9 +273,9 @@ angular.module('mm.addons.grades')
     /**
      * Translates the names of the grades table columns.
      *
-     * @module mm.addons.grades
+     * @module mm.core.grades
      * @ngdoc method
-     * @name $mmaGradesHelper#translateGradesTable
+     * @name $mmGradesHelper#translateGradesTable
      * @param  {Object} table Grades table.
      * @return {Promise}      Promise to be resolved with the translated table.
      */
@@ -284,7 +284,7 @@ angular.module('mm.addons.grades')
             promises = [];
 
         columns.forEach(function(column) {
-            var promise = $translate('mma.grades.'+column.name).then(function(translated) {
+            var promise = $translate('mm.grades.'+column.name).then(function(translated) {
                 column.name = translated;
             });
             promises.push(promise);

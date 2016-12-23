@@ -1,13 +1,15 @@
 {
-    "average": "Promedio",
+    "average": "Media",
+    "badgrade": "La calificación suministrada no es válida",
+    "contributiontocoursetotal": "Contribución al total del curso",
     "feedback": "Retroalimentación",
     "grade": "Calificación",
     "grades": "Calificaciones",
-    "itemname": "Nombre del ítem",
+    "itemname": "Elemento de calificación",
     "lettergrade": "Calificación por letra",
+    "nooutcome": "No resultado",
     "percentage": "Porcentaje",
     "range": "Rango",
     "rank": "Rango",
-    "viewgrades": "Ver calificaciones",
     "weight": "Peso"
 }

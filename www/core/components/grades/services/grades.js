@@ -12,18 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.addons.grades')
+angular.module('mm.core.grades')
 
 /**
  * Service to handle grades.
  *
- * @module mm.addons.grades
+ * @module mm.core.grades
  * @ngdoc service
- * @name $mmaGrades
+ * @name $mmGrades
  */
-.factory('$mmaGrades', function($q, $log, $mmSite, $mmCourses, $mmSitesManager, $mmUtil, $mmText) {
+.factory('$mmGrades', function($q, $log, $mmSite, $mmCourses, $mmSitesManager, $mmUtil, $mmText) {
 
-    $log = $log.getInstance('$mmaGrades');
+    $log = $log.getInstance('$mmGrades');
 
     var self = {};
 
@@ -58,7 +58,7 @@ angular.module('mm.addons.grades')
      * @return {String}         Cache key.
      */
     function getGradesTablePrefixCacheKey(courseId) {
-        return 'mmaGrades:table:' + courseId + ':';
+        return 'mmGrades:table:' + courseId + ':';
     }
 
     /**
@@ -68,15 +68,15 @@ angular.module('mm.addons.grades')
      * @return {String}         Cache key.
      */
     function getGradeItemsPrefixCacheKey(courseId) {
-        return 'mmaGrades:items:' + courseId + ':';
+        return 'mmGrades:items:' + courseId + ':';
     }
 
     /**
      * Invalidates grade table data WS calls.
      *
-     * @module mm.addons.grades
+     * @module mm.core.grades
      * @ngdoc method
-     * @name $mmaGrades#invalidateGradesTableData
+     * @name $mmGrades#invalidateGradesTableData
      * @param {Number} courseId Course ID.
      * @param {Number} userId   User ID.
      * @param {Number}  [siteId]   Site id (empty for current site).
@@ -91,9 +91,9 @@ angular.module('mm.addons.grades')
     /**
      * Invalidates grade items data WS calls.
      *
-     * @module mm.addons.grades
+     * @module mm.core.grades
      * @ngdoc method
-     * @name $mmaGrades#invalidateGradeItemsData
+     * @name $mmGrades#invalidateGradeItemsData
      * @param {Number}  courseId   Course ID.
      * @param {Number}  userId     User ID.
      * @param {Number}  [groupId]  Group ID. Default 0.
@@ -109,9 +109,9 @@ angular.module('mm.addons.grades')
     /**
      * Invalidates all course  grade table data WS calls.
      *
-     * @module mm.addons.grades
+     * @module mm.core.grades
      * @ngdoc method
-     * @name $mmaGrades#invalidateGradesTableCourseData
+     * @name $mmGrades#invalidateGradesTableCourseData
      * @param {Number} courseId Course ID.
      * @param {Number}  [siteId]   Site id (empty for current site).
      * @return {Promise}        Promise resolved when the data is invalidated.
@@ -125,9 +125,9 @@ angular.module('mm.addons.grades')
     /**
      * Invalidates all course grade items data WS calls.
      *
-     * @module mm.addons.grades
+     * @module mm.core.grades
      * @ngdoc method
-     * @name $mmaGrades#invalidateGradeCourseItemsData
+     * @name $mmGrades#invalidateGradeCourseItemsData
      * @param {Number}  courseId   Course ID.
      * @param {Number}  [siteId]   Site id (empty for current site).
      * @return {Promise}        Promise resolved when the data is invalidated.
@@ -141,9 +141,9 @@ angular.module('mm.addons.grades')
     /**
      * Returns whether or not the plugin is enabled for a certain site.
      *
-     * @module mm.addons.grades
+     * @module mm.core.grades
      * @ngdoc method
-     * @name $mmaGrades#isPluginEnabled
+     * @name $mmGrades#isPluginEnabled
      * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Boolean}         True if plugin is enabled, false otherwise.
      */
@@ -156,9 +156,9 @@ angular.module('mm.addons.grades')
     /**
      * Returns whether or not the grade addon is enabled for a certain course.
      *
-     * @module mm.addons.grades
+     * @module mm.core.grades
      * @ngdoc method
-     * @name $mmaGrades#isPluginEnabledForCourse
+     * @name $mmGrades#isPluginEnabledForCourse
      * @param {Number} courseId  Course ID.
      * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}         Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
@@ -179,9 +179,9 @@ angular.module('mm.addons.grades')
     /**
      * Returns whether or not WS Grade Items is avalaible.
      *
-     * @module mm.addons.grades
+     * @module mm.core.grades
      * @ngdoc method
-     * @name $mmaGrades#isGradeItemsAvalaible
+     * @name $mmGrades#isGradeItemsAvalaible
      * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Boolean}         True if ws is avalaible, false otherwise.
      */
@@ -194,9 +194,9 @@ angular.module('mm.addons.grades')
     /**
      * Returns whether or not the grade addon is enabled for a certain user.
      *
-     * @module mm.addons.grades
+     * @module mm.core.grades
      * @ngdoc method
-     * @name $mmaGrades#isPluginEnabledForUser
+     * @name $mmGrades#isPluginEnabledForUser
      * @param  {Number} courseId Course ID.
      * @param  {Number} userId   User ID.
      * @param  {String} [siteId] Site ID. If not defined, current site.
@@ -219,9 +219,9 @@ angular.module('mm.addons.grades')
      * Get the grades for a certain course.
      * For now we only support gradereport_user_get_grades_table. It returns the complete grades table.
      *
-     * @module mm.addons.grades
+     * @module mm.core.grades
      * @ngdoc method
-     * @name $mmaGrades#getGradesTable
+     * @name $mmGrades#getGradesTable
      * @param  {Number}  courseId             ID of the course to get the grades from.
      * @param  {Number}  [userId]             ID of the user to get the grades from.
      * @param  {String}  [siteId]             Site ID. If not defined, current site.
@@ -259,9 +259,9 @@ angular.module('mm.addons.grades')
     /**
      * Get the grade items for a certain course.
      *
-     * @module mm.addons.grades
+     * @module mm.core.grades
      * @ngdoc method
-     * @name $mmaGrades#getGradeItems
+     * @name $mmGrades#getGradeItems
      * @param  {Number}  courseId             ID of the course to get the grades from.
      * @param  {Number}  [userId]             ID of the user to get the grades from. If not defined use site's current user.
      * @param  {Number}  [groupId]            ID of the group to get the grades from. Default 0.
@@ -389,9 +389,9 @@ angular.module('mm.addons.grades')
     /**
      * Get the grade items for a certain module. Keep in mind that may have more than one item to include outcomes and scales.
      *
-     * @module mm.addons.grades
+     * @module mm.core.grades
      * @ngdoc method
-     * @name $mmaGrades#getGradeModuleItems
+     * @name $mmGrades#getGradeModuleItems
      * @param  {Number}  courseId             ID of the course to get the grades from.
      * @param  {Number}  moduleId             ID of the module to get the grades from.
      * @param  {Number}  [userId]             ID of the user to get the grades from. If not defined use site's current user.
@@ -421,9 +421,9 @@ angular.module('mm.addons.grades')
     /**
      * Invalidate the grade items for a certain module.
      *
-     * @module mm.addons.grades
+     * @module mm.core.grades
      * @ngdoc method
-     * @name $mmaGrades#invalidateGradeModuleItems
+     * @name $mmGrades#invalidateGradeModuleItems
      * @param  {Number}  courseId     ID of the course to invalidate the grades.
      * @param  {Number}  [userId]     ID of the user to invalidate. If not defined use site's current user.
      * @param  {Number}  [groupId]    ID of the group to invalidate. Not used for old gradebook table.
@@ -448,9 +448,9 @@ angular.module('mm.addons.grades')
     /**
      * Invalidate all the grade items for a certain course.
      *
-     * @module mm.addons.grades
+     * @module mm.core.grades
      * @ngdoc method
-     * @name $mmaGrades#invalidateGradeCourseItems
+     * @name $mmGrades#invalidateGradeCourseItems
      * @param  {Number}  courseId     ID of the course to invalidate the grades.
      * @param  {String}  [siteId]     Site ID. If not defined, current site.
      * @return {Promise}              Promise to be resolved when the grades are invalidated.
