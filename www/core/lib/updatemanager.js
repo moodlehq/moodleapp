@@ -27,7 +27,7 @@ angular.module('mm.core')
  */
 .factory('$mmUpdateManager', function($log, $q, $mmConfig, $mmSitesManager, $mmFS, $cordovaLocalNotification, $mmLocalNotifications,
             $mmApp, $mmEvents, mmCoreSitesStore, mmCoreVersionApplied, mmCoreEventSiteAdded, mmCoreEventSiteUpdated,
-            mmCoreEventSiteDeleted, $injector, $mmFilepool, mmCoreCourseModulesStore, mmFilepoolLinksStore,
+            mmCoreEventSiteDeleted, $injector, $mmFilepool, mmCoreCourseModulesStore, mmFilepoolLinksStore, $mmAddonManager,
             mmFilepoolPackagesStore, mmCoreConfigConstants) {
 
     $log = $log.getInstance('$mmUpdateManager');
@@ -72,6 +72,10 @@ angular.module('mm.core')
 
             if (versionCode >= 2013 && versionApplied < 2013) {
                 promises.push(migrateFileExtensions());
+            }
+
+            if (versionCode >= 2017 && versionApplied < 2017) {
+                promises.push(setCalendarDefaultNotifTime());
             }
 
             return $q.all(promises).then(function() {
@@ -337,6 +341,49 @@ angular.module('mm.core')
 
         return $q.all(promises).then(function() {
             return component;
+        });
+    }
+
+    /**
+     * Calendar default notification time is configurable from version 3.2.1, and a new option "Default" is added.
+     * All events that were configured to use the fixed default time should now be configured to use "Default" option.
+     *
+     * @return {Promise} Promise resolved when the events are configured.
+     */
+    function setCalendarDefaultNotifTime() {
+        if (!$mmLocalNotifications.isAvailable()) {
+            // Local notif not available, nothing to do.
+            return $q.when();
+        }
+
+        var $mmaCalendar = $mmAddonManager.get('$mmaCalendar'),
+            mmaCalendarDefaultNotifTime = $mmAddonManager.get('mmaCalendarDefaultNotifTime');
+
+        if (!$mmaCalendar || typeof mmaCalendarDefaultNotifTime == 'undefined') {
+            // Calendar plugin not available. Stop.
+            return $q.when();
+        }
+
+        return $mmSitesManager.getSitesIds().then(function(siteIds) {
+
+            var promises = [];
+            angular.forEach(siteIds, function(siteId) {
+                // Get stored events.
+                promises.push($mmaCalendar.getAllEventsFromLocalDb(siteId).then(function(events) {
+                    var eventPromises = [];
+
+                    angular.forEach(events, function(event) {
+                        if (event.notificationtime == mmaCalendarDefaultNotifTime) {
+                            event.notificationtime = -1;
+                            eventPromises.push($mmaCalendar.storeEventInLocalDb(event, siteId));
+                        }
+                    });
+
+                    return $q.all(eventPromises);
+                }));
+            });
+
+            return $q.all(promises);
         });
     }
 

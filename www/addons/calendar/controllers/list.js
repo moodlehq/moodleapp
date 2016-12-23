@@ -21,14 +21,15 @@ angular.module('mm.addons.calendar')
  * @ngdoc controller
  * @name mmaCalendarListCtrl
  */
-.controller('mmaCalendarListCtrl', function($scope, $stateParams, $log, $state, $mmaCalendar, $mmUtil, $ionicHistory,
-        mmaCalendarDaysInterval, $ionicScrollDelegate) {
+.controller('mmaCalendarListCtrl', function($scope, $stateParams, $log, $state, $mmaCalendar, $mmUtil, $ionicHistory, $mmEvents,
+        mmaCalendarDaysInterval, $ionicScrollDelegate, $mmLocalNotifications, mmaCalendarDefaultNotifTimeChangedEvent) {
 
     $log = $log.getInstance('mmaCalendarListCtrl');
 
     var daysLoaded,
         emptyEventsTimes, // Variable to identify consecutive calls returning 0 events.
-        scrollView = $ionicScrollDelegate.$getByHandle('mmaCalendarEventsListScroll');
+        scrollView = $ionicScrollDelegate.$getByHandle('mmaCalendarEventsListScroll'),
+        obsDefaultTimeChange;
 
     if ($stateParams.eventid) {
         // We arrived here via notification click, let's clear history and redirect to event details.
@@ -91,6 +92,7 @@ angular.module('mm.addons.calendar')
 
     initVars();
     $scope.count = 0;
+    $scope.notificationsEnabled = $mmLocalNotifications.isAvailable();
 
     // Get first events.
     fetchEvents();
@@ -110,4 +112,20 @@ angular.module('mm.addons.calendar')
             });
         });
     };
+
+    // Open calendar events settings.
+    $scope.openSettings = function() {
+        $state.go('site.calendar-settings');
+    };
+
+    if ($scope.notificationsEnabled) {
+        // Re-schedule events if default time changes.
+        obsDefaultTimeChange = $mmEvents.on(mmaCalendarDefaultNotifTimeChangedEvent, function() {
+            $mmaCalendar.scheduleEventsNotifications($scope.events);
+        });
+    }
+
+    $scope.$on('$destroy', function() {
+        obsDefaultTimeChange && obsDefaultTimeChange.off && obsDefaultTimeChange.off();
+    });
 });
