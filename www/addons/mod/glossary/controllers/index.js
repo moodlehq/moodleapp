@@ -192,6 +192,7 @@ angular.module('mm.addons.mod_glossary')
             $scope.showNoEntries = result.count <= 0;
         }).catch(function() {
             $mmUtil.showErrorModal('mma.mod_glossary.errorloadingentries', true);
+            $scope.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
             return $q.reject();
         });
     }
