@@ -21,11 +21,11 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc controller
  * @name mmaModAssignIndexCtrl
  */
-.controller('mmaModAssignIndexCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $translate, mmaModAssignComponent, $q,
-        $state, mmaModAssignSubmissionInvalidatedEvent, $mmEvents, $mmSite, mmaModAssignSubmissionSavedEvent, $mmCourse, $mmApp,
-        mmaModAssignSubmittedForGradingEvent, $mmaModAssignSync, $mmText, mmaModAssignEventAutomSynced, $ionicScrollDelegate,
-        mmCoreEventOnlineStatusChanged, $mmaModAssignOffline, mmaModAssignEventManualSynced, mmaModAssignSubmissionStatusSubmitted,
-        mmaModAssignSubmissionStatusDraft, mmaModAssignNeedGrading, mmaModAssignGradedEvent) {
+.controller('mmaModAssignIndexCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $mmCourseHelper, $mmCoursePrefetchDelegate,
+        $translate, mmaModAssignComponent, $q, $state, mmaModAssignSubmissionInvalidatedEvent, $mmEvents, $mmSite,
+        mmaModAssignSubmissionSavedEvent, $mmCourse, $mmApp, mmaModAssignSubmittedForGradingEvent, $mmaModAssignSync, $mmText,
+        mmaModAssignEventAutomSynced, $ionicScrollDelegate, mmCoreEventOnlineStatusChanged, $mmaModAssignOffline, mmaModAssignEventManualSynced,
+        mmaModAssignSubmissionStatusSubmitted, mmaModAssignSubmissionStatusDraft, mmaModAssignNeedGrading, mmaModAssignGradedEvent) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         siteId = $mmSite.getId(),
@@ -77,6 +77,8 @@ angular.module('mm.addons.mod_assign')
                     // Ignore errors.
                 });
             }
+        }).then(function() {
+            fillContextMenu(module, courseId);
         }).then(function() {
             // Check if there's any offline data for this assign.
             return $mmaModAssignOffline.hasAssignOfflineData(assign.id);
@@ -143,6 +145,7 @@ angular.module('mm.addons.mod_assign')
             }
         }
 
+        fillContextMenu(module, courseId);
         return $q.all(promises).finally(function() {
             $scope.$broadcast(mmaModAssignSubmissionInvalidatedEvent);
             return fetchAssignment(true, sync, showErrors);
@@ -170,6 +173,48 @@ angular.module('mm.addons.mod_assign')
         $scope.refreshIcon = 'ion-refresh';
         $scope.syncIcon = 'ion-loop';
     });
+
+    // Function to fill Context Menu
+    function fillContextMenu(module, courseId, invalidateCache) {
+        $mmCourseHelper.getModulePrefetchInfo(module, courseId, invalidateCache).then(function(moduleInfo) {
+            $scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
+            $scope.prefetchStatusIcon = moduleInfo.statusIcon;
+            $scope.timemodified = moduleInfo.timemodified > 0 ? $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable : "";
+        });
+    }
+
+    $scope.removeFiles = function() {
+        $mmCourseHelper.confirmAndRemove(module, courseId);
+    };
+
+    // Context Menu Prefetch action.
+    $scope.prefetch = function() {
+        var icon = $scope.prefetchStatusIcon;
+
+        $scope.prefetchStatusIcon = 'spinner'; // Show spinner since this operation might take a while.
+
+        // We need to call getDownloadSize, the package might have been updated.
+        $mmCoursePrefetchDelegate.getModuleDownloadSize(module, courseId).then(function(size) {
+            $mmUtil.confirmDownloadSize(size).then(function() {
+                $mmCoursePrefetchDelegate.prefetchModule(module, courseId).catch(function() {
+                    if (!$scope.$$destroyed) {
+                        $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                    }
+                });
+            }).catch(function() {
+                // User hasn't confirmed, stop spinner.
+                $scope.prefetchStatusIcon = icon;
+            });
+        }).catch(function(error) {
+            $scope.prefetchStatusIcon = icon;
+            if (error) {
+                $mmUtil.showErrorModal(error);
+            } else {
+                $mmUtil.showErrorModal('mm.core.errordownloading', true);
+            }
+        });
+    };
+
 
     // Context Menu Description action.
     $scope.expandDescription = function() {

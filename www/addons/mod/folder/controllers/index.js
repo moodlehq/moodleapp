@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_folder')
  * @name mmaModFolderIndexCtrl
  */
 .controller('mmaModFolderIndexCtrl', function($scope, $stateParams, $mmaModFolder, $mmCourse, $mmUtil, $q, $mmText, $translate,
-            mmaModFolderComponent) {
+            mmaModFolderComponent, $mmCourseHelper, $mmCoursePrefetchDelegate) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         sectionId = $stateParams.sectionid,
@@ -37,6 +37,7 @@ angular.module('mm.addons.mod_folder')
     // Convenience function to set scope data using module.
     function showModuleData(module) {
         $scope.title = module.name;
+        fillContextMenu(module, courseId);
         if (path) {
             // Subfolder.
             $scope.contents = module.contents;
@@ -81,6 +82,47 @@ angular.module('mm.addons.mod_folder')
             $scope.refreshIcon = 'ion-refresh';
         });
     }
+    // Function to fill Context Menu
+    function fillContextMenu(module, courseId, invalidateCache) {
+        $mmCourseHelper.getModulePrefetchInfo(module, courseId, invalidateCache).then(function(moduleInfo) {
+            $scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
+            $scope.prefetchStatusIcon = moduleInfo.statusIcon;
+            $scope.timemodified = moduleInfo.timemodified > 0 ? $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable : "";
+        });
+    }
+
+    $scope.removeFiles = function() {
+        $mmCourseHelper.confirmAndRemove(module, courseId);
+    };
+
+    // Context Menu Prefetch action.
+    $scope.prefetch = function() {
+        var icon = $scope.prefetchStatusIcon;
+
+        $scope.prefetchStatusIcon = 'spinner'; // Show spinner since this operation might take a while.
+
+        // We need to call getDownloadSize, the package might have been updated.
+        $mmCoursePrefetchDelegate.getModuleDownloadSize(module, courseId).then(function(size) {
+            $mmUtil.confirmDownloadSize(size).then(function() {
+                $mmCoursePrefetchDelegate.prefetchModule(module, courseId).catch(function() {
+                    if (!$scope.$$destroyed) {
+                        $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                    }
+                });
+            }).catch(function() {
+                // User hasn't confirmed, stop spinner.
+                $scope.prefetchStatusIcon = icon;
+            });
+        }).catch(function(error) {
+            $scope.prefetchStatusIcon = icon;
+            if (error) {
+                $mmUtil.showErrorModal(error);
+            } else {
+                $mmUtil.showErrorModal('mm.core.errordownloading', true);
+            }
+        });
+    };
+
 
     // Context Menu Description action.
     $scope.expandDescription = function() {

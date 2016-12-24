@@ -23,7 +23,7 @@ angular.module('mm.core.course')
  */
 .factory('$mmCourseHelper', function($q, $mmCoursePrefetchDelegate, $mmFilepool, $mmUtil, $mmCourse, $mmSite, $state, $mmText,
             mmCoreNotDownloaded, mmCoreOutdated, mmCoreDownloading, mmCoreCourseAllSectionsId, $mmSitesManager, $mmAddonManager,
-            $controller, $mmCourseDelegate) {
+            $controller, $mmCourseDelegate, $translate) {
 
     var self = {},
         calculateSectionStatus = false;
@@ -638,6 +638,22 @@ angular.module('mm.core.course')
      */
     self.sectionHasContent = function(section) {
         return !section.hiddenbynumsections  && (section.summary != '' || section.modules.length);
+    };
+
+    /**
+     * Show Confirmation Dialog and then Remove a module.
+     * 
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourseHelper#confirmAndRemove
+     * @param {Object} module       Module to be removed.
+     * @param {Number} courseId     Course ID the module belongs to.
+     * @return {Promise}            Promise resolved when done.
+     */
+    self.confirmAndRemove = function(module, courseId) {
+        $mmUtil.showConfirm($translate('mm.course.confirmdeletemodulefiles')).then(function() {
+            $mmCoursePrefetchDelegate.removeModuleFiles(module, courseId);
+        });
     };
 
     return self;
