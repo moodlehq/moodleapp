@@ -95,6 +95,16 @@ angular.module('mm.core.login', [])
         params: {
             siteurl: ''
         }
+    })
+
+    .state('mm_login.sitepolicy', {
+        url: '/sitepolicy',
+        templateUrl: 'core/components/login/templates/sitepolicy.html',
+        controller: 'mmLoginSitePolicyCtrl',
+        cache: false,
+        params: {
+            siteid: ''
+        }
     });
 
     // Default redirect to the login page.
@@ -109,7 +119,7 @@ angular.module('mm.core.login', [])
 
 .run(function($log, $state, $mmUtil, $translate, $mmSitesManager, $rootScope, $mmSite, $mmURLDelegate, $ionicHistory, $timeout,
                 $mmEvents, $mmLoginHelper, mmCoreEventSessionExpired, $mmApp, $ionicPlatform, mmCoreConfigConstants, $mmText,
-                mmCoreEventPasswordChangeForced, mmCoreEventUserNotFullySetup) {
+                mmCoreEventPasswordChangeForced, mmCoreEventUserNotFullySetup, mmCoreEventSitePolicyNotAgreed) {
 
     $log = $log.getInstance('mmLogin');
 
@@ -127,6 +137,25 @@ angular.module('mm.core.login', [])
     });
     $mmEvents.on(mmCoreEventUserNotFullySetup, function(siteId) {
         openInAppForEdit(siteId, '/user/edit.php', 'mm.core.usernotfullysetup');
+    });
+
+    // Listen for sitepolicynotagreed event to accept the site policy.
+    $mmEvents.on(mmCoreEventSitePolicyNotAgreed, function(siteId) {
+        siteId = siteId || $mmSite.getId();
+        if (!siteId || siteId != $mmSite.getId()) {
+            // Only current site allowed.
+            return;
+        }
+
+        if (!$mmSite.wsAvailable('core_user_agree_site_policy')) {
+            // WS not available, stop.
+            return;
+        }
+
+        $ionicHistory.nextViewOptions({disableBack: true});
+        $state.go('mm_login.sitepolicy', {
+            siteid: siteId
+        });
     });
 
     // Register observer to check if the app was launched via URL scheme.
@@ -185,9 +214,11 @@ angular.module('mm.core.login', [])
             return;
         }
 
+        var isLoginStateWithSession = toState.name === 'mm_login.reconnect' || toState.name === 'mm_login.sitepolicy';
+
         if (toState.name.substr(0, 8) === 'redirect' || toState.name.substr(0, 15) === 'mm_contentlinks') {
             return;
-        } else if ((toState.name.substr(0, 8) !== 'mm_login' || toState.name === 'mm_login.reconnect') && !$mmSite.isLoggedIn()) {
+        } else if ((toState.name.substr(0, 8) !== 'mm_login' || isLoginStateWithSession) && !$mmSite.isLoggedIn()) {
             // We are not logged in.
             event.preventDefault();
             $log.debug('Redirect to login page, request was: ' + toState.name);
@@ -197,7 +228,7 @@ angular.module('mm.core.login', [])
                 disableBack: true
             });
             $state.transitionTo('mm_login.init');
-        } else if (toState.name.substr(0, 8) === 'mm_login' && toState.name !== 'mm_login.reconnect' && $mmSite.isLoggedIn()) {
+        } else if (toState.name.substr(0, 8) === 'mm_login' && !isLoginStateWithSession && $mmSite.isLoggedIn()) {
             // We are logged in and requested the login page.
             event.preventDefault();
             $log.debug('Redirect to course page, request was: ' + toState.name);
