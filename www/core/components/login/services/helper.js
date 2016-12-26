@@ -72,7 +72,8 @@ angular.module('mm.core.login')
      */
     self.confirmAndOpenBrowserForSSOLogin = function(siteurl, typeOfLogin, service, launchUrl) {
         // Show confirm only if it's needed. Treat "false" (string) as false to prevent typing errors.
-        var skipConfirmation = mmCoreConfigConstants.skipssoconfirmation && mmCoreConfigConstants.skipssoconfirmation !== 'false',
+        var skipConfirmation = self.isSSOEmbeddedBrowser(typeOfLogin) ||
+                    (mmCoreConfigConstants.skipssoconfirmation && mmCoreConfigConstants.skipssoconfirmation !== 'false'),
             promise = skipConfirmation ? $q.when() : $mmUtil.showConfirm($translate('mm.login.logininsiterequired'));
 
         promise.then(function() {
