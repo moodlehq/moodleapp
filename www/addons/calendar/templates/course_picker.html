@@ -1,0 +1,9 @@
+<ion-popover-view class="mma-calendar-course-picker">
+    <ion-content>
+        <div class="list">
+            <ion-radio class="item-text-wrap" ng-repeat="course in courses" ng-model="filter.courseid" ng-value="course.id" ng-change="coursePicked()">
+                <mm-format-text>{{ course.fullname }}</mm-format-text>
+            </ion-radio>
+        </div>
+    </ion-content>
+</ion-popover-view>
