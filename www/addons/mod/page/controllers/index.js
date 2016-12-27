@@ -60,16 +60,7 @@ angular.module('mm.addons.mod_page')
         }).finally(function() {
             $scope.loaded = true;
             $scope.refreshIcon = 'ion-refresh';
-            fillContextMenu(module, courseId);
-        });
-    }
-
-    // Function to fill Context Menu
-    function fillContextMenu(module, courseId, invalidateCache) {
-        $mmCourseHelper.getModulePrefetchInfo(module, courseId, invalidateCache).then(function(moduleInfo) {
-            $scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
-            $scope.prefetchStatusIcon = moduleInfo.statusIcon;
-            $scope.timemodified = moduleInfo.timemodified > 0 ? $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable : "";
+            $mmCourseHelper.fillContextMenu($scope, module, courseId);
         });
     }
 
@@ -79,30 +70,7 @@ angular.module('mm.addons.mod_page')
 
     // Context Menu Prefetch action.
     $scope.prefetch = function() {
-        var icon = $scope.prefetchStatusIcon;
-
-        $scope.prefetchStatusIcon = 'spinner'; // Show spinner since this operation might take a while.
-
-        // We need to call getDownloadSize, the package might have been updated.
-        $mmCoursePrefetchDelegate.getModuleDownloadSize(module, courseId).then(function(size) {
-            $mmUtil.confirmDownloadSize(size).then(function() {
-                $mmCoursePrefetchDelegate.prefetchModule(module, courseId).catch(function() {
-                    if (!$scope.$$destroyed) {
-                        $mmUtil.showErrorModal('mm.core.errordownloading', true);
-                    }
-                });
-            }).catch(function() {
-                // User hasn't confirmed, stop spinner.
-                $scope.prefetchStatusIcon = icon;
-            });
-        }).catch(function(error) {
-            $scope.prefetchStatusIcon = icon;
-            if (error) {
-                $mmUtil.showErrorModal(error);
-            } else {
-                $mmUtil.showErrorModal('mm.core.errordownloading', true);
-            }
-        });
+        $mmCourseHelper.contextMenuPrefetch($scope, module, courseId);
     };
 
     // Context Menu Description action.
