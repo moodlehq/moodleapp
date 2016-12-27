@@ -42,7 +42,8 @@ angular.module('mm.core.user')
      *                             - getController(userid) (Function) Returns the function that will act as controller.
      *                                                                See core/components/user/templates/profile.html
      *                                                                for the list of scope variables expected.
-     *                             - getType (String)  A type should be specified among these:
+     *                           Also the object require the following attributes:
+     *                             - type (String)  A type should be specified among these:
      *                                                 - mmUserProfileHandlersTypeCommunication: will be displayed under the user
      *                                                         avatar. Should have icon. Spinner not used.
      *                                                 - mmUserProfileHandlersTypeNewPage: will be displayed as a list of items.
@@ -109,8 +110,7 @@ angular.module('mm.core.user')
                                 handlers.push({
                                     controller: handler.instance.getController(user, courseId),
                                     priority: handler.priority,
-                                    type: (handler.instance.getType && handler.instance.getType()) ||
-                                        mmUserProfileHandlersTypeNewPage
+                                    type: handler.instance.type || mmUserProfileHandlersTypeNewPage
                                 });
                             } else {
                                 return $q.reject();

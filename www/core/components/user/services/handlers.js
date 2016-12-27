@@ -99,7 +99,9 @@ angular.module('mm.core.user')
      */
     self.userEmail = function() {
 
-        var self = {};
+        var self = {
+            type: mmUserProfileHandlersTypeCommunication
+        };
 
         /**
          * Check if handler is enabled.
@@ -150,15 +152,6 @@ angular.module('mm.core.user')
                 };
             };
 
-        };
-
-        /**
-         * Get the type.
-         *
-         * @return {String}    Type of handler.
-         */
-        self.getType = function() {
-            return mmUserProfileHandlersTypeCommunication;
         };
 
         return self;

@@ -13,6 +13,7 @@
     "errorwhileretrievingmessages": "Error while retrieving the messages from the server.",
     "messagenotsent": "The message was not sent, please try again later.",
     "messagepreferences": "Message preferences",
+    "message": "Message",
     "messages": "Messages",
     "mustbeonlinetosendmessages": "You must be online to send messages",
     "newmessage": "New message...",
