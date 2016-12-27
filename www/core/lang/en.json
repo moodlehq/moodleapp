@@ -65,6 +65,7 @@
     "errorrenamefile": "Error renaming the file. Please try again.",
     "errorsync": "An error occurred while synchronizing. Please try again.",
     "errorsyncblocked": "This {{$a}} cannot be synchronized right now because of an ongoing process. Please try again later. If the problem persists, try restarting the app.",
+    "fieldvalueseparator": ":",
     "filename": "Filename",
     "filenameexist": "File name already exists: {{$a}}",
     "folder": "Folder",

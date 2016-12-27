@@ -1,4 +1,5 @@
 {
+    "about": "About",
     "address": "Address",
     "city": "City/town",
     "contact": "Contact",
@@ -17,7 +18,8 @@
     "newpicture": "New picture",
     "phone1": "Phone",
     "phone2": "Mobile",
-    "roles": "Roles",
+    "rolesoncourse": "Roles on course",
+    "sendemail": "Email",
     "student": "Student",
     "teacher": "Non-editing teacher",
     "viewprofile": "View profile",
