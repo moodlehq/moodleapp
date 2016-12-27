@@ -32,6 +32,16 @@ angular.module('mm.core')
  *
  * <textarea placeholder="New message" ng-model="newMessage" mm-keep-keyboard="#mma-messages-send-message-button"></textarea>
  * <button id="mma-messages-send-message-button">Send</button>
+ *
+ * Alternatively, this directive can be applied to the button. The value of the directive needs to be a selector to identify
+ * the input element. In this case, you need to set keep-in-button="true".
+ *
+ * Example usage:
+ *
+ * <textarea id="send-message-input" placeholder="New message" ng-model="newMessage"></textarea>
+ * <button mm-keep-keyboard="#send-message-input" keep-in-button="true">Send</button>
+ *
+ * @param {Boolean} [keepInButton] True if the directive is applied to the button, false if applied to the input.
  */
 .directive('mmKeepKeyboard', function($mmUtil, $timeout) {
 
@@ -39,22 +49,35 @@ angular.module('mm.core')
         restrict: 'A',
         link: function(scope, element, attrs) {
             var selector = attrs.mmKeepKeyboard,
-                el = element[0],
-                lastFocusOut = 0;
+                keepInButton = attrs.keepInButton && attrs.keepInButton !== 'false',
+                lastFocusOut = 0,
+                selectedEl,
+                button,
+                input;
 
             if (typeof selector != 'string' || !selector) {
                 // Not a valid selector, stop.
                 return;
             }
 
-            var button = document.querySelector(selector);
-            if (!button) {
-                // Button not found.
+            selectedEl = document.querySelector(selector);
+            if (!selectedEl) {
+                // Element not found.
                 return;
             }
 
+            if (keepInButton) {
+                // The directive is applied to the button.
+                button = element[0];
+                input = selectedEl;
+            } else {
+                // The directive is applied to the input.
+                button = selectedEl;
+                input = element[0];
+            }
+
             // Listen for focusout event. This is to be able to check if previous focus was on this element.
-            el.addEventListener('focusout', focusOut);
+            input.addEventListener('focusout', focusOut);
 
             // Listen for clicks in the button.
             button.addEventListener('click', buttonClicked);
@@ -62,7 +85,7 @@ angular.module('mm.core')
             scope.$on('$destroy', function() {
                 // Stop listening.
                 button.removeEventListener('click', buttonClicked);
-                el.removeEventListener('focusout', focusOut);
+                input.removeEventListener('focusout', focusOut);
             });
 
             // Input was focused out, save the time it was done.
@@ -72,10 +95,10 @@ angular.module('mm.core')
 
             // Function called when button is clicked. Focus the input element again if needed.
             function buttonClicked() {
-                if (document.activeElement == el) {
+                if (document.activeElement == input) {
                     // Directive's element is focused at the time the button is clicked. Listen for focusout to focus it again.
                     // Focus it after a $timeout just in case the focusout event isn't triggered.
-                    el.addEventListener('focusout', focusElementAgain);
+                    input.addEventListener('focusout', focusElementAgain);
                     $timeout(focusElementAgain);
                 } else if (document.activeElement == button && Date.now() - lastFocusOut < 200) {
                     // Last focused element was the directive's element, focus it again.
@@ -85,8 +108,8 @@ angular.module('mm.core')
 
             // Focus an element again and stop listening focusout to focus again if needed.
             function focusElementAgain() {
-                $mmUtil.focusElement(el);
-                el.removeEventListener('focusout', focusElementAgain);
+                $mmUtil.focusElement(input);
+                input.removeEventListener('focusout', focusElementAgain);
             }
         }
     };
