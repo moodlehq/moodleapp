@@ -353,48 +353,46 @@ angular.module('mm.addons.messages')
         }
     }
 
-    // Scroll when keyboard is hide/shown to keep the user scroll. This is only needed for Android.
+    // Scroll when keyboard is hide/shown to keep the user scroll.
     function setScrollWithKeyboard() {
-        if (ionic.Platform.isAndroid()) {
-            $timeout(function() { // Use a $timeout to wait for scroll to correctly measure height.
-                var obsShow,
-                    obsHide,
-                    keyboardHeight,
-                    maxInitialScroll = scrollView.getScrollView().__contentHeight - scrollView.getScrollView().__clientHeight,
-                    initialHeight = $window.innerHeight;
+        $timeout(function() { // Use a $timeout to wait for scroll to correctly measure height.
+            var obsShow,
+                obsHide,
+                keyboardHeight,
+                maxInitialScroll = scrollView.getScrollView().__contentHeight - scrollView.getScrollView().__clientHeight,
+                initialHeight = $window.innerHeight;
 
-                obsShow = $mmEvents.on(mmCoreEventKeyboardShow, function(e) {
-                    $timeout(function() {
-                        // Try to calculate keyboard height ourselves since e.keyboardHeight is not reliable.
-                        var heightDifference = initialHeight - $window.innerHeight,
-                            newKeyboardHeight = heightDifference > 50 ? heightDifference : e.keyboardHeight;
-                        if (newKeyboardHeight) {
-                            keyboardHeight = newKeyboardHeight;
-                            scrollView.scrollBy(0, newKeyboardHeight);
-                        }
-                    });
-                });
-
-                obsHide = $mmEvents.on(mmCoreEventKeyboardHide, function(e) {
-                    if (!scrollView || !scrollView.getScrollPosition()) {
-                        return; // Can't get scroll position, stop.
+            obsShow = $mmEvents.on(mmCoreEventKeyboardShow, function(e) {
+                $timeout(function() {
+                    // Try to calculate keyboard height ourselves since e.keyboardHeight is not reliable.
+                    var heightDifference = initialHeight - $window.innerHeight,
+                        newKeyboardHeight = heightDifference > 50 ? heightDifference : e.keyboardHeight;
+                    if (newKeyboardHeight) {
+                        keyboardHeight = newKeyboardHeight;
+                        scrollView.scrollBy(0, newKeyboardHeight);
                     }
-
-                    if (scrollView.getScrollPosition().top >= maxInitialScroll) {
-                        // scrollBy(0,0) would automatically reset at maxInitialScroll. We need to apply the difference
-                        // from there to scroll to the right point.
-                        scrollView.scrollBy(0, scrollView.getScrollPosition().top - keyboardHeight - maxInitialScroll);
-                    } else {
-                        scrollView.scrollBy(0, - keyboardHeight);
-                    }
-                });
-
-                $scope.$on('$destroy', function() {
-                    obsShow && obsShow.off && obsShow.off();
-                    obsHide && obsHide.off && obsHide.off();
                 });
             });
-        }
+
+            obsHide = $mmEvents.on(mmCoreEventKeyboardHide, function(e) {
+                if (!scrollView || !scrollView.getScrollPosition()) {
+                    return; // Can't get scroll position, stop.
+                }
+
+                if (scrollView.getScrollPosition().top >= maxInitialScroll) {
+                    // scrollBy(0,0) would automatically reset at maxInitialScroll. We need to apply the difference
+                    // from there to scroll to the right point.
+                    scrollView.scrollBy(0, scrollView.getScrollPosition().top - keyboardHeight - maxInitialScroll);
+                } else {
+                    scrollView.scrollBy(0, - keyboardHeight);
+                }
+            });
+
+            $scope.$on('$destroy', function() {
+                obsShow && obsShow.off && obsShow.off();
+                obsHide && obsHide.off && obsHide.off();
+            });
+        });
     }
 
     // Function to delete a message.
