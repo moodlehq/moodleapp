@@ -71,7 +71,7 @@ angular.module('mm.addons.frontpage')
             return function($scope) {
                 $scope.icon = 'ion-home';
                 $scope.title = 'mma.frontpage.sitehome';
-                $scope.state = 'site.mm_course-section';
+                $scope.state = 'site.frontpage';
                 $scope.class = 'mma-frontpage-handler';
             };
         };
@@ -116,7 +116,7 @@ angular.module('mm.addons.frontpage')
                                 // Use redirect to make the course the new history root (to avoid "loops" in history).
                                 $state.go('redirect', {
                                     siteid: siteId,
-                                    state: 'site.mm_course-section'
+                                    state: 'site.frontpage'
                                 });
                             }
                         }];

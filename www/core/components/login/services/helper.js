@@ -193,7 +193,7 @@ angular.module('mm.core.login')
             var $mmaFrontpage = $mmAddonManager.get('$mmaFrontpage');
             if ($mmaFrontpage) {
                 return $mmaFrontpage.isFrontpageAvailable().then(function() {
-                    return $state.go('site.mm_course-section');
+                    return $state.go('site.frontpage');
                 }).catch(function() {
                     return $state.go('site.mm_courses');
                 });
