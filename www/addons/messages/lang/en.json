@@ -11,6 +11,7 @@
     "errorwhileretrievingcontacts": "Error while retrieving the contacts from the server.",
     "errorwhileretrievingdiscussions": "Error while retrieving the discussions from the server.",
     "errorwhileretrievingmessages": "Error while retrieving the messages from the server.",
+    "loadpreviousmessages": "Load previous messages",
     "messagenotsent": "The message was not sent, please try again later.",
     "messagepreferences": "Message preferences",
     "messages": "Messages",
