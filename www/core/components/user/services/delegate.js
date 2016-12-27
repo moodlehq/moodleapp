@@ -109,7 +109,8 @@ angular.module('mm.core.user')
                                 handlers.push({
                                     controller: handler.instance.getController(user, courseId),
                                     priority: handler.priority,
-                                    type: handler.instance.getType && handler.instance.getType() || mmUserProfileHandlersTypeNewPage
+                                    type: (handler.instance.getType && handler.instance.getType()) ||
+                                        mmUserProfileHandlersTypeNewPage
                                 });
                             } else {
                                 return $q.reject();
