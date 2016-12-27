@@ -24,7 +24,7 @@ angular.module('mm.addons.messages')
  * @name $mmaMessagesHandlers
  */
 .factory('$mmaMessagesHandlers', function($log, $mmaMessages, $mmSite, $state, $mmUtil, $mmContentLinksHelper, $mmaMessagesSync,
-            $mmSitesManager, mmUserProfileHandlersTypeCommunication, mmUserProfileHandlersTypeAction) {
+            $mmSitesManager, mmUserProfileHandlersTypeCommunication, mmUserProfileHandlersTypeAction, $translate) {
     $log = $log.getInstance('$mmaMessagesHandlers');
 
     var self = {};
@@ -98,7 +98,13 @@ angular.module('mm.addons.messages')
                     $scope.spinner = true;
                     $mmaMessages.isContact(user.id).then(function(isContact) {
                         if (isContact) {
-                            return $mmaMessages.removeContact(user.id);
+                            var template = $translate.instant('mma.messages.removecontactconfirm'),
+                                title = $translate.instant('mma.messages.removecontact');
+                            return $mmUtil.showConfirm(template, title, {okText: title}).then(function() {
+                                return $mmaMessages.removeContact(user.id);
+                            }).catch(function() {
+                                // Ignore on cancel.
+                            });
                         } else {
                             return $mmaMessages.addContact(user.id);
                         }
@@ -197,7 +203,13 @@ angular.module('mm.addons.messages')
                         if (isBlocked) {
                             return $mmaMessages.unblockContact(user.id);
                         } else {
-                            return $mmaMessages.blockContact(user.id);
+                            var template = $translate.instant('mma.messages.blockcontactconfirm'),
+                                title = $translate.instant('mma.messages.blockcontact');
+                            return $mmUtil.showConfirm(template, title, {okText: title}).then(function() {
+                                return $mmaMessages.blockContact(user.id);
+                            }).catch(function() {
+                                // Ignore on cancel.
+                            });
                         }
                     }).catch(function(error) {
                         $mmUtil.showErrorModal(error);
