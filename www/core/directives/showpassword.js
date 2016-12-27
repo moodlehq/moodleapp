@@ -16,6 +16,7 @@ angular.module('mm.core')
 
 /**
  * Directive to allow showing and hiding a password.
+ * The input MUST have an id or name to identify it.
  *
  * @module mm.core
  * @ngdoc directive
@@ -23,20 +24,32 @@ angular.module('mm.core')
  * @description
  * This directive needs to be applied to the input with the password. Example:
  *
- * <input type="password" placeholder="Password" mm-show-password initial-shown="true">
+ * <input id="user-password-input" type="password" placeholder="Password" mm-show-password initial-shown="true">
  *
  * @param {Boolean} [initialShown] Whether the password should be shown initially. Defaults to false.
  */
 .directive('mmShowPassword', function($compile) {
 
-    var buttonHtml = '<button class="button button-clear button-positive icon" aria-label="{{ label | translate }}" ' +
-                        'ng-class="{\'ion-eye\': !shown, \'ion-eye-disabled\': shown}" ng-click="toggle()"></button>';
+    var buttonHtml = '<a class="button button-clear button-positive icon" aria-label="{{ label | translate }}" ' +
+                        'ng-class="{\'ion-eye\': !shown, \'ion-eye-disabled\': shown}" ng-click="toggle()" ' +
+                        'mm-keep-keyboard="{{selector}}" keep-in-button="true"></a>';
 
     return {
         restrict: 'A',
         scope: true,
         link: function(scope, element, attrs) {
-            var button = $compile(angular.element(buttonHtml))(scope);
+            var button;
+
+            // Create a selector to identify the current element.
+            if (element[0].id) {
+                scope.selector = '#' + element[0].id;
+            } else if (element[0].name) {
+                scope.selector = element[0].tagName.toLowerCase() + '[name="' + elm[0].name + '"]';
+            } else {
+                scope.selector = '';
+            }
+
+            button = $compile(angular.element(buttonHtml))(scope);
 
             // Wrap the element in a div and add the button.
             element.wrap('<div class="item-input-inset mm-show-password-container">');
