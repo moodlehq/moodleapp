@@ -1182,7 +1182,6 @@ i, cite, em, var, address, dfn {
 }
 
 /** Format Text */
-
 mm-format-text, *[mm-format-text] {
   audio, video, a, iframe {
     pointer-events: auto;
@@ -1198,10 +1197,18 @@ mm-format-text, *[mm-format-text] {
   ol {
     list-style: decimal;
   }
+}
 
+mm-format-text[max-height], *[mm-format-text][max-height] {
   display: block;
   position: relative;
   width: 100%;
+
+  /* Force display inline */
+  &.inline {
+    display: inline-block;
+    width: auto;
+  }
 
   // This is to allow clicks in radio/checkbox content.
   &.mm-text-formatted {
