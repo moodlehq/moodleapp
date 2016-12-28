@@ -766,6 +766,19 @@ mm-timer {
   padding-right: 0;
 }
 
+.item.mm-not-clickable {
+  cursor: default;
+
+  &[ng-click]:hover {
+    cursor: default;
+  }
+
+  &.activated {
+    border-color: $item-default-border;
+    background-color: $item-default-bg;
+  }
+}
+
 .item.mm-tab-handlers,
 .mm-tab-handlers {
   padding: 6px 2px;
