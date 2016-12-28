@@ -2,3 +2,7 @@
 .item.item-button-right .badge.mm-course-download{
   right: $spinner-width + $item-padding;
 }
+
+.mm-course-module-handler mm-format-text + mm-format-text {
+    margin-top: 16px;
+}
