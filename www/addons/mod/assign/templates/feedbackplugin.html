@@ -5,7 +5,7 @@
         <div class="item item-text-wrap" ng-if="text.length > 0 || files.length > 0">
             <h2>{{plugin.name}}</h2>
             <p ng-if="notsupported" class="badge badge-inline badge-positive">{{ 'mma.mod_assign.feedbacknotsupported' | translate }}</p>
-            <p><mm-format-text ng-if="text" expand-title="{{plugin.name}}" shorten fullview-on-click="true" newlines-on-fullview="true" watch="true" component="{{assignComponent}}" component-id="{{assign.cmid}}">
+            <p><mm-format-text ng-if="text" expand-title="{{plugin.name}}" max-height="80" fullview-on-click="true" newlines-on-fullview="true" watch="true" component="{{assignComponent}}" component-id="{{assign.cmid}}">
                 {{text}}
             </mm-format-text></p>
             <mm-file ng-repeat="file in files" file="file" component="{{assignComponent}}" component-id="{{assign.cmid}}" always-download="true" no-border="true"></mm-file>

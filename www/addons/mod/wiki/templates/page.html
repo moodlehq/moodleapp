@@ -18,7 +18,7 @@
         </div>
 
         <article ng-class="{'mma-mod_wiki-noedit': !canEdit}">
-            <mm-format-text class="mm-content-with-float" watch="true" component="{{component}}" component-id="{{componentId}}" ng-if="pageContent">{{ pageContent }}</mm-format-text>
+            <mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}" ng-if="pageContent">{{ pageContent }}</mm-format-text>
             <p ng-if="!pageContent">{{ 'mma.mod_wiki.nocontent' | translate }}</p>
         </article>
     </mm-loading>

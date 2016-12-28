@@ -440,25 +440,6 @@ button.item.item-button-right {
   right: 0;
 }
 
-// mm-format-text can have elements with float. These styles makes sure height is calculated right.
-.mm-content-with-float {
-  display: inline-block;
-  width: 100%;
-}
-
-// Fix lists styles in mm-format-text.
-mm-format-text, *[mm-format-text] {
-  ul, ol {
-    -webkit-padding-start: 40px;
-  }
-  ul {
-    list-style: disc;
-  }
-  ol {
-    list-style: decimal;
-  }
-}
-
 .mm-loading-container {
     width: 100%;
     text-align: center;
@@ -752,13 +733,6 @@ mm-timer {
 .mm-button-with-inner-link, .button.mm-button-with-inner-link {
   &:after {
     display: none;
-  }
-}
-
-// This is to allow clicks in radio/checkbox content.
-mm-format-text {
-  audio, video, a, iframe {
-    pointer-events: auto;
   }
 }
 
@@ -1207,20 +1181,78 @@ i, cite, em, var, address, dfn {
   }
 }
 
-.mm-shortened {
-  color: #777;
+/** Format Text */
 
-  .mm-show-more {
-    color: $dark;
-    text-align: right;
-    padding-top: 5px;
-    font-size: 14px;
+mm-format-text, *[mm-format-text] {
+  audio, video, a, iframe {
+    pointer-events: auto;
+  }
 
-    &:after {
-      @extend .ion;
-      content: $ionicon-var-chevron-down;
-      margin-left: 10px;
-      color: $item-icon-accessory-color;
+  // Fix lists styles in mm-format-text.
+  ul, ol {
+    -webkit-padding-start: 40px;
+  }
+  ul {
+    list-style: disc;
+  }
+  ol {
+    list-style: decimal;
+  }
+
+  display: block;
+  position: relative;
+  width: 100%;
+
+  // This is to allow clicks in radio/checkbox content.
+  &.mm-text-formatted {
+    cursor: pointer;
+
+    .mm-show-more {
+      display: none;
+    }
+
+    &:not(.mm-shortened) {
+      max-height: none !important;
+    }
+
+    &.mm-shortened {
+      color: #777;
+      overflow: hidden;
+      min-height: 50px;
+
+      .mm-show-more {
+        color: $dark;
+        text-align: right;
+        font-size: 14px;
+        display: block;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        z-index: 1001;
+
+        &:after {
+          @extend .ion;
+          content: $ionicon-var-chevron-down;
+          margin-left: 10px;
+          color: $item-icon-accessory-color;
+        }
+      }
+
+      &:before {
+        content: '';
+        height: 100%;
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: -moz-linear-gradient(top, transparent calc(100% - 50px), white calc(100% - 15px));
+        background: -webkit-gradient(left top, left bottom, color-stop(calc(100% - 50px), transparent), color-stop(calc(100% - 15px), white));
+        background: -webkit-linear-gradient(top, transparent calc(100% - 50px), white calc(100% - 15px));
+        background: -o-linear-gradient(top, transparent calc(100% - 50px), white calc(100% - 15px));
+        background: -ms-linear-gradient(top, transparent calc(100% - 50px), white calc(100% - 15px));
+        background: linear-gradient(to bottom, transparent calc(100% - 50px), white calc(100% - 15px));
+        z-index: 1000;
+      }
     }
   }
 }
