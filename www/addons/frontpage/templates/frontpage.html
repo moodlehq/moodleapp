@@ -10,21 +10,7 @@
                     <mm-format-text>{{ section.summary }}</mm-format-text>
                 </div>
 
-                <a class="item item-text-wrap mm-course-module-handler clearfix {{class}}" ng-repeat="module in section.modules" ng-click="action($event)" ng-class="{'item-media': icon}" ng-controller="module._controller" title="{{ module.name }}">
-
-                    <img ng-src="{{ icon }}" alt="" role="presentation" ng-if="icon">
-
-                    <div class="buttons mm-module-buttons" ng-if="(buttons && buttons.length > 0) || spinner">
-
-                        <button ng-repeat="button in buttons" ng-hide="button.hidden" ng-click="button.action($event)" class="button button-icon" aria-label="{{ button.label | translate }}">
-                            <i class="icon positive" ng-class="{'{{button.icon}}': button.icon}"></i>
-                        </button>
-
-                        <ion-spinner ng-if="spinner"></ion-spinner>
-                    </div>
-
-                    <mm-format-text watch="true">{{ title }}</mm-format-text>
-                </a>
+                <mm-course-module class="item item-complex" ng-repeat="module in section.modules" module="module"></mm-course-module>
             </section>
 
             <mma-frontpage-item ng-repeat="item in items" name="{{item}}"></mma-frontpage-item>
@@ -34,21 +20,7 @@
                     <mm-format-text>{{ block.summary }}</mm-format-text>
                 </div>
 
-                <a class="item item-text-wrap mm-course-module-handler clearfix {{class}}" ng-repeat="module in block.modules" ng-click="action($event)" ng-class="{'item-media': icon}" ng-controller="module._controller" title="{{ module.name }}">
-
-                    <img ng-src="{{ icon }}" alt="" role="presentation" ng-if="icon">
-
-                    <div class="buttons mm-module-buttons" ng-if="(buttons && buttons.length > 0) || spinner">
-
-                        <button ng-repeat="button in buttons" ng-hide="button.hidden" ng-click="button.action($event)" class="button button-icon" aria-label="{{ button.label | translate }}">
-                            <i class="icon positive" ng-class="{'{{button.icon}}': button.icon}"></i>
-                        </button>
-
-                        <ion-spinner ng-if="spinner"></ion-spinner>
-                    </div>
-
-                    <mm-format-text watch="true">{{ title }}</mm-format-text>
-                </a>
+                <mm-course-module class="item item-complex" ng-repeat="module in block.modules" module="module"></mm-course-module>
             </section>
 
             <p class="padding" ng-if="!hasContent">{{ 'mm.course.nocontentavailable' | translate }}</p>
