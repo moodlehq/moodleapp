@@ -1,7 +1,7 @@
 <ion-view view-title="{{ 'mma.calendar.calendarevents' | translate }}">
     <ion-nav-buttons side="secondary">
+        <button class="button button-icon ion-funnel" ng-show="courses && courses.length" ng-click="pickCourse($event)" aria-label="{{ 'mm.courses.filter' | translate }}"></button>
         <mm-context-menu>
-            <button class="button button-icon ion-funnel" ng-show="courses && courses.length" ng-click="pickCourse($event)" aria-label="{{ 'mm.courses.filter' | translate }}"></button>
             <mm-context-menu-item priority="600" ng-show="notificationsEnabled" ui-sref="site.calendar-settings" content="'mm.settings.settings' | translate" action="openSettings()" icon-action="'ion-gear-b'"></mm-context-menu-item>
         </mm-context-menu>
     </ion-nav-buttons>
