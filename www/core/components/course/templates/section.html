@@ -7,7 +7,7 @@
 
             <section class="card" ng-if="summary">
                 <!-- Only displayed when 1 section per page. -->
-                <div class="item item-text-wrap">
+                <div class="item item-text-wrap clearfix">
                     <article><mm-format-text>{{ summary }}</mm-format-text></article>
                 </div>
             </section>
@@ -18,7 +18,7 @@
                     <h2><mm-format-text watch="true">{{ section.name }}</mm-format-text></h2>
                 </div>
 
-                <div class="item item-text-wrap" ng-if="allSections && section.summary">
+                <div class="item item-text-wrap clearfix" ng-if="allSections && section.summary">
                     <mm-format-text>{{ section.summary }}</mm-format-text>
                 </div>
 

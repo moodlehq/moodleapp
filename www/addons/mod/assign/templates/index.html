@@ -12,8 +12,8 @@
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="assignmentLoaded" on-refresh="refreshAssignment(false)"></ion-refresher>
         <mm-loading hide-until="assignmentLoaded">
             <div class="card" ng-if="description" ng-click="expandDescription()">
-                <div class="item item-text-wrap item-body">
-                    <mm-format-text max-height="80" clean="true" component="{{assignComponent}}" component-id="{{assign.cmid}}">{{ description }}</mm-format-text>
+                <div class="item item-text-wrap">
+                    <mm-format-text max-height="120" clean="true" component="{{assignComponent}}" component-id="{{assign.cmid}}">{{ description }}</mm-format-text>
                 </div>
             </div>
             <div class="list card" ng-if="assign.introattachments && assign.introattachments.length">
