@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_page')
  * @name mmaModPageIndexCtrl
  */
 .controller('mmaModPageIndexCtrl', function($scope, $stateParams, $translate, $mmUtil, $mmaModPage, $mmCourse, $q, $log, $mmApp,
-            mmaModPageComponent, $mmText, $mmaModPagePrefetchHandler, $mmCourseHelper, $mmCoursePrefetchDelegate) {
+            mmaModPageComponent, $mmText, $mmaModPagePrefetchHandler, $mmCourseHelper) {
     $log = $log.getInstance('mmaModPageIndexCtrl');
 
     var module = $stateParams.module || {},
@@ -64,6 +64,7 @@ angular.module('mm.addons.mod_page')
         });
     }
 
+    // Confirm and Remove action.
     $scope.removeFiles = function() {
         $mmCourseHelper.confirmAndRemove(module, courseId);
     };

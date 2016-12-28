@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_folder')
  * @name mmaModFolderIndexCtrl
  */
 .controller('mmaModFolderIndexCtrl', function($scope, $stateParams, $mmaModFolder, $mmCourse, $mmUtil, $q, $mmText, $translate,
-            mmaModFolderComponent, $mmCourseHelper, $mmCoursePrefetchDelegate) {
+            mmaModFolderComponent, $mmCourseHelper) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         sectionId = $stateParams.sectionid,
@@ -83,6 +83,7 @@ angular.module('mm.addons.mod_folder')
         });
     }
 
+    // Confirm and Remove action.
     $scope.removeFiles = function() {
         $mmCourseHelper.confirmAndRemove(module, courseId);
     };

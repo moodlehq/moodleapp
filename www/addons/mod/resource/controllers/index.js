@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_resource')
  * @ngdoc controller
  * @name mmaModResourceIndexCtrl
  */
-.controller('mmaModResourceIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModResource, $log, $mmApp, $mmCourse, $timeout,
+.controller('mmaModResourceIndexCtrl', function($scope, $stateParams, $mmUtil, $mmCourseHelper, $mmaModResource, $log, $mmApp, $mmCourse, $timeout,
         $mmText, $translate, mmaModResourceComponent, $mmaModResourcePrefetchHandler) {
     $log = $log.getInstance('mmaModResourceIndexCtrl');
 
@@ -44,6 +44,8 @@ angular.module('mm.addons.mod_resource')
                 $mmUtil.showErrorModal('mma.mod_resource.errorwhileloadingthecontent', true);
                 return $q.reject();
             }
+
+            $mmCourseHelper.fillContextMenu($scope, module, courseId);
 
             if ($mmaModResource.isDisplayedInIframe(module)) {
                 $scope.mode = 'iframe';
@@ -102,6 +104,16 @@ angular.module('mm.addons.mod_resource')
             }
         });
     }
+
+    // Confirm and Remove action.
+    $scope.removeFiles = function() {
+        $mmCourseHelper.confirmAndRemove(module, courseId);
+    };
+
+    // Context Menu Prefetch action.
+    $scope.prefetch = function() {
+        $mmCourseHelper.contextMenuPrefetch($scope, module, courseId);
+    };
 
     // Context Menu Description action.
     $scope.expandDescription = function() {

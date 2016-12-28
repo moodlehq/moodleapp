@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_survey')
  * @ngdoc controller
  * @name mmaModSurveyIndexCtrl
  */
-.controller('mmaModSurveyIndexCtrl', function($scope, $stateParams, $mmaModSurvey, $mmUtil, $q, $mmCourse, $translate, $mmText,
+.controller('mmaModSurveyIndexCtrl', function($scope, $stateParams, $mmaModSurvey, $mmUtil, $mmCourseHelper, $q, $mmCourse, $translate, $mmText,
             $ionicPlatform, $ionicScrollDelegate, $mmaModSurveyOffline, mmaModSurveyComponent, $mmaModSurveySync, $mmSite,
             $mmEvents, mmaModSurveyAutomSyncedEvent, $mmApp, $mmEvents, mmCoreEventOnlineStatusChanged) {
     var module = $stateParams.module || {},
@@ -52,7 +52,8 @@ angular.module('mm.addons.mod_survey')
             $scope.title = survey.name || $scope.title;
             $scope.description = survey.intro || $scope.description;
             $scope.survey = survey;
-
+            $mmCourseHelper.fillContextMenu($scope, module, courseid);
+            
             if (sync) {
                 // Try to synchronize the survey.
                 return syncSurvey(showErrors).then(function(answersSent) {
@@ -169,6 +170,16 @@ angular.module('mm.addons.mod_survey')
                 modal.dismiss();
             });
         });
+    };
+
+    // Confirm and Remove action.
+    $scope.removeFiles = function() {
+        $mmCourseHelper.confirmAndRemove(module, courseid);
+    };
+
+    // Context Menu Prefetch action.
+    $scope.prefetch = function() {
+        $mmCourseHelper.contextMenuPrefetch($scope, module, courseid);
     };
 
     // Context Menu Description action.

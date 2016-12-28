@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_imscp')
  * @ngdoc controller
  * @name mmaModImscpIndexCtrl
  */
-.controller('mmaModImscpIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModImscp, $log, mmaModImscpComponent,
+.controller('mmaModImscpIndexCtrl', function($scope, $stateParams, $mmUtil, $mmCourseHelper, $mmaModImscp, $log, mmaModImscpComponent,
             $ionicPopover, $timeout, $q, $mmCourse, $mmApp, $mmText, $translate, $mmaModImscpPrefetchHandler) {
     $log = $log.getInstance('mmaModImscpIndexCtrl');
 
@@ -61,6 +61,7 @@ angular.module('mm.addons.mod_imscp')
         // Load module contents if needed.
         return $mmCourse.loadModuleContents(module, courseId).then(function() {
             $scope.items = $mmaModImscp.createItemList(module.contents);
+            $mmCourseHelper.fillContextMenu($scope, module, courseId);
             if ($scope.items.length && typeof currentItem == 'undefined') {
                 currentItem = $scope.items[0].href;
             }
@@ -127,6 +128,16 @@ angular.module('mm.addons.mod_imscp')
 
     $scope.getNumberForPadding = function(n) {
         return new Array(n);
+    };
+
+    // Confirm and Remove action.
+    $scope.removeFiles = function() {
+        $mmCourseHelper.confirmAndRemove(module, courseId);
+    };
+
+    // Context Menu Prefetch action.
+    $scope.prefetch = function() {
+        $mmCourseHelper.contextMenuPrefetch($scope, module, courseId);
     };
 
     // Context Menu Description action.

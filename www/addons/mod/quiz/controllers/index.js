@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_quiz')
  */
 .controller('mmaModQuizIndexCtrl', function($scope, $stateParams, $mmaModQuiz, $mmCourse, $ionicPlatform, $q, $translate,
             $mmaModQuizHelper, $ionicHistory, $ionicScrollDelegate, $mmEvents, mmaModQuizEventAttemptFinished, $state,
-            $mmQuestionBehaviourDelegate, $mmaModQuizSync, $mmText, $mmUtil, mmaModQuizEventAutomSynced, $mmSite,
+            $mmQuestionBehaviourDelegate, $mmaModQuizSync, $mmText, $mmUtil, $mmCourseHelper, mmaModQuizEventAutomSynced, $mmSite,
             $mmCoursePrefetchDelegate, mmCoreDownloaded, mmCoreDownloading, mmCoreEventPackageStatusChanged,
             mmaModQuizComponent, $mmaModQuizPrefetchHandler, $mmApp, mmCoreEventOnlineStatusChanged) {
     var module = $stateParams.module || {},
@@ -419,6 +419,7 @@ angular.module('mm.addons.mod_quiz')
         $scope.quizLoaded = true;
         $scope.refreshIcon = 'ion-refresh';
         $scope.syncIcon = 'ion-loop';
+        $mmCourseHelper.fillContextMenu($scope, module, courseId);
     });
 
     // Pull to refresh.
@@ -430,6 +431,7 @@ angular.module('mm.addons.mod_quiz')
                 $scope.refreshIcon = 'ion-refresh';
                 $scope.syncIcon = 'ion-loop';
                 $scope.$broadcast('scroll.refreshComplete');
+                $mmCourseHelper.fillContextMenu($scope, module, courseId);
             });
         }
     };
@@ -463,6 +465,16 @@ angular.module('mm.addons.mod_quiz')
         }
     };
 
+    // Confirm and Remove action.
+    $scope.removeFiles = function() {
+        $mmCourseHelper.confirmAndRemove(module, courseId);
+    };
+
+    // Context Menu Prefetch action.
+    $scope.prefetch = function() {
+        $mmCourseHelper.contextMenuPrefetch($scope, module, courseId);
+    };
+    
     // Context Menu Description action.
     $scope.expandDescription = function() {
         $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false, mmaModQuizComponent, module.id);

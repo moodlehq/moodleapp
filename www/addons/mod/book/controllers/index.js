@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_book')
  * @ngdoc controller
  * @name mmaModBookIndexCtrl
  */
-.controller('mmaModBookIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModBook, $log, mmaModBookComponent, $mmText,
+.controller('mmaModBookIndexCtrl', function($scope, $stateParams, $mmUtil, $mmCourseHelper, $mmaModBook, $log, mmaModBookComponent, $mmText,
             $ionicPopover, $mmApp, $q, $mmCourse, $ionicScrollDelegate, $translate, $mmaModBookPrefetchHandler) {
     $log = $log.getInstance('mmaModBookIndexCtrl');
 
@@ -69,12 +69,12 @@ angular.module('mm.addons.mod_book')
     // Convenience function to download book contents and load the current chapter.
     function fetchContent(chapterId) {
         var downloadFailed = false;
-
+        $mmCourseHelper.fillContextMenu($scope, module, courseId);
         // Load module contents if needed.
         return $mmCourse.loadModuleContents(module, courseId).then(function() {
             contentsMap = $mmaModBook.getContentsMap(module.contents);
             chapters = $mmaModBook.getTocList(module.contents);
-            $scope.toc = chapters;
+            $scope.toc = chapters;  
 
             if (typeof currentChapter == 'undefined') {
                 currentChapter = $mmaModBook.getFirstChapter(chapters);
@@ -136,6 +136,15 @@ angular.module('mm.addons.mod_book')
         };
     });
 
+    // Confirm and Remove action.
+    $scope.removeFiles = function() {
+        $mmCourseHelper.confirmAndRemove(module, courseId);
+    };
+
+    // Context Menu Prefetch action.
+    $scope.prefetch = function() {
+        $mmCourseHelper.contextMenuPrefetch($scope, module, courseId);
+    };
     // Context Menu Description action.
     $scope.expandDescription = function() {
         $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false, mmaModBookComponent, module.id);

@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_glossary')
  * @ngdoc controller
  * @name mmaModGlossaryIndexCtrl
  */
-.controller('mmaModGlossaryIndexCtrl', function($q, $scope, $stateParams, $ionicPopover, $mmUtil, $mmaModGlossary,
+.controller('mmaModGlossaryIndexCtrl', function($q, $scope, $stateParams, $ionicPopover, $mmUtil, $mmCourseHelper, $mmaModGlossary,
         $ionicScrollDelegate, $translate, $mmText, mmaModGlossaryComponent, mmaModGlossaryLimitEntriesNum) {
 
     var module = $stateParams.module || {},
@@ -100,6 +100,16 @@ angular.module('mm.addons.mod_glossary')
 
     $scope.trackBy = function(entry) {
         return fetchMode + ':' + entry.id;
+    };
+
+    // Confirm and Remove action.
+    $scope.removeFiles = function() {
+        $mmCourseHelper.confirmAndRemove(module, courseId);
+    };
+
+    // Context Menu Prefetch action.
+    $scope.prefetch = function() {
+        $mmCourseHelper.contextMenuPrefetch($scope, module, courseId);
     };
 
     // Context Menu Description action.
@@ -181,6 +191,8 @@ angular.module('mm.addons.mod_glossary')
         var args = angular.extend([], fetchArguments);
         args.push(limitFrom);
         args.push(limitNum);
+
+        $mmCourseHelper.fillContextMenu($scope, module, courseId);
 
         return fetchFunction.apply(this, args).then(function(result) {
             if (append) {

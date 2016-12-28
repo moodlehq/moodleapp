@@ -651,8 +651,8 @@ angular.module('mm.core.course')
      * @return {Promise}            Promise resolved when done.
      */
     self.confirmAndRemove = function(module, courseId) {
-        $mmUtil.showConfirm($translate('mm.course.confirmdeletemodulefiles')).then(function() {
-            $mmCoursePrefetchDelegate.removeModuleFiles(module, courseId);
+        return $mmUtil.showConfirm($translate('mm.course.confirmdeletemodulefiles')).then(function() {
+            return $mmCoursePrefetchDelegate.removeModuleFiles(module, courseId);
         });
     };
 
@@ -672,9 +672,9 @@ angular.module('mm.core.course')
 
         scope.prefetchStatusIcon = 'spinner'; // Show spinner since this operation might take a while.
         // We need to call getDownloadSize, the package might have been updated.
-        $mmCoursePrefetchDelegate.getModuleDownloadSize(module, courseId).then(function(size) {
-            $mmUtil.confirmDownloadSize(size).then(function() {
-                $mmCoursePrefetchDelegate.prefetchModule(module, courseId).catch(function() {
+        return $mmCoursePrefetchDelegate.getModuleDownloadSize(module, courseId).then(function(size) {
+            return $mmUtil.confirmDownloadSize(size).then(function() {
+                return $mmCoursePrefetchDelegate.prefetchModule(module, courseId).catch(function() {
                     if (!scope.$$destroyed) {
                         $mmUtil.showErrorModal('mm.core.errordownloading', true);
                     }
@@ -706,7 +706,7 @@ angular.module('mm.core.course')
      * @return {Promise}            Promise resolved when done.
      */
     self.fillContextMenu = function(scope, module, courseId, invalidateCache) {
-        self.getModulePrefetchInfo(module, courseId, invalidateCache).then(function(moduleInfo) {
+        return self.getModulePrefetchInfo(module, courseId, invalidateCache).then(function(moduleInfo) {
             scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
             scope.prefetchStatusIcon = moduleInfo.statusIcon;
             scope.timemodified = moduleInfo.timemodified > 0 ? $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable : "";

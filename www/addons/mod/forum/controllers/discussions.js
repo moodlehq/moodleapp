@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_forum')
  * @ngdoc controller
  * @name mmaModForumDiscussionsCtrl
  */
-.controller('mmaModForumDiscussionsCtrl', function($q, $scope, $stateParams, $mmaModForum, $mmCourse, $mmUtil, $mmGroups, $mmUser,
+.controller('mmaModForumDiscussionsCtrl', function($q, $scope, $stateParams, $mmaModForum, $mmCourse, $mmUtil, $mmCourseHelper, $mmGroups, $mmUser,
             $mmEvents, $ionicScrollDelegate, $ionicPlatform, mmUserProfileState, mmaModForumNewDiscussionEvent, $mmSite, $translate,
             mmaModForumReplyDiscussionEvent, $mmText, mmaModForumComponent, $mmaModForumOffline, $mmaModForumSync,
             mmaModForumAutomSyncedEvent, mmaModForumManualSyncedEvent, $mmApp, mmCoreEventOnlineStatusChanged) {
@@ -67,6 +67,8 @@ angular.module('mm.addons.mod_forum')
                     // Ignore errors.
                 });
             }
+        }).then(function() {
+            $mmCourseHelper.fillContextMenu($scope, module, courseid);
         }).then(function() {
             return $mmGroups.getActivityGroupMode(forum.cmid).then(function(mode) {
                 usesGroups = mode === $mmGroups.SEPARATEGROUPS || mode === $mmGroups.VISIBLEGROUPS;
@@ -302,6 +304,16 @@ angular.module('mm.addons.mod_forum')
             $scope.$broadcast('scroll.refreshComplete');
         });
     }
+
+    // Confirm and Remove action.
+    $scope.removeFiles = function() {
+        $mmCourseHelper.confirmAndRemove(module, courseid);
+    };
+
+    // Context Menu Prefetch action.
+    $scope.prefetch = function() {
+        $mmCourseHelper.contextMenuPrefetch($scope, module, courseid);
+    };
 
     // Context Menu Description action.
     $scope.expandDescription = function() {
