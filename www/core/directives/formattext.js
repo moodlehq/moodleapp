@@ -38,6 +38,8 @@ angular.module('mm.core')
  *
  * The following attributes are replacing the deprecated ones. If any of the following is specified, the deprecated will be ignored:
  *     -max-height: Indicates the max height in pixels to render the content box. It should be 50 at least to make sense.
+ *         Using this parameter will force display: block to calculate height better. If you want to avoid this use class="inline"
+ *         at the same time to use display: inline-block.
  *
  * The following attributes has ben deprecated on version 3.2.1:
  *     -shorten: If shorten is present, max-height="100" will be applied.
@@ -145,8 +147,10 @@ angular.module('mm.core')
 
         formatContents(scope, element, attrs, text).then(function(fullText) {
             if (maxHeight && fullText != "") {
-                //@todo: Work on calculate better this height.
+                // Render text before calculating text to get the proper height.
+                renderText(scope, element, fullText);
                 // Height cannot be calculated if the element is not shown while calculating.
+                //@todo: Work on calculate better this height.
                 var height = element[0].offsetHeight || element[0].height || element[0].clientHeight;
 
                 // If cannot calculate height, shorten always.
