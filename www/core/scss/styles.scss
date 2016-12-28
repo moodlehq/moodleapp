@@ -985,15 +985,15 @@ mm-format-text {
   }
 }
 
-// Disable textarea copy to prevent errors in iOS.
+// Disable input copy to prevent errors in iOS.
 
-.previous-input-focus.mm-textarea, .cloned-text-input + textarea.mm-textarea {
+.previous-input-focus, .previous-input-focus.mm-textarea, .cloned-text-input + input, .cloned-text-input + textarea.mm-textarea {
   width: 100%;
   position: relative !important;
   left: 0px;
 }
 
-textarea.cloned-text-input{
+.cloned-text-input, textarea.cloned-text-input, input.cloned-text-input {
   display: none;
 }
 
