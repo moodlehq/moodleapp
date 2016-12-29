@@ -477,6 +477,10 @@ angular.module('mm.core')
         if (!promise) {
             promise = $http.head(url, {timeout: mmWSTimeout}).then(function(data) {
                 var mimeType = data.headers('Content-Type');
+                if (mimeType) {
+                    // Remove "parameters" like charset.
+                    mimeType = mimeType.split(';')[0];
+                }
                 mimeTypeCache[url] = mimeType;
 
                 return mimeType || '';

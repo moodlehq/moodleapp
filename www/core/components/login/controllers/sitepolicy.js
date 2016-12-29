@@ -22,7 +22,7 @@ angular.module('mm.core.login')
  * @name mmLoginSitePolicyCtrl
  */
 .controller('mmLoginSitePolicyCtrl', function($scope, $state, $stateParams, $mmSitesManager, $mmSite, $mmUtil, $ionicHistory,
-            $mmLoginHelper, $mmWS, $q, $sce) {
+            $mmLoginHelper, $mmWS, $q, $sce, $mmFS) {
 
     var siteId = $stateParams.siteid || $mmSite.getId();
 
@@ -40,8 +40,21 @@ angular.module('mm.core.login')
             }
 
             $scope.sitePolicy = settings.sitepolicy;
-            $scope.trustedSitePolicy = $sce.trustAsResourceUrl(settings.sitepolicy);
-            $scope.policyLoaded = true;
+
+            // Try to get the mime type.
+            return $mmUtil.getMimeType($scope.sitePolicy).then(function(mimeType) {
+                var extension = $mmFS.getExtension(mimeType, $scope.sitePolicy);
+                $scope.showInline = extension == 'html' || extension == 'html';
+
+                if ($scope.showInline) {
+                    $scope.trustedSitePolicy = $sce.trustAsResourceUrl(settings.sitepolicy);
+                }
+            }).catch(function() {
+                // Unable to get mime type, assume it's not supported.
+                $scope.showInline = false;
+            }).finally(function() {
+                $scope.policyLoaded = true;
+            });
         }).catch(function(error) {
             $mmUtil.showErrorModalDefault(error, 'Error getting site policy.');
             cancel();
