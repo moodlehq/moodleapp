@@ -117,7 +117,7 @@ angular.module('mm.addons.mod_quiz')
             $scope.quiz = quiz;
 
             // All data obtained, now fill the context menu.
-            $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh);
+            $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModQuizComponent);
         }).catch(function(message) {
             if (!refresh && !quiz) {
                 // Get quiz failed, retry without using cache since it might be a new activity.

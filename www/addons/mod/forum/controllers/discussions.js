@@ -112,7 +112,7 @@ angular.module('mm.addons.mod_forum')
             });
         }).then(function() {
             // All data obtained, now fill the context menu.
-            $mmCourseHelper.fillContextMenu($scope, module, courseid, refresh);
+            $mmCourseHelper.fillContextMenu($scope, module, courseid, refresh, mmaModForumComponent);
         }).catch(function(message) {
             if (!refresh) {
                 // Get forum failed, retry without using cache since it might be a new activity.

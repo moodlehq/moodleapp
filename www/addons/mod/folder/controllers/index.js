@@ -35,9 +35,8 @@ angular.module('mm.addons.mod_folder')
     $scope.componentId = module.id;
 
     // Convenience function to set scope data using module.
-    function showModuleData(module, refresh) {
+    function showModuleData(module) {
         $scope.title = module.name;
-        $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh);
         if (path) {
             // Subfolder.
             $scope.contents = module.contents;
@@ -49,7 +48,8 @@ angular.module('mm.addons.mod_folder')
     // Convenience function to fetch folder data from Moodle.
     function fetchFolder(refresh) {
         return $mmCourse.getModule(module.id, courseId, sectionId).then(function(module) {
-            showModuleData(module, refresh);
+            showModuleData(module);
+            $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModFolderComponent);
         }, function(error) {
             if (error) {
                 $mmUtil.showErrorModal(error);
@@ -59,7 +59,8 @@ angular.module('mm.addons.mod_folder')
 
             if (!$scope.title) {
                 // Error getting data from server. Use module param.
-                showModuleData(module, refresh);
+                showModuleData(module);
+                $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModFolderComponent);
             }
             return $q.reject();
         });

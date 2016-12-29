@@ -120,7 +120,7 @@ angular.module('mm.addons.mod_assign')
             });
         }).then(function() {
             // Data fetched, now fill context menu.
-            $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh);
+            $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModAssignComponent);
         }).catch(function(message) {
             if (!refresh && !assign) {
                 // Some call failed, retry without using cache since it might be a new activity.

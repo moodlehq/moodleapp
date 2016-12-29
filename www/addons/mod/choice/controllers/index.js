@@ -76,7 +76,7 @@ angular.module('mm.addons.mod_choice')
             });
         }).then(function() {
             // All data obtained, now fill the context menu.
-            $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh);
+            $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModChoiceComponent);
         }).catch(function(message) {
             if (!refresh) {
                 // Some call failed, retry without using cache since it might be a new activity.

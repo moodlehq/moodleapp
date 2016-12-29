@@ -23,7 +23,7 @@ angular.module('mm.core.course')
  */
 .factory('$mmCourseHelper', function($q, $mmCoursePrefetchDelegate, $mmFilepool, $mmUtil, $mmCourse, $mmSite, $state, $mmText,
             mmCoreNotDownloaded, mmCoreOutdated, mmCoreDownloading, mmCoreCourseAllSectionsId, $mmSitesManager, $mmAddonManager,
-            $controller, $mmCourseDelegate, $translate) {
+            $controller, $mmCourseDelegate, $translate, $mmEvents, mmCoreEventPackageStatusChanged) {
 
     var self = {},
         calculateSectionStatus = false;
@@ -703,13 +703,14 @@ angular.module('mm.core.course')
      * @module mm.core.course
      * @ngdoc method
      * @name $mmCourseHelper#fillContextMenu
-     * @param {Object} scope                   Scope.
-     * @param {Object} module                  Module.
-     * @param {Number} courseId                Course ID the module belongs to.
-     * @param {Number} [invalidateCache=false] Invalidates the cache first.
-     * @return {Promise}                       Promise resolved when done.
+     * @param  {Object} scope                   Scope.
+     * @param  {Object} module                  Module.
+     * @param  {Number} courseId                Course ID the module belongs to.
+     * @param  {Number} [invalidateCache=false] Invalidates the cache first.
+     * @param  {String} [component]             Component of the module.
+     * @return {Promise}                        Promise resolved when done.
      */
-    self.fillContextMenu = function(scope, module, courseId, invalidateCache) {
+    self.fillContextMenu = function(scope, module, courseId, invalidateCache, component) {
         return self.getModulePrefetchInfo(module, courseId, invalidateCache).then(function(moduleInfo) {
             scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
             scope.prefetchStatusIcon = moduleInfo.statusIcon;
@@ -718,6 +719,18 @@ angular.module('mm.core.course')
             } else {
                 // Cannot calculate time modified, show a default text.
                 scope.timemodified = $translate.instant('mm.core.download');
+            }
+
+            if (typeof scope.statusObserver == 'undefined' && component) {
+                scope.statusObserver = $mmEvents.on(mmCoreEventPackageStatusChanged, function(data) {
+                    if (data.siteid === $mmSite.getId() && data.componentId === module.id && data.component === component) {
+                        self.fillContextMenu(scope, module, courseId, false, component);
+                    }
+                });
+
+                scope.$on('$destroy', function() {
+                    scope.statusObserver && scope.statusObserver.off && scope.statusObserver.off();
+                });
             }
         });
     };

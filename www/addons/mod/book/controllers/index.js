@@ -102,7 +102,7 @@ angular.module('mm.addons.mod_book')
                 }
 
                 // All data obtained, now fill the context menu.
-                $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh);
+                $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModBookComponent);
             });
         });
     }

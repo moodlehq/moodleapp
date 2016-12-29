@@ -147,7 +147,7 @@ angular.module('mm.addons.mod_scorm')
             $scope.allDataLoaded = true;
 
             // All data obtained, now fill the context menu.
-            $mmCourseHelper.fillContextMenu($scope, module, courseid, refresh);
+            $mmCourseHelper.fillContextMenu($scope, module, courseid, refresh, mmaModScormComponent);
         });
     }
 

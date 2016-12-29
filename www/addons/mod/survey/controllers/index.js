@@ -82,7 +82,7 @@ angular.module('mm.addons.mod_survey')
             }
         }).then(function() {
             // All data obtained, now fill the context menu.
-            $mmCourseHelper.fillContextMenu($scope, module, courseid, refresh);
+            $mmCourseHelper.fillContextMenu($scope, module, courseid, refresh, mmaModSurveyComponent);
         }).catch(function(message) {
             if (!refresh) {
                 // Some call failed, retry without using cache since it might be a new activity.

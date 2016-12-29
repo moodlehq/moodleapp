@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_wiki')
  */
 .controller('mmaModWikiIndexCtrl', function($q, $scope, $stateParams, $mmCourse, $mmUser, $mmGroups, $ionicPopover, $mmUtil, $state,
         $mmSite, $mmaModWiki, $ionicTabsDelegate, $ionicHistory, $translate, mmaModWikiSubwikiPagesLoaded, $mmCourseHelper,
-        $mmText, mmaModWikiComponent, $mmEvents, mmCoreEventPackageStatusChanged, $ionicScrollDelegate,
+        $mmText, mmaModWikiComponent, $mmEvents, $ionicScrollDelegate,
         $mmaModWikiOffline, mmaModWikiPageCreatedEvent, mmaModWikiSubwikiAutomSyncedEvent, $mmaModWikiSync,
         mmaModWikiManualSyncedEvent, $mmApp, mmCoreEventOnlineStatusChanged) {
     var module = $stateParams.module || {},
@@ -32,7 +32,7 @@ angular.module('mm.addons.mod_wiki')
         currentPage = $stateParams.pageid || false,
         pageTitle = $stateParams.pagetitle,
         isCurrentView = true,
-        popover, wiki, currentSubwiki, loadedSubwikis, tabsDelegate, statusObserver, onlineObserver,
+        popover, wiki, currentSubwiki, loadedSubwikis, tabsDelegate, onlineObserver,
         currentPageObj, newPageObserver, syncObserver, syncObserverManual, scrollView, ignoreManualSyncEvent;
 
     $scope.title = pageTitle || module.name;
@@ -241,17 +241,7 @@ angular.module('mm.addons.mod_wiki')
                         return fetchWikiPage();
                     }).then(function() {
                         // All data obtained, now fill the context menu.
-                        $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh);
-
-                        if (typeof statusObserver == "undefined") {
-                            // Listen for changes on this module status.
-                            statusObserver = $mmEvents.on(mmCoreEventPackageStatusChanged, function(data) {
-                                if (data.siteid === $mmSite.getId() && data.componentId === module.id &&
-                                        data.component === mmaModWikiComponent) {
-                                    $mmCourseHelper.fillContextMenu($scope, module, courseId);
-                                }
-                            });
-                        }
+                        $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModWikiComponent);
                     });
                 });
             });
@@ -809,7 +799,6 @@ angular.module('mm.addons.mod_wiki')
     });
 
     $scope.$on('$destroy', function() {
-        statusObserver && statusObserver.off && statusObserver.off();
         popover && popover.remove();
         newPageObserver && newPageObserver.off && newPageObserver.off();
         syncObserver && syncObserver.off && syncObserver.off();

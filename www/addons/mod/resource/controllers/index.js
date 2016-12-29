@@ -103,7 +103,7 @@ angular.module('mm.addons.mod_resource')
             }
         }).then(function() {
             // All data obtained, now fill the context menu.
-            $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh);
+            $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModResourceComponent);
         });
     }
 

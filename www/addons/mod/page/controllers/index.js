@@ -47,7 +47,7 @@ angular.module('mm.addons.mod_page')
             }).then(function() {
                 return $mmaModPage.getPageHtml(module.contents, module.id).then(function(content) {
                     // All data obtained, now fill the context menu.
-                    $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh);
+                    $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModPageComponent);
 
                     $scope.content = content;
 
