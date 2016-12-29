@@ -372,7 +372,7 @@ angular.module('mm.core.course')
                 if (module.id == moduleId) {
                     // This is the module we're looking for. Open it.
                     var newScope = scope.$new();
-                    $controller(module._controller, {scope: newScope});
+                    $controller(module._controller, {$scope: newScope});
                     if (newScope.action) {
                         newScope.action();
                     }
