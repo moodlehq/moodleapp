@@ -47,6 +47,7 @@ angular.module('mm.addons.mod_forum', [])
             cid: null, // Not naming it courseid because it collides with 'site.mod_forum' param in split-view.
             forumid: null,
             cmid: null,
+            trackposts: null, // Whether the discussion can track posts reading.
             locked: null // Whether the discussion is locked for the user.
         },
         views: {

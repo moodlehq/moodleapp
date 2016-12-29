@@ -33,6 +33,7 @@ angular.module('mm.addons.mod_forum')
         syncObserver, syncManualObserver, onlineObserver;
 
     $scope.discussionId = discussionId;
+    $scope.trackPosts = $stateParams.trackposts;
     $scope.component = mmaModForumComponent;
     $scope.discussionStr = $translate.instant('discussion');
     $scope.componentId = cmid;

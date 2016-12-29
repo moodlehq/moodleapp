@@ -33,6 +33,7 @@ angular.module('mm.addons.mod_forum')
  * @param {Object}   newpost          Object with the new post data. Usually shared between posts.
  * @param {Boolean}  showdivider      True if it should have a list divider before the post.
  * @param {Boolean}  titleimportant   True if title should be "important" (bold).
+ * @param {Boolean}  unread           True if post is being tracked and its not read.
  * @param {Function} [onpostchange]   Function to call when a post is added, updated or discarded.
  * @param {String}   [defaultsubject] Default subject to set to new posts.
  * @param {String}   [scrollHandle]   Name of the scroll handle of the page containing the post.
@@ -52,6 +53,7 @@ angular.module('mm.addons.mod_forum')
             newpost: '=',
             showdivider: '=?',
             titleimportant: '=?',
+            unread: '=?',
             onpostchange: '&?',
             defaultsubject: '=?',
             scrollHandle: '@?'

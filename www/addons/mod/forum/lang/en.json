@@ -24,5 +24,7 @@
     "reply": "Reply",
     "sortnewestfirst": "Display newest first",
     "sortoldestfirst": "Display oldest first",
-    "subject": "Subject"
+    "subject": "Subject",
+    "unread": "Unread",
+    "unreadpostsnumber": "{{$a}} unread posts"
 }
