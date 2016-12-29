@@ -22,9 +22,9 @@ angular.module('mm.addons.mod_choice')
  * @name mmaModChoiceIndexCtrl
  * @todo Delete answer if user can update the answer, show selected if choice is closed (WS returns empty options).
  */
-.controller('mmaModChoiceIndexCtrl', function($scope, $stateParams, $mmaModChoice, $mmUtil, $mmCourseHelper, $q, $mmCourse, $translate, $mmText,
+.controller('mmaModChoiceIndexCtrl', function($scope, $stateParams, $mmaModChoice, $mmUtil, $mmCourseHelper, $q, $mmCourse, $mmText,
             mmaModChoiceComponent, mmaModChoiceAutomSyncedEvent, $mmSite, $mmEvents, $mmaModChoiceSync, $ionicScrollDelegate,
-            $mmaModChoiceOffline, $mmApp, $mmEvents, mmCoreEventOnlineStatusChanged) {
+            $mmaModChoiceOffline, $mmApp, $translate, mmCoreEventOnlineStatusChanged) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         choice,
@@ -57,7 +57,6 @@ angular.module('mm.addons.mod_choice')
             $scope.title = choice.name || $scope.title;
             $scope.description = choice.intro || $scope.description;
             $scope.choice = choice;
-            $mmCourseHelper.fillContextMenu($scope, module, courseId);
 
             if (sync) {
                 // Try to synchronize the choice.
@@ -75,6 +74,9 @@ angular.module('mm.addons.mod_choice')
             return fetchOptions(hasOffline).then(function() {
                 return fetchResults();
             });
+        }).then(function() {
+            // All data obtained, now fill the context menu.
+            $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh);
         }).catch(function(message) {
             if (!refresh) {
                 // Some call failed, retry without using cache since it might be a new activity.

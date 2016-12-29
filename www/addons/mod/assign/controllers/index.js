@@ -21,11 +21,11 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc controller
  * @name mmaModAssignIndexCtrl
  */
-.controller('mmaModAssignIndexCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $mmCourseHelper,
-        $translate, mmaModAssignComponent, $q, $state, mmaModAssignSubmissionInvalidatedEvent, $mmEvents, $mmSite,
+.controller('mmaModAssignIndexCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $mmCourseHelper, $mmaModAssignOffline,
+        mmaModAssignComponent, $q, $state, mmaModAssignSubmissionInvalidatedEvent, $mmEvents, $mmSite, mmaModAssignGradedEvent,
         mmaModAssignSubmissionSavedEvent, $mmCourse, $mmApp, mmaModAssignSubmittedForGradingEvent, $mmaModAssignSync, $mmText,
-        mmaModAssignEventAutomSynced, $ionicScrollDelegate, mmCoreEventOnlineStatusChanged, $mmaModAssignOffline, mmaModAssignEventManualSynced,
-        mmaModAssignSubmissionStatusSubmitted, mmaModAssignSubmissionStatusDraft, mmaModAssignNeedGrading, mmaModAssignGradedEvent) {
+        mmaModAssignEventAutomSynced, $ionicScrollDelegate, mmCoreEventOnlineStatusChanged, mmaModAssignEventManualSynced,
+        mmaModAssignSubmissionStatusSubmitted, mmaModAssignSubmissionStatusDraft, mmaModAssignNeedGrading, $translate) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         siteId = $mmSite.getId(),
@@ -78,8 +78,6 @@ angular.module('mm.addons.mod_assign')
                 });
             }
         }).then(function() {
-            $mmCourseHelper.fillContextMenu($scope, module, courseId);
-        }).then(function() {
             // Check if there's any offline data for this assign.
             return $mmaModAssignOffline.hasAssignOfflineData(assign.id);
         }).then(function(hasOffline) {
@@ -120,6 +118,9 @@ angular.module('mm.addons.mod_assign')
                     });
                 }
             });
+        }).then(function() {
+            // Data fetched, now fill context menu.
+            $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh);
         }).catch(function(message) {
             if (!refresh && !assign) {
                 // Some call failed, retry without using cache since it might be a new activity.
@@ -145,7 +146,6 @@ angular.module('mm.addons.mod_assign')
             }
         }
 
-        $mmCourseHelper.fillContextMenu($scope, module, courseId);
         return $q.all(promises).finally(function() {
             $scope.$broadcast(mmaModAssignSubmissionInvalidatedEvent);
             return fetchAssignment(true, sync, showErrors);

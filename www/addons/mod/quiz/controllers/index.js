@@ -115,6 +115,9 @@ angular.module('mm.addons.mod_quiz')
 
         }).then(function() {
             $scope.quiz = quiz;
+
+            // All data obtained, now fill the context menu.
+            $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh);
         }).catch(function(message) {
             if (!refresh && !quiz) {
                 // Get quiz failed, retry without using cache since it might be a new activity.
@@ -419,7 +422,6 @@ angular.module('mm.addons.mod_quiz')
         $scope.quizLoaded = true;
         $scope.refreshIcon = 'ion-refresh';
         $scope.syncIcon = 'ion-loop';
-        $mmCourseHelper.fillContextMenu($scope, module, courseId);
     });
 
     // Pull to refresh.
@@ -431,7 +433,6 @@ angular.module('mm.addons.mod_quiz')
                 $scope.refreshIcon = 'ion-refresh';
                 $scope.syncIcon = 'ion-loop';
                 $scope.$broadcast('scroll.refreshComplete');
-                $mmCourseHelper.fillContextMenu($scope, module, courseId);
             });
         }
     };

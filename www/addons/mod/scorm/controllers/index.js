@@ -21,10 +21,10 @@ angular.module('mm.addons.mod_scorm')
  * @ngdoc controller
  * @name mmaModScormIndexCtrl
  */
-.controller('mmaModScormIndexCtrl', function($scope, $stateParams, $mmaModScorm, $mmUtil, $mmCourseHelper, $q, $mmCourse, $ionicScrollDelegate,
+.controller('mmaModScormIndexCtrl', function($scope, $stateParams, $mmaModScorm, $mmUtil, $q, $mmCourse, $ionicScrollDelegate,
             $mmCoursePrefetchDelegate, $mmaModScormHelper, $mmEvents, $mmSite, $state, mmCoreOutdated, mmCoreNotDownloaded,
             mmCoreDownloading, mmaModScormComponent, mmCoreEventPackageStatusChanged, $ionicHistory, mmaModScormEventAutomSynced,
-            $mmaModScormSync, $timeout, $mmText, $translate, $mmaModScormPrefetchHandler, $mmApp, $mmEvents,
+            $mmaModScormSync, $timeout, $mmText, $translate, $mmaModScormPrefetchHandler, $mmApp, $mmCourseHelper,
             mmCoreEventOnlineStatusChanged) {
 
     var module = $stateParams.module || {},
@@ -62,7 +62,6 @@ angular.module('mm.addons.mod_scorm')
             $scope.title = scorm.name || $scope.title;
             $scope.description = scorm.intro || $scope.description;
             $scope.scorm = scorm;
-            $mmCourseHelper.fillContextMenu($scope, module, courseid);
 
             var result = $mmaModScorm.isScormSupported(scorm);
             if (result === true) {
@@ -146,6 +145,9 @@ angular.module('mm.addons.mod_scorm')
             return showError(message);
         }).then(function() {
             $scope.allDataLoaded = true;
+
+            // All data obtained, now fill the context menu.
+            $mmCourseHelper.fillContextMenu($scope, module, courseid, refresh);
         });
     }
 

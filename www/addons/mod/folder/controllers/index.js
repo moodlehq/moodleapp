@@ -35,9 +35,9 @@ angular.module('mm.addons.mod_folder')
     $scope.componentId = module.id;
 
     // Convenience function to set scope data using module.
-    function showModuleData(module) {
+    function showModuleData(module, refresh) {
         $scope.title = module.name;
-        $mmCourseHelper.fillContextMenu($scope, module, courseId);
+        $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh);
         if (path) {
             // Subfolder.
             $scope.contents = module.contents;
@@ -47,9 +47,9 @@ angular.module('mm.addons.mod_folder')
     }
 
     // Convenience function to fetch folder data from Moodle.
-    function fetchFolder() {
+    function fetchFolder(refresh) {
         return $mmCourse.getModule(module.id, courseId, sectionId).then(function(module) {
-            showModuleData(module);
+            showModuleData(module, refresh);
         }, function(error) {
             if (error) {
                 $mmUtil.showErrorModal(error);
@@ -59,7 +59,7 @@ angular.module('mm.addons.mod_folder')
 
             if (!$scope.title) {
                 // Error getting data from server. Use module param.
-                showModuleData(module);
+                showModuleData(module, refresh);
             }
             return $q.reject();
         });
@@ -103,7 +103,7 @@ angular.module('mm.addons.mod_folder')
         if ($scope.canReload) {
             $scope.refreshIcon = 'spinner';
             return $mmCourse.invalidateModule(module.id).finally(function() {
-                return fetchFolder().finally(function() {
+                return fetchFolder(true).finally(function() {
                     $scope.refreshIcon = 'ion-refresh';
                     $scope.$broadcast('scroll.refreshComplete');
                 });

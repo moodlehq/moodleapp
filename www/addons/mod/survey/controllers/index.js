@@ -21,9 +21,9 @@ angular.module('mm.addons.mod_survey')
  * @ngdoc controller
  * @name mmaModSurveyIndexCtrl
  */
-.controller('mmaModSurveyIndexCtrl', function($scope, $stateParams, $mmaModSurvey, $mmUtil, $mmCourseHelper, $q, $mmCourse, $translate, $mmText,
+.controller('mmaModSurveyIndexCtrl', function($scope, $stateParams, $mmaModSurvey, $mmUtil, $q, $mmCourse, $translate, $mmText,
             $ionicPlatform, $ionicScrollDelegate, $mmaModSurveyOffline, mmaModSurveyComponent, $mmaModSurveySync, $mmSite,
-            $mmEvents, mmaModSurveyAutomSyncedEvent, $mmApp, $mmEvents, mmCoreEventOnlineStatusChanged) {
+            $mmEvents, mmaModSurveyAutomSyncedEvent, $mmApp, $mmCourseHelper, mmCoreEventOnlineStatusChanged) {
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
         survey,
@@ -52,8 +52,7 @@ angular.module('mm.addons.mod_survey')
             $scope.title = survey.name || $scope.title;
             $scope.description = survey.intro || $scope.description;
             $scope.survey = survey;
-            $mmCourseHelper.fillContextMenu($scope, module, courseid);
-            
+
             if (sync) {
                 // Try to synchronize the survey.
                 return syncSurvey(showErrors).then(function(answersSent) {
@@ -81,6 +80,9 @@ angular.module('mm.addons.mod_survey')
             if (!survey.surveydone && !hasOffline) {
                 return fetchQuestions();
             }
+        }).then(function() {
+            // All data obtained, now fill the context menu.
+            $mmCourseHelper.fillContextMenu($scope, module, courseid, refresh);
         }).catch(function(message) {
             if (!refresh) {
                 // Some call failed, retry without using cache since it might be a new activity.

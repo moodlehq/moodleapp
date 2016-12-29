@@ -240,6 +240,7 @@ angular.module('mm.addons.mod_wiki')
                     }).then(function() {
                         return fetchWikiPage();
                     }).then(function() {
+                        // All data obtained, now fill the context menu.
                         $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh);
 
                         if (typeof statusObserver == "undefined") {

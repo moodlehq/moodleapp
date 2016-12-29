@@ -641,14 +641,14 @@ angular.module('mm.core.course')
     };
 
     /**
-     * Show Confirmation Dialog and then Remove a module.
-     * 
+     * Show confirmation dialog and then remove a module files.
+     *
      * @module mm.core.course
      * @ngdoc method
      * @name $mmCourseHelper#confirmAndRemove
-     * @param {Object} module       Module to be removed.
-     * @param {Number} courseId     Course ID the module belongs to.
-     * @return {Promise}            Promise resolved when done.
+     * @param {Object} module    Module to remove the files.
+     * @param {Number} courseId  Course ID the module belongs to.
+     * @return {Promise}         Promise resolved when done.
      */
     self.confirmAndRemove = function(module, courseId) {
         return $mmUtil.showConfirm($translate('mm.course.confirmdeletemodulefiles')).then(function() {
@@ -657,15 +657,16 @@ angular.module('mm.core.course')
     };
 
     /**
-     * Prefetch Module Info of current Module for ContextMenu
-     * 
+     * Helper function to prefetch a module, showing a confirmation modal if the size is big. Meant to be called
+     * from a context menu option.
+     *
      * @module mm.core.course
      * @ngdoc method
      * @name $mmCourseHelper#contextMenuPrefetch
-     * @param {Object} scope        Scope
-     * @param {Object} module       Module to be prefetched
-     * @param {Number} courseId     Course ID the module belongs to.
-     * @return {Promise}            Promise resolved when done.
+     * @param {Object} scope    Scope
+     * @param {Object} module   Module to be prefetched
+     * @param {Number} courseId Course ID the module belongs to.
+     * @return {Promise}        Promise resolved when done.
      */
     self.contextMenuPrefetch = function(scope, module, courseId) {
         var icon = scope.prefetchStatusIcon;
@@ -675,43 +676,47 @@ angular.module('mm.core.course')
         return $mmCoursePrefetchDelegate.getModuleDownloadSize(module, courseId).then(function(size) {
             return $mmUtil.confirmDownloadSize(size).then(function() {
                 return $mmCoursePrefetchDelegate.prefetchModule(module, courseId).catch(function() {
-                    if (!scope.$$destroyed) {
-                        $mmUtil.showErrorModal('mm.core.errordownloading', true);
-                    }
+                    return failPrefetch(!scope.$$destroyed);
                 });
-            }).catch(function() {
+            }, function() {
                 // User hasn't confirmed, stop spinner.
                 scope.prefetchStatusIcon = icon;
+                return failPrefetch(false);
             });
-        }).catch(function(error) {
-            scope.prefetchStatusIcon = icon;
-            if (error) {
-                $mmUtil.showErrorModal(error);
-            } else {
-                $mmUtil.showErrorModal('mm.core.errordownloading', true);
-            }
+        }, function(error) {
+            return failPrefetch(true, error);
         });
-    }
+
+        // Function to call if an error happens.
+        function failPrefetch(showError, error) {
+            scope.prefetchStatusIcon = icon;
+            if (showError) {
+                $mmUtil.showErrorModalDefault(error, 'mm.core.errordownloading', true);
+            }
+            return $q.reject();
+        }
+    };
 
     /**
      * Fill the Context Menu when particular Module is loaded.
-     * 
+     *
      * @module mm.core.course
      * @ngdoc method
      * @name $mmCourseHelper#fillContextMenu
-     * @param {Object} scope        Scope
-     * @param {Object} module       Module to be prefetched
-     * @param {Number} courseId     Course ID the module belongs to.
-     * @param {Number} [invalidateCache=false]  Invalidates the cache first.
-     * @return {Promise}            Promise resolved when done.
+     * @param {Object} scope                   Scope.
+     * @param {Object} module                  Module.
+     * @param {Number} courseId                Course ID the module belongs to.
+     * @param {Number} [invalidateCache=false] Invalidates the cache first.
+     * @return {Promise}                       Promise resolved when done.
      */
     self.fillContextMenu = function(scope, module, courseId, invalidateCache) {
         return self.getModulePrefetchInfo(module, courseId, invalidateCache).then(function(moduleInfo) {
             scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
             scope.prefetchStatusIcon = moduleInfo.statusIcon;
-            scope.timemodified = moduleInfo.timemodified > 0 ? $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable : "";
+            scope.timemodified = moduleInfo.timemodified > 0 ?
+                    $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable : '';
         });
-    }
+    };
 
     return self;
 })

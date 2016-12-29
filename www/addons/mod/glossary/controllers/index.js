@@ -78,6 +78,9 @@ angular.module('mm.addons.mod_glossary')
             return refreshEntries().finally(function() {
                 $scope.refreshIcon = 'ion-refresh';
                 $scope.$broadcast('scroll.refreshComplete');
+
+                // Data refreshed, fill the context menu.
+                $mmCourseHelper.fillContextMenu($scope, module, courseId, true);
             });
         }
     };
@@ -173,6 +176,8 @@ angular.module('mm.addons.mod_glossary')
         fetchEntries().then(function() {
             // After a successful fetch, the glossary can be considered as 'viewed'.
             $mmaModGlossary.logView(glossary.id, viewMode);
+            // All data obtained, now fill the context menu.
+            $mmCourseHelper.fillContextMenu($scope, module, courseId, false);
         }).finally(function() {
             $scope.loaded = true;
             $scope.refreshIcon = 'ion-refresh';
@@ -191,8 +196,6 @@ angular.module('mm.addons.mod_glossary')
         var args = angular.extend([], fetchArguments);
         args.push(limitFrom);
         args.push(limitNum);
-
-        $mmCourseHelper.fillContextMenu($scope, module, courseId);
 
         return fetchFunction.apply(this, args).then(function(result) {
             if (append) {

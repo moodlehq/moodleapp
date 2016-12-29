@@ -21,8 +21,8 @@ angular.module('mm.addons.mod_resource')
  * @ngdoc controller
  * @name mmaModResourceIndexCtrl
  */
-.controller('mmaModResourceIndexCtrl', function($scope, $stateParams, $mmUtil, $mmCourseHelper, $mmaModResource, $log, $mmApp, $mmCourse, $timeout,
-        $mmText, $translate, mmaModResourceComponent, $mmaModResourcePrefetchHandler) {
+.controller('mmaModResourceIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModResource, $log, $mmApp, $mmCourse, $timeout,
+        $mmText, $translate, mmaModResourceComponent, $mmaModResourcePrefetchHandler, $mmCourseHelper) {
     $log = $log.getInstance('mmaModResourceIndexCtrl');
 
     var module = $stateParams.module || {},
@@ -37,15 +37,13 @@ angular.module('mm.addons.mod_resource')
     $scope.component = mmaModResourceComponent;
     $scope.componentId = module.id;
 
-    function fetchContent() {
+    function fetchContent(refresh) {
         // Load module contents if needed.
         return $mmCourse.loadModuleContents(module, courseId).then(function() {
             if (!module.contents || !module.contents.length) {
                 $mmUtil.showErrorModal('mma.mod_resource.errorwhileloadingthecontent', true);
                 return $q.reject();
             }
-
-            $mmCourseHelper.fillContextMenu($scope, module, courseId);
 
             if ($mmaModResource.isDisplayedInIframe(module)) {
                 $scope.mode = 'iframe';
@@ -74,6 +72,7 @@ angular.module('mm.addons.mod_resource')
                         }
                     }).catch(function() {
                         $mmUtil.showErrorModal('mma.mod_resource.errorwhileloadingthecontent', true);
+                        return $q.reject();
                     }).finally(function() {
                         $scope.loaded = true;
                         $scope.refreshIcon = 'ion-refresh';
@@ -102,6 +101,9 @@ angular.module('mm.addons.mod_resource')
                     });
                 };
             }
+        }).then(function() {
+            // All data obtained, now fill the context menu.
+            $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh);
         });
     }
 
@@ -125,7 +127,7 @@ angular.module('mm.addons.mod_resource')
         if ($scope.loaded) {
             $scope.refreshIcon = 'spinner';
             return $mmaModResourcePrefetchHandler.invalidateContent(module.id).then(function() {
-                return fetchContent();
+                return fetchContent(true);
             }).finally(function() {
                 $scope.$broadcast('scroll.refreshComplete');
             });
