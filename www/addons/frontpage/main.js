@@ -14,7 +14,7 @@
 
 angular.module('mm.addons.frontpage', [])
 
-.constant('mmaFrontpagePriority', 1000)
+.constant('mmaFrontpagePriority', 10)
 
 .config(function($mmSideMenuDelegateProvider, $mmContentLinksDelegateProvider, mmaFrontpagePriority) {
     // Register side menu addon.

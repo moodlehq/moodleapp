@@ -16,7 +16,7 @@ angular.module('mm.addons.files', ['mm.core'])
 
 .constant('mmaFilesMyComponent', 'mmaFilesMy')
 .constant('mmaFilesSiteComponent', 'mmaFilesSite')
-.constant('mmaFilesPriority', 800)
+.constant('mmaFilesPriority', 400)
 
 .config(function($stateProvider, $mmSideMenuDelegateProvider, mmaFilesPriority) {
 

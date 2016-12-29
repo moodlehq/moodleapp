@@ -15,7 +15,7 @@
 angular.module('mm.addons.notifications', [])
 
 .constant('mmaNotificationsListLimit', 20) // Max of notifications to retrieve in each WS call.
-.constant('mmaNotificationsPriority', 400)
+.constant('mmaNotificationsPriority', 200)
 
 .config(function($stateProvider, $mmSideMenuDelegateProvider, mmaNotificationsPriority) {
 
