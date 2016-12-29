@@ -24,7 +24,7 @@ angular.module('mm.addons.messages')
 .controller('mmaMessagesDiscussionCtrl', function($scope, $stateParams, $mmApp, $mmaMessages, $mmSite, $timeout, $mmEvents, $window,
         $ionicScrollDelegate, mmUserProfileState, $mmUtil, mmaMessagesPollInterval, $interval, $log, $ionicHistory, $ionicPlatform,
         mmCoreEventKeyboardShow, mmCoreEventKeyboardHide, mmaMessagesDiscussionLoadedEvent, mmaMessagesDiscussionLeftEvent,
-        $mmUser, $translate, mmaMessagesNewMessageEvent, mmaMessagesAutomSyncedEvent, $mmaMessagesSync) {
+        $mmUser, $translate, mmaMessagesNewMessageEvent, mmaMessagesAutomSyncedEvent, $mmaMessagesSync, $q, md5) {
 
     $log = $log.getInstance('mmaMessagesDiscussionCtrl');
 
@@ -88,6 +88,7 @@ angular.module('mm.addons.messages')
         }
 
         $scope.data.showDelete = false;
+        $scope.newMessage = ''; // Clear new message.
 
         text = text.replace(/(?:\r\n|\r|\n)/g, '<br />');
         message = {
@@ -102,27 +103,48 @@ angular.module('mm.addons.messages')
 
         messagesBeingSent++;
 
-        $mmaMessages.sendMessage(userId, text).then(function(sent) {
-            message.sending = false;
-            if (sent) {
-                // Message sent to server, not pending anymore.
-                message.pending = false;
-            }
-            notifyNewMessage();
-        }, function(error) {
+        // If there is an ongoing fetch, wait for it to finish.
+        // Otherwise, if a message is sent while fetching it could disappear until the next fetch.
+        waitForFetch().finally(function() {
+            $mmaMessages.sendMessage(userId, text).then(function(data) {
+                var promise;
 
-            // Only close the keyboard if an error happens, we want the user to be able to send multiple
-            // messages withoutthe keyboard being closed.
-            $mmApp.closeKeyboard();
+                messagesBeingSent--;
 
-            if (typeof error === 'string') {
-                $mmUtil.showErrorModal(error);
-            } else {
-                $mmUtil.showErrorModal('mma.messages.messagenotsent', true);
-            }
-            $scope.messages.splice($scope.messages.indexOf(message), 1);
-        }).finally(function() {
-            messagesBeingSent--;
+                if (data.sent) {
+                    // Message was sent, fetch messages right now.
+                    promise = fetchMessages();
+                } else {
+                    promise = $q.reject();
+                }
+
+                promise.catch(function() {
+                    // Fetch failed or is offline message, mark the message as sent. If fetch is successful there's no need
+                    // to mark it because the fetch will already show the message received from the server.
+                    message.sending = false;
+                    if (data.sent) {
+                        // Message sent to server, not pending anymore.
+                        message.pending = false;
+                    } else if (data.message) {
+                        message.timecreated = data.message.timecreated;
+                    }
+
+                    notifyNewMessage();
+                });
+            }, function(error) {
+                messagesBeingSent--;
+
+                // Only close the keyboard if an error happens, we want the user to be able to send multiple
+                // messages without the keyboard being closed.
+                $mmApp.closeKeyboard();
+
+                if (typeof error === 'string') {
+                    $mmUtil.showErrorModal(error);
+                } else {
+                    $mmUtil.showErrorModal('mma.messages.messagenotsent', true);
+                }
+                $scope.messages.splice($scope.messages.indexOf(message), 1);
+            });
         });
     };
 
@@ -190,10 +212,10 @@ angular.module('mm.addons.messages')
             // We do not poll while a message is being sent or we could confuse the user
             // as his message would disappear from the list, and he'd have to wait for the
             // interval to check for new messages.
-            return;
+            return $q.reject();
         } else if (fetching) {
             // Already fetching.
-            return;
+            return $q.reject();
         }
 
         fetching = true;
@@ -209,17 +231,57 @@ angular.module('mm.addons.messages')
         }).then(function(messages) {
             if (messagesBeingSent > 0) {
                 // Ignore polling due to a race condition.
-                return;
+                return $q.reject();
             }
 
-            // Sort messages.
-            $scope.messages = $mmaMessages.sortMessages(messages);
+            var messagesToRemove = {};
+
+            // Mark all displayed messages to be removed (for now).
+            angular.forEach($scope.messages, function(message) {
+                // Use smallmessage instead of message ID because ID changes when a message is read.
+                var id = md5.createHash(message.smallmessage) + '#' + message.timecreated;
+                messagesToRemove[id] = message;
+            });
+
+            // Add new messages to the list and remove from messagesToRemove the messages that should still be displayed.
+            angular.forEach(messages, function(message) {
+                var id = md5.createHash(message.smallmessage) + '#' + message.timecreated;
+                if (!messagesToRemove[id]) {
+                    // Message not added to the list. Add it now.
+                    $scope.messages.push(message);
+                } else {
+                    // Message needs to be kept in the list.
+                    delete messagesToRemove[id];
+                }
+            });
+
+            // Remove messages.
+            angular.forEach(messagesToRemove, function(message) {
+                var position = $scope.messages.indexOf(message);
+                if (position != -1) {
+                    $scope.messages.splice(position, 1);
+                }
+            });
+
+            // Sort the messages.
+            $mmaMessages.sortMessages($scope.messages);
 
             // Notify that there can be a new message.
             notifyNewMessage();
         }).finally(function() {
             fetching = false;
         });
+    }
+
+    // Wait until fetching is false.
+    function waitForFetch() {
+        if (!fetching) {
+            return $q.when();
+        }
+
+        return $timeout(function() {
+            return waitForFetch();
+        }, 400);
     }
 
     // Set a polling to get new messages every certain time.
@@ -291,48 +353,46 @@ angular.module('mm.addons.messages')
         }
     }
 
-    // Scroll when keyboard is hide/shown to keep the user scroll. This is only needed for Android.
+    // Scroll when keyboard is hide/shown to keep the user scroll.
     function setScrollWithKeyboard() {
-        if (ionic.Platform.isAndroid()) {
-            $timeout(function() { // Use a $timeout to wait for scroll to correctly measure height.
-                var obsShow,
-                    obsHide,
-                    keyboardHeight,
-                    maxInitialScroll = scrollView.getScrollView().__contentHeight - scrollView.getScrollView().__clientHeight,
-                    initialHeight = $window.innerHeight;
+        $timeout(function() { // Use a $timeout to wait for scroll to correctly measure height.
+            var obsShow,
+                obsHide,
+                keyboardHeight,
+                maxInitialScroll = scrollView.getScrollView().__contentHeight - scrollView.getScrollView().__clientHeight,
+                initialHeight = $window.innerHeight;
 
-                obsShow = $mmEvents.on(mmCoreEventKeyboardShow, function(e) {
-                    $timeout(function() {
-                        // Try to calculate keyboard height ourselves since e.keyboardHeight is not reliable.
-                        var heightDifference = initialHeight - $window.innerHeight,
-                            newKeyboardHeight = heightDifference > 50 ? heightDifference : e.keyboardHeight;
-                        if (newKeyboardHeight) {
-                            keyboardHeight = newKeyboardHeight;
-                            scrollView.scrollBy(0, newKeyboardHeight);
-                        }
-                    });
-                });
-
-                obsHide = $mmEvents.on(mmCoreEventKeyboardHide, function(e) {
-                    if (!scrollView || !scrollView.getScrollPosition()) {
-                        return; // Can't get scroll position, stop.
+            obsShow = $mmEvents.on(mmCoreEventKeyboardShow, function(e) {
+                $timeout(function() {
+                    // Try to calculate keyboard height ourselves since e.keyboardHeight is not reliable.
+                    var heightDifference = initialHeight - $window.innerHeight,
+                        newKeyboardHeight = heightDifference > 50 ? heightDifference : e.keyboardHeight;
+                    if (newKeyboardHeight) {
+                        keyboardHeight = newKeyboardHeight;
+                        scrollView.scrollBy(0, newKeyboardHeight);
                     }
-
-                    if (scrollView.getScrollPosition().top >= maxInitialScroll) {
-                        // scrollBy(0,0) would automatically reset at maxInitialScroll. We need to apply the difference
-                        // from there to scroll to the right point.
-                        scrollView.scrollBy(0, scrollView.getScrollPosition().top - keyboardHeight - maxInitialScroll);
-                    } else {
-                        scrollView.scrollBy(0, - keyboardHeight);
-                    }
-                });
-
-                $scope.$on('$destroy', function() {
-                    obsShow && obsShow.off && obsShow.off();
-                    obsHide && obsHide.off && obsHide.off();
                 });
             });
-        }
+
+            obsHide = $mmEvents.on(mmCoreEventKeyboardHide, function(e) {
+                if (!scrollView || !scrollView.getScrollPosition()) {
+                    return; // Can't get scroll position, stop.
+                }
+
+                if (scrollView.getScrollPosition().top >= maxInitialScroll) {
+                    // scrollBy(0,0) would automatically reset at maxInitialScroll. We need to apply the difference
+                    // from there to scroll to the right point.
+                    scrollView.scrollBy(0, scrollView.getScrollPosition().top - keyboardHeight - maxInitialScroll);
+                } else {
+                    scrollView.scrollBy(0, - keyboardHeight);
+                }
+            });
+
+            $scope.$on('$destroy', function() {
+                obsShow && obsShow.off && obsShow.off();
+                obsHide && obsHide.off && obsHide.off();
+            });
+        });
     }
 
     // Function to delete a message.

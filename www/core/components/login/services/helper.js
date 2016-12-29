@@ -35,6 +35,30 @@ angular.module('mm.core.login')
     var self = {};
 
     /**
+     * Accept site policy.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#acceptSitePolicy
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved if success. rejected if failure.
+     */
+    self.acceptSitePolicy = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.write('core_user_agree_site_policy', {}).then(function(result) {
+                if (!result.status) {
+                    // Error.
+                    if (result.warnings && result.warnings.length) {
+                        return $q.reject(result.warnings[0].message);
+                    } else {
+                        return $q.reject();
+                    }
+                }
+            });
+        });
+    };
+
+    /**
      * Show a confirm modal if needed and open a browser to perform SSO login.
      *
      * @module mm.core.login
@@ -48,7 +72,8 @@ angular.module('mm.core.login')
      */
     self.confirmAndOpenBrowserForSSOLogin = function(siteurl, typeOfLogin, service, launchUrl) {
         // Show confirm only if it's needed. Treat "false" (string) as false to prevent typing errors.
-        var skipConfirmation = mmCoreConfigConstants.skipssoconfirmation && mmCoreConfigConstants.skipssoconfirmation !== 'false',
+        var skipConfirmation = self.isSSOEmbeddedBrowser(typeOfLogin) ||
+                    (mmCoreConfigConstants.skipssoconfirmation && mmCoreConfigConstants.skipssoconfirmation !== 'false'),
             promise = skipConfirmation ? $q.when() : $mmUtil.showConfirm($translate('mm.login.logininsiterequired'));
 
         promise.then(function() {
@@ -168,7 +193,7 @@ angular.module('mm.core.login')
             var $mmaFrontpage = $mmAddonManager.get('$mmaFrontpage');
             if ($mmaFrontpage) {
                 return $mmaFrontpage.isFrontpageAvailable().then(function() {
-                    return $state.go('site.mm_course-section');
+                    return $state.go('site.frontpage');
                 }).catch(function() {
                     return $state.go('site.mm_courses');
                 });

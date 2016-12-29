@@ -21,11 +21,13 @@ angular.module('mm.addons.messages')
  * @ngdoc controller
  * @name mmaMessagesDiscussionsCtrl
  */
-.controller('mmaMessagesDiscussionsCtrl', function($scope, $mmUtil, $mmaMessages, $rootScope, $mmEvents, $mmSite,
-            mmCoreSplitViewLoad, mmaMessagesNewMessageEvent) {
+.controller('mmaMessagesDiscussionsCtrl', function($scope, $mmUtil, $mmaMessages, $rootScope, $mmEvents, $mmSite, $ionicPlatform,
+            mmCoreSplitViewLoad, mmaMessagesNewMessageEvent, $mmAddonManager) {
     var newMessagesObserver,
         siteId = $mmSite.getId(),
-        discussions;
+        discussions,
+        $mmPushNotificationsDelegate = $mmAddonManager.get('$mmPushNotificationsDelegate'),
+        unregisterResume;
 
     $scope.loaded = false;
 
@@ -45,6 +47,8 @@ angular.module('mm.addons.messages')
             } else {
                 $mmUtil.showErrorModal('mma.messages.errorwhileretrievingdiscussions', true);
             }
+        }).finally(function() {
+            $scope.loaded = true;
         });
     }
 
@@ -61,7 +65,6 @@ angular.module('mm.addons.messages')
     };
 
     fetchDiscussions().finally(function() {
-        $scope.loaded = true;
         // Tell mm-split-view that it can load the first link now in tablets. We need to do it
         // like this because the directive doesn't have access to $scope.loaded variable (because of tabs).
         $rootScope.$broadcast(mmCoreSplitViewLoad);
@@ -87,9 +90,34 @@ angular.module('mm.addons.messages')
         }
     });
 
+    // If a message push notification is received, refresh the view.
+    if ($mmPushNotificationsDelegate) {
+        $mmPushNotificationsDelegate.registerReceiveHandler('mmaMessages:discussions', function(notification) {
+            if ($mmUtil.isFalseOrZero(notification.notif)) {
+                // New message received. If it's from current site, refresh the data.
+                if (notification.site == $mmSite.getId()) {
+                    $scope.loaded = false;
+                    refreshData();
+                }
+            }
+        });
+    }
+
+    // Refresh the view when the app is resumed.
+    unregisterResume = $ionicPlatform.on('resume', function() {
+        $scope.loaded = false;
+        refreshData();
+    });
+
     $scope.$on('$destroy', function() {
         if (newMessagesObserver && newMessagesObserver.off) {
             newMessagesObserver.off();
+        }
+        if ($mmPushNotificationsDelegate) {
+            $mmPushNotificationsDelegate.unregisterReceiveHandler('mmaMessages:discussions');
+        }
+        if (unregisterResume) {
+            unregisterResume();
         }
     });
 });

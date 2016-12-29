@@ -61,6 +61,7 @@
     "signupplugindisabled": "{{$a}} is not enabled.",
     "siteaddress": "Site address",
     "siteinmaintenance": "Your site is in maintenance mode",
+    "sitepolicynotagreederror": "Site policy not agreed.",
     "siteurl": "Site URL",
     "siteurlrequired": "Site URL required, i.e <i>http://www.yourmoodlesite.abc or https://www.yourmoodlesite.efg</i>",
     "startsignup": "Create new account",

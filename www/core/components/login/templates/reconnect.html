@@ -15,7 +15,7 @@
             <form>
                 <ion-input class="item item-input item-stacked-label">
                     <ion-label>{{ 'mm.login.password' | translate }}</ion-label>
-                    <input type="password" placeholder="{{ 'mm.login.password' | translate }}" ng-model="credentials.password" mm-auto-focus>
+                    <input id="mm-login-reconnect-password-input" type="password" placeholder="{{ 'mm.login.password' | translate }}" ng-model="credentials.password" mm-auto-focus mm-show-password>
                 </ion-input>
                 <div class="item padding">
                     <button class="button button-block button-positive" ng-click="login()">{{ 'mm.login.loginbutton' | translate }}</button>

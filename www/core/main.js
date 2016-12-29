@@ -18,6 +18,7 @@ angular.module('mm.core', ['pascalprecht.translate'])
 .constant('mmCoreUserDeleted', 'mmCoreUserDeleted')
 .constant('mmCoreUserPasswordChangeForced', 'mmCoreUserPasswordChangeForced')
 .constant('mmCoreUserNotFullySetup', 'mmCoreUserNotFullySetup')
+.constant('mmCoreSitePolicyNotAgreed', 'mmCoreSitePolicyNotAgreed')
 .constant('mmCoreSecondsYear', 31536000)
 .constant('mmCoreSecondsDay', 86400)
 .constant('mmCoreSecondsHour', 3600)
@@ -175,7 +176,7 @@ angular.module('mm.core', ['pascalprecht.translate'])
 })
 
 .run(function($ionicPlatform, $ionicBody, $window, $mmEvents, $mmInitDelegate, mmCoreEventKeyboardShow, mmCoreEventKeyboardHide,
-        $mmApp, $timeout, mmCoreEventOnline, mmCoreEventOnlineStatusChanged) {
+        $mmApp, $timeout, mmCoreEventOnline, mmCoreEventOnlineStatusChanged, $mmUtil, $ionicScrollDelegate) {
     // Execute all the init processes.
     $mmInitDelegate.executeInitProcesses();
 
@@ -190,6 +191,36 @@ angular.module('mm.core', ['pascalprecht.translate'])
         // Listen for keyboard events. We don't use $cordovaKeyboard because it doesn't support keyboardHeight property.
         $window.addEventListener('native.keyboardshow', function(e) {
             $mmEvents.trigger(mmCoreEventKeyboardShow, e);
+
+            if (ionic.Platform.isIOS() && document.activeElement && document.activeElement.tagName != 'BODY') {
+                if ($mmUtil.closest(document.activeElement, 'ion-footer-bar[keyboard-attach]')) {
+                    // Input element is in a footer with keyboard-attach directive, nothing to be done.
+                    return;
+                }
+
+                // In iOS the user can select elements outside of the view using previous/next. Check if it's the case.
+                if ($mmUtil.isElementOutsideOfScreen(document.activeElement)) {
+                    // Focused element is outside of the screen. Scroll so the element is seen.
+                    var position = $mmUtil.getElementXY(document.activeElement),
+                        delegateHandle = $mmUtil.closest(document.activeElement, '*[delegate-handle]'),
+                        scrollView;
+
+                    if (position) {
+                        if ($window && $window.innerHeight) {
+                            // Put the input in the middle of screen aprox, not in top.
+                            position[1] = position[1] - $window.innerHeight * 0.5;
+                        }
+
+                        // Get the right scroll delegate to use.
+                        delegateHandle = delegateHandle && delegateHandle.getAttribute('delegate-handle');
+                        scrollView = typeof delegateHandle == 'string' ?
+                                $ionicScrollDelegate.$getByHandle(delegateHandle) : $ionicScrollDelegate;
+
+                        // Scroll to the position.
+                        $ionicScrollDelegate.scrollTo(position[0], position[1]);
+                    }
+                }
+            }
         });
         $window.addEventListener('native.keyboardhide', function(e) {
             $mmEvents.trigger(mmCoreEventKeyboardHide, e);

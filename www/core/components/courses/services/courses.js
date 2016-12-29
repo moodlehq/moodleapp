@@ -29,6 +29,59 @@ angular.module('mm.core.courses')
         currentCourses = {};
 
     /**
+     * Get categories. They can be filtered by id.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#getCategories
+     * @param   {Number}  categoryId        Category ID to get.
+     * @param   {Boolean} addSubcategories  If add subcategories to the list.
+     * @param   {String}  [siteId]          Site to get the courses from. If not defined, use current site.
+     * @return  {Promise}                   Promise to be resolved when the categories are retrieved.
+     */
+    self.getCategories = function(categoryId, addSubcategories, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            // Get parent when id is the root category.
+            var criteriaKey = categoryId == 0 ? 'parent' : 'id';
+
+            var data = {
+                    criteria: [
+                        { key: criteriaKey, value: categoryId }
+                    ],
+                    addsubcategories: addSubcategories ? 1 : 0
+                },
+                preSets = {
+                    cacheKey: getCategoriesCacheKey(categoryId, addSubcategories)
+                };
+
+            return site.read('core_course_get_categories', data, preSets);
+        });
+    };
+
+    /**
+     * Get cache key for get categories methods WS call.
+     *
+     * @param   {Number}    categoryId        Category ID to get.
+     * @param   {Boolean}   addSubcategories  If add subcategories to the list.
+     * @return  {String}    Cache key.
+     */
+    function getCategoriesCacheKey(categoryId, addSubcategories) {
+        return 'mmCourses:categories:' + categoryId + ':' + addSubcategories;
+    }
+
+    /**
+     * Check if get cateogries WS is available.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#isGetCategoriesAvailable
+     * @return {Boolean} True if get categories is available, false otherwise.
+     */
+    self.isGetCategoriesAvailable = function() {
+        return $mmSite.wsAvailable('core_course_get_categories');
+    };
+
+    /**
      * DEPRECATED: this function will be removed in a future version.
      * Clear current courses array. Reserved for core use.
      *
@@ -133,8 +186,6 @@ angular.module('mm.core.courses')
      * @return {Promise}        Promise to be resolved when the courses are retrieved.
      */
     self.getCourses = function(ids, siteid) {
-        siteid = siteid || $mmSite.getId();
-
         if (!angular.isArray(ids)) {
             return $q.reject();
         } else if (ids.length === 0) {
@@ -172,6 +223,63 @@ angular.module('mm.core.courses')
     }
 
     /**
+     * Get courses. They can be filtered by field.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#getCoursesByField
+     * @param {String}  [field]     The field to search can be left empty for all courses or:
+     *                                  id: course id.
+     *                                  ids: comma separated course ids.
+     *                                  shortname: course short name.
+     *                                  idnumber: course id number.
+     *                                  category: category id the course belongs to.
+     * @param {Mixed}   [value]     The value to match.
+     * @param {String}  [siteId]    Site to get the courses from. If not defined, use current site.
+     * @return {Promise}        Promise to be resolved when the courses are retrieved.
+     */
+    self.getCoursesByField = function(field, value, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var data = {
+                    field: field || "",
+                    value: field ? value : ""
+                },
+                preSets = {
+                    cacheKey: getCoursesByFieldCacheKey(field, value)
+                };
+
+            return site.read('core_course_get_courses_by_field', data, preSets).then(function(courses) {
+                return courses.courses || $q.reject();
+            });
+        });
+    };
+
+    /**
+     * Get cache key for get courses WS call.
+     *
+     * @param  {String} [field]     The field to search.
+     * @param  {Mixed}  [value]     The value to match.
+     * @return {String}       Cache key.
+     */
+    function getCoursesByFieldCacheKey(field, value) {
+        field = field || "";
+        value = field ? value : "";
+        return 'mmCourses:coursesbyfield:' + field + ":" + value;
+    }
+
+    /**
+     * Check if get courses by field WS is available.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#isGetCoursesByFieldAvailable
+     * @return {Boolean} True if get courses by field is available, false otherwise.
+     */
+    self.isGetCoursesByFieldAvailable = function() {
+        return $mmSite.wsAvailable('core_course_get_courses_by_field');
+    };
+
+    /**
      * DEPRECATED: this function will be removed in a future version. Please use $mmCourses#getUserCourse.
      * Get a course stored in memory.
      *
@@ -206,6 +314,8 @@ angular.module('mm.core.courses')
         return $mmSitesManager.getSite(siteId).then(function(site) {
             // Add always the site id course.
             courseIds.push(site.getInfo().siteid || 1);
+
+            siteId = siteId || site.getId();
 
             // Get user navigation and administration options to speed up handlers loading.
             promises.push(self.getUserNavigationOptions(courseIds, siteId).catch(function() {
@@ -286,8 +396,6 @@ angular.module('mm.core.courses')
      * @since 2.5
      */
     self.getUserCourse = function(id, preferCache, siteid) {
-        siteid = siteid || $mmSite.getId();
-
         if (!id) {
             return $q.reject();
         }
@@ -318,7 +426,6 @@ angular.module('mm.core.courses')
      * @return {Promise}                   Promise to be resolved when the courses are retrieved.
      */
     self.getUserCourses = function(preferCache, siteid) {
-        siteid = siteid || $mmSite.getId();
         if (typeof preferCache == 'undefined') {
             preferCache = false;
         }
@@ -337,6 +444,7 @@ angular.module('mm.core.courses')
             }
 
             return site.read('core_enrol_get_users_courses', data, presets).then(function(courses) {
+                siteid = siteid || site.getId();
                 if (siteid === $mmSite.getId()) {
                     // Only store courses if we're getting current site courses. This function is deprecated and will be removed.
                     storeCoursesInMemory(courses);
@@ -422,16 +530,34 @@ angular.module('mm.core.courses')
     }
 
     /**
+     * Invalidates get categories WS call.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#invalidateCategories
+     * @param  {Number}  categoryId          Category id to get.
+     * @param  {Boolean} addSubcategories    If add subcategories to the list.
+     * @param  {String}  [siteId]            Site Id. If not defined, use current site.
+     * @return {Promise}                     Promise resolved when the data is invalidated.
+     */
+    self.invalidateCategories = function(categoryId, addSubcategories, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getCategoriesCacheKey(categoryId, addSubcategories));
+        });
+    };
+
+    /**
      * Invalidates get course WS call.
      *
      * @module mm.core.courses
      * @ngdoc method
      * @name $mmCourses#invalidateCourse
-     * @param  {Number} id Course ID.
+     * @param  {Number}   id          Course ID.
+     * @param  {String}   [siteId]    Site Id. If not defined, use current site.
      * @return {Promise}   Promise resolved when the data is invalidated.
      */
-    self.invalidateCourse = function(id, siteid) {
-        return self.invalidateCourses([id], siteid);
+    self.invalidateCourse = function(id, siteId) {
+        return self.invalidateCourses([id], siteId);
     };
 
     /**
@@ -466,14 +592,30 @@ angular.module('mm.core.courses')
      * @module mm.core.courses
      * @ngdoc method
      * @name $mmCourses#invalidateCourses
-     * @param  {Number[]} ids   Courses IDs.
-     * @param {String} [siteid] Site ID to invalidate. If not defined, use current site.
-     * @return {Promise}        Promise resolved when the data is invalidated.
+     * @param  {Number[]} ids         Courses IDs.
+     * @param  {String}   [siteId]    Site Id. If not defined, use current site.
+     * @return {Promise}              Promise resolved when the data is invalidated.
      */
-    self.invalidateCourses = function(ids, siteid) {
-        siteid = siteid || $mmSite.getId();
-        return $mmSitesManager.getSite(siteid).then(function(site) {
+    self.invalidateCourses = function(ids, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getCoursesCacheKey(ids));
+        });
+    };
+
+    /**
+     * Invalidates get courses by field WS call.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#invalidateCoursesByField
+     * @param {String}  [field]     See mmCourses#getCoursesByField for info.
+     * @param {Mixed}   [value]     The value to match.
+     * @param {String}  [siteId]    Site Id. If not defined, use current site.
+     * @return {Promise}   Promise resolved when the data is invalidated.
+     */
+    self.invalidateCoursesByField = function(field, value, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getCoursesByFieldCacheKey(field, value));
         });
     };
 
@@ -518,7 +660,6 @@ angular.module('mm.core.courses')
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
     self.invalidateUserCourses = function(siteid) {
-        siteid = siteid || $mmSite.getId();
         return $mmSitesManager.getSite(siteid).then(function(site) {
             return site.invalidateWsCacheForKey(getUserCoursesCacheKey());
         });

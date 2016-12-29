@@ -138,7 +138,6 @@ angular.module('mm.addons.messages')
             angular.forEach(messages, function(message, index) {
                 // Chain message sending. If 1 message fails to be sent we'll stop sending.
                 promise = promise.then(function() {
-                    var time = new Date().getTime();
                     return $mmaMessages.sendMessageOnline(userId, message.smallmessage, siteId).catch(function(data) {
                         if (data.wserror) {
                             // Error returned by WS. Store the error to show a warning but keep sending messages.
@@ -157,10 +156,9 @@ angular.module('mm.addons.messages')
                         // Message was sent, delete it from local DB.
                         return $mmaMessagesOffline.deleteMessage(userId, message.smallmessage, message.timecreated, siteId);
                     }).then(function() {
-                        // All done. If the process was too fast add a delay to ensure timecreated of messages is different.
-                        var diff = new Date().getTime() - time;
-                        if (diff < 1000 && index < messages.length - 1) {
-                            return $timeout(function() {}, 1000 - diff);
+                        // All done. Wait 1 second to ensure timecreated of messages is different.
+                        if (index < messages.length - 1) {
+                            return $timeout(function() {}, 1000);
                         }
                     });
                 });

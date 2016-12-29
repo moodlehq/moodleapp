@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.core.user', [])
+angular.module('mm.core.user', ['mm.core.contentlinks'])
 
 .constant('mmUserEventProfileRefreshed', 'user_profile_refreshed') // User refreshed an user profile.
 .constant('mmUserProfilePictureUpdated', 'user_profile_picture_updated') // User profile picture updated.

@@ -1,17 +1,4 @@
 {
-    "average": "Gemiddelde",
-    "badgrade": "Beoordeling ongeldig",
-    "contributiontocoursetotal": "Bijdrage aan het cursustotaal",
-    "feedback": "Feedback",
-    "grade": "Cijfer",
-    "grades": "Cijfers",
-    "itemname": "Beoordelingsitem",
-    "lettergrade": "Letterbeoordeling",
     "nogradesreturned": "Geen cijfers",
-    "nooutcome": "Geen competentie",
-    "percentage": "Percentage",
-    "range": "Bereik",
-    "rank": "Volgorde",
-    "viewgrades": "Bekijk cijfers",
-    "weight": "Weging"
+    "viewgrades": "Bekijk cijfers"
 }

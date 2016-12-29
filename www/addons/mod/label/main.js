@@ -14,24 +14,6 @@
 
 angular.module('mm.addons.mod_label', ['mm.core'])
 
-.config(function($stateProvider) {
-
-    $stateProvider
-    .state('site.mod_label', {
-        url: '/mod_label',
-        params: {
-            description: null
-        },
-        views: {
-            'site': {
-                templateUrl: 'addons/mod/label/templates/index.html',
-                controller: 'mmaModLabelIndexCtrl'
-            }
-        }
-    });
-
-})
-
 .config(function($mmCourseDelegateProvider, $mmContentLinksDelegateProvider) {
     $mmCourseDelegateProvider.registerContentHandler('mmaModLabel', 'label', '$mmaModLabelHandlers.courseContent');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModLabel', '$mmaModLabelHandlers.linksHandler');

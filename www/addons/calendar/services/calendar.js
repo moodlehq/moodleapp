@@ -40,7 +40,7 @@ angular.module('mm.addons.calendar')
  */
 .factory('$mmaCalendar', function($log, $q, $mmSite, $mmUtil, $mmCourses, $mmGroups, $mmCourse, $mmLocalNotifications,
         $mmSitesManager, mmCoreSecondsDay, mmaCalendarDaysInterval, mmaCalendarEventsStore, mmaCalendarDefaultNotifTime,
-        mmaCalendarComponent) {
+        mmaCalendarComponent, mmaCalendarDefaultNotifTimeSetting, $mmConfig) {
 
     $log = $log.getInstance('$mmaCalendar');
 
@@ -88,23 +88,27 @@ angular.module('mm.addons.calendar')
      * Store events in local DB.
      *
      * @param {Object[]} events  Events to store.
-     * @param  {String} [siteid] ID of the site the event belongs to. If not defined, use current site.
+     * @param  {String} [siteId] ID of the site the event belongs to. If not defined, use current site.
      * @return {Promise}         Promise resolved when the events are stored.
      */
-    function storeEventsInLocalDB(events, siteid) {
-        siteid = siteid || $mmSite.getId();
+    function storeEventsInLocalDB(events, siteId) {
+        siteId = siteId || $mmSite.getId();
 
-        return $mmSitesManager.getSite(siteid).then(function(site) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
             var promises = [],
                 db = site.getDb();
 
             angular.forEach(events, function(event) {
-                // Get the event notification time to prevent overriding it in DB.
-                var promise = self.getEventNotificationTime(event.id, siteid).then(function(time) {
-                    event.notificationtime = time;
+                // Don't override event notification time if the user configured it.
+                promises.push(self.getEventFromLocalDb(event.id, siteId).catch(function() {
+                    // Event not stored, return empty object.
+                    return {};
+                }).then(function(e) {
+                    if (typeof e.notificationtime != 'undefined') {
+                        event.notificationtime = e.notificationtime;
+                    }
                     return db.insert(mmaCalendarEventsStore, event);
-                });
-                promises.push(promise);
+                }));
             });
 
             return $q.all(promises);
@@ -128,6 +132,37 @@ angular.module('mm.addons.calendar')
             e.moduleicon = icon;
         }
         e.icon = icon;
+    };
+
+    /**
+     * Get all calendar events from local Db.
+     *
+     * @module mm.addons.calendar
+     * @ngdoc method
+     * @name $mmaCalendar#getAllEventsFromLocalDb
+     * @param  {String} [siteId] ID of the site. If not defined, use current site.
+     * @return {Promise}         Promise resolved with all the events.
+     */
+    self.getAllEventsFromLocalDb = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().getAll(mmaCalendarEventsStore);
+        });
+    };
+
+    /**
+     * Get the configured default notification time.
+     *
+     * @module mm.addons.calendar
+     * @ngdoc method
+     * @name $mmaCalendar#getDefaultNotificationTime
+     * @param  {String} [siteId] ID of the site. If not defined, use current site.
+     * @return {Promise}         Promise resolved with the default time.
+     */
+    self.getDefaultNotificationTime = function(siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        var key = mmaCalendarDefaultNotifTimeSetting + '#' + siteId;
+        return $mmConfig.get(key, mmaCalendarDefaultNotifTime);
     };
 
     /**
@@ -171,15 +206,14 @@ angular.module('mm.addons.calendar')
      * @module mm.addons.calendar
      * @ngdoc method
      * @name $mmaCalendar#getEventFromLocalDb
-     * @param {Number}  id Event ID.
-     * @return {Promise}   Promise resolved when the event data is retrieved.
+     * @param  {Number} id       Event ID.
+     * @param  {String} [siteId] ID of the site the event belongs to. If not defined, use current site.
+     * @return {Promise}         Promise resolved when the event data is retrieved.
      */
-    self.getEventFromLocalDb = function(id) {
-        if (!$mmSite.isLoggedIn()) {
-            // Not logged in, we can't get the site DB. User logged out or session expired while an operation was ongoing.
-            return $q.reject();
-        }
-        return $mmSite.getDb().get(mmaCalendarEventsStore, id);
+    self.getEventFromLocalDb = function(id, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().get(mmaCalendarEventsStore, id);
+        });
     };
 
     /**
@@ -196,29 +230,46 @@ angular.module('mm.addons.calendar')
     };
 
     /**
-     * Get event notification time.
+     * Get event notification time. Always returns number of minutes (0 if disabled).
      *
      * @module mm.addons.calendar
      * @ngdoc method
      * @name $mmaCalendar#getEventNotificationTime
      * @param  {Number} id       Event ID.
-     * @param  {String} [siteid] ID of the site the event belongs to. If not defined, use current site.
-     * @return {String}          Event icon name. If type not valid, return empty string.
+     * @param  {String} [siteId] ID of the site the event belongs to. If not defined, use current site.
+     * @return {Number}          Event notification time in minutes. 0 if disabled.
      */
-    self.getEventNotificationTime = function(id, siteid) {
-        siteid = siteid || $mmSite.getId();
+    self.getEventNotificationTime = function(id, siteId) {
+        siteId = siteId || $mmSite.getId();
 
-        return $mmSitesManager.getSite(siteid).then(function(site) {
-            var db = site.getDb();
+        return self.getEventNotificationTimeOption(id, siteId).then(function(time) {
+            if (time == -1) {
+                return self.getDefaultNotificationTime(siteId);
+            }
+            return time;
+        });
+    };
 
-            return db.get(mmaCalendarEventsStore, id).then(function(e) {
-                if (typeof e.notificationtime != 'undefined') {
-                    return e.notificationtime;
-                }
-                return mmaCalendarDefaultNotifTime;
-            }, function(err) {
-                return mmaCalendarDefaultNotifTime;
-            });
+    /**
+     * Get event notification time for options. Returns -1 for default time.
+     *
+     * @module mm.addons.calendar
+     * @ngdoc method
+     * @name $mmaCalendar#getEventNotificationTimeOption
+     * @param  {Number} id       Event ID.
+     * @param  {String} [siteId] ID of the site the event belongs to. If not defined, use current site.
+     * @return {Number}          Event notification time in minutes. 0 if disabled, -1 if default time.
+     */
+    self.getEventNotificationTimeOption = function(id, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return self.getEventFromLocalDb(id, siteId).then(function(e) {
+            if (typeof e.notificationtime != 'undefined') {
+                return e.notificationtime;
+            }
+            return -1;
+        }, function() {
+            return -1;
         });
     };
 
@@ -231,7 +282,7 @@ angular.module('mm.addons.calendar')
      * @param {Number} [daysToStart=0]   Number of days from now to start getting events.
      * @param {Number} [daysInterval=30] Number of days between timestart and timeend.
      * @param {Boolean} [refresh]        True when we should not get the value from the cache.
-     * @param {String} [siteid]          Site to get the events from. If not defined, use current site.
+     * @param {String} [siteId]          Site to get the events from. If not defined, use current site.
      * @return {Promise}                 Promise to be resolved when the participants are retrieved.
      * @description
      * Get the events in a certain period. The period is calculated like this:
@@ -240,10 +291,10 @@ angular.module('mm.addons.calendar')
      * E.g. using $mmaCalendar.getEvents(30, 30) is going to get the events starting after 30 days from now
      * and ending before 60 days from now.
      */
-    self.getEvents = function(daysToStart, daysInterval, refresh, siteid) {
+    self.getEvents = function(daysToStart, daysInterval, refresh, siteId) {
         daysToStart = daysToStart || 0;
         daysInterval = daysInterval || mmaCalendarDaysInterval;
-        siteid = siteid || $mmSite.getId();
+        siteId = siteId || $mmSite.getId();
 
          var now = $mmUtil.timestamp(),
             start = now + (mmCoreSecondsDay * daysToStart),
@@ -257,18 +308,18 @@ angular.module('mm.addons.calendar')
             "options[timeend]": end
         };
 
-        return $mmCourses.getUserCourses(false, siteid).then(function(courses) {
+        return $mmCourses.getUserCourses(false, siteId).then(function(courses) {
             courses.push({id: 1}); // Add front page.
             angular.forEach(courses, function(course, index) {
                 data["events[courseids][" + index + "]"] = course.id;
             });
 
-            return $mmGroups.getUserGroups(courses, refresh, siteid).then(function(groups) {
+            return $mmGroups.getUserGroups(courses, refresh, siteId).then(function(groups) {
                 angular.forEach(groups, function(group, index) {
                     data["events[groupids][" + index + "]"] = group.id;
                 });
 
-                return $mmSitesManager.getSite(siteid).then(function(site) {
+                return $mmSitesManager.getSite(siteId).then(function(site) {
 
                     // We need to retrieve cached data using cache key because we have timestamp in the params.
                     var preSets = {
@@ -276,7 +327,7 @@ angular.module('mm.addons.calendar')
                         getCacheUsingCacheKey: true
                     };
                     return site.read('core_calendar_get_calendar_events', data, preSets).then(function(response) {
-                        storeEventsInLocalDB(response.events, siteid);
+                        storeEventsInLocalDB(response.events, siteId);
                         return response.events;
                     });
                 });
@@ -325,13 +376,13 @@ angular.module('mm.addons.calendar')
     self.scheduleAllSitesEventsNotifications = function() {
 
         if ($mmLocalNotifications.isAvailable()) {
-            return $mmSitesManager.getSitesIds().then(function(siteids) {
+            return $mmSitesManager.getSitesIds().then(function(siteIds) {
 
                 var promises = [];
-                angular.forEach(siteids, function(siteid) {
+                angular.forEach(siteIds, function(siteId) {
                     // Get first events.
-                    var promise = self.getEvents(undefined, undefined, false, siteid).then(function(events) {
-                        return self.scheduleEventsNotifications(events, siteid);
+                    var promise = self.getEvents(undefined, undefined, false, siteId).then(function(events) {
+                        return self.scheduleEventsNotifications(events, siteId);
                     });
                     promises.push(promise);
                 });
@@ -354,16 +405,21 @@ angular.module('mm.addons.calendar')
      * @name $mmaCalendar#scheduleEventNotification
      * @param  {Object} event    Event to schedule.
      * @param  {Number} time     Notification setting time (in minutes). E.g. 10 means "notificate 10 minutes before start".
-     * @param  {String} [siteid] Site ID the event belongs to. If not defined, use current site.
+     * @param  {String} [siteId] Site ID the event belongs to. If not defined, use current site.
      * @return {Promise}       Promise resolved when the notification is scheduled.
      */
-    self.scheduleEventNotification = function(event, time, siteid) {
-        siteid = siteid || $mmSite.getId();
+    self.scheduleEventNotification = function(event, time, siteId) {
+        siteId = siteId || $mmSite.getId();
 
         if ($mmLocalNotifications.isAvailable()) {
             if (time === 0) {
-                return $mmLocalNotifications.cancel(event.id, mmaCalendarComponent, siteid); // Cancel if it was scheduled.
-            } else {
+                return $mmLocalNotifications.cancel(event.id, mmaCalendarComponent, siteId); // Cancel if it was scheduled.
+            }
+
+            // If time is -1, get event default time.
+            var promise = time == -1 ? self.getDefaultNotificationTime(siteId) : $q.when(time);
+
+            return promise.then(function(time) {
                 var timeend = (event.timestart + event.timeduration) * 1000;
                 if (timeend <= new Date().getTime()) {
                     // The event has finished already, don't schedule it.
@@ -379,12 +435,13 @@ angular.module('mm.addons.calendar')
                         at: dateTriggered,
                         data: {
                             eventid: event.id,
-                            siteid: siteid
+                            siteid: siteId
                         }
                     };
 
-                return $mmLocalNotifications.schedule(notification, mmaCalendarComponent, siteid);
-            }
+                return $mmLocalNotifications.schedule(notification, mmaCalendarComponent, siteId);
+            });
+
         } else {
             return $q.when();
         }
@@ -399,23 +456,56 @@ angular.module('mm.addons.calendar')
      * @ngdoc method
      * @name $mmaCalendar#scheduleEventsNotifications
      * @param  {Object[]} events Events to schedule.
-     * @param  {String} [siteid] ID of the site the events belong to. If not defined, use current site.
+     * @param  {String} [siteId] ID of the site the events belong to. If not defined, use current site.
      * @return {Promise}         Promise resolved when all the notifications have been scheduled.
      */
-    self.scheduleEventsNotifications = function(events, siteid) {
-        siteid = siteid || $mmSite.getId();
+    self.scheduleEventsNotifications = function(events, siteId) {
+        siteId = siteId || $mmSite.getId();
         var promises = [];
 
         if ($mmLocalNotifications.isAvailable()) {
             angular.forEach(events, function(e) {
-                var promise = self.getEventNotificationTime(e.id, siteid).then(function(time) {
-                    return self.scheduleEventNotification(e, time, siteid);
+                var promise = self.getEventNotificationTime(e.id, siteId).then(function(time) {
+                    return self.scheduleEventNotification(e, time, siteId);
                 });
                 promises.push(promise);
             });
         }
 
         return $q.all(promises);
+    };
+
+    /**
+     * Set the default notification time.
+     *
+     * @module mm.addons.calendar
+     * @ngdoc method
+     * @name $mmaCalendar#setDefaultNotificationTime
+     * @param  {Number} time     New default time.
+     * @param  {String} [siteId] ID of the site. If not defined, use current site.
+     * @return {Promise}         Promise resolved when stored.
+     */
+    self.setDefaultNotificationTime = function(time, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        var key = mmaCalendarDefaultNotifTimeSetting + '#' + siteId;
+        return $mmConfig.set(key, time);
+    };
+
+    /**
+     * Store an event in local DB as it is.
+     *
+     * @module mm.addons.calendar
+     * @ngdoc method
+     * @name $mmaCalendar#storeEventInLocalDb
+     * @param  {Object} event    Event to store.
+     * @param  {String} [siteId] ID of the site the event belongs to. If not defined, use current site.
+     * @return {Promise}         Promise resolved when stored.
+     */
+    self.storeEventInLocalDb = function(event, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().insert(mmaCalendarEventsStore, event);
+        });
     };
 
     /**

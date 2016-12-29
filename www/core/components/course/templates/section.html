@@ -8,7 +8,7 @@
             <section class="card" ng-if="summary">
                 <!-- Only displayed when 1 section per page. -->
                 <div class="item item-text-wrap">
-                    <article><mm-format-text class="mm-content-with-float">{{ summary }}</mm-format-text></article>
+                    <article><mm-format-text>{{ summary }}</mm-format-text></article>
                 </div>
             </section>
 
@@ -19,25 +19,28 @@
                 </div>
 
                 <div class="item item-text-wrap" ng-if="allSections && section.summary">
-                    <mm-format-text class="mm-content-with-float">{{ section.summary }}</mm-format-text>
+                    <mm-format-text>{{ section.summary }}</mm-format-text>
                 </div>
 
-                <a class="item item-text-wrap mm-course-module-handler {{class}}" ng-repeat="module in section.modules" ng-click="action($event)" ng-class="{'item-button-right': (buttons && buttons.length > 0) || spinner, 'item-media': icon, 'item-completion': module.completionstatus}" ng-controller="module._controller" title="{{ title }}">
+                <a class="item item-text-wrap mm-course-module-handler clearfix {{class}}" ng-repeat="module in section.modules" ng-click="action($event)" ng-class="{'item-media': icon}" ng-controller="module._controller" title="{{ module.name }}">
 
                     <img ng-src="{{ icon }}" alt="" role="presentation" ng-if="icon">
+
+                    <div class="buttons mm-module-buttons" ng-class="{'mm-button-completion': module.completionstatus}" ng-if="(buttons && buttons.length > 0) || spinner || module.completionstatus">
+                        <mm-completion ng-if="module.completionstatus" completion="module.completionstatus" module-name="module.name" after-change="completionChanged"></mm-completion>
+
+                        <button ng-repeat="button in buttons" ng-hide="button.hidden" ng-click="button.action($event)" class="button button-icon" aria-label="{{ button.label | translate }}">
+                            <i class="icon positive" ng-class="{'{{button.icon}}': button.icon}"></i>
+                        </button>
+
+                        <ion-spinner ng-if="spinner"></ion-spinner>
+                    </div>
+
                     <mm-format-text watch="true">{{ title }}</mm-format-text>
-
-                    <button ng-repeat="button in buttons" ng-hide="button.hidden" ng-click="button.action($event)" class="button button-icon" aria-label="{{ button.label | translate }}">
-                        <i class="icon positive" ng-class="{'{{button.icon}}': button.icon}"></i>
-                    </button>
-
-                    <ion-spinner ng-if="spinner"></ion-spinner>
-
-                    <mm-completion ng-if="module.completionstatus" completion="module.completionstatus" module-name="title" after-change="completionChanged"></mm-completion>
                 </a>
 
                 <!-- When there is nothing in the section. -->
-                <div class="item item-text-wrap" ng-if="!sitehome && section.modules.length < 1">
+                <div class="item item-text-wrap" ng-if="section.modules.length < 1 && sections.length == 1">
                     {{ 'mm.course.nocontentavailable' | translate }}
                 </div>
             </section>

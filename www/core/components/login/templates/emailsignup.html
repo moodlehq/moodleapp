@@ -20,7 +20,7 @@
                 </ion-input>
                 <ion-input class="item item-input item-stacked-label item-text-wrap" mm-input-errors error-messages="passwordErrors">
                     <ion-label mm-mark-required="true">{{ 'mm.login.password' | translate }}</ion-label>
-                    <input type="password" name="password" placeholder="{{ 'mm.login.password' | translate }}" ng-model="data.password" required>
+                    <input id="mm-login-emailsignup-password-input" type="password" name="password" placeholder="{{ 'mm.login.password' | translate }}" ng-model="data.password" required mm-show-password>
                     <p ng-if="settings.passwordpolicy" class="mm-input-footnote">
                         {{settings.passwordpolicy}}
                     </p>

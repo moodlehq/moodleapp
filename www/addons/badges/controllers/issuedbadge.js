@@ -23,8 +23,8 @@ angular.module('mm.addons.badges')
  */
 .controller('mmaBadgesIssuedCtrl', function($scope, $stateParams, $mmUtil, $mmaBadges, $mmSite, $q, $mmCourses, $mmUser) {
 
-    $scope.courseId = $stateParams.courseid;
-    $scope.userId = $stateParams.userid || $mmSite.getUserId();
+    $scope.courseId = $stateParams.cid;
+    $scope.userId = $stateParams.uid || $mmSite.getUserId();
     var uniqueHash = $stateParams.uniquehash;
 
     function fetchIssuedBadge() {
