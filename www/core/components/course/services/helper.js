@@ -713,8 +713,12 @@ angular.module('mm.core.course')
         return self.getModulePrefetchInfo(module, courseId, invalidateCache).then(function(moduleInfo) {
             scope.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
             scope.prefetchStatusIcon = moduleInfo.statusIcon;
-            scope.timemodified = moduleInfo.timemodified > 0 ?
-                    $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable : '';
+            if (moduleInfo.timemodified > 0) {
+                scope.timemodified = $translate.instant('mm.core.lastmodified') + ': ' + moduleInfo.timemodifiedReadable;
+            } else {
+                // Cannot calculate time modified, show a default text.
+                scope.timemodified = $translate.instant('mm.core.download');
+            }
         });
     };
 
