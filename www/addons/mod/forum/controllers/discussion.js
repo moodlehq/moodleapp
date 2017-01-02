@@ -208,9 +208,7 @@ angular.module('mm.addons.mod_forum')
 
     $scope.changeSort(true).then(function() {
         // Add log in Moodle.
-        $mmSite.write('mod_forum_view_forum_discussion', {
-            discussionid: discussionId
-        });
+        $mmaModForum.logDiscussionView(discussionId);
     });
 
     // Pull to refresh.
