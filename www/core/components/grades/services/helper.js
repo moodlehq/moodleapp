@@ -154,8 +154,10 @@ angular.module('mm.core.grades')
                     }
                     // Trust the HTML.
                     row.text = $sce.trustAsHtml(row.text);
-                    formatted.rows.push(row);
                 }
+
+                // Always add row to avoid rowspan errors.
+                formatted.rows.push(row);
             }
         }
 
