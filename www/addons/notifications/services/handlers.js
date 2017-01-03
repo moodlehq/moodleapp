@@ -23,7 +23,8 @@ angular.module('mm.addons.notifications')
  * @ngdoc service
  * @name $mmaNotificationsHandlers
  */
-.factory('$mmaNotificationsHandlers', function($log, $mmaNotifications) {
+.factory('$mmaNotificationsHandlers', function($log, $mmaNotifications, $mmEvents, $mmSitesManager,
+        mmaNotificationsReadChangedEvent, mmaNotificationsReadCronEvent) {
     $log = $log.getInstance('$mmaNotificationsHandlers');
 
     var self = {};
@@ -67,7 +68,76 @@ angular.module('mm.addons.notifications')
                 $scope.title = 'mma.notifications.notifications';
                 $scope.state = 'site.notifications';
                 $scope.class = 'mma-notifications-handler';
+                $scope.loading = true;
+                updateUnreadNotificationsCount().finally(function() {
+                    $scope.loading = false;
+                });
+
+                var readChangedObserver = $mmEvents.on(mmaNotificationsReadChangedEvent, function(data) {
+                    if (data && $mmSitesManager.isCurrentSite(data.siteid)) {
+                        updateUnreadNotificationsCount();
+                    }
+                });
+
+                var cronObserver = $mmEvents.on(mmaNotificationsReadCronEvent, function(data) {
+                    if (data && $mmSitesManager.isCurrentSite(data.siteid)) {
+                        updateUnreadNotificationsCount();
+                    }
+                });
+
+                function updateUnreadNotificationsCount() {
+                    return $mmaNotifications.getUnreadNotificationsCount().then(function(unread) {
+                        $scope.badge = unread;
+                    });
+                }
+
+                $scope.$on('$destroy', function() {
+                    readChangedObserver && readChangedObserver.off && readChangedObserver.off();
+                    cronObserver && cronObserver.off && cronObserver.off();
+                });
             };
+        };
+
+        /**
+         * Execute the process.
+         * Receives the ID of the site affected, undefined for all sites.
+         *
+         * @param  {String} [siteId] ID of the site affected, undefined for all sites.
+         * @return {Promise}         Promise resolved when done, rejected if failure.
+         */
+        self.execute = function(siteId) {
+            if ($mmSitesManager.isCurrentSite(siteId)) {
+                $mmEvents.trigger(mmaNotificationsReadCronEvent, {
+                    siteid: siteId
+                });
+            }
+        };
+
+        /**
+         * Get the time between consecutive executions.
+         *
+         * @return {Number} Time between consecutive executions (in ms).
+         */
+        self.getInterval = function() {
+            return 600000; // 10 minutes.
+        };
+
+        /**
+         * Whether it's a synchronization process or not.
+         *
+         * @return {Boolean} True if is a sync process, false otherwise.
+         */
+        self.isSync = function() {
+            return false;
+        };
+
+        /**
+         * Whether the process uses network or not.
+         *
+         * @return {Boolean} True if uses network, false otherwise.
+         */
+        self.usesNetwork = function() {
+            return true;
         };
 
         return self;
