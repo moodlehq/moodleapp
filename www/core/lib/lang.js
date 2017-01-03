@@ -24,7 +24,7 @@ angular.module('mm.core')
 .factory('$mmLang', function($translate, $translatePartialLoader, $mmConfig, $cordovaGlobalization, $q, mmCoreConfigConstants) {
 
     var self = {},
-        fallbackLanguage = 'en',
+        fallbackLanguage = mmCoreConfigConstants.default_lang || 'en',
         currentLanguage; // Save current language in a variable to speed up the get function.
 
     /**
@@ -67,8 +67,13 @@ angular.module('mm.core')
         return $mmConfig.get('current_language').then(function(language) {
             return language;
         }, function() {
+            // User hasn't defined a language. If default language is forced, use it.
+            if (mmCoreConfigConstants.forcedefaultlanguage && mmCoreConfigConstants.forcedefaultlanguage !== 'false') {
+                return mmCoreConfigConstants.default_lang;
+            }
+
             try {
-                // User hasn't defined a language. Get it from cordova globalization.
+                // No forced language, try to get current language from cordova globalization.
                 return $cordovaGlobalization.getPreferredLanguage().then(function(result) {
                     var language = result.value.toLowerCase();
                     if (language.indexOf('-') > -1) {
@@ -82,11 +87,11 @@ angular.module('mm.core')
                     return language;
                 }, function() {
                     // Error getting locale. Use default language.
-                    return mmCoreConfigConstants.default_lang || fallbackLanguage;
+                    return fallbackLanguage;
                 });
             } catch(err) {
                 // Error getting locale. Use default language.
-                return mmCoreConfigConstants.default_lang || fallbackLanguage;
+                return fallbackLanguage;
             }
         }).then(function(language) {
             currentLanguage = language; // Save it for later.
@@ -149,7 +154,7 @@ angular.module('mm.core')
     return self;
 })
 
-.config(function($translateProvider, $translatePartialLoaderProvider) {
+.config(function($translateProvider, $translatePartialLoaderProvider, mmCoreConfigConstants) {
 
     $translateProvider.useLoader('$translatePartialLoader', {
         urlTemplate: '{part}/{lang}.json'
@@ -158,9 +163,10 @@ angular.module('mm.core')
     // Load the built language files from build/lang.
     $translatePartialLoaderProvider.addPart('build/lang');
 
-    // Set fallback language.
-    $translateProvider.fallbackLanguage('en');
-    $translateProvider.preferredLanguage('en'); // Set English until we know which language to use.
+    // Set fallback language and language to use until the app determines the right language to use.
+    var lang = mmCoreConfigConstants.default_lang || 'en';
+    $translateProvider.fallbackLanguage(lang);
+    $translateProvider.preferredLanguage(lang);
 })
 
 .run(function($ionicPlatform, $translate, $mmLang) {

@@ -31,9 +31,14 @@ function getRemoteAddonPaths(paths, pathToAddon) {
 
   paths.forEach(function(path) {
     // Search only inside the addon folder.
-    result.push(npmPath.join(pathToAddon, path));
-    // Ignore the files inside the addon "package" (tmp) folder.
-    result.push('!' + npmPath.join(pathToPackageFolder, path));
+    // Check if the path needs to be ignored.
+    if (path[0] == '!') {
+      result.push('!' + npmPath.join(pathToAddon, path.substr(1)));
+    } else {
+      result.push(npmPath.join(pathToAddon, path));
+      // Ignore the files inside the addon "package" (tmp) folder.
+      result.push('!' + npmPath.join(pathToPackageFolder, path));
+    }
   });
 
   return result;
@@ -41,9 +46,13 @@ function getRemoteAddonPaths(paths, pathToAddon) {
 
 // Get the names of the JSON files inside a directory.
 function getFilenames(dir) {
-  return fs.readdirSync(dir).filter(function(file) {
-    return file.indexOf('.json') > -1;
-  });
+  if (fs.existsSync(dir)) {
+    return fs.readdirSync(dir).filter(function(file) {
+      return file.indexOf('.json') > -1;
+    });
+  } else {
+    return [];
+  }
 }
 
 /**
@@ -99,11 +108,14 @@ function treatMergedData(data) {
     } else if (filepath.indexOf('addons') === 0) {
 
       var split = filepath.split('/'),
-        pluginName = split[1];
+        pluginName = split[1],
+        index = 2;
 
-      // Check if it's a subplugin. If so, we'll use plugin_subplugin.
-      if (split[2] != 'lang') {
-        pluginName = pluginName + '_' + split[2];
+      // Check if it's a subplugin. If so, we'll use plugin_subfolder_subfolder2_...
+      // E.g. 'mod_assign_feedback_comments'.
+      while (split[index] && split[index] != 'lang') {
+        pluginName = pluginName + '_' + split[index];
+        index++;
       }
       addProperties(merged, data[filepath], 'mma.'+pluginName+'.');
 
@@ -190,6 +202,12 @@ function buildJS(jsPaths, buildDest, buildFile, license, buildingApp, replace, d
  * @return {Void}
  */
 function buildLangs(filenames, langPaths, buildDest, done) {
+  if (!filenames || !filenames.length) {
+    // If no filenames supplied, stop. Maybe it's an empty lang folder.
+    done();
+    return;
+  }
+
   var count = 0;
 
   function taskFinished() {
@@ -290,9 +308,17 @@ var paths = {
     './www/core/lib/*.js',
     './www/core/filters/*.js',
     './www/core/directives/*.js',
-    './www/core/components/**/main.js',
+    './www/core/components/*/main.js', // Don't use **/main.js to ensure that top level main.js are executed before lower ones.
+    './www/core/components/*/*/main.js',
+    './www/core/components/*/*/*/main.js',
+    './www/core/components/*/*/*/*/main.js',
+    './www/core/components/*/*/*/*/**/main.js', // It's unlikely there're more subaddons.
     './www/core/components/**/*.js',
-    './www/addons/**/main.js',
+    './www/addons/*/main.js', // Don't use **/main.js to ensure that top level main.js are executed before lower ones.
+    './www/addons/*/*/main.js',
+    './www/addons/*/*/*/main.js',
+    './www/addons/*/*/*/*/main.js',
+    './www/addons/*/*/*/*/**/main.js', // It's unlikely there're more subaddons.
     './www/addons/**/*.js',
     '!./www/**/tests/*.js',
     '!./www/**/e2e/*.js',
@@ -340,10 +366,16 @@ var remoteAddonPaths = {
   all: [
     '*',
     '**/*',
+    '!e2e/*',
+    '!**/e2e/*',
   ],
-  js: [
+  js: [ // Treat main.js files first.
+    '*/main.js',
+    '**/main.js',
     '*.js',
     '**/*.js',
+    '!e2e/*.js',
+    '!**/e2e/*.js',
   ],
   sass: [
     '*.scss',
@@ -773,6 +805,11 @@ gulp.task('remoteaddon-lang', ['remoteaddon-copy'], function(done) {
   langPaths = getRemoteAddonPaths(remoteAddonPaths.lang, path);
   addonPackagePath = npmPath.join(path, remoteAddonPackageFolder);
   buildDest = npmPath.join(addonPackagePath, 'lang');
+  if (!fs.existsSync(langPaths[0])) {
+    // No lang folder, stop.
+    done();
+    return;
+  }
 
   // Get filenames to know which languages are available.
   filenames = filenames.concat(getFilenames(langPaths[0]));

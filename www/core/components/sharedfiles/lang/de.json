@@ -1,10 +1,11 @@
 {
     "chooseaccountstorefile": "Wählen Sie ein Nutzerkonto, um die Datei dort zu speichern.",
-    "chooseactionrepeatedfile": "Es gibt bereits eine Datei mit diesem Namen. Möchten Sie die vorhandene Datei ersetzen oder möchten Sie sie umbenennen in '{{$a}}'?",
-    "errorreceivefilenosites": "Bisher sind keine Websites gespeichert. Fügen Sie zuerst eine Website hinzu, bevor Sie eine Datei über die App teilen.",
-    "nosharedfiles": "Bisher sind keine Dateien für diese Website gespeichert.",
+    "chooseactionrepeatedfile": "Eine Datei mit diesem Namen existiert bereits. Möchten Sie die vorhandene Datei ersetzen oder möchten Sie sie umbenennen in '{{$a}}'?",
+    "errorreceivefilenosites": "Keine Websites gespeichert. Fügen Sie zuerst eine Website hinzu, bevor Sie eine Datei über die App freigeben.",
+    "nosharedfiles": "Keine Dateien für diese Website freigegeben",
+    "nosharedfilestoupload": "Sie haben hier noch keine Dateien zum Hochladen. Wenn Sie eine Datei aus einer anderen App hochladen möchten, suchen Sie diese Datei und tippen Sie auf die Taste 'Öffnen in'.",
     "rename": "Umbenennen",
     "replace": "Ersetzen",
-    "sharedfiles": "Gespeicherte Dateien",
-    "successstorefile": "Die Datei wurde erfolgreich gespeichert. Sie können die Datei jetzt verwenden, um Sie in 'Meine Dateien' hochzuladen oder bei Aktivitäten anzuhängen."
+    "sharedfiles": "Freigegebene Dateien",
+    "successstorefile": "Die Datei wurde gespeichert. Sie können die Datei verwenden, um Sie in 'Meine Dateien' hochzuladen oder bei Aktivitäten anzuhängen."
 }

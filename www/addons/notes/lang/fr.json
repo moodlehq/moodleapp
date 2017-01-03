@@ -8,5 +8,6 @@
     "personalnotes": "Annotations personnelles",
     "publishstate": "Contexte",
     "sitenotes": "Annotations du site",
-    "userwithid": "Utilisateur d'identifiant {{id}}"
+    "userwithid": "Utilisateur d'identifiant {{id}}",
+    "warningnotenotsent": "Impossible d'ajouter d'annotation au cours {{course}}. {{error}}"
 }

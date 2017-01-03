@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_forum')
  */
 .controller('mmaModForumDiscussionsCtrl', function($q, $scope, $stateParams, $mmaModForum, $mmCourse, $mmUtil, $mmGroups, $mmUser,
             $mmEvents, $ionicScrollDelegate, $ionicPlatform, mmUserProfileState, mmaModForumNewDiscussionEvent, $mmSite, $translate,
-            mmaModForumReplyDiscussionEvent, $mmText, mmaModForumComponent, $mmaModForumOffline, $mmaModForumSync, $mmEvents,
+            mmaModForumReplyDiscussionEvent, $mmText, mmaModForumComponent, $mmaModForumOffline, $mmaModForumSync,
             mmaModForumAutomSyncedEvent, mmaModForumManualSyncedEvent, $mmApp, mmCoreEventOnlineStatusChanged) {
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
@@ -56,6 +56,11 @@ angular.module('mm.addons.mod_forum')
             $scope.description = forum.intro || $scope.description;
             $scope.forum = forum;
 
+            // In tablet, load first discussion skipping "Add new discussion" button.
+            if (!$scope.linkToLoad) {
+                $scope.linkToLoad = $scope.isCreateEnabled && forum.cancreatediscussions ? 2 : 1;
+            }
+
             if (sync) {
                 // Try to synchronize the forum.
                 return syncForum(showErrors).catch(function() {
@@ -82,10 +87,13 @@ angular.module('mm.addons.mod_forum')
                                 // Fill user data for Offline discussions (should be already cached).
                                 var userPromises = [];
                                 angular.forEach(offlineDiscussions, function(discussion) {
-                                    userPromises.push($mmUser.getProfile(discussion.userid, courseid, true).then(function(user) {
-                                        discussion.userfullname = user.fullname;
-                                        discussion.userpictureurl = user.profileimageurl;
-                                    }));
+                                    if (discussion.parent != 0 || forum.type != 'single') {
+                                        // Do not show author for first post and type single.
+                                        userPromises.push($mmUser.getProfile(discussion.userid, courseid, true).then(function(user) {
+                                            discussion.userfullname = user.fullname;
+                                            discussion.userpictureurl = user.profileimageurl;
+                                        }));
+                                    }
                                 });
 
                                 return $q.all(userPromises).then(function() {
@@ -128,6 +136,17 @@ angular.module('mm.addons.mod_forum')
             var promise = usesGroups ?
                     $mmaModForum.formatDiscussionsGroups(forum.cmid, response.discussions) : $q.when(response.discussions);
             return promise.then(function(discussions) {
+
+                if (forum.type == 'single') {
+                    // Hide author for first post and type single.
+                    for (var x in discussions) {
+                        if (discussions[x].userfullname && discussions[x].parent == 0) {
+                            discussions[x].userfullname = false;
+                            break;
+                        }
+                    }
+                }
+
                 if (page == 0) {
                     $scope.discussions = discussions;
                 } else {

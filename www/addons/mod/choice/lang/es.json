@@ -13,6 +13,7 @@
     "responses": "Respuestas",
     "responsesresultgraphdescription": "{{number}}% de los usuarios han escogido la opción: {{text}}.",
     "responsesresultgraphheader": "Vista de gráfica",
+    "resultsnotsynced": "Los resultados no incluyen su última respuesta. Por favor, sincronícelos para actualizarlos.",
     "savemychoice": "Guardar mi elección",
     "userchoosethisoption": "Usuarios que eligieron esta opción",
     "yourselection": "Su elección"

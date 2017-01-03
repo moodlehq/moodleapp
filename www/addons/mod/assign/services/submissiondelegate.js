@@ -44,7 +44,7 @@ angular.module('mm.addons.mod_assign')
  *
  * @see $mmaModAssignSubmissionDelegate#registerHandler to see the methods your handle needs to implement.
  */
-.factory('$mmaModAssignSubmissionDelegate', function($log, $mmSite, $mmUtil, $q) {
+.factory('$mmaModAssignSubmissionDelegate', function($log, $mmSite, $mmUtil, $q, $translate) {
     $log = $log.getInstance('$mmaModAssignSubmissionDelegate');
 
     var handlers = {},
@@ -126,6 +126,34 @@ angular.module('mm.addons.mod_assign')
         var handler = self.getPluginHandler(plugin.type);
         if (handler && handler.getDirectiveName) {
             return handler.getDirectiveName(plugin, edit);
+        }
+    };
+
+    /**
+     * Get a readable name to use for a certain submission plugin.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionDelegate#getPluginName
+     * @param  {Object} plugin Plugin to get the directive for.
+     * @return {String}        Human readable name. Undefined if no name, translation or directive found.
+     */
+    self.getPluginName = function(plugin) {
+        var handler = self.getPluginHandler(plugin.type);
+        if (handler && handler.getPluginName) {
+            return handler.getPluginName(plugin);
+        }
+
+        // Fallback to translated string.
+        var translationId = 'mma.mod_assign_submission_' + plugin.type + '.pluginname',
+            translation = $translate.instant(translationId);
+        if (translationId != translation) {
+            return translation;
+        }
+
+        // Fallback to WS string.
+        if (plugin.name) {
+            return plugin.name;
         }
     };
 
@@ -384,6 +412,9 @@ angular.module('mm.addons.mod_assign')
      *                             - prepareSyncData(assign, submission, plugin, offlineData, pluginData, siteId). Optional. Should
      *                                                           prepare and add to pluginData the data to send to server based in
      *                                                           the offline data stored. This is to perform a synchronziation.
+     *                             - getPluginName(plugin). Optional. Should return a human readable String. If not present, default
+     *                                                           translation will be applied, if translation not found, optional
+     *                                                           name will be used.
      */
     self.registerHandler = function(addon, pluginType, handler) {
         if (typeof handlers[pluginType] !== 'undefined') {

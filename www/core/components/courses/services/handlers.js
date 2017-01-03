@@ -21,7 +21,7 @@ angular.module('mm.core.courses')
  * @ngdoc service
  * @name $mmCoursesHandlers
  */
-.factory('$mmCoursesHandlers', function($mmSite, $state, $mmCourses, $q, $mmUtil, $translate, $timeout, $mmCourse,
+.factory('$mmCoursesHandlers', function($mmSite, $state, $mmCourses, $q, $mmUtil, $translate, $timeout, $mmCourse, $mmSitesManager,
             mmCoursesEnrolInvalidKey) {
 
     var self = {};
@@ -87,7 +87,7 @@ angular.module('mm.core.courses')
                         var body = $translate('mm.core.twoparagraphs',
                                         {p1: error, p2: $translate.instant('mm.core.confirmopeninbrowser')});
                         $mmUtil.showConfirm(body).then(function() {
-                            $mmUtil.openInBrowser(url);
+                            $mmSite.openInBrowserWithAutoLogin(url);
                         });
                         return $q.reject();
                     });
@@ -204,27 +204,31 @@ angular.module('mm.core.courses')
                     // Course view or enrol.
                     var params = $mmUtil.extractUrlParams(url),
                         courseId = parseInt(params.id, 10);
-                    if (courseId && courseId != 1) {
-                        // Return actions.
-                        return [{
-                            message: 'mm.core.view',
-                            icon: 'ion-eye',
-                            sites: siteIds,
-                            action: function(siteId) {
-                                siteId = siteId || $mmSite.getId();
-                                if (siteId == $mmSite.getId()) {
-                                    actionEnrol(courseId, url);
-                                } else {
-                                    // Use redirect to make the course the new history root (to avoid "loops" in history).
-                                    $state.go('redirect', {
-                                        siteid: siteId,
-                                        state: 'site.mm_course',
-                                        params: {courseid: courseId}
-                                    });
+
+                    // Get the course id of Site Home for the first site (all the siteIds should belong to the same Moodle).
+                    return $mmSitesManager.getSiteHomeId(siteIds[0]).then(function(siteHomeId) {
+                        if (courseId && courseId != siteHomeId) {
+                            // Return actions.
+                            return [{
+                                message: 'mm.core.view',
+                                icon: 'ion-eye',
+                                sites: siteIds,
+                                action: function(siteId) {
+                                    siteId = siteId || $mmSite.getId();
+                                    if (siteId == $mmSite.getId()) {
+                                        actionEnrol(courseId, url);
+                                    } else {
+                                        // Use redirect to make the course the new history root (to avoid "loops" in history).
+                                        $state.go('redirect', {
+                                            siteid: siteId,
+                                            state: 'site.mm_course',
+                                            params: {courseid: courseId}
+                                        });
+                                    }
                                 }
-                            }
-                        }];
-                    }
+                            }];
+                        }
+                    });
                 }
             }
 

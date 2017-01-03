@@ -18,6 +18,10 @@
     "numreplies": "{{numreplies}} antwoorden",
     "posttoforum": "Plaats op het forum",
     "re": "Re:",
+    "refreshdiscussions": "Discussie verversen",
+    "refreshposts": "Discussieberichten verversen",
     "reply": "Antwoord",
+    "sortnewestfirst": "Toon nieuwste eerst",
+    "sortoldestfirst": "Toon oudste eerst",
     "subject": "Onderwerp"
 }

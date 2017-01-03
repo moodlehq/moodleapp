@@ -72,4 +72,12 @@ angular.module('mm.core.settings', [])
         }
     });
 
+})
+
+.run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, mmCoreEventLogout, $mmSettingsDelegate,
+            mmCoreEventRemoteAddonsLoaded) {
+    $mmEvents.on(mmCoreEventLogin, $mmSettingsDelegate.updateHandlers);
+    $mmEvents.on(mmCoreEventSiteUpdated, $mmSettingsDelegate.updateHandlers);
+    $mmEvents.on(mmCoreEventRemoteAddonsLoaded, $mmSettingsDelegate.updateHandlers);
+    $mmEvents.on(mmCoreEventLogout, $mmSettingsDelegate.clearSiteHandlers);
 });

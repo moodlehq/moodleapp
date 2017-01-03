@@ -31,7 +31,7 @@ angular.module('mm.core')
  * Attributes accepted:
  *     - siteid: Reference to the site ID if different than the site the user is connected to.
  */
-.directive('mmExternalContent', function($log, $mmFilepool, $mmSite, $mmSitesManager, $mmUtil, $q, $mmApp) {
+.directive('mmExternalContent', function($log, $mmFilepool, $mmSite, $mmSitesManager, $mmUtil, $q, $mmApp, $ionicPlatform) {
     $log = $log.getInstance('mmExternalContent');
 
     /**
@@ -49,7 +49,12 @@ angular.module('mm.core')
             type = dom.getAttribute('type');
         e.setAttribute('src', url);
         if (type) {
-            e.setAttribute('type', type);
+            if (ionic.Platform.isAndroid() && type == 'video/quicktime') {
+                // Fix for VideoJS/Chrome bug https://github.com/videojs/video.js/issues/423 .
+                e.setAttribute('type', 'video/mp4');
+            } else {
+                e.setAttribute('type', type);
+            }
         }
         dom.parentNode.insertBefore(e, dom);
     }
@@ -66,6 +71,25 @@ angular.module('mm.core')
      * @return {Promise}              Promise resolved if the element is successfully treated.
      */
     function handleExternalContent(siteId, dom, targetAttr, url, component, componentId) {
+
+        if (dom.tagName == 'VIDEO' && dom.textTracks) {
+            // It's a video with subtitles. In iOS, subtitles position is wrong so it needs to be fixed.
+            dom.textTracks.onaddtrack = function(event) {
+                if (event.track) {
+                    event.track.oncuechange = function() {
+                        var line = $ionicPlatform.isTablet() || ionic.Platform.isAndroid() ? 90 : 80;
+                        // Position all subtitles to a percentage of video height.
+                        angular.forEach(event.track.cues, function(cue) {
+                            cue.snapToLines = false;
+                            cue.line = line;
+                            cue.size = 100; // This solves some Android issue.
+                        });
+                        // Delete listener.
+                        event.track.oncuechange = null;
+                    };
+                }
+            };
+        }
 
         if (!url || !$mmUtil.isDownloadableUrl(url)) {
             $log.debug('Ignoring non-downloadable URL: ' + url);
@@ -85,7 +109,7 @@ angular.module('mm.core')
 
             var fn;
 
-            if (targetAttr === 'src' && dom.tagName !== 'SOURCE') {
+            if (targetAttr === 'src' && dom.tagName !== 'SOURCE' && dom.tagName !== 'TRACK') {
                 fn = $mmFilepool.getSrcByUrl;
             } else {
                 fn = $mmFilepool.getUrlByUrl;
@@ -152,7 +176,7 @@ angular.module('mm.core')
                     observe = true;
                 }
 
-            } else if (dom.tagName === 'AUDIO' || dom.tagName === 'VIDEO' || dom.tagName === 'SOURCE') {
+            } else if (dom.tagName === 'AUDIO' || dom.tagName === 'VIDEO' || dom.tagName === 'SOURCE' || dom.tagName === 'TRACK') {
                 targetAttr = 'src';
                 sourceAttr = 'targetSrc';
                 if (attrs.hasOwnProperty('ngSrc')) {

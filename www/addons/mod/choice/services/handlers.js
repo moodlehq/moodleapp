@@ -127,8 +127,11 @@ angular.module('mm.addons.mod_choice')
                     if (status) {
                         $scope.spinner = status === mmCoreDownloading;
                         downloadBtn.hidden = status !== mmCoreNotDownloaded;
-                        // Always show refresh button if downloaded because we can't tell if there's something new.
-                        refreshBtn.hidden = status !== mmCoreOutdated && status !== mmCoreDownloaded;
+                        refreshBtn.hidden = status !== mmCoreOutdated;
+                        if (!$mmCoursePrefetchDelegate.canCheckUpdates()) {
+                            // Always show refresh button if downloaded because we can't tell if there's something new.
+                            refreshBtn.hidden = refreshBtn.hidden && status !== mmCoreDownloaded;
+                        }
                     }
                 }
 

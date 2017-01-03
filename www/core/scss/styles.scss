@@ -33,9 +33,6 @@ $item-message-note-text: #999 !default;
 $item-message-note-font-size: $font-size-small !default;
 $item-message-mine-bg: rgba(17, 193, 243, .1) !default;
 
-// Completion
-$completion-img-width: 24px !default;
-
 // Disabled items.
 $item-disabled-color: #999 !default;
 
@@ -55,6 +52,12 @@ $mm-text-with-icon-height: 22px !default;
 
 // Smaller button icon.
 $mm-button-icon-small-height: 22px !default;
+
+// Required inputs asterisk color.
+$mm-input-required-asterisk-color: #ff4136 !default;
+
+// Item padding.
+$item-input-padding: 16px !default;
 
 /**
  * App Branding
@@ -100,8 +103,17 @@ em {
  * Styles.
  */
 
-.item-stacked-label{
+.mm-big   { font-size: 115%; }
+
+.item-stacked-label {
   background-color: $item-default-bg;
+}
+
+.item-stacked-label, .item-checkbox {
+  .input-label {
+    max-width: 100%;
+    width: 100%;
+  }
 }
 
 // Default bar.
@@ -117,6 +129,9 @@ em {
 // This is done for accessibility reasons when a heading is semantically incorrect.
 .item .item-heading {
   @extend h2;
+  &.padding {
+    @extend .padding;
+  }
 }
 
 .item.item-text-wrap .item-heading {
@@ -172,9 +187,13 @@ em {
   &.item-icon-left {
     padding-left: 35px;
 
-    .icon {
+    .icon:first-child {
       left: 4px;
     }
+  }
+
+  &.item-icon-right {
+    @extend .item-icon-right;
   }
 }
 
@@ -193,6 +212,10 @@ em {
     color: $item-message-note-text;
     font-size: $item-message-note-font-size;
     margin-left: 20px;
+  }
+
+  mm-format-text > p:only-child {
+    display: inline-block;
   }
 }
 
@@ -242,10 +265,12 @@ em {
     @extend .item-avatar;
     text-align: center;
     padding-left: 16px;
+
     &.item-complex .item-content {
         text-align: center;
         padding-left: 49px;
     }
+
     > img:first-child,
     &.item-complex .item-content > img:first-child,
     img.avatar {
@@ -258,7 +283,42 @@ em {
         border-radius : 50%;
         padding: 4px;
         border: 1px solid #ddd;
+
+        &.avatar-full {
+          border-radius: 2%;
+          border: 0;
+          max-width: 100%;
+          max-height: 200px;
+          width: auto;
+          height: auto;
+        }
     }
+}
+
+.item-stack-top {
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* Show buttons as tabs */
+.tabs.tabs-free {
+  position: initial;
+  background: transparent;
+  border: 0;
+  margin-bottom: 0;
+  margin-top: 10px;
+
+  .tab-item {
+    margin-top: -1px;
+    max-width: initial;
+    font-size: 120%;
+
+    &.active, &.activated {
+      margin-top: -1px;
+      border-top-width: 0;
+      border-bottom-width: 3px;
+    }
+  }
 }
 
 .user-with-avatar {
@@ -268,6 +328,7 @@ em {
   padding: 4px;
   padding-left: 56px;
   min-height: 48px;
+  text-decoration: none;
 }
 .user-with-avatar > img:first-child {
     position: absolute;
@@ -348,6 +409,24 @@ button.item.item-button-right {
   }
 }
 
+.item-button-right > .buttons.buttons-vertical {
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.button.button-block {
+  line-height: 28px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+
+  .icon:before,
+  &.icon:before,
+  &.icon-left:before,
+  &.icon-right:before {
+    line-height: 28px;
+  }
+}
+
 /**
  * Core directives.
  */
@@ -361,25 +440,6 @@ button.item.item-button-right {
   right: 0;
 }
 
-// mm-format-text can have elements with float. These styles makes sure height is calculated right.
-.mm-content-with-float {
-  display: inline-block;
-  width: 100%;
-}
-
-// Fix lists styles in mm-format-text.
-mm-format-text, *[mm-format-text] {
-  ul, ol {
-    -webkit-padding-start: 40px;
-  }
-  ul {
-    list-style: disc;
-  }
-  ol {
-    list-style: decimal;
-  }
-}
-
 .mm-loading-container {
     width: 100%;
     text-align: center;
@@ -387,11 +447,24 @@ mm-format-text, *[mm-format-text] {
 }
 
 .mm-loading-content {
-  height: 100%;
+  padding-bottom: 1px; /* This makes height be real */
 }
 
 mm-loading.mm-loading-noheight .mm-loading-content {
   height: auto;
+}
+
+mm-loading.mm-loading-center {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: inline-block;
+
+  .mm-loading-container {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
 }
 
 // Align ion-spinner right
@@ -406,21 +479,36 @@ mm-loading.mm-loading-noheight .mm-loading-content {
   background-color: #D9D9D9;
 }
 
-.item.item-text-wrap.item-completion { // Add .item and .item-text-wrap to give more priority to the rule, otherwise it's overridden by Ionic styles.
-  padding-right: $item-icon-font-size + ($button-border-width * 2) + $item-padding * 3 + $completion-img-width;
+.mm-module-buttons {
+  float: right;
+  width: $button-height;
+  height: 30px;
+  margin-top: - ($button-padding);
+  margin-bottom: $button-padding;
+  margin-left: 2px;
+  position: relative;
+  text-align: center;
+
+  &.mm-button-completion {
+    margin-left: $button-icon-size + ($button-padding * 2) + 2;
+  }
+
+  .spinner {
+    bottom: - ($button-padding);
+    right: 7px;
+    position: absolute;
+  }
 }
 
 .mm-completion-container {
   // Based on .item-checkbox .checkbox and .item-checkbox.item-checkbox-right
   position: absolute;
-  top: 50%;
-  right: $item-padding / 2;
-  margin-right: $item-icon-font-size + ($button-border-width * 2) + ($item-padding * 2);
-  margin-top: ($completion-img-width / 2) * -1;
+  top: 0;
+  right: $button-height;
+  padding: $button-padding;
 
   img {
-    float: right;
-    width: $completion-img-width;
+    width: $button-icon-size;
   }
 }
 
@@ -433,7 +521,9 @@ img.mm-media-adapt-width {
 
 .mm-adapted-img-container {
   position: relative;
+  display: inline-block;
 }
+
 .mm-image-viewer-icon {
   position: absolute;
   right: 10px;
@@ -491,9 +581,24 @@ p.mm-error {
 }
 
 // Extra attributes to ionic classes to force frames via directive 100% height.
-
 .scroll {
-  height: 100%;
+  top: 0;
+  bottom: 0;
+  position: absolute;
+  left: 0;
+  right: 0;
+
+  // Fix too much padding when a card is on top.
+  &.padding>.card:first-child,
+  &.padding .mm-loading-content>.card:first-child,
+  &.padding .scroll-refresher>.card:first-child {
+    margin-top: $content-padding;
+  }
+}
+
+// Fix padding for modal.
+.padding .scroll {
+  padding: $content-padding;
 }
 
 .iframe-wrapper {
@@ -582,6 +687,35 @@ mm-timer {
   padding: 0;
 }
 
+.item-input.mm-item-input-padding-right {
+  padding-right: $item-input-padding;
+}
+
+.item-input.item-stacked-label {
+  padding: $item-input-padding;
+
+  .item-input-wrapper.item-select {
+    display: block;
+
+    select {
+      background: transparent;
+      padding: 12px;
+      margin: 0;
+      width: 100%;
+      position: relative;
+      max-width: 100%;
+      direction: ltr;
+      line-height: 14px;
+    }
+  }
+}
+
+.item-input-inset .item-input-wrapper input,
+.item-input .item-input-wrapper input {
+  width: 100%;
+  background: transparent;
+}
+
 .button.mm-button-icon-small {
   padding: 0 3px;
   min-height: $mm-button-icon-small-height;
@@ -602,13 +736,6 @@ mm-timer {
   }
 }
 
-// This is to allow clicks in radio/checkbox content.
-mm-format-text {
-  audio, video, a, iframe {
-    pointer-events: auto;
-  }
-}
-
 // Squared checkboxes.
 .checkbox input:before, .checkbox-icon:before {
   border-radius: 0;
@@ -619,6 +746,7 @@ mm-format-text {
   border-bottom: 1px solid #ddd;
   margin-bottom: 10px;
   padding: 5px;
+  background-color: white;
 
   input {
     font-size: 20px;
@@ -636,6 +764,19 @@ mm-format-text {
   padding-top: 0;
   padding-left: 0;
   padding-right: 0;
+}
+
+.item.mm-course-handlers {
+  padding: 6px 2px;
+
+  .tabs {
+    background: white;
+  }
+
+  .mm-loading-course-handlers {
+    padding: 7px;
+    padding-bottom: 6px;
+  }
 }
 
 /**
@@ -670,8 +811,20 @@ mm-format-text {
 
 .mm-textarea {
   width: 100%;
-  height: 200px;
   resize: none;
+
+  &[mm-auto-rows] {
+    height: auto;
+    line-height: 18px;
+    padding: 5px;
+  }
+  &:not([mm-auto-rows]) {
+    height: 200px;
+  }
+}
+
+.item-input-wrapper .mm-textarea {
+  background: transparent;
 }
 
 .item.mm-item-has-rich-text-editor {
@@ -806,6 +959,18 @@ mm-format-text {
   }
 }
 
+// Disable input copy to prevent errors in iOS.
+
+.previous-input-focus, .previous-input-focus.mm-textarea, .cloned-text-input + input, .cloned-text-input + textarea.mm-textarea {
+  width: 100%;
+  position: relative !important;
+  left: 0px;
+}
+
+.cloned-text-input, textarea.cloned-text-input, input.cloned-text-input {
+  display: none;
+}
+
 // InApp notifications.
 
 .mm-inapp-notification-backdrop {
@@ -841,7 +1006,7 @@ mm-format-text {
     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
     padding: 2px 0;
 
-    .scroll-content {
+    .scroll-content, .scroll {
       position: relative;
       top: auto;
       bottom: auto;
@@ -855,5 +1020,246 @@ mm-format-text {
   .mm-inapp-notification-backdrop .mm-inapp-notification {
     margin-left: 6px !important;
     margin-right: 6px !important;
+  }
+}
+
+// Toggles with relative positioning.
+
+.item-toggle-relative {
+  .item.item-toggle {
+    padding: 0px;
+    margin-top: 0px;
+    margin-left: 0px;
+
+    .toggle {
+      position: relative;
+      top: 0px;
+      right: 0px;
+    }
+  }
+}
+
+// Spinner aligned right.
+
+ion-spinner.mm-spinner-right {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}
+
+.item-toggle.has-spinner-right {
+  .mm-spinner-right {
+    top: ($item-padding / 2) + 2; // Same top as toggle.
+    right: 5px;
+  }
+
+  .toggle {
+    right: $item-padding + 19px;
+  }
+}
+
+// If the item-toggle is nested inside another item then the spinner can be aligned to the right.
+.item .item-toggle.has-spinner-right {
+  .mm-spinner-right {
+    right: 0px;
+  }
+
+  .toggle {
+    right: $item-padding + 14px;
+  }
+}
+
+.item-borderless.item-toggle {
+  padding-left: 0;
+  padding-bottom: 5px;
+  padding-top: 5px;
+
+  .toggle {
+    top: 0;
+  }
+}
+
+// Video subtitles.
+.platform-ios video::cue {
+  font-size: 12px;
+}
+// Add note below an input.
+.item .mm-input-footnote {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-style: italic;
+}
+
+// Mark input as required styles.
+.mm-input-required-asterisk, .icon.mm-input-required-asterisk, i.icon.mm-input-required-asterisk {
+  color: $mm-input-required-asterisk-color !important;
+  font-size: 8px;
+  padding-left: 4px;
+  line-height: 100%;
+  vertical-align: top;
+}
+
+// Allow placeholders in date inputs.
+.platform-android, .platform-ios {
+  input[type="date"], input[type="datetime"], input[type="datetime-local"], input[type="time"] {
+    &.ng-empty:before {
+      color: $input-color-placeholder;
+      content: attr(placeholder);
+    }
+  }
+}
+
+/**
+ * Form validation.
+ */
+
+.item.mm-input-has-errors, .item .mm-input-has-errors {
+  input {
+    border-bottom: 1px solid $mm-error-color;
+  }
+  .checkbox-icon, textarea {
+    border: 1px solid $mm-error-color;
+  }
+  &.mm-item-has-rich-text-editor, .mm-item-has-rich-text-editor {
+    .mm-rich-text-editor-container {
+      border: 1px solid $mm-error-color;
+    }
+  }
+}
+
+.mm-input-error-container {
+  margin: 0;
+
+  .mm-input-error {
+    padding: 4px;
+    color: $mm-error-color;
+    font-size: 12px;
+  }
+}
+
+// Ionic overrides italic font-style, apply it again.
+i, cite, em, var, address, dfn {
+    font-style: italic;
+}
+
+// Footer with auto height.
+.bar-footer.bar-footer-adjustable {
+  height: auto;
+}
+
+// Show password styles.
+.item,
+.card .item,
+.list-inset .item,
+.padding > .list .item,
+.padding-horizontal > .list .item {
+  &.item-input .mm-show-password-container {
+    padding: 0px;
+    width: 100%;
+
+    input {
+      padding-right: 0px;
+    }
+    .button {
+      margin-left: ($item-padding / 3) * 2;
+      padding: 0 $button-clear-padding;
+    }
+  }
+}
+
+.item-button-right > .buttons.buttons-small {
+  min-width: 20px;
+  height: 100%;
+  top: 0;
+
+  > .button.button-icon {
+    min-width: 20px;
+
+    .icon.icon-accessory:before {
+      font-size: 16px;
+    }
+  }
+}
+
+/** Format Text */
+mm-format-text, *[mm-format-text] {
+  audio, video, a, iframe {
+    pointer-events: auto;
+  }
+
+  // Fix lists styles in mm-format-text.
+  ul, ol {
+    -webkit-padding-start: 40px;
+  }
+  ul {
+    list-style: disc;
+  }
+  ol {
+    list-style: decimal;
+  }
+}
+
+mm-format-text[max-height], *[mm-format-text][max-height] {
+  display: block;
+  position: relative;
+  width: 100%;
+
+  /* Force display inline */
+  &.inline {
+    display: inline-block;
+    width: auto;
+  }
+
+  // This is to allow clicks in radio/checkbox content.
+  &.mm-text-formatted {
+    cursor: pointer;
+
+    .mm-show-more {
+      display: none;
+    }
+
+    &:not(.mm-shortened) {
+      max-height: none !important;
+    }
+
+    &.mm-shortened {
+      color: #777;
+      overflow: hidden;
+      min-height: 50px;
+
+      .mm-show-more {
+        color: $dark;
+        text-align: right;
+        font-size: 14px;
+        display: block;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        z-index: 1001;
+
+        &:after {
+          @extend .ion;
+          content: $ionicon-var-chevron-down;
+          margin-left: 10px;
+          color: $item-icon-accessory-color;
+        }
+      }
+
+      &:before {
+        content: '';
+        height: 100%;
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: -moz-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        background: -webkit-gradient(left top, left bottom, color-stop(calc(100% - 50px), rgba(255, 255, 255, 0)), color-stop(calc(100% - 15px), white));
+        background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        background: -o-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        background: -ms-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        background: linear-gradient(to bottom, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
+        z-index: 1000;
+      }
+    }
   }
 }

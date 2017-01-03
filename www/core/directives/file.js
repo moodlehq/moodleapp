@@ -37,6 +37,7 @@ angular.module('mm.core')
  * @param {Boolean} [alwaysDownload]   True if refresh button should be shown even if the file is not outdated. Defaults to false.
  *                                     Use it for files that you cannot determine if they're outdated or not.
  * @param {Boolean} [canDownload=true] True if file can be downloaded, false otherwise. Defaults to true.
+ * @param {Boolean} [noBorder=false]   True if want to show file entry without borders. Defaults to false.
  */
 .directive('mmFile', function($q, $mmUtil, $mmFilepool, $mmSite, $mmApp, $mmEvents, $mmFS, mmCoreDownloaded, mmCoreDownloading,
             mmCoreNotDownloaded, mmCoreOutdated) {
@@ -174,7 +175,8 @@ angular.module('mm.core')
             file: '=',
             canDelete: '@?',
             onDelete: '&?',
-            canDownload: '@?'
+            canDownload: '@?',
+            noBorder : '@?'
         },
         link: function(scope, element, attrs) {
             var fileUrl = scope.file.fileurl || scope.file.url,

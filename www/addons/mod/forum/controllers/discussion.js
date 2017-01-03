@@ -51,6 +51,8 @@ angular.module('mm.addons.mod_forum')
         direction: 'ASC',
         text: $translate.instant('mma.mod_forum.sortnewestfirst')
     };
+    // Receive locked as param since it's returned by getDiscussions. This means that PullToRefresh won't update this value.
+    $scope.locked = !!$stateParams.locked;
 
     // Convenience function to get forum discussions.
     function fetchPosts(sync, showErrors) {
@@ -109,13 +111,21 @@ angular.module('mm.addons.mod_forum')
         }).finally(function() {
             var posts = offlineReplies.concat(onlinePosts);
             $scope.discussion = $mmaModForum.extractStartingPost(posts);
+
             // Set default reply subject.
             $scope.posts = $mmaModForum.sortDiscussionPosts(posts, $scope.sort.direction);
+            $scope.defaultSubject = $translate.instant('mma.mod_forum.re') + ' ' + $scope.discussion.subject;
+            $scope.newpost.subject = $scope.defaultSubject;
 
-            return $translate('mma.mod_forum.re').then(function(strReplyPrefix) {
-                $scope.defaultSubject = strReplyPrefix + ' ' + $scope.discussion.subject;
-                $scope.newpost.subject = $scope.defaultSubject;
-            });
+            if ($scope.discussion.userfullname && $scope.discussion.parent == 0 && courseid && cmid) {
+                return $mmaModForum.getForum(courseid, cmid).then(function(forum) {
+                    if (forum.type == 'single') {
+                        // Hide author for first post and type single.
+                        $scope.discussion.userfullname = null;
+                    }
+                });
+            }
+            return $q.when();
         }).catch(function(message) {
             $mmUtil.showErrorModal(message);
             return $q.reject();

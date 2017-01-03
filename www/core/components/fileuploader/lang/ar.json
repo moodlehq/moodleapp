@@ -1,20 +1,15 @@
 {
     "audio": "صوتي",
     "camera": "الكاميرا",
-    "chooseaccountuploadfile": "اختر حساب لكي تقوم برفع الملف إليه",
-    "downloading": "يتم التنزيل",
     "errorcapturingaudio": "خطأ في التقاط الصوت",
     "errorcapturingimage": "خطأ في التقاط الصورة",
     "errorcapturingvideo": "خطأ في التقاط الفيديو",
     "errormustbeonlinetoupload": "لابد أن تكون متصل بالأنترنت لكي يتم رفع الملفات",
     "errorreadingfile": "خطأ في قراءة الملف",
-    "errorwhiledownloading": "حدث خطأ عن محاولة تنزيل الملف",
     "file": "ملف",
     "fileuploaded": "الملف الذي تم رفعه",
     "readingfile": "يتم قراءة الملف",
-    "success": "نجاح",
     "uploadafile": "إرفع ملف",
-    "uploadfiles": "إرفع ملفات",
     "uploading": "يتم الرفع",
     "video": "فيديو"
 }

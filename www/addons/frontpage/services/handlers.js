@@ -23,7 +23,7 @@ angular.module('mm.addons.frontpage')
  * @ngdoc service
  * @name $mmaFrontPageHandlers
  */
-.factory('$mmaFrontPageHandlers', function($log, $mmaFrontpage, $mmUtil, $state) {
+.factory('$mmaFrontPageHandlers', function($log, $mmaFrontpage, $mmUtil, $state, $mmSitesManager, $mmSite) {
     $log = $log.getInstance('$mmaFrontPageHandlers');
 
     var self = {};
@@ -71,7 +71,7 @@ angular.module('mm.addons.frontpage')
             return function($scope) {
                 $scope.icon = 'ion-home';
                 $scope.title = 'mma.frontpage.sitehome';
-                $scope.state = 'site.mm_course-section';
+                $scope.state = 'site.frontpage';
                 $scope.class = 'mma-frontpage-handler';
             };
         };
@@ -102,22 +102,28 @@ angular.module('mm.addons.frontpage')
             if (typeof self.handles(url) != 'undefined') {
                 var params = $mmUtil.extractUrlParams(url),
                     courseId = parseInt(params.id, 10);
-                if (courseId === 1) {
-                    // Return actions.
-                    return [{
-                        message: 'mm.core.view',
-                        icon: 'ion-eye',
-                        sites: siteIds,
-                        action: function(siteId) {
-                            siteId = siteId || $mmSite.getId();
-                            // Use redirect to make the course the new history root (to avoid "loops" in history).
-                            $state.go('redirect', {
-                                siteid: siteId,
-                                state: 'site.mm_course-section'
-                            });
-                        }
-                    }];
-                }
+
+                // Get the course id of Site Home for the first site (all the siteIds should belong to the same Moodle).
+                return $mmSitesManager.getSiteHomeId(siteIds[0]).then(function(siteHomeId) {
+                    if (courseId === siteHomeId) {
+                        // Return actions.
+                        return [{
+                            message: 'mm.core.view',
+                            icon: 'ion-eye',
+                            sites: siteIds,
+                            action: function(siteId) {
+                                siteId = siteId || $mmSite.getId();
+                                // Use redirect to make the course the new history root (to avoid "loops" in history).
+                                $state.go('redirect', {
+                                    siteid: siteId,
+                                    state: 'site.frontpage'
+                                });
+                            }
+                        }];
+                    }
+
+                    return [];
+                });
             }
             return [];
         };

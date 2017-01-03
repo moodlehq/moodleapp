@@ -5,6 +5,7 @@
     "cannotcreatediscussion": "Impossible de créer une nouvelle discussion",
     "couldnotadd": "Impossible d'ajouter votre message à cause d'une erreur indéterminée",
     "discussion": "Discussion",
+    "discussionlocked": "Cette discussion a été verrouillée. Vous ne pouvez plus y répondre.",
     "discussionsubscription": "Abonnement à la discussion",
     "edit": "Modifier",
     "erroremptymessage": "Un message ne peut pas être vide",
@@ -18,6 +19,10 @@
     "numreplies": "{{numreplies}} réponses",
     "posttoforum": "Envoyer",
     "re": "Re:",
+    "refreshdiscussions": "Rafraîchir les discussions",
+    "refreshposts": "Rafraîchir les messages des discussions",
     "reply": "Répondre",
+    "sortnewestfirst": "Afficher la plus récente en premier",
+    "sortoldestfirst": "Afficher la plus ancienne en premier",
     "subject": "Sujet"
 }

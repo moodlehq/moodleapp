@@ -73,5 +73,41 @@ angular.module('mm.addons.notifications')
         return self;
     };
 
+    /**
+     * Notification preferences handler.
+     *
+     * @module mm.addons.notifications
+     * @ngdoc method
+     * @name $mmaNotificationsHandlers#preferences
+     */
+    self.preferences = function() {
+
+        var self = {};
+
+        /**
+         * Check if handler is enabled.
+         *
+         * @return {Boolean} True if handler is enabled, false otherwise.
+         */
+        self.isEnabled = function() {
+            return $mmaNotifications.isNotificationPreferencesEnabled();
+        };
+
+        /**
+         * Get the controller.
+         *
+         * @return {Object} Controller.
+         */
+        self.getController = function() {
+            return function($scope) {
+                $scope.title = 'mma.notifications.notificationpreferences';
+                $scope.class = 'mma-notifications-notificationpreferences-handler';
+                $scope.state = 'site.notifications-preferences';
+            };
+        };
+
+        return self;
+    };
+
     return self;
 });

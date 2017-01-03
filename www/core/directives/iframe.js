@@ -27,10 +27,10 @@ angular.module('mm.core')
  * @param {Mixed} [width=100%]  Width of the iframe. If not defined, use 100%.
  * @param {Mixed} [height=100%] Height of the iframe. If not defined, use 100%.
  */
-.directive('mmIframe', function($mmUtil, $mmText) {
+.directive('mmIframe', function($log, $mmUtil, $mmText, $mmSite, $mmFS) {
+    $log = $log.getInstance('mmIframe');
 
-    var errorShownTime = 0,
-        tags = ['iframe', 'frame', 'object', 'embed'];
+    var tags = ['iframe', 'frame', 'object', 'embed'];
 
     /**
      * Intercept window.open in a frame and its subframes, shows an error modal instead.
@@ -85,14 +85,40 @@ angular.module('mm.core')
 
         if (contentWindow) {
             // Intercept window.open.
-            contentWindow.open = function () {
-                // Prevent showing more than one consecutive error. This shouldn't happen often because it means that the
-                // element is using more than one window.open, but it's better to handle it just in case.
-                var currentTime = new Date().getTime();
-                if (currentTime - errorShownTime > 500) {
-                    errorShownTime = currentTime;
-                    $mmUtil.showErrorModal('mm.core.erroropenpopup', true);
+            contentWindow.open = function (url) {
+                var scheme = $mmText.getUrlScheme(url);
+                if (!scheme) {
+                    // It's a relative URL, use the frame src to create the full URL.
+                    var src = element[0] && (element[0].src || element[0].data);
+                    if (src) {
+                        var dirAndFile = $mmFS.getFileAndDirectoryFromPath(src);
+                        if (dirAndFile.directory) {
+                            url = $mmFS.concatenatePaths(dirAndFile.directory, url);
+                        } else {
+                            $log.warn('Cannot get iframe dir path to open relative url', url, element);
+                            return {}; // Return empty "window" object.
+                        }
+                    } else {
+                        $log.warn('Cannot get iframe src to open relative url', url, element);
+                        return {}; // Return empty "window" object.
+                    }
                 }
+
+                if (url.indexOf('cdvfile://') === 0 || url.indexOf('file://') === 0) {
+                    // It's a local file.
+                    $mmUtil.openFile(url).catch(function(error) {
+                        $mmUtil.showErrorModal(error);
+                    });
+                } else {
+                    // It's an external link, we will open with browser. Check if we need to auto-login.
+                    if (!$mmSite.isLoggedIn()) {
+                        // Not logged in, cannot auto-login.
+                        $mmUtil.openInBrowser(url);
+                    } else {
+                        $mmSite.openInBrowserWithAutoLoginIfSameSite(url);
+                    }
+                }
+
                 return {}; // Return empty "window" object.
             };
         }
@@ -130,7 +156,11 @@ angular.module('mm.core')
                         // If the link's already prevented by SCORM JS then we won't open it in browser.
                         if (!e.defaultPrevented) {
                             e.preventDefault();
-                            $mmUtil.openInBrowser(href);
+                            if (!$mmSite.isLoggedIn()) {
+                                $mmUtil.openInBrowser(href);
+                            } else {
+                                $mmSite.openInBrowserWithAutoLoginIfSameSite(href);
+                            }
                         }
                     });
                 } else if (el.target == '_parent' || el.target == '_top' || el.target == '_blank') {
@@ -139,7 +169,9 @@ angular.module('mm.core')
                         // If the link's already prevented by SCORM JS then we won't open it in InAppBrowser.
                         if (!e.defaultPrevented) {
                             e.preventDefault();
-                            $mmUtil.openInApp(href);
+                            $mmUtil.openFile(href).catch(function(error) {
+                                $mmUtil.showErrorModal(error);
+                            });
                         }
                     });
                 } else if (ionic.Platform.isIOS() && (!el.target || el.target == '_self')) {

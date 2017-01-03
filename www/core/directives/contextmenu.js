@@ -14,7 +14,7 @@
 
 angular.module('mm.core')
 
-.controller('mmContextMenu', function($scope, $ionicPopover, $q) {
+.controller('mmContextMenu', function($scope, $ionicPopover, $q, $timeout) {
     var items = $scope.ctxtMenuItems = [];
 
     /**
@@ -95,7 +95,14 @@ angular.module('mm.core')
     });
 
     $scope.$on('$destroy', function() {
-        $scope.contextMenuPopover.remove();
+        if ($scope.contextMenuPopover) {
+            $scope.contextMenuPopover.remove();
+        } else {
+            // Directive destroyed before popover was initialized. Wait a bit and try again.
+            $timeout(function() {
+                $scope.contextMenuPopover && $scope.contextMenuPopover.remove();
+            }, 200);
+        }
     });
 })
 
@@ -126,9 +133,15 @@ angular.module('mm.core')
         transclude: true,
         templateUrl: 'core/templates/contextmenuicon.html',
         controller: 'mmContextMenu',
-        link: function(scope) {
+        link: function(scope, element) {
             scope.contextMenuIcon = scope.icon || 'ion-android-more-vertical';
             scope.contextMenuAria = scope.title || $translate.instant('mm.core.info');
+
+            // The transclude should have been executed already. Remove ng-transclude to prevent errors with mm-nav-buttons.
+            var div = element[0].querySelector('div[ng-transclude]');
+            if (div && div.removeAttribute) {
+                div.removeAttribute('ng-transclude');
+            }
         }
     };
 })
@@ -158,6 +171,7 @@ angular.module('mm.core')
  * @param {Function} [action]              Javascript action to be taken on click. Only works if iconAction is set and is not an spinner.
  * @param {String}   [href]                Link to go if no action provided.
  * @param {Boolean}  [captureLink=false]   If the link needs to be captured by the app.
+ * @param {Boolean}  [autoLogin=check]     If the link needs to be opened using auto-login. See mmLink.
  * @param {Boolean}  [closeOnClick=true]   If close the popover when clicked. Only works if action or href is provided.
  * @param {Boolean}  [closeWhenDone=false] Close popover when action is done. Only if action is supplied and closeOnClick=false.
  * @param {Number}   [priority]            Used to sort items. The highest priority, the highest position.
@@ -213,19 +227,13 @@ angular.module('mm.core')
             action: '&?',
             href: '=?',
             captureLink: '=?',
+            autoLogin: '=?',
             closeOnClick: '=?',
             closeWhenDone: '=?',
             priority: '=?',
             ngShow: '=?'
         },
         link: function(scope, element, attrs, CtxtMenuCtrl) {
-            // Remove ng-transclude from parent. If this directive is inside ng-transclude it means ng-transclude has been
-            // executed already and it can be removed to prevent errors with mm-nav-buttons.
-            var parent = element.parent()[0];
-            if (parent && parent.removeAttribute) {
-                parent.removeAttribute('ng-transclude');
-            }
-
             // Initialize values. Change the name of some of them to prevent being reconverted to string.
             scope.priority = scope.priority || 1;
             scope.closeOnClick = getBooleanValue(scope.closeOnClick, true);
@@ -242,6 +250,7 @@ angular.module('mm.core')
 
             // Navigation help if href provided.
             scope.captureLink = scope.href && scope.captureLink ? scope.captureLink : "false";
+            scope.autoLogin = scope.autoLogin || 'check';
 
             if (CtxtMenuCtrl.shouldMerge() && $ionicPlatform.isTablet()) {
                 // Item should be merged with an outer context-menu in tablet view.
@@ -254,7 +263,7 @@ angular.module('mm.core')
                         }
                         CtxtMenuCtrl.addContextMenuItem(scope);
                     }
-                }, 1000);
+                });
             } else {
                 CtxtMenuCtrl.addContextMenuItem(scope);
             }

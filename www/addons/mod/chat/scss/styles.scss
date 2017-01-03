@@ -9,6 +9,7 @@ $mma-chat-notice-badge: "stable" !default;
   span {
     @extend .badge;
     @extend .badge-#{$mma-chat-notice-badge};
+    white-space: normal;
   }
 }
 

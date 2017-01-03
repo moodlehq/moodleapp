@@ -21,7 +21,7 @@ angular.module('mm.core.courses')
  * @ngdoc controller
  * @name mmCoursesListCtrl
  */
-.controller('mmCoursesListCtrl', function($scope, $mmCourses, $mmCoursesDelegate, $mmUtil, $mmEvents, $mmSite,
+.controller('mmCoursesListCtrl', function($scope, $mmCourses, $mmCoursesDelegate, $mmUtil, $mmEvents, $mmSite, $q,
             mmCoursesEventMyCoursesUpdated, mmCoursesEventMyCoursesRefreshed) {
 
     $scope.searchEnabled = $mmCourses.isSearchCoursesAvailable();
@@ -32,10 +32,9 @@ angular.module('mm.core.courses')
     function fetchCourses(refresh) {
         return $mmCourses.getUserCourses().then(function(courses) {
             $scope.courses = courses;
-            angular.forEach(courses, function(course) {
-                course._handlers = $mmCoursesDelegate.getNavHandlersFor(course.id, refresh);
-            });
             $scope.filter.filterText = ''; // Filter value MUST be set after courses are shown.
+
+            return loadCoursesNavHandlers(refresh);
         }, function(error) {
             if (typeof error != 'undefined' && error !== '') {
                 $mmUtil.showErrorModal(error);
@@ -44,13 +43,37 @@ angular.module('mm.core.courses')
             }
         });
     }
+
+    // Convenience function to load the handlers of each course.
+    function loadCoursesNavHandlers(refresh) {
+        var courseIds = $scope.courses.map(function(course) {
+            return course.id;
+        });
+
+        return $mmCourses.getCoursesOptions(courseIds).then(function(options) {
+            angular.forEach($scope.courses, function(course) {
+                course._handlers = $mmCoursesDelegate.getNavHandlersFor(
+                            course.id, refresh, options.navOptions[course.id], options.admOptions[course.id]);
+            });
+        });
+    }
+
     fetchCourses().finally(function() {
         $scope.coursesLoaded = true;
     });
 
     $scope.refreshCourses = function() {
+        var promises = [];
+
         $mmEvents.trigger(mmCoursesEventMyCoursesRefreshed);
-        $mmCourses.invalidateUserCourses().finally(function() {
+
+        promises.push($mmCourses.invalidateUserCourses());
+        promises.push($mmCourses.invalidateUserNavigationOptions());
+        promises.push($mmCourses.invalidateUserAdministrationOptions());
+
+        $mmCoursesDelegate.clearCoursesHandlers();
+
+        $q.all(promises).finally(function() {
             fetchCourses(true).finally(function() {
                 $scope.$broadcast('scroll.refreshComplete');
             });

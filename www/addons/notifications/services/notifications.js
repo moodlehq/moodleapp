@@ -51,6 +51,38 @@ angular.module('mm.addons.notifications')
     }
 
     /**
+     * Get the cache key for the get notification preferences call.
+     *
+     * @return {String} Cache key.
+     */
+    function getNotificationPreferencesCacheKey() {
+        return 'mmaNotifications:notificationPreferences';
+    }
+
+    /**
+     * Get notification preferences.
+     *
+     * @module mm.addons.notifications
+     * @ngdoc method
+     * @name $mmaNotifications#getNotificationPreferences
+     * @param  {String} [siteid] Site ID. If not defined, use current site.
+     * @return {Promise}         Promise resolved with the notification preferences.
+     */
+    self.getNotificationPreferences = function(siteId) {
+        $log.debug('Get notification preferences');
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var preSets = {
+                    cacheKey: getNotificationPreferencesCacheKey()
+                };
+
+            return site.read('core_message_get_user_notification_preferences', {}, preSets).then(function(data) {
+                return data.preferences;
+            });
+        });
+    };
+
+    /**
      * Get cache key for notification list WS calls.
      *
      * @return {String} Cache key.
@@ -130,6 +162,21 @@ angular.module('mm.addons.notifications')
     };
 
     /**
+     * Invalidate get notification preferences.
+     *
+     * @module mm.addons.notifications
+     * @ngdoc method
+     * @name $mmaNotifications#invalidateNotificationPreferences
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when data is invalidated.
+     */
+    self.invalidateNotificationPreferences = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getNotificationPreferencesCacheKey());
+        });
+    };
+
+    /**
      * Invalidates notifications list WS calls.
      *
      * @module mm.addons.notifications
@@ -139,6 +186,18 @@ angular.module('mm.addons.notifications')
      */
     self.invalidateNotificationsList = function() {
         return $mmSite.invalidateWsCacheForKey(getNotificationsCacheKey());
+    };
+
+    /**
+     * Returns whether or not the notification preferences are enabled for the current site.
+     *
+     * @module mm.addons.notifications
+     * @ngdoc method
+     * @name $mmaNotifications#isNotificationPreferencesEnabled
+     * @return {Boolean} True if enabled, false otherwise.
+     */
+    self.isNotificationPreferencesEnabled = function() {
+        return $mmSite.wsAvailable('core_message_get_user_notification_preferences');
     };
 
     /**

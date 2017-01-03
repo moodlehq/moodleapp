@@ -1,0 +1,12 @@
+<!-- Render (no edit). -->
+<div class="item" ng-if="!edit && field && field.name">
+    <p class="item-heading">{{ field.name }}</p>
+    <p><mm-format-text watch="true">{{ field.value }}</mm-format-text></p>
+</div>
+<!-- Edit. -->
+<ion-input ng-if="edit && field && field.shortname" class="item item-select" mm-input-errors field-name="{{field.modelName}}">
+    <ion-label id="mma-userprofilefield-menu-edit-{{field.shortname}}" mm-mark-required="{{field.required}}">{{ field.name }}</ion-label>
+    <select name="{{field.modelName}}" ng-model="model[field.modelName]" ng-options="option as option for option in field.options" aria-labelledby="mma-userprofilefield-menu-edit-{{field.shortname}}" ng-disabled="!signup && field.locked" ng-required="{{field.required}}" mm-ios-select-fix>
+        <option value="">{{ 'mm.core.choosedots' | translate }}</option>
+    </select>
+</ion-input>

@@ -117,7 +117,9 @@ angular.module('mm.core')
 
     this.$get = function($http, $q, $mmWS, $mmDB, $log, md5, $mmApp, $mmLang, $mmUtil, $mmFS, mmCoreWSCacheStore,
             mmCoreWSPrefix, mmCoreSessionExpired, $mmEvents, mmCoreEventSessionExpired, mmCoreUserDeleted, mmCoreEventUserDeleted,
-            $mmText, $translate, mmCoreConfigConstants) {
+            $mmText, $translate, mmCoreConfigConstants, mmCoreUserPasswordChangeForced, mmCoreEventPasswordChangeForced,
+            mmCoreLoginTokenChangePassword, mmCoreSecondsMinute, mmCoreUserNotFullySetup, mmCoreEventUserNotFullySetup,
+            mmCoreSitePolicyNotAgreed, mmCoreEventSitePolicyNotAgreed) {
 
         $log = $log.getInstance('$mmSite');
 
@@ -161,16 +163,19 @@ angular.module('mm.core')
         /**
          * Site object to store site data.
          *
-         * @param {String} id      Site ID.
-         * @param {String} siteurl Site URL.
-         * @param {String} token   User's token in the site.
-         * @param {Object} infos   Site's info.
+         * @param  {String} id             Site ID.
+         * @param  {String} siteurl        Site URL.
+         * @param  {String} token          User's token in the site.
+         * @param  {Object} infos          Site's info.
+         * @param  {String} [privateToken] User's private token.
+         * @return {Void}
          */
-        function Site(id, siteurl, token, infos) {
+        function Site(id, siteurl, token, infos, privateToken) {
             this.id = id;
             this.siteurl = siteurl;
             this.token = token;
             this.infos = infos;
+            this.privateToken = privateToken;
 
             if (this.id) {
                 this.db = $mmDB.getDB('Site-' + this.id, siteSchema, dboptions);
@@ -214,6 +219,15 @@ angular.module('mm.core')
         };
 
         /**
+         * Get site private token.
+         *
+         * @return {String} Current site private token.
+         */
+        Site.prototype.getPrivateToken = function() {
+            return this.privateToken;
+        };
+
+        /**
          * Get site DB.
          *
          * @return {Object} Current site DB.
@@ -252,6 +266,24 @@ angular.module('mm.core')
          */
         Site.prototype.setToken = function(token) {
             this.token = token;
+        };
+
+        /**
+         * Set site private token.
+         *
+         * @param {String} privateToken New private token.
+         */
+        Site.prototype.setPrivateToken = function(privateToken) {
+            this.privateToken = privateToken;
+        };
+
+        /**
+         * Check if token is already expired using local data.
+         *
+         * @return {Boolean} is token is expired or not.
+         */
+        Site.prototype.isTokenExpired = function() {
+            return this.token == mmCoreLoginTokenChangePassword;
         };
 
         /**
@@ -386,6 +418,9 @@ angular.module('mm.core')
             if (typeof(preSets.sync) === 'undefined') {
                 preSets.sync = 0;
             }
+            if (typeof(preSets.emergencyCache) === 'undefined') {
+                preSets.emergencyCache = 0;
+            }
             return this.request(method, data, preSets);
         };
 
@@ -404,6 +439,10 @@ angular.module('mm.core')
          *                                        flag the cache entry, it doesn't affect the data retrieved in this call.
          *                    - getCacheUsingCacheKey (boolean) True if it should retrieve cached data by cacheKey,
          *                                        false if it should get the data based on the params passed (usual behavior).
+         *                    - getEmergencyCacheUsingCacheKey (boolean) True to retrieve emergency cached data by cacheKey,
+         *                                        false if it should get the data based on the params passed (usual behavior).
+         *                    - uniqueCacheKey (boolean) True if there should only be 1 entry for this cache key, so all the
+         *                                        cache entries with the same cache key will be deleted.
          *                    - filter boolean (true) True to filter WS response (moodlewssettingfilter), false otherwise.
          *                    - rewriteurls boolean (true) True to rewrite URLs (moodlewssettingfileurl), false otherwise.
          * @param {Boolean} retrying True if we're retrying the call for some reason. This is to prevent infinite loops.
@@ -424,6 +463,13 @@ angular.module('mm.core')
             var site = this,
                 initialToken = site.token;
             data = data || {};
+
+            // Prevent calls with expired tokens.
+            if (site.isTokenExpired()) {
+                $log.debug('Token expired, rejecting.');
+                $mmEvents.trigger(mmCoreEventSessionExpired, site.id);
+                return $mmLang.translateAndReject('mm.login.reconnectdescription');
+            }
 
             // Get the method to use based on the available ones.
             method = site.getCompatibleFunction(method);
@@ -457,13 +503,15 @@ angular.module('mm.core')
                 delete wsPreSets.cacheKey;
                 delete wsPreSets.emergencyCache;
                 delete wsPreSets.getCacheUsingCacheKey;
+                delete wsPreSets.getEmergencyCacheUsingCacheKey;
+                delete wsPreSets.uniqueCacheKey;
 
                 // @todo Sync
 
                 return $mmWS.call(method, data, wsPreSets).then(function(response) {
 
                     if (preSets.saveToCache) {
-                        saveToCache(site, method, data, response, preSets.cacheKey);
+                        saveToCache(site, method, data, response, preSets);
                     }
 
                     // We pass back a clone of the original object, this may
@@ -489,6 +537,18 @@ angular.module('mm.core')
                         // User deleted, trigger event.
                         $mmEvents.trigger(mmCoreEventUserDeleted, {siteid: site.id, params: data});
                         return $mmLang.translateAndReject('mm.core.userdeleted');
+                    } else if (error === mmCoreUserPasswordChangeForced) {
+                        // Password Change Forced, trigger event.
+                        $mmEvents.trigger(mmCoreEventPasswordChangeForced, site.id);
+                        return $mmLang.translateAndReject('mm.core.forcepasswordchangenotice');
+                    } else if (error === mmCoreUserNotFullySetup) {
+                        // User not fully setup, trigger event.
+                        $mmEvents.trigger(mmCoreEventUserNotFullySetup, site.id);
+                        return $mmLang.translateAndReject('mm.core.usernotfullysetup');
+                    } else if (error === mmCoreSitePolicyNotAgreed) {
+                        // Site policy not agreed, trigger event.
+                        $mmEvents.trigger(mmCoreEventSitePolicyNotAgreed, site.id);
+                        return $mmLang.translateAndReject('mm.login.sitepolicynotagreederror');
                     } else if (typeof preSets.emergencyCache !== 'undefined' && !preSets.emergencyCache) {
                         $log.debug('WS call ' + method + ' failed. Emergency cache is forbidden, rejecting.');
                         return $q.reject(error);
@@ -497,7 +557,7 @@ angular.module('mm.core')
                     $log.debug('WS call ' + method + ' failed. Trying to use the emergency cache.');
                     preSets.omitExpires = true;
                     preSets.getFromCache = true;
-                    return getFromCache(site, method, data, preSets).catch(function() {
+                    return getFromCache(site, method, data, preSets, true).catch(function() {
                         return $q.reject(error);
                     });
                 });
@@ -692,6 +752,7 @@ angular.module('mm.core')
          *                                   - {Number} code Code to identify the authentication method to use.
          *                                   - {String} [service] If defined, name of the service to use.
          *                                   - {String} [warning] If defined, code of the warning message.
+         *                                   - {Boolean} [coresupported] Whether core SSO is supported.
          */
         Site.prototype.checkLocalMobilePlugin = function(retrying) {
             var siteurl = this.siteurl,
@@ -737,7 +798,7 @@ angular.module('mm.core')
                             return $mmLang.translateAndReject('mm.core.unexpectederror');
                     }
                 } else {
-                    return {code: code, service: service};
+                    return {code: code, service: service, coresupported: !!data.coresupported};
                 }
             }, function() {
                 return {code: 0};
@@ -798,6 +859,201 @@ angular.module('mm.core')
         };
 
         /**
+         * Get the public config of this site.
+         *
+         * @return {Promise} Promise resolved with site public config. Rejected with an object if error, see $mmWS#callAjax.
+         */
+        Site.prototype.getPublicConfig = function() {
+            var that = this;
+            return $mmWS.callAjax('tool_mobile_get_public_config', {}, {siteurl: this.siteurl}).then(function(config) {
+                // Use the wwwroot returned by the server.
+                if (config.httpswwwroot) {
+                    that.siteurl = config.httpswwwroot;
+                }
+                return config;
+            });
+        };
+
+        /**
+         * Open a URL in browser using auto-login in the Moodle site if available.
+         *
+         * @param  {String} url            The URL to open.
+         * @param  {String} [alertMessage] If defined, an alert will be shown before opening the browser.
+         * @return {Promise}               Promise resolved when done, rejected otherwise.
+         */
+        Site.prototype.openInBrowserWithAutoLogin = function(url, alertMessage) {
+            return this.openWithAutoLogin(false, url, alertMessage);
+        };
+
+        /**
+         * Open a URL in browser using auto-login in the Moodle site if available and the URL belongs to the site.
+         *
+         * @param  {String} url            The URL to open.
+         * @param  {String} [alertMessage] If defined, an alert will be shown before opening the browser.
+         * @return {Promise}               Promise resolved when done, rejected otherwise.
+         */
+        Site.prototype.openInBrowserWithAutoLoginIfSameSite = function(url, alertMessage) {
+            return this.openWithAutoLoginIfSameSite(false, url, alertMessage);
+        };
+
+        /**
+         * Open a URL in inappbrowser using auto-login in the Moodle site if available.
+         *
+         * @param  {String} url            The URL to open.
+         * @param  {Object} options        Override default options passed to $cordovaInAppBrowser#open
+         * @param  {String} [alertMessage] If defined, an alert will be shown before opening the inappbrowser.
+         * @return {Promise}               Promise resolved when done, rejected otherwise.
+         */
+        Site.prototype.openInAppWithAutoLogin = function(url, options, alertMessage) {
+            return this.openWithAutoLogin(true, url, options, alertMessage);
+        };
+
+        /**
+         * Open a URL in inappbrowser using auto-login in the Moodle site if available and the URL belongs to the site.
+         *
+         * @param  {String} url            The URL to open.
+         * @param  {Object} options        Override default options passed to $cordovaInAppBrowser#open
+         * @param  {String} [alertMessage] If defined, an alert will be shown before opening the inappbrowser.
+         * @return {Promise}               Promise resolved when done, rejected otherwise.
+         */
+        Site.prototype.openInAppWithAutoLoginIfSameSite = function(url, options, alertMessage) {
+            return this.openWithAutoLoginIfSameSite(true, url, options, alertMessage);
+        };
+
+        /**
+         * Open a URL in browser or InAppBrowser using auto-login in the Moodle site if available.
+         *
+         * @param  {Boolean} inApp         True to open it in InAppBrowser, false to open in browser.
+         * @param  {String} url            The URL to open.
+         * @param  {Object} options        Override default options passed to $cordovaInAppBrowser#open.
+         * @param  {String} [alertMessage] If defined, an alert will be shown before opening the browser/inappbrowser.
+         * @return {Promise}               Promise resolved when done, rejected otherwise.
+         */
+        Site.prototype.openWithAutoLogin = function(inApp, url, options, alertMessage) {
+            if (!this.privateToken || !this.wsAvailable('tool_mobile_get_autologin_key') ||
+                    (this.lastAutoLogin && $mmUtil.timestamp() - this.lastAutoLogin < 6 * mmCoreSecondsMinute)) {
+                // No private token, WS not available or last auto-login was less than 6 minutes ago.
+                // Open the final URL without auto-login.
+                return open(url);
+            }
+
+            var that = this,
+                userId = that.getUserId(),
+                params = {
+                    privatetoken: that.privateToken
+                },
+                modal = $mmUtil.showModalLoading();
+
+            // Use write to not use cache.
+            return that.write('tool_mobile_get_autologin_key', params).then(function(data) {
+                if (!data.autologinurl || !data.key) {
+                    // Not valid data, open the final URL without auto-login.
+                    return open(url);
+                }
+
+                that.lastAutoLogin = $mmUtil.timestamp();
+
+                return open(data.autologinurl + '?userid=' + userId + '&key=' + data.key + '&urltogo=' + url);
+            }).catch(function() {
+                // Couldn't get autologin key, open the final URL without auto-login.
+                return open(url);
+            });
+
+            function open(url) {
+                if (modal) {
+                    modal.dismiss();
+                }
+
+                var promise;
+                if (alertMessage) {
+                    promise = $mmUtil.showModal('mm.core.notice', alertMessage, 3000);
+                } else {
+                    promise = $q.when();
+                }
+
+                return promise.finally(function() {
+                    if (inApp) {
+                        $mmUtil.openInApp(url, options);
+                    } else {
+                        $mmUtil.openInBrowser(url);
+                    }
+                });
+            }
+        };
+
+        /**
+         * Open a URL in browser or InAppBrowser using auto-login in the Moodle site if available and the URL belongs to the site.
+         *
+         * @param  {String} url The URL to open.
+         * @return {Promise}    Promise resolved when done, rejected otherwise.
+         */
+        Site.prototype.openWithAutoLoginIfSameSite = function(inApp, url, options) {
+            if (this.containsUrl(url)) {
+                return this.openWithAutoLogin(inApp, url, options);
+            } else {
+                if (inApp) {
+                    $mmUtil.openInApp(url, options);
+                } else {
+                    $mmUtil.openInBrowser(url);
+                }
+                return $q.when();
+            }
+        };
+
+        /**
+         * Get the config of this site.
+         *
+         * @param {String}   [name]         Name of the setting to get. If not set or false, all settings will be returned.
+         * @param {Boolean}  [ignoreCache]  True if it should ignore cached data.
+         * @return {Promise} Promise resolved with site config. Rejected with an object if error.
+         */
+        Site.prototype.getConfig = function(name, ignoreCache) {
+            var site = this;
+
+            var preSets = {
+                cacheKey: getConfigCacheKey()
+            };
+
+            if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+
+            return site.read('tool_mobile_get_config', {}, preSets).then(function(config) {
+                if (name) {
+                    // Return the requested setting.
+                    for (var x in config.settings) {
+                        if (config.settings[x].name == name) {
+                            return config.settings[x].value;
+                        }
+                    }
+                    return $q.reject();
+                } else {
+                    // Return all settings in the same array.
+                    var settings = {};
+                    angular.forEach(config.settings, function(setting) {
+                        settings[setting.name] = setting.value;
+                    });
+                    return settings;
+                }
+            });
+        };
+
+        /**
+         * Invalidates config WS call.
+         *
+         * @return {Promise}        Promise resolved when the data is invalidated.
+         */
+        Site.prototype.invalidateConfig = function() {
+            var site = this;
+            return site.invalidateWsCacheForKey(getConfigCacheKey());
+        };
+
+        function getConfigCacheKey() {
+            return 'tool_mobile_get_config';
+        }
+
+        /**
          * Invalidate entries from the cache.
          *
          * @param  {Object} db      DB the entries belong to.
@@ -846,32 +1102,36 @@ angular.module('mm.core')
         };
 
         /**
+         * Get cache ID.
+         *
+         * @param  {String} method     The WebService method.
+         * @param  {Object} data       Arguments to pass to the method.
+         * @return {String}            Cache ID.
+         */
+        function getCacheId(method, data) {
+            return md5.createHash(method + ':' + JSON.stringify(data));
+        }
+
+        /**
          * Get a WS response from cache.
          *
-         * @param {Object} site    Site.
-         * @param {String} method  The WebService method.
-         * @param {Object} data    Arguments to pass to the method.
-         * @param {Object} preSets Extra settings.
-         * @return {Promise}       Promise to be resolved with the WS response.
+         * @param  {Object} site       Site.
+         * @param  {String} method     The WebService method.
+         * @param  {Object} data       Arguments to pass to the method.
+         * @param  {Object} preSets    Extra settings.
+         * @param  {Boolean} emergency True if it's an "emergency" cache call (WS call failed).
+         * @return {Promise}           Promise to be resolved with the WS response.
          */
-        function getFromCache(site, method, data, preSets) {
-            var result,
-                db = site.db,
-                deferred = $q.defer(),
-                id,
+        function getFromCache(site, method, data, preSets, emergency) {
+            var db = site.db,
+                id = getCacheId(method, data),
                 promise;
 
-            if (!db) {
-                deferred.reject();
-                return deferred.promise;
-            } else if (!preSets.getFromCache) {
-                deferred.reject();
-                return deferred.promise;
+            if (!db || !preSets.getFromCache) {
+                return $q.reject();
             }
 
-            id = md5.createHash(method + ':' + JSON.stringify(data));
-
-            if (preSets.getCacheUsingCacheKey) {
+            if (preSets.getCacheUsingCacheKey || (emergency && preSets.getEmergencyCacheUsingCacheKey)) {
                 promise = db.whereEqual(mmCoreWSCacheStore, 'key', preSets.cacheKey).then(function(entries) {
                     if (!entries.length) {
                         // Cache key not found, get by params sent.
@@ -891,7 +1151,7 @@ angular.module('mm.core')
                 promise = db.get(mmCoreWSCacheStore, id);
             }
 
-            promise.then(function(entry) {
+            return promise.then(function(entry) {
                 var now = new Date().getTime();
 
                 preSets.omitExpires = preSets.omitExpires || !$mmApp.isOnline();
@@ -899,54 +1159,93 @@ angular.module('mm.core')
                 if (!preSets.omitExpires) {
                     if (now > entry.expirationtime) {
                         $log.debug('Cached element found, but it is expired');
-                        deferred.reject();
-                        return;
+                        return $q.reject();
                     }
                 }
 
                 if (typeof entry != 'undefined' && typeof entry.data != 'undefined') {
                     var expires = (entry.expirationtime - now) / 1000;
                     $log.info('Cached element found, id: ' + id + ' expires in ' + expires + ' seconds');
-                    deferred.resolve(entry.data);
-                    return;
+                    return entry.data;
                 }
 
-                deferred.reject();
-            }, function() {
-                deferred.reject();
+                return $q.reject();
             });
-
-            return deferred.promise;
         }
 
         /**
          * Save a WS response to cache.
          *
-         * @param {Object} site    Site.
-         * @param {String} method   The WebService method.
-         * @param {Object} data     Arguments to pass to the method.
-         * @param {Object} preSets  Extra settings.
-         * @param {String} cacheKey (Optional) Extra key to add to the cache object to identify similar calls.
-         * @return {Promise}        Promise to be resolved when the response is saved.
+         * @param  {Object} site     Site.
+         * @param  {String} method   The WebService method.
+         * @param  {Object} data     Arguments to pass to the method.
+         * @param  {Object} response WS call response.
+         * @param  {Object} preSets  Extra settings.
+         * @return {Promise}         Promise to be resolved when the response is saved.
          */
-        function saveToCache(site, method, data, response, cacheKey) {
+        function saveToCache(site, method, data, response, preSets) {
             var db = site.db,
-                id = md5.createHash(method + ':' + JSON.stringify(data)),
+                id = getCacheId(method, data),
                 cacheExpirationTime = mmCoreConfigConstants.cache_expiration_time,
+                promise,
                 entry = {
-                        id: id,
-                        data: response
-                    };
+                    id: id,
+                    data: response
+                };
 
             if (!db) {
                 return $q.reject();
             } else {
-                cacheExpirationTime = isNaN(cacheExpirationTime) ? 300000 : cacheExpirationTime;
-                entry.expirationtime = new Date().getTime() + cacheExpirationTime;
-                if (cacheKey) {
-                    entry.key = cacheKey;
+                if (preSets.uniqueCacheKey) {
+                    // Cache key must be unique, delete all entries with same cache key.
+                    promise = deleteFromCache(site, method, data, preSets, true).catch(function() {
+                        // Ignore errors.
+                    });
+                } else {
+                    promise = $q.when();
                 }
-                return db.insert(mmCoreWSCacheStore, entry);
+
+                return promise.then(function() {
+                    cacheExpirationTime = isNaN(cacheExpirationTime) ? 300000 : cacheExpirationTime;
+                    entry.expirationtime = new Date().getTime() + cacheExpirationTime;
+                    if (preSets.cacheKey) {
+                        entry.key = preSets.cacheKey;
+                    }
+                    return db.insert(mmCoreWSCacheStore, entry);
+                });
+            }
+        }
+
+        /**
+         * Delete a WS cache entry or entries.
+         *
+         * @param  {Object} site         Site.
+         * @param  {String} method       The WebService method.
+         * @param  {Object} data         Arguments to pass to the method.
+         * @param  {Object} preSets      Extra settings.
+         * @param  {Boolean} allCacheKey True to delete all entries with the cache key, false to delete only by ID.
+         * @return {Promise}             Promise to be resolved when the entries are deleted.
+         */
+        function deleteFromCache(site, method, data, preSets, allCacheKey) {
+            var db = site.db,
+                id = getCacheId(method, data);
+
+            if (!db) {
+                return $q.reject();
+            } else {
+                if (allCacheKey) {
+                    return db.whereEqual(mmCoreWSCacheStore, 'key', preSets.cacheKey).then(function(entries) {
+                        var promises = [];
+
+                        angular.forEach(entries, function(entry) {
+                            promises.push(db.remove(mmCoreWSCacheStore, entry.id));
+                        });
+
+                        return $q.all(promises);
+                    });
+                } else {
+                    return db.remove(mmCoreWSCacheStore, id);
+                }
             }
         }
 
@@ -956,16 +1255,17 @@ angular.module('mm.core')
          * @module mm.core
          * @ngdoc method
          * @name $mmSitesFactory#makeSite
-         * @param {String} id      Site ID.
-         * @param {String} siteurl Site URL.
-         * @param {String} token   User's token in the site.
-         * @param {Object} infos   Site's info.
-         * @return {Object} The current site object.
+         * @param  {String} id             Site ID.
+         * @param  {String} siteurl        Site URL.
+         * @param  {String} token          User's token in the site.
+         * @param  {Object} infos          Site's info.
+         * @param  {String} [privateToken] User's private token.
+         * @return {Object}                The current site object.
          * @description
          * This returns a site object.
          */
-        self.makeSite = function(id, siteurl, token, infos) {
-            return new Site(id, siteurl, token, infos);
+        self.makeSite = function(id, siteurl, token, infos, privateToken) {
+            return new Site(id, siteurl, token, infos, privateToken);
         };
 
         /**

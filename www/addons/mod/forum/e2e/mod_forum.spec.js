@@ -162,5 +162,45 @@ describe('User can manage course forum', function() {
         });
     });
 
+    it('Check that the Course discussion post was successfully created', function (done) {
+        return MM.loginAsStudent().then(function () {
+            return MM.clickOnInSideMenu('My courses')
+        }).then(function () {
+            return MM.clickOn('Psychology in Cinema');
+        }).then(function () {
+            return MM.clickOn('Analysis');
+        }).then(function () {
+            return MM.clickOn('Course discussion');
+        }).then(function () {
+            expect(MM.getView().getText()).toMatch('Test Subject');
+            expect(MM.getView().getText()).toMatch('Test Message');
+            expect(MM.getView().getText()).toMatch('Barbara Gardner');
+        }).then(function () {
+            return MM.goBack()
+        }).then(function() {
+            done();
+        });
+    });
+
+    it('Check that the discussions about group projects was successfully created', function (done) {
+        return MM.loginAsStudent().then(function () {
+            return MM.clickOnInSideMenu('My courses')
+        }).then(function () {
+            return MM.clickOn('Psychology in Cinema');
+        }).then(function () {
+            return MM.clickOn('Group Projects and Individual tasks');
+        }).then(function () {
+            return MM.clickOn('Discussions about your group projects');
+        }).then(function() {
+            expect(MM.getView().getText()).toMatch('Test Group Projects Subject');
+            expect(MM.getView().getText()).toMatch('Test Group Projects Message');
+            expect(MM.getView().getText()).toMatch('Barbara Gardner');
+        }).then(function () {
+            return MM.goBack()
+        }).then(function() {
+            done();
+        });
+    });
+
 });
 

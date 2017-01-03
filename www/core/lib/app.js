@@ -33,7 +33,7 @@ angular.module('mm.core')
  *      });
  *  })
  */
-.provider('$mmApp', function($stateProvider) {
+.provider('$mmApp', function($stateProvider, $sceDelegateProvider) {
 
     /** Define the app storage schema. */
     var DBNAME = 'MoodleMobile',
@@ -337,6 +337,77 @@ angular.module('mm.core')
                 return ssoAuthenticationDeferred.promise;
             }
             return $q.when();
+        };
+
+        /**
+         * Retrieve redirect data.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#getRedirect
+         * @return {Object} Object with siteid, state, params and timemodified.
+         */
+        self.getRedirect = function() {
+            if (localStorage && localStorage.getItem) {
+                try {
+                    var data = {
+                        siteid: localStorage.getItem('mmCoreRedirectSiteId'),
+                        state: localStorage.getItem('mmCoreRedirectState'),
+                        params: localStorage.getItem('mmCoreRedirectParams'),
+                        timemodified: localStorage.getItem('mmCoreRedirectTime')
+                    };
+
+                    if (data.params) {
+                        data.params = JSON.parse(data.params);
+                    }
+
+                    return data;
+                } catch(ex) {
+                    $log.error('Error loading redirect data:', ex);
+                }
+            }
+
+            return {};
+        };
+
+        /**
+         * Store redirect params.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#storeRedirect
+         * @param  {String} siteId Site ID.
+         * @param  {String} state  State to go.
+         * @param  {Object} params State params.
+         * @return {Void}
+         */
+        self.storeRedirect = function(siteId, state, params) {
+            if (localStorage && localStorage.setItem) {
+                try {
+                    localStorage.setItem('mmCoreRedirectSiteId', siteId);
+                    localStorage.setItem('mmCoreRedirectState', state);
+                    localStorage.setItem('mmCoreRedirectParams', JSON.stringify(params));
+                    localStorage.setItem('mmCoreRedirectTime', new Date().getTime());
+                } catch(ex) {}
+            }
+        };
+
+        /**
+         * Trust a wildcard of resources. Reserved for core use.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#trustResources
+         * @param  {String} wildcard Wildcard to trust.
+         * @return {Void}
+         * @protected
+         */
+        self.trustResources = function(wildcard) {
+            var currentList = $sceDelegateProvider.resourceUrlWhitelist();
+            if (currentList.indexOf(wildcard) == -1) {
+                currentList.push(wildcard);
+                $sceDelegateProvider.resourceUrlWhitelist(currentList);
+            }
         };
 
         return self;

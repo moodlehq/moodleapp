@@ -56,5 +56,5 @@
     "summaryofattempts": "你的先前作答記錄摘要",
     "timeleft": "剩餘時間",
     "timetaken": "所用時間",
-    "yourfinalgradeis": "這個測驗您的最後得分是{{$a}}"
+    "yourfinalgradeis": "這個測驗您的最後成績是{{$a}}"
 }

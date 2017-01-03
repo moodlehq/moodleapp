@@ -187,6 +187,34 @@ angular.module('mm.core.course')
     };
 
     /**
+     * Gets a module basic grade info by module ID.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#getModuleBasicInfo
+     * @param  {Number} moduleId Module ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with the module's grade info.
+     */
+    self.getModuleBasicGradeInfo = function(moduleId, siteId) {
+        return self.getModuleBasicInfo(moduleId, siteId).then(function(info) {
+            var grade = {
+                advancedgrading: info.advancedgrading || false,
+                grade: info.grade || false,
+                gradecat: info.gradecat || false,
+                gradepass: info.gradepass || false,
+                outcomes: info.outcomes || false,
+                scale: info.scale || false
+            };
+
+            if (grade.grade !== false || grade.advancedgrading !== false || grade.outcomes !== false) {
+                return grade;
+            }
+            return false;
+        });
+    };
+
+    /**
      * Gets a module basic info by instance.
      *
      * @module mm.core.course
@@ -224,14 +252,15 @@ angular.module('mm.core.course')
      * @module mm.core.course
      * @ngdoc method
      * @name $mmCourse#getModule
-     * @param {Number} moduleId             The module ID.
-     * @param {Number} [courseId]           The course ID. Recommended to speed up the process and minimize data usage.
-     * @param {Number} [sectionId]          The section ID.
-     * @param {Boolean} [preferCache=false] True if shouldn't call WS if data is cached, false otherwise.
-     * @param  {String} [siteId]            Site ID. If not defined, current site.
-     * @return {Promise}                    Promise resolved with the module.
+     * @param  {Number} moduleId       The module ID.
+     * @param  {Number} [courseId]     The course ID. Recommended to speed up the process and minimize data usage.
+     * @param  {Number} [sectionId]    The section ID.
+     * @param  {Boolean} [preferCache] True if shouldn't call WS if data is cached, false otherwise.
+     * @param  {Boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String} [siteId]       Site ID. If not defined, current site.
+     * @return {Promise}               Promise resolved with the module.
      */
-    self.getModule = function(moduleId, courseId, sectionId, preferCache, siteId) {
+    self.getModule = function(moduleId, courseId, sectionId, preferCache, ignoreCache, siteId) {
         siteId = siteId || $mmSite.getId();
 
         if (!moduleId) {
@@ -275,6 +304,11 @@ angular.module('mm.core.course')
                 cacheKey: getModuleCacheKey(moduleId),
                 omitExpires: preferCache
             };
+
+            if (!preferCache && ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
 
             if (sectionId) {
                 params.options.push({
@@ -427,33 +461,53 @@ angular.module('mm.core.course')
      * @return {Promise}                The reject contains the error message, else contains the sections.
      */
     self.getSections = function(courseId, excludeModules, excludeContents, preSets, siteId) {
-        preSets = preSets || {};
-        siteId = siteId || $mmSite.getId();
-        preSets.cacheKey = getSectionsCacheKey(courseId);
-        preSets.getCacheUsingCacheKey = true; // This is to make sure users don't lose offline access when updating.
-
-        var options = [
-                {
-                    name: 'excludemodules',
-                    value: excludeModules ? 1 : 0
-                },
-                {
-                    name: 'excludecontents',
-                    value: excludeContents ? 1 : 0
-                }
-            ];
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
+            preSets = preSets || {};
+            preSets.cacheKey = getSectionsCacheKey(courseId);
+            preSets.getCacheUsingCacheKey = true; // This is to make sure users don't lose offline access when updating.
+
+            var options = [
+                    {
+                        name: 'excludemodules',
+                        value: excludeModules ? 1 : 0
+                    },
+                    {
+                        name: 'excludecontents',
+                        value: excludeContents ? 1 : 0
+                    }
+                ];
+
             return site.read('core_course_get_contents', {
                 courseid: courseId,
                 options: options
             }, preSets).then(function(sections) {
-                angular.forEach(sections, function(section) {
-                    angular.forEach(section.modules, function(module) {
-                        addContentsIfNeeded(module);
+                var promise,
+                    siteHomeId = site.getInfo().siteid || 1;
+
+                if (courseId == siteHomeId) {
+                    // Check if frontpage sections should be shown.
+                    promise = site.getConfig('numsections').catch(function() {
+                        // Ignore errors for not present settings assuming numsections will be true.
+                        return $q.when(true);
                     });
+                } else {
+                    promise = $q.when(true);
+                }
+
+                return promise.then(function(showSections) {
+                    if (!showSections && sections.length > 0) {
+                        // Get only the last section (Main menu block section).
+                        sections.pop();
+                    }
+
+                    angular.forEach(sections, function(section) {
+                        angular.forEach(section.modules, function(module) {
+                            addContentsIfNeeded(module);
+                        });
+                    });
+                    return sections;
                 });
-                return sections;
+
             });
         });
     };
@@ -479,8 +533,6 @@ angular.module('mm.core.course')
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
     self.invalidateModule = function(moduleId, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getModuleCacheKey(moduleId));
         });
@@ -492,12 +544,15 @@ angular.module('mm.core.course')
      * @module mm.core.course
      * @ngdoc method
      * @name $mmCourse#invalidateModuleByInstance
-     * @param {Number} id     Instance ID.
-     * @param {String} module Name of the module. E.g. 'glossary'.
+     * @param {Number} id        Instance ID.
+     * @param {String} module    Name of the module. E.g. 'glossary'.
+     * @param {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}      Promise resolved when the data is invalidated.
      */
-    self.invalidateModuleByInstance = function(id, module) {
-        return $mmSite.invalidateWsCacheForKey(getModuleByInstanceCacheKey(id, module));
+    self.invalidateModuleByInstance = function(id, module, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getModuleByInstanceCacheKey(id, module));
+        });
     };
 
     /**
@@ -506,16 +561,25 @@ angular.module('mm.core.course')
      * @module mm.core.course
      * @ngdoc method
      * @name $mmCourse#invalidateSections
-     * @param {Number} courseid  Course ID.
-     * @param  {Number} [userid] User ID. If not defined, current user.
+     * @param {Number} courseId  Course ID.
+     * @param  {Number} [userId] User ID. If not defined, current user.
+     * @param {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}         Promise resolved when the data is invalidated.
      */
-    self.invalidateSections = function(courseid, userid) {
-        userid = userid || $mmSite.getUserId();
+    self.invalidateSections = function(courseId, userId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var promises = [],
+                siteHomeId = site.getInfo().siteid || 1;
 
-        var p1 = $mmSite.invalidateWsCacheForKey(getSectionsCacheKey(courseid)),
-            p2 = $mmSite.invalidateWsCacheForKey(getActivitiesCompletionCacheKey(courseid, userid));
-        return $q.all([p1, p2]);
+            userId = userId || site.getUserId();
+
+            promises.push(site.invalidateWsCacheForKey(getSectionsCacheKey(courseId)));
+            promises.push(site.invalidateWsCacheForKey(getActivitiesCompletionCacheKey(courseId, userId)));
+            if (courseId == siteHomeId) {
+                promises.push(site.invalidateConfig());
+            }
+            return $q.all(promises);
+        });
     };
 
     /**
@@ -524,16 +588,18 @@ angular.module('mm.core.course')
      * @module mm.core.course
      * @ngdoc method
      * @name $mmCourse#loadModuleContents
-     * @param  {Object} module      Module to load the contents.
-     * @param  {Number} [courseId]  The course ID. Recommended to speed up the process and minimize data usage.
-     * @param  {Number} [sectionId] The section ID.
-     * @param  {String} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise}            Promise resolved when loaded.
+     * @param  {Object} module         Module to load the contents.
+     * @param  {Number} [courseId]     The course ID. Recommended to speed up the process and minimize data usage.
+     * @param  {Number} [sectionId]    The section ID.
+     * @param  {Boolean} [preferCache] True if shouldn't call WS if data is cached, false otherwise.
+     * @param  {Boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String} [siteId]       Site ID. If not defined, current site.
+     * @return {Promise}               Promise resolved when loaded.
      */
-    self.loadModuleContents = function(module, courseId, sectionId, siteId) {
+    self.loadModuleContents = function(module, courseId, sectionId, preferCache, ignoreCache, siteId) {
         siteId = siteId || $mmSite.getId();
 
-        if (module.contents && module.contents.length) {
+        if (!ignoreCache && module.contents && module.contents.length) {
             // Already loaded.
             return $q.when();
         }
@@ -544,9 +610,34 @@ angular.module('mm.core.course')
             if (version >= 2015051100) {
                 // From Moodle 2.9 the course contents can be filtered, so maybe the module doesn't have contents
                 // because they were filtered. Try to get its contents.
-                return self.getModule(module.id, courseId, sectionId, false, siteId).then(function(mod) {
+                return self.getModule(module.id, courseId, sectionId, preferCache, ignoreCache, siteId).then(function(mod) {
                     module.contents = mod.contents;
                 });
+            }
+        });
+    };
+
+    /**
+     * Report a course (and section) as being viewed.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourse#logView
+     * @param {Number} courseId  Course ID.
+     * @param {Number} [section] Section number.
+     * @return {Promise}         Promise resolved when the WS call is successful.
+     */
+    self.logView = function(courseId, section) {
+        var params = {
+            courseid: courseId
+        };
+        if (typeof section != 'undefined') {
+            params.sectionnumber = section;
+        }
+
+        return $mmSite.write('core_course_view_course', params).then(function(response) {
+            if (!response.status) {
+                return $q.reject();
             }
         });
     };

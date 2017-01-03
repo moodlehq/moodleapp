@@ -22,16 +22,14 @@ angular.module('mm.addons.mod_wiki')
  * @name mmaModWikiEditCtrl
  */
 .controller('mmaModWikiEditCtrl', function($q, $scope, $stateParams, $mmUtil, $state, $mmaModWiki, $translate, $ionicHistory,
-        $mmCourse, $ionicPlatform, $rootScope, mmaModWikiRenewLockTimeout, $interval, $mmText, $mmaModWikiOffline,
-        $mmEvents, $mmLang, $mmSite, mmaModWikiComponent, mmaModWikiPageCreatedEvent, $mmaModWikiSync, $mmSyncBlock) {
+        $mmCourse, mmaModWikiRenewLockTimeout, $interval, $mmText, $mmaModWikiOffline, $mmEvents, $mmLang, $mmSite,
+        mmaModWikiComponent, mmaModWikiPageCreatedEvent, $mmaModWikiSync, $mmSyncBlock) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         subwikiId = $stateParams.subwikiid || null,
         wikiId = null,
         pageId = $stateParams.pageid || null,
         section = $stateParams.section || null,
-        originalBackFunction = $rootScope.$ionicGoBack,
-        unregisterHardwareBack,
         originalContent = null,
         editing = false,
         version = false,
@@ -41,6 +39,9 @@ angular.module('mm.addons.mod_wiki')
         subwikiFiles,
         renewLockInterval,
         editOffline = false;
+
+    // Block leaving the view, we want to show a confirm to the user if there's unsaved data.
+    $mmUtil.blockLeaveView($scope, cancel);
 
     $scope.saveAndGoParams = false; // See $ionicView.afterLeave.
     $scope.component = mmaModWikiComponent;
@@ -139,18 +140,12 @@ angular.module('mm.addons.mod_wiki')
 
     // Just ask to confirm the lost of data.
     function cancel() {
-        var promise;
-
         if ((originalContent == $scope.page.text) || (!editing && !$scope.page.text && !$scope.page.title)) {
-            promise = $q.when();
+            return $q.when();
         } else {
             // Show confirmation if some data has been modified.
-            promise = $mmUtil.showConfirm($translate('mm.core.confirmcanceledit'));
+            return $mmUtil.showConfirm($translate('mm.core.confirmcanceledit'));
         }
-
-        return promise.then(function() {
-            return $ionicHistory.goBack();
-        });
     }
 
     // Check if we need to navigate to a new state.
@@ -195,6 +190,7 @@ angular.module('mm.addons.mod_wiki')
                     module: module,
                     moduleid: module.id,
                     courseid: courseId,
+                    pageid: null,
                     pagetitle: $scope.page.title,
                     wikiid: wikiId,
                     subwikiid: subwikiId
@@ -372,12 +368,6 @@ angular.module('mm.addons.mod_wiki')
         }
     });
 
-    // Override Ionic's back button behavior.
-    $rootScope.$ionicGoBack = cancel;
-
-    // Override Android's back button. We set a priority of 101 to override the "Return to previous view" action.
-    unregisterHardwareBack = $ionicPlatform.registerBackButtonAction(cancel, 101);
-
     fetchWikiPageData().then(function() {
         if (subwikiId && !$scope.$$destroyed) {
             // Block the subwiki now that we have subwikiId for sure.
@@ -389,9 +379,6 @@ angular.module('mm.addons.mod_wiki')
 
 
     $scope.$on('$destroy', function() {
-        // Restore original back functions.
-        unregisterHardwareBack();
-        $rootScope.$ionicGoBack = originalBackFunction;
         $interval.cancel(renewLockInterval);
         if (subwikiId) {
             $mmSyncBlock.unblockOperation(mmaModWikiComponent, subwikiId);

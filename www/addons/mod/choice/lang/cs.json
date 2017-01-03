@@ -13,6 +13,7 @@
     "responses": "Odpovědi",
     "responsesresultgraphdescription": "{{number}}% uživatelů zvolilo možnost: {{text}}.",
     "responsesresultgraphheader": "Graf",
+    "resultsnotsynced": "Výsledky nezahrnují poslední řešení. Pro aktualizaci je synchronizujte, prosím.",
     "savemychoice": "Uložit mou volbu",
     "userchoosethisoption": "Uživatelé, kteří si vybrali tuto alternativu",
     "yourselection": "Vaše volba"

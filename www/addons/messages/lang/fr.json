@@ -1,6 +1,7 @@
 {
     "addcontact": "Ajouter un contact",
     "blockcontact": "Bloquer le contact",
+    "blocknoncontacts": "Empêcher les utilisateurs inconnus de m'envoyer des messages personnels",
     "contactlistempty": "La liste des contacts est vide",
     "contactname": "Nom du contact",
     "contacts": "Contacts",
@@ -11,6 +12,7 @@
     "errorwhileretrievingdiscussions": "Erreur lors de la récupération des discussions depuis le serveur.",
     "errorwhileretrievingmessages": "Erreur lors de la récupération des messages depuis le serveur.",
     "messagenotsent": "Ce message n'a pas été envoyé. Veuillez essayer plus tard.",
+    "messagepreferences": "Préférences des messages",
     "messages": "Messages",
     "mustbeonlinetosendmessages": "Vous devez être en ligne pour envoyer des messages",
     "newmessage": "Nouveau message...",
@@ -24,5 +26,6 @@
     "type_online": "En ligne",
     "type_search": "Résultats de recherche",
     "type_strangers": "Autres",
-    "unblockcontact": "Débloquer contact"
+    "unblockcontact": "Débloquer contact",
+    "warningmessagenotsent": "Impossible d'envoyer de message à l'utilisateur {{user}}. {{error}}"
 }

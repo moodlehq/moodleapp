@@ -13,6 +13,7 @@
     "responses": "Erantzunak",
     "responsesresultgraphdescription": "Erabiltzaileen %{{number}}-ak aukera hau aukeratu zuten: {{text}}.",
     "responsesresultgraphheader": "Erakutsi grafikoa",
+    "resultsnotsynced": "Emaitzek ez dute zure azken erantzunak barne hartzen. Mesedez, sinkronizatu datuak eguneratzeko.",
     "savemychoice": "Gorde nire aukera",
     "userchoosethisoption": "Aukera hau hautatu duten erabiltzaileak",
     "yourselection": "Zure aukera"

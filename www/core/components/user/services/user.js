@@ -33,7 +33,7 @@ angular.module('mm.core.user')
  * @ngdoc service
  * @name $mmUser
  */
-.factory('$mmUser', function($log, $q, $mmSite, $mmUtil, $translate, mmCoreUsersStore) {
+.factory('$mmUser', function($log, $q, $mmSite, $mmUtil, $translate, mmCoreUsersStore, $mmFilepool, $mmSitesManager) {
 
     $log = $log.getInstance('$mmUser');
 
@@ -51,8 +51,13 @@ angular.module('mm.core.user')
             return $q.reject();
         }
 
+        id = parseInt(id, 10);
+        if (isNaN(id)) {
+            return $q.reject();
+        }
+
         self.invalidateUserCache(id); // Invalidate WS calls.
-        return $mmSite.getDb().remove(mmCoreUsersStore, parseInt(id));
+        return $mmSite.getDb().remove(mmCoreUsersStore, id);
     };
 
     /**
@@ -163,7 +168,13 @@ angular.module('mm.core.user')
             // Not logged in, we can't get the site DB. User logged out or session expired while an operation was ongoing.
             return $q.reject();
         }
-        return $mmSite.getDb().get(mmCoreUsersStore, parseInt(id, 10));
+
+        id = parseInt(id, 10);
+        if (isNaN(id)) {
+            return $q.reject();
+        }
+
+        return $mmSite.getDb().get(mmCoreUsersStore, id);
     };
 
     /**
@@ -238,6 +249,38 @@ angular.module('mm.core.user')
     };
 
     /**
+     * Prefetch user profiles and their images from a certain course. It prevents duplicates.
+     *
+     * @module mm.core.user
+     * @ngdoc method
+     * @name $mmUser#prefetchProfiles
+     * @param  {Number[]} userIds  List of user IDs.
+     * @param  {Number} [courseId] Course the users belong to.
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved when prefetched.
+     */
+    self.prefetchProfiles = function(userIds, courseId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        var treated = {},
+            promises = [];
+
+        angular.forEach(userIds, function(userId) {
+            if (!treated[userId]) {
+                treated[userId] = true;
+
+                promises.push(self.getProfile(userId, courseId).then(function(profile) {
+                    if (profile.profileimageurl) {
+                        $mmFilepool.addToQueueByUrl(siteId, profile.profileimageurl);
+                    }
+                }));
+            }
+        });
+
+        return $q.all(promises);
+    };
+
+    /**
      * Store user basic information in local DB to be retrieved if the WS call fails.
      *
      * @module mm.core.user
@@ -254,8 +297,13 @@ angular.module('mm.core.user')
             return $q.reject();
         }
 
+        id = parseInt(id, 10);
+        if (isNaN(id)) {
+            return $q.reject();
+        }
+
         return $mmSite.getDb().insert(mmCoreUsersStore, {
-            id: parseInt(id),
+            id: id,
             fullname: fullname,
             profileimageurl: avatar
         });
@@ -264,6 +312,9 @@ angular.module('mm.core.user')
     /**
      * Store users basic information in local DB.
      *
+     * @module mm.core.user
+     * @ngdoc method
+     * @name $mmUser#storeUsers
      * @param  {Object[]} users Users to store. Fields stored: id, fullname, profileimageurl.
      * @return {Promise}        Promise resolve when the user is stored.
      */
@@ -279,6 +330,85 @@ angular.module('mm.core.user')
         });
 
         return $q.all(promises);
+    };
+
+    /**
+     * Update a preference for a user.
+     *
+     * @module mm.core.user
+     * @ngdoc method
+     * @name $mmUser#updateUserPreference
+     * @param  {String} name     Preference name.
+     * @param  {Mixed} value     Preference new value.
+     * @param  {Number} [userId] User ID. If not defined, site's current user.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved if success.
+     */
+    self.updateUserPreference = function(name, value, userId, siteId) {
+        var preferences = [
+            {
+                type: name,
+                value: value
+            }
+        ];
+        return self.updateUserPreferences(preferences, undefined, userId, siteId);
+    };
+
+    /**
+     * Update some preferences for a user.
+     *
+     * @module mm.core.user
+     * @ngdoc method
+     * @name $mmUser#updateUserPreferences
+     * @param  {Object[]} preferences           List of preferences.
+     * @param  {Boolean} [disableNotifications] Whether to disable all notifications. Undefined to not update this value.
+     * @param  {Number} [userId]                User ID. If not defined, site's current user.
+     * @param  {String} [siteId]                Site ID. If not defined, current site.
+     * @return {Promise}                        Promise resolved if success.
+     */
+    self.updateUserPreferences = function(preferences, disableNotifications, userId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            userId = userId || site.getUserId();
+
+            var data = {
+                    userid: userId,
+                    preferences: preferences
+                },
+                preSets = {
+                    responseExpected: false
+                };
+
+            if (typeof disableNotifications != 'undefined') {
+                data.emailstop = disableNotifications ? 1 : 0;
+            }
+
+            return site.write('core_user_update_user_preferences', data, preSets);
+        });
+    };
+
+    /*
+     * Change the given user profile picture.
+     *
+     * @module mm.core.user
+     * @ngdoc method
+     * @name $mmUser#changeProfilePicture
+     * @param  {Number} draftItemId New picture draft item id.
+     * @param  {Number} id          User ID.
+     * @return {Promise}            Promise resolve with the new profileimageurl
+     */
+    self.changeProfilePicture = function(draftItemId, userId) {
+        var data = {
+            'draftitemid': draftItemId,
+            'delete': 0,
+            'userid': userId
+        };
+
+        return $mmSite.write('core_user_update_picture', data).then(function(result) {
+            if (!result.success) {
+                return $q.reject();
+            }
+            return result.profileimageurl;
+        });
     };
 
     return self;

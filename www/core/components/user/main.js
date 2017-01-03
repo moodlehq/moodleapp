@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.core.user', [])
+angular.module('mm.core.user', ['mm.core.contentlinks'])
 
 .constant('mmUserEventProfileRefreshed', 'user_profile_refreshed') // User refreshed an user profile.
+.constant('mmUserProfilePictureUpdated', 'user_profile_picture_updated') // User profile picture updated.
 .value('mmUserProfileState', 'site.mm_user-profile')
 
 .config(function($stateProvider, $mmContentLinksDelegateProvider) {
@@ -41,10 +42,15 @@ angular.module('mm.core.user', [])
 })
 
 .run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, $mmUserDelegate, $mmSite, mmCoreEventUserDeleted, $mmUser,
-            mmCoreEventRemoteAddonsLoaded) {
-    $mmEvents.on(mmCoreEventLogin, $mmUserDelegate.updateProfileHandlers);
-    $mmEvents.on(mmCoreEventSiteUpdated, $mmUserDelegate.updateProfileHandlers);
-    $mmEvents.on(mmCoreEventRemoteAddonsLoaded, $mmUserDelegate.updateProfileHandlers);
+            mmCoreEventRemoteAddonsLoaded, $mmUserProfileFieldsDelegate) {
+    function updateHandlers() {
+        $mmUserDelegate.updateProfileHandlers();
+        $mmUserProfileFieldsDelegate.updateFieldHandlers();
+    }
+
+    $mmEvents.on(mmCoreEventLogin, updateHandlers);
+    $mmEvents.on(mmCoreEventSiteUpdated, updateHandlers);
+    $mmEvents.on(mmCoreEventRemoteAddonsLoaded, updateHandlers);
 
     $mmEvents.on(mmCoreEventUserDeleted, function(data) {
         if (data.siteid && data.siteid === $mmSite.getId() && data.params) {

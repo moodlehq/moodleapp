@@ -1,10 +1,21 @@
 {
     "activities": "פעילויות",
+    "competenciesmostoftennotproficientincourse": "מיומנויות בהן אינכם בקיאים בקורס זה",
+    "coursecompetencies": "מיומנויות הקורס",
+    "coursecompetencyratingsarepushedtouserplans": "מצב רכישת מיומנות כתוצאה מהשלמת פעילות בקורס, מתעדכן באופן מידי בתוכניות הלימוד.",
+    "crossreferencedcompetencies": "מקושר למיומנויות",
     "duedate": "עד לתאריך",
     "evidence": "סימוכין",
+    "learningplancompetencies": "מיומנויות תוכנית־הלימודים",
+    "learningplans": "תוכניות־לימודים",
+    "noactivities": "לא מקושר לאף פעילות בקורס",
+    "nocompetencies": "טרם נוצרה מיומנות כלשהי באוסף־מיומנויות זה.",
+    "nocrossreferencedcompetencies": "אף מיומנות לא מקושרת למיומנות זו.",
     "path": "נתיב",
     "progress": "מעקב התקדמות למידה",
     "rating": "דירוג",
+    "reviewstatus": "סקירת מצב",
     "status": "מצב",
-    "template": "תבנית"
+    "template": "תבנית",
+    "xcompetenciesproficientoutofyincourse": "רכשתם בקיאות ב {{$a.x}} מתוך {{$a.y}} המיומנויות בקורס זה."
 }

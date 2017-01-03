@@ -1,14 +1,4 @@
 {
-    "average": "Genomsnitt",
-    "contributiontocoursetotal": "Bidrag till kurs totalt",
-    "feedback": "Feedback",
-    "grade": "Betyg",
-    "grades": "Betyg",
-    "itemname": "Namn på komponent",
-    "lettergrade": "Bokstavsbetyg/omdöme",
-    "percentage": "Procentandel",
-    "range": "Omfång",
-    "rank": "Ranking",
-    "viewgrades": "Visa betyg",
-    "weight": "Viktning"
+    "nogradesreturned": "Inga bokstavsbetyg har returnerats",
+    "viewgrades": "Visa betyg"
 }

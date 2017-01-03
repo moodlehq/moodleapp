@@ -1,17 +1,18 @@
 {
     "addcontact": "Añadir como contacto",
     "blockcontact": "Bloquear contacto",
+    "blocknoncontacts": "Bloquear mensajes de usuarios que no figuren en mi lista de contactos",
     "contactlistempty": "La lista de contactos está vacía",
     "contactname": "Nombre del contacto",
     "contacts": "Contactos",
     "deletemessage": "Eliminar mensaje",
     "deletemessageconfirmation": "¿Está Usted seguro de querer eliminar este mensaje? Solamente será eliminado de su historia de mensajería y todavía será visible por el usuario que lo envió o recibió.",
     "errordeletemessage": "Error al eliminar el mensaje",
-    "erroruseronlyacceptsmessagefromcontacts": "",
     "errorwhileretrievingcontacts": "Error al recuperar los contactos del servidor.",
     "errorwhileretrievingdiscussions": "Error al recuperar las discusiones del servidor.",
     "errorwhileretrievingmessages": "Error al recuperar los mensajes del servidor.",
     "messagenotsent": "El mensaje no fue enviado; por favor inténtelo nuevamente después.",
+    "messagepreferences": "Preferencias de Mensaje",
     "messages": "Mensajes",
     "mustbeonlinetosendmessages": "Usted debe de estar en-linea para enviar mensajes",
     "newmessage": "Nuevo mensaje...",
@@ -25,5 +26,6 @@
     "type_online": "En-línea",
     "type_search": "Resultados de la búsqueda",
     "type_strangers": "Otros",
-    "unblockcontact": "Desbloquear contacto"
+    "unblockcontact": "Desbloquear contacto",
+    "warningmessagenotsent": "No se pudo enviar mensaje(s) al usuario {{user}}. {{error}}"
 }

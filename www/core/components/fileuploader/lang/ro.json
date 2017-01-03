@@ -1,4 +1,5 @@
 {
+    "addfiletext": "Adăugați fișier",
     "audio": "Audio",
     "camera": "Camera WEB",
     "confirmuploadfile": "Sunteți pe cale să încărcați {{dimensiune}}. Sunteți sigur ca doriți să continuați?",
@@ -15,7 +16,6 @@
     "maxbytesfile": "Fișierul {{$a.file}} este prea mare. Dimensiunea maximă pe care o puteți încărca este {{$a.size}}.",
     "photoalbums": "Albume foto",
     "readingfile": "Se citește fișierul",
-    "success": "Succes!",
     "uploadafile": "Încărcați un fișier",
     "uploading": "Se încarcă",
     "video": "Video"

@@ -32,10 +32,11 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmUtilProvider#param
-     * @param  {Object} obj Object to serialize.
+     * @param  {Object}     obj Object to serialize.
+     * @param  {Boolean}    [addNull=false] Add null values to the serialized as empty parameters.
      * @return {String}     Serialization of the object.
      */
-    self.param = function(obj) {
+    self.param = function(obj, addNull) {
         var query = '', name, value, fullSubName, subName, subValue, innerObj, i;
 
         for (name in obj) {
@@ -49,8 +50,7 @@ angular.module('mm.core')
                     innerObj[fullSubName] = subValue;
                     query += self.param(innerObj) + '&';
                 }
-            }
-            else if (value instanceof Object) {
+            } else if (value instanceof Object) {
                 for (subName in value) {
                     subValue = value[subName];
                     fullSubName = name + '[' + subName + ']';
@@ -58,8 +58,9 @@ angular.module('mm.core')
                     innerObj[fullSubName] = subValue;
                     query += self.param(innerObj) + '&';
                 }
+            } else if (addNull || (value !== undefined && value !== null)) {
+                query += encodeURIComponent(name) + '=' + encodeURIComponent(value) + '&';
             }
-            else if (value !== undefined && value !== null) query += encodeURIComponent(name) + '=' + encodeURIComponent(value) + '&';
         }
 
         return query.length ? query.substr(0, query.length - 1) : query;
@@ -67,14 +68,17 @@ angular.module('mm.core')
 
     this.$get = function($ionicLoading, $ionicPopup, $injector, $translate, $http, $log, $q, $mmLang, $mmFS, $timeout, $mmApp,
                 $mmText, mmCoreWifiDownloadThreshold, mmCoreDownloadThreshold, $ionicScrollDelegate, $mmWS, $cordovaInAppBrowser,
-                $mmConfig, mmCoreSettingsRichTextEditor) {
+                $mmConfig, mmCoreSettingsRichTextEditor, $rootScope, $ionicPlatform, $ionicHistory, mmCoreSplitViewBlock, $state,
+                $window) {
 
         $log = $log.getInstance('$mmUtil');
 
         var self = {}, // Use 'self' to be coherent with the rest of services.
             matchesFn,
             inputSupportKeyboard = ['date', 'datetime', 'datetime-local', 'email', 'month', 'number', 'password',
-                'search', 'tel', 'text', 'time', 'url', 'week'];
+                'search', 'tel', 'text', 'time', 'url', 'week'],
+            originalBackFunction = $rootScope.$ionicGoBack,
+            backFunctionsStack = [originalBackFunction];
 
         /**
          * Formats a URL, trim, lowercase, etc...
@@ -536,7 +540,7 @@ angular.module('mm.core')
                 if (!modalClosed) {
                     $ionicLoading.show({
                         template:   '<ion-spinner></ion-spinner>' +
-                                    '<p>'+text+'</p>'
+                                    '<p>' + addFormatTextIfNeeded(text) + '</p>'
                     });
 
                     // Leave some delay before setting modalShown to true.
@@ -594,7 +598,7 @@ angular.module('mm.core')
                 template = "<ion-spinner></ion-spinner><p>{{'mm.core.loading' | translate}}</p>";
             }
 
-            options.template = template;
+            options.template = addFormatTextIfNeeded(template); // Add format-text to handle links.
 
             $ionicLoading.show(options);
 
@@ -611,10 +615,10 @@ angular.module('mm.core')
          * @module mm.core
          * @ngdoc method
          * @name $mmUtil#showErrorModal
-         * @param {String} errorMessage    Message to show.
-         * @param {Boolean} needsTranslate True if the errorMessage is a $translate key, false otherwise.
-         * @param {Number} [autocloseTime] Number of milliseconds to wait to close the modal.
-         *                                 If not defined, modal won't be automatically closed.
+         * @param {Mixed}   errorMessage     Message to show.
+         * @param {Boolean} [needsTranslate] True if the errorMessage is a $translate key, false otherwise.
+         * @param {Number}  [autocloseTime]  Number of milliseconds to wait to close the modal.
+         *                                   If not defined, modal won't be automatically closed.
          */
         self.showErrorModal = function(errorMessage, needsTranslate, autocloseTime) {
             var errorKey = 'mm.core.error',
@@ -648,19 +652,35 @@ angular.module('mm.core')
             }
 
             $translate(langKeys).then(function(translations) {
-                var popup = $ionicPopup.alert({
-                    title: translations[errorKey],
-                    template: needsTranslate ? translations[errorMessage] : errorMessage
-                });
+                var message = $mmText.decodeHTML(needsTranslate ? translations[errorMessage] : errorMessage),
+                    popup = $ionicPopup.alert({
+                        title: $mmText.decodeHTML(translations[errorKey]),
+                        template: addFormatTextIfNeeded(message) // Add format-text to handle links.
+                    });
 
                 if (typeof autocloseTime != 'undefined' && !isNaN(parseInt(autocloseTime))) {
                     $timeout(function() {
                         popup.close();
                     }, parseInt(autocloseTime));
-                } else {
-                    delete popup;
                 }
             });
+        };
+
+        /**
+         * Show a modal with an error message specifying a default message if error is empty.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#showErrorModalDefault
+         * @param {Mixed}   errorMessage      Message to show.
+         * @param {Mixed}   [defaultError]    Message to show. If errorMessage is empty.
+         * @param {Boolean} [needsTranslate]  True if the errorMessage is a $translate key, false otherwise.
+         * @param {Number}  [autocloseTime]   Number of milliseconds to wait to close the modal.
+         *                                    If not defined, modal won't be automatically closed.
+         */
+        self.showErrorModalDefault = function(errorMessage, defaultError, needsTranslate, autocloseTime) {
+            errorMessage = errorMessage ? errorMessage : defaultError;
+            return self.showErrorModal(errorMessage, needsTranslate, autocloseTime);
         };
 
         /**
@@ -669,21 +689,29 @@ angular.module('mm.core')
          * @module mm.core
          * @ngdoc method
          * @name $mmUtil#showModal
-         * @param {String} title        Language key.
-         * @param {String} message      Language key.
+         * @param {String} title           Language key.
+         * @param {String} message         Language key.
+         * @param {Number} [autocloseTime] Number of milliseconds to wait to close the modal.
+         * @return {Promise}               A promise resolved when the popup is closed. Has one additional function "close",
+         *                                 which can be called to programmatically close the popup with the given value.
          */
-        self.showModal = function(title, message) {
-            var promises = [
-                $translate(title),
-                $translate(message),
-            ];
+        self.showModal = function(title, message, autocloseTime) {
+            title = $translate.instant(title);
+            message = $translate.instant(message);
+            autocloseTime = parseInt(autocloseTime);
 
-            $q.all(promises).then(function(translations) {
-                $ionicPopup.alert({
-                    title: translations[0],
-                    template: translations[1]
-                });
+            var popup = $ionicPopup.alert({
+                title: title,
+                template: addFormatTextIfNeeded(message) // Add format-text to handle links.
             });
+
+            if (autocloseTime > 0) {
+                $timeout(function() {
+                    popup.close();
+                }, autocloseTime);
+            }
+
+            return popup;
         };
 
         /**
@@ -700,7 +728,7 @@ angular.module('mm.core')
         self.showConfirm = function(template, title, options) {
             options = options || {};
 
-            options.template = template;
+            options.template = addFormatTextIfNeeded(template); // Add format-text to handle links.
             options.title = title;
             return $ionicPopup.confirm(options).then(function(confirmed) {
                 if (!confirmed) {
@@ -725,7 +753,7 @@ angular.module('mm.core')
             inputType = inputType || 'password';
 
             var options = {
-                template: body,
+                template: addFormatTextIfNeeded(body), // Add format-text to handle links.
                 title: title,
                 inputPlaceholder: inputPlaceholder,
                 inputType: inputType
@@ -737,6 +765,19 @@ angular.module('mm.core')
                 return data;
             });
         };
+
+        /**
+         * Wraps a message with mm-format-text if the message contains < and >.
+         *
+         * @param  {String} message Message to wrap.
+         * @return {String}         Result message.
+         */
+        function addFormatTextIfNeeded(message) {
+            if ($mmText.hasHTMLTags(message)) {
+                return '<mm-format-text>' + message + '</mm-format-text>';
+            }
+            return message;
+        }
 
         /**
          * Reads and parses a JSON file.
@@ -767,6 +808,28 @@ angular.module('mm.core')
                 countryName = $translate.instant(countryKey);
 
             return countryName !== countryKey ? countryName : code;
+        };
+
+        /**
+         * Get list of countries with their code and translated name.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#getCountryList
+         * @return {Object} List of countries.
+         */
+        self.getCountryList = function() {
+            var table = $translate.getTranslationTable(),
+                countries = {};
+
+            angular.forEach(table, function(value, name) {
+                if (name.indexOf('mm.core.country-') === 0) {
+                    name = name.replace('mm.core.country-', '');
+                    countries[name] = value;
+                }
+            });
+
+            return countries;
         };
 
         /**
@@ -806,7 +869,7 @@ angular.module('mm.core')
          * @return {Number} The current timestamp in seconds.
          */
         self.timestamp = function() {
-            return Math.round(new Date().getTime() / 1000);
+            return Math.round(Date.now() / 1000);
         };
 
         /**
@@ -819,7 +882,7 @@ angular.module('mm.core')
          * @return {Number}     True if value is false, 0 or "0".
          */
         self.isFalseOrZero = function(value) {
-            return typeof value != 'undefined' && (value === false || parseInt(value) === 0);
+            return typeof value != 'undefined' && (value === false || value === "false" || parseInt(value) === 0);
         };
 
         /**
@@ -832,7 +895,7 @@ angular.module('mm.core')
          * @return {Number}     True if value is true, 1 or "1".
          */
         self.isTrueOrOne = function(value) {
-            return typeof value != 'undefined' && (value === true || parseInt(value) === 1);
+            return typeof value != 'undefined' && (value === true || value === "true" || parseInt(value) === 1);
         };
 
         /**
@@ -951,6 +1014,72 @@ angular.module('mm.core')
         };
 
         /**
+         * Returns a tree formatted from the a plain list.
+         * List has to be sorted by depth to allow this function to work correctly. Errors can be thrown if a child node is
+         * processed before a parent node.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#formatTree
+         * @param  {Array}  list                List to format.
+         * @param  {String} [parentFieldName]   Name of the parent field to match with children. Default: parent.
+         * @param  {String} [idFieldName]       Name of the children field to match with parent. Default: id.
+         * @param  {Number} [rootParentId]      The id of the root. Default: 0.
+         * @param  {Number} [maxDepth]          Max Depth to convert to tree. Children found will be in the last level of depth.
+         *                                          Default: 5.
+         * @return {Array}                      Array with the formatted tree, children will be on each node under children field.
+         */
+        self.formatTree = function(list, parentFieldName, idFieldName, rootParentId, maxDepth) {
+            var original = list,
+                map = {},
+                mapDepth = {},
+                node, parent, id,
+                tree = [];
+
+            parentFieldName = parentFieldName || 'parent';
+            idFieldName = idFieldName || 'id';
+            rootParentId = rootParentId || 0;
+            maxDepth = maxDepth || 5;
+
+            angular.forEach(list, function(node, index) {
+                id = node[idFieldName];
+                parent = node[parentFieldName];
+                node.children = [];
+
+                // Use map to look-up the parents.
+                map[id] = index;
+                if (parent != rootParentId) {
+                    if (mapDepth[parent] == maxDepth) {
+                        // Reached max level of depth. Proceed with flat order. Find parent object of the current node.
+                        var parentNode = list[map[parent]];
+                        if (parentNode != null) {
+                            var parentOfParent = parentNode[parentFieldName];
+                            // This element will be the child of the node that is two levels up the hierarchy
+                            // (i.e. the child of node.parent.parent).
+                            list[map[parentOfParent]].children.push(node);
+                            // Assign depth level to the same depth as the parent (i.e. max depth level).
+                            mapDepth[id] = mapDepth[parent];
+                            // Change the parent to be the one that is two levels up the hierarchy.
+                            //node.parent = parentOfParent;
+                        }
+                    } else {
+                        list[map[parent]].children.push(node);
+
+                        // Increase the depth level.
+                        mapDepth[id] = mapDepth[parent] + 1;
+                    }
+                } else {
+                    tree.push(node);
+
+                    // Root elements are the first elements in the tree structure, therefore have the depth level 1.
+                    mapDepth[id] = 1;
+                }
+            });
+
+            return tree;
+        };
+
+        /**
          * Empties an array without losing its reference.
          *
          * @module mm.core
@@ -1024,15 +1153,17 @@ angular.module('mm.core')
          * @module mm.core
          * @ngdoc method
          * @name $mmUtil#basicLeftCompare
-         * @param {Mixed}  itemA         First object.
-         * @param {Mixed}  itemB         Second object.
-         * @param {Number} [maxLevels=0] Number of levels to reach if 2 objects are compared.
-         * @param {Number} [level=0]     Current deep level (when comparing objects).
-         * @return {Boolean}             True if equal, false otherwise.
+         * @param {Mixed}  itemA                   First object.
+         * @param {Mixed}  itemB                   Second object.
+         * @param {Number} [maxLevels=0]           Number of levels to reach if 2 objects are compared.
+         * @param {Number} [level=0]               Current deep level (when comparing objects).
+         * @param {Boolean} [undefinedIsNull=true] True if undefined is equal to null. Defaults to true.
+         * @return {Boolean}                       True if equal, false otherwise.
          */
-        self.basicLeftCompare = function(itemA, itemB, maxLevels, level) {
+        self.basicLeftCompare = function(itemA, itemB, maxLevels, level, undefinedIsNull) {
             level = level || 0;
             maxLevels = maxLevels || 0;
+            undefinedIsNull = typeof undefinedIsNull == 'undefined' ? true : undefinedIsNull;
 
             if (angular.isFunction(itemA) || angular.isFunction(itemB)) {
                 return true; // Don't compare functions.
@@ -1049,6 +1180,11 @@ angular.module('mm.core')
                 });
                 return equal;
             } else {
+                if (undefinedIsNull && (
+                        (typeof itemA == 'undefined' && itemB === null) || (itemA === null && typeof itemB == 'undefined'))) {
+                    return true;
+                }
+
                 // We'll treat "2" and 2 as the same value.
                 var floatA = parseFloat(itemA),
                     floatB = parseFloat(itemB);
@@ -1152,6 +1288,72 @@ angular.module('mm.core')
         };
 
         /**
+         * Given a float, prints it nicely.
+         * Localized floats must not be used in calculations!
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#formatFloat
+         * @see adapted from format_float function on moodlelib.php
+         * @param  {Mixed}  float           The float to print
+         * @return {String}  locale float
+         */
+        self.formatFloat = function(float) {
+            if (typeof float == "undefined") {
+                return '';
+            }
+
+            var localeSeparator = $translate.instant('mm.core.decsep');
+
+            // Convert float to string.
+            float += '';
+            return float.replace('.', localeSeparator);
+        }
+
+        /**
+         * Converts locale specific floating point/comma number back to standard PHP float value
+         * Do NOT try to do any math operations before this conversion on any user submitted floats!
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#unformatFloat
+         * @see adapted from unformat_float function on moodlelib.php
+         * @param  {Mixed}  localeFloat Locale aware float representation
+         * @return {Mixed}  float|string|bool - false if bad format. Empty string if empty value or the parsed float if not.
+         */
+        self.unformatFloat = function(localeFloat) {
+            // Bad format on input type number.
+            if (typeof localeFloat == "undefined") {
+                return false;
+            }
+
+            // Empty (but not zero).
+            if (localeFloat == null) {
+                return "";
+            }
+
+            // Convert float to string.
+            localeFloat += '';
+            localeFloat = localeFloat.trim();
+
+            if (localeFloat == "") {
+                return "";
+            }
+
+            var localeSeparator = $translate.instant('mm.core.decsep');
+
+            localeFloat = localeFloat.replace(' ', ''); // No spaces - those might be used as thousand separators.
+            localeFloat = localeFloat.replace(localeSeparator, '.');
+
+            localeFloat = parseFloat(localeFloat);
+            // Bad format.
+            if (isNaN(localeFloat)) {
+                return false;
+            }
+            return localeFloat;
+        }
+
+        /**
          * Serialize an object to be used in a request.
          *
          * @module mm.core
@@ -1220,8 +1422,8 @@ angular.module('mm.core')
                 media;
             div.html(html);
 
-            // Treat img, audio, video and source.
-            media = div[0].querySelectorAll('img, video, audio, source');
+            // Treat elements with src (img, audio, video, ...).
+            media = div[0].querySelectorAll('img, video, audio, source, track');
             angular.forEach(media, function(el) {
                 var src = paths[decodeURIComponent(el.getAttribute('src'))];
                 if (typeof src !== 'undefined') {
@@ -1273,6 +1475,29 @@ angular.module('mm.core')
 
             scrollDelegate.scrollTo(position[0], position[1]);
             return true;
+        };
+
+        /**
+         * Search for an input with error (mm-input-error directive) and scrolls to it if found.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#scrollToInputError
+         * @param  {Object} container           Element to search in.
+         * @param  {Object} [scrollDelegate]    Scroll delegate. If not defined, use $ionicScrollDelegate.
+         * @param  {String} [scrollParentClass] Scroll Parent Class where to stop calculating the position. Default scroll-content.
+         * @return {Boolean}                    True if the element is found, false otherwise.
+         */
+        self.scrollToInputError = function(container, scrollDelegate, scrollParentClass) {
+            // Wait an instant to make sure errors are shown and scroll to the element.
+            return $timeout(function() {
+                if (!scrollDelegate) {
+                    scrollDelegate = $ionicScrollDelegate;
+                }
+
+                scrollDelegate.resize();
+                return self.scrollToElement(container, '.mm-input-has-errors', scrollDelegate, scrollParentClass);
+            }, 100);
         };
 
         /**
@@ -1646,7 +1871,8 @@ angular.module('mm.core')
                 $translate.instant('mm.core.serverconnection'),
                 $translate.instant('mm.core.errorinvalidresponse'),
                 $translate.instant('mm.core.sitemaintenance'),
-                $translate.instant('mm.core.upgraderunning')
+                $translate.instant('mm.core.upgraderunning'),
+                $translate.instant('mm.core.nopasswordchangeforced')
             ];
             return error && localErrors.indexOf(error) == -1;
         };
@@ -1749,6 +1975,156 @@ angular.module('mm.core')
             }
 
             return false;
+        };
+
+        /**
+         * Blocks leaving a view. This function should be used in views that want to perform a certain action before
+         * leaving (usually, ask the user if he wants to leave because some data isn't saved).
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#blockLeaveView
+         * @param  {Object} scope         View's scope.
+         * @param  {Function} canLeaveFn  Function called when the user wants to leave the view. Must return a promise
+         *                                resolved if the view should be left, rejected if the user should stay in the view.
+         * @param  {Object} [currentView] Current view. Defaults to $ionicHistory.currentView().
+         * @return {Object}               Object with:
+         *                                       -back: Original back function.
+         *                                       -unblock: Function to unblock. It is called automatically when scope is destroyed.
+         */
+        self.blockLeaveView = function(scope, canLeaveFn, currentView) {
+            currentView = currentView || $ionicHistory.currentView();
+
+            var unregisterHardwareBack,
+                leaving = false,
+                hasSplitView = $ionicPlatform.isTablet() && $state.current.name.split('.').length == 3,
+                skipSplitViewLeave = false;
+
+            // Override Ionic's back button behavior.
+            $rootScope.$ionicGoBack = goBack;
+
+            // Override Android's back button. We set a priority of 101 to override the "Return to previous view" action.
+            unregisterHardwareBack = $ionicPlatform.registerBackButtonAction(goBack, 101);
+
+            // Add function to the stack.
+            backFunctionsStack.push(goBack);
+
+            if (hasSplitView) {
+                // Block split view.
+                blockSplitView(true);
+            }
+
+            scope.$on('$destroy', unblock);
+
+            return {
+                back: originalBackFunction,
+                unblock: unblock
+            };
+
+            // Function called when the user wants to leave the view.
+            function goBack() {
+                // Check that we're leaving the current view, since the user can navigate to other views from here.
+                if ($ionicHistory.currentView() !== currentView) {
+                    // It's another view.
+                    originalBackFunction();
+                    return;
+                }
+
+                if (leaving) {
+                    // Leave view pending, don't call again.
+                    return;
+                }
+                leaving = true;
+
+                canLeaveFn().then(function() {
+                    // User confirmed to leave or there was no need to confirm, go back.
+                    // Skip next leave view from split view if there's one since we already checked if user can leave.
+                    skipSplitViewLeave = hasSplitView;
+                    originalBackFunction();
+                }).finally(function() {
+                    leaving = false;
+                });
+            }
+
+            // Leaving current view when it's in split view.
+            function leaveViewInSplitView() {
+                if (skipSplitViewLeave) {
+                    skipSplitViewLeave = false;
+                    return $q.when();
+                }
+
+                return canLeaveFn();
+            }
+
+            // Restore original back functions.
+            function unblock() {
+                unregisterHardwareBack();
+
+                if (hasSplitView) {
+                    // Unblock split view.
+                    blockSplitView(false);
+                }
+
+                // Remove function from the stack.
+                var position = backFunctionsStack.indexOf(goBack);
+                if (position > -1) {
+                    backFunctionsStack.splice(position, 1);
+                }
+
+                // Revert go back only if it hasn't been overridden by another view.
+                if ($rootScope.$ionicGoBack === goBack) {
+                    if (!backFunctionsStack.length) {
+                        // Shouldn't happen. Reset stack.
+                        backFunctionsStack = [originalBackFunction];
+                        $rootScope.$ionicGoBack = originalBackFunction;
+                    } else {
+                        $rootScope.$ionicGoBack = backFunctionsStack[backFunctionsStack.length - 1];
+                    }
+                }
+            }
+
+            // Block or unblock split view.
+            function blockSplitView(block) {
+                $rootScope.$broadcast(mmCoreSplitViewBlock, {
+                    block: block,
+                    blockFunction: leaveViewInSplitView,
+                    state: currentView.stateName,
+                    stateParams: currentView.stateParams
+                });
+            }
+        };
+
+        /**
+         * Check if an element is outside of screen (viewport).
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#isElementOutsideOfScreen
+         * @param  {Object} element          DOM element to check.
+         * @param  {String} [scrollSelector] Selector to find the scroll that contains the element.
+         * @return {Boolean}                 Whether the element is outside of the viewport.
+         */
+        self.isElementOutsideOfScreen = function(element, scrollSelector) {
+            scrollSelector = scrollSelector || '.scroll-content';
+
+            var elementRect = element.getBoundingClientRect(),
+                elementMidPoint,
+                scrollEl = self.closest(element, scrollSelector),
+                scrollElRect,
+                scrollTopPos = 0;
+
+            if (!elementRect) {
+                return false;
+            }
+
+            elementMidPoint = Math.round((elementRect.bottom + elementRect.top) / 2);
+
+            if (scrollEl) {
+                scrollElRect = scrollEl.getBoundingClientRect();
+                scrollTopPos = (scrollElRect && scrollElRect.top) || 0;
+            }
+
+            return elementMidPoint > $window.innerHeight || elementMidPoint < scrollTopPos;
         };
 
         return self;

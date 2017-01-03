@@ -29,7 +29,7 @@ describe('User can attempt quizzes', function() {
         });
     });
 
-    it('Attept Quiz', function (done) {
+    it('Attempt Quiz', function (done) {
         return MM.loginAsStudent().then(function () {
             return MM.clickOnInSideMenu('My courses');
         }).then(function () {
@@ -40,6 +40,7 @@ describe('User can attempt quizzes', function() {
             return MM.clickOn('Grammar help with your essays');
         }).then(function() {
             return MM.clickOn('Attempt quiz now');
+        }).then(function() {
             done();
         });
     });
@@ -54,9 +55,16 @@ describe('User can attempt quizzes', function() {
         }).then(function () {
             return MM.clickOn('Grammar help with your essays');
         }).then(function() {
+            return MM.clickOn('Attempt quiz now');
+        }).then(function () {
+            return MM.goBack();
+        }).then(function() {
+            expect(MM.getView().getText()).toMatch('Continue the last attempt');
+        }).then(function() {
             return MM.clickOn('Continue the last attempt');
         }).then(function(){
             return element(by.xpath('/html/body/div[4]/div/div[3]/button')).click();
+        }).then(function() {
             done();
         });
     });
@@ -71,12 +79,17 @@ describe('User can attempt quizzes', function() {
         }).then(function () {
             return MM.clickOn('Grammar help with your essays');
         }).then(function() {
+            return MM.clickOn('Attempt quiz now');
+        }).then(function () {
+            return MM.goBack();
+        }).then(function() {
             return MM.clickOn('Continue the last attempt');
         }).then(function() {
             return MM.clickOn('Check');
         }).then(function () {
             return MM.clickOn('OK');
             expect(MM.getView().getText()).toMatch('Please select an answer.');
+        }).then(function() {
             done();
         });
     });
@@ -91,6 +104,10 @@ describe('User can attempt quizzes', function() {
         }).then(function () {
             return MM.clickOn('Grammar help with your essays');
         }).then(function() {
+            return MM.clickOn('Attempt quiz now');
+        }).then(function () {
+            return MM.goBack();
+        }).then(function() {
             return MM.clickOn('Continue the last attempt');
         }).then(function() {
             return element(by.xpath('//*[@id="mma-mod_quiz-question-1"]/mm-question/div[1]/section/label[1]/label/div/i')).click();
@@ -100,8 +117,26 @@ describe('User can attempt quizzes', function() {
             return element(by.xpath('//*[@id="mma-mod_quiz-question-1"]/mm-question/div[1]/section/label[3]/label/div/i')).click();
         }).then(function () {
             return MM.clickOn('Check');
+        }).then(function() {
             done();
         });
     });
+
+    it('User can open test in browser', function (done) {
+        return MM.loginAsStudent().then(function () {
+            return MM.clickOnInSideMenu('My courses');
+        }).then(function () {
+            return MM.clickOn('Psychology in Cinema');
+        }).then(function () {
+            return MM.clickOn('Group Projects and Individual tasks');
+        }).then(function () {
+            return MM.clickOn('Grammar help with your essays');
+        }).then(function() {
+            return element(by.xpath('/html/body/ion-nav-view/ion-side-menus/ion-side-menu-content/ion-nav-bar/div[2]/ion-header-bar/div[3]/span/a')).click();
+        }).then(function() {
+            done();
+        });
+    });
+
 });
 

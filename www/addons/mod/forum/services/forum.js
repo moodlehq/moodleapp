@@ -96,15 +96,15 @@ angular.module('mm.addons.mod_forum')
     self.addNewDiscussion = function(forumId, name, courseId, subject, message, subscribe, groupId, siteId, timecreated) {
         siteId = siteId || $mmSite.getId();
 
-        if (!$mmApp.isOnline()) {
-            // App is offline, store the action.
-            return storeOffline();
-        }
-
         // If we are editing an offline discussion, discard previous first.
         var discardPromise = timecreated ? $mmaModForumOffline.deleteNewDiscussion(forumId, timecreated, siteId) : $q.when();
 
         return discardPromise.then(function() {
+            if (!$mmApp.isOnline()) {
+                // App is offline, store the action.
+                return storeOffline();
+            }
+
             return self.addNewDiscussionOnline(forumId, subject, message, subscribe, groupId, siteId).then(function() {
                 return true;
             }).catch(function(error) {
@@ -305,6 +305,29 @@ angular.module('mm.addons.mod_forum')
     };
 
     /**
+     * Get all course forums.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#getCourseForums
+     * @param {Number} courseId Course ID.
+     * @param {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the forums are retrieved.
+     */
+    self.getCourseForums = function(courseId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    courseids: [courseId]
+                },
+                preSets = {
+                    cacheKey: getForumDataCacheKey(courseId)
+                };
+
+            return site.read('mod_forum_get_forums_by_courses', params, preSets);
+        });
+    };
+
+    /**
      * Get a forum by course module ID.
      *
      * @module mm.addons.mod_forum
@@ -316,23 +339,13 @@ angular.module('mm.addons.mod_forum')
      * @return {Promise}        Promise resolved when the forum is retrieved.
      */
     self.getForum = function(courseId, cmId, siteId) {
-        siteId = siteId || $mmSite.getId();
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            var params = {
-                    courseids: [courseId]
-                },
-                preSets = {
-                    cacheKey: getForumDataCacheKey(courseId)
-                };
-
-            return site.read('mod_forum_get_forums_by_courses', params, preSets).then(function(forums) {
-                for (var x in forums) {
-                    if (forums[x].cmid == cmId) {
-                        return forums[x];
-                    }
+        return self.getCourseForums(courseId, siteId).then(function(forums) {
+            for (var x in forums) {
+                if (forums[x].cmid == cmId) {
+                    return forums[x];
                 }
-                return $q.reject();
-            });
+            }
+            return $q.reject();
         });
     };
 

@@ -6,8 +6,10 @@
             <div ng-if="user && !isDeleted">
                 <div class="list">
                     <div class="item item-text-wrap item-avatar-center">
-                        <img ng-if="user.profileimageurl" class="avatar" ng-src="{{user.profileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: user.fullname} }}" role="presentation">
-                        <img ng-if="!user.profileimageurl" class="avatar" src="img/user-avatar.png" alt="{{ 'mm.core.pictureof' | translate:{$a: user.fullname} }}" role="presentation">
+                        <span ng-class="{'foreground-ion-edit ion-edit': canChangeProfilePicture}" ng-click="canChangeProfilePicture && changeProfilePicture()">
+                            <img ng-if="user.profileimageurl" class="avatar" ng-src="{{user.profileimageurl}}" mm-external-content alt="{{ 'mm.core.pictureof' | translate:{$a: user.fullname} }}" role="presentation">
+                            <img ng-if="!user.profileimageurl" class="avatar" src="img/user-avatar.png" alt="{{ 'mm.core.pictureof' | translate:{$a: user.fullname} }}" role="presentation">
+                        </span>
                         <h2><mm-format-text watch="true" clean="true">{{user.fullname}}</mm-format-text></h2>
                     </div>
                 </div>
@@ -19,7 +21,7 @@
                     <div class="item" ng-if="user.email">
                         <p class="item-heading">{{ 'mm.user.email' | translate}}</p>
                         <p>
-                            <a href="mailto:{{user.email}}" mm-link>
+                            <a href="mailto:{{user.email}}" mm-link auto-login="no">
                                 <mm-format-text watch="true" clean="true">{{user.email}}</mm-format-text>
                             </a>
                         </p>
@@ -27,7 +29,7 @@
                     <div class="item" ng-if="user.phone1">
                         <p class="item-heading">{{ 'mm.user.phone1' | translate}}</p>
                         <p>
-                            <a href="tel:{{user.phone1}}" mm-link>
+                            <a href="tel:{{user.phone1}}" mm-link auto-login="no">
                                 <mm-format-text watch="true" clean="true">{{user.phone1}}</mm-format-text>
                             </a>
                         </p>
@@ -35,7 +37,7 @@
                     <div class="item" ng-if="user.phone2">
                         <p class="item-heading">{{ 'mm.user.phone2' | translate}}</p>
                         <p>
-                            <a href="tel:{{user.phone2}}" mm-link>
+                            <a href="tel:{{user.phone2}}" mm-link auto-login="no">
                                 <mm-format-text watch="true" clean="true">{{user.phone2}}</mm-format-text>
                             </a>
                         </p>
@@ -43,10 +45,10 @@
                     <div class="item" ng-if="user.address">
                         <p class="item-heading">{{ 'mm.user.address' | translate}}</p>
                         <p>
-                            <a ng-if="isAndroid" href="geo:0,0?q={{user.encodedAddress}}" mm-link>
+                            <a ng-if="isAndroid" href="geo:0,0?q={{user.encodedAddress}}" mm-link auto-login="no">
                                 <mm-format-text watch="true" clean="true">{{user.address}}</mm-format-text>
                             </a>
-                            <a ng-if="!isAndroid" href="http://maps.google.com?q={{user.encodedAddress}}" mm-link>
+                            <a ng-if="!isAndroid" href="http://maps.google.com?q={{user.encodedAddress}}" mm-link auto-login="no">
                                 <mm-format-text watch="true" clean="true">{{user.address}}</mm-format-text>
                             </a>
                         </p>
@@ -103,14 +105,14 @@
                             <mm-format-text watch="true" clean="true">{{user.interests}}</mm-format-text>
                         </p>
                     </div>
-                    <mm-user-custom-field ng-repeat="field in user.customfields" field="field"></mm-user-custom-field>
+                    <mm-user-profile-field ng-repeat="field in user.customfields" field="field"></mm-user-profile-field>
                 </div>
                 <div class="list">
                     <div class="item item-divider" ng-if="user.description">
                         <h2>{{ 'mm.user.description' | translate}}</h2>
                     </div>
                     <div class="item item-text-wrap" ng-if="user.description">
-                        <mm-format-text class="mm-content-with-float" watch="true">{{user.description}}</mm-format-text>
+                        <mm-format-text watch="true">{{user.description}}</mm-format-text>
                     </div>
                 </div>
             </div>

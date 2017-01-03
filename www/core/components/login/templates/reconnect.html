@@ -2,9 +2,9 @@
     <ion-content mm-state-class>
         <div class="card">
             <div class="item item-text-wrap item-avatar-center">
-                <p>{{ 'mm.login.reconnectdescription' | translate }}</p>
                 <img ng-src="{{site.avatar}}" class="avatar" mm-external-content siteid="site.id" alt="{{ 'mm.core.pictureof' | translate:{$a: site.fullname} }}" role="presentation">
                 <h2 class="padding">{{siteurl}}</h2>
+                <p><i class="icon ion-alert-circled padding"></i> {{ 'mm.login.reconnectdescription' | translate }}</p>
             </div>
         </div>
         <div class="list list-inset">
@@ -15,7 +15,7 @@
             <form>
                 <ion-input class="item item-input item-stacked-label">
                     <ion-label>{{ 'mm.login.password' | translate }}</ion-label>
-                    <input type="password" placeholder="{{ 'mm.login.password' | translate }}" ng-model="credentials.password" mm-auto-focus>
+                    <input id="mm-login-reconnect-password-input" type="password" placeholder="{{ 'mm.login.password' | translate }}" ng-model="credentials.password" mm-auto-focus mm-show-password>
                 </ion-input>
                 <div class="item padding">
                     <button class="button button-block button-positive" ng-click="login()">{{ 'mm.login.loginbutton' | translate }}</button>

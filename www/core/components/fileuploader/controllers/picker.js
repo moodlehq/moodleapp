@@ -27,6 +27,8 @@ angular.module('mm.core.fileuploader')
     var maxSize = $stateParams.maxsize,
         upload = $stateParams.upload,
         allowOffline = $stateParams.allowOffline && !upload,
+        title = $stateParams.title,
+        filterMethods = $stateParams.filterMethods,
         uploadMethods = {
             album: $mmFileUploaderHelper.uploadImage,
             camera: $mmFileUploaderHelper.uploadImage,
@@ -37,6 +39,8 @@ angular.module('mm.core.fileuploader')
     $scope.isAndroid = ionic.Platform.isAndroid();
     $scope.handlers = $mmFileUploaderDelegate.getHandlers();
     $scope.title = $translate.instant(upload ? 'mm.fileuploader.uploadafile' : 'mm.fileuploader.selectafile');
+    $scope.title = title ? title : $scope.title; // Override with custom title.
+    $scope.filterMethods = filterMethods ? filterMethods.split(',') : null;
 
     // Function called when a file is uploaded.
     function successUploading(result) {

@@ -16,5 +16,6 @@
     "subwiki": "Sous-wiki",
     "titleshouldnotbeempty": "Le titre ne doit pas être vide",
     "viewpage": "Consulter la page",
+    "wikipage": "Page wiki",
     "wrongversionlock": "Un autre utilisateur a modifié cette page pendant que vous la modifiiez. Vos modifications sont obsolètes."
 }

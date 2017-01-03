@@ -24,8 +24,9 @@ angular.module('mm.core')
  * @ngdoc service
  * @name $mmWS
  */
-.factory('$mmWS', function($http, $q, $log, $mmLang, $cordovaFileTransfer, $mmApp, $mmFS, mmCoreSessionExpired,
-            mmCoreUserDeleted, $translate, $window, md5, $timeout, mmWSTimeout) {
+.factory('$mmWS', function($http, $q, $log, $mmLang, $cordovaFileTransfer, $mmApp, $mmFS, mmCoreSessionExpired, $translate, $window,
+            mmCoreUserDeleted, md5, $timeout, mmWSTimeout, mmCoreUserPasswordChangeForced, mmCoreUserNotFullySetup,
+            mmCoreSitePolicyNotAgreed) {
 
     $log = $log.getInstance('$mmWS');
 
@@ -80,7 +81,7 @@ angular.module('mm.core')
             // There are some ongoing retry calls, wait for timeout.
             if (retryCalls.length > 0) {
                 $log.warn('Calls locked, trying later...');
-                promise = addToRetryQueue(method, siteurl, ajaxData, preSets)
+                promise = addToRetryQueue(method, siteurl, ajaxData, preSets);
             } else {
                 promise = performPost(method, siteurl, ajaxData, preSets);
             }
@@ -126,6 +127,12 @@ angular.module('mm.core')
                     return $q.reject(mmCoreUserDeleted);
                 } else if (data.errorcode === 'sitemaintenance' || data.errorcode === 'upgraderunning') {
                     return $mmLang.translateAndReject('mm.core.' + data.errorcode);
+                } else if (data.errorcode === 'forcepasswordchangenotice') {
+                    return $q.reject(mmCoreUserPasswordChangeForced);
+                } else if (data.errorcode === 'usernotfullysetup') {
+                    return $q.reject(mmCoreUserNotFullySetup);
+                } else if (data.errorcode === 'sitepolicynotagreed') {
+                    return $q.reject(mmCoreSitePolicyNotAgreed);
                 } else {
                     return $q.reject(data.message);
                 }
@@ -470,6 +477,10 @@ angular.module('mm.core')
         if (!promise) {
             promise = $http.head(url, {timeout: mmWSTimeout}).then(function(data) {
                 var mimeType = data.headers('Content-Type');
+                if (mimeType) {
+                    // Remove "parameters" like charset.
+                    mimeType = mimeType.split(';')[0];
+                }
                 mimeTypeCache[url] = mimeType;
 
                 return mimeType || '';
@@ -618,6 +629,91 @@ angular.module('mm.core')
 
         return query.length ? query.substr(0, query.length - 1) : query;
     }
+
+    /**
+     * Call a Moodle WS using the AJAX API. Please use it if the WS layer is not an option.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmWS#callAjax
+     * @param {String} method  The WebService method to be called.
+     * @param {Object} data    Arguments to pass to the method.
+     * @param {Object} preSets Extra settings and information.
+     *                             - siteurl string The site URL.
+     *                             - responseExpected boolean Defaults to true. Set to false when the expected response is null.
+     * @return {Promise}       Promise resolved with the response data in success and rejected with an object containing:
+     *                                 - error: Error message.
+     *                                 - errorcode: Error code returned by the site (if any).
+     *                                 - available: 0 if unknown, 1 if available, -1 if not available.
+     */
+    self.callAjax = function(method, data, preSets) {
+        var siteurl,
+            ajaxData;
+
+        if (typeof preSets.siteurl == 'undefined') {
+            return rejectWithError($translate.instant('mm.core.unexpectederror'));
+        } else if (!$mmApp.isOnline()) {
+            return rejectWithError($translate.instant('mm.core.networkerrormsg'));
+        }
+
+        if (typeof preSets.responseExpected == 'undefined') {
+            preSets.responseExpected = true;
+        }
+
+        ajaxData = [{
+            index: 0,
+            methodname: method,
+            args: convertValuesToString(data)
+        }];
+
+        siteurl = preSets.siteurl + '/lib/ajax/service.php';
+
+        return $http.post(siteurl, JSON.stringify(ajaxData), {timeout: mmWSTimeout}).then(function(data) {
+            // Some moodle web services return null. If the responseExpected value is set then so long as no data
+            // is returned, we create a blank object.
+            if ((!data || !data.data) && !preSets.responseExpected) {
+                data = [{}];
+            } else {
+                data = data.data;
+            }
+
+            // Check if error. Ajax layer should always return an object (if error) or an array (if success).
+            if (!data || typeof data != 'object') {
+                return rejectWithError($translate.instant('mm.core.serverconnection'));
+            } else if (data.error) {
+                return rejectWithError(data.error, data.errorcode);
+            }
+
+            // Get the first response since only one request was done.
+            data = data[0];
+
+            if (data.error) {
+                return rejectWithError(data.exception.message, data.exception.errorcode);
+            }
+
+            return data.data;
+        }, function(data) {
+            var available = data.status == 404 ? -1 : 0;
+            return rejectWithError($translate.instant('mm.core.serverconnection'), '', available);
+        });
+
+        // Convenience function to return an error.
+        function rejectWithError(message, code, available) {
+            if (typeof available == 'undefined') {
+                if (code) {
+                    available = code == 'invalidrecord' ? -1 : 1;
+                } else {
+                    available = 0;
+                }
+            }
+
+            return $q.reject({
+                error: message,
+                errorcode: code,
+                available: available
+            });
+        }
+    };
 
     return self;
 

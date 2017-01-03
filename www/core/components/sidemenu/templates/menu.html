@@ -18,11 +18,12 @@
     <ion-side-menu side="left" id="mm-side-menu-left">
         <header>
             <div class="bar bar-header bar-side-menu">
-                <div class="item item-avatar">
+                <a menu-close mm-user-link userid="{{siteinfo.userid}}" class="item item-avatar item-icon-right full-image">
                     <img ng-src="{{siteinfo.userpictureurl}}" alt="{{ 'mm.core.pictureof' | translate:{$a: siteinfo.fullname} }}" role="presentation" mm-external-content>
                     <h2>{{siteinfo.fullname}}</h2>
                     <p><mm-format-text watch="true">{{siteinfo.sitename}}</mm-format-text></p>
-                </div>
+                    <i class="icon ion-ios-arrow-right"></i>
+                </a>
             </div>
         </header>
         <ion-content class="has-side-menu-header mm-sidemenu-menu">
@@ -43,12 +44,12 @@
                         </a>
                     </li>
                     <li>
-                        <a menu-close class="item item-icon-left" ng-href="{{siteinfo.siteurl}}" mm-link title="{{ 'mm.sidemenu.website' | translate}}">
+                        <a menu-close class="item item-icon-left" ng-href="{{siteinfo.siteurl}}" mm-link auto-login="yes" title="{{ 'mm.sidemenu.website' | translate}}">
                             <i class="icon ion-earth"></i>{{ 'mm.sidemenu.website' | translate}}
                         </a>
                     </li>
                     <li>
-                        <a menu-close class="item item-icon-left" ng-href="{{docsurl}}" mm-link title="{{ 'mm.sidemenu.help' | translate}}">
+                        <a menu-close class="item item-icon-left" ng-href="{{docsurl}}" mm-link auto-login="no" title="{{ 'mm.sidemenu.help' | translate}}">
                             <i class="icon ion-help-buoy"></i>{{ 'mm.sidemenu.help' | translate}}
                         </a>
                     </li>

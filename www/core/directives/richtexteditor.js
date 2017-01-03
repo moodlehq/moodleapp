@@ -35,7 +35,8 @@ angular.module('mm.core')
  *
  * Accepts the following attributes:
  *
- * @param {Object} model           Model where to store the text. It'll be placed in a "text" property.
+ * @param {Object} model           Model where to store the text. It'll be placed in model[property].
+ * @param {Object} [property=text] Name of the model property where to store the text. Defaults to "text".
  * @param {String} [placeholder]   Placeholder to set in textarea if rich text editor is disabled.
  * @param {Object} [options]       Options to pass to the editor. It can be used to override default options.
  * @param {Object} [tabletOptions] Options to pass to the editor when run in a tablet. Has priority over "options" param.
@@ -44,8 +45,9 @@ angular.module('mm.core')
  * @param {String} [name]          Name to set to the hidden textarea.
  * @param {Function} [textChange]  Function to call when the editor text changes.
  * @param {Function} [firstRender] Function to call when the editor text is first rendered. Only called with rich text editor.
- * @param  {String} [component]    The component to link the files to.
- * @param  {Mixed} [componentId]   An ID to use in conjunction with the component.
+ * @param {String} [component]     The component to link the files to.
+ * @param {Mixed} [componentId]    An ID to use in conjunction with the component.
+ * @param {Boolean} [required]     Whether the input is required.
  */
 .directive('mmRichTextEditor', function($ionicPlatform, $mmLang, $timeout, $q, $window, $ionicScrollDelegate, $mmUtil,
             $mmSite, $mmFilepool) {
@@ -232,6 +234,7 @@ angular.module('mm.core')
         templateUrl: 'core/templates/richtexteditor.html',
         scope: {
             model: '=',
+            property: '@?',
             placeholder: '@?',
             options: '=?',
             tabletOptions: '=?',
@@ -241,7 +244,8 @@ angular.module('mm.core')
             textChange: '&?',
             firstRender: '&?',
             component: '@?',
-            componentId: '@?'
+            componentId: '@?',
+            required: '@?'
         },
         link: function(scope, element) {
             element = element[0];
@@ -273,6 +277,9 @@ angular.module('mm.core')
                 componentId = scope.componentId,
                 firstChange = true,
                 renderTime;
+
+            // Default to text.
+            scope.property = typeof scope.property == 'string' ? scope.property : 'text';
 
             if (scope.scrollHandle) {
                 scrollView = $ionicScrollDelegate.$getByHandle(scope.scrollHandle);
@@ -414,14 +421,16 @@ angular.module('mm.core')
                     editorHeightWithoutResize = editorInitialHeight + toolbarHeight,
                     contentVisibleHeight,
                     editorContentNewHeight,
-                    screenSmallerThanEditor;
+                    screenSmallerThanEditor,
+                    editorMaximized;
 
                 if (typeof fixedBarsHeight == 'undefined') {
                     fixedBarsHeight = calculateFixedBarsHeight(editorEl);
                 }
 
+                editorMaximized = !!editorEl.querySelector('.cke_maximized');
                 contentVisibleHeight = $window.innerHeight - fixedBarsHeight;
-                screenSmallerThanEditor = contentVisibleHeight > 0 && contentVisibleHeight < editorHeightWithoutResize;
+                screenSmallerThanEditor = !editorMaximized && contentVisibleHeight > 0 && contentVisibleHeight < editorHeightWithoutResize;
                 editorContentNewHeight = contentVisibleHeight - toolbarHeight;
 
                 if (resized && !screenSmallerThanEditor) {

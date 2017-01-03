@@ -131,8 +131,11 @@ angular.module('mm.addons.mod_book')
                     if (status) {
                         $scope.spinner = status === mmCoreDownloading;
                         downloadBtn.hidden = status !== mmCoreNotDownloaded;
-                        // Always show refresh button if a book is downloaded because revision and timemodified aren't reliable.
-                        refreshBtn.hidden = status !== mmCoreOutdated && status !== mmCoreDownloaded;
+                        refreshBtn.hidden = status !== mmCoreOutdated;
+                        if (!$mmCoursePrefetchDelegate.canCheckUpdates()) {
+                            // Always show refresh button if downloaded because revision and timemodified aren't reliable.
+                            refreshBtn.hidden = refreshBtn.hidden && status !== mmCoreDownloaded;
+                        }
                     }
                 }
 

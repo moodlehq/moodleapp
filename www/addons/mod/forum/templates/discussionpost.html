@@ -1,15 +1,15 @@
 <div class="item item-divider" ng-if="showdivider"></div>
-<div class="item item-avatar">
-    <img ng-if="post.userpictureurl" ng-src="{{post.userpictureurl}}" mm-external-content mm-user-link courseid="{{courseid}}" userid="{{post.userid}}" alt="{{ 'mm.core.pictureof' | translate:{$a: post.userfullname} }}" role="presentation">
-    <img ng-if="!post.userpictureurl" src="img/user-avatar.png"  alt="{{ 'mm.core.pictureof' | translate:{$a: post.userfullname} }}" role="presentation">
+<div class="item item-heading item-text-wrap clearfix" ng-class="{'item-avatar': subject}">
+    <img ng-if="post.userpictureurl && subject" ng-src="{{post.userpictureurl}}" mm-external-content mm-user-link courseid="{{courseid}}" userid="{{post.userid}}" alt="{{ 'mm.core.pictureof' | translate:{$a: post.userfullname} }}" role="presentation">
+    <img ng-if="!post.userpictureurl && subject" src="img/user-avatar.png"  alt="{{ 'mm.core.pictureof' | translate:{$a: post.userfullname} }}" role="presentation">
     <h2 ng-if="titleimportant">{{title}}</h2>
     <p ng-if="!titleimportant">{{title}}</p>
     <div class="item-note" ng-if="!post.modified"><i class="icon ion-clock"></i> {{ 'mm.core.notsent' | translate }}</div>
     <div class="item-note" ng-if="post.modified">{{post.modified | mmDateDayOrTime}}</div>
-    <p>{{subject}}</p>
+    <p ng-if="subject">{{subject}}</p>
 </div>
 <div class="item item-body" ng-if="newpost.editing !== uniqueid || !newpost.isEditing">
-    <mm-format-text class="mm-content-with-float" watch="true" component="{{component}}" component-id="{{componentId}}">{{post.message}}</mm-format-text>
+    <mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{post.message}}</mm-format-text>
     <mm-file ng-repeat="attachment in post.attachments" file="attachment" component="{{component}}" component-id="{{componentId}}"></mm-file>
 </div>
 <div class="item tabs tabs-icon-left mma-forum-align-right" ng-if="((isReplyEnabled && post.canreply) || !post.id) && (newpost.editing !== uniqueid || !newpost.isEditing)">

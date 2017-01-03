@@ -47,18 +47,21 @@ angular.module('mm.core.sharedfiles')
             modal.show();
 
             scope.click = function(name) {
-                close();
-                deferred.resolve(name);
+                close().catch(function() {}).then(function() {
+                    deferred.resolve(name);
+                });
             };
 
             scope.closeModal = function() {
-                close();
-                deferred.reject();
+                close().catch(function() {}).then(function() {
+                    deferred.reject();
+                });
             };
 
             function close() {
-                modal.remove();
-                scope.$destroy();
+                return modal.remove().then(function() {
+                    scope.$destroy();
+                });
             }
 
             return deferred.promise;

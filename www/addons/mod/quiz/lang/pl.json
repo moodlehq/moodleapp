@@ -7,6 +7,7 @@
     "comment": "Komentarz",
     "completedon": "Ukończono",
     "confirmclose": "Zakończenie podejścia. Jeżeli zakończysz to podejście, nie będziesz mógł zmienić swoich odpowiedzi.",
+    "confirmstart": "Test ma limit czasu: {{$a}}. <br>\nCzas będzie odliczany od momentu, kiedy rozpoczniesz swoją próbę. Musisz ją zakończyć przed jego upływem.<br>\nCzy jesteś pewien, że chcesz rozpocząć teraz?",
     "confirmstartheader": "Test na czas",
     "connectionerror": "Utracono połączenie. (Automatyczny zapis nie powiódł się).\n\nZanotuj wszystkie odpowiedzi jakich udzieliłeś na tej stronie w ciągu ostatnich kilku minut i spróbuj połączyć się z siecią ponownie.\n\nKiedy połączenie zostanie nawiązane twoje odpowiedzi zostaną zapisane a ten komunikat zniknie.",
     "continueattemptquiz": "Kontynuuj ostatnie podejście",
@@ -32,7 +33,7 @@
     "previewquiznow": "Pokaż podgląd testu",
     "question": "Pytanie",
     "quizpassword": "Hasło dostępu do quizu",
-    "reattemptquiz": "Ponownie rozwiąż test",
+    "reattemptquiz": "Ponownie rozwiąż quiz",
     "requirepasswordmessage": "Aby wziąć udział w tym quizie, musisz znać hasło",
     "returnattempt": "Powrót do podejścia",
     "review": "Przegląd",
@@ -54,5 +55,5 @@
     "summaryofattempts": "Podsumowanie twoich poprzednich podejść",
     "timeleft": "Pozostały czas",
     "timetaken": "Wykorzystany czas",
-    "yourfinalgradeis": "Twoja końcowa ocena za ten test wynosi {{$a}}"
+    "yourfinalgradeis": "Twoja końcowa ocena za ten quiz wynosi {{$a}}"
 }

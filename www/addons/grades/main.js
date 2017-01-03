@@ -16,40 +16,23 @@ angular.module('mm.addons.grades', [])
 
 .constant('mmaGradesPriority', 400)
 .constant('mmaGradesViewGradesPriority', 400)
+.constant('mmaGradesSideMenuPriority', 950)
+
 
 .config(function($stateProvider, $mmUserDelegateProvider, $mmCoursesDelegateProvider, $mmContentLinksDelegateProvider,
-            mmaGradesPriority, mmaGradesViewGradesPriority) {
+            $mmSideMenuDelegateProvider, mmaGradesPriority, mmaGradesViewGradesPriority, mmaGradesSideMenuPriority) {
 
     $stateProvider
 
-    .state('site.grades', {
-        url: '/grades',
+    .state('site.coursesgrades', {
+        url: '/coursesgrades',
         views: {
             'site': {
-                templateUrl: 'addons/grades/templates/table.html',
-                controller: 'mmaGradesTableCtrl'
+                templateUrl: 'addons/grades/templates/courses.html',
+                controller: 'mmaGradesCoursesGradesCtrl'
             }
-        },
-        params: {
-            course: null,
-            userid: null
         }
-    })
-
-    .state('site.grade', {
-        url: '/grade',
-        views: {
-            'site': {
-                templateUrl: 'addons/grades/templates/grade.html',
-                controller: 'mmaGradesGradeCtrl'
-            }
-        },
-        params: {
-            courseid: null,
-            userid: null,
-            gradeid: null
-        }
-    });;
+    });
 
 
     // Register plugin on user profile.
@@ -60,4 +43,7 @@ angular.module('mm.addons.grades', [])
 
     // Register content links handler.
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaGrades', '$mmaGradesHandlers.linksHandler');
+
+    // Register side menu addon.
+    $mmSideMenuDelegateProvider.registerNavHandler('mmaGrades', '$mmaGradesHandlers.sideMenuNav', mmaGradesSideMenuPriority);
 });

@@ -31,6 +31,9 @@ angular.module('mm.core.course')
             this.component = 'core_module';
             this.isResource = false;
 
+            // RegExp to check if a module has updates based on the result of $mmCoursePrefetchDelegate#getCourseUpdates.
+            this.updatesNames = /^.*files$/;
+
             /**
              * Add an ongoing download to the downloadPromises list. On finish the promise will be removed.
              *
@@ -87,8 +90,8 @@ angular.module('mm.core.course')
                 var siteId = $mmSite.getId(),
                     that = this;
 
-                // Load module contents if needed.
-                return that.loadContents(module, courseId).then(function() {
+                // Load module contents (ignore cache so we always have the latest data).
+                return that.loadContents(module, courseId, true).then(function() {
                     // Get the intro files.
                     return that.getIntroFiles(module, courseId);
                 }).then(function(introFiles) {
@@ -381,7 +384,7 @@ angular.module('mm.core.course')
             this.invalidateContent = function(moduleId) {
                 var promises = [];
 
-                promises.push($mmCourse.invalidateModule(module.id));
+                promises.push($mmCourse.invalidateModule(moduleId));
                 promises.push($mmFilepool.invalidateFilesByComponent($mmSite.getId(), this.component, moduleId));
 
                 return $q.all(promises);
@@ -394,7 +397,7 @@ angular.module('mm.core.course')
              * @param  {Number} courseId Course ID the module belongs to.
              * @return {Promise}         Promise resolved when done.
              */
-            self.invalidateModule = function(module, courseId) {
+            this.invalidateModule = function(module, courseId) {
                 return $mmCourse.invalidateModule(module.id);
             };
 
@@ -453,11 +456,12 @@ angular.module('mm.core.course')
              *
              * @param  {Object} module     Module to load the contents.
              * @param  {Number} [courseId] The course ID. Recommended to speed up the process and minimize data usage.
+             * @param  {Boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
              * @return {Promise}           Promise resolved when loaded.
              */
-            this.loadContents = function(module, courseId) {
+            this.loadContents = function(module, courseId, ignoreCache) {
                 if (this.isResource) {
-                    return $mmCourse.loadModuleContents(module, courseId);
+                    return $mmCourse.loadModuleContents(module, courseId, false, false, ignoreCache);
                 }
                 return $q.when();
             };

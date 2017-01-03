@@ -3,15 +3,16 @@
     "cacheexpirationtime": "Önbellek zaman aşımı (milisaniye)",
     "currentlanguage": "Geçerli dil",
     "deletesitefiles": "Bu siteden indirdiğiniz dosyaları silmek istediğinizden eminmisiniz?",
-    "development": "Gelişmiş ayarlar",
+    "disabled": "Devre dışı bırakıldı",
     "enabledebugging": "Hata ayıklamayı etkinleştir",
     "estimatedfreespace": "Tahmini boş alan",
     "general": "Genel",
     "language": "Lisan",
     "license": "Lisans",
+    "loggedin": "Çevrimiçi",
+    "loggedoff": "Çevrim içi değil",
     "settings": "Ayarlar",
     "sites": "Siteler",
     "spaceusage": "Kullanılan alan",
-    "success": "Başarılı",
     "total": "Toplam"
 }

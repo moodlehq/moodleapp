@@ -90,6 +90,10 @@ angular.module('mm.core')
      * @return {String}               Text cleaned.
      */
     self.cleanTags = function(text, singleLine) {
+        if (!text) {
+            return '';
+        }
+
         // First, we use a regexpr.
         text = text.replace(/(<([^>]+)>)/ig,"");
         // Then, we rely on the browser. We need to wrap the text to be sure is HTML.
@@ -413,6 +417,9 @@ angular.module('mm.core')
      * @return {String}      Escaped text.
      */
     self.escapeForRegex = function(text) {
+        if (!text || !text.replace) {
+            return '';
+        }
         return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
     };
 
@@ -540,6 +547,19 @@ angular.module('mm.core')
         if (matches && matches[1]) {
             return matches[1];
         }
+    };
+
+    /**
+     * Check if a text contains HTML tags.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#hasHTMLTags
+     * @param  {String} text Text to check.
+     * @return {Boolean}     True if has HTML tags, false otherwise.
+     */
+    self.hasHTMLTags = function(text) {
+        return /<[a-z][\s\S]*>/i.test(text);
     };
 
     return self;

@@ -708,6 +708,7 @@
     "model/vrml": ["vrml", "wrl"],
     "application/vnd.visio": ["vsd", "vss", "vst", "vsw"],
     "application/vnd.vsf": ["vsf"],
+    "text/vtt": ["vtt"],
     "model/vnd.vtu": ["vtu"],
     "application/voicexml+xml": ["vxml"],
     "application/x-doom": ["wad"],

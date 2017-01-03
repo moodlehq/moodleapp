@@ -33,13 +33,14 @@ angular.module('mm.core')
  * template using this directive. It doesn't matter the position of this parameter, only the name.
  *
  * Attributes:
- * @param {Object} file             Required. A fileEntry retrieved using $mmFS#getFile or similar.
- * @param {Boolean} [manage]        True if the user can manage the file (edit/delete), false otherwise.
- * @param {Function} [fileDeleted]  Function to call when a file is deleted. Required if manage=true.
- * @param {Function} [fileRenamed]  Function to call when a file is renamed. It will receive a "file" parameter with the new
- *                                  fileEntry. This parameter needs to be named "file".
- * @param {Boolean} [overrideClick] True if the default item click should be overridden, false otherwise.
- * @param {Function} [fileClicked]  Function to call when a file is clicked. Requires overrideClick=true.
+ * @param {Object} file                 Required. A fileEntry retrieved using $mmFS#getFile or similar.
+ * @param {Boolean} [manage]            True if the user can manage the file (edit/delete), false otherwise.
+ * @param {Function} [fileDeleted]      Function to call when a file is deleted. Required if manage=true.
+ * @param {Function} [fileRenamed]      Function to call when a file is renamed. It will receive a "file" parameter with the new
+ *                                      fileEntry. This parameter needs to be named "file".
+ * @param {Boolean} [overrideClick]     True if the default item click should be overridden, false otherwise.
+ * @param {Function} [fileClicked]      Function to call when a file is clicked. Requires overrideClick=true.
+ * @param {Boolean}  [noBorder=false]   True if want to show file entry without borders. Defaults to false.
  */
 .directive('mmLocalFile', function($mmFS, $mmText, $mmUtil, $timeout, $translate) {
 
@@ -59,7 +60,8 @@ angular.module('mm.core')
             fileDeleted: '&?',
             fileRenamed: '&?',
             overrideClick: '=?',
-            fileClicked: '&?'
+            fileClicked: '&?',
+            noBorder: '@?'
         },
         link: function(scope, element) {
             var file = scope.file,

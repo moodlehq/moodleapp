@@ -1,14 +1,4 @@
 {
-    "average": "Promedio",
-    "contributiontocoursetotal": "Contribución al total del curso",
-    "feedback": "Retroalimentación",
-    "grade": "Calificación",
-    "grades": "Calificaciones",
-    "itemname": "Ítem de calificación",
-    "lettergrade": "Calificación con letra",
-    "percentage": "Porcentaje",
-    "range": "Rango",
-    "rank": "Rankeo",
-    "viewgrades": "Ver calificaciones",
-    "weight": "Ponderación"
+    "nogradesreturned": "No se han devuelto calificaciones",
+    "viewgrades": "Ver calificaciones"
 }

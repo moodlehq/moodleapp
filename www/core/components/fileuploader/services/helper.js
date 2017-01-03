@@ -14,10 +14,12 @@
 
 angular.module('mm.core.fileuploader')
 
-.constant('mmFileUploaderFileSizeWarning', 5242880)
+.constant('mmFileUploaderFileSizeWarning', 1048576) // 1 MB.
+.constant('mmFileUploaderWifiFileSizeWarning', 10485760) // 10 MB.
 
 .factory('$mmFileUploaderHelper', function($q, $mmUtil, $mmApp, $log, $translate, $window, $state, $rootScope,
-        $mmFileUploader, $cordovaCamera, $cordovaCapture, $mmLang, $mmFS, $mmText, mmFileUploaderFileSizeWarning) {
+        $mmFileUploader, $cordovaCamera, $cordovaCapture, $mmLang, $mmFS, $mmText, mmFileUploaderFileSizeWarning,
+        mmFileUploaderWifiFileSizeWarning) {
 
     $log = $log.getInstance('$mmFileUploaderHelper');
 
@@ -30,19 +32,24 @@ angular.module('mm.core.fileuploader')
      * @module mm.core.fileuploader
      * @ngdoc method
      * @name $mmFileUploaderHelper#confirmUploadFile
-     * @param  {Number} size           File's size.
-     * @param  {Boolean} alwaysConfirm True to show a confirm even if the size isn't high, false otherwise.
-     * @param  {Boolean} allowOffline  True to allow uploading in offline, false to require connection.
-     * @return {Promise}               Promise resolved when the user confirms or if there's no need to show a modal.
+     * @param  {Number} size              File's size.
+     * @param  {Boolean} alwaysConfirm    True to show a confirm even if the size isn't high, false otherwise.
+     * @param  {Boolean} allowOffline     True to allow uploading in offline, false to require connection.
+     * @param {Number} [wifiThreshold]    Threshold to show confirm in WiFi connection. Default: mmFileUploaderWifiFileSizeWarning.
+     * @param {Number} [limitedThreshold] Threshold to show confirm in limited connection. Default: mmFileUploaderFileSizeWarning.
+     * @return {Promise}                  Promise resolved when the user confirms or if there's no need to show a modal.
      */
-    self.confirmUploadFile = function(size, alwaysConfirm, allowOffline) {
+    self.confirmUploadFile = function(size, alwaysConfirm, allowOffline, wifiThreshold, limitedThreshold) {
         if (!allowOffline && !$mmApp.isOnline()) {
             return $mmLang.translateAndReject('mm.fileuploader.errormustbeonlinetoupload');
         }
 
+        wifiThreshold = typeof wifiThreshold == 'undefined' ? mmFileUploaderWifiFileSizeWarning : wifiThreshold;
+        limitedThreshold = typeof limitedThreshold == 'undefined' ? mmFileUploaderFileSizeWarning : limitedThreshold;
+
         if (size < 0) {
             return $mmUtil.showConfirm($translate('mm.fileuploader.confirmuploadunknownsize'));
-        } else if ($mmApp.isNetworkAccessLimited() || size >= mmFileUploaderFileSizeWarning) {
+        } else if (size >= wifiThreshold || ($mmApp.isNetworkAccessLimited() && size >= limitedThreshold)) {
             size = $mmText.bytesToSize(size, 2);
             return $mmUtil.showConfirm($translate('mm.fileuploader.confirmuploadfile', {size: size}));
         } else {
@@ -152,12 +159,15 @@ angular.module('mm.core.fileuploader')
      * @ngdoc method
      * @name $mmFileUploaderHelper#selectAndUploadFile
      * @param  {Number} [maxSize] Max size of the file to upload. If not defined or -1, no max size.
+     * @param  {String} [title]   File picker page title
+     * @param  {Array}  [filterMethods]   File picker available methods
      * @return {Promise} Promise resolved when a file is uploaded, rejected if file picker is closed without a file uploaded.
      *                   The resolve value should be the response of the upload request.
      */
-    self.selectAndUploadFile = function(maxSize) {
+    self.selectAndUploadFile = function(maxSize, title, filterMethods) {
         filePickerDeferred = $q.defer();
-        $state.go('site.fileuploader-picker', {maxsize: maxSize, upload: true});
+        filterMethods = (angular.isArray(filterMethods)) ? filterMethods.join() : null;
+        $state.go('site.fileuploader-picker', {maxsize: maxSize, upload: true, title: title, filterMethods: filterMethods});
         return filePickerDeferred.promise;
     };
 
@@ -169,12 +179,16 @@ angular.module('mm.core.fileuploader')
      * @name $mmFileUploaderHelper#selectFile
      * @param  {Number} [maxSize]     Max size of the file. If not defined or -1, no max size.
      * @param  {Boolean} allowOffline True to allow selecting in offline, false to require connection.
+     * @param  {String} [title]   File picker page title
+     * @param  {Array}  [filterMethods]   File picker available methods
      * @return {Promise} Promise resolved when a file is selected, rejected if file picker is closed without selecting a file.
      *                   The resolve value should be the FileEntry of a copy of the picked file, so it can be deleted afterwards.
      */
-    self.selectFile = function(maxSize, allowOffline) {
+    self.selectFile = function(maxSize, allowOffline, title, filterMethods) {
         filePickerDeferred = $q.defer();
-        $state.go('site.fileuploader-picker', {maxsize: maxSize, upload: false, allowOffline: allowOffline});
+        filterMethods = (angular.isArray(filterMethods)) ? filterMethods.join() : null;
+        var stateParams = {maxsize: maxSize, upload: false, allowOffline: allowOffline, title: title, filterMethods: filterMethods};
+        $state.go('site.fileuploader-picker', stateParams);
         return filePickerDeferred.promise;
     };
 
@@ -274,7 +288,8 @@ angular.module('mm.core.fileuploader')
         $log.debug('Trying to capture an image with camera');
         var options = {
             quality: 50,
-            destinationType: navigator.camera.DestinationType.FILE_URI
+            destinationType: navigator.camera.DestinationType.FILE_URI,
+            correctOrientation: true
         };
 
         if (fromAlbum) {

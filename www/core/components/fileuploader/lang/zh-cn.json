@@ -1,4 +1,5 @@
 {
+    "addfiletext": "添加文件",
     "confirmuploadfile": "Chcesz wysłać plik {$a}. Czy na pewno chcesz kontynuować?",
     "errorcapturingaudio": "捕捉音频时出错",
     "errorcapturingvideo": "捕捉视频时出错",
@@ -7,7 +8,6 @@
     "fileuploaded": "文件已上传",
     "maxbytesfile": "这个文件 {{$a.file}} 太大了。你可以上传的文件最大容量是 {{$a.size}}。",
     "readingfile": "Odczytywanie pliku",
-    "success": "成功",
     "uploadafile": "上传一个文件",
     "uploading": "上传中",
     "video": "视频"

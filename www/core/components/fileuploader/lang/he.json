@@ -1,9 +1,8 @@
 {
+    "addfiletext": "הוספת קובץ",
     "audio": "קול",
     "camera": "מצלמה",
-    "chooseaccountuploadfile": "בחירת חשבון אליו יועלה הקובץ.",
     "confirmuploadfile": "את/ה עומד/ת להעלות קובץ בגודל {{size}}. האם את/ה רוצא/ה להמשיך?",
-    "downloading": "מוריד קבצים",
     "errorcapturingaudio": "שגיאה בלכידת הקול.",
     "errorcapturingimage": "שגיאה בלכידת התמונה.",
     "errorcapturingvideo": "שגיאה בלכידת הסרט.",
@@ -11,16 +10,12 @@
     "errormustbeonlinetoupload": "עליך להיות מחובר/ת בכדי להעלות קבצים.",
     "errornoapp": "לא נמצא יישומון זמין לביצוע פעולה הזו.",
     "errorreadingfile": "שגיאה בקריאת קובץ.",
-    "errorwhiledownloading": "התרחשה שגיאה בזמן הניסיון להוריד את הקובץ.",
-    "errorwhilerecordingaudio": "התרחשה שגיאה בזמן הניסיון להקליט אודיו.",
     "errorwhileuploading": "התרחשה שגיאה בזמן הניסיון להעלות את הקובץ.",
     "file": "קובץ",
     "fileuploaded": "הקובץ הועלה בהצלחה.",
     "photoalbums": "אלבומי תמונות",
     "readingfile": "קורא קובץ",
-    "success": "הצלחה!",
     "uploadafile": "העלה קובץ",
-    "uploadfiles": "העלה קבצים",
     "uploading": "מעלה קבצים",
     "video": "וידאו"
 }

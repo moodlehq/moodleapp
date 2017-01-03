@@ -1,10 +1,20 @@
 {
     "activities": "Actividades",
+    "competenciesmostoftennotproficientincourse": "Competencias que más a menudo no se superan en este curso",
+    "coursecompetencies": "Competencias del curso",
+    "crossreferencedcompetencies": "Competencias referenciadas",
     "duedate": "Fecha de entrega",
+    "errornocompetenciesfound": "No se encontraron competencias",
     "evidence": "Evidencia",
+    "learningplancompetencies": "Competencias del plan de aprendizaje",
+    "learningplans": "Planes de aprendizaje",
+    "mylearningplans": "Mis planes de aprendizaje",
+    "nocompetencies": "Sin competencias",
     "path": "Ruta",
+    "proficient": "Superada",
     "progress": "Progreso del estudiante",
     "rating": "Clasificación",
     "status": "Estado",
-    "template": "Plantilla"
+    "template": "Plantilla",
+    "xcompetenciesproficientoutofy": "{{$a.x}} de {{$a.y}} competencias superadas"
 }

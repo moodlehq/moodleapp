@@ -1,6 +1,5 @@
 {
     "errorgetlti": "Ошибка при получении данных модуля",
     "errorinvalidlaunchurl": "Запущенный URL не действителен",
-    "launch_url": "Запустить URL",
     "launchactivity": "Запустить активность"
 }

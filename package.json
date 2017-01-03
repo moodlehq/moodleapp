@@ -44,7 +44,15 @@
     "cordova-plugin-file-transfer",
     "cordova-plugin-network-information",
     "cordova-plugin-camera",
-    "cordova-plugin-media-capture",
+    {
+      "locator": "cordova-plugin-media-capture",
+      "id": "cordova-plugin-media-capture",
+      "variables": {
+        "CAMERA_USAGE_DESCRIPTION": "We'd like to access your camera to let you take a photo",
+        "PHOTOLIBRARY_USAGE_DESCRIPTION": "We'd like like to open your photo library to let you pick a photo",
+        "MICROPHONE_USAGE_DESCRIPTION": "We'd like to access your microphone to let you record an audio"
+      }
+    },
     "cordova-plugin-splashscreen",
     "cordova-plugin-statusbar",
     "cordova-plugin-whitelist",

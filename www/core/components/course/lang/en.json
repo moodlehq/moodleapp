@@ -1,9 +1,9 @@
 {
-    "activitynotyetviewable": "This activity is not yet viewable in the app.",
-    "activitynotyetviewableinapp": "We are working on supporting the {{$a}} activity. Come back soon!",
-    "activitynotyetviewablesiteupgradeneeded": "The site is not using the latest version of Moodle. Please contact the site administrator.",
-    "activitynotyetviewableremoteaddon": "This activity is a 3rd party addon not yet supported by the app. Come back soon!",
+    "activitynotyetviewableinapp": "We are working on supporting the {{$a}} activity.",
+    "activitynotyetviewableremoteaddon": "Your organisation installed a plugin that is not yet supported.",
+    "activitynotyetviewablesiteupgradeneeded": "Your organisation's Moodle installation needs to be updated.",
     "allsections": "All sections",
+    "askadmintosupport": "Contact the site administrator and tell them you want to use this activity with the Moodle Mobile app.",
     "confirmdeletemodulefiles": "Are you sure you want to delete this module files?",
     "confirmdownload": "You are about to download {{size}}. Are you sure you want to continue?",
     "confirmdownloadunknownsize": "We were unable to calculate the size of the download. Are you sure you want to download?",
@@ -15,5 +15,6 @@
     "errorgetmodule": "Error getting module data.",
     "nocontentavailable": "No content available at the moment.",
     "overriddennotice": "Your final grade from this activity was manually adjusted.",
+    "useactivityonbrowser": "You can still use it using your devices browser.",
     "showall": "Show all"
 }

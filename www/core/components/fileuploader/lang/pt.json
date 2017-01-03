@@ -1,9 +1,8 @@
 {
+    "addfiletext": "Adicionar ficheiro",
     "audio": "Áudio",
     "camera": "Câmera",
-    "chooseaccountuploadfile": "Escolha uma conta para enviar o ficheiro.",
     "confirmuploadfile": "Está prestes a carregar {{size}}. Tem a certeza que quer continuar?",
-    "downloading": "Descarregando",
     "errorcapturingaudio": "Erro ao capturar áudio.",
     "errorcapturingimage": "Erro ao capturar imagem.",
     "errorcapturingvideo": "Erro ao capturar vídeo.",
@@ -11,17 +10,13 @@
     "errormustbeonlinetoupload": "Necessita de estar online para enviar ficheiros",
     "errornoapp": "Não possui a aplicação móvel necessária para executar esta ação.",
     "errorreadingfile": "Erro ao ler o ficheiro",
-    "errorwhiledownloading": "Ocorreu um erro ao descarregar o ficheiro",
-    "errorwhilerecordingaudio": "Ocorreu um erro durante a gravação do áudio.",
     "errorwhileuploading": "Ocorreu um erro durante o carregamento do ficheiro.",
     "file": "Ficheiro",
     "fileuploaded": "Ficheiro carregado com sucesso",
     "maxbytesfile": "O ficheiro {{$a.file}} é muito grande. Apenas pode carregar ficheiros com um tamanho máximo de {{$a.size}}.",
     "photoalbums": "Álbuns de fotos",
     "readingfile": "A ler ficheiro",
-    "success": "Sucesso!",
     "uploadafile": "Carregar um ficheiro",
-    "uploadfiles": "Carregar ficheiros",
     "uploading": "A carregar",
     "video": "Video"
 }

@@ -23,7 +23,8 @@ angular.module('mm.addons.messages')
  * @ngdoc service
  * @name $mmaMessagesHandlers
  */
-.factory('$mmaMessagesHandlers', function($log, $mmaMessages, $mmSite, $state, $mmUtil, $mmContentLinksHelper, $mmaMessagesSync) {
+.factory('$mmaMessagesHandlers', function($log, $mmaMessages, $mmSite, $state, $mmUtil, $mmContentLinksHelper, $mmaMessagesSync,
+            $mmSitesManager) {
     $log = $log.getInstance('$mmaMessagesHandlers');
 
     var self = {};
@@ -43,7 +44,16 @@ angular.module('mm.addons.messages')
             return $mmaMessages.isPluginEnabled();
         };
 
-        self.isEnabledForUser = function(user, courseId) {
+        /**
+         * Check if handler is enabled for this user in this context.
+         *
+         * @param {Object} user     User to check.
+         * @param {Number} courseId Course ID.
+         * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
+         * @return {Promise}        Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
+         */
+        self.isEnabledForUser = function(user, courseId, navOptions, admOptions) {
             return user.id != $mmSite.getUserId();
         };
 
@@ -127,7 +137,16 @@ angular.module('mm.addons.messages')
             return $mmaMessages.isPluginEnabled();
         };
 
-        self.isEnabledForUser = function(user, courseId) {
+        /**
+         * Check if handler is enabled for this user in this context.
+         *
+         * @param {Object} user     User to check.
+         * @param {Number} courseId Course ID.
+         * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
+         * @return {Promise}        Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
+         */
+        self.isEnabledForUser = function(user, courseId, navOptions, admOptions) {
             return user.id != $mmSite.getUserId();
         };
 
@@ -211,7 +230,16 @@ angular.module('mm.addons.messages')
             return $mmaMessages.isPluginEnabled();
         };
 
-        self.isEnabledForUser = function(user, courseId) {
+        /**
+         * Check if handler is enabled for this user in this context.
+         *
+         * @param {Object} user     User to check.
+         * @param {Number} courseId Course ID.
+         * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
+         * @return {Promise}        Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
+         */
+        self.isEnabledForUser = function(user, courseId, navOptions, admOptions) {
             return user.id != $mmSite.getUserId();
         };
 
@@ -231,7 +259,8 @@ angular.module('mm.addons.messages')
                     $event.preventDefault();
                     $event.stopPropagation();
                     $state.go('site.messages-discussion', {
-                        userId: user.id
+                        userId: user.id,
+                        showKeyboard: true
                     });
                 };
             };
@@ -343,7 +372,12 @@ angular.module('mm.addons.messages')
                                         stateParams = {userId: parseInt(params.user1, 10)};
                                     } else {
                                         // He isn't, open in browser.
-                                        $mmUtil.openInBrowser(url);
+                                        var modal = $mmUtil.showModalLoading();
+                                        $mmSitesManager.getSite(siteId).then(function(site) {
+                                            return site.openInBrowserWithAutoLogin(url);
+                                        }).finally(function() {
+                                            modal.dismiss();
+                                        });
                                         return;
                                     }
                                 } else if (typeof params.id != 'undefined') {
@@ -432,6 +466,42 @@ angular.module('mm.addons.messages')
          */
         self.usesNetwork = function() {
             return true;
+        };
+
+        return self;
+    };
+
+    /**
+     * Message preferences handler.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessagesHandlers#preferences
+     */
+    self.preferences = function() {
+
+        var self = {};
+
+        /**
+         * Check if handler is enabled.
+         *
+         * @return {Boolean} True if handler is enabled, false otherwise.
+         */
+        self.isEnabled = function() {
+            return $mmaMessages.isMessagePreferencesEnabled();
+        };
+
+        /**
+         * Get the controller.
+         *
+         * @return {Object} Controller.
+         */
+        self.getController = function() {
+            return function($scope) {
+                $scope.title = 'mma.messages.messagepreferences';
+                $scope.class = 'mma-messages-messagepreferences-handler';
+                $scope.state = 'site.messages-preferences';
+            };
         };
 
         return self;

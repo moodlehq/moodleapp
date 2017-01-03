@@ -30,8 +30,8 @@
     "overallfeedback": "Feedback global",
     "overdue": "Fora de prazo",
     "overduemustbesubmittedby": "Esta tentativa excedeu o tempo limite. Já deveria ter submetido a mesma. Se pretende que esta tentativa seja avaliada, deve submetê-la até {{$a}}. Se não a submeter até lá, não irá obter nota na mesma.",
-    "preview": "Pré-visualizar",
-    "previewquiznow": "Pré-visualizar teste",
+    "preview": "Pré-visualização",
+    "previewquiznow": "Pré-visualizar Teste",
     "question": "Pergunta",
     "quizpassword": "Senha do teste",
     "reattemptquiz": "Iniciar uma nova tentativa de resolução do teste",
@@ -56,5 +56,5 @@
     "summaryofattempts": "Síntese das tentativas anteriores",
     "timeleft": "Tempo restante",
     "timetaken": "Tempo gasto",
-    "yourfinalgradeis": "A sua nota final do teste é {{$a}}."
+    "yourfinalgradeis": "A sua nota final do teste é {{$a}}"
 }

@@ -23,7 +23,7 @@ angular.module('mm.core')
  * @description
  * This formats a timestamp into a date. Parameters:
  *
- * @param {Number} timestamp Timestamp to format (in seconds). If not defined, use current time.
+ * @param {Number} timestamp Timestamp to format (in milliseconds). If not defined, use current time.
  * @param {String} format    Format to use. It should be a string code to handle i18n (e.g. mm.core.dftimedate). If the code doesn't
  *                           have a prefix, 'mm.core' will be used by default. E.g. 'dftimedate' -> 'mm.core.dftimedate'.
  * @return {String}          Formatted date.

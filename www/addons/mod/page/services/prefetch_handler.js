@@ -25,5 +25,8 @@ angular.module('mm.addons.mod_page')
 
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModPageComponent, true);
 
+    // RegExp to check if a module has updates based on the result of $mmCoursePrefetchDelegate#getCourseUpdates.
+    self.updatesNames = /^configuration$|^.*files$/;
+
     return self;
 });

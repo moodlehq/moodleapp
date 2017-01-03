@@ -24,7 +24,7 @@ angular.module('mm.core')
  * This service provides functions related to addons, like checking if an addon is available.
  */
 .factory('$mmAddonManager', function($log, $injector, $ocLazyLoad, $mmFilepool, $mmSite, $mmFS, $mmLang, $mmSitesManager, $q,
-            $mmUtil, mmAddonManagerComponent, mmCoreNotDownloaded) {
+            $mmUtil, $mmApp, mmAddonManagerComponent, mmCoreNotDownloaded) {
 
     $log = $log.getInstance('$mmAddonManager');
 
@@ -248,6 +248,10 @@ angular.module('mm.core')
                 return $ocLazyLoad.load($mmFS.concatenatePaths(absoluteDirPath, remoteAddonFilename));
             }).then(function() {
                 loadedAddons.push(addon);
+
+                // Trust the files inside the addon.
+                $mmApp.trustResources($mmFS.concatenatePaths(absoluteDirPath, '**'));
+
                 // Check if the addon has a CSS file.
                 return $mmFS.getFile($mmFS.concatenatePaths(dirPath, remoteAddonCssFilename)).then(function(file) {
                     // The file exists, add it in the head.

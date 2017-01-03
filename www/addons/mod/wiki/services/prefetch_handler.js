@@ -26,6 +26,9 @@ angular.module('mm.addons.mod_wiki')
 
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModWikiComponent);
 
+    // RegExp to check if a module has updates based on the result of $mmCoursePrefetchDelegate#getCourseUpdates.
+    self.updatesNames = /^.*files$|^pages$/;
+
     /**
      * Download the module.
      *

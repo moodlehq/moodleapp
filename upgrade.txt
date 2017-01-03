@@ -1,6 +1,19 @@
 This files describes API changes in the Moodle Mobile app,
 information provided here is intended especially for developers.
 
+=== 3.2.1 ===
+
+ * mmaGrades addon has been moved to core with mmGrades name (and derivatives).
+ * The promise returned by $mmaMessages#sendMessage is now resolved with an object instead of a boolean.
+ * mm-format-text directive is now depending on height so new parameter max-height has been added and parameters shorten and expand-on-click have been deprecated.
+
+=== 3.2 ===
+
+ * Now the app supports auto-login with the site if it's a Moodle 3.2 or higher. The mm-link directive already handles it automatically, but it also includes a new attribute to force or disable auto-login in links. To manually open a link with auto-login you can use any of the new functions in $mmSite: openInBrowserWithAutoLogin, openInAppWithAutoLogin, ...
+ * $mmCourse#getModule now accepts a ignoreCache parameter. Also, $mmCourse#loadModuleContents now accepts preferCache and ignoreCache.
+ * Ionic and some other libraries have been updated, please run:
+    bower update
+
 === 3.1.3 ===
 
  * The module object received by addons in course contents no longer has the "contents" array in Moodle 2.9 or higher. Please use the new function $mmCourse#loadModuleContents to load the contents.

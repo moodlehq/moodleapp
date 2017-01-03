@@ -5,6 +5,7 @@
     "cannotcreatediscussion": "No se pudo crear una discusión nueva",
     "couldnotadd": "No se puede colocar su mensaje debido a un problema desconocido.",
     "discussion": "Discusión",
+    "discussionlocked": "Esta discusión ha sido bloqueada, por lo que Usted ya no puede responder a ella.",
     "discussionsubscription": "Suscripción a discusión",
     "edit": "Editar",
     "erroremptymessage": "El mensaje no puede estar vacío",
@@ -18,6 +19,10 @@
     "numreplies": "{{numreplies}} respuestas",
     "posttoforum": "Enviar al foro",
     "re": "Re:",
+    "refreshdiscussions": "Refrescar discusiones",
+    "refreshposts": "Refrescar publicaciones de discusiones",
     "reply": "Responder (réplica)",
+    "sortnewestfirst": "Mostrar primeramente los más nuevos",
+    "sortoldestfirst": "Mostrar primeramente los más antiguos",
     "subject": "Asunto"
 }

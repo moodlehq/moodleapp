@@ -45,17 +45,21 @@ angular.module('mm.core')
      * @param {String|Object|Function} handler Must be resolved to an object defining the following functions. Or to a function
      *                           returning an object defining these properties. See {@link $mmUtil#resolveObject}.
      *                             - component (String) Handler's component.
+     *                             - (Optional) updatesNames (RegExp) RegExp of update names to check. If getCourseUpdates returns
+     *                                                                 an update whose names matches this, the module will be marked
+     *                                                                 as outdated. Ignored if hasUpdates function is defined.
      *                             - getDownloadSize(module, courseid) (Object|Promise) Get the download size of a module.
-     *                                                                  The returning object should have size field with file size
-     *                                                                  in bytes and and total field which indicates if it's been
-     *                                                                  able to calculate the total size (true) or only partial size
-     *                                                                  (false).
+     *                                                                 The returning object should have size field with file size
+     *                                                                 in bytes and and total field which indicates if it's been
+     *                                                                 able to calculate the total size (true) or only partial size
+     *                                                                 (false).
      *                             - isEnabled() (Boolean|Promise) Whether or not the handler is enabled on a site level.
      *                             - prefetch(module, courseid, single) (Promise) Prefetches a module.
      *                             - (Optional) getFiles(module, courseid) (Object[]|Promise) Get list of files. If not defined,
-     *                                                                      we'll assume they're in module.contents.
-     *                             - (Optional) determineStatus(status) (String) Returns status to show based on current. E.g. for
-     *                                                                 books we'll show "outdated" even if state is "downloaded".
+     *                                                                 we'll assume they're in module.contents.
+     *                             - (Optional) determineStatus(status, canCheck) (String) Returns status to show based on
+     *                                                                 current. E.g. for books we'll show "outdated" even if state
+     *                                                                 is "downloaded" if canCheck=false.
      *                             - (Optional) getRevision(module, courseid) (String|Number|Promise) Returns the module revision.
      *                                                                 If not defined we'll calculate it using module files.
      *                             - (Optional) getTimemodified(module, courseid) (Number|Promise) Returns the module timemodified.
@@ -71,7 +75,14 @@ angular.module('mm.core')
      *                             - (Optional) removeFiles(module, courseId) (Promise) Remove module downloaded files. If not
      *                                                                 defined, we'll use getFiles to remove them (slow).
      *                             - (Optional) loadContents(module, courseId) (Promise) Load module contents in module.contents if
-     *                                                                  needed. Only needed if getFiles isn't implemeneted.
+     *                                                                 needed. Only needed if getFiles isn't implemeneted.
+     *                             - (Optional) hasUpdates(module, courseId, moduleUpdates) (Promise|Boolean) Check if the module
+     *                                                                 has updates to download based on getCourseUpdates result.
+     *                                                                 Should return a boolean or a promise resolved with a boolean.
+     *                             - (Optional) canUseCheckUpdates(module, courseId) (Promise|Boolean) Check if a certain module can
+     *                                                                 use core_course_check_updates to check if it has updates. If
+     *                                                                 not defined, it will assume all modules can be checked.
+     *                                                                 Should return a boolean or a promise resolved with a boolean.
      */
     self.registerPrefetchHandler = function(addon, handles, handler) {
         if (typeof prefetchHandlers[handles] !== 'undefined') {
@@ -88,14 +99,53 @@ angular.module('mm.core')
         return true;
     };
 
-    self.$get = function($q, $log, $mmSite, $mmUtil, $mmFilepool, $mmEvents, mmCoreDownloaded, mmCoreDownloading,
-                mmCoreNotDownloaded, mmCoreOutdated, mmCoreNotDownloadable, mmCoreEventSectionStatusChanged, $mmFS) {
+    self.$get = function($q, $log, $mmSite, $mmUtil, $mmFilepool, $mmEvents, $mmCourse, mmCoreDownloaded, mmCoreDownloading,
+                mmCoreNotDownloaded, mmCoreOutdated, mmCoreNotDownloadable, mmCoreEventSectionStatusChanged, $mmFS, md5) {
         var enabledHandlers = {},
             self = {},
             deferreds = {},
-            lastUpdateHandlersStart;
+            lastUpdateHandlersStart,
+            courseUpdatesPromises = {}; // To prevent checking updates of a course twice at the same time.
 
         $log = $log.getInstance('$mmCoursePrefetchDelegate');
+
+        /**
+         * Check if current site can check updates using core_course_check_updates.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmCoursePrefetchDelegate#canCheckUpdates
+         * @return {Boolean} True if can check updates, false otherwise.
+         */
+        self.canCheckUpdates = function() {
+            return $mmSite.wsAvailable('core_course_check_updates');
+        };
+
+         /**
+         * Check if a certain module can use core_course_check_updates.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmCoursePrefetchDelegate#canModuleUseCheckUpdates
+         * @param {Object} module   Module.
+         * @param {Number} courseId Course ID the module belongs to.
+         * @return {Promise}        Promise resolved with boolean: whether the module can use check updates WS.
+         */
+        self.canModuleUseCheckUpdates = function(module, courseId) {
+            var handler = enabledHandlers[module.modname];
+
+            if (!handler) {
+                // Module not supported, cannot use check updates.
+                return $q.when(false);
+            }
+
+            if (handler.canUseCheckUpdates) {
+                return $q.when(handler.canUseCheckUpdates(module, courseId));
+            }
+
+            // By default, modules can use check updates.
+            return $q.when(true);
+        };
 
         /**
          * Clear the status cache (memory object).
@@ -163,11 +213,11 @@ angular.module('mm.core')
             this.getValue = function(component, componentId, name, ignoreInvalidate) {
                 var cache = this.get(component, componentId);
 
-                if (typeof cache[name] != "undefined") {
+                if (cache[name] && typeof cache[name].value != "undefined") {
                     var now = new Date().getTime();
                     // Invalidate after 5 minutes.
-                    if (!ignoreInvalidate || cache.lastupdate + 300000 >= now) {
-                        return cache[name];
+                    if (ignoreInvalidate || cache[name].lastupdate + 300000 >= now) {
+                        return cache[name].value;
                     }
                 }
 
@@ -186,8 +236,10 @@ angular.module('mm.core')
             this.setValue = function(component, componentId, name, value) {
                 var cache = this.get(component, componentId);
 
-                cache[name] = value;
-                cache.lastupdate = new Date().getTime();
+                cache[name] = {
+                    value: value,
+                    lastupdate: new Date().getTime()
+                };
 
                 return value;
             };
@@ -199,8 +251,10 @@ angular.module('mm.core')
              * @param {Mixed}   [componentId]   An ID to use in conjunction with the component.
              */
             this.invalidate = function(component, componentId) {
-                var packageId = $mmFilepool.getPackageId(component, componentId);
-                delete cacheStore[packageId];
+                var cache = this.get(component, componentId);
+                angular.forEach(cache, function(entry) {
+                    entry.lastupdate = 0;
+                });
             };
         };
 
@@ -210,12 +264,13 @@ angular.module('mm.core')
          * @module mm.core
          * @ngdoc method
          * @name $mmCoursePrefetchDelegate#determineModuleStatus
-         * @param  {Object} module           Module.
-         * @param  {String} status           Current status.
-         * @param {Boolean} restoreDownloads True if it should restore downloads if needed.
+         * @param  {Object} module            Module.
+         * @param  {String} status            Current status.
+         * @param  {Boolean} restoreDownloads True if it should restore downloads if needed.
+         * @param  {Boolean} canCheck         True if updates can be checked using core_course_check_updates.
          * @return {String}                  Module status.
          */
-        self.determineModuleStatus = function(module, status, restoreDownloads) {
+        self.determineModuleStatus = function(module, status, restoreDownloads, canCheck) {
             var handler = enabledHandlers[module.modname];
 
             if (handler) {
@@ -228,10 +283,235 @@ angular.module('mm.core')
                     }
                 } else if (handler.determineStatus) {
                     // The handler implements a determineStatus function. Apply it.
-                    return handler.determineStatus(status);
+                    return handler.determineStatus(status, canCheck);
                 }
             }
             return status;
+        };
+
+        /**
+         * Get cache key for course updates WS calls.
+         *
+         * @param  {Number} courseId Course ID.
+         * @return {String}          Cache key.
+         */
+        function getCourseUpdatesCacheKey(courseId) {
+            return 'mmCourse:courseUpdates:' + courseId;
+        }
+
+        /**
+         * Creates the list of modules to check for get course updates.
+         *
+         * @param  {Object[]} modules List of modules.
+         * @param  {Number} courseId  Course ID the modules belong to.
+         * @return {Promise}          Promise resolved with the list.
+         */
+        function createToCheckList(modules, courseId) {
+            var result = {
+                    toCheck: [],
+                    cannotUse: []
+                },
+                promises = [];
+
+            angular.forEach(modules, function(module) {
+                promises.push(getModuleStatusAndDownloadTime(module, courseId).then(function(data) {
+                    if (data.status == mmCoreDownloaded) {
+                        // Module is downloaded and not outdated. Check if it can check updates.
+                        return self.canModuleUseCheckUpdates(module, courseId).then(function(canUse) {
+                            if (canUse) {
+                                // Can use check updates, add it to the tocheck list.
+                                result.toCheck.push({
+                                    contextlevel: 'module',
+                                    id: module.id,
+                                    since: data.downloadtime || 0
+                                });
+                            } else {
+                                // Cannot use check updates, add it to the cannotUse array.
+                                result.cannotUse.push(module);
+                            }
+                        });
+                    }
+                }).catch(function() {
+                    // Ignore errors.
+                }));
+            });
+
+            return $q.all(promises).then(function() {
+                // Sort toCheck list.
+                result.toCheck.sort(function (a, b) {
+                    return a.id > b.id;
+                });
+
+                return result;
+            });
+        }
+
+        /**
+         * Get a module status and download time. It will only return the download time if the module is mmCoreDownloaded.
+         *
+         * @param {Object} module   Module.
+         * @param {Number} courseId Course ID the module belongs to.
+         * @return {Promise}        Promise resolved with the data.
+         */
+        function getModuleStatusAndDownloadTime(module, courseId) {
+            var handler = enabledHandlers[module.modname],
+                siteId = $mmSite.getId();
+
+            if (handler) {
+                // Check if the module is downloadable.
+                return self.isModuleDownloadable(module, courseId).then(function(downloadable) {
+                    if (!downloadable) {
+                        return mmCoreNotDownloadable;
+                    }
+
+                    var status = statusCache.getValue(handler.component, module.id, 'status');
+
+                    if (typeof status != 'undefined' && status != mmCoreDownloaded) {
+                        // Status is different than mmCoreDownloaded, just return the status.
+                        return {
+                            status: status
+                        };
+                    }
+
+                    // Get the stored data to get the status and downloadtime.
+                    return $mmFilepool.getPackageData(siteId, handler.component, module.id).then(function(data) {
+                        // If downloadtime isn't set, use timemodified. This is to prevent showing all modules as
+                        // outdated when updating the app from a version that didn't store download time.
+                        var time = typeof data.downloadtime != 'undefined' ? data.downloadtime : data.timemodified;
+                        return {
+                            status: data.status,
+                            downloadtime: time
+                        };
+                    });
+                });
+            }
+
+            // No handler found, module not downloadable.
+            return $q.when({
+                status: mmCoreNotDownloadable
+            });
+        }
+
+        /**
+         * Check for updates in a course.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmCoursePrefetchDelegate#getCourseUpdates
+         * @param  {Object[]} modules List of modules.
+         * @param  {Number} courseId  Course ID the modules belong to.
+         * @return {Promise}          Promise resolved with the updates. If a module is set to false, it means updates cannot be
+         *                            checked for that module in the current site.
+         */
+        self.getCourseUpdates = function(modules, courseId) {
+            if (!self.canCheckUpdates()) {
+                return $q.reject();
+            }
+
+            // Check if there's already a getCourseUpdates in progress.
+            var id = md5.createHash(courseId + '#' + JSON.stringify(modules)),
+                siteId = $mmSite.getId(),
+                promise;
+
+            if (courseUpdatesPromises[siteId] && courseUpdatesPromises[siteId][id]) {
+                // There's already a get updates ongoing, return the promise.
+                return courseUpdatesPromises[siteId][id];
+            } else if (!courseUpdatesPromises[siteId]) {
+                courseUpdatesPromises[siteId] = {};
+            }
+
+            promise = createToCheckList(modules, courseId).then(function(data) {
+                var result = {},
+                    params,
+                    preSets;
+
+                // Mark as false the modules that cannot use check updates WS.
+                angular.forEach(data.cannotUse, function(module) {
+                    result[module.id] = false;
+                });
+
+                if (!data.toCheck.length) {
+                    // Nothing to check, no need to call the WS.
+                    return result;
+                }
+
+                params = {
+                    courseid: courseId,
+                    tocheck: data.toCheck
+                };
+                preSets = {
+                    cacheKey: getCourseUpdatesCacheKey(courseId),
+                    getEmergencyCacheUsingCacheKey: true,
+                    uniqueCacheKey: true
+                };
+
+                return $mmSite.read('core_course_check_updates', params, preSets).then(function(response) {
+                    if (!response || typeof response.instances == 'undefined') {
+                        return $q.reject();
+                    }
+
+                    // Format the response to index it by module ID.
+                    angular.forEach(response.instances, function(instance) {
+                        result[instance.id] = instance;
+                    });
+
+                    // Treat warnings, adding the not supported modules.
+                    angular.forEach(response.warnings, function(warning) {
+                        if (warning.warningcode == 'missingcallback') {
+                            result[warning.itemid] = false;
+                        }
+                    });
+
+                    return result;
+                });
+            }).finally(function() {
+                // Get updates finished, delete the promise.
+                delete courseUpdatesPromises[siteId][id];
+            });
+
+            courseUpdatesPromises[siteId][id] = promise;
+            return promise;
+        };
+
+        /**
+         * Check for updates in a course.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmCoursePrefetchDelegate#getCourseUpdatesByCourseId
+         * @param  {Number} courseId  Course ID the modules belong to.
+         * @return {Promise}          Promise resolved with the updates.
+         */
+        self.getCourseUpdatesByCourseId = function(courseId) {
+            if (!self.canCheckUpdates()) {
+                return $q.reject();
+            }
+
+            // Get course sections.
+            return $mmCourse.getSections(courseId, false, true, {omitExpires: true}).then(function(sections) {
+                // Get modules. Cannot use $mmCourseHelper#getSectionsModules because of circular dependencies.
+                var modules = [];
+                angular.forEach(sections, function(section) {
+                    if (section.modules) {
+                        modules = modules.concat(section.modules);
+                    }
+                });
+
+                return self.getCourseUpdates(modules, courseId);
+            });
+        };
+
+        /**
+         * Invalidate check updates WS call.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmCoursePrefetchDelegate#invalidateCourseUpdates
+         * @param {Number} courseId  Course ID.
+         * @return {Promise}         Promise resolved when data is invalidated.
+         */
+        self.invalidateCourseUpdates = function(courseId) {
+            return $mmSite.invalidateWsCacheForKey(getCourseUpdatesCacheKey(courseId));
         };
 
         /**
@@ -558,11 +838,14 @@ angular.module('mm.core')
          * @param {Number} courseid       Course ID the module belongs to.
          * @param {Number} [revision]     Module's revision. If not defined, it will be calculated using module data.
          * @param {Number} [timemodified] Module's timemodified. If not defined, it will be calculated using module data.
+         * @param {Object} [updates]      Result of getCourseUpdates for all modules in the course. If not provided, it will be
+         *                                calculated (slower). If it's false it means the site doesn't support check updates.
          * @return {Promise}              Promise resolved with the status.
          */
-        self.getModuleStatus = function(module, courseid, revision, timemodified) {
+        self.getModuleStatus = function(module, courseid, revision, timemodified, updates) {
             var handler = enabledHandlers[module.modname],
-                siteid = $mmSite.getId();
+                siteid = $mmSite.getId(),
+                canCheck = self.canCheckUpdates();
 
             if (handler) {
                 // Check if the module is downloadable.
@@ -574,56 +857,87 @@ angular.module('mm.core')
                     var status = statusCache.getValue(handler.component, module.id, 'status'),
                         promise;
                     if (typeof status != 'undefined') {
-                        return self.determineModuleStatus(module, status, true);
+                        return self.determineModuleStatus(module, status, true, canCheck);
                     }
 
                     // Get the saved package status.
                     return $mmFilepool.getPackageCurrentStatus(siteid, handler.component, module.id).then(function(status) {
-                        status = handler.determineStatus ? handler.determineStatus(status) : status;
+                        status = handler.determineStatus ? handler.determineStatus(status, canCheck) : status;
                         if (status == mmCoreNotDownloaded || status == mmCoreOutdated || status == mmCoreDownloading) {
-                            status = statusCache.setValue(handler.component, module.id, 'status', status);
-                            return self.determineModuleStatus(module, status, true);
+                            self.updateStatusCache(handler.component, module.id, status);
+                            return self.determineModuleStatus(module, status, true, canCheck);
                         }
 
-                        // Call getModuleFiles only if it's needed.
-                        var revisionNeedsFiles = typeof revision == 'undefined' && !handler.getRevision &&
-                                        typeof statusCache.getValue(handler.component, module.id, 'revision') == 'undefined',
-                            timemodifiedNeedsFiles = typeof timemodified == 'undefined' && !handler.getTimemodified &&
-                                        typeof statusCache.getValue(handler.component, module.id, 'timemodified') == 'undefined';
-
-                        if (revisionNeedsFiles || timemodifiedNeedsFiles) {
-                            promise = self.getModuleFiles(module, courseid);
+                        // Check if we already have course updates or calculate them.
+                        if (typeof updates == 'undefined') {
+                            promise = self.getCourseUpdatesByCourseId(courseid).then(function(updates) {
+                                if (!updates || updates[module.id] === false) {
+                                    // Cannot check updates for the module.
+                                    return $q.reject();
+                                }
+                                return updates;
+                            });
+                        } else if (updates === false) {
+                            promise = $q.reject(); // Cannot get updates.
                         } else {
-                            promise = $q.when();
+                            promise = $q.when(updates);
                         }
 
-                        return promise.then(function(files) {
+                        return promise.then(function(updates) {
+                            // Check if the module has any update.
+                            var hasUpdPrms = self.moduleHasUpdates(module, courseid, updates).then(function(hasUpdates) {
+                                if (hasUpdates) {
+                                    // Has updates, mark the module as outdated.
+                                    status = mmCoreOutdated;
+                                    return $mmFilepool.storePackageStatus(siteid, handler.component, module.id, status)
+                                            .catch(function() {
+                                        // Ignore errors.
+                                    }).then(function() {
+                                        return status;
+                                    });
+                                } else {
+                                    // No updates, keep current status.
+                                    return status;
+                                }
+                            });
+                            return getStatus(hasUpdPrms, true);
+                        }, function() {
+                            // Cannot check updates, use revision and timemodified to check it.
+                            // Call getModuleFiles only if it's needed.
+                            var revisionNeedsFiles = typeof revision == 'undefined' && !handler.getRevision &&
+                                            typeof statusCache.getValue(handler.component, module.id, 'revision') == 'undefined',
+                                timemodifiedNeedsFiles = typeof timemodified == 'undefined' && !handler.getTimemodified &&
+                                            typeof statusCache.getValue(handler.component, module.id, 'timemodified') == 'undefined';
 
-                            // Get revision and timemodified if they aren't defined.
-                            // If handler doesn't define a function to get them, get them from file list.
-                            var promises = [];
-
-                            if (typeof revision == 'undefined') {
-                                promises.push(self.getModuleRevision(module, courseid, files).then(function(rev) {
-                                    revision = rev;
-                                }));
+                            if (revisionNeedsFiles || timemodifiedNeedsFiles) {
+                                promise = self.getModuleFiles(module, courseid);
+                            } else {
+                                promise = $q.when();
                             }
 
-                            if (typeof timemodified == 'undefined') {
-                                promises.push(self.getModuleTimemodified(module, courseid, files).then(function(timemod) {
-                                    timemodified = timemod;
-                                }));
-                            }
+                            return promise.then(function(files) {
 
-                            return $q.all(promises).then(function() {
-                                // Now get the status.
-                                return $mmFilepool.getPackageStatus(siteid, handler.component, module.id, revision, timemodified)
-                                        .then(function(status) {
-                                    status = statusCache.setValue(handler.component, module.id, 'status', status);
-                                    return self.determineModuleStatus(module, status, true);
-                                }).catch(function() {
-                                    status = statusCache.getValue(handler.component, module.id, 'status', true);
-                                    return self.determineModuleStatus(module, status, true);
+                                // Get revision and timemodified if they aren't defined.
+                                // If handler doesn't define a function to get them, get them from file list.
+                                var promises = [];
+
+                                if (typeof revision == 'undefined') {
+                                    promises.push(self.getModuleRevision(module, courseid, files).then(function(rev) {
+                                        revision = rev;
+                                    }));
+                                }
+
+                                if (typeof timemodified == 'undefined') {
+                                    promises.push(self.getModuleTimemodified(module, courseid, files).then(function(timemod) {
+                                        timemodified = timemod;
+                                    }));
+                                }
+
+                                return $q.all(promises).then(function() {
+                                    // Now get the status.
+                                    var getStatusPromise = $mmFilepool.getPackageStatus(
+                                            siteid, handler.component, module.id, revision, timemodified);
+                                    return getStatus(getStatusPromise, false);
                                 });
                             });
                         });
@@ -633,6 +947,17 @@ angular.module('mm.core')
 
             // No handler found, module not downloadable.
             return $q.when(mmCoreNotDownloadable);
+
+            // Get module status based on the result of a promise.
+            function getStatus(promise, canCheck) {
+                return promise.then(function(status) {
+                    self.updateStatusCache(handler.component, module.id, status);
+                    return self.determineModuleStatus(module, status, true, canCheck);
+                }).catch(function() {
+                    var status = statusCache.getValue(handler.component, module.id, 'status', true);
+                    return self.determineModuleStatus(module, status, true, canCheck);
+                });
+            }
         };
 
         /**
@@ -669,51 +994,61 @@ angular.module('mm.core')
             result[mmCoreOutdated] = [];
             result.total = 0;
 
-            angular.forEach(modules, function(module) {
-                // Check if the module has a prefetch handler.
-                var handler = enabledHandlers[module.modname],
-                    promise;
-                // Prevent null contents.
-                module.contents = module.contents || [];
+            // Check updates in course. Don't use getCourseUpdates because the list of modules might not be the whole course list.
+            return self.getCourseUpdatesByCourseId(courseid).catch(function() {
+                // Cannot get updates.
+                return false;
+            }).then(function(updates) {
 
-                if (handler) {
-                    var cacheStatus = statusCache.getValue(handler.component, module.id, 'status');
-                    if (!refresh && typeof cacheStatus != 'undefined') {
-                        promise = $q.when(self.determineModuleStatus(module, cacheStatus, restoreDownloads));
-                    } else {
-                        promise = self.getModuleStatus(module, courseid);
+                angular.forEach(modules, function(module) {
+                    // Check if the module has a prefetch handler.
+                    var handler = enabledHandlers[module.modname],
+                        promise,
+                        canCheck = updates && updates[module.id] !== false;
+
+                    // Prevent null contents.
+                    module.contents = module.contents || [];
+
+                    if (handler) {
+                        var cacheStatus = statusCache.getValue(handler.component, module.id, 'status');
+                        if (!refresh && typeof cacheStatus != 'undefined') {
+                            promise = $q.when(self.determineModuleStatus(module, cacheStatus, restoreDownloads, canCheck));
+                        } else {
+                            promise = self.getModuleStatus(module, courseid, undefined, undefined, updates);
+                        }
+
+                        promises.push(
+                            promise.then(function(modstatus) {
+                                if (modstatus != mmCoreNotDownloadable) {
+                                    // Update status cache.
+                                    statusCache.setValue(handler.component, module.id, 'sectionid', sectionid);
+                                    self.updateStatusCache(handler.component, module.id, modstatus);
+
+                                    status = $mmFilepool.determinePackagesStatus(status, modstatus);
+                                    result[modstatus].push(module);
+                                    result.total++;
+                                }
+                            }).catch(function() {
+                                modstatus = statusCache.getValue(handler.component, module.id, 'status', true);
+                                if (typeof modstatus == 'undefined') {
+                                    return $q.reject();
+                                }
+                                if (modstatus != mmCoreNotDownloadable) {
+                                    status = $mmFilepool.determinePackagesStatus(status, modstatus);
+                                    result[modstatus].push(module);
+                                    result.total++;
+                                }
+                            })
+                        );
                     }
+                });
 
-                    promises.push(
-                        promise.then(function(modstatus) {
-                            if (modstatus != mmCoreNotDownloadable) {
-                                // Update status cache.
-                                statusCache.setValue(handler.component, module.id, 'sectionid', sectionid);
-                                modstatus = statusCache.setValue(handler.component, module.id, 'status', modstatus);
-
-                                status = $mmFilepool.determinePackagesStatus(status, modstatus);
-                                result[modstatus].push(module);
-                                result.total++;
-                            }
-                        }).catch(function() {
-                            modstatus = statusCache.getValue(handler.component, module.id, 'status', true);
-                            if (typeof modstatus == 'undefined') {
-                                return $q.reject();
-                            }
-                            if (modstatus != mmCoreNotDownloadable) {
-                                status = $mmFilepool.determinePackagesStatus(status, modstatus);
-                                result[modstatus].push(module);
-                                result.total++;
-                            }
-                        })
-                    );
-                }
+                return $q.all(promises).then(function() {
+                    result.status = status;
+                    return result;
+                });
             });
 
-            return $q.all(promises).then(function() {
-                result.status = status;
-                return result;
-            });
         };
 
         /**
@@ -755,6 +1090,8 @@ angular.module('mm.core')
                     statusCache.invalidate(handler.component, module.id);
                 }
             });
+
+            promises.push(self.invalidateCourseUpdates(courseId));
 
             return $q.all(promises);
         };
@@ -826,6 +1163,42 @@ angular.module('mm.core')
                 // No handler for module, so it's not downloadable.
                 return $q.when(false);
             }
+        };
+
+        /**
+         * Check if a module has updates based on the result of getCourseUpdates.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmCoursePrefetchDelegate#moduleHasUpdates
+         * @param  {Object} module   Module.
+         * @param  {Number} courseId Course ID the module belongs to.
+         * @param  {Object} updates  Result of getCourseUpdates.
+         * @return {Promise}         Promise resolved with boolean: whether the module has updates.
+         */
+        self.moduleHasUpdates = function(module, courseId, updates) {
+            var handler = enabledHandlers[module.modname],
+                moduleUpdates = updates[module.id];
+
+            if (handler && handler.hasUpdates) {
+                // Handler implements its own function to check the updates, use it.
+                return $q.when(handler.hasUpdates(module, courseId, moduleUpdates));
+            } else if (!moduleUpdates || !moduleUpdates.updates || !moduleUpdates.updates.length) {
+                // Module doesn't have any update.
+                return $q.when(false);
+            } else if (handler && handler.updatesNames && handler.updatesNames.test) {
+                // Check the update names defined by the handler.
+                for (var i = 0, len = moduleUpdates.updates.length; i < len; i++) {
+                    if (handler.updatesNames.test(moduleUpdates.updates[i].name)) {
+                        return $q.when(true);
+                    }
+                }
+
+                return $q.when(false);
+            }
+
+            // Handler doesn't define hasUpdates or updatesNames and there is at least 1 update. Assume it has updates.
+            return $q.when(true);
         };
 
         /**

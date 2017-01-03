@@ -318,6 +318,7 @@ angular.module('mm.addons.messages')
                 // Mark offline messages as pending.
                 angular.forEach(offlineMessages, function(message) {
                     message.pending = true;
+                    message.text = message.smallmessage;
                 });
 
                 return messages.concat(offlineMessages);
@@ -405,6 +406,7 @@ angular.module('mm.addons.messages')
         }).then(function(offlineMessages) {
             angular.forEach(offlineMessages, function(message) {
                 message.pending = true;
+                message.text = message.smallmessage;
                 treatRecentMessage(message, message.touserid, '');
             });
 
@@ -430,11 +432,13 @@ angular.module('mm.addons.messages')
             // Extract the most recent message. Pending messages are considered more recent than messages already sent.
             var discMessage = discussions[userId].message;
             if (typeof discMessage === 'undefined' || (!discMessage.pending && message.pending) ||
-                    (discMessage.pending == message.pending && discMessage.timecreated < message.timecreated)) {
+                    (discMessage.pending == message.pending && (discMessage.timecreated < message.timecreated ||
+                    (discMessage.timecreated == message.timecreated && discMessage.id < message.id)))) {
 
                 discussions[userId].message = {
+                    id: message.id,
                     user: userId,
-                    message: message.smallmessage,
+                    message: message.text,
                     timecreated: message.timecreated,
                     pending: message.pending
                 };
@@ -537,6 +541,42 @@ angular.module('mm.addons.messages')
             } else {
                 return $q.reject();
             }
+        });
+    };
+
+    /**
+     * Get the cache key for the get message preferences call.
+     *
+     * @return {String} Cache key.
+     */
+    function getMessagePreferencesCacheKey() {
+        return 'mmaMessages:messagePreferences';
+    }
+
+    /**
+     * Get message preferences.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#getMessagePreferences
+     * @param  {String} [siteid] Site ID. If not defined, use current site.
+     * @return {Promise}         Promise resolved with the message preferences.
+     */
+    self.getMessagePreferences = function(siteId) {
+        $log.debug('Get message preferences');
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var preSets = {
+                    cacheKey: getMessagePreferencesCacheKey()
+                };
+
+            return site.read('core_message_get_user_message_preferences', {}, preSets).then(function(data) {
+                if (data.preferences) {
+                    data.preferences.blocknoncontacts = data.blocknoncontacts;
+                    return data.preferences;
+                }
+                return $q.reject();
+            });
         });
     };
 
@@ -645,6 +685,21 @@ angular.module('mm.addons.messages')
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(self._getCacheKeyForEnabled());
+        });
+    };
+
+    /**
+     * Invalidate get message preferences.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#invalidateMessagePreferences
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when data is invalidated.
+     */
+    self.invalidateMessagePreferences = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getMessagePreferencesCacheKey());
         });
     };
 
@@ -768,6 +823,18 @@ angular.module('mm.addons.messages')
     };
 
     /**
+     * Returns whether or not the message preferences are enabled for the current site.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#isMessagePreferencesEnabled
+     * @return {Boolean} True if enabled, false otherwise.
+     */
+    self.isMessagePreferencesEnabled = function() {
+        return $mmSite.wsAvailable('core_message_get_user_message_preferences');
+    };
+
+    /**
      * Returns whether or not the plugin is enabled in a certain site.
      *
      * Do not abuse this method.
@@ -862,7 +929,9 @@ angular.module('mm.addons.messages')
      * @name $mmaMessages#sendMessage
      * @param {Number} to User ID to send the message to.
      * @param {String} message The message to send
-     * @return {Promise}       Promise resolved with boolean: true if message was sent to server, false if stored in device.
+     * @return {Promise}       Promise resolved with:
+     *                                 - sent (Boolean) True if message was sent to server, false if stored in device.
+     *                                 - message (Object) If sent=false, contains the stored message.
      */
     self.sendMessage = function(to, message, siteId) {
         siteId = siteId || $mmSite.getId();
@@ -884,7 +953,7 @@ angular.module('mm.addons.messages')
 
             // Online and no messages stored. Send it to server.
             return self.sendMessageOnline(to, message).then(function() {
-                return true;
+                return {sent: true};
             }).catch(function(data) {
                 if (data.wserror) {
                     // It's a WebService error, the user cannot send the message so don't store it.
@@ -898,8 +967,11 @@ angular.module('mm.addons.messages')
 
         // Convenience function to store a message to be synchronized later.
         function storeOffline() {
-            return $mmaMessagesOffline.saveMessage(to, message, siteId).then(function() {
-                return false;
+            return $mmaMessagesOffline.saveMessage(to, message, siteId).then(function(entry) {
+                return {
+                    sent: false,
+                    message: entry
+                };
             });
         }
     };
@@ -980,6 +1052,8 @@ angular.module('mm.addons.messages')
      */
     self.sortMessages = function(messages) {
         return messages.sort(function (a, b) {
+            var timecreatedA, timecreatedB;
+
             // Pending messages last.
             if (a.pending && !b.pending) {
                 return 1;
@@ -987,9 +1061,13 @@ angular.module('mm.addons.messages')
                 return -1;
             }
 
-            a = parseInt(a.timecreated, 10);
-            b = parseInt(b.timecreated, 10);
-            return a >= b ? 1 : -1;
+            timecreatedA = parseInt(a.timecreated, 10);
+            timecreatedB = parseInt(b.timecreated, 10);
+            if (timecreatedA == timecreatedB && a.id) {
+                // Same time, sort by ID.
+                return a.id >= b.id;
+            }
+            return timecreatedA >= timecreatedB ? 1 : -1;
         });
     };
 

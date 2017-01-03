@@ -13,6 +13,7 @@
     "responses": "Respostes",
     "responsesresultgraphdescription": "{{number}}% dels usuaris han escollit l'opció: {{text}}.",
     "responsesresultgraphheader": "Mostra la gràfica",
+    "resultsnotsynced": "Els resultats no inclouen la vostra darrera resposta. Sincronitzeu per actualitzar-los.",
     "savemychoice": "Desa la meva resposta",
     "userchoosethisoption": "Usuaris que han escollit aquesta opció",
     "yourselection": "La vostra selecció"
