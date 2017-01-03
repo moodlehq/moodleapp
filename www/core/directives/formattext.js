@@ -159,6 +159,9 @@ angular.module('mm.core')
 
                     fullText += '<div class="mm-show-more">' + $translate.instant('mm.core.showmore') + '</div>';
 
+                    if (expandInFullview) {
+                        element.addClass('mm-expand-in-fullview');
+                    }
                     element.addClass('mm-text-formatted mm-shortened');
                     element.css('max-height', maxHeight + 'px');
 

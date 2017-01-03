@@ -1245,6 +1245,10 @@ mm-format-text[max-height], *[mm-format-text][max-height] {
         }
       }
 
+      &.mm-expand-in-fullview .mm-show-more:after {
+        content: $ionicon-var-chevron-right;
+      }
+
       &:before {
         content: '';
         height: 100%;
