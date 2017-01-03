@@ -24,7 +24,7 @@ angular.module('mm.addons.notes')
  * @name $mmaNotesHandlers
  */
 .factory('$mmaNotesHandlers', function($mmaNotes, $mmSite, $mmApp, $ionicModal, $mmUtil, $q, $mmaNotesSync,
-            mmCoursesAccessMethods) {
+            mmCoursesAccessMethods, mmUserProfileHandlersTypeCommunication) {
 
     // We use "caches" to decrease network usage.
     var self = {},
@@ -68,7 +68,9 @@ angular.module('mm.addons.notes')
      */
     self.addNote = function() {
 
-        var self = {};
+        var self = {
+            type: mmUserProfileHandlersTypeCommunication
+        };
 
         /**
          * Check if handler is enabled.
@@ -123,6 +125,7 @@ angular.module('mm.addons.notes')
                 // Button title.
                 $scope.title = 'mma.notes.addnewnote';
                 $scope.class = 'mma-notes-add-handler';
+                $scope.icon = 'ion-ios-list';
 
                 $ionicModal.fromTemplateUrl('addons/notes/templates/add.html', {
                     scope: $scope,

@@ -21,7 +21,7 @@ angular.module('mm.core.user')
  * @ngdoc service
  * @name $mmUserHandlers
  */
-.factory('$mmUserHandlers', function($mmUtil, $mmContentLinksHelper) {
+.factory('$mmUserHandlers', function($mmUtil, $mmContentLinksHelper, mmUserProfileHandlersTypeCommunication, $mmSite, $window) {
 
     var self = {};
 
@@ -85,6 +85,73 @@ angular.module('mm.core.user')
                     }
                 }
             }
+        };
+
+        return self;
+    };
+
+    /**
+     * Profile links email handler.
+     *
+     * @module mm.core.user
+     * @ngdoc method
+     * @name $mmUserHandlers#userEmail
+     */
+    self.userEmail = function() {
+
+        var self = {
+            type: mmUserProfileHandlersTypeCommunication
+        };
+
+        /**
+         * Check if handler is enabled.
+         *
+         * @return {Boolean}    Always enabled.
+         */
+        self.isEnabled = function() {
+            return true;
+        };
+
+        /**
+         * Check if handler is enabled for this user in this context.
+         *
+         * @param {Object} user     User to check.
+         * @param {Number} courseId Course ID.
+         * @param  {Object} [navOptions] Course navigation options for current user. See $mmCourses#getUserNavigationOptions.
+         * @param  {Object} [admOptions] Course admin options for current user. See $mmCourses#getUserAdministrationOptions.
+         * @return {Promise}        Promise resolved with true if enabled, resolved with false otherwise.
+         */
+        self.isEnabledForUser = function(user, courseId, navOptions, admOptions) {
+            // Not current user required.
+            return user.id != $mmSite.getUserId() && user.email;
+        };
+
+        /**
+         * Get the controller.
+         *
+         * @param {Object} user     User.
+         * @param {Number} courseId Course ID.
+         * @return {Object}         Controller.
+         */
+        self.getController = function(user, courseId) {
+
+            /**
+             * Add mail handler controller.
+             *
+             * @modulemm.core.user
+             * @ngdoc controller
+             * @name $mmUserHandlers#userProfile:controller
+             */
+            return function($scope, $state) {
+                $scope.icon = 'ion-android-mail';
+                $scope.title = 'mm.user.sendemail';
+                $scope.action = function($event) {
+                    $event.preventDefault();
+                    $event.stopPropagation();
+                    $window.location.href = "mailto:" + user.email;
+                };
+            };
+
         };
 
         return self;

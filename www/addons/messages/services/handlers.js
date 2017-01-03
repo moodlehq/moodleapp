@@ -24,7 +24,7 @@ angular.module('mm.addons.messages')
  * @name $mmaMessagesHandlers
  */
 .factory('$mmaMessagesHandlers', function($log, $mmaMessages, $mmSite, $state, $mmUtil, $mmContentLinksHelper, $mmaMessagesSync,
-            $mmSitesManager) {
+            $mmSitesManager, mmUserProfileHandlersTypeCommunication, mmUserProfileHandlersTypeAction, $translate) {
     $log = $log.getInstance('$mmaMessagesHandlers');
 
     var self = {};
@@ -38,7 +38,9 @@ angular.module('mm.addons.messages')
      */
     self.addContact = function() {
 
-        var self = {};
+        var self = {
+            type: mmUserProfileHandlersTypeAction
+        };
 
         self.isEnabled = function() {
             return $mmaMessages.isPluginEnabled();
@@ -74,9 +76,11 @@ angular.module('mm.addons.messages')
                         if (isContact) {
                             $scope.title = 'mma.messages.removecontact';
                             $scope.class = 'mma-messages-removecontact-handler';
+                            $scope.icon = 'ion-minus-round';
                         } else {
                             $scope.title = 'mma.messages.addcontact';
                             $scope.class = 'mma-messages-addcontact-handler';
+                            $scope.icon = 'ion-plus-round';
                         }
                     }).catch(function() {
                         // This fails for some reason, let's just hide the button.
@@ -94,7 +98,13 @@ angular.module('mm.addons.messages')
                     $scope.spinner = true;
                     $mmaMessages.isContact(user.id).then(function(isContact) {
                         if (isContact) {
-                            return $mmaMessages.removeContact(user.id);
+                            var template = $translate.instant('mma.messages.removecontactconfirm'),
+                                title = $translate.instant('mma.messages.removecontact');
+                            return $mmUtil.showConfirm(template, title, {okText: title}).then(function() {
+                                return $mmaMessages.removeContact(user.id);
+                            }).catch(function() {
+                                // Ignore on cancel.
+                            });
                         } else {
                             return $mmaMessages.addContact(user.id);
                         }
@@ -131,7 +141,9 @@ angular.module('mm.addons.messages')
      */
     self.blockContact = function() {
 
-        var self = {};
+        var self = {
+            type: mmUserProfileHandlersTypeAction
+        };
 
         self.isEnabled = function() {
             return $mmaMessages.isPluginEnabled();
@@ -167,9 +179,11 @@ angular.module('mm.addons.messages')
                         if (isBlocked) {
                             $scope.title = 'mma.messages.unblockcontact';
                             $scope.class = 'mma-messages-unblockcontact-handler';
+                            $scope.icon = 'ion-checkmark-circled';
                         } else {
                             $scope.title = 'mma.messages.blockcontact';
                             $scope.class = 'mma-messages-blockcontact-handler';
+                            $scope.icon = 'ion-close-circled';
                         }
                     }).catch(function() {
                         // This fails for some reason, let's just hide the button.
@@ -189,7 +203,13 @@ angular.module('mm.addons.messages')
                         if (isBlocked) {
                             return $mmaMessages.unblockContact(user.id);
                         } else {
-                            return $mmaMessages.blockContact(user.id);
+                            var template = $translate.instant('mma.messages.blockcontactconfirm'),
+                                title = $translate.instant('mma.messages.blockcontact');
+                            return $mmUtil.showConfirm(template, title, {okText: title}).then(function() {
+                                return $mmaMessages.blockContact(user.id);
+                            }).catch(function() {
+                                // Ignore on cancel.
+                            });
                         }
                     }).catch(function(error) {
                         $mmUtil.showErrorModal(error);
@@ -224,7 +244,9 @@ angular.module('mm.addons.messages')
      */
     self.sendMessage = function() {
 
-        var self = {};
+        var self = {
+            type: mmUserProfileHandlersTypeCommunication
+        };
 
         self.isEnabled = function() {
             return $mmaMessages.isPluginEnabled();
@@ -253,8 +275,9 @@ angular.module('mm.addons.messages')
              * @name $mmaMessagesHandlers#sendMessage:controller
              */
             return function($scope) {
-                $scope.title = 'mma.messages.sendmessage';
+                $scope.title = 'mma.messages.message';
                 $scope.class = 'mma-messages-sendmessage-handler';
+                $scope.icon = 'ion-chatbubble';
                 $scope.action = function($event) {
                     $event.preventDefault();
                     $event.stopPropagation();
