@@ -397,42 +397,6 @@ angular.module('mm.addons.messages')
                 treatRecentMessage(message, message.useridto, message.usertofullname);
             });
 
-            // Now get the contacts.
-            return self.getContacts();
-        }).then(function(contacts) {
-            var types = ['online', 'offline', 'strangers'];
-
-            // Add contacts with unread messages.
-            angular.forEach(types, function(type) {
-                if (contacts[type] && contacts[type].length > 0) {
-                    angular.forEach(contacts[type], function(contact) {
-
-                        if (typeof discussions[contact.id] === 'undefined' && contact.unread) {
-                            // It's a contact with unread messages. Contacts without unread messages are not used.
-                            discussions[contact.id] = {
-                                fullname: contact.fullname,
-                                profileimageurl: "",
-                                message: {
-                                    user: contact.id,
-                                    message: "...",
-                                    timecreated: 0,
-                                }
-                            };
-                        }
-
-                        if (typeof discussions[contact.id] !== 'undefined') {
-                            // The contact is used in a discussion.
-                            if (contact.profileimageurl) {
-                                discussions[contact.id].profileimageurl = contact.profileimageurl;
-                            }
-                            if (typeof contact.unread !== 'undefined') {
-                                discussions[contact.id].unread = contact.unread;
-                            }
-                        }
-                    });
-                }
-            });
-
             // Now get unsent messages.
             return $mmaMessagesOffline.getAllMessages();
         }).then(function(offlineMessages) {
