@@ -98,6 +98,9 @@ angular.module('mm.addons.messages')
             if (typeof discussion != 'undefined') {
                 // A discussion has been read reset counter.
                 discussion.unread = false;
+
+                // Discussions changed, invalidate them.
+                $mmaMessages.invalidateDiscussionsCache();
             }
         }
     });

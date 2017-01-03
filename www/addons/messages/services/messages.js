@@ -152,14 +152,11 @@ angular.module('mm.addons.messages')
             },
             presets = {
                 cacheKey: self._getCacheKeyForBlockedContacts($mmSite.getUserId())
-            },
-            deferred;
+            };
 
         if (!$mmSite.wsAvailable('core_message_get_blocked_users')) {
             // If the WS is not available, we mock an empty response.
-            deferred = $q.defer();
-            deferred.resolve({users: [], warnings: []});
-            return deferred.promise;
+            return $q.when({users: [], warnings: []});
         }
 
         return $mmSite.read('core_message_get_blocked_users', params, presets);
@@ -457,7 +454,7 @@ angular.module('mm.addons.messages')
             preSets = {
                 typeExpected: 'boolean'
             };
-        return $mmSite.write('core_message_mark_message_read', params);
+        return $mmSite.write('core_message_mark_message_read', params, preSets);
 
     };
 
@@ -581,7 +578,7 @@ angular.module('mm.addons.messages')
      * @module mm.addons.messages
      * @ngdoc method
      * @name $mmaMessages#getMessagePreferences
-     * @param  {String} [siteid] Site ID. If not defined, use current site.
+     * @param  {String} [siteId] Site ID. If not defined, use current site.
      * @return {Promise}         Promise resolved with the message preferences.
      */
     self.getMessagePreferences = function(siteId) {
@@ -601,6 +598,64 @@ angular.module('mm.addons.messages')
             });
         });
     };
+
+    /**
+     * Get unread conversations count. Do not cache calls.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#getUnreadConversationsCount
+     * @param  {Number} [userId] The user id who received the message. If not defined, use current user.
+     * @param  {String} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise}         Promise resolved with the message unread count.
+     */
+    self.getUnreadConversationsCount = function(userId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            userId = userId || site.getUserId();
+
+            if (site.wsAvailable('core_message_get_unread_conversations_count')) {
+                var params = {
+                        useridto: userId
+                    },
+                    preSets = {
+                        getFromCache: 0,
+                        emergencyCache: 0,
+                        saveToCache: 0,
+                        typeExpected: 'number'
+                    };
+
+                return site.read('core_message_get_unread_conversations_count', params, preSets).catch(function() {
+                    // Return no messages if the call fails.
+                    return 0;
+                });
+            }
+
+            // Fallback call.
+            var params = {
+                read: 0,
+                limitfrom: 0,
+                limitnum: mmaMessagesLimitMessages + 1,
+                useridto: userId,
+                useridfrom: 0,
+            };
+            return self._getMessages(params).then(function(response) {
+                // Count the discussions by filtering same senders.
+                var discussions = {},
+                    count;
+                angular.forEach(response.messages, function(message) {
+                    discussions[message.useridto] = 1;
+                });
+                count = Object.keys(discussions).length;
+
+                // Add + sign if there are more than the limit reachable.
+                return (count > mmaMessagesLimitMessages) ? count + "+" : count;
+            }).catch(function() {
+                // Return no messages if the call fails.
+                return 0;
+            });
+        });
+    };
+
 
     /**
      * Invalidate all contacts cache.
