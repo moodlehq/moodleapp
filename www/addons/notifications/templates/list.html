@@ -8,6 +8,7 @@
                     <img ng-if="notification.profileimageurlfrom" ng-src="{{notification.profileimageurlfrom}}" mm-external-content ui-sref="{{userStateName}}({courseid: notification.courseid, userid: notification.useridfrom})" alt="{{ 'mm.core.pictureof' | translate:{$a: notification.userfromfullname} }}" role="presentation">
                     <img ng-if="!notification.profileimageurlfrom" src="img/user-avatar.png" alt="{{ 'mm.core.pictureof' | translate:{$a: notification.userfromfullname} }}" role="presentation">
                     <h2>{{notification.userfromfullname}}</h2>
+                    <div class="item-note text-right" ng-if="!notification.timeread"><i class="icon ion-record positive"></i></div>
                     <p>{{notification.timecreated | mmDateDayOrTime}}</p>
                 </div>
                 <div class="item item-body">

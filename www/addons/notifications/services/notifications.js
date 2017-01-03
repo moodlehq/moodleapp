@@ -162,6 +162,26 @@ angular.module('mm.addons.notifications')
     };
 
     /**
+     * Mark message notification as read.
+     *
+     * @module mm.addons.notifications
+     * @ngdoc method
+     * @name $mmaNotifications#markNotificationRead
+     * @param notificationId   ID of notification to mark as read
+     * @returns {Promise} Promise resolved with boolean marking success or not.
+     */
+    self.markNotificationRead = function(notificationId) {
+        var params = {
+                'messageid': notificationId
+            },
+            preSets = {
+                typeExpected: 'boolean'
+            };
+        return $mmSite.write('core_message_mark_message_read', params);
+
+    };
+
+    /**
      * Invalidate get notification preferences.
      *
      * @module mm.addons.notifications
