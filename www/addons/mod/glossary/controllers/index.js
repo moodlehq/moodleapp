@@ -126,6 +126,7 @@ angular.module('mm.addons.mod_glossary')
         glossary = mod;
 
         $scope.description = glossary.intro || module.description;
+        $scope.canAdd = glossary.canaddentry || false;
 
         // Preparing browse modes.
         if (glossary.browsemodes.indexOf('date') >= 0) {
