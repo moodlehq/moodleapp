@@ -21,8 +21,8 @@ angular.module('mm.addons.mod_glossary')
  * @ngdoc service
  * @name $mmaModGlossary
  */
-.factory('$mmaModGlossary', function($mmSite, $q, $mmSitesManager, $mmFilepool, mmaModGlossaryComponent,
-        mmaModGlossaryLimitEntriesNum) {
+.factory('$mmaModGlossary', function($mmSite, $q, $mmSitesManager, $mmFilepool, mmaModGlossaryComponent, $mmaModGlossaryOffline,
+        mmaModGlossaryLimitEntriesNum, $mmApp, $mmUtil) {
     var self = {};
 
     /**
@@ -363,8 +363,6 @@ angular.module('mm.addons.mod_glossary')
      * @return {Promise}         Promise resolved with the entry.
      */
     self.getEntry = function(id, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     id: id
@@ -531,6 +529,94 @@ angular.module('mm.addons.mod_glossary')
     };
 
     /**
+     * Create a new entry on a glossary
+     *
+     * @module mm.addons.mod_glossary
+     * @ngdoc method
+     * @name $mmaModGlossary#addEntry
+     * @param  {Number} glossaryId Glossary ID.
+     * @param  {String} concept    Glossary entry concept.
+     * @param  {String} definition Glossary entry concept definition.
+     * @param  {Array}  [options]  Array of options for the entry.
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}          Promise resolved with entry ID if entry was created in server, false if stored in device.
+     */
+    self.addEntry = function(glossaryId, concept, definition, options, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        if (!$mmApp.isOnline()) {
+            // App is offline, store the action.
+            return storeOffline();
+        }
+
+        // Discard stored content for this entry. If it exists it means the user is editing it.
+        return $mmaModGlossaryOffline.deleteAddEntry(glossaryId, concept, siteId).then(function() {
+            // Try to add it in online.
+            return self.addEntryOnline(glossaryId, concept, definition, options, siteId).then(function(entryId) {
+                return entryId;
+            }).catch(function(error) {
+                if (error && error.wserror) {
+                    // The WebService has thrown an error, this means that responses cannot be deleted.
+                    return $q.reject(error.error);
+                } else {
+                    // Couldn't connect to server, store in offline.
+                    return storeOffline();
+                }
+            });
+        });
+
+        // Convenience function to store a new page to be synchronized later.
+        function storeOffline() {
+            return $mmaModGlossaryOffline.saveAddEntry(glossaryId, concept, definition, options, siteId).then(function() {
+                return false;
+            });
+        }
+    };
+
+    /**
+     * Create a new entry on a glossary. It does not cache calls. It will fail if offline or cannot connect.
+     *
+     * @module mm.addons.mod_glossary
+     * @ngdoc method
+     * @name $mmaModGlossary#addEntryOnline
+     * @param  {Number} glossaryId Glossary ID.
+     * @param  {String} concept    Glossary entry concept.
+     * @param  {String} definition Glossary entry concept definition.
+     * @param  {Array}  [options]  Array of options for the entry.
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved if created, rejected otherwise. Reject param is an object with:
+     *                                   - error: The error message.
+     *                                   - wserror: True if it's an error returned by the WebService, false otherwise.
+     */
+    self.addEntryOnline = function(glossaryId, concept, definition, options, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    glossaryid: glossaryId,
+                    concept: concept,
+                    definition: definition,
+                    definitionformat: 'html'
+                };
+            if (options) {
+                params.options = options;
+            }
+
+            return site.write('mod_glossary_add_entry', params).catch(function(error) {
+                return $q.reject({
+                    error: error,
+                    wserror: $mmUtil.isWebServiceError(error)
+                });
+            }).then(function(response) {
+                if (response.entryid) {
+                    return response.entryid;
+                }
+                return $q.reject({
+                    wserror: true
+                });
+            });
+        });
+    };
+
+    /**
      * Check if glossary plugin is enabled in a certain site.
      *
      * @module mm.addons.mod_glossary
@@ -540,8 +626,6 @@ angular.module('mm.addons.mod_glossary')
      * @return {Promise}         Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
     self.isPluginEnabled = function(siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             // This function was introduced along with all the other required ones.
             return site.wsAvailable('mod_glossary_get_glossaries_by_courses');
