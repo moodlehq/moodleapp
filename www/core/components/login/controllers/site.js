@@ -27,7 +27,6 @@ angular.module('mm.core.login')
     $scope.siteurl = '';
 
     $scope.connect = function(url) {
-
         $mmApp.closeKeyboard();
 
         if (!url) {
@@ -37,7 +36,6 @@ angular.module('mm.core.login')
 
         var modal = $mmUtil.showModalLoading(),
             sitedata = $mmSitesManager.getDemoSiteData(url);
-
         if (sitedata) {
             // It's a demo site.
             $mmSitesManager.getUserToken(sitedata.url, sitedata.username, sitedata.password).then(function(data) {

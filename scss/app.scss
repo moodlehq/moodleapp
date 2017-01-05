@@ -78,5 +78,22 @@ $button-default-active-border: $positive;
   background-color: transparent;
 }
 
+.bar-side-menu {
+   background-color: blue;
+ }
+ 
+ .bar-content {
+   background-color: blue;
+ }
+ 
+ .button.button-positive {
+   border-color: blue;
+   background-color: blue;
+    color: #fff;
+ } 
+ 
+ .item-divider {
+   background-color: #fafafa;
+ }
 // Include all of Moodle Mobile.
 @import "www/build/mm.bundle.scss";
