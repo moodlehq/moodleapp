@@ -305,7 +305,9 @@ angular.module('mm.addons.messages')
                 useridto: $mmSite.getUserId(),
                 useridfrom: userId,
                 limitnum: mmaMessagesLimitMessages
-            };
+            },
+            hasReceived,
+            hasSent;
 
         if (lfReceivedUnread > 0 || lfReceivedRead > 0 || lfSentUnread > 0 || lfSentRead > 0) {
             // Do not use cache when retrieving older messages. This is to prevent storing too much data
@@ -320,11 +322,13 @@ angular.module('mm.addons.messages')
             result.messages = response;
             params.useridto = userId;
             params.useridfrom = $mmSite.getUserId();
+            hasReceived = response.length > 0;
 
             // Get message sent by current user.
             return self._getRecentMessages(params, presets, lfSentUnread, lfSentRead);
         }).then(function(response) {
             result.messages = result.messages.concat(response);
+            hasSent = response.length > 0;
 
             if (result.messages.length > mmaMessagesLimitMessages) {
                 // Sort messages and get the more recent ones.
@@ -332,9 +336,8 @@ angular.module('mm.addons.messages')
                 result.messages = self.sortMessages(result.messages);
                 result.messages = result.messages.slice(-mmaMessagesLimitMessages);
             } else {
-                result.canLoadMore = false;
+                result.canLoadMore = result.messages.length == mmaMessagesLimitMessages && (!hasReceived || !hasSent);
             }
-
 
             if (excludePending) {
                 // No need to get offline messages, return the ones we have.
