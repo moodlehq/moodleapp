@@ -150,8 +150,10 @@ angular.module('mm.core')
                 // Render text before calculating text to get the proper height.
                 renderText(scope, element, fullText);
                 // Height cannot be calculated if the element is not shown while calculating.
-                //@todo: Work on calculate better this height.
-                var height = element[0].offsetHeight || element[0].height || element[0].clientHeight;
+                // Force shorten if it was previously shortened.
+                //@todo: Work on calculate this height better.
+                var height = element.css('max-height') ? false :
+                        element[0].offsetHeight || element[0].height || element[0].clientHeight;
 
                 // If cannot calculate height, shorten always.
                 if (!height || height > maxHeight) {
