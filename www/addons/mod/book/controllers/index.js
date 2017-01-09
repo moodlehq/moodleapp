@@ -21,8 +21,8 @@ angular.module('mm.addons.mod_book')
  * @ngdoc controller
  * @name mmaModBookIndexCtrl
  */
-.controller('mmaModBookIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModBook, $log, mmaModBookComponent, $mmText,
-            $ionicPopover, $mmApp, $q, $mmCourse, $ionicScrollDelegate, $translate, $mmaModBookPrefetchHandler) {
+.controller('mmaModBookIndexCtrl', function($scope, $stateParams, $mmUtil, $mmCourseHelper, $mmaModBook, $log, mmaModBookComponent,
+            $mmText, $ionicPopover, $mmApp, $q, $mmCourse, $ionicScrollDelegate, $translate, $mmaModBookPrefetchHandler) {
     $log = $log.getInstance('mmaModBookIndexCtrl');
 
     var module = $stateParams.module || {},
@@ -67,7 +67,7 @@ angular.module('mm.addons.mod_book')
     }
 
     // Convenience function to download book contents and load the current chapter.
-    function fetchContent(chapterId) {
+    function fetchContent(chapterId, refresh) {
         var downloadFailed = false;
 
         // Load module contents if needed.
@@ -100,6 +100,9 @@ angular.module('mm.addons.mod_book')
                     // We could load the main file but the download failed. Show error message.
                     $mmUtil.showErrorModal('mm.core.errordownloadingsomefiles', true);
                 }
+
+                // All data obtained, now fill the context menu.
+                $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModBookComponent);
             });
         });
     }
@@ -109,7 +112,7 @@ angular.module('mm.addons.mod_book')
             $scope.refreshIcon = 'spinner';
 
             return $mmaModBook.invalidateContent(module.id, courseId).finally(function() {
-                return fetchContent(currentChapter);
+                return fetchContent(currentChapter, true);
             }).finally(function() {
                 $scope.refreshIcon = 'ion-refresh';
                 $scope.$broadcast('scroll.refreshComplete');
@@ -136,6 +139,15 @@ angular.module('mm.addons.mod_book')
         };
     });
 
+    // Confirm and Remove action.
+    $scope.removeFiles = function() {
+        $mmCourseHelper.confirmAndRemove(module, courseId);
+    };
+
+    // Context Menu Prefetch action.
+    $scope.prefetch = function() {
+        $mmCourseHelper.contextMenuPrefetch($scope, module, courseId);
+    };
     // Context Menu Description action.
     $scope.expandDescription = function() {
         $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false, mmaModBookComponent, module.id);

@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_glossary')
  * @ngdoc controller
  * @name mmaModGlossaryIndexCtrl
  */
-.controller('mmaModGlossaryIndexCtrl', function($q, $scope, $stateParams, $ionicPopover, $mmUtil, $mmaModGlossary,
+.controller('mmaModGlossaryIndexCtrl', function($q, $scope, $stateParams, $ionicPopover, $mmUtil, $mmCourseHelper, $mmaModGlossary,
         $ionicScrollDelegate, $translate, $mmText, mmaModGlossaryComponent, mmaModGlossaryLimitEntriesNum) {
 
     var module = $stateParams.module || {},
@@ -78,6 +78,9 @@ angular.module('mm.addons.mod_glossary')
             return refreshEntries().finally(function() {
                 $scope.refreshIcon = 'ion-refresh';
                 $scope.$broadcast('scroll.refreshComplete');
+
+                // Data refreshed, fill the context menu.
+                $mmCourseHelper.fillContextMenu($scope, module, courseId, true, mmaModGlossaryComponent);
             });
         }
     };
@@ -100,6 +103,16 @@ angular.module('mm.addons.mod_glossary')
 
     $scope.trackBy = function(entry) {
         return fetchMode + ':' + entry.id;
+    };
+
+    // Confirm and Remove action.
+    $scope.removeFiles = function() {
+        $mmCourseHelper.confirmAndRemove(module, courseId);
+    };
+
+    // Context Menu Prefetch action.
+    $scope.prefetch = function() {
+        $mmCourseHelper.contextMenuPrefetch($scope, module, courseId);
     };
 
     // Context Menu Description action.
@@ -163,6 +176,8 @@ angular.module('mm.addons.mod_glossary')
         fetchEntries().then(function() {
             // After a successful fetch, the glossary can be considered as 'viewed'.
             $mmaModGlossary.logView(glossary.id, viewMode);
+            // All data obtained, now fill the context menu.
+            $mmCourseHelper.fillContextMenu($scope, module, courseId, false, mmaModGlossaryComponent);
         }).finally(function() {
             $scope.loaded = true;
             $scope.refreshIcon = 'ion-refresh';
