@@ -5,7 +5,7 @@
   </ion-nav-buttons>
   <ion-content mm-state-class>
       <ion-list show-delete="data.showDelete">
-        <ion-item ng-repeat="site in sites track by $index" class="card item item-thumbnail-left item-remove-animate" ng-click="login(site.id)">
+        <ion-item ng-repeat="site in sites track by site.id" class="item item-thumbnail-left item-remove-animate" ng-click="login(site.id)">
           <ion-delete-button class="ion-trash-a" ng-click='onItemDelete($event, $index)'></ion-delete-button>
           <img class="avatar" ng-src="{{site.avatar}}" mm-external-content siteid="site.id" alt="{{ 'mm.core.pictureof' | translate:{$a: site.fullname} }}" role="presentation">
           <h2>{{site.fullname}}</h2>
