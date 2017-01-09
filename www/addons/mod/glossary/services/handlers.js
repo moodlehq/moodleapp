@@ -201,14 +201,8 @@ angular.module('mm.addons.mod_glossary')
         }
 
         function getEntry(entryId, siteId) {
-            return $mmaModGlossary.getEntry(entryId, siteId).then(function(result) {
-                return result.entry;
-            }).catch(function(error) {
-                if (error) {
-                    $mmUtil.showErrorModal(error);
-                } else {
-                    $mmUtil.showErrorModal('mma.mod_glossary.errorloadingentry', true);
-                }
+            return $mmaModGlossary.getEntry(entryId, siteId).catch(function(error) {
+                $mmUtil.showErrorModalDefault(error, 'mma.mod_glossary.errorloadingentry', true);
                 return $q.reject();
             });
         }
@@ -239,22 +233,24 @@ angular.module('mm.addons.mod_glossary')
                         icon: 'ion-eye',
                         sites: ids,
                         action: function(siteId) {
-                            var modal = $mmUtil.showModalLoading();
-                            return getEntry(parseInt(params.eid, 10), siteId).then(function(entry) {
-                                var promise;
-                                if (courseId) {
-                                    promise = $q.when(courseId);
-                                } else {
-                                    promise = $mmCourseHelper.getModuleCourseIdByInstance(entry.glossaryid, 'glossary', siteId);
-                                }
-                                return promise.then(function(courseId) {
-                                    var stateParams = {
-                                        entry: entry,
-                                        entryid: entry.id,
-                                        cid: courseId
-                                    };
-                                    $mmContentLinksHelper.goInSite('site.mod_glossary-entry', stateParams, siteId);
+                            var modal = $mmUtil.showModalLoading(),
+                                entryId = parseInt(params.eid, 10),
+                                promise;
+
+                            if (courseId) {
+                                promise = $q.when(courseId);
+                            } else {
+                                promise = getEntry(entryId, siteId).then(function(entry) {
+                                    return $mmCourseHelper.getModuleCourseIdByInstance(entry.glossaryid, 'glossary', siteId);
                                 });
+                            }
+
+                            return promise.then(function(courseId) {
+                                var stateParams = {
+                                    entryid: entryId,
+                                    cid: courseId
+                                };
+                                $mmContentLinksHelper.goInSite('site.mod_glossary-entry', stateParams, siteId);
                             }).finally(function() {
                                 modal.dismiss();
                             });

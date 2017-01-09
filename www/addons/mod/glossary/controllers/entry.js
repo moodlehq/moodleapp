@@ -22,75 +22,69 @@ angular.module('mm.addons.mod_glossary')
  * @name mmaModGlossaryEntryCtrl
  */
 .controller('mmaModGlossaryEntryCtrl', function($scope, $stateParams, $mmaModGlossary, $translate, mmaModGlossaryComponent,
-        mmUserProfileState) {
-    var entry = $stateParams.entry || {},
-        courseid = $stateParams.cid || 0,
-        glossary;
+        mmUserProfileState, $mmUtil) {
+
+    var entryId = $stateParams.entryid,
+        courseId = $stateParams.cid || 0,
+        glossary,
+        entry;
 
     // This is a coding error, for now the course ID is required here as we need it for the author link.
-    if (!courseid) {
-        notifyErrorOccured();
+    if (!courseId) {
+        $mmUtil.showErrorModal('mma.mod_glossary.errorloadingentry', true);
         return;
     }
 
     $scope.refreshEntry = function() {
-        refreshEntry().finally(function() {
+        return $mmaModGlossary.invalidateEntry(entry.id).then(function() {
+            return fetchEntry(true);
+        }).finally(function() {
             $scope.$broadcast('scroll.refreshComplete');
         });
     };
 
-    // Load the glossary first.
-    $mmaModGlossary.getGlossaryById(courseid, entry.glossaryid).then(function(gloss) {
-        glossary = gloss;
-        var displayFormat = glossary.displayformat;
+    function fetchEntry(refresh) {
+        return $mmaModGlossary.getEntry(entryId).then(function(result) {
+            entry = result;
+            $scope.entry = entry;
+            $scope.title = entry.concept;
 
-        $scope.title = entry.concept;
-        $scope.entry = entry;
-        $scope.courseid = courseid;
-        $scope.userStateName = mmUserProfileState;
-        $scope.component = mmaModGlossaryComponent;
-        $scope.componentId = glossary.coursemodule;
+            if (!refresh) {
+                // Load the glossary.
+                return $mmaModGlossary.getGlossaryById(courseId, entry.glossaryid).then(function(gloss) {
+                    glossary = gloss;
+                    var displayFormat = glossary.displayformat;
 
-        if (displayFormat == 'fullwithauthor' || displayFormat == 'encyclopedia') {
-            $scope.showAuthor = true;
-            $scope.showDate = true;
+                    $scope.courseId = courseId;
+                    $scope.userStateName = mmUserProfileState;
+                    $scope.component = mmaModGlossaryComponent;
+                    $scope.componentId = glossary.coursemodule;
 
-        } else if (displayFormat == 'fullwithoutauthor') {
-            $scope.showAuthor = false;
-            $scope.showDate = true;
+                    if (displayFormat == 'fullwithauthor' || displayFormat == 'encyclopedia') {
+                        $scope.showAuthor = true;
+                        $scope.showDate = true;
 
-        // Default, and faq, simple, entrylist, continuous.
-        } else {
-            $scope.showAuthor = false;
-            $scope.showDate = false;
-        }
+                    } else if (displayFormat == 'fullwithoutauthor') {
+                        $scope.showAuthor = false;
+                        $scope.showDate = true;
 
-        $scope.loaded = true;
+                    // Default, and faq, simple, entrylist, continuous.
+                    } else {
+                        $scope.showAuthor = false;
+                        $scope.showDate = false;
+                    }
+                });
+            }
+        }).catch(function(error) {
+            $mmUtil.showErrorModalDefault(error, 'mma.mod_glossary.errorloadingentry', true);
+            return $q.reject();
+        });
+    }
 
+    fetchEntry().then(function() {
         // Log that the entry was viewed.
         $mmaModGlossary.logEntryView(entry.id);
-
-    }).catch(function() {
-        notifyErrorOccured();
-    });
-
-    function fetchEntry() {
-        return $mmaModGlossary.getEntry(entry.id).then(function(result) {
-            $scope.entry = result.entry;
-            $scope.title = result.entry.concept;
-        });
-    }
-
-    function refreshEntry() {
-        return $mmaModGlossary.invalidateEntry(entry.id).then(function() {
-            return fetchEntry();
-        });
-    }
-
-    function notifyErrorOccured() {
-        $scope.title = $translate.instant('mm.core.error');
-        $scope.entry = false;
+    }).finally(function() {
         $scope.loaded = true;
-    }
-
+    });
 });

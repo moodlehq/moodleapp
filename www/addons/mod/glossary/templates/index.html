@@ -30,7 +30,7 @@
                             <h2>{{getDivider(entries[$index])}}</h2>
                         </div>
 
-                        <a class="item" mm-split-view-link="site.mod_glossary-entry({entry: {{ entry }}, cid: {{ courseid }}, entryid: {{ entry.id }}})">
+                        <a class="item" mm-split-view-link="site.mod_glossary-entry({cid: {{ courseid }}, entryid: {{ entry.id }}})">
                             <p>{{entry.concept}}</p>
                         </a>
                     </div>

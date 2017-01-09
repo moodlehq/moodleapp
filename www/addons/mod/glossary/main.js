@@ -39,8 +39,7 @@ angular.module('mm.addons.mod_glossary', ['mm.core'])
       url: '/mod_glossary-entry',
       params: {
         cid: null, // Not naming it courseid because it collides with 'site.mod_glossary' param in split-view.
-        entry: null,
-        entryid: null // Required so Angular ui-router is able to compare states (it doesn't compare object properties).
+        entryid: null
       },
       views: {
         'site': {
@@ -48,6 +47,21 @@ angular.module('mm.addons.mod_glossary', ['mm.core'])
           templateUrl: 'addons/mod/glossary/templates/entry.html'
         }
       }
+    })
+
+    .state('site.mod_glossary-edit', {
+        url: '/mod_glossary-edit',
+        params: {
+            module: null,
+            cmid: null,
+            courseid: null
+        },
+        views: {
+            'site': {
+                controller: 'mmaModGlossaryEditCtrl',
+                templateUrl: 'addons/mod/glossary/templates/edit.html'
+            }
+        }
     });
 
 })

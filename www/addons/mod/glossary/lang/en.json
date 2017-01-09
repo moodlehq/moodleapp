@@ -6,10 +6,14 @@
     "bynewestfirst": "Newest first",
     "byrecentlyupdated": "Recently updated",
     "bysearch": "Search",
+    "cannoteditentry": "Cannot edit entry",
+    "concept": "Concept",
+    "definition": "Definition",
     "entrypendingapproval": "This entry is pending approval.",
     "errorloadingentries": "An error occured while loading entries.",
     "errorloadingentry": "An error occured while loading the entry.",
     "errorloadingglossary": "An error occured while loading the glossary.",
+    "fillfields": "Concept and definition are mandatory fields.",
     "noentriesfound": "No entries were found.",
     "searchquery": "Search query"
 }

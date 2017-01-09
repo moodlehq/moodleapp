@@ -371,7 +371,13 @@ angular.module('mm.addons.mod_glossary')
                     cacheKey: self._getEntryCacheKey(id)
                 };
 
-            return site.read('mod_glossary_get_entry_by_id', params, preSets);
+            return site.read('mod_glossary_get_entry_by_id', params, preSets).then(function(response) {
+                if (response && response.entry) {
+                    return response.entry;
+                } else {
+                    return $q.reject();
+                }
+            });
         });
     };
 
@@ -594,7 +600,7 @@ angular.module('mm.addons.mod_glossary')
                     glossaryid: glossaryId,
                     concept: concept,
                     definition: definition,
-                    definitionformat: 'html'
+                    definitionformat: 1
                 };
             if (options) {
                 params.options = options;
@@ -630,6 +636,19 @@ angular.module('mm.addons.mod_glossary')
             // This function was introduced along with all the other required ones.
             return site.wsAvailable('mod_glossary_get_glossaries_by_courses');
         });
+    };
+
+    /**
+     * Return whether or not the plugin is enabled for editing in the current site. Plugin is enabled if the glossary WS are
+     * available.
+     *
+     * @module mm.addons.mod_glossary
+     * @ngdoc method
+     * @name $mmaModGlossary#isPluginEnabledForEditing
+     * @return {Boolean}     Whether the glossary editing is available or not.
+     */
+    self.isPluginEnabledForEditing = function() {
+        return  $mmSite.wsAvailable('mod_glossary_add_entry');
     };
 
     /**

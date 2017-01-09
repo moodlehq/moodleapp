@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_glossary')
  * @name mmaModGlossaryIndexCtrl
  */
 .controller('mmaModGlossaryIndexCtrl', function($q, $scope, $stateParams, $ionicPopover, $mmUtil, $mmCourseHelper, $mmaModGlossary,
-        $ionicScrollDelegate, $translate, $mmText, mmaModGlossaryComponent, mmaModGlossaryLimitEntriesNum) {
+        $ionicScrollDelegate, $translate, $mmText, mmaModGlossaryComponent, mmaModGlossaryLimitEntriesNum, $state) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
@@ -121,12 +121,24 @@ angular.module('mm.addons.mod_glossary')
                 mmaModGlossaryComponent, module.id);
     };
 
+    $scope.gotoAddEntry = function() {
+        if ($scope.canAdd) {
+            var stateParams = {
+                module: module,
+                cmid: module.id,
+                courseid: courseId
+            };
+
+            return $state.go('site.mod_glossary-edit', stateParams);
+        }
+    };
+
     // Controller run.
     $mmaModGlossary.getGlossary(courseId, module.id).then(function(mod) {
         glossary = mod;
 
         $scope.description = glossary.intro || module.description;
-        $scope.canAdd = glossary.canaddentry || false;
+        $scope.canAdd = $mmaModGlossary.isPluginEnabledForEditing() && glossary.canaddentry || false;
 
         // Preparing browse modes.
         if (glossary.browsemodes.indexOf('date') >= 0) {
