@@ -1340,6 +1340,26 @@ mm-format-text[max-height], *[mm-format-text][max-height] {
   }
 }
 
+.item.active,
+.item.activated,
+.item-complex.active .item-content,
+.item-complex.activated .item-content,
+.item .item-content.active,
+.item .item-content.activated {
+
+  mm-format-text[max-height], *[mm-format-text][max-height] {
+    // This is to allow clicking on activated areas and have background the same color.
+    &.mm-text-formatted.mm-shortened:before {
+          background: -moz-linear-gradient(top, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
+          background: -webkit-gradient(left top, left bottom, color-stop(calc(100% - 50px), rgba($item-default-active-bg, 0)), color-stop(calc(100% - 15px), $item-default-active-bg));
+          background: -webkit-linear-gradient(top, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
+          background: -o-linear-gradient(top, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
+          background: -ms-linear-gradient(top, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
+          background: linear-gradient(to bottom, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
+    }
+  }
+}
+
 // Position modals over action sheet. This means that modals will ALWAYS be over action sheet (in Ionic it's the opposite).
 .action-sheet-open .modal-backdrop.active {
   z-index: 20;
