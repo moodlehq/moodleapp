@@ -39,7 +39,7 @@ angular.module('mm.addons.mod_forum')
  * @param {String}   [scrollHandle]   Name of the scroll handle of the page containing the post.
  */
 .directive('mmaModForumDiscussionPost', function($mmaModForum, $mmUtil, $translate, $q, $mmaModForumOffline, $mmSyncBlock,
-        mmaModForumComponent, $mmaModForumSync) {
+        mmaModForumComponent, $mmaModForumSync, $mmText) {
 
     // Get a forum. Returns empty object if params aren't valid.
     function getForum(courseId, cmId) {
@@ -116,11 +116,7 @@ angular.module('mm.addons.mod_forum')
                 $mmUtil.isRichTextEditorEnabled().then(function(enabled) {
                     if (!enabled) {
                         // Rich text editor not enabled, add some HTML to the message if needed.
-                        if (message.indexOf('<p>') == -1) {
-                            // Wrap the text in <p> tags.
-                            message = '<p>' + message + '</p>';
-                        }
-                        message = message.replace(/\n/g, '<br>');
+                        message = message = $mmText.formatHtmlLines(message);
                     }
 
                     return getForum(scope.courseid, scope.componentId).then(function(forum) {
@@ -131,11 +127,7 @@ angular.module('mm.addons.mod_forum')
                             }
                         });
                     }).catch(function(message) {
-                        if (message) {
-                            $mmUtil.showErrorModal(message);
-                        } else {
-                            $mmUtil.showErrorModal('mma.mod_forum.couldnotadd', true);
-                        }
+                        $mmUtil.showErrorModalDefault(message, 'mma.mod_forum.couldnotadd', true);
                     });
                 }).finally(function() {
                     modal.dismiss();
