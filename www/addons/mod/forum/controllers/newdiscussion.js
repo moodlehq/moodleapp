@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_forum')
  */
 .controller('mmaModForumNewDiscussionCtrl', function($scope, $stateParams, $mmGroups, $q, $mmaModForum, $mmEvents, $ionicPlatform,
             $mmUtil, $ionicHistory, $translate, mmaModForumNewDiscussionEvent, $mmaModForumOffline, $mmSite, mmaModForumComponent,
-            mmaModForumAutomSyncedEvent, $mmSyncBlock, $mmaModForumSync) {
+            mmaModForumAutomSyncedEvent, $mmSyncBlock, $mmaModForumSync, $mmText) {
 
     var courseid = $stateParams.cid,
         forumid = $stateParams.forumid,
@@ -103,11 +103,7 @@ angular.module('mm.addons.mod_forum')
         }).then(function(message) {
             $scope.showForm = true;
         }).catch(function(message) {
-            if (message) {
-                $mmUtil.showErrorModal(message);
-            } else {
-                $mmUtil.showErrorModal('mma.mod_forum.errorgetgroups', true);
-            }
+            $mmUtil.showErrorModalDefault(message, 'mma.mod_forum.errorgetgroups', true);
             $scope.showForm = false;
             return $q.reject();
         });
@@ -237,11 +233,7 @@ angular.module('mm.addons.mod_forum')
         $mmUtil.isRichTextEditorEnabled().then(function(enabled) {
             if (!enabled) {
                 // Rich text editor not enabled, add some HTML to the message if needed.
-                if (message.indexOf('<p>') == -1) {
-                    // Wrap the text in <p> tags.
-                    message = '<p>' + message + '</p>';
-                }
-                message = message.replace(/\n/g, '<br>');
+                message = $mmText.formatHtmlLines(message);
             }
 
             return $mmaModForum.addNewDiscussion(forumid, forumName, courseid, subject, message, subscribe, groupid, undefined,
@@ -249,11 +241,7 @@ angular.module('mm.addons.mod_forum')
         }).then(function(discussionid) {
             returnToDiscussions(discussionid);
         }).catch(function(message) {
-            if (message) {
-                $mmUtil.showErrorModal(message);
-            } else {
-                $mmUtil.showErrorModal('mma.mod_forum.cannotcreatediscussion', true);
-            }
+            $mmUtil.showErrorModalDefault(message, 'mma.mod_forum.cannotcreatediscussion', true);
         });
     };
 
