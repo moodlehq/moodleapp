@@ -23,8 +23,8 @@ angular.module('mm.addons.notifications')
  * @ngdoc service
  * @name $mmaNotificationsHandlers
  */
-.factory('$mmaNotificationsHandlers', function($log, $mmaNotifications, $mmEvents, $mmSitesManager,
-        mmaNotificationsReadChangedEvent, mmaNotificationsReadCronEvent) {
+.factory('$mmaNotificationsHandlers', function($log, $mmaNotifications, $mmEvents, $mmSitesManager, $mmUtil,
+        mmaNotificationsReadChangedEvent, mmaNotificationsReadCronEvent, $mmAddonManager) {
     $log = $log.getInstance('$mmaNotificationsHandlers');
 
     var self = {};
@@ -64,6 +64,9 @@ angular.module('mm.addons.notifications')
              * @name $mmaNotificationsHandlers#sideMenuNav:controller
              */
             return function($scope) {
+                var $mmPushNotificationsDelegate = $mmAddonManager.get('$mmPushNotificationsDelegate'),
+                    readChangedObserver, cronObserver;
+
                 $scope.icon = 'ion-ios-bell';
                 $scope.title = 'mma.notifications.notifications';
                 $scope.state = 'site.notifications';
@@ -73,17 +76,27 @@ angular.module('mm.addons.notifications')
                     $scope.loading = false;
                 });
 
-                var readChangedObserver = $mmEvents.on(mmaNotificationsReadChangedEvent, function(data) {
+                readChangedObserver = $mmEvents.on(mmaNotificationsReadChangedEvent, function(data) {
                     if (data && $mmSitesManager.isCurrentSite(data.siteid)) {
                         updateUnreadNotificationsCount();
                     }
                 });
 
-                var cronObserver = $mmEvents.on(mmaNotificationsReadCronEvent, function(data) {
+                cronObserver = $mmEvents.on(mmaNotificationsReadCronEvent, function(data) {
                     if (data && $mmSitesManager.isCurrentSite(data.siteid)) {
                         updateUnreadNotificationsCount();
                     }
                 });
+
+                // If a message push notification is received, refresh the count.
+                if ($mmPushNotificationsDelegate) {
+                    $mmPushNotificationsDelegate.registerReceiveHandler('mmaNotifications:sidemenu', function(notification) {
+                        // New message received. If it's from current site, refresh the data.
+                        if ($mmUtil.isTrueOrOne(notification.notif) && $mmSitesManager.isCurrentSite(notification.site)) {
+                            updateUnreadNotificationsCount();
+                        }
+                    });
+                }
 
                 function updateUnreadNotificationsCount() {
                     return $mmaNotifications.getUnreadNotificationsCount().then(function(unread) {
@@ -94,6 +107,10 @@ angular.module('mm.addons.notifications')
                 $scope.$on('$destroy', function() {
                     readChangedObserver && readChangedObserver.off && readChangedObserver.off();
                     cronObserver && cronObserver.off && cronObserver.off();
+
+                    if ($mmPushNotificationsDelegate) {
+                        $mmPushNotificationsDelegate.unregisterReceiveHandler('mmaMessages:sidemenu');
+                    }
                 });
             };
         };
