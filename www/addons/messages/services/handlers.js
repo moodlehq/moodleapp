@@ -25,7 +25,7 @@ angular.module('mm.addons.messages')
  */
 .factory('$mmaMessagesHandlers', function($log, $mmaMessages, $mmSite, $state, $mmUtil, $mmContentLinksHelper, $mmaMessagesSync,
             $mmSitesManager, mmUserProfileHandlersTypeCommunication, mmUserProfileHandlersTypeAction, $translate,
-            mmaMessagesReadChangedEvent, $mmEvents, mmaMessagesReadCronEvent) {
+            mmaMessagesReadChangedEvent, $mmEvents, mmaMessagesReadCronEvent, $mmAddonManager) {
     $log = $log.getInstance('$mmaMessagesHandlers');
 
     var self = {};
@@ -329,6 +329,9 @@ angular.module('mm.addons.messages')
              * @name $mmaMessagesHandlers#sideMenuNav:controller
              */
             return function($scope) {
+                var $mmPushNotificationsDelegate = $mmAddonManager.get('$mmPushNotificationsDelegate'),
+                    readChangedObserver, cronObserver;
+
                 $scope.icon = 'ion-chatbox';
                 $scope.title = 'mma.messages.messages';
                 $scope.state = 'site.messages';
@@ -338,17 +341,27 @@ angular.module('mm.addons.messages')
                     $scope.loading = false;
                 });
 
-                var readChangedObserver = $mmEvents.on(mmaMessagesReadChangedEvent, function(data) {
+                readChangedObserver = $mmEvents.on(mmaMessagesReadChangedEvent, function(data) {
                     if (data && $mmSitesManager.isCurrentSite(data.siteid)) {
                         updateUnreadConversationsCount();
                     }
                 });
 
-                var cronObserver = $mmEvents.on(mmaMessagesReadCronEvent, function(data) {
+                cronObserver = $mmEvents.on(mmaMessagesReadCronEvent, function(data) {
                     if (data && $mmSitesManager.isCurrentSite(data.siteid)) {
                         updateUnreadConversationsCount();
                     }
                 });
+
+                // If a message push notification is received, refresh the count.
+                if ($mmPushNotificationsDelegate) {
+                    $mmPushNotificationsDelegate.registerReceiveHandler('mmaMessages:sidemenu', function(notification) {
+                        // New message received. If it's from current site, refresh the data.
+                        if ($mmUtil.isFalseOrZero(notification.notif) && $mmSitesManager.isCurrentSite(notification.site)) {
+                            updateUnreadConversationsCount();
+                        }
+                    });
+                }
 
                 function updateUnreadConversationsCount() {
                     return $mmaMessages.getUnreadConversationsCount().then(function(unread) {
@@ -359,6 +372,10 @@ angular.module('mm.addons.messages')
                 $scope.$on('$destroy', function() {
                     readChangedObserver && readChangedObserver.off && readChangedObserver.off();
                     cronObserver && cronObserver.off && cronObserver.off();
+
+                    if ($mmPushNotificationsDelegate) {
+                        $mmPushNotificationsDelegate.unregisterReceiveHandler('mmaMessages:sidemenu');
+                    }
                 });
             };
         };
