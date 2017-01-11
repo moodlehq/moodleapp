@@ -25,7 +25,7 @@ angular.module('mm.core.courses')
 
     // Convenience function to search courses.
     function loadCourses() {
-        $scope.frontpageCourseId = $mmSite.getInfo().siteid || 1;
+        $scope.frontpageCourseId = $mmSite.getSiteHomeId();
         return $mmCourses.getCoursesByField().then(function(courses) {
             $scope.courses = courses;
         }).catch(function(message) {

@@ -614,7 +614,7 @@ angular.module('mm.core')
      */
     self.getSiteHomeId = function(siteId) {
         return self.getSite(siteId).then(function(site) {
-            return site.getInfo().siteid || 1;
+            return site.getSiteHomeId();
         });
     };
 
