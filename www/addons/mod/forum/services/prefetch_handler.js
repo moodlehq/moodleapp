@@ -21,8 +21,8 @@ angular.module('mm.addons.mod_forum')
  * @ngdoc service
  * @name $mmaModForumPrefetchHandler
  */
-.factory('$mmaModForumPrefetchHandler', function($mmaModForum, mmaModForumComponent, $mmFilepool, $mmSite, $q, $mmUtil, $mmUser,
-            $mmGroups, md5, $mmPrefetchFactory) {
+.factory('$mmaModForumPrefetchHandler', function($mmaModForum, mmaModForumComponent, $mmFilepool, $q, $mmUtil, $mmUser,
+            $mmGroups, md5, $mmPrefetchFactory, $mmCoursePrefetchDelegate) {
 
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModForumComponent);
 
@@ -222,6 +222,11 @@ angular.module('mm.addons.mod_forum')
      * @return {Promise}         Promise resolved when done.
      */
     self.invalidateModule = function(module, courseId) {
+        if ($mmCoursePrefetchDelegate.canCheckUpdates()) {
+            // No need to invalidate anything if can check updates.
+            return $q.when();
+        }
+
         // Get the forum since we need its ID.
         return $mmaModForum.getForum(courseId, module.id).then(function(forum) {
             var promises = [];
