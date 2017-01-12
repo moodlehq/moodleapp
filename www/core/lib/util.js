@@ -679,7 +679,7 @@ angular.module('mm.core')
          *                                    If not defined, modal won't be automatically closed.
          */
         self.showErrorModalDefault = function(errorMessage, defaultError, needsTranslate, autocloseTime) {
-            errorMessage = errorMessage ? errorMessage : defaultError;
+            errorMessage = typeof errorMessage == 'string' ? errorMessage : defaultError;
             return self.showErrorModal(errorMessage, needsTranslate, autocloseTime);
         };
 

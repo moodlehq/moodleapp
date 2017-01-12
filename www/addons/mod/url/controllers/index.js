@@ -21,21 +21,32 @@ angular.module('mm.addons.mod_url')
  * @ngdoc controller
  * @name mmaModUrlIndexCtrl
  */
-.controller('mmaModUrlIndexCtrl', function($scope, $stateParams, $mmaModUrl, $mmCourse, $mmText, $translate, mmaModUrlComponent) {
+.controller('mmaModUrlIndexCtrl', function($scope, $stateParams, $mmaModUrl, $mmCourse, $mmText, $translate, $q, $mmUtil,
+            mmaModUrlComponent) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid;
 
     $scope.title = module.name;
-    $scope.description = module.description;
     $scope.moduleUrl = module.url;
     $scope.component = mmaModUrlComponent;
     $scope.componentId = module.id;
 
     function fetchContent() {
-        // Load module contents if needed.
-        return $mmCourse.loadModuleContents(module, courseId).then(function() {
-            $scope.url = (module.contents && module.contents[0] && module.contents[0].fileurl) ?
-                            module.contents[0].fileurl : undefined;
+        // Fetch the module data.
+        return $mmCourse.getModule(module.id, courseId).then(function(mod) {
+            if (!mod.contents.length) {
+                // If the data was cached maybe we don't have contents. Reject.
+                return $q.reject();
+            }
+
+            module = mod;
+            $scope.title = module.name;
+            $scope.description = module.description;
+
+            $scope.url = (module.contents[0] && module.contents[0].fileurl) ? module.contents[0].fileurl : undefined;
+        }).catch(function(error) {
+            $mmUtil.showErrorModalDefault(error, 'mm.course.errorgetmodule', true);
+            return $q.reject();
         }).finally(function() {
             $scope.loaded = true;
             $scope.refreshIcon = 'ion-refresh';
