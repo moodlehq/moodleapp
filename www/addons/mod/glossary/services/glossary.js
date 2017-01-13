@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_glossary')
  * @name $mmaModGlossary
  */
 .factory('$mmaModGlossary', function($mmSite, $q, $mmSitesManager, $mmFilepool, mmaModGlossaryComponent, $mmaModGlossaryOffline,
-        mmaModGlossaryLimitEntriesNum, $mmApp, $mmUtil) {
+        mmaModGlossaryLimitEntriesNum, $mmApp, $mmUtil, mmaModGlossaryLimitCategoriesNum) {
     var self = {};
 
     /**
@@ -339,6 +339,80 @@ angular.module('mm.addons.mod_glossary')
     };
 
     /**
+     * Get the glossary categories cache key.
+     *
+     * @param  {Number} id      Glossary Id
+     * @return {String}     The cache key
+     */
+    function getCategoriesCacheKey(id) {
+        return 'mmaModGlossary:categories:' + id;
+    }
+
+    /**
+     * Get all the categories related to the glossary.
+     *
+     * @ngdoc  method
+     * @module mm.addons.mod_glossary
+     * @name   $mmaModGlossary#getAllCategories
+     * @param  {Number} id          Glossary Id.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with the categories.
+     */
+    self.getAllCategories = function(id, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return getCategories(id, 0, mmaModGlossaryLimitCategoriesNum, [], site);
+        });
+    };
+
+
+    /**
+     * Get the categories related to the glossary by sections. It's a recursive function see initial call values.
+     *
+     * @param  {Number} id          Glossary Id.
+     * @param  {Number} from        Number of categories already fetched, so fetch will be done from this number.  Initial value 0.
+     * @param  {Number} limit       Number of categories to fetch. Initial value mmaModGlossaryLimitCategoriesNum.
+     * @param  {Array}  categories  Already fetched categories where to append the fetch. Initial value [].
+     * @param  {Object} site        Site Object.
+     * @return {Promise}            Promise resolved with the categories.
+     */
+    function getCategories(id, from, limit, categories, site) {
+        var params = {
+                id: id,
+                from: from,
+                limit: limit
+            },
+            preSets = {
+                cacheKey: getCategoriesCacheKey(id)
+            };
+
+        return site.read('mod_glossary_get_categories', params, preSets).then(function(response) {
+            categories = categories.concat(response.categories);
+            canLoadMore = (from + limit) < response.count;
+            if (canLoadMore) {
+                from += limit;
+                return getCategories(id, from, limit, categories, site);
+            }
+            return categories;
+        });
+    }
+
+    /**
+     * Invalidate cache of categories by glossary id.
+     *
+     * @ngdoc  method
+     * @module mm.addons.mod_glossary
+     * @name   $mmaModGlossary#invalidateCategories
+     * @param  {Number} id          Glossary Id
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved when categories data has been invalidated,
+     */
+    self.invalidateCategories = function(id, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(self._getCategoriesCacheKey(id));
+        });
+    };
+
+    /**
      * Get an entry by ID cache key.
      *
      * @param  {Number} id
@@ -444,36 +518,52 @@ angular.module('mm.addons.mod_glossary')
      */
      self.invalidateContent = function(moduleId, courseId) {
         return self.getGlossary(courseId, moduleId).then(function(glossary) {
-
-            return self.fetchAllEntries(self.getEntriesByLetter, [glossary.id, 'ALL'], true).then(function(entries) {
+            return self.invalidateGlossaryEntries(glossary).finally(function() {
                 var promises = [];
-
-                angular.forEach(entries, function(entry) {
-                    promises.push(self.invalidateEntry(entry.id));
-                });
-
-                angular.forEach(glossary.browsemodes, function(mode) {
-                    switch(mode) {
-                        case 'letter':
-                            promises.push(self.invalidateEntriesByLetter(glossary.id, 'ALL'));
-                            break;
-                        case 'cat':
-                            // Not implemented.
-                            break;
-                        case 'date':
-                            promises.push(self.invalidateEntriesByDate(glossary.id, 'CREATION', 'DESC'));
-                            promises.push(self.invalidateEntriesByDate(glossary.id, 'UPDATE', 'DESC'));
-                            break;
-                        case 'author':
-                            promises.push(self.invalidateEntriesByAuthor(glossary.id, 'ALL', 'LASTNAME', 'ASC'));
-                            break;
-                    }
-                });
-
                 promises.push(self.invalidateCourseGlossaries(courseId));
-
+                promises.push(self.invalidateCategories(glossary.id));
                 return $q.all(promises);
             });
+        });
+    };
+
+    /**
+     * Invalidate the prefetched content for a given glossary, except files.
+     * To invalidate files, use $mmaModGlossary#invalidateFiles.
+     *
+     * @module mm.addons.mod_glossary
+     * @ngdoc method
+     * @name $mmaModGlossary#invalidateGlossaryEntries
+     * @param {Object} glossary The glossary object.
+     * @return {Promise}        Promise resolved when data is invalidated.
+     */
+    self.invalidateGlossaryEntries = function(glossary) {
+        return self.fetchAllEntries(self.getEntriesByLetter, [glossary.id, 'ALL'], true).then(function(entries) {
+            var promises = [];
+
+            angular.forEach(entries, function(entry) {
+                promises.push(self.invalidateEntry(entry.id));
+            });
+
+            angular.forEach(glossary.browsemodes, function(mode) {
+                switch(mode) {
+                    case 'letter':
+                        promises.push(self.invalidateEntriesByLetter(glossary.id, 'ALL'));
+                        break;
+                    case 'cat':
+                        // Not implemented.
+                        break;
+                    case 'date':
+                        promises.push(self.invalidateEntriesByDate(glossary.id, 'CREATION', 'DESC'));
+                        promises.push(self.invalidateEntriesByDate(glossary.id, 'UPDATE', 'DESC'));
+                        break;
+                    case 'author':
+                        promises.push(self.invalidateEntriesByAuthor(glossary.id, 'ALL', 'LASTNAME', 'ASC'));
+                        break;
+                }
+            });
+
+            return $q.all(promises);
         });
     };
 
@@ -543,11 +633,12 @@ angular.module('mm.addons.mod_glossary')
      * @param  {Number} glossaryId Glossary ID.
      * @param  {String} concept    Glossary entry concept.
      * @param  {String} definition Glossary entry concept definition.
+     * @param  {Number} courseId   Course ID of the glossary.
      * @param  {Array}  [options]  Array of options for the entry.
      * @param  {String} [siteId]   Site ID. If not defined, current site.
      * @return {Promise}          Promise resolved with entry ID if entry was created in server, false if stored in device.
      */
-    self.addEntry = function(glossaryId, concept, definition, options, siteId) {
+    self.addEntry = function(glossaryId, concept, definition, courseId, options, siteId) {
         siteId = siteId || $mmSite.getId();
 
         if (!$mmApp.isOnline()) {
@@ -573,7 +664,7 @@ angular.module('mm.addons.mod_glossary')
 
         // Convenience function to store a new page to be synchronized later.
         function storeOffline() {
-            return $mmaModGlossaryOffline.saveAddEntry(glossaryId, concept, definition, options, siteId).then(function() {
+            return $mmaModGlossaryOffline.saveAddEntry(glossaryId, concept, definition, courseId, options, siteId).then(function() {
                 return false;
             });
         }
@@ -603,7 +694,7 @@ angular.module('mm.addons.mod_glossary')
                     definitionformat: 1
                 };
             if (options) {
-                params.options = options;
+                params.options = $mmUtil.objectToArrayOfObjects(options, 'name', 'value');
             }
 
             return site.write('mod_glossary_add_entry', params).catch(function(error) {

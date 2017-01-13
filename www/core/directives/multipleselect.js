@@ -82,7 +82,7 @@ angular.module('mm.core')
 
             scope.saveOptions = function() {
                 var selected = [];
-                angular.forEach(scope.optionsRender, function (tempOption, index){
+                angular.forEach(scope.optionsRender, function (tempOption){
                     for (var j = 0; j < scope.options.length; j++) {
                         var option = scope.options[j];
                         if (option[keyProperty] == tempOption.key) {

@@ -15,7 +15,11 @@
 angular.module('mm.addons.mod_glossary', ['mm.core'])
 
 .constant('mmaModGlossaryComponent', 'mmaModGlossary')
+.constant('mmaModGlossaryAddEntryEvent', 'mma-mod_glossary_add_entry')
+.constant('mmaModGlossaryAutomSyncedEvent', 'mma-mod_glossar_autom_synced')
 .constant('mmaModGlossaryLimitEntriesNum', 25)
+.constant('mmaModGlossaryLimitCategoriesNum', 20)
+.constant('mmaModGlossarySyncTime', 300000) // In milliseconds.
 
 .config(function($stateProvider) {
 
@@ -54,7 +58,10 @@ angular.module('mm.addons.mod_glossary', ['mm.core'])
         params: {
             module: null,
             cmid: null,
-            courseid: null
+            glossary: null,
+            glossaryid: null,
+            courseid: null,
+            entry: null
         },
         views: {
             'site': {
@@ -70,4 +77,7 @@ angular.module('mm.addons.mod_glossary', ['mm.core'])
     $mmCourseDelegateProvider.registerContentHandler('mmaModGlossary', 'glossary', '$mmaModGlossaryHandlers.courseContent');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModGlossary', '$mmaModGlossaryHandlers.linksHandler');
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModGlossary', 'glossary', '$mmaModGlossaryPrefetchHandler');
+})
+.run(function($mmCronDelegate) {
+    $mmCronDelegate.register('mmaModGlossary', '$mmaModGlossaryHandlers.syncHandler');
 });

@@ -21,13 +21,15 @@ angular.module('mm.addons.mod_glossary')
  * @ngdoc controller
  * @name mmaModGlossaryEditCtrl
  */
-.controller('mmaModGlossaryEditCtrl', function($stateParams, $scope, mmaModGlossaryComponent, $mmUtil, $q, $mmaModGlossary, $mmText,
-        $translate, $state) {
+.controller('mmaModGlossaryEditCtrl', function($stateParams, $scope, mmaModGlossaryComponent, $mmUtil, $q, $mmaModGlossary,
+        $translate, $ionicHistory, $mmEvents, mmaModGlossaryAddEntryEvent, $mmaModGlossaryOffline) {
 
     var module = $stateParams.module,
         courseId = $stateParams.courseid,
         cmid = $stateParams.cmid,
-        glossaryId = module.instance;
+        glossaryId = $stateParams.glossaryid,
+        glossary = $stateParams.glossary || {},
+        entry = $stateParams.entry || false;
 
     $scope.entry = {
         concept: '',
@@ -36,14 +38,35 @@ angular.module('mm.addons.mod_glossary')
     $scope.title = module.name;
     $scope.component = mmaModGlossaryComponent;
     $scope.componentId = module.id;
+    $scope.autolinking = glossary.usedynalink;
+    $scope.options = {
+        categories: null,
+        aliases: "",
+        usedynalink: glossary.usedynalink,
+        casesensitive: false,
+        fullmatch: false
+    };
+
+    if (entry) {
+        $scope.entry.concept = entry.concept || '';
+        $scope.entry.text = entry.definition || '';
+        if (entry.options) {
+            $scope.options.categories = entry.options.categories || null;
+            $scope.options.aliases = entry.options.aliases || "";
+            $scope.options.usedynalink = !!entry.options.usedynalink || glossary.usedynalink;
+            $scope.options.casesensitive = !!entry.options.casesensitive
+            $scope.options.fullmatch = !!entry.options.fullmatch;
+        }
+    }
 
     // Block leaving the view, we want to show a confirm to the user if there's unsaved data.
     $mmUtil.blockLeaveView($scope, cancel);
 
     // Fetch Glossary data.
     function fetchGlossaryData(refresh) {
-        // Nothing to do now.
-        return $q.when();
+        return $mmaModGlossary.getAllCategories(glossaryId).then(function(categories) {
+            $scope.categories = categories;
+        });
     }
 
     // Just ask to confirm the lost of data.
@@ -72,25 +95,54 @@ angular.module('mm.addons.mod_glossary')
                 //definition = $mmText.formatHtmlLines(definition);
             }
 
-            return $mmaModGlossary.addEntry(glossaryId, concept, definition);
+            // If editing an offline entry and concept is different, delete previous first.
+            if (entry.concept && entry.concept != concept) {
+                return $mmaModGlossaryOffline.deleteAddEntry(glossaryId, entry.concept);
+            }
+            return $q.when();
+
+        }).then(function(entryId) {
+            var cats = $scope.categories.filter(function(category) {
+                return category.selected;
+            }).map(function(category) {
+                return category.id;
+            });
+
+            var options = {
+                aliases: $scope.options.aliases || "",
+                categories: cats.join(',') || ""
+            };
+
+            if ($scope.autolinking) {
+                options.usedynalink = $scope.options.usedynalink ? 1 : 0;
+                if ($scope.options.usedynalink) {
+                    options.casesensitive = $scope.options.casesensitive ? 1 : 0;
+                    options.fullmatch = $scope.options.fullmatch ? 1 : 0;
+                }
+            }
+
+            return $mmaModGlossary.addEntry(glossaryId, concept, definition, options, courseId);
         }).then(function(entryId) {
             $scope.entry.glossaryid = glossaryId;
             $scope.entry.id = entryId;
             $scope.entry.definition = definition;
-            return gotoEntry(entryId);
+            return returnToEntryList();
         }).catch(function(error) {
             $mmUtil.showErrorModalDefault(error, 'mma.mod_glossary.cannoteditentry', true);
         });
     };
 
-    function gotoEntry() {
-
-        var stateParams = {
-            entry: $scope.entry,
-            entryid: $scope.entry.id,
-            cid: courseId
+    function returnToEntryList(entryId) {
+        var data = {
+            glossaryid: glossaryId,
+            cmid: cmid,
+            entry: $scope.entry
         };
-        return $state.go('site.mod_glossary-entry', stateParams);
+
+        $mmEvents.trigger(mmaModGlossaryAddEntryEvent, data);
+
+        // Go back to discussions list.
+        $ionicHistory.goBack();
     }
 
     fetchGlossaryData().finally(function() {

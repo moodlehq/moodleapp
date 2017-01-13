@@ -27,6 +27,16 @@ angular.module('mm.addons.mod_glossary')
                 },
                 {
                     name: 'concept'
+                },
+                {
+                    name: 'userid'
+                },
+                {
+                    // Not using compound indexes because they seem to have issues with where().
+                    name: 'glossaryAndUser',
+                    generator: function(obj) {
+                        return [obj.glossaryid, obj.userid];
+                    }
                 }
             ]
         }
@@ -103,11 +113,13 @@ angular.module('mm.addons.mod_glossary')
      * @name $mmaModGlossaryOffline#getGlossaryAddEntries
      * @param  {Number} glossaryId Glossary ID.
      * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @param  {Number} [userId]   User the entries belong to. If not defined, current user in site.
      * @return {Promise}           Promise resolved with pages.
      */
-    self.getGlossaryAddEntries = function(glossaryId, siteId) {
+    self.getGlossaryAddEntries = function(glossaryId, siteId, userId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.getDb().whereEqual(mmaModGlossaryAddEntryStore, 'glossaryid', glossaryId);
+            userId = userId || site.getUserId();
+            return site.getDb().whereEqual(mmaModGlossaryAddEntryStore, 'glossaryAndUser', [glossaryId, userId]);
         });
     };
 
@@ -121,40 +133,30 @@ angular.module('mm.addons.mod_glossary')
      * @param  {Number} glossaryId Glossary ID.
      * @param  {String} concept    Glossary entry concept.
      * @param  {String} definition Glossary entry concept definition.
+     * @param  {Number} courseId   Course ID of the glossary.
      * @param  {Array}  [options]  Array of options for the entry.
      * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @param  {Number} [userId]   User the entry belong to. If not defined, current user in site.
      * @return {Promise}           Promise resolved if stored, rejected if failure.
      */
-    self.saveAddEntry = function(glossaryId, concept, definition, options, siteId) {
+    self.saveAddEntry = function(glossaryId, concept, definition, courseId, options, siteId, userId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
+            userId = userId || site.getUserId();
+
             var now = new Date().getTime(),
                 entry = {
                     glossaryid: glossaryId,
+                    courseid: courseId,
                     concept: concept,
                     definition: definition,
                     definitionformat: 'html',
                     options: options,
+                    userid: userId,
                     timecreated: now,
                     timemodified: now
                 };
 
             return site.getDb().insert(mmaModGlossaryAddEntryStore, entry);
-        });
-    };
-
-    /**
-     * Check if a glossary has offline data stored.
-     *
-     * @module mm.addons.mod_glossary
-     * @ngdoc method
-     * @name $mmaModGlossaryOffline#glossaryHasOfflineData
-     * @param  {Number} glossaryId Glossary ID.
-     * @param  {String} [siteId]   Site ID. If not defined, current site.
-     * @return {Promise}           Promise resolved with boolean: true if has offline data, false otherwise.
-     */
-    self.glossaryHasOfflineData = function(glossaryId, siteId) {
-        return self.getGlossaryAddEntries(glossaryId, siteId).then(function(entries) {
-            return !!entries.length;
         });
     };
 
