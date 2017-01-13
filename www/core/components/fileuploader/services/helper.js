@@ -397,7 +397,11 @@ angular.module('mm.core.fileuploader')
                 return self.errorMaxBytes(maxSize, fileTooLarge.name);
             }
 
-            // File isn't too large. Get a unique name in the folder to prevent overriding another file.
+            // File isn't too large.
+            // Picking an image from album in Android adds a timestamp at the end of the file. Delete it.
+            fileName = fileName.replace(/(\.[^\.]*)\?[^\.]*$/, '$1');
+
+            // Get a unique name in the folder to prevent overriding another file.
             return $mmFS.getUniqueNameInFolder($mmFS.getTmpFolder(), fileName, defaultExt);
         }).then(function(newName) {
             // Now move or copy the file.
