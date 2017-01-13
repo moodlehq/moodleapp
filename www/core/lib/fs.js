@@ -742,7 +742,7 @@ angular.module('mm.core')
      * @return {Promise}      Promise resolved when the entry is copied.
      */
     self.copyFile = function(from, to) {
-        // Remove basePath if it's in the paths.
+        // Paths cannot start with "/". Remove basePath if present.
         from = self.removeStartingSlash(from.replace(basePath, ''));
         to = self.removeStartingSlash(to.replace(basePath, ''));
 

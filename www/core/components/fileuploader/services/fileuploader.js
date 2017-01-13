@@ -14,11 +14,64 @@
 
 angular.module('mm.core.fileuploader')
 
-.factory('$mmFileUploader', function($mmSite, $mmFS, $q, $timeout, $log, $mmSitesManager) {
+.factory('$mmFileUploader', function($mmSite, $mmFS, $q, $timeout, $log, $mmSitesManager, $mmFilepool) {
 
     $log = $log.getInstance('$mmFileUploader');
 
     var self = {};
+
+    /**
+     * Given a list of files (either online files or local files), store the local files in a local folder
+     * to be uploaded later.
+     *
+     * @module mm.core.fileuploader
+     * @ngdoc method
+     * @name $mmFileUploader#storeFilesToUpload
+     * @param  {String} folderPath Path of the folder where to store the files.
+     * @param  {Object[]} files    List of files.
+     * @return {Promise}           Promise resolved if success, rejected otherwise.
+     */
+    self.storeFilesToUpload = function(folderPath, files) {
+        var result = {
+            online: [],
+            offline: 0
+        };
+
+        if (!files || !files.length) {
+            return $q.when(result);
+        }
+
+        // Remove unused files from previous saves.
+        return $mmFS.removeUnusedFiles(folderPath, files).then(function() {
+            var promises = [];
+
+            angular.forEach(files, function(file) {
+                if (file.filename && !file.name) {
+                    // It's an online file, add it to the result and ignore it.
+                    result.online.push({
+                        filename: file.filename,
+                        fileurl: file.fileurl
+                    });
+                } else if (!file.name) {
+                    // Error.
+                    promises.push($q.reject());
+                } else if (file.fullPath && file.fullPath.indexOf(folderPath) != -1) {
+                    // File already in the submission folder.
+                    result.offline++;
+                } else {
+                    // Local file, copy it. Use copy instead of move to prevent having a unstable state if
+                    // some copies succeed and others don't.
+                    var destFile = $mmFS.concatenatePaths(folderPath, file.name);
+                    promises.push($mmFS.copyFile(file.toURL(), destFile));
+                    result.offline++;
+                }
+            });
+
+            return $q.all(promises).then(function() {
+                return result;
+            });
+        });
+    };
 
     /**
      * Upload a file.
@@ -137,10 +190,97 @@ angular.module('mm.core.fileuploader')
         options.fileName = name;
         options.mimeType = type;
         options.deleteAfterUpload = deleteAfterUpload;
-        options.itemId = itemId;
+        options.itemId = itemId || 0;
         options.fileArea = fileArea;
 
         return self.uploadFile(uri, options, siteId);
+    };
+
+    /**
+     * Upload a file to a draft area. If the file is an online file it will be downloaded and then re-uploaded.
+     *
+     * @module mm.core.fileuploader
+     * @ngdoc method
+     * @name $mmFileUploader#uploadOrReuploadFile
+     * @param  {Object} file          Online file or local FileEntry.
+     * @param  {Number} [itemId]      Draft ID to use. Undefined or 0 to create a new draft ID.
+     * @param  {String} [component]   The component to set to the downloaded files.
+     * @param  {Number} [componentId] An ID to use in conjunction with the component.
+     * @param  {String} [siteId]      Site ID. If not defined, current site.
+     * @return {Promise}              Promise resolved with the itemId.
+     */
+    self.uploadOrReuploadFile = function(file, itemId, component, componentId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        var promise,
+            fileName;
+
+        if (file.filename && !file.name) {
+            // It's an online file. We need to download it and re-upload it.
+            fileName = file.filename;
+            promise = $mmFilepool.downloadUrl(siteId, file.fileurl, false, component, componentId).then(function(path) {
+                return $mmFS.getExternalFile(path);
+            });
+        } else {
+            // Local file, we already have the file entry.
+            fileName = file.name;
+            promise = $q.when(file);
+        }
+
+        return promise.then(function(fileEntry) {
+            // Now upload the file.
+            return self.uploadGenericFile(fileEntry.toURL(), fileName, fileEntry.type, true, 'draft', itemId, siteId)
+                    .then(function(result) {
+                return result.itemid;
+            });
+        });
+    };
+
+    /**
+     * Given a list of files (either online files or local files), upload them to a draft area and return the draft ID.
+     * Online files will be downloaded and then re-uploaded.
+     * If there are no files to upload it will return a fake draft ID (1).
+     *
+     * @module mm.core.fileuploader
+     * @ngdoc method
+     * @name $mmFileUploader#uploadOrReuploadFiles
+     * @param  {Object[]} files       List of files.
+     * @param  {String} [component]   The component to set to the downloaded files.
+     * @param  {Number} [componentId] An ID to use in conjunction with the component.
+     * @param  {String} [siteId]      Site ID. If not defined, current site.
+     * @return {Promise}              Promise resolved with the itemId.
+     */
+    self.uploadOrReuploadFiles = function(files, component, componentId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        if (!files || !files.length) {
+            // Return fake draft ID.
+            return $q.when(1);
+        }
+
+        // Upload only the first file first to get a draft id.
+        return self.uploadOrReuploadFile(files[0], 0, component, componentId, siteId).then(function(itemId) {
+            var promises = [],
+                error;
+
+            angular.forEach(files, function(file, index) {
+                if (index === 0) {
+                    // First file has already been uploaded.
+                    return;
+                }
+
+                promises.push(self.uploadOrReuploadFile(file, itemId, component, componentId, siteId).catch(function(message) {
+                    error = message;
+                    return $q.reject();
+                }));
+            });
+
+            return $q.all(promises).then(function() {
+                return itemId;
+            }).catch(function() {
+                return $q.reject(error);
+            });
+        });
     };
 
     return self;
