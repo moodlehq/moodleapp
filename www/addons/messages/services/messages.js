@@ -22,7 +22,7 @@ angular.module('mm.addons.messages')
  * @name $mmaMessages
  */
 .factory('$mmaMessages', function($mmSite, $mmSitesManager, $log, $q, $mmUser, $mmaMessagesOffline, $mmApp,
-            mmaMessagesNewMessageEvent) {
+            mmaMessagesNewMessageEvent, mmaMessagesLimitMessages) {
     $log = $log.getInstance('$mmaMessages');
 
     var self = {};
@@ -283,34 +283,65 @@ angular.module('mm.addons.messages')
      * @module mm.addons.messages
      * @ngdoc method
      * @name $mmaMessages#getDiscussion
-     * @param  {Number} userId          The ID of the other user.
-     * @param  {Boolean} excludePending True to exclude messages pending to be sent.
-     * @return {Promise}                Promise resolved with messages.
+     * @param  {Number} userId               The ID of the other user.
+     * @param  {Boolean} excludePending      True to exclude messages pending to be sent.
+     * @param  {Number} [lfReceivedUnread=0] Number of unread received messages already fetched, so fetch will be done from this.
+     * @param  {Number} [lfReceivedRead=0]   Number of read received messages already fetched, so fetch will be done from this.
+     * @param  {Number} [lfSentUnread=0]     Number of unread sent messages already fetched, so fetch will be done from this.
+     * @param  {Number} [lfSentRead=0]       Number of read sent messages already fetched, so fetch will be done from this.
+     * @return {Promise}                     Promise resolved with messages and a boolean telling if can load more messages.
      */
-    self.getDiscussion = function(userId, excludePending) {
-        var messages,
+    self.getDiscussion = function(userId, excludePending, lfReceivedUnread, lfReceivedRead, lfSentUnread, lfSentRead) {
+        lfReceivedUnread = lfReceivedUnread || 0;
+        lfReceivedRead = lfReceivedRead || 0;
+        lfSentUnread = lfSentUnread || 0;
+        lfSentRead = lfSentRead || 0;
+
+        var result = {},
             presets = {
                 cacheKey: self._getCacheKeyForDiscussion(userId)
             },
             params = {
                 useridto: $mmSite.getUserId(),
                 useridfrom: userId,
-                limitfrom: 0,
-                limitnum: 50
-            };
+                limitnum: mmaMessagesLimitMessages
+            },
+            hasReceived,
+            hasSent;
 
-        return self._getRecentMessages(params, presets).then(function(response) {
-            messages = response;
+        if (lfReceivedUnread > 0 || lfReceivedRead > 0 || lfSentUnread > 0 || lfSentRead > 0) {
+            // Do not use cache when retrieving older messages. This is to prevent storing too much data
+            // and to prevent inconsistencies between "pages" loaded.
+            presets.getFromCache = 0;
+            presets.saveToCache = 0;
+            presets.emergencyCache = 0;
+        }
+
+        // Get message received by current user.
+        return self._getRecentMessages(params, presets, lfReceivedUnread, lfReceivedRead).then(function(response) {
+            result.messages = response;
             params.useridto = userId;
             params.useridfrom = $mmSite.getUserId();
+            hasReceived = response.length > 0;
 
-            return self._getRecentMessages(params, presets);
+            // Get message sent by current user.
+            return self._getRecentMessages(params, presets, lfSentUnread, lfSentRead);
         }).then(function(response) {
-            messages = messages.concat(response);
+            result.messages = result.messages.concat(response);
+            hasSent = response.length > 0;
+
+            if (result.messages.length > mmaMessagesLimitMessages) {
+                // Sort messages and get the more recent ones.
+                result.canLoadMore = true;
+                result.messages = self.sortMessages(result.messages);
+                result.messages = result.messages.slice(-mmaMessagesLimitMessages);
+            } else {
+                result.canLoadMore = result.messages.length == mmaMessagesLimitMessages && (!hasReceived || !hasSent);
+            }
 
             if (excludePending) {
                 // No need to get offline messages, return the ones we have.
-                return messages;
+                return result;
             }
 
             // Get offline messages.
@@ -321,7 +352,8 @@ angular.module('mm.addons.messages')
                     message.text = message.smallmessage;
                 });
 
-                return messages.concat(offlineMessages);
+                result.messages = result.messages.concat(offlineMessages);
+                return result;
             });
         });
     };
@@ -339,8 +371,7 @@ angular.module('mm.addons.messages')
             params = {
                 useridto: $mmSite.getUserId(),
                 useridfrom: 0,
-                limitfrom: 0,
-                limitnum: 50
+                limitnum: mmaMessagesLimitMessages
             },
             presets = {
                 cacheKey: self._getCacheKeyForDiscussions()
@@ -508,17 +539,23 @@ angular.module('mm.addons.messages')
      * @module mm.addons.messages
      * @ngdoc method
      * @name $mmaMessages#_getRecentMessages
-     * @param {Object} params Parameters to pass to the WS.
-     * @param {Object} presets Set of presets for the WS.
+     * @param  {Object} params              Parameters to pass to the WS.
+     * @param  {Object} preSets             Set of presets for the WS.
+     * @param  {Number} [limitFromUnread=0] Number of read messages already fetched, so fetch will be done from this number.
+     * @param  {Number} [limitFromRead=0]   Number of unread messages already fetched, so fetch will be done from this number.
      * @return {Promise}
      * @protected
      */
-    self._getRecentMessages = function(params, presets) {
+    self._getRecentMessages = function(params, preSets, limitFromUnread, limitFromRead) {
+        limitFromUnread = limitFromUnread || 0;
+        limitFromRead = limitFromRead || 0;
+
         params = angular.extend(params, {
-            read: 0
+            read: 0,
+            limitfrom: limitFromUnread
         });
 
-        return self._getMessages(params, presets).then(function(response) {
+        return self._getMessages(params, preSets).then(function(response) {
             var messages = response.messages;
             if (messages) {
                 if (messages.length >= params.limitnum) {
@@ -528,8 +565,9 @@ angular.module('mm.addons.messages')
                 // We need to fetch more messages.
                 params.limitnum = params.limitnum - messages.length;
                 params.read = 1;
+                params.limitfrom = limitFromRead;
 
-                return self._getMessages(params, presets).then(function(response) {
+                return self._getMessages(params, preSets).then(function(response) {
                     if (response.messages) {
                         messages = messages.concat(response.messages);
                     }

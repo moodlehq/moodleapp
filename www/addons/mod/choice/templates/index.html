@@ -6,6 +6,8 @@
             <mm-context-menu-item priority="800" ng-if="description" content="'mm.core.moduleintro' | translate" action="expandDescription()" icon-action="'ion-arrow-right-c'"></mm-context-menu-item>
             <mm-context-menu-item priority="700" ng-if="choiceLoaded && !hasOffline && isOnline" content="'mm.core.refresh' | translate" action="refreshChoice(false)" icon-action="refreshIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
             <mm-context-menu-item priority="600" ng-if="choiceLoaded && hasOffline && isOnline" content="'mm.settings.synchronizenow' | translate" action="refreshChoice(true)" icon-action="syncIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+            <mm-context-menu-item priority="500" ng-if="prefetchStatusIcon" content="timemodified" icon-action="prefetchStatusIcon" action="prefetch()" close-on-click="false"></mm-context-menu-item>
+            <mm-context-menu-item priority="400" ng-if="size" content="size" icon-description="'ion-cube'" icon-action="'ion-trash-a'" action="removeFiles()"></mm-context-menu-item>
         </mm-context-menu>
     </ion-nav-buttons>
     <ion-content mm-state-class>
@@ -50,29 +52,30 @@
 
             <!-- Choice results -->
             <section class="card text-center" ng-if="canSeeResults">
-                <h3>{{ 'mma.mod_choice.responses' | translate }}</h3>
-
+                <div class="item item-divider">
+                    <h3>{{ 'mma.mod_choice.responses' | translate }}</h3>
+                </div>
                 <div class="mm-warning" ng-if="hasOffline">
                     <i class="icon ion-alert-circled padding"></i> {{ 'mma.mod_choice.resultsnotsynced' | translate }}
                 </div>
-
-                <div class="row">
-                    <p class="col"><b>{{ 'mma.mod_choice.choiceoptions' | translate }}</b></p>
-                    <p class="col"><b>{{ 'mma.mod_choice.numberofuser' | translate }}</b></p>
-                    <p class="col"><b>{{ 'mma.mod_choice.numberofuserinpercentage' | translate }}</b></p>
-                    <p class="col" ng-if="!choice.publish"><b>{{ 'mma.mod_choice.responsesresultgraphheader' | translate }}</b></p>
-                    <p class="col" ng-if="choice.publish"><b>{{ 'mma.mod_choice.userchoosethisoption' | translate }}</b></p>
-                </div>
-                <div class="row" ng-repeat="result in results">
-                    <p class="col"><b><mm-format-text watch="true">{{ result.text }}</mm-format-text></b></p>
-                    <p class="col">{{ result.numberofuser }}</p>
-                    <p class="col">{{ 'mm.core.percentagenumber' | translate:{$a: result.percentageamount} }}</p>
-                    <div class="col text-left">
-                        <img ng-if="!choice.publish" class="mma-mod_choice-graph-horizontal" src="addons/mod/choice/img/row.png" alt="{{ 'mma.mod_choice.responsesresultgraphdescription' | translate:{number: result.percentageamount, text: result.text} }}" ng-style="{'width': result.percentageamount+'%'}">
-                        <a ng-if="choice.publish" class="padding mma-mod_choice-user" ng-repeat="user in result.userresponses" mm-user-link courseid="{{courseid}}" userid="{{user.userid}}" title="{{user.fullname}}">
-                            <img ng-src="{{user.profileimageurl}}" alt="{{user.fullname}}" mm-external-content>
-                            <p>{{user.fullname}}</p>
-                        </a>
+                <div class="row row-no-padding responsive-md">
+                    <div class="col col-33">
+                        <div class="mm-warning" ng-if="hasOffline">
+                            <i class="icon ion-alert-circled padding"></i> {{ 'mma.mod_choice.resultsnotsynced' | translate }}
+                        </div>
+                        <div class="item chart-item">
+                            <canvas class="chart chart-pie" chart-data="data" chart-labels="labels"></canvas>
+                        </div>
+                    </div>
+                    <div ng-if="choice.publish && results" class="col col-67 item list text-left">
+                        <article ng-repeat="result in results" class="item">
+                            <h2><mm-format-text watch="true">{{ result.text }}</mm-format-text></h2>
+                            <p>{{ 'mma.mod_choice.numberofuser' | translate }}: {{ result.numberofuser }} ({{ 'mm.core.percentagenumber' | translate: {$a: result.percentageamount} }})</p>
+                            <a class="user-with-avatar" ng-repeat="user in result.userresponses" mm-user-link courseid="{{courseid}}" userid="{{user.userid}}" title="{{user.fullname}}">
+                                 <img ng-src="{{user.profileimageurl}}" alt="{{user.fullname}}" mm-external-content>
+                                 <p>{{user.fullname}}</p>
+                            </a>
+                        </article>
                     </div>
                 </div>
             </section>

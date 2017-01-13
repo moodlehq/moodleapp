@@ -21,8 +21,8 @@ angular.module('mm.addons.mod_page')
  * @ngdoc controller
  * @name mmaModPageIndexCtrl
  */
-.controller('mmaModPageIndexCtrl', function($scope, $stateParams, $mmUtil, $mmaModPage, $mmCourse, $q, $log, $mmApp,
-            mmaModPageComponent, $mmText, $translate, $mmaModPagePrefetchHandler) {
+.controller('mmaModPageIndexCtrl', function($scope, $stateParams, $translate, $mmUtil, $mmaModPage, $mmCourse, $q, $log, $mmApp,
+            mmaModPageComponent, $mmText, $mmaModPagePrefetchHandler, $mmCourseHelper) {
     $log = $log.getInstance('mmaModPageIndexCtrl');
 
     var module = $stateParams.module || {},
@@ -36,7 +36,7 @@ angular.module('mm.addons.mod_page')
     $scope.loaded = false;
     $scope.refreshIcon = 'spinner';
 
-    function fetchContent() {
+    function fetchContent(refresh) {
         // Load module contents if needed.
         return $mmCourse.loadModuleContents(module, courseId).then(function() {
             var downloadFailed = false;
@@ -46,6 +46,9 @@ angular.module('mm.addons.mod_page')
                 downloadFailed = true;
             }).then(function() {
                 return $mmaModPage.getPageHtml(module.contents, module.id).then(function(content) {
+                    // All data obtained, now fill the context menu.
+                    $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModPageComponent);
+
                     $scope.content = content;
 
                     if (downloadFailed && $mmApp.isOnline()) {
@@ -63,6 +66,16 @@ angular.module('mm.addons.mod_page')
         });
     }
 
+    // Confirm and Remove action.
+    $scope.removeFiles = function() {
+        $mmCourseHelper.confirmAndRemove(module, courseId);
+    };
+
+    // Context Menu Prefetch action.
+    $scope.prefetch = function() {
+        $mmCourseHelper.contextMenuPrefetch($scope, module, courseId);
+    };
+
     // Context Menu Description action.
     $scope.expandDescription = function() {
         $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false, mmaModPageComponent, module.id);
@@ -72,7 +85,7 @@ angular.module('mm.addons.mod_page')
         if ($scope.loaded) {
             $scope.refreshIcon = 'spinner';
             return $mmaModPagePrefetchHandler.invalidateContent(module.id).then(function() {
-                return fetchContent();
+                return fetchContent(true);
             }).finally(function() {
                 $scope.$broadcast('scroll.refreshComplete');
             });

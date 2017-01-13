@@ -23,7 +23,7 @@ angular.module('mm.addons.badges')
  * @ngdoc service
  * @name $mmaBadgesHandlers
  */
-.factory('$mmaBadgesHandlers', function($mmaBadges, $mmUtil, $q, $mmContentLinksHelper) {
+.factory('$mmaBadgesHandlers', function($mmaBadges, $mmUtil, $q, $mmContentLinksHelper, mmUserProfileHandlersTypeNewPage) {
 
     var self = {};
 
@@ -36,7 +36,9 @@ angular.module('mm.addons.badges')
      */
     self.userProfile = function() {
 
-        var self = {};
+        var self = {
+            type: mmUserProfileHandlersTypeNewPage
+        };
 
         /**
          * Check if handler is enabled.

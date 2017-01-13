@@ -167,7 +167,7 @@ angular.module('mm.addons.mod_forum')
      */
     self.getTimemodified = function(module, courseId) {
         return $mmaModForum.getForum(courseId, module.id).then(function(forum) {
-            return getTimemodifiedFromForum(module, forum, false);
+            return getTimemodifiedFromForum(module, forum);
         });
     };
 
@@ -176,51 +176,25 @@ angular.module('mm.addons.mod_forum')
      *
      * @param {Object} module       Module.
      * @param {Object} forum        Forum.
-     * @param {Boolean} getRealTime True to get the real time modified, false to get an approximation (try to minimize WS calls).
      * @return {Promise}            Promise resolved with timemodified.
      */
-    function getTimemodifiedFromForum(module, forum, getRealTime) {
+    function getTimemodifiedFromForum(module, forum) {
         var timemodified = forum.timemodified || 0,
-            siteId = $mmSite.getId(),
             introFiles = self.getIntroFilesFromInstance(module, forum);
 
         // Check intro files timemodified.
         timemodified = Math.max(timemodified, $mmFilepool.getTimemodifiedFromFileList(introFiles));
 
-        if (getRealTime) {
-            // Get timemodified from discussions to get the real time.
-            return getTimemodifiedFromDiscussions();
-        }
-
-        // To prevent calling getDiscussions if a new discussion is added we'll check forum.numdiscussions first.
-        return $mmFilepool.getPackageRevision(siteId, self.component, module.id).catch(function() {
-            return '';
-        }).then(function(revision) {
-            // Get only the new discussions number stored.
-            revision = '' + revision; // Make sure it's a string.
-            revision = revision.split('#')[0];
-
-            if (parseInt(revision, 10) != forum.numdiscussions) {
-                // Number of discussions has changed, return current time to show refresh button.
-                return $mmUtil.timestamp();
-            }
-
-            // Number of discussions hasn't changed.
-            return getTimemodifiedFromDiscussions();
-        });
-
         // Get the time modified of the most recent discussion and check if it's higher than timemodified.
-        function getTimemodifiedFromDiscussions() {
-            return $mmaModForum.getDiscussions(forum.id, 0).then(function(response) {
-                if (response.discussions && response.discussions[0]) {
-                    var discussionTime =  parseInt(response.discussions[0].timemodified, 10);
-                    if (!isNaN(discussionTime)) {
-                        timemodified = Math.max(timemodified, discussionTime);
-                    }
+        return $mmaModForum.getDiscussions(forum.id, 0).then(function(response) {
+            if (response.discussions && response.discussions[0]) {
+                var discussionTime =  parseInt(response.discussions[0].timemodified, 10);
+                if (!isNaN(discussionTime)) {
+                    timemodified = Math.max(timemodified, discussionTime);
                 }
-                return timemodified;
-            });
-        }
+            }
+            return timemodified;
+        });
     }
 
     /**
@@ -304,7 +278,7 @@ angular.module('mm.addons.mod_forum')
 
             // Get revision and timemodified.
             revision = getRevisionFromForum(forum);
-            return getTimemodifiedFromForum(module, forum, true);
+            return getTimemodifiedFromForum(module, forum);
         }).then(function(time) {
             timemod = time;
 

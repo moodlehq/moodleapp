@@ -275,10 +275,10 @@ em {
     &.item-complex .item-content > img:first-child,
     img.avatar {
         position: static;
-        width: 100px;
-        height: 100px;
-        max-width: 100px;
-        max-height: 100px;
+        width: 90px;
+        height: 90px;
+        max-width: 90px;
+        max-height: 90px;
         margin-bottom: 10px;
         border-radius : 50%;
         padding: 4px;
@@ -378,7 +378,7 @@ em {
   .spinner {
     position: absolute;
     right: $button-padding;
-    padding-top: floor(($button-height + ($button-border-width * 2) + 1 - 28) / 2);
+    padding-top: 0;
     line-height: 28px;
   }
 }
@@ -766,14 +766,50 @@ mm-timer {
   padding-right: 0;
 }
 
-.item.mm-course-handlers {
+.item.mm-not-clickable {
+  cursor: default;
+
+  &[ng-click]:hover {
+    cursor: default;
+  }
+
+  &.activated {
+    border-color: $item-default-border;
+    background-color: $item-default-bg;
+  }
+}
+
+.item.mm-tab-handlers,
+.mm-tab-handlers {
   padding: 6px 2px;
 
   .tabs {
     background: white;
+    border: 0;
+  }
+  .tabs-icon-round {
+    color: $positive;
+
+    .tab-item.activated {
+      opacity: 0.7;
+    }
+
+    .icon {
+      border-radius: 50%;
+      max-width: 32px;
+      font-size: 22px;
+      line-height: 32px;
+      color: white;
+      background-color: $positive;
+      margin-bottom: 5px;
+
+      &:before {
+        line-height: 32px;
+      }
+    }
   }
 
-  .mm-loading-course-handlers {
+  .mm-loading-handlers {
     padding: 7px;
     padding-bottom: 6px;
   }
@@ -1153,16 +1189,22 @@ i, cite, em, var, address, dfn {
 .list-inset .item,
 .padding > .list .item,
 .padding-horizontal > .list .item {
-  &.item-input .mm-show-password-container {
-    padding: 0px;
-    width: 100%;
+
+  &.item-input {
+    padding-right: $item-padding;
 
     input {
       padding-right: 0px;
     }
-    .button {
-      margin-left: ($item-padding / 3) * 2;
-      padding: 0 $button-clear-padding;
+
+    .mm-show-password-container {
+      padding: 0px;
+      width: 100%;
+
+      .button {
+        margin-left: ($item-padding / 3) * 2;
+        padding: 0 $button-clear-padding;
+      }
     }
   }
 }
@@ -1243,6 +1285,10 @@ mm-format-text[max-height], *[mm-format-text][max-height] {
           margin-left: 10px;
           color: $item-icon-accessory-color;
         }
+      }
+
+      &.mm-expand-in-fullview .mm-show-more:after {
+        content: $ionicon-var-chevron-right;
       }
 
       &:before {

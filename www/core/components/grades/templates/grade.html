@@ -4,7 +4,7 @@
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="gradeLoaded && grade" on-refresh="refreshGrade()">
         </ion-refresher>
         <mm-loading hide-until="gradeLoaded">
-            <div ng-if="grade" class="card">
+            <div ng-if="grade">
                 <a ng-if="grade.itemname" mm-link capture-link="true" class="item item-divider" href="{{ grade.link }}" title="{{ grade.itemname }}">
                     <h2><mm-format-text watch="true">{{ grade.itemname }}</mm-format-text></h2>
                 </a>

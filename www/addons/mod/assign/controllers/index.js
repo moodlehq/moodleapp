@@ -21,11 +21,11 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc controller
  * @name mmaModAssignIndexCtrl
  */
-.controller('mmaModAssignIndexCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $translate, mmaModAssignComponent, $q,
-        $state, mmaModAssignSubmissionInvalidatedEvent, $mmEvents, $mmSite, mmaModAssignSubmissionSavedEvent, $mmCourse, $mmApp,
-        mmaModAssignSubmittedForGradingEvent, $mmaModAssignSync, $mmText, mmaModAssignEventAutomSynced, $ionicScrollDelegate,
-        mmCoreEventOnlineStatusChanged, $mmaModAssignOffline, mmaModAssignEventManualSynced, mmaModAssignSubmissionStatusSubmitted,
-        mmaModAssignSubmissionStatusDraft, mmaModAssignNeedGrading, mmaModAssignGradedEvent) {
+.controller('mmaModAssignIndexCtrl', function($scope, $stateParams, $mmaModAssign, $mmUtil, $mmCourseHelper, $mmaModAssignOffline,
+        mmaModAssignComponent, $q, $state, mmaModAssignSubmissionInvalidatedEvent, $mmEvents, $mmSite, mmaModAssignGradedEvent,
+        mmaModAssignSubmissionSavedEvent, $mmCourse, $mmApp, mmaModAssignSubmittedForGradingEvent, $mmaModAssignSync, $mmText,
+        mmaModAssignEventAutomSynced, $ionicScrollDelegate, mmCoreEventOnlineStatusChanged, mmaModAssignEventManualSynced,
+        mmaModAssignSubmissionStatusSubmitted, mmaModAssignSubmissionStatusDraft, mmaModAssignNeedGrading, $translate) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         siteId = $mmSite.getId(),
@@ -118,6 +118,9 @@ angular.module('mm.addons.mod_assign')
                     });
                 }
             });
+        }).then(function() {
+            // Data fetched, now fill context menu.
+            $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModAssignComponent);
         }).catch(function(message) {
             if (!refresh && !assign) {
                 // Some call failed, retry without using cache since it might be a new activity.
@@ -170,6 +173,17 @@ angular.module('mm.addons.mod_assign')
         $scope.refreshIcon = 'ion-refresh';
         $scope.syncIcon = 'ion-loop';
     });
+
+    // Confirm and Remove action.
+    $scope.removeFiles = function() {
+        $mmCourseHelper.confirmAndRemove(module, courseId);
+    };
+
+    // Context Menu Prefetch action.
+    $scope.prefetch = function() {
+        $mmCourseHelper.contextMenuPrefetch($scope, module, courseId);
+    };
+
 
     // Context Menu Description action.
     $scope.expandDescription = function() {

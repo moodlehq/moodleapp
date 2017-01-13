@@ -22,7 +22,7 @@ angular.module('mm.core.user')
  * @ngdoc provider
  * @name $mmUserDelegate
  */
-.provider('$mmUserDelegate', function() {
+.provider('$mmUserDelegate', function(mmUserProfileHandlersTypeNewPage) {
     var profileHandlers = {},
         self = {};
 
@@ -42,6 +42,15 @@ angular.module('mm.core.user')
      *                             - getController(userid) (Function) Returns the function that will act as controller.
      *                                                                See core/components/user/templates/profile.html
      *                                                                for the list of scope variables expected.
+     *                           Also the object require the following attributes:
+     *                             - type (String)  A type should be specified among these:
+     *                                                 - mmUserProfileHandlersTypeCommunication: will be displayed under the user
+     *                                                         avatar. Should have icon. Spinner not used.
+     *                                                 - mmUserProfileHandlersTypeNewPage: will be displayed as a list of items.
+     *                                                         Should have icon. Spinner not used.
+     *                                                         Default value if none is specified.
+     *                                                 - mmUserProfileHandlersTypeAction: will be displayed as a button and should
+     *                                                         not redirect to any state. Spinner use is recommended.
      *                           The string can either be 'factoryName' or 'factoryName.functionToCall'.
      * @param {Number} [priority=100] Plugin priority.
      */
@@ -75,7 +84,7 @@ angular.module('mm.core.user')
          * @name $mmUserDelegate#getProfileHandlersFor
          * @param {Object} user The user object.
          * @param {Number} courseId The course ID.
-         * @return {Promise} Resolved with an array of objects containing 'priority' and 'controller'.
+         * @return {Promise} Resolved with an array of objects containing 'priority', 'controller' and 'type'.
          */
         self.getProfileHandlersFor = function(user, courseId) {
             var handlers = [],
@@ -100,7 +109,8 @@ angular.module('mm.core.user')
                             if (enabled) {
                                 handlers.push({
                                     controller: handler.instance.getController(user, courseId),
-                                    priority: handler.priority
+                                    priority: handler.priority,
+                                    type: handler.instance.type || mmUserProfileHandlersTypeNewPage
                                 });
                             } else {
                                 return $q.reject();

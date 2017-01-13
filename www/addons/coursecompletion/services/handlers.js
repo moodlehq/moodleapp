@@ -23,7 +23,7 @@ angular.module('mm.addons.coursecompletion')
  * @ngdoc service
  * @name $mmaCourseCompletionHandlers
  */
-.factory('$mmaCourseCompletionHandlers', function($mmaCourseCompletion, $state, mmCoursesAccessMethods) {
+.factory('$mmaCourseCompletionHandlers', function($mmaCourseCompletion, $state, mmCoursesAccessMethods, mmUserProfileHandlersTypeNewPage) {
 
     // We use "caches" to decrease network usage.
     var self = {},
@@ -79,7 +79,9 @@ angular.module('mm.addons.coursecompletion')
      */
     self.viewCompletion = function() {
 
-        var self = {};
+        var self = {
+            type: mmUserProfileHandlersTypeNewPage
+        };
 
         /**
          * Check if handler is enabled.
@@ -135,8 +137,9 @@ angular.module('mm.addons.coursecompletion')
             return function($scope) {
 
                 // Button title.
-                $scope.title = 'mma.coursecompletion.viewcoursereport';
+                $scope.title = 'mma.coursecompletion.coursecompletion';
                 $scope.class = 'mma-coursecompletion-user-handler';
+                $scope.icon = 'ion-android-checkbox-outline';
 
                 $scope.action = function($event) {
                     $event.preventDefault();

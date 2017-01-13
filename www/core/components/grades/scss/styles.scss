@@ -4,9 +4,11 @@
   border-collapse: collapse;
   line-height: 20px;
   width: 100%;
-  border-top: 1px solid #eee;
+  border-top: 1px solid $item-light-border;
+  font-size: 16px;
+  color: $item-stable-text;
   tr {
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid $item-light-border;
   }
   th,
   td {
@@ -52,7 +54,8 @@
     font-weight: bold;
   }
   .itemcenter {
-    padding-left: 10px;
+    @extend .item;
+    padding: 10px;
     white-space: nowrap;
   }
   .feedbacktext {
@@ -68,27 +71,30 @@
   }
   .oddd1,
   .oddd3,
-  .evend3 {
-    background-color: #eee;
-    &.b1b,
-    &.b1l {
-      border-top: 1px solid #fff;
-    }
+  .evend3,
+  .levelodd {
+    background-color: $item-divider-bg;
   }
   .oddd2,
   .evend2,
   .oddd4,
   .evend4 {
-    background-color: #f9f9f9;
-  }
-  .levelodd {
-    background-color:#eee;
-    &.b1b,
-    &.b1l {
-      border-top: 1px solid #fff;
-    }
+    background-color: $item-stable-bg;
   }
   .leveleven {
-    background-color: #fff;
+    background-color: $item-light-bg;
+  }
+  .column-leader {
+    border-left: 1px solid $item-light-border;
+    border-top: 1px solid $item-light-border;
+    border-bottom: 1px solid $item-light-border;
+    &.level1 {
+      border-left: 0;
+    }
+  }
+  .column-itemname {
+    border-right: 1px solid $item-light-border;
+    border-top: 1px solid $item-light-border;
+    border-bottom: 1px solid $item-light-border;
   }
 }

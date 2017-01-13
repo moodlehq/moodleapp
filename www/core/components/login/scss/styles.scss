@@ -1,7 +1,12 @@
 
 .mm-mm_login_sites {
   .item-thumbnail-left .item-content {
-    padding-top: 16px;
+    padding-top: $item-padding;
+    padding-right: $item-padding;
+  }
+
+  .list-left-editing .item-thumbnail-left .item-content {
+    padding-right: (ceil( ($item-padding * 3) + ($item-padding / 3) ) - 5);
   }
 
   .avatar {
@@ -13,10 +18,6 @@
     border-radius : 50%;
     padding: 4px;
     border: 1px solid #ddd;
-  }
-
-  .card {
-    margin: 15px 10px;
   }
 }
 

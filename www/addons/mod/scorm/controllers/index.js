@@ -24,7 +24,7 @@ angular.module('mm.addons.mod_scorm')
 .controller('mmaModScormIndexCtrl', function($scope, $stateParams, $mmaModScorm, $mmUtil, $q, $mmCourse, $ionicScrollDelegate,
             $mmCoursePrefetchDelegate, $mmaModScormHelper, $mmEvents, $mmSite, $state, mmCoreOutdated, mmCoreNotDownloaded,
             mmCoreDownloading, mmaModScormComponent, mmCoreEventPackageStatusChanged, $ionicHistory, mmaModScormEventAutomSynced,
-            $mmaModScormSync, $timeout, $mmText, $translate, $mmaModScormPrefetchHandler, $mmApp, $mmEvents,
+            $mmaModScormSync, $timeout, $mmText, $translate, $mmaModScormPrefetchHandler, $mmApp, $mmCourseHelper,
             mmCoreEventOnlineStatusChanged) {
 
     var module = $stateParams.module || {},
@@ -145,6 +145,9 @@ angular.module('mm.addons.mod_scorm')
             return showError(message);
         }).then(function() {
             $scope.allDataLoaded = true;
+
+            // All data obtained, now fill the context menu.
+            $mmCourseHelper.fillContextMenu($scope, module, courseid, refresh, mmaModScormComponent);
         });
     }
 
@@ -422,6 +425,16 @@ angular.module('mm.addons.mod_scorm')
         } else {
             openScorm(scoId);
         }
+    };
+
+    // Confirm and Remove action.
+    $scope.removeFiles = function() {
+        $mmCourseHelper.confirmAndRemove(module, courseid);
+    };
+
+    // Context Menu Prefetch action.
+    $scope.prefetch = function() {
+        $mmCourseHelper.contextMenuPrefetch($scope, module, courseid);
     };
 
     // Context Menu Description action.

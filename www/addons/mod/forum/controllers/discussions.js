@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_forum')
  */
 .controller('mmaModForumDiscussionsCtrl', function($q, $scope, $stateParams, $mmaModForum, $mmCourse, $mmUtil, $mmGroups, $mmUser,
             $mmEvents, $ionicScrollDelegate, $ionicPlatform, mmUserProfileState, mmaModForumNewDiscussionEvent, $mmSite, $translate,
-            mmaModForumReplyDiscussionEvent, $mmText, mmaModForumComponent, $mmaModForumOffline, $mmaModForumSync,
+            mmaModForumReplyDiscussionEvent, $mmText, mmaModForumComponent, $mmaModForumOffline, $mmaModForumSync, $mmCourseHelper,
             mmaModForumAutomSyncedEvent, mmaModForumManualSyncedEvent, $mmApp, mmCoreEventOnlineStatusChanged) {
     var module = $stateParams.module || {},
         courseid = $stateParams.courseid,
@@ -110,6 +110,9 @@ angular.module('mm.addons.mod_forum')
 
                 return $q.all(promises);
             });
+        }).then(function() {
+            // All data obtained, now fill the context menu.
+            $mmCourseHelper.fillContextMenu($scope, module, courseid, refresh, mmaModForumComponent);
         }).catch(function(message) {
             if (!refresh) {
                 // Get forum failed, retry without using cache since it might be a new activity.
@@ -302,6 +305,16 @@ angular.module('mm.addons.mod_forum')
             $scope.$broadcast('scroll.refreshComplete');
         });
     }
+
+    // Confirm and Remove action.
+    $scope.removeFiles = function() {
+        $mmCourseHelper.confirmAndRemove(module, courseid);
+    };
+
+    // Context Menu Prefetch action.
+    $scope.prefetch = function() {
+        $mmCourseHelper.contextMenuPrefetch($scope, module, courseid);
+    };
 
     // Context Menu Description action.
     $scope.expandDescription = function() {

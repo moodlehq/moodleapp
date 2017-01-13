@@ -11,6 +11,12 @@
 
     <ion-content class="padding" delegate-handle="mmaMessagesScroll" mm-state-class>
         <mm-loading hide-until="loaded">
+            <!-- Button and spinner to show previous messages. -->
+            <button ng-if="canLoadMore && !loadingPrevious" class="button button-block" ng-click="loadPrevious()">{{ 'mma.messages.loadpreviousmessages' | translate }}</button>
+            <div ng-if="loadingPrevious" class="mma-messages-showprevious-spinner-container">
+                <ion-spinner></ion-spinner>
+            </div>
+
             <section class="mma-messages-discussion-container" aria-live="polite">
                 <ion-list ng-repeat="message in messages track by $index" show-delete="data.showDelete">
 

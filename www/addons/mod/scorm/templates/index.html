@@ -6,6 +6,8 @@
             <mm-context-menu-item priority="800" ng-if="description" content="'mm.core.moduleintro' | translate" action="expandDescription()" icon-action="'ion-arrow-right-c'"></mm-context-menu-item>
             <mm-context-menu-item priority="700" ng-if="scormLoaded && !hasOffline && isOnline" content="'mm.core.refresh' | translate" action="refreshScorm(false)" icon-action="refreshIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
             <mm-context-menu-item priority="600" ng-if="scormLoaded && hasOffline && isOnline" content="'mm.settings.synchronizenow' | translate" action="refreshScorm(true)" icon-action="syncIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+            <mm-context-menu-item priority="550" ng-if="prefetchStatusIcon" content="timemodified" icon-action="prefetchStatusIcon" action="prefetch()" close-on-click="false"></mm-context-menu-item>
+            <mm-context-menu-item priority="500" ng-if="size" content="size" icon-description="'ion-cube'" icon-action="'ion-trash-a'" action="removeFiles()"></mm-context-menu-item>
         </mm-context-menu>
     </ion-nav-buttons>
     <ion-content padding="true" delegate-handle="mmaModScormIndexScroll" mm-state-class>

@@ -53,12 +53,11 @@ angular.module('mm.addons.mod_label')
         self.getController = function(module) {
             return function($scope) {
                 $scope.title = module.description;
+                module.description = "";
 
                 $scope.icon = false;
                 $scope.class = 'mma-mod_label-handler';
-                $scope.action = function() {
-                    // Nothing to do. Just avoid errors.
-                };
+                $scope.action = false;
             };
         };
 

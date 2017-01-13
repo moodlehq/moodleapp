@@ -21,7 +21,7 @@ angular.module('mm.addons.frontpage')
  * @ngdoc directive
  * @name mmaFrontpageItemNews
  */
-.directive('mmaFrontpageItemNews', function($mmCourse, $state, $mmSite, $mmAddonManager) {
+.directive('mmaFrontpageItemNews', function($mmCourse, $state, $mmSite, $mmAddonManager, $mmCourseDelegate) {
     return {
         restrict: 'A',
         priority: 100,
@@ -49,10 +49,10 @@ angular.module('mm.addons.frontpage')
                         if (forum) {
                             return $mmCourse.getModuleBasicInfo(forum.cmid).then(function(module) {
                                 scope.show = true;
-                                scope.icon = $mmCourse.getModuleIconSrc('forum');
-                                scope.action = function() {
-                                    $state.go('site.mod_forum', {module: module, courseid: courseId});
-                                };
+                                scope.module = module;
+                                scope.module._controller =
+                                    $mmCourseDelegate.getContentHandlerControllerFor(module.modname, module, courseId,
+                                        module.section);
                             });
                         }
                     });

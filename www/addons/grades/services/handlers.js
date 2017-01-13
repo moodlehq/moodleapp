@@ -21,7 +21,8 @@ angular.module('mm.addons.grades')
  * @ngdoc service
  * @name $mmaGradesHandlers
  */
-.factory('$mmaGradesHandlers', function($mmGrades, $mmaCoursesGrades, $state, $mmUtil, $mmContentLinksHelper, mmCoursesAccessMethods) {
+.factory('$mmaGradesHandlers', function($mmGrades, $mmaCoursesGrades, $state, $mmUtil, $mmContentLinksHelper,
+            mmCoursesAccessMethods, mmUserProfileHandlersTypeNewPage) {
 
     var self = {},
         viewGradesEnabledCache = {}; // We use a "cache" to decrease network usage.
@@ -137,7 +138,9 @@ angular.module('mm.addons.grades')
      */
     self.viewGrades = function() {
 
-        var self = {};
+        var self = {
+            type: mmUserProfileHandlersTypeNewPage
+        };
 
         /**
          * Check if handler is enabled.
@@ -187,8 +190,9 @@ angular.module('mm.addons.grades')
              * @name $mmaGradesHandlers#viewGrades:controller
              */
             return function($scope) {
-                $scope.title = 'mma.grades.viewgrades';
+                $scope.title = 'mm.grades.grades';
                 $scope.class = 'mma-grades-user-handler';
+                $scope.icon = 'ion-stats-bars';
 
                 $scope.action = function($event) {
                     $event.preventDefault();
