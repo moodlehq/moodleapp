@@ -526,7 +526,9 @@ mm-loading.mm-loading-center {
 .mm-media-adapt-width {
   max-width: 100%;
 }
-img.mm-media-adapt-width {
+
+.mm-enabled-media-adapt img.mm-media-adapt-width,
+img.mm-media-adapt-width-enabled {
   height: auto;
 }
 
