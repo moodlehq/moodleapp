@@ -202,10 +202,12 @@ angular.module('mm.addons.mod_assign')
 
                 return $q.all(promises);
             }).then(function() {
-                // Data has been sent to server. Now invalidate the WS calls.
-                return $mmaModAssign.invalidateContent(assign.cmid, courseId, siteId).catch(function() {
-                    // Ignore errors.
-                });
+                if (result.updated) {
+                    // Data has been sent to server. Now invalidate the WS calls.
+                    return $mmaModAssign.invalidateContent(assign.cmid, courseId, siteId).catch(function() {
+                        // Ignore errors.
+                    });
+                }
             });
         }).then(function() {
             // Sync finished, set sync time.
