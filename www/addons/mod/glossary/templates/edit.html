@@ -19,6 +19,8 @@
                     <ion-label id="mma-glossary-aliaseslabel">{{ 'mma.mod_glossary.aliases' | translate }}</ion-label>
                     <textarea class="mm-textarea" ng-model="options.aliases" rows="1" mm-auto-rows aria-labelledby="mma-glossary-aliaseslabel"></textarea>
                 </div>
+                <div class="item item-divider">{{ 'mma.mod_glossary.attachment' | translate }}</div>
+                <mm-attachments files="attachments" component="{{component}}" component-id="{{componentId}}" allow-offline="true"></mm-attachments>
 
                 <div ng-if="autolinking">
                     <div class="item item-divider">{{ 'mma.mod_glossary.linking' | translate }}</div>

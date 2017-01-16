@@ -630,18 +630,20 @@ angular.module('mm.addons.mod_glossary')
      * @module mm.addons.mod_glossary
      * @ngdoc method
      * @name $mmaModGlossary#addEntry
-     * @param  {Number} glossaryId Glossary ID.
-     * @param  {String} concept    Glossary entry concept.
-     * @param  {String} definition Glossary entry concept definition.
-     * @param  {Number} courseId   Course ID of the glossary.
-     * @param  {Array}  [options]  Array of options for the entry.
-     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @param  {Number}  glossaryId     Glossary ID.
+     * @param  {String}  concept        Glossary entry concept.
+     * @param  {String}  definition     Glossary entry concept definition.
+     * @param  {Number}  courseId       Course ID of the glossary.
+     * @param  {Array}   [options]      Array of options for the entry.
+     * @param  {Mixed}   [attach]       Attachments ID if sending online, result of $mmFileUploader#storeFilesToUpload otherwise.
+     * @param  {String}  [siteId]       Site ID. If not defined, current site.
+     * @param  {Boolean} allowOffline  True if it can be stored in offline, false otherwise.
      * @return {Promise}          Promise resolved with entry ID if entry was created in server, false if stored in device.
      */
-    self.addEntry = function(glossaryId, concept, definition, courseId, options, siteId) {
+    self.addEntry = function(glossaryId, concept, definition, courseId, options, attach, siteId, allowOffline) {
         siteId = siteId || $mmSite.getId();
 
-        if (!$mmApp.isOnline()) {
+        if (!$mmApp.isOnline() && allowOffline) {
             // App is offline, store the action.
             return storeOffline();
         }
@@ -649,22 +651,23 @@ angular.module('mm.addons.mod_glossary')
         // Discard stored content for this entry. If it exists it means the user is editing it.
         return $mmaModGlossaryOffline.deleteAddEntry(glossaryId, concept, siteId).then(function() {
             // Try to add it in online.
-            return self.addEntryOnline(glossaryId, concept, definition, options, siteId).then(function(entryId) {
+            return self.addEntryOnline(glossaryId, concept, definition, options, attach, siteId).then(function(entryId) {
                 return entryId;
             }).catch(function(error) {
-                if (error && error.wserror) {
-                    // The WebService has thrown an error, this means that responses cannot be deleted.
-                    return $q.reject(error.error);
-                } else {
+                if (allowOffline && error && !error.wserror) {
                     // Couldn't connect to server, store in offline.
                     return storeOffline();
+                } else {
+                    // The WebService has thrown an error or offline not supported, reject.
+                    return $q.reject(error.error);
                 }
             });
         });
 
         // Convenience function to store a new page to be synchronized later.
         function storeOffline() {
-            return $mmaModGlossaryOffline.saveAddEntry(glossaryId, concept, definition, courseId, options, siteId).then(function() {
+            return $mmaModGlossaryOffline.saveAddEntry(glossaryId, concept, definition, courseId, options, attach,
+                    siteId).then(function() {
                 return false;
             });
         }
@@ -680,12 +683,13 @@ angular.module('mm.addons.mod_glossary')
      * @param  {String} concept    Glossary entry concept.
      * @param  {String} definition Glossary entry concept definition.
      * @param  {Array}  [options]  Array of options for the entry.
+     * @param  {Number} [attachId] Attachments ID (if any attachment).
      * @param  {String} [siteId]   Site ID. If not defined, current site.
      * @return {Promise}           Promise resolved if created, rejected otherwise. Reject param is an object with:
      *                                   - error: The error message.
      *                                   - wserror: True if it's an error returned by the WebService, false otherwise.
      */
-    self.addEntryOnline = function(glossaryId, concept, definition, options, siteId) {
+    self.addEntryOnline = function(glossaryId, concept, definition, options, attachId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     glossaryid: glossaryId,
@@ -695,6 +699,13 @@ angular.module('mm.addons.mod_glossary')
                 };
             if (options) {
                 params.options = $mmUtil.objectToArrayOfObjects(options, 'name', 'value');
+            }
+
+            if (attachId) {
+                params.options.push({
+                    name: 'attachmentsid',
+                    value: attachId
+                });
             }
 
             return addEntryOnline(site, params).then(function(response) {
