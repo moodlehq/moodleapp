@@ -611,6 +611,10 @@ p.mm-error {
   position: absolute !important; // Position fixed causes problems in Android 4.1-4.3.
 }
 
+.mm-zoom-pane {
+  height: 100%;
+}
+
 .mm-has-navigation-bar {
   .iframe-wrapper {
     top: $button-height + 5px;
