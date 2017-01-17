@@ -948,9 +948,14 @@ angular.module('mm.addons.messages')
         var data = {
                 searchtext: query,
                 onlymycourses: 0
+            },
+            preSets = {
+                getFromCache: 0 // Always try to get updated data. If it fails, it will get it from cache.
             };
+
         limit = typeof limit === 'undefined' ? 100 : limit;
-        return $mmSite.read('core_message_search_contacts', data).then(function(contacts) {
+
+        return $mmSite.read('core_message_search_contacts', data, preSets).then(function(contacts) {
             if (limit && contacts.length > limit) {
                 contacts = contacts.splice(0, limit);
             }
