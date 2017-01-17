@@ -1,10 +1,13 @@
 /* - User grades table (most of it extracted from MM1)
 -------------------------------------------------------------------------- */
+.mm-grades-container {
+  padding-right: 2px;
+}
+
 .mm-grades-table {
   border-collapse: collapse;
   line-height: 20px;
   width: 100%;
-  border-top: 1px solid $item-light-border;
   font-size: 16px;
   color: $item-stable-text;
   tr {
@@ -35,10 +38,10 @@
       padding-left: 20px;
     }
     &.item {
-      padding-left: 40px;
+      padding-left: 30px;
     }
     &.baggt {
-      padding-left: 40px;
+      padding-left: 30px;
     }
     img {
       margin-left: -20px;
@@ -46,8 +49,8 @@
     }
   }
   .b1l {
-    width: 20px;
-    min-width: 20px;
+    width: 10px;
+    min-width: 10px;
   }
   .b1t,
   .baggt {
