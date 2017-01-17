@@ -35,7 +35,7 @@ angular.module('mm.addons.frontpage')
                 if (!newsitems) {
                     return;
                 }
-                var courseId = $mmSite.getInfo().siteid || 1;
+                var courseId = $mmSite.getSiteHomeId();
 
                 $mmaModForum = $mmAddonManager.get('$mmaModForum');
                 if ($mmaModForum) {

@@ -25,7 +25,7 @@ angular.module('mm.addons.frontpage')
             $mmCourseHelper) {
 
     // Default values are Site Home and all sections.
-    var courseId = $mmSite.getInfo().siteid || 1,
+    var courseId = $mmSite.getSiteHomeId(),
         moduleId = $stateParams.moduleid,
         sectionsLoaded;
 

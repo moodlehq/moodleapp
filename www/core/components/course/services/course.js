@@ -482,7 +482,7 @@ angular.module('mm.core.course')
                 options: options
             }, preSets).then(function(sections) {
                 var promise,
-                    siteHomeId = site.getInfo().siteid || 1;
+                    siteHomeId = site.getSiteHomeId();
 
                 if (courseId == siteHomeId) {
                     // Check if frontpage sections should be shown.
@@ -569,7 +569,7 @@ angular.module('mm.core.course')
     self.invalidateSections = function(courseId, userId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var promises = [],
-                siteHomeId = site.getInfo().siteid || 1;
+                siteHomeId = site.getSiteHomeId();
 
             userId = userId || site.getUserId();
 

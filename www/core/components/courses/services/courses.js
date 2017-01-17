@@ -313,7 +313,7 @@ angular.module('mm.core.courses')
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
             // Add always the site id course.
-            courseIds.push(site.getInfo().siteid || 1);
+            courseIds.push(site.getSiteHomeId());
 
             siteId = siteId || site.getId();
 

@@ -21,10 +21,11 @@ angular.module('mm.core.courses')
  * @ngdoc controller
  * @name mmCoursesAvailableCtrl
  */
-.controller('mmCoursesAvailableCtrl', function($scope, $mmCourses, $q, $mmUtil) {
+.controller('mmCoursesAvailableCtrl', function($scope, $mmCourses, $q, $mmUtil, $mmSite) {
 
     // Convenience function to search courses.
     function loadCourses() {
+        $scope.frontpageCourseId = $mmSite.getSiteHomeId();
         return $mmCourses.getCoursesByField().then(function(courses) {
             $scope.courses = courses;
         }).catch(function(message) {
