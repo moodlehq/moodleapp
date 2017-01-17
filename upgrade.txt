@@ -8,6 +8,7 @@ information provided here is intended especially for developers.
  * mm-format-text directive is now depending on height so new parameter max-height has been added and parameters shorten and expand-on-click have been deprecated.
  * Now mmUser#formatRoleList is returning a String instead of a Promise.
  * The event mmCoreEventSessionExpired now receives an object instead of a string. Also, mmLoginLaunchSiteURL and mmLoginLaunchPassport have been deprecated, please use mmLoginLaunchData instead.
+ * Handlers registered in $mmFileUploaderDelegate now must implement a getData function instead of getController. This is because now file picker uses action sheet instead of a new view.
 
 === 3.2 ===
 
