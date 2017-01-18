@@ -655,6 +655,25 @@ angular.module('mm.addons.mod_forum')
     };
 
     /**
+     * Report a forum discussion as being viewed.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#logDiscussionView
+     * @param {String} id Discussion ID.
+     * @return {Promise}  Promise resolved when the WS call is successful.
+     */
+    self.logDiscussionView = function(id) {
+        if (id) {
+            var params = {
+                discussionid: id
+            };
+            return $mmSite.write('mod_forum_view_forum_discussion', params);
+        }
+        return $q.reject();
+    };
+
+    /**
      * Reply to a certain post.
      *
      * @module mm.addons.mod_forum
