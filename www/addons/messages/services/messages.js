@@ -656,7 +656,6 @@ angular.module('mm.addons.messages')
         });
     };
 
-
     /**
      * Invalidate all contacts cache.
      *
@@ -830,6 +829,20 @@ angular.module('mm.addons.messages')
 
             return isContact;
         });
+    };
+
+    /**
+     * Returns whether or not we can count unread messages.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#isMessageCountEnabled
+     * @param {Boolean} [useFallback=false] If we can use the fallback function.
+     * @return {Boolean} True if enabled, false otherwise.
+     */
+    self.isMessageCountEnabled = function(useFallback) {
+        return $mmSite.wsAvailable('core_message_get_unread_conversations_count') ||
+            (useFallback && $mmSite.wsAvailable('core_message_get_messages'));
     };
 
     /**

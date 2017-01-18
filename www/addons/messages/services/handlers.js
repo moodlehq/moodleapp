@@ -336,37 +336,41 @@ angular.module('mm.addons.messages')
                 $scope.title = 'mma.messages.messages';
                 $scope.state = 'site.messages';
                 $scope.class = 'mma-messages-handler';
-                $scope.loading = true;
-                updateUnreadConversationsCount().finally(function() {
-                    $scope.loading = false;
-                });
 
-                readChangedObserver = $mmEvents.on(mmaMessagesReadChangedEvent, function(data) {
-                    if (data && $mmSitesManager.isCurrentSite(data.siteid)) {
-                        updateUnreadConversationsCount();
-                    }
-                });
+                if ($mmaMessages.isMessageCountEnabled(true)) {
+                    $scope.loading = true;
 
-                cronObserver = $mmEvents.on(mmaMessagesReadCronEvent, function(data) {
-                    if (data && $mmSitesManager.isCurrentSite(data.siteid)) {
-                        updateUnreadConversationsCount();
-                    }
-                });
+                    updateUnreadConversationsCount().finally(function() {
+                        $scope.loading = false;
+                    });
 
-                // If a message push notification is received, refresh the count.
-                if ($mmPushNotificationsDelegate) {
-                    $mmPushNotificationsDelegate.registerReceiveHandler('mmaMessages:sidemenu', function(notification) {
-                        // New message received. If it's from current site, refresh the data.
-                        if ($mmUtil.isFalseOrZero(notification.notif) && $mmSitesManager.isCurrentSite(notification.site)) {
+                    readChangedObserver = $mmEvents.on(mmaMessagesReadChangedEvent, function(data) {
+                        if (data && $mmSitesManager.isCurrentSite(data.siteid)) {
                             updateUnreadConversationsCount();
                         }
                     });
-                }
 
-                function updateUnreadConversationsCount() {
-                    return $mmaMessages.getUnreadConversationsCount().then(function(unread) {
-                        $scope.badge = unread;
+                    cronObserver = $mmEvents.on(mmaMessagesReadCronEvent, function(data) {
+                        if (data && $mmSitesManager.isCurrentSite(data.siteid)) {
+                            updateUnreadConversationsCount();
+                        }
                     });
+
+                    // If a message push notification is received, refresh the count.
+                    if ($mmPushNotificationsDelegate) {
+                        $mmPushNotificationsDelegate.registerReceiveHandler('mmaMessages:sidemenu', function(notification) {
+                            // New message received. If it's from current site, refresh the data.
+                            if ($mmUtil.isFalseOrZero(notification.notif) && $mmSitesManager.isCurrentSite(notification.site)) {
+                                updateUnreadConversationsCount();
+                            }
+                        });
+                    }
+
+                    function updateUnreadConversationsCount() {
+                        return $mmaMessages.getUnreadConversationsCount().then(function(unread) {
+                            $scope.badge = unread;
+                        });
+                    }
                 }
 
                 $scope.$on('$destroy', function() {
@@ -388,7 +392,7 @@ angular.module('mm.addons.messages')
          * @return {Promise}         Promise resolved when done, rejected if failure.
          */
         self.execute = function(siteId) {
-            if ($mmSitesManager.isCurrentSite(siteId)) {
+            if ($mmSitesManager.isCurrentSite(siteId) && $mmaMessages.isMessageCountEnabled(true)) {
                 $mmEvents.trigger(mmaMessagesReadCronEvent, {
                     siteid: siteId
                 });
@@ -410,7 +414,8 @@ angular.module('mm.addons.messages')
          * @return {Boolean} True if is a sync process, false otherwise.
          */
         self.isSync = function() {
-            return false;
+            // This is done to use only wifi if using the fallback function
+            return !$mmaMessages.isMessageCountEnabled();
         };
 
         /**
