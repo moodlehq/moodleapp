@@ -71,37 +71,41 @@ angular.module('mm.addons.notifications')
                 $scope.title = 'mma.notifications.notifications';
                 $scope.state = 'site.notifications';
                 $scope.class = 'mma-notifications-handler';
-                $scope.loading = true;
-                updateUnreadNotificationsCount().finally(function() {
-                    $scope.loading = false;
-                });
 
-                readChangedObserver = $mmEvents.on(mmaNotificationsReadChangedEvent, function(data) {
-                    if (data && $mmSitesManager.isCurrentSite(data.siteid)) {
-                        updateUnreadNotificationsCount();
-                    }
-                });
+                if ($mmaNotifications.isNotificationCountEnabled(true)) {
+                    $scope.loading = true;
 
-                cronObserver = $mmEvents.on(mmaNotificationsReadCronEvent, function(data) {
-                    if (data && $mmSitesManager.isCurrentSite(data.siteid)) {
-                        updateUnreadNotificationsCount();
-                    }
-                });
+                    updateUnreadNotificationsCount().finally(function() {
+                        $scope.loading = false;
+                    });
 
-                // If a message push notification is received, refresh the count.
-                if ($mmPushNotificationsDelegate) {
-                    $mmPushNotificationsDelegate.registerReceiveHandler('mmaNotifications:sidemenu', function(notification) {
-                        // New message received. If it's from current site, refresh the data.
-                        if ($mmUtil.isTrueOrOne(notification.notif) && $mmSitesManager.isCurrentSite(notification.site)) {
+                    readChangedObserver = $mmEvents.on(mmaNotificationsReadChangedEvent, function(data) {
+                        if (data && $mmSitesManager.isCurrentSite(data.siteid)) {
                             updateUnreadNotificationsCount();
                         }
                     });
-                }
 
-                function updateUnreadNotificationsCount() {
-                    return $mmaNotifications.getUnreadNotificationsCount().then(function(unread) {
-                        $scope.badge = unread;
+                    cronObserver = $mmEvents.on(mmaNotificationsReadCronEvent, function(data) {
+                        if (data && $mmSitesManager.isCurrentSite(data.siteid)) {
+                            updateUnreadNotificationsCount();
+                        }
                     });
+
+                    // If a message push notification is received, refresh the count.
+                    if ($mmPushNotificationsDelegate) {
+                        $mmPushNotificationsDelegate.registerReceiveHandler('mmaNotifications:sidemenu', function(notification) {
+                            // New message received. If it's from current site, refresh the data.
+                            if ($mmUtil.isTrueOrOne(notification.notif) && $mmSitesManager.isCurrentSite(notification.site)) {
+                                updateUnreadNotificationsCount();
+                            }
+                        });
+                    }
+
+                    function updateUnreadNotificationsCount() {
+                        return $mmaNotifications.getUnreadNotificationsCount().then(function(unread) {
+                            $scope.badge = unread;
+                        });
+                    }
                 }
 
                 $scope.$on('$destroy', function() {
@@ -123,7 +127,7 @@ angular.module('mm.addons.notifications')
          * @return {Promise}         Promise resolved when done, rejected if failure.
          */
         self.execute = function(siteId) {
-            if ($mmSitesManager.isCurrentSite(siteId)) {
+            if ($mmSitesManager.isCurrentSite(siteId) && $mmaNotifications.isNotificationCountEnabled(true)) {
                 $mmEvents.trigger(mmaNotificationsReadCronEvent, {
                     siteid: siteId
                 });
@@ -145,7 +149,8 @@ angular.module('mm.addons.notifications')
          * @return {Boolean} True if is a sync process, false otherwise.
          */
         self.isSync = function() {
-            return false;
+            // This is done to use only wifi if using the fallback function
+            return !$mmaNotifications.isNotificationCountEnabled();
         };
 
         /**

@@ -193,7 +193,7 @@ angular.module('mm.addons.notifications')
             }
 
             // Fallback call.
-            return self.getNotifications(false, 0,  mmaNotificationsListLimit + 1).then(function(unread) {
+            return self.getNotifications(false, 0, mmaNotificationsListLimit + 1).then(function(unread) {
                 // Add + sign if there are more than the limit reachable.
                 return (unread.length > mmaNotificationsListLimit) ? unread.length + "+" : unread.length;
             }).catch(function() {
@@ -248,6 +248,20 @@ angular.module('mm.addons.notifications')
      */
     self.invalidateNotificationsList = function() {
         return $mmSite.invalidateWsCacheForKey(getNotificationsCacheKey());
+    };
+
+    /**
+     * Returns whether or not we can count unread notifications.
+     *
+     * @module mm.addons.notifications
+     * @ngdoc method
+     * @name $mmaNotifications#isMessageCountEnabled
+     * @param {Boolean} [useFallback=false] If we can use the fallback function.
+     * @return {Boolean} True if enabled, false otherwise.
+     */
+    self.isNotificationCountEnabled = function(useFallback) {
+        return $mmSite.wsAvailable('message_popup_get_unread_popup_notification_count') ||
+            (useFallback && $mmSite.wsAvailable('core_message_get_messages'));
     };
 
     /**
