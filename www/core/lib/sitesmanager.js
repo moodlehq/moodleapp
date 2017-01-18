@@ -38,7 +38,7 @@ angular.module('mm.core')
  * @ngdoc service
  * @name $mmSitesManager
  */
-.factory('$mmSitesManager', function($http, $q, $mmSitesFactory, md5, $mmLang, $mmApp, $mmUtil, $mmEvents, $state,
+.factory('$mmSitesManager', function($http, $q, $mmSitesFactory, md5, $mmLang, $mmApp, $mmUtil, $mmEvents,
             $translate, mmCoreSitesStore, mmCoreCurrentSiteStore, mmCoreEventLogin, mmCoreEventLogout, $log, mmCoreWSPrefix,
             mmCoreEventSiteUpdated, mmCoreEventSiteAdded, mmCoreEventSessionExpired, mmCoreEventSiteDeleted, $mmText,
             mmCoreConfigConstants, mmLoginSSOCode, mmLoginSSOInAppCode) {
@@ -586,6 +586,24 @@ angular.module('mm.core')
                 return site;
             });
         }
+    };
+
+    /**
+     * Returns if the site is the current one.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#isCurrentSite
+     * @param  {Mixed}  [site]  Site object or siteId to be compared. If not defined, use current site.
+     * @return {Boolean}        If site or siteId is the current one.
+     */
+    self.isCurrentSite = function(site) {
+        if (!site || !currentSite) {
+            return !!currentSite;
+        }
+
+        var siteId = typeof site == 'object' ? site.getId() : site;
+        return currentSite.getId() === siteId;
     };
 
     /**

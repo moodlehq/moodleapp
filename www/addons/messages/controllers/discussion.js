@@ -24,7 +24,8 @@ angular.module('mm.addons.messages')
 .controller('mmaMessagesDiscussionCtrl', function($scope, $stateParams, $mmApp, $mmaMessages, $mmSite, $timeout, $mmEvents, $window,
         $ionicScrollDelegate, mmUserProfileState, $mmUtil, mmaMessagesPollInterval, $interval, $log, $ionicHistory, $ionicPlatform,
         mmCoreEventKeyboardShow, mmCoreEventKeyboardHide, mmaMessagesDiscussionLoadedEvent, mmaMessagesDiscussionLeftEvent,
-        $mmUser, $translate, mmaMessagesNewMessageEvent, mmaMessagesAutomSyncedEvent, $mmaMessagesSync, $q, md5) {
+        $mmUser, $translate, mmaMessagesNewMessageEvent, mmaMessagesAutomSyncedEvent, $mmaMessagesSync, $q, md5,
+        mmaMessagesReadChangedEvent) {
 
     $log = $log.getInstance('mmaMessagesDiscussionCtrl');
 
@@ -38,7 +39,8 @@ angular.module('mm.addons.messages')
         canDelete = $mmaMessages.canDeleteMessages(), // Check if user can delete messages.
         syncObserver,
         scrollKeyboardInitialized = false,
-        pagesLoaded = 1;
+        pagesLoaded = 1,
+        unreadMessageFrom = false;
 
     $scope.showKeyboard = $stateParams.showKeyboard;
     $scope.loaded = false;
@@ -90,6 +92,8 @@ angular.module('mm.addons.messages')
             // Silent error.
             return;
         }
+
+        hideUnreadLabel();
 
         $scope.data.showDelete = false;
         $scope.newMessage = ''; // Clear new message.
@@ -280,9 +284,25 @@ angular.module('mm.addons.messages')
 
             // Notify that there can be a new message.
             notifyNewMessage();
+
+            // Mark retrieved messages as read if they are not.
+            markMessagesAsRead();
         }).finally(function() {
             fetching = false;
         });
+    }
+
+    // Hide unread label when sending messages.
+    function hideUnreadLabel() {
+        if (typeof unreadMessageFrom == 'number') {
+            angular.forEach($scope.messages, function(message) {
+                if (message.id == unreadMessageFrom) {
+                    message.unreadFrom = false;
+                }
+            });
+            // Label hidden.
+            unreadMessageFrom = true;
+        }
     }
 
     // Wait until fetching is false.
@@ -294,6 +314,48 @@ angular.module('mm.addons.messages')
         return $timeout(function() {
             return waitForFetch();
         }, 400);
+    }
+
+    // Mark messages as read.
+    function markMessagesAsRead() {
+        var readChanged = false,
+            previousMessageRead = false,
+            promises = [];
+
+        angular.forEach($scope.messages, function(message) {
+
+            if (message.useridfrom != $scope.currentUserId) {
+                // If the message is unread, call $mmaMessages.markMessageRead.
+                if (message.read == 0) {
+                    promises.push($mmaMessages.markMessageRead(message.id).then(function() {
+                        readChanged = true;
+                        message.read = 1;
+                    }));
+                }
+
+                // Place unread from message label only once.
+                if (!unreadMessageFrom) {
+                    message.unreadFrom = message.read == 0 && previousMessageRead;
+                    // Save where the label is placed.
+                    unreadMessageFrom = message.unreadFrom && parseInt(message.id, 10);
+                    previousMessageRead = message.read != 0;
+                }
+            }
+        });
+        // Do not update the message unread from label on next refresh.
+        if (!unreadMessageFrom) {
+            // Using true to indicate the label is not placed but should not be placed.
+            unreadMessageFrom = true;
+        }
+
+        $q.all(promises).finally(function() {
+            if (readChanged) {
+                $mmEvents.trigger(mmaMessagesReadChangedEvent, {
+                    siteid: $mmSite.getId(),
+                    userid: userId
+                });
+            }
+        });
     }
 
     // Get a discussion. Can load several "pages".
