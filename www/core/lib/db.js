@@ -287,13 +287,14 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmDB#getDB
-     * @param  {String} name    DB name.
-     * @param  {Object} schema  DB schema.
-     * @param  {Object} options DB options.
-     * @return {Object}         DB.
+     * @param  {String} name      DB name.
+     * @param  {Object} schema    DB schema.
+     * @param  {Object} options   DB options.
+     * @param  {Boolean} forceNew True if it should always create a new instance.
+     * @return {Object}           DB.
      */
-    self.getDB = function(name, schema, options) {
-        if (typeof dbInstances[name] === 'undefined') {
+    self.getDB = function(name, schema, options, forceNew) {
+        if (typeof dbInstances[name] === 'undefined' || forceNew) {
 
             var isSafari = !ionic.Platform.isIOS() && !ionic.Platform.isAndroid() && navigator.userAgent.indexOf('Safari') != -1
                             && navigator.userAgent.indexOf('Chrome') == -1 && navigator.userAgent.indexOf('Firefox') == -1;

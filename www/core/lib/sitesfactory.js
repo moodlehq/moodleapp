@@ -42,6 +42,7 @@ angular.module('mm.core')
  * @description
  * This provider is the interface with the DB database. The modules that need to store
  * information here need to register their stores.
+ * Remote addons registering stores MUST call $mmSite#reloadDb.
  *
  * Example:
  *
@@ -88,6 +89,7 @@ angular.module('mm.core')
      * Register multiple stores at once.
      * IMPORTANT: Modifying the schema of an already existing store deletes all its data in WebSQL Storage.
      * If a store schema needs to be modified, the data should be manually migrated to the new store.
+     * Remote addons registering stores MUST call $mmSite#reloadDb.
      *
      * @param  {Array} stores Array of store objects.
      * @return {Void}
@@ -238,6 +240,18 @@ angular.module('mm.core')
          */
         Site.prototype.getDb = function() {
             return this.db;
+        };
+
+        /**
+         * Reload the site database.
+         * This must be used by remote addons that register stores in the site database.
+         *
+         * @return {Void}
+         */
+        Site.prototype.reloadDb = function() {
+            if (this.db) {
+                this.db = $mmDB.getDB('Site-' + this.id, siteSchema, dboptions, true);
+            }
         };
 
         /**
