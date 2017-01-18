@@ -162,6 +162,68 @@ angular.module('mm.addons.notifications')
     };
 
     /**
+     * Get unread notifications count. Do not cache calls.
+     *
+     * @module mm.addons.notifications
+     * @ngdoc method
+     * @name $mmaMessages#getUnreadNotificationsCount
+     * @param  {Number} [userId] The user id who received the notification. If not defined, use current user.
+     * @param  {String} [siteId] Site ID. If not defined, use current site.
+     * @return {Promise}         Promise resolved with the message notifications count.
+     */
+    self.getUnreadNotificationsCount = function(userId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            if (site.wsAvailable('message_popup_get_unread_popup_notification_count')) {
+                userId = userId || site.getUserId();
+
+                var params = {
+                        useridto: userId
+                    },
+                    preSets = {
+                        getFromCache: 0,
+                        emergencyCache: 0,
+                        saveToCache: 0,
+                        typeExpected: 'number'
+                    };
+
+                return site.read('message_popup_get_unread_popup_notification_count', params, preSets).catch(function() {
+                    // Return no messages if the call fails.
+                    return 0;
+                });
+            }
+
+            // Fallback call.
+            return self.getNotifications(false, 0, mmaNotificationsListLimit + 1).then(function(unread) {
+                // Add + sign if there are more than the limit reachable.
+                return (unread.length > mmaNotificationsListLimit) ? unread.length + "+" : unread.length;
+            }).catch(function() {
+                // Return no messages if the call fails.
+                return 0;
+            });
+        });
+    };
+
+    /**
+     * Mark message notification as read.
+     *
+     * @module mm.addons.notifications
+     * @ngdoc method
+     * @name $mmaNotifications#markNotificationRead
+     * @param notificationId   ID of notification to mark as read
+     * @returns {Promise} Promise resolved with boolean marking success or not.
+     */
+    self.markNotificationRead = function(notificationId) {
+        var params = {
+                'messageid': notificationId
+            },
+            preSets = {
+                typeExpected: 'boolean'
+            };
+        return $mmSite.write('core_message_mark_message_read', params, preSets);
+
+    };
+
+    /**
      * Invalidate get notification preferences.
      *
      * @module mm.addons.notifications
@@ -186,6 +248,20 @@ angular.module('mm.addons.notifications')
      */
     self.invalidateNotificationsList = function() {
         return $mmSite.invalidateWsCacheForKey(getNotificationsCacheKey());
+    };
+
+    /**
+     * Returns whether or not we can count unread notifications.
+     *
+     * @module mm.addons.notifications
+     * @ngdoc method
+     * @name $mmaNotifications#isMessageCountEnabled
+     * @param {Boolean} [useFallback=false] If we can use the fallback function.
+     * @return {Boolean} True if enabled, false otherwise.
+     */
+    self.isNotificationCountEnabled = function(useFallback) {
+        return $mmSite.wsAvailable('message_popup_get_unread_popup_notification_count') ||
+            (useFallback && $mmSite.wsAvailable('core_message_get_messages'));
     };
 
     /**

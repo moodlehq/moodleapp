@@ -22,7 +22,7 @@ angular.module('mm.addons.notifications')
  * @name mmaNotificationsListCtrl
  */
 .controller('mmaNotificationsListCtrl', function($scope, $mmUtil, $mmaNotifications, mmaNotificationsListLimit,
-            mmUserProfileState) {
+            mmUserProfileState, $q, $mmEvents, $mmSite, mmaNotificationsReadChangedEvent) {
 
     var readCount = 0,
         unreadCount = 0;
@@ -39,6 +39,7 @@ angular.module('mm.addons.notifications')
         }
 
         return $mmaNotifications.getUnreadNotifications(unreadCount, mmaNotificationsListLimit).then(function(unread) {
+            var promise;
             // Don't add the unread notifications to $scope.notifications yet. If there are no unread notifications
             // that causes that the "There are no notifications" message is shown in pull to refresh.
             unreadCount += unread.length;
@@ -46,7 +47,7 @@ angular.module('mm.addons.notifications')
             if (unread.length < mmaNotificationsListLimit) {
                 // Limit not reached. Get read notifications until reach the limit.
                 var readLimit = mmaNotificationsListLimit - unread.length;
-                return $mmaNotifications.getReadNotifications(readCount, readLimit).then(function(read) {
+                promise = $mmaNotifications.getReadNotifications(readCount, readLimit).then(function(read) {
                     readCount += read.length;
                     if (refresh) {
                         $scope.notifications = unread.concat(read);
@@ -56,15 +57,12 @@ angular.module('mm.addons.notifications')
                     $scope.canLoadMore = read.length >= readLimit;
                 }, function(error) {
                     if (unread.length == 0) {
-                        if (error) {
-                            $mmUtil.showErrorModal(error);
-                        } else {
-                            $mmUtil.showErrorModal('mma.notifications.errorgetnotifications', true);
-                        }
+                        $mmUtil.showErrorModalDefault(error, 'mma.notifications.errorgetnotifications', true);
                         $scope.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
                     }
                 });
             } else {
+                promise = $q.when();
                 if (refresh) {
                     $scope.notifications = unread;
                 } else {
@@ -72,18 +70,39 @@ angular.module('mm.addons.notifications')
                 }
                 $scope.canLoadMore = true;
             }
+
+            return promise.then(function() {
+                // Mark retrieved notifications as read if they are not.
+                markNotificationsAsRead(unread);
+            });
         }, function(error) {
-            if (error) {
-                $mmUtil.showErrorModal(error);
-            } else {
-                $mmUtil.showErrorModal('mma.notifications.errorgetnotifications', true);
-            }
+            $mmUtil.showErrorModalDefault(error, 'mma.notifications.errorgetnotifications', true);
             $scope.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
         });
     }
     fetchNotifications().finally(function() {
         $scope.notificationsLoaded = true;
     });
+
+    // Mark notifications as read.
+    function markNotificationsAsRead(notifications) {
+        if (notifications.length > 0) {
+            var promises = [];
+
+            angular.forEach(notifications, function(notification) {
+                // If the notification is unread, call $mmaNotifications.markNotificationRead.
+                promises.push($mmaNotifications.markNotificationRead(notification.id));
+            });
+
+            $q.all(promises).finally(function() {
+                $mmaNotifications.invalidateNotificationsList().finally(function() {
+                    $mmEvents.trigger(mmaNotificationsReadChangedEvent, {
+                        siteid: $mmSite.getId()
+                    });
+                });
+            });
+        }
+    }
 
     $scope.refreshNotifications = function() {
         $mmaNotifications.invalidateNotificationsList().finally(function() {
