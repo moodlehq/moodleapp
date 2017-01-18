@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_glossary')
  * @name $mmaModGlossaryPrefetchHandler
  */
 .factory('$mmaModGlossaryPrefetchHandler', function($mmaModGlossary, mmaModGlossaryComponent, $mmFilepool, $q, $mmUser,
-            mmCoreDownloaded, mmCoreOutdated, $mmUtil, $mmPrefetchFactory) {
+            mmCoreDownloaded, mmCoreOutdated, $mmUtil, $mmPrefetchFactory, $mmCoursePrefetchDelegate) {
 
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModGlossaryComponent, false);
 
@@ -161,6 +161,11 @@ angular.module('mm.addons.mod_glossary')
      * @return {Promise}         Promise resolved when done.
      */
     self.invalidateModule = function(module, courseId) {
+        if ($mmCoursePrefetchDelegate.canCheckUpdates()) {
+            // No need to invalidate anything if can check updates.
+            return $q.when();
+        }
+
         return $mmaModGlossary.getGlossary(courseId, module.id).then(function(glossary) {
             var promises = [];
 
