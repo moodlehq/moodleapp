@@ -32,6 +32,9 @@ angular.module('mm.addons.mod_forum')
         scrollView,
         syncObserver, syncManualObserver, onlineObserver;
 
+    // Block leaving the view, we want to show a confirm to the user if there's unsaved data.
+    $mmUtil.blockLeaveView($scope, leaveView);
+
     $scope.discussionId = discussionId;
     $scope.trackPosts = $stateParams.trackposts;
     $scope.component = mmaModForumComponent;
@@ -59,6 +62,8 @@ angular.module('mm.addons.mod_forum')
     };
     // Receive locked as param since it's returned by getDiscussions. This means that PullToRefresh won't update this value.
     $scope.locked = !!$stateParams.locked;
+
+    $scope.originalData = {};
 
     // Convenience function to get the forum.
     function fetchForum() {
@@ -303,6 +308,17 @@ angular.module('mm.addons.mod_forum')
         }
     });
 
+    // Ask to confirm if there are changes.
+    function leaveView() {
+        if (!$scope.originalData || typeof $scope.originalData.subject == 'undefined' ||
+                ($scope.originalData.subject == $scope.newpost.subject && $scope.originalData.text == $scope.newpost.text)) {
+            return $q.when();
+        } else {
+            // Show confirmation if some data has been modified.
+            return $mmUtil.showConfirm($translate('mm.core.confirmcanceledit'));
+        }
+    }
+
     function scrollTop() {
         if (!scrollView) {
             scrollView = $ionicScrollDelegate.$getByHandle('mmaModForumPostsScroll');
@@ -324,6 +340,9 @@ angular.module('mm.addons.mod_forum')
         refreshPosts(false).finally(function() {
             $scope.discussionLoaded = true;
         });
+
+        // Update original data.
+        $mmUtil.copyProperties($scope.newpost, $scope.originalData);
     };
 
     $scope.$on('$destroy', function(){

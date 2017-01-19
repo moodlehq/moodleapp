@@ -37,9 +37,21 @@ angular.module('mm.addons.mod_forum')
  * @param {Function} [onpostchange]   Function to call when a post is added, updated or discarded.
  * @param {String}   [defaultsubject] Default subject to set to new posts.
  * @param {String}   [scrollHandle]   Name of the scroll handle of the page containing the post.
+ * @param {Object}   [originalData]   Original newpost data. Used to detect if data has changed.
  */
 .directive('mmaModForumDiscussionPost', function($mmaModForum, $mmUtil, $translate, $q, $mmaModForumOffline, $mmSyncBlock,
         mmaModForumComponent, $mmaModForumSync, $mmText) {
+
+    // Confirm discard changes if any.
+    function confirmDiscard(scope) {
+        if (!scope.originalData || typeof scope.originalData.subject == 'undefined' ||
+                (scope.originalData.subject == scope.newpost.subject && scope.originalData.text == scope.newpost.text)) {
+            return $q.when();
+        } else {
+            // Show confirmation if some data has been modified.
+            return $mmUtil.showConfirm($translate('mm.core.confirmloss'));
+        }
+    }
 
     // Get a forum. Returns empty object if params aren't valid.
     function getForum(courseId, cmId) {
@@ -66,7 +78,8 @@ angular.module('mm.addons.mod_forum')
             unread: '=?',
             onpostchange: '&?',
             defaultsubject: '=?',
-            scrollHandle: '@?'
+            scrollHandle: '@?',
+            originalData: '=?'
         },
         templateUrl: 'addons/mod/forum/templates/discussionpost.html',
         transclude: true,
@@ -79,23 +92,51 @@ angular.module('mm.addons.mod_forum')
 
             // Set this post as being replied to.
             scope.showReply = function() {
-                scope.newpost.replyingto = scope.post.id;
-                scope.newpost.editing = 'reply' + scope.post.id;
-                scope.newpost.isEditing = false;
-                scope.newpost.subject = scope.defaultsubject || '';
-                scope.newpost.text = '';
+                var promise,
+                    wasReplying = typeof scope.newpost.replyingto != 'undefined';
+
+                if (scope.newpost.isEditing) {
+                    // User is editing a post, data needs to be resetted. Ask confirm if there is unsaved data.
+                    promise = confirmDiscard(scope);
+                } else if (!wasReplying) {
+                    // User isn't replying, it's a brand new reply. Nothing to confirm, just initialize the data.
+                    promise = $q.when();
+                }
+
+                if (promise) {
+                    promise.then(function() {
+                        scope.newpost.replyingto = scope.post.id;
+                        scope.newpost.editing = 'reply' + scope.post.id;
+                        scope.newpost.isEditing = false;
+                        scope.newpost.subject = scope.defaultsubject || '';
+                        scope.newpost.text = '';
+
+                        // Update original data.
+                        $mmUtil.copyProperties(scope.newpost, scope.originalData);
+                    });
+                } else {
+                    // The post being replied has changed but the data will be kept.
+                    scope.newpost.replyingto = scope.post.id;
+                    scope.newpost.editing = 'reply' + scope.post.id;
+                }
             };
 
             // Set this post as being edited to.
             scope.editReply = function() {
-                syncId = $mmaModForumSync.getDiscussionSyncId(scope.discussionId);
-                $mmSyncBlock.blockOperation(mmaModForumComponent, syncId);
+                // Ask confirm if there is unsaved data.
+                confirmDiscard(scope).then(function() {
+                    syncId = $mmaModForumSync.getDiscussionSyncId(scope.discussionId);
+                    $mmSyncBlock.blockOperation(mmaModForumComponent, syncId);
 
-                scope.newpost.replyingto = scope.post.parent;
-                scope.newpost.editing = 'edit' + scope.post.parent;
-                scope.newpost.isEditing = true;
-                scope.newpost.subject = scope.post.subject;
-                scope.newpost.text = scope.post.message;
+                    scope.newpost.replyingto = scope.post.parent;
+                    scope.newpost.editing = 'edit' + scope.post.parent;
+                    scope.newpost.isEditing = true;
+                    scope.newpost.subject = scope.post.subject;
+                    scope.newpost.text = scope.post.message;
+
+                    // Update original data.
+                    $mmUtil.copyProperties(scope.newpost, scope.originalData);
+                });
             };
 
             // Reply to this post.
@@ -139,19 +180,15 @@ angular.module('mm.addons.mod_forum')
 
             // Cancel reply.
             scope.cancel = function() {
-                var promise;
-                if ((!scope.newpost.subject || scope.newpost.subject == scope.defaultsubject) && !scope.newpost.text) {
-                    promise = $q.when(); // Nothing written, cancel right away.
-                } else {
-                    promise = $mmUtil.showConfirm($translate('mm.core.areyousure'));
-                }
-
-                promise.then(function() {
+                confirmDiscard(scope).then(function() {
                     scope.newpost.replyingto = undefined;
                     scope.newpost.editing = undefined;
                     scope.newpost.subject = scope.defaultsubject || '';
                     scope.newpost.text = '';
                     scope.newpost.isEditing = false;
+
+                    // Update original data.
+                    $mmUtil.copyProperties(scope.newpost, scope.originalData);
                 });
 
                 if (syncId) {
@@ -176,6 +213,14 @@ angular.module('mm.addons.mod_forum')
 
                 if (syncId) {
                     $mmSyncBlock.unblockOperation(mmaModForumComponent, syncId);
+                }
+            };
+
+            // Text changed when rendered.
+            scope.firstRender = function() {
+                if (scope.newpost.isEditing) {
+                    // Update original data.
+                    $mmUtil.copyProperties(scope.newpost, scope.originalData);
                 }
             };
 

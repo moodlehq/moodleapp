@@ -24,6 +24,7 @@
     "completion-alt-manual-y": "Completed: {{$a}}. Select to mark as not complete.",
     "confirmcanceledit": "Are you sure you want to leave this page? All changes will be lost.",
     "confirmdeletefile": "Are you sure you want to delete this file?",
+    "confirmloss": "Are you sure? All changes will be lost.",
     "confirmopeninbrowser": "Do you want to open it in browser?",
     "content": "Content",
     "contenteditingsynced": "The content you are editing has been synced.",

@@ -31,7 +31,11 @@ angular.module('mm.addons.mod_forum')
         timecreated = $stateParams.timecreated,
         forumName,
         syncObserver,
-        syncId;
+        syncId,
+        originalData;
+
+    // Block leaving the view, we want to show a confirm to the user if there's unsaved data.
+    $mmUtil.blockLeaveView($scope, leaveView);
 
     $scope.newdiscussion = {
         subject: '',
@@ -100,7 +104,11 @@ angular.module('mm.addons.mod_forum')
                 }));
             }
             return $q.all(promises);
-        }).then(function(message) {
+        }).then(function() {
+            if (!originalData) {
+                // Initialize original data.
+                originalData = angular.copy($scope.newdiscussion);
+            }
             $scope.showForm = true;
         }).catch(function(message) {
             $mmUtil.showErrorModalDefault(message, 'mma.mod_forum.errorgetgroups', true);
@@ -207,9 +215,21 @@ angular.module('mm.addons.mod_forum')
             $scope.hasOffline = false;
             $scope.newdiscussion.subject = '';
             $scope.newdiscussion.text = '';
+            originalData = angular.copy($scope.newdiscussion);
         } else {
             // Go back to discussions list.
             $ionicHistory.goBack();
+        }
+    }
+
+    // Ask to confirm if there are changes.
+    function leaveView() {
+        if (!originalData || (originalData.subject == $scope.newdiscussion.subject &&
+                originalData.text == $scope.newdiscussion.text)) {
+            return $q.when();
+        } else {
+            // Show confirmation if some data has been modified.
+            return $mmUtil.showConfirm($translate('mm.core.confirmcanceledit'));
         }
     }
 
@@ -262,6 +282,11 @@ angular.module('mm.addons.mod_forum')
                 returnToDiscussions();
             });
         });
+    };
+
+    // Text changed when rendered.
+    $scope.firstRender = function() {
+        originalData.text = $scope.newdiscussion.text;
     };
 
     $scope.$on('$destroy', function(){
