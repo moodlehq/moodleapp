@@ -231,7 +231,7 @@ angular.module('mm.addons.mod_forum')
                                 action: function(siteId) {
                                     var stateParams = {
                                         discussionid: parseInt(params.d, 10),
-                                        cid: courseId
+                                        cid: courseId ? parseInt(courseId, 10) : courseId
                                     };
                                     $mmContentLinksHelper.goInSite('site.mod_forum-discussion', stateParams, siteId);
                                 }
