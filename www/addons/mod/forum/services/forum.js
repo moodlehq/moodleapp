@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_forum')
  * @name $mmaModForum
  */
 .factory('$mmaModForum', function($q, $mmSite, $mmUser, $mmGroups, $translate, $mmSitesManager, mmaModForumDiscPerPage,
-            mmaModForumComponent, $mmaModForumOffline, $mmApp, $mmUtil) {
+            mmaModForumComponent, $mmaModForumOffline, $mmApp, $mmUtil, $mmLang) {
     var self = {};
 
     /**
@@ -714,6 +714,11 @@ angular.module('mm.addons.mod_forum')
 
         // Convenience function to store a message to be synchronized later.
         function storeOffline() {
+            if (!forumId) {
+                // Not enough data to store in offline, reject.
+                return $mmLang.translateAndReject('mm.core.networkerrormsg');
+            }
+
             return $mmaModForumOffline.replyPost(postId, discussionId, forumId, name, courseId, subject, message, siteId)
                     .then(function() {
                 return false;
