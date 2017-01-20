@@ -318,16 +318,22 @@ angular.module('mm.core')
 
         return candidateSite.fetchSiteInfo().then(function(infos) {
             if (isValidMoodleVersion(infos)) {
-                var siteid = self.createSiteID(infos.siteurl, infos.username);
-                // Add site to sites list.
-                self.addSite(siteid, siteurl, token, infos, privateToken);
-                // Turn candidate site into current site.
-                candidateSite.setId(siteid);
+                // Set site ID and infos.
+                var siteId = self.createSiteID(infos.siteurl, infos.username);
+                candidateSite.setId(siteId);
                 candidateSite.setInfo(infos);
-                currentSite = candidateSite;
-                // Store session.
-                self.login(siteid);
-                $mmEvents.trigger(mmCoreEventSiteAdded, siteid);
+
+                // Try to get the site config.
+                return getSiteConfig(candidateSite).then(function(config) {
+                    candidateSite.setConfig(config);
+                    // Add site to sites list.
+                    self.addSite(siteId, siteurl, token, infos, privateToken, config);
+                    // Turn candidate site into current site.
+                    currentSite = candidateSite;
+                    // Store session.
+                    self.login(siteId);
+                    $mmEvents.trigger(mmCoreEventSiteAdded, siteId);
+                });
             } else {
                 return $mmLang.translateAndReject('mm.login.invalidmoodleversion');
             }
@@ -442,16 +448,18 @@ angular.module('mm.core')
      * @param  {String} token          User's token in the site.
      * @param  {Object} infos          Site's info.
      * @param  {String} [privateToken] User's private token.
+     * @param  {Object} [config]       Site config (from tool_mobile_get_config).
      * @return {Promise}               Promise resolved when done.
      */
-    self.addSite = function(id, siteurl, token, infos, privateToken) {
+    self.addSite = function(id, siteurl, token, infos, privateToken, config) {
         privateToken = privateToken || '';
         return $mmApp.getDB().insert(mmCoreSitesStore, {
             id: id,
             siteurl: siteurl,
             token: token,
             infos: infos,
-            privatetoken: privateToken
+            privatetoken: privateToken,
+            config: config
         });
     };
 
@@ -581,7 +589,7 @@ angular.module('mm.core')
             return $q.when(sites[siteId]);
         } else {
             return $mmApp.getDB().get(mmCoreSitesStore, siteId).then(function(data) {
-                var site = $mmSitesFactory.makeSite(siteId, data.siteurl, data.token, data.infos, data.privatetoken);
+                var site = $mmSitesFactory.makeSite(siteId, data.siteurl, data.token, data.infos, data.privatetoken, data.config);
                 sites[siteId] = site;
                 return site;
             });
@@ -782,7 +790,8 @@ angular.module('mm.core')
                 siteurl: site.getURL(),
                 token: token,
                 infos: site.getInfo(),
-                privatetoken: privateToken
+                privatetoken: privateToken,
+                config: site.getStoredConfig()
             });
         });
     };
@@ -800,14 +809,24 @@ angular.module('mm.core')
         return self.getSite(siteid).then(function(site) {
             return site.fetchSiteInfo().then(function(infos) {
                 site.setInfo(infos);
-                return $mmApp.getDB().insert(mmCoreSitesStore, {
-                    id: siteid,
-                    siteurl: site.getURL(),
-                    token: site.getToken(),
-                    infos: infos,
-                    privatetoken: site.getPrivateToken()
-                }).finally(function() {
-                    $mmEvents.trigger(mmCoreEventSiteUpdated, siteid);
+
+                // Try to get the site config.
+                return getSiteConfig(site).catch(function() {
+                    // Error getting config, keep the current one.
+                    return site.getStoredConfig();
+                }).then(function(config) {
+                    site.setConfig(config);
+
+                    return $mmApp.getDB().insert(mmCoreSitesStore, {
+                        id: siteid,
+                        siteurl: site.getURL(),
+                        token: site.getToken(),
+                        infos: infos,
+                        privatetoken: site.getPrivateToken(),
+                        config: config
+                    }).finally(function() {
+                        $mmEvents.trigger(mmCoreEventSiteUpdated, siteid);
+                    });
                 });
             });
         });
@@ -869,7 +888,8 @@ angular.module('mm.core')
             var ids = [];
             angular.forEach(sites, function(site) {
                 if (!sites[site.id]) {
-                    sites[site.id] = $mmSitesFactory.makeSite(site.id, site.siteurl, site.token, site.infos, site.privatetoken);
+                    sites[site.id] = $mmSitesFactory.makeSite(
+                            site.id, site.siteurl, site.token, site.infos, site.privatetoken, site.config);
                 }
                 if (sites[site.id].containsUrl(url)) {
                     if (!username || sites[site.id].getInfo().username == username) {
@@ -911,6 +931,21 @@ angular.module('mm.core')
         var temporarySite = $mmSitesFactory.makeSite(undefined, siteUrl);
         return temporarySite.getPublicConfig();
     };
+
+    /**
+     * Get site config.
+     *
+     * @param  {Object} site The site to get the config.
+     * @return {Promise}     Promise resolved with config if available.
+     */
+    function getSiteConfig(site) {
+        if (!site.wsAvailable('tool_mobile_get_config')) {
+            // WS not available, cannot get config.
+            return $q.when();
+        }
+
+        return site.getConfig(false, true);
+    }
 
     return self;
 

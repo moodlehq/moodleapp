@@ -168,14 +168,16 @@ angular.module('mm.core')
          * @param  {String} token          User's token in the site.
          * @param  {Object} infos          Site's info.
          * @param  {String} [privateToken] User's private token.
+         * @param  {Object} [config]       Site config.
          * @return {Void}
          */
-        function Site(id, siteurl, token, infos, privateToken) {
+        function Site(id, siteurl, token, infos, privateToken, config) {
             this.id = id;
             this.siteurl = siteurl;
             this.token = token;
             this.infos = infos;
             this.privateToken = privateToken;
+            this.config = config;
 
             if (this.id) {
                 this.db = $mmDB.getDB('Site-' + this.id, siteSchema, dboptions);
@@ -302,6 +304,15 @@ angular.module('mm.core')
          */
         Site.prototype.setInfo = function(infos) {
             this.infos = infos;
+        };
+
+        /**
+         * Set site config.
+         *
+         * @param {Object} Config.
+         */
+        Site.prototype.setConfig = function(config) {
+            this.config = config;
         };
 
         /**
@@ -1011,6 +1022,7 @@ angular.module('mm.core')
 
         /**
          * Get the config of this site.
+         * It is recommended to use getStoredConfig instead since it's faster and doesn't use network.
          *
          * @param {String}   [name]         Name of the setting to get. If not set or false, all settings will be returned.
          * @param {Boolean}  [ignoreCache]  True if it should ignore cached data.
@@ -1061,6 +1073,24 @@ angular.module('mm.core')
         function getConfigCacheKey() {
             return 'tool_mobile_get_config';
         }
+
+        /**
+         * Get the stored config of this site.
+         *
+         * @param {String} [name] Name of the setting to get. If not set or false, all settings will be returned.
+         * @return {Object}       Site config or a specific setting.
+         */
+        Site.prototype.getStoredConfig = function(name) {
+            if (!this.config) {
+                return;
+            }
+
+            if (name) {
+                return this.config[name];
+            } else {
+                return this.config;
+            }
+        };
 
         /**
          * Invalidate entries from the cache.
@@ -1269,12 +1299,13 @@ angular.module('mm.core')
          * @param  {String} token          User's token in the site.
          * @param  {Object} infos          Site's info.
          * @param  {String} [privateToken] User's private token.
+         * @param  {Object} [config]       Site config.
          * @return {Object}                The current site object.
          * @description
          * This returns a site object.
          */
-        self.makeSite = function(id, siteurl, token, infos, privateToken) {
-            return new Site(id, siteurl, token, infos, privateToken);
+        self.makeSite = function(id, siteurl, token, infos, privateToken, config) {
+            return new Site(id, siteurl, token, infos, privateToken, config);
         };
 
         /**
