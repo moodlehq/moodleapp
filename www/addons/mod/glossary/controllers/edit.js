@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_glossary')
  * @ngdoc controller
  * @name mmaModGlossaryEditCtrl
  */
-.controller('mmaModGlossaryEditCtrl', function($stateParams, $scope, mmaModGlossaryComponent, $mmUtil, $q, $mmaModGlossary,
+.controller('mmaModGlossaryEditCtrl', function($stateParams, $scope, mmaModGlossaryComponent, $mmUtil, $q, $mmaModGlossary, $mmText,
         $translate, $ionicHistory, $mmEvents, mmaModGlossaryAddEntryEvent, $mmaModGlossaryOffline) {
 
     var module = $stateParams.module,
@@ -92,7 +92,7 @@ angular.module('mm.addons.mod_glossary')
         $mmUtil.isRichTextEditorEnabled().then(function(enabled) {
             if (!enabled) {
                 // Rich text editor not enabled, add some HTML to the definition if needed.
-                //definition = $mmText.formatHtmlLines(definition);
+                definition = $mmText.formatHtmlLines(definition);
             }
 
             // If editing an offline entry and concept is different, delete previous first.

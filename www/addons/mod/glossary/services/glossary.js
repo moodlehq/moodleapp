@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_glossary')
  * @name $mmaModGlossary
  */
 .factory('$mmaModGlossary', function($mmSite, $q, $mmSitesManager, $mmFilepool, mmaModGlossaryComponent, $mmaModGlossaryOffline,
-        mmaModGlossaryLimitEntriesNum, $mmApp, $mmUtil, mmaModGlossaryLimitCategoriesNum) {
+        mmaModGlossaryLimitEntriesNum, $mmApp, $mmUtil, mmaModGlossaryLimitCategoriesNum, $mmText) {
     var self = {};
 
     /**
@@ -698,9 +698,17 @@ angular.module('mm.addons.mod_glossary')
             }
 
             return site.write('mod_glossary_add_entry', params).catch(function(error) {
+                var wserror = $mmUtil.isWebServiceError(error);
+                if (wserror && error == "Invalid parameter value detected") {
+                    // Old PARAM_TEXT is used on definition, resend it cleaning html.
+                    var definition = $mmText.cleanTags(params.definition);
+                    if (definition != params.definition) {
+                        return self.addEntryOnline(glossaryId, concept, definition, options, siteId);
+                    }
+                }
                 return $q.reject({
                     error: error,
-                    wserror: $mmUtil.isWebServiceError(error)
+                    wserror: wserror
                 });
             }).then(function(response) {
                 if (response.entryid) {
