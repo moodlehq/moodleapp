@@ -76,6 +76,7 @@ angular.module('mm.core')
 
             if (versionCode >= 2017 && versionApplied < 2017) {
                 promises.push(setCalendarDefaultNotifTime());
+                promises.push(setSitesConfig());
             }
 
             return $q.all(promises).then(function() {
@@ -384,6 +385,61 @@ angular.module('mm.core')
             });
 
             return $q.all(promises);
+        });
+    }
+
+    /**
+     * In version 3.2.1 we want the site config to be stored in each site if available.
+     * Since it can be slow, we'll only block retrieving the config of current site, the rest will be in background.
+     *
+     * @return {Promise} Promise resolved when the config is loaded for the current site (if any).
+     */
+    function setSitesConfig() {
+        return $mmSitesManager.getSitesIds().then(function(siteIds) {
+
+            return $mmSitesManager.getStoredCurrentSiteId().catch(function() {
+                // Error getting current site.
+            }).then(function(currentSiteId) {
+                var promise;
+
+                // Load the config of current site first.
+                if (currentSiteId) {
+                    promise = setSiteConfig(currentSiteId);
+                } else {
+                    promise = $q.when();
+                }
+
+                // Load the config of rest of sites in background.
+                angular.forEach(siteIds, function(siteId) {
+                    if (siteId != currentSiteId) {
+                        setSiteConfig(siteId);
+                    }
+                });
+
+                return promise;
+            });
+        });
+    }
+
+    /**
+     * Store the config of a site.
+     *
+     * @return {Promise} Promise resolved when the config is loaded for the site.
+     */
+    function setSiteConfig(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            if (site.getStoredConfig() || !site.wsAvailable('tool_mobile_get_config')) {
+                // Site already has the config or it cannot be retrieved. Stop.
+                return;
+            }
+
+            // Get the site config.
+            return site.getConfig().then(function(config) {
+                return $mmSitesManager.addSite(site.getId(), site.getURL(),
+                        site.getToken(), site.getInfo(), site.getPrivateToken(), config);
+            }).catch(function() {
+                // Ignore errors.
+            });
         });
     }
 
