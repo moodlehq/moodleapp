@@ -28,6 +28,7 @@ angular.module('mm.core.sidemenu')
     $scope.handlers = $mmSideMenuDelegate.getNavHandlers();
     $scope.areNavHandlersLoaded = $mmSideMenuDelegate.areNavHandlersLoaded;
     $scope.siteinfo = $mmSite.getInfo();
+    loadLogoutLabel();
 
     $scope.logout = function() {
         $mmSitesManager.logout().finally(function() {
@@ -44,12 +45,18 @@ angular.module('mm.core.sidemenu')
         $scope.siteinfo = undefined;
         $timeout(function() {
             $scope.siteinfo = $mmSite.getInfo();
+            loadLogoutLabel();
 
             // Update docs URL, maybe the Moodle release has changed.
             $mmSite.getDocsUrl().then(function(docsurl) {
                 $scope.docsurl = docsurl;
             });
         });
+    }
+
+    function loadLogoutLabel() {
+        var config = $mmSite.getStoredConfig();
+        $scope.logoutLabel = 'mm.sidemenu.' + (config && config.tool_mobile_forcelogout == "1" ? 'logout': 'changesite');
     }
 
     var langObserver = $mmEvents.on(mmCoreEventLanguageChanged, updateSiteInfo);
