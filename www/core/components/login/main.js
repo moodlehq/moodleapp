@@ -268,8 +268,17 @@ angular.module('mm.core.login', [])
                     isSSOConfirmShown = true;
                     $mmUtil.showConfirm($translate('mm.login.reconnectssodescription')).then(function() {
                         waitingForBrowser = true;
-                        $mmLoginHelper.confirmAndOpenBrowserForSSOLogin(
+                        $mmLoginHelper.openBrowserForSSOLogin(
                                     result.siteurl, result.code, result.service, result.config && result.config.launchurl);
+                    }).catch(function() {
+                        // User cancelled, logout him.
+                        $mmSitesManager.logout().then(function() {
+                            $ionicHistory.nextViewOptions({
+                                disableAnimate: true,
+                                disableBack: true
+                            });
+                            $state.go('mm_login.sites');
+                        });
                     }).finally(function() {
                         isSSOConfirmShown = false;
                     });
