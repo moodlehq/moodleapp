@@ -88,13 +88,16 @@ angular.module('mm.core', ['pascalprecht.translate'])
             },
             cache: false,
             template: '<ion-view><ion-content mm-state-class><mm-loading class="mm-loading-center"></mm-loading></ion-content></ion-view>',
-            controller: function($scope, $state, $stateParams, $mmSite, $mmSitesManager, $ionicHistory, $mmAddonManager, $mmApp) {
+            controller: function($scope, $state, $stateParams, $mmSite, $mmSitesManager, $ionicHistory, $mmAddonManager, $mmApp,
+                        $mmLoginHelper) {
 
                 $ionicHistory.nextViewOptions({disableBack: true});
 
                 function loadSiteAndGo() {
                     $mmSitesManager.loadSite($stateParams.siteid).then(function() {
-                        $state.go($stateParams.state, $stateParams.params);
+                        if (!$mmLoginHelper.isSiteLoggedOut()) {
+                            $state.go($stateParams.state, $stateParams.params);
+                        }
                     }, function() {
                         // Site doesn't exist.
                         $state.go('mm_login.sites');

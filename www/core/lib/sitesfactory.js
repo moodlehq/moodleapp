@@ -169,15 +169,17 @@ angular.module('mm.core')
          * @param  {Object} infos          Site's info.
          * @param  {String} [privateToken] User's private token.
          * @param  {Object} [config]       Site config.
+         * @param  {Boolean} loggedOut     True if logged out and needs to authenticate again, false otherwise.
          * @return {Void}
          */
-        function Site(id, siteurl, token, infos, privateToken, config) {
+        function Site(id, siteurl, token, infos, privateToken, config, loggedOut) {
             this.id = id;
             this.siteurl = siteurl;
             this.token = token;
             this.infos = infos;
             this.privateToken = privateToken;
             this.config = config;
+            this.loggedOut = !!loggedOut;
 
             if (this.id) {
                 this.db = $mmDB.getDB('Site-' + this.id, siteSchema, dboptions);
@@ -292,9 +294,19 @@ angular.module('mm.core')
          * Check if token is already expired using local data.
          *
          * @return {Boolean} is token is expired or not.
+         * @deprecated since version 3.2.
          */
         Site.prototype.isTokenExpired = function() {
             return this.token == mmCoreLoginTokenChangePassword;
+        };
+
+        /**
+         * Check if user logged out from the site and needs to authenticate again.
+         *
+         * @return {Boolean} Whether is logged out.
+         */
+        Site.prototype.isLoggedOut = function() {
+            return !!this.loggedOut;
         };
 
         /**
@@ -313,6 +325,15 @@ angular.module('mm.core')
          */
         Site.prototype.setConfig = function(config) {
             this.config = config;
+        };
+
+        /**
+         * Set site logged out.
+         *
+         * @param  {Boolean} loggedOut True if logged out and needs to authenticate again, false otherwise.
+         */
+        Site.prototype.setLoggedOut = function(loggedOut) {
+            this.loggedOut = !!loggedOut;
         };
 
         /**
@@ -1300,12 +1321,13 @@ angular.module('mm.core')
          * @param  {Object} infos          Site's info.
          * @param  {String} [privateToken] User's private token.
          * @param  {Object} [config]       Site config.
+         * @param  {Boolean} loggedOut     True if logged out and needs to authenticate again, false otherwise.
          * @return {Object}                The current site object.
          * @description
          * This returns a site object.
          */
-        self.makeSite = function(id, siteurl, token, infos, privateToken, config) {
-            return new Site(id, siteurl, token, infos, privateToken, config);
+        self.makeSite = function(id, siteurl, token, infos, privateToken, config, loggedOut) {
+            return new Site(id, siteurl, token, infos, privateToken, config, loggedOut);
         };
 
         /**

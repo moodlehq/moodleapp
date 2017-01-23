@@ -26,9 +26,9 @@ angular.module('mm.core.login')
  * @ngdoc service
  * @name $mmLoginHelper
  */
-.factory('$mmLoginHelper', function($q, $log, $mmConfig, mmLoginSSOCode, mmLoginSSOInAppCode, mmLoginLaunchSiteURL,
+.factory('$mmLoginHelper', function($q, $log, $mmConfig, mmLoginSSOCode, mmLoginSSOInAppCode, mmLoginLaunchSiteURL, $mmEvents,
             mmLoginLaunchPassport, md5, $mmSite, $mmSitesManager, $mmLang, $mmUtil, $state, $mmAddonManager,
-            $translate, mmCoreConfigConstants) {
+            $translate, mmCoreConfigConstants, mmCoreEventSessionExpired) {
 
     $log = $log.getInstance('$mmLoginHelper');
 
@@ -72,9 +72,8 @@ angular.module('mm.core.login')
      */
     self.confirmAndOpenBrowserForSSOLogin = function(siteurl, typeOfLogin, service, launchUrl) {
         // Show confirm only if it's needed. Treat "false" (string) as false to prevent typing errors.
-        var skipConfirmation = self.isSSOEmbeddedBrowser(typeOfLogin) ||
-                    (mmCoreConfigConstants.skipssoconfirmation && mmCoreConfigConstants.skipssoconfirmation !== 'false'),
-            promise = skipConfirmation ? $q.when() : $mmUtil.showConfirm($translate('mm.login.logininsiterequired'));
+        var showConfirmation = self.shouldShowSSOConfirm(typeOfLogin),
+            promise = showConfirmation ? $mmUtil.showConfirm($translate('mm.login.logininsiterequired')) : $q.when();
 
         promise.then(function() {
             self.openBrowserForSSOLogin(siteurl, typeOfLogin, service, launchUrl);
@@ -216,6 +215,23 @@ angular.module('mm.core.login')
     };
 
     /**
+     * Check if current site is logged out, triggering mmCoreEventSessionExpired if it is.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#isSiteLoggedOut
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Boolean}         True if user is logged out, false otherwise.
+     */
+    self.isSiteLoggedOut = function() {
+        if ($mmSite.isLoggedOut()) {
+            $mmEvents.trigger(mmCoreEventSessionExpired, $mmSite.getId());
+            return true;
+        }
+        return false;
+    };
+
+    /**
      * Check if SSO login should use an embedded browser.
      *
      * @module mm.core.login
@@ -299,6 +315,20 @@ angular.module('mm.core.login')
         $mmConfig.set(mmLoginLaunchPassport, passport);
 
         return loginUrl;
+    };
+
+    /**
+     * Check if a confirm should be shown to open a SSO authentication.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#shouldShowSSOConfirm
+     * @param  {Number} typeOfLogin mmLoginSSOCode or mmLoginSSOInAppCode.
+     * @return {Boolean}            True if confirm modal should be shown, false otherwise.
+     */
+    self.shouldShowSSOConfirm = function(typeOfLogin) {
+        return !self.isSSOEmbeddedBrowser(typeOfLogin) &&
+                    (!mmCoreConfigConstants.skipssoconfirmation || mmCoreConfigConstants.skipssoconfirmation === 'false');
     };
 
     /**

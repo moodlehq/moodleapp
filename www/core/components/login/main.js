@@ -14,7 +14,7 @@
 
 angular.module('mm.core.login', [])
 
-.constant('mmCoreLoginTokenChangePassword', '*changepassword*')
+.constant('mmCoreLoginTokenChangePassword', '*changepassword*') // Deprecated.
 
 .config(function($stateProvider, $urlRouterProvider, $mmInitDelegateProvider, mmInitDelegateMaxAddonPriority) {
 
@@ -119,7 +119,7 @@ angular.module('mm.core.login', [])
 
 .run(function($log, $state, $mmUtil, $translate, $mmSitesManager, $rootScope, $mmSite, $mmURLDelegate, $ionicHistory, $timeout,
                 $mmEvents, $mmLoginHelper, mmCoreEventSessionExpired, $mmApp, $ionicPlatform, mmCoreConfigConstants, $mmText,
-                mmCoreEventPasswordChangeForced, mmCoreEventUserNotFullySetup, mmCoreEventSitePolicyNotAgreed) {
+                mmCoreEventPasswordChangeForced, mmCoreEventUserNotFullySetup, mmCoreEventSitePolicyNotAgreed, $q) {
 
     $log = $log.getInstance('mmLogin');
 
@@ -195,11 +195,13 @@ angular.module('mm.core.login', [])
     $rootScope.$on('$cordovaInAppBrowser:exit', function() {
         waitingForBrowser = false;
         lastInAppUrl = false;
+        checkLogout();
     });
     $ionicPlatform.on('resume', function() {
         // Wait a second before setting it to false since in iOS there could be some frozen WS calls.
         $timeout(function() {
             waitingForBrowser = false;
+            checkLogout();
         }, 1000);
     });
 
@@ -245,8 +247,10 @@ angular.module('mm.core.login', [])
     // Function to handle session expired events.
     function sessionExpired(siteid) {
 
-        var siteurl = $mmSite.getURL();
-        if (typeof(siteurl) === 'undefined') {
+        var siteUrl = $mmSite.getURL(),
+            promise;
+
+        if (typeof(siteUrl) === 'undefined') {
             return;
         }
 
@@ -255,7 +259,7 @@ angular.module('mm.core.login', [])
         }
 
         // Check authentication method.
-        $mmSitesManager.checkSite(siteurl).then(function(result) {
+        $mmSitesManager.checkSite(siteUrl).then(function(result) {
 
             if (result.warning) {
                 $mmUtil.showErrorModal(result.warning, true, 4000);
@@ -266,19 +270,21 @@ angular.module('mm.core.login', [])
                 // or show it again if the user is already authenticating using SSO.
                 if (!$mmApp.isSSOAuthenticationOngoing() && !isSSOConfirmShown && !waitingForBrowser) {
                     isSSOConfirmShown = true;
-                    $mmUtil.showConfirm($translate('mm.login.reconnectssodescription')).then(function() {
+
+                    if ($mmLoginHelper.shouldShowSSOConfirm(result.code)) {
+                        promise = $mmUtil.showConfirm($translate.instant(
+                                'mm.login.' + ($mmSite.isLoggedOut() ? 'loggedoutssodescription' : 'reconnectssodescription')));
+                    } else {
+                        promise = $q.when();
+                    }
+
+                    promise.then(function() {
                         waitingForBrowser = true;
                         $mmLoginHelper.openBrowserForSSOLogin(
                                     result.siteurl, result.code, result.service, result.config && result.config.launchurl);
                     }).catch(function() {
                         // User cancelled, logout him.
-                        $mmSitesManager.logout().then(function() {
-                            $ionicHistory.nextViewOptions({
-                                disableAnimate: true,
-                                disableBack: true
-                            });
-                            $state.go('mm_login.sites');
-                        });
+                        logout();
                     }).finally(function() {
                         isSSOConfirmShown = false;
                     });
@@ -371,5 +377,25 @@ angular.module('mm.core.login', [])
         });
 
         return true;
+    }
+
+    // Logout the user if needed.
+    function checkLogout() {
+        if (!$mmApp.isSSOAuthenticationOngoing() && $mmSite.isLoggedIn() && $mmSite.isLoggedOut() &&
+                $state.current.name != 'mm_login.reconnect') {
+            // User must reauthenticate but he closed the InAppBrowser without doing so, logout him and go to sites list.
+            logout();
+        }
+    }
+
+    // Logout user and go to sites list.
+    function logout() {
+        $mmSitesManager.logout().then(function() {
+            $ionicHistory.nextViewOptions({
+                disableAnimate: true,
+                disableBack: true
+            });
+            $state.go('mm_login.sites');
+        });
     }
 });
