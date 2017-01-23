@@ -65,6 +65,7 @@ angular.module('mm.addons.notifications')
              */
             return function($scope) {
                 var $mmPushNotificationsDelegate = $mmAddonManager.get('$mmPushNotificationsDelegate'),
+                    $mmaPushNotifications = $mmAddonManager.get('$mmaPushNotifications'),
                     readChangedObserver, cronObserver;
 
                 $scope.icon = 'ion-ios-bell';
@@ -81,13 +82,13 @@ angular.module('mm.addons.notifications')
 
                     readChangedObserver = $mmEvents.on(mmaNotificationsReadChangedEvent, function(data) {
                         if (data && $mmSitesManager.isCurrentSite(data.siteid)) {
-                            updateUnreadNotificationsCount();
+                            updateUnreadNotificationsCount(data.siteid);
                         }
                     });
 
                     cronObserver = $mmEvents.on(mmaNotificationsReadCronEvent, function(data) {
                         if (data && $mmSitesManager.isCurrentSite(data.siteid)) {
-                            updateUnreadNotificationsCount();
+                            updateUnreadNotificationsCount(data.siteid);
                         }
                     });
 
@@ -96,14 +97,21 @@ angular.module('mm.addons.notifications')
                         $mmPushNotificationsDelegate.registerReceiveHandler('mmaNotifications:sidemenu', function(notification) {
                             // New message received. If it's from current site, refresh the data.
                             if ($mmUtil.isTrueOrOne(notification.notif) && $mmSitesManager.isCurrentSite(notification.site)) {
-                                updateUnreadNotificationsCount();
+                                updateUnreadNotificationsCount(notification.site);
                             }
                         });
+
+                        // Register Badge counter.
+                        $mmPushNotificationsDelegate.registerCounterHandler('mmaNotifications');
                     }
 
-                    function updateUnreadNotificationsCount() {
+                    function updateUnreadNotificationsCount(siteId) {
                         return $mmaNotifications.getUnreadNotificationsCount().then(function(unread) {
                             $scope.badge = unread;
+                            // Update badge.
+                            if ($mmaPushNotifications) {
+                                $mmaPushNotifications.updateAddonCounter(siteId, 'mmaNotifications', unread);
+                            }
                         });
                     }
                 }
