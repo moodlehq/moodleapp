@@ -480,11 +480,7 @@ angular.module('mm.core')
             currentSite = site;
             self.login(siteId);
 
-            if (site.isTokenExpired()) {
-                $log.debug('Token expired, rejecting.');
-                $mmEvents.trigger(mmCoreEventSessionExpired, siteId);
-                return $mmLang.translateAndReject('mm.login.reconnectdescription');
-            } else if (site.isLoggedOut()) {
+            if (site.isLoggedOut()) {
                 // Logged out, nothing else to do.
                 return;
             }
@@ -492,7 +488,7 @@ angular.module('mm.core')
             // Check if local_mobile was installed to Moodle.
             return site.checkIfLocalMobileInstalledAndNotUsed().then(function() {
                 // Local mobile was added. Throw invalid session to force reconnect and create a new token.
-                $mmEvents.trigger(mmCoreEventSessionExpired, siteId);
+                $mmEvents.trigger(mmCoreEventSessionExpired, {siteid: siteId});
             }, function() {
                 // Update site info. We don't block the UI.
                 self.updateSiteInfo(siteId);

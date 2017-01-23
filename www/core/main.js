@@ -95,7 +95,7 @@ angular.module('mm.core', ['pascalprecht.translate'])
 
                 function loadSiteAndGo() {
                     $mmSitesManager.loadSite($stateParams.siteid).then(function() {
-                        if (!$mmLoginHelper.isSiteLoggedOut()) {
+                        if (!$mmLoginHelper.isSiteLoggedOut($stateParams.state, $stateParams.params)) {
                             $state.go($stateParams.state, $stateParams.params);
                         }
                     }, function() {

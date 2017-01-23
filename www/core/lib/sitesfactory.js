@@ -505,13 +505,6 @@ angular.module('mm.core')
                 initialToken = site.token;
             data = data || {};
 
-            // Prevent calls with expired tokens.
-            if (site.isTokenExpired()) {
-                $log.debug('Token expired, rejecting.');
-                $mmEvents.trigger(mmCoreEventSessionExpired, site.id);
-                return $mmLang.translateAndReject('mm.login.reconnectdescription');
-            }
-
             // Get the method to use based on the available ones.
             method = site.getCompatibleFunction(method);
 
@@ -571,7 +564,7 @@ angular.module('mm.core')
                         }
 
                         // Session expired, trigger event.
-                        $mmEvents.trigger(mmCoreEventSessionExpired, site.id);
+                        $mmEvents.trigger(mmCoreEventSessionExpired, {siteid: site.id});
                         // Change error message. We'll try to get data from cache.
                         error = $translate.instant('mm.core.lostconnection');
                     } else if (error === mmCoreUserDeleted) {

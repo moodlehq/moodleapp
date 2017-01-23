@@ -42,7 +42,7 @@ angular.module('mm.core.login')
             // Only accept the redirect if it was stored less than 20 seconds ago.
             if (new Date().getTime() - redirectData.timemodified < 20000) {
                 return $mmSitesManager.loadSite(redirectData.siteid).then(function() {
-                    if (!$mmLoginHelper.isSiteLoggedOut()) {
+                    if (!$mmLoginHelper.isSiteLoggedOut(redirectData.state, redirectData.params)) {
                         $state.go(redirectData.state, redirectData.params);
                     }
                 }).catch(function() {

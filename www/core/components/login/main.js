@@ -83,7 +83,9 @@ angular.module('mm.core.login', [])
             siteurl: '',
             username: '',
             infositeurl: '',
-            siteid: ''
+            siteid: '',
+            statename: null, // Name and params of the state to go once authenticated. If not defined, site initial page.
+            stateparams: null
         }
     })
 
@@ -245,16 +247,17 @@ angular.module('mm.core.login', [])
     });
 
     // Function to handle session expired events.
-    function sessionExpired(siteid) {
+    function sessionExpired(data) {
 
-        var siteUrl = $mmSite.getURL(),
+        var siteId = data && data.siteid,
+            siteUrl = $mmSite.getURL(),
             promise;
 
         if (typeof(siteUrl) === 'undefined') {
             return;
         }
 
-        if (siteid && siteid !== $mmSite.getId()) {
+        if (siteId && siteId !== $mmSite.getId()) {
             return; // Site that triggered the event is not current site.
         }
 
@@ -280,8 +283,8 @@ angular.module('mm.core.login', [])
 
                     promise.then(function() {
                         waitingForBrowser = true;
-                        $mmLoginHelper.openBrowserForSSOLogin(
-                                    result.siteurl, result.code, result.service, result.config && result.config.launchurl);
+                        $mmLoginHelper.openBrowserForSSOLogin(result.siteurl, result.code, result.service,
+                                result.config && result.config.launchurl, data.statename, data.stateparams);
                     }).catch(function() {
                         // User cancelled, logout him.
                         logout();
@@ -291,13 +294,15 @@ angular.module('mm.core.login', [])
                 }
             } else {
                 var info = $mmSite.getInfo();
-                if (typeof(info) !== 'undefined' && typeof(info.username) !== 'undefined') {
+                if (typeof info != 'undefined' && typeof info.username != 'undefined') {
                     $ionicHistory.nextViewOptions({disableBack: true});
                     $state.go('mm_login.reconnect', {
                         siteurl: result.siteurl,
                         username: info.username,
                         infositeurl: info.siteurl,
-                        siteid: $mmSite.getId()
+                        siteid: siteId,
+                        statename: data.statename,
+                        stateparams: data.stateparams
                     });
                 }
             }
@@ -347,7 +352,8 @@ angular.module('mm.core.login', [])
         $mmApp.startSSOAuthentication();
         $log.debug('App launched by URL');
 
-        var modal = $mmUtil.showModalLoading('mm.login.authenticating', true);
+        var modal = $mmUtil.showModalLoading('mm.login.authenticating', true),
+            siteData;
 
         // Delete the sso scheme from the URL.
         url = url.replace(ssoScheme, '');
@@ -363,10 +369,16 @@ angular.module('mm.core.login', [])
         // Wait for app to be ready.
         $mmApp.ready().then(function() {
             return $mmLoginHelper.validateBrowserSSOLogin(url);
-        }).then(function(siteData) {
+        }).then(function(data) {
+            siteData = data;
             return $mmLoginHelper.handleSSOLoginAuthentication(siteData.siteurl, siteData.token, siteData.privateToken);
         }).then(function() {
-            $mmLoginHelper.goToSiteInitialPage();
+            if (siteData.statename) {
+                // State defined, go to that state instead of site initial page.
+                $state.go(siteData.statename, siteData.stateparams);
+            } else {
+                $mmLoginHelper.goToSiteInitialPage();
+            }
         }).catch(function(errorMessage) {
             if (typeof errorMessage === 'string' && errorMessage !== '') {
                 $mmUtil.showErrorModal(errorMessage);

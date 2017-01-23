@@ -16,8 +16,9 @@ angular.module('mm.core.login')
 
 .constant('mmLoginSSOCode', 2) // SSO in browser window is required.
 .constant('mmLoginSSOInAppCode', 3) // SSO in embedded browser is required.
-.constant('mmLoginLaunchSiteURL', 'mmLoginLaunchSiteURL')
-.constant('mmLoginLaunchPassport', 'mmLoginLaunchPassport')
+.constant('mmLoginLaunchSiteURL', 'mmLoginLaunchSiteURL') // @deprecated since version 3.2.1. Use mmLoginLaunchData instead.
+.constant('mmLoginLaunchPassport', 'mmLoginLaunchPassport') // @deprecated since version 3.2.1. Use mmLoginLaunchData instead.
+.constant('mmLoginLaunchData', 'mmLoginLaunchData')
 
 /**
  * Service to provide some helper functionalities for the login component.
@@ -26,9 +27,9 @@ angular.module('mm.core.login')
  * @ngdoc service
  * @name $mmLoginHelper
  */
-.factory('$mmLoginHelper', function($q, $log, $mmConfig, mmLoginSSOCode, mmLoginSSOInAppCode, mmLoginLaunchSiteURL, $mmEvents,
-            mmLoginLaunchPassport, md5, $mmSite, $mmSitesManager, $mmLang, $mmUtil, $state, $mmAddonManager,
-            $translate, mmCoreConfigConstants, mmCoreEventSessionExpired) {
+.factory('$mmLoginHelper', function($q, $log, $mmConfig, mmLoginSSOCode, mmLoginSSOInAppCode, mmLoginLaunchData, $mmEvents,
+            md5, $mmSite, $mmSitesManager, $mmLang, $mmUtil, $state, $mmAddonManager, $translate, mmCoreConfigConstants,
+            mmCoreEventSessionExpired) {
 
     $log = $log.getInstance('$mmLoginHelper');
 
@@ -220,12 +221,17 @@ angular.module('mm.core.login')
      * @module mm.core.login
      * @ngdoc method
      * @name $mmLoginHelper#isSiteLoggedOut
-     * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Boolean}         True if user is logged out, false otherwise.
+     * @param  {String} [stateName]   Name of the state to go once authenticated if logged out. If not defined, site initial page.
+     * @param  {Object} [stateParams] Params of the state to go once authenticated if logged out.
+     * @return {Boolean}              True if user is logged out, false otherwise.
      */
-    self.isSiteLoggedOut = function() {
+    self.isSiteLoggedOut = function(stateName, stateParams) {
         if ($mmSite.isLoggedOut()) {
-            $mmEvents.trigger(mmCoreEventSessionExpired, $mmSite.getId());
+            $mmEvents.trigger(mmCoreEventSessionExpired, {
+                siteid: $mmSite.getId(),
+                statename: stateName,
+                stateparams: stateParams
+            });
             return true;
         }
         return false;
@@ -263,23 +269,23 @@ angular.module('mm.core.login')
      * @module mm.core.login
      * @ngdoc method
      * @name $mmLoginHelper#openBrowserForSSOLogin
-     * @param  {String} siteurl     URL of the site where the SSO login will be performed.
-     * @param  {Number} typeOfLogin mmLoginSSOCode or mmLoginSSOInAppCode.
-     * @param  {String} [service]   The service to use. If not defined, external service will be used.
-     * @param  {String} [launchUrl] The URL to open. If not defined, local_mobile URL will be used.
+     * @param  {String} siteurl       URL of the site where the SSO login will be performed.
+     * @param  {Number} typeOfLogin   mmLoginSSOCode or mmLoginSSOInAppCode.
+     * @param  {String} [service]     The service to use. If not defined, external service will be used.
+     * @param  {String} [launchUrl]   The URL to open. If not defined, local_mobile URL will be used.
+     * @param  {String} [stateName]   Name of the state to go once authenticated. If not defined, site initial page.
+     * @param  {Object} [stateParams] Params of the state to go once authenticated.
      * @return {Void}
      */
-    self.openBrowserForSSOLogin = function(siteurl, typeOfLogin, service, launchUrl) {
-        var loginUrl = self.prepareForSSOLogin(siteurl, service, launchUrl);
+    self.openBrowserForSSOLogin = function(siteurl, typeOfLogin, service, launchUrl, stateName, stateParams) {
+        var loginUrl = self.prepareForSSOLogin(siteurl, service, launchUrl, stateName, stateParams);
 
         if (self.isSSOEmbeddedBrowser(typeOfLogin)) {
-            $translate('mm.login.cancel').then(function(cancelStr) {
-                var options = {
-                    clearsessioncache: 'yes', // Clear the session cache to allow for multiple logins.
-                    closebuttoncaption: cancelStr,
-                };
-                $mmUtil.openInApp(loginUrl, options);
-            });
+            var options = {
+                clearsessioncache: 'yes', // Clear the session cache to allow for multiple logins.
+                closebuttoncaption: $translate.instant('mm.login.cancel'),
+            };
+            $mmUtil.openInApp(loginUrl, options);
         } else {
             $mmUtil.openInBrowser(loginUrl);
             if (navigator.app) {
@@ -294,14 +300,16 @@ angular.module('mm.core.login')
      * @module mm.core.login
      * @ngdoc method
      * @name $mmLoginHelper#prepareForSSOLogin
-     * @param  {String} siteurl     URL of the site where the SSO login will be performed.
-     * @param  {String} [service]   The service to use. If not defined, external service will be used.
-     * @param  {String} [launchUrl] The URL to open. If not defined, local_mobile URL will be used.
+     * @param  {String} siteUrl       URL of the site where the SSO login will be performed.
+     * @param  {String} [service]     The service to use. If not defined, external service will be used.
+     * @param  {String} [launchUrl]   The URL to open. If not defined, local_mobile URL will be used.
+     * @param  {String} [stateName]   Name of the state to go once authenticated. If not defined, site initial page.
+     * @param  {Object} [stateParams] Params of the state to go once authenticated.
      * @return {Void}
      */
-    self.prepareForSSOLogin = function(siteurl, service, launchUrl) {
+    self.prepareForSSOLogin = function(siteUrl, service, launchUrl, stateName, stateParams) {
         service = service || mmCoreConfigConstants.wsextservice;
-        launchUrl = launchUrl || siteurl + '/local/mobile/launch.php';
+        launchUrl = launchUrl || siteUrl + '/local/mobile/launch.php';
 
         var passport = Math.random() * 1000,
             loginUrl = launchUrl + '?service=' + service;
@@ -311,8 +319,12 @@ angular.module('mm.core.login')
 
         // Store the siteurl and passport in $mmConfig for persistence. We are "configuring"
         // the app to wait for an SSO. $mmConfig shouldn't be used as a temporary storage.
-        $mmConfig.set(mmLoginLaunchSiteURL, siteurl);
-        $mmConfig.set(mmLoginLaunchPassport, passport);
+        $mmConfig.set(mmLoginLaunchData, {
+            siteurl: siteUrl,
+            passport: passport,
+            statename: stateName || '',
+            stateparams: stateParams || {}
+        });
 
         return loginUrl;
     };
@@ -344,39 +356,39 @@ angular.module('mm.core.login')
         // Split signature:::token
         var params = url.split(":::");
 
-        return $mmConfig.get(mmLoginLaunchSiteURL).then(function(launchSiteURL) {
-            return $mmConfig.get(mmLoginLaunchPassport).then(function(passport) {
+        return $mmConfig.get(mmLoginLaunchData).then(function(data) {
+            var launchSiteURL = data.siteurl,
+                passport = data.passport;
 
-                // Reset temporary values.
-                $mmConfig.delete(mmLoginLaunchSiteURL);
-                $mmConfig.delete(mmLoginLaunchPassport);
+            // Reset temporary values.
+            $mmConfig.delete(mmLoginLaunchData);
 
-                // Validate the signature.
-                // We need to check both http and https.
-                var signature = md5.createHash(launchSiteURL + passport);
-                if (signature != params[0]) {
-                    if (launchSiteURL.indexOf("https://") != -1) {
-                        launchSiteURL = launchSiteURL.replace("https://", "http://");
-                    } else {
-                        launchSiteURL = launchSiteURL.replace("http://", "https://");
-                    }
-                    signature = md5.createHash(launchSiteURL + passport);
-                }
-
-                if (signature == params[0]) {
-                    $log.debug('Signature validated');
-                    return {
-                        siteurl: launchSiteURL,
-                        token: params[1],
-                        privateToken: params[2]
-                    };
+            // Validate the signature.
+            // We need to check both http and https.
+            var signature = md5.createHash(launchSiteURL + passport);
+            if (signature != params[0]) {
+                if (launchSiteURL.indexOf("https://") != -1) {
+                    launchSiteURL = launchSiteURL.replace("https://", "http://");
                 } else {
-                    $log.debug('Inalid signature in the URL request yours: ' + params[0] + ' mine: '
-                                    + signature + ' for passport ' + passport);
-                    return $mmLang.translateAndReject('mm.core.unexpectederror');
+                    launchSiteURL = launchSiteURL.replace("http://", "https://");
                 }
+                signature = md5.createHash(launchSiteURL + passport);
+            }
 
-            });
+            if (signature == params[0]) {
+                $log.debug('Signature validated');
+                return {
+                    siteurl: launchSiteURL,
+                    token: params[1],
+                    privateToken: params[2],
+                    statename: data.statename,
+                    stateparams: data.stateparams
+                };
+            } else {
+                $log.debug('Inalid signature in the URL request yours: ' + params[0] + ' mine: '
+                                + signature + ' for passport ' + passport);
+                return $mmLang.translateAndReject('mm.core.unexpectederror');
+            }
         });
     };
 
