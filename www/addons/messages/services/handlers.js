@@ -372,7 +372,8 @@ angular.module('mm.addons.messages')
 
                     function updateUnreadConversationsCount(siteId) {
                         return $mmaMessages.getUnreadConversationsCount().then(function(unread) {
-                            $scope.badge = unread;
+                            // Leave badge enter if there is a 0+ or a 0.
+                            $scope.badge = parseInt(unread, 10) > 0 ? unread : '';
                             // Update badge.
                             if ($mmaPushNotifications) {
                                 $mmaPushNotifications.updateAddonCounter(siteId, 'mmaMessages', unread);

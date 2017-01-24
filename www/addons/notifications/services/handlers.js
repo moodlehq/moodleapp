@@ -107,7 +107,8 @@ angular.module('mm.addons.notifications')
 
                     function updateUnreadNotificationsCount(siteId) {
                         return $mmaNotifications.getUnreadNotificationsCount().then(function(unread) {
-                            $scope.badge = unread;
+                            // Leave badge enter if there is a 0+ or a 0.
+                            $scope.badge = parseInt(unread, 10) > 0 ? unread : '';
                             // Update badge.
                             if ($mmaPushNotifications) {
                                 $mmaPushNotifications.updateAddonCounter(siteId, 'mmaNotifications', unread);

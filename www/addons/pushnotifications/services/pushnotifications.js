@@ -293,9 +293,17 @@ angular.module('mm.addons.pushnotifications')
         });
 
         return $q.all(promises).then(function (counters) {
-            var total = counters.reduce(function (previous, counter) {
-                return previous + counter;
-            }, 0);
+            var plus = false,
+                total = counters.reduce(function (previous, counter) {
+                    // Check if there is a plus sign at the end of the counter.
+                    if (counter != parseInt(counter, 10)) {
+                        plus = true;
+                        counter = parseInt(counter, 10);
+                    }
+                    return previous + counter;
+                }, 0);
+
+            total = plus && total > 0 ? total + '+' : total;
 
             // Save the counter on site.
             return saveAddonBadge(siteId, total);
@@ -323,8 +331,9 @@ angular.module('mm.addons.pushnotifications')
 
             return $q.all(promises).then(function (counters) {
                 var total = counters.reduce(function (previous, counter) {
-                    return previous + counter;
-                }, 0);
+                        // The app badge counter does not support strings, so parse to int before.
+                        return previous + parseInt(counter, 10);
+                    }, 0);
 
                 // Set the app badge.
                 return $cordovaPushV5.setBadgeNumber(total).then(function() {
