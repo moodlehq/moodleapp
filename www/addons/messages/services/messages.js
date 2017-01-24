@@ -450,11 +450,8 @@ angular.module('mm.addons.messages')
     self.markMessageRead = function(messageId) {
         var params = {
                 'messageid': messageId
-            },
-            preSets = {
-                typeExpected: 'boolean'
             };
-        return $mmSite.write('core_message_mark_message_read', params, preSets);
+        return $mmSite.write('core_message_mark_message_read', params);
 
     };
 

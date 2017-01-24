@@ -215,11 +215,8 @@ angular.module('mm.addons.notifications')
     self.markNotificationRead = function(notificationId) {
         var params = {
                 'messageid': notificationId
-            },
-            preSets = {
-                typeExpected: 'boolean'
             };
-        return $mmSite.write('core_message_mark_message_read', params, preSets);
+        return $mmSite.write('core_message_mark_message_read', params);
 
     };
 
