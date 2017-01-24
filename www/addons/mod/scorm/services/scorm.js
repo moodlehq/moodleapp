@@ -21,8 +21,8 @@ angular.module('mm.addons.mod_scorm')
  * @ngdoc service
  * @name $mmaModScorm
  */
-.factory('$mmaModScorm', function($mmSite, $q, $translate, $mmFilepool, $mmFS, $mmWS, $sce, $mmaModScormOnline, $state,
-            $mmaModScormOffline, $mmUtil, $log, $mmSitesManager, mmaModScormComponent) {
+.factory('$mmaModScorm', function($mmSite, $q, $translate, $mmFilepool, $mmFS, $mmWS, $sce, $mmaModScormOnline,
+            $mmaModScormOffline, $mmUtil, $log, $mmSitesManager, mmaModScormComponent, mmCoreOutdated, mmCoreDownloading) {
     $log = $log.getInstance('$mmaModScorm');
 
     var self = {},
@@ -1312,6 +1312,38 @@ angular.module('mm.addons.mod_scorm')
                 self._updateUserDataAfterSave($mmSite.getId(), scorm.id, attempt, tracks);
             }
             return success;
+        }
+    };
+
+    /**
+     * Check if the SCORM main file should be downloaded.
+     * This function should only be called if the SCORM can be downloaded (not downloaded or outdated).
+     *
+     * @module mm.addons.mod_scorm
+     * @ngdoc method
+     * @name $mmaModScorm#shouldDownloadMainFile
+     * @param  {Object} scorm         SCORM to check.
+     * @param  {Boolean} [isOutdated] True if package outdated, false if not downloaded, undefined to calculate it.
+     * @param  {String} [siteId]      Site ID. If not defined, current site.
+     * @return {Promise}              Promise resolved with true if it should be downloaded, false otherwise.
+     */
+    self.shouldDownloadMainFile = function(scorm, isOutdated, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        if (typeof isOutdated == 'undefined') {
+            // Calculate if it's outdated.
+            return $mmFilepool.getPackageData(siteId, mmaModScormComponent, scorm.coursemodule).then(function(data) {
+                var isOutdated = data.status == mmCoreOutdated ||
+                        (data.status == mmCoreDownloading && data.previous == mmCoreOutdated);
+                return !isOutdated || data.revision != scorm.sha1hash;
+            });
+        } else if (isOutdated) {
+            // The package is outdated, but maybe the file hasn't changed.
+            return $mmFilepool.getPackageRevision(siteId, mmaModScormComponent, scorm.coursemodule).then(function(revision) {
+                return scorm.sha1hash != revision;
+            });
+        } else {
+            return $q.when(true);
         }
     };
 

@@ -100,7 +100,7 @@ angular.module('mm.addons.mod_scorm')
     }
 
     /**
-     * Downloads/Prefetches and unzips the SCORM package.
+     * Downloads/Prefetches and unzips the SCORM package if it should be downloaded.
      *
      * @module mm.addons.mod_scorm
      * @ngdoc method
@@ -129,6 +129,25 @@ angular.module('mm.addons.mod_scorm')
             return $mmLang.translateAndReject(result);
         }
 
+        // First verify that the file needs to be downloaded. It needs to be checked manually because the ZIP file
+        // is deleted after unzipping, so the filepool will always download it.
+        return $mmaModScorm.shouldDownloadMainFile(scorm, undefined, siteId).then(function(download) {
+            if (download) {
+                return downloadMainFile(scorm, prefetch, siteId);
+            }
+        });
+    };
+
+    /**
+     * Downloads/Prefetches and unzips the SCORM package.
+     *
+     * @param {Object} scorm     SCORM object returned by $mmaModScorm#getScorm.
+     * @param {Boolean} prefetch True if prefetch, false otherwise.
+     * @param {String} siteId    Site ID.
+     * @return {Promise}         Promise resolved when the file is downloaded and unzipped.
+     *                           @see $mmaModScormPrefetchHandler#_downloadOrPrefetchPackage
+     */
+    function downloadMainFile(scorm, prefetch, siteId) {
         var dirPath,
             deferred = $q.defer(), // We use a deferred to be able to notify.
             packageUrl = $mmaModScorm.getPackageUrl(scorm);
@@ -177,7 +196,7 @@ angular.module('mm.addons.mod_scorm')
         }).then(deferred.resolve, deferred.reject);
 
         return deferred.promise;
-    };
+    }
 
     /**
      * Downloads WS data for SCORM.

@@ -90,11 +90,11 @@ angular.module('mm.addons.mod_scorm')
                     var revision = scorm.sha1hash,
                         timemodified = 0;
 
-                    function download() {
+                    function download(isOutdated) {
                         // We need to call getScorm again, the package might have been updated.
                         $scope.spinner = true; // Show spinner since this operation might take a while.
                         $mmaModScorm.getScorm(courseid, module.id, module.url).then(function(scorm) {
-                            $mmaModScormHelper.confirmDownload(scorm).then(function() {
+                            $mmaModScormHelper.confirmDownload(scorm, isOutdated).then(function() {
                                 $mmaModScormPrefetchHandler.prefetch(module, courseid).catch(function() {
                                     if (!$scope.$$destroyed) {
                                         $mmaModScormHelper.showDownloadError(scorm);
@@ -128,8 +128,8 @@ angular.module('mm.addons.mod_scorm')
                             e.preventDefault();
                             e.stopPropagation();
                         }
-                        $mmaModScorm.invalidateContent(scorm.coursemodule, courseid).finally(function() {
-                            download();
+                        $mmaModScorm.invalidateAllScormData(scorm.id).finally(function() {
+                            download(true);
                         });
                     };
 
