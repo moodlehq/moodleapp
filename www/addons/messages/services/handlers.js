@@ -428,6 +428,15 @@ angular.module('mm.addons.messages')
         };
 
         /**
+         * Whether the process should be executed during a manual sync.
+         *
+         * @return {Boolean} True if is a manual sync process, false otherwise.
+         */
+        self.canManualSync = function() {
+            return true;
+        };
+
+        /**
          * Whether the process uses network or not.
          *
          * @return {Boolean} True if uses network, false otherwise.
