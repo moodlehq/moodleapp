@@ -88,7 +88,7 @@ angular.module('mm.addons.mod_forum')
  * @name $mmaModForumOffline
  */
 .factory('$mmaModForumOffline', function($log, mmaModForumOfflineDiscussionsStore, $mmSitesManager, mmaModForumOfflineRepliesStore,
-        $mmSite, $mmUser) {
+        $mmSite, $mmUser, $mmFS) {
 
     $log = $log.getInstance('$mmaModForumOffline');
 
@@ -199,18 +199,21 @@ angular.module('mm.addons.mod_forum')
      * @module mm.addons.mod_forum
      * @ngdoc method
      * @name $mmaModForumOffline#addNewDiscussion
-     * @param {Number}  forumId   Forum ID.
-     * @param {String}  name      Forum name.
-     * @param {Number}  courseId  Course ID the forum belongs to.
-     * @param {String}  subject   New discussion's subject.
-     * @param {String}  message   New discussion's message.
-     * @param {String}  subscribe True if should subscribe to the discussion, false otherwise.
-     * @param {String}  [groupId] Group this discussion belongs to.
-     * @param {String}  [siteId]  Site ID. If not defined, current site.
-     * @param  {Number} [userId]  User the discussion belong to. If not defined, current user in site.
-     * @return {Promise}          Promise resolved when new discussion is successfully saved.
+     * @param  {Number} forumId       Forum ID.
+     * @param  {String} name          Forum name.
+     * @param  {Number} courseId      Course ID the forum belongs to.
+     * @param  {String} subject       New discussion's subject.
+     * @param  {String} message       New discussion's message.
+     * @param  {String} subscribe     True if should subscribe to the discussion, false otherwise.
+     * @param  {String} [groupId]     Group this discussion belongs to.
+     * @param  {Object} [attach]      Result of $mmFileUploader#storeFilesToUpload for attachments.
+     * @param  {Number} [timecreated] The time the discussion was created. If not defined, current time.
+     * @param  {String} [siteId]      Site ID. If not defined, current site.
+     * @param  {Number} [userId]      User the discussion belong to. If not defined, current user in site.
+     * @return {Promise}              Promise resolved when new discussion is successfully saved.
      */
-    self.addNewDiscussion = function(forumId, name, courseId, subject, message, subscribe, groupId, siteId, userId) {
+    self.addNewDiscussion = function(forumId, name, courseId, subject, message, subscribe, groupId, attach, timecreated,
+                siteId, userId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -226,8 +229,13 @@ angular.module('mm.addons.mod_forum')
                     subscribe: subscribe,
                     groupid: groupId || -1,
                     userid: userId,
-                    timecreated: new Date().getTime()
+                    timecreated: timecreated || new Date().getTime()
                 };
+
+            if (attach) {
+                entry.attachments = attach;
+            }
+
             return db.insert(mmaModForumOfflineDiscussionsStore, entry);
         });
     };
@@ -346,6 +354,43 @@ angular.module('mm.addons.mod_forum')
         return $mmSitesManager.getSite(siteId).then(function(site) {
             userId = userId || site.getUserId();
             return site.getDb().whereEqual(mmaModForumOfflineRepliesStore, 'discussionAndUser', [discussionId, userId]);
+        });
+    };
+
+    /**
+     * Get the path to the folder where to store files for offline attachments in a forum.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForumOffline#getForumFolder
+     * @param  {Number} forumId  Forum ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with the path.
+     */
+    self.getForumFolder = function(forumId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+
+            var siteFolderPath = $mmFS.getSiteFolder(site.getId()),
+                forumFolderPath = 'offlineforum/' + forumId;
+
+            return $mmFS.concatenatePaths(siteFolderPath, forumFolderPath);
+        });
+    };
+
+    /**
+     * Get the path to the folder where to store files for a new offline discussion.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForumOffline#getNewDiscussionFolder
+     * @param  {Number} forumId     Forum ID.
+     * @param  {Number} timecreated The time the discussion was created.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with the path.
+     */
+    self.getNewDiscussionFolder = function(forumId, timecreated, siteId) {
+        return self.getForumFolder(forumId, siteId).then(function(folderPath) {
+            return $mmFS.concatenatePaths(folderPath, 'newdisc_' + timecreated);
         });
     };
 

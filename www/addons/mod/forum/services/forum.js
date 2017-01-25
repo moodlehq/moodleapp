@@ -89,39 +89,43 @@ angular.module('mm.addons.mod_forum')
      * @param {String} message        New discussion's message.
      * @param {String} subscribe      True if should subscribe to the discussion, false otherwise.
      * @param {String} [groupId]      Group this discussion belongs to.
+     * @param {Mixed} [attach]        The attachments ID if sending online, result of $mmFileUploader#storeFilesToUpload otherwise.
      * @param {String} [siteId]       Site ID. If not defined, current site.
      * @param {Number} [timecreated]  The time the discussion was created. Only used when editing discussion.
-     * @return {Promise}              Promise resolved when the discussion is created.
+     * @param {Boolean} allowOffline  True if it can be stored in offline, false otherwise.
+     * @return {Promise}              Promise resolved with discussion ID if sent online, resolved with false if stored offline.
      */
-    self.addNewDiscussion = function(forumId, name, courseId, subject, message, subscribe, groupId, siteId, timecreated) {
+    self.addNewDiscussion = function(forumId, name, courseId, subject, message, subscribe, groupId, attach, siteId,
+                timecreated, allowOffline) {
         siteId = siteId || $mmSite.getId();
 
         // If we are editing an offline discussion, discard previous first.
         var discardPromise = timecreated ? $mmaModForumOffline.deleteNewDiscussion(forumId, timecreated, siteId) : $q.when();
 
         return discardPromise.then(function() {
-            if (!$mmApp.isOnline()) {
+            if (!$mmApp.isOnline() && allowOffline) {
                 // App is offline, store the action.
                 return storeOffline();
             }
 
-            return self.addNewDiscussionOnline(forumId, subject, message, subscribe, groupId, siteId).then(function() {
-                return true;
+            return self.addNewDiscussionOnline(forumId, subject, message, subscribe, groupId, attach, siteId).then(function(id) {
+                // Success, return the discussion ID.
+                return id;
             }).catch(function(error) {
-                if (error && error.wserror) {
-                    // The WebService has thrown an error, this means that responses cannot be deleted.
-                    return $q.reject(error.error);
-                } else {
+                if (allowOffline && error && !error.wserror) {
                     // Couldn't connect to server, store in offline.
                     return storeOffline();
+                } else {
+                    // The WebService has thrown an error or offline not supported, reject.
+                    return $q.reject(error.error);
                 }
             });
         });
 
         // Convenience function to store a message to be synchronized later.
         function storeOffline() {
-            return $mmaModForumOffline.addNewDiscussion(forumId, name, courseId, subject, message, subscribe, groupId, siteId)
-                    .then(function() {
+            return $mmaModForumOffline.addNewDiscussion(forumId, name, courseId, subject, message, subscribe,
+                    groupId, attach, timecreated, siteId).then(function() {
                 return false;
             });
         }
@@ -133,15 +137,16 @@ angular.module('mm.addons.mod_forum')
      * @module mm.addons.mod_forum
      * @ngdoc method
      * @name $mmaModForum#addNewDiscussionOnline
-     * @param {Number} forumId   Forum ID.
-     * @param {String} subject   New discussion's subject.
-     * @param {String} message   New discussion's message.
-     * @param {String} subscribe True if should subscribe to the discussion, false otherwise.
-     * @param {String} [groupId] Group this discussion belongs to.
-     * @param {String} [siteId]  Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved when the discussion is created.
+     * @param  {Number} forumId    Forum ID.
+     * @param  {String} subject    New discussion's subject.
+     * @param  {String} message    New discussion's message.
+     * @param  {String} subscribe  True if should subscribe to the discussion, false otherwise.
+     * @param  {String} [groupId]  Group this discussion belongs to.
+     * @param  {Number} [attachId] Attachments ID (if any attachment).
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved when the discussion is created.
      */
-    self.addNewDiscussionOnline = function(forumId, subject, message, subscribe, groupId, siteId) {
+    self.addNewDiscussionOnline = function(forumId, subject, message, subscribe, groupId, attachId, siteId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -156,8 +161,16 @@ angular.module('mm.addons.mod_forum')
                     }
                 ]
             };
+
             if (groupId) {
                 params.groupid = groupId;
+            }
+
+            if (attachId) {
+                params.options.push({
+                    name: 'attachmentsid',
+                    value: attachId
+                });
             }
 
             return site.write('mod_forum_add_discussion', params).catch(function(error) {
@@ -175,6 +188,23 @@ angular.module('mm.addons.mod_forum')
                     return response.discussionid;
                 }
             });
+        });
+    };
+
+    /**
+     * Check if a the site allows adding attachments in posts and discussions.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#canAddAttachments
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with a boolean: true if can add attachments, false otherwise.
+     */
+    self.canAddAttachments = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            // Attachments allowed from Moodle 3.1.
+            var version = parseInt(site.getInfo().version, 10);
+            return version && version >= 2016052300;
         });
     };
 
