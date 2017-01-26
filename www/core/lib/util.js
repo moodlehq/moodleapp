@@ -69,7 +69,7 @@ angular.module('mm.core')
     this.$get = function($ionicLoading, $ionicPopup, $injector, $translate, $http, $log, $q, $mmLang, $mmFS, $timeout, $mmApp,
                 $mmText, mmCoreWifiDownloadThreshold, mmCoreDownloadThreshold, $ionicScrollDelegate, $mmWS, $cordovaInAppBrowser,
                 $mmConfig, mmCoreSettingsRichTextEditor, $rootScope, $ionicPlatform, $ionicHistory, mmCoreSplitViewBlock, $state,
-                $window) {
+                $window, $cordovaClipboard) {
 
         $log = $log.getInstance('$mmUtil');
 
@@ -78,7 +78,8 @@ angular.module('mm.core')
             inputSupportKeyboard = ['date', 'datetime', 'datetime-local', 'email', 'month', 'number', 'password',
                 'search', 'tel', 'text', 'time', 'url', 'week'],
             originalBackFunction = $rootScope.$ionicGoBack,
-            backFunctionsStack = [originalBackFunction];
+            backFunctionsStack = [originalBackFunction],
+            toastPromise;
 
         /**
          * Formats a URL, trim, lowercase, etc...
@@ -517,9 +518,9 @@ angular.module('mm.core')
          * @module mm.core
          * @ngdoc method
          * @name $mmUtil#showModalLoading
-         * @param {String}  text           The text of the modal window.
-         * @param {Boolean} needsTranslate True if the 'text' is a $translate key, false otherwise.
-         * @return {Object}                Object with a 'dismiss' function to close the modal.
+         * @param {String}  [text]                  The text of the modal window. Default: mm.core.loading.
+         * @param {Boolean} [needsTranslate=false]  True if the 'text' is a $translate key, false otherwise.
+         * @return {Object}                         Object with a 'dismiss' function to close the modal.
          * @description
          * Usage:
          *     var modal = $mmUtil.showModalLoading(myText);
@@ -531,33 +532,22 @@ angular.module('mm.core')
                 modalShown = false,
                 showModalPromise;
 
-            if (!text) {
-                text = 'mm.core.loading';
-                needsTranslate = true;
-            }
-
-            function showModal(text) {
-                if (!modalClosed) {
-                    $ionicLoading.show({
-                        template:   '<ion-spinner></ion-spinner>' +
-                                    '<p>' + addFormatTextIfNeeded(text) + '</p>'
-                    });
-
-                    // Leave some delay before setting modalShown to true.
-                    // @todo In Ionic 1.3.1 $ionicLoading returns a promise, we should use that promise instead of a delay.
-                    showModalPromise = $timeout(function() {
-                        showModalPromise = null;
-                        if (!modalClosed) {
-                            modalShown = true;
-                        }
-                    }, 200);
+            if (!modalClosed) {
+                if (!text) {
+                    text = $translate.instant('mm.core.loading');
+                } else if (needsTranslate) {
+                    text = $translate.instant(text);
                 }
-            }
 
-            if (needsTranslate) {
-                $translate(text).then(showModal);
-            } else {
-                showModal(text);
+                showModalPromise = $ionicLoading.show({
+                    template:   '<ion-spinner></ion-spinner>' +
+                                '<p>' + addFormatTextIfNeeded(text) + '</p>'
+                }).then(function() {
+                    showModalPromise = null;
+                    if (!modalClosed) {
+                        modalShown = true;
+                    }
+                });
             }
 
             return {
@@ -575,6 +565,59 @@ angular.module('mm.core')
                 }
             };
         };
+
+        /**
+         * Displays an autodimissable toast modal window.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#showToast
+         * @param {String}  text                    The text of the toast.
+         * @param {Boolean} [needsTranslate=false]  True if the 'text' is a $translate key, false otherwise.
+         * @param {Number}  [duration=2000]         Duration in ms of the dimissable toast.
+         * @return {Promise}                        Returned by $ionicLoading.
+         */
+        self.showToast = function(text, needsTranslate, duration) {
+            duration = duration || 2000;
+
+            if (needsTranslate) {
+                text = $translate.instant(text);
+            }
+
+            return $ionicLoading.show({
+                template: text,
+                duration: duration,
+                noBackdrop: true,
+                hideOnStateChange: true
+            }).then(function() {
+                var container = angular.element(document.querySelector(".loading-container.visible")).addClass('mm-toast');
+
+                // Remove class on close.
+                $timeout.cancel(toastPromise);
+                toastPromise = $timeout(function() {
+                    container.removeClass('mm-toast');
+                }, duration);
+            });
+        };
+
+        /**
+         * Copies a text to clipboard and shows a toast message.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#showToast
+         * @param  {String} text Text to be copied
+         * @return {Promise}     Resolved when text is copied.
+         */
+        self.copyToClipboard = function(text) {
+            return $cordovaClipboard.copy(text).then(function() {
+                // Show toast using ionicLoading.
+                return self.showToast('mm.core.copiedtoclipboard', true);
+            }).catch(function () {
+                // Ignore errors.
+            });
+        };
+
 
         /**
          * Displays a loading modal window using a certain template.

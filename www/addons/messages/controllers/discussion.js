@@ -85,6 +85,15 @@ angular.module('mm.addons.messages')
         return !moment(message.timecreated).isSame(prevMessage.timecreated, 'day');
     };
 
+    /**
+     * Copy message to clipboard
+     *
+     * @param  {String} text Message text to be copied.
+     */
+    $scope.copyMessage = function(text) {
+        $mmUtil.copyToClipboard(text);
+    };
+
     $scope.sendMessage = function(text) {
         var message;
 

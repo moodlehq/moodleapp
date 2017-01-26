@@ -1082,6 +1082,20 @@ mm-timer {
   }
 }
 
+.mm-toast {
+  pointer-events: none;
+  bottom: 100px;
+  -ms-flex-align: flex-end;
+  -webkit-align-items: flex-end;
+  -moz-align-items: flex-end;
+  align-items: flex-end;
+
+  .loading {
+    padding: 10px 20px;
+    border-radius: 25px;
+  }
+}
+
 @media only screen and (max-width: 400px) {
   .mm-inapp-notification-backdrop .mm-inapp-notification {
     margin-left: 6px !important;
