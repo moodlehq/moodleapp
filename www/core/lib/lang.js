@@ -253,6 +253,54 @@ angular.module('mm.core')
     $translateProvider.preferredLanguage(lang);
 })
 
+.config(function($provide) {
+    // Decorate $translate to use custom strings if needed.
+    $provide.decorator('$translate', ['$delegate', '$q', '$injector', function($delegate, $q, $injector) {
+        var $mmLang; // Inject it using $injector to prevent circular dependencies.
+
+        // Redefine $translate default function.
+        var newTranslate = function(translationId, interpolateParams, interpolationId, defaultTranslationText, forceLanguage) {
+            var value = getCustomString(translationId, forceLanguage);
+            if (value !== false) {
+                return $q.when(value);
+            }
+            return $delegate(translationId, interpolateParams, interpolationId, defaultTranslationText, forceLanguage);
+        };
+
+        // Redefine $translate.instant.
+        newTranslate.instant = function(translationId, interpolateParams, interpolationId, forceLanguage, sanitizeStrategy) {
+            var value = getCustomString(translationId, forceLanguage);
+            if (value !== false) {
+                return value;
+            }
+            return $delegate.instant(translationId, interpolateParams, interpolationId, forceLanguage, sanitizeStrategy);
+        };
+
+        // Copy the rest of functions and properties.
+        for (var name in $delegate) {
+            if (name != 'instant') {
+                newTranslate[name] = $delegate[name];
+            }
+        }
+
+        return newTranslate;
+
+        // Get a custom string.
+        function getCustomString(translationId, forceLanguage) {
+            if (!$mmLang) {
+                $mmLang = $injector.get('$mmLang');
+            }
+
+            var customStrings = $mmLang.getCustomStrings(forceLanguage);
+            if (customStrings && typeof customStrings[translationId] != 'undefined') {
+                return customStrings[translationId];
+            }
+
+            return false;
+        }
+    }]);
+})
+
 .run(function($ionicPlatform, $translate, $mmLang, $mmSite, $mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated,
             mmCoreEventLogout) {
     $ionicPlatform.ready(function() {
