@@ -25,7 +25,9 @@ angular.module('mm.core')
 
     var self = {},
         fallbackLanguage = mmCoreConfigConstants.default_lang || 'en',
-        currentLanguage; // Save current language in a variable to speed up the get function.
+        currentLanguage, // Save current language in a variable to speed up the get function.
+        customStrings = {},
+        customStringsRaw;
 
     /**
      * Register a folder to search language files into it.
@@ -47,6 +49,31 @@ angular.module('mm.core')
             promises.push($translate.refresh(fallbackLanguage));
         }
         return $q.all(promises);
+    };
+
+    /**
+     * Clear current custom strings.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmLang#clearCustomStrings
+     * @return {Void}
+     */
+    self.clearCustomStrings = function() {
+        customStrings = {};
+        customStringsRaw = '';
+    };
+
+    /**
+     * Get all current custom strings.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmLang#getAllCustomStrings
+     * @return {Object} Custom strings.
+     */
+    self.getAllCustomStrings = function() {
+        return customStrings;
     };
 
     /**
@@ -100,6 +127,21 @@ angular.module('mm.core')
     };
 
     /**
+     * Get current custom strings.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmLang#getCustomStrings
+     * @param  {String} [lang] The language to get. If not defined, return current language.
+     * @return {Object}        Custom strings.
+     */
+    self.getCustomStrings = function(lang) {
+        lang = lang || currentLanguage;
+
+        return customStrings[lang];
+    };
+
+    /**
      * Change current language.
      *
      * @module mm.core
@@ -114,6 +156,48 @@ angular.module('mm.core')
         moment.locale(language);
         currentLanguage = language;
         return $q.all([p1, p2]);
+    };
+
+    /**
+     * Load certain custom strings.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmLang#loadCustomStrings
+     * @param  {String} Custom strings to load (tool_mobile_customlangstrings).
+     * @return {Void}
+     */
+    self.loadCustomStrings = function(strings) {
+        if (strings == customStringsRaw) {
+            // Strings haven't changed, stop.
+            return;
+        }
+
+        // Reset current values.
+        self.clearCustomStrings();
+
+        if (!strings || typeof strings != 'string') {
+            return;
+        }
+
+        var list = strings.split(/(?:\r\n|\r|\n)/);
+        angular.forEach(list, function(entry) {
+            var values = entry.split('|'),
+                lang;
+
+            if (values.length < 3) {
+                // Not enough data, ignore the entry.
+                return;
+            }
+
+            lang = values[2];
+
+            if (!customStrings[lang]) {
+                customStrings[lang] = {};
+            }
+
+            customStrings[lang][values[0]] = values[1];
+        });
     };
 
     /**
@@ -169,11 +253,29 @@ angular.module('mm.core')
     $translateProvider.preferredLanguage(lang);
 })
 
-.run(function($ionicPlatform, $translate, $mmLang) {
+.run(function($ionicPlatform, $translate, $mmLang, $mmSite, $mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated,
+            mmCoreEventLogout) {
     $ionicPlatform.ready(function() {
         $mmLang.getCurrentLanguage().then(function(language) {
             $translate.use(language);
             moment.locale(language);
         });
     });
+
+    $mmEvents.on(mmCoreEventLogin, loadCustomStrings);
+    $mmEvents.on(mmCoreEventSiteUpdated, function(siteId) {
+        if (siteId == $mmSite.getId()) {
+            loadCustomStrings();
+        }
+    });
+    $mmEvents.on(mmCoreEventLogout, function() {
+        $mmLang.clearCustomStrings();
+    });
+
+    function loadCustomStrings() {
+        var customStrings = $mmSite.getStoredConfig('tool_mobile_customlangstrings');
+        if (typeof customStrings != 'undefined') {
+            $mmLang.loadCustomStrings(customStrings);
+        }
+    }
 });
