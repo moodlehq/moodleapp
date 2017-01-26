@@ -82,6 +82,17 @@ angular.module('mm.core')
     /**
      * @module mm.core
      * @ngdoc method
+     * @name $mmSite#reloadDb
+     * @return {Void}
+     * @description
+     *
+     * Reload the site database.
+     * This must be used by remote addons that register stores in the site database.
+     */
+
+    /**
+     * @module mm.core
+     * @ngdoc method
      * @name $mmSite#getUserId
      * @return {Object} User's ID.
      * @description
@@ -352,6 +363,128 @@ angular.module('mm.core')
      * @description
      *
      * Check if a URL belongs to this site.
+     */
+
+    /**
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSite#getPublicConfig
+     * @return {Promise} Promise resolved with site public config. Rejected with an object if error, see $mmWS#callAjax.
+     * @description
+     *
+     * Get the public config of this site.
+     */
+
+    /**
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSite#openInBrowserWithAutoLogin
+     * @param  {String} url            The URL to open.
+     * @param  {String} [alertMessage] If defined, an alert will be shown before opening the browser.
+     * @return {Promise}               Promise resolved when done, rejected otherwise.
+     * @description
+     *
+     * Open a URL in browser using auto-login in the Moodle site if available.
+     */
+
+    /**
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSite#openInBrowserWithAutoLoginIfSameSite
+     * @param  {String} url            The URL to open.
+     * @param  {String} [alertMessage] If defined, an alert will be shown before opening the browser.
+     * @return {Promise}               Promise resolved when done, rejected otherwise.
+     * @description
+     *
+     * Open a URL in browser using auto-login in the Moodle site if available and the URL belongs to the site.
+     */
+
+    /**
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSite#openInAppWithAutoLogin
+     * @param  {String} url            The URL to open.
+     * @param  {Object} options        Override default options passed to $cordovaInAppBrowser#open
+     * @param  {String} [alertMessage] If defined, an alert will be shown before opening the inappbrowser.
+     * @return {Promise}               Promise resolved when done, rejected otherwise.
+     * @description
+     *
+     * Open a URL in inappbrowser using auto-login in the Moodle site if available.
+     */
+
+    /**
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSite#openInAppWithAutoLoginIfSameSite
+     * @param  {String} url            The URL to open.
+     * @param  {Object} options        Override default options passed to $cordovaInAppBrowser#open
+     * @param  {String} [alertMessage] If defined, an alert will be shown before opening the inappbrowser.
+     * @return {Promise}               Promise resolved when done, rejected otherwise.
+     * @description
+     *
+     * Open a URL in inappbrowser using auto-login in the Moodle site if available and the URL belongs to the site.
+     */
+
+    /**
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSite#openWithAutoLogin
+     * @param  {Boolean} inApp         True to open it in InAppBrowser, false to open in browser.
+     * @param  {String} url            The URL to open.
+     * @param  {Object} options        Override default options passed to $cordovaInAppBrowser#open.
+     * @param  {String} [alertMessage] If defined, an alert will be shown before opening the browser/inappbrowser.
+     * @return {Promise}               Promise resolved when done, rejected otherwise.
+     * @description
+     *
+     * Open a URL in browser or InAppBrowser using auto-login in the Moodle site if available.
+     */
+
+    /**
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSite#openWithAutoLoginIfSameSite
+     * @param  {Boolean} inApp         True to open it in InAppBrowser, false to open in browser.
+     * @param  {String} url            The URL to open.
+     * @param  {Object} options        Override default options passed to $cordovaInAppBrowser#open.
+     * @param  {String} [alertMessage] If defined, an alert will be shown before opening the browser/inappbrowser.
+     * @return {Promise}               Promise resolved when done, rejected otherwise.
+     * @description
+     *
+     * Open a URL in browser or InAppBrowser using auto-login in the Moodle site if available and the URL belongs to the site.
+     */
+
+    /**
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSite#getConfig
+     * @param {String}  [name]        Name of the setting to get. If not set or false, all settings will be returned.
+     * @param {Boolean} [ignoreCache] True if it should ignore cached data.
+     * @return {Promise}              Promise resolved with site config. Rejected with an object if error.
+     * @description
+     *
+     * Get the config of this site.
+     * It is recommended to use getStoredConfig instead since it's faster and doesn't use network.
+     */
+
+    /**
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSite#invalidateConfig
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     * @description
+     *
+     * Invalidates config WS call.
+     */
+
+    /**
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSite#getStoredConfig
+     * @param {String} [name] Name of the setting to get. If not set or false, all settings will be returned.
+     * @return {Object}       Site config or a specific setting.
+     * @description
+     *
+     * Get the stored config of this site.
      */
 
     /**
