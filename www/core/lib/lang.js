@@ -30,25 +30,20 @@ angular.module('mm.core')
         customStringsRaw;
 
     /**
-     * Register a folder to search language files into it.
+     * Change current language.
      *
      * @module mm.core
      * @ngdoc method
-     * @name $mmLang#registerLanguageFolder
-     * @param  {String} path Path of the folder to use.
-     * @return {Promise}     Promise resolved when all the language files to be used are loaded.
+     * @name $mmLang#changeCurrentLanguage
+     * @param {String} language New language to use.
+     * @return {Promise}        Promise resolved when the change is finished.
      */
-    self.registerLanguageFolder = function(path) {
-        $translatePartialLoader.addPart(path);
-        // We refresh the languages one by one because if we refresh all of them at once and 1 file isn't found
-        // then no language will be loaded. This way if 1 language file is missing only that language won't be refreshed.
-        var promises = [];
-        promises.push($translate.refresh(currentLanguage));
-        if (currentLanguage !== fallbackLanguage) {
-            // Refresh fallback language.
-            promises.push($translate.refresh(fallbackLanguage));
-        }
-        return $q.all(promises);
+    self.changeCurrentLanguage = function(language) {
+        var p1 = $translate.use(language),
+            p2 = $mmConfig.set('current_language', language);
+        moment.locale(language);
+        currentLanguage = language;
+        return $q.all([p1, p2]);
     };
 
     /**
@@ -142,23 +137,6 @@ angular.module('mm.core')
     };
 
     /**
-     * Change current language.
-     *
-     * @module mm.core
-     * @ngdoc method
-     * @name $mmLang#changeCurrentLanguage
-     * @param {String} language New language to use.
-     * @return {Promise}        Promise resolved when the change is finished.
-     */
-    self.changeCurrentLanguage = function(language) {
-        var p1 = $translate.use(language),
-            p2 = $mmConfig.set('current_language', language);
-        moment.locale(language);
-        currentLanguage = language;
-        return $q.all([p1, p2]);
-    };
-
-    /**
      * Load certain custom strings.
      *
      * @module mm.core
@@ -198,6 +176,28 @@ angular.module('mm.core')
 
             customStrings[lang][values[0]] = values[1];
         });
+    };
+
+    /**
+     * Register a folder to search language files into it.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmLang#registerLanguageFolder
+     * @param  {String} path Path of the folder to use.
+     * @return {Promise}     Promise resolved when all the language files to be used are loaded.
+     */
+    self.registerLanguageFolder = function(path) {
+        $translatePartialLoader.addPart(path);
+        // We refresh the languages one by one because if we refresh all of them at once and 1 file isn't found
+        // then no language will be loaded. This way if 1 language file is missing only that language won't be refreshed.
+        var promises = [];
+        promises.push($translate.refresh(currentLanguage));
+        if (currentLanguage !== fallbackLanguage) {
+            // Refresh fallback language.
+            promises.push($translate.refresh(fallbackLanguage));
+        }
+        return $q.all(promises);
     };
 
     /**
