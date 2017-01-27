@@ -218,6 +218,25 @@ angular.module('mm.core.login')
     };
 
     /**
+     * Given a site public config, check if email signup is disabled.
+     *
+     * @module mm.core.login
+     * @ngdoc method
+     * @name $mmLoginHelper#isEmailSignupDisabled
+     * @param  {Object} config Site public config.
+     * @return {Boolean}       True if email signup is disabled, false otherwise.
+     */
+    self.isEmailSignupDisabled = function(config) {
+        var disabledFeatures = config && config.tool_mobile_disabledfeatures;
+        if (!disabledFeatures) {
+            return false;
+        }
+
+        var regEx = new RegExp('(,|^)\\$mmLoginEmailSignup(,|$)', 'g');
+        return !!disabledFeatures.match(regEx);
+    };
+
+    /**
      * Check if the app is configured to use a fixed URL.
      *
      * @module mm.core.login

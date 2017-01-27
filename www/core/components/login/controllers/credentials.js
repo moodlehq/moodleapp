@@ -79,7 +79,7 @@ angular.module('mm.core.login')
             $scope.sitename = siteConfig.sitename;
             $scope.logourl = siteConfig.logourl || siteConfig.compactlogourl;
             $scope.authInstructions = siteConfig.authinstructions || $translate.instant('mm.login.loginsteps');
-            $scope.canSignup = siteConfig.registerauth == 'email';
+            $scope.canSignup = siteConfig.registerauth == 'email' && !$mmLoginHelper.isEmailSignupDisabled(siteConfig);
         } else {
             $scope.sitename = null;
             $scope.logourl = null;
