@@ -113,7 +113,7 @@ angular.module('mm.addons.notifications')
                     cronObserver && cronObserver.off && cronObserver.off();
 
                     if ($mmPushNotificationsDelegate) {
-                        $mmPushNotificationsDelegate.unregisterReceiveHandler('mmaMessages:sidemenu');
+                        $mmPushNotificationsDelegate.unregisterReceiveHandler('mmaNotifications:sidemenu');
                     }
                 });
             };

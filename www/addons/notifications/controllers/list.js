@@ -21,11 +21,14 @@ angular.module('mm.addons.notifications')
  * @ngdoc controller
  * @name mmaNotificationsListCtrl
  */
-.controller('mmaNotificationsListCtrl', function($scope, $mmUtil, $mmaNotifications, mmaNotificationsListLimit,
-            mmUserProfileState, $q, $mmEvents, $mmSite, mmaNotificationsReadChangedEvent) {
+.controller('mmaNotificationsListCtrl', function($scope, $mmUtil, $mmaNotifications, mmaNotificationsListLimit, $mmAddonManager,
+            mmUserProfileState, $q, $mmEvents, $mmSite, mmaNotificationsReadChangedEvent, mmaNotificationsReadCronEvent, $state) {
 
     var readCount = 0,
-        unreadCount = 0;
+        unreadCount = 0,
+        siteId = $mmSite.getId(),
+        $mmPushNotificationsDelegate = $mmAddonManager.get('$mmPushNotificationsDelegate'),
+        cronObserver;
 
     $scope.notifications = [];
     $scope.userStateName = mmUserProfileState;
@@ -80,12 +83,44 @@ angular.module('mm.addons.notifications')
             $scope.canLoadMore = false; // Set to false to prevent infinite calls with infinite-loading.
         });
     }
+
     fetchNotifications().finally(function() {
         $scope.notificationsLoaded = true;
     });
 
+    cronObserver = $mmEvents.on(mmaNotificationsReadCronEvent, function(data) {
+        if ($state.current.name == 'site.notifications' && data && (data.siteid == siteId || !data.siteid)) {
+            refreshData();
+        }
+    });
+
+    // If a message push notification is received, refresh the view.
+    if ($mmPushNotificationsDelegate) {
+        $mmPushNotificationsDelegate.registerReceiveHandler('mmaNotifications:discussions', function(notification) {
+            if ($state.current.name == 'site.notifications' && $mmUtil.isTrueOrOne(notification.notif) &&
+                    notification.site == siteId) {
+                // New notification received. If it's from current site, refresh the data.
+                refreshData();
+            }
+        });
+    }
+
+    // Refresh when entering again.
+    var skip = true;
+    $scope.$on('$ionicView.enter', function() {
+        if (skip) {
+            skip = false;
+            return;
+        }
+        $scope.notificationsLoaded = false;
+        refreshData().finally(function() {
+            $scope.notificationsLoaded = true;
+        });
+    });
+
     // Mark notifications as read.
     function markNotificationsAsRead(notifications) {
+        // Only mark as read if we are in the state.
         if (notifications.length > 0) {
             var promises = [];
 
@@ -96,19 +131,21 @@ angular.module('mm.addons.notifications')
 
             $q.all(promises).finally(function() {
                 $mmaNotifications.invalidateNotificationsList().finally(function() {
-                    $mmEvents.trigger(mmaNotificationsReadChangedEvent, {
-                        siteid: $mmSite.getId()
-                    });
+                    $mmEvents.trigger(mmaNotificationsReadChangedEvent, {siteid: siteId});
                 });
             });
         }
     }
 
+    function refreshData() {
+        return $mmaNotifications.invalidateNotificationsList().finally(function() {
+            return fetchNotifications(true);
+        });
+    }
+
     $scope.refreshNotifications = function() {
-        $mmaNotifications.invalidateNotificationsList().finally(function() {
-            fetchNotifications(true).finally(function() {
-                $scope.$broadcast('scroll.refreshComplete');
-            });
+        refreshData().finally(function() {
+            $scope.$broadcast('scroll.refreshComplete');
         });
     };
 
@@ -117,4 +154,12 @@ angular.module('mm.addons.notifications')
             $scope.$broadcast('scroll.infiniteScrollComplete');
         });
     };
+
+    $scope.$on('$destroy', function() {
+        cronObserver && cronObserver.off && cronObserver.off();
+
+        if ($mmPushNotificationsDelegate) {
+            $mmPushNotificationsDelegate.unregisterReceiveHandler('mmaNotifications:discussions');
+        }
+    });
 });
