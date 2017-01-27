@@ -22,8 +22,9 @@ angular.module('mm.addons.messages')
  * @name mmaMessagesDiscussionsCtrl
  */
 .controller('mmaMessagesDiscussionsCtrl', function($scope, $mmUtil, $mmaMessages, $rootScope, $mmEvents, $mmSite, $ionicPlatform,
-            mmCoreSplitViewLoad, mmaMessagesNewMessageEvent, $mmAddonManager, mmaMessagesReadChangedEvent) {
-    var newMessagesObserver, readChangedObserver,
+            mmCoreSplitViewLoad, mmaMessagesNewMessageEvent, $mmAddonManager, mmaMessagesReadChangedEvent,
+            mmaMessagesReadCronEvent) {
+    var newMessagesObserver, readChangedObserver, cronObserver,
         siteId = $mmSite.getId(),
         discussions,
         $mmPushNotificationsDelegate = $mmAddonManager.get('$mmPushNotificationsDelegate'),
@@ -43,11 +44,7 @@ angular.module('mm.addons.messages')
             });
             $scope.discussions = discussionsSorted;
         }, function(error) {
-            if (typeof error === 'string') {
-                $mmUtil.showErrorModal(error);
-            } else {
-                $mmUtil.showErrorModal('mma.messages.errorwhileretrievingdiscussions', true);
-            }
+            $mmUtil.showErrorModalDefault(error, 'mma.messages.errorwhileretrievingdiscussions', true);
         }).finally(function() {
             $scope.loaded = true;
         });
@@ -61,6 +58,8 @@ angular.module('mm.addons.messages')
 
     $scope.refresh = function() {
         refreshData().finally(function() {
+            // Triggering without userid will avoid loops. This trigger will only update the side menu.
+            $mmEvents.trigger(mmaMessagesReadChangedEvent, {siteid: siteId});
             $scope.$broadcast('scroll.refreshComplete');
         });
     };
@@ -105,6 +104,12 @@ angular.module('mm.addons.messages')
         }
     });
 
+    cronObserver = $mmEvents.on(mmaMessagesReadCronEvent, function(data) {
+        if (data && (data.siteid == siteId || !data.siteid)) {
+            refreshData();
+        }
+    });
+
     // If a message push notification is received, refresh the view.
     if ($mmPushNotificationsDelegate) {
         $mmPushNotificationsDelegate.registerReceiveHandler('mmaMessages:discussions', function(notification) {
@@ -127,6 +132,7 @@ angular.module('mm.addons.messages')
     $scope.$on('$destroy', function() {
         newMessagesObserver && newMessagesObserver.off && newMessagesObserver.off();
         readChangedObserver && readChangedObserver.off && readChangedObserver.off();
+        cronObserver && cronObserver.off && cronObserver.off();
 
         if ($mmPushNotificationsDelegate) {
             $mmPushNotificationsDelegate.unregisterReceiveHandler('mmaMessages:discussions');
