@@ -490,6 +490,17 @@ angular.module('mm.core')
     /**
      * @module mm.core
      * @ngdoc method
+     * @name $mmSite#isFeatureDisabled
+     * @param {String} name Name of the feature to check.
+     * @return {Boolean}    True if disabled, false otherwise.
+     * @description
+     *
+     * Check if a certain feature is disabled in the site.
+     */
+
+    /**
+     * @module mm.core
+     * @ngdoc method
      * @name $mmSite#getCompatibleFunction
      * @param  {String} method WS function to check.
      * @return {String}        Method to use based in the available functions.

@@ -1204,6 +1204,22 @@ angular.module('mm.core')
         };
 
         /**
+         * Check if a certain feature is disabled in the site.
+         *
+         * @param {String} name Name of the feature to check.
+         * @return {Boolean}    True if disabled, false otherwise.
+         */
+        Site.prototype.isFeatureDisabled = function(name) {
+            var disabledFeatures = this.getStoredConfig('tool_mobile_disabledfeatures');
+            if (!disabledFeatures) {
+                return false;
+            }
+
+            var regEx = new RegExp('(,|^)' + $mmText.escapeForRegex(name) + '(,|$)', 'g');
+            return !!disabledFeatures.match(regEx);
+        };
+
+        /**
          * Invalidate entries from the cache.
          *
          * @param  {Object} db      DB the entries belong to.
