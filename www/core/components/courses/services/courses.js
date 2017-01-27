@@ -82,6 +82,35 @@ angular.module('mm.core.courses')
     };
 
     /**
+     * Check if My Courses is disabled in a certain site.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#isMyCoursesDisabled
+     * @param  {String} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     */
+    self.isMyCoursesDisabled = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return self.isMyCoursesDisabledInSite(site);
+        });
+    };
+
+    /**
+     * Check if My Courses is disabled in a certain site.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#isMyCoursesDisabledInSite
+     * @param  {Object} [site] Site. If not defined, use current site.
+     * @return {Boolean}       True if disabled, false otherwise.
+     */
+    self.isMyCoursesDisabledInSite = function(site) {
+        site = site || $mmSite;
+        return site.isFeatureDisabled('$mmSideMenuDelegate_mmCourses');
+    };
+
+    /**
      * DEPRECATED: this function will be removed in a future version.
      * Clear current courses array. Reserved for core use.
      *

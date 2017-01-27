@@ -22,7 +22,7 @@ angular.module('mm.core.courses')
  * @name $mmCoursesHandlers
  */
 .factory('$mmCoursesHandlers', function($mmSite, $state, $mmCourses, $q, $mmUtil, $translate, $timeout, $mmCourse, $mmSitesManager,
-            mmCoursesEnrolInvalidKey) {
+            mmCoursesEnrolInvalidKey, $mmContentLinksHelper) {
 
     var self = {};
 
@@ -177,6 +177,18 @@ angular.module('mm.core.courses')
         }
 
         /**
+         * Whether or not My Courses is enabled for a certain site.
+         *
+         * @param  {String} siteId Site ID.
+         * @return {Promise}       Promise resolved with true if enabled.
+         */
+        function isMyCoursesEnabled(siteId) {
+            return $mmCourses.isMyCoursesDisabled(siteId).then(function(disabled) {
+                return !disabled;
+            });
+        }
+
+        /**
          * Get actions to perform with the link.
          *
          * @param {String[]} siteIds Site IDs the URL belongs to.
@@ -187,19 +199,27 @@ angular.module('mm.core.courses')
             // Check if it's a course URL.
             if (typeof self.handles(url) != 'undefined') {
                 if (url.search(patterns[2]) > -1) {
-                    // My courses. Return actions.
-                    return [{
-                        message: 'mm.core.view',
-                        icon: 'ion-eye',
-                        sites: siteIds,
-                        action: function(siteId) {
-                            // Use redirect to go to history root.
-                            $state.go('redirect', {
-                                siteid: siteId || $mmSite.getId(),
-                                state: 'site.mm_courses'
-                            });
+                    // My courses. Check if it's enabled.
+                    // Pass false because all sites should have the same siteurl.
+                    return $mmContentLinksHelper.filterSupportedSites(siteIds, isMyCoursesEnabled, false).then(function(ids) {
+                        if (!ids.length) {
+                            return [];
+                        } else {
+                            // Return actions.
+                            return [{
+                                message: 'mm.core.view',
+                                icon: 'ion-eye',
+                                sites: ids,
+                                action: function(siteId) {
+                                    // Use redirect to go to history root.
+                                    $state.go('redirect', {
+                                        siteid: siteId || $mmSite.getId(),
+                                        state: 'site.mm_courses'
+                                    });
+                                }
+                            }];
                         }
-                    }];
+                    });
                 } else {
                     // Course view or enrol.
                     var params = $mmUtil.extractUrlParams(url),

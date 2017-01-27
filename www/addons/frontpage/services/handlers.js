@@ -23,7 +23,7 @@ angular.module('mm.addons.frontpage')
  * @ngdoc service
  * @name $mmaFrontPageHandlers
  */
-.factory('$mmaFrontPageHandlers', function($log, $mmaFrontpage, $mmUtil, $state, $mmSitesManager, $mmSite) {
+.factory('$mmaFrontPageHandlers', function($log, $mmaFrontpage, $mmUtil, $state, $mmSitesManager, $mmSite, $mmContentLinksHelper) {
     $log = $log.getInstance('$mmaFrontPageHandlers');
 
     var self = {};
@@ -91,6 +91,33 @@ angular.module('mm.addons.frontpage')
         var self = {};
 
         /**
+         * Whether or not the frontpage is enabled for a certain site.
+         *
+         * @param  {String} siteId   Site ID.
+         * @param  {Number} courseId Course ID related to the URL.
+         * @return {Promise}         Promise resolved with true if enabled.
+         */
+        function isFrontpageEnabled(siteId, courseId) {
+            return $mmSitesManager.getSite(siteId).then(function(site) {
+                if (courseId != site.getSiteHomeId()) {
+                    // The course is not site home.
+                    return false;
+                }
+
+                if ($mmaFrontpage.isDisabledInSite(site)) {
+                    // Frontpage is disabled.
+                    return false;
+                }
+
+                return $mmaFrontpage.isFrontpageAvailable(siteId).then(function() {
+                    return true;
+                }).catch(function() {
+                    return false;
+                });
+            });
+        }
+
+        /**
          * Get actions to perform with the link.
          *
          * @param {String[]} siteIds Site IDs the URL belongs to.
@@ -103,14 +130,17 @@ angular.module('mm.addons.frontpage')
                 var params = $mmUtil.extractUrlParams(url),
                     courseId = parseInt(params.id, 10);
 
-                // Get the course id of Site Home for the first site (all the siteIds should belong to the same Moodle).
-                return $mmSitesManager.getSiteHomeId(siteIds[0]).then(function(siteHomeId) {
-                    if (courseId === siteHomeId) {
+                // Check if frontpage is enabled.
+                // Pass false because all sites should have the same siteurl.
+                return $mmContentLinksHelper.filterSupportedSites(siteIds, isFrontpageEnabled, false, courseId).then(function(ids) {
+                    if (!ids.length) {
+                        return [];
+                    } else {
                         // Return actions.
                         return [{
                             message: 'mm.core.view',
                             icon: 'ion-eye',
-                            sites: siteIds,
+                            sites: ids,
                             action: function(siteId) {
                                 siteId = siteId || $mmSite.getId();
                                 // Use redirect to make the course the new history root (to avoid "loops" in history).
@@ -121,10 +151,9 @@ angular.module('mm.addons.frontpage')
                             }
                         }];
                     }
-
-                    return [];
                 });
             }
+
             return [];
         };
 

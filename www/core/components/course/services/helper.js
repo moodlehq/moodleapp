@@ -421,12 +421,12 @@ angular.module('mm.core.course')
             }
 
             return promise.then(function() {
-                // Get the site home ID.
-                return $mmSitesManager.getSiteHomeId(siteId);
-            }).then(function(siteHomeId) {
-                if (courseId == siteHomeId) {
+                // Get the site.
+                return $mmSitesManager.getSite(siteId);
+            }).then(function(site) {
+                if (courseId == site.getSiteHomeId()) {
                     var $mmaFrontpage = $mmAddonManager.get('$mmaFrontpage');
-                    if ($mmaFrontpage) {
+                    if ($mmaFrontpage && !$mmaFrontpage.isDisabledInSite(site)) {
                         return $mmaFrontpage.isFrontpageAvailable().then(function() {
                             // Frontpage is avalaible so redirect to it.
                             return $state.go('redirect', {

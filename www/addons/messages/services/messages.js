@@ -829,6 +829,35 @@ angular.module('mm.addons.messages')
     };
 
     /**
+     * Check if Messages index is disabled in a certain site.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#isMessagesIndexDisabled
+     * @param  {String} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     */
+    self.isMessagesIndexDisabled = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return self.isMessagesIndexDisabledInSite(site);
+        });
+    };
+
+    /**
+     * Check if Messages index is disabled in a certain site.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#isMessagesIndexDisabledInSite
+     * @param  {Object} [site] Site. If not defined, use current site.
+     * @return {Boolean}       True if disabled, false otherwise.
+     */
+    self.isMessagesIndexDisabledInSite = function(site) {
+        site = site || $mmSite;
+        return site.isFeatureDisabled('$mmSideMenuDelegate_mmaMessages');
+    };
+
+    /**
      * Returns whether or not we can count unread messages.
      *
      * @module mm.addons.messages

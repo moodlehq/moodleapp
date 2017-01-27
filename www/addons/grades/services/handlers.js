@@ -236,6 +236,24 @@ angular.module('mm.addons.grades')
         }
 
         /**
+         * Whether or not the courses grades overview is enabled for a certain site.
+         *
+         * @param  {String} siteId Site ID.
+         * @return {Promise}       Promise resolved with true if enabled.
+         */
+        function isCoursesGradesEnabled(siteId) {
+            return $mmaCoursesGrades.isPluginEnabled(siteId).then(function() {
+                if (!enabled) {
+                    return false;
+                }
+
+                return $mmaCoursesGrades.isDisabled(siteId).then(function(disabled) {
+                    return !disabled;
+                });
+            });
+        }
+
+        /**
          * Get actions to perform with the link.
          *
          * @param {String[]} siteIds Site IDs the URL belongs to.
@@ -248,7 +266,8 @@ angular.module('mm.addons.grades')
             if (typeof self.handles(url) != 'undefined') {
                 // Check for the courses grades link first.
                 if (url.indexOf('overview') > -1) {
-                    return $mmContentLinksHelper.filterSupportedSites(siteIds, $mmaCoursesGrades.isPluginEnabled, false).then(function(ids) {
+                    // Pass false because all sites should have the same siteurl.
+                    return $mmContentLinksHelper.filterSupportedSites(siteIds, isCoursesGradesEnabled, false).then(function(ids) {
                         if (!ids.length) {
                             return [];
                         } else {

@@ -29,7 +29,7 @@ angular.module('mm.core.login')
  */
 .factory('$mmLoginHelper', function($q, $log, $mmConfig, mmLoginSSOCode, mmLoginSSOInAppCode, mmLoginLaunchData, $mmEvents,
             md5, $mmSite, $mmSitesManager, $mmLang, $mmUtil, $state, $mmAddonManager, $translate, mmCoreConfigConstants,
-            mmCoreEventSessionExpired) {
+            mmCoreEventSessionExpired, mmUserProfileState, $mmCourses) {
 
     $log = $log.getInstance('$mmLoginHelper');
 
@@ -188,19 +188,33 @@ angular.module('mm.core.login')
      * @return {Promise} Promise resolved when the state changes.
      */
     self.goToSiteInitialPage = function() {
-        if ($mmSite.getInfo() && $mmSite.getInfo().userhomepage === 0) {
-            // Configured to go to Site Home. Check if plugin is installed in the app.
+        var myCoursesDisabled = $mmCourses.isMyCoursesDisabledInSite();
+
+        if (myCoursesDisabled || ($mmSite.getInfo() && $mmSite.getInfo().userhomepage === 0)) {
+            // Configured to go to Site Home OR My Courses is disabled. Check if plugin is installed in the app.
             var $mmaFrontpage = $mmAddonManager.get('$mmaFrontpage');
-            if ($mmaFrontpage) {
+            if ($mmaFrontpage && !$mmaFrontpage.isDisabledInSite()) {
                 return $mmaFrontpage.isFrontpageAvailable().then(function() {
                     return $state.go('site.frontpage');
                 }).catch(function() {
-                    return $state.go('site.mm_courses');
+                    if (!myCoursesDisabled) {
+                        // Site Home not available, go to My Courses.
+                        return $state.go('site.mm_courses');
+                    }
+
+                    // Both Site Home and My Courses aren't available, go to the user profile.
+                    return $state.go(mmUserProfileState, {userid: $mmSite.getUserId()});
                 });
             }
         }
 
-        return $state.go('site.mm_courses');
+        if (!myCoursesDisabled) {
+            // Site Home not available, go to My Courses.
+            return $state.go('site.mm_courses');
+        }
+
+        // Both Site Home and My Courses aren't available, go to the user profile.
+        return $state.go(mmUserProfileState, {userid: $mmSite.getUserId()});
     };
 
     /**

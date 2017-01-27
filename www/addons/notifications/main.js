@@ -62,8 +62,15 @@ angular.module('mm.addons.notifications', [])
         $mmPushNotificationsDelegate.registerHandler('mmaNotifications', function(notification) {
             if ($mmUtil.isTrueOrOne(notification.notif)) {
                 $mmaNotifications.isPluginEnabledForSite(notification.site).then(function() {
-                    $mmaNotifications.invalidateNotificationsList().finally(function() {
-                        $state.go('redirect', {siteid: notification.site, state: 'site.notifications'});
+                    $mmaNotifications.isDisabled(notification.site).then(function(disabled) {
+                        if (disabled) {
+                            // Notifications are disabled, stop.
+                            return;
+                        }
+
+                        $mmaNotifications.invalidateNotificationsList().finally(function() {
+                            $state.go('redirect', {siteid: notification.site, state: 'site.notifications'});
+                        });
                     });
                 });
                 return true;

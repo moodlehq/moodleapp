@@ -463,10 +463,25 @@ angular.module('mm.addons.messages')
          * Whether or not the handler is enabled for a certain site.
          *
          * @param  {String} siteId Site ID.
+         * @param  {Object} params Params of the URL.
          * @return {Promise}       Promise resolved with true if enabled.
          */
-        function isEnabledForSite(siteId) {
-            return $mmaMessages.isPluginEnabled(siteId);
+        function isEnabledForSite(siteId, params) {
+            return $mmaMessages.isPluginEnabled(siteId).then(function(enabled) {
+                if (!enabled) {
+                    return false;
+                }
+
+                var isDiscussion = typeof params.id != 'undefined' ||
+                        (typeof params.user1 != 'undefined' && typeof params.user2 != 'undefined');
+
+                if (!isDiscussion) {
+                    // It's not a discussion, check if messaging index is enabled.
+                    return $mmaMessages.isMessagesIndexDisabled(siteId).then(function(disabled) {
+                        return !disabled;
+                    });
+                }
+            });
         }
 
         /**
@@ -480,13 +495,13 @@ angular.module('mm.addons.messages')
         self.getActions = function(siteIds, url) {
             // Check it's a messages URL.
             if (typeof self.handles(url) != 'undefined') {
+                var params = $mmUtil.extractUrlParams(url);
                 // Pass false because all sites should have the same siteurl.
-                return $mmContentLinksHelper.filterSupportedSites(siteIds, isEnabledForSite, false).then(function(ids) {
+                return $mmContentLinksHelper.filterSupportedSites(siteIds, isEnabledForSite, false, params).then(function(ids) {
                     if (!ids.length) {
                         return [];
                     } else {
                         // Return actions.
-                        var params = $mmUtil.extractUrlParams(url);
                         return [{
                             message: 'mm.core.view',
                             icon: 'ion-eye',

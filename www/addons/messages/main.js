@@ -98,8 +98,15 @@ angular.module('mm.addons.messages', ['mm.core'])
         $mmPushNotificationsDelegate.registerHandler('mmaMessages', function(notification) {
             if ($mmUtil.isFalseOrZero(notification.notif)) {
                 $mmaMessages.isMessagingEnabledForSite(notification.site).then(function() {
-                    $mmaMessages.invalidateDiscussionsCache().finally(function() {
-                        $state.go('redirect', {siteid: notification.site, state: 'site.messages'});
+                    $mmaMessages.isMessagesIndexDisabled(notification.site).then(function(disabled) {
+                        if (disabled) {
+                            // Messages are disabled, stop.
+                            return;
+                        }
+
+                        $mmaMessages.invalidateDiscussionsCache().finally(function() {
+                            $state.go('redirect', {siteid: notification.site, state: 'site.messages'});
+                        });
                     });
                 });
                 return true;

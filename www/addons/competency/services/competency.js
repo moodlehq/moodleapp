@@ -92,6 +92,35 @@ angular.module('mm.addons.competency')
     }
 
     /**
+     * Check if Learning Plans are disabled in a certain site.
+     *
+     * @module mm.addons.competency
+     * @ngdoc method
+     * @name $mmaCompetency#isLearningPlansDisabled
+     * @param  {String} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     */
+    self.isLearningPlansDisabled = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return self.isLearningPlansDisabledInSite(site);
+        });
+    };
+
+    /**
+     * Check if Learning Plans are disabled in a certain site.
+     *
+     * @module mm.addons.competency
+     * @ngdoc method
+     * @name $mmaCompetency#isDisabledInSite
+     * @param  {Object} [site] Site. If not defined, use current site.
+     * @return {Boolean}       True if disabled, false otherwise.
+     */
+    self.isLearningPlansDisabledInSite = function(site) {
+        site = site || $mmSite;
+        return site.isFeatureDisabled('$mmSideMenuDelegate_mmaCompetency');
+    };
+
+    /**
      * Check if competency learning plans WS is available.
      *
      * @module mm.addons.competency
