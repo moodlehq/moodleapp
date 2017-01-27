@@ -115,8 +115,7 @@ angular.module('mm.addons.messages')
         $mmPushNotificationsDelegate.registerReceiveHandler('mmaMessages:discussions', function(notification) {
             if ($mmUtil.isFalseOrZero(notification.notif)) {
                 // New message received. If it's from current site, refresh the data.
-                if (notification.site == $mmSite.getId()) {
-                    $scope.loaded = false;
+                if (notification.site == siteId) {
                     refreshData();
                 }
             }
