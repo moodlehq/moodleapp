@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_resource')
  * @name $mmaModResourcePrefetchHandler
  */
 .factory('$mmaModResourcePrefetchHandler', function($mmaModResource, $mmSite, $mmFilepool, $mmPrefetchFactory, $q,
-            mmaModResourceComponent) {
+            mmaModResourceComponent, $mmCourse) {
 
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModResourceComponent, true);
 
@@ -76,6 +76,39 @@ angular.module('mm.addons.mod_resource')
      */
     self.prefetch = function(module, courseId, single) {
         return downloadOrPrefetch(module, courseId, true);
+    };
+
+    /**
+     * Invalidate the prefetched content.
+     *
+     * @module mm.addons.mod_resource
+     * @ngdoc method
+     * @name $mmaModResourcePrefetchHandler#invalidateContent
+     * @param  {Number} moduleId The module ID.
+     * @param  {Number} courseId Course ID of the module.
+     * @return {Promise}
+     */
+    self.invalidateContent = function(moduleId, courseId) {
+        return $mmaModResource.invalidateContent(moduleId, courseId);
+    };
+
+    /**
+     * Invalidates WS calls needed to determine module status.
+     *
+     * @module mm.addons.mod_resource
+     * @ngdoc method
+     * @name $mmaModResourcePrefetchHandler#invalidateModule
+     * @param  {Object} module   Module to invalidate.
+     * @param  {Number} courseId Course ID the module belongs to.
+     * @return {Promise}         Promise resolved when done.
+     */
+    self.invalidateModule = function(module, courseId) {
+        var promises = [];
+
+        promises.push($mmaModResource.invalidateResourceData(courseId));
+        promises.push($mmCourse.invalidateModule(module.id));
+
+        return $q.all(promises);
     };
 
     return self;

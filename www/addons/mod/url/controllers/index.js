@@ -30,20 +30,29 @@ angular.module('mm.addons.mod_url')
     $scope.moduleUrl = module.url;
     $scope.component = mmaModUrlComponent;
     $scope.componentId = module.id;
+    $scope.canGetUrl = $mmaModUrl.isGetUrlWSAvailable();
 
     function fetchContent() {
         // Fetch the module data.
-        return $mmCourse.getModule(module.id, courseId).then(function(mod) {
-            if (!mod.contents.length) {
-                // If the data was cached maybe we don't have contents. Reject.
-                return $q.reject();
+        var promise;
+        if ($scope.canGetUrl) {
+            promise = $mmaModUrl.getUrl(courseId, module.id);
+        } else {
+            promise = $mmCourse.getModule(module.id, courseId);
+        }
+        return promise.then(function(mod) {
+            if (!$scope.canGetUrl) {
+                if (!mod.contents.length) {
+                    // If the data was cached maybe we don't have contents. Reject.
+                    return $q.reject();
+                }
             }
 
-            module = mod;
-            $scope.title = module.name;
-            $scope.description = module.description;
+            $scope.title = mod.name;
+            $scope.description = mod.intro || mod.description;
 
-            $scope.url = (module.contents[0] && module.contents[0].fileurl) ? module.contents[0].fileurl : undefined;
+            $scope.url = $scope.canGetUrl ? mod.externalurl : 
+                            ((mod.contents[0] && mod.contents[0].fileurl) ? mod.contents[0].fileurl : undefined);
         }).catch(function(error) {
             $mmUtil.showErrorModalDefault(error, 'mm.course.errorgetmodule', true);
             return $q.reject();
@@ -65,7 +74,7 @@ angular.module('mm.addons.mod_url')
     $scope.doRefresh = function() {
         if ($scope.loaded) {
             $scope.refreshIcon = 'spinner';
-            return $mmCourse.invalidateModule(module.id).then(function() {
+            return $mmaModUrl.invalidateContent(module.id, courseId).then(function() {
                 return fetchContent();
             }).finally(function() {
                 $scope.$broadcast('scroll.refreshComplete');

@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_page')
  * @ngdoc service
  * @name $mmaModPage
  */
-.factory('$mmaModPage', function($mmFilepool, $mmSite, $mmFS, $http, $log, $q, $mmSitesManager, $mmUtil, $mmText,
+.factory('$mmaModPage', function($mmFilepool, $mmSite, $mmFS, $http, $log, $q, $mmSitesManager, $mmUtil, $mmText, $mmCourse,
             mmaModPageComponent) {
     $log = $log.getInstance('$mmaModPage');
 
@@ -118,11 +118,123 @@ angular.module('mm.addons.mod_page')
      * @return {Promise}         Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
     self.isPluginEnabled = function(siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.canDownloadFiles();
         });
+    };
+
+    /**
+     * Returns whether or not getPage WS available or not.
+     *
+     * @module mm.addons.mod_page
+     * @ngdoc method
+     * @name $mmaModPage#isGetPageWSAvailable
+     * @return {Boolean}
+     */
+    self.isGetPageWSAvailable = function() {
+        return $mmSite.wsAvailable('mod_page_get_pages_by_courses');
+    };
+
+    /**
+     * Get a page data.
+     *
+     * @module mm.addons.mod_page
+     * @ngdoc method
+     * @name $mmaModPage#getPageData
+     * @param {Number} courseid Course ID.
+     * @param {Number} cmid     Course module ID.
+     * @param  {String} key     Name of the property to check.
+     * @param  {Mixed}  value   Value to search.
+     * @return {Promise}        Promise resolved when the page is retrieved.
+     */
+    function getPageData(siteId, courseId, key, value) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    courseids: [courseId]
+                },
+                preSets = {
+                    cacheKey: getPageCacheKey(courseId)
+                };
+
+            return site.read('mod_page_get_pages_by_courses', params, preSets).then(function(response) {
+                if (response && response.pages) {
+                    var currentPage;
+                    angular.forEach(response.pages, function(page) {
+                        if (!currentPage && page[key] == value) {
+                            currentPage = page;
+                        }
+                    });
+                    if (currentPage) {
+                        return currentPage;
+                    }
+                }
+                return $q.reject();
+            });
+        });
+    }
+
+    /**
+     * Get a page by course module ID.
+     *
+     * @module mm.addons.mod_page
+     * @ngdoc method
+     * @name $mmaModPage#getPageData
+     * @param {Number} courseId Course ID.
+     * @param {Number} cmId     Course module ID.
+     * @param {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the book is retrieved.
+     */
+    self.getPageData = function(courseId, cmId, siteId) {
+        return getPageData(siteId, courseId, 'coursemodule', cmId);
+    };
+
+    /**
+     * Get cache key for page data WS calls.
+     *
+     * @param {Number} courseid Course ID.
+     * @return {String}         Cache key.
+     */
+    function getPageCacheKey(courseid) {
+        return 'mmaModPage:page:' + courseid;
+    }
+
+    /**
+     * Invalidates page data.
+     *
+     * @module mm.addons.mod_page
+     * @ngdoc method
+     * @name $mmaModPage#invalidateBookData
+     * @param {Number} courseId Course ID.
+     * @param {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidatePageData = function(courseId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getPageCacheKey(courseId));
+        });
+    };
+
+    /**
+     * Invalidate the prefetched content.
+     *
+     * @module mm.addons.mod_page
+     * @ngdoc method
+     * @name $mmaModPage#invalidateContent
+     * @param  {Number} moduleId The module ID.
+     * @param  {Number} courseId Course ID of the module.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}
+     */
+    self.invalidateContent = function(moduleId, courseId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        var promises = [];
+
+        promises.push(self.invalidatePageData(courseId, siteId));
+        promises.push($mmFilepool.invalidateFilesByComponent(siteId, mmaModPageComponent, moduleId));
+        promises.push($mmCourse.invalidateModule(moduleId, siteId));
+
+        return $mmUtil.allPromises(promises);
     };
 
     /**

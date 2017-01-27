@@ -34,11 +34,12 @@ angular.module('mm.addons.mod_folder')
     $scope.refreshIcon = 'spinner';
     $scope.component = mmaModFolderComponent;
     $scope.componentId = module.id;
+    $scope.canGetFolder = $mmaModFolder.isGetFolderWSAvailable();
 
     // Convenience function to set scope data using module.
     function showModuleData(module) {
         $scope.title = module.name;
-        $scope.description = module.description;
+        $scope.description = module.intro || module.description;
         if (path) {
             // Subfolder.
             $scope.contents = module.contents;
@@ -49,15 +50,27 @@ angular.module('mm.addons.mod_folder')
 
     // Convenience function to fetch folder data from Moodle.
     function fetchFolder(refresh) {
-        return $mmCourse.getModule(module.id, courseId, sectionId).then(function(mod) {
-            if (!mod.contents.length && module.contents.length && !$mmApp.isOnline()) {
-                // The contents might be empty due to a cached data. Use the old ones.
-                mod.contents = module.contents;
-            }
+        var promise;
+        if ($scope.canGetFolder) {
+            promise = $mmaModFolder.getFolder(courseId, module.id).then(function(folder) {
+                return $mmCourse.loadModuleContents(module, courseId).then(function() {
+                    folder.contents = module.contents;
+                    return folder;
+                });
+            });
+        } else {
+            promise = $mmCourse.getModule(module.id, courseId, sectionId).then(function(mod) {
+                if (!mod.contents.length && module.contents.length && !$mmApp.isOnline()) {
+                    // The contents might be empty due to a cached data. Use the old ones.
+                    mod.contents = module.contents;
+                }
+                module = mod;
+                return mod;
+            });
+        }
 
-            module = mod;
-
-            showModuleData(module);
+        return promise.then(function(folder) {
+            showModuleData(folder);
             $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModFolderComponent);
         }).catch(function(error) {
             $mmUtil.showErrorModalDefault(error, 'mma.mod_folder.errorwhilegettingfolder', true);
@@ -102,7 +115,8 @@ angular.module('mm.addons.mod_folder')
     $scope.refreshFolder = function() {
         if ($scope.canReload) {
             $scope.refreshIcon = 'spinner';
-            return $mmCourse.invalidateModule(module.id).finally(function() {
+
+            return $mmaModFolder.invalidateContent(module.id, courseId).finally(function() {
                 return fetchFolder(true).finally(function() {
                     $scope.refreshIcon = 'ion-refresh';
                     $scope.$broadcast('scroll.refreshComplete');
