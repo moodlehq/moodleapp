@@ -740,6 +740,21 @@ mm-timer {
   }
 }
 
+// Increase size for buttons with only an icon inside.
+.button.icon {
+  &:before {
+    padding-left: 4px;
+    padding-right: 4px;
+    font-size: 30px;
+  }
+
+  &.button-small:before {
+    padding-left: 6px;
+    padding-right: 6px;
+    font-size: 20px;
+  }
+}
+
 .item-input-wrapper ~ .button.mm-button-icon-small {
   margin-left: 5px;
 }
