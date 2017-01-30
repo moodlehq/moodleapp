@@ -170,6 +170,35 @@ angular.module('mm.addons.coursecompletion')
     };
 
     /**
+     * Check if view user course completion is disabled in a certain site.
+     *
+     * @module mm.addons.coursecompletion
+     * @ngdoc method
+     * @name $mmaCourseCompletion#isUserDisabled
+     * @param  {String} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     */
+    self.isUserDisabled = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return self.isUserDisabledInSite(site);
+        });
+    };
+
+    /**
+     * Check if view user course completion is disabled in a certain site.
+     *
+     * @module mm.addons.coursecompletion
+     * @ngdoc method
+     * @name $mmaCourseCompletion#isUserDisabledInSite
+     * @param  {Object} [site] Site. If not defined, use current site.
+     * @return {Boolean}       True if disabled, false otherwise.
+     */
+    self.isUserDisabledInSite = function(site) {
+        site = site || $mmSite;
+        return site.isFeatureDisabled('$mmUserDelegate_mmaCourseCompletion:viewCompletion');
+    };
+
+    /**
      * Returns whether or not the view course completion plugin is enabled for the current site.
      *
      * This method is called quite often and thus should only perform a quick

@@ -245,6 +245,35 @@ angular.module('mm.core.grades')
     };
 
     /**
+     * Check if user grades are disabled in a certain site.
+     *
+     * @module mm.core.grades
+     * @ngdoc method
+     * @name $mmGrades#isUserGradesDisabled
+     * @param  {String} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     */
+    self.isUserGradesDisabled = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return self.isUserGradesDisabledInSite(site);
+        });
+    };
+
+    /**
+     * Check if user grades are disabled in a certain site.
+     *
+     * @module mm.core.grades
+     * @ngdoc method
+     * @name $mmGrades#isUserGradesDisabledInSite
+     * @param  {Object} [site] Site. If not defined, use current site.
+     * @return {Boolean}       True if disabled, false otherwise.
+     */
+    self.isUserGradesDisabledInSite = function(site) {
+        site = site || $mmSite;
+        return site.isFeatureDisabled('$mmUserDelegate_mmaGrades:viewGrades');
+    };
+
+    /**
      * Get the grades for a certain course.
      * For now we only support gradereport_user_get_grades_table. It returns the complete grades table.
      *

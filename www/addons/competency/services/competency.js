@@ -194,6 +194,35 @@ angular.module('mm.addons.competency')
     };
 
     /**
+     * Check if user competencies are disabled in a certain site.
+     *
+     * @module mm.addons.competency
+     * @ngdoc method
+     * @name $mmaCompetency#isUserCompetenciesDisabled
+     * @param  {String} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     */
+    self.isUserCompetenciesDisabled = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return self.isUserCompetenciesDisabledInSite(site);
+        });
+    };
+
+    /**
+     * Check if user competencies are disabled in a certain site.
+     *
+     * @module mm.addons.competency
+     * @ngdoc method
+     * @name $mmaCompetency#isUserCompetenciesDisabledInSite
+     * @param  {Object} [site] Site. If not defined, use current site.
+     * @return {Boolean}       True if disabled, false otherwise.
+     */
+    self.isUserCompetenciesDisabledInSite = function(site) {
+        site = site || $mmSite;
+        return site.isFeatureDisabled('$mmUserDelegate_mmaCompetency:learningPlan');
+    };
+
+    /**
      * Get plans for a certain user.
      *
      * @module mm.addons.competency

@@ -21,7 +21,7 @@ angular.module('mm.addons.grades')
  * @ngdoc service
  * @name $mmaGradesHandlers
  */
-.factory('$mmaGradesHandlers', function($mmGrades, $mmaCoursesGrades, $state, $mmUtil, $mmContentLinksHelper,
+.factory('$mmaGradesHandlers', function($mmGrades, $mmaCoursesGrades, $state, $mmUtil, $mmContentLinksHelper, $mmSitesManager,
             mmCoursesAccessMethods, mmUserProfileHandlersTypeNewPage) {
 
     var self = {},
@@ -221,17 +221,35 @@ angular.module('mm.addons.grades')
         var self = {};
 
         /**
-         * Whether or not the handler is enabled for a certain site and course.
+         * Whether or not the handler is enabled for a certain site, course and user.
          *
          * @param  {String} siteId   Site ID.
          * @param  {Number} courseId Course ID.
          * @return {Promise}         Promise resolved with true if enabled.
          */
-        function isEnabled(siteId, courseId) {
+        function isCourseEnabled(siteId, courseId, userId) {
             return $mmGrades.isPluginEnabled(siteId).then(function(enabled) {
-                if (enabled) {
-                    return $mmGrades.isPluginEnabledForCourse(courseId, siteId);
+                if (!enabled) {
+                    return false;
                 }
+
+                return $mmGrades.isPluginEnabledForCourse(courseId, siteId).then(function(enabled) {
+                    if (!enabled) {
+                        return false;
+                    }
+
+                    return $mmSitesManager.getSite(siteId).then(function(site) {
+                        if (!userId || userId == site.getUserId()) {
+                            // Course own grades.
+                            return $mmGrades.isCourseGradesDisabledInSite(site);
+                        } else {
+                            // User grades.
+                            return $mmGrades.isUserGradesDisabledInSite(site);
+                        }
+                    }).then(function(disabled) {
+                        return !disabled;
+                    });
+                });
             });
         }
 
@@ -286,9 +304,12 @@ angular.module('mm.addons.grades')
                 } else {
                     var params = $mmUtil.extractUrlParams(url);
                     if (typeof params.id != 'undefined') {
-                        var courseId = parseInt(params.id, 10);
+                        var courseId = parseInt(params.id, 10),
+                            userId = parseInt(params.userid, 10);
+
                         // Pass false because all sites should have the same siteurl.
-                        return $mmContentLinksHelper.filterSupportedSites(siteIds, isEnabled, false, courseId).then(function(ids) {
+                        return $mmContentLinksHelper.filterSupportedSites(siteIds, isCourseEnabled, false, courseId, userId)
+                                .then(function(ids) {
                             if (!ids.length) {
                                 return [];
                             } else {
@@ -300,7 +321,7 @@ angular.module('mm.addons.grades')
                                     action: function(siteId) {
                                         var stateParams = {
                                             course: {id: courseId},
-                                            userid: parseInt(params.userid, 10),
+                                            userid: userId,
                                             courseid: courseId,
                                             forcephoneview: false
                                         };

@@ -480,6 +480,11 @@ angular.module('mm.addons.messages')
                     return $mmaMessages.isMessagesIndexDisabled(siteId).then(function(disabled) {
                         return !disabled;
                     });
+                } else {
+                    // It's a discussion, check if send message is disabled.
+                    return $mmaMessages.isSendMessageDisabled(siteId).then(function(disabled) {
+                        return !disabled;
+                    });
                 }
             });
         }

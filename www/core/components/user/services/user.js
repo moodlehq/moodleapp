@@ -244,6 +244,35 @@ angular.module('mm.core.user')
     };
 
     /**
+     * Check if update profile picture is disabled in a certain site.
+     *
+     * @module mm.core.user
+     * @ngdoc method
+     * @name $mmUser#isUpdatePictureDisabled
+     * @param  {String} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     */
+    self.isUpdatePictureDisabled = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return self.isUpdatePictureDisabledInSite(site);
+        });
+    };
+
+    /**
+     * Check if update profile picture is disabled in a certain site.
+     *
+     * @module mm.core.user
+     * @ngdoc method
+     * @name $mmUser#isUpdatePictureDisabledInSite
+     * @param  {Object} [site] Site. If not defined, use current site.
+     * @return {Boolean}       True if disabled, false otherwise.
+     */
+    self.isUpdatePictureDisabledInSite = function(site) {
+        site = site || $mmSite;
+        return site.isFeatureDisabled('$mmUserDelegate_picture');
+    };
+
+    /**
      * Prefetch user profiles and their images from a certain course. It prevents duplicates.
      *
      * @module mm.core.user

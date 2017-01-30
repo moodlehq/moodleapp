@@ -777,6 +777,64 @@ angular.module('mm.addons.messages')
     };
 
     /**
+     * Check if add contact (from user profile) is disabled in a certain site.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#isAddContactDisabled
+     * @param  {String} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     */
+    self.isAddContactDisabled = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return self.isAddContactDisabledInSite(site);
+        });
+    };
+
+    /**
+     * Check if add contact (from user profile) is disabled in a certain site.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#isAddContactDisabledInSite
+     * @param  {Object} [site] Site. If not defined, use current site.
+     * @return {Boolean}       True if disabled, false otherwise.
+     */
+    self.isAddContactDisabledInSite = function(site) {
+        site = site || $mmSite;
+        return site.isFeatureDisabled('$mmUserDelegate_mmaMessages:addContact');
+    };
+
+    /**
+     * Check if block contact (from user profile) is disabled in a certain site.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#isBlockContactDisabled
+     * @param  {String} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     */
+    self.isBlockContactDisabled = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return self.isBlockContactDisabledInSite(site);
+        });
+    };
+
+    /**
+     * Check if block contact (from user profile) is disabled in a certain site.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#isBlockContactDisabledInSite
+     * @param  {Object} [site] Site. If not defined, use current site.
+     * @return {Boolean}       True if disabled, false otherwise.
+     */
+    self.isBlockContactDisabledInSite = function(site) {
+        site = site || $mmSite;
+        return site.isFeatureDisabled('$mmUserDelegate_mmaMessages:blockContact');
+    };
+
+    /**
      * Checks if the a user is blocked by the current user.
      *
      * @module mm.addons.messages
@@ -987,6 +1045,35 @@ angular.module('mm.addons.messages')
      */
     self.isSearchEnabled = function() {
         return $mmSite.wsAvailable('core_message_search_contacts');
+    };
+
+    /**
+     * Check if send message (from user profile) is disabled in a certain site.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#isSendMessageDisabled
+     * @param  {String} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     */
+    self.isSendMessageDisabled = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return self.isSendMessagesDisabledInSite(site);
+        });
+    };
+
+    /**
+     * Check if send message (from user profile) is disabled in a certain site.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#isSendMessagesDisabledInSite
+     * @param  {Object} [site] Site. If not defined, use current site.
+     * @return {Boolean}       True if disabled, false otherwise.
+     */
+    self.isSendMessagesDisabledInSite = function(site) {
+        site = site || $mmSite;
+        return site.isFeatureDisabled('$mmUserDelegate_mmaMessages:sendMessage');
     };
 
     /**

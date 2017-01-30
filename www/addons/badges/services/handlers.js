@@ -115,11 +115,24 @@ angular.module('mm.addons.badges')
         /**
          * Whether or not the handler is enabled for a certain site.
          *
-         * @param  {String} siteId Site ID.
-         * @return {Promise}       Promise resolved with true if enabled.
+         * @param  {String} siteId      Site ID.
+         * @param  {Boolean} isMyBadges True if the link is to see the user badges.
+         * @return {Promise}            Promise resolved with true if enabled.
          */
-        function isPluginEnabled(siteId) {
-            return $mmaBadges.isPluginEnabled(siteId);
+        function isViewEnabled(siteId, isMyBadges) {
+            return $mmaBadges.isPluginEnabled(siteId).then(function(enabled) {
+                if (!enabled) {
+                    return false;
+                }
+
+                if (isMyBadges) {
+                    return $mmaBadges.isViewUserDisabled().then(function(disabled) {
+                        return !disabled;
+                    });
+                }
+
+                return true;
+            });
         }
 
         /**
@@ -163,7 +176,7 @@ angular.module('mm.addons.badges')
 
             if (isMyBadges || isBadge) {
                 // Pass false because all sites should have the same siteurl.
-                return $mmContentLinksHelper.filterSupportedSites(siteIds, isPluginEnabled, false).then(function(ids) {
+                return $mmContentLinksHelper.filterSupportedSites(siteIds, isViewEnabled, false, isMyBadges).then(function(ids) {
                     if (!ids.length) {
                         return [];
                     }
