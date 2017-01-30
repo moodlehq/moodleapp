@@ -250,6 +250,15 @@ angular.module('mm.core')
         };
 
         /**
+         * Get site Course ID for frontpage course. If not declared it will return 1 as default.
+         *
+         * @return {Number} Site Home ID.
+         */
+        Site.prototype.getSiteHomeId = function() {
+            return this.infos && this.infos.siteid || 1;
+        };
+
+        /**
          * Set site ID.
          *
          * @param {String} New ID.

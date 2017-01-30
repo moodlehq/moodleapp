@@ -74,7 +74,7 @@ angular.module('mm.addons.mod_scorm')
                 return; // SCORM is closed or not open yet, we can't get more data.
             }
 
-            return syncScorm(!refresh, showErrors).catch(function() {
+            return syncScorm(showErrors).catch(function() {
                 // Ignore errors, keep getting data even if sync fails.
             }).then(function() {
 
@@ -345,9 +345,8 @@ angular.module('mm.addons.mod_scorm')
     }
 
     // Tries to synchronize the current SCORM.
-    function syncScorm(checkTime, showErrors) {
-        var promise = checkTime ? $mmaModScormSync.syncScormIfNeeded(scorm) : $mmaModScormSync.syncScorm(scorm);
-        return promise.then(function(data) {
+    function syncScorm(showErrors) {
+        return $mmaModScormSync.syncScorm(scorm).then(function(data) {
             if (data) {
                 var message = $mmText.buildMessage(data.warnings);
                 if (message) {

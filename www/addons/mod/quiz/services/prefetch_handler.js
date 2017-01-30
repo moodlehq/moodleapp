@@ -272,6 +272,7 @@ angular.module('mm.addons.mod_quiz')
      * @return {Promise}         Promise resolved when done.
      */
     self.invalidateModule = function(module, courseId) {
+        // Always invalidate all the data since it's needed to check if the quiz is downloadable.
         return $mmaModQuiz.getQuizIdFromModule(module, courseId).then(function(quizId) {
             var promises = [];
 

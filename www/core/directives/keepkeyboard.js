@@ -43,7 +43,7 @@ angular.module('mm.core')
  *
  * @param {Boolean} [keepInButton] True if the directive is applied to the button, false if applied to the input.
  */
-.directive('mmKeepKeyboard', function($mmUtil, $timeout) {
+.directive('mmKeepKeyboard', function($mmUtil, $timeout, $mmApp) {
 
     return {
         restrict: 'A',
@@ -51,6 +51,7 @@ angular.module('mm.core')
             var selector = attrs.mmKeepKeyboard,
                 keepInButton = attrs.keepInButton && attrs.keepInButton !== 'false',
                 lastFocusOut = 0,
+                candidateEls,
                 selectedEl,
                 button,
                 input;
@@ -60,7 +61,10 @@ angular.module('mm.core')
                 return;
             }
 
-            selectedEl = document.querySelector(selector);
+            // Get the selected element.
+            // Always get the last one since Ionic stacks views and the element might be already in a previous view.
+            candidateEls = document.querySelectorAll(selector);
+            selectedEl = candidateEls[candidateEls.length - 1];
             if (!selectedEl) {
                 // Element not found.
                 return;
@@ -106,10 +110,12 @@ angular.module('mm.core')
                 }
             }
 
-            // Focus an element again and stop listening focusout to focus again if needed.
+            // If keyboard is open, focus the input again and stop listening focusout to focus again if needed.
             function focusElementAgain() {
-                $mmUtil.focusElement(input);
-                input.removeEventListener('focusout', focusElementAgain);
+                if ($mmApp.isKeyboardVisible()) {
+                    $mmUtil.focusElement(input);
+                    input.removeEventListener('focusout', focusElementAgain);
+                }
             }
         }
     };

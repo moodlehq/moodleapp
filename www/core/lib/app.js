@@ -184,6 +184,18 @@ angular.module('mm.core')
         };
 
         /**
+         * Check if the keyboard is visible.
+         *
+         * @return {Boolean} True if keyboard is visible, false otherwise.
+         */
+        self.isKeyboardVisible = function() {
+            if (typeof cordova != 'undefined' && cordova.plugins && cordova.plugins.Keyboard) {
+                return cordova.plugins.Keyboard.isVisible;
+            }
+            return false;
+        };
+
+        /**
          * Returns whether we are online.
          *
          * @module mm.core

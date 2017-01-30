@@ -55,6 +55,14 @@ angular.module('mm.core')
             element.wrap('<div class="item-input-inset mm-show-password-container">');
             element.after(button);
 
+            // By default, don't autocapitalize and autocorrect.
+            if (!element.attr('autocorrect')) {
+                element.attr('autocorrect', 'off');
+            }
+            if (!element.attr('autocapitalize')) {
+                element.attr('autocapitalize', 'none');
+            }
+
             scope.shown = attrs.initialShown && attrs.initialShown !== 'false';
             setData();
 

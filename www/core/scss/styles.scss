@@ -139,6 +139,17 @@ em {
   white-space: normal;
 }
 
+.item h1:first-child,
+.item h2:first-child,
+.item .item-heading:first-child,
+.item h3:first-child,
+.item h4:first-child,
+.item h5:first-child,
+.item h6:first-child,
+.item p:first-child {
+    margin-top: 0;
+}
+
 // More options for grids.
 .col-65 {
   @include flex(0, 0, 65%);
@@ -215,7 +226,7 @@ em {
   }
 
   mm-format-text > p:only-child {
-    display: inline-block;
+    display: inline;
   }
 }
 
@@ -609,6 +620,10 @@ p.mm-error {
   height: auto;
   width: auto;
   position: absolute !important; // Position fixed causes problems in Android 4.1-4.3.
+}
+
+.mm-zoom-pane {
+  height: 100%;
 }
 
 .mm-has-navigation-bar {

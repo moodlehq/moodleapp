@@ -1,7 +1,8 @@
 $mma-messages-date-badge: "stable" !default;
 
 // The date displayed in the list.
-.mma-messages-date {
+.mma-messages-date,
+.mma-messages-unreadfrom {
 
   text-align: center;
   margin-top: 10px;
@@ -10,6 +11,10 @@ $mma-messages-date-badge: "stable" !default;
     @extend .badge;
     @extend .badge-#{$mma-messages-date-badge};
   }
+}
+
+.mma-messages-unreadfrom {
+  color: $positive;
 }
 
 .mma-messages-input-inset {

@@ -16,7 +16,7 @@
                 </div>
                 <ion-input class="item item-input item-stacked-label item-text-wrap" mm-input-errors error-messages="usernameErrors">
                     <ion-label mm-mark-required="true">{{ 'mm.login.username' | translate }}</ion-label>
-                    <input type="text" name="username" placeholder="{{ 'mm.login.username' | translate }}" ng-model="data.username" autocapitalize="off" autocorrect="off" mm-auto-focus required>
+                    <input type="text" name="username" placeholder="{{ 'mm.login.username' | translate }}" ng-model="data.username" autocapitalize="none" autocorrect="off" mm-auto-focus required>
                 </ion-input>
                 <ion-input class="item item-input item-stacked-label item-text-wrap" mm-input-errors error-messages="passwordErrors">
                     <ion-label mm-mark-required="true">{{ 'mm.login.password' | translate }}</ion-label>
@@ -29,11 +29,11 @@
                 <div class="item item-divider item-text-wrap">{{ 'mm.login.supplyinfo' | translate }}</div>
                 <ion-input class="item item-input item-stacked-label item-text-wrap" mm-input-errors error-messages="emailErrors">
                     <ion-label mm-mark-required="true">{{ 'mm.user.email' | translate }}</ion-label>
-                    <input type="email" name="email" placeholder="{{ 'mm.user.email' | translate }}" ng-model="data.email" autocapitalize="off" autocorrect="off" required>
+                    <input type="email" name="email" placeholder="{{ 'mm.user.email' | translate }}" ng-model="data.email" autocapitalize="none" autocorrect="off" required>
                 </ion-input>
                 <ion-input class="item item-input item-stacked-label item-text-wrap" mm-input-errors error-messages="email2Errors">
                     <ion-label mm-mark-required="true">{{ 'mm.user.emailagain' | translate }}</ion-label>
-                    <input type="email" name="email2" placeholder="{{ 'mm.user.emailagain' | translate }}" ng-model="data.email2" autocapitalize="off" autocorrect="off" required ng-pattern="escapeForRegex(data.email)">
+                    <input type="email" name="email2" placeholder="{{ 'mm.user.emailagain' | translate }}" ng-model="data.email2" autocapitalize="none" autocorrect="off" required ng-pattern="escapeForRegex(data.email)">
                 </ion-input>
                 <ion-input ng-repeat="namefield in settings.namefields track by $index" class="item item-input item-stacked-label item-text-wrap" mm-input-errors field-name="{{namefield}}" error-messages="namefieldsErrors[namefield]">
                     <ion-label mm-mark-required="true">{{ 'mm.user.' + namefield | translate }}</ion-label>
@@ -62,7 +62,7 @@
                     </div>
                     <ion-input class="item item-input item-stacked-label item-text-wrap" mm-input-errors>
                         <ion-label mm-mark-required="true">{{ 'mm.login.enterthewordsabove' | translate }}</ion-label>
-                        <input type="text" name="recaptcharesponse" placeholder="{{ 'mm.login.enterthewordsabove' | translate }}" ng-model="data.recaptcharesponse" autocapitalize="off" autocorrect="off" required>
+                        <input type="text" name="recaptcharesponse" placeholder="{{ 'mm.login.enterthewordsabove' | translate }}" ng-model="data.recaptcharesponse" autocapitalize="none" autocorrect="off" required>
                     </ion-input>
                     <div class="item padding">
                         <!-- Use anchor instead of button to prevent marking form as submitted. -->

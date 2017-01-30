@@ -98,7 +98,7 @@ angular.module('mm.core.user')
 
                 return $mmCourses.getCoursesOptions(courseIds).then(function(options) {
                     // For backwards compatibility we don't modify the courseId.
-                    var courseIdForOptions = courseId || $mmSite.getInfo().siteid || 1;
+                    var courseIdForOptions = courseId || $mmSite.getSiteHomeId();
                     var navOptions = options.navOptions[courseIdForOptions];
                     var admOptions = options.admOptions[courseIdForOptions];
 

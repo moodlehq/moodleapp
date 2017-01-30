@@ -104,7 +104,7 @@ angular.module('mm.core.user')
 
     // Allow to change the profile image only in the app profile page.
     $scope.canChangeProfilePicture =
-        (!$scope.courseId ||$scope.courseId == ($mmSite.getInfo().siteid || 1)) &&
+        (!$scope.courseId ||$scope.courseId == ($mmSite.getSiteHomeId())) &&
         $scope.userId == $mmSite.getUserId() &&
         $mmSite.canUploadFiles() &&
         $mmSite.wsAvailable('core_user_update_picture');

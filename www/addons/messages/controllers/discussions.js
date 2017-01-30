@@ -22,8 +22,9 @@ angular.module('mm.addons.messages')
  * @name mmaMessagesDiscussionsCtrl
  */
 .controller('mmaMessagesDiscussionsCtrl', function($scope, $mmUtil, $mmaMessages, $rootScope, $mmEvents, $mmSite, $ionicPlatform,
-            mmCoreSplitViewLoad, mmaMessagesNewMessageEvent, $mmAddonManager) {
-    var newMessagesObserver,
+            mmCoreSplitViewLoad, mmaMessagesNewMessageEvent, $mmAddonManager, mmaMessagesReadChangedEvent,
+            mmaMessagesReadCronEvent) {
+    var newMessagesObserver, readChangedObserver, cronObserver,
         siteId = $mmSite.getId(),
         discussions,
         $mmPushNotificationsDelegate = $mmAddonManager.get('$mmPushNotificationsDelegate'),
@@ -36,17 +37,14 @@ angular.module('mm.addons.messages')
             discussions = discs;
 
             // Convert to an array for sorting.
-            var array = [];
-            angular.forEach(discussions, function(v) {
-                array.push(v);
+            var discussionsSorted = [];
+            angular.forEach(discussions, function(discussion) {
+                discussion.unread = !!discussion.unread;
+                discussionsSorted.push(discussion);
             });
-            $scope.discussions = array;
+            $scope.discussions = discussionsSorted;
         }, function(error) {
-            if (typeof error === 'string') {
-                $mmUtil.showErrorModal(error);
-            } else {
-                $mmUtil.showErrorModal('mma.messages.errorwhileretrievingdiscussions', true);
-            }
+            $mmUtil.showErrorModalDefault(error, 'mma.messages.errorwhileretrievingdiscussions', true);
         }).finally(function() {
             $scope.loaded = true;
         });
@@ -60,6 +58,8 @@ angular.module('mm.addons.messages')
 
     $scope.refresh = function() {
         refreshData().finally(function() {
+            // Triggering without userid will avoid loops. This trigger will only update the side menu.
+            $mmEvents.trigger(mmaMessagesReadChangedEvent, {siteid: siteId});
             $scope.$broadcast('scroll.refreshComplete');
         });
     };
@@ -90,13 +90,32 @@ angular.module('mm.addons.messages')
         }
     });
 
+    readChangedObserver = $mmEvents.on(mmaMessagesReadChangedEvent, function(data) {
+        if (data && data.siteid == siteId && data.userid) {
+            var discussion = discussions[data.userid];
+
+            if (typeof discussion != 'undefined') {
+                // A discussion has been read reset counter.
+                discussion.unread = false;
+
+                // Discussions changed, invalidate them.
+                $mmaMessages.invalidateDiscussionsCache();
+            }
+        }
+    });
+
+    cronObserver = $mmEvents.on(mmaMessagesReadCronEvent, function(data) {
+        if (data && (data.siteid == siteId || !data.siteid)) {
+            refreshData();
+        }
+    });
+
     // If a message push notification is received, refresh the view.
     if ($mmPushNotificationsDelegate) {
         $mmPushNotificationsDelegate.registerReceiveHandler('mmaMessages:discussions', function(notification) {
             if ($mmUtil.isFalseOrZero(notification.notif)) {
                 // New message received. If it's from current site, refresh the data.
-                if (notification.site == $mmSite.getId()) {
-                    $scope.loaded = false;
+                if (notification.site == siteId) {
                     refreshData();
                 }
             }
@@ -110,9 +129,10 @@ angular.module('mm.addons.messages')
     });
 
     $scope.$on('$destroy', function() {
-        if (newMessagesObserver && newMessagesObserver.off) {
-            newMessagesObserver.off();
-        }
+        newMessagesObserver && newMessagesObserver.off && newMessagesObserver.off();
+        readChangedObserver && readChangedObserver.off && readChangedObserver.off();
+        cronObserver && cronObserver.off && cronObserver.off();
+
         if ($mmPushNotificationsDelegate) {
             $mmPushNotificationsDelegate.unregisterReceiveHandler('mmaMessages:discussions');
         }

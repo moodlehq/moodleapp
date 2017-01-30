@@ -325,6 +325,7 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}         Promise resolved when done.
      */
     self.invalidateModule = function(module, courseId) {
+        // Always invalidate all the data since some assigns cannot use check updates.
         var siteId = $mmSite.getId();
         return $mmaModAssign.getAssignment(courseId, module.id, siteId).then(function(assign) {
             var promises = [];
