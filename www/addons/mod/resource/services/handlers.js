@@ -203,12 +203,7 @@ angular.module('mm.addons.mod_resource')
          * @return {Promise}           Promise resolved with true if enabled.
          */
         function isEnabled(siteId, courseId) {
-            return $mmaModResource.isPluginEnabled(siteId).then(function(enabled) {
-                if (!enabled) {
-                    return false;
-                }
-                return courseId || $mmCourse.canGetModuleWithoutCourseId(siteId);
-            });
+            return $mmContentLinksHelper.isModuleIndexEnabled($mmaModResource, 'resource', siteId, courseId);
         }
 
         /**

@@ -22,7 +22,7 @@ angular.module('mm.core.contentlinks')
  * @name $mmContentLinksHelper
  */
 .factory('$mmContentLinksHelper', function($log, $ionicHistory, $state, $mmSite, $mmContentLinksDelegate, $mmUtil, $translate,
-            $mmCourseHelper, $mmSitesManager, $q, $mmLoginHelper, $mmText, mmCoreConfigConstants) {
+            $mmCourseHelper, $mmSitesManager, $q, $mmLoginHelper, $mmText, mmCoreConfigConstants, $mmCourse) {
 
     $log = $log.getInstance('$mmContentLinksHelper');
 
@@ -265,6 +265,28 @@ angular.module('mm.core.contentlinks')
             return false;
         }).catch(function() {
             return false;
+        });
+    };
+
+    /**
+     * Check if a module is enabled for module index links.
+     *
+     * @module mm.core.contentlinks
+     * @ngdoc method
+     * @name $mmContentLinksHelper#isModuleIndexEnabled
+     * @param  {Object} service    Module's service. Must implement a 'isPluginEnabled(siteId)' function.
+     * @param  {String} modName    Name of the module: 'assign', 'book', ...
+     * @param  {String} siteId     Site ID.
+     * @param  {Number} [courseId] Course ID of the module.
+     * @return {Promise}           Promise resolved with true if enabled, resolved with false or rejected otherwise.
+     */
+    self.isModuleIndexEnabled = function(service, modName, siteId, courseId) {
+        return $mmCourseHelper.isModuleEnabled(service, modName, siteId).then(function(enabled) {
+            if (!enabled) {
+                return false;
+            }
+
+            return courseId || $mmCourse.canGetModuleWithoutCourseId(siteId);
         });
     };
 

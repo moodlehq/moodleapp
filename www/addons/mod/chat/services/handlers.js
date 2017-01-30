@@ -83,12 +83,7 @@ angular.module('mm.addons.mod_chat')
          * @return {Promise}           Promise resolved with true if enabled.
          */
         function isEnabled(siteId, courseId) {
-            return $mmaModChat.isPluginEnabled(siteId).then(function(enabled) {
-                if (!enabled) {
-                    return false;
-                }
-                return courseId || $mmCourse.canGetModuleWithoutCourseId(siteId);
-            });
+            return $mmContentLinksHelper.isModuleIndexEnabled($mmaModChat, 'chat', siteId, courseId);
         }
 
         /**

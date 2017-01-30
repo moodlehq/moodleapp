@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_imscp')
  * @ngdoc service
  * @name $mmaModImscpHandlers
  */
-.factory('$mmaModImscpHandlers', function($mmCourse, $mmaModImscp, $mmEvents, $state, $mmSite, $mmCourseHelper, $mmFilepool,
+.factory('$mmaModImscpHandlers', function($mmCourse, $mmaModImscp, $mmEvents, $state, $mmSite, $mmCourseHelper,
             $mmCoursePrefetchDelegate, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated, mmCoreEventPackageStatusChanged,
             mmaModImscpComponent, $mmContentLinksHelper, $q, $mmaModImscpPrefetchHandler, $mmUtil) {
     var self = {};
@@ -179,12 +179,7 @@ angular.module('mm.addons.mod_imscp')
          * @return {Promise}           Promise resolved with true if enabled.
          */
         function isEnabled(siteId, courseId) {
-            return $mmaModImscp.isPluginEnabled(siteId).then(function(enabled) {
-                if (!enabled) {
-                    return false;
-                }
-                return courseId || $mmCourse.canGetModuleWithoutCourseId(siteId);
-            });
+            return $mmContentLinksHelper.isModuleIndexEnabled($mmaModImscp, 'imscp', siteId, courseId);
         }
 
         /**

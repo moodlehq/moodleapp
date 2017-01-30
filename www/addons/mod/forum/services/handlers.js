@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_forum')
  */
 .factory('$mmaModForumHandlers', function($mmCourse, $mmaModForum, $state, $mmUtil, $mmContentLinksHelper, $q, $mmEvents, $mmSite,
             $mmaModForumPrefetchHandler, $mmCoursePrefetchDelegate, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated,
-            mmaModForumComponent, mmCoreEventPackageStatusChanged, $mmaModForumSync) {
+            mmaModForumComponent, mmCoreEventPackageStatusChanged, $mmaModForumSync, $mmCourseDelegate) {
     var self = {};
 
     /**
@@ -178,12 +178,7 @@ angular.module('mm.addons.mod_forum')
          * @return {Promise}           Promise resolved with true if enabled.
          */
         function isIndexEnabled(siteId, courseId) {
-            return $mmaModForum.isPluginEnabled(siteId).then(function(enabled) {
-                if (!enabled) {
-                    return false;
-                }
-                return courseId || $mmCourse.canGetModuleWithoutCourseId(siteId);
-            });
+            return $mmContentLinksHelper.isModuleIndexEnabled($mmaModForum, 'forum', siteId, courseId);
         }
 
         /**
@@ -193,8 +188,14 @@ angular.module('mm.addons.mod_forum')
          * @return {Promise}       Promise resolved with true if enabled.
          */
         function isDiscEnabled(siteId) {
-            // We don't check courseId because it's only needed for user profile links, we can afford not passing it.
-            return $mmaModForum.isPluginEnabled(siteId);
+            // First check if module is disabled since it will always be a local check.
+            return $mmCourseDelegate.isModuleDisabled('forum', siteId).then(function(disabled) {
+                if (disabled) {
+                    return false;
+                }
+
+                return $mmaModForum.isPluginEnabled(siteId);
+            });
         }
 
         /**
@@ -219,7 +220,7 @@ angular.module('mm.addons.mod_forum')
                     courseId = courseId || params.courseid || params.cid;
 
                     // Pass false because all sites should have the same siteurl.
-                    return $mmContentLinksHelper.filterSupportedSites(siteIds, isDiscEnabled, false, courseId).then(function(ids) {
+                    return $mmContentLinksHelper.filterSupportedSites(siteIds, isDiscEnabled, false).then(function(ids) {
                         if (!ids.length) {
                             return [];
                         } else {

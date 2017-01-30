@@ -169,12 +169,7 @@ angular.module('mm.addons.mod_assign')
          * @return {Promise}           Promise resolved with true if enabled.
          */
         function isEnabled(siteId, courseId) {
-            return $mmaModAssign.isPluginEnabled(siteId).then(function(enabled) {
-                if (!enabled) {
-                    return false;
-                }
-                return courseId || $mmCourse.canGetModuleWithoutCourseId(siteId);
-            });
+            return $mmContentLinksHelper.isModuleIndexEnabled($mmaModAssign, 'assign', siteId, courseId);
         }
 
         /**

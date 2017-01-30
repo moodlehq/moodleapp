@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_label')
  * @ngdoc service
  * @name $mmaModLabelHandlers
  */
-.factory('$mmaModLabelHandlers', function($mmText, $translate, $state, $mmContentLinksHelper, $q, $mmCourse) {
+.factory('$mmaModLabelHandlers', function($mmContentLinksHelper, $q, $mmCourse, $mmCourseDelegate) {
     var self = {};
 
     /**
@@ -83,10 +83,13 @@ angular.module('mm.addons.mod_label')
          * @return {Promise}           Promise resolved with true if enabled.
          */
         function isEnabled(siteId, courseId) {
-            if (courseId) {
-                return $q.when(true);
-            }
-            return $mmCourse.canGetModuleWithoutCourseId(siteId);
+            return $mmCourseDelegate.isModuleDisabled('label', siteId).then(function(disabled) {
+                if (disabled) {
+                    return false;
+                }
+
+                return courseId || $mmCourse.canGetModuleWithoutCourseId(siteId);
+            });
         }
 
         /**

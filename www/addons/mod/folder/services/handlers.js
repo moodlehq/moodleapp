@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_folder')
  * @ngdoc service
  * @name $mmaModFolderHandlers
  */
-.factory('$mmaModFolderHandlers', function($mmCourse, $mmaModFolder, $mmEvents, $state, $mmSite, $mmCourseHelper, $mmFilepool,
+.factory('$mmaModFolderHandlers', function($mmCourse, $mmEvents, $state, $mmSite, $mmCourseHelper, $mmCourseDelegate,
             $mmCoursePrefetchDelegate, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated, mmCoreEventPackageStatusChanged,
             mmaModFolderComponent, $mmContentLinksHelper, $q, $mmaModFolderPrefetchHandler, $mmUtil) {
     var self = {};
@@ -175,10 +175,13 @@ angular.module('mm.addons.mod_folder')
          * @return {Promise}           Promise resolved with true if enabled.
          */
         function isEnabled(siteId, courseId) {
-            if (courseId) {
-                return $q.when(true);
-            }
-            return $mmCourse.canGetModuleWithoutCourseId(siteId);
+            return $mmCourseDelegate.isModuleDisabled('folder', siteId).then(function(disabled) {
+                if (disabled) {
+                    return false;
+                }
+
+                return courseId || $mmCourse.canGetModuleWithoutCourseId(siteId);
+            });
         }
 
         /**

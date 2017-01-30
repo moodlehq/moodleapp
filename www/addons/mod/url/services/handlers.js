@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_url')
  * @ngdoc service
  * @name $mmaModUrlHandlers
  */
-.factory('$mmaModUrlHandlers', function($mmCourse, $mmaModUrl, $state, $mmUtil, $mmContentLinksHelper, $q) {
+.factory('$mmaModUrlHandlers', function($mmCourse, $mmaModUrl, $state, $mmCourseDelegate, $mmContentLinksHelper, $q) {
 
     var self = {};
 
@@ -111,10 +111,13 @@ angular.module('mm.addons.mod_url')
          * @return {Promise}           Promise resolved with true if enabled.
          */
         function isEnabled(siteId, courseId) {
-            if (courseId) {
-                return $q.when(true);
-            }
-            return $mmCourse.canGetModuleWithoutCourseId(siteId);
+            return $mmCourseDelegate.isModuleDisabled('url', siteId).then(function(disabled) {
+                if (disabled) {
+                    return false;
+                }
+
+                return courseId || $mmCourse.canGetModuleWithoutCourseId(siteId);
+            });
         }
 
         /**

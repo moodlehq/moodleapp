@@ -166,37 +166,23 @@ angular.module('mm.addons.mod_glossary')
             patterns = ['/mod/glossary/view.php', '/mod/glossary/showentry.php'];
 
         /**
-         * Whether or not the handler is enabled to see glossary index for a certain site.
+         * Whether or not the handler is enabled for a certain site.
          *
          * @param  {String} siteId     Site ID.
          * @param  {Number} [courseId] Course ID related to the URL.
          * @return {Promise}           Promise resolved with true if enabled.
          */
-        function isIndexEnabled(siteId, courseId) {
-            return $mmaModGlossary.isPluginEnabled(siteId).then(function(enabled) {
-                if (!enabled) {
-                    return false;
-                }
-                return courseId || $mmCourse.canGetModuleWithoutCourseId(siteId);
-            });
+        function isEnabled(siteId, courseId) {
+            return $mmContentLinksHelper.isModuleIndexEnabled($mmaModGlossary, 'glossary', siteId, courseId);
         }
 
         /**
-         * Whether or not the handler is enabled to see glossary entry for a certain site.
+         * Get an entry.
          *
-         * @param  {String} siteId     Site ID.
-         * @param  {Number} [courseId] Course ID related to the URL.
-         * @return {Promise}           Promise resolved with true if enabled.
+         * @param  {Number} entryId Entry ID.
+         * @param  {String} siteId  Site ID.
+         * @return {Promise}        Promise resolved with the entry.
          */
-        function isEntryEnabled(siteId, courseId) {
-            return $mmaModGlossary.isPluginEnabled(siteId).then(function(enabled) {
-                if (!enabled) {
-                    return false;
-                }
-                return courseId || $mmCourse.canGetModuleByInstance(siteId);
-            });
-        }
-
         function getEntry(entryId, siteId) {
             return $mmaModGlossary.getEntry(entryId, siteId).catch(function(error) {
                 $mmUtil.showErrorModalDefault(error, 'mma.mod_glossary.errorloadingentry', true);
@@ -219,7 +205,7 @@ angular.module('mm.addons.mod_glossary')
                 courseId = courseId || params.courseid || params.cid;
 
                 // Pass false because all sites should have the same siteurl.
-                return $mmContentLinksHelper.filterSupportedSites(siteIds, isEntryEnabled, false, courseId).then(function(ids) {
+                return $mmContentLinksHelper.filterSupportedSites(siteIds, isEnabled, false, courseId).then(function(ids) {
                     if (!ids.length) {
                         return [];
                     }
@@ -270,7 +256,7 @@ angular.module('mm.addons.mod_glossary')
             // Check it's a glossary URL.
             if (url.indexOf(patterns[0]) > -1) {
                 // Glossary index.
-                return $mmContentLinksHelper.treatModuleIndexUrl(siteIds, url, isIndexEnabled, courseId);
+                return $mmContentLinksHelper.treatModuleIndexUrl(siteIds, url, isEnabled, courseId);
             } else if (url.indexOf(patterns[1]) > -1) {
                 // Glossary entry.
                 return treatEntryLink(siteIds, url, courseId);

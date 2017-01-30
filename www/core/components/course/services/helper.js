@@ -340,6 +340,28 @@ angular.module('mm.core.course')
     };
 
     /**
+     * Check if a module is enabled.
+     *
+     * @module mm.core.course
+     * @ngdoc method
+     * @name $mmCourseHelper#isModuleEnabled
+     * @param  {Object} service  Module's service. Must implement a 'isPluginEnabled(siteId)' function.
+     * @param  {String} modName  Name of the module: 'assign', 'book', ...
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with true if enabled, resolved with false or rejected otherwise.
+     */
+    self.isModuleEnabled = function(service, modName, siteId) {
+        // First check if module is disabled since it will always be a local check.
+        return $mmCourseDelegate.isModuleDisabled(modName, siteId).then(function(disabled) {
+            if (disabled) {
+                return false;
+            }
+
+            return service.isPluginEnabled(siteId);
+        });
+    };
+
+    /**
      * This function treats every module on the sections provided to get the controller a content handler provides, treat completion
      * and navigates to a module page if required. It also returns if sections has content.
      *
