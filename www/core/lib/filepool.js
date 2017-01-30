@@ -57,11 +57,8 @@ angular.module('mm.core')
                     name: 'component',
                 },
                 {
-                    // Not using compound indexes because they seem to have issues with where().
                     name: 'componentAndId',
-                    generator: function(obj) {
-                        return [obj.component, obj.componentId];
-                    }
+                    keyPath: ['component', 'componentId']
                 }
             ]
         },

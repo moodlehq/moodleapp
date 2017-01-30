@@ -39,11 +39,8 @@ angular.module('mm.addons.mod_scorm')
                     name: 'timemodified'
                 },
                 {
-                    // Not using compound indexes because they seem to have issues with where().
                     name: 'scormAndUser',
-                    generator: function(obj) {
-                        return [obj.scormid, obj.userid];
-                    }
+                    keyPath: ['scormid', 'userid']
                 }
             ]
         },
@@ -70,18 +67,12 @@ angular.module('mm.addons.mod_scorm')
                     name: 'synced'
                 },
                 {
-                    // Not using compound indexes because they seem to have issues with where().
                     name: 'scormUserAttempt',
-                    generator: function(obj) {
-                        return [obj.scormid, obj.userid, obj.attempt];
-                    }
+                    keyPath: ['scormid', 'userid', 'attempt']
                 },
                 {
-                    // Not using compound indexes because they seem to have issues with where().
                     name: 'scormUserAttemptSynced',
-                    generator: function(obj) {
-                        return [obj.scormid, obj.userid, obj.attempt, obj.synced];
-                    }
+                    keyPath: ['scormid', 'userid', 'attempt', 'synced']
                 }
             ]
         }

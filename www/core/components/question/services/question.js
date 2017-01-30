@@ -42,18 +42,12 @@ angular.module('mm.core.question')
                     name: 'state'
                 },
                 {
-                    // Not using compound indexes because they seem to have issues with where().
                     name: 'componentAndAttempt',
-                    generator: function(obj) {
-                        return [obj.component, obj.attemptid];
-                    }
+                    keyPath: ['component', 'attemptid']
                 },
                 {
-                    // Not using compound indexes because they seem to have issues with where().
                     name: 'componentAndComponentId',
-                    generator: function(obj) {
-                        return [obj.component, obj.componentId];
-                    }
+                    keyPath: ['component', 'componentId']
                 }
             ]
         },
@@ -80,25 +74,16 @@ angular.module('mm.core.question')
                     name: 'questionslot'
                 },
                 {
-                    // Not using compound indexes because they seem to have issues with where().
                     name: 'componentAndAttempt',
-                    generator: function(obj) {
-                        return [obj.component, obj.attemptid];
-                    }
+                    keyPath: ['component', 'attemptid']
                 },
                 {
-                    // Not using compound indexes because they seem to have issues with where().
                     name: 'componentAndComponentId',
-                    generator: function(obj) {
-                        return [obj.component, obj.componentId];
-                    }
+                    keyPath: ['component', 'componentId']
                 },
                 {
-                    // Not using compound indexes because they seem to have issues with where().
                     name: 'componentAndAttemptAndQuestion',
-                    generator: function(obj) {
-                        return [obj.component, obj.attemptid, obj.questionslot];
-                    }
+                    keyPath: ['component', 'attemptid', 'questionslot']
                 }
             ]
         }
