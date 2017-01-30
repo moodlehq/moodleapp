@@ -64,7 +64,8 @@ angular.module('mm.core')
         },
         dboptions = {
             autoSchema: true
-        };
+        },
+        supportWhereEqual;
 
     /**
      * Register a store schema.
@@ -82,8 +83,82 @@ angular.module('mm.core')
             console.log('$mmSite: Error: store ' + store.name + ' is already defined.');
             return;
         }
+        store.indexes = getIndexes(store.indexes);
         siteSchema.stores.push(store);
     };
+
+    /**
+     * Convenience function that translates indexes of a store keyPath values into generators if needed.
+     *
+     * @param  {Array} indexes Indexes Schema
+     * @return {Array}         Indexes translated if needed.
+     */
+    function getIndexes(indexes) {
+        if (!isWhereEqualSupported()) {
+            var neededIndexes = {},
+                uniqueIndexes = {};
+
+            // Get compound indexes and add the individual ones if not added.
+            angular.forEach(indexes, function(index) {
+                if (index.keyPath) {
+                    angular.forEach(index.keyPath, function(keyName) {
+                        neededIndexes[keyName] = keyName;
+                    });
+                } else {
+                    uniqueIndexes[index.name] = true;
+                }
+            });
+
+            // Add needed indexes not added.
+            angular.forEach(neededIndexes, function(index) {
+                if (typeof uniqueIndexes[index] == "undefined") {
+                    indexes.push({
+                        name: index
+                    });
+                    uniqueIndexes[index] = true;
+                }
+            });
+        } else {
+            // Needs a generator instead of keyPath.
+            angular.forEach(indexes, function(index) {
+                if (index.keyPath) {
+                    index.generator = function(obj) {
+                        var arr = [];
+                        angular.forEach(index.keyPath, function(keyName) {
+                            arr.push(obj[keyName]);
+                        });
+                        return arr;
+                    }
+                    delete index.keyPath;
+                }
+            });
+        }
+
+        return indexes;
+    }
+
+    /**
+     * Convenience function to check if WhereEqual is supported by the DB.
+     *
+     * @return {Boolean} If Where equal function will be supported by the device.
+     */
+    function isWhereEqualSupported() {
+        if (typeof supportWhereEqual != "undefined") {
+            return supportWhereEqual;
+        }
+
+        if (ionic.Platform.isIOS()) {
+            supportWhereEqual = true;
+            return true;
+        }
+
+        var isSafari = !ionic.Platform.isIOS() && !ionic.Platform.isAndroid() && navigator.userAgent.indexOf('Safari') != -1 &&
+                            navigator.userAgent.indexOf('Chrome') == -1 && navigator.userAgent.indexOf('Firefox') == -1;
+        supportWhereEqual = typeof IDBObjectStore != 'undefined' && typeof IDBObjectStore.prototype.count != 'undefined' &&
+                            !isSafari;
+
+        return supportWhereEqual;
+    }
 
     /**
      * Register multiple stores at once.
