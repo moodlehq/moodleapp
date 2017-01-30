@@ -23,6 +23,7 @@ angular.module('mm.core')
  * @description
  * This provider is the interface with the app database. The modules that need to store
  * information here need to register their stores.
+ * Remote addons cannot register stores in the app database.
  *
  * Example:
  *
@@ -63,6 +64,7 @@ angular.module('mm.core')
 
     /**
      * Register multiple stores at once.
+     * Remote addons cannot register stores in the app database.
      *
      * @param  {Array} stores Array of store objects.
      * @return {Void}
@@ -115,6 +117,9 @@ angular.module('mm.core')
         /**
          * Closes the keyboard if plugin is available.
          *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#closeKeyboard
          * @return {Boolean} True if plugin is available, false otherwise.
          */
         self.closeKeyboard = function() {
@@ -127,6 +132,10 @@ angular.module('mm.core')
 
         /**
          * Get the application global database.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#getDB
          * @return {Object} App's DB.
          */
         self.getDB = function() {
@@ -142,6 +151,9 @@ angular.module('mm.core')
          *
          * Do not use this method to modify the schema. Use $mmAppProvider#registerStore instead.
          *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#getSchema
          * @return {Object} The schema.
          */
         self.getSchema = function() {
@@ -186,6 +198,9 @@ angular.module('mm.core')
         /**
          * Check if the keyboard is visible.
          *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#isKeyboardVisible
          * @return {Boolean} True if keyboard is visible, false otherwise.
          */
         self.isKeyboardVisible = function() {
@@ -254,6 +269,9 @@ angular.module('mm.core')
         /**
          * Open the keyboard if plugin is available.
          *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmApp#openKeyboard
          * @return {Boolean} True if plugin is available, false otherwise.
          */
         self.openKeyboard = function() {
