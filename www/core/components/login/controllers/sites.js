@@ -90,8 +90,10 @@ angular.module('mm.core.login')
         var modal = $mmUtil.showModalLoading();
 
         $mmSitesManager.loadSite(siteId).then(function() {
-            $ionicHistory.nextViewOptions({disableBack: true});
-            return $mmLoginHelper.goToSiteInitialPage();
+            if (!$mmLoginHelper.isSiteLoggedOut()) {
+                $ionicHistory.nextViewOptions({disableBack: true});
+                return $mmLoginHelper.goToSiteInitialPage();
+            }
         }, function(error) {
             $log.error('Error loading site ' + siteId);
             error = error || 'Error loading site.';

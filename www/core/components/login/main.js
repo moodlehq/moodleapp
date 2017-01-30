@@ -14,7 +14,7 @@
 
 angular.module('mm.core.login', [])
 
-.constant('mmCoreLoginTokenChangePassword', '*changepassword*')
+.constant('mmCoreLoginTokenChangePassword', '*changepassword*') // Deprecated.
 
 .config(function($stateProvider, $urlRouterProvider, $mmInitDelegateProvider, mmInitDelegateMaxAddonPriority) {
 
@@ -83,7 +83,9 @@ angular.module('mm.core.login', [])
             siteurl: '',
             username: '',
             infositeurl: '',
-            siteid: ''
+            siteid: '',
+            statename: null, // Name and params of the state to go once authenticated. If not defined, site initial page.
+            stateparams: null
         }
     })
 
@@ -119,7 +121,7 @@ angular.module('mm.core.login', [])
 
 .run(function($log, $state, $mmUtil, $translate, $mmSitesManager, $rootScope, $mmSite, $mmURLDelegate, $ionicHistory, $timeout,
                 $mmEvents, $mmLoginHelper, mmCoreEventSessionExpired, $mmApp, $ionicPlatform, mmCoreConfigConstants, $mmText,
-                mmCoreEventPasswordChangeForced, mmCoreEventUserNotFullySetup, mmCoreEventSitePolicyNotAgreed) {
+                mmCoreEventPasswordChangeForced, mmCoreEventUserNotFullySetup, mmCoreEventSitePolicyNotAgreed, $q) {
 
     $log = $log.getInstance('mmLogin');
 
@@ -195,11 +197,13 @@ angular.module('mm.core.login', [])
     $rootScope.$on('$cordovaInAppBrowser:exit', function() {
         waitingForBrowser = false;
         lastInAppUrl = false;
+        checkLogout();
     });
     $ionicPlatform.on('resume', function() {
         // Wait a second before setting it to false since in iOS there could be some frozen WS calls.
         $timeout(function() {
             waitingForBrowser = false;
+            checkLogout();
         }, 1000);
     });
 
@@ -243,19 +247,22 @@ angular.module('mm.core.login', [])
     });
 
     // Function to handle session expired events.
-    function sessionExpired(siteid) {
+    function sessionExpired(data) {
 
-        var siteurl = $mmSite.getURL();
-        if (typeof(siteurl) === 'undefined') {
+        var siteId = data && data.siteid,
+            siteUrl = $mmSite.getURL(),
+            promise;
+
+        if (typeof(siteUrl) === 'undefined') {
             return;
         }
 
-        if (siteid && siteid !== $mmSite.getId()) {
+        if (siteId && siteId !== $mmSite.getId()) {
             return; // Site that triggered the event is not current site.
         }
 
         // Check authentication method.
-        $mmSitesManager.checkSite(siteurl).then(function(result) {
+        $mmSitesManager.checkSite(siteUrl).then(function(result) {
 
             if (result.warning) {
                 $mmUtil.showErrorModal(result.warning, true, 4000);
@@ -266,23 +273,36 @@ angular.module('mm.core.login', [])
                 // or show it again if the user is already authenticating using SSO.
                 if (!$mmApp.isSSOAuthenticationOngoing() && !isSSOConfirmShown && !waitingForBrowser) {
                     isSSOConfirmShown = true;
-                    $mmUtil.showConfirm($translate('mm.login.reconnectssodescription')).then(function() {
+
+                    if ($mmLoginHelper.shouldShowSSOConfirm(result.code)) {
+                        promise = $mmUtil.showConfirm($translate.instant(
+                                'mm.login.' + ($mmSite.isLoggedOut() ? 'loggedoutssodescription' : 'reconnectssodescription')));
+                    } else {
+                        promise = $q.when();
+                    }
+
+                    promise.then(function() {
                         waitingForBrowser = true;
-                        $mmLoginHelper.confirmAndOpenBrowserForSSOLogin(
-                                    result.siteurl, result.code, result.service, result.config && result.config.launchurl);
+                        $mmLoginHelper.openBrowserForSSOLogin(result.siteurl, result.code, result.service,
+                                result.config && result.config.launchurl, data.statename, data.stateparams);
+                    }).catch(function() {
+                        // User cancelled, logout him.
+                        logout();
                     }).finally(function() {
                         isSSOConfirmShown = false;
                     });
                 }
             } else {
                 var info = $mmSite.getInfo();
-                if (typeof(info) !== 'undefined' && typeof(info.username) !== 'undefined') {
+                if (typeof info != 'undefined' && typeof info.username != 'undefined') {
                     $ionicHistory.nextViewOptions({disableBack: true});
                     $state.go('mm_login.reconnect', {
                         siteurl: result.siteurl,
                         username: info.username,
                         infositeurl: info.siteurl,
-                        siteid: $mmSite.getId()
+                        siteid: siteId,
+                        statename: data.statename,
+                        stateparams: data.stateparams
                     });
                 }
             }
@@ -332,7 +352,8 @@ angular.module('mm.core.login', [])
         $mmApp.startSSOAuthentication();
         $log.debug('App launched by URL');
 
-        var modal = $mmUtil.showModalLoading('mm.login.authenticating', true);
+        var modal = $mmUtil.showModalLoading('mm.login.authenticating', true),
+            siteData;
 
         // Delete the sso scheme from the URL.
         url = url.replace(ssoScheme, '');
@@ -348,10 +369,16 @@ angular.module('mm.core.login', [])
         // Wait for app to be ready.
         $mmApp.ready().then(function() {
             return $mmLoginHelper.validateBrowserSSOLogin(url);
-        }).then(function(siteData) {
+        }).then(function(data) {
+            siteData = data;
             return $mmLoginHelper.handleSSOLoginAuthentication(siteData.siteurl, siteData.token, siteData.privateToken);
         }).then(function() {
-            $mmLoginHelper.goToSiteInitialPage();
+            if (siteData.statename) {
+                // State defined, go to that state instead of site initial page.
+                $state.go(siteData.statename, siteData.stateparams);
+            } else {
+                $mmLoginHelper.goToSiteInitialPage();
+            }
         }).catch(function(errorMessage) {
             if (typeof errorMessage === 'string' && errorMessage !== '') {
                 $mmUtil.showErrorModal(errorMessage);
@@ -362,5 +389,25 @@ angular.module('mm.core.login', [])
         });
 
         return true;
+    }
+
+    // Logout the user if needed.
+    function checkLogout() {
+        if (!$mmApp.isSSOAuthenticationOngoing() && $mmSite.isLoggedIn() && $mmSite.isLoggedOut() &&
+                $state.current.name != 'mm_login.reconnect') {
+            // User must reauthenticate but he closed the InAppBrowser without doing so, logout him and go to sites list.
+            logout();
+        }
+    }
+
+    // Logout user and go to sites list.
+    function logout() {
+        $mmSitesManager.logout().then(function() {
+            $ionicHistory.nextViewOptions({
+                disableAnimate: true,
+                disableBack: true
+            });
+            $state.go('mm_login.sites');
+        });
     }
 });

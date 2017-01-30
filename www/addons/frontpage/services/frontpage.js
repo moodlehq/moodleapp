@@ -80,19 +80,17 @@ angular.module('mm.addons.frontpage')
                 return $q.reject();
             }
         }).catch(function() {
-            return $mmSite.getConfig().then(function(config) {
-                if (config.frontpageloggedin) {
-                    var items = config.frontpageloggedin.split(',');
-
-                    if (items.length > 0) {
-                        return $q.when();
-                    }
+            var config = $mmSite.getStoredConfig();
+            if (config && config.frontpageloggedin) {
+                var items = config.frontpageloggedin.split(',');
+                if (items.length > 0) {
+                    return; // It's enabled.
                 }
+            }
 
-                if (!hasData) {
-                    return $q.reject();
-                }
-            });
+            if (!hasData) {
+                return $q.reject();
+            }
         });
     };
 

@@ -7,6 +7,7 @@ information provided here is intended especially for developers.
  * The promise returned by $mmaMessages#sendMessage is now resolved with an object instead of a boolean.
  * mm-format-text directive is now depending on height so new parameter max-height has been added and parameters shorten and expand-on-click have been deprecated.
  * Now mmUser#formatRoleList is returning a String instead of a Promise.
+ * The event mmCoreEventSessionExpired now receives an object instead of a string. Also, mmLoginLaunchSiteURL and mmLoginLaunchPassport have been deprecated, please use mmLoginLaunchData instead.
 
 === 3.2 ===
 

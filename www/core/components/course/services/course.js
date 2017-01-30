@@ -481,32 +481,24 @@ angular.module('mm.core.course')
                 courseid: courseId,
                 options: options
             }, preSets).then(function(sections) {
-                var promise,
-                    siteHomeId = site.getSiteHomeId();
+                var siteHomeId = site.getSiteHomeId(),
+                    showSections = true;
 
                 if (courseId == siteHomeId) {
-                    // Check if frontpage sections should be shown.
-                    promise = site.getConfig('numsections').catch(function() {
-                        // Ignore errors for not present settings assuming numsections will be true.
-                        return $q.when(true);
-                    });
-                } else {
-                    promise = $q.when(true);
+                    showSections = site.getStoredConfig('numsections');
                 }
 
-                return promise.then(function(showSections) {
-                    if (!showSections && sections.length > 0) {
-                        // Get only the last section (Main menu block section).
-                        sections.pop();
-                    }
+                if (typeof showSections != 'undefined' && !showSections && sections.length > 0) {
+                    // Get only the last section (Main menu block section).
+                    sections.pop();
+                }
 
-                    angular.forEach(sections, function(section) {
-                        angular.forEach(section.modules, function(module) {
-                            addContentsIfNeeded(module);
-                        });
+                angular.forEach(sections, function(section) {
+                    angular.forEach(section.modules, function(module) {
+                        addContentsIfNeeded(module);
                     });
-                    return sections;
                 });
+                return sections;
 
             });
         });

@@ -21,43 +21,39 @@ angular.module('mm.addons.frontpage')
  * @ngdoc directive
  * @name mmaFrontpageItemNews
  */
-.directive('mmaFrontpageItemNews', function($mmCourse, $state, $mmSite, $mmAddonManager, $mmCourseDelegate) {
+.directive('mmaFrontpageItemNews', function($mmCourse, $mmSite, $mmAddonManager, $mmCourseDelegate) {
     return {
         restrict: 'A',
         priority: 100,
         templateUrl: 'addons/frontpage/templates/frontpageitemnews.html',
         link: function(scope) {
             // Get number of news items to show.
-            return $mmSite.getConfig('newsitems').catch(function() {
-                // Ignore errors for not present settings assuming newsitems will be 0.
-                return $q.when(0);
-            }).then(function(newsitems) {
-                if (!newsitems) {
-                    return;
-                }
-                var courseId = $mmSite.getSiteHomeId();
+            var newsitems = $mmSite.getStoredConfig('newsitems') || 0;
+            if (!newsitems) {
+                return;
+            }
+            var courseId = $mmSite.getSiteHomeId();
 
-                $mmaModForum = $mmAddonManager.get('$mmaModForum');
-                if ($mmaModForum) {
-                    return $mmaModForum.getCourseForums(courseId).then(function(forums) {
-                        for (var x in forums) {
-                            if (forums[x].type == 'news') {
-                                return forums[x];
-                            }
+            $mmaModForum = $mmAddonManager.get('$mmaModForum');
+            if ($mmaModForum) {
+                return $mmaModForum.getCourseForums(courseId).then(function(forums) {
+                    for (var x in forums) {
+                        if (forums[x].type == 'news') {
+                            return forums[x];
                         }
-                    }).then(function(forum) {
-                        if (forum) {
-                            return $mmCourse.getModuleBasicInfo(forum.cmid).then(function(module) {
-                                scope.show = true;
-                                scope.module = module;
-                                scope.module._controller =
-                                    $mmCourseDelegate.getContentHandlerControllerFor(module.modname, module, courseId,
-                                        module.section);
-                            });
-                        }
-                    });
-                }
-            });
+                    }
+                }).then(function(forum) {
+                    if (forum) {
+                        return $mmCourse.getModuleBasicInfo(forum.cmid).then(function(module) {
+                            scope.show = true;
+                            scope.module = module;
+                            scope.module._controller =
+                                $mmCourseDelegate.getContentHandlerControllerFor(module.modname, module, courseId,
+                                    module.section);
+                        });
+                    }
+                });
+            }
         }
     };
 });

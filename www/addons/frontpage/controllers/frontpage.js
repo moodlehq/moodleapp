@@ -36,64 +36,59 @@ angular.module('mm.addons.frontpage')
     function loadContent() {
         $scope.hasContent = false;
 
-        return $mmSite.getConfig().catch(function() {
-            // Ignore errors for not present settings assuming numsections will be true.
-            return $q.when({
-                numsections: 1
+        var config = $mmSite.getStoredConfig() || {numsections: 1};
+
+        if (config.frontpageloggedin) {
+            // Items with index 1 and 3 were removed on 2.5 and not being supported in the app.
+            var frontpageItems = [
+                    'mma-frontpage-item-news', // News items.
+                    false,
+                    'mma-frontpage-item-categories', // List of categories.
+                    false,
+                    'mma-frontpage-item-categories', // Combo list.
+                    'mma-frontpage-item-enrolled-course-list', // Enrolled courses.
+                    'mma-frontpage-item-all-course-list', // List of courses.
+                    'mma-frontpage-item-course-search' // Course search box.
+                ],
+                items = config.frontpageloggedin.split(',');
+
+            $scope.items = [];
+
+            angular.forEach(items, function (itemNumber) {
+                // Get the frontpage item directive to render itself.
+                var item = frontpageItems[parseInt(itemNumber, 10)];
+                if (!item || $scope.items.indexOf(item) >= 0) {
+                    return;
+                }
+
+                $scope.hasContent = true;
+                $scope.items.push(item);
             });
-        }).then(function(config) {
-            if (config.frontpageloggedin) {
-                // Items with index 1 and 3 were removed on 2.5 and not being supported in the app.
-                var frontpageItems = [
-                        'mma-frontpage-item-news', // News items.
-                        false,
-                        'mma-frontpage-item-categories', // List of categories.
-                        false,
-                        'mma-frontpage-item-categories', // Combo list.
-                        'mma-frontpage-item-enrolled-course-list', // Enrolled courses.
-                        'mma-frontpage-item-all-course-list', // List of courses.
-                        'mma-frontpage-item-course-search' // Course search box.
-                    ],
-                    items = config.frontpageloggedin.split(',');
 
-                $scope.items = [];
+        }
 
-                angular.forEach(items, function (itemNumber) {
-                    // Get the frontpage item directive to render itself.
-                    var item = frontpageItems[parseInt(itemNumber, 10)];
-                    if (!item || $scope.items.indexOf(item) >= 0) {
-                        return;
-                    }
-
-                    $scope.hasContent = true;
-                    $scope.items.push(item);
-                });
-
+        return $mmCourse.getSections(courseId, false, true).then(function(sections) {
+            sectionsLoaded = sections;
+            // Check "Include a topic section" setting from numsections.
+            if (config.numsections && sections.length > 0) {
+                $scope.section = sections.pop();
+            } else {
+                $scope.section = false;
             }
 
-            return $mmCourse.getSections(courseId, false, true).then(function(sections) {
-                sectionsLoaded = sections;
-                // Check "Include a topic section" setting from numsections.
-                if (config.numsections && sections.length > 0) {
-                    $scope.section = sections.pop();
-                } else {
-                    $scope.section = false;
-                }
+            if (sections.length > 0) {
+                $scope.block = sections.pop();
+            } else {
+                $scope.block = false;
+            }
 
-                if (sections.length > 0) {
-                    $scope.block = sections.pop();
-                } else {
-                    $scope.block = false;
-                }
+            $scope.hasContent = $mmCourseHelper.addContentHandlerControllerForSectionModules([$scope.section, $scope.block],
+                courseId, moduleId, false, $scope) || $scope.hasContent;
 
-                $scope.hasContent = $mmCourseHelper.addContentHandlerControllerForSectionModules([$scope.section, $scope.block],
-                    courseId, moduleId, false, $scope) || $scope.hasContent;
-
-                // Add log in Moodle.
-                $mmCourse.logView(courseId);
-            }, function(error) {
-                $mmUtil.showErrorModalDefault(error, 'mm.course.couldnotloadsectioncontent', true);
-            });
+            // Add log in Moodle.
+            $mmCourse.logView(courseId);
+        }, function(error) {
+            $mmUtil.showErrorModalDefault(error, 'mm.course.couldnotloadsectioncontent', true);
         });
     }
 
