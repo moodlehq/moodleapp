@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_forum')
  * @name $mmaModForum
  */
 .factory('$mmaModForum', function($q, $mmSite, $mmUser, $mmGroups, $translate, $mmSitesManager, mmaModForumDiscPerPage,
-            mmaModForumComponent, $mmaModForumOffline, $mmApp, $mmUtil) {
+            mmaModForumComponent, $mmaModForumOffline, $mmApp, $mmUtil, $mmLang) {
     var self = {};
 
     /**
@@ -342,6 +342,28 @@ angular.module('mm.addons.mod_forum')
         return self.getCourseForums(courseId, siteId).then(function(forums) {
             for (var x in forums) {
                 if (forums[x].cmid == cmId) {
+                    return forums[x];
+                }
+            }
+            return $q.reject();
+        });
+    };
+
+    /**
+     * Get a forum by forum ID.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#getForumById
+     * @param {Number} courseId Course ID.
+     * @param {Number} forumId  Forum ID.
+     * @param {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the forum is retrieved.
+     */
+    self.getForumById = function(courseId, forumId, siteId) {
+        return self.getCourseForums(courseId, siteId).then(function(forums) {
+            for (var x in forums) {
+                if (forums[x].id == forumId) {
                     return forums[x];
                 }
             }
@@ -714,6 +736,11 @@ angular.module('mm.addons.mod_forum')
 
         // Convenience function to store a message to be synchronized later.
         function storeOffline() {
+            if (!forumId) {
+                // Not enough data to store in offline, reject.
+                return $mmLang.translateAndReject('mm.core.networkerrormsg');
+            }
+
             return $mmaModForumOffline.replyPost(postId, discussionId, forumId, name, courseId, subject, message, siteId)
                     .then(function() {
                 return false;

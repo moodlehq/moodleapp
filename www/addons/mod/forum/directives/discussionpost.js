@@ -40,6 +40,16 @@ angular.module('mm.addons.mod_forum')
  */
 .directive('mmaModForumDiscussionPost', function($mmaModForum, $mmUtil, $translate, $q, $mmaModForumOffline, $mmSyncBlock,
         mmaModForumComponent, $mmaModForumSync) {
+
+    // Get a forum. Returns empty object if params aren't valid.
+    function getForum(courseId, cmId) {
+        if (courseId && cmId) {
+            return $mmaModForum.getForum(courseId, cmId);
+        } else {
+            return $q.when({}); // Return empty object.
+        }
+    }
+
     return {
         restrict: 'E',
         scope: {
@@ -113,7 +123,7 @@ angular.module('mm.addons.mod_forum')
                         message = message.replace(/\n/g, '<br>');
                     }
 
-                    return $mmaModForum.getForum(scope.courseid, scope.componentId).then(function(forum) {
+                    return getForum(scope.courseid, scope.componentId).then(function(forum) {
                         return $mmaModForum.replyPost(scope.newpost.replyingto, scope.discussionId, forum.id, forum.name,
                                 scope.courseid, scope.newpost.subject, message).then(function() {
                             if (scope.onpostchange) {

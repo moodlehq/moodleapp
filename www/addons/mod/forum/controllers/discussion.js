@@ -55,6 +55,18 @@ angular.module('mm.addons.mod_forum')
     // Receive locked as param since it's returned by getDiscussions. This means that PullToRefresh won't update this value.
     $scope.locked = !!$stateParams.locked;
 
+    // Convenience function to get the forum.
+    function fetchForum() {
+        if (courseid && cmid) {
+            return $mmaModForum.getForum(courseid, cmid);
+        } else if (courseid && forumId) {
+            return $mmaModForum.getForumById(courseid, forumId);
+        } else {
+            // Cannot get the forum.
+            return $q.reject();
+        }
+    }
+
     // Convenience function to get forum discussions.
     function fetchPosts(sync, showErrors) {
         var syncPromise,
@@ -76,7 +88,7 @@ angular.module('mm.addons.mod_forum')
             return $mmaModForum.getDiscussionPosts(discussionId).then(function(posts) {
                 onlinePosts = posts;
 
-            }).finally(function() {
+            }).then(function() {
                 // Check if there are responses stored in offline.
                 return $mmaModForumOffline.hasDiscussionReplies(discussionId).then(function(hasOffline) {
                     $scope.postHasOffline = hasOffline;
@@ -92,6 +104,15 @@ angular.module('mm.addons.mod_forum')
                             });
 
                             angular.forEach(replies, function(offlineReply) {
+                                // If we don't have forumId and courseId, get it from the post.
+                                if (!forumId) {
+                                    forumId = offlineReply.forumid;
+                                }
+                                if (!courseid) {
+                                    courseid = offlineReply.courseid;
+                                    $scope.courseid = courseid;
+                                }
+
                                 convertPromises.push($mmaModForumOffline.convertOfflineReplyToOnline(offlineReply)
                                         .then(function(reply) {
                                     offlineReplies.push(reply);
@@ -109,7 +130,7 @@ angular.module('mm.addons.mod_forum')
                     }
                 });
             });
-        }).finally(function() {
+        }).then(function() {
             var posts = offlineReplies.concat(onlinePosts);
             $scope.discussion = $mmaModForum.extractStartingPost(posts);
 
@@ -118,15 +139,19 @@ angular.module('mm.addons.mod_forum')
             $scope.defaultSubject = $translate.instant('mma.mod_forum.re') + ' ' + $scope.discussion.subject;
             $scope.newpost.subject = $scope.defaultSubject;
 
-            if ($scope.discussion.userfullname && $scope.discussion.parent == 0 && courseid && cmid) {
-                return $mmaModForum.getForum(courseid, cmid).then(function(forum) {
-                    if (forum.type == 'single') {
-                        // Hide author for first post and type single.
-                        $scope.discussion.userfullname = null;
-                    }
-                });
-            }
-            return $q.when();
+            // Now try to get the forum.
+            return fetchForum().then(function(forum) {
+                if ($scope.discussion.userfullname && $scope.discussion.parent == 0 && forum.type == 'single') {
+                    // Hide author for first post and type single.
+                    $scope.discussion.userfullname = null;
+                }
+
+                forumId = forum.id;
+                cmid = forum.cmid;
+                $scope.componentId = cmid;
+            }).catch(function(err) {
+                // Ignore errors.
+            });
         }).catch(function(message) {
             $mmUtil.showErrorModal(message);
             return $q.reject();
