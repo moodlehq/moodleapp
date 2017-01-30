@@ -21,7 +21,7 @@ angular.module('mm.addons.participants')
  * @ngdoc service
  * @name $mmaParticipantsHandlers
  */
-.factory('$mmaParticipantsHandlers', function($mmaParticipants, mmCoursesAccessMethods, $mmUtil, $state) {
+.factory('$mmaParticipantsHandlers', function($mmaParticipants, mmCoursesAccessMethods, $mmUtil, $state, $mmContentLinksHelper) {
     var self = {};
 
     /**
@@ -102,6 +102,23 @@ angular.module('mm.addons.participants')
         var self = {};
 
         /**
+         * Whether or not participants is enabled for a certain site.
+         *
+         * @param  {String} siteId   Site ID.
+         * @param  {Number} courseId Course ID.
+         * @return {Promise}         Promise resolved with true if enabled.
+         */
+        function isEnabled(siteId, courseId) {
+            return $mmaParticipants.isDisabled(siteId).then(function(disabled) {
+                if (disabled) {
+                    return false;
+                }
+
+                return $mmaParticipants.isPluginEnabledForCourse(courseId, siteId);
+            });
+        }
+
+        /**
          * Get actions to perform with the link.
          *
          * @param {String[]} siteIds Site IDs the URL belongs to.
@@ -111,25 +128,33 @@ angular.module('mm.addons.participants')
         self.getActions = function(siteIds, url) {
             // Check it's a user URL.
             if (typeof self.handles(url) != 'undefined') {
-                var params = $mmUtil.extractUrlParams(url);
-                if (typeof params.id != 'undefined') {
-                    // Return actions.
-                    return [{
-                        message: 'mm.core.view',
-                        icon: 'ion-eye',
-                        sites: siteIds,
-                        action: function(siteId) {
-                            // Use redirect to make the participants list the new history root (to avoid "loops" in history).
-                            $state.go('redirect', {
-                                siteid: siteId,
-                                state: 'site.participants',
-                                params: {
-                                    course: {id: parseInt(params.id, 10)}
-                                }
-                            });
-                        }
-                    }];
-                }
+                var params = $mmUtil.extractUrlParams(url),
+                    courseId = parseInt(params.id, 10);
+
+                // Participants. Check if it's enabled.
+                // Pass false because all sites should have the same siteurl.
+                return $mmContentLinksHelper.filterSupportedSites(siteIds, isEnabled, false, courseId).then(function(ids) {
+                    if (!ids.length) {
+                        return [];
+                    } else {
+                        // Return actions.
+                        return [{
+                            message: 'mm.core.view',
+                            icon: 'ion-eye',
+                            sites: ids,
+                            action: function(siteId) {
+                                // Use redirect to make the participants list the new history root (to avoid "loops" in history).
+                                $state.go('redirect', {
+                                    siteid: siteId,
+                                    state: 'site.participants',
+                                    params: {
+                                        course: {id: courseId}
+                                    }
+                                });
+                            }
+                        }];
+                    }
+                });
             }
             return [];
         };

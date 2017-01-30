@@ -21,7 +21,7 @@ angular.module('mm.addons.coursecompletion')
  * @ngdoc service
  * @name $mmaCourseCompletion
  */
-.factory('$mmaCourseCompletion', function($mmSite, $log, $q, $mmCourses) {
+.factory('$mmaCourseCompletion', function($mmSite, $log, $q, $mmCourses, $mmSitesManager) {
     $log = $log.getInstance('$mmaCourseCompletion');
 
     var self = {};
@@ -138,6 +138,35 @@ angular.module('mm.addons.coursecompletion')
     self.invalidateCourseCompletion = function(courseid, userid) {
         userid = userid || $mmSite.getUserId();
         return $mmSite.invalidateWsCacheForKey(getCompletionCacheKey(courseid, userid));
+    };
+
+    /**
+     * Check if course completion is disabled in a certain site at course level.
+     *
+     * @module mm.addons.coursecompletion
+     * @ngdoc method
+     * @name $mmaCourseCompletion#isCourseDisabled
+     * @param  {String} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     */
+    self.isCourseDisabled = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return self.isCourseDisabledInSite(site);
+        });
+    };
+
+    /**
+     * Check if course completion is disabled in a certain site at course level.
+     *
+     * @module mm.addons.coursecompletion
+     * @ngdoc method
+     * @name $mmaCourseCompletion#isCourseDisabledInSite
+     * @param  {Object} [site] Site. If not defined, use current site.
+     * @return {Boolean}       True if disabled, false otherwise.
+     */
+    self.isCourseDisabledInSite = function(site) {
+        site = site || $mmSite;
+        return site.isFeatureDisabled('$mmCoursesDelegate_mmaCourseCompletion');
     };
 
     /**

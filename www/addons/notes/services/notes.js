@@ -252,6 +252,35 @@ angular.module('mm.addons.notes')
     };
 
     /**
+     * Check if view course notes is disabled in a certain site.
+     *
+     * @module mm.addons.notes
+     * @ngdoc method
+     * @name $mmaNotes#isViewDisabled
+     * @param  {String} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     */
+    self.isViewDisabled = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return self.isViewDisabledInSite(site);
+        });
+    };
+
+    /**
+     * Check if view course notes is disabled in a certain site.
+     *
+     * @module mm.addons.notes
+     * @ngdoc method
+     * @name $mmaNotes#isViewDisabledInSite
+     * @param  {Object} [site] Site. If not defined, use current site.
+     * @return {Boolean}       True if disabled, false otherwise.
+     */
+    self.isViewDisabledInSite = function(site) {
+        site = site || $mmSite;
+        return site.isFeatureDisabled('$mmCoursesDelegate_mmaNotes');
+    };
+
+    /**
      * Get the cache key for the get notes call.
      *
      * @param  {Number} courseId ID of the course to get the notes from.
