@@ -27,6 +27,8 @@
     "application/vnd.adobe.air-application-installer-package+zip": ["air"],
     "application/vnd.dvb.ait": ["ait"],
     "application/vnd.amiga.ami": ["ami"],
+    "audio/amr": ["amr"],
+    "audio/AMR": ["amr"],
     "application/vnd.android.package-archive": ["apk"],
     "text/cache-manifest": ["appcache"],
     "application/x-ms-application": ["application"],

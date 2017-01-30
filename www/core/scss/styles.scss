@@ -1324,3 +1324,11 @@ mm-format-text[max-height], *[mm-format-text][max-height] {
     }
   }
 }
+
+// Position modals over action sheet. This means that modals will ALWAYS be over action sheet (in Ionic it's the opposite).
+.action-sheet-open .modal-backdrop.active {
+  z-index: 20;
+  .modal {
+    pointer-events: auto;
+  }
+}

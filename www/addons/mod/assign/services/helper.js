@@ -406,7 +406,7 @@ angular.module('mm.addons.mod_assign')
                         // Local file, copy it. Use copy instead of move to prevent having a unstable state if
                         // some copies succeed and others don't.
                         var destFile = $mmFS.concatenatePaths(folderPath, file.name);
-                        promises.push($mmFS.copyFile(file.fullPath, destFile));
+                        promises.push($mmFS.copyFile(file.toURL(), destFile));
                         result.offline++;
                     }
                 });

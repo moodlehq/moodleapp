@@ -774,7 +774,7 @@ angular.module('mm.core')
          */
         function addFormatTextIfNeeded(message) {
             if ($mmText.hasHTMLTags(message)) {
-                return '<mm-format-text>' + message + '</mm-format-text>';
+                return '<mm-format-text watch="true">' + message + '</mm-format-text>';
             }
             return message;
         }

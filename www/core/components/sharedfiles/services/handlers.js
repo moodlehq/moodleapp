@@ -46,32 +46,23 @@ angular.module('mm.core.sharedfiles')
         };
 
         /**
-         * Get the controller.
+         * Get the data to display the handler.
          *
-         * @return {Object} Controller.
+         * @return {Object} Data.
          */
-        self.getController = function() {
+        self.getData = function() {
 
-            /**
-             * File picker handler controller.
-             *
-             * @module mm.core.sharedfiles
-             * @ngdoc controller
-             * @name $mmSharedFilesHandlers#filePicker:controller
-             */
-            return function($scope) {
-
-                // Button title.
-                $scope.title = 'mm.sharedfiles.sharedfiles';
-                $scope.class = 'mm-sharedfiles-filepicker-handler';
-
-                $scope.action = function(maxSize) {
-                    // We don't use maxSize because we aren't uploading the file ourselves, we return
+            return {
+                name: 'sharedfiles',
+                title: 'mm.sharedfiles.sharedfiles',
+                class: 'mm-sharedfiles-filepicker-handler',
+                icon: 'ion-folder',
+                action: function(maxSize, upload, allowOffline) {
+                    // We don't use the params because we aren't uploading the file ourselves, we return
                     // the file to upload to the fileuploader.
                     return $mmSharedFilesHelper.pickSharedFile();
-                };
+                }
             };
-
         };
 
         return self;

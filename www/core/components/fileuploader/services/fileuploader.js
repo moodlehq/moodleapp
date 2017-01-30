@@ -103,12 +103,10 @@ angular.module('mm.core.fileuploader')
             filename = mediaFile.name,
             split;
 
-        if (ionic.Platform.isIOS()) {
-            // In iOS we'll add a timestamp to the filename to make it unique.
-            split = filename.split('.');
-            split[0] += '_' + new Date().getTime();
-            filename = split.join('.');
-        }
+        // Add a timestamp to the filename to make it unique.
+        split = filename.split('.');
+        split[0] += '_' + new Date().getTime();
+        filename = split.join('.');
 
         options.fileKey = null;
         options.fileName = filename;
