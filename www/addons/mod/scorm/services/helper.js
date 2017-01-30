@@ -35,7 +35,7 @@ angular.module('mm.addons.mod_scorm')
      * @name $mmaModScormHelper#convertAttemptToOffline
      * @param  {Object} scorm   SCORM.
      * @param  {Number} attempt Number of the online attempt.
-     * @param {String} [siteId] Site ID. If not defined, current site.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}        Promise resolved when the attempt is created.
      */
     self.convertAttemptToOffline = function(scorm, attempt, siteId) {
@@ -117,24 +117,30 @@ angular.module('mm.addons.mod_scorm')
      * @module mm.addons.mod_scorm
      * @ngdoc method
      * @name $mmaModScormHelper#confirmDownload
-     * @param {Object} scorm SCORM to download.
-     * @return {Promise}     Promise resolved if the user confirms or no confirmation needed.
+     * @param  {Object} scorm         SCORM to download.
+     * @param  {Boolean} [isOutdated] True if package outdated, false if not outdated, undefined to calculate it.
+     * @return {Promise}              Promise resolved if the user confirms or no confirmation needed.
      */
-    self.confirmDownload = function(scorm) {
-        var promise;
-        if (!scorm.packagesize) {
-            // We don't have package size, try to calculate it.
-            promise = $mmaModScorm.calculateScormSize(scorm).then(function(size) {
-                // Store it so we don't have to calculate it again when using the same object.
-                scorm.packagesize = size;
-                return size;
-            });
-        } else {
-            promise = $q.when(scorm.packagesize);
-        }
+    self.confirmDownload = function(scorm, isOutdated) {
+        // Check if file should be downloaded.
+        return $mmaModScorm.shouldDownloadMainFile(scorm, isOutdated, $mmSite.getId()).then(function(download) {
+            if (download) {
+                var subPromise;
+                if (!scorm.packagesize) {
+                    // We don't have package size, try to calculate it.
+                    subPromise = $mmaModScorm.calculateScormSize(scorm).then(function(size) {
+                        // Store it so we don't have to calculate it again when using the same object.
+                        scorm.packagesize = size;
+                        return size;
+                    });
+                } else {
+                    subPromise = $q.when(scorm.packagesize);
+                }
 
-        return promise.then(function(size) {
-            return $mmUtil.confirmDownloadSize({size: size, total: true});
+                return subPromise.then(function(size) {
+                    return $mmUtil.confirmDownloadSize({size: size, total: true});
+                });
+            }
         });
     };
 
