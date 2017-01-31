@@ -2335,7 +2335,7 @@ angular.module('mm.core')
                 promises.push(db.remove(mmFilepoolStore, fileId));
 
                 // Remove links.
-                promises.push(db.where(mmFilepoolLinksStore, 'fileId', '=', fileId).then(function(entries) {
+                promises.push(db.whereEqual(mmFilepoolLinksStore, 'fileId', fileId).then(function(entries) {
                     return $q.all(entries.map(function(entry) {
                         return db.remove(mmFilepoolLinksStore, [entry.fileId, entry.component, entry.componentId]);
                     }));
