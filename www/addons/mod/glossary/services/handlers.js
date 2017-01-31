@@ -23,7 +23,8 @@ angular.module('mm.addons.mod_glossary')
  */
 .factory('$mmaModGlossaryHandlers', function($mmCourse, $mmaModGlossary, $state, $q, $mmContentLinksHelper, $mmUtil, $mmEvents,
             $mmCourseHelper, $mmaModGlossaryPrefetchHandler, mmaModGlossaryComponent, mmCoreEventPackageStatusChanged,
-            $mmCoursePrefetchDelegate, mmCoreDownloading, mmCoreDownloaded, mmCoreNotDownloaded, mmCoreOutdated, $mmSite) {
+            $mmCoursePrefetchDelegate, mmCoreDownloading, mmCoreDownloaded, mmCoreNotDownloaded, mmCoreOutdated, $mmSite,
+            $mmaModGlossarySync) {
     var self = {};
 
     /**
@@ -115,11 +116,7 @@ angular.module('mm.addons.mod_glossary')
                         });
                     }).catch(function(error) {
                         $scope.spinner = false;
-                        if (error) {
-                            $mmUtil.showErrorModal(error);
-                        } else {
-                            $mmUtil.showErrorModal('mm.core.errordownloading', true);
-                        }
+                        $mmUtil.showErrorModalDefault(error, 'mm.core.errordownloading', true);
                     });
                 }
 
@@ -201,14 +198,8 @@ angular.module('mm.addons.mod_glossary')
         }
 
         function getEntry(entryId, siteId) {
-            return $mmaModGlossary.getEntry(entryId, siteId).then(function(result) {
-                return result.entry;
-            }).catch(function(error) {
-                if (error) {
-                    $mmUtil.showErrorModal(error);
-                } else {
-                    $mmUtil.showErrorModal('mma.mod_glossary.errorloadingentry', true);
-                }
+            return $mmaModGlossary.getEntry(entryId, siteId).catch(function(error) {
+                $mmUtil.showErrorModalDefault(error, 'mma.mod_glossary.errorloadingentry', true);
                 return $q.reject();
             });
         }
@@ -239,22 +230,24 @@ angular.module('mm.addons.mod_glossary')
                         icon: 'ion-eye',
                         sites: ids,
                         action: function(siteId) {
-                            var modal = $mmUtil.showModalLoading();
-                            return getEntry(parseInt(params.eid, 10), siteId).then(function(entry) {
-                                var promise;
-                                if (courseId) {
-                                    promise = $q.when(courseId);
-                                } else {
-                                    promise = $mmCourseHelper.getModuleCourseIdByInstance(entry.glossaryid, 'glossary', siteId);
-                                }
-                                return promise.then(function(courseId) {
-                                    var stateParams = {
-                                        entry: entry,
-                                        entryid: entry.id,
-                                        cid: courseId
-                                    };
-                                    $mmContentLinksHelper.goInSite('site.mod_glossary-entry', stateParams, siteId);
+                            var modal = $mmUtil.showModalLoading(),
+                                entryId = parseInt(params.eid, 10),
+                                promise;
+
+                            if (courseId) {
+                                promise = $q.when(courseId);
+                            } else {
+                                promise = getEntry(entryId, siteId).then(function(entry) {
+                                    return $mmCourseHelper.getModuleCourseIdByInstance(entry.glossaryid, 'glossary', siteId);
                                 });
+                            }
+
+                            return promise.then(function(courseId) {
+                                var stateParams = {
+                                    entryid: entryId,
+                                    cid: courseId
+                                };
+                                $mmContentLinksHelper.goInSite('site.mod_glossary-entry', stateParams, siteId);
                             }).finally(function() {
                                 modal.dismiss();
                             });
@@ -298,6 +291,58 @@ angular.module('mm.addons.mod_glossary')
                     return url.substr(0, position);
                 }
             }
+        };
+
+        return self;
+    };
+
+    /**
+     * Synchronization handler.
+     *
+     * @module mm.addons.mod_glossary
+     * @ngdoc method
+     * @name $mmaModGlossaryHandlers#syncHandler
+     */
+    self.syncHandler = function() {
+
+        var self = {};
+
+        /**
+         * Execute the process.
+         * Receives the ID of the site affected, undefined for all sites.
+         *
+         * @param  {String} [siteId] ID of the site affected, undefined for all sites.
+         * @return {Promise}         Promise resolved when done, rejected if failure.
+         */
+        self.execute = function(siteId) {
+            return $mmaModGlossarySync.syncAllGlossaries(siteId);
+        };
+
+        /**
+         * Get the time between consecutive executions.
+         *
+         * @return {Number} Time between consecutive executions (in ms).
+         */
+        self.getInterval = function() {
+            return 600000; // 10 minutes.
+        };
+
+        /**
+         * Whether it's a synchronization process or not.
+         *
+         * @return {Boolean} True if is a sync process, false otherwise.
+         */
+        self.isSync = function() {
+            return true;
+        };
+
+        /**
+         * Whether the process uses network or not.
+         *
+         * @return {Boolean} True if uses network, false otherwise.
+         */
+        self.usesNetwork = function() {
+            return true;
         };
 
         return self;

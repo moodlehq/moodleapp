@@ -1817,21 +1817,35 @@ angular.module('mm.core')
          * @return {Object[]}         Array of objects with the name & value of each property.
          */
         self.objectToArrayOfObjects = function(obj, keyName, valueName, sort) {
-            var result = [],
-                keys = Object.keys(obj);
+            var keys = Object.keys(obj);
 
             if (sort) {
                 keys = keys.sort();
             }
 
-            angular.forEach(keys, function(key) {
+            return keys.map(function(key) {
                 var entry = {};
                 entry[keyName] = key;
                 entry[valueName] = obj[key];
-                result.push(entry);
+                return entry;
             });
-            return result;
         };
+
+        /**
+         * Converts an object into an arrayloosing the keys.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#objectToArray
+         * @param  {Object} obj       Object to convert.
+         * @return {Array}            Array with the values of the object but loosing the keys.
+         */
+        self.objectToArray = function(obj) {
+            return Object.keys(obj).map(function(key) {
+                return obj[key];
+            });
+        };
+
 
         /**
          * Tests to see whether two arrays or objects have the same value at a particular key.

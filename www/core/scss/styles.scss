@@ -134,7 +134,8 @@ em {
   }
 }
 
-.item.item-text-wrap .item-heading {
+.item.item-text-wrap .item-heading,
+p.item-text-wrap {
   overflow: visible;
   white-space: normal;
 }
