@@ -181,7 +181,7 @@ angular.module('mm.core')
         var promises = [],
             syncPromise,
             deleted = false,
-            hasSyncHooks = $mmCronDelegate.hasSyncHooks();
+            hasSyncHooks = $mmCronDelegate.hasManualSyncHooks();
 
         if (hasSyncHooks && !$mmApp.isOnline()) {
             // We need connection to execute sync.

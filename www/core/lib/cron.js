@@ -52,12 +52,13 @@ angular.module('mm.core')
      * @module mm.core
      * @ngdoc method
      * @name $mmCronDelegate#_executeHook
-     * @param  {String} name     Name of the hook.
-     * @param  {String} [siteId] Site ID. If not defined, all sites.
-     * @return {Promise}         Promise resolved if hook is executed successfully, rejected otherwise.
+     * @param  {String}  name           Name of the hook.
+     * @param  {Boolean} [force=false]  Wether the execution is forced (manual sync).
+     * @param  {String}  [siteId]       Site ID. If not defined, all sites.
+     * @return {Promise}                Promise resolved if hook is executed successfully, rejected otherwise.
      * @protected
      */
-    self._executeHook = function(name, siteId) {
+    self._executeHook = function(name, force, siteId) {
         if (!hooks[name] || !hooks[name].instance || !angular.isFunction(hooks[name].instance.execute)) {
             // Invalid hook.
             $log.debug('Cannot execute hook because is invalid: ' + name);
@@ -65,7 +66,7 @@ angular.module('mm.core')
         }
 
         var usesNetwork = self._hookUsesNetwork(name),
-            isSync = self._isHookSync(name),
+            isSync = !force && self._isHookSync(name),
             promise;
 
         if (usesNetwork && !$mmApp.isOnline()) {
@@ -158,7 +159,7 @@ angular.module('mm.core')
         var promises = [];
 
         angular.forEach(hooks, function(hook, name) {
-            if (self._isHookSync(name)) {
+            if (self._isHookManualSync(name)) {
                 // Mark the hook as running (it might be running already).
                 hook.running = true;
 
@@ -166,7 +167,7 @@ angular.module('mm.core')
                 $timeout.cancel(hook.timeout);
 
                 // Now force the execution of the hook.
-                promises.push(self._executeHook(name, siteId));
+                promises.push(self._executeHook(name, true, siteId));
             }
         });
 
@@ -245,6 +246,23 @@ angular.module('mm.core')
     };
 
     /**
+     * Check if there is any manual sync hook registered.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmCronDelegate#hasManualSyncHooks
+     * @return {Boolean} True if has at least 1 manual sync hook, false othewise.
+     */
+    self.hasManualSyncHooks = function() {
+        for (var name in hooks) {
+            if (self._isHookManualSync(name)) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    /**
      * Check if a hook uses network. Defaults to true.
      *
      * @module mm.core
@@ -283,6 +301,25 @@ angular.module('mm.core')
     };
 
     /**
+     * Check if a hook can be manually synced. Defaults will use isSync instead.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmCronDelegate#_isHookManualSync
+     * @param {String} name Hook's name.
+     * @return {Boolean}    True if hook is a sync process and can be manually executed or not defined, false otherwise.
+     * @protected
+     */
+    self._isHookManualSync = function(name) {
+        if (!hooks[name] || !hooks[name].instance || !angular.isFunction(hooks[name].instance.canManualSync)) {
+            // Invalid, return default.
+            return self._isHookSync(name);
+        }
+
+        return hooks[name].instance.canManualSync();
+    };
+
+    /**
      * Register a hook to be executed every certain time.
      *
      * @module mm.core
@@ -293,7 +330,8 @@ angular.module('mm.core')
      *                           returning an object defining these functions. See {@link $mmUtil#resolveObject}.
      *                             - getInterval (Number) Returns hook's interval in milliseconds. Defaults to mmCoreCronInterval.
      *                             - usesNetwork (Boolean) Whether the process uses network or not. True if not defined.
-     *                             - isSync (Boolean) Whether it's a synchronization process or not. False if not defined.
+     *                             - isSync (Boolean) Whether it's a synchronization process or not. True if not defined.
+     *                             - canManualSync (Boolean) Whether the sync can be executed manually. Call isSync if not defined.
      *                             - execute(siteId) (Promise) Execute the process. Should return a promise. Receives the ID of the
      *                                 site affected, undefined for all sites. Important: If the promise is rejected then this
      *                                 function will be called again often, it shouldn't be abused.

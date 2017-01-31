@@ -806,7 +806,7 @@ angular.module('mm.core')
     };
 
     /**
-     * Updates a site's token usign siteId.
+     * Updates a site's token using siteId.
      *
      * @module mm.core
      * @ngdoc method
