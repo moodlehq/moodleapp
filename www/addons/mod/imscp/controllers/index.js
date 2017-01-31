@@ -58,52 +58,56 @@ angular.module('mm.addons.mod_imscp')
     }
 
     function fetchContent(refresh) {
-        // Load module contents if needed.
-        return $mmCourse.loadModuleContents(module, courseId).then(function() {
+        var downloadFailed = false,
+            promises = [];
+
+        // Try to get the imscp data.
+        promises.push($mmaModImscp.getImscp(courseId, module.id).then(function(imscp) {
+            $scope.title = imscp.name || $scope.title;
+            $scope.description = imscp.intro || $scope.description;
+        }).catch(function() {
+            // Ignore errors since this WS isn't available in some Moodle versions.
+        }));
+
+        // Download content. This function also loads module contents if needed.
+        promises.push($mmaModImscpPrefetchHandler.download(module, courseId).catch(function() {
+            // Mark download as failed but go on since the main files could have been downloaded.
+            downloadFailed = true;
+
+            if (!module.contents.length) {
+                // Try to load module contents for offline usage.
+                return $mmCourse.loadModuleContents(module, courseId).catch(function(error) {
+                    // Error getting module contents, fail.
+                    $mmUtil.showErrorModalDefault(error, 'mm.course.errorgetmodule', true);
+                    return $q.reject();
+                });
+            }
+        }));
+
+        return $q.all(promises).then(function() {
+
             $scope.items = $mmaModImscp.createItemList(module.contents);
             if ($scope.items.length && typeof currentItem == 'undefined') {
                 currentItem = $scope.items[0].href;
             }
 
-            if (module.contents && module.contents.length) {
-                var downloadFailed = false;
+            return $mmaModImscp.getIframeSrc(module).then(function() {
+                // All data obtained, now fill the context menu.
+                $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModImscpComponent);
 
-                // Try to get the imscp data.
-                return $mmaModImscp.getImscp(courseId, module.id).then(function(imscp) {
-                    $scope.title = imscp.name || $scope.title;
-                    $scope.description = imscp.intro || $scope.description;
-                }).catch(function() {
-                    // Ignore errors since this WS isn't available in some Moodle versions.
-                }).then(function() {
-                    // Download content.
-                    return $mmaModImscpPrefetchHandler.download(module);
-                }).catch(function() {
-                    // Mark download as failed but go on since the main files could have been downloaded.
-                    downloadFailed = true;
-                }).then(function() {
-                    return $mmaModImscp.getIframeSrc(module).then(function() {
-                        // All data obtained, now fill the context menu.
-                        $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModImscpComponent);
+                loadItem(currentItem);
 
-                        loadItem(currentItem);
-
-                        if (downloadFailed && $mmApp.isOnline()) {
-                            // We could load the main file but the download failed. Show error message.
-                            $mmUtil.showErrorModal('mm.core.errordownloadingsomefiles', true);
-                        }
-                    }).catch(function() {
-                        $mmUtil.showErrorModal('mma.mod_imscp.deploymenterror', true);
-                        return $q.reject();
-                    }).finally(function() {
-                        $scope.loaded = true;
-                        $scope.refreshIcon = 'ion-refresh';
-                    });
-                });
-            }
-            return $q.reject();
-        }).catch(function() {
-            $mmUtil.showErrorModal('mma.mod_imscp.deploymenterror', true);
-            return $q.reject();
+                if (downloadFailed && $mmApp.isOnline()) {
+                    // We could load the main file but the download failed. Show error message.
+                    $mmUtil.showErrorModal('mm.core.errordownloadingsomefiles', true);
+                }
+            }).catch(function() {
+                $mmUtil.showErrorModal('mma.mod_imscp.deploymenterror', true);
+                return $q.reject();
+            });
+        }).finally(function() {
+            $scope.loaded = true;
+            $scope.refreshIcon = 'ion-refresh';
         });
     }
 

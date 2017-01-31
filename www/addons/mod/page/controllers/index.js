@@ -37,28 +37,44 @@ angular.module('mm.addons.mod_page')
     $scope.refreshIcon = 'spinner';
 
     function fetchContent(refresh) {
-        // Load module contents if needed.
-        return $mmCourse.loadModuleContents(module, courseId).then(function() {
-            var downloadFailed = false;
-            // Prefetch the content so ALL files are downloaded, not just the ones shown in the page.
-            return $mmaModPagePrefetchHandler.download(module).catch(function() {
-                // Mark download as failed but go on since the main files could have been downloaded.
-                downloadFailed = true;
-            }).then(function() {
-                return $mmaModPage.getPageHtml(module.contents, module.id).then(function(content) {
-                    // All data obtained, now fill the context menu.
-                    $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModPageComponent);
+        var downloadFailed = false;
 
-                    $scope.content = content;
+        // Download content. This function also loads module contents if needed.
+        return $mmaModPagePrefetchHandler.download(module, courseId).catch(function() {
+            // Mark download as failed but go on since the main files could have been downloaded.
+            downloadFailed = true;
 
-                    if (downloadFailed && $mmApp.isOnline()) {
-                        // We could load the main file but the download failed. Show error message.
-                        $mmUtil.showErrorModal('mm.core.errordownloadingsomefiles', true);
-                    }
-                });
-            });
-        }).catch(function() {
-            $mmUtil.showErrorModal('mma.mod_page.errorwhileloadingthepage', true);
+            if (!module.contents.length) {
+                // Try to load module contents for offline usage.
+                return $mmCourse.loadModuleContents(module, courseId);
+            }
+        }).then(function() {
+            var promises = [];
+
+            // Get the module to get the latest title and description. Data should've been updated in download.
+            promises.push($mmCourse.getModule(module.id, courseId).then(function(mod) {
+                $scope.title = mod.name;
+                $scope.description = mod.description;
+            }).catch(function() {
+                // Ignore errors.
+            }));
+
+            // Get the page HTML.
+            promises.push($mmaModPage.getPageHtml(module.contents, module.id).then(function(content) {
+                // All data obtained, now fill the context menu.
+                $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModPageComponent);
+
+                $scope.content = content;
+
+                if (downloadFailed && $mmApp.isOnline()) {
+                    // We could load the main file but the download failed. Show error message.
+                    $mmUtil.showErrorModal('mm.core.errordownloadingsomefiles', true);
+                }
+            }));
+
+            return $q.all(promises);
+        }).catch(function(error) {
+            $mmUtil.showErrorModalDefault(error, 'mma.mod_page.errorwhileloadingthepage', true);
             return $q.reject();
         }).finally(function() {
             $scope.loaded = true;
