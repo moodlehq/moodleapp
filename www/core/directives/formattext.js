@@ -117,6 +117,27 @@ angular.module('mm.core')
     }
 
     /**
+     * Returns the element height in pixels.
+     *
+     * @param  {Object}  elementAng Angular DOM element to get height from.
+     * @return {Number}             The height of the element in pixels. When 0 or false is returned it means the element
+     *                                  is not visible.
+     */
+    function getElementHeight(elementAng) {
+        var element = elementAng[0],
+            height;
+
+        // Disable media adapt to correctly calculate the height.
+        elementAng.removeClass('mm-enabled-media-adapt');
+
+        height = element.offsetHeight || element.height || element.clientHeight;
+
+        elementAng.addClass('mm-enabled-media-adapt');
+
+        return parseInt(height, 10) || false;
+    }
+
+    /**
      * Format contents and render.
      *
      * @param  {Object} scope   Directive scope.
@@ -150,8 +171,9 @@ angular.module('mm.core')
                 // Render text before calculating text to get the proper height.
                 renderText(scope, element, fullText);
                 // Height cannot be calculated if the element is not shown while calculating.
-                //@todo: Work on calculate better this height.
-                var height = element[0].offsetHeight || element[0].height || element[0].clientHeight;
+                // Force shorten if it was previously shortened.
+                //@todo: Work on calculate this height better.
+                var height = element.css('max-height') ? false : getElementHeight(element);
 
                 // If cannot calculate height, shorten always.
                 if (!height || height > maxHeight) {
@@ -188,6 +210,8 @@ angular.module('mm.core')
                     });
                 }
             }
+            element.addClass('mm-enabled-media-adapt');
+
             renderText(scope, element, fullText, attrs.afterRender);
         });
     }

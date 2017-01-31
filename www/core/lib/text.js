@@ -142,6 +142,23 @@ angular.module('mm.core')
     };
 
     /**
+     * Formats a text, in HTML replacing new lines by correct html new lines.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#formatHtmlLines
+     * @param  {String} text             Text to format.
+     * @return {String}                  Formatted text.
+     */
+    self.formatHtmlLines = function(text) {
+        if (text.indexOf('<p>') == -1) {
+            // Wrap the text in <p> tags.
+            text = '<p>' + text + '</p>';
+        }
+        return text.replace(/\n/g, '<br>');
+    };
+
+    /**
      * Shortens a text to length and adds an ellipsis.
      *
      * @module mm.core
