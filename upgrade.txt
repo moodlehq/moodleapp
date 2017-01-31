@@ -9,6 +9,10 @@ information provided here is intended especially for developers.
  * Now mmUser#formatRoleList is returning a String instead of a Promise.
  * The event mmCoreEventSessionExpired now receives an object instead of a string. Also, mmLoginLaunchSiteURL and mmLoginLaunchPassport have been deprecated, please use mmLoginLaunchData instead.
  * Handlers registered in $mmFileUploaderDelegate now must implement a getData function instead of getController. This is because now file picker uses action sheet instead of a new view.
+ * New Phonegap plugin installed. Please run:
+    ionic plugin add cordova-universal-clipboard
+        or
+    ionic state restore
 
 === 3.2 ===
 
