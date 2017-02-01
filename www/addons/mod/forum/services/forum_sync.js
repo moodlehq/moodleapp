@@ -209,7 +209,7 @@ angular.module('mm.addons.mod_forum')
                 courseId = data.courseid;
 
                 // First of all upload the attachments (if any).
-                promise = uploadAttachments(forumId, data, siteId).then(function(itemId) {
+                promise = uploadAttachments(forumId, data, true, siteId, userId).then(function(itemId) {
                     // Now try to add the discussion.
                     return $mmaModForum.addNewDiscussionOnline(forumId, data.subject, data.message,
                             data.subscribe, data.groupid, itemId, siteId);
@@ -277,6 +277,26 @@ angular.module('mm.addons.mod_forum')
 
         promises.push($mmaModForumOffline.deleteNewDiscussion(forumId, timecreated, siteId, userId));
         promises.push($mmaModForumHelper.deleteNewDiscussionStoredFiles(forumId, timecreated, siteId).catch(function() {
+            // Ignore errors, maybe there are no files.
+        }));
+
+        return $q.all(promises);
+    }
+
+    /**
+     * Delete a new discussion.
+     *
+     * @param  {Number} forumId  Forum ID the discussion belongs to.
+     * @param {Number}  postId   ID of the post being replied.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @param  {Number} [userId] User the discussion belongs to. If not defined, current user in site.
+     * @return {Promise}         Promise resolved when deleted.
+     */
+    function deleteReply(forumId, postId, siteId, userId) {
+        var promises = [];
+
+        promises.push($mmaModForumOffline.deleteReply(postId, siteId, userId));
+        promises.push($mmaModForumHelper.deleteReplyStoredFiles(forumId, postId, siteId, userId).catch(function() {
             // Ignore errors, maybe there are no files.
         }));
 
@@ -414,18 +434,21 @@ angular.module('mm.addons.mod_forum')
                 courseId = data.courseid;
                 forumId = data.forumid;
 
-                // A user has added some discussions.
-                promise = $mmaModForum.replyPostOnline(data.postid, data.subject, data.message, siteId);
+                // First of all upload the attachments (if any).
+                promise = uploadAttachments(forumId, data, false, siteId, userId).then(function(itemId) {
+                    // Now try to send the reply.
+                    return $mmaModForum.replyPostOnline(data.postid, data.subject, data.message, itemId, siteId);
+                });
 
                 promises.push(promise.then(function() {
                     result.updated = true;
 
-                    return $mmaModForumOffline.deleteReply(data.postid, siteId, userId);
+                    return deleteReply(forumId, data.postid, siteId, userId);
                 }).catch(function(error) {
                     if (error && error.wserror) {
                         // The WebService has thrown an error, this means that responses cannot be submitted. Delete them.
                         result.updated = true;
-                        return $mmaModForumOffline.deleteReply(data.postid, siteId, userId).then(function() {
+                        return deleteReply(forumId, data.postid, siteId, userId).then(function() {
                             // Responses deleted, add a warning.
                             result.warnings.push($translate.instant('mm.core.warningofflinedatadeleted', {
                                 component: $mmCourse.translateModuleName('forum'),
@@ -470,10 +493,12 @@ angular.module('mm.addons.mod_forum')
      *
      * @param  {Number} forumId  Forum ID the post belongs to.
      * @param  {Object} post     Offline post or discussion.
+     * @param  {Boolean} isDisc  True if it's a new discussion, false if it's a reply.
      * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @param  {Number} [userId] User the reply belongs to. If not defined, current user in site.
      * @return {Promise}         Promise resolved with draftid if uploaded, resolved with undefined if nothing to upload.
      */
-    function uploadAttachments(forumId, post, siteId) {
+    function uploadAttachments(forumId, post, isDisc, siteId, userId) {
         var attachments = post && post.attachments;
         if (attachments) {
             // Has some attachments to sync.
@@ -482,7 +507,13 @@ angular.module('mm.addons.mod_forum')
 
             if (attachments.offline) {
                 // Has offline files.
-                promise = $mmaModForumHelper.getNewDiscussionStoredFiles(forumId, post.timecreated, siteId).then(function(atts) {
+                if (isDisc) {
+                    promise = $mmaModForumHelper.getNewDiscussionStoredFiles(forumId, post.timecreated, siteId);
+                } else {
+                    promise = $mmaModForumHelper.getReplyStoredFiles(forumId, post.postid, siteId, userId);
+                }
+
+                promise.then(function(atts) {
                     files = files.concat(atts);
                 }).catch(function() {
                     // Folder not found, no files to add.

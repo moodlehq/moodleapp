@@ -731,35 +731,37 @@ angular.module('mm.addons.mod_forum')
      * @module mm.addons.mod_forum
      * @ngdoc method
      * @name $mmaModForum#replyPost
-     * @param {Number} postId           ID of the post being replied.
-     * @param {Number} discussionId     ID of the discussion the user is replying to.
-     * @param {Number} forumId          ID of the forum the user is replying to.
-     * @param {String} name             Forum name.
-     * @param {Number} courseId         Course ID the forum belongs to.
-     * @param {String} subject          New post's subject.
-     * @param {String} message          New post's message.
-     * @param {String} [siteId]         Site ID. If not defined, current site.
-     * @return {Promise}                Promise resolved when the post is created.
+     * @param {Number} postId         ID of the post being replied.
+     * @param {Number} discussionId   ID of the discussion the user is replying to.
+     * @param {Number} forumId        ID of the forum the user is replying to.
+     * @param {String} name           Forum name.
+     * @param {Number} courseId       Course ID the forum belongs to.
+     * @param {String} subject        New post's subject.
+     * @param {String} message        New post's message.
+     * @param {Mixed} [attach]        The attachments ID if sending online, result of $mmFileUploader#storeFilesToUpload otherwise.
+     * @param {String} [siteId]       Site ID. If not defined, current site.
+     * @param {Boolean} allowOffline  True if it can be stored in offline, false otherwise.
+     * @return {Promise}              Promise resolved when the post is created.
      */
-    self.replyPost = function(postId, discussionId, forumId, name, courseId, subject, message, siteId) {
+    self.replyPost = function(postId, discussionId, forumId, name, courseId, subject, message, attach, siteId, allowOffline) {
         siteId = siteId || $mmSite.getId();
 
-        if (!$mmApp.isOnline()) {
+        if (!$mmApp.isOnline() && allowOffline) {
             // App is offline, store the action.
             return storeOffline();
         }
 
         // If there's already a reply to be sent to the server, discard it first.
         return $mmaModForumOffline.deleteReply(postId, siteId).then(function() {
-            return self.replyPostOnline(postId, subject, message, siteId).then(function() {
+            return self.replyPostOnline(postId, subject, message, attach, siteId).then(function() {
                 return true;
             }).catch(function(error) {
-                if (error && error.wserror) {
-                    // The WebService has thrown an error, this means that responses cannot be deleted.
-                    return $q.reject(error.error);
-                } else {
+                if (allowOffline && error && !error.wserror) {
                     // Couldn't connect to server, store in offline.
                     return storeOffline();
+                } else {
+                    // The WebService has thrown an error or offline not supported, reject.
+                    return $q.reject(error.error);
                 }
             });
         });
@@ -771,7 +773,7 @@ angular.module('mm.addons.mod_forum')
                 return $mmLang.translateAndReject('mm.core.networkerrormsg');
             }
 
-            return $mmaModForumOffline.replyPost(postId, discussionId, forumId, name, courseId, subject, message, siteId)
+            return $mmaModForumOffline.replyPost(postId, discussionId, forumId, name, courseId, subject, message, attach, siteId)
                     .then(function() {
                 return false;
             });
@@ -784,21 +786,30 @@ angular.module('mm.addons.mod_forum')
      * @module mm.addons.mod_forum
      * @ngdoc method
      * @name $mmaModForum#replyPostOnline
-     * @param {Number} postId   ID of the post being replied.
-     * @param {String} subject  New post's subject.
-     * @param {String} message  New post's message.
-     * @param {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}        Promise resolved when the post is created.
+     * @param  {Number} postId     ID of the post being replied.
+     * @param  {String} subject    New post's subject.
+     * @param  {String} message    New post's message.
+     * @param  {Number} [attachId] Attachments ID (if any attachment).
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved when the post is created.
      */
-    self.replyPostOnline = function(postId, subject, message, siteId) {
+    self.replyPostOnline = function(postId, subject, message, attachId, siteId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                 postid: postId,
                 subject: subject,
-                message: message
+                message: message,
+                options: []
             };
+
+            if (attachId) {
+                params.options.push({
+                    name: 'attachmentsid',
+                    value: attachId
+                });
+            }
 
             return site.write('mod_forum_add_discussion_post', params).catch(function(error) {
                 return $q.reject({

@@ -34,18 +34,18 @@ angular.module('mm.addons.mod_forum')
  * @param {Boolean}  showdivider      True if it should have a list divider before the post.
  * @param {Boolean}  titleimportant   True if title should be "important" (bold).
  * @param {Boolean}  unread           True if post is being tracked and its not read.
+ * @param {Object}   [forum]          The forum the post belongs to. Required for attachments and offline posts.
  * @param {Function} [onpostchange]   Function to call when a post is added, updated or discarded.
  * @param {String}   [defaultsubject] Default subject to set to new posts.
  * @param {String}   [scrollHandle]   Name of the scroll handle of the page containing the post.
  * @param {Object}   [originalData]   Original newpost data. Used to detect if data has changed.
  */
 .directive('mmaModForumDiscussionPost', function($mmaModForum, $mmUtil, $translate, $q, $mmaModForumOffline, $mmSyncBlock,
-        mmaModForumComponent, $mmaModForumSync, $mmText) {
+        mmaModForumComponent, $mmaModForumSync, $mmText, $mmaModForumHelper, $ionicScrollDelegate) {
 
     // Confirm discard changes if any.
     function confirmDiscard(scope) {
-        if (!scope.originalData || typeof scope.originalData.subject == 'undefined' ||
-                (scope.originalData.subject == scope.newpost.subject && scope.originalData.text == scope.newpost.text)) {
+        if (!$mmaModForumHelper.hasPostDataChanged(scope.newpost, scope.originalData)) {
             return $q.when();
         } else {
             // Show confirmation if some data has been modified.
@@ -53,13 +53,23 @@ angular.module('mm.addons.mod_forum')
         }
     }
 
-    // Get a forum. Returns empty object if params aren't valid.
-    function getForum(courseId, cmId) {
-        if (courseId && cmId) {
-            return $mmaModForum.getForum(courseId, cmId);
-        } else {
-            return $q.when({}); // Return empty object.
-        }
+    // Set data to new post, clearing tmp files and updating original data.
+    function setPostData(scope, scrollView, replyingTo, editing, isEditing, subject, text, files) {
+        // Delete the local files from the tmp folder if any.
+        $mmaModForumHelper.clearTmpFiles(scope.newpost.files);
+
+        scope.newpost.replyingto = replyingTo;
+        scope.newpost.editing = editing;
+        scope.newpost.isEditing = !!isEditing;
+        scope.newpost.subject = subject || scope.defaultsubject || '';
+        scope.newpost.text = text || '';
+        scope.newpost.files = files || [];
+
+        // Update original data.
+        $mmUtil.copyProperties(scope.newpost, scope.originalData);
+
+        // Resize the scroll, some elements might have appeared or disappeared.
+        scrollView && scrollView.resize();
     }
 
     return {
@@ -76,6 +86,7 @@ angular.module('mm.addons.mod_forum')
             showdivider: '=?',
             titleimportant: '=?',
             unread: '=?',
+            forum: '=?',
             onpostchange: '&?',
             defaultsubject: '=?',
             scrollHandle: '@?',
@@ -84,36 +95,27 @@ angular.module('mm.addons.mod_forum')
         templateUrl: 'addons/mod/forum/templates/discussionpost.html',
         transclude: true,
         link: function(scope) {
-            var syncId;
+            var syncId,
+                scrollView = $ionicScrollDelegate.$getByHandle(scope.scrollHandle);
 
             scope.isReplyEnabled = $mmaModForum.isReplyPostEnabled();
+            scope.canAddAttachments = $mmaModForum.canAddAttachments();
 
             scope.uniqueid = scope.post.id ? 'reply' + scope.post.id : 'edit' + scope.post.parent;
 
             // Set this post as being replied to.
             scope.showReply = function() {
-                var promise,
+                var uniqueId = 'reply' + scope.post.id,
                     wasReplying = typeof scope.newpost.replyingto != 'undefined';
 
                 if (scope.newpost.isEditing) {
                     // User is editing a post, data needs to be resetted. Ask confirm if there is unsaved data.
-                    promise = confirmDiscard(scope);
-                } else if (!wasReplying) {
-                    // User isn't replying, it's a brand new reply. Nothing to confirm, just initialize the data.
-                    promise = $q.when();
-                }
-
-                if (promise) {
-                    promise.then(function() {
-                        scope.newpost.replyingto = scope.post.id;
-                        scope.newpost.editing = 'reply' + scope.post.id;
-                        scope.newpost.isEditing = false;
-                        scope.newpost.subject = scope.defaultsubject || '';
-                        scope.newpost.text = '';
-
-                        // Update original data.
-                        $mmUtil.copyProperties(scope.newpost, scope.originalData);
+                    confirmDiscard(scope).then(function() {
+                        setPostData(scope, scrollView, scope.post.id, uniqueId, false);
                     });
+                } else if (!wasReplying) {
+                    // User isn't replying, it's a brand new reply. Initialize the data.
+                    setPostData(scope, scrollView, scope.post.id, uniqueId, false);
                 } else {
                     // The post being replied has changed but the data will be kept.
                     scope.newpost.replyingto = scope.post.id;
@@ -125,17 +127,13 @@ angular.module('mm.addons.mod_forum')
             scope.editReply = function() {
                 // Ask confirm if there is unsaved data.
                 confirmDiscard(scope).then(function() {
+                    var uniqueId = 'edit' + scope.post.parent;
+
                     syncId = $mmaModForumSync.getDiscussionSyncId(scope.discussionId);
                     $mmSyncBlock.blockOperation(mmaModForumComponent, syncId);
 
-                    scope.newpost.replyingto = scope.post.parent;
-                    scope.newpost.editing = 'edit' + scope.post.parent;
-                    scope.newpost.isEditing = true;
-                    scope.newpost.subject = scope.post.subject;
-                    scope.newpost.text = scope.post.message;
-
-                    // Update original data.
-                    $mmUtil.copyProperties(scope.newpost, scope.originalData);
+                    setPostData(scope, scrollView, scope.post.parent, uniqueId, true, scope.post.subject,
+                            scope.post.message, scope.post.attachments);
                 });
             };
 
@@ -150,8 +148,13 @@ angular.module('mm.addons.mod_forum')
                     return;
                 }
 
-                var message = scope.newpost.text,
-                    modal = $mmUtil.showModalLoading('mm.core.sending', true);
+                var forum = scope.forum || {}, // Use empty object if forum isn't defined.
+                    subject = scope.newpost.subject,
+                    message = scope.newpost.text,
+                    replyingTo = scope.newpost.replyingto,
+                    files = scope.newpost.files || [],
+                    modal = $mmUtil.showModalLoading('mm.core.sending', true),
+                    saveOffline = false;
 
                 // Check if rich text editor is enabled or not.
                 $mmUtil.isRichTextEditorEnabled().then(function(enabled) {
@@ -160,60 +163,95 @@ angular.module('mm.addons.mod_forum')
                         message = message = $mmText.formatHtmlLines(message);
                     }
 
-                    return getForum(scope.courseid, scope.componentId).then(function(forum) {
-                        return $mmaModForum.replyPost(scope.newpost.replyingto, scope.discussionId, forum.id, forum.name,
-                                scope.courseid, scope.newpost.subject, message).then(function() {
-                            if (scope.onpostchange) {
-                                scope.onpostchange();
+                    // Upload attachments first if any.
+                    if (files.length) {
+                        return $mmaModForumHelper.uploadOrStoreReplyFiles(forum.id, replyingTo, files, false).catch(function(err) {
+                            // Cannot upload them in online, save them in offline.
+                            if (!forum.id) {
+                                // Cannot store them in offline without the forum ID. Reject.
+                                return $q.reject(err);
                             }
+
+                            saveOffline = true;
+                            return $mmaModForumHelper.uploadOrStoreReplyFiles(forum.id, replyingTo, files, true);
                         });
-                    }).catch(function(message) {
-                        $mmUtil.showErrorModalDefault(message, 'mma.mod_forum.couldnotadd', true);
-                    });
-                }).finally(function() {
-                    modal.dismiss();
+                    }
+                }).then(function(attach) {
+                    if (saveOffline) {
+                        // Save post in offline.
+                        return $mmaModForumOffline.replyPost(replyingTo, scope.discussionId, forum.id, forum.name,
+                                scope.courseid, subject, message, attach).then(function() {
+                            // Return false since it wasn't sent to server.
+                            return false;
+                        });
+                    } else {
+                        // Try to send it to server.
+                        // Don't allow offline if there are attachments since they were uploaded fine.
+                        return $mmaModForum.replyPost(replyingTo, scope.discussionId, forum.id, forum.name,
+                                scope.courseid, subject, message, attach, undefined, !files.length);
+                    }
+                }).then(function(sent) {
+                    if (sent && forum.id) {
+                        // Data sent to server, delete stored files (if any).
+                        $mmaModForumHelper.deleteReplyStoredFiles(forum.id, replyingTo);
+                    }
+
+                    // Reset data.
+                    setPostData(scope, scrollView);
+
+                    if (scope.onpostchange) {
+                        scope.onpostchange();
+                    }
+
                     if (syncId) {
                         $mmSyncBlock.unblockOperation(mmaModForumComponent, syncId);
                     }
+                }).catch(function(message) {
+                    $mmUtil.showErrorModalDefault(message, 'mma.mod_forum.couldnotadd', true);
+                }).finally(function() {
+                    modal.dismiss();
                 });
             };
 
             // Cancel reply.
             scope.cancel = function() {
                 confirmDiscard(scope).then(function() {
-                    scope.newpost.replyingto = undefined;
-                    scope.newpost.editing = undefined;
-                    scope.newpost.subject = scope.defaultsubject || '';
-                    scope.newpost.text = '';
-                    scope.newpost.isEditing = false;
+                    // Reset data.
+                    setPostData(scope, scrollView);
 
-                    // Update original data.
-                    $mmUtil.copyProperties(scope.newpost, scope.originalData);
+                    if (syncId) {
+                        $mmSyncBlock.unblockOperation(mmaModForumComponent, syncId);
+                    }
                 });
-
-                if (syncId) {
-                    $mmSyncBlock.unblockOperation(mmaModForumComponent, syncId);
-                }
             };
 
             // Discard reply.
             scope.discard = function() {
                 $mmUtil.showConfirm($translate('mm.core.areyousure')).then(function() {
-                    return $mmaModForumOffline.deleteReply(scope.post.parent).finally(function() {
-                        scope.newpost.replyingto = undefined;
-                        scope.newpost.editing = undefined;
-                        scope.newpost.subject = scope.defaultsubject || '';
-                        scope.newpost.text = '';
-                        scope.newpost.isEditing = false;
+                    var promises = [],
+                        forum = scope.forum || {}; // Use empty object if forum isn't defined.
+
+                    promises.push($mmaModForumOffline.deleteReply(scope.post.parent));
+                    if (forum.id) {
+                        promises.push($mmaModForumHelper.deleteReplyStoredFiles(forum.id, scope.post.parent).catch(function() {
+                            // Ignore errors, maybe there are no files.
+                        }));
+                    }
+
+                    return $q.all(promises).finally(function() {
+                        // Reset data.
+                        setPostData(scope, scrollView);
+
                         if (scope.onpostchange) {
                             scope.onpostchange();
+                        }
+
+                        if (syncId) {
+                            $mmSyncBlock.unblockOperation(mmaModForumComponent, syncId);
                         }
                     });
                 });
 
-                if (syncId) {
-                    $mmSyncBlock.unblockOperation(mmaModForumComponent, syncId);
-                }
             };
 
             // Text changed when rendered.
