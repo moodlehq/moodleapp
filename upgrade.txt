@@ -14,6 +14,7 @@ information provided here is intended especially for developers.
     ionic plugin add cordova-universal-clipboard
         or
     ionic state restore
+ * mm-rich-text-editor now admits a new parameter adjust-height (default: true). It admits an HTML DOM Id string or boolean. Specifying it will adjust height of the editor to the selected element. If true it will adjust to the whole page and false will use height parameter instead.
 
 === 3.2 ===
 
