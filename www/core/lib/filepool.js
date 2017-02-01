@@ -1348,6 +1348,8 @@ angular.module('mm.core')
      * @param {Mixed} [componentId]      An ID to use in conjunction with the component.
      * @param {Number} [timemodified=0]  The time this file was modified.
      * @param {Boolean} [checkSize=true] True if we shouldn't download files if their size is big, false otherwise.
+     * @param {Boolean} downloadUnknown  True to download file in WiFi if their size is unknown, false otherwise.
+     *                                   Ignored if checkSize=false.
      * @return {Promise}                 Resolved with the URL to use. When rejected, nothing could be done.
      * @description
      * This will return a URL pointing to the content of the requested URL.
@@ -1360,7 +1362,7 @@ angular.module('mm.core')
      * When the file cannot be found, and we are offline, then we reject the promise because
      * there was nothing we could do.
      */
-    self._getFileUrlByUrl = function(siteId, fileUrl, mode, component, componentId, timemodified, checkSize) {
+    self._getFileUrlByUrl = function(siteId, fileUrl, mode, component, componentId, timemodified, checkSize, downloadUnknown) {
         var fileId,
             revision;
 
@@ -1445,15 +1447,21 @@ angular.module('mm.core')
 
                 // Calculate the size of the file.
                 promise.then(function(size) {
-                    if (size > 0) {
+                    var isWifi = !$mmApp.isNetworkAccessLimited(),
+                        sizeUnknown = size <= 0;
+
+                    if (!sizeUnknown) {
                         // Store the size in the cache.
                         sizeCache[fileUrl] = size;
+                    }
 
-                        // We were able to calculate the size. Check that it's below the thresholds.
-                        var isWifi = !$mmApp.isNetworkAccessLimited();
-                        if (size <= mmFilepoolDownloadThreshold || (isWifi && size <= mmFilepoolWifiDownloadThreshold)) {
+                    // Check if the file should be downloaded.
+                    if (sizeUnknown) {
+                        if (downloadUnknown && isWifi) {
                             self.addToQueueByUrl(siteId, fileUrl, component, componentId, timemodified);
                         }
+                    } else if (size <= mmFilepoolDownloadThreshold || (isWifi && size <= mmFilepoolWifiDownloadThreshold)) {
+                        self.addToQueueByUrl(siteId, fileUrl, component, componentId, timemodified);
                     }
                 });
             } else {
@@ -1811,6 +1819,8 @@ angular.module('mm.core')
      * @param {Mixed} [componentId]      An ID to use in conjunction with the component.
      * @param {Number} [timemodified]    The time this file was modified.
      * @param {Boolean} [checkSize=true] True if we shouldn't download files if their size is big, false otherwise.
+     * @param {Boolean} downloadUnknown  True to download file in WiFi if their size is unknown, false otherwise.
+     *                                   Ignored if checkSize=false.
      * @return {Promise}                 Resolved with the URL to use. When rejected, nothing could be done,
      *                                   which means that you should not even use the fileUrl passed.
      * @description
@@ -1818,8 +1828,8 @@ angular.module('mm.core')
      * The URL returned is compatible to use with IMG tags.
      * See {@link $mmFilepool#_getFileUrlByUrl} for more details.
      */
-    self.getSrcByUrl = function(siteId, fileUrl, component, componentId, timemodified, checkSize) {
-        return self._getFileUrlByUrl(siteId, fileUrl, 'src', component, componentId, timemodified, checkSize);
+    self.getSrcByUrl = function(siteId, fileUrl, component, componentId, timemodified, checkSize, downloadUnknown) {
+        return self._getFileUrlByUrl(siteId, fileUrl, 'src', component, componentId, timemodified, checkSize, downloadUnknown);
     };
 
     /**
@@ -1855,6 +1865,8 @@ angular.module('mm.core')
      * @param {Mixed} [componentId]      An ID to use in conjunction with the component.
      * @param {Number} [timemodified]    The time this file was modified.
      * @param {Boolean} [checkSize=true] True if we shouldn't download files if their size is big, false otherwise.
+     * @param {Boolean} downloadUnknown  True to download file in WiFi if their size is unknown, false otherwise.
+     *                                   Ignored if checkSize=false.
      * @return {Promise}                 Resolved with the URL to use. When rejected, nothing could be done,
      *                                   which means that you should not even use the fileUrl passed.
      * @description
@@ -1862,8 +1874,8 @@ angular.module('mm.core')
      * The URL returned is compatible to use with a local browser.
      * See {@link $mmFilepool#_getFileUrlByUrl} for more details.
      */
-    self.getUrlByUrl = function(siteId, fileUrl, component, componentId, timemodified, checkSize) {
-        return self._getFileUrlByUrl(siteId, fileUrl, 'url', component, componentId, timemodified, checkSize);
+    self.getUrlByUrl = function(siteId, fileUrl, component, componentId, timemodified, checkSize, downloadUnknown) {
+        return self._getFileUrlByUrl(siteId, fileUrl, 'url', component, componentId, timemodified, checkSize, downloadUnknown);
     };
 
     /**

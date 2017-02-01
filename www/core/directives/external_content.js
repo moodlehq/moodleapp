@@ -107,7 +107,9 @@ angular.module('mm.core')
                 return $q.reject();
             }
 
-            var fn;
+            // Download images, tracks and posters if size is unknown.
+            var fn,
+                downloadUnknown = dom.tagName == 'IMG' || dom.tagName == 'TRACK' || targetAttr == 'poster';
 
             if (targetAttr === 'src' && dom.tagName !== 'SOURCE' && dom.tagName !== 'TRACK') {
                 fn = $mmFilepool.getSrcByUrl;
@@ -115,7 +117,7 @@ angular.module('mm.core')
                 fn = $mmFilepool.getUrlByUrl;
             }
 
-            return fn(siteId, url, component, componentId).then(function(finalUrl) {
+            return fn(siteId, url, component, componentId, 0, true, downloadUnknown).then(function(finalUrl) {
                 $log.debug('Using URL ' + finalUrl + ' for ' + url);
                 if (dom.tagName === 'SOURCE') {
                     // The browser does not catch changes in SRC, we need to add a new source.
