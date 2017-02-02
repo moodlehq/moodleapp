@@ -954,12 +954,24 @@ angular.module('mm.addons.messages')
      *
      * @module mm.addons.messages
      * @ngdoc method
-     * @name $mmaMessages#isSearchEnabled
+     * @name $mmaMessages#isSearchContactsEnabled
      * @return {Boolean}
      */
-    self.isSearchEnabled = function() {
+    self.isSearchContactsEnabled = function() {
         return $mmSite.wsAvailable('core_message_search_contacts');
     };
+
+    /**
+     * Returns whether or not we can search messages.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#isSearchMessagesEnabled
+     * @return {Boolean}
+     */
+    self.isSearchMessagesEnabled = function() {
+        return $mmSite.wsAvailable('core_message_data_for_messagearea_search_messages');
+    }
 
     /**
      * Remove a contact.
@@ -1011,6 +1023,31 @@ angular.module('mm.addons.messages')
             }
             $mmUser.storeUsers(contacts);
             return contacts;
+        });
+    };
+
+    /**
+     * Search for all the messges with a specific text.
+     * 
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessages#searchMessages
+     * @param {String}  query   The query string
+     * @return {Promise}
+     */
+    self.searchMessages = function(userId, query, limitFrom, limitNum) {
+        var param = {
+            userid: userId,
+            search: query,
+            limitfrom: limitFrom,
+            limitnum: limitNum
+        },
+        preSets = {
+            getFromCache: 0 // Always try to get updated data. If it fails, it will get it from cache.
+        };
+
+        return $mmSite.read('core_message_data_for_messagearea_search_messages', param, preSets).then(function(searchResults) {
+            return searchResults.contacts;
         });
     };
 
