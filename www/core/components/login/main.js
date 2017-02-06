@@ -166,8 +166,7 @@ angular.module('mm.core.login', [])
     // Observe loaded pages in the InAppBrowser to handle SSO URLs.
     $rootScope.$on('$cordovaInAppBrowser:loadstart', function(e, event) {
         // URLs with a custom scheme can be prefixed with "http://" or "https://", we need to remove this.
-        var protocol = $mmText.getUrlProtocol(event.url),
-            url = event.url.replace(/^https?:\/\//, '');
+        var url = event.url.replace(/^https?:\/\//, '');
 
         if (appLaunchedByURL(url)) {
             // Close the browser if it's a valid SSO URL.
@@ -175,7 +174,7 @@ angular.module('mm.core.login', [])
         } else if (ionic.Platform.isAndroid()) {
             // Check if the URL has a custom URL scheme. In Android they need to be opened manually.
             var urlScheme = $mmText.getUrlProtocol(url);
-            if (urlScheme) {
+            if (urlScheme && urlScheme !== 'file' && urlScheme !== 'cdvfile') {
                 // Open in browser should launch the right app if found and do nothing if not found.
                 $mmUtil.openInBrowser(url);
 
@@ -188,7 +187,7 @@ angular.module('mm.core.login', [])
                     $mmUtil.closeInAppBrowser();
                 }
             } else {
-                lastInAppUrl = protocol + '://' + url;
+                lastInAppUrl = event.url;
             }
         }
     });
