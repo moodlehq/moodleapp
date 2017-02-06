@@ -136,6 +136,9 @@ angular.module('mm.core')
         link: function(scope, element) {
             scope.contextMenuIcon = scope.icon || 'ion-android-more-vertical';
             scope.contextMenuAria = scope.title || $translate.instant('mm.core.info');
+            scope.filterNgShow = function(value) {
+                return value && value.ngShow;
+            };
 
             // The transclude should have been executed already. Remove ng-transclude to prevent errors with mm-nav-buttons.
             var div = element[0].querySelector('div[ng-transclude]');
