@@ -897,6 +897,9 @@ mm-timer {
 }
 
 .item.mm-item-has-rich-text-editor {
+  &.item-input {
+    padding: 0;
+  }
   padding: 0;
   display: block;
 
