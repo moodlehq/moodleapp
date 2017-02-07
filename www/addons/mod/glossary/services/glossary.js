@@ -697,20 +697,7 @@ angular.module('mm.addons.mod_glossary')
                 params.options = $mmUtil.objectToArrayOfObjects(options, 'name', 'value');
             }
 
-            return site.write('mod_glossary_add_entry', params).catch(function(error) {
-                var wserror = $mmUtil.isWebServiceError(error);
-                if (wserror && error == "Invalid parameter value detected") {
-                    // Old PARAM_TEXT is used on definition, resend it cleaning html.
-                    var definition = $mmText.cleanTags(params.definition);
-                    if (definition != params.definition) {
-                        return self.addEntryOnline(glossaryId, concept, definition, options, siteId);
-                    }
-                }
-                return $q.reject({
-                    error: error,
-                    wserror: wserror
-                });
-            }).then(function(response) {
+            return addEntryOnline(site, params).then(function(response) {
                 if (response.entryid) {
                     return response.entryid;
                 }
@@ -719,6 +706,24 @@ angular.module('mm.addons.mod_glossary')
                 });
             });
         });
+
+        function addEntryOnline(site, params) {
+            return site.write('mod_glossary_add_entry', params).catch(function(error) {
+                var wserror = $mmUtil.isWebServiceError(error);
+                if (wserror && error == "Invalid parameter value detected") {
+                    // Old PARAM_TEXT is used on definition, resend it cleaning html.
+                    var definition = $mmText.cleanTags(params.definition);
+                    if (definition != params.definition) {
+                        params.definition = definition;
+                        return addEntryOnline(site, params);
+                    }
+                }
+                return $q.reject({
+                    error: error,
+                    wserror: wserror
+                });
+            })
+        }
     };
 
     /**
