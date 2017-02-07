@@ -1472,6 +1472,14 @@ angular.module('mm.core')
                 if (typeof src !== 'undefined') {
                     el.setAttribute('src', src);
                 }
+
+                // Treat video posters.
+                if (el.tagName == 'VIDEO' && el.getAttribute('poster')) {
+                    src = paths[decodeURIComponent(el.getAttribute('poster'))];
+                    if (typeof src !== 'undefined') {
+                        el.setAttribute('poster', src);
+                    }
+                }
             });
 
             // We do the same for links.
@@ -1771,12 +1779,20 @@ angular.module('mm.core')
                 urls = [];
 
             div.innerHTML = html;
-            elements = div.querySelectorAll('a, img, audio, video, source');
+            elements = div.querySelectorAll('a, img, audio, video, source, track');
 
             angular.forEach(elements, function(element) {
                 var url = element.tagName === 'A' ? element.href : element.src;
                 if (url && self.isDownloadableUrl(url) && urls.indexOf(url) == -1) {
                     urls.push(url);
+                }
+
+                // Treat video poster.
+                if (element.tagName == 'VIDEO' && element.getAttribute('poster')) {
+                    url = element.getAttribute('poster');
+                    if (url && self.isDownloadableUrl(url) && urls.indexOf(url) == -1) {
+                        urls.push(url);
+                    }
                 }
             });
 
