@@ -27,8 +27,7 @@ angular.module('mm.core.sidemenu')
     $mmSideMenu.setScope($scope);
     $scope.handlers = $mmSideMenuDelegate.getNavHandlers();
     $scope.areNavHandlersLoaded = $mmSideMenuDelegate.areNavHandlersLoaded;
-    $scope.siteinfo = $mmSite.getInfo();
-    loadLogoutLabel();
+    loadSiteInfo();
 
     $scope.logout = function() {
         $mmSitesManager.logout().finally(function() {
@@ -40,23 +39,27 @@ angular.module('mm.core.sidemenu')
         $scope.docsurl = docsurl;
     });
 
+    function loadSiteInfo() {
+        var config = $mmSite.getStoredConfig();
+
+        $scope.siteinfo = $mmSite.getInfo();
+        $scope.logoutLabel = 'mm.sidemenu.' + (config && config.tool_mobile_forcelogout == "1" ? 'logout': 'changesite');
+
+        $mmSite.getDocsUrl().then(function(docsurl) {
+            $scope.docsurl = docsurl;
+        });
+
+        $mmSideMenu.getCustomMenuItems().then(function(items) {
+            $scope.customItems = items;
+        });
+    }
+
     function updateSiteInfo() {
         // We need to use $timeout to force a $digest and make $watch notice the variable change.
         $scope.siteinfo = undefined;
         $timeout(function() {
-            $scope.siteinfo = $mmSite.getInfo();
-            loadLogoutLabel();
-
-            // Update docs URL, maybe the Moodle release has changed.
-            $mmSite.getDocsUrl().then(function(docsurl) {
-                $scope.docsurl = docsurl;
-            });
+            loadSiteInfo();
         });
-    }
-
-    function loadLogoutLabel() {
-        var config = $mmSite.getStoredConfig();
-        $scope.logoutLabel = 'mm.sidemenu.' + (config && config.tool_mobile_forcelogout == "1" ? 'logout': 'changesite');
     }
 
     var langObserver = $mmEvents.on(mmCoreEventLanguageChanged, updateSiteInfo);

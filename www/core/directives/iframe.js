@@ -14,6 +14,8 @@
 
 angular.module('mm.core')
 
+.constant('mmCoreIframeTimeout', 15000)
+
 /**
  * Directive to display content in an iframe.
  *
@@ -27,7 +29,7 @@ angular.module('mm.core')
  * @param {Mixed} [width=100%]  Width of the iframe. If not defined, use 100%.
  * @param {Mixed} [height=100%] Height of the iframe. If not defined, use 100%.
  */
-.directive('mmIframe', function($log, $mmUtil, $mmText, $mmSite, $mmFS) {
+.directive('mmIframe', function($log, $mmUtil, $mmText, $mmSite, $mmFS, $timeout, mmCoreIframeTimeout) {
     $log = $log.getInstance('mmIframe');
 
     var tags = ['iframe', 'frame', 'object', 'embed'];
@@ -195,17 +197,38 @@ angular.module('mm.core')
 
     return {
         restrict: 'E',
-        template: '<div class="iframe-wrapper"><iframe class="mm-iframe" ng-style="{\'width\': width, \'height\': height}" ng-src="{{src}}"></iframe></div>',
+        templateUrl: 'core/templates/iframe.html',
         scope: {
             src: '='
         },
         link: function(scope, element, attrs) {
+            var url = (scope.src && scope.src.toString()) || '',  // Convert $sce URLs to string URLs.
+                iframe = angular.element(element.find('iframe')[0]);
+
             scope.width = $mmUtil.formatPixelsSize(attrs.iframeWidth) || '100%';
             scope.height = $mmUtil.formatPixelsSize(attrs.iframeHeight) || '100%';
 
-            var iframe = angular.element(element.find('iframe')[0]);
+            // Show loading only with external URLs.
+            scope.loading = !!url.match(/^https?:\/\//i);
+
             treatFrame(iframe);
 
+            if (scope.loading) {
+                iframe.on('load', function() {
+                    scope.loading = false;
+                    $timeout(); // Use $timeout to force a digest and update the view.
+                });
+
+                iframe.on('error', function() {
+                    scope.loading = false;
+                    $mmUtil.showErrorModal('mm.core.errorloadingcontent', true);
+                    $timeout(); // Use $timeout to force a digest and update the view.
+                });
+
+                $timeout(function() {
+                    scope.loading = false;
+                }, mmCoreIframeTimeout);
+            }
         }
     };
 });

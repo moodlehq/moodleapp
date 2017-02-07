@@ -44,6 +44,14 @@
                             <ion-spinner ng-if="loading" class="icon"></ion-spinner>
                         </a>
                     </li>
+                    <li ng-repeat="item in customItems" class="mm-sidemenu-customitem">
+                        <a ng-if="item.type != 'embedded'" menu-close class="item item-icon-left" ng-href="{{item.url}}" mm-link in-app="{{item.type == 'inappbrowser'}}" title="{{item.label}}">
+                            <i class="icon {{item.icon}}"></i>{{item.label}}
+                        </a>
+                        <a ng-if="item.type == 'embedded'" menu-close class="item item-icon-left" ui-sref="site.iframe-view({title: item.label, url: item.url})" title="{{item.label}}">
+                            <i class="icon {{item.icon}}"></i>{{item.label}}
+                        </a>
+                    </li>
                     <li>
                         <a menu-close class="item item-icon-left" ng-href="{{siteinfo.siteurl}}" mm-link auto-login="yes" title="{{ 'mm.sidemenu.website' | translate}}">
                             <i class="icon ion-earth"></i>{{ 'mm.sidemenu.website' | translate}}
