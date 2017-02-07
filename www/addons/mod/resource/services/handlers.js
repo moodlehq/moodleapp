@@ -21,9 +21,10 @@ angular.module('mm.addons.mod_resource')
  * @ngdoc service
  * @name $mmaModResourceHandlers
  */
-.factory('$mmaModResourceHandlers', function($mmCourse, $mmaModResource, $mmEvents, $state, $mmSite, $mmCourseHelper,
-            $mmCoursePrefetchDelegate, $mmUtil, $mmFS, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated,
-            mmCoreEventPackageStatusChanged, mmaModResourceComponent, $q, $mmContentLinksHelper, $mmaModResourcePrefetchHandler) {
+.factory('$mmaModResourceHandlers', function($mmCourse, $mmaModResource, $mmEvents, $state, $mmSite, $mmCourseHelper, $mmUtil,
+            $mmCoursePrefetchDelegate, $mmFS, mmCoreDownloading, mmCoreNotDownloaded, mmCoreOutdated, $mmaModResourceHelper,
+            mmCoreEventPackageStatusChanged, mmaModResourceComponent, $q, $mmContentLinksHelper, $mmaModResourcePrefetchHandler,
+            mmCoreDownloaded) {
     var self = {};
 
     /**
@@ -56,7 +57,8 @@ angular.module('mm.addons.mod_resource')
         self.getController = function(module, courseId) {
             return function($scope) {
                 var downloadBtn,
-                    refreshBtn;
+                    refreshBtn,
+                    openBtn;
 
                 downloadBtn = {
                     hidden: true,
@@ -80,9 +82,20 @@ angular.module('mm.addons.mod_resource')
                     }
                 };
 
+                openBtn = {
+                    hidden: true,
+                    icon: 'ion-document',
+                    label: 'mma.mod_resource.openthefile',
+                    action: function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        $mmaModResourceHelper.openFile(module, courseId);
+                    }
+                };
+
                 $scope.title = module.name;
                 $scope.class = 'mma-mod_resource-handler';
-                $scope.buttons = [downloadBtn, refreshBtn];
+                $scope.buttons = [downloadBtn, refreshBtn, openBtn];
                 $scope.spinner = true; // Show spinner while calculating status.
 
                 // Show resource icon while calculating the right icon to show.
@@ -111,12 +124,14 @@ angular.module('mm.addons.mod_resource')
 
                 function download(refresh) {
                     var dwnBtnHidden = downloadBtn.hidden,
-                        rfrshBtnHidden = refreshBtn.hidden;
+                        rfrshBtnHidden = refreshBtn.hidden,
+                        openBtnHidden = openBtn.hidden;
 
                     // Show spinner since this operation might take a while.
                     $scope.spinner = true;
                     downloadBtn.hidden = true;
                     refreshBtn.hidden = true;
+                    openBtn.hidden = true;
 
                     // Get download size to ask for confirm if it's high.
                     $mmaModResourcePrefetchHandler.getDownloadSize(module, courseId).then(function(size) {
@@ -126,18 +141,16 @@ angular.module('mm.addons.mod_resource')
                             $scope.spinner = false;
                             downloadBtn.hidden = dwnBtnHidden;
                             refreshBtn.hidden = rfrshBtnHidden;
+                            openBtn.hidden = openBtnHidden;
                         });
                     }).catch(function(error) {
                         // Error, leave the buttons as they were.
                         $scope.spinner = false;
                         downloadBtn.hidden = dwnBtnHidden;
                         refreshBtn.hidden = rfrshBtnHidden;
+                        openBtn.hidden = openBtnHidden;
 
-                        if (error) {
-                            $mmUtil.showErrorModal(error);
-                        } else {
-                            $mmUtil.showErrorModal('mm.core.errordownloading', true);
-                        }
+                        $mmUtil.showErrorModalDefault(error, 'mm.core.errordownloading', true);
                     });
                 }
 
@@ -147,6 +160,7 @@ angular.module('mm.addons.mod_resource')
                         $scope.spinner = status === mmCoreDownloading;
                         downloadBtn.hidden = status !== mmCoreNotDownloaded;
                         refreshBtn.hidden = status !== mmCoreOutdated;
+                        openBtn.hidden = status !== mmCoreDownloaded || $mmaModResource.isDisplayedInIframe(module);
                     }
                 }
 
