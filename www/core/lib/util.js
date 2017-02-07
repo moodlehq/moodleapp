@@ -2200,6 +2200,22 @@ angular.module('mm.core')
             return elementMidPoint > $window.innerHeight || elementMidPoint < scrollTopPos;
         };
 
+        /**
+         * Copy properties from one object to another.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#copyProperties
+         * @param  {Object} from Object to copy the properties from.
+         * @param  {Object} to   Object where to store the properties.
+         * @return {Void}
+         */
+        self.copyProperties = function(from, to) {
+            angular.forEach(from, function(value, name) {
+                to[name] = angular.copy(value);
+            });
+        };
+
         return self;
     };
 });

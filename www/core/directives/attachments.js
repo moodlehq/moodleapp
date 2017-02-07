@@ -27,7 +27,7 @@ angular.module('mm.core')
  * scope array, this directive won't update anything, so the module using this directive should be the one
  * uploading and moving the files.
  *
- * All the files added will be copies to the app temproary folder, so they should be deleted after uploading them
+ * All the files added will be copied to the app temporary folder, so they should be deleted after uploading them
  * or if the user cancels the action.
  *
  * Example usage:
