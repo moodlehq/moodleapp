@@ -36,3 +36,26 @@
     }
 }
 
+.mm-nest-cards {
+    .mm-nested-card {
+        padding: 0;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+        margin: 1px 10px 0px;
+        border-radius: 0;
+        background-color: #fff;
+
+        .item {
+            border-left: 0;
+            border-right: 0;
+        }
+    }
+
+    .item-divider {
+        display: none;
+    }
+
+    .mm-nested {
+        margin-left: 10px;
+    }
+}
