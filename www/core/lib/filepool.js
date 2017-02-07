@@ -57,11 +57,8 @@ angular.module('mm.core')
                     name: 'component',
                 },
                 {
-                    // Not using compound indexes because they seem to have issues with where().
                     name: 'componentAndId',
-                    generator: function(obj) {
-                        return [obj.component, obj.componentId];
-                    }
+                    keyPath: ['component', 'componentId']
                 }
             ]
         },
@@ -911,7 +908,7 @@ angular.module('mm.core')
      */
     self._getFileLinks = function(siteId, fileId) {
         return getSiteDb(siteId).then(function(db) {
-            return db.query(mmFilepoolLinksStore, ['fileId', '=', fileId]);
+            return db.whereEqual(mmFilepoolLinksStore, 'fileId', fileId);
         });
     };
 
@@ -1538,6 +1535,21 @@ angular.module('mm.core')
         });
     };
 
+    // Convenience function to get component files.
+    function getComponentFiles(db, component, componentId) {
+        var fieldName, where;
+
+        if (typeof componentId !== 'undefined') {
+            fieldName = 'componentAndId';
+            where = [component, self._fixComponentId(componentId)];
+        } else {
+            fieldName = 'component';
+            where = component;
+        }
+
+        return db.whereEqual(mmFilepoolLinksStore, fieldName, where);
+    }
+
     /**
      * Get all the matching files from a component. Returns objects containing properties like path, extension and url.
      *
@@ -1550,15 +1562,8 @@ angular.module('mm.core')
      * @return {Promise}            Promise resolved with the files on success.
      */
     self.getFilesByComponent = function(siteId, component, componentId) {
-        var where;
-        if (typeof componentId !== 'undefined') {
-            where = ['componentAndId', '=', [component, self._fixComponentId(componentId)]];
-        } else {
-            where = ['component', '=', component];
-        }
-
         return getSiteDb(siteId).then(function(db) {
-            return db.query(mmFilepoolLinksStore, where).then(function(items) {
+            return getComponentFiles(db, component, componentId).then(function(items) {
                 var promises = [],
                     files = [];
 
@@ -1997,15 +2002,8 @@ angular.module('mm.core')
      * Invalidates a file by marking it stale. See {@link $mmFilepool#invalidateFileByUrl} for more details.
      */
     self.invalidateFilesByComponent = function(siteId, component, componentId) {
-        var where;
-        if (typeof componentId !== 'undefined') {
-            where = ['componentAndId', '=', [component, self._fixComponentId(componentId)]];
-        } else {
-            where = ['component', '=', component];
-        }
-
         return getSiteDb(siteId).then(function(db) {
-            return db.query(mmFilepoolLinksStore, where).then(function(items) {
+            return getComponentFiles(db, component, componentId).then(function(items) {
                 var promise,
                     promises = [];
 
@@ -2337,7 +2335,7 @@ angular.module('mm.core')
                 promises.push(db.remove(mmFilepoolStore, fileId));
 
                 // Remove links.
-                promises.push(db.where(mmFilepoolLinksStore, 'fileId', '=', fileId).then(function(entries) {
+                promises.push(db.whereEqual(mmFilepoolLinksStore, 'fileId', fileId).then(function(entries) {
                     return $q.all(entries.map(function(entry) {
                         return db.remove(mmFilepoolLinksStore, [entry.fileId, entry.component, entry.componentId]);
                     }));
@@ -2371,15 +2369,8 @@ angular.module('mm.core')
      * @return {Promise}             Resolved on success. Rejected on failure.
      */
     self.removeFilesByComponent = function(siteId, component, componentId) {
-        var where;
-        if (typeof componentId !== 'undefined') {
-            where = ['componentAndId', '=', [component, self._fixComponentId(componentId)]];
-        } else {
-            where = ['component', '=', component];
-        }
-
         return getSiteDb(siteId).then(function(db) {
-            return db.query(mmFilepoolLinksStore, where);
+            return getComponentFiles(db, component, componentId);
         }).then(function(items) {
             return $q.all(items.map(function(item) {
                 return self._removeFileById(siteId, item.fileId);
@@ -2464,7 +2455,8 @@ angular.module('mm.core')
                     return $q.when();
                 }
 
-                return db.query(mmFilepoolLinksStore, ['fileId', '=', fileId]).then(function(entries) {
+
+                return db.whereEqual(mmFilepoolLinksStore, 'fileId', fileId).then(function(entries) {
                     // Found some fileId on LinksStore, we have to change them.
                     return $q.all(entries.map(function(linkEntry) {
                         linkEntry.fileId = fileObject.fileId;

@@ -330,7 +330,7 @@ angular.module('mm.core')
 
         angular.forEach(components, function(c) {
             if (c) {
-                promises.push(db.query(mmFilepoolLinksStore, ['componentAndId', '=', [c, componentId]]).then(function(items) {
+                promises.push(db.whereEqual(mmFilepoolLinksStore, 'componentAndId', [c, componentId]).then(function(items) {
                     if (items.length) {
                         component = c;
                     }

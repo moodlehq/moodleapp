@@ -36,11 +36,8 @@ angular.module('mm.addons.mod_forum')
                     name: 'timecreated'
                 },
                 {
-                    // Not using compound indexes because they seem to have issues with where().
                     name: 'forumAndUser',
-                    generator: function(obj) {
-                        return [obj.forumid, obj.userid];
-                    }
+                    keyPath: ['forumid', 'userid']
                 }
             ]
         },
@@ -61,18 +58,12 @@ angular.module('mm.addons.mod_forum')
                     name: 'timecreated'
                 },
                 {
-                    // Not using compound indexes because they seem to have issues with where().
                     name: 'discussionAndUser',
-                    generator: function(obj) {
-                        return [obj.discussionid, obj.userid];
-                    }
+                    keyPath: ['discussionid', 'userid']
                 },
                 {
-                    // Not using compound indexes because they seem to have issues with where().
                     name: 'forumAndUser',
-                    generator: function(obj) {
-                        return [obj.forumid, obj.userid];
-                    }
+                    keyPath: ['forumid', 'userid']
                 }
             ]
         }

@@ -32,11 +32,8 @@ angular.module('mm.addons.mod_glossary')
                     name: 'userid'
                 },
                 {
-                    // Not using compound indexes because they seem to have issues with where().
                     name: 'glossaryAndUser',
-                    generator: function(obj) {
-                        return [obj.glossaryid, obj.userid];
-                    }
+                    keyPath: ['glossaryid', 'userid']
                 }
             ]
         }
