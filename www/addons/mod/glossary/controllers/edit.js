@@ -120,8 +120,7 @@ angular.module('mm.addons.mod_glossary')
                     options.fullmatch = $scope.options.fullmatch ? 1 : 0;
                 }
             }
-
-            return $mmaModGlossary.addEntry(glossaryId, concept, definition, options, courseId);
+            return $mmaModGlossary.addEntry(glossaryId, concept, courseId, definition, options);
         }).then(function(entryId) {
             $scope.entry.glossaryid = glossaryId;
             $scope.entry.id = entryId;
