@@ -143,35 +143,6 @@ angular.module('mm.addons.notes')
     };
 
     /**
-     * Check if add notes is disabled in a certain site.
-     *
-     * @module mm.addons.notes
-     * @ngdoc method
-     * @name $mmaNotes#isAddDisabled
-     * @param  {String} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
-     */
-    self.isAddDisabled = function(siteId) {
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            return self.isAddDisabledInSite(site);
-        });
-    };
-
-    /**
-     * Check if add notes is disabled in a certain site.
-     *
-     * @module mm.addons.notes
-     * @ngdoc method
-     * @name $mmaNotes#isAddDisabledInSite
-     * @param  {Object} [site] Site. If not defined, use current site.
-     * @return {Boolean}       True if disabled, false otherwise.
-     */
-    self.isAddDisabledInSite = function(site) {
-        site = site || $mmSite;
-        return site.isFeatureDisabled('$mmUserDelegate_mmaNotes:addNote');
-    };
-
-    /**
      * Returns whether or not the add note plugin is enabled for a certain site.
      *
      * This method is called quite often and thus should only perform a quick
@@ -278,35 +249,6 @@ angular.module('mm.addons.notes')
         }).catch(function() {
             return false;
         });
-    };
-
-    /**
-     * Check if view course notes is disabled in a certain site.
-     *
-     * @module mm.addons.notes
-     * @ngdoc method
-     * @name $mmaNotes#isViewDisabled
-     * @param  {String} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
-     */
-    self.isViewDisabled = function(siteId) {
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            return self.isViewDisabledInSite(site);
-        });
-    };
-
-    /**
-     * Check if view course notes is disabled in a certain site.
-     *
-     * @module mm.addons.notes
-     * @ngdoc method
-     * @name $mmaNotes#isViewDisabledInSite
-     * @param  {Object} [site] Site. If not defined, use current site.
-     * @return {Boolean}       True if disabled, false otherwise.
-     */
-    self.isViewDisabledInSite = function(site) {
-        site = site || $mmSite;
-        return site.isFeatureDisabled('$mmCoursesDelegate_mmaNotes');
     };
 
     /**

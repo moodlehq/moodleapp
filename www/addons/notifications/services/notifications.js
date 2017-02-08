@@ -248,35 +248,6 @@ angular.module('mm.addons.notifications')
     };
 
     /**
-     * Check if notifications are disabled in a certain site.
-     *
-     * @module mm.addons.notifications
-     * @ngdoc method
-     * @name $mmaNotifications#isDisabled
-     * @param  {String} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
-     */
-    self.isDisabled = function(siteId) {
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            return self.isDisabledInSite(site);
-        });
-    };
-
-    /**
-     * Check if notifications are disabled in a certain site.
-     *
-     * @module mm.addons.notifications
-     * @ngdoc method
-     * @name $mmaNotifications#isDisabledInSite
-     * @param  {Object} [site] Site. If not defined, use current site.
-     * @return {Boolean}       True if disabled, false otherwise.
-     */
-    self.isDisabledInSite = function(site) {
-        site = site || $mmSite;
-        return site.isFeatureDisabled('$mmSideMenuDelegate_mmaNotifications');
-    };
-
-    /**
      * Returns whether or not we can count unread notifications.
      *
      * @module mm.addons.notifications

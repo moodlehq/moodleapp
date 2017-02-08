@@ -92,64 +92,6 @@ angular.module('mm.addons.competency')
     }
 
     /**
-     * Check if Learning Plans are disabled in a certain site.
-     *
-     * @module mm.addons.competency
-     * @ngdoc method
-     * @name $mmaCompetency#isLearningPlansDisabled
-     * @param  {String} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
-     */
-    self.isLearningPlansDisabled = function(siteId) {
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            return self.isLearningPlansDisabledInSite(site);
-        });
-    };
-
-    /**
-     * Check if Learning Plans are disabled in a certain site.
-     *
-     * @module mm.addons.competency
-     * @ngdoc method
-     * @name $mmaCompetency#isLearningPlansDisabledInSite
-     * @param  {Object} [site] Site. If not defined, use current site.
-     * @return {Boolean}       True if disabled, false otherwise.
-     */
-    self.isLearningPlansDisabledInSite = function(site) {
-        site = site || $mmSite;
-        return site.isFeatureDisabled('$mmSideMenuDelegate_mmaCompetency');
-    };
-
-    /**
-     * Check if course competencies are disabled in a certain site.
-     *
-     * @module mm.addons.competency
-     * @ngdoc method
-     * @name $mmaCompetency#isCourseCompetenciesDisabled
-     * @param  {String} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
-     */
-    self.isCourseCompetenciesDisabled = function(siteId) {
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            return self.isCourseCompetenciesDisabledInSite(site);
-        });
-    };
-
-    /**
-     * Check if course competencies are disabled in a certain site.
-     *
-     * @module mm.addons.competency
-     * @ngdoc method
-     * @name $mmaCompetency#isCourseCompetenciesDisabledInSite
-     * @param  {Object} [site] Site. If not defined, use current site.
-     * @return {Boolean}       True if disabled, false otherwise.
-     */
-    self.isCourseCompetenciesDisabledInSite = function(site) {
-        site = site || $mmSite;
-        return site.isFeatureDisabled('$mmCoursesDelegate_mmaCompetency');
-    };
-
-    /**
      * Check if competency learning plans WS is available.
      *
      * @module mm.addons.competency
@@ -191,35 +133,6 @@ angular.module('mm.addons.competency')
         return self.getCourseCompetencies(courseId, siteId).catch(function() {
             return false;
         });
-    };
-
-    /**
-     * Check if user competencies are disabled in a certain site.
-     *
-     * @module mm.addons.competency
-     * @ngdoc method
-     * @name $mmaCompetency#isUserCompetenciesDisabled
-     * @param  {String} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
-     */
-    self.isUserCompetenciesDisabled = function(siteId) {
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            return self.isUserCompetenciesDisabledInSite(site);
-        });
-    };
-
-    /**
-     * Check if user competencies are disabled in a certain site.
-     *
-     * @module mm.addons.competency
-     * @ngdoc method
-     * @name $mmaCompetency#isUserCompetenciesDisabledInSite
-     * @param  {Object} [site] Site. If not defined, use current site.
-     * @return {Boolean}       True if disabled, false otherwise.
-     */
-    self.isUserCompetenciesDisabledInSite = function(site) {
-        site = site || $mmSite;
-        return site.isFeatureDisabled('$mmUserDelegate_mmaCompetency:learningPlan');
     };
 
     /**

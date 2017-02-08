@@ -21,7 +21,7 @@ angular.module('mm.addons.badges')
  * @ngdoc service
  * @name $mmaBadges
  */
-.factory('$mmaBadges', function($mmSite, $log, $mmSitesManager) {
+.factory('$mmaBadges', function($log, $mmSitesManager) {
     $log = $log.getInstance('$mmaBadges');
 
     var self = {};
@@ -114,35 +114,6 @@ angular.module('mm.addons.badges')
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getBadgesCacheKey(courseId, userId));
         });
-    };
-
-    /**
-     * Check if view user badges is disabled in a certain site.
-     *
-     * @module mm.addons.badges
-     * @ngdoc method
-     * @name $mmaBadges#isViewUserDisabled
-     * @param  {String} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
-     */
-    self.isViewUserDisabled = function(siteId) {
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            return self.isViewUserDisabledInSite(site);
-        });
-    };
-
-    /**
-     * Check if view user badges is disabled in a certain site.
-     *
-     * @module mm.addons.badges
-     * @ngdoc method
-     * @name $mmaBadges#isViewUserDisabledInSite
-     * @param  {Object} [site] Site. If not defined, use current site.
-     * @return {Boolean}       True if disabled, false otherwise.
-     */
-    self.isViewUserDisabledInSite = function(site) {
-        site = site || $mmSite;
-        return site.isFeatureDisabled('$mmUserDelegate_mmaBadges');
     };
 
     return self;

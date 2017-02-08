@@ -139,35 +139,6 @@ angular.module('mm.core.grades')
     };
 
     /**
-     * Check if course grades are disabled in a certain site.
-     *
-     * @module mm.core.grades
-     * @ngdoc method
-     * @name $mmGrades#isCourseGradesDisabled
-     * @param  {String} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
-     */
-    self.isCourseGradesDisabled = function(siteId) {
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            return self.isCourseGradesDisabledInSite(site);
-        });
-    };
-
-    /**
-     * Check if course grades are disabled in a certain site.
-     *
-     * @module mm.core.grades
-     * @ngdoc method
-     * @name $mmGrades#isCourseGradesDisabledInSite
-     * @param  {Object} [site] Site. If not defined, use current site.
-     * @return {Boolean}       True if disabled, false otherwise.
-     */
-    self.isCourseGradesDisabledInSite = function(site) {
-        site = site || $mmSite;
-        return site.isFeatureDisabled('$mmCoursesDelegate_mmaGrades');
-    };
-
-    /**
      * Returns whether or not the plugin is enabled for a certain site.
      *
      * @module mm.core.grades
@@ -242,35 +213,6 @@ angular.module('mm.core.grades')
         }).catch(function() {
             return false;
         });
-    };
-
-    /**
-     * Check if user grades are disabled in a certain site.
-     *
-     * @module mm.core.grades
-     * @ngdoc method
-     * @name $mmGrades#isUserGradesDisabled
-     * @param  {String} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
-     */
-    self.isUserGradesDisabled = function(siteId) {
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            return self.isUserGradesDisabledInSite(site);
-        });
-    };
-
-    /**
-     * Check if user grades are disabled in a certain site.
-     *
-     * @module mm.core.grades
-     * @ngdoc method
-     * @name $mmGrades#isUserGradesDisabledInSite
-     * @param  {Object} [site] Site. If not defined, use current site.
-     * @return {Boolean}       True if disabled, false otherwise.
-     */
-    self.isUserGradesDisabledInSite = function(site) {
-        site = site || $mmSite;
-        return site.isFeatureDisabled('$mmUserDelegate_mmaGrades:viewGrades');
     };
 
     /**

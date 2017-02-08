@@ -409,19 +409,21 @@ angular.module('mm.addons.calendar')
 
                 var promises = [];
                 angular.forEach(siteIds, function(siteId) {
-                    // Get first events.
-                    var promise = self.getEvents(undefined, undefined, false, siteId).then(function(events) {
-                        return self.scheduleEventsNotifications(events, siteId);
-                    });
-                    promises.push(promise);
+                    // Check if calendar is disabled for the site.
+                    promises.push(self.isDisabled(siteId).then(function(disabled) {
+                        if (!disabled) {
+                            // Get first events.
+                            return self.getEvents(undefined, undefined, false, siteId).then(function(events) {
+                                return self.scheduleEventsNotifications(events, siteId);
+                            });
+                        }
+                    }));
                 });
 
                 return $q.all(promises);
             });
         } else {
-            var deferred = $q.defer();
-            deferred.resolve();
-            return deferred.promise;
+            return $q.when();
         }
     };
 

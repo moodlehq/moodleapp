@@ -21,7 +21,7 @@ angular.module('mm.addons.participants')
  * @ngdoc service
  * @name $mmaParticipantsHandlers
  */
-.factory('$mmaParticipantsHandlers', function($mmaParticipants, mmCoursesAccessMethods, $mmUtil, $state, $mmContentLinksHelper) {
+.factory('$mmaParticipantsHandlers', function($mmaParticipants, mmCoursesAccessMethods, $state, $mmContentLinkHandlerFactory) {
     var self = {};
 
     /**
@@ -92,90 +92,41 @@ angular.module('mm.addons.participants')
 
     /**
      * Content links handler.
+     * Match user/index.php but NOT grade/report/user/index.php.
      *
      * @module mm.addons.participants
      * @ngdoc method
      * @name $mmaParticipantsHandlers#linksHandler
      */
-    self.linksHandler = function() {
+    self.linksHandler = $mmContentLinkHandlerFactory.createChild(
+            /\/user\/index\.php/, '$mmCoursesDelegate_mmaParticipants');
 
-        var self = {};
-
-        /**
-         * Whether or not participants is enabled for a certain site.
-         *
-         * @param  {String} siteId   Site ID.
-         * @param  {Number} courseId Course ID.
-         * @return {Promise}         Promise resolved with true if enabled.
-         */
-        function isEnabled(siteId, courseId) {
-            return $mmaParticipants.isDisabled(siteId).then(function(disabled) {
-                if (disabled) {
-                    return false;
-                }
-
-                return $mmaParticipants.isPluginEnabledForCourse(courseId, siteId);
-            });
+    // Check if the handler is enabled for a certain site. See $mmContentLinkHandlerFactory#isEnabled.
+    self.linksHandler.isEnabled = function(siteId, url, params, courseId) {
+        courseId = parseInt(params.id, 10) || courseId;
+        if (!courseId || url.indexOf('/grade/report/') != -1) {
+            return false;
         }
 
-        /**
-         * Get actions to perform with the link.
-         *
-         * @param {String[]} siteIds Site IDs the URL belongs to.
-         * @param {String} url       URL to treat.
-         * @return {Object[]}        List of actions. See {@link $mmContentLinksDelegate#registerLinkHandler}.
-         */
-        self.getActions = function(siteIds, url) {
-            // Check it's a user URL.
-            if (typeof self.handles(url) != 'undefined') {
-                var params = $mmUtil.extractUrlParams(url),
-                    courseId = parseInt(params.id, 10);
+        return $mmaParticipants.isPluginEnabledForCourse(courseId, siteId);
+    };
 
-                // Participants. Check if it's enabled.
-                // Pass false because all sites should have the same siteurl.
-                return $mmContentLinksHelper.filterSupportedSites(siteIds, isEnabled, false, courseId).then(function(ids) {
-                    if (!ids.length) {
-                        return [];
-                    } else {
-                        // Return actions.
-                        return [{
-                            message: 'mm.core.view',
-                            icon: 'ion-eye',
-                            sites: ids,
-                            action: function(siteId) {
-                                // Use redirect to make the participants list the new history root (to avoid "loops" in history).
-                                $state.go('redirect', {
-                                    siteid: siteId,
-                                    state: 'site.participants',
-                                    params: {
-                                        course: {id: courseId}
-                                    }
-                                });
-                            }
-                        }];
+    // Get actions to perform with the link. See $mmContentLinkHandlerFactory#getActions.
+    self.linksHandler.getActions = function(siteIds, url, params, courseId) {
+        courseId = parseInt(params.id, 10) || courseId;
+
+        return [{
+            action: function(siteId) {
+                // Always use redirect to make it the new history root (to avoid "loops" in history).
+                $state.go('redirect', {
+                    siteid: siteId,
+                    state: 'site.participants',
+                    params: {
+                        course: {id: courseId}
                     }
                 });
             }
-            return [];
-        };
-
-        /**
-         * Check if the URL is handled by this handler. If so, returns the URL of the site.
-         *
-         * @param  {String} url URL to check.
-         * @return {String}     Site URL. Undefined if the URL doesn't belong to this handler.
-         */
-        self.handles = function(url) {
-            // Verify it's not a grade URL.
-            if (url.indexOf('grade/report/user') == -1) {
-                var position = url.indexOf('/user/index.php');
-                if (position > -1) {
-                    return url.substr(0, position);
-                }
-            }
-        };
-
-        return self;
+        }];
     };
 
     return self;

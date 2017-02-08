@@ -25,7 +25,7 @@ angular.module('mm.addons.messages')
  */
 .factory('$mmaMessagesHandlers', function($log, $mmaMessages, $mmSite, $state, $mmUtil, $mmContentLinksHelper, $mmaMessagesSync,
             $mmSitesManager, mmUserProfileHandlersTypeCommunication, mmUserProfileHandlersTypeAction, $translate,
-            mmaMessagesReadChangedEvent, $mmEvents, mmaMessagesReadCronEvent, $mmAddonManager) {
+            mmaMessagesReadChangedEvent, $mmEvents, mmaMessagesReadCronEvent, $mmAddonManager, $mmContentLinkHandlerFactory) {
     $log = $log.getInstance('$mmaMessagesHandlers');
 
     var self = {};
@@ -449,127 +449,77 @@ angular.module('mm.addons.messages')
     };
 
     /**
-     * Content links handler.
+     * Content links handler for messaging index.
+     * Match message index URL without params id, user1 or user2.
      *
      * @module mm.addons.messages
      * @ngdoc method
-     * @name $mmaMessagesHandlers#linksHandler
+     * @name $mmaMessagesHandlers#indexLinksHandler
      */
-    self.linksHandler = function() {
+    self.indexLinksHandler = $mmContentLinkHandlerFactory.createChild(
+            /\/message\/index\.php((?![\?\&](id|user1|user2)=\d+).)*$/, '$mmSideMenuDelegate_mmaMessages');
 
-        var self = {};
+    // Check if the handler is enabled for a certain site. See $mmContentLinkHandlerFactory#isEnabled.
+    self.indexLinksHandler.isEnabled = $mmaMessages.isPluginEnabled;
 
-        /**
-         * Whether or not the handler is enabled for a certain site.
-         *
-         * @param  {String} siteId Site ID.
-         * @param  {Object} params Params of the URL.
-         * @return {Promise}       Promise resolved with true if enabled.
-         */
-        function isEnabledForSite(siteId, params) {
-            return $mmaMessages.isPluginEnabled(siteId).then(function(enabled) {
-                if (!enabled) {
-                    return false;
-                }
-
-                var isDiscussion = typeof params.id != 'undefined' ||
-                        (typeof params.user1 != 'undefined' && typeof params.user2 != 'undefined');
-
-                if (!isDiscussion) {
-                    // It's not a discussion, check if messaging index is enabled.
-                    return $mmaMessages.isMessagesIndexDisabled(siteId).then(function(disabled) {
-                        return !disabled;
-                    });
-                } else {
-                    // It's a discussion, check if send message is disabled.
-                    return $mmaMessages.isSendMessageDisabled(siteId).then(function(disabled) {
-                        return !disabled;
-                    });
-                }
-            });
-        }
-
-        /**
-         * Get actions to perform with the link.
-         *
-         * @param {String[]} siteIds Site IDs the URL belongs to.
-         * @param {String} url       URL to treat.
-         * @return {Object[]}        Promise resolved with the list of actions.
-         *                           See {@link $mmContentLinksDelegate#registerLinkHandler}.
-         */
-        self.getActions = function(siteIds, url) {
-            // Check it's a messages URL.
-            if (typeof self.handles(url) != 'undefined') {
-                var params = $mmUtil.extractUrlParams(url);
-                // Pass false because all sites should have the same siteurl.
-                return $mmContentLinksHelper.filterSupportedSites(siteIds, isEnabledForSite, false, params).then(function(ids) {
-                    if (!ids.length) {
-                        return [];
-                    } else {
-                        // Return actions.
-                        return [{
-                            message: 'mm.core.view',
-                            icon: 'ion-eye',
-                            sites: ids,
-                            action: function(siteId) {
-                                var stateName,
-                                    stateParams;
-
-                                if (typeof params.user1 != 'undefined' && typeof params.user2 != 'undefined') {
-                                    // Check if the current user is in the conversation.
-                                    if ($mmSite.getUserId() == params.user1) {
-                                        stateName = 'site.messages-discussion';
-                                        stateParams = {userId: parseInt(params.user2, 10)};
-                                    } else if ($mmSite.getUserId() == params.user2) {
-                                        stateName = 'site.messages-discussion';
-                                        stateParams = {userId: parseInt(params.user1, 10)};
-                                    } else {
-                                        // He isn't, open in browser.
-                                        var modal = $mmUtil.showModalLoading();
-                                        $mmSitesManager.getSite(siteId).then(function(site) {
-                                            return site.openInBrowserWithAutoLogin(url);
-                                        }).finally(function() {
-                                            modal.dismiss();
-                                        });
-                                        return;
-                                    }
-                                } else if (typeof params.id != 'undefined') {
-                                    stateName = 'site.messages-discussion';
-                                    stateParams = {userId: parseInt(params.id, 10)};
-                                }
-
-                                if (!stateName) {
-                                    // Go to messaging index page. We use redirect state to view the side menu.
-                                    $state.go('redirect', {
-                                        siteid: siteId,
-                                        state: 'site.messages',
-                                        params: {}
-                                    });
-                                } else {
-                                    $mmContentLinksHelper.goInSite(stateName, stateParams, siteId);
-                                }
-                            }
-                        }];
-                    }
+    // Get actions to perform with the link. See $mmContentLinkHandlerFactory#getActions.
+    self.indexLinksHandler.getActions = function(siteIds, url, params, courseId) {
+        return [{
+            action: function(siteId) {
+                // Always use redirect to make it the new history root (to avoid "loops" in history).
+                $state.go('redirect', {
+                    siteid: siteId,
+                    state: 'site.messages',
+                    params: {}
                 });
             }
-            return [];
-        };
+        }];
+    };
 
-        /**
-         * Check if the URL is handled by this handler. If so, returns the URL of the site.
-         *
-         * @param  {String} url URL to check.
-         * @return {String}     Site URL. Undefined if the URL doesn't belong to this handler.
-         */
-        self.handles = function(url) {
-            var position = url.indexOf('/message/index.php');
-            if (position > -1) {
-                return url.substr(0, position);
+    /**
+     * Content links handler for a discussion.
+     * Match message index URL with params id, user1 or user2.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
+     * @name $mmaMessagesHandlers#discussionLinksHandler
+     */
+    self.discussionLinksHandler = $mmContentLinkHandlerFactory.createChild(
+            /\/message\/index\.php.*([\?\&](id|user1|user2)=\d+)/, '$mmUserDelegate_mmaMessages:sendMessage');
+
+    // Check if the handler is enabled for a certain site. See $mmContentLinkHandlerFactory#isEnabled.
+    self.discussionLinksHandler.isEnabled = function(siteId, url, params, courseId) {
+        return $mmaMessages.isPluginEnabled(siteId).then(function(enabled) {
+            if (!enabled) {
+                return false;
             }
-        };
 
-        return self;
+            if (typeof params.id == 'undefined' && typeof params.user2 == 'undefined') {
+                // Other user not defined, cannot treat the URL.
+                return false;
+            }
+
+            if (typeof params.user1 != 'undefined') {
+                // Check if user1 is the current user, since the app only supports current user.
+                return $mmSitesManager.getSite(siteId).then(function(site) {
+                    return parseInt(params.user1, 10) == site.getUserId();
+                });
+            }
+
+            return true;
+        });
+    };
+
+    // Get actions to perform with the link. See $mmContentLinkHandlerFactory#getActions.
+    self.discussionLinksHandler.getActions = function(siteIds, url, params, courseId) {
+        return [{
+            action: function(siteId) {
+                var stateParams = {
+                    userId: parseInt(params.id || params.user2, 10)
+                };
+                $mmContentLinksHelper.goInSite('site.messages-discussion', stateParams, siteId);
+            }
+        }];
     };
 
     /**
