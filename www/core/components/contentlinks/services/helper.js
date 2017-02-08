@@ -41,34 +41,9 @@ angular.module('mm.core.contentlinks')
      *                                depending on this result.
      * @param  {Mixed}                All the params sent after checkAll will be passed to isEnabledFn.
      * @return {Promise}              Promise resolved with the list of supported sites.
+     * @deprecated since v3.2.1. Please use $mmUtil#filterEnabledSites instead.
      */
-    self.filterSupportedSites = function(siteIds, isEnabledFn, checkAll) {
-        var promises = [],
-            supported = [],
-            extraParams = Array.prototype.slice.call(arguments, 3); // Params received after 'checkAll'.
-
-        angular.forEach(siteIds, function(siteId) {
-            if (checkAll || !promises.length) {
-                promises.push(isEnabledFn.apply(isEnabledFn, [siteId].concat(extraParams)).then(function(enabled) {
-                    if (enabled) {
-                        supported.push(siteId);
-                    }
-                }));
-            }
-        });
-
-        return $mmUtil.allPromises(promises).catch(function() {}).then(function() {
-            if (!checkAll) {
-                if (supported.length) {
-                    return siteIds; // Checking 1 was enough and it succeeded, all sites supported.
-                } else {
-                    return []; // Checking 1 was enough and it failed, no sites supported.
-                }
-            } else {
-                return supported;
-            }
-        });
-    };
+    self.filterSupportedSites = $mmUtil.filterEnabledSites;
 
     /**
      * Get the first valid action in a list of actions.
@@ -298,7 +273,7 @@ angular.module('mm.core.contentlinks')
      * @name $mmContentLinksHelper#treatModuleGradeUrl
      * @param {String[]} siteIds      Site IDs the URL belongs to.
      * @param {String} url            URL to treat.
-     * @param {Function} isEnabled    Function to check if the module is enabled. @see $mmContentLinksHelper#filterSupportedSites.
+     * @param {Function} isEnabled    Function to check if the module is enabled. @see $mmUtil#filterEnabledSites.
      * @param {Number} [courseId]     Course ID related to the URL.
      * @param {Function} [gotoReview] Function to go to review page if user is not current user.
      * @return {Promise}              Promise resolved with the list of actions.
@@ -310,7 +285,7 @@ angular.module('mm.core.contentlinks')
             courseId = courseId || params.courseid || params.cid;
 
             // Pass false because all sites should have the same siteurl.
-            return self.filterSupportedSites(siteIds, isEnabled, false, courseId).then(function(ids) {
+            return $mmUtil.filterEnabledSites(siteIds, isEnabled, false, courseId).then(function(ids) {
                 if (!ids.length) {
                     return [];
                 } else {
@@ -352,7 +327,7 @@ angular.module('mm.core.contentlinks')
      * @name $mmContentLinksHelper#treatModuleIndexUrl
      * @param {String[]} siteIds   Site IDs the URL belongs to.
      * @param {String} url         URL to treat.
-     * @param {Function} isEnabled Function to check if the module is enabled. @see $mmContentLinksHelper#filterSupportedSites .
+     * @param {Function} isEnabled Function to check if the module is enabled. @see $mmUtil#filterEnabledSites.
      * @param {Number} [courseId]  Course ID related to the URL.
      * @return {Promise}           Promise resolved with the list of actions.
      */
@@ -363,7 +338,7 @@ angular.module('mm.core.contentlinks')
             courseId = courseId || params.courseid || params.cid;
 
             // Pass false because all sites should have the same siteurl.
-            return self.filterSupportedSites(siteIds, isEnabled, false, courseId).then(function(ids) {
+            return $mmUtil.filterEnabledSites(siteIds, isEnabled, false, courseId).then(function(ids) {
                 if (!ids.length) {
                     return [];
                 } else {

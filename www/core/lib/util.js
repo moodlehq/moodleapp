@@ -2216,6 +2216,48 @@ angular.module('mm.core')
             });
         };
 
+        /**
+         * Filter the list of site IDs based on a isEnabled function.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#filterEnabledSites
+         * @param  {String[]} siteIds     Site IDs to filter.
+         * @param  {Function} isEnabledFn Function to call for each site. Must return true or a promise resolved with true if
+         *                                enabled. It receives a siteId param and all the params sent to this function after
+         *                                'checkAll'.
+         * @param  {Boolean} checkAll     True if it should check all the sites, false if it should check only 1 and treat them all
+         *                                depending on this result.
+         * @param  {Mixed}                All the params sent after checkAll will be passed to isEnabledFn.
+         * @return {Promise}              Promise resolved with the list of enabled sites.
+         */
+        self.filterEnabledSites = function(siteIds, isEnabledFn, checkAll) {
+            var promises = [],
+                enabledSites = [],
+                extraParams = Array.prototype.slice.call(arguments, 3); // Params received after 'checkAll'.
+
+            angular.forEach(siteIds, function(siteId) {
+                if (checkAll || !promises.length) {
+                    promises.push($q.when(isEnabledFn.apply(isEnabledFn, [siteId].concat(extraParams))).then(function(enabled) {
+                        if (enabled) {
+                            enabledSites.push(siteId);
+                        }
+                    }));
+                }
+            });
+
+            return self.allPromises(promises).catch(function() {
+                // Ignore errors.
+            }).then(function() {
+                if (!checkAll) {
+                    // Checking 1 was enough, so it will either return all the sites or none.
+                    return enabledSites.length ? siteIds : [];
+                } else {
+                    return enabledSites;
+                }
+            });
+        };
+
         return self;
     };
 });

@@ -987,6 +987,22 @@ angular.module('mm.core')
         return site.getConfig(false, true);
     }
 
+    /**
+     * Check if a certain feature is disabled in a site.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmSitesManager#isFeatureDisabled
+     * @param  {String} name     Name of the feature to check.
+     * @param  {Number} [siteId] The site ID. If not defined, current site (if available).
+     * @return {Promise}         Promise resolved with true if disabled.
+     */
+    self.isFeatureDisabled = function(name, siteId) {
+        return self.getSite(siteId).then(function(site) {
+            return site.isFeatureDisabled(name);
+        });
+    };
+
     return self;
 
 });
