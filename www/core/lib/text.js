@@ -579,5 +579,66 @@ angular.module('mm.core')
         return /<[a-z][\s\S]*>/i.test(text);
     };
 
+    /**
+     * Check if a text contains Unicode long chars.
+     * Using as threshold Hex value D800
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#hasUnicode
+     * @param  {String} text Text to check.
+     * @return {Boolean}     True if has Unicode chars, false otherwise.
+     */
+    self.hasUnicode = function(text) {
+        for (var x = 0; x < text.length; x++) {
+            if (text.charCodeAt(x) > 55295) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    /**
+     * Check if an object has any long Unicode char.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#hasUnicodeData
+     * @param  {Mixed}  data  Object to be checked.
+     * @return {Boolean}      If the data has any long Unicode char on it.
+     */
+    self.hasUnicodeData = function(data) {
+        for (var el in data) {
+            if (angular.isObject(data[el])) {
+                if (self.hasUnicodeData(data[el])) {
+                    return true;
+                }
+            } else if (typeof data[el] == "string" && self.hasUnicode(data[el])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Strip Unicode long char of a given text.
+     * Using as threshold Hex value D800
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#stripUnicode
+     * @param  {String} text Text to check.
+     * @return {String}      Without the Unicode chars.
+     */
+    self.stripUnicode = function(text) {
+        var stripped = "";
+        for (var x = 0; x < text.length; x++) {
+            if (text.charCodeAt(x) <= 55295){
+                stripped += text.charAt(x);
+            }
+        }
+        return stripped;
+    };
+
     return self;
 });
