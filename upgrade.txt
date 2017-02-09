@@ -4,7 +4,7 @@ information provided here is intended especially for developers.
 === 3.2.1 ===
 
  * mmaGrades addon has been moved to core with mmGrades name (and derivatives).
- * $mmContentLinksDelegate has been refactored. Please see the new requirements in $mmContentLinksDelegateProvider#registerLinkHandler. Also, it is recommended to use the new $mmContentLinkHandlerFactory to create the content link handlers.
+ * $mmContentLinksDelegate has been refactored. Please see the new requirements in $mmContentLinksDelegateProvider#registerLinkHandler. Also, it is recommended to use the new $mmContentLinkHandlerFactory to create the content link handlers. The functions $mmContentLinksHelper#treatModuleIndexUrl and $mmContentLinksHelper#treatModuleGradeUrl have been modified to match the new behaviour.
  * The promise returned by $mmaMessages#sendMessage is now resolved with an object instead of a boolean.
  * mm-format-text directive is now depending on height so new parameter max-height has been added and parameters shorten and expand-on-click have been deprecated.
  * Now mmUser#formatRoleList is returning a String instead of a Promise.

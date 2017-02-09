@@ -62,7 +62,8 @@ angular.module('mm.addons.mod_scorm', ['mm.core'])
 .config(function($mmCourseDelegateProvider, $mmCoursePrefetchDelegateProvider, $mmContentLinksDelegateProvider) {
     $mmCourseDelegateProvider.registerContentHandler('mmaModScorm', 'scorm', '$mmaModScormHandlers.courseContent');
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModScorm', 'scorm', '$mmaModScormPrefetchHandler');
-    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModScorm', '$mmaModScormHandlers.linksHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModScorm:index', '$mmaModScormHandlers.indexLinksHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModScorm:grade', '$mmaModScormHandlers.gradeLinksHandler');
 })
 
 .run(function($mmCronDelegate) {

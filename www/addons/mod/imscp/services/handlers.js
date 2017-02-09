@@ -167,53 +167,7 @@ angular.module('mm.addons.mod_imscp')
      * @ngdoc method
      * @name $mmaModImscpHandlers#linksHandler
      */
-    self.linksHandler = function() {
-
-        var self = {};
-
-        /**
-         * Whether or not the handler is enabled for a certain site.
-         *
-         * @param  {String} siteId     Site ID.
-         * @param  {Number} [courseId] Course ID related to the URL.
-         * @return {Promise}           Promise resolved with true if enabled.
-         */
-        function isEnabled(siteId, courseId) {
-            return $mmContentLinksHelper.isModuleIndexEnabled($mmaModImscp, 'imscp', siteId, courseId);
-        }
-
-        /**
-         * Get actions to perform with the link.
-         *
-         * @param {String[]} siteIds  Site IDs the URL belongs to.
-         * @param {String} url        URL to treat.
-         * @param {Number} [courseId] Course ID related to the URL.
-         * @return {Promise}          Promise resolved with the list of actions.
-         *                            See {@link $mmContentLinksDelegate#registerLinkHandler}.
-         */
-        self.getActions = function(siteIds, url, courseId) {
-            // Check it's an IMSCP URL.
-            if (typeof self.handles(url) != 'undefined') {
-                return $mmContentLinksHelper.treatModuleIndexUrl(siteIds, url, isEnabled, courseId);
-            }
-            return $q.when([]);
-        };
-
-        /**
-         * Check if the URL is handled by this handler. If so, returns the URL of the site.
-         *
-         * @param  {String} url URL to check.
-         * @return {String}     Site URL. Undefined if the URL doesn't belong to this handler.
-         */
-        self.handles = function(url) {
-            var position = url.indexOf('/mod/imscp/view.php');
-            if (position > -1) {
-                return url.substr(0, position);
-            }
-        };
-
-        return self;
-    };
+    self.linksHandler = $mmContentLinksHelper.createModuleIndexLinkHandler('mmaModImscp', 'imscp', $mmaModImscp);
 
     return self;
 });
