@@ -584,8 +584,12 @@ angular.module('mm.core')
         var deferred = $q.defer();
 
         function deleteDB() {
-            delete dbInstances[name];
-            $q.when(ydn.db.deleteDatabase(name)).then(deferred.resolve, deferred.reject);
+            var type = dbInstances[name].getType();
+
+            $q.when(ydn.db.deleteDatabase(name, type).then(function() {
+                delete dbInstances[name];
+                deferred.resolve();
+            }, deferred.reject));
         }
 
         if (typeof dbInstances[name] != 'undefined') {
