@@ -376,6 +376,7 @@ angular.module('mm.core.course')
                     if (newScope.action) {
                         newScope.action();
                     }
+                    newScope.$destroy();
                 }
             });
         });
