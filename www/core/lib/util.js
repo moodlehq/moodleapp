@@ -2259,6 +2259,94 @@ angular.module('mm.core')
             });
         };
 
+        /**
+         * Returns element height of an element.
+         *
+         * @param  {Object}  element                DOM element to measure.
+         * @param  {Boolean} [usePadding=false]     Use padding to calculate the measure.
+         * @param  {Boolean} [useMargin=false]      Use margin to calculate the measure.
+         * @param  {Boolean} [useBorder=false]      Use borders to calculate the measure.
+         * @param  {Boolean} [innerMeasure=false]   If inner measure is needed: padding, margin or borders will be substracted.
+         * @return {Number}                         Height in pixels.
+         */
+        self.getElementHeight = function(element, usePadding, useMargin, useBorder, innerMeasure) {
+            var measure = element.offsetHeight || element.height || element.clientHeight || 0;
+
+            // Measure not correctly taken.
+            if (measure <= 0) {
+                var angElement = angular.element(element);
+                if (angElement.css('display') == '') {
+                    angElement.css('display', 'inline-block');
+                    measure = element.offsetHeight || element.height || element.clientHeight || 0;
+                    angElement.css('display', '');
+                }
+            }
+
+            if (usePadding || useMargin || useBorder) {
+                var surround = 0,
+                    cs = getComputedStyle(element);
+                if (usePadding) {
+                    surround += parseInt(cs.paddingTop, 10) + parseInt(cs.paddingBottom, 10);
+                }
+                if (useMargin) {
+                    surround += parseInt(cs.marginTop, 10) + parseInt(cs.marginBottom, 10);
+                }
+                if (useBorder) {
+                    surround += parseInt(cs.borderTop, 10) + parseInt(cs.borderBottom, 10);
+                }
+                if (innerMeasure) {
+                    measure = measure > surround ? measure - surround : 0;
+                } else {
+                    measure += surround;
+                }
+            }
+            return measure;
+        };
+
+        /**
+         * Returns element width of an element.
+         *
+         * @param  {Object}  element                DOM element to measure.
+         * @param  {Boolean} [usePadding=false]     Use padding to calculate the measure.
+         * @param  {Boolean} [useMargin=false]      Use margin to calculate the measure.
+         * @param  {Boolean} [useBorder=false]      Use borders to calculate the measure.
+         * @param  {Boolean} [innerMeasure=false]   If inner measure is needed: padding, margin or borders will be substracted.
+         * @return {Number}                         Witdh in pixels.
+         */
+        self.getElementWidth = function(element, usePadding, useMargin, useBorder, innerMeasure) {
+            var measure = element.offsetWidth || element.width || element.clientWidth || 0;
+
+            // Measure not correctly taken.
+            if (measure <= 0) {
+                var angElement = angular.element(element);
+                if (angElement.css('display') == '') {
+                    angElement.css('display', 'inline-block');
+                    measure = element.offsetWidth || element.width || element.clientWidth || 0;
+                    angElement.css('display', '');
+                }
+            }
+
+            if (usePadding || useMargin || useBorder) {
+                var surround = 0,
+                    cs = getComputedStyle(element);
+                if (usePadding) {
+                    surround += parseInt(cs.paddingLeft, 10) + parseInt(cs.paddingRight, 10);
+                }
+                if (useMargin) {
+                    surround += parseInt(cs.marginLeft, 10) + parseInt(cs.marginRight, 10);
+                }
+                if (useBorder) {
+                    surround += parseInt(cs.borderLeft, 10) + parseInt(cs.borderRight, 10);
+                }
+                if (innerMeasure) {
+                    measure = measure > surround ? measure - surround : 0;
+                } else {
+                    measure += surround;
+                }
+            }
+            return measure;
+        };
+
         return self;
     };
 });
