@@ -1295,6 +1295,7 @@ mm-format-text[max-height], *[mm-format-text][max-height] {
   display: block;
   position: relative;
   width: 100%;
+  overflow: hidden;
 
   /* Force display inline */
   &.inline {
@@ -1328,6 +1329,8 @@ mm-format-text[max-height], *[mm-format-text][max-height] {
         bottom: 0;
         right: 0;
         z-index: 1001;
+        background-color: white;
+        padding-left: 10px;
 
         &:after {
           @extend .ion;
