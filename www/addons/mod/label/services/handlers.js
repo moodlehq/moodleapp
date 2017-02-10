@@ -52,7 +52,10 @@ angular.module('mm.addons.mod_label')
          */
         self.getController = function(module) {
             return function($scope) {
-                $scope.title = module.description;
+                $scope.title = module.description || module.descriptioncopy;
+
+                // Store the description so it can be retrieved if this controller is instantiated more than once.
+                module.descriptioncopy = module.description;
                 module.description = "";
 
                 $scope.icon = false;
