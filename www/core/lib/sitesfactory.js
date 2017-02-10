@@ -122,13 +122,14 @@ angular.module('mm.core')
             // Needs a generator instead of keyPath.
             angular.forEach(indexes, function(index) {
                 if (index.keyPath) {
+                    var path = index.keyPath;
                     index.generator = function(obj) {
                         var arr = [];
-                        angular.forEach(index.keyPath, function(keyName) {
+                        angular.forEach(path, function(keyName) {
                             arr.push(obj[keyName]);
                         });
                         return arr;
-                    }
+                    };
                     delete index.keyPath;
                 }
             });
