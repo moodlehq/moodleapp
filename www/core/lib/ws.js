@@ -324,7 +324,7 @@ angular.module('mm.core')
      * @return {Promise}                The success returns the fileEntry, the reject will contain the error object.
      */
     self.downloadFile = function(url, path, addExtension) {
-        $log.debug('Downloading file ' + url);
+        $log.debug('Downloading file ' + url, path, addExtension);
 
         // Use a tmp path to download the file and then move it to final location.This is because if the download fails,
         // the local file is deleted.
