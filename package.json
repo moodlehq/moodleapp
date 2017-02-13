@@ -81,7 +81,8 @@
       "locator": "phonegap-plugin-push",
       "id": "phonegap-plugin-push"
     },
-    "cordova-universal-clipboard"
+    "cordova-universal-clipboard",
+    "nl.kingsquare.cordova.background-audio"
   ],
   "cordovaPlatforms": [
     "ios",

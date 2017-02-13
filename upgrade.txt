@@ -13,7 +13,9 @@ information provided here is intended especially for developers.
  * The function $mmaModForumOffline#convertOfflineReplyToOnline is now in $mmaModForumHelper.
  * The function $mmContentLinksHelper#filterSupportedSites has been deprecated. Please use $mmUtil#filterEnabledSites instead.
  * New Phonegap plugin installed. Please run:
+ * New Phonegap plugins installed. Please run:
     ionic plugin add cordova-universal-clipboard
+    ionic plugin add nl.kingsquare.cordova.background-audio
         or
     ionic state restore
  * mm-rich-text-editor now admits a new parameter adjust-height (default: true). It admits an HTML DOM Id string or boolean. Specifying it will adjust height of the editor to the selected element. If true it will adjust to the whole page and false will use height parameter instead.
