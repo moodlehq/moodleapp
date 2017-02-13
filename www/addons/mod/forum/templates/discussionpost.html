@@ -28,7 +28,7 @@
         <i class="icon ion-edit"></i> {{ 'mma.mod_forum.edit' | translate }}
     </a>
 </div>
-<div id="mma-forum-reply-edit-form-{{uniqueid}}" class="item item-text-wrap" ng-if="newpost.editing === uniqueid">
+<div id="mma-forum-reply-edit-form-{{uniqueid}}" class="item item-text-wrap mma-forum-reply-edit" ng-if="newpost.editing === uniqueid">
     <form class="list mma-forum-border">
         <ion-input class="item item-input item-stacked-label">
             <ion-label>{{ 'mma.mod_forum.subject' | translate }}</ion-label>
