@@ -360,6 +360,8 @@ angular.module('mm.addons.pushnotifications')
                 promises.push(db.remove(mmaPushNotificationsBadgeStore, [entry.siteid, entry.addon]));
             });
             return $q.all(promises);
+        }).finally(function() {
+            self.updateAppCounter();
         });
 
     };
