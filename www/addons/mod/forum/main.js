@@ -78,8 +78,9 @@ angular.module('mm.addons.mod_forum', [])
 
 .config(function($mmCourseDelegateProvider, $mmContentLinksDelegateProvider, $mmCoursePrefetchDelegateProvider) {
     $mmCourseDelegateProvider.registerContentHandler('mmaModForum', 'forum', '$mmaModForumHandlers.courseContent');
-    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModForum', '$mmaModForumHandlers.linksHandler');
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModForum', 'forum', '$mmaModForumPrefetchHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModForum:index', '$mmaModForumHandlers.indexLinksHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModForum:discussion', '$mmaModForumHandlers.discussionLinksHandler');
 })
 .run(function($mmCronDelegate) {
     $mmCronDelegate.register('mmaModForum', '$mmaModForumHandlers.syncHandler');

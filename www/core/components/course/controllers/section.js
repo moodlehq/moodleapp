@@ -22,12 +22,13 @@ angular.module('mm.core.course')
  * @name mmCourseSectionCtrl
  */
 .controller('mmCourseSectionCtrl', function($mmCourse, $mmUtil, $scope, $stateParams, $translate, $mmEvents, $ionicScrollDelegate,
-            $mmCourses, $q, mmCoreEventCompletionModuleViewed, $mmCoursePrefetchDelegate, $mmCourseHelper) {
+            $mmCourses, $q, mmCoreEventCompletionModuleViewed, $mmCoursePrefetchDelegate, $mmCourseHelper, $timeout) {
 
     // Default values are Site Home and all sections.
     var courseId = $stateParams.cid,
         sectionId = $stateParams.sectionid || -1,
-        moduleId = $stateParams.mid;
+        moduleId = $stateParams.mid,
+        scrollView;
 
     $scope.sections = []; // Reset scope.sections, otherwise an error is shown in console with tablet view.
     $scope.sectionHasContent = $mmCourseHelper.sectionHasContent;
@@ -93,6 +94,17 @@ angular.module('mm.core.course')
 
     loadContent(sectionId).finally(function() {
         $scope.sectionLoaded = true;
+
+        if (moduleId) {
+            $timeout(function() {
+                // Module should've been opened, scroll to it.
+                if (!scrollView) {
+                    scrollView = $ionicScrollDelegate.$getByHandle('mmSectionScroll');
+                }
+
+                $mmUtil.scrollToElement(document.body, '#mm-course-module-' + moduleId, scrollView);
+            }, 400);
+        }
     });
 
     $scope.doRefresh = function() {
@@ -115,7 +127,10 @@ angular.module('mm.core.course')
 
     // Refresh list after a completion change since there could be new activities or so.
     function refreshAfterCompletionChange() {
-        var scrollView = $ionicScrollDelegate.$getByHandle('mmSectionScroll');
+        if (!scrollView) {
+            scrollView = $ionicScrollDelegate.$getByHandle('mmSectionScroll');
+        }
+
         if (scrollView && scrollView.getScrollPosition()) {
             $scope.loadingPaddingTop = scrollView.getScrollPosition().top;
         }

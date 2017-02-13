@@ -220,6 +220,8 @@ angular.module('mm.core.courses')
 
             if (!$mmSite.isLoggedIn()) {
                 promise = $q.reject();
+            } else if ($mmSite.isFeatureDisabled('$mmCoursesDelegate_' + addon)) {
+                promise = $q.when(false);
             } else {
                 promise = $q.when(handlerInfo.instance.isEnabled());
             }

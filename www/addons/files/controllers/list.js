@@ -71,9 +71,7 @@ angular.module('mm.addons.files')
         });
     };
 
-    $scope.showUpload = function() {
-        return (root === 'my' && !path && $mmSite.canUploadFiles());
-    };
+    $scope.showUpload = root === 'my' && !path && $mmSite.canUploadFiles() && !$mmaFiles.isUploadDisabledInSite();
 
     // When we are in the root of the private files we can add more files.
     $scope.add = function() {

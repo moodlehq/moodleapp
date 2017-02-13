@@ -1006,7 +1006,7 @@ angular.module('mm.core')
          * @return {Promise}               Promise resolved when done, rejected otherwise.
          */
         Site.prototype.openInBrowserWithAutoLogin = function(url, alertMessage) {
-            return this.openWithAutoLogin(false, url, alertMessage);
+            return this.openWithAutoLogin(false, url, undefined, alertMessage);
         };
 
         /**
@@ -1017,7 +1017,7 @@ angular.module('mm.core')
          * @return {Promise}               Promise resolved when done, rejected otherwise.
          */
         Site.prototype.openInBrowserWithAutoLoginIfSameSite = function(url, alertMessage) {
-            return this.openWithAutoLoginIfSameSite(false, url, alertMessage);
+            return this.openWithAutoLoginIfSameSite(false, url, undefined, alertMessage);
         };
 
         /**
@@ -1108,12 +1108,15 @@ angular.module('mm.core')
         /**
          * Open a URL in browser or InAppBrowser using auto-login in the Moodle site if available and the URL belongs to the site.
          *
-         * @param  {String} url The URL to open.
-         * @return {Promise}    Promise resolved when done, rejected otherwise.
+         * @param  {Boolean} inApp         True to open it in InAppBrowser, false to open in browser.
+         * @param  {String} url            The URL to open.
+         * @param  {Object} options        Override default options passed to $cordovaInAppBrowser#open.
+         * @param  {String} [alertMessage] If defined, an alert will be shown before opening the browser/inappbrowser.
+         * @return {Promise}               Promise resolved when done, rejected otherwise.
          */
-        Site.prototype.openWithAutoLoginIfSameSite = function(inApp, url, options) {
+        Site.prototype.openWithAutoLoginIfSameSite = function(inApp, url, options, alertMessage) {
             if (this.containsUrl(url)) {
-                return this.openWithAutoLogin(inApp, url, options);
+                return this.openWithAutoLogin(inApp, url, options, alertMessage);
             } else {
                 if (inApp) {
                     $mmUtil.openInApp(url, options);
@@ -1128,9 +1131,9 @@ angular.module('mm.core')
          * Get the config of this site.
          * It is recommended to use getStoredConfig instead since it's faster and doesn't use network.
          *
-         * @param {String}   [name]         Name of the setting to get. If not set or false, all settings will be returned.
-         * @param {Boolean}  [ignoreCache]  True if it should ignore cached data.
-         * @return {Promise} Promise resolved with site config. Rejected with an object if error.
+         * @param {String}  [name]        Name of the setting to get. If not set or false, all settings will be returned.
+         * @param {Boolean} [ignoreCache] True if it should ignore cached data.
+         * @return {Promise}              Promise resolved with site config. Rejected with an object if error.
          */
         Site.prototype.getConfig = function(name, ignoreCache) {
             var site = this;
@@ -1174,6 +1177,11 @@ angular.module('mm.core')
             return site.invalidateWsCacheForKey(getConfigCacheKey());
         };
 
+        /**
+         * Get cache key for getConfig WS calls.
+         *
+         * @return {String} Cache key.
+         */
         function getConfigCacheKey() {
             return 'tool_mobile_get_config';
         }
@@ -1194,6 +1202,22 @@ angular.module('mm.core')
             } else {
                 return this.config;
             }
+        };
+
+        /**
+         * Check if a certain feature is disabled in the site.
+         *
+         * @param {String} name Name of the feature to check.
+         * @return {Boolean}    True if disabled, false otherwise.
+         */
+        Site.prototype.isFeatureDisabled = function(name) {
+            var disabledFeatures = this.getStoredConfig('tool_mobile_disabledfeatures');
+            if (!disabledFeatures) {
+                return false;
+            }
+
+            var regEx = new RegExp('(,|^)' + $mmText.escapeForRegex(name) + '(,|$)', 'g');
+            return !!disabledFeatures.match(regEx);
         };
 
         /**

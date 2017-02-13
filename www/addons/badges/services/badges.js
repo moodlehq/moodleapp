@@ -21,7 +21,7 @@ angular.module('mm.addons.badges')
  * @ngdoc service
  * @name $mmaBadges
  */
-.factory('$mmaBadges', function($mmSite, $log, $mmSitesManager) {
+.factory('$mmaBadges', function($log, $mmSitesManager) {
     $log = $log.getInstance('$mmaBadges');
 
     var self = {};

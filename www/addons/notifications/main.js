@@ -53,7 +53,7 @@ angular.module('mm.addons.notifications', [])
             '$mmaNotificationsHandlers.preferences', mmaNotificationsPreferencesPriority);
 })
 
-.run(function($log, $mmaNotifications, $mmUtil, $state, $mmAddonManager, $mmCronDelegate) {
+.run(function($log, $mmaNotifications, $mmUtil, $state, $mmAddonManager, $mmCronDelegate, $mmSitesManager) {
     $log = $log.getInstance('mmaNotifications');
 
     // Register push notification clicks.
@@ -62,8 +62,16 @@ angular.module('mm.addons.notifications', [])
         $mmPushNotificationsDelegate.registerHandler('mmaNotifications', function(notification) {
             if ($mmUtil.isTrueOrOne(notification.notif)) {
                 $mmaNotifications.isPluginEnabledForSite(notification.site).then(function() {
-                    $mmaNotifications.invalidateNotificationsList().finally(function() {
-                        $state.go('redirect', {siteid: notification.site, state: 'site.notifications'});
+                    $mmSitesManager.isFeatureDisabled('$mmSideMenuDelegate_mmaNotifications', notification.site)
+                            .then(function(disabled) {
+                        if (disabled) {
+                            // Notifications are disabled, stop.
+                            return;
+                        }
+
+                        $mmaNotifications.invalidateNotificationsList().finally(function() {
+                            $state.go('redirect', {siteid: notification.site, state: 'site.notifications'});
+                        });
                     });
                 });
                 return true;

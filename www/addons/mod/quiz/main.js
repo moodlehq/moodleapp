@@ -89,8 +89,10 @@ angular.module('mm.addons.mod_quiz', ['mm.core'])
 
 .config(function($mmCourseDelegateProvider, $mmContentLinksDelegateProvider, $mmCoursePrefetchDelegateProvider) {
     $mmCourseDelegateProvider.registerContentHandler('mmaModQuiz', 'quiz', '$mmaModQuizHandlers.courseContentHandler');
-    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModQuiz', '$mmaModQuizHandlers.linksHandler');
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModQuiz', 'quiz', '$mmaModQuizPrefetchHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModQuiz:index', '$mmaModQuizHandlers.indexLinksHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModQuiz:grade', '$mmaModQuizHandlers.gradeLinksHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModQuiz:review', '$mmaModQuizHandlers.reviewLinksHandler');
 })
 
 .run(function($mmCronDelegate) {

@@ -363,6 +363,35 @@ angular.module('mm.addons.calendar')
     };
 
     /**
+     * Check if Calendar is disabled in a certain site.
+     *
+     * @module mm.addons.calendar
+     * @ngdoc method
+     * @name $mmaCalendar#isDisabled
+     * @param  {String} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     */
+    self.isDisabled = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return self.isDisabledInSite(site);
+        });
+    };
+
+    /**
+     * Check if Calendar is disabled in a certain site.
+     *
+     * @module mm.addons.calendar
+     * @ngdoc method
+     * @name $mmaCalendar#isDisabledInSite
+     * @param  {Object} [site] Site. If not defined, use current site.
+     * @return {Boolean}       True if disabled, false otherwise.
+     */
+    self.isDisabledInSite = function(site) {
+        site = site || $mmSite;
+        return site.isFeatureDisabled('$mmSideMenuDelegate_mmaCalendar');
+    };
+
+    /**
      * Get the next events for all the sites and schedules their notifications.
      * If an event notification time is 0, cancel its scheduled notification (if any).
      * If local notification plugin is not enabled, resolve the promise.
@@ -380,19 +409,21 @@ angular.module('mm.addons.calendar')
 
                 var promises = [];
                 angular.forEach(siteIds, function(siteId) {
-                    // Get first events.
-                    var promise = self.getEvents(undefined, undefined, false, siteId).then(function(events) {
-                        return self.scheduleEventsNotifications(events, siteId);
-                    });
-                    promises.push(promise);
+                    // Check if calendar is disabled for the site.
+                    promises.push(self.isDisabled(siteId).then(function(disabled) {
+                        if (!disabled) {
+                            // Get first events.
+                            return self.getEvents(undefined, undefined, false, siteId).then(function(events) {
+                                return self.scheduleEventsNotifications(events, siteId);
+                            });
+                        }
+                    }));
                 });
 
                 return $q.all(promises);
             });
         } else {
-            var deferred = $q.defer();
-            deferred.resolve();
-            return deferred.promise;
+            return $q.when();
         }
     };
 

@@ -75,8 +75,9 @@ angular.module('mm.addons.mod_glossary', ['mm.core'])
 
 .config(function($mmCourseDelegateProvider, $mmContentLinksDelegateProvider, $mmCoursePrefetchDelegateProvider) {
     $mmCourseDelegateProvider.registerContentHandler('mmaModGlossary', 'glossary', '$mmaModGlossaryHandlers.courseContent');
-    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModGlossary', '$mmaModGlossaryHandlers.linksHandler');
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModGlossary', 'glossary', '$mmaModGlossaryPrefetchHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModGlossary:index', '$mmaModGlossaryHandlers.indexLinksHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModGlossary:entry', '$mmaModGlossaryHandlers.entryLinksHandler');
 })
 .run(function($mmCronDelegate) {
     $mmCronDelegate.register('mmaModGlossary', '$mmaModGlossaryHandlers.syncHandler');
