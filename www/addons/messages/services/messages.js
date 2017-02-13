@@ -449,7 +449,8 @@ angular.module('mm.addons.messages')
      */
     self.markMessageRead = function(messageId) {
         var params = {
-                'messageid': messageId
+                'messageid': messageId,
+                'timeread': $mmUtil.timestamp()
             };
         return $mmSite.write('core_message_mark_message_read', params);
 
