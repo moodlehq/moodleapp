@@ -21,7 +21,7 @@ angular.module('mm.addons.messages')
  * @ngdoc service
  * @name $mmaMessages
  */
-.factory('$mmaMessages', function($mmSite, $mmSitesManager, $log, $q, $mmUser, $mmaMessagesOffline, $mmApp,
+.factory('$mmaMessages', function($mmSite, $mmSitesManager, $log, $q, $mmUser, $mmaMessagesOffline, $mmApp, $mmUtil,
             mmaMessagesNewMessageEvent, mmaMessagesLimitMessages) {
     $log = $log.getInstance('$mmaMessages');
 
@@ -449,7 +449,8 @@ angular.module('mm.addons.messages')
      */
     self.markMessageRead = function(messageId) {
         var params = {
-                'messageid': messageId
+                'messageid': messageId,
+                'timeread': $mmUtil.timestamp()
             };
         return $mmSite.write('core_message_mark_message_read', params);
 
