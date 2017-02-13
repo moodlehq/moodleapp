@@ -148,18 +148,14 @@ angular.module('mm.addons.messages')
 
                     notifyNewMessage();
                 });
-            }, function(error) {
+            }).catch(function(error) {
                 messagesBeingSent--;
 
                 // Only close the keyboard if an error happens, we want the user to be able to send multiple
                 // messages without the keyboard being closed.
                 $mmApp.closeKeyboard();
 
-                if (typeof error === 'string') {
-                    $mmUtil.showErrorModal(error);
-                } else {
-                    $mmUtil.showErrorModal('mma.messages.messagenotsent', true);
-                }
+                $mmUtil.showErrorModalDefault(error, 'mma.messages.messagenotsent', true);
                 $scope.messages.splice($scope.messages.indexOf(message), 1);
             });
         });
@@ -570,11 +566,7 @@ angular.module('mm.addons.messages')
                 $scope.messages.splice(index, 1); // Remove message from the list without having to wait for re-fetch.
                 fetchMessages(); // Re-fetch messages to update cached data.
             }).catch(function(error) {
-                if (typeof error === 'string') {
-                    $mmUtil.showErrorModal(error);
-                } else {
-                    $mmUtil.showErrorModal('mma.messages.errordeletemessage', true);
-                }
+                $mmUtil.showErrorModalDefault(error, 'mma.messages.errordeletemessage', true);
             }).finally(function() {
                 modal.dismiss();
             });

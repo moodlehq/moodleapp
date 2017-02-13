@@ -197,7 +197,7 @@ angular.module('mm.core')
             mmCoreWSPrefix, mmCoreSessionExpired, $mmEvents, mmCoreEventSessionExpired, mmCoreUserDeleted, mmCoreEventUserDeleted,
             $mmText, $translate, mmCoreConfigConstants, mmCoreUserPasswordChangeForced, mmCoreEventPasswordChangeForced,
             mmCoreLoginTokenChangePassword, mmCoreSecondsMinute, mmCoreUserNotFullySetup, mmCoreEventUserNotFullySetup,
-            mmCoreSitePolicyNotAgreed, mmCoreEventSitePolicyNotAgreed) {
+            mmCoreSitePolicyNotAgreed, mmCoreEventSitePolicyNotAgreed, mmCoreUnicodeNotSupported) {
 
         $log = $log.getInstance('$mmSite');
 
@@ -258,6 +258,7 @@ angular.module('mm.core')
             this.privateToken = privateToken;
             this.config = config;
             this.loggedOut = !!loggedOut;
+            this.cleanUnicode = false;
 
             if (this.id) {
                 this.db = $mmDB.getDB('Site-' + this.id, siteSchema, dboptions);
@@ -499,6 +500,9 @@ angular.module('mm.core')
                 saveToCache: 0
             };
 
+            // Reset clean Unicode to check if it's supported again.
+            site.cleanUnicode = false;
+
             site.read('core_webservice_get_site_info', {}, preSets).then(deferred.resolve, function(error) {
                 site.read('moodle_webservice_get_siteinfo', {}, preSets).then(deferred.resolve, function(error) {
                     deferred.reject(error);
@@ -613,6 +617,16 @@ angular.module('mm.core')
             preSets = angular.copy(preSets) || {};
             preSets.wstoken = site.token;
             preSets.siteurl = site.siteurl;
+            preSets.cleanUnicode = site.cleanUnicode;
+
+            if (preSets.cleanUnicode && $mmText.hasUnicodeData(data)) {
+                // Data will be cleaned, notify the user.
+                // @todo: Detect if the call is a syncing call and not notify.
+                $mmUtil.showToast('mm.core.unicodenotsupported', true, 3000);
+            } else {
+                // No need to clean data in this call.
+                preSets.cleanUnicode = false;
+            }
 
             // Enable text filtering by default.
             data.moodlewssettingfilter = preSets.filter === false ? false : true;
@@ -673,6 +687,14 @@ angular.module('mm.core')
                         // Site policy not agreed, trigger event.
                         $mmEvents.trigger(mmCoreEventSitePolicyNotAgreed, site.id);
                         return $mmLang.translateAndReject('mm.login.sitepolicynotagreederror');
+                    } else if (error === mmCoreUnicodeNotSupported) {
+                        if (!site.cleanUnicode) {
+                            // Try again cleaning unicode.
+                            site.cleanUnicode = true;
+                            return site.request(method, data, preSets);
+                        }
+                        // This should not happen.
+                        return $mmLang.translateAndReject('mm.core.unicodenotsupported');
                     } else if (typeof preSets.emergencyCache !== 'undefined' && !preSets.emergencyCache) {
                         $log.debug('WS call ' + method + ' failed. Emergency cache is forbidden, rejecting.');
                         return $q.reject(error);
