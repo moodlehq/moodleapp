@@ -404,6 +404,10 @@ angular.module('mm.core.fileuploader')
             options.sourceType = navigator.camera.PictureSourceType.PHOTOLIBRARY;
             options.popoverOptions = new CameraPopoverOptions(10, 10, $window.innerWidth  - 200, $window.innerHeight - 200,
                                             Camera.PopoverArrowDirection.ARROW_ANY);
+            if (ionic.Platform.isIOS()) {
+                // Only get all media in iOS because in Android using this option allows uploading any kind of file.
+                options.mediaType = Camera.MediaType.ALLMEDIA;
+            }
         }
 
         return $cordovaCamera.getPicture(options).then(function(path) {
