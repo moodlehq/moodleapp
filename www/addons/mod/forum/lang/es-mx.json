@@ -9,7 +9,7 @@
     "discussionsubscription": "Suscripción a discusión",
     "edit": "Editar",
     "erroremptymessage": "El mensaje no puede estar vacío",
-    "erroremptysubject": "El asunto de la publicación no puede estar vacío",
+    "erroremptysubject": "El asunto del mensaje no puede estar vacío.",
     "errorgetforum": "Error al obtener datos del foro.",
     "errorgetgroups": "Error al obtener configuraciones de grupo.",
     "forumnodiscussionsyet": "Todavía no hay tópicos de discusión en este foro.",
@@ -24,5 +24,7 @@
     "reply": "Responder (réplica)",
     "sortnewestfirst": "Mostrar primeramente los más nuevos",
     "sortoldestfirst": "Mostrar primeramente los más antiguos",
-    "subject": "Asunto"
+    "subject": "Asunto",
+    "unread": "No leído",
+    "unreadpostsnumber": "{{$a}} mensajes no leídos"
 }

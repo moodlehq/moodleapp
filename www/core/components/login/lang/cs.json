@@ -1,7 +1,6 @@
 {
     "authenticating": "Autentizace",
     "cancel": "Zrušit",
-    "cannotdownloadfiles": "Stahování souborů je vypnuto v mobilních službách, aplikace nebude fungovat s nastavením zakázu. Prosím, obraťte se na správce webu.",
     "checksiteversion": "Zkontrolujte, zda web používá Moodle 2.4 nebo novější.",
     "confirmdeletesite": "Jste si jisti, že chcete smazat web {{sitename}}?",
     "connect": "Připojit!",
@@ -10,7 +9,6 @@
     "contactyouradministratorissue": "Požádejte správce, prosím, aby zkontroloval následující problém: {{$a}}",
     "createaccount": "Vytvořit můj nový účet",
     "createuserandpass": "Vytvořit nové uživatelské jméno a heslo pro přihlášení",
-    "credentials": "Identifikační údaje",
     "credentialsdescription": "Pro přihlášení uveďte své uživatelské jméno a heslo",
     "emailconfirmsent": "<p>Na vaši adresu <b>{{$a}}</b> byl odeslán e-mail s jednoduchými pokyny k dokončení vaší registrace.</p><p>Narazíte-li na nějaké obtíže, spojte se se správcem těchto stránek.</p>",
     "enterthewordsabove": "Vložte výše uvedená slova",

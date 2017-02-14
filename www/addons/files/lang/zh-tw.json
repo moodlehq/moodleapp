@@ -1,6 +1,7 @@
 {
     "emptyfilelist": "沒有可以顯示的檔案",
-    "myfiles": "我的檔案",
+    "files": "我的檔案",
+    "privatefiles": "私人檔案",
     "sitefiles": "網站公用檔案",
     "uploadfiles": "可以上傳檔案"
 }

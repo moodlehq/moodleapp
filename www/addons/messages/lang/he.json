@@ -10,6 +10,7 @@
     "errorwhileretrievingcontacts": "שגיאה בזמן טעינת אנשי קשר מהשרת.",
     "errorwhileretrievingdiscussions": "שגיאה בזמן טעינת הדיונים מהשרת.",
     "errorwhileretrievingmessages": "שגיאה בזמן טעינת המסרים מהשרת.",
+    "message": "גוף ההודעה",
     "messagenotsent": "מסר זה לא נשלח, אנא נסה שוב מאוחר יותר.",
     "messages": "מסרים",
     "mustbeonlinetosendmessages": "עליך להיות מחובר/ת בכדי לשלוח מסר.",

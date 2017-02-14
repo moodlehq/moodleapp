@@ -24,5 +24,7 @@
     "reply": "Odpovědět",
     "sortnewestfirst": "Zobrazit nejnovější",
     "sortoldestfirst": "Zobrazit nejstarší",
-    "subject": "Předmět"
+    "subject": "Předmět",
+    "unread": "Nepřečteno",
+    "unreadpostsnumber": "Nepřečtené příspěvky: {{$a}}"
 }

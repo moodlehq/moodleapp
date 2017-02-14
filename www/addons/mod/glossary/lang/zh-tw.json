@@ -1,3 +1,6 @@
 {
-    "browsemode": "瀏覽模式"
+    "attachment": "附件",
+    "browsemode": "瀏覽模式",
+    "casesensitive": "區分字母的大小寫",
+    "categories": "課程類別"
 }

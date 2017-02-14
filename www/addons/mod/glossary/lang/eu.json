@@ -1,10 +1,13 @@
 {
+    "attachment": "Eranskina",
     "browsemode": "Aztertu sarrerak",
     "byalphabet": "Alfabetikoki",
     "byauthor": "Taldekatu egilearen arabera",
     "bynewestfirst": "Berrienak lehenago",
     "byrecentlyupdated": "Duela gutxi eguneratuak",
     "bysearch": "Bilatu",
+    "casesensitive": "Letra larriak eta xeheak bereiziz",
+    "categories": "Ikastaro-kategoriak",
     "entrypendingapproval": "Sarrera hau onarpenaren zain dago.",
     "errorloadingentries": "Errorea gertatu da sarrerak kargatzean.",
     "errorloadingentry": "Errorea gertatu da sarrera kargatzean.",

@@ -1,4 +1,14 @@
 {
-    "notingroup": "Üzgünüz, bu etkinliği görebilmeniz için bir grubun üyesi olmanız gerekiyor.",
-    "page": "Sayfa"
+    "cannoteditpage": "Bu sayfayı düzenleyemezsiniz.",
+    "createpage": "Sayfa oluştur",
+    "editingpage": "Bu sayfayı düzenleme '{{$a}}'",
+    "map": "Harita",
+    "newpagehdr": "Yeni sayfa",
+    "newpagetitle": "Yeni sayfa başlığı",
+    "nocontent": "Bu sayfa için içerik yok",
+    "notingroup": "Grupta değil",
+    "page": "Sayfa",
+    "pageexists": "Bu sayfa zaten var.",
+    "pagename": "Sayfa adı",
+    "wrongversionlock": "Başka bir kullanıcı sizin düzenlemeniz sırasında bu sayfayı düzenledi ve içeriğiniz geçersiz."
 }

@@ -11,6 +11,7 @@
     "errorwhileretrievingcontacts": "Chyba při načítání kontaktů ze serveru.",
     "errorwhileretrievingdiscussions": "Chyba při načítání diskusí ze serveru.",
     "errorwhileretrievingmessages": "Chyba při načítání zpráv ze serveru.",
+    "message": "Zpráva",
     "messagenotsent": "Zpráva nebyla odeslána, zkuste to prosím později.",
     "messagepreferences": "Nastavení zpráv",
     "messages": "Zprávy",

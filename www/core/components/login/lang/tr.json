@@ -1,6 +1,7 @@
 {
     "authenticating": "Kimlik doğrulanıyor",
     "cancel": "Vazgeç",
+    "connect": "Bağlan",
     "createaccount": "Yeni hesabımı oluştur",
     "createuserandpass": "Kullanıcı adınızı ve şifrenizi seçin",
     "emailconfirmsent": "<p>Bu e-posta adresinize (<b>{{$a}}</b>) bir mesaj gönderildi.</p>\n<p>Bu mesaj, kaydınızı tamamlamanız için basit yönergeleri içermektedir.</p>\n<p>Bu işlemleri yaparken bir zorlukla karşılaşırsanız site yöneticiyle iletişim kurabilirsiniz.</p>",
@@ -29,6 +30,7 @@
     "policyagree": "Bu siteyi kullanmaya devam etmek için bu sözleşmeyi kabul etmelisiniz. Kabul ediyor musunuz?",
     "policyagreement": "Site şartları sözleşmesi",
     "policyagreementclick": "Site şartları sözleşmesi bağlantısı",
+    "security_question": "Güvenlik sorusu",
     "selectacountry": "Bir ülke seç",
     "siteinmaintenance": "Siteniz bakım modunda",
     "siteurl": "Sİte Adresi",

@@ -1,10 +1,13 @@
 {
+    "attachment": "Adjunt",
     "browsemode": "Navegueu per les entrades",
     "byalphabet": "Alfabèticament",
     "byauthor": "Agrupat per autor",
     "bynewestfirst": "El més nou primer",
     "byrecentlyupdated": "Actualitzat recentment",
     "bysearch": "Cerca",
+    "casesensitive": "Distingeix majúscules",
+    "categories": "Categories de cursos",
     "entrypendingapproval": "Aquesta entrada està pendent d'aprovació.",
     "errorloadingentries": "S'ha produït un error en carregar les entrades.",
     "errorloadingentry": "S'ha produït un error en carregar l'entrada.",

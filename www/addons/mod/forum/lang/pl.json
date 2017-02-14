@@ -5,6 +5,7 @@
     "cannotcreatediscussion": "Nie można utworzyć nowego wątku",
     "couldnotadd": "Nie można dodać twojego wpisu z powodu nieznanego błędu",
     "discussion": "Temat",
+    "discussionlocked": "Dyskusja została zablokowana, więc nie możesz już odpowiedzieć.",
     "discussionsubscription": "Subskrypcja dyskusja",
     "edit": "Edycja",
     "erroremptymessage": "Wiadomość nie może być pusta",
@@ -15,5 +16,7 @@
     "posttoforum": "Wyślij wpis na forum",
     "re": "Odp:",
     "reply": "Odpowiedz",
-    "subject": "Temat"
+    "subject": "Temat",
+    "unread": "Nieprzeczytane",
+    "unreadpostsnumber": "{{$a}} nieprzeczytanych wpisów"
 }

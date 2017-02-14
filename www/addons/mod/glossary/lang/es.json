@@ -1,10 +1,13 @@
 {
+    "attachment": "Adjunto",
     "browsemode": "Navegar por las entradas",
     "byalphabet": "Alfabéticamente",
     "byauthor": "Agrupado por autor",
     "bynewestfirst": "El más reciente primero",
     "byrecentlyupdated": "Actualizado recientemente",
     "bysearch": "Busca",
+    "casesensitive": "Diferencia entre mayúsculas y minúsculas",
+    "categories": "Categorías",
     "entrypendingapproval": "Esta entrada está pendiente de aprobación.",
     "errorloadingentries": "Ha ocurrido un error cargando las entradas.",
     "errorloadingentry": "Ha ocurrido un error cargando la entrada.",

@@ -1,8 +1,10 @@
 {
     "activities": "Etkinlikler",
     "duedate": "Son teslim tarihi",
+    "evidence": "Kanıt",
     "path": "Yol",
     "progress": "Öğrenci ilerlemesi",
+    "rating": "Derecelendirme",
     "status": "Durum",
     "template": "Şablon"
 }

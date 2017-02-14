@@ -15,5 +15,7 @@
     "posttoforum": "发到讨论区上",
     "re": "回复:",
     "reply": "回复",
-    "subject": "主题"
+    "subject": "主题",
+    "unread": "未读",
+    "unreadpostsnumber": "{{$a}} 条未读帖子"
 }

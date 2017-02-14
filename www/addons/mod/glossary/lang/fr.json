@@ -1,10 +1,13 @@
 {
+    "attachment": "Annexe",
     "browsemode": "Parcourir les articles",
     "byalphabet": "Alphabétiquement",
     "byauthor": "Grouper par auteur",
     "bynewestfirst": "Les plus récents en premier",
     "byrecentlyupdated": "Modifiés récemment",
     "bysearch": "Rechercher",
+    "casesensitive": "Casse des caractères",
+    "categories": "Catégories de cours",
     "entrypendingapproval": "Cet article est en attente d'approbation",
     "errorloadingentries": "Une erreur est survenue lors du chargement des articles.",
     "errorloadingentry": "Une erreur est survenue lors du chargement de l'article.",
