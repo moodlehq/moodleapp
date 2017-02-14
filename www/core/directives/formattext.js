@@ -87,27 +87,21 @@ angular.module('mm.core')
      * @return {Number}          The width of the element in pixels. When 0 is returned it means the element is not visible.
      */
     function getElementWidth(element) {
-        var width = element.offsetWidth || element.width || element.clientWidth;
+        var width = $mmUtil.getElementWidth(element);
 
         if (!width) {
             // All elements inside are floating or inline. Change display mode to allow calculate the width.
             var angElement = angular.element(element),
-                parentNode = element.parentNode,
-                parentWidth = parentNode.offsetWidth || parentNode.width || parentNode.clientWidth,
+                parentWidth = $mmUtil.getElementWidth(element.parentNode, true, false, false, true),
                 previousDisplay = angElement.css('display');
 
             angElement.css('display', 'inline-block');
 
-            width = element.offsetWidth || element.width || element.clientWidth;
+            width = $mmUtil.getElementWidth(element);
 
-            if (parentWidth > 0) {
-                var cs = getComputedStyle(parentNode);
-                parentWidth -= (parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight));
-
-                // If width is incorrectly calculated use parent width instead.
-                if (parentWidth > 0 && (!width || width > parentWidth)) {
-                    width = parentWidth;
-                }
+            // If width is incorrectly calculated use parent width instead.
+            if (parentWidth > 0 && (!width || width > parentWidth)) {
+                width = parentWidth;
             }
 
             angElement.css('display', previousDisplay);
@@ -130,7 +124,7 @@ angular.module('mm.core')
         // Disable media adapt to correctly calculate the height.
         elementAng.removeClass('mm-enabled-media-adapt');
 
-        height = element.offsetHeight || element.height || element.clientHeight;
+        height = $mmUtil.getElementHeight(element);
 
         elementAng.addClass('mm-enabled-media-adapt');
 
