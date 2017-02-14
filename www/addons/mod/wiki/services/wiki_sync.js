@@ -62,23 +62,26 @@ angular.module('mm.addons.mod_wiki')
                 // Sync new pages.
                 sitePromises.push($mmaModWikiOffline.getAllNewPages(siteId).then(function(pages) {
                     var promises = [],
-                        subwikis = [];
+                        subwikis = {};
 
                     // Get subwikis to sync.
                     angular.forEach(pages, function(page) {
-                        if (subwikis.indexOf(page.subwikiid) == -1) {
-                            subwikis.push(page.subwikiid);
-                        }
+                        var index = self.subwikiBlockId(page.subwikiid, page.wikiid, page.userid, page.groupid);
+                        subwikis[index] = page;
                     });
 
                     // Sync all subwikis.
-                    angular.forEach(subwikis, function(subwikiId) {
-                        promises.push(self.syncSubwikiIfNeeded(subwikiId, siteId).then(function(result) {
+                    angular.forEach(subwikis, function(subwiki) {
+                        promises.push(self.syncSubwikiIfNeeded(subwiki.subwikiid, subwiki.wikiid, subwiki.userid, subwiki.groupid,
+                                siteId).then(function(result) {
                             if (result && result.updated) {
                                 // Sync successful, send event.
                                 $mmEvents.trigger(mmaModWikiSubwikiAutomSyncedEvent, {
                                     siteid: siteId,
-                                    subwikiid: subwikiId,
+                                    subwikiid: subwiki.subwikiid,
+                                    wikiid: subwiki.wikiid,
+                                    userid: subwiki.userid,
+                                    groupid: subwiki.groupid,
                                     created: result.created,
                                     discarded: result.discarded,
                                     warnings: result.warnings
@@ -101,14 +104,18 @@ angular.module('mm.addons.mod_wiki')
      * @module mm.addons.mod_wiki
      * @ngdoc method
      * @name $mmaModWikiSync#syncSubwikiIfNeeded
-     * @param {Number} subwikiId Subwiki ID.
-     * @param {String} [siteId]  Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved when the subwiki is synced or if it doesn't need to be synced.
+     * @param  {Number} [subwikiId] Subwiki ID. If not defined, wikiId, userId and groupId should be defined.
+     * @param  {Number} [wikiId]    Wiki ID. Optional, will be used create subwiki if not informed.
+     * @param  {Number} [userId]    User ID. Optional, will be used create subwiki if not informed.
+     * @param  {Number} [groupId]   Group ID. Optional, will be used create subwiki if not informed.
+     * @param {String}  [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved when the subwiki is synced or if it doesn't need to be synced.
      */
-    self.syncSubwikiIfNeeded = function(subwikiId, siteId) {
-        return self.isSyncNeeded(subwikiId, siteId).then(function(needed) {
+    self.syncSubwikiIfNeeded = function(subwikiId, wikiId, userId, groupId, siteId) {
+        var index = self.subwikiBlockId(subwikiId, wikiId, userId, groupId);
+        return self.isSyncNeeded(index, siteId).then(function(needed) {
             if (needed) {
-                return self.syncSubwiki(subwikiId, siteId);
+                return self.syncSubwiki(subwikiId, wikiId, userId, groupId, siteId);
             }
         });
     };
@@ -119,11 +126,14 @@ angular.module('mm.addons.mod_wiki')
      * @module mm.addons.mod_wiki
      * @ngdoc method
      * @name $mmaModWikiSync#syncSubwiki
-     * @param {Number} subwikiId Subwiki ID.
-     * @param {String} [siteId]  Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved if sync is successful, rejected otherwise.
+     * @param  {Number} [subwikiId] Subwiki ID. If not defined, wikiId, userId and groupId should be defined.
+     * @param  {Number} [wikiId]    Wiki ID. Optional, will be used create subwiki if not informed.
+     * @param  {Number} [userId]    User ID. Optional, will be used create subwiki if not informed.
+     * @param  {Number} [groupId]   Group ID. Optional, will be used create subwiki if not informed.
+     * @param {String}  [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved if sync is successful, rejected otherwise.
      */
-    self.syncSubwiki = function(subwikiId, siteId) {
+    self.syncSubwiki = function(subwikiId, wikiId, userId, groupId, siteId) {
         siteId = siteId || $mmSite.getId();
 
         var syncPromise,
@@ -134,22 +144,23 @@ angular.module('mm.addons.mod_wiki')
                 discarded: []
             };
 
-        if (self.isSyncing(subwikiId, siteId)) {
+        var index = self.subwikiBlockId(subwikiId, wikiId, userId, groupId);
+        if (self.isSyncing(index, siteId)) {
             // There's already a sync ongoing for this subwiki, return the promise.
-            return self.getOngoingSync(subwikiId, siteId);
+            return self.getOngoingSync(index, siteId);
         }
 
         // Verify that subwiki isn't blocked.
-        if ($mmSyncBlock.isBlocked(mmaModWikiComponent, subwikiId, siteId)) {
-            $log.debug('Cannot sync subwiki ' + subwikiId + ' because it is blocked.');
+        if ($mmSyncBlock.isBlocked(mmaModWikiComponent, index, siteId)) {
+            $log.debug('Cannot sync subwiki ' + index + ' because it is blocked.');
             var modulename = $mmCourse.translateModuleName('wiki');
             return $mmLang.translateAndReject('mm.core.errorsyncblocked', {$a: modulename});
         }
 
-        $log.debug('Try to sync subwiki ' + subwikiId);
+        $log.debug('Try to sync subwiki ' + index);
 
         // Get offline responses to be sent.
-        syncPromise = $mmaModWikiOffline.getSubwikiNewPages(subwikiId, siteId).catch(function() {
+        syncPromise = $mmaModWikiOffline.getSubwikiNewPages(subwikiId, wikiId, userId, groupId, siteId).catch(function() {
             // No offline data found, return empty array.
             return [];
         }).then(function(pages) {
@@ -165,7 +176,8 @@ angular.module('mm.addons.mod_wiki')
 
             // Send the pages.
             angular.forEach(pages, function(page) {
-                promises.push($mmaModWiki.newPageOnline(subwikiId, page.title, page.cachedcontent, siteId).then(function(pageId) {
+                promises.push($mmaModWiki.newPageOnline(page.title, page.cachedcontent, subwikiId, wikiId, userId, groupId, siteId)
+                        .then(function(pageId) {
                     result.updated = true;
 
                     // Add page to created pages array.
@@ -175,11 +187,12 @@ angular.module('mm.addons.mod_wiki')
                     });
 
                     // Delete the local page.
-                    return $mmaModWikiOffline.deleteNewPage(subwikiId, page.title, siteId);
+                    return $mmaModWikiOffline.deleteNewPage(page.title, subwikiId, wikiId, userId, groupId, siteId);
                 }).catch(function(error) {
                     if (error && error.wserror) {
                         // The WebService has thrown an error, this means that the page cannot be submitted. Delete it.
-                        return $mmaModWikiOffline.deleteNewPage(subwikiId, page.title, siteId).then(function() {
+                        return $mmaModWikiOffline.deleteNewPage(page.title, subwikiId, wikiId, userId, groupId, siteId)
+                                .then(function() {
                             result.updated = true;
 
                             // Page deleted, add the page to discarded pages and add a warning.
@@ -206,7 +219,7 @@ angular.module('mm.addons.mod_wiki')
             return $q.all(promises);
         }).then(function() {
             // Sync finished, set sync time.
-            return self.setSyncTime(subwikiId, siteId).catch(function() {
+            return self.setSyncTime(index, siteId).catch(function() {
                 // Ignore errors.
             });
         }).then(function() {
@@ -214,7 +227,7 @@ angular.module('mm.addons.mod_wiki')
             return result;
         });
 
-        return self.addOngoingSync(subwikiId, syncPromise, siteId);
+        return self.addOngoingSync(index, syncPromise, siteId);
     };
 
     /**
@@ -243,7 +256,8 @@ angular.module('mm.addons.mod_wiki')
                 };
 
             angular.forEach(subwikis, function(subwiki) {
-                promises.push(self.syncSubwiki(subwiki.id, siteId).then(function(data) {
+                promises.push(self.syncSubwiki(subwiki.id, subwiki.wikiid, subwiki.userid, subwiki.groupid, siteId)
+                        .then(function(data) {
                     if (data && data.updated) {
                         result.warnings = result.warnings.concat(data.warnings);
                         result.updated = true;
@@ -281,6 +295,19 @@ angular.module('mm.addons.mod_wiki')
                 });
             });
         });
+    };
+
+    self.subwikiBlockId = function(subwikiId, wikiId, userId, groupId) {
+        if (subwikiId && subwikiId > 0) {
+            return parseInt(subwikiId, 10) || 0;
+        }
+        if(wikiId) {
+            wikiId = parseInt(wikiId, 10) || 0;
+            userId = parseInt(userId, 10) || 0;
+            groupId = parseInt(groupId, 10) || 0;
+            return wikiId + ':' + userId + ':' + groupId;
+        }
+        return false;
     };
 
     return self;

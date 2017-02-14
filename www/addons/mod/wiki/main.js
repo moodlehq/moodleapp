@@ -37,6 +37,8 @@ angular.module('mm.addons.mod_wiki', [])
             pagetitle: null,
             wikiid: null,
             subwikiid: null,
+            userid: null,
+            groupid: null,
             action: null
         },
         views: {
@@ -55,6 +57,9 @@ angular.module('mm.addons.mod_wiki', [])
             pageid: null,
             pagetitle: null,
             subwikiid: null,
+            wikiid: null,
+            userid: null,
+            groupid: null,
             section: null
         },
         views: {

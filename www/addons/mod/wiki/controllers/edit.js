@@ -27,18 +27,19 @@ angular.module('mm.addons.mod_wiki')
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         subwikiId = $stateParams.subwikiid || null,
-        wikiId = null,
+        wikiId = $stateParams.wikiid || null,
         pageId = $stateParams.pageid || null,
         section = $stateParams.section || null,
         originalContent = null,
         editing = false,
         version = false,
-        groupId,
-        userId,
+        groupId = $stateParams.groupid || null,
+        userId = $stateParams.userid || null,
         rteEnabled,
         subwikiFiles,
         renewLockInterval,
-        editOffline = false;
+        editOffline = false,
+        blockId = $mmaModWikiSync.subwikiBlockId(subwikiId, wikiId, userId, groupId);
 
     // Block leaving the view, we want to show a confirm to the user if there's unsaved data.
     $mmUtil.blockLeaveView($scope, cancel);
@@ -57,9 +58,9 @@ angular.module('mm.addons.mod_wiki')
     $scope.title = $scope.page.title ? $translate.instant('mma.mod_wiki.editingpage', {'$a': $scope.page.title}) :
         $translate.instant('mma.mod_wiki.newpagehdr');
 
-    if (subwikiId) {
+    if (blockId) {
         // Block the subwiki ASAP.
-        $mmSyncBlock.blockOperation(mmaModWikiComponent, subwikiId);
+        $mmSyncBlock.blockOperation(mmaModWikiComponent, blockId);
     }
 
     $scope.save = function() {
@@ -85,7 +86,7 @@ angular.module('mm.addons.mod_wiki')
 
             if (!editOffline) {
                 // Check if the user has an offline page with the same title.
-                promise = $mmaModWikiOffline.getNewPage(subwikiId, $scope.page.title).then(function() {
+                promise = $mmaModWikiOffline.getNewPage($scope.page.title, subwikiId, wikiId, userId, groupId).then(function() {
                     // There's a page with same name, reject with error message.
                     return $mmLang.translateAndReject('mma.mod_wiki.pageexists');
                 }, function() {
@@ -97,8 +98,8 @@ angular.module('mm.addons.mod_wiki')
 
             promise = promise.then(function() {
                 // Try to send the page.
-                var instanceId = module && module.instance;
-                return $mmaModWiki.newPage(subwikiId, $scope.page.title, text, instanceId).then(function(createdId) {
+                var wikiId = wikiId || (module && module.instance);
+                return $mmaModWiki.newPage($scope.page.title, text, subwikiId, wikiId, userId, groupId).then(function(createdId) {
                     if (createdId) {
                         // Page was created, get its data and go to the page.
                         pageId = createdId;
@@ -153,12 +154,15 @@ angular.module('mm.addons.mod_wiki')
         return retrieveModuleInfo(wikiId).then(function() {
             var openPage = false;
 
-            if (!editing && editOffline && backViewPageIsDifferentOffline()) {
-                // The user submitted an offline page that isn't loaded in the back view, open it.
-                openPage = true;
-            } else if (!editOffline && backViewIsDifferentPageOnline()) {
-                // The user submitted an offline page that isn't loaded in the back view, open it.
-                openPage = true;
+            // Not the firstpage.
+            if ($stateParams.subwikiid) {
+                if (!editing && editOffline && backViewPageIsDifferentOffline()) {
+                    // The user submitted an offline page that isn't loaded in the back view, open it.
+                    openPage = true;
+                } else if (!editOffline && backViewIsDifferentPageOnline()) {
+                    // The user submitted an offline page that isn't loaded in the back view, open it.
+                    openPage = true;
+                }
             }
 
             if (openPage) {
@@ -249,7 +253,7 @@ angular.module('mm.addons.mod_wiki')
                     userId = pageContents.userid;
 
                     // Wait for sync to be over (if any).
-                    return $mmaModWikiSync.waitForSync(subwikiId);
+                    return $mmaModWikiSync.waitForSync(blockId);
                 }).then(function() {
                     // Check if rich text editor is enabled.
                     return $mmUtil.isRichTextEditorEnabled();
@@ -284,12 +288,12 @@ angular.module('mm.addons.mod_wiki')
                 });
             } else {
                 // New page. Wait for sync to be over (if any).
-                promise = $mmaModWikiSync.waitForSync(subwikiId);
+                promise = $mmaModWikiSync.waitForSync(blockId);
 
                 if ($scope.page.title) {
                     // Check if there's already some offline data for this page.
                     promise = promise.then(function() {
-                        return $mmaModWikiOffline.getNewPage(subwikiId, $scope.page.title);
+                        return $mmaModWikiOffline.getNewPage($scope.page.title, subwikiId, wikiId, userId, groupId);
                     }).then(function(page) {
                         // Load offline content.
                         $scope.page.text = page.cachedcontent;
@@ -306,7 +310,7 @@ angular.module('mm.addons.mod_wiki')
                 promise.then(function() {
                     $scope.wikiLoaded = true;
                     editing = false;
-                    canEdit = !!subwikiId; // If no subwikiId is received, the user cannot edit the page.
+                    canEdit = !!blockId; // If no blockId, the user cannot edit the page.
                 });
             }
         } else {
@@ -315,11 +319,7 @@ angular.module('mm.addons.mod_wiki')
         }
 
         return promise.catch(function(message) {
-            if (message) {
-                $mmUtil.showErrorModal(message);
-            } else {
-                $mmUtil.showErrorModal('Error getting wiki data.');
-            }
+            $mmUtil.showErrorModalDefault(message, 'Error getting wiki data.');
 
             return $ionicHistory.goBack();
         }).finally(function() {
@@ -369,9 +369,14 @@ angular.module('mm.addons.mod_wiki')
     });
 
     fetchWikiPageData().then(function() {
-        if (subwikiId && !$scope.$$destroyed) {
-            // Block the subwiki now that we have subwikiId for sure.
-            $mmSyncBlock.blockOperation(mmaModWikiComponent, subwikiId);
+        if (blockId && !$scope.$$destroyed) {
+            // Block the subwiki now that we have blockId for sure.
+            var newBlockId = $mmaModWikiSync.subwikiBlockId(subwikiId, wikiId, userId, groupId);
+            if (newBlockId != blockId) {
+                $mmSyncBlock.unblockOperation(mmaModWikiComponent, blockId);
+                blockId = newBlockId;
+                $mmSyncBlock.blockOperation(mmaModWikiComponent, blockId);
+            }
         }
     }).finally(function() {
         $scope.wikiLoaded = true;
@@ -380,8 +385,8 @@ angular.module('mm.addons.mod_wiki')
 
     $scope.$on('$destroy', function() {
         $interval.cancel(renewLockInterval);
-        if (subwikiId) {
-            $mmSyncBlock.unblockOperation(mmaModWikiComponent, subwikiId);
+        if (blockId) {
+            $mmSyncBlock.unblockOperation(mmaModWikiComponent, blockId);
         }
     });
 });

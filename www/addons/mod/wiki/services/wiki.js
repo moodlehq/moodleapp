@@ -252,15 +252,19 @@ angular.module('mm.addons.mod_wiki')
      * @module mm.addons.mod_wiki
      * @ngdoc method
      * @name $mmaModWiki#setSubwikiList
-     * @param  {Number} wikiId wiki Id
-     * @param  {Number} subwikis List of subwikis
-     * @param  {Number} count Number of subwikis in the subwikis list
-     * @param  {Number} selected subwiki Id currently selected
+     * @param  {Number} wikiId      wiki Id
+     * @param  {Number} subwikis    List of subwikis
+     * @param  {Number} count       Number of subwikis in the subwikis list
+     * @param  {Number} subwikiId   subwiki Id currently selected
+     * @param  {Number} userId      user Id currently selected
+     * @param  {Number} groupId     group Id currently selected
      */
-    self.setSubwikiList = function(wikiId, subwikis, count, selected) {
+    self.setSubwikiList = function(wikiId, subwikis, count, subwikiId, userId, groupId) {
         var subwikiLists =  {
             count: count,
-            selected: selected,
+            subwikiSelected: subwikiId,
+            userSelected: userId,
+            groupSelected: groupId,
             subwikis: subwikis
         };
         subwikiListsCache[wikiId] = subwikiLists;
@@ -493,6 +497,8 @@ angular.module('mm.addons.mod_wiki')
                 }
             }
             return false;
+        }).catch(function() {
+            return false;
         });
     };
 
@@ -502,14 +508,16 @@ angular.module('mm.addons.mod_wiki')
      * @module mm.addons.mod_wiki
      * @ngdoc method
      * @name $mmaModWiki#newPage
-     * @param  {Number} subwikiId Subwiki ID.
-     * @param  {String} title     Title to create the page.
-     * @param  {String} content   Content to save on the page.
-     * @param  {Number} [wikiId]  Wiki ID. Optional, will be used to provide a better error handling if page cannot be sent.
-     * @param  {String} [siteId]  Site ID. If not defined, current site.
-     * @return {Promise}          Promise resolved with page ID if page was created in server, false if stored in device.
+     * @param  {String} title       Title to create the page.
+     * @param  {String} content     Content to save on the page.
+     * @param  {Number} [subwikiId] Subwiki ID. If not defined, wikiId, userId and groupId should be defined.
+     * @param  {Number} [wikiId]    Wiki ID. Optional, will be used create subwiki if not informed.
+     * @param  {Number} [userId]    User ID. Optional, will be used create subwiki if not informed.
+     * @param  {Number} [groupId]   Group ID. Optional, will be used create subwiki if not informed.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with page ID if page was created in server, false if stored in device.
      */
-    self.newPage = function(subwikiId, title, content, wikiId, siteId) {
+    self.newPage = function(title, content, subwikiId, wikiId, userId, groupId, siteId) {
         siteId = siteId || $mmSite.getId();
 
         if (!$mmApp.isOnline()) {
@@ -518,9 +526,9 @@ angular.module('mm.addons.mod_wiki')
         }
 
         // Discard stored content for this page. If it exists it means the user is editing it.
-        return $mmaModWikiOffline.deleteNewPage(subwikiId, title, siteId).then(function() {
+        return $mmaModWikiOffline.deleteNewPage(title, subwikiId, wikiId, userId, groupId, siteId).then(function() {
             // Try to create it in online.
-            return self.newPageOnline(subwikiId, title, content, siteId).then(function(pageId) {
+            return self.newPageOnline(title, content, subwikiId, wikiId, userId, groupId, siteId).then(function(pageId) {
                 return pageId;
             }).catch(function(error) {
                 if (error && error.wserror) {
@@ -552,7 +560,7 @@ angular.module('mm.addons.mod_wiki')
             }
 
             return promise.then(function() {
-                return $mmaModWikiOffline.saveNewPage(subwikiId, title, content, siteId).then(function() {
+                return $mmaModWikiOffline.saveNewPage(title, content, subwikiId, wikiId, userId, groupId, siteId).then(function() {
                     return false;
                 });
             });
@@ -565,24 +573,34 @@ angular.module('mm.addons.mod_wiki')
      * @module mm.addons.mod_wiki
      * @ngdoc method
      * @name $mmaModWiki#newPageOnline
-     * @param  {Number} subwikiId Subwiki ID.
-     * @param  {String} title     Title to create the page.
-     * @param  {String} content   Content to save on the page.
-     * @param  {String} [siteId]  Site ID. If not defined, current site.
-     * @return {Promise}          Promise resolved if created, rejected otherwise. Reject param is an object with:
+     * @param  {String} title       Title to create the page.
+     * @param  {String} content     Content to save on the page.
+     * @param  {Number} [subwikiId] Subwiki ID. If not defined, wikiId, userId and groupId should be defined.
+     * @param  {Number} [wikiId]    Wiki ID. Optional, will be used create subwiki if not informed.
+     * @param  {Number} [userId]    User ID. Optional, will be used create subwiki if not informed.
+     * @param  {Number} [groupId]   Group ID. Optional, will be used create subwiki if not informed.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved if created, rejected otherwise. Reject param is an object with:
      *                                   - error: The error message.
      *                                   - wserror: True if it's an error returned by the WebService, false otherwise.
      */
-    self.newPageOnline = function(subwikiId, title, content, siteId) {
+    self.newPageOnline = function(title, content, subwikiId, wikiId, userId, groupId, siteId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     title: title,
                     content: content,
-                    contentformat: 'html',
-                    subwikiid: subwikiId
+                    contentformat: 'html'
                 };
+
+            if (subwikiId) {
+                params.subwikiid = subwikiId;
+            } else if (wikiId) {
+                params.wikiid = wikiId;
+                params.userid = userId || 0;
+                params.groupid = groupId || 0;
+            }
 
             return site.write('mod_wiki_new_page', params).catch(function(error) {
                 return $q.reject({
