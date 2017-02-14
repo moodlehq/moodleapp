@@ -45,6 +45,11 @@ angular.module('mm.core', ['pascalprecht.translate'])
     // Use JS scrolling.
     $ionicConfigProvider.scrolling.jsScrolling(true);
 
+    // Translate back button (it's only shown in iOS and browser).
+    if (!ionic.Platform.isAndroid()) {
+        $ionicConfigProvider.backButton.text("{{'mm.core.back' | translate}}");
+    }
+
     // Decorate $ionicPlatform.
     $provide.decorator('$ionicPlatform', ['$delegate', '$window', function($delegate, $window) {
         $delegate.isTablet = function() {
