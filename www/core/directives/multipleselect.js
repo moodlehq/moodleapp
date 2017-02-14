@@ -53,7 +53,7 @@ angular.module('mm.core')
                 strSeparator = $translate.instant('mm.core.elementseparator') + " ";
 
             scope.optionsRender = [];
-            scope.selectedOptions = "";
+            scope.selectedOptions = getSelectedOptionsText();
 
             element.on('click', function(e) {
                 e.preventDefault();
@@ -81,23 +81,30 @@ angular.module('mm.core')
             });
 
             scope.saveOptions = function() {
-                var selected = [];
                 angular.forEach(scope.optionsRender, function (tempOption){
                     for (var j = 0; j < scope.options.length; j++) {
                         var option = scope.options[j];
                         if (option[keyProperty] == tempOption.key) {
                             option[selectedProperty] = tempOption.selected;
-                            if (tempOption.selected) {
-                                selected.push(tempOption.value);
-                            }
                             return;
                         }
                     }
                 });
-                scope.selectedOptions = selected.join(strSeparator);
+                scope.selectedOptions = getSelectedOptionsText();
 
                 scope.closeModal();
             };
+
+            // Get string for selected options to be shown.
+            function getSelectedOptionsText() {
+                var selected = scope.options.filter(function(option) {
+                    return !!option[selectedProperty];
+                }).map(function(option) {
+                    return option[valueProperty];
+                });
+
+                return selected.join(strSeparator);
+            }
 
             scope.closeModal = function(){
                 scope.modal.hide();

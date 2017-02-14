@@ -48,7 +48,7 @@ angular.module('mm.addons.mod_glossary')
  * @ngdoc service
  * @name $mmaModGlossaryOffline
  */
-.factory('$mmaModGlossaryOffline', function($mmSitesManager, $log, mmaModGlossaryAddEntryStore) {
+.factory('$mmaModGlossaryOffline', function($mmSitesManager, $log, mmaModGlossaryAddEntryStore, $mmFS) {
     $log = $log.getInstance('$mmaModGlossaryOffline');
 
     var self = {};
@@ -127,21 +127,21 @@ angular.module('mm.addons.mod_glossary')
      * @module mm.addons.mod_glossary
      * @ngdoc method
      * @name $mmaModGlossaryOffline#saveAddEntry
-     * @param  {Number} glossaryId Glossary ID.
-     * @param  {String} concept    Glossary entry concept.
-     * @param  {String} definition Glossary entry concept definition.
-     * @param  {Number} courseId   Course ID of the glossary.
-     * @param  {Array}  [options]  Array of options for the entry.
-     * @param  {String} [siteId]   Site ID. If not defined, current site.
-     * @param  {Number} [userId]   User the entry belong to. If not defined, current user in site.
-     * @return {Promise}           Promise resolved if stored, rejected if failure.
+     * @param  {Number} glossaryId      Glossary ID.
+     * @param  {String} concept         Glossary entry concept.
+     * @param  {String} definition      Glossary entry concept definition.
+     * @param  {Number} courseId        Course ID of the glossary.
+     * @param  {Array}  [options]       Array of options for the entry.
+     * @param  {Object} [attach]        Result of $mmFileUploader#storeFilesToUpload for attachments.
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
+     * @param  {Number} [userId]        User the entry belong to. If not defined, current user in site.
+     * @return {Promise}                Promise resolved if stored, rejected if failure.
      */
-    self.saveAddEntry = function(glossaryId, concept, definition, courseId, options, siteId, userId) {
+    self.saveAddEntry = function(glossaryId, concept, definition, courseId, options, attach, siteId, userId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             userId = userId || site.getUserId();
 
-            var now = new Date().getTime(),
-                entry = {
+            var entry = {
                     glossaryid: glossaryId,
                     courseid: courseId,
                     concept: concept,
@@ -149,11 +149,51 @@ angular.module('mm.addons.mod_glossary')
                     definitionformat: 'html',
                     options: options,
                     userid: userId,
-                    timecreated: now,
-                    timemodified: now
+                    timecreated: new Date().getTime()
                 };
 
+            if (attach) {
+                entry.attachments = attach;
+            }
+
             return site.getDb().insert(mmaModGlossaryAddEntryStore, entry);
+        });
+    };
+
+    /**
+     * Get the path to the folder where to store files for offline attachments in a glossary.
+     *
+     * @module mm.addons.mod_glossary
+     * @ngdoc method
+     * @name $mmaModGlossaryOffline#getGlossaryFolder
+     * @param  {Number} glossaryId  Glossary ID.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with the path.
+     */
+    self.getGlossaryFolder = function(glossaryId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+
+            var siteFolderPath = $mmFS.getSiteFolder(site.getId()),
+                folderPath = 'offlineglossary/' + glossaryId;
+
+            return $mmFS.concatenatePaths(siteFolderPath, folderPath);
+        });
+    };
+
+    /**
+     * Get the path to the folder where to store files for a new offline entry.
+     *
+     * @module mm.addons.mod_glossary
+     * @ngdoc method
+     * @name $mmaModGlossaryOffline#getEntryFolder
+     * @param  {Number} glossaryId  Glossary ID.
+     * @param  {Number} entryName   The name of the entry.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with the path.
+     */
+    self.getEntryFolder = function(glossaryId, entryName, siteId) {
+        return self.getGlossaryFolder(glossaryId, siteId).then(function(folderPath) {
+            return $mmFS.concatenatePaths(folderPath, 'newentry_' + entryName);
         });
     };
 

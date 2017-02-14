@@ -70,6 +70,7 @@ angular.module('mm.core')
 
             if (typeof scope.maxSubmissions == 'undefined' || scope.maxSubmissions < 0) {
                 scope.maxSubmissions = $translate.instant('mm.core.unknown');
+                scope.unlimitedFiles = true;
             }
 
             scope.add = function() {

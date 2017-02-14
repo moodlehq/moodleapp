@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_glossary')
  */
 .factory('$mmaModGlossarySync', function($q, $log, $mmApp, $mmSitesManager, $mmaModGlossaryOffline, $mmSite, $mmEvents, $mmSync,
         $mmLang, mmaModGlossaryComponent, $mmaModGlossary, $translate, mmaModGlossaryAutomSyncedEvent, mmaModGlossarySyncTime,
-        $mmCourse, $mmSyncBlock, $mmUtil) {
+        $mmCourse, $mmSyncBlock, $mmUtil, $mmaModGlossaryHelper, $mmFileUploader) {
 
     $log = $log.getInstance('$mmaModGlossarySync');
 
@@ -174,18 +174,21 @@ angular.module('mm.addons.mod_glossary')
 
                 courseId = data.courseid;
 
-                // A user has added some entries.
-                promise = $mmaModGlossary.addEntryOnline(glossaryId, data.concept, data.definition, data.options, siteId);
+                // First of all upload the attachments (if any).
+                promise = uploadAttachments(glossaryId, data, siteId).then(function(itemId) {
+                    // Now try to add the entry.
+                    return $mmaModGlossary.addEntryOnline(glossaryId, data.concept, data.definition, data.options, itemId, siteId);
+                });
 
                 promises.push(promise.then(function() {
                     result.updated = true;
 
-                    return $mmaModGlossaryOffline.deleteAddEntry(glossaryId, data.concept, siteId);
+                    return deleteAddEntry(glossaryId, data.concept, siteId);
                 }).catch(function(error) {
                     if (error && error.wserror) {
                         // The WebService has thrown an error, this means that responses cannot be submitted. Delete them.
                         result.updated = true;
-                        return $mmaModGlossaryOffline.deleteAddEntry(glossaryId, data.concept, siteId).then(function() {
+                        return deleteAddEntry(glossaryId, data.concept, siteId).then(function() {
                             // Responses deleted, add a warning.
                             result.warnings.push($translate.instant('mm.core.warningofflinedatadeleted', {
                                 component: $mmCourse.translateModuleName('glossary'),
@@ -222,6 +225,60 @@ angular.module('mm.addons.mod_glossary')
 
         return self.addOngoingSync(syncId, syncPromise, siteId);
     };
+
+     /**
+      * Delete a new entry.
+      *
+      * @param  {Number} glossaryId Glossary ID.
+      * @param  {String} concept    Glossary entry concept.
+      * @param  {String} [siteId]   Site ID. If not defined, current site.
+      * @return {Promise}           Promise resolved when deleted.
+      */
+    function deleteAddEntry(glossaryId, concept, siteId) {
+        var promises = [];
+
+        promises.push($mmaModGlossaryOffline.deleteAddEntry(glossaryId, concept, siteId));
+        promises.push($mmaModGlossaryHelper.deleteStoredFiles(glossaryId, concept, siteId).catch(function() {
+            // Ignore errors, maybe there are no files.
+        }));
+
+        return $q.all(promises);
+    }
+
+    /**
+     * Upload attachments of an offline entry.
+     *
+     * @param  {Number} glossaryId Glossary ID.
+     * @param  {Object} entry      Offline entry.
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved with draftid if uploaded, resolved with undefined if nothing to upload.
+     */
+    function uploadAttachments(glossaryId, entry, siteId) {
+        var attachments = entry && entry.attachments;
+        if (attachments) {
+            // Has some attachments to sync.
+            var files = attachments.online || [],
+                promise;
+
+            if (attachments.offline) {
+                // Has offline files.
+                promise = $mmaModGlossaryHelper.getStoredFiles(glossaryId, entry.concept, siteId).then(function(atts) {
+                    files = files.concat(atts);
+                }).catch(function() {
+                    // Folder not found, no files to add.
+                });
+            } else {
+                promise = $q.when();
+            }
+
+            return promise.then(function() {
+                return $mmFileUploader.uploadOrReuploadFiles(files, mmaModGlossaryComponent, glossaryId, siteId);
+            });
+        }
+
+        // No attachments, resolve.
+        return $q.when();
+    }
 
     /**
      * Get the ID of a glossary sync.
