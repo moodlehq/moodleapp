@@ -2,7 +2,7 @@
     "addattempt": "Zezwalaj na inną próbę",
     "addnewattempt": "Dodaj odpowiedź",
     "addnewattemptfromprevious": "Dodaj nową próbę na podstawie poprzedniego zgłoszenia",
-    "addsubmission": "Dodaj zadanie",
+    "addsubmission": "Dodaj swoją pracę",
     "allowsubmissionsanddescriptionfromdatesummary": "Szczegóły zadania oraz możliwość rozwiązania będzie dostępna od <strong>{{$a}}</strong>",
     "allowsubmissionsfromdate": "Zezwól na przesyłanie rozwiązań od",
     "allowsubmissionsfromdatesummary": "Rozwiązania tego zadania będzie można przesyłać od <strong>{{$a}}</strong>",

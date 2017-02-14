@@ -1,5 +1,6 @@
 {
     "answer": "Resposta",
+    "answersaved": "Resposta desada",
     "complete": "Complet",
     "correct": "Correcta",
     "errorattachmentsnotsupported": "L'aplicació encara no admet l'adjunció de fitxers.",
@@ -8,9 +9,13 @@
     "feedback": "Retroacció",
     "howtodraganddrop": "Feu un toc per seleccionar i feu un toc de nou per deixar anar.",
     "incorrect": "Incorrecta",
+    "information": "Informació",
+    "invalidanswer": "Resposta no vàlida o incompleta",
     "notanswered": "No contestada encara",
     "notyetanswered": "Encara no s'ha contestat",
     "partiallycorrect": "Parcialment correcte",
     "questionmessage": "Pregunta {{$a}}: {{$b}}",
+    "questionno": "Pregunta {{$a}}",
+    "requiresgrading": "Cal puntuar",
     "unknown": "No es pot determinar l'estat"
 }

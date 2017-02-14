@@ -11,6 +11,7 @@
     "errorwhileretrievingcontacts": "S'ha produït un error en recuperar els contactes del servidor.",
     "errorwhileretrievingdiscussions": "S'ha produït un error mentre es recuperaven els debats del servidor.",
     "errorwhileretrievingmessages": "S'ha produït un error descarregant els missatges.",
+    "message": "Cos del missatge",
     "messagenotsent": "El missatge no s'ha enviat. Si us plau, intenteu-ho més tard",
     "messages": "Missatges",
     "mustbeonlinetosendmessages": "Heu de tenir connexió a la xarxa per a enviar missatges",

@@ -1,9 +1,11 @@
 {
+    "addfiletext": "Dosya ekle",
     "errorcapturingaudio": "Ses çalma hatası",
     "errorcapturingvideo": "Video oynatma hatası",
     "errorreadingfile": "\"{$a}\" dosyasını okurken hata oluştu",
     "file": "Dosya",
     "fileuploaded": "Dosya yüklendi",
+    "maxbytesfile": "Dosya {{$a.file}} çok büyük. Yüklediğiniz maksimum boyutu {{$a.size}} olduğunu.",
     "uploadafile": "Bir dosya yükle",
     "uploading": "Yükleniyor",
     "video": "Video"

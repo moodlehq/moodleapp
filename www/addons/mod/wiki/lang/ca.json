@@ -1,7 +1,7 @@
 {
     "cannoteditpage": "No podeu editar aquesta pàgina.",
     "createpage": "Crea una pàgina",
-    "editingpage": "S'està editant aquesta pàgina '{{$a}}'",
+    "editingpage": "S'està editant aquesta pàgina «{{$a}}»",
     "errorloadingpage": "S'ha produït un error en carregar la pàgina.",
     "errornowikiavailable": "Aquest wiki no té cap contingut encara.",
     "gowikihome": "Vés a l'inici del wiki",
@@ -11,11 +11,11 @@
     "nocontent": "No hi ha contingut per a aquesta pàgina",
     "notingroup": "No en grup",
     "page": "Pàgina",
-    "pageexists": "Aquesta pàgina ja existeix. Redirigint cap a ella.",
+    "pageexists": "Aquesta pàgina ja existeix.",
     "pagename": "Nom de la pàgina",
     "subwiki": "Subwiki",
     "titleshouldnotbeempty": "El títol no pot ser buit",
     "viewpage": "Mostra la pàgina",
     "wikipage": "Pàgina wiki",
-    "wrongversionlock": "Un altre usuari ha editat aquesta pàgina wiki que esteu editant i per això el vostre contingut es obsolet."
+    "wrongversionlock": "Un altre usuari ha editat aquesta pàgina wiki que esteu editant i per això el vostre contingut és obsolet."
 }

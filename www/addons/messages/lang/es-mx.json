@@ -11,6 +11,7 @@
     "errorwhileretrievingcontacts": "Error al recuperar los contactos del servidor.",
     "errorwhileretrievingdiscussions": "Error al recuperar las discusiones del servidor.",
     "errorwhileretrievingmessages": "Error al recuperar los mensajes del servidor.",
+    "message": "Cuerpo del mensaje",
     "messagenotsent": "El mensaje no fue enviado; por favor inténtelo nuevamente después.",
     "messagepreferences": "Preferencias de Mensaje",
     "messages": "Mensajes",

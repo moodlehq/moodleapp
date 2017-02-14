@@ -1,6 +1,5 @@
 {
     "about": "À propos",
-    "appname": "Moodle Mobile {{version}}",
     "appready": "Prêt pour l'app",
     "cacheexpirationtime": "Durée d'échéance du cache (ms)",
     "cannotsyncoffline": "Impossible de synchroniser sans connection réseau.",
@@ -15,7 +14,6 @@
     "currentlanguage": "Langue actuelle",
     "deletesitefiles": "Voulez-vous vraiment supprimer les fichiers téléchargés depuis ce site ?",
     "deletesitefilestitle": "Supprimer les fichiers de site",
-    "development": "Développement",
     "deviceinfo": "Info sur l'appareil",
     "deviceos": "Système d'exploitation de l'appareil",
     "devicewebworkers": "Web workers supportés",
@@ -48,7 +46,6 @@
     "sites": "Plateformes",
     "spaceusage": "Espace utilisé",
     "storagetype": "Type de stockage",
-    "success": "Succès !",
     "synchronization": "Synchronisation",
     "synchronizenow": "Synchroniser maintenant",
     "synchronizing": "Synchronisation en cours",

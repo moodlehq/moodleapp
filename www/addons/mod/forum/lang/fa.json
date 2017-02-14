@@ -5,6 +5,7 @@
     "cannotcreatediscussion": "ایجاد مباحثهٔ‌جدید ممکن نشد",
     "couldnotadd": "به دلیل بروز یک خطای ناشناخته ارائه مطلب شما امکان پذیر نبود",
     "discussion": "مباحثه",
+    "discussionlocked": "این مباحثه قفل شده است و در نتیجه دیگر نمی‌توانید در آن شرکت کنید.",
     "discussionsubscription": "آبونه‌شدن در مباحثه",
     "edit": "ویرایش",
     "erroremptymessage": "متن ارسالی نمی‌تواند خالی باشد",
@@ -15,5 +16,7 @@
     "posttoforum": "طرح در تالار",
     "re": "در پاسخ به:",
     "reply": "ارسال پاسخ",
-    "subject": "موضوع"
+    "subject": "موضوع",
+    "unread": "خوانده نشده",
+    "unreadpostsnumber": "{{$a}} مطلب خوانده نشده"
 }

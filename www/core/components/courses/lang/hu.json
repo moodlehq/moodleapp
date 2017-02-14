@@ -1,8 +1,12 @@
 {
+    "availablecourses": "Felvehető kurzusok",
+    "categories": "Kurzuskategóriák",
+    "courses": "Kurzusok",
     "enrolme": "Iratkoztasson be",
     "frontpage": "Kezdőoldal",
     "mycourses": "Kurzusaim",
     "nocourses": "Nincs megjelenítendő kurzusinformáció.",
+    "nocoursesyet": "Ebben a kategóriában nincsenek kurzusok",
     "nosearchresults": "Keresése nem adott eredményt",
     "notenroled": "Ezt a kurzust nem vette föl",
     "password": "Jelszó",

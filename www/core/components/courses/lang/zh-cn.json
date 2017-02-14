@@ -1,8 +1,12 @@
 {
+    "availablecourses": "现有课程",
+    "categories": "课程分类",
+    "courses": "课程",
     "enrolme": "将我加入",
     "frontpage": "首页",
     "mycourses": "我的课程",
     "nocourses": "没有可显示的课程信息。",
+    "nocoursesyet": "此类中无课程",
     "nosearchresults": "您的搜索没有结果",
     "notenroled": "您没有加入此课程",
     "password": "密码",

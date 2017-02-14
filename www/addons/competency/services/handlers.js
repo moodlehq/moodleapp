@@ -100,7 +100,7 @@ angular.module('mm.addons.competency')
              */
             return function($scope) {
                 $scope.icon = 'ion-map';
-                $scope.title = 'mma.competency.mylearningplans';
+                $scope.title = 'mma.competency.myplans';
                 $scope.state = 'site.learningplans';
                 $scope.class = 'mma-competency-handler';
             };

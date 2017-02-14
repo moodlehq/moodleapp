@@ -7,6 +7,7 @@
     "contacts": "Kapcsolatok",
     "deletemessage": "Üzenet törlése",
     "deletemessageconfirmation": "Biztosan törli az üzenetet? Az csak a korábbi üzeneteiből törlődik, az azt küldő vagy fogadó fél továbbra is láthatja.",
+    "message": "Üzenet törzsszövege",
     "messagepreferences": "Üzenet beállításai",
     "messages": "Üzenetek",
     "newmessage": "Új üzenet",

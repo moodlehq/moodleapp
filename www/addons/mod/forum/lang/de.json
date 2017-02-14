@@ -9,7 +9,7 @@
     "discussionsubscription": "Themenabonnement",
     "edit": "Bearbeiten",
     "erroremptymessage": "Die Mitteilung darf nicht leer sein.",
-    "erroremptysubject": "Das Nachrichtenthema darf nicht leer sein.",
+    "erroremptysubject": "Der Betreff darf nicht leer sein.",
     "errorgetforum": "Fehler beim Laden der Forumsdaten",
     "errorgetgroups": "Fehler beim Laden der Gruppenenstellungen",
     "forumnodiscussionsyet": "Keine Themen im Forum",
@@ -24,5 +24,7 @@
     "reply": "Antworten",
     "sortnewestfirst": "Neu zuerst",
     "sortoldestfirst": "Alt zuerst",
-    "subject": "Betreff"
+    "subject": "Betreff",
+    "unread": "Ungelesen",
+    "unreadpostsnumber": "{{$a}} ungelesene Beiträge"
 }

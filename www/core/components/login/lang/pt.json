@@ -1,13 +1,11 @@
 {
     "authenticating": "Autenticação",
     "cancel": "Cancelar",
-    "cannotdownloadfiles": "O seu serviço Mobile não permite descarregar ficheiros e a aplicação não funciona sem ativar esta configuração. Por favor, contacte o administrador do site.",
     "confirmdeletesite": "Tem a certeza que pretende remover o site {{sitename}}?",
     "connect": "Ligar!",
     "connecttomoodle": "Ligação ao Moodle",
     "createaccount": "Criar a minha conta",
     "createuserandpass": "Escolha um nome de utilizador e senha",
-    "credentials": "Credenciais",
     "credentialsdescription": "Por favor digite o seu nome de utilizador e senha para entrar",
     "emailconfirmsent": "<p>Acaba de ser enviada uma mensagem para o seu endereço <strong>{{$a}}</strong>, com instruções fáceis para completar a sua inscrição.</p><p>Se tiver alguma dificuldade em completar o registo, contacte o administrador do site.</p>",
     "enterthewordsabove": "Insira as palavras indicadas acima",

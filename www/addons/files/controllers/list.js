@@ -34,7 +34,7 @@ angular.module('mm.addons.files')
                 $scope.title = $translate.instant('mma.files.sitefiles');
             } else if (root === 'my') {
                 promise = $mmaFiles.getMyFiles();
-                $scope.title = $translate.instant('mma.files.myprivatefiles');
+                $scope.title = $translate.instant('mma.files.files');
             } else {
                 // Upon error we create a fake promise that is rejected.
                 promise = $q.reject();

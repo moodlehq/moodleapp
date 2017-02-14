@@ -5,10 +5,11 @@
     "cannotcreatediscussion": "Kon geen nieuwe discussie starten",
     "couldnotadd": "Door een onbekende fout was het niet mogelijk om je bericht toe te voegen .",
     "discussion": "Discussie",
+    "discussionlocked": "Deze discussie is geblokkeerd, zodat u niet meer kan beantwoorden.",
     "discussionsubscription": "Inschrijving discussie",
     "edit": "Wijzig",
     "erroremptymessage": "Bericht kan niet leeg zijn",
-    "erroremptysubject": "Onderwerp mag niet leeg zijn",
+    "erroremptysubject": "Onderwerp kan niet leeg zijn",
     "errorgetforum": "Fout bij het ophalen van forumgegevens",
     "errorgetgroups": "Fout bij het ophalen van groepinstellingen.",
     "forumnodiscussionsyet": "Er zijn nog geen discussies in dit forum",
@@ -23,5 +24,7 @@
     "reply": "Antwoord",
     "sortnewestfirst": "Toon nieuwste eerst",
     "sortoldestfirst": "Toon oudste eerst",
-    "subject": "Onderwerp"
+    "subject": "Onderwerp",
+    "unread": "Niet gelezen",
+    "unreadpostsnumber": "{{$a}} ongelezen berichten"
 }

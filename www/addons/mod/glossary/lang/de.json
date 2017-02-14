@@ -1,10 +1,13 @@
 {
+    "attachment": "Anhang",
     "browsemode": "Einträge durchblättern",
     "byalphabet": "Alphabetisch",
     "byauthor": "Nach Autor/in",
     "bynewestfirst": "Neu zuerst",
     "byrecentlyupdated": "Gerade aktualisiert",
     "bysearch": "Suchen",
+    "casesensitive": "Groß-/Kleinschreibung",
+    "categories": "Kursbereiche",
     "entrypendingapproval": "Dieser Eintrag wartet auf eine Freigabe.",
     "errorloadingentries": "Fehler beim Laden von Einträgen",
     "errorloadingentry": "Fehler beim Laden des Eintrags",

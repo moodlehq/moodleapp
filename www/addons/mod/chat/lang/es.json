@@ -14,6 +14,6 @@
     "mustbeonlinetosendmessages": "Usted debe de estar conectado a Internet para enviar mensajes",
     "nomessages": "Aún no hay mensajes",
     "send": "Enviar",
-    "sessionstart": "La próxima sesión de chat comenzará en  {{$a}}",
+    "sessionstart": "La próxima sesión de chat empezará el {{$a.date}}, (dentro de {{$a.fromnow}})",
     "talk": "Charla"
 }

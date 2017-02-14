@@ -64,7 +64,7 @@ angular.module('mm.addons.files')
              */
             return function($scope) {
                 $scope.icon = 'ion-folder';
-                $scope.title = 'mma.files.myfiles';
+                $scope.title = 'mma.files.files';
                 $scope.state = 'site.files';
                 $scope.class = 'mma-files-handler';
             };

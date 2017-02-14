@@ -8,7 +8,7 @@
     "discussionsubscription": "מנוי לעדכונים בדיון",
     "edit": "עריכה",
     "erroremptymessage": "הודעת הפרסום איננה יכולה להיות ריקה",
-    "erroremptysubject": "נושא ההודעה אינו יכול להיות ריק",
+    "erroremptysubject": "הנושא הפרסום אינו יכול להיות ריק",
     "errorgetforum": "שגיאה בטעינת מידע הפורום.",
     "errorgetgroups": "שגיאה בטעינת הגדרות קבוצה.",
     "forumnodiscussionsyet": "עדיין לא קיימים נושאי דיונים בפורום זה.",
@@ -19,5 +19,7 @@
     "posttoforum": "שליחת הודעה לפורום",
     "re": "תשובה ל:",
     "reply": "תגובה",
-    "subject": "נושא"
+    "subject": "נושא",
+    "unread": "לא נקרא",
+    "unreadpostsnumber": "{{$a}} הודעות שלא נקראו"
 }

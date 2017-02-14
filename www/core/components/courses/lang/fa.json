@@ -1,9 +1,14 @@
 {
+    "availablecourses": "درس‌های موجود",
+    "categories": "طبقه‌های درسی",
+    "courses": "درس‌ها",
     "enrolme": "من را ثیت نام کن",
     "frontpage": "صفحهٔ اول",
     "mycourses": "درسهای من",
     "nocourses": "هیچ درسی برای نمایش وجود ندارد",
+    "nocoursesyet": "درسی در این طبقه وجود ندارد",
     "nosearchresults": "نتایجی برای جستجوی شما وجود نداشت.",
+    "notenroled": "شما در این درس ثبت‌نام نیستید",
     "password": "رمز ورود",
     "search": "جستجو",
     "searchcourses": "جستجو بین درس‌ها"
