@@ -1,10 +1,10 @@
-<ion-view view-title="{{'mma.files.myfiles' | translate}}">
+<ion-view view-title="{{'mma.files.files' | translate}}">
     <ion-content padding="true" mm-state-class>
         <section ng-if="showPrivateFiles || showSiteFiles">
             <section class="list card" ng-if="showPrivateFiles">
-                <a ui-sref="site.files-list({root: 'my'})" class="item item-icon-right" title="{{ 'mma.files.myprivatefiles' | translate }}">
+                <a ui-sref="site.files-list({root: 'my'})" class="item item-icon-right" title="{{ 'mma.files.privatefiles' | translate }}">
                     <i class="icon ion-ios-arrow-right"></i>
-                    {{ 'mma.files.myprivatefiles' | translate }}
+                    {{ 'mma.files.privatefiles' | translate }}
                 </a>
                 <div class="item item-text-wrap"><p>{{ 'mma.files.myprivatefilesdesc' | translate }}</p></div>
             </section>
