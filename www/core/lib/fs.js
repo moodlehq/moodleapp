@@ -869,15 +869,20 @@ angular.module('mm.core')
      */
     self.getFileIcon = function(filename) {
         var ext = self.getFileExtension(filename),
-            icon;
+            icon = 'unknown';
 
-        if (ext && extToMime[ext] && extToMime[ext].icon) {
-            icon = extToMime[ext].icon + '-64.png';
-        } else {
-            icon = 'unknown-64.png';
+        if (ext && extToMime[ext]) {
+            if (extToMime[ext].icon) {
+                icon = extToMime[ext].icon;
+            } else {
+                var type = extToMime[ext].type.split('/')[0];
+                if (type == 'video' || type == 'text' || type == 'image' || type == 'document' || type == 'audio') {
+                    icon = type;
+                }
+            }
         }
 
-        return 'img/files/' + icon;
+        return 'img/files/' + icon + '-64.png';
     };
 
     /**
@@ -909,6 +914,10 @@ angular.module('mm.core')
 
         if (dot > -1) {
             ext = filename.substr(dot + 1).toLowerCase();
+
+            // Remove hash in extension if there's any. @see $mmFilepool#_getFileIdByUrl
+            ext = ext.replace(/_.{32}$/, '');
+
             // Check extension corresponds to a mimetype to know if it's valid.
             if (typeof self.getMimeType(ext) == 'undefined') {
                 $log.debug('Get file extension: Not valid extension ' + ext);
