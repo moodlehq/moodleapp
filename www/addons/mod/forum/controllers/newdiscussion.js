@@ -59,8 +59,8 @@ angular.module('mm.addons.mod_forum')
                         // We need to check which of the returned groups the user can post to.
                         promise = validateVisibleGroups(forumgroups, refresh);
                     } else {
-                        // WS already filters groups, no need to do it ourselves.
-                        promise = $q.when(forumgroups);
+                        // WS already filters groups, no need to do it ourselves. Add "All participants" if needed.
+                        promise = addAllParticipantsOption(forumgroups, true);
                     }
 
                     return promise.then(function(forumgroups) {
@@ -135,8 +135,8 @@ angular.module('mm.addons.mod_forum')
                 return false;
             }).then(function(canAdd) {
                 if (canAdd) {
-                    // The user can post to all groups, return them all.
-                    return forumgroups;
+                    // The user can post to all groups, add the "All participants" option and return them all.
+                    return addAllParticipantsOption(forumgroups);
                 } else {
                     // The user can't post to all groups, let's check which groups he can post to.
                     var promises = [],
@@ -187,6 +187,37 @@ angular.module('mm.addons.mod_forum')
         });
 
         return filtered;
+    }
+
+    // Add the "All participants" option to a list of groups if the user can add a discussion to all participants.
+    function addAllParticipantsOption(groups, check) {
+        var promise;
+
+        if (!$mmaModForum.isAllParticipantsFixed()) {
+            // All participants has a bug, don't add it.
+            return $q.when(groups);
+        } else if (check) {
+            // We need to check if the user can add a discussion to all participants.
+            promise = $mmaModForum.canAddDiscussionToAll(forumId).catch(function() {
+                // The call failed, let's assume he can't.
+                return false;
+            });
+        } else {
+            // No need to check, assume the user can.
+            promise = $q.when(true);
+        }
+
+        return promise.then(function(canAdd) {
+            if (canAdd) {
+                groups.unshift({
+                    courseid: courseId,
+                    id: -1,
+                    name: $translate.instant('mm.core.allparticipants')
+                });
+            }
+
+            return groups;
+        });
     }
 
     fetchDiscussionData().finally(function() {

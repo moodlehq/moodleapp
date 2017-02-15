@@ -203,8 +203,7 @@ angular.module('mm.addons.mod_forum')
     self.canAddAttachments = function(siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             // Attachments allowed from Moodle 3.1.
-            var version = parseInt(site.getInfo().version, 10);
-            return version && version >= 2016052300;
+            return site.isVersionGreaterEqualThan('3.1');
         });
     };
 
@@ -266,6 +265,18 @@ angular.module('mm.addons.mod_forum')
         }
 
         return undefined;
+    };
+
+    /**
+     * There was a bug adding new discussions to All Participants (see MDL-57962). Check if it's fixed.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#isAllParticipantsFixed
+     * @return {Boolean} True if fixed, false otherwise.
+     */
+    self.isAllParticipantsFixed = function() {
+        return $mmSite.isVersionGreaterEqualThan(['3.1.5', '3.2.2']);
     };
 
     /**

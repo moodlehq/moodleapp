@@ -111,7 +111,7 @@ angular.module('mm.addons.mod_assign')
                         $scope.summary = response.gradingsummary;
 
                         $scope.needsGradingAvalaible = response.gradingsummary.submissionsneedgradingcount > 0 &&
-                            parseInt($mmSite.getInfo().version, 10) >= 2016110200;
+                            $mmSite.isVersionGreaterEqualThan('3.2');
                     }).catch(function() {
                         // Fail silently (WS is not available, fallback).
                         return $q.when();

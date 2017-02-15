@@ -26,8 +26,7 @@ angular.module('mm.addons.files')
             "itemid": 0,
             "filepath": "",
             "filename": ""
-        },
-        moodle310version = 2016052300;
+        };
 
     /**
      * Check if core_files_get_files WS call is available.
@@ -429,8 +428,7 @@ angular.module('mm.addons.files')
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            var version = parseInt(site.getInfo().version, 10);
-            return version && version >= moodle310version;
+            return site.isVersionGreaterEqualThan('3.1.0');
         });
     };
 
@@ -447,16 +445,12 @@ angular.module('mm.addons.files')
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            var version = parseInt(site.getInfo().version, 10);
-            if (!version) {
-                // Cannot determine version, return false.
-                return false;
-            } else if (version == moodle310version) {
-                // Uploading is not working right now for Moodle 3.1.0 (2016052300).
-                return false;
-            } else if (version > moodle310version) {
+            if (site.isVersionGreaterEqualThan('3.1.1')) {
                 // In Moodle 3.1.1 or higher we need a WS to move to private files.
                 return self.canMoveFromDraftToPrivate(siteId);
+            } else if (site.isVersionGreaterEqualThan('3.1.0')) {
+                // Upload private files doesn't work for Moodle 3.1.0 due to a bug.
+                return false;
             }
 
             return true;

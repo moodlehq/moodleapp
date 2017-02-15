@@ -448,10 +448,8 @@ angular.module('mm.addons.mod_wiki')
         }
 
         if (lockonly) {
-            var version = $mmSite.getInfo().version;
-
             // This parameter requires Moodle 3.2. It saves network usage.
-            if (version && parseInt(version, 10) >= 2016100700) {
+            if ($mmSite.isVersionGreaterEqualThan('3.2')) {
                 params.lockonly = 1;
             }
         }

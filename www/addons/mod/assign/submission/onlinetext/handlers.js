@@ -137,11 +137,8 @@ angular.module('mm.addons.mod_assign')
      */
     self.isEnabledForEdit = function() {
         // There's a bug in Moodle 3.1.0 that doesn't allow submitting HTML, so we'll disable this plugin in that case.
-        // Bug was fixed in 3.1.1 minor release (2016052301) and in master version 2016070700.
-        var version = parseInt($mmSite.getInfo().version, 10),
-            localMobileEnabled = $mmSite.checkIfAppUsesLocalMobile();
-
-        return (version >= 2016052301 && version < 2016052400) || version >= 2016070700 || localMobileEnabled;
+        // Bug was fixed in 3.1.1 minor release and in 3.2.
+        return $mmSite.isVersionGreaterEqualThan('3.1.1') || $mmSite.checkIfAppUsesLocalMobile();
     };
 
     /**
