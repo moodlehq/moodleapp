@@ -193,7 +193,10 @@ angular.module('mm.addons.mod_forum')
     function addAllParticipantsOption(groups, check) {
         var promise;
 
-        if (check) {
+        if (!$mmaModForum.isAllParticipantsFixed()) {
+            // All participants has a bug, don't add it.
+            return $q.when(groups);
+        } else if (check) {
             // We need to check if the user can add a discussion to all participants.
             promise = $mmaModForum.canAddDiscussionToAll(forumId).catch(function() {
                 // The call failed, let's assume he can't.

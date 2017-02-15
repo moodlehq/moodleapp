@@ -268,6 +268,18 @@ angular.module('mm.addons.mod_forum')
     };
 
     /**
+     * There was a bug adding new discussions to All Participants (see MDL-57962). Check if it's fixed.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#isAllParticipantsFixed
+     * @return {Boolean} True if fixed, false otherwise.
+     */
+    self.isAllParticipantsFixed = function() {
+        return $mmSite.isVersionGreaterEqualThan(['3.1.5', '3.2.2']);
+    };
+
+    /**
      * Check if canAddDiscussion is available.
      *
      * @module mm.addons.mod_forum
