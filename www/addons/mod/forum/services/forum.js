@@ -203,8 +203,7 @@ angular.module('mm.addons.mod_forum')
     self.canAddAttachments = function(siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             // Attachments allowed from Moodle 3.1.
-            var version = parseInt(site.getInfo().version, 10);
-            return version && version >= 2016052300;
+            return site.isVersionGreaterEqualThan('3.1');
         });
     };
 

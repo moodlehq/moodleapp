@@ -236,7 +236,18 @@ angular.module('mm.core')
             "moodle_webservice_get_siteinfo": "core_webservice_get_site_info",
         };
 
-        var self = {};
+        var self = {},
+            moodleReleases = {
+                '2.4': 2012120300,
+                '2.5': 2013051400,
+                '2.6': 2013111800,
+                '2.7': 2014051200,
+                '2.8': 2014111000,
+                '2.9': 2015051100,
+                '3.0': 2015111600,
+                '3.1': 2016052300,
+                '3.2': 2016120500
+            };
 
         /**
          * Site object to store site data.
@@ -752,7 +763,7 @@ angular.module('mm.core')
          */
         Site.prototype.uploadFile = function(uri, options) {
             if (!options.fileArea) {
-                if (parseInt(this.infos.version, 10) >= 2016052300) {
+                if (this.isVersionGreaterEqualThan('3.1')) {
                     // From Moodle 3.1 only draft is allowed.
                     options.fileArea = 'draft';
                 } else {
@@ -1289,6 +1300,123 @@ angular.module('mm.core')
             }
             return method;
         };
+
+        /**
+         * Check if the site version is greater than one or some versions.
+         * This function accepts a string or an array of strings. If array, the last version must be the highest.
+         *
+         * @param  {Mixed} versions Version or list of versions to check.
+         * @return {Boolean}        True if greater or equal, false otherwise.
+         * @description
+         * If a string is supplied (e.g. '3.2.1'), it will check if the site version is greater or equal than this version.
+         *
+         * If an array of versions is supplied, it will check if the site version is greater or equal than the last version,
+         * or if it's higher or equal than any of the other releases supplied but lower than the next major release. The last
+         * version of the array must be the highest version.
+         * For example, if the values supplied are ['3.0.5', '3.2.3', '3.3.1'] the function will return true if the site version
+         * is either:
+         *     - Greater or equal than 3.3.1.
+         *     - Greater or equal than 3.2.3 but lower than 3.3.
+         *     - Greater or equal than 3.0.5 but lower than 3.1.
+         *
+         * This function only accepts versions from 2.4.0 and above. If any of the versions supplied isn't found, it will assume
+         * it's the last released major version.
+         */
+        Site.prototype.isVersionGreaterEqualThan = function(versions) {
+            var siteVersion = parseInt(this.getInfo().version, 10);
+
+            if (angular.isArray(versions)) {
+                if (!versions.length) {
+                    return false;
+                }
+
+                for (var i = 0; i < versions.length; i++) {
+                    var versionNumber = getVersionNumber(versions[i]);
+                    if (i == versions.length - 1) {
+                        // It's the last version, check only if site version is greater than this one.
+                        return siteVersion >= versionNumber;
+                    } else {
+                        // Check if site version if bigger than this number but lesser than next major.
+                        if (siteVersion >= versionNumber && siteVersion < getNextMajorVersionNumber(versions[i])) {
+                            return true;
+                        }
+                    }
+                }
+            } else if (typeof versions == 'string') {
+                // Compare with this version.
+                return siteVersion >= getVersionNumber(versions);
+            }
+
+            return false;
+        };
+
+        /**
+         * Get a version number from a release version.
+         * If release version is valid but not found in the list of Moodle releases, it will use the last released major version.
+         *
+         * @param  {String} version Release version to convert to version number.
+         * @return {Number}         Version number, 0 if invalid.
+         */
+        function getVersionNumber(version) {
+            var data = getMajorAndMinor(version);
+
+            if (!data) {
+                // Invalid version.
+                return 0;
+            }
+
+            if (typeof moodleReleases[data.major] == 'undefined') {
+                // Major version not found. Use the last one.
+                data.major = Object.keys(moodleReleases).slice(-1);
+            }
+
+            return moodleReleases[data.major] + data.minor;
+        }
+
+        /**
+         * Given a release version, return the major and minor versions.
+         *
+         * @param  {String} version Release version (e.g. '3.1.0').
+         * @return {Object}         Object with major and minor. Returns false if invalid version.
+         */
+        function getMajorAndMinor(version) {
+            var match = version.match(/(\d)+(?:\.(\d)+)?(?:\.(\d)+)?/);
+            if (!match || !match[1]) {
+                // Invalid version.
+                return false;
+            }
+
+            return {
+                major: match[1] + '.' + (match[2] || '0'),
+                minor: parseInt(match[3] || 0, 10)
+            };
+        }
+
+        /**
+         * Given a release version, return the next major version number.
+         *
+         * @param  {String} version Release version (e.g. '3.1.0').
+         * @return {Number}         Next major version number.
+         */
+        function getNextMajorVersionNumber(version) {
+            var data = getMajorAndMinor(version),
+                position,
+                releases = Object.keys(moodleReleases);
+
+            if (!data) {
+                // Invalid version.
+                return 0;
+            }
+
+            position = releases.indexOf(data.major);
+
+            if (position == -1 || position == releases.length -1) {
+                // Major version not found or it's the last one. Use the last one.
+                return moodleReleases[releases[position]];
+            }
+
+            return moodleReleases[releases[position + 1]];
+        }
 
         /**
          * Get cache ID.

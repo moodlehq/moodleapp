@@ -597,9 +597,7 @@ angular.module('mm.core.course')
         }
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            var version = parseInt(site.getInfo().version, 10);
-
-            if (version >= 2015051100) {
+            if (site.isVersionGreaterEqualThan('2.9')) {
                 // From Moodle 2.9 the course contents can be filtered, so maybe the module doesn't have contents
                 // because they were filtered. Try to get its contents.
                 return self.getModule(module.id, courseId, sectionId, preferCache, ignoreCache, siteId).then(function(mod) {

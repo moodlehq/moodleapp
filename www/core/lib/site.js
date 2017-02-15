@@ -501,6 +501,32 @@ angular.module('mm.core')
     /**
      * @module mm.core
      * @ngdoc method
+     * @name $mmSite#isVersionGreaterEqualThan
+     * @param  {Mixed} versions Version or list of versions to check.
+     * @return {Boolean}        True if greater or equal, false otherwise.
+     * @description
+     *
+     * Check if the site version is greater than one or some versions.
+     * This function accepts a string or an array of strings. If array, the last version must be the highest.
+     *
+     * If a string is supplied (e.g. '3.2.1'), it will check if the site version is greater or equal than this version.
+     *
+     * If an array of versions is supplied, it will check if the site version is greater or equal than the last version,
+     * or if it's higher or equal than any of the other releases supplied but lower than the next major release. The last
+     * version of the array must be the highest version.
+     * For example, if the values supplied are ['3.0.5', '3.2.3', '3.3.1'] the function will return true if the site version
+     * is either:
+     *     - Greater or equal than 3.3.1.
+     *     - Greater or equal than 3.2.3 but lower than 3.3.
+     *     - Greater or equal than 3.0.5 but lower than 3.1.
+     *
+     * This function only accepts versions from 2.4.0 and above. If any of the versions supplied isn't found, it will assume
+     * it's the last released major version.
+     */
+
+    /**
+     * @module mm.core
+     * @ngdoc method
      * @name $mmSite#getCompatibleFunction
      * @param  {String} method WS function to check.
      * @return {String}        Method to use based in the available functions.
