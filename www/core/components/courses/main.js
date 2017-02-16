@@ -87,8 +87,9 @@ angular.module('mm.core.courses', ['mm.core.contentlinks'])
 })
 
 .config(function($mmContentLinksDelegateProvider) {
-    $mmContentLinksDelegateProvider.registerLinkHandler('mmCourses:myCourses', '$mmCoursesHandlers.myCoursesLinksHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmCourses:courses', '$mmCoursesHandlers.coursesLinksHandler');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmCourses:course', '$mmCoursesHandlers.courseLinksHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmCourses:dashboard', '$mmCoursesHandlers.dashboardLinksHandler');
 })
 
 .run(function($mmEvents, mmCoreEventLogin, mmCoreEventSiteUpdated, mmCoreEventLogout, $mmCoursesDelegate, $mmCourses,
