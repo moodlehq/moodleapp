@@ -307,7 +307,25 @@ angular.module('mm.core.courses')
                 };
 
             return site.read('core_course_get_courses_by_field', data, preSets).then(function(courses) {
-                return courses.courses || $q.reject();
+                if (courses.courses) {
+                    // Courses will be sorted using sortorder if avalaible.
+                    return courses.courses.sort(function(a, b) {
+                        if (typeof a.sortorder == "undefined" && typeof b.sortorder == "undefined") {
+                            return b.id - a.id;
+                        }
+
+                        if (typeof a.sortorder == "undefined") {
+                            return 1;
+                        }
+
+                        if (typeof b.sortorder == "undefined") {
+                            return -1;
+                        }
+
+                        return b.sortorder - a.sortorder;
+                    });
+                }
+                return $q.reject();
             });
         });
     };
