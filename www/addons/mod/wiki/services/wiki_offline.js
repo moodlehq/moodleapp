@@ -14,7 +14,7 @@
 
 angular.module('mm.addons.mod_wiki')
 
-.constant('mmaModWikiNewPagesStore', 'mma_mod_wiki_new_pages')
+.constant('mmaModWikiNewPagesStore', 'mma_mod_wiki_new_pages_store')
 
 .config(function($mmSitesFactoryProvider, mmaModWikiNewPagesStore) {
     var stores = [
