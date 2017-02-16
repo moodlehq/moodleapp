@@ -27,23 +27,37 @@ angular.module('mm.core.courses')
     var self = {};
 
     /**
-     * Content links handler for My Courses.
+     * Content links handler for list of courses.
+     * It can show the list of available courses or in a certain category. It will show My Courses in old sites.
      *
      * @module mm.core.courses
      * @ngdoc method
      * @name $mmCoursesHandlers#myCoursesLinksHandler
      */
-    self.myCoursesLinksHandler = $mmContentLinkHandlerFactory.createChild(
+    self.coursesLinksHandler = $mmContentLinkHandlerFactory.createChild(
                 /\/course\/?(index\.php.*)?$/, '$mmSideMenuDelegate_mmCourses');
 
     // Get actions to perform with the link. See $mmContentLinkHandlerFactory#getActions.
-    self.myCoursesLinksHandler.getActions = function(siteIds, url, params, courseId) {
+    self.coursesLinksHandler.getActions = function(siteIds, url, params, courseId) {
         return [{
             action: function(siteId) {
+                var state = 'site.mm_courses', // By default, go to My Courses (old Moodles).
+                    stateParams = {};
+
+                if ($mmCourses.isGetCoursesByFieldAvailable()) {
+                    if (params.categoryid && $mmCourses.isGetCategoriesAvailable()) {
+                        state = 'site.mm_coursescategories';
+                        stateParams.categoryid = parseInt(params.categoryid, 10);
+                    } else {
+                        state = 'site.mm_availablecourses';
+                    }
+                }
+
                 // Always use redirect to make it the new history root (to avoid "loops" in history).
                 $state.go('redirect', {
                     siteid: siteId || $mmSite.getId(),
-                    state: 'site.mm_courses'
+                    state: state,
+                    params: stateParams
                 });
             }
         }];
@@ -227,6 +241,29 @@ angular.module('mm.core.courses')
             }
         });
     }
+
+    /**
+     * Content links handler for Dashboard. For now, it will always go to My Courses.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCoursesHandlers#dashboardLinksHandler
+     */
+    self.dashboardLinksHandler = $mmContentLinkHandlerFactory.createChild(
+                /\/my\/?$/, '$mmSideMenuDelegate_mmCourses');
+
+    // Get actions to perform with the link. See $mmContentLinkHandlerFactory#getActions.
+    self.dashboardLinksHandler.getActions = function(siteIds, url, params, courseId) {
+        return [{
+            action: function(siteId) {
+                // Always use redirect to make it the new history root (to avoid "loops" in history).
+                $state.go('redirect', {
+                    siteid: siteId || $mmSite.getId(),
+                    state: 'site.mm_courses'
+                });
+            }
+        }];
+    };
 
     return self;
 });
