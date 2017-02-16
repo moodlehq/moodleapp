@@ -265,6 +265,9 @@ p.item-text-wrap {
 .item.item-disabled,
 .platform-android .item.item-disabled {
   color: $item-disabled-color;
+  h2 {
+    color: $item-disabled-color;
+  }
 }
 
 // Avoid adding too much padding.
