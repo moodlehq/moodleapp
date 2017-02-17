@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <widget id="com.moodle.moodlemobile" version="3.2.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>isea project</name>
-  <description>Official Moodle Mobile app for isea project</description>
+  <description>Official Mobile app for isea project</description>
   <author href="http://isea-got.in" email="sandeeppatitripathi@gmail.com">sandeep</author>
   <content src="index.html"/>
   <access origin="*"/>
