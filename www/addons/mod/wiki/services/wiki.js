@@ -111,8 +111,6 @@ angular.module('mm.addons.mod_wiki')
      * @return {Promise}         Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
     self.isPluginEnabled = function(siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return  site.wsAvailable('mod_wiki_get_wikis_by_courses') &&
                     site.wsAvailable('mod_wiki_get_subwikis') &&
@@ -148,8 +146,6 @@ angular.module('mm.addons.mod_wiki')
      * @return {Promise}        Promise resolved when the wiki is retrieved.
      */
     self.getWiki = function(courseId, id, paramName, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     courseids: [courseId]
@@ -298,8 +294,6 @@ angular.module('mm.addons.mod_wiki')
      * @return {Promise}        Promise resolved with wiki subwikis.
      */
     self.getSubwikis = function(wikiId, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     wikiid: wikiId
@@ -333,8 +327,6 @@ angular.module('mm.addons.mod_wiki')
      * @return {Promise}        Promise resolved with wiki subwiki pages.
      */
     self.getSubwikiPages = function(wikiId, groupId, userId, sortBy, sortDirection, includeContent, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             groupId = groupId || -1;
             userId = userId || 0;
@@ -378,8 +370,6 @@ angular.module('mm.addons.mod_wiki')
      * @return {Promise}        Promise resolved with wiki subwiki files.
      */
     self.getSubwikiFiles = function(wikiId, groupId, userId, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             groupId = groupId || -1;
             userId = userId || 0;
@@ -412,8 +402,6 @@ angular.module('mm.addons.mod_wiki')
      * @return {Promise}        Promise resolved with wiki page contents.
      */
     self.getPageContents = function(pageId, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     pageid: pageId
@@ -585,8 +573,6 @@ angular.module('mm.addons.mod_wiki')
      *                                   - wserror: True if it's an error returned by the WebService, false otherwise.
      */
     self.newPageOnline = function(title, content, subwikiId, wikiId, userId, groupId, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     title: title,
@@ -658,7 +644,6 @@ angular.module('mm.addons.mod_wiki')
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
     self.invalidateWikiData = function(courseId, siteId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getWikiDataCacheKey(courseId));
         });
@@ -675,7 +660,6 @@ angular.module('mm.addons.mod_wiki')
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
     self.invalidateSubwikis = function(wikiId, siteId) {
-        siteId = siteId || $mmSite.getId();
         self.clearSubwikiList(wikiId);
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getWikiSubwikisCacheKey(wikiId));
@@ -693,7 +677,6 @@ angular.module('mm.addons.mod_wiki')
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
     self.invalidateSubwikiPages = function(wikiId, siteId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKeyStartingWith(getWikiSubwikiPagesCacheKeyPrefix(wikiId));
         });
@@ -710,7 +693,6 @@ angular.module('mm.addons.mod_wiki')
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
     self.invalidateSubwikiFiles = function(wikiId, siteId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKeyStartingWith(getWikiSubwikiFilesCacheKeyPrefix(wikiId));
         });
@@ -727,7 +709,6 @@ angular.module('mm.addons.mod_wiki')
      * @return {Promise}        Promise resolved when the data is invalidated.
      */
     self.invalidatePage = function(pageId, siteId) {
-        siteId = siteId || $mmSite.getId();
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getWikiPageCacheKey(pageId));
         });
@@ -771,8 +752,7 @@ angular.module('mm.addons.mod_wiki')
      * @return {Promise}         Promise resolved when the files are invalidated.
      */
     self.invalidateFiles = function(moduleId, siteId) {
-        siteId = siteId || $mmSite.getId();
-        return $mmFilepool.invalidateFilesByComponent($mmSite.getId(), mmaModWikiComponent, moduleId);
+        return $mmFilepool.invalidateFilesByComponent(siteId, mmaModWikiComponent, moduleId);
     };
 
     /**
@@ -787,8 +767,6 @@ angular.module('mm.addons.mod_wiki')
      */
     self.logView = function(id, siteId) {
         if (id) {
-            siteId = siteId || $mmSite.getId();
-
             return $mmSitesManager.getSite(siteId).then(function(site) {
                 var params = {
                     wikiid: id
@@ -811,8 +789,6 @@ angular.module('mm.addons.mod_wiki')
      */
     self.logPageView = function(id, siteId) {
         if (id) {
-            siteId = siteId || $mmSite.getId();
-
             return $mmSitesManager.getSite(siteId).then(function(site) {
                 var params = {
                     pageid: id
