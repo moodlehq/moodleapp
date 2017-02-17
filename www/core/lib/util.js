@@ -1909,6 +1909,30 @@ angular.module('mm.core')
             });
         };
 
+        /**
+         * Converts an array of objects into an object with key and value.
+         * The contrary of objectToArrayOfObjects
+         * For example, it can convert [{name: 'size', value: 2}] into {size: 2}.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#objectToKeyValueMap
+         * @param  {Object} obj         Object to convert.
+         * @param  {String} keyName     Name of the properties where the keys are stored.
+         * @param  {String} valueName   Name of the properties where the keys are stored.
+         * @param  {String} [keyPrefix] Key prefix if needed to delete it.
+         * @return {Object[]}         Array of objects mapped.
+         */
+        self.objectToKeyValueMap = function(obj, keyName, valueName, keyPrefix) {
+            var prefixSubstr = keyPrefix ? keyPrefix.length : 0,
+                mapped = {};
+            angular.forEach(obj, function(item) {
+                var key = prefixSubstr > 0 ? item[keyName].substr(prefixSubstr) : item[keyName];
+                mapped[key] = item[valueName];
+            });
+            return mapped;
+        };
+
 
         /**
          * Tests to see whether two arrays or objects have the same value at a particular key.
