@@ -11,7 +11,6 @@
     "wsextservice" : "local_mobile",
     "gcmpn": "694767596569",
     "customurlscheme": "moodlemobile",
-    "siteurl": "http://isea-got.in",
     "skipssoconfirmation": "false",
     "forcedefaultlanguage": "false"
 }
