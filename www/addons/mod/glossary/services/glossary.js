@@ -22,18 +22,19 @@ angular.module('mm.addons.mod_glossary')
  * @name $mmaModGlossary
  */
 .factory('$mmaModGlossary', function($mmSite, $q, $mmSitesManager, $mmFilepool, mmaModGlossaryComponent, $mmaModGlossaryOffline,
-        mmaModGlossaryLimitEntriesNum, $mmApp, $mmUtil, mmaModGlossaryLimitCategoriesNum, $mmText) {
+        mmaModGlossaryLimitEntriesNum, $mmApp, $mmUtil, mmaModGlossaryLimitCategoriesNum, $mmText,
+        mmaModGlossaryShowAllCategories) {
     var self = {};
 
     /**
      * Get the course glossary cache key.
      *
-     * @param  {Number} courseId
-     * @return {String}
      * @protected
-     * @ngdoc  method
      * @module mm.addons.mod_glossary
+     * @ngdoc method
      * @name   $mmaModGlossary#_getCourseGlossariesCacheKey
+     * @param  {Number} courseId    Course Id.
+     * @return {String}             Cache key.
      */
     self._getCourseGlossariesCacheKey = function(courseId) {
         return 'mmaModGlossary:courseGlossaries:' + courseId;
@@ -42,51 +43,57 @@ angular.module('mm.addons.mod_glossary')
     /**
      * Get all the glossaries in a course.
      *
-     * @param  {Number} courseId
-     * @return {Promise} resolved with the glossaries
-     * @ngdoc  method
      * @module mm.addons.mod_glossary
+     * @ngdoc method
      * @name   $mmaModGlossary#getCourseGlossaries
+     * @param  {Number} courseId     Course Id.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}             Resolved with the glossaries.
      */
-    self.getCourseGlossaries = function(courseId) {
-        var params = {
-                courseids: [courseId]
-            },
-            preSets = {
-                cacheKey: self._getCourseGlossariesCacheKey(courseId)
-            };
-        return $mmSite.read('mod_glossary_get_glossaries_by_courses', params, preSets).then(function(result) {
-            return result.glossaries;
+    self.getCourseGlossaries = function(courseId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    courseids: [courseId]
+                },
+                preSets = {
+                    cacheKey: self._getCourseGlossariesCacheKey(courseId)
+                };
+            return site.read('mod_glossary_get_glossaries_by_courses', params, preSets).then(function(result) {
+                return result.glossaries;
+            });
         });
     };
 
     /**
      * Invalidate all glossaries in a course.
      *
-     * @param  {Number} courseId
-     * @return {Promise}
      * @protected
-     * @ngdoc  method
      * @module mm.addons.mod_glossary
+     * @ngdoc method
      * @name   $mmaModGlossary#invalidateCourseGlossaries
+     * @param  {Number} courseId     Course Id.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}             Resolved when data is invalidated.
      */
-    self.invalidateCourseGlossaries = function(courseId) {
-        var key = self._getCourseGlossariesCacheKey(courseId);
-        return $mmSite.invalidateWsCacheForKey(key);
+    self.invalidateCourseGlossaries = function(courseId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var key = self._getCourseGlossariesCacheKey(courseId);
+            return site.invalidateWsCacheForKey(key);
+        });
     };
 
     /**
      * Get the entries by author cache key.
      *
-     * @param  {Number} glossaryId
-     * @param  {String} letter
-     * @param  {String} field
-     * @param  {String} sort
-     * @return {String}
      * @protected
-     * @ngdoc  method
      * @module mm.addons.mod_glossary
+     * @ngdoc method
      * @name   $mmaModGlossary#_getEntriesByAuthorCacheKey
+     * @param  {Number} glossaryId  Glossary Id.
+     * @param  {String} letter      First letter of firstname or lastname, or either keywords: ALL or SPECIAL.
+     * @param  {String} field       Search and order using: FIRSTNAME or LASTNAME
+     * @param  {String} sort        The direction of the order: ASC or DESC
+     * @return {String}             Cache key.
      */
     self._getEntriesByAuthorCacheKey = function(glossaryId, letter, field, sort) {
         return 'mmaModGlossary:entriesByAuthor:' + glossaryId + ":" + letter + ":" + field + ":" + sort;
@@ -95,66 +102,142 @@ angular.module('mm.addons.mod_glossary')
     /**
      * Get entries by author.
      *
-     * @param  {Number} glossaryId
-     * @param  {String} letter
-     * @param  {String} field
-     * @param  {String} sort
-     * @param  {Number} from
-     * @param  {Number} limit
-     * @param  {Boolean} forceCache     True to always get the value from cache, false otherwise. Default false.
-     * @return {Promise}
-     * @ngdoc  method
      * @module mm.addons.mod_glossary
+     * @ngdoc method
      * @name   $mmaModGlossary#getEntriesByAuthor
+     * @param  {Number} glossaryId  Glossary Id.
+     * @param  {String} letter      First letter of firstname or lastname, or either keywords: ALL or SPECIAL.
+     * @param  {String} field       Search and order using: FIRSTNAME or LASTNAME
+     * @param  {String} sort        The direction of the order: ASC or DESC
+     * @param  {Number} from        Start returning records from here.
+     * @param  {Number} limit       Number of records to return.
+     * @param  {Boolean} forceCache True to always get the value from cache, false otherwise. Default false.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Resolved with the entries.
      */
-    self.getEntriesByAuthor = function(glossaryId, letter, field, sort, from, limit, forceCache) {
-        var params = {
-                id: glossaryId,
-                letter: letter,
-                field: field,
-                sort: sort,
-                from: from,
-                limit: limit
-            },
-            preSets = {
-                cacheKey: self._getEntriesByAuthorCacheKey(glossaryId, letter, field, sort)
-            };
+    self.getEntriesByAuthor = function(glossaryId, letter, field, sort, from, limit, forceCache, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    id: glossaryId,
+                    letter: letter,
+                    field: field,
+                    sort: sort,
+                    from: from,
+                    limit: limit
+                },
+                preSets = {
+                    cacheKey: self._getEntriesByAuthorCacheKey(glossaryId, letter, field, sort)
+                };
 
-        if (forceCache) {
-            preSets.omitExpires = true;
-        }
+            if (forceCache) {
+                preSets.omitExpires = true;
+            }
 
-        return $mmSite.read('mod_glossary_get_entries_by_author', params, preSets);
+            return site.read('mod_glossary_get_entries_by_author', params, preSets);
+        });
     };
 
     /**
      * Invalidate cache of entries by author.
      *
-     * @param  {Number} glossaryId
-     * @param  {String} letter
-     * @param  {String} field
-     * @param  {String} sort
-     * @return {Promise}
-     * @ngdoc  method
      * @module mm.addons.mod_glossary
+     * @ngdoc method
      * @name   $mmaModGlossary#invalidateEntriesByAuthor
+     * @param  {Number} glossaryId  Glossary Id.
+     * @param  {String} letter      First letter of firstname or lastname, or either keywords: ALL or SPECIAL.
+     * @param  {String} field       Search and order using: FIRSTNAME or LASTNAME
+     * @param  {String} sort        The direction of the order: ASC or DESC
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Resolved when data is invalidated.
      */
-    self.invalidateEntriesByAuthor = function(glossaryId, letter, field, sort) {
-        var key = self._getEntriesByAuthorCacheKey(glossaryId, letter, field, sort);
-        return $mmSite.invalidateWsCacheForKey(key);
+    self.invalidateEntriesByAuthor = function(glossaryId, letter, field, sort, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var key = self._getEntriesByAuthorCacheKey(glossaryId, letter, field, sort);
+            return site.invalidateWsCacheForKey(key);
+        });
+    };
+
+    /**
+     * Get entries by category.
+     *
+     * @module mm.addons.mod_glossary
+     * @ngdoc method
+     * @name   $mmaModGlossary#getEntriesByCategory
+     * @param  {Number} glossaryId      Glossary Id.
+     * @param  {String} categoryId      The category ID. Use mmaModGlossaryShowAllCategories for all  categories, or
+     *                                  mmaModGlossaryShowNotCategorised for uncategorised entries.
+     * @param  {Number} from            Start returning records from here.
+     * @param  {Number} limit           Number of records to return.
+     * @param  {Boolean} forceCache     True to always get the value from cache, false otherwise. Default false.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}
+     */
+    self.getEntriesByCategory = function(glossaryId, categoryId, from, limit, forceCache, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    id: glossaryId,
+                    categoryid: categoryId,
+                    from: from,
+                    limit: limit
+                },
+                preSets = {
+                    cacheKey: self._getEntriesByCategoryCacheKey(glossaryId, categoryId)
+                };
+
+            if (forceCache) {
+                preSets.omitExpires = true;
+            }
+
+            return site.read('mod_glossary_get_entries_by_category', params, preSets);
+        });
+    };
+
+    /**
+     * Invalidate cache of entries by category.
+     *
+     * @module mm.addons.mod_glossary
+     * @ngdoc method
+     * @name   $mmaModGlossary#invalidateEntriesByCategory
+     * @param  {Number} glossaryId      Glossary Id.
+     * @param  {String} categoryId      The category ID. Use mmaModGlossaryShowAllCategories for all  categories, or
+     *                                  mmaModGlossaryShowNotCategorised for uncategorised entries.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}                Resolved when data is invalidated.
+     */
+    self.invalidateEntriesByCategory = function(glossaryId, categoryId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var key = self._getEntriesByCategoryCacheKey(glossaryId, categoryId);
+            return site.invalidateWsCacheForKey(key);
+        });
+    };
+
+    /**
+     * Get the entries by category cache key.
+     *
+     * @protected
+     * @module mm.addons.mod_glossary
+     * @ngdoc method
+     * @name   $mmaModGlossary#_getEntriesByCategoryCacheKey
+     * @param  {Number} glossaryId      Glossary Id.
+     * @param  {String} categoryId      The category ID. Use mmaModGlossaryShowAllCategories for all  categories, or
+     *                                  mmaModGlossaryShowNotCategorised for uncategorised entries.
+     * @return {String}                 Cache key.
+     */
+    self._getEntriesByCategoryCacheKey = function(glossaryId, categoryId) {
+        return 'mmaModGlossary:entriesByCategory:' + glossaryId + ":" + categoryId;
     };
 
     /**
      * Get the entries by date cache key.
      *
-     * @param  {Number} glossaryId
-     * @param  {String} order
-     * @param  {String} sort
-     * @return {String}
      * @protected
-     * @ngdoc  method
      * @module mm.addons.mod_glossary
+     * @ngdoc method
      * @name   $mmaModGlossary#_getEntriesByDateCacheKey
+     * @param  {Number} glossaryId   Glossary Id.
+     * @param  {String} order        The way to order the records.
+     * @param  {String} sort         The direction of the order.
+     * @return {String}              Cache key.
      */
     self._getEntriesByDateCacheKey = function(glossaryId, order, sort) {
         return 'mmaModGlossary:entriesByDate:' + glossaryId + ":" + order + ":" + sort;
@@ -163,62 +246,68 @@ angular.module('mm.addons.mod_glossary')
     /**
      * Get entries by date.
      *
-     * @param  {Number} glossaryId
-     * @param  {String} order
-     * @param  {String} sort
-     * @param  {Number} from
-     * @param  {Number} limit
-     * @param  {Boolean} forceCache     True to always get the value from cache, false otherwise. Default false.
-     * @return {Promise}
-     * @ngdoc  method
      * @module mm.addons.mod_glossary
+     * @ngdoc method
      * @name   $mmaModGlossary#getEntriesByDate
+     * @param  {Number} glossaryId   Glossary Id.
+     * @param  {String} order        The way to order the records.
+     * @param  {String} sort         The direction of the order.
+     * @param  {Number} from         Start returning records from here.
+     * @param  {Number} limit        Number of records to return.
+     * @param  {Boolean} forceCache  True to always get the value from cache, false otherwise. Default false.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}             Resolved with the entries.
      */
-    self.getEntriesByDate = function(glossaryId, order, sort, from, limit, forceCache) {
-        var params = {
-                id: glossaryId,
-                order: order,
-                sort: sort,
-                from: from,
-                limit: limit
-            },
-            preSets = {
-                cacheKey: self._getEntriesByDateCacheKey(glossaryId, order, sort)
-            };
+    self.getEntriesByDate = function(glossaryId, order, sort, from, limit, forceCache, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    id: glossaryId,
+                    order: order,
+                    sort: sort,
+                    from: from,
+                    limit: limit
+                },
+                preSets = {
+                    cacheKey: self._getEntriesByDateCacheKey(glossaryId, order, sort)
+                };
 
-        if (forceCache) {
-            preSets.omitExpires = true;
-        }
+            if (forceCache) {
+                preSets.omitExpires = true;
+            }
 
-        return $mmSite.read('mod_glossary_get_entries_by_date', params, preSets);
+            return site.read('mod_glossary_get_entries_by_date', params, preSets);
+        });
     };
 
     /**
      * Invalidate cache of entries by date.
      *
-     * @param  {Number} glossaryId
-     * @param  {String} letter
-     * @param  {String} field
-     * @return {Promise}
-     * @ngdoc  method
      * @module mm.addons.mod_glossary
+     * @ngdoc method
      * @name   $mmaModGlossary#invalidateEntriesByDate
+     * @param  {Number} glossaryId   Glossary Id.
+     * @param  {String} order        The way to order the records.
+     * @param  {String} sort         The direction of the order.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}             Resolved when data is invalidated.
      */
-    self.invalidateEntriesByDate = function(glossaryId, order, sort) {
-        var key = self._getEntriesByDateCacheKey(glossaryId, order, sort);
-        return $mmSite.invalidateWsCacheForKey(key);
+    self.invalidateEntriesByDate = function(glossaryId, order, sort, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var key = self._getEntriesByDateCacheKey(glossaryId, order, sort);
+            return site.invalidateWsCacheForKey(key);
+        });
     };
 
     /**
      * Get the entries by letter cache key.
      *
-     * @param  {Number} glossaryId
-     * @param  {String} letter
-     * @return {String}
      * @protected
-     * @ngdoc  method
      * @module mm.addons.mod_glossary
+     * @ngdoc method
      * @name   $mmaModGlossary#_getEntriesByLetterCacheKey
+     * @param  {Number} glossaryId  Glossary Id.
+     * @param  {String} letter      A letter, or a special keyword.
+     * @return {String}             Cache key.
      */
     self._getEntriesByLetterCacheKey = function(glossaryId, letter) {
         return 'mmaModGlossary:entriesByLetter:' + glossaryId + ":" + letter;
@@ -227,62 +316,68 @@ angular.module('mm.addons.mod_glossary')
     /**
      * Get entries by letter.
      *
-     * @param  {Number} glossaryId
-     * @param  {String} letter
-     * @param  {Number} from
-     * @param  {Number} limit
-     * @param  {Boolean} forceCache     True to always get the value from cache, false otherwise. Default false.
-     * @return {Promise}
-     * @ngdoc  method
      * @module mm.addons.mod_glossary
+     * @ngdoc method
      * @name   $mmaModGlossary#getEntriesByLetter
+     * @param  {Number} glossaryId  Glossary Id.
+     * @param  {String} letter      A letter, or a special keyword.
+     * @param  {Number} from        Start returning records from here.
+     * @param  {Number} limit       Number of records to return.
+     * @param  {Boolean} forceCache True to always get the value from cache, false otherwise. Default false.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Resolved with the entries.
      */
-    self.getEntriesByLetter = function(glossaryId, letter, from, limit, forceCache) {
-        var params = {
-                id: glossaryId,
-                letter: letter,
-                from: from,
-                limit: limit
-            },
-            preSets = {
-                cacheKey: self._getEntriesByLetterCacheKey(glossaryId, letter)
-            };
+    self.getEntriesByLetter = function(glossaryId, letter, from, limit, forceCache, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    id: glossaryId,
+                    letter: letter,
+                    from: from,
+                    limit: limit
+                },
+                preSets = {
+                    cacheKey: self._getEntriesByLetterCacheKey(glossaryId, letter)
+                };
 
-        if (forceCache) {
-            preSets.omitExpires = true;
-        }
+            if (forceCache) {
+                preSets.omitExpires = true;
+            }
 
-        return $mmSite.read('mod_glossary_get_entries_by_letter', params, preSets);
+            return site.read('mod_glossary_get_entries_by_letter', params, preSets);
+        });
     };
 
     /**
      * Invalidate cache of entries by letter.
      *
-     * @param  {Number} glossaryId
-     * @param  {String} letter
-     * @return {Promise}
-     * @ngdoc  method
      * @module mm.addons.mod_glossary
+     * @ngdoc method
      * @name   $mmaModGlossary#invalidateEntriesByLetter
+     * @param  {Number} glossaryId  Glossary Id.
+     * @param  {String} letter      A letter, or a special keyword.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Resolved when data is invalidated.
      */
-    self.invalidateEntriesByLetter = function(glossaryId, letter) {
-        var key = self._getEntriesByLetterCacheKey(glossaryId, letter);
-        return $mmSite.invalidateWsCacheForKey(key);
+    self.invalidateEntriesByLetter = function(glossaryId, letter, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var key = self._getEntriesByLetterCacheKey(glossaryId, letter);
+            return site.invalidateWsCacheForKey(key);
+        });
     };
 
     /**
      * Get the entries by search cache key.
      *
-     * @param  {Number} glossaryId
-     * @param  {String} query
-     * @param  {Boolean} fullsearch
-     * @param  {String} order
-     * @param  {String} sort
-     * @return {String}
      * @protected
-     * @ngdoc  method
      * @module mm.addons.mod_glossary
+     * @ngdoc method
      * @name   $mmaModGlossary#_getEntriesBySearchCacheKey
+     * @param  {Number} glossaryId      Glossary Id.
+     * @param  {String} query           The search query.
+     * @param  {Boolean} fullsearch     Whether or not full search is required.
+     * @param  {String} order           The way to order the results.
+     * @param  {String} sort            The direction of the order.
+     * @return {String}                 Cache key.
      */
     self._getEntriesBySearchCacheKey = function(glossaryId, query, fullsearch, order, sort) {
         return 'mmaModGlossary:entriesBySearch:' + glossaryId + ":" + fullsearch + ":" + order + ":" + sort + ":" + query;
@@ -291,98 +386,103 @@ angular.module('mm.addons.mod_glossary')
     /**
      * Get entries by search.
      *
-     * @param  {Number} glossaryId
-     * @param  {String} query
-     * @param  {Boolean} fullsearch
-     * @param  {String} order
-     * @param  {String} sort
-     * @param  {Number} from
-     * @param  {Number} limit
-     * @return {Promise}
-     * @ngdoc  method
      * @module mm.addons.mod_glossary
+     * @ngdoc method
      * @name   $mmaModGlossary#getEntriesBySearch
+     * @param  {Number} glossaryId      Glossary Id.
+     * @param  {String} query           The search query.
+     * @param  {Boolean} fullsearch     Whether or not full search is required.
+     * @param  {String} order           The way to order the results.
+     * @param  {String} sort            The direction of the order.
+     * @param  {Number} from            Start returning records from here.
+     * @param  {Number} limit           Number of records to return.
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
+     * @return {Promise}                Resolved with the entries.
      */
-    self.getEntriesBySearch = function(glossaryId, query, fullsearch, order, sort, from, limit) {
-        var params = {
-                id: glossaryId,
-                query: query,
-                fullsearch: fullsearch,
-                order: order,
-                sort: sort,
-                from: from,
-                limit: limit
-            },
-            preSets = {
-                cacheKey: self._getEntriesBySearchCacheKey(glossaryId, query, fullsearch, order, sort)
-            };
+    self.getEntriesBySearch = function(glossaryId, query, fullsearch, order, sort, from, limit, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    id: glossaryId,
+                    query: query,
+                    fullsearch: fullsearch,
+                    order: order,
+                    sort: sort,
+                    from: from,
+                    limit: limit
+                },
+                preSets = {
+                    cacheKey: self._getEntriesBySearchCacheKey(glossaryId, query, fullsearch, order, sort)
+                };
 
-        return $mmSite.read('mod_glossary_get_entries_by_search', params, preSets);
+            return site.read('mod_glossary_get_entries_by_search', params, preSets);
+        });
     };
 
     /**
      * Invalidate cache of entries by search.
      *
-     * @param  {Number} glossaryId
-     * @param  {String} query
-     * @param  {Boolean} fullsearch
-     * @param  {String} order
-     * @param  {String} sort
-     * @return {Promise}
-     * @ngdoc  method
      * @module mm.addons.mod_glossary
+     * @ngdoc method
      * @name   $mmaModGlossary#invalidateEntriesBySearch
+     * @param  {Number} glossaryId      Glossary Id.
+     * @param  {String} query           The search query.
+     * @param  {Boolean} fullsearch     Whether or not full search is required.
+     * @param  {String} order           The way to order the results.
+     * @param  {String} sort            The direction of the order.
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
+     * @return {Promise}                Resolved when data is invalidated.
      */
-    self.invalidateEntriesBySearch = function(glossaryId, query, fullsearch, order, sort) {
-        var key = self._getEntriesBySearchCacheKey(glossaryId, query, fullsearch, order, sort);
-        return $mmSite.invalidateWsCacheForKey(key);
+    self.invalidateEntriesBySearch = function(glossaryId, query, fullsearch, order, sort, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var key = self._getEntriesBySearchCacheKey(glossaryId, query, fullsearch, order, sort);
+            return site.invalidateWsCacheForKey(key);
+        });
     };
 
     /**
      * Get the glossary categories cache key.
      *
-     * @param  {Number} id      Glossary Id
-     * @return {String}     The cache key
+     * @param  {Number} glossaryId  Glossary Id.
+     * @return {String}             The cache key.
      */
-    function getCategoriesCacheKey(id) {
-        return 'mmaModGlossary:categories:' + id;
+    function getCategoriesCacheKey(glossaryId) {
+        return 'mmaModGlossary:categories:' + glossaryId;
     }
 
     /**
      * Get all the categories related to the glossary.
      *
-     * @ngdoc  method
      * @module mm.addons.mod_glossary
+     * @ngdoc method
      * @name   $mmaModGlossary#getAllCategories
-     * @param  {Number} id          Glossary Id.
+     * @param  {Number} glossaryId  Glossary Id.
      * @param  {String} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise}            Promise resolved with the categories.
+     * @return {Promise}            Promise resolved with the categories if supported or empty array if not.
      */
-    self.getAllCategories = function(id, siteId) {
+    self.getAllCategories = function(glossaryId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            return getCategories(id, 0, mmaModGlossaryLimitCategoriesNum, [], site);
+            return getCategories(glossaryId, 0, mmaModGlossaryLimitCategoriesNum, [], site);
         });
     };
-
 
     /**
      * Get the categories related to the glossary by sections. It's a recursive function see initial call values.
      *
-     * @param  {Number} id          Glossary Id.
+     * @param  {Number} glossaryId  Glossary Id.
      * @param  {Number} from        Number of categories already fetched, so fetch will be done from this number.  Initial value 0.
      * @param  {Number} limit       Number of categories to fetch. Initial value mmaModGlossaryLimitCategoriesNum.
      * @param  {Array}  categories  Already fetched categories where to append the fetch. Initial value [].
      * @param  {Object} site        Site Object.
      * @return {Promise}            Promise resolved with the categories.
      */
-    function getCategories(id, from, limit, categories, site) {
+    function getCategories(glossaryId, from, limit, categories, site) {
         var params = {
-                id: id,
+                id: glossaryId,
                 from: from,
                 limit: limit
             },
             preSets = {
-                cacheKey: getCategoriesCacheKey(id)
+                cacheKey: getCategoriesCacheKey(glossaryId)
             };
 
         return site.read('mod_glossary_get_categories', params, preSets).then(function(response) {
@@ -390,7 +490,7 @@ angular.module('mm.addons.mod_glossary')
             canLoadMore = (from + limit) < response.count;
             if (canLoadMore) {
                 from += limit;
-                return getCategories(id, from, limit, categories, site);
+                return getCategories(glossaryId, from, limit, categories, site);
             }
             return categories;
         });
@@ -399,50 +499,50 @@ angular.module('mm.addons.mod_glossary')
     /**
      * Invalidate cache of categories by glossary id.
      *
-     * @ngdoc  method
      * @module mm.addons.mod_glossary
+     * @ngdoc method
      * @name   $mmaModGlossary#invalidateCategories
-     * @param  {Number} id          Glossary Id
+     * @param  {Number} glossaryId  Glossary Id.
      * @param  {String} [siteId]    Site ID. If not defined, current site.
      * @return {Promise}            Promise resolved when categories data has been invalidated,
      */
-    self.invalidateCategories = function(id, siteId) {
+    self.invalidateCategories = function(glossaryId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.invalidateWsCacheForKey(self._getCategoriesCacheKey(id));
+            return site.invalidateWsCacheForKey(self._getCategoriesCacheKey(glossaryId));
         });
     };
 
     /**
      * Get an entry by ID cache key.
      *
-     * @param  {Number} id
-     * @return {String}
      * @protected
-     * @ngdoc  method
      * @module mm.addons.mod_glossary
+     * @ngdoc method
      * @name   $mmaModGlossary#_getEntryCacheKey
+     * @param  {Number} entryId  Entry Id.
+     * @return {String}          Cache key.
      */
-    self._getEntryCacheKey = function(id) {
-        return 'mmaModGlossary:getEntry:' + id;
+    self._getEntryCacheKey = function(entryId) {
+        return 'mmaModGlossary:getEntry:' + entryId;
     };
 
     /**
      * Get one entry by ID.
      *
-     * @ngdoc  method
      * @module mm.addons.mod_glossary
+     * @ngdoc  method
      * @name   $mmaModGlossary#getEntry
-     * @param  {Number} id       Entry ID.
+     * @param  {Number} entryId  Entry ID.
      * @param  {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}         Promise resolved with the entry.
      */
-    self.getEntry = function(id, siteId) {
+    self.getEntry = function(entryId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
-                    id: id
+                    id: entryId
                 },
                 preSets = {
-                    cacheKey: self._getEntryCacheKey(id)
+                    cacheKey: self._getEntryCacheKey(entryId)
                 };
 
             return site.read('mod_glossary_get_entry_by_id', params, preSets).then(function(response) {
@@ -466,10 +566,13 @@ angular.module('mm.addons.mod_glossary')
      * @param  {Boolean}    forceCache      True to always get the value from cache, false otherwise. Default false.
      * @param  {Array}      entries         Entries already fetch (just to concatenate them).
      * @param  {Number}     limitFrom       Number of entries already fetched, so fetch will be done from this number.
+     * @param  {String}     [siteId] Site ID. If not defined, current site.
      * @return {Promise}    Promise resolved when done.
      */
-    self.fetchAllEntries = function(fetchFunction, fetchArguments, forceCache, entries, limitFrom) {
+    self.fetchAllEntries = function(fetchFunction, fetchArguments, forceCache, entries, limitFrom, siteId) {
         var limitNum = mmaModGlossaryLimitEntriesNum;
+
+        siteId = siteId || $mmSite.getId();
 
         if (typeof limitFrom == 'undefined' || typeof entries == 'undefined') {
             limitFrom = 0;
@@ -479,13 +582,14 @@ angular.module('mm.addons.mod_glossary')
         var args = angular.extend([], fetchArguments);
         args.push(limitFrom);
         args.push(limitNum);
+        args.push(siteId);
 
         return fetchFunction.apply(this, args).then(function(result) {
             entries = entries.concat(result.entries);
             canLoadMore = (limitFrom + limitNum) < result.count;
             if (canLoadMore) {
                 limitFrom += limitNum;
-                return self.fetchAllEntries(fetchFunction, fetchArguments, forceCache, entries, limitFrom);
+                return self.fetchAllEntries(fetchFunction, fetchArguments, forceCache, entries, limitFrom, siteId);
             }
             return entries;
         });
@@ -494,15 +598,18 @@ angular.module('mm.addons.mod_glossary')
     /**
      * Invalidate cache of entry by ID.
      *
-     * @param  {Number} id
-     * @return {Promise}
-     * @ngdoc  method
      * @module mm.addons.mod_glossary
+     * @ngdoc method
      * @name   $mmaModGlossary#invalidateEntry
+     * @param  {Number} entryId         Entry Id.
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
+     * @return {Promise}                Resolved when data is invalidated.
      */
-    self.invalidateEntry = function(id) {
-        var key = self._getEntryCacheKey(id);
-        return $mmSite.invalidateWsCacheForKey(key);
+    self.invalidateEntry = function(entryId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var key = self._getEntryCacheKey(entryId);
+            return site.invalidateWsCacheForKey(key);
+        });
     };
 
     /**
@@ -534,8 +641,8 @@ angular.module('mm.addons.mod_glossary')
      * @module mm.addons.mod_glossary
      * @ngdoc method
      * @name $mmaModGlossary#invalidateGlossaryEntries
-     * @param {Object} glossary The glossary object.
-     * @return {Promise}        Promise resolved when data is invalidated.
+     * @param {Object} glossary     The glossary object.
+     * @return {Promise}            Promise resolved when data is invalidated.
      */
     self.invalidateGlossaryEntries = function(glossary) {
         return self.fetchAllEntries(self.getEntriesByLetter, [glossary.id, 'ALL'], true).then(function(entries) {
@@ -551,7 +658,7 @@ angular.module('mm.addons.mod_glossary')
                         promises.push(self.invalidateEntriesByLetter(glossary.id, 'ALL'));
                         break;
                     case 'cat':
-                        // Not implemented.
+                        promises.push(self.invalidateEntriesByCategory(glossary.id, mmaModGlossaryShowAllCategories));
                         break;
                     case 'date':
                         promises.push(self.invalidateEntriesByDate(glossary.id, 'CREATION', 'DESC'));
@@ -573,28 +680,30 @@ angular.module('mm.addons.mod_glossary')
      * @module mm.addons.mod_glossary
      * @ngdoc method
      * @name $mmaModGlossary#invalidateFiles
-     * @param {Number} moduleId The module ID.
-     * @return {Promise}        Promise resolved when the files are invalidated.
+     * @param {Number}  moduleId    The module ID.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved when the files are invalidated.
      */
-     self.invalidateFiles = function(moduleId) {
-         return $mmFilepool.invalidateFilesByComponent($mmSite.getId(), mmaModGlossaryComponent, moduleId);
+     self.invalidateFiles = function(moduleId, siteId) {
+         return $mmFilepool.invalidateFilesByComponent(siteId, mmaModGlossaryComponent, moduleId);
      };
 
     /**
      * Get one glossary by cmID.
      *
-     * @param  {Number} courseId
-     * @param  {Number} cmid
-     * @return {Promise}
-     * @ngdoc  method
      * @module mm.addons.mod_glossary
+     * @ngdoc method
      * @name   $mmaModGlossary#getGlossary
+     * @param  {Number} courseId    Course Id.
+     * @param  {Number} cmId        Course Module Id.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}
      */
-    self.getGlossary = function(courseId, cmid) {
-        return self.getCourseGlossaries(courseId).then(function(glossaries) {
+    self.getGlossary = function(courseId, cmId, siteId) {
+        return self.getCourseGlossaries(courseId, siteId).then(function(glossaries) {
             var result = $q.reject();
             angular.forEach(glossaries, function(glossary) {
-                if (glossary.coursemodule == cmid) {
+                if (glossary.coursemodule == cmId) {
                     result = glossary;
                 }
             });
@@ -605,18 +714,19 @@ angular.module('mm.addons.mod_glossary')
     /**
      * Get one glossary by glossary ID.
      *
-     * @param  {Number} courseId
-     * @param  {Number} id
-     * @return {Promise}
-     * @ngdoc  method
      * @module mm.addons.mod_glossary
+     * @ngdoc method
      * @name   $mmaModGlossary#getGlossaryById
+     * @param  {Number} courseId    Course Id.
+     * @param  {Number} glossaryId  Glossary Id.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}
      */
-    self.getGlossaryById = function(courseId, id) {
-        return self.getCourseGlossaries(courseId).then(function(glossaries) {
+    self.getGlossaryById = function(courseId, glossaryId, siteId) {
+        return self.getCourseGlossaries(courseId, siteId).then(function(glossaries) {
             var result = $q.reject();
             angular.forEach(glossaries, function(glossary) {
-                if (glossary.id == id) {
+                if (glossary.id == glossaryId) {
                     result = glossary;
                 }
             });
@@ -733,7 +843,7 @@ angular.module('mm.addons.mod_glossary')
                     error: error,
                     wserror: wserror
                 });
-            })
+            });
         }
     };
 
@@ -772,13 +882,13 @@ angular.module('mm.addons.mod_glossary')
      * @module mm.addons.mod_glossary
      * @ngdoc method
      * @name $mmaModGlossary#logView
-     * @param {Number} id Glossary ID.
-     * @param {String} mode The mode in which the glossary was viewed.
-     * @return {Promise} Promise resolved when the WS call is successful.
+     * @param {Number} glossaryId   Glossary ID.
+     * @param {String} mode         The mode in which the glossary was viewed.
+     * @return {Promise}            Promise resolved when the WS call is successful.
      */
-    self.logView = function(id, mode) {
+    self.logView = function(glossaryId, mode) {
         var params = {
-            id: id,
+            id: glossaryId,
             mode: mode
         };
         return $mmSite.write('mod_glossary_view_glossary', params);
@@ -790,12 +900,12 @@ angular.module('mm.addons.mod_glossary')
      * @module mm.addons.mod_glossary
      * @ngdoc method
      * @name $mmaModGlossary#logEntryView
-     * @param {Number} id Entry ID.
-     * @return {Promise} Promise resolved when the WS call is successful.
+     * @param {Number} entryId  Entry ID.
+     * @return {Promise}        Promise resolved when the WS call is successful.
      */
-    self.logEntryView = function(id) {
+    self.logEntryView = function(entryId) {
         var params = {
-            id: id
+            id: entryId
         };
         return $mmSite.write('mod_glossary_view_entry', params);
     };
