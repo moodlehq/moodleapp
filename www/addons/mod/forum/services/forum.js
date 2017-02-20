@@ -313,33 +313,36 @@ angular.module('mm.addons.mod_forum')
     /**
      * Format discussions, setting groupname if the discussion group is valid.
      *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForum#formatDiscussionsGroups
      * @param  {Number} cmid          Forum cmid.
      * @param  {Object[]} discussions List of discussions to format.
      * @return {Promise}              Promise resolved with the formatted discussions.
      */
     self.formatDiscussionsGroups = function(cmid, discussions) {
         discussions = angular.copy(discussions);
-        return $translate('mm.core.allparticipants').then(function(strAllParts) {
-            return $mmGroups.getActivityAllowedGroups(cmid).then(function(forumgroups) {
-                // Turn groups into an object where each group is identified by id.
-                var groups = {};
-                angular.forEach(forumgroups, function(fg) {
-                    groups[fg.id] = fg;
-                });
 
-                // Format discussions.
-                angular.forEach(discussions, function(disc) {
-                    if (disc.groupid === -1) {
-                        disc.groupname = strAllParts;
-                    } else {
-                        var group = groups[disc.groupid];
-                        if (group) {
-                            disc.groupname = group.name;
-                        }
-                    }
-                });
-                return discussions;
+        var strAllParts = $translate.instant('mm.core.allparticipants');
+        return $mmGroups.getActivityAllowedGroups(cmid).then(function(forumgroups) {
+            // Turn groups into an object where each group is identified by id.
+            var groups = {};
+            angular.forEach(forumgroups, function(fg) {
+                groups[fg.id] = fg;
             });
+
+            // Format discussions.
+            angular.forEach(discussions, function(disc) {
+                if (disc.groupid === -1) {
+                    disc.groupname = strAllParts;
+                } else {
+                    var group = groups[disc.groupid];
+                    if (group) {
+                        disc.groupname = group.name;
+                    }
+                }
+            });
+            return discussions;
         }).catch(function() {
             return discussions;
         });
