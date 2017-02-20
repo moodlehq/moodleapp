@@ -43,7 +43,9 @@ angular.module('mm.addons.mod_wiki')
     $scope.component = mmaModWikiComponent;
     $scope.canEdit = false;
     $scope.subwikiData = {
-        selected: 0,
+        subwikiSelected: 0,
+        userSelected: 0,
+        groupSelected: 0,
         subwikis: [],
         count: 0
     };
@@ -103,7 +105,10 @@ angular.module('mm.addons.mod_wiki')
     };
 
     $scope.gotoEditPage = function() {
-        if (currentPageObj && $scope.canEdit) {
+        if (!$scope.canEdit) {
+            return;
+        }
+        if (currentPageObj) {
             var stateParams = {
                 module: module,
                 moduleid: module.id,
@@ -112,31 +117,63 @@ angular.module('mm.addons.mod_wiki')
                 pagetitle: currentPageObj.title,
                 subwikiid: currentPageObj.subwikiid
             };
+            if (currentSubwiki) {
+                stateParams.wikiid = currentSubwiki.wikiid;
+                stateParams.userid = currentSubwiki.userid;
+                stateParams.groupid = currentSubwiki.groupid;
+            }
 
             return $state.go('site.mod_wiki-edit', stateParams);
+        } else if (currentSubwiki) {
+            return gotoCreateFirstPage();
         }
     };
 
     $scope.gotoNewPage = function() {
-        if (currentPageObj && $scope.canEdit) {
+        if (!$scope.canEdit) {
+            return;
+        }
+        if (currentPageObj) {
             var stateParams = {
                 module: module,
                 moduleid: module.id,
                 courseid: courseId,
                 subwikiid: currentPageObj.subwikiid
             };
+            if (currentSubwiki) {
+                stateParams.wikiid = currentSubwiki.wikiid;
+                stateParams.userid = currentSubwiki.userid;
+                stateParams.groupid = currentSubwiki.groupid;
+            }
 
             return $state.go('site.mod_wiki-edit', stateParams);
+        } else if (currentSubwiki) {
+            return gotoCreateFirstPage();
         }
     };
 
-    $scope.gotoSubwiki = function(subwikiId) {
+    // First page is missing. It will go to create the page.
+    function gotoCreateFirstPage() {
+        var stateParams = {
+            module: module,
+            moduleid: module.id,
+            courseid: courseId,
+            pagetitle: wiki.firstpagetitle,
+            wikiid: currentSubwiki.wikiid,
+            userid: currentSubwiki.userid,
+            groupid: currentSubwiki.groupid
+        };
+
+        return $state.go('site.mod_wiki-edit', stateParams);
+    }
+
+    $scope.gotoSubwiki = function(subwikiId, userId, groupId, canEdit) {
 
         // Check if the subwiki is disabled.
-        if (subwikiId > 0) {
+        if (subwikiId > 0 || canEdit) {
             popover.hide();
 
-            if (subwikiId != currentSubwiki.id) {
+            if (subwikiId != currentSubwiki.id || userId != currentSubwiki.userid || groupId != currentSubwiki.groupid) {
                 // Add a new State.
                 var stateParams = {
                     module: module,
@@ -146,6 +183,8 @@ angular.module('mm.addons.mod_wiki')
                     pagetitle: null,
                     wikiid: wiki.id,
                     subwikiid: subwikiId,
+                    userid: userId,
+                    groupid: groupId,
                     action: tabsDelegate.selectedIndex() == 0 ? 'page' : 'map'
                 };
                 return $state.go('site.mod_wiki', stateParams);
@@ -219,7 +258,10 @@ angular.module('mm.addons.mod_wiki')
                             }
 
                             $scope.subwikiData.count = subwikiList.count;
-                            $scope.subwikiData.selected = $stateParams.subwikiid || subwikiList.selected;
+                            $scope.subwikiData.subwikiSelected = $stateParams.subwikiid || subwikiList.subwikiSelected;
+                            $scope.subwikiData.userSelected = $stateParams.userid || subwikiList.userSelected;
+                            $scope.subwikiData.groupSelected = $stateParams.groupid || subwikiList.groupSelected;
+
                             $scope.subwikiData.subwikis = subwikiList.subwikis;
                             return $q.when();
                         });
@@ -234,7 +276,7 @@ angular.module('mm.addons.mod_wiki')
                             tabsDelegate.select(action == 'map' ? 1 : 0);
                         }
 
-                        if (!$scope.subwikiData.selected || $scope.subwikiData.count <= 0) {
+                        if ($scope.subwikiData.subwikiSelected === false || $scope.subwikiData.count <= 0) {
                             return $q.reject($translate.instant('mma.mod_wiki.errornowikiavailable'));
                         }
                     }).then(function() {
@@ -256,11 +298,7 @@ angular.module('mm.addons.mod_wiki')
                 return refreshAllData(sync, showErrors);
             }
 
-            if (message) {
-                $mmUtil.showErrorModal(message);
-            } else {
-                $mmUtil.showErrorModal('Error getting wiki data.');
-            }
+            $mmUtil.showErrorModalDefault(message, 'Error getting wiki data.');
             return $q.reject();
         });
     }
@@ -301,10 +339,13 @@ angular.module('mm.addons.mod_wiki')
             allParticipantsTitle = $translate.instant('mm.core.allparticipants'),
             nonInGroupTitle = $translate.instant('mma.mod_wiki.notingroup'),
             myGroupsTitle = $translate.instant('mm.core.mygroups'),
-            otherGroupsTitle = $translate.instant('mm.core.othergroups');
+            otherGroupsTitle = $translate.instant('mm.core.othergroups'),
+            selectedUserId = false;
 
         $scope.subwikiData.subwikis = [];
-        $scope.subwikiData.selected = $stateParams.subwikiid || false;
+        $scope.subwikiData.subwikiSelected = $stateParams.subwikiid || false;
+        $scope.subwikiData.userSelected =  $stateParams.userid || false;
+        $scope.subwikiData.groupSelected =  $stateParams.groupid || false;
         $scope.subwikiData.count = 0;
 
         // Group mode available.
@@ -327,8 +368,10 @@ angular.module('mm.addons.mod_wiki')
                     subwikiList.unshift({
                         name: allParticipantsTitle,
                         id: subwiki.id,
-                        group: -1,
-                        groupLabel: ""
+                        user: userId,
+                        group: groupId,
+                        groupLabel: "",
+                        canedit: subwiki.canedit
                     });
                     allParticipants = true;
                 }
@@ -349,8 +392,10 @@ angular.module('mm.addons.mod_wiki')
                         subwikiList.push({
                             name: user.fullname,
                             id: subwiki.id,
+                            user: userId,
                             group: groupId,
-                            groupLabel: groupLabel
+                            groupLabel: groupLabel,
+                            canedit: subwiki.canedit
                         });
 
                     });
@@ -363,6 +408,7 @@ angular.module('mm.addons.mod_wiki')
                     subwikiList.push({
                         name: groupLabel,
                         id: subwiki.id,
+                        user: userId,
                         group: groupId,
                         groupLabel: groupLabel,
                         canedit: subwiki.canedit
@@ -373,9 +419,15 @@ angular.module('mm.addons.mod_wiki')
 
             // If no subwikiid received as view param, select always the current user
             // or the first subwiki if not previously selected.
-            if (!$stateParams.subwikiid && subwiki.id > 0 &&
-                ((userId > 0 && currentUserId == userId) || !$scope.subwikiData.selected)) {
-                $scope.subwikiData.selected = subwiki.id;
+            if (!$stateParams.subwikiid && ((userId > 0 && currentUserId == userId) || !$scope.subwikiData.subwikiSelected ||
+                    $scope.subwikiData.subwikiSelected < 1)) {
+
+                // Check if there is one more propperly selected.
+                if (!$scope.subwikiData.userSelected || $scope.subwikiData.userSelected != currentUserId) {
+                    $scope.subwikiData.subwikiSelected = subwiki.id;
+                    $scope.subwikiData.userSelected = userId;
+                    $scope.subwikiData.groupSelected = groupId;
+                }
             }
         });
 
@@ -439,7 +491,8 @@ angular.module('mm.addons.mod_wiki')
                 $scope.subwikiData.subwikis.push({label: "", subwikis: subwikiList});
             }
 
-            $mmaModWiki.setSubwikiList(wiki.id, $scope.subwikiData.subwikis, $scope.subwikiData.count, $scope.subwikiData.selected);
+            $mmaModWiki.setSubwikiList(wiki.id, $scope.subwikiData.subwikis, $scope.subwikiData.count,
+                $scope.subwikiData.subwikiSelected, $scope.subwikiData.userSelected, $scope.subwikiData.groupSelected);
         });
     }
 
@@ -479,11 +532,7 @@ angular.module('mm.addons.mod_wiki')
         return $mmaModWiki.getSubwikis(wikiId).then(function(subwikis) {
             loadedSubwikis = subwikis;
 
-            // Check if any of the subwikis has offline data.
-            var subwikiIds = subwikis.map(function(subwiki) {
-                return subwiki.id;
-            });
-            return $mmaModWikiOffline.subwikisHaveOfflineData(subwikiIds).then(function(hasOffline) {
+            return $mmaModWikiOffline.subwikisHaveOfflineData(subwikis).then(function(hasOffline) {
                 $scope.wikiHasOffline = hasOffline;
             });
         });
@@ -491,10 +540,15 @@ angular.module('mm.addons.mod_wiki')
 
     // Fetch the page to be shown.
     function fetchWikiPage() {
+        var groupId, userId, subwikiId;
         // Search the current Subwiki.
         currentSubwiki = false;
         angular.forEach(loadedSubwikis, function(subwiki) {
-            if (!currentSubwiki && subwiki.id == $scope.subwikiData.selected) {
+            subwikiId = parseInt(subwiki.id, 10);
+            userId = parseInt(subwiki.userid, 10);
+            groupId = parseInt(subwiki.groupid, 10);
+            if (!currentSubwiki && subwikiId == $scope.subwikiData.subwikiSelected && userId == $scope.subwikiData.userSelected  &&
+                    groupId == $scope.subwikiData.groupSelected) {
                 currentSubwiki = subwiki;
             }
         });
@@ -503,16 +557,26 @@ angular.module('mm.addons.mod_wiki')
             return $q.reject();
         }
 
-        $scope.subwikiData.selected = currentSubwiki.id;
+        $scope.subwikiData.subwikiSelected = parseInt(currentSubwiki.id, 10);
+        $scope.subwikiData.userSelected = parseInt(currentSubwiki.userid, 10);
+        $scope.subwikiData.groupSelected = parseInt(currentSubwiki.groupid, 10);
 
         // We need fetchSubwikis to finish before calling fetchSubwikiPages because it needs subwikiid and pageid variable.
         return fetchSubwikiPages(currentSubwiki).then(function() {
+            // Check can edit before to have the value if there's no valid page.
+            $scope.canEdit = currentSubwiki.canedit && $mmaModWiki.isPluginEnabledForEditing();
+
             return fetchPageContents(currentPage).then(function(pageContents) {
-                $scope.title = pageContents.title;
-                $scope.subwikiData.selected = pageContents.subwikiid;
-                $scope.pageContent = replaceEditLinks(pageContents.cachedcontent);
-                $scope.canEdit = pageContents.caneditpage && $mmaModWiki.isPluginEnabledForEditing();
-                currentPageObj = pageContents;
+                if (pageContents) {
+                    $scope.title = pageContents.title;
+                    $scope.subwikiData.subwikiSelected = parseInt(pageContents.subwikiid, 10);
+                    $scope.subwikiData.userSelected = parseInt(pageContents.userid, 10);
+                    $scope.subwikiData.groupSelected = parseInt(pageContents.groupid, 10);
+
+                    $scope.pageContent = replaceEditLinks(pageContents.cachedcontent);
+                    $scope.canEdit = pageContents.caneditpage && $mmaModWiki.isPluginEnabledForEditing();
+                    currentPageObj = pageContents;
+                }
             });
         });
     }
@@ -541,7 +605,8 @@ angular.module('mm.addons.mod_wiki')
             }
 
             // Now get the offline pages.
-            return $mmaModWikiOffline.getSubwikiNewPages(subwiki.id).then(function(offlinePages) {
+            return $mmaModWikiOffline.getSubwikiNewPages(subwiki.id, subwiki.wikiid, subwiki.userid, subwiki.groupid)
+                    .then(function(offlinePages) {
 
                 // If no page specified, search first page in the offline pages.
                 if (!currentPage && !pageTitle) {
@@ -555,7 +620,8 @@ angular.module('mm.addons.mod_wiki')
                 $scope.subwikiPages = $mmaModWiki.sortPagesByTitle(subwikiPages.concat(offlinePages));
                 $scope.$broadcast(mmaModWikiSubwikiPagesLoaded, $scope.subwikiPages);
 
-                if (!currentPage && !pageTitle) {
+                // Reject if no currentPage selected from the subwikis given (if no subwikis avalaible, do not reject).
+                if (!currentPage && !pageTitle && subwikiPages.length > 0) {
                     return $q.reject();
                 }
             });
@@ -564,14 +630,17 @@ angular.module('mm.addons.mod_wiki')
 
     // Convenience function to get wiki page contents.
     function fetchPageContents(pageId) {
-        if (!pageId && pageTitle) {
+        if (!pageId) {
+            var title = title || wiki.firstpagetitle;
+
             // No page ID but we received a title. This means we're trying to load an offline page.
-            $scope.pageIsOffline = true;
-            return $mmaModWikiOffline.getNewPage(currentSubwiki.id, pageTitle).then(function(offlinePage) {
+            return $mmaModWikiOffline.getNewPage(title, currentSubwiki.id, currentSubwiki.wikiid, currentSubwiki.userid,
+                    currentSubwiki.groupid).then(function(offlinePage) {
+                $scope.pageIsOffline = true;
                 if (!newPageObserver) {
                     // It's an offline page, listen for new pages event to detect if the user goes to Edit and submits the page.
                     newPageObserver = $mmEvents.on(mmaModWikiPageCreatedEvent, function(data) {
-                        if (data.siteid == $mmSite.getId() && data.subwikiid == currentSubwiki.id && data.pagetitle == pageTitle) {
+                        if (data.siteid == $mmSite.getId() && data.subwikiid == currentSubwiki.id && data.pagetitle == title) {
                             // The page has been submitted. Get the page from the server.
                             currentPage = data.pageid;
 
@@ -588,8 +657,7 @@ angular.module('mm.addons.mod_wiki')
 
                 return offlinePage;
             }).catch(function() {
-                // Page not found, reject.
-                return $q.reject();
+                // Page not found, ignore.
             });
         }
 
@@ -692,11 +760,7 @@ angular.module('mm.addons.mod_wiki')
             return result.updated;
         }).catch(function(error) {
             if (showErrors) {
-                if (error) {
-                    $mmUtil.showErrorModal(error);
-                } else {
-                    $mmUtil.showErrorModal('mm.core.errorsync', true);
-                }
+                $mmUtil.showErrorModalDefault(error, 'mm.core.errorsync', true);
             }
             return $q.reject();
         });
@@ -765,7 +829,9 @@ angular.module('mm.addons.mod_wiki')
 
     // Refresh data if this subwiki is synchronized automatically.
     syncObserver = $mmEvents.on(mmaModWikiSubwikiAutomSyncedEvent, function(data) {
-        if (data && currentSubwiki && data.siteid == $mmSite.getId() && data.subwikiid == currentSubwiki.id) {
+        if (data && currentSubwiki && data.siteid == $mmSite.getId() && data.subwikiid == currentSubwiki.id &&
+                data.wikiid == currentSubwiki.wikiid && data.userid == currentSubwiki.userid  &&
+                data.groupid == currentSubwiki.groupid) {
             if (isCurrentView && data.warnings && data.warnings.length) {
                 // Show warnings.
                 $mmUtil.showErrorModal($mmText.buildMessage(data.warnings));
