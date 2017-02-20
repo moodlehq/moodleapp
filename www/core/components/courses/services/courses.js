@@ -322,7 +322,7 @@ angular.module('mm.core.courses')
                             return -1;
                         }
 
-                        return b.sortorder - a.sortorder;
+                        return a.sortorder - b.sortorder;
                     });
                 }
                 return $q.reject();
