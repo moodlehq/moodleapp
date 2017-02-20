@@ -27,6 +27,7 @@ angular.module('mm.core.settings')
     $scope.versionname = mmCoreConfigConstants.versionname;
     $scope.appname = mmCoreConfigConstants.appname;
     $scope.versioncode = mmCoreConfigConstants.versioncode;
+    $scope.privacyPolicy = mmCoreConfigConstants.privacypolicy;
 
     $scope.navigator = $window.navigator;
     if ($window.location && $window.location.href) {
