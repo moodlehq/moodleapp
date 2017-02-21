@@ -14,7 +14,7 @@
 
 angular.module('mm.core.fileuploader')
 
-.factory('$mmFileUploader', function($mmSite, $mmFS, $q, $timeout, $log, $mmSitesManager, $mmFilepool) {
+.factory('$mmFileUploader', function($mmSite, $mmFS, $q, $timeout, $log, $mmSitesManager, $mmFilepool, $mmUtil) {
 
     $log = $log.getInstance('$mmFileUploader');
 
@@ -124,19 +124,38 @@ angular.module('mm.core.fileuploader')
      */
     self.uploadImage = function(uri, isFromAlbum) {
         $log.debug('Uploading an image');
-        var options = {};
+        var options = {
+                fileName: 'image_' + $mmUtil.readableTimestamp() + '.jpg', // Default file name.
+                mimeType: 'image/jpeg'
+            },
+            fileName,
+            extension;
 
-        if (typeof uri == 'undefined' || uri === ''){
+        if (typeof uri == 'undefined' || uri === '') {
             // In Node-Webkit, if you successfully upload a picture and then you open the file picker again
             // and cancel, this function is called with an empty uri. Let's filter it.
             $log.debug('Received invalid URI in $mmFileUploader.uploadImage()');
             return $q.reject();
         }
 
+        // Check if we know the real file name.
+        if (isFromAlbum) {
+            fileName = $mmFS.getFileAndDirectoryFromPath(uri).name;
+            // Picking an image from album in Android adds a timestamp at the end of the file. Delete it.
+            fileName = fileName.replace(/(\.[^\.]*)\?[^\.]*$/, '$1');
+
+            extension = $mmFS.getFileExtension(fileName);
+
+            if (extension) {
+                // The file has extension, use the real name.
+                options.fileName = fileName;
+                options.mimeType = $mmFS.getMimeType(extension);
+            }
+        }
+
+
         options.deleteAfterUpload = !isFromAlbum;
         options.fileKey = 'file';
-        options.fileName = 'image_' + new Date().getTime() + '.jpg';
-        options.mimeType = 'image/jpeg';
 
         return self.uploadFile(uri, options);
     };
@@ -158,7 +177,7 @@ angular.module('mm.core.fileuploader')
 
         // Add a timestamp to the filename to make it unique.
         split = filename.split('.');
-        split[0] += '_' + new Date().getTime();
+        split[0] += '_' + $mmUtil.readableTimestamp();
         filename = split.join('.');
 
         options.fileKey = null;
