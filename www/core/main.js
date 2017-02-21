@@ -201,6 +201,11 @@ angular.module('mm.core', ['pascalprecht.translate'])
         $window.addEventListener('native.keyboardshow', function(e) {
             $mmEvents.trigger(mmCoreEventKeyboardShow, e);
 
+            // Resize is not triggered on iOS.
+            if (ionic.Platform.isIOS()) {
+                ionic.trigger('resize');
+            }
+
             if (ionic.Platform.isIOS() && document.activeElement && document.activeElement.tagName != 'BODY') {
                 if ($mmUtil.closest(document.activeElement, 'ion-footer-bar[keyboard-attach]')) {
                     // Input element is in a footer with keyboard-attach directive, nothing to be done.
@@ -233,6 +238,11 @@ angular.module('mm.core', ['pascalprecht.translate'])
         });
         $window.addEventListener('native.keyboardhide', function(e) {
             $mmEvents.trigger(mmCoreEventKeyboardHide, e);
+
+            // Resize is not triggered on iOS.
+            if (ionic.Platform.isIOS()) {
+                ionic.trigger('resize');
+            }
         });
     });
 
