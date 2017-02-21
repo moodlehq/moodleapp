@@ -491,7 +491,7 @@ angular.module('mm.core')
      * @return {String}          The file name normalized.
      */
     self.normalizeFileName = function(filename) {
-        filename = decodeURIComponent(filename);
+        filename = $mmText.decodeURIComponent(filename);
         return filename;
     };
 
@@ -1246,7 +1246,7 @@ angular.module('mm.core')
                 number = 1;
 
             // Clean the file name.
-            fileNameWithoutExtension = $mmText.removeSpecialCharactersForFiles(decodeURIComponent(fileNameWithoutExtension));
+            fileNameWithoutExtension = $mmText.removeSpecialCharactersForFiles($mmText.decodeURIComponent(fileNameWithoutExtension));
 
             // Index the files by name.
             angular.forEach(entries, function(entry) {
@@ -1276,7 +1276,7 @@ angular.module('mm.core')
             }
         }).catch(function() {
             // Folder doesn't exist, name is unique. Clean it and return it.
-            return $mmText.removeSpecialCharactersForFiles(decodeURIComponent(fileName));
+            return $mmText.removeSpecialCharactersForFiles($mmText.decodeURIComponent(fileName));
         });
     };
 

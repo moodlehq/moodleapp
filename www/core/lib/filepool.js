@@ -1280,7 +1280,7 @@ angular.module('mm.core')
             filename;
 
         // Decode URL.
-        url = $mmText.decodeHTML(decodeURIComponent(url));
+        url = $mmText.decodeHTML($mmText.decodeURIComponent(url));
 
         if (url.indexOf('/webservice/pluginfile') !== -1) {
             // Remove attributes that do not matter.

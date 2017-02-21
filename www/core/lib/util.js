@@ -330,7 +330,7 @@ angular.module('mm.core')
                         // with white spaces, special characters...
                         if (path.indexOf(fsRoot > -1)) {
                             path = path.replace(fsRoot, "");
-                            path = encodeURIComponent(decodeURIComponent(path));
+                            path = encodeURIComponent($mmText.decodeURIComponent(path));
                             path = fsRoot + path;
                         }
 
@@ -1468,14 +1468,14 @@ angular.module('mm.core')
             // Treat elements with src (img, audio, video, ...).
             media = div[0].querySelectorAll('img, video, audio, source, track');
             angular.forEach(media, function(el) {
-                var src = paths[decodeURIComponent(el.getAttribute('src'))];
+                var src = paths[$mmText.decodeURIComponent(el.getAttribute('src'))];
                 if (typeof src !== 'undefined') {
                     el.setAttribute('src', src);
                 }
 
                 // Treat video posters.
                 if (el.tagName == 'VIDEO' && el.getAttribute('poster')) {
-                    src = paths[decodeURIComponent(el.getAttribute('poster'))];
+                    src = paths[$mmText.decodeURIComponent(el.getAttribute('poster'))];
                     if (typeof src !== 'undefined') {
                         el.setAttribute('poster', src);
                     }
@@ -1484,7 +1484,7 @@ angular.module('mm.core')
 
             // We do the same for links.
             angular.forEach(div.find('a'), function(anchor) {
-                var href = decodeURIComponent(anchor.getAttribute('href')),
+                var href = $mmText.decodeURIComponent(anchor.getAttribute('href')),
                     url = paths[href];
 
                 if (typeof url !== 'undefined') {

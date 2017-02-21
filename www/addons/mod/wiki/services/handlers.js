@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_wiki')
  */
 .factory('$mmaModWikiHandlers', function($mmCourse, $mmaModWiki, $state, $mmContentLinksHelper, $mmCourseHelper, $mmUtil, $q,
         mmaModWikiComponent, $mmaModWikiPrefetchHandler, mmCoreDownloading, mmCoreNotDownloaded, mmCoreEventPackageStatusChanged,
-        mmCoreOutdated, $mmCoursePrefetchDelegate, $mmSite, $mmEvents, $mmaModWikiSync, $mmContentLinkHandlerFactory) {
+        mmCoreOutdated, $mmCoursePrefetchDelegate, $mmSite, $mmEvents, $mmaModWikiSync, $mmContentLinkHandlerFactory, $mmText) {
     var self = {};
 
     /**
@@ -283,7 +283,7 @@ angular.module('mm.addons.mod_wiki')
 
         var section = "";
         if (typeof params.section != 'undefined') {
-            section = decodeURIComponent(params.section.replace(/\+/g, ' '));
+            section = $mmText.decodeURIComponent(params.section.replace(/\+/g, ' '));
         }
 
         // Return actions.
