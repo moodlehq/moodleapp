@@ -92,6 +92,7 @@ function treatFile(file, data) {
  */
 function treatMergedData(data) {
   var merged = {};
+  var mergedOrdered = {};
 
   for (var filepath in data) {
 
@@ -126,7 +127,12 @@ function treatMergedData(data) {
     }
   }
 
-  return new Buffer(JSON.stringify(merged, null, 4));
+  // Force ordering by string key.
+  Object.keys(merged).sort().forEach(function(k){
+    mergedOrdered[k] = merged[k];
+  });
+
+  return new Buffer(JSON.stringify(mergedOrdered, null, 4));
 }
 
 /**
