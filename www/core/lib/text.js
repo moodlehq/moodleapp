@@ -618,7 +618,7 @@ angular.module('mm.core')
             }
         }
         return false;
-    }
+    };
 
     /**
      * Strip Unicode long char of a given text.
@@ -638,6 +638,42 @@ angular.module('mm.core')
             }
         }
         return stripped;
+    };
+
+    /**
+     * Same as Javascript's decodeURI, but if an exception is thrown it will return the original URI.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#decodeURI
+     * @param  {String} uri URI to decode.
+     * @return {String}     Decoded URI, or original URI if an exception is thrown.
+     */
+    self.decodeURI = function(uri) {
+        try {
+            return decodeURI(uri);
+        } catch(ex) {
+            // Error, use the original URI.
+        }
+        return uri;
+    };
+
+    /**
+     * Same as Javascript's decodeURIComponent, but if an exception is thrown it will return the original URI.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#decodeURIComponent
+     * @param  {String} uri URI to decode.
+     * @return {String}     Decoded URI, or original URI if an exception is thrown.
+     */
+    self.decodeURIComponent = function(uri) {
+        try {
+            return decodeURIComponent(uri);
+        } catch(ex) {
+            // Error, use the original URI.
+        }
+        return uri;
     };
 
     return self;

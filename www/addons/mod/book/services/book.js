@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_book')
  * @name $mmaModBook
  */
 .factory('$mmaModBook', function($mmFilepool, $mmSite, $mmFS, $http, $log, $q, $mmSitesManager, $mmUtil, mmaModBookComponent,
-            $mmCourse) {
+            $mmCourse, $mmText) {
     $log = $log.getInstance('$mmaModBook');
 
     var self = {};
@@ -278,7 +278,7 @@ angular.module('mm.addons.mod_book')
                             // Remove the chapter folder from the path and add the filename.
                             key = content.filepath.replace('/' + chapter + '/', '') + content.filename;
                         }
-                        map[chapter].paths[decodeURIComponent(key)] = content.fileurl;
+                        map[chapter].paths[$mmText.decodeURIComponent(key)] = content.fileurl;
                     }
                 }
             }
