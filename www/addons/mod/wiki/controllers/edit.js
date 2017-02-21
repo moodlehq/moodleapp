@@ -129,11 +129,7 @@ angular.module('mm.addons.mod_wiki')
         }
 
         return promise.catch(function(message) {
-            if (message) {
-                $mmUtil.showErrorModal(message);
-            } else {
-                $mmUtil.showErrorModal('Error saving wiki data.');
-            }
+            $mmUtil.showErrorModalDefault(message, 'Error saving wiki data.');
         }).finally(function() {
             modal.dismiss();
         });
@@ -174,7 +170,9 @@ angular.module('mm.addons.mod_wiki')
                     pageid: pageId,
                     pagetitle: $scope.page.title,
                     wikiid: wikiId,
-                    subwikiid: subwikiId
+                    subwikiid: subwikiId,
+                    userid: userId,
+                    groupid: groupId
                 };
             }
 
@@ -197,11 +195,13 @@ angular.module('mm.addons.mod_wiki')
                     pageid: null,
                     pagetitle: $scope.page.title,
                     wikiid: wikiId,
-                    subwikiid: subwikiId
+                    subwikiid: subwikiId,
+                    userid: userId,
+                    groupid: groupId
                 };
             }
         } else {
-            $mmUtil.showModal('mm.core.success','mm.core.datastoredoffline');
+            $mmUtil.showModal('mm.core.success', 'mm.core.datastoredoffline');
         }
 
         return $ionicHistory.goBack();
@@ -218,9 +218,22 @@ angular.module('mm.addons.mod_wiki')
     // In case we're editing an offline page, check if the page loaded in back view is different than this view.
     function backViewPageIsDifferentOffline() {
         // We cannot precisely detect when the state is the same but this is close to it.
-        var backView = $ionicHistory.backView();
-        return backView.stateName != 'site.mod_wiki' || backView.stateParams.moduleid != module.id ||
-                    backView.stateParams.subwikiid != subwikiId || backView.stateParams.pagetitle != $scope.page.title;
+        var backView = $ionicHistory.backView(),
+            backViewParams = backView.stateParams;
+        if (backView.stateName != 'site.mod_wiki' || backViewParams.moduleid != module.id || backViewParams.wikiid != wikiId ||
+                backViewParams.pagetitle != $scope.page.title) {
+            return true;
+        }
+
+        // Check subwiki using subwiki or user and group.
+        var backSubwikiId = parseInt(backViewParams.subwikiid, 10) || 0;
+        if (backSubwikiId > 0 && subwikiId > 0) {
+            return backSubwikiId != subwikiId;
+        }
+
+        var backUserId = parseInt(backViewParams.userid, 10) || 0,
+            backGroupId = parseInt(backViewParams.groupid, 10) || 0;
+        return userId != backUserId || groupId != backGroupId;
     }
 
     // Renew lock and control versions.

@@ -580,12 +580,14 @@ angular.module('mm.addons.mod_wiki')
                     contentformat: 'html'
                 };
 
-            if (subwikiId) {
+            subwikiId = parseInt(subwikiId, 10) || 0;
+            wikiId = parseInt(wikiId, 10) > 0 ? parseInt(wikiId, 10) : 0;
+            if (subwikiId && subwikiId > 0) {
                 params.subwikiid = subwikiId;
             } else if (wikiId) {
                 params.wikiid = wikiId;
-                params.userid = userId || 0;
-                params.groupid = groupId || 0;
+                params.userid = parseInt(userId, 10) > 0 ? parseInt(userId, 10) : 0;
+                params.groupid = parseInt(groupId, 10) > 0 ? parseInt(groupId, 10) : 0;
             }
 
             return site.write('mod_wiki_new_page', params).catch(function(error) {
