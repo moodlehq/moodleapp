@@ -916,6 +916,18 @@ angular.module('mm.core')
         };
 
         /**
+         * Return the current timestamp in a "readable" format: YYYYMMDDHHmmSS.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#readableTimestamp
+         * @return {Number} The readable timestamp.
+         */
+        self.readableTimestamp = function() {
+            return moment(Date.now()).format('YYYYMMDDHHmmSS');
+        };
+
+        /**
          * Return true if the param is false (bool), 0 (number) or "0" (string).
          *
          * @module mm.core
