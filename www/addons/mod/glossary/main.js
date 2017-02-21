@@ -19,6 +19,8 @@ angular.module('mm.addons.mod_glossary', ['mm.core'])
 .constant('mmaModGlossaryAutomSyncedEvent', 'mma-mod_glossar_autom_synced')
 .constant('mmaModGlossaryLimitEntriesNum', 25)
 .constant('mmaModGlossaryLimitCategoriesNum', 20)
+.constant('mmaModGlossaryShowAllCategories', 0)
+.constant('mmaModGlossaryShowNotCategorised', -1)
 .constant('mmaModGlossarySyncTime', 300000) // In milliseconds.
 
 .config(function($stateProvider) {
