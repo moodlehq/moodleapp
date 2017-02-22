@@ -298,13 +298,15 @@ angular.module('mm.addons.mod_wiki')
     };
 
     self.subwikiBlockId = function(subwikiId, wikiId, userId, groupId) {
+        subwikiId = parseInt(subwikiId, 10) || 0;
         if (subwikiId && subwikiId > 0) {
-            return parseInt(subwikiId, 10) || 0;
+            return subwikiId;
         }
+
+        wikiId = (wikiId = parseInt(wikiId, 10)) > 0 ? wikiId : 0;
         if(wikiId) {
-            wikiId = parseInt(wikiId, 10) || 0;
-            userId = parseInt(userId, 10) || 0;
-            groupId = parseInt(groupId, 10) || 0;
+            userId = parseInt(userId, 10) > 0 ? parseInt(userId, 10) : 0;
+            groupId = parseInt(groupId, 10) > 0 ? parseInt(groupId, 10) : 0;
             return wikiId + ':' + userId + ':' + groupId;
         }
         return false;

@@ -75,10 +75,10 @@ angular.module('mm.addons.mod_wiki')
      */
     self.deleteNewPage = function(title, subwikiId, wikiId, userId, groupId,  siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            subwikiId = parseInt(subwikiId, 10) || 0;
-            wikiId = parseInt(wikiId, 10) || 0;
-            userId = parseInt(userId, 10) || 0;
-            groupId = parseInt(groupId, 10) || 0;
+            subwikiId = (subwikiId = parseInt(subwikiId, 10)) > 0 ? subwikiId : 0;
+            wikiId = (wikiId = parseInt(wikiId, 10)) > 0 ? wikiId : 0;
+            userId = (userId = parseInt(userId, 10)) > 0 ? userId : 0;
+            groupId = (groupId = parseInt(groupId, 10)) > 0 ? groupId : 0;
             return site.getDb().remove(mmaModWikiNewPagesStore, [subwikiId, wikiId, userId, groupId, title]);
         });
     };
@@ -115,10 +115,10 @@ angular.module('mm.addons.mod_wiki')
      */
     self.getNewPage = function(title, subwikiId, wikiId, userId, groupId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            subwikiId = parseInt(subwikiId, 10) || 0;
-            wikiId = parseInt(wikiId, 10) || 0;
-            userId = parseInt(userId, 10) || 0;
-            groupId = parseInt(groupId, 10) || 0;
+            subwikiId = (subwikiId = parseInt(subwikiId, 10)) > 0 ? subwikiId : 0;
+            wikiId = (wikiId = parseInt(wikiId, 10)) > 0 ? wikiId : 0;
+            userId = (userId = parseInt(userId, 10)) > 0 ? userId : 0;
+            groupId = (groupId = parseInt(groupId, 10)) > 0 ? groupId : 0;
             return site.getDb().get(mmaModWikiNewPagesStore, [subwikiId, wikiId, userId, groupId, title]);
         });
     };
@@ -138,10 +138,10 @@ angular.module('mm.addons.mod_wiki')
      */
     self.getSubwikiNewPages = function(subwikiId, wikiId, userId, groupId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            subwikiId = parseInt(subwikiId, 10) || 0;
-            wikiId = parseInt(wikiId, 10) || 0;
-            userId = parseInt(userId, 10) || 0;
-            groupId = parseInt(groupId, 10) || 0;
+            subwikiId = (subwikiId = parseInt(subwikiId, 10)) > 0 ? subwikiId : 0;
+            wikiId = (wikiId = parseInt(wikiId, 10)) > 0 ? wikiId : 0;
+            userId = (userId = parseInt(userId, 10)) > 0 ? userId : 0;
+            groupId = (groupId = parseInt(groupId, 10)) > 0 ? groupId : 0;
             return site.getDb().whereEqual(mmaModWikiNewPagesStore, 'subwikiWikiUserGroup', [subwikiId, wikiId, userId, groupId]);
         });
     };
@@ -195,10 +195,10 @@ angular.module('mm.addons.mod_wiki')
                 entry = {
                     title: title,
                     cachedcontent: content,
-                    subwikiid: parseInt(subwikiId, 10) || 0,
-                    wikiid: parseInt(wikiId, 10) || 0,
-                    userid: parseInt(userId, 10) || 0,
-                    groupid: parseInt(groupId, 10) || 0,
+                    subwikiid: (subwikiId = parseInt(subwikiId, 10)) > 0 ? subwikiId : 0,
+                    wikiid: (wikiId = parseInt(wikiId, 10)) > 0 ? wikiId : 0,
+                    userid: (userId = parseInt(userId, 10)) > 0 ? userId : 0,
+                    groupid: (groupId = parseInt(groupId, 10)) > 0 ? groupId : 0,
                     contentformat: 'html',
                     timecreated: now,
                     timemodified: now,
