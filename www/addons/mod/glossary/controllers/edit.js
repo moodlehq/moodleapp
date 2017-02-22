@@ -30,6 +30,7 @@ angular.module('mm.addons.mod_glossary')
         cmid = $stateParams.cmid,
         glossaryId = $stateParams.glossaryid,
         glossary = $stateParams.glossary || {},
+        originalData = null,
         entry = $stateParams.entry || false;
 
     $scope.entry = {
@@ -52,6 +53,12 @@ angular.module('mm.addons.mod_glossary')
     if (entry) {
         $scope.entry.concept = entry.concept || '';
         $scope.entry.text = entry.definition || '';
+
+        originalData = {};
+        originalData.text = $scope.entry.text;
+        originalData.concept = $scope.entry.concept;
+        originalData.files = [];
+
         if (entry.options) {
             $scope.options.categories = entry.options.categories || null;
             $scope.options.aliases = entry.options.aliases || "";
@@ -64,6 +71,7 @@ angular.module('mm.addons.mod_glossary')
         if (entry.attachments && entry.attachments.offline) {
             $mmaModGlossaryHelper.getStoredFiles(glossaryId, entry.concept).then(function(files) {
                 $scope.attachments = files;
+                originalData.files = angular.copy(files);
             });
         }
     }
@@ -93,7 +101,7 @@ angular.module('mm.addons.mod_glossary')
     function cancel() {
         var promise;
 
-        if (!$mmaModGlossaryHelper.hasEntryDataChanged($scope.entry, $scope.attachments)) {
+        if (!$mmaModGlossaryHelper.hasEntryDataChanged($scope.entry, $scope.attachments, originalData)) {
            promise = $q.when();
         } else {
             // Show confirmation if some data has been modified.

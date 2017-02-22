@@ -38,8 +38,6 @@ angular.module('mm.addons.mod_glossary')
      * @return {Promise}            Promise resolved when deleted.
      */
     self.deleteStoredFiles = function(glossaryId, entryName, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmaModGlossaryOffline.getEntryFolder(glossaryId, entryName, siteId).then(function(folderPath) {
             return $mmFS.removeDir(folderPath);
         });
@@ -57,8 +55,6 @@ angular.module('mm.addons.mod_glossary')
      * @return {Promise}            Promise resolved with the files.
      */
     self.getStoredFiles = function(glossaryId, entryName, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmaModGlossaryOffline.getEntryFolder(glossaryId, entryName, siteId).then(function(folderPath) {
             return $mmFileUploaderHelper.getStoredFiles(folderPath);
         });
@@ -70,12 +66,22 @@ angular.module('mm.addons.mod_glossary')
      * @module mm.addons.mod_glossary
      * @ngdoc method
      * @name $mmaModGlossaryHelper#hasEntryDataChanged
-     * @param  {Object}  entry     Current data.
-     * @param  {Object}  files     Files attached.
+     * @param  {Object}  entry       Current data.
+     * @param  {Object}  files       Files attached.
+     * @param  {Object}  original    Original content.
      * @return {Boolean}           True if data has changed, false otherwise.
      */
-    self.hasEntryDataChanged = function(entry, files) {
-        return entry.text || entry.concept || files.length > 0;
+    self.hasEntryDataChanged = function(entry, files, original) {
+        if (!original || typeof original.concept == 'undefined') {
+            // There is no original data.
+            return entry.text || entry.concept || files.length > 0;
+        }
+
+        if (original.text != entry.text || original.concept != entry.concept) {
+            return true;
+        }
+
+        return $mmFileUploaderHelper.areFileListDifferent(files, original.files);
     };
 
     /**
@@ -92,8 +98,6 @@ angular.module('mm.addons.mod_glossary')
      * @return {Promise}            Promise resolved if success, rejected otherwise.
      */
     self.storeFiles = function(glossaryId, entryName, files, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         // Get the folder where to store the files.
         return $mmaModGlossaryOffline.getEntryFolder(glossaryId, entryName, siteId).then(function(folderPath) {
             return $mmFileUploader.storeFilesToUpload(folderPath, files);
