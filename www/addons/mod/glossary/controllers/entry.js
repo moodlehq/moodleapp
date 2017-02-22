@@ -85,6 +85,6 @@ angular.module('mm.addons.mod_glossary')
         // Log that the entry was viewed.
         $mmaModGlossary.logEntryView(entry.id);
     }).finally(function() {
-        $scope.loaded = true;
+        $scope.entryLoaded = true;
     });
 });
