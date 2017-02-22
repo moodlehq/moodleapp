@@ -12,7 +12,7 @@
                     <h2><mm-format-text watch="true" clean="true">{{user.fullname}}</mm-format-text></h2>
                     <p><mm-format-text watch="true" clean="true" ng-if="user.address">{{user.address}}</mm-format-text></p>
                     <p ng-if="user.roles">
-                        <strong>{{ 'mm.user.rolesoncourse' | translate}}</strong>{{'mm.core.fieldvalueseparator' | translate}} <mm-format-text watch="true" clean="true">{{user.roles}}</mm-format-text>
+                        <strong>{{ 'mm.user.roles' | translate}}</strong>{{'mm.core.fieldvalueseparator' | translate}} <mm-format-text watch="true" clean="true">{{user.roles}}</mm-format-text>
                     </p>
                 </div>
                 <div class="item item-borderless mm-tab-handlers" ng-if="(communicationHandlers && communicationHandlers.length) || isLoadingHandlers">
@@ -26,9 +26,9 @@
                     </div>
                 </div>
 
-                <a class="item item-icon-left item-icon-right item-text-wrap mm-user-profile-handler {{class}}" ui-sref="site.mm_user-about({courseid: courseId, userid: userId})" title="{{ 'mm.user.about' | translate }}">
+                <a class="item item-icon-left item-icon-right item-text-wrap mm-user-profile-handler {{class}}" ui-sref="site.mm_user-about({courseid: courseId, userid: userId})" title="{{ 'mm.user.details' | translate }}">
                     <i class="icon ion-person"></i>
-                    <h2>{{ 'mm.user.about' | translate }}</h2>
+                    <h2>{{ 'mm.user.details' | translate }}</h2>
                     <i class="icon icon-accessory ion-chevron-right"></i>
                 </a>
                 <div class="item text-center" ng-if="isLoadingHandlers">
