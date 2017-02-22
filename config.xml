@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.moodle.moodlemobile" version="3.2.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.moodle.sorce" version="3.2.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>SOrCE</name>
-  <description>Official Moodle Mobile app</description>
+  <description>SOrCE Moodle Mobile app</description>
   <author href="http://moodle.com" email="juan@moodle.com">Juan Leyva</author>
   <content src="index.html"/>
   <access origin="*"/>
