@@ -105,10 +105,20 @@ angular.module('mm.addons.mod_wiki')
                         pageId = createdId;
 
                         return $mmaModWiki.getPageContents(pageId).then(function(pageContents) {
-                            wikiId = pageContents.wikiid;
-                            subwikiId = pageContents.subwikiid;
+                            var promises = [];
+                            wikiId = parseInt(pageContents.wikiid, 10);
+                            if (!subwikiId) {
+                                // Subwiki was not created, invalidate subwikis as well.
+                                promises.push($mmaModWiki.invalidateSubwikis(wikiId));
+                            }
+
+                            subwikiId = parseInt(pageContents.subwikiid, 10);
+                            userId = parseInt(pageContents.userid, 10);
+                            groupId = parseInt(pageContents.groupid, 10);
                             // Invalidate subwiki pages since there are new.
-                            return $mmaModWiki.invalidateSubwikiPages(pageContents.wikiid).then(function() {
+                            promises.push($mmaModWiki.invalidateSubwikiPages(wikiId));
+
+                            return $q.all(promises).then(function() {
                                 return gotoPage();
                             });
                         }).finally(function() {
