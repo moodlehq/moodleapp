@@ -50,7 +50,7 @@ angular.module('mm.core')
             var keyProperty = attrs.keyProperty || "key",
                 valueProperty = attrs.valueProperty || "value",
                 selectedProperty = attrs.selectedProperty || "selected",
-                strSeparator = $translate.instant('mm.core.elementseparator') + " ";
+                strSeparator = $translate.instant('mm.core.listsep') + " ";
 
             scope.optionsRender = [];
             scope.selectedOptions = getSelectedOptionsText();

@@ -1,7 +1,7 @@
 {
     "addcontact": "Add contact",
     "blockcontact": "Block contact",
-    "blockcontactconfirm": "You will stop receveiving messages form this contact.",
+    "blockcontactconfirm": "You will stop receiving messages from this contact.",
     "blocknoncontacts": "Prevent non-contacts from messaging me",
     "contactname": "Contact name",
     "contactlistempty": "The contact list is empty",

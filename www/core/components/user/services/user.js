@@ -72,7 +72,7 @@ angular.module('mm.core.user')
      * @return {String}         Formatted address.
      */
     self.formatAddress = function(address, city, country) {
-        var separator = $translate.instant('mm.core.elementseparator'),
+        var separator = $translate.instant('mm.core.listsep'),
             values = [address, city, country];
 
         values = values.filter(function (value) {
@@ -96,7 +96,7 @@ angular.module('mm.core.user')
             return "";
         }
 
-        var separator = $translate.instant('mm.core.elementseparator');
+        var separator = $translate.instant('mm.core.listsep');
 
         roles = roles.reduce(function (previousValue, currentValue) {
             var role = $translate.instant('mm.user.' + currentValue.shortname);
