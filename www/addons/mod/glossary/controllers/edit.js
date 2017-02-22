@@ -40,11 +40,11 @@ angular.module('mm.addons.mod_glossary')
     $scope.title = module.name;
     $scope.component = mmaModGlossaryComponent;
     $scope.componentId = module.id;
-    $scope.autolinking = glossary.usedynalink;
+    $scope.autolinking = !!glossary.usedynalink;
     $scope.options = {
         categories: null,
         aliases: "",
-        usedynalink: glossary.usedynalink,
+        usedynalink: false,
         casesensitive: false,
         fullmatch: false
     };
@@ -62,9 +62,11 @@ angular.module('mm.addons.mod_glossary')
         if (entry.options) {
             $scope.options.categories = entry.options.categories || null;
             $scope.options.aliases = entry.options.aliases || "";
-            $scope.options.usedynalink = !!entry.options.usedynalink || glossary.usedynalink;
-            $scope.options.casesensitive = !!entry.options.casesensitive;
-            $scope.options.fullmatch = !!entry.options.fullmatch;
+            $scope.options.usedynalink = !!entry.options.usedynalink;
+            if ($scope.options.usedynalink) {
+                $scope.options.casesensitive = !!entry.options.casesensitive;
+                $scope.options.fullmatch = !!entry.options.fullmatch;
+            }
         }
 
         // Treat offline attachments if any.
