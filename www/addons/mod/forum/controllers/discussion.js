@@ -36,6 +36,11 @@ angular.module('mm.addons.mod_forum')
     // Block leaving the view, we want to show a confirm to the user if there's unsaved data.
     $mmUtil.blockLeaveView($scope, leaveView);
 
+    // Possible sort types.
+    $scope.sortTypeFlatNewest = 'flat-newest';
+    $scope.sortTypeFlatOldest = 'flat-oldest';
+    $scope.sortTypeNested = 'nested';
+
     $scope.discussionId = discussionId;
     $scope.trackPosts = $stateParams.trackposts;
     $scope.component = mmaModForumComponent;
@@ -52,16 +57,8 @@ angular.module('mm.addons.mod_forum')
         isEditing: false,
         files: []
     };
-    $scope.sort = {
-        icon: 'ion-arrow-up-c',
-        direction: 'ASC',
-        text: $translate.instant('mma.mod_forum.sortnewestfirst')
-    };
-    $scope.nested = {
-        icon: 'ion-arrow-swap',
-        isnested: false,
-        text: $translate.instant('mma.mod_forum.nestposts')
-    };
+    $scope.sort = $scope.sortTypeFlatOldest; // By default, flat with oldest first.
+
     // Receive locked as param since it's returned by getDiscussions. This means that PullToRefresh won't update this value.
     $scope.locked = !!$stateParams.locked;
 
@@ -141,14 +138,15 @@ angular.module('mm.addons.mod_forum')
             var posts = offlineReplies.concat(onlinePosts);
             $scope.discussion = $mmaModForum.extractStartingPost(posts);
 
-            // If $scope.nested.isnested is true, normal sorting is disabled and nested posts will be displayed.
-            if ($scope.nested.isnested) {
+            // If sort type is nested, normal sorting is disabled and nested posts will be displayed.
+            if ($scope.sort == $scope.sortTypeNested) {
                 // Sort first by creation date to make format tree work.
                 posts = $mmaModForum.sortDiscussionPosts(posts, 'ASC');
                 $scope.posts = $mmUtil.formatTree(posts, 'parent', 'id', $scope.discussion.id);
             } else {
                 // Set default reply subject.
-                $scope.posts = $mmaModForum.sortDiscussionPosts(posts, $scope.sort.direction);
+                var direction = $scope.sort == $scope.sortTypeFlatNewest ? 'DESC' : 'ASC';
+                $scope.posts = $mmaModForum.sortDiscussionPosts(posts, direction);
             }
             $scope.defaultSubject = $translate.instant('mma.mod_forum.re') + ' ' + $scope.discussion.subject;
             $scope.newPost.subject = $scope.defaultSubject;
@@ -178,44 +176,12 @@ angular.module('mm.addons.mod_forum')
     }
 
     // Function to change posts sorting.
-    $scope.changeSort = function(init) {
+    $scope.changeSort = function(type) {
         $scope.discussionLoaded = false;
         scrollTop();
-        // Set $scope.nested attributes to default.
-        $scope.nested.icon = 'ion-arrow-swap';
-        $scope.nested.isnested = false;
-        $scope.nested.text = $translate.instant('mma.mod_forum.nestposts');
 
-        if (!init) {
-            $scope.sort.direction = $scope.sort.direction == 'ASC' ? 'DESC' : 'ASC';
-        }
-
-        return fetchPosts(init).then(function() {
-            if ($scope.sort.direction == 'ASC') {
-                $scope.sort.icon = 'ion-arrow-up-c';
-                $scope.sort.text = $translate.instant('mma.mod_forum.sortnewestfirst');
-            } else {
-                $scope.sort.icon = 'ion-arrow-down-c';
-                $scope.sort.text = $translate.instant('mma.mod_forum.sortoldestfirst');
-            }
-        });
-    };
-
-    // Function to change nested posts.
-    $scope.nestPosts = function(init) {
-        $scope.discussionLoaded = false;
-        scrollTop();
-        $scope.nested.isnested = !$scope.nested.isnested;
-
-        return fetchPosts(init).then(function() {
-            if ($scope.nested.isnested) {
-                $scope.nested.icon = 'ion-navicon';
-                $scope.nested.text = $translate.instant('mma.mod_forum.flatposts');
-            } else {
-                $scope.nested.icon = 'ion-arrow-swap';
-                $scope.nested.text = $translate.instant('mma.mod_forum.nestposts');
-            }
-        });
+        $scope.sort = type;
+        return fetchPosts();
     };
 
     // Tries to synchronize the posts discussion.
@@ -268,7 +234,7 @@ angular.module('mm.addons.mod_forum')
         $mmEvents.trigger(mmaModForumReplyDiscussionEvent, data);
     }
 
-    $scope.changeSort(true).then(function() {
+    fetchPosts(true).then(function() {
         // Add log in Moodle.
         $mmaModForum.logDiscussionView(discussionId);
     });
