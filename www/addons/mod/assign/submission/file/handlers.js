@@ -24,7 +24,8 @@ angular.module('mm.addons.mod_assign')
  * @name $mmaModAssignSubmissionFileHandler
  */
 .factory('$mmaModAssignSubmissionFileHandler', function($mmaModAssignSubmissionFileSession, $mmaModAssign, $mmSite, $q,
-            $mmaModAssignHelper, $mmWS, $mmFS, $mmFilepool, $mmUtil, $mmaModAssignOffline, mmaModAssignSubmissionFileName) {
+            $mmaModAssignHelper, $mmWS, $mmFS, $mmFilepool, $mmUtil, $mmaModAssignOffline, mmaModAssignSubmissionFileName,
+            $mmFileUploaderHelper) {
 
     var self = {};
 
@@ -42,13 +43,8 @@ angular.module('mm.addons.mod_assign')
 
         // Clear the files in session for this assign.
         $mmaModAssignSubmissionFileSession.clearFiles(assign.id);
-
         // Now delete the local files from the tmp folder.
-        files.forEach(function(file) {
-            if (!file.offline && file.remove) {
-                file.remove();
-            }
-        });
+        $mmFileUploaderHelper.clearTmpFiles(files);
     };
 
     /**

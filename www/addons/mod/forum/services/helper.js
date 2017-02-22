@@ -21,28 +21,10 @@ angular.module('mm.addons.mod_forum')
  * @ngdoc service
  * @name $mmaModForumHelper
  */
-.factory('$mmaModForumHelper', function($mmaModForumOffline, $mmSite, $mmFileUploader, $mmFS, mmaModForumComponent, $mmUser, $q) {
+.factory('$mmaModForumHelper', function($mmaModForumOffline, $mmSite, $mmFileUploader, $mmFS, mmaModForumComponent, $mmUser, $q,
+        $mmFileUploaderHelper) {
 
     var self = {};
-
-    /**
-     * Clear temporary attachments because a new discussion or post was cancelled.
-     * Attachments already saved in an offline discussion or post will NOT be deleted.
-     *
-     * @module mm.addons.mod_forum
-     * @ngdoc method
-     * @name $mmaModForumHelper#clearTmpFiles
-     * @param  {Object[]} files List of current files.
-     * @return {Void}
-     */
-    self.clearTmpFiles = function(files) {
-        // Delete the local files from the tmp folder.
-        files.forEach(function(file) {
-            if (!file.offline && file.remove) {
-                file.remove();
-            }
-        });
-    };
 
     /**
      * Convert offline reply to online format in order to be compatible with them.
@@ -150,7 +132,7 @@ angular.module('mm.addons.mod_forum')
      */
     self.getNewDiscussionStoredFiles = function(forumId, timecreated, siteId) {
         return $mmaModForumOffline.getNewDiscussionFolder(forumId, timecreated, siteId).then(function(folderPath) {
-            return getStoredFiles(folderPath);
+            return $mmFileUploaderHelper.getStoredFiles(folderPath);
         });
     };
 
@@ -168,26 +150,9 @@ angular.module('mm.addons.mod_forum')
      */
     self.getReplyStoredFiles = function(forumId, postId, siteId, userId) {
         return $mmaModForumOffline.getReplyFolder(forumId, postId, siteId, userId).then(function(folderPath) {
-            return getStoredFiles(folderPath);
+            return $mmFileUploaderHelper.getStoredFiles(folderPath);
         });
     };
-
-    /**
-     * Get the files stored in a folder, marking them as offline.
-     *
-     * @param  {String} folderPath Folder where to get the files.
-     * @return {Promise}           Promise resolved with the list of files.
-     */
-    function getStoredFiles(folderPath) {
-        return $mmFS.getDirectoryContents(folderPath).then(function(files) {
-            // Mark the files as pending offline.
-            angular.forEach(files, function(file) {
-                file.offline = true;
-                file.filename = file.name;
-            });
-            return files;
-        });
-    }
 
     /**
      * Check if the data of a post/discussion has changed.
@@ -205,20 +170,11 @@ angular.module('mm.addons.mod_forum')
             return false;
         }
 
-        var postFiles = post.files || [],
-            originalFiles = original.files || [];
-
-        if (original.subject != post.subject || original.text != post.text || postFiles.length != originalFiles.length) {
+        if (original.subject != post.subject || original.text != post.text) {
             return true;
         }
 
-        for (var i = 0; i < postFiles.length; i++) {
-            if (postFiles[i].name != originalFiles[i].name) {
-                return true;
-            }
-        }
-
-        return false;
+        return $mmFileUploaderHelper.areFileListDifferent(post.files, original.files);
     };
 
     /**

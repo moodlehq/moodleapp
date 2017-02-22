@@ -28,6 +28,53 @@ angular.module('mm.core.fileuploader')
         hideActionSheet;
 
     /**
+     * Compares two file lists and returns if they are different.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFileUploaderHelper#areFileListDifferent
+     * @param  {Array} a First file list.
+     * @param  {Array} b Second file list.
+     * @return {Boolean}   If both lists are different.
+     */
+    self.areFileListDifferent = function(a, b) {
+        a = a || [];
+        b = b || [];
+        if (a.length != b.length) {
+            return true;
+        }
+
+        // Currently we are going to compare the order of the files as well.
+        // This function can be improved comparing more fields or not comparing the order.
+        for (var i = 0; i < a.length; i++) {
+            if (a[i].name != b[i].name) {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+    /**
+     * Clear temporary attachments to be uploaded.
+     * Attachments already saved in an offline store will NOT be deleted.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFileUploaderHelper#clearTmpFiles
+     * @param  {Object[]} files List of current files.
+     * @return {Void}
+     */
+    self.clearTmpFiles = function(files) {
+        // Delete the local files from the tmp folder.
+        files.forEach(function(file) {
+            if (!file.offline && file.remove) {
+                file.remove();
+            }
+        });
+    };
+
+    /**
      * Show a confirmation modal to the user if he is using a limited connection or the file size is higher than 5MB.
      *
      * @module mm.core.fileuploader
@@ -159,6 +206,39 @@ angular.module('mm.core.fileuploader')
         if (hideActionSheet) {
             hideActionSheet();
         }
+    };
+
+    /**
+     * Get the files stored in a folder, marking them as offline.
+     *
+     * @module mm.core.fileuploader
+     * @ngdoc method
+     * @name $mmFileUploaderHelper#getStoredFiles
+     * @param  {String} folderPath Folder where to get the files.
+     * @return {Promise}           Promise resolved with the list of files.
+     */
+    self.getStoredFiles = function(folderPath) {
+        return $mmFS.getDirectoryContents(folderPath).then(function(files) {
+            return self.markOfflineFiles(files);
+        });
+    };
+
+    /**
+     * Mark files as offline.
+     *
+     * @module mm.core.fileuploader
+     * @ngdoc method
+     * @name $mmFileUploaderHelper#markOfflineFiles
+     * @param  {Array} files     Files to mark as offline.
+     * @return {Array}           Files marked as offline.
+     */
+    self.markOfflineFiles = function(files) {
+        // Mark the files as pending offline.
+        angular.forEach(files, function(file) {
+            file.offline = true;
+            file.filename = file.name;
+        });
+        return files;
     };
 
     /**

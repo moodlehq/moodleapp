@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_forum')
  */
 .controller('mmaModForumNewDiscussionCtrl', function($scope, $stateParams, $mmGroups, $q, $mmaModForum, $mmEvents, $ionicPlatform,
             $mmUtil, $ionicHistory, $translate, mmaModForumNewDiscussionEvent, $mmaModForumOffline, $mmSite, mmaModForumComponent,
-            mmaModForumAutomSyncedEvent, $mmSyncBlock, $mmaModForumSync, $mmText, $mmaModForumHelper) {
+            mmaModForumAutomSyncedEvent, $mmSyncBlock, $mmaModForumSync, $mmText, $mmaModForumHelper, $mmFileUploaderHelper) {
 
     var courseId = $stateParams.cid,
         forumId = $stateParams.forumid,
@@ -250,7 +250,7 @@ angular.module('mm.addons.mod_forum')
         $mmEvents.trigger(mmaModForumNewDiscussionEvent, data);
 
         // Delete the local files from the tmp folder.
-        $mmaModForumHelper.clearTmpFiles($scope.newDiscussion.files);
+        $mmFileUploaderHelper.clearTmpFiles($scope.newDiscussion.files);
 
         if ($ionicPlatform.isTablet()) {
             // Empty form.
@@ -278,7 +278,7 @@ angular.module('mm.addons.mod_forum')
 
         return promise.then(function() {
             // Delete the local files from the tmp folder.
-            $mmaModForumHelper.clearTmpFiles($scope.newDiscussion.files);
+            $mmFileUploaderHelper.clearTmpFiles($scope.newDiscussion.files);
         });
     }
 

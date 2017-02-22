@@ -21,28 +21,10 @@ angular.module('mm.addons.mod_glossary')
  * @ngdoc service
  * @name $mmaModGlossaryHelper
  */
-.factory('$mmaModGlossaryHelper', function($mmaModGlossaryOffline, $mmSite, $mmFileUploader, $mmFS, mmaModGlossaryComponent) {
+.factory('$mmaModGlossaryHelper', function($mmaModGlossaryOffline, $mmSite, $mmFileUploader, $mmFS, mmaModGlossaryComponent,
+        $mmFileUploaderHelper) {
 
     var self = {};
-
-    /**
-     * Clear temporary attachments because a new discussion or post was cancelled.
-     * Attachments already saved in an offline discussion or post will NOT be deleted.
-     *
-     * @module mm.addons.mod_glossary
-     * @ngdoc method
-     * @name $mmaModGlossaryHelper#clearTmpFiles
-     * @param  {Object[]} files List of current files.
-     * @return {Void}
-     */
-    self.clearTmpFiles = function(files) {
-        // Delete the local files from the tmp folder.
-        files.forEach(function(file) {
-            if (!file.offline && file.remove) {
-                file.remove();
-            }
-        });
-    };
 
     /**
      * Delete stored attachment files for a new discussion.
@@ -78,14 +60,7 @@ angular.module('mm.addons.mod_glossary')
         siteId = siteId || $mmSite.getId();
 
         return $mmaModGlossaryOffline.getEntryFolder(glossaryId, entryName, siteId).then(function(folderPath) {
-            return $mmFS.getDirectoryContents(folderPath).then(function(files) {
-                // Mark the files as pending offline.
-                angular.forEach(files, function(file) {
-                    file.offline = true;
-                    file.filename = file.name;
-                });
-                return files;
-            });
+            return $mmFileUploaderHelper.getStoredFiles(folderPath);
         });
     };
 

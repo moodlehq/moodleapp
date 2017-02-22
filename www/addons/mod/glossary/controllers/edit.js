@@ -22,7 +22,8 @@ angular.module('mm.addons.mod_glossary')
  * @name mmaModGlossaryEditCtrl
  */
 .controller('mmaModGlossaryEditCtrl', function($stateParams, $scope, mmaModGlossaryComponent, $mmUtil, $q, $mmaModGlossary, $mmText,
-        $translate, $ionicHistory, $mmEvents, mmaModGlossaryAddEntryEvent, $mmaModGlossaryOffline, $mmaModGlossaryHelper) {
+        $translate, $ionicHistory, $mmEvents, mmaModGlossaryAddEntryEvent, $mmaModGlossaryOffline, $mmaModGlossaryHelper,
+        $mmFileUploaderHelper) {
 
     var module = $stateParams.module,
         courseId = $stateParams.courseid,
@@ -101,7 +102,7 @@ angular.module('mm.addons.mod_glossary')
 
         return promise.then(function() {
             // Delete the local files from the tmp folder.
-            $mmaModGlossaryHelper.clearTmpFiles($scope.attachments);
+            $mmFileUploaderHelper.clearTmpFiles($scope.attachments);
         });
     }
 
@@ -198,7 +199,7 @@ angular.module('mm.addons.mod_glossary')
             entry: $scope.entry
         };
 
-        $mmaModGlossaryHelper.clearTmpFiles($scope.attachments);
+        $mmFileUploaderHelper.clearTmpFiles($scope.attachments);
 
         $mmEvents.trigger(mmaModGlossaryAddEntryEvent, data);
 

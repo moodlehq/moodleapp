@@ -41,7 +41,7 @@ angular.module('mm.addons.mod_forum')
  * @param {Object}   [originalData]   Original newpost data. Used to detect if data has changed.
  */
 .directive('mmaModForumDiscussionPost', function($mmaModForum, $mmUtil, $translate, $q, $mmaModForumOffline, $mmSyncBlock,
-        mmaModForumComponent, $mmaModForumSync, $mmText, $mmaModForumHelper, $ionicScrollDelegate) {
+        mmaModForumComponent, $mmaModForumSync, $mmText, $mmaModForumHelper, $ionicScrollDelegate, $mmFileUploaderHelper) {
 
     // Confirm discard changes if any.
     function confirmDiscard(scope) {
@@ -56,7 +56,7 @@ angular.module('mm.addons.mod_forum')
     // Set data to new post, clearing tmp files and updating original data.
     function setPostData(scope, scrollView, replyingTo, editing, isEditing, subject, text, files) {
         // Delete the local files from the tmp folder if any.
-        $mmaModForumHelper.clearTmpFiles(scope.newpost.files);
+        $mmFileUploaderHelper.clearTmpFiles(scope.newpost.files);
 
         scope.newpost.replyingto = replyingTo;
         scope.newpost.editing = editing;
