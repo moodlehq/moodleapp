@@ -1394,3 +1394,11 @@ mm-format-text[max-height], *[mm-format-text][max-height] {
     pointer-events: auto;
   }
 }
+
+// Disable action sheet if loading is active.
+.action-sheet-open .backdrop-loading.active {
+  z-index: 21;
+}
+.action-sheet-open.loading-active .action-sheet-backdrop {
+  pointer-events: none;
+}
