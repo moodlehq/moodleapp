@@ -508,7 +508,7 @@ angular.module('mm.addons.mod_glossary')
      */
     self.invalidateCategories = function(glossaryId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.invalidateWsCacheForKey(self._getCategoriesCacheKey(glossaryId));
+            return site.invalidateWsCacheForKey(getCategoriesCacheKey(glossaryId));
         });
     };
 
