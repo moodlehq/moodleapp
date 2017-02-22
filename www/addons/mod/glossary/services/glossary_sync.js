@@ -192,7 +192,7 @@ angular.module('mm.addons.mod_glossary')
                             // Responses deleted, add a warning.
                             result.warnings.push($translate.instant('mm.core.warningofflinedatadeleted', {
                                 component: $mmCourse.translateModuleName('glossary'),
-                                name: data.name,
+                                name: data.concept,
                                 error: error.error
                             }));
                         });
@@ -208,7 +208,7 @@ angular.module('mm.addons.mod_glossary')
             if (result.updated && courseId) {
                 // Data has been sent to server. Now invalidate the WS calls.
                 return $mmaModGlossary.getGlossaryById(courseId, glossaryId).then(function(glossary) {
-                    return $mmaModGlossary.invalidateGlossaryEntries(glossary);
+                    return $mmaModGlossary.invalidateGlossaryEntries(glossary, true);
                 }).catch(function() {
                     // Ignore errors.
                 });

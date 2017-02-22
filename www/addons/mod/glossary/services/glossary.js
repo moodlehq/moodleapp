@@ -607,10 +607,27 @@ angular.module('mm.addons.mod_glossary')
      */
     self.invalidateEntry = function(entryId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            var key = self._getEntryCacheKey(entryId);
-            return site.invalidateWsCacheForKey(key);
+            return site.invalidateWsCacheForKey(self._getEntryCacheKey(entryId));
         });
     };
+
+    /**
+     * Invalidate cache of all entries in the array.
+     *
+     * @param  {Array}  entries         Entry objects to invalidate.
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
+     * @return {Promise}                Resolved when data is invalidated.
+     */
+    function invalidateEntries(entries, siteId) {
+        var keys = [];
+        angular.forEach(entries, function(entry) {
+            keys.push(self._getEntryCacheKey(entry.id));
+        });
+
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateMultipleWsCacheForKey(keys);
+        });
+    }
 
     /**
      * Invalidate the prefetched content except files.
@@ -641,37 +658,38 @@ angular.module('mm.addons.mod_glossary')
      * @module mm.addons.mod_glossary
      * @ngdoc method
      * @name $mmaModGlossary#invalidateGlossaryEntries
-     * @param {Object} glossary     The glossary object.
-     * @return {Promise}            Promise resolved when data is invalidated.
+     * @param {Object} glossary         The glossary object.
+     * @param {Object} onlyEntriesList  If true, entries won't be invalidated.
+     * @return {Promise}                Promise resolved when data is invalidated.
      */
-    self.invalidateGlossaryEntries = function(glossary) {
-        return self.fetchAllEntries(self.getEntriesByLetter, [glossary.id, 'ALL'], true).then(function(entries) {
-            var promises = [];
+    self.invalidateGlossaryEntries = function(glossary, onlyEntriesList) {
+        var promises = [];
 
-            angular.forEach(entries, function(entry) {
-                promises.push(self.invalidateEntry(entry.id));
-            });
+        if (!onlyEntriesList) {
+            promises.push(self.fetchAllEntries(self.getEntriesByLetter, [glossary.id, 'ALL'], true).then(function(entries) {
+                return invalidateEntries(entries);
+            }));
+        }
 
-            angular.forEach(glossary.browsemodes, function(mode) {
-                switch(mode) {
-                    case 'letter':
-                        promises.push(self.invalidateEntriesByLetter(glossary.id, 'ALL'));
-                        break;
-                    case 'cat':
-                        promises.push(self.invalidateEntriesByCategory(glossary.id, mmaModGlossaryShowAllCategories));
-                        break;
-                    case 'date':
-                        promises.push(self.invalidateEntriesByDate(glossary.id, 'CREATION', 'DESC'));
-                        promises.push(self.invalidateEntriesByDate(glossary.id, 'UPDATE', 'DESC'));
-                        break;
-                    case 'author':
-                        promises.push(self.invalidateEntriesByAuthor(glossary.id, 'ALL', 'LASTNAME', 'ASC'));
-                        break;
-                }
-            });
-
-            return $q.all(promises);
+        angular.forEach(glossary.browsemodes, function(mode) {
+            switch(mode) {
+                case 'letter':
+                    promises.push(self.invalidateEntriesByLetter(glossary.id, 'ALL'));
+                    break;
+                case 'cat':
+                    promises.push(self.invalidateEntriesByCategory(glossary.id, mmaModGlossaryShowAllCategories));
+                    break;
+                case 'date':
+                    promises.push(self.invalidateEntriesByDate(glossary.id, 'CREATION', 'DESC'));
+                    promises.push(self.invalidateEntriesByDate(glossary.id, 'UPDATE', 'DESC'));
+                    break;
+                case 'author':
+                    promises.push(self.invalidateEntriesByAuthor(glossary.id, 'ALL', 'LASTNAME', 'ASC'));
+                    break;
+            }
         });
+
+        return $q.all(promises);
     };
 
     /**
