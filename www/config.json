@@ -11,7 +11,7 @@
     "presets" : {"url": "http://ectmoodle.ac.ae", "username": ""},
     "gcmpn": "694767596569",
     "customurlscheme": "moodlemobile",
-    "siteurl": "http://ectmoodle.ae",
+    "siteurl": "http://ectmoodle.ac.ae",
     "skipssoconfirmation": "false",
     "forcedefaultlanguage": "false"
 }
