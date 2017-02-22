@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_glossary')
  * @name mmaModGlossaryEditCtrl
  */
 .controller('mmaModGlossaryEditCtrl', function($stateParams, $scope, mmaModGlossaryComponent, $mmUtil, $q, $mmaModGlossary, $mmText,
-        $translate, $ionicHistory, $mmEvents, mmaModGlossaryAddEntryEvent, $mmaModGlossaryOffline, $mmaModGlossaryHelper,
+        $translate, $ionicHistory, $mmEvents, mmaModGlossaryAddEntryEvent, $mmaModGlossaryOffline, $mmaModGlossaryHelper, $mmLang,
         $mmFileUploaderHelper) {
 
     var module = $stateParams.module,
@@ -31,7 +31,8 @@ angular.module('mm.addons.mod_glossary')
         glossaryId = $stateParams.glossaryid,
         glossary = $stateParams.glossary || {},
         originalData = null,
-        entry = $stateParams.entry || false;
+        entry = $stateParams.entry || false,
+        allowDuplicateEntries = !!glossary.allowduplicatedentries;
 
     $scope.entry = {
         concept: '',
@@ -71,7 +72,7 @@ angular.module('mm.addons.mod_glossary')
 
         // Treat offline attachments if any.
         if (entry.attachments && entry.attachments.offline) {
-            $mmaModGlossaryHelper.getStoredFiles(glossaryId, entry.concept).then(function(files) {
+            $mmaModGlossaryHelper.getStoredFiles(glossaryId, entry.concept, entry.timecreated).then(function(files) {
                 $scope.attachments = files;
                 originalData.files = angular.copy(files);
             });
@@ -121,6 +122,7 @@ angular.module('mm.addons.mod_glossary')
             definition = $scope.entry.text,
             modal,
             attachments,
+            timecreated = entry && entry.timecreated || Date.now(),
             saveOffline = false;
 
         if (!concept || !definition) {
@@ -137,9 +139,9 @@ angular.module('mm.addons.mod_glossary')
                 definition = $mmText.formatHtmlLines(definition);
             }
 
-            // If editing an offline entry and concept is different, delete previous first.
-            if (entry.concept && entry.concept != concept) {
-                return $mmaModGlossaryOffline.deleteAddEntry(glossaryId, entry.concept);
+            // If editing an offline entry, delete previous first.
+            if (entry) {
+                return $mmaModGlossaryOffline.deleteAddEntry(glossaryId, entry.concept, entry.timecreated);
             }
             return $q.when();
 
@@ -148,11 +150,11 @@ angular.module('mm.addons.mod_glossary')
 
             // Upload attachments first if any.
             if (attachments.length) {
-                return $mmaModGlossaryHelper.uploadOrStoreFiles(glossaryId, concept, attachments, false)
+                return $mmaModGlossaryHelper.uploadOrStoreFiles(glossaryId, concept, timecreated, attachments, false)
                         .catch(function() {
                     // Cannot upload them in online, save them in offline.
                     saveOffline = true;
-                    return $mmaModGlossaryHelper.uploadOrStoreFiles(glossaryId, concept, attachments, true);
+                    return $mmaModGlossaryHelper.uploadOrStoreFiles(glossaryId, concept, timecreated, attachments, true);
                 });
             }
         }).then(function(attach) {
@@ -176,6 +178,16 @@ angular.module('mm.addons.mod_glossary')
             }
 
             if (saveOffline) {
+                if (entry && !allowDuplicateEntries) {
+                    // Check if the entry is duplicated in online or offline mode.
+                    promise = $mmaModGlossary.isConceptUsed(glossaryId, concept).then(function() {
+                        // There's a page with same name, reject with error message.
+                        return $mmLang.translateAndReject('mma.mod_glossary.errconceptalreadyexists');
+                    }, function() {
+                        // Not found, page can be sent.
+                    });
+                }
+
                 // Save entry in offline.
                 return $mmaModGlossaryOffline.saveAddEntry(glossaryId, concept, definition, courseId, options, attach).then(function() {
                     // Don't return anything.
@@ -184,13 +196,13 @@ angular.module('mm.addons.mod_glossary')
                 // Try to send it to server.
                 // Don't allow offline if there are attachments since they were uploaded fine.
                 return $mmaModGlossary.addEntry(glossaryId, concept, definition, courseId, options, attach, undefined,
-                    !attachments.length);
+                    entry.timecreated, !attachments.length);
             }
         }).then(function(entryId) {
             if (entryId) {
                 $scope.entry.id = entryId;
                 // Data sent to server, delete stored files (if any).
-                $mmaModGlossaryHelper.deleteStoredFiles(glossaryId, concept);
+                $mmaModGlossaryHelper.deleteStoredFiles(glossaryId, concept, timecreated);
             }
             $scope.entry.glossaryid = glossaryId;
             $scope.entry.definition = definition;

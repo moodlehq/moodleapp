@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_glossary')
  * @name $mmaModGlossary
  */
 .factory('$mmaModGlossary', function($mmSite, $q, $mmSitesManager, $mmFilepool, mmaModGlossaryComponent, $mmaModGlossaryOffline,
-        mmaModGlossaryLimitEntriesNum, $mmApp, $mmUtil, mmaModGlossaryLimitCategoriesNum, $mmText,
+        mmaModGlossaryLimitEntriesNum, $mmApp, $mmUtil, mmaModGlossaryLimitCategoriesNum, $mmText, $mmLang,
         mmaModGlossaryShowAllCategories) {
     var self = {};
 
@@ -747,10 +747,11 @@ angular.module('mm.addons.mod_glossary')
      * @param  {Array}   [options]      Array of options for the entry.
      * @param  {Mixed}   [attach]       Attachments ID if sending online, result of $mmFileUploader#storeFilesToUpload otherwise.
      * @param  {String}  [siteId]       Site ID. If not defined, current site.
+     * @param  {Number}  [timecreated]  The time the entry was created. Only used when editing entries.
      * @param  {Boolean} allowOffline  True if it can be stored in offline, false otherwise.
      * @return {Promise}          Promise resolved with entry ID if entry was created in server, false if stored in device.
      */
-    self.addEntry = function(glossaryId, concept, definition, courseId, options, attach, siteId, allowOffline) {
+    self.addEntry = function(glossaryId, concept, definition, courseId, options, attach, siteId, timecreated, allowOffline) {
         siteId = siteId || $mmSite.getId();
 
         if (!$mmApp.isOnline() && allowOffline) {
@@ -758,8 +759,11 @@ angular.module('mm.addons.mod_glossary')
             return storeOffline();
         }
 
-        // Discard stored content for this entry. If it exists it means the user is editing it.
-        return $mmaModGlossaryOffline.deleteAddEntry(glossaryId, concept, siteId).then(function() {
+        // If we are editing an offline entry, discard previous first.
+        var discardPromise = timecreated ?
+            $mmaModGlossaryOffline.deleteAddEntry(glossaryId, concept, timecreated, siteId) : $q.when();
+
+        return discardPromise.then(function() {
             // Try to add it in online.
             return self.addEntryOnline(glossaryId, concept, definition, options, attach, siteId).then(function(entryId) {
                 return entryId;
@@ -776,9 +780,16 @@ angular.module('mm.addons.mod_glossary')
 
         // Convenience function to store a new page to be synchronized later.
         function storeOffline() {
-            return $mmaModGlossaryOffline.saveAddEntry(glossaryId, concept, definition, courseId, options, attach,
-                    siteId).then(function() {
-                return false;
+            // Check if the entry is duplicated in online or offline mode.
+            return self.isConceptUsed(glossaryId, concept, siteId).then(function(used) {
+                if (used) {
+                    return $mmLang.translateAndReject('mma.mod_glossary.errconceptalreadyexists');
+                }
+
+                return $mmaModGlossaryOffline.saveAddEntry(glossaryId, concept, definition, courseId, options, attach,
+                        siteId).then(function() {
+                    return false;
+                });
             });
         }
     };
@@ -845,6 +856,40 @@ angular.module('mm.addons.mod_glossary')
                 });
             });
         }
+    };
+
+    /**
+     * Check if a entry concept is already used.
+     *
+     * @param  {Number} glossaryId  Glossary ID.
+     * @param  {String} concept     Concept to check.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with true if used, resolved with false if not used or error.
+     */
+    self.isConceptUsed = function(glossaryId, concept, siteId) {
+        // Check offline first.
+        return $mmaModGlossaryOffline.isConceptUsed(glossaryId, concept, siteId).then(function(exists) {
+            if (exists) {
+                return true;
+            }
+
+            // If we get here, there's no offline entry with this name, check online.
+            // Get entries from the cache.
+            return self.fetchAllEntries(self.getEntriesByLetter, [glossaryId, 'ALL'], true, undefined, undefined, siteId)
+                    .then(function(entries) {
+                // Check if there's any entry with the same concept.
+                for (var i = 0, len = entries.length; i < len; i++) {
+                    if (entries[i].concept == concept) {
+                        return true;
+                    }
+                }
+
+                return false;
+            });
+        }).catch(function() {
+            // Error, assume not used.
+            return false;
+        });
     };
 
     /**

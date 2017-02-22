@@ -183,12 +183,12 @@ angular.module('mm.addons.mod_glossary')
                 promises.push(promise.then(function() {
                     result.updated = true;
 
-                    return deleteAddEntry(glossaryId, data.concept, siteId);
+                    return deleteAddEntry(glossaryId, data.concept, data.timecreated, siteId);
                 }).catch(function(error) {
                     if (error && error.wserror) {
                         // The WebService has thrown an error, this means that responses cannot be submitted. Delete them.
                         result.updated = true;
-                        return deleteAddEntry(glossaryId, data.concept, siteId).then(function() {
+                        return deleteAddEntry(glossaryId, data.concept, data.timecreated, siteId).then(function() {
                             // Responses deleted, add a warning.
                             result.warnings.push($translate.instant('mm.core.warningofflinedatadeleted', {
                                 component: $mmCourse.translateModuleName('glossary'),
@@ -229,16 +229,17 @@ angular.module('mm.addons.mod_glossary')
      /**
       * Delete a new entry.
       *
-      * @param  {Number} glossaryId Glossary ID.
-      * @param  {String} concept    Glossary entry concept.
-      * @param  {String} [siteId]   Site ID. If not defined, current site.
-      * @return {Promise}           Promise resolved when deleted.
+      * @param  {Number} glossaryId   Glossary ID.
+      * @param  {String} concept      Glossary entry concept.
+      * @param  {Number} timecreated  Time to allow duplicated entries.
+      * @param  {String} [siteId]     Site ID. If not defined, current site.
+      * @return {Promise}             Promise resolved when deleted.
       */
-    function deleteAddEntry(glossaryId, concept, siteId) {
+    function deleteAddEntry(glossaryId, concept, timecreated, siteId) {
         var promises = [];
 
-        promises.push($mmaModGlossaryOffline.deleteAddEntry(glossaryId, concept, siteId));
-        promises.push($mmaModGlossaryHelper.deleteStoredFiles(glossaryId, concept, siteId).catch(function() {
+        promises.push($mmaModGlossaryOffline.deleteAddEntry(glossaryId, concept, timecreated, siteId));
+        promises.push($mmaModGlossaryHelper.deleteStoredFiles(glossaryId, concept, timecreated, siteId).catch(function() {
             // Ignore errors, maybe there are no files.
         }));
 
@@ -262,7 +263,7 @@ angular.module('mm.addons.mod_glossary')
 
             if (attachments.offline) {
                 // Has offline files.
-                promise = $mmaModGlossaryHelper.getStoredFiles(glossaryId, entry.concept, siteId).then(function(atts) {
+                promise = $mmaModGlossaryHelper.getStoredFiles(glossaryId, entry.concept, entry.timecreated, siteId).then(function(atts) {
                     files = files.concat(atts);
                 }).catch(function() {
                     // Folder not found, no files to add.
