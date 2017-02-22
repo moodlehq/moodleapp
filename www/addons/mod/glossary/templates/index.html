@@ -39,7 +39,7 @@
                 </div>
 
                 <div class="list" ng-if="entries && entries.length > 0">
-                    <div ng-repeat="entry in entries track by trackBy(entry)">
+                    <div ng-repeat="entry in entries track by $index">
 
                         <div class="item item-divider" ng-if="showDivider(entries[$index], entries[$index - 1])">
                             <h2>{{getDivider(entries[$index])}}</h2>

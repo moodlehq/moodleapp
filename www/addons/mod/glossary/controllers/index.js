@@ -215,10 +215,6 @@ angular.module('mm.addons.mod_glossary')
         showSpinnerAndFetch(false, false, true);
     };
 
-    $scope.trackBy = function(entry) {
-        return fetchMode + ':' + entry.id;
-    };
-
     // Confirm and Remove action.
     $scope.removeFiles = function() {
         $mmCourseHelper.confirmAndRemove(module, courseId);
