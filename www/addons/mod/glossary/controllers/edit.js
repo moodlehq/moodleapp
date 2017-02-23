@@ -139,13 +139,6 @@ angular.module('mm.addons.mod_glossary')
                 definition = $mmText.formatHtmlLines(definition);
             }
 
-            // If editing an offline entry, delete previous first.
-            if (entry) {
-                return $mmaModGlossaryOffline.deleteAddEntry(glossaryId, entry.concept, entry.timecreated);
-            }
-            return $q.when();
-
-        }).then(function() {
             attachments = $scope.attachments;
 
             // Upload attachments first if any.
@@ -178,25 +171,31 @@ angular.module('mm.addons.mod_glossary')
             }
 
             if (saveOffline) {
+                var promise;
                 if (entry && !allowDuplicateEntries) {
                     // Check if the entry is duplicated in online or offline mode.
                     promise = $mmaModGlossary.isConceptUsed(glossaryId, concept).then(function() {
-                        // There's a page with same name, reject with error message.
+                        // There's a entry with same name, reject with error message.
                         return $mmLang.translateAndReject('mma.mod_glossary.errconceptalreadyexists');
                     }, function() {
-                        // Not found, page can be sent.
+                        // Not found, entry can be sent.
                     });
+                } else {
+                    promise = $q.when();
                 }
 
-                // Save entry in offline.
-                return $mmaModGlossaryOffline.saveAddEntry(glossaryId, concept, definition, courseId, options, attach).then(function() {
-                    // Don't return anything.
+                return promise.then(function() {
+                    // Save entry in offline.
+                    return $mmaModGlossaryOffline.saveAddEntry(glossaryId, concept, definition, courseId, options, attach,
+                            undefined, undefined, entry).then(function() {
+                        // Don't return anything.
+                    });
                 });
             } else {
                 // Try to send it to server.
                 // Don't allow offline if there are attachments since they were uploaded fine.
                 return $mmaModGlossary.addEntry(glossaryId, concept, definition, courseId, options, attach, undefined,
-                    entry.timecreated, !attachments.length);
+                    entry, !attachments.length);
             }
         }).then(function(entryId) {
             if (entryId) {

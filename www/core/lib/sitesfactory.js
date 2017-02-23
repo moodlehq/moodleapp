@@ -817,7 +817,7 @@ angular.module('mm.core')
         };
 
         /**
-         * Invalidates all the cache entries with for an array of keys.
+         * Invalidates all the cache entries in an array of keys.
          *
          * @param  {Array} keys Keys to search.
          * @return {Promise}    Promise resolved when the cache entries are invalidated.

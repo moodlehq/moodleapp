@@ -765,11 +765,11 @@ angular.module('mm.addons.mod_glossary')
      * @param  {Array}   [options]      Array of options for the entry.
      * @param  {Mixed}   [attach]       Attachments ID if sending online, result of $mmFileUploader#storeFilesToUpload otherwise.
      * @param  {String}  [siteId]       Site ID. If not defined, current site.
-     * @param  {Number}  [timecreated]  The time the entry was created. Only used when editing entries.
-     * @param  {Boolean} allowOffline  True if it can be stored in offline, false otherwise.
+     * @param  {Object}  [discardEntry] The entry provided will be discarded if found.
+     * @param  {Boolean} allowOffline   True if it can be stored in offline, false otherwise.
      * @return {Promise}          Promise resolved with entry ID if entry was created in server, false if stored in device.
      */
-    self.addEntry = function(glossaryId, concept, definition, courseId, options, attach, siteId, timecreated, allowOffline) {
+    self.addEntry = function(glossaryId, concept, definition, courseId, options, attach, siteId, discardEntry, allowOffline) {
         siteId = siteId || $mmSite.getId();
 
         if (!$mmApp.isOnline() && allowOffline) {
@@ -778,8 +778,8 @@ angular.module('mm.addons.mod_glossary')
         }
 
         // If we are editing an offline entry, discard previous first.
-        var discardPromise = timecreated ?
-            $mmaModGlossaryOffline.deleteAddEntry(glossaryId, concept, timecreated, siteId) : $q.when();
+        var discardPromise = discardEntry ?
+            $mmaModGlossaryOffline.deleteAddEntry(glossaryId, discardEntry.concept, discardEntry.timecreated, siteId) : $q.when();
 
         return discardPromise.then(function() {
             // Try to add it in online.
@@ -796,7 +796,7 @@ angular.module('mm.addons.mod_glossary')
             });
         });
 
-        // Convenience function to store a new page to be synchronized later.
+        // Convenience function to store a new entry to be synchronized later.
         function storeOffline() {
             // Check if the entry is duplicated in online or offline mode.
             return self.isConceptUsed(glossaryId, concept, siteId).then(function(used) {
@@ -805,7 +805,7 @@ angular.module('mm.addons.mod_glossary')
                 }
 
                 return $mmaModGlossaryOffline.saveAddEntry(glossaryId, concept, definition, courseId, options, attach,
-                        siteId).then(function() {
+                        siteId, undefined, discardEntry).then(function() {
                     return false;
                 });
             });
@@ -879,6 +879,9 @@ angular.module('mm.addons.mod_glossary')
     /**
      * Check if a entry concept is already used.
      *
+     * @module mm.addons.mod_glossary
+     * @ngdoc method
+     * @name $mmaModGlossary#isConceptUsed
      * @param  {Number} glossaryId  Glossary ID.
      * @param  {String} concept     Concept to check.
      * @param  {String} [siteId]    Site ID. If not defined, current site.

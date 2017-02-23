@@ -52,7 +52,7 @@ angular.module('mm.addons.mod_glossary')
  * @ngdoc service
  * @name $mmaModGlossaryOffline
  */
-.factory('$mmaModGlossaryOffline', function($mmSitesManager, $log, mmaModGlossaryAddEntryStore, $mmFS) {
+.factory('$mmaModGlossaryOffline', function($mmSitesManager, $log, mmaModGlossaryAddEntryStore, $mmFS, $q) {
     $log = $log.getInstance('$mmaModGlossaryOffline');
 
     var self = {};
@@ -82,7 +82,7 @@ angular.module('mm.addons.mod_glossary')
      * @ngdoc method
      * @name $mmaModGlossaryOffline#getAllAddEntries
      * @param  {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}         Promise resolved with pages.
+     * @return {Promise}         Promise resolved with entries.
      */
     self.getAllAddEntries = function(siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -100,7 +100,7 @@ angular.module('mm.addons.mod_glossary')
      * @param  {String} concept     Glossary entry concept.
      * @param  {Number} timecreated Time to allow duplicated entries.
      * @param  {String} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise}            Promise resolved with page.
+     * @return {Promise}            Promise resolved with entry.
      */
     self.getAddEntry = function(glossaryId, concept, timecreated, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -117,7 +117,7 @@ angular.module('mm.addons.mod_glossary')
      * @param  {Number} glossaryId Glossary ID.
      * @param  {String} [siteId]   Site ID. If not defined, current site.
      * @param  {Number} [userId]   User the entries belong to. If not defined, current user in site.
-     * @return {Promise}           Promise resolved with pages.
+     * @return {Promise}           Promise resolved with entries.
      */
     self.getGlossaryAddEntries = function(glossaryId, siteId, userId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -164,9 +164,10 @@ angular.module('mm.addons.mod_glossary')
      * @param  {Object} [attach]        Result of $mmFileUploader#storeFilesToUpload for attachments.
      * @param  {String} [siteId]        Site ID. If not defined, current site.
      * @param  {Number} [userId]        User the entry belong to. If not defined, current user in site.
+     * @param  {Object} [discardEntry]  The entry provided will be discarded if found.
      * @return {Promise}                Promise resolved if stored, rejected if failure.
      */
-    self.saveAddEntry = function(glossaryId, concept, definition, courseId, options, attach, siteId, userId) {
+    self.saveAddEntry = function(glossaryId, concept, definition, courseId, options, attach, siteId, userId, discardEntry) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             userId = userId || site.getUserId();
 
@@ -185,7 +186,13 @@ angular.module('mm.addons.mod_glossary')
                 entry.attachments = attach;
             }
 
-            return site.getDb().insert(mmaModGlossaryAddEntryStore, entry);
+            // If editing an offline entry, delete previous first.
+            var discardPromise = discardEntry ?
+                self.deleteAddEntry(glossaryId, discardEntry.concept, discardEntry.timecreated, site.getId()) : $q.when();
+
+            return discardPromise.then(function() {
+                return site.getDb().insert(mmaModGlossaryAddEntryStore, entry);
+            });
         });
     };
 
