@@ -172,6 +172,9 @@ angular.module('mm.addons.mod_glossary')
             promises.push(fetchInvalidate.apply(this, args));
             promises.push($mmaModGlossary.invalidateCourseGlossaries(courseId));
         }
+        if (glossary && glossary.id) {
+            promises.push($mmaModGlossary.invalidateCategories(glossary.id));
+        }
 
         return $q.all(promises).then(function() {
             limitFrom = 0;
@@ -213,10 +216,6 @@ angular.module('mm.addons.mod_glossary')
         fetchArguments = [glossary.id, query, 1, 'CONCEPT', 'ASC'];
         $scope.loaded = false;
         showSpinnerAndFetch(false, false, true);
-    };
-
-    $scope.trackBy = function(entry) {
-        return fetchMode + ':' + entry.id;
     };
 
     // Confirm and Remove action.

@@ -817,6 +817,37 @@ angular.module('mm.core')
         };
 
         /**
+         * Invalidates all the cache entries in an array of keys.
+         *
+         * @param  {Array} keys Keys to search.
+         * @return {Promise}    Promise resolved when the cache entries are invalidated.
+         */
+        Site.prototype.invalidateMultipleWsCacheForKey = function(keys) {
+            var db = this.db;
+            if (!db) {
+                return $q.reject();
+            }
+
+            var allEntries = [],
+                promises = [];
+
+            $log.debug('Invalidating multiple cache keys');
+            angular.forEach(keys, function(key) {
+                if (key) {
+                    promises.push(db.whereEqual(mmCoreWSCacheStore, 'key', key).then(function(entries) {
+                        if (entries && entries.length > 0) {
+                            allEntries.concat(entries);
+                        }
+                    }));
+                }
+            });
+
+            return $q.all(promises).then(function() {
+                return invalidateWsCacheEntries(db, allEntries);
+            });
+        };
+
+        /**
          * Invalidates all the cache entries whose key starts with a certain value.
          *
          * @param  {String} key Key to search.
@@ -1263,9 +1294,10 @@ angular.module('mm.core')
         function invalidateWsCacheEntries(db, entries) {
             var promises = [];
             angular.forEach(entries, function(entry) {
-                entry.expirationtime = 0;
-                var promise = db.insert(mmCoreWSCacheStore, entry);
-                promises.push(promise);
+                if (entry.expirationtime > 0) {
+                    entry.expirationtime = 0;
+                    promises.push(db.insert(mmCoreWSCacheStore, entry));
+                }
             });
             return $q.all(promises);
         }

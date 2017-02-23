@@ -263,6 +263,7 @@ p.item-text-wrap {
 
 // Defines a "disabled" item.
 .item.item-disabled,
+.item-toggle[disabled],
 .platform-android .item.item-disabled {
   color: $item-disabled-color;
   h2 {
@@ -1376,13 +1377,19 @@ mm-format-text[max-height], *[mm-format-text][max-height] {
 
   mm-format-text[max-height], *[mm-format-text][max-height] {
     // This is to allow clicking on activated areas and have background the same color.
-    &.mm-text-formatted.mm-shortened:before {
-          background: -moz-linear-gradient(top, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
-          background: -webkit-gradient(left top, left bottom, color-stop(calc(100% - 50px), rgba($item-default-active-bg, 0)), color-stop(calc(100% - 15px), $item-default-active-bg));
-          background: -webkit-linear-gradient(top, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
-          background: -o-linear-gradient(top, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
-          background: -ms-linear-gradient(top, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
-          background: linear-gradient(to bottom, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
+    &.mm-text-formatted.mm-shortened {
+      .mm-show-more {
+        background-color: $item-default-active-bg;
+      }
+
+      &:before {
+        background: -moz-linear-gradient(top, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
+        background: -webkit-gradient(left top, left bottom, color-stop(calc(100% - 50px), rgba($item-default-active-bg, 0)), color-stop(calc(100% - 15px), $item-default-active-bg));
+        background: -webkit-linear-gradient(top, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
+        background: -o-linear-gradient(top, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
+        background: -ms-linear-gradient(top, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
+        background: linear-gradient(to bottom, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
+      }
     }
   }
 }

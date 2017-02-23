@@ -3,14 +3,14 @@
     <ion-nav-buttons side="secondary">
         <a class="button button-clear" ng-click="save()"> {{ 'mm.core.save' | translate }}</a>
     </ion-nav-buttons>
-    <ion-content mm-state-class delegate-handle="mmaModGlossaryEditPage">
+    <ion-content mm-state-class delegate-handle="mmaModGlossaryEditEntry">
         <mm-loading hide-until="glossaryLoaded">
             <form>
                 <div class="item-title">
                     <input type="text" placeholder="{{ 'mma.mod_glossary.concept' | translate }}" ng-model="entry.concept">
                 </div>
                 <div class="item item-noborder mm-item-has-rich-text-editor">
-                    <mm-rich-text-editor model="entry" placeholder="{{ 'mma.mod_glossary.definition' | translate }}" name="glossary_entry_definition" scroll-handle="mmaModGlossaryEditPage" component="{{component}}" component-id="{{componentId}}"></mm-rich-text-editor>
+                    <mm-rich-text-editor model="entry" placeholder="{{ 'mma.mod_glossary.definition' | translate }}" name="glossary_entry_definition" scroll-handle="mmaModGlossaryEditEntry" component="{{component}}" component-id="{{componentId}}"></mm-rich-text-editor>
                 </div>
                 <mm-multiple-select ng-if="categories.length > 0" title="{{ 'mma.mod_glossary.categories' | translate }}" options="categories" key-property="id" value-property="name" selected-property="selected">
                 </mm-multiple-select>

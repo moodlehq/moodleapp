@@ -21,28 +21,10 @@ angular.module('mm.addons.mod_glossary')
  * @ngdoc service
  * @name $mmaModGlossaryHelper
  */
-.factory('$mmaModGlossaryHelper', function($mmaModGlossaryOffline, $mmSite, $mmFileUploader, $mmFS, mmaModGlossaryComponent) {
+.factory('$mmaModGlossaryHelper', function($mmaModGlossaryOffline, $mmSite, $mmFileUploader, $mmFS, mmaModGlossaryComponent,
+        $mmFileUploaderHelper) {
 
     var self = {};
-
-    /**
-     * Clear temporary attachments because a new discussion or post was cancelled.
-     * Attachments already saved in an offline discussion or post will NOT be deleted.
-     *
-     * @module mm.addons.mod_glossary
-     * @ngdoc method
-     * @name $mmaModGlossaryHelper#clearTmpFiles
-     * @param  {Object[]} files List of current files.
-     * @return {Void}
-     */
-    self.clearTmpFiles = function(files) {
-        // Delete the local files from the tmp folder.
-        files.forEach(function(file) {
-            if (!file.offline && file.remove) {
-                file.remove();
-            }
-        });
-    };
 
     /**
      * Delete stored attachment files for a new discussion.
@@ -52,13 +34,12 @@ angular.module('mm.addons.mod_glossary')
      * @name $mmaModGlossaryHelper#deleteStoredFiles
      * @param  {Number} glossaryId  Glossary ID.
      * @param  {String} entryName   The name of the entry.
+     * @param  {Number} timecreated The time the entry was created.
      * @param  {String} [siteId]    Site ID. If not defined, current site.
      * @return {Promise}            Promise resolved when deleted.
      */
-    self.deleteStoredFiles = function(glossaryId, entryName, siteId) {
-        siteId = siteId || $mmSite.getId();
-
-        return $mmaModGlossaryOffline.getEntryFolder(glossaryId, entryName, siteId).then(function(folderPath) {
+    self.deleteStoredFiles = function(glossaryId, entryName, timecreated, siteId) {
+        return $mmaModGlossaryOffline.getEntryFolder(glossaryId, entryName, timecreated, siteId).then(function(folderPath) {
             return $mmFS.removeDir(folderPath);
         });
     };
@@ -69,23 +50,15 @@ angular.module('mm.addons.mod_glossary')
      * @module mm.addons.mod_glossary
      * @ngdoc method
      * @name $mmaModGlossaryHelper#getStoredFiles
-     * @param  {Number} glossaryId  Glossary ID.
-     * @param  {String} entryName   The name of the entry.
-     * @param  {String} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise}            Promise resolved with the files.
+     * @param  {Number} glossaryId      lossary ID.
+     * @param  {String} entryName       The name of the entry.
+     * @param  {Number} [timecreated]   The time the entry was created.
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved with the files.
      */
-    self.getStoredFiles = function(glossaryId, entryName, siteId) {
-        siteId = siteId || $mmSite.getId();
-
-        return $mmaModGlossaryOffline.getEntryFolder(glossaryId, entryName, siteId).then(function(folderPath) {
-            return $mmFS.getDirectoryContents(folderPath).then(function(files) {
-                // Mark the files as pending offline.
-                angular.forEach(files, function(file) {
-                    file.offline = true;
-                    file.filename = file.name;
-                });
-                return files;
-            });
+    self.getStoredFiles = function(glossaryId, entryName, timecreated, siteId) {
+        return $mmaModGlossaryOffline.getEntryFolder(glossaryId, entryName, timecreated, siteId).then(function(folderPath) {
+            return $mmFileUploaderHelper.getStoredFiles(folderPath);
         });
     };
 
@@ -95,12 +68,22 @@ angular.module('mm.addons.mod_glossary')
      * @module mm.addons.mod_glossary
      * @ngdoc method
      * @name $mmaModGlossaryHelper#hasEntryDataChanged
-     * @param  {Object}  entry     Current data.
-     * @param  {Object}  files     Files attached.
+     * @param  {Object}  entry       Current data.
+     * @param  {Object}  files       Files attached.
+     * @param  {Object}  original    Original content.
      * @return {Boolean}           True if data has changed, false otherwise.
      */
-    self.hasEntryDataChanged = function(entry, files) {
-        return entry.text || entry.concept || files.length > 0;
+    self.hasEntryDataChanged = function(entry, files, original) {
+        if (!original || typeof original.concept == 'undefined') {
+            // There is no original data.
+            return entry.text || entry.concept || files.length > 0;
+        }
+
+        if (original.text != entry.text || original.concept != entry.concept) {
+            return true;
+        }
+
+        return $mmFileUploaderHelper.areFileListDifferent(files, original.files);
     };
 
     /**
@@ -110,17 +93,16 @@ angular.module('mm.addons.mod_glossary')
      * @module mm.addons.mod_glossary
      * @ngdoc method
      * @name $mmaModGlossaryHelper#storeFiles
-     * @param  {Number} glossaryId  Glossary ID.
-     * @param  {String} entryName   The name of the entry.
-     * @param  {Object[]} files     List of files.
-     * @param  {String} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise}            Promise resolved if success, rejected otherwise.
+     * @param  {Number} glossaryId      Glossary ID.
+     * @param  {String} entryName       The name of the entry.
+     * @param  {Number} [timecreated]   The time the entry was created.
+     * @param  {Object[]} files         List of files.
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved if success, rejected otherwise.
      */
-    self.storeFiles = function(glossaryId, entryName, files, siteId) {
-        siteId = siteId || $mmSite.getId();
-
+    self.storeFiles = function(glossaryId, entryName, timecreated, files, siteId) {
         // Get the folder where to store the files.
-        return $mmaModGlossaryOffline.getEntryFolder(glossaryId, entryName, siteId).then(function(folderPath) {
+        return $mmaModGlossaryOffline.getEntryFolder(glossaryId, entryName, timecreated, siteId).then(function(folderPath) {
             return $mmFileUploader.storeFilesToUpload(folderPath, files);
         });
     };
@@ -131,16 +113,17 @@ angular.module('mm.addons.mod_glossary')
      * @module mm.addons.mod_glossary
      * @ngdoc method
      * @name $mmaModGlossaryHelper#uploadOrStoreFiles
-     * @param  {Number}   glossaryId  Glossary ID.
-     * @param  {String}   entryName   The name of the entry.
-     * @param  {Object[]} files       List of files.
-     * @param  {Boolean}  offline     True if files sould be stored for offline, false to upload them.
-     * @param  {String}   [siteId]    Site ID. If not defined, current site.
-     * @return {Promise}              Promise resolved if success.
+     * @param  {Number}   glossaryId    Glossary ID.
+     * @param  {String}   entryName     The name of the entry.
+     * @param  {Number}   [timecreated] The time the entry was created.
+     * @param  {Object[]} files         List of files.
+     * @param  {Boolean}  offline       True if files sould be stored for offline, false to upload them.
+     * @param  {String}   [siteId]      Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved if success.
      */
-    self.uploadOrStoreFiles = function(glossaryId, entryName, files, offline, siteId) {
+    self.uploadOrStoreFiles = function(glossaryId, entryName, timecreated, files, offline, siteId) {
         if (offline) {
-            return self.storeFiles(glossaryId, entryName, files, siteId);
+            return self.storeFiles(glossaryId, entryName, timecreated, files, siteId);
         } else {
             return $mmFileUploader.uploadOrReuploadFiles(files, mmaModGlossaryComponent, glossaryId, siteId);
         }
