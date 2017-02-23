@@ -758,18 +758,20 @@ angular.module('mm.addons.mod_glossary')
      * @module mm.addons.mod_glossary
      * @ngdoc method
      * @name $mmaModGlossary#addEntry
-     * @param  {Number}  glossaryId     Glossary ID.
-     * @param  {String}  concept        Glossary entry concept.
-     * @param  {String}  definition     Glossary entry concept definition.
-     * @param  {Number}  courseId       Course ID of the glossary.
-     * @param  {Array}   [options]      Array of options for the entry.
-     * @param  {Mixed}   [attach]       Attachments ID if sending online, result of $mmFileUploader#storeFilesToUpload otherwise.
-     * @param  {String}  [siteId]       Site ID. If not defined, current site.
-     * @param  {Object}  [discardEntry] The entry provided will be discarded if found.
-     * @param  {Boolean} allowOffline   True if it can be stored in offline, false otherwise.
+     * @param  {Number}  glossaryId        Glossary ID.
+     * @param  {String}  concept           Glossary entry concept.
+     * @param  {String}  definition        Glossary entry concept definition.
+     * @param  {Number}  courseId          Course ID of the glossary.
+     * @param  {Array}   [options]         Array of options for the entry.
+     * @param  {Mixed}   [attach]          Attachments ID if sending online, result of $mmFileUploader#storeFilesToUpload otherwise.
+     * @param  {String}  [siteId]          Site ID. If not defined, current site.
+     * @param  {Object}  [discardEntry]    The entry provided will be discarded if found.
+     * @param  {Boolean} allowOffline      True if it can be stored in offline, false otherwise.
+     * @param  {Boolean} [checkDuplicates] Check for duplicates before storing offline. Only used if allowOffline is true.
      * @return {Promise}          Promise resolved with entry ID if entry was created in server, false if stored in device.
      */
-    self.addEntry = function(glossaryId, concept, definition, courseId, options, attach, siteId, discardEntry, allowOffline) {
+    self.addEntry = function(glossaryId, concept, definition, courseId, options, attach, siteId, discardEntry, allowOffline,
+            checkDuplicates) {
         siteId = siteId || $mmSite.getId();
 
         if (!$mmApp.isOnline() && allowOffline) {
@@ -798,8 +800,10 @@ angular.module('mm.addons.mod_glossary')
 
         // Convenience function to store a new entry to be synchronized later.
         function storeOffline() {
+            var timecreated = discardEntry && discardEntry.timecreated,
+                duplicatesPromise = checkDuplicates ? self.isConceptUsed(glossaryId, concept, timecreated, siteId) : $q.when(false);
             // Check if the entry is duplicated in online or offline mode.
-            return self.isConceptUsed(glossaryId, concept, siteId).then(function(used) {
+            return duplicatesPromise.then(function(used) {
                 if (used) {
                     return $mmLang.translateAndReject('mma.mod_glossary.errconceptalreadyexists');
                 }
@@ -882,14 +886,15 @@ angular.module('mm.addons.mod_glossary')
      * @module mm.addons.mod_glossary
      * @ngdoc method
      * @name $mmaModGlossary#isConceptUsed
-     * @param  {Number} glossaryId  Glossary ID.
-     * @param  {String} concept     Concept to check.
-     * @param  {String} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise}            Promise resolved with true if used, resolved with false if not used or error.
+     * @param  {Number} glossaryId      Glossary ID.
+     * @param  {String} concept         Concept to check.
+     * @param  {Number} [timecreated]   Timecreated to check that is not the timecreated we are editing.
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved with true if used, resolved with false if not used or error.
      */
-    self.isConceptUsed = function(glossaryId, concept, siteId) {
+    self.isConceptUsed = function(glossaryId, concept, timecreated, siteId) {
         // Check offline first.
-        return $mmaModGlossaryOffline.isConceptUsed(glossaryId, concept, siteId).then(function(exists) {
+        return $mmaModGlossaryOffline.isConceptUsed(glossaryId, concept, timecreated, siteId).then(function(exists) {
             if (exists) {
                 return true;
             }

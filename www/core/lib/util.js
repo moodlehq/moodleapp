@@ -1204,6 +1204,40 @@ angular.module('mm.core')
         };
 
         /**
+         * Check if a promise works and returns true if resolves or false if rejects.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#promiseWorks
+         * @param  {Promise} promise    Promise to check
+         * @return {Promise}            Promise resolved with true if the promises resolves and false if rejects.
+         */
+        self.promiseWorks = function(promise) {
+            return promise.then(function() {
+                return true;
+            }).catch(function() {
+                return false;
+            });
+        };
+
+        /**
+         * Check if a promise works and returns true if rejects or false if resolves.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#promiseFails
+         * @param  {Promise} promise    Promise to check
+         * @return {Promise}            Promise resolved with true if the promises rejects and false if resolves.
+         */
+        self.promiseFails = function(promise) {
+            return promise.then(function() {
+                return false;
+            }).catch(function() {
+                return true;
+            });
+        };
+
+        /**
          * Compare two objects. This function won't compare functions and proto properties, it's a basic compare.
          * Also, this will only check if itemA's properties are in itemB with same value. This function will still
          * return true if itemB has more properties than itemA.

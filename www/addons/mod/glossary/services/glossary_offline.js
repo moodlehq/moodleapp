@@ -52,7 +52,7 @@ angular.module('mm.addons.mod_glossary')
  * @ngdoc service
  * @name $mmaModGlossaryOffline
  */
-.factory('$mmaModGlossaryOffline', function($mmSitesManager, $log, mmaModGlossaryAddEntryStore, $mmFS, $q) {
+.factory('$mmaModGlossaryOffline', function($mmSitesManager, $log, mmaModGlossaryAddEntryStore, $mmFS, $q, $mmUtil) {
     $log = $log.getInstance('$mmaModGlossaryOffline');
 
     var self = {};
@@ -132,16 +132,24 @@ angular.module('mm.addons.mod_glossary')
      * @module mm.addons.mod_glossary
      * @ngdoc method
      * @name $mmaModGlossaryOffline#isConceptUsed
-     * @param  {Number} glossaryId Glossary ID.
-     * @param  {String} concept    Concept to check.
-     * @param  {String} [siteId]   Site ID. If not defined, current site.
-     * @return {Promise}           Promise resolved with true if concept is found, false otherwise.
+     * @param  {Number} glossaryId      Glossary ID.
+     * @param  {String} concept         Concept to check.
+     * @param  {Number} [timecreated]   Timecreated to check that is not the timecreated we are editing.
+     * @param  {String} [siteId]        Site ID. If not defined, current site.
+     * @return {Promise}                Promise resolved with true if concept is found, false otherwise.
      */
-    self.isConceptUsed = function(glossaryId, concept, siteId) {
+    self.isConceptUsed = function(glossaryId, concept, timecreated, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.getDb().whereEqual(mmaModGlossaryAddEntryStore, 'glossaryAndConcept', [glossaryId, concept])
                     .then(function(entries) {
-                return !!entries.length;
+                if (!!entries.length) {
+                    if (entries.length > 1 || !timecreated) {
+                        return true;
+                    }
+                    // If there's only one entry, check that is not the one we are editing.
+                    return $mmUtil.promiseFails(self.getAddEntry(glossaryId, concept, timecreated, siteId));
+                }
+                return false;
             });
         }).catch(function() {
             // No offline data found, return false.
