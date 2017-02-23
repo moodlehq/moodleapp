@@ -82,12 +82,12 @@ angular.module('mm.core.courses')
                 // Success retrieving the course, we can assume the user has permissions to view it.
                 course.fullname = c.fullname || course.fullname;
                 course.summary = c.summary || course.summary;
-                return loadCourseNavHandlers(refresh);
+                return loadCourseNavHandlers(refresh, false);
             }).catch(function() {
                 // The user is not an admin/manager. Check if we can provide guest access to the course.
                 return canAccessAsGuest().then(function(passwordRequired) {
                     if (!passwordRequired) {
-                        return loadCourseNavHandlers(refresh);
+                        return loadCourseNavHandlers(refresh, true);
                     } else {
                         course._handlers = [];
                         $scope.handlersShouldBeShown = false;
@@ -126,7 +126,7 @@ angular.module('mm.core.courses')
     }
 
     // Load course nav handlers.
-    function loadCourseNavHandlers(refresh) {
+    function loadCourseNavHandlers(refresh, guest) {
         var promises = [],
             navOptions,
             admOptions;
@@ -147,8 +147,8 @@ angular.module('mm.core.courses')
         }));
 
         return $q.all(promises).then(function() {
-            course._handlers = $mmCoursesDelegate.getNavHandlersFor(
-                        course.id, refresh, navOptions[course.id], admOptions[course.id]);
+            var getHandlersFn = guest ? $mmCoursesDelegate.getNavHandlersForGuest : $mmCoursesDelegate.getNavHandlersFor;
+            course._handlers = getHandlersFn(course.id, refresh, navOptions[course.id], admOptions[course.id]);
         });
 
     }
