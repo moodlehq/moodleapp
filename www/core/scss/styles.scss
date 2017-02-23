@@ -688,6 +688,17 @@ mm-timer {
 
 .popover.mm-context-menu {
   width: 320px;
+  max-width: 100%;
+}
+
+.popup-container.mm-nohead .popup-head {
+  display: none;
+}
+
+.popup-container.mm-bigpopup .popup {
+  width: 90%; // Fallback of calc.
+  width: calc(100% - 20px);
+  max-width: none;
 }
 
 // Inline icons and inputs.

@@ -142,7 +142,7 @@ angular.module('mm.addons.mod_glossary')
             attachments = $scope.attachments;
 
             // Upload attachments first if any.
-            if (attachments.length) {
+            if (!!attachments.length) {
                 return $mmaModGlossaryHelper.uploadOrStoreFiles(glossaryId, concept, timecreated, attachments, false)
                         .catch(function() {
                     // Cannot upload them in online, save them in offline.
@@ -174,7 +174,7 @@ angular.module('mm.addons.mod_glossary')
                 var promise;
                 if (entry && !allowDuplicateEntries) {
                     // Check if the entry is duplicated in online or offline mode.
-                    promise = $mmaModGlossary.isConceptUsed(glossaryId, concept).then(function() {
+                    promise = $mmaModGlossary.isConceptUsed(glossaryId, concept, entry.timecreated).then(function() {
                         // There's a entry with same name, reject with error message.
                         return $mmLang.translateAndReject('mma.mod_glossary.errconceptalreadyexists');
                     }, function() {
@@ -195,7 +195,7 @@ angular.module('mm.addons.mod_glossary')
                 // Try to send it to server.
                 // Don't allow offline if there are attachments since they were uploaded fine.
                 return $mmaModGlossary.addEntry(glossaryId, concept, definition, courseId, options, attach, undefined,
-                    entry, !attachments.length);
+                    entry, !attachments.length, !allowDuplicateEntries);
             }
         }).then(function(entryId) {
             if (entryId) {

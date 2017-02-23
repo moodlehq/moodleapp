@@ -773,6 +773,9 @@ angular.module('mm.core')
 
             options.template = addFormatTextIfNeeded(template); // Add format-text to handle links.
             options.title = title;
+            if (!title) {
+                options.cssClass = 'mm-nohead';
+            }
             return $ionicPopup.confirm(options).then(function(confirmed) {
                 if (!confirmed) {
                     return $q.reject();
@@ -1198,6 +1201,40 @@ angular.module('mm.core')
             });
 
             return deferred.promise;
+        };
+
+        /**
+         * Check if a promise works and returns true if resolves or false if rejects.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#promiseWorks
+         * @param  {Promise} promise    Promise to check
+         * @return {Promise}            Promise resolved with true if the promises resolves and false if rejects.
+         */
+        self.promiseWorks = function(promise) {
+            return promise.then(function() {
+                return true;
+            }).catch(function() {
+                return false;
+            });
+        };
+
+        /**
+         * Check if a promise works and returns true if rejects or false if resolves.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#promiseFails
+         * @param  {Promise} promise    Promise to check
+         * @return {Promise}            Promise resolved with true if the promises rejects and false if resolves.
+         */
+        self.promiseFails = function(promise) {
+            return promise.then(function() {
+                return false;
+            }).catch(function() {
+                return true;
+            });
         };
 
         /**

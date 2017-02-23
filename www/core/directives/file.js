@@ -233,7 +233,7 @@ angular.module('mm.core')
                     });
                 } else {
                     // File doesn't need to be opened (it's a prefetch). Show confirm modal if file size is defined and it's big.
-                    promise = fileSize ? $mmUtil.confirmDownloadSize(fileSize) : $q.when();
+                    promise = fileSize ? $mmUtil.confirmDownloadSize({size: fileSize, total: true}) : $q.when();
                     promise.then(function() {
                         // User confirmed, add the file to queue.
                         $mmFilepool.invalidateFileByUrl(siteId, fileUrl).finally(function() {
