@@ -113,11 +113,7 @@ angular.module('mm.addons.mod_wiki')
                         });
                     }).catch(function(error) {
                         $scope.spinner = false;
-                        if (error) {
-                            $mmUtil.showErrorModal(error);
-                        } else {
-                            $mmUtil.showErrorModal('mm.core.errordownloading', true);
-                        }
+                        $mmUtil.showErrorModalDefault(error, 'mm.core.errordownloading', true);
                     });
                 }
 
