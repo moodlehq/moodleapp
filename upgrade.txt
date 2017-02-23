@@ -23,6 +23,7 @@ information provided here is intended especially for developers.
  * A new field has been added to config.json: privacypolicy.
  * String identifiers mm.core.elementseparator and mm.core.fieldvalueseparator have been renamed to:
    mm.core.listsep and mm.core.labelsep
+ * Filepool now also throws file events (getFileEventNameByUrl) when files are deleted, outdated or start downloading. It passes an 'action' property to identify the exact action.
 
 === 3.2 ===
 
