@@ -773,6 +773,9 @@ angular.module('mm.core')
 
             options.template = addFormatTextIfNeeded(template); // Add format-text to handle links.
             options.title = title;
+            if (!title) {
+                options.cssClass = 'mm-nohead';
+            }
             return $ionicPopup.confirm(options).then(function(confirmed) {
                 if (!confirmed) {
                     return $q.reject();
