@@ -180,7 +180,7 @@
     "twoparagraphs": "{{p1}}<br><br>{{p2}}",
     "tryagain": "Try again",
     "uhoh": "Uh oh!",
-    "unicodenotsupported" : "Unicode text like emojis are not supported on this site, text will be sent removing those characters.",
+    "unicodenotsupported" : "Some emojis are not supported on this site. Such characters will be removed when the message is sent.",
     "unicodenotsupportedcleanerror" : "Empty text was found when cleaning Unicode chars.",
     "unknown": "Unknown",
     "unlimited": "Unlimited",
