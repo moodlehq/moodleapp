@@ -394,6 +394,9 @@ angular.module('mm.core')
                     scope.$watch(variable, function() {
                         formatAndRenderContents(scope, element, attrs, content);
                     });
+                } else {
+                    // Variable not found, just format the original content.
+                    formatAndRenderContents(scope, element, attrs, content);
                 }
             } else {
                 formatAndRenderContents(scope, element, attrs, content);
