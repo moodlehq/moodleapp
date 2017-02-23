@@ -12,7 +12,6 @@
     "erroremptysubject": "Post subject cannot be empty",
     "errorgetforum": "Error getting forum data.",
     "errorgetgroups": "Error getting group settings.",
-    "flatposts": "Display replies flat",
     "forumnodiscussionsyet": "There are no discussion topics yet in this forum.",
     "group": "Group",
     "message": "Message",
