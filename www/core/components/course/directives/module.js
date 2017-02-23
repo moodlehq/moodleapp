@@ -28,13 +28,14 @@ angular.module('mm.core.course')
  *
  * @example
  *
- * <mm-course-module module="module"></mm-course-module>
+ * <mm-course-module module="module" completion-changed="completionChanged"></mm-course-module>
  */
 .directive('mmCourseModule', function() {
     return {
         restrict: 'E',
         scope: {
             module: '=',
+            completionChanged: '=?'
         },
         templateUrl: 'core/components/course/templates/module.html'
     };

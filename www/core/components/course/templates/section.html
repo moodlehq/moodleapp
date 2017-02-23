@@ -22,7 +22,7 @@
                     <mm-format-text>{{ section.summary }}</mm-format-text>
                 </div>
 
-                <mm-course-module class="item item-complex" ng-repeat="module in section.modules" module="module"></mm-course-module>
+                <mm-course-module class="item item-complex" ng-repeat="module in section.modules" module="module" completion-changed="completionChanged"></mm-course-module>
 
                 <!-- When there is nothing in the section. -->
                 <div class="item item-text-wrap" ng-if="section.modules.length < 1 && sections.length == 1">
