@@ -597,9 +597,13 @@ angular.module('mm.core')
 
             // Undo resize.
             function undoResize(editorEl, contentsEl) {
-                angular.element(editorEl).css('height', '');
                 if (contentsEl) {
+                    // RTE enabled.
+                    angular.element(editorEl).css('height', '');
                     angular.element(contentsEl).css('height', editorInitialHeight + 'px');
+                } else {
+                    // Textarea.
+                    angular.element(editorEl).css('height', editorInitialHeight + 'px');
                 }
                 resized = false;
             }
