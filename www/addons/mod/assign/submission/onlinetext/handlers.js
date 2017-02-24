@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_assign')
  * @name $mmaModAssignSubmissionOnlinetextHandler
  */
 .factory('$mmaModAssignSubmissionOnlinetextHandler', function($mmSite, $mmaModAssign, $q, $mmaModAssignHelper, $mmWS, $mmText,
-            $mmaModAssignOffline) {
+            $mmaModAssignOffline, $mmUtil) {
 
     var self = {};
 
@@ -166,11 +166,19 @@ angular.module('mm.addons.mod_assign')
      * @return {Void}
      */
     self.prepareSubmissionData = function(assign, submission, plugin, inputData, pluginData, offline, userId, siteId) {
-        pluginData.onlinetext_editor = {
-            text: getTextToSubmit(plugin, inputData),
-            format: 1,
-            itemid: 0 // Can't add new files yet, so we use a fake itemid.
-        };
+        return $mmUtil.isRichTextEditorEnabled().then(function(enabled) {
+            var text = getTextToSubmit(plugin, inputData);
+            if (!enabled) {
+                // Rich text editor not enabled, add some HTML to the text if needed.
+                text = $mmText.formatHtmlLines(text);
+            }
+
+            pluginData.onlinetext_editor = {
+                text: text,
+                format: 1,
+                itemid: 0 // Can't add new files yet, so we use a fake itemid.
+            };
+        });
     };
 
     /**

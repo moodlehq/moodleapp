@@ -160,7 +160,7 @@ angular.module('mm.addons.mod_forum')
                 $mmUtil.isRichTextEditorEnabled().then(function(enabled) {
                     if (!enabled) {
                         // Rich text editor not enabled, add some HTML to the message if needed.
-                        message = message = $mmText.formatHtmlLines(message);
+                        message = $mmText.formatHtmlLines(message);
                     }
 
                     // Upload attachments first if any.

@@ -24,7 +24,7 @@ angular.module('mm.addons.messages')
 .controller('mmaMessagesDiscussionCtrl', function($scope, $stateParams, $mmApp, $mmaMessages, $mmSite, $timeout, $mmEvents, $window,
         $ionicScrollDelegate, mmUserProfileState, $mmUtil, mmaMessagesPollInterval, $interval, $log, $ionicHistory, $ionicPlatform,
         mmCoreEventKeyboardShow, mmCoreEventKeyboardHide, mmaMessagesDiscussionLoadedEvent, mmaMessagesDiscussionLeftEvent,
-        $mmUser, $translate, mmaMessagesNewMessageEvent, mmaMessagesAutomSyncedEvent, $mmaMessagesSync, $q, md5,
+        $mmUser, $translate, mmaMessagesNewMessageEvent, mmaMessagesAutomSyncedEvent, $mmaMessagesSync, $q, md5, $mmText,
         mmaMessagesReadChangedEvent) {
 
     $log = $log.getInstance('mmaMessagesDiscussionCtrl');
@@ -107,7 +107,7 @@ angular.module('mm.addons.messages')
         $scope.data.showDelete = false;
         $scope.newMessage = ''; // Clear new message.
 
-        text = text.replace(/(?:\r\n|\r|\n)/g, '<br />');
+        text = $mmText.replaceNewLines(text, '<br>');
         message = {
             pending: true,
             sending: true,

@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_chat')
  * @name mmaModChatChatCtrl
  */
 .controller('mmaModChatChatCtrl', function($scope, $stateParams, $mmApp, $mmaModChat, $log, $ionicModal, $mmUtil, $ionicHistory,
-            $ionicScrollDelegate, $timeout, $mmSite, $interval, mmaChatPollInterval, $q) {
+            $ionicScrollDelegate, $timeout, $mmSite, $interval, mmaChatPollInterval, $q, $mmText) {
 
     $log = $log.getInstance('mmaModChatChatCtrl');
 
@@ -173,7 +173,7 @@ angular.module('mm.addons.mod_chat')
             // Silent error.
             return;
         }
-        text = text.replace(/(?:\r\n|\r|\n)/g, '<br />');
+        text = $mmText.replaceNewLines(text, '<br>');
 
         $mmaModChat.sendMessage($scope.chatsid, text, beep).then(function() {
             if (beep === '') {

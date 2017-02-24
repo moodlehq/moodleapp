@@ -24,7 +24,7 @@ angular.module('mm.addons.notifications')
 .filter('mmaNotificationsFormat', function($mmText) {
   return function(text) {
     text = text.replace(/-{4,}/ig, '');
-    text = $mmText.replaceNewLines(text, '<br />');
+    text = $mmText.replaceNewLines(text, '<br>');
     return text;
   };
 });
