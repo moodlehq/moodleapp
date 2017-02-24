@@ -594,10 +594,25 @@ p.mm-error {
   box-shadow: $card-box-shadow;
   margin: 20px 10px;
   background-color: #fff;
+  position: relative;
+  padding-left: $item-padding * 3;
+  text-align: left;
 
-  i.icon:before {
-      color: $mm-warning-color;
-      font-size: 125%;
+  i.icon {
+    @include display-flex();
+    @include align-items(center);
+    position: absolute;
+    top: 0;
+    height: 100%;
+    font-size: ceil(($item-icon-font-size / 4) * 3);
+    left: ceil($item-padding / 4);
+    color: $mm-warning-color;
+
+    &:before {
+      display: block;
+      width: ceil(($item-icon-font-size / 4) * 3);
+      text-align: center;
+    }
   }
 }
 
