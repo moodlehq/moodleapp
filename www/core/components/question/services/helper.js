@@ -687,6 +687,7 @@ angular.module('mm.core.question')
                 rowModel.id = select.id;
                 rowModel.name = select.name;
                 rowModel.disabled = select.disabled;
+                rowModel.selected = false;
                 rowModel.options = [];
 
                 // Check if answer is correct.
@@ -702,12 +703,17 @@ angular.module('mm.core.question')
                         log.warn('Aborting because couldn\'t find option value.', question.name);
                         return self.showDirectiveError(scope);
                     }
-
-                    rowModel.options.push({
+                    var opt = {
                         value: option.value,
                         label: option.innerHTML,
                         selected: option.selected
-                    });
+                    };
+
+                    if (opt.selected) {
+                        rowModel.selected = opt;
+                    }
+
+                    rowModel.options.push(opt);
                 });
 
                 // Get the accessibility label.

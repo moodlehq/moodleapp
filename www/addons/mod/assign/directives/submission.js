@@ -222,7 +222,8 @@ angular.module('mm.addons.mod_assign')
                     originalGrades.applyToAll = true;
                 }
                 if (assign.markingworkflow && scope.grade.gradingStatus) {
-                    scope.workflowStatusTranslationId =  getSubmissionGradingStatusTranslationId(scope.grade.gradingStatus);
+                    scope.workflowStatusTranslationId =
+                        $mmaModAssign.getSubmissionGradingStatusTranslationId(scope.grade.gradingStatus);
                 }
 
                 if (!scope.feedback) {

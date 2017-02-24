@@ -1,9 +1,9 @@
 <ion-view view-title="{{ 'mma.mod_forum.addanewdiscussion' | translate }}">
-    <ion-content padding="true" mm-state-class delegate-handle="mmaModForumNewDiscussion">
+    <ion-content mm-state-class delegate-handle="mmaModForumNewDiscussion">
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="groupsLoaded" on-refresh="refreshGroups()">
         </ion-refresher>
         <mm-loading hide-until="groupsLoaded">
-            <form ng-if="showForm" class="list mma-forum-border">
+            <form ng-if="showForm" class="list">
                 <ion-input class="item item-input item-stacked-label">
                     <ion-label>{{ 'mma.mod_forum.subject' | translate }}</ion-label>
                     <input type="text" placeholder="{{ 'mma.mod_forum.subject' | translate }}" ng-model="newDiscussion.subject">

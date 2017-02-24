@@ -155,14 +155,17 @@ p.item-text-wrap {
 .col-65 {
   @include flex(0, 0, 65%);
   max-width: 65%;
+  width: 65%;
 }
 .col-60 {
   @include flex(0, 0, 60%);
+  width: 60%;
   max-width: 60%;
 }
 .col-40 {
   @include flex(0, 0, 40%);
   max-width: 40%;
+  width: 40%;
 }
 
 // Media item, ideal for icons.
@@ -578,7 +581,7 @@ mm-navigation-bar {
 
 // When using .item and .row in the same element, .row's padding prevails. Use this class to keep .item's padding.
 .item.row.mm-item-padding {
-  padding: $item-padding;
+  padding: $item-padding / 2;
 }
 
 p.mm-error {
@@ -742,6 +745,28 @@ mm-timer {
     }
   }
 }
+
+.item-select .mm-select-fix {
+  // Taken from .item-select select.
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  padding: 0 ($item-padding * 3) 0 $item-padding;
+  max-width: 65%;
+  width: 100%;
+  border: none;
+  background: $item-default-bg;
+  color: #333;
+  text-indent: .01px;
+  white-space: nowrap;
+  font-size: $font-size-base;
+  cursor: pointer;
+  direction: rtl; // right align the select text
+
+  pointer-events: none;
+}
+
 
 .item-input-inset .item-input-wrapper input,
 .item-input .item-input-wrapper input {
@@ -920,6 +945,7 @@ mm-timer {
 
   .input-label, .mm-textarea {
     padding-left: $item-padding;
+    padding-top: $item-padding/2;
   }
 }
 

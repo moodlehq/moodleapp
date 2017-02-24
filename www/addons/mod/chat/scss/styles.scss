@@ -34,3 +34,13 @@ $mma-chat-notice-badge: "stable" !default;
 .mma-chat-reconnect-button, .button.mma-chat-reconnect-button {
   margin: 0;
 }
+
+.mma-mod_chat-users-modal {
+  .item-complex .item-avatar {
+    padding-bottom: 0;
+
+    .tabs {
+      border: 0;
+    }
+  }
+}
