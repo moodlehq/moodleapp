@@ -204,7 +204,7 @@ angular.module('mm.core')
                 $mmFilepool.getFileEventNameByUrl(siteId, fileUrl).then(function(eventName) {
                     observer = $mmEvents.on(eventName, function(data) {
                         getState(scope, siteId, fileUrl, timeModified, alwaysDownload);
-                        if (!data.success) {
+                        if (data.action == 'download' && !data.success) {
                             $mmUtil.showErrorModal('mm.core.errordownloading', true);
                         }
                     });

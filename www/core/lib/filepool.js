@@ -431,6 +431,7 @@ angular.module('mm.core')
                     }).then(function() {
                         // Check if the queue is running.
                         self.checkQueueProcessing();
+                        self._notifyFileDownloading(siteId, fileId);
                         return self._getQueuePromise(siteId, fileId);
                     });
                 }
@@ -802,6 +803,8 @@ angular.module('mm.core')
             extension = $mmFS.guessExtensionFromUrl(fileUrl),
             addExtension = typeof filePath == "undefined",
             pathPromise = filePath ? filePath : self._getFilePath(siteId, fileId, extension);
+
+        self._notifyFileDownloading(siteId, fileId);
 
         return $q.when(pathPromise).then(function(filePath) {
             if (poolFileObject && poolFileObject.fileId !== fileId) {
@@ -2056,6 +2059,19 @@ angular.module('mm.core')
     };
 
     /**
+     * Notify a file has been deleted.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#_notifyFileDeleted
+     * @param {String} siteId The site ID.
+     * @param {String} fileId The file ID.
+     */
+    self._notifyFileDeleted = function(siteId, fileId) {
+        $mmEvents.trigger(self._getFileEventName(siteId, fileId), {action: 'deleted'});
+    };
+
+    /**
      * Notify a file has been downloaded.
      *
      * @module mm.core
@@ -2065,7 +2081,7 @@ angular.module('mm.core')
      * @param {String} fileId The file ID.
      */
     self._notifyFileDownloaded = function(siteId, fileId) {
-        $mmEvents.trigger(self._getFileEventName(siteId, fileId), {success: true});
+        $mmEvents.trigger(self._getFileEventName(siteId, fileId), {action: 'download', success: true});
     };
 
     /**
@@ -2078,7 +2094,33 @@ angular.module('mm.core')
      * @param {String} fileId The file ID.
      */
     self._notifyFileDownloadError = function(siteId, fileId) {
-        $mmEvents.trigger(self._getFileEventName(siteId, fileId), {success: false});
+        $mmEvents.trigger(self._getFileEventName(siteId, fileId), {action: 'download', success: false});
+    };
+
+    /**
+     * Notify a file starts being downloaded or added to queue.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#_notifyFileDownloading
+     * @param {String} siteId The site ID.
+     * @param {String} fileId The file ID.
+     */
+    self._notifyFileDownloading = function(siteId, fileId) {
+        $mmEvents.trigger(self._getFileEventName(siteId, fileId), {action: 'downloading'});
+    };
+
+    /**
+     * Notify a file has been outdated.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#_notifyFileOutdated
+     * @param {String} siteId The site ID.
+     * @param {String} fileId The file ID.
+     */
+    self._notifyFileOutdated = function(siteId, fileId) {
+        $mmEvents.trigger(self._getFileEventName(siteId, fileId), {action: 'outdated'});
     };
 
     /**
@@ -2352,7 +2394,9 @@ angular.module('mm.core')
                     }));
                 }
 
-                return $q.all(promises);
+                return $q.all(promises).then(function() {
+                    self._notifyFileDeleted(siteId, fileId);
+                });
             });
         });
     };
