@@ -1207,6 +1207,17 @@ ion-spinner.mm-spinner-right {
   }
 }
 
+.card .item-border,
+.item-border {
+  &:first-child {
+    border-top: $item-border-width solid $item-light-border;
+  }
+
+  &:last-child {
+    border-bottom: $item-border-width solid $item-light-border;
+  }
+}
+
 // Video subtitles.
 .platform-ios video::cue {
   font-size: 12px;
