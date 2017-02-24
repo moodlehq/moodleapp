@@ -27,11 +27,11 @@
             </div>
 
             <!-- Survey questions -->
-            <section class="card padding" ng-if="!survey.surveydone && !hasOffline && questions && questions.length">
+            <section ng-if="!survey.surveydone && !hasOffline && questions && questions.length">
                 <div ng-repeat="question in questions">
                     <!-- Parent question (Category header) -->
                     <div ng-if="question.multi && question.multi.length" ng-class="{'mma-mod_survey-padding-top': !$first}">
-                        <h2>{{ question.text }}</h2>
+                        <h3 class="padding-horizontal">{{ question.text }}</h3>
                         <div class="row" ng-if="isTablet">
                             <div class="col col-50">{{ 'mma.mod_survey.responses' | translate }}</div>
                             <div class="col text-center" ng-repeat="option in question.options">
@@ -51,7 +51,7 @@
                                 <input type="radio" name="{{question.name}}" ng-model="answers[question.name]" ng-value="$index + 1" aria-labelledby="mma-mod_survey-{{question.name}}">
                             </div>
                             <!-- Phone view: select -->
-                            <div ng-if="!isTablet" class="col-40 text-center item-select">
+                            <div ng-if="!isTablet" class="col-40 item-select">
                                 <select class="mma-mod_survey-select" ng-model="answers[question.name]" ng-options="question.options.indexOf(o)+1 as o for o in question.options" aria-labelledby="mma-mod_survey-{{question.name}}" mm-ios-select-fix>
                                     <option class="mma-mod_survey-defaultoption" value="" disabled selected>{{ 'mm.core.choose' | translate }}</option>
                                 </select>
@@ -78,7 +78,7 @@
                         </div>
                     </div>
                 </div>
-                <div>
+                <div class="padding">
                     <button class="button button-block" ng-click="submit()" ng-disabled="!isValidResponse()">{{ 'mma.mod_survey.clicktocontinue' | translate }}</button>
                 </div>
             </section>
