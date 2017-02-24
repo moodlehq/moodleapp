@@ -305,6 +305,13 @@ angular.module('mm.core.login', [])
                     });
                 }
             }
+        }).catch(function(error) {
+            // Error checking site.
+            if ($mmSite.isLoggedOut()) {
+                // Site is logged out, show error and logout the user.
+                $mmUtil.showErrorModalDefault(error, 'mm.core.networkerrormsg', true);
+                logout();
+            }
         });
     }
 
