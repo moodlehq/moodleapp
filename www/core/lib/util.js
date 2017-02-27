@@ -664,10 +664,6 @@ angular.module('mm.core')
          *                                   If not defined, modal won't be automatically closed.
          */
         self.showErrorModal = function(errorMessage, needsTranslate, autocloseTime) {
-            var errorKey = 'mm.core.error',
-                langKeys = [errorKey],
-                matches;
-
             if (angular.isObject(errorMessage)) {
                 // We received an object instead of a string. Search for common properties.
                 if (typeof errorMessage.content != 'undefined') {
@@ -684,30 +680,32 @@ angular.module('mm.core')
                 }
 
                 // Try to remove tokens from the contents.
-                matches = errorMessage.match(/token"?[=|:]"?(\w*)/, '');
+                var matches = errorMessage.match(/token"?[=|:]"?(\w*)/, '');
                 if (matches && matches[1]) {
                     errorMessage = errorMessage.replace(new RegExp(matches[1], 'g'), 'secret');
                 }
             }
 
-            if (needsTranslate) {
-                langKeys.push(errorMessage);
+            var message = $mmText.decodeHTML(needsTranslate ? $translate.instant(errorMessage) : errorMessage),
+                popup = $ionicPopup.alert({
+                    title: getErrorTitle(message),
+                    template: addFormatTextIfNeeded(message) // Add format-text to handle links.
+                });
+
+            if (typeof autocloseTime != 'undefined' && !isNaN(parseInt(autocloseTime))) {
+                $timeout(function() {
+                    popup.close();
+                }, parseInt(autocloseTime));
             }
-
-            $translate(langKeys).then(function(translations) {
-                var message = $mmText.decodeHTML(needsTranslate ? translations[errorMessage] : errorMessage),
-                    popup = $ionicPopup.alert({
-                        title: $mmText.decodeHTML(translations[errorKey]),
-                        template: addFormatTextIfNeeded(message) // Add format-text to handle links.
-                    });
-
-                if (typeof autocloseTime != 'undefined' && !isNaN(parseInt(autocloseTime))) {
-                    $timeout(function() {
-                        popup.close();
-                    }, parseInt(autocloseTime));
-                }
-            });
         };
+
+        function getErrorTitle(message) {
+            if (message == $translate.instant('mm.core.networkerrormsg')) {
+                return '<span class="mm-icon-with-badge"><i class="icon ion-wifi"></i>\
+                    <i class="icon ion-alert-circled mm-icon-badge"></i></span>';
+            }
+            return $mmText.decodeHTML($translate.instant('mm.core.error'));
+        }
 
         /**
          * Show a modal with an error message specifying a default message if error is empty.

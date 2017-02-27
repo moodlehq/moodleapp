@@ -98,11 +98,7 @@ angular.module('mm.addons.mod_assign')
                 });
             });
         }).catch(function(message) {
-            if (message) {
-                $mmUtil.showErrorModal(message);
-            } else {
-                $mmUtil.showErrorModal('Error getting assigment data.');
-            }
+            $mmUtil.showErrorModalDefault(message, 'Error getting assigment data.');
             blockData && blockData.back();
             return $q.reject();
         });

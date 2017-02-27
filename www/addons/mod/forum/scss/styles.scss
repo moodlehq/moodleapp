@@ -53,6 +53,12 @@
             border-left: 0;
             border-right: 0;
         }
+        .item-media:first-child {
+            border-top: 0;
+        }
+        .item-media:last-child {
+            border-bottom: 0;
+        }
     }
 
     .item-divider {

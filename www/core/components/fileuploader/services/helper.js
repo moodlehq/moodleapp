@@ -88,6 +88,10 @@ angular.module('mm.core.fileuploader')
      * @return {Promise}                  Promise resolved when the user confirms or if there's no need to show a modal.
      */
     self.confirmUploadFile = function(size, alwaysConfirm, allowOffline, wifiThreshold, limitedThreshold) {
+        if (size == 0) {
+            return $q.when();
+        }
+
         if (!allowOffline && !$mmApp.isOnline()) {
             return $mmLang.translateAndReject('mm.fileuploader.errormustbeonlinetoupload');
         }

@@ -764,14 +764,15 @@ angular.module('mm.addons.mod_glossary')
      * @param  {Number}  courseId          Course ID of the glossary.
      * @param  {Array}   [options]         Array of options for the entry.
      * @param  {Mixed}   [attach]          Attachments ID if sending online, result of $mmFileUploader#storeFilesToUpload otherwise.
+     * @param  {Number}  [timecreated]     The time the entry was created. If not defined, current time.
      * @param  {String}  [siteId]          Site ID. If not defined, current site.
      * @param  {Object}  [discardEntry]    The entry provided will be discarded if found.
      * @param  {Boolean} allowOffline      True if it can be stored in offline, false otherwise.
      * @param  {Boolean} [checkDuplicates] Check for duplicates before storing offline. Only used if allowOffline is true.
      * @return {Promise}          Promise resolved with entry ID if entry was created in server, false if stored in device.
      */
-    self.addEntry = function(glossaryId, concept, definition, courseId, options, attach, siteId, discardEntry, allowOffline,
-            checkDuplicates) {
+    self.addEntry = function(glossaryId, concept, definition, courseId, options, attach, timecreated, siteId, discardEntry,
+            allowOffline, checkDuplicates) {
         siteId = siteId || $mmSite.getId();
 
         if (!$mmApp.isOnline() && allowOffline) {
@@ -800,15 +801,15 @@ angular.module('mm.addons.mod_glossary')
 
         // Convenience function to store a new entry to be synchronized later.
         function storeOffline() {
-            var timecreated = discardEntry && discardEntry.timecreated,
-                duplicatesPromise = checkDuplicates ? self.isConceptUsed(glossaryId, concept, timecreated, siteId) : $q.when(false);
+            var discardTime = discardEntry && discardEntry.timecreated,
+                duplicatesPromise = checkDuplicates ? self.isConceptUsed(glossaryId, concept, discardTime, siteId) : $q.when(false);
             // Check if the entry is duplicated in online or offline mode.
             return duplicatesPromise.then(function(used) {
                 if (used) {
                     return $mmLang.translateAndReject('mma.mod_glossary.errconceptalreadyexists');
                 }
 
-                return $mmaModGlossaryOffline.saveAddEntry(glossaryId, concept, definition, courseId, options, attach,
+                return $mmaModGlossaryOffline.saveAddEntry(glossaryId, concept, definition, courseId, options, attach, timecreated,
                         siteId, undefined, discardEntry).then(function() {
                     return false;
                 });
@@ -909,7 +910,6 @@ angular.module('mm.addons.mod_glossary')
                         return true;
                     }
                 }
-
                 return false;
             });
         }).catch(function() {

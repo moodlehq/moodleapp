@@ -594,10 +594,25 @@ p.mm-error {
   box-shadow: $card-box-shadow;
   margin: 20px 10px;
   background-color: #fff;
+  position: relative;
+  padding-left: $item-padding * 3;
+  text-align: left;
 
-  i.icon:before {
-      color: $mm-warning-color;
-      font-size: 125%;
+  i.icon {
+    @include display-flex();
+    @include align-items(center);
+    position: absolute;
+    top: 0;
+    height: 100%;
+    font-size: ceil(($item-icon-font-size / 4) * 3);
+    left: ceil($item-padding / 4);
+    color: $mm-warning-color;
+
+    &:before {
+      display: block;
+      width: ceil(($item-icon-font-size / 4) * 3);
+      text-align: center;
+    }
   }
 }
 
@@ -692,6 +707,28 @@ mm-timer {
 .popover.mm-context-menu {
   width: 320px;
   max-width: 100%;
+}
+
+.popup-container .popup-title
+
+
+.mm-icon-with-badge {
+  position: relative;
+
+  .icon {
+    font-size: $button-large-icon-size;
+  }
+
+  .mm-icon-badge {
+    width: auto;
+    height: auto;
+    margin: 0;
+    position: absolute;
+    top: -18px;
+    right: -8px;
+    color: red;
+    font-size: $button-large-icon-size / 2;
+  }
 }
 
 .popup-container.mm-nohead .popup-head {
@@ -1204,6 +1241,17 @@ ion-spinner.mm-spinner-right {
 
   .toggle {
     top: 0;
+  }
+}
+
+.card .item-border,
+.item-border {
+  &:first-child {
+    border-top: $item-border-width solid $item-light-border;
+  }
+
+  &:last-child {
+    border-bottom: $item-border-width solid $item-light-border;
   }
 }
 
