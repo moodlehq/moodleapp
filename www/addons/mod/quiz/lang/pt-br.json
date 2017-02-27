@@ -38,6 +38,7 @@
     "noquestions": "Ainda não foi inserida nenhuma pergunta",
     "noreviewattempt": "Você não tem permissão para revisar esta tentativa.",
     "notyetgraded": "Ainda não avaliado",
+    "opentoc": "Abrir dicas de navegação.",
     "outof": "{{$a.grade}} de um máximo de {{$a.maxgrade}}",
     "outofpercent": "{{$a.grade}} de um máximo de {{$a.maxgrade}}({{$a.percent}}%)",
     "outofshort": "{{$a.grade}}/{{$a.maxgrade}}",

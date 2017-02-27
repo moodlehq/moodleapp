@@ -1,0 +1,13 @@
+{
+    "erroremptysubject": "Το θέμα της δημοσίευσης δεν μπορεί να είναι κενό",
+    "errorgetforum": "Σφάλμα κατά τη λήψη των δεδομένων του forum.",
+    "errorgetgroups": "Σφάλμα κατά τη λήψη των ρυθμίσεων της ομάδας.",
+    "forumnodiscussionsyet": "Δεν υπάρχουν ακόμα θέματα συζήτησης σε αυτό το forum.",
+    "group": "Ομάδα",
+    "numdiscussions": "{{numdiscussions}} συζητήσεις",
+    "numreplies": "{{numreplies}} απαντήσεις",
+    "refreshdiscussions": "Ανανεώστε τις συζητήσεις",
+    "refreshposts": "Ανανεώστε τα μηνύματα της συζήτησης",
+    "sortnewestfirst": "Εμφανίστε πρώτα τα νεότερα",
+    "sortoldestfirst": "Εμφανίστε πρώτα τα παλαιότερα"
+}

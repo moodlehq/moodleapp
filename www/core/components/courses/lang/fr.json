@@ -1,10 +1,12 @@
 {
     "allowguests": "Les visiteurs anonymes sont autorisés dans ce cours",
     "availablecourses": "Cours disponibles",
+    "cannotretrievemorecategories": "Les catégories de niveau plus grand que {{$a}} ne peuvent pas être chargées.",
     "categories": "Catégories de cours",
     "confirmselfenrol": "Voulez-vous vraiment vous inscrire vous-même dans ce cours ?",
     "courses": "Cours",
     "enrolme": "M'inscrire",
+    "errorloadcategories": "Une erreur est survenue lors du chargement des catégories.",
     "errorloadcourses": "Une erreur est survenue lors du chargement des cours.",
     "errorsearching": "Une erreur est survenue durant la recherche.",
     "errorselfenrol": "Une erreur est survenue durant l'auto-inscription",

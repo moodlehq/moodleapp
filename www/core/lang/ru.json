@@ -35,6 +35,7 @@
     "download": "Скачать",
     "downloading": "Загрузка",
     "edit": "Редактировать",
+    "elementseparator": ",",
     "error": "Ошибка",
     "errordownloading": "Ошибка загрузки файла",
     "filename": "Имя файла",

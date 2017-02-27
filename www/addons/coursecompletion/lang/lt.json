@@ -1,0 +1,21 @@
+{
+    "complete": "Visas",
+    "completecourse": "Visa kursų medžiaga",
+    "completed": "Užbaigta",
+    "completiondate": "Užbaigimo data",
+    "couldnotloadreport": "Nepavyko įkelti kursų baigimo ataskaitos, prašome pabandyti vėliau.",
+    "coursecompletion": "Kursų užbaigimas",
+    "criteria": "Kriterijai",
+    "criteriagroup": "Kriterijų grupė",
+    "criteriarequiredall": "Visi žemiau esantys kriterijai yra privalomi",
+    "criteriarequiredany": "Kiekvienas kriterijus, esantis žemiau, yra privalomas",
+    "inprogress": "Nebaigta",
+    "manualselfcompletion": "Savarankiško mokymosi vadovas",
+    "notyetstarted": "Nepradėta",
+    "pending": "Laukiama",
+    "required": "Privaloma",
+    "requiredcriteria": "Privalomi kriterijai",
+    "requirement": "Būtina sąlyga",
+    "status": "Būsena",
+    "viewcoursereport": "Peržiūrėti kursų ataskaitą"
+}

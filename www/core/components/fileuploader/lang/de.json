@@ -3,7 +3,7 @@
     "audio": "Audio",
     "camera": "Kamera",
     "confirmuploadfile": "Möchten Sie wirklich {{size}} hochladen?",
-    "confirmuploadunknownsize": "Die Dateigröße zum Hochladen kann nicht berechnet werden. Möchten Sie wirklich weitermachen?",
+    "confirmuploadunknownsize": "Die Datenmenge kann nicht berechnet werden. Möchten Sie wirklich hochladen?",
     "errorcapturingaudio": "Fehler bei der Audioaufnahme",
     "errorcapturingimage": "Fehler bei der Fotoaufnahme",
     "errorcapturingvideo": "Fehler bei der Videoaufnahme",

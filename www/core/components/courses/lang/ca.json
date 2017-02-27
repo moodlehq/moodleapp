@@ -1,10 +1,12 @@
 {
     "allowguests": "Aquest curs permet entrar als usuaris visitants",
     "availablecourses": "Cursos disponibles",
+    "cannotretrievemorecategories": "No es poden recuperar categories més enllà del nivell {{$a}}.",
     "categories": "Categories de cursos",
     "confirmselfenrol": "Segur que voleu autoinscriure-us en aquest curs?",
     "courses": "Cursos",
     "enrolme": "Inscriu-me",
+    "errorloadcategories": "S'ha produït un error en carregar les categories.",
     "errorloadcourses": "S'ha produït un error carregant els cursos.",
     "errorsearching": "S'ha produït un error durant la cerca.",
     "errorselfenrol": "S'ha produït un error durant l'autoinscripció.",
