@@ -151,11 +151,15 @@ angular.module('mm.addons.mod_glossary')
                 });
             }
         }).then(function(attach) {
-            var cats = $scope.categories.filter(function(category) {
-                return category.selected;
-            }).map(function(category) {
-                return category.id;
-            });
+            var cats = [];
+
+            if ($scope.categories) {
+                cats = $scope.categories.filter(function(category) {
+                    return category.selected;
+                }).map(function(category) {
+                    return category.id;
+                });
+            }
 
             var options = {
                 aliases: $scope.options.aliases || "",
@@ -174,11 +178,11 @@ angular.module('mm.addons.mod_glossary')
                 var promise;
                 if (entry && !allowDuplicateEntries) {
                     // Check if the entry is duplicated in online or offline mode.
-                    promise = $mmaModGlossary.isConceptUsed(glossaryId, concept, entry.timecreated).then(function() {
-                        // There's a entry with same name, reject with error message.
-                        return $mmLang.translateAndReject('mma.mod_glossary.errconceptalreadyexists');
-                    }, function() {
-                        // Not found, entry can be sent.
+                    promise = $mmaModGlossary.isConceptUsed(glossaryId, concept, entry.timecreated).then(function(used) {
+                        if (used) {
+                            // There's a entry with same name, reject with error message.
+                            return $mmLang.translateAndReject('mma.mod_glossary.errconceptalreadyexists');
+                        }
                     });
                 } else {
                     promise = $q.when();
@@ -187,14 +191,14 @@ angular.module('mm.addons.mod_glossary')
                 return promise.then(function() {
                     // Save entry in offline.
                     return $mmaModGlossaryOffline.saveAddEntry(glossaryId, concept, definition, courseId, options, attach,
-                            undefined, undefined, entry).then(function() {
+                            timecreated, undefined, undefined, entry).then(function() {
                         // Don't return anything.
                     });
                 });
             } else {
                 // Try to send it to server.
                 // Don't allow offline if there are attachments since they were uploaded fine.
-                return $mmaModGlossary.addEntry(glossaryId, concept, definition, courseId, options, attach, undefined,
+                return $mmaModGlossary.addEntry(glossaryId, concept, definition, courseId, options, attach, timecreated, undefined,
                     entry, !attachments.length, !allowDuplicateEntries);
             }
         }).then(function(entryId) {

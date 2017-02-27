@@ -170,12 +170,14 @@ angular.module('mm.addons.mod_glossary')
      * @param  {Number} courseId        Course ID of the glossary.
      * @param  {Array}  [options]       Array of options for the entry.
      * @param  {Object} [attach]        Result of $mmFileUploader#storeFilesToUpload for attachments.
+     * @param  {Number} [timecreated]   The time the entry was created. If not defined, current time.
      * @param  {String} [siteId]        Site ID. If not defined, current site.
      * @param  {Number} [userId]        User the entry belong to. If not defined, current user in site.
      * @param  {Object} [discardEntry]  The entry provided will be discarded if found.
      * @return {Promise}                Promise resolved if stored, rejected if failure.
      */
-    self.saveAddEntry = function(glossaryId, concept, definition, courseId, options, attach, siteId, userId, discardEntry) {
+    self.saveAddEntry = function(glossaryId, concept, definition, courseId, options, attach, timecreated, siteId, userId,
+            discardEntry) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             userId = userId || site.getUserId();
 
@@ -187,7 +189,7 @@ angular.module('mm.addons.mod_glossary')
                     definitionformat: 'html',
                     options: options,
                     userid: userId,
-                    timecreated: new Date().getTime()
+                    timecreated: timecreated || new Date().getTime()
                 };
 
             if (attach) {
