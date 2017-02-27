@@ -142,6 +142,11 @@ angular.module('mm.addons.mod_assign')
                     return $q.when();
                 }
 
+                if (!scope.$$destroyed) {
+                    // Block the assignment.
+                    $mmSyncBlock.blockOperation(mmaModAssignComponent, assign.id);
+                }
+
                 scope.gradeInfo = gradeInfo;
                 if (gradeInfo.advancedgrading && gradeInfo.advancedgrading[0] &&
                         typeof gradeInfo.advancedgrading[0].method != 'undefined') {
@@ -309,11 +314,6 @@ angular.module('mm.addons.mod_assign')
                     promises = [];
 
                 scope.assign = assign;
-
-                if (!scope.$$destroyed) {
-                    // Block the assignment.
-                    $mmSyncBlock.blockOperation(mmaModAssignComponent, assign.id);
-                }
 
                 if (assign.allowsubmissionsfromdate && assign.allowsubmissionsfromdate >= time) {
                     scope.fromDate = moment(assign.allowsubmissionsfromdate * 1000)
@@ -590,7 +590,7 @@ angular.module('mm.addons.mod_assign')
                 obsManualSync && obsManualSync.off && obsManualSync.off();
                 obsSubmitGrade && obsSubmitGrade.off && obsSubmitGrade.off();
 
-                if (scope.assign) {
+                if (scope.assign && scope.isGrading) {
                     $mmSyncBlock.unblockOperation(mmaModAssignComponent, scope.assign.id);
                 }
             });
