@@ -1336,11 +1336,17 @@ angular.module('mm.addons.mod_scorm')
                 var isOutdated = data.status == mmCoreOutdated ||
                         (data.status == mmCoreDownloading && data.previous == mmCoreOutdated);
                 return !isOutdated || data.revision != scorm.sha1hash;
+            }).catch(function() {
+                //Package not found, not downloaded.
+                return $q.when(true);
             });
         } else if (isOutdated) {
             // The package is outdated, but maybe the file hasn't changed.
             return $mmFilepool.getPackageRevision(siteId, mmaModScormComponent, scorm.coursemodule).then(function(revision) {
                 return scorm.sha1hash != revision;
+            }).catch(function() {
+                //Package not found, not downloaded.
+                return $q.when(true);
             });
         } else {
             return $q.when(true);
