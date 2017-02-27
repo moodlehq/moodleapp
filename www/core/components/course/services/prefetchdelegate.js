@@ -361,7 +361,9 @@ angular.module('mm.core')
                 // Check if the module is downloadable.
                 return self.isModuleDownloadable(module, courseId).then(function(downloadable) {
                     if (!downloadable) {
-                        return mmCoreNotDownloadable;
+                        return {
+                            status: mmCoreNotDownloadable
+                        };
                     }
 
                     var status = statusCache.getValue(handler.component, module.id, 'status');

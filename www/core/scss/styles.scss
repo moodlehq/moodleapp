@@ -59,6 +59,9 @@ $mm-input-required-asterisk-color: #ff4136 !default;
 // Item padding.
 $item-input-padding: 16px !default;
 
+// Rich text editor.
+$mm-rte-min-height: 80px !default;
+
 /**
  * App Branding
  */
@@ -966,6 +969,7 @@ mm-timer {
   }
   &:not([mm-auto-rows]) {
     height: 200px;
+    min-height: $mm-rte-min-height;
   }
 }
 
@@ -1010,6 +1014,10 @@ mm-timer {
   textarea.cke_source {
     padding: 20px;
     box-sizing: border-box;
+  }
+
+  .cke_contents {
+    min-height: $mm-rte-min-height;
   }
 }
 
