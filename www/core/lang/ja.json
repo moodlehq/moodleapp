@@ -33,6 +33,7 @@
     "downloading": "ダウンロード中 ...",
     "edit": "編集",
     "error": "エラー",
+    "errordownloading": "ファイルのダウンロードのエラー",
     "filename": "ファイル名",
     "folder": "フォルダ",
     "forcepasswordchangenotice": "続けるにはパスワードを変更してください。",

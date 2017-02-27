@@ -7,10 +7,15 @@
     "contacts": "Kişiler",
     "message": "Mesaj gövdesi",
     "messages": "Mesaj(lar)",
-    "nomessages": "Yeni mesaj yok",
+    "nomessages": "İleti yok.",
     "nousersfound": "Kullanıcı bulunamadı",
     "removecontact": "Kişiyi kaldır",
     "send": "Gönder",
     "sendmessage": "Mesaj gönder",
+    "type_blocked": "Engellendi",
+    "type_offline": "Çevrimdışı",
+    "type_online": "Çevrimiçi",
+    "type_search": "Arama sonuçları",
+    "type_strangers": "Diğer",
     "unblockcontact": "Engeli kaldır"
 }
