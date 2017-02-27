@@ -35,7 +35,7 @@
     "hiddenuser": "参加者",
     "latesubmissions": "提出期限後の提出",
     "latesubmissionsaccepted": "{{$a}} まで許可されます。",
-    "markingworkflowstate": "採点ワークフロー状態",
+    "markingworkflowstate": "採点ワークフローステータス",
     "markingworkflowstateinmarking": "採点中",
     "markingworkflowstateinreview": "レビュー中",
     "markingworkflowstatenotmarked": "未採点",
