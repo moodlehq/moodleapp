@@ -5,6 +5,7 @@
     "contactlistempty": "قائمة الاتصال فارغة",
     "contacts": "عناوين اتصال",
     "errordeletemessage": "خطأ عند حذف الرسالة",
+    "message": "رسالة",
     "messagenotsent": "لم يتم إرسال الرسالة، يرجي المحاولة لاحقا",
     "messages": "رسائل",
     "mustbeonlinetosendmessages": "لابد أن تكون متصل بالأنترنت لكي ترسل أي رسائل",

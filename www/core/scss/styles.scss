@@ -134,7 +134,8 @@ em {
   }
 }
 
-.item.item-text-wrap .item-heading {
+.item.item-text-wrap .item-heading,
+p.item-text-wrap {
   overflow: visible;
   white-space: normal;
 }
@@ -154,14 +155,17 @@ em {
 .col-65 {
   @include flex(0, 0, 65%);
   max-width: 65%;
+  width: 65%;
 }
 .col-60 {
   @include flex(0, 0, 60%);
+  width: 60%;
   max-width: 60%;
 }
 .col-40 {
   @include flex(0, 0, 40%);
   max-width: 40%;
+  width: 40%;
 }
 
 // Media item, ideal for icons.
@@ -262,8 +266,12 @@ em {
 
 // Defines a "disabled" item.
 .item.item-disabled,
+.item-toggle[disabled],
 .platform-android .item.item-disabled {
   color: $item-disabled-color;
+  h2 {
+    color: $item-disabled-color;
+  }
 }
 
 // Avoid adding too much padding.
@@ -526,7 +534,9 @@ mm-loading.mm-loading-center {
 .mm-media-adapt-width {
   max-width: 100%;
 }
-img.mm-media-adapt-width {
+
+.mm-enabled-media-adapt img.mm-media-adapt-width,
+img.mm-media-adapt-width-enabled {
   height: auto;
 }
 
@@ -571,7 +581,7 @@ mm-navigation-bar {
 
 // When using .item and .row in the same element, .row's padding prevails. Use this class to keep .item's padding.
 .item.row.mm-item-padding {
-  padding: $item-padding;
+  padding: $item-padding / 2;
 }
 
 p.mm-error {
@@ -584,10 +594,25 @@ p.mm-error {
   box-shadow: $card-box-shadow;
   margin: 20px 10px;
   background-color: #fff;
+  position: relative;
+  padding-left: $item-padding * 3;
+  text-align: left;
 
-  i.icon:before {
-      color: $mm-warning-color;
-      font-size: 125%;
+  i.icon {
+    @include display-flex();
+    @include align-items(center);
+    position: absolute;
+    top: 0;
+    height: 100%;
+    font-size: ceil(($item-icon-font-size / 4) * 3);
+    left: ceil($item-padding / 4);
+    color: $mm-warning-color;
+
+    &:before {
+      display: block;
+      width: ceil(($item-icon-font-size / 4) * 3);
+      text-align: center;
+    }
   }
 }
 
@@ -681,6 +706,39 @@ mm-timer {
 
 .popover.mm-context-menu {
   width: 320px;
+  max-width: 100%;
+}
+
+.popup-container .popup-title
+
+
+.mm-icon-with-badge {
+  position: relative;
+
+  .icon {
+    font-size: $button-large-icon-size;
+  }
+
+  .mm-icon-badge {
+    width: auto;
+    height: auto;
+    margin: 0;
+    position: absolute;
+    top: -18px;
+    right: -8px;
+    color: red;
+    font-size: $button-large-icon-size / 2;
+  }
+}
+
+.popup-container.mm-nohead .popup-head {
+  display: none;
+}
+
+.popup-container.mm-bigpopup .popup {
+  width: 90%; // Fallback of calc.
+  width: calc(100% - 20px);
+  max-width: none;
 }
 
 // Inline icons and inputs.
@@ -725,6 +783,28 @@ mm-timer {
   }
 }
 
+.item-select .mm-select-fix {
+  // Taken from .item-select select.
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  padding: 0 ($item-padding * 3) 0 $item-padding;
+  max-width: 65%;
+  width: 100%;
+  border: none;
+  background: $item-default-bg;
+  color: #333;
+  text-indent: .01px;
+  white-space: nowrap;
+  font-size: $font-size-base;
+  cursor: pointer;
+  direction: rtl; // right align the select text
+
+  pointer-events: none;
+}
+
+
 .item-input-inset .item-input-wrapper input,
 .item-input .item-input-wrapper input {
   width: 100%;
@@ -737,6 +817,21 @@ mm-timer {
 
   .icon:before {
     font-size: $mm-button-icon-small-height;
+  }
+}
+
+// Increase size for buttons with only an icon inside.
+.button.icon {
+  &:before {
+    padding-left: 4px;
+    padding-right: 4px;
+    font-size: 30px;
+  }
+
+  &.button-small:before {
+    padding-left: 6px;
+    padding-right: 6px;
+    font-size: 20px;
   }
 }
 
@@ -879,11 +974,15 @@ mm-timer {
 }
 
 .item.mm-item-has-rich-text-editor {
+  &.item-input {
+    padding: 0;
+  }
   padding: 0;
   display: block;
 
   .input-label, .mm-textarea {
     padding-left: $item-padding;
+    padding-top: $item-padding/2;
   }
 }
 
@@ -1067,6 +1166,21 @@ mm-timer {
   }
 }
 
+.mm-toast {
+  pointer-events: none;
+  bottom: 100px;
+  -ms-flex-align: flex-end;
+  -webkit-align-items: flex-end;
+  -moz-align-items: flex-end;
+  align-items: flex-end;
+
+  .loading {
+    padding: 10px 20px;
+    border-radius: 25px;
+    margin: 0 10px;
+  }
+}
+
 @media only screen and (max-width: 400px) {
   .mm-inapp-notification-backdrop .mm-inapp-notification {
     margin-left: 6px !important;
@@ -1127,6 +1241,17 @@ ion-spinner.mm-spinner-right {
 
   .toggle {
     top: 0;
+  }
+}
+
+.card .item-border,
+.item-border {
+  &:first-child {
+    border-top: $item-border-width solid $item-light-border;
+  }
+
+  &:last-child {
+    border-bottom: $item-border-width solid $item-light-border;
   }
 }
 
@@ -1260,6 +1385,7 @@ mm-format-text[max-height], *[mm-format-text][max-height] {
   display: block;
   position: relative;
   width: 100%;
+  overflow: hidden;
 
   /* Force display inline */
   &.inline {
@@ -1293,6 +1419,8 @@ mm-format-text[max-height], *[mm-format-text][max-height] {
         bottom: 0;
         right: 0;
         z-index: 1001;
+        background-color: white;
+        padding-left: 10px;
 
         &:after {
           @extend .ion;
@@ -1323,4 +1451,46 @@ mm-format-text[max-height], *[mm-format-text][max-height] {
       }
     }
   }
+}
+
+.item.active,
+.item.activated,
+.item-complex.active .item-content,
+.item-complex.activated .item-content,
+.item .item-content.active,
+.item .item-content.activated {
+
+  mm-format-text[max-height], *[mm-format-text][max-height] {
+    // This is to allow clicking on activated areas and have background the same color.
+    &.mm-text-formatted.mm-shortened {
+      .mm-show-more {
+        background-color: $item-default-active-bg;
+      }
+
+      &:before {
+        background: -moz-linear-gradient(top, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
+        background: -webkit-gradient(left top, left bottom, color-stop(calc(100% - 50px), rgba($item-default-active-bg, 0)), color-stop(calc(100% - 15px), $item-default-active-bg));
+        background: -webkit-linear-gradient(top, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
+        background: -o-linear-gradient(top, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
+        background: -ms-linear-gradient(top, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
+        background: linear-gradient(to bottom, rgba($item-default-active-bg, 0) calc(100% - 50px), $item-default-active-bg calc(100% - 15px));
+      }
+    }
+  }
+}
+
+// Position modals over action sheet. This means that modals will ALWAYS be over action sheet (in Ionic it's the opposite).
+.action-sheet-open .modal-backdrop.active {
+  z-index: 20;
+  .modal {
+    pointer-events: auto;
+  }
+}
+
+// Disable action sheet if loading is active.
+.action-sheet-open .backdrop-loading.active {
+  z-index: 21;
+}
+.action-sheet-open.loading-active .action-sheet-backdrop {
+  pointer-events: none;
 }

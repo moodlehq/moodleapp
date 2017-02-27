@@ -27,6 +27,7 @@ angular.module('mm.core.course')
     $log = $log.getInstance('mmCourseModContentCtrl');
     var module = $stateParams.module || {};
 
+    $scope.isDisabledInSite = $mmCourseDelegate.isModuleDisabledInSite(module.modname);
     $scope.isSupportedByTheApp = $mmCourseDelegate.hasContentHandler(module.modname);
     $scope.moduleName = $mmCourse.translateModuleName(module.modname);
     $scope.isContributedPlugin = $scope.moduleName == $translate.instant('mm.core.mod_external-tool');

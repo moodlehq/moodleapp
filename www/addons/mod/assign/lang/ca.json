@@ -73,7 +73,7 @@
     "submissionslocked": "Aquesta tasca no accepta trameses",
     "submissionstatus": "Estat de la tramesa",
     "submissionstatus_": "No s'ha tramès",
-    "submissionstatus_draft": "Esborrany (no tramès)",
+    "submissionstatus_draft": "Esborrany (no s'ha tramès la versió definitiva)",
     "submissionstatus_marked": "Qualificada",
     "submissionstatus_new": "No s'ha tramès",
     "submissionstatus_reopened": "Reoberta",

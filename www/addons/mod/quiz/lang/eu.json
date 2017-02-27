@@ -10,6 +10,8 @@
     "confirmclose": "Behin saiakera itxitakoan ezingo duzu bertako erantzunetan aldaketarik egin.",
     "confirmcontinueoffline": "Saiakera hau ez da {{$a}}-tik sinkronizatu. Ordutik beste gailu batean saiakerarekin jarraitu baduzu datuak galdu ahal zenitzakeen.",
     "confirmleavequizonerror": "Errorea gertatu da erantzunak gordetzen ari zirenean. Ziur zaude galdetegia utzi nahi duzula?",
+    "confirmstart": "Galdetegi honek {{$a}}-(e)ko denbora-muga du. Denbora saiakera egiten hasten zarenean hasiko da eta bukatu aurretik bidali beharko duzu. Ziur zaude orain hasi nahi duzula?",
+    "confirmstartheader": "Denbora-mugadun galdetegia",
     "connectionerror": "Galdu egin da sarearen konexioa (Ez du berez gordeko)\n\nGorde idatziz azken minutuetan orri honetan egin dituzun erantzunak eta ondoren saiatu berriz konektatzen.\n\nKonexioa berriz ezartzen denean, zure erantzunak gordetzeko modua izango da eta mezu hau desagertu egingo da.",
     "continueattemptquiz": "Jarraitu azken saiakerarekin",
     "continuepreview": "Jarraitu aurreko aurrebistarekin",

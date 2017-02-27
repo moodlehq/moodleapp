@@ -1,10 +1,13 @@
 {
+    "attachment": "Anexo",
     "browsemode": "Ver entradas",
     "byalphabet": "Alfabeticamente",
     "byauthor": "Agrupar por autor",
     "bynewestfirst": "Ordenar por mais recentes",
     "byrecentlyupdated": "Recentemente atualizados",
     "bysearch": "Pesquisar",
+    "casesensitive": "Respeitar maiúsculas/minúsculas",
+    "categories": "Categorias de disciplinas",
     "entrypendingapproval": "Este termo aguarda aprovação.",
     "errorloadingentries": "Ocorreu um erro ao carregar os termos.",
     "errorloadingentry": "Ocorreu um erro ao carregar o termo.",

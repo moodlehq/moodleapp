@@ -1,5 +1,6 @@
 {
-    "myfiles": "Dosyalarım",
+    "files": "Dosyalarım",
+    "privatefiles": "Kişisel dosyalar",
     "sitefiles": "Site dosyaları",
     "uploadfiles": "Dosya yükleyebilir"
 }

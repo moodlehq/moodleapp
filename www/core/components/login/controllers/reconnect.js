@@ -22,14 +22,18 @@ angular.module('mm.core.login')
  * @name mmLoginReconnectCtrl
  */
 .controller('mmLoginReconnectCtrl', function($scope, $state, $stateParams, $mmSitesManager, $mmApp, $mmUtil, $ionicHistory,
-            $mmLoginHelper) {
+            $mmLoginHelper, $mmSite) {
 
-    var infositeurl = $stateParams.infositeurl; // Siteurl in site info. It might be different than siteurl (http/https).
+    var infositeurl = $stateParams.infositeurl, // Siteurl in site info. It might be different than siteurl (http/https).
+        stateName = $stateParams.statename,
+        stateParams = $stateParams.stateparams;
+
     $scope.siteurl = $stateParams.siteurl;
     $scope.credentials = {
         username: $stateParams.username,
         password: ''
     };
+    $scope.isLoggedOut = $mmSite.isLoggedOut();
 
     $mmSitesManager.getSite($stateParams.siteid).then(function(site) {
         $scope.site = {
@@ -75,9 +79,14 @@ angular.module('mm.core.login')
                 $mmSitesManager.updateSiteInfoByUrl(infositeurl, username).finally(function() {
                     delete $scope.credentials; // Delete password from the scope.
                     $ionicHistory.nextViewOptions({disableBack: true});
-                    return $mmLoginHelper.goToSiteInitialPage();
+                    if (stateName) {
+                        // State defined, go to that state instead of site initial page.
+                        return $state.go(stateName, stateParams);
+                    } else {
+                        return $mmLoginHelper.goToSiteInitialPage();
+                    }
                 });
-            }, function(error) {
+            }, function() {
                 // Site deleted? Go back to login page.
                 $mmUtil.showErrorModal('mm.login.errorupdatesite', true);
                 $scope.cancel();

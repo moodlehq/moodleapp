@@ -28,7 +28,7 @@ angular.module('mm.addons.frontpage')
         templateUrl: 'addons/frontpage/templates/frontpageitemenrolledcourselist.html',
         link: function(scope) {
             return $mmCourses.getUserCourses().then(function(courses) {
-                scope.show = courses.length > 0;
+                scope.show = courses.length > 0 && !$mmCourses.isMyCoursesDisabledInSite();
             });
         }
     };

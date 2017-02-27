@@ -11,6 +11,7 @@
     "errorwhileretrievingcontacts": "Fel vid hämtning av kontakter från servern.",
     "errorwhileretrievingdiscussions": "Fel vid hämtning  av diskussionerna från servern.",
     "errorwhileretrievingmessages": "Fel vid hämtning meddelanden från servern.",
+    "message": "Meddelandets brödtext",
     "messagenotsent": "Meddelandet skickades inte, försök igen senare.",
     "messages": "Meddelanden",
     "mustbeonlinetosendmessages": "Du måste vara online för att skicka meddelanden",

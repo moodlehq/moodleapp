@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_resource')
  * @name $mmaModResource
  */
 .factory('$mmaModResource', function($mmFilepool, $mmSite, $mmUtil, $mmFS, $http, $log, $q, $sce, $mmApp, $mmSitesManager,
-            mmaModResourceComponent, mmCoreNotDownloaded, mmCoreDownloading, mmCoreDownloaded) {
+            $mmText, mmaModResourceComponent, mmCoreNotDownloaded, mmCoreDownloading, mmCoreDownloaded) {
     $log = $log.getInstance('$mmaModResource');
 
     var self = {};
@@ -97,7 +97,7 @@ angular.module('mm.addons.mod_resource')
                 indexUrl = url;
             } else {
                 // Any other file in the resource.
-                paths[decodeURIComponent(fullpath)] = url;
+                paths[$mmText.decodeURIComponent(fullpath)] = url;
             }
         });
 

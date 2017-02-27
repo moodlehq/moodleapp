@@ -17,14 +17,62 @@ angular.module('mm.core.fileuploader')
 .constant('mmFileUploaderFileSizeWarning', 1048576) // 1 MB.
 .constant('mmFileUploaderWifiFileSizeWarning', 10485760) // 10 MB.
 
-.factory('$mmFileUploaderHelper', function($q, $mmUtil, $mmApp, $log, $translate, $window, $state, $rootScope,
-        $mmFileUploader, $cordovaCamera, $cordovaCapture, $mmLang, $mmFS, $mmText, mmFileUploaderFileSizeWarning,
-        mmFileUploaderWifiFileSizeWarning) {
+.factory('$mmFileUploaderHelper', function($q, $mmUtil, $mmApp, $log, $translate, $window, $rootScope, $ionicActionSheet,
+        $mmFileUploader, $cordovaCamera, $cordovaCapture, $mmLang, $mmFS, $mmText, $timeout, mmFileUploaderFileSizeWarning,
+        mmFileUploaderWifiFileSizeWarning, $mmFileUploaderDelegate) {
 
     $log = $log.getInstance('$mmFileUploaderHelper');
 
     var self = {},
-        filePickerDeferred;
+        filePickerDeferred,
+        hideActionSheet;
+
+    /**
+     * Compares two file lists and returns if they are different.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFileUploaderHelper#areFileListDifferent
+     * @param  {Array} a First file list.
+     * @param  {Array} b Second file list.
+     * @return {Boolean}   If both lists are different.
+     */
+    self.areFileListDifferent = function(a, b) {
+        a = a || [];
+        b = b || [];
+        if (a.length != b.length) {
+            return true;
+        }
+
+        // Currently we are going to compare the order of the files as well.
+        // This function can be improved comparing more fields or not comparing the order.
+        for (var i = 0; i < a.length; i++) {
+            if (a[i].name != b[i].name) {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+    /**
+     * Clear temporary attachments to be uploaded.
+     * Attachments already saved in an offline store will NOT be deleted.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFileUploaderHelper#clearTmpFiles
+     * @param  {Object[]} files List of current files.
+     * @return {Void}
+     */
+    self.clearTmpFiles = function(files) {
+        // Delete the local files from the tmp folder.
+        files.forEach(function(file) {
+            if (!file.offline && file.remove) {
+                file.remove();
+            }
+        });
+    };
 
     /**
      * Show a confirmation modal to the user if he is using a limited connection or the file size is higher than 5MB.
@@ -40,6 +88,10 @@ angular.module('mm.core.fileuploader')
      * @return {Promise}                  Promise resolved when the user confirms or if there's no need to show a modal.
      */
     self.confirmUploadFile = function(size, alwaysConfirm, allowOffline, wifiThreshold, limitedThreshold) {
+        if (size == 0) {
+            return $q.when();
+        }
+
         if (!allowOffline && !$mmApp.isOnline()) {
             return $mmLang.translateAndReject('mm.fileuploader.errormustbeonlinetoupload');
         }
@@ -134,6 +186,10 @@ angular.module('mm.core.fileuploader')
             filePickerDeferred.reject();
             filePickerDeferred = undefined;
         }
+        // Close the action sheet if it's opened.
+        if (hideActionSheet) {
+            hideActionSheet();
+        }
     };
 
     /**
@@ -150,6 +206,43 @@ angular.module('mm.core.fileuploader')
             filePickerDeferred.resolve(result);
             filePickerDeferred = undefined;
         }
+        // Close the action sheet if it's opened.
+        if (hideActionSheet) {
+            hideActionSheet();
+        }
+    };
+
+    /**
+     * Get the files stored in a folder, marking them as offline.
+     *
+     * @module mm.core.fileuploader
+     * @ngdoc method
+     * @name $mmFileUploaderHelper#getStoredFiles
+     * @param  {String} folderPath Folder where to get the files.
+     * @return {Promise}           Promise resolved with the list of files.
+     */
+    self.getStoredFiles = function(folderPath) {
+        return $mmFS.getDirectoryContents(folderPath).then(function(files) {
+            return self.markOfflineFiles(files);
+        });
+    };
+
+    /**
+     * Mark files as offline.
+     *
+     * @module mm.core.fileuploader
+     * @ngdoc method
+     * @name $mmFileUploaderHelper#markOfflineFiles
+     * @param  {Array} files     Files to mark as offline.
+     * @return {Array}           Files marked as offline.
+     */
+    self.markOfflineFiles = function(files) {
+        // Mark the files as pending offline.
+        angular.forEach(files, function(file) {
+            file.offline = true;
+            file.filename = file.name;
+        });
+        return files;
     };
 
     /**
@@ -165,10 +258,7 @@ angular.module('mm.core.fileuploader')
      *                   The resolve value should be the response of the upload request.
      */
     self.selectAndUploadFile = function(maxSize, title, filterMethods) {
-        filePickerDeferred = $q.defer();
-        filterMethods = (angular.isArray(filterMethods)) ? filterMethods.join() : null;
-        $state.go('site.fileuploader-picker', {maxsize: maxSize, upload: true, title: title, filterMethods: filterMethods});
-        return filePickerDeferred.promise;
+        return selectFile(maxSize, false, title, filterMethods, true);
     };
 
     /**
@@ -185,12 +275,114 @@ angular.module('mm.core.fileuploader')
      *                   The resolve value should be the FileEntry of a copy of the picked file, so it can be deleted afterwards.
      */
     self.selectFile = function(maxSize, allowOffline, title, filterMethods) {
-        filePickerDeferred = $q.defer();
-        filterMethods = (angular.isArray(filterMethods)) ? filterMethods.join() : null;
-        var stateParams = {maxsize: maxSize, upload: false, allowOffline: allowOffline, title: title, filterMethods: filterMethods};
-        $state.go('site.fileuploader-picker', stateParams);
-        return filePickerDeferred.promise;
+        return selectFile(maxSize, allowOffline, title, filterMethods, false);
     };
+
+    /**
+     * Open the view to select a file and maybe uploading it.
+     *
+     * @param  {Number} [maxSize]       Max size of the file. If not defined or -1, no max size.
+     * @param  {Boolean} allowOffline   True to allow selecting in offline, false to require connection.
+     * @param  {String} [title]         File picker title.
+     * @param  {Array}  [filterMethods] File picker available methods.
+     * @param  {Boolean} upload         True if the file should be uploaded, false if only picked.
+     * @return {Promise} Promise resolved when a file is selected, rejected if file picker is closed without selecting a file.
+     *                   The resolve value should be the FileEntry of a copy of the picked file, so it can be deleted afterwards.
+     */
+    function selectFile(maxSize, allowOffline, title, filterMethods, upload) {
+        var buttons = [],
+            handlers;
+
+        filePickerDeferred = $q.defer();
+
+        // Add buttons for handlers.
+        handlers = $mmFileUploaderDelegate.getHandlers();
+        handlers.sort(function(a, b) {
+            return a.priority < b.priority;
+        });
+
+        angular.forEach(handlers, function(handler) {
+            if (filterMethods && filterMethods.indexOf(handler.name) == -1) {
+                // Method is not available, skip.
+                return;
+            }
+
+            buttons.push({
+                text: (handler.icon ? '<i class="icon ' + handler.icon + '"></i>' : '') + $translate.instant(handler.title),
+                action: handler.action,
+                className: handler.class,
+                afterRender: handler.afterRender
+            });
+        });
+
+        hideActionSheet = $ionicActionSheet.show({
+            buttons: buttons,
+            titleText: title ? title : $translate.instant('mm.fileuploader.' + (upload ? 'uploadafile' : 'selectafile')),
+            cancelText: $translate.instant('mm.core.cancel'),
+            buttonClicked: function(index) {
+                if (angular.isFunction(buttons[index].action)) {
+                    if (!allowOffline && !$mmApp.isOnline()) {
+                        // Not allowed, show error.
+                        $mmUtil.showErrorModal('mm.fileuploader.errormustbeonlinetoupload', true);
+                        return;
+                    }
+
+                    // Execute the action and close the action sheet.
+                    buttons[index].action(maxSize, upload, allowOffline).then(function(data) {
+                        if (data.uploaded) {
+                            // The handler already uploaded the file. Return the result.
+                            return data.result;
+                        } else {
+                            // The handler didn't upload the file, we need to upload it.
+                            if (data.fileEntry) {
+                                // The handler provided us a fileEntry, use it.
+                                return self.uploadFileEntry(data.fileEntry, data.delete, maxSize, upload, allowOffline);
+                            } else if (data.path) {
+                                // The handler provided a path. First treat it like it's a relative path.
+                                return $mmFS.getFile(data.path).then(function(fileEntry) {
+                                    return self.uploadFileEntry(fileEntry, data.delete, maxSize, upload, allowOffline);
+                                }, function() {
+                                    // File not found, it's probably an absolute path.
+                                    return $mmFS.getExternalFile(data.path).then(function(fileEntry) {
+                                        return uploadFileEntry(fileEntry, data.delete, maxSize, upload, allowOffline);
+                                    });
+                                });
+                            }
+
+                            // Nothing received, fail.
+                            $mmUtil.showErrorModal('No file received');
+                        }
+                    }).then(function(result) {
+                        // Success uploading or picking, return the result.
+                        self.fileUploaded(result);
+                    }).catch(function(error) {
+                        if (error) {
+                            $mmUtil.showErrorModal(error);
+                        }
+                    });
+                }
+
+                // Never close the action sheet. It will automatically be closed if success.
+                return false;
+            },
+            cancel: function() {
+                // User cancelled the action sheet.
+                self.filePickerClosed();
+                return true;
+            }
+        });
+
+        // Call afterRender for each button.
+        $timeout(function() {
+            angular.forEach(buttons, function(button) {
+                if (angular.isFunction(button.afterRender)) {
+                    button.afterRender(maxSize, upload, allowOffline);
+                }
+            });
+        }, 500);
+
+        return filePickerDeferred.promise;
+    }
 
     /**
      * Convenience function to upload a file on a certain site, showing a confirm if needed.
@@ -296,6 +488,10 @@ angular.module('mm.core.fileuploader')
             options.sourceType = navigator.camera.PictureSourceType.PHOTOLIBRARY;
             options.popoverOptions = new CameraPopoverOptions(10, 10, $window.innerWidth  - 200, $window.innerHeight - 200,
                                             Camera.PopoverArrowDirection.ARROW_ANY);
+            if (ionic.Platform.isIOS()) {
+                // Only get all media in iOS because in Android using this option allows uploading any kind of file.
+                options.mediaType = Camera.MediaType.ALLMEDIA;
+            }
         }
 
         return $cordovaCamera.getPicture(options).then(function(path) {
@@ -308,6 +504,54 @@ angular.module('mm.core.fileuploader')
         }, function(error) {
             var defaultError = fromAlbum ? 'mm.fileuploader.errorgettingimagealbum' : 'mm.fileuploader.errorcapturingimage';
             return treatImageError(error, defaultError);
+        });
+    };
+
+    /**
+     * Upload a file given the file entry.
+     *
+     * @module mm.core.fileuploader
+     * @ngdoc method
+     * @name $mmFileUploaderHelper#uploadFileEntry
+     * @param  {Object} fileEntry     The file entry.
+     * @param  {Boolean} deleteAfter  True if the file should be deleted once treated.
+     * @param  {Number} [maxSize]     Max size of the file. If not defined or -1, no max size.
+     * @param  {Boolean} upload       True if the file should be uploaded, false to return the picked file.
+     * @param  {Boolean} allowOffline True to allow selecting in offline, false to require connection.
+     * @return {Promise}              Promise resolved when done.
+     */
+    self.uploadFileEntry = function(fileEntry, deleteAfter, maxSize, upload, allowOffline) {
+        return $mmFS.getFileObjectFromFileEntry(fileEntry).then(function(file) {
+            return self.uploadFileObject(file, maxSize, upload, allowOffline).then(function(result) {
+                if (deleteAfter) {
+                    // We have uploaded and deleted a copy of the file. Now delete the original one.
+                    $mmFS.removeFileByFileEntry(fileEntry);
+                }
+                return result;
+            });
+        });
+    };
+
+    /**
+     * Upload a file given the file object.
+     *
+     * @module mm.core.fileuploader
+     * @ngdoc method
+     * @name $mmFileUploaderHelper#uploadFileObject
+     * @param  {Object} file          The file object.
+     * @param  {Number} [maxSize]     Max size of the file. If not defined or -1, no max size.
+     * @param  {Boolean} upload       True if the file should be uploaded, false to return the picked file.
+     * @param  {Boolean} allowOffline True to allow selecting in offline, false to require connection.
+     * @return {Promise}              Promise resolved when done.
+     */
+    self.uploadFileObject = function(file, maxSize, upload, allowOffline) {
+        if (maxSize != -1 && file.size > maxSize) {
+            return self.errorMaxBytes(maxSize, file.name);
+        }
+
+        return self.confirmUploadFile(file.size, false, allowOffline).then(function() {
+            // We have the data of the file to be uploaded, but not its URL (needed). Create a copy of the file to upload it.
+            return self.copyAndUploadFile(file, upload);
         });
     };
 
@@ -397,7 +641,11 @@ angular.module('mm.core.fileuploader')
                 return self.errorMaxBytes(maxSize, fileTooLarge.name);
             }
 
-            // File isn't too large. Get a unique name in the folder to prevent overriding another file.
+            // File isn't too large.
+            // Picking an image from album in Android adds a timestamp at the end of the file. Delete it.
+            fileName = fileName.replace(/(\.[^\.]*)\?[^\.]*$/, '$1');
+
+            // Get a unique name in the folder to prevent overriding another file.
             return $mmFS.getUniqueNameInFolder($mmFS.getTmpFolder(), fileName, defaultExt);
         }).then(function(newName) {
             // Now move or copy the file.
@@ -433,9 +681,11 @@ angular.module('mm.core.fileuploader')
         var errorStr = $translate.instant('mm.core.error'),
             retryStr = $translate.instant('mm.core.retry'),
             args = arguments,
-            progressTemplate =  "<ion-spinner></ion-spinner>" +
-                                "<p ng-if=\"!perc\">{{'mm.fileuploader.uploading' | translate}}</p>" +
-                                "<p ng-if=\"perc\">{{'mm.fileuploader.uploadingperc' | translate:{$a: perc} }}</p>",
+            progressTemplate =  "<div>" +
+                                    "<ion-spinner></ion-spinner>" +
+                                    "<p ng-if=\"!perc\">{{'mm.fileuploader.uploading' | translate}}</p>" +
+                                    "<p ng-if=\"perc\">{{'mm.fileuploader.uploadingperc' | translate:{$a: perc} }}</p>" +
+                                "</div>",
             scope,
             modal,
             promise,
@@ -490,6 +740,7 @@ angular.module('mm.core.fileuploader')
                 return errorUploading(error);
             }).finally(function() {
                 modal.dismiss();
+                scope.$destroy();
             });
         });
 

@@ -15,5 +15,7 @@
     "posttoforum": "Hozzászólás a fórumhoz",
     "re": "Tárgy:",
     "reply": "Válasz",
-    "subject": "Téma"
+    "subject": "Téma",
+    "unread": "Elolvasatlan",
+    "unreadpostsnumber": "{{$a}} elolvasatlan hozzászólás"
 }

@@ -137,7 +137,7 @@ angular.module('mm.core.grades')
                             img = getImgHTML(content);
                             content = content.replace(/<\/span>/gi, "\n");
                             content = $mmText.cleanTags(content);
-                            content = content.replace("\n", "<br />");
+                            content = $mmText.replaceNewLines(content, '<br>');
                             content = img + " " + content;
 
                             row.text += "<" + celltype + " " + id + " " + headers + " " + "class='"+ tclass +"' " + colspan +">";
@@ -208,7 +208,7 @@ angular.module('mm.core.grades')
                     content = $mmText.cleanTags(content);
                     content = img + " " + content;
                 } else {
-                    content = content.replace("\n", "<br />");
+                    content = $mmText.replaceNewLines(content, '<br>');
                 }
 
                 if (content == '&nbsp;') {

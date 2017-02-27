@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc service
  * @name $mmaModAssignHelper
  */
-.factory('$mmaModAssignHelper', function($mmUtil, $mmaModAssignSubmissionDelegate, $q, $mmSite, $mmFS, $mmFilepool, $mmaModAssign,
+.factory('$mmaModAssignHelper', function($mmUtil, $mmaModAssignSubmissionDelegate, $q, $mmSite, $mmFS, $mmaModAssign,
             $mmFileUploader, mmaModAssignComponent, $mmaModAssignOffline, $mmaModAssignFeedbackDelegate) {
 
     var self = {};
@@ -374,47 +374,9 @@ angular.module('mm.addons.mod_assign')
     self.storeSubmissionFiles = function(assignId, pluginName, files, userId, siteId) {
         siteId = siteId || $mmSite.getId();
 
-        var result = {
-            online: [],
-            offline: 0
-        };
-
-        if (!files || !files.length) {
-            return $q.when(result);
-        }
-
+        // Get the folder where to store the files.
         return $mmaModAssignOffline.getSubmissionPluginFolder(assignId, pluginName, userId, siteId).then(function(folderPath) {
-            // Remove unused files from previous submissions.
-            return $mmFS.removeUnusedFiles(folderPath, files).then(function() {
-                var promises = [];
-
-                angular.forEach(files, function(file) {
-                    if (file.filename && !file.name) {
-                        // It's an online file, add it to the result and ignore it.
-                        result.online.push({
-                            filename: file.filename,
-                            fileurl: file.fileurl
-                        });
-                        return;
-                    } else if (!file.name) {
-                        // Error.
-                        promises.push($q.reject());
-                    } else if (file.fullPath && file.fullPath.indexOf(folderPath) != -1) {
-                        // File already in the submission folder.
-                        result.offline++;
-                    } else {
-                        // Local file, copy it. Use copy instead of move to prevent having a unstable state if
-                        // some copies succeed and others don't.
-                        var destFile = $mmFS.concatenatePaths(folderPath, file.name);
-                        promises.push($mmFS.copyFile(file.fullPath, destFile));
-                        result.offline++;
-                    }
-                });
-
-                return $q.all(promises).then(function() {
-                    return result;
-                });
-            });
+            return $mmFileUploader.storeFilesToUpload(folderPath, files);
         });
     };
 
@@ -431,30 +393,7 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}         Promise resolved with the itemId.
      */
     self.uploadFile = function(assignId, file, itemId, siteId) {
-        siteId = siteId || $mmSite.getId();
-
-        var promise,
-            fileName;
-
-        if (file.filename && !file.name) {
-            // It's an online file. We need to download it and re-upload it.
-            fileName = file.filename;
-            promise = $mmFilepool.downloadUrl(siteId, file.fileurl, false, mmaModAssignComponent, assignId).then(function(path) {
-                return $mmFS.getExternalFile(path);
-            });
-        } else {
-            // Local file, we already have the file entry.
-            fileName = file.name;
-            promise = $q.when(file);
-        }
-
-        return promise.then(function(fileEntry) {
-            // Now upload the file.
-            return $mmFileUploader.uploadGenericFile(fileEntry.toURL(), fileName, fileEntry.type, true, 'draft', itemId, siteId)
-                    .then(function(result) {
-                return result.itemid;
-            });
-        });
+        return $mmFileUploader.uploadOrReuploadFile(file, itemId, mmaModAssignComponent, assignId, siteId);
     };
 
     /**
@@ -471,36 +410,7 @@ angular.module('mm.addons.mod_assign')
      * @return {Promise}         Promise resolved with the itemId.
      */
     self.uploadFiles = function(assignId, files, siteId) {
-        siteId = siteId || $mmSite.getId();
-
-        if (!files || !files.length) {
-            // Return fake draft ID.
-            return $q.when(1);
-        }
-
-        // Upload only the first file first to get a draft id.
-        return self.uploadFile(assignId, files[0]).then(function(itemId) {
-            var promises = [],
-                error;
-
-            angular.forEach(files, function(file, index) {
-                if (index === 0) {
-                    // First file has already been uploaded.
-                    return;
-                }
-
-                promises.push(self.uploadFile(assignId, file, itemId, siteId).catch(function(message) {
-                    error = message;
-                    return $q.reject();
-                }));
-            });
-
-            return $q.all(promises).then(function() {
-                return itemId;
-            }).catch(function() {
-                return $q.reject(error);
-            });
-        });
+        return $mmFileUploader.uploadOrReuploadFiles(files, mmaModAssignComponent, assignId, siteId);
     };
 
     /**

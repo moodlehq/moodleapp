@@ -14,6 +14,27 @@
 
 angular.module('mm.addons.pushnotifications')
 
+
+.constant('mmaPushNotificationsBadgeStore', 'mma_pushnotifications_badge')
+
+.config(function($mmAppProvider, mmaPushNotificationsBadgeStore) {
+    var stores = [
+        {
+            name: mmaPushNotificationsBadgeStore,
+            keyPath: ['siteid', 'addon'],
+            indexes: [
+                {
+                    name: 'siteid'
+                },
+                {
+                    name: 'addon'
+                }
+            ]
+        }
+    ];
+    $mmAppProvider.registerStores(stores);
+})
+
 /**
  * Push notifications factory.
  *
@@ -22,7 +43,8 @@ angular.module('mm.addons.pushnotifications')
  * @name $mmaPushNotifications
  */
 .factory('$mmaPushNotifications', function($mmSite, $log, $cordovaPushV5, $mmText, $q, $cordovaDevice, $mmUtil, $mmSitesManager,
-            mmCoreConfigConstants, $mmApp, $mmLocalNotifications, $mmPushNotificationsDelegate, mmaPushNotificationsComponent) {
+            mmCoreConfigConstants, $mmApp, $mmLocalNotifications, $mmPushNotificationsDelegate, mmaPushNotificationsComponent,
+            mmaPushNotificationsBadgeStore) {
     $log = $log.getInstance('$mmaPushNotifications');
 
     var self = {},
@@ -226,6 +248,173 @@ angular.module('mm.addons.pushnotifications')
             }
         });
     };
+
+    /**
+     * Update Counter for an addon. It will update the refered siteId counter and the total badge.
+     * It will return the updated addon counter.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmaPushNotifications#updateAddonCounter
+     * @param  {String} siteId Site ID.
+     * @param  {String} addon  Registered addon name to set the badge number.
+     * @param  {Number} number The number to be stored.
+     * @return {Promise}       Promise resolved with the stored badge counter for the addon on the site.
+     */
+    self.updateAddonCounter = function(siteId, addon, number) {
+        if ($mmPushNotificationsDelegate.isCounterHandlerRegistered(addon)) {
+            siteId = siteId || $mmSite.getId();
+
+            return saveAddonBadge(siteId, number, addon).then(function() {
+                return self.updateSiteCounter(siteId).then(function() {
+                    return number;
+                });
+            });
+        }
+        return $q.when(0);
+    };
+
+    /**
+     * Update counter for a site using the stored addon data. It will update the total badge application number.
+     * It will return the updated site counter.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmaPushNotifications#updateSiteCounter
+     * @param  {String} siteId Site ID.
+     * @return {Promise}       Promise resolved with the stored badge counter for the site.
+     */
+    self.updateSiteCounter = function(siteId) {
+        var addons = $mmPushNotificationsDelegate.getCounterHandlers(),
+            promises = [];
+
+        angular.forEach(addons, function(addon) {
+            promises.push(getAddonBadge(siteId, addon));
+        });
+
+        return $q.all(promises).then(function (counters) {
+            var plus = false,
+                total = counters.reduce(function (previous, counter) {
+                    // Check if there is a plus sign at the end of the counter.
+                    if (counter != parseInt(counter, 10)) {
+                        plus = true;
+                        counter = parseInt(counter, 10);
+                    }
+                    return previous + counter;
+                }, 0);
+
+            total = plus && total > 0 ? total + '+' : total;
+
+            // Save the counter on site.
+            return saveAddonBadge(siteId, total);
+        }).then(function(siteTotal) {
+            return self.updateAppCounter().then(function() {
+                return siteTotal;
+            });
+        });
+    };
+
+    /**
+     * Update total badge counter of the app.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmaPushNotifications#updateAppCounter
+     * @return {Promise}        Promise resolved with the stored badge counter for the site.
+     */
+    self.updateAppCounter = function() {
+        return $mmSitesManager.getSitesIds().then(function (sites) {
+            var promises = [];
+            angular.forEach(sites, function(siteId) {
+                promises.push(getAddonBadge(siteId));
+            });
+
+            return $q.all(promises).then(function (counters) {
+                var total = counters.reduce(function (previous, counter) {
+                        // The app badge counter does not support strings, so parse to int before.
+                        return previous + parseInt(counter, 10);
+                    }, 0);
+
+                // Set the app badge.
+                return $cordovaPushV5.setBadgeNumber(total).then(function() {
+                    return total;
+                });
+            });
+        });
+    };
+
+    /**
+     * Delete all badge records for a given site.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmaPushNotifications#cleanSiteCounters
+     * @param  {String} siteId Site ID.
+     * @return {Promise}       Resolved when done.
+     */
+    self.cleanSiteCounters = function(siteId) {
+        var db = $mmApp.getDB();
+        return db.whereEqual(mmaPushNotificationsBadgeStore, 'siteid', siteId).then(function (entries) {
+            var promises =  [];
+            angular.forEach(entries, function (entry) {
+                promises.push(db.remove(mmaPushNotificationsBadgeStore, [entry.siteid, entry.addon]));
+            });
+            return $q.all(promises);
+        }).finally(function() {
+            self.updateAppCounter();
+        });
+
+    };
+
+    /**
+     * Get Sitebadge  counter from the database.
+     *
+     * @module mm.addons.pushnotifications
+     * @ngdoc method
+     * @name $mmaPushNotifications#getSiteCounter
+     * @param  {String} siteId Site ID.
+     * @return {Promise}       Promise resolved with the stored badge counter for the site.
+     */
+    self.getSiteCounter = function(siteId) {
+        return getAddonBadge(siteId);
+    };
+
+    /**
+     * Get the addon/site badge counter from the database.
+     *
+     * @param  {String} siteId   Site ID.
+     * @param  {String} [addon]  Registered addon name. If not defined it will return the site total.
+     * @return {Promise}         Promise resolved with the stored badge counter for the addon or site or 0 if none.
+     */
+    function getAddonBadge(siteId, addon) {
+        addon = addon || 'site';
+
+        return $mmApp.getDB().get(mmaPushNotificationsBadgeStore, [siteId, addon]).then(function(entry) {
+             return (entry && entry.number) || 0;
+        }).catch(function() {
+            return 0;
+        });
+    }
+
+    /**
+     * Save the addon/site badgecounter on the database.
+     *
+     * @param  {String} siteId   Site ID.
+     * @param  {Number} number   The number to be stored.
+     * @param  {String} [addon]  Registered addon name. If not defined it will store the site total.
+     * @return {Promise}         Promise resolved with the stored badge counter for the addon or site.
+     */
+    function saveAddonBadge(siteId, number, addon) {
+        var entry = {
+            siteid: siteId,
+            addon: addon || 'site',
+            number: number
+        };
+
+        return $mmApp.getDB().insert(mmaPushNotificationsBadgeStore, entry).then(function() {
+            return number;
+        });
+    }
 
     return self;
 });

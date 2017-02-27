@@ -21,7 +21,8 @@ angular.module('mm.addons.mod_page')
  * @ngdoc service
  * @name $mmaModPage
  */
-.factory('$mmaModPage', function($mmFilepool, $mmSite, $mmFS, $http, $log, $q, $mmSitesManager, $mmUtil, mmaModPageComponent) {
+.factory('$mmaModPage', function($mmFilepool, $mmSite, $mmFS, $http, $log, $q, $mmSitesManager, $mmUtil, $mmText,
+            mmaModPageComponent) {
     $log = $log.getInstance('$mmaModPage');
 
     var self = {};
@@ -55,7 +56,7 @@ angular.module('mm.addons.mod_page')
                     // Add the folders without the leading slash.
                     key = content.filepath.substr(1) + key;
                 }
-                paths[decodeURIComponent(key)] = url;
+                paths[$mmText.decodeURIComponent(key)] = url;
             }
         });
 

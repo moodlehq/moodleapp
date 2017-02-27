@@ -33,6 +33,18 @@ angular.module('mm.core')
     self.VISIBLEGROUPS  = 2;
 
     /**
+     * Check if current site allows getting activity group mode.
+     *
+     * @module mm.core.groups
+     * @ngdoc method
+     * @name $mmGroups#canGetActivityGroupMode
+     * @return {Boolean} True if can get, false otherwise.
+     */
+    self.canGetActivityGroupMode = function() {
+        return $mmSite.wsAvailable('core_group_get_activity_groupmode');
+    };
+
+    /**
      * Get the groups allowed in an activity.
      *
      * @module mm.core.groups

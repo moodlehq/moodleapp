@@ -76,6 +76,8 @@ angular.module('mm.core')
 
             if (versionCode >= 2017 && versionApplied < 2017) {
                 promises.push(setCalendarDefaultNotifTime());
+                promises.push(setSitesConfig());
+                promises.push(migrateWikiNewPagesStore());
             }
 
             return $q.all(promises).then(function() {
@@ -329,7 +331,7 @@ angular.module('mm.core')
 
         angular.forEach(components, function(c) {
             if (c) {
-                promises.push(db.query(mmFilepoolLinksStore, ['componentAndId', '=', [c, componentId]]).then(function(items) {
+                promises.push(db.whereEqual(mmFilepoolLinksStore, 'componentAndId', [c, componentId]).then(function(items) {
                     if (items.length) {
                         component = c;
                     }
@@ -384,6 +386,137 @@ angular.module('mm.core')
             });
 
             return $q.all(promises);
+        });
+    }
+
+    /**
+     * In version 3.2.1 we want the site config to be stored in each site if available.
+     * Since it can be slow, we'll only block retrieving the config of current site, the rest will be in background.
+     *
+     * @return {Promise} Promise resolved when the config is loaded for the current site (if any).
+     */
+    function setSitesConfig() {
+        return $mmSitesManager.getSitesIds().then(function(siteIds) {
+
+            return $mmSitesManager.getStoredCurrentSiteId().catch(function() {
+                // Error getting current site.
+            }).then(function(currentSiteId) {
+                var promise;
+
+                // Load the config of current site first.
+                if (currentSiteId) {
+                    promise = setSiteConfig(currentSiteId);
+                } else {
+                    promise = $q.when();
+                }
+
+                // Load the config of rest of sites in background.
+                angular.forEach(siteIds, function(siteId) {
+                    if (siteId != currentSiteId) {
+                        setSiteConfig(siteId);
+                    }
+                });
+
+                return promise;
+            });
+        });
+    }
+
+    /**
+     * Store the config of a site.
+     *
+     * @param  {String} siteId       Site ID.
+     * @return {Promise} Promise resolved when the config is loaded for the site.
+     */
+    function setSiteConfig(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            if (site.getStoredConfig() || !site.wsAvailable('tool_mobile_get_config')) {
+                // Site already has the config or it cannot be retrieved. Stop.
+                return;
+            }
+
+            // Get the site config.
+            return site.getConfig().then(function(config) {
+                return $mmSitesManager.addSite(site.getId(), site.getURL(),
+                        site.getToken(), site.getInfo(), site.getPrivateToken(), config);
+            }).catch(function() {
+                // Ignore errors.
+            });
+        });
+    }
+
+    /**
+     * The store for new wiki pages had changed the number of index in the keyPath. To avoid problems and loosing data, old store
+     * is going to be migrated to a new one and old entries deleted once migrated.
+     * Since it can be slow, we'll only block migrating the db of current site, the rest will be in background.
+     *
+     * @return {Promise} Promise resolved when the db is migrated.
+     */
+    function migrateWikiNewPagesStore() {
+        return $mmSitesManager.getSitesIds().then(function(siteIds) {
+
+            return $mmSitesManager.getStoredCurrentSiteId().catch(function() {
+                // Error getting current site.
+            }).then(function(currentSiteId) {
+                var promise;
+
+                // Load the config of current site first.
+                if (currentSiteId) {
+                    promise = migrateWikiNewPagesSiteStore(currentSiteId);
+                } else {
+                    promise = $q.when();
+                }
+
+                // Load the config of rest of sites in background.
+                angular.forEach(siteIds, function(siteId) {
+                    if (siteId != currentSiteId) {
+                        migrateWikiNewPagesSiteStore(siteId);
+                    }
+                });
+
+                return promise;
+            });
+        });
+    }
+
+    /**
+     * Migrate the new wiki pages store of one site. If any error, data will be lost without asking.
+     *
+     * @param  {String} siteId       Site ID.
+     * @return {Promise} Promise resolved when the data is migraded for the site.
+     */
+    function migrateWikiNewPagesSiteStore(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var $mmaModWikiOffline = $injector.get('$mmaModWikiOffline'),
+                oldStorageName = 'mma_mod_wiki_new_pages', // Old mmaModWikiNewPagesStore constant.
+                db = site.getDb();
+
+            try {
+                return db.getAll(oldStorageName).then(function(pages) {
+                    if (pages.length > 0) {
+                        $log.debug('Found ' + pages.length + ' new wiki pages from old store to migrate on site' + siteId);
+
+                        var promises = [];
+                        angular.forEach(pages, function(page) {
+                            if (page.subwikiid > 0) {
+                                promises.push($mmaModWikiOffline.saveNewPage(page.title, page.cachedcontent, page.subwikiid, 0, 0,
+                                    0, siteId));
+                            }
+                        });
+
+                        return $q.all(promises).finally(function() {
+                            db.removeAll(oldStorageName);
+                        });
+                    }
+                }).catch(function() {
+                    // Fail silently.
+                    return $q.when();
+                });
+            } catch (e) {
+                // Fail silently.
+            }
+            // Fail silently.
+            return $q.when();
         });
     }
 

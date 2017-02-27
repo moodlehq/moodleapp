@@ -23,7 +23,7 @@
                     <p ng-if="showDate(messages[$index], messages[$index - 1])" class="mma-messages-date"><span>{{ message.timecreated | mmFormatDate:"dfdayweekmonth" }}</span></p>
                     <div class="mma-messages-unreadfrom" ng-if="message.unreadFrom">{{ 'mma.messages.newmessages' | translate:{$a: title} }} <i class="icon ion-arrow-down-c"></i></div>
 
-                    <ion-item class='item item-message item-text-wrap item-remove-animate' ng-class='{"item-message-mine": message.useridfrom == currentUserId}' >
+                    <ion-item on-hold="copyMessage(message.smallmessage)" class='item item-message item-text-wrap item-remove-animate' ng-class='{"item-message-mine": message.useridfrom == currentUserId}' >
                         <!-- Some messages have <p> and some others don't. Add a <p> so they all have same styles. -->
                         <p>
                             <ion-delete-button class="ion-trash-a mma-messages-delete-button" ng-if="!message.sending" ng-click='deleteMessage(message, $index)'></ion-delete-button>

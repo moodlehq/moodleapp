@@ -12,10 +12,12 @@
     "nocompetencies": "טרם נוצרה מיומנות כלשהי באוסף־מיומנויות זה.",
     "nocrossreferencedcompetencies": "אף מיומנות לא מקושרת למיומנות זו.",
     "path": "נתיב",
+    "proficient": "בקיאות",
     "progress": "מעקב התקדמות למידה",
     "rating": "דירוג",
     "reviewstatus": "סקירת מצב",
     "status": "מצב",
     "template": "תבנית",
+    "xcompetenciesproficientoutofy": "בקיאות ב {{$a.x}} מיומנויות מתוך {{$a.y}}",
     "xcompetenciesproficientoutofyincourse": "רכשתם בקיאות ב {{$a.x}} מתוך {{$a.y}} המיומנויות בקורס זה."
 }

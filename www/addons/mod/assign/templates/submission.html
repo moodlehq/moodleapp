@@ -43,7 +43,7 @@
     <div ng-show="showSubmission">
         <mma-mod-assign-submission-plugin ng-repeat="plugin in submissionPlugins" assign="assign" submission="userSubmission" plugin="plugin" scroll-handle="{{scrollHandle}}"></mma-mod-assign-submission-plugin>
 
-        <div ng-if="userSubmission && userSubmission.status != statusNew" class="item item-text-wrap">
+        <div ng-if="userSubmission && userSubmission.status != statusNew && userSubmission.timemodified" class="item item-text-wrap">
             <h2>{{ 'mma.mod_assign.timemodified' | translate }}</h2>
             <p>{{ userSubmission.timemodified * 1000 | mmFormatDate:"dfmediumdate" }}</p>
         </div>
@@ -90,12 +90,12 @@
                 <!-- If has offline data, show edit. -->
                 <a ng-if="hasOffline" class="button button-block" ng-click="goToEdit()">{{ 'mma.mod_assign.editsubmission' | translate }}</a>
                 <!-- If no submission or is new, show add submission. -->
-                <a ng-if="!hasOffline && (!userSubmission || userSubmission.status == statusNew)" class="button button-block" ng-click="goToEdit()">{{ 'mma.mod_assign.addsubmission' | translate }}</a>
+                <a ng-if="!hasOffline && (!userSubmission || !userSubmission.status || userSubmission.status == statusNew)" class="button button-block" ng-click="goToEdit()">{{ 'mma.mod_assign.addsubmission' | translate }}</a>
                 <!-- If reopened, show addfromprevious and addnewattempt. -->
                 <a ng-if="!hasOffline && userSubmission && userSubmission.status == statusReopened" class="button button-block" ng-click="copyPrevious()">{{ 'mma.mod_assign.addnewattemptfromprevious' | translate }}</a>
                 <a ng-if="userSubmission && userSubmission.status == statusReopened" class="button button-block" ng-click="goToEdit()">{{ 'mma.mod_assign.addnewattempt' | translate }}</a>
                 <!-- Else show editsubmission. -->
-                <a ng-if="!hasOffline && userSubmission && userSubmission.status != statusNew && userSubmission.status != statusReopened" class="button button-block" ng-click="goToEdit()">{{ 'mma.mod_assign.editsubmission' | translate }}</a>
+                <a ng-if="!hasOffline && userSubmission && userSubmission.status && userSubmission.status != statusNew && userSubmission.status != statusReopened" class="button button-block" ng-click="goToEdit()">{{ 'mma.mod_assign.editsubmission' | translate }}</a>
             </div>
             <div ng-if="unsupportedEditPlugins && unsupportedEditPlugins.length && !showErrorStatementEdit">
                 <p class="mma-mod-assign-warning">{{ 'mma.mod_assign.erroreditpluginsnotsupported' | translate }}</p>

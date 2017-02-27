@@ -7,7 +7,7 @@
     "discussion": "Discuție",
     "edit": "Modifică",
     "erroremptymessage": "Mesajul nu poate fi necompletat",
-    "erroremptysubject": "Subiectul nu poate rămâne necompletat",
+    "erroremptysubject": "Subiectul nu poate fi necompletat",
     "errorgetforum": "A apărut o eroare la obținerea datelor despre forum.",
     "errorgetgroups": "Eroare la obținerea setărilor pentru grup.",
     "forumnodiscussionsyet": "Nu există subiecte deschise în acest forum.",
@@ -18,5 +18,7 @@
     "posttoforum": "Trimite intervenţie pe forum",
     "re": "Re:",
     "reply": "Răspunde",
-    "subject": "Subiect"
+    "subject": "Subiect",
+    "unread": "Necitit",
+    "unreadpostsnumber": "{{$a}} intervenţii necitite"
 }

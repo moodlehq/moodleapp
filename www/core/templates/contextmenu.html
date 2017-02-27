@@ -2,7 +2,7 @@
     <ion-content>
         <div class="list">
             <div ng-if="title" class="item item-divider">{{ title }}</div>
-            <a ng-repeat="item in ctxtMenuItems | orderBy: '-priority'" class="item" mm-link capture-link="{{item.captureLink}}"
+            <a ng-repeat="item in ctxtMenuItems | orderBy: '-priority'" class="item item-text-wrap" mm-link capture-link="{{item.captureLink}}"
                 ng-class="{'item-icon-right': item.href || item.iconAction, 'item-icon-left': item.iconDescription}"
                 ng-href="{{item.href}}" ng-click="contextMenuItemClicked($event, item)" aria-label="{{ item.ariaAction }}"
                 ng-show="item.ngShow" auto-login="{{item.autoLogin}}">

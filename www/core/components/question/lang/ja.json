@@ -1,10 +1,16 @@
 {
     "answer": "回答",
+    "answersaved": "解答保存",
     "complete": "詳細",
     "correct": "正解",
     "feedback": "フィードバック",
     "incorrect": "不正解",
+    "information": "情報",
+    "invalidanswer": "不完全な答え",
     "notanswered": "未投票",
     "notyetanswered": "未回答",
-    "partiallycorrect": "部分的に正解"
+    "partiallycorrect": "部分的に正解",
+    "questionno": "問題 {{$a}}",
+    "requiresgrading": "要評定",
+    "unknown": "不明"
 }

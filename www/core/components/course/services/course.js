@@ -481,32 +481,24 @@ angular.module('mm.core.course')
                 courseid: courseId,
                 options: options
             }, preSets).then(function(sections) {
-                var promise,
-                    siteHomeId = site.getSiteHomeId();
+                var siteHomeId = site.getSiteHomeId(),
+                    showSections = true;
 
                 if (courseId == siteHomeId) {
-                    // Check if frontpage sections should be shown.
-                    promise = site.getConfig('numsections').catch(function() {
-                        // Ignore errors for not present settings assuming numsections will be true.
-                        return $q.when(true);
-                    });
-                } else {
-                    promise = $q.when(true);
+                    showSections = site.getStoredConfig('numsections');
                 }
 
-                return promise.then(function(showSections) {
-                    if (!showSections && sections.length > 0) {
-                        // Get only the last section (Main menu block section).
-                        sections.pop();
-                    }
+                if (typeof showSections != 'undefined' && !showSections && sections.length > 0) {
+                    // Get only the last section (Main menu block section).
+                    sections.pop();
+                }
 
-                    angular.forEach(sections, function(section) {
-                        angular.forEach(section.modules, function(module) {
-                            addContentsIfNeeded(module);
-                        });
+                angular.forEach(sections, function(section) {
+                    angular.forEach(section.modules, function(module) {
+                        addContentsIfNeeded(module);
                     });
-                    return sections;
                 });
+                return sections;
 
             });
         });
@@ -605,9 +597,7 @@ angular.module('mm.core.course')
         }
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
-            var version = parseInt(site.getInfo().version, 10);
-
-            if (version >= 2015051100) {
+            if (site.isVersionGreaterEqualThan('2.9')) {
                 // From Moodle 2.9 the course contents can be filtered, so maybe the module doesn't have contents
                 // because they were filtered. Try to get its contents.
                 return self.getModule(module.id, courseId, sectionId, preferCache, ignoreCache, siteId).then(function(mod) {

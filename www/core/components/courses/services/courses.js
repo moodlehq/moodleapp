@@ -82,6 +82,64 @@ angular.module('mm.core.courses')
     };
 
     /**
+     * Check if My Courses is disabled in a certain site.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#isMyCoursesDisabled
+     * @param  {String} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     */
+    self.isMyCoursesDisabled = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return self.isMyCoursesDisabledInSite(site);
+        });
+    };
+
+    /**
+     * Check if My Courses is disabled in a certain site.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#isMyCoursesDisabledInSite
+     * @param  {Object} [site] Site. If not defined, use current site.
+     * @return {Boolean}       True if disabled, false otherwise.
+     */
+    self.isMyCoursesDisabledInSite = function(site) {
+        site = site || $mmSite;
+        return site.isFeatureDisabled('$mmSideMenuDelegate_mmCourses');
+    };
+
+    /**
+     * Check if Search Courses is disabled in a certain site.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#isSearchCoursesDisabled
+     * @param  {String} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     */
+    self.isSearchCoursesDisabled = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return self.isSearchCoursesDisabledInSite(site);
+        });
+    };
+
+    /**
+     * Check if Search Courses is disabled in a certain site.
+     *
+     * @module mm.core.courses
+     * @ngdoc method
+     * @name $mmCourses#isSearchCoursesDisabledInSite
+     * @param  {Object} [site] Site. If not defined, use current site.
+     * @return {Boolean}       True if disabled, false otherwise.
+     */
+    self.isSearchCoursesDisabledInSite = function(site) {
+        site = site || $mmSite;
+        return site.isFeatureDisabled('$mmCoursesDelegate_search');
+    };
+
+    /**
      * DEPRECATED: this function will be removed in a future version.
      * Clear current courses array. Reserved for core use.
      *
@@ -249,7 +307,25 @@ angular.module('mm.core.courses')
                 };
 
             return site.read('core_course_get_courses_by_field', data, preSets).then(function(courses) {
-                return courses.courses || $q.reject();
+                if (courses.courses) {
+                    // Courses will be sorted using sortorder if avalaible.
+                    return courses.courses.sort(function(a, b) {
+                        if (typeof a.sortorder == "undefined" && typeof b.sortorder == "undefined") {
+                            return b.id - a.id;
+                        }
+
+                        if (typeof a.sortorder == "undefined") {
+                            return 1;
+                        }
+
+                        if (typeof b.sortorder == "undefined") {
+                            return -1;
+                        }
+
+                        return a.sortorder - b.sortorder;
+                    });
+                }
+                return $q.reject();
             });
         });
     };

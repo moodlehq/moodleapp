@@ -72,7 +72,7 @@ angular.module('mm.core.user')
      * @return {String}         Formatted address.
      */
     self.formatAddress = function(address, city, country) {
-        var separator = $translate.instant('mm.core.elementseparator'),
+        var separator = $translate.instant('mm.core.listsep'),
             values = [address, city, country];
 
         values = values.filter(function (value) {
@@ -96,7 +96,7 @@ angular.module('mm.core.user')
             return "";
         }
 
-        var separator = $translate.instant('mm.core.elementseparator');
+        var separator = $translate.instant('mm.core.listsep');
 
         roles = roles.reduce(function (previousValue, currentValue) {
             var role = $translate.instant('mm.user.' + currentValue.shortname);
@@ -241,6 +241,35 @@ angular.module('mm.core.user')
      */
     self.invalidateUserCache = function(userid) {
         return $mmSite.invalidateWsCacheForKey(getUserCacheKey(userid));
+    };
+
+    /**
+     * Check if update profile picture is disabled in a certain site.
+     *
+     * @module mm.core.user
+     * @ngdoc method
+     * @name $mmUser#isUpdatePictureDisabled
+     * @param  {String} [siteId] Site Id. If not defined, use current site.
+     * @return {Promise}         Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     */
+    self.isUpdatePictureDisabled = function(siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return self.isUpdatePictureDisabledInSite(site);
+        });
+    };
+
+    /**
+     * Check if update profile picture is disabled in a certain site.
+     *
+     * @module mm.core.user
+     * @ngdoc method
+     * @name $mmUser#isUpdatePictureDisabledInSite
+     * @param  {Object} [site] Site. If not defined, use current site.
+     * @return {Boolean}       True if disabled, false otherwise.
+     */
+    self.isUpdatePictureDisabledInSite = function(site) {
+        site = site || $mmSite;
+        return site.isFeatureDisabled('$mmUserDelegate_picture');
     };
 
     /**

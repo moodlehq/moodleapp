@@ -278,8 +278,11 @@ angular.module('mm.addons.mod_scorm')
     function showStatus(status) {
         currentStatus = status;
 
-        if (status == mmCoreOutdated) {
-            $scope.statusMessage = 'mma.mod_scorm.scormstatusoutdated';
+        if (status == mmCoreOutdated && scorm) {
+            // Only show the outdated message if the file should be downloaded.
+            $mmaModScorm.shouldDownloadMainFile(scorm, true).then(function(download) {
+                $scope.statusMessage = download ? 'mma.mod_scorm.scormstatusoutdated' : '';
+            });
         } else if (status == mmCoreNotDownloaded) {
             $scope.statusMessage = 'mma.mod_scorm.scormstatusnotdownloaded';
         } else if (status == mmCoreDownloading) {
@@ -402,12 +405,13 @@ angular.module('mm.addons.mod_scorm')
             return;
         }
 
-        if (currentStatus == mmCoreOutdated || currentStatus == mmCoreNotDownloaded) {
+        var isOutdated = currentStatus == mmCoreOutdated;
+
+        if (isOutdated || currentStatus == mmCoreNotDownloaded) {
             // SCORM needs to be downloaded.
-            $mmaModScormHelper.confirmDownload(scorm).then(function() {
-                // Invalidate file if SCORM is outdated.
-                var promise = currentStatus == mmCoreOutdated ?
-                                $mmaModScorm.invalidateContent(scorm.coursemodule, courseid) : $q.when();
+            $mmaModScormHelper.confirmDownload(scorm, isOutdated).then(function() {
+                // Invalidate WS data if SCORM is outdated.
+                var promise = isOutdated ? $mmaModScorm.invalidateAllScormData(scorm.id) : $q.when();
                 promise.finally(function() {
                     downloadScormPackage().then(function() {
                         // Success downloading, open scorm if user hasn't left the view.

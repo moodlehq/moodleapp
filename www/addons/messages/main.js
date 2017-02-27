@@ -77,7 +77,8 @@ angular.module('mm.addons.messages', ['mm.core'])
     $mmUserDelegateProvider.registerProfileHandler('mmaMessages:blockContact', '$mmaMessagesHandlers.blockContact', mmaMessagesBlockContactPriority);
 
     // Register content links handler.
-    $mmContentLinksDelegateProvider.registerLinkHandler('mmaMessages', '$mmaMessagesHandlers.linksHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaMessages:index', '$mmaMessagesHandlers.indexLinksHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaMessages:discussion', '$mmaMessagesHandlers.discussionLinksHandler');
 
     // Register settings handler.
     $mmSettingsDelegateProvider.registerHandler('mmaMessages:preferences',
@@ -85,7 +86,7 @@ angular.module('mm.addons.messages', ['mm.core'])
 })
 
 .run(function($mmaMessages, $mmEvents, $state, $mmAddonManager, $mmUtil, mmCoreEventLogin, $mmCronDelegate, $mmaMessagesSync,
-            mmCoreEventOnlineStatusChanged) {
+            mmCoreEventOnlineStatusChanged, $mmSitesManager) {
 
     // Invalidate messaging enabled WS calls.
     $mmEvents.on(mmCoreEventLogin, function() {
@@ -98,8 +99,15 @@ angular.module('mm.addons.messages', ['mm.core'])
         $mmPushNotificationsDelegate.registerHandler('mmaMessages', function(notification) {
             if ($mmUtil.isFalseOrZero(notification.notif)) {
                 $mmaMessages.isMessagingEnabledForSite(notification.site).then(function() {
-                    $mmaMessages.invalidateDiscussionsCache().finally(function() {
-                        $state.go('redirect', {siteid: notification.site, state: 'site.messages'});
+                    $mmSitesManager.isFeatureDisabled('$mmSideMenuDelegate_mmaMessages', notification.site).then(function(disabled) {
+                        if (disabled) {
+                            // Messages are disabled, stop.
+                            return;
+                        }
+
+                        $mmaMessages.invalidateDiscussionsCache().finally(function() {
+                            $state.go('redirect', {siteid: notification.site, state: 'site.messages'});
+                        });
                     });
                 });
                 return true;

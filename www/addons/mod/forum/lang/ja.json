@@ -16,5 +16,7 @@
     "posttoforum": "フォーラムに投稿する",
     "re": "Re:",
     "reply": "返信",
-    "subject": "件名"
+    "subject": "件名",
+    "unread": "未読",
+    "unreadpostsnumber": "未読件数 {{$a}}"
 }

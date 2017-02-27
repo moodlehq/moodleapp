@@ -1,15 +1,15 @@
-<ion-view view-title="{{'mma.files.myfiles' | translate}}">
+<ion-view view-title="{{'mma.files.files' | translate}}">
     <ion-content padding="true" mm-state-class>
-        <section ng-if="canAccessFiles()">
-            <section class="list card" ng-if="showPrivateFiles()">
-                <a ui-sref="site.files-list({root: 'my'})" class="item item-icon-right" title="{{ 'mma.files.myprivatefiles' | translate }}">
+        <section ng-if="showPrivateFiles || showSiteFiles">
+            <section class="list card" ng-if="showPrivateFiles">
+                <a ui-sref="site.files-list({root: 'my'})" class="item item-icon-right" title="{{ 'mma.files.privatefiles' | translate }}">
                     <i class="icon ion-ios-arrow-right"></i>
-                    {{ 'mma.files.myprivatefiles' | translate }}
+                    {{ 'mma.files.privatefiles' | translate }}
                 </a>
                 <div class="item item-text-wrap"><p>{{ 'mma.files.myprivatefilesdesc' | translate }}</p></div>
             </section>
 
-            <section class="list card">
+            <section class="list card" ng-if="showSiteFiles">
                 <a ui-sref="site.files-list({root: 'site'})" class="item item-icon-right" title="{{ 'mma.files.sitefiles' | translate }}">
                     <i class="icon ion-ios-arrow-right"></i>
                     {{ 'mma.files.sitefiles' | translate }}
@@ -17,12 +17,12 @@
                 <div class="item item-text-wrap"><p>{{ 'mma.files.sitefilesdesc' | translate }}</p></div>
             </section>
 
-            <div class="list card" ng-if="!canDownload()">
+            <div class="list card" ng-if="!canDownload">
                 <div class="item item-text-wrap"><p>{{ 'mma.files.admindisableddownload' | translate }}</p></div>
             </div>
         </section>
 
-        <section ng-if="showUpload()">
+        <section ng-if="showUpload">
             <div class="card">
                 <h2 class="item-body">{{ 'mma.files.uploadfiles' | translate }}</h2>
                 <p class="item-body">{{ 'mma.files.clicktoupload' | translate }}</p>

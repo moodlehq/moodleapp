@@ -1,0 +1,25 @@
+<ion-modal-view class="mm-sharedfiles-list-modal">
+    <ion-header-bar>
+        <h1 class="title"><mm-format-text watch="true">{{title}}</mm-format-text></h1>
+        <button class="button button-icon ion-close-round" ng-click="closeModal()" aria-label="{{ 'mm.core.close' | translate }}"></button>
+    </ion-header-bar>
+    <ion-content>
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="filesLoaded" on-refresh="refreshFiles()"></ion-refresher>
+        <mm-site-picker site-selected="changeSite(siteId)" ng-show="filesLoaded"></mm-site-picker>
+        <li class="item item-divider"></li>
+        <mm-loading hide-until="filesLoaded">
+            <ul class="list">
+                <li ng-repeat="file in files">
+                    <mm-local-file ng-if="file.isFile" file="file" manage="false" override-click="true" file-clicked="filePicked(file)"></mm-local-file>
+                    <a class="item item-media" ng-if="!file.isFile" ng-click="openFolder(file)">
+                        <img src="img/files/folder-64.png" alt="{{ 'mm.core.folder' | translate }}" role="presentation">
+                        {{ file.name }}
+                    </a>
+                </li>
+                <li ng-if="files && !files.length" class="item item-text-wrap">
+                    <p>{{ 'mm.sharedfiles.nosharedfilestoupload' | translate }}</p>
+                </li>
+            </ul>
+        </mm-loading>
+    </ion-content>
+</ion-modal-view>

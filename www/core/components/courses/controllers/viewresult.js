@@ -22,14 +22,16 @@ angular.module('mm.core.courses')
  * @name mmCoursesViewResultCtrl
  */
 .controller('mmCoursesViewResultCtrl', function($scope, $stateParams, $mmCourses, $mmCoursesDelegate, $mmUtil, $translate, $q,
-            $ionicModal, $mmEvents, $mmSite, mmCoursesSearchComponent, mmCoursesEnrolInvalidKey, mmCoursesEventMyCoursesUpdated) {
+            $ionicModal, $mmEvents, $mmSite, mmCoursesSearchComponent, mmCoursesEnrolInvalidKey, mmCoursesEventMyCoursesUpdated,
+            $timeout) {
 
-    var course = $stateParams.course || {},
+    var course = angular.copy($stateParams.course || {}), // Copy the object to prevent modifying the one from the previous view.
         selfEnrolWSAvailable = $mmCourses.isSelfEnrolmentEnabled(),
         guestWSAvailable = $mmCourses.isGuestWSAvailable(),
         isGuestEnabled = false,
         guestInstanceId,
-        enrollmentMethods;
+        enrollmentMethods,
+        waitStart = 0;
 
     $scope.course = course;
     $scope.component = mmCoursesSearchComponent;
@@ -82,12 +84,12 @@ angular.module('mm.core.courses')
                 // Success retrieving the course, we can assume the user has permissions to view it.
                 course.fullname = c.fullname || course.fullname;
                 course.summary = c.summary || course.summary;
-                return loadCourseNavHandlers(refresh);
+                return loadCourseNavHandlers(refresh, false);
             }).catch(function() {
                 // The user is not an admin/manager. Check if we can provide guest access to the course.
                 return canAccessAsGuest().then(function(passwordRequired) {
                     if (!passwordRequired) {
-                        return loadCourseNavHandlers(refresh);
+                        return loadCourseNavHandlers(refresh, true);
                     } else {
                         course._handlers = [];
                         $scope.handlersShouldBeShown = false;
@@ -97,6 +99,8 @@ angular.module('mm.core.courses')
                     $scope.handlersShouldBeShown = false;
                 });
             });
+        }).finally(function() {
+            $scope.courseLoaded = true;
         });
     }
 
@@ -126,7 +130,7 @@ angular.module('mm.core.courses')
     }
 
     // Load course nav handlers.
-    function loadCourseNavHandlers(refresh) {
+    function loadCourseNavHandlers(refresh, guest) {
         var promises = [],
             navOptions,
             admOptions;
@@ -147,8 +151,9 @@ angular.module('mm.core.courses')
         }));
 
         return $q.all(promises).then(function() {
-            course._handlers = $mmCoursesDelegate.getNavHandlersFor(
-                        course.id, refresh, navOptions[course.id], admOptions[course.id]);
+            var getHandlersFn = guest ? $mmCoursesDelegate.getNavHandlersForGuest : $mmCoursesDelegate.getNavHandlersFor;
+            course._handlers = getHandlersFn(course.id, refresh, navOptions[course.id], admOptions[course.id]);
+            $scope.handlersShouldBeShown = true;
         });
 
     }
@@ -172,9 +177,7 @@ angular.module('mm.core.courses')
         });
     }
 
-    getCourse().finally(function() {
-        $scope.courseLoaded = true;
-    });
+    getCourse();
 
     $scope.doRefresh = function() {
         refreshData().finally(function() {
@@ -217,8 +220,13 @@ angular.module('mm.core.courses')
                 $mmCourses.selfEnrol(course.id, password, instanceId).then(function() {
                     // Close modal and refresh data.
                     $scope.isEnrolled = true;
+                    $scope.courseLoaded = false;
+
                     // Don't refresh until modal is closed. See https://github.com/driftyco/ionic/issues/9069
                     $scope.closeModal().then(function() {
+                        // Sometimes the list of enrolled courses takes a while to be updated. Wait for it.
+                        return waitForEnrolled(true);
+                    }).then(function() {
                         refreshData().finally(function() {
                             // My courses have been updated, trigger event.
                             $mmEvents.trigger(mmCoursesEventMyCoursesUpdated, $mmSite.getId());
@@ -245,5 +253,28 @@ angular.module('mm.core.courses')
                 });
             });
         };
+
+        function waitForEnrolled(init) {
+            if (init) {
+                waitStart = Date.now();
+            }
+
+            // Check if user is enrolled in the course.
+            return $mmCourses.invalidateUserCourses().catch(function() {
+                // Ignore errors.
+            }).then(function() {
+                return $mmCourses.getUserCourse(course.id);
+            }).catch(function() {
+                // Not enrolled, wait a bit and try again.
+                if ($scope.$$destroyed || (Date.now() - waitStart > 60000)) {
+                    // Max time reached or the user left the view, stop.
+                    return;
+                }
+
+                return $timeout(function() {
+                    return waitForEnrolled();
+                }, 5000);
+            });
+        }
     }
 });

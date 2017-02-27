@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_assign')
  * @name $mmaModAssignSubmissionOnlinetextHandler
  */
 .factory('$mmaModAssignSubmissionOnlinetextHandler', function($mmSite, $mmaModAssign, $q, $mmaModAssignHelper, $mmWS, $mmText,
-            $mmaModAssignOffline) {
+            $mmaModAssignOffline, $mmUtil) {
 
     var self = {};
 
@@ -137,11 +137,8 @@ angular.module('mm.addons.mod_assign')
      */
     self.isEnabledForEdit = function() {
         // There's a bug in Moodle 3.1.0 that doesn't allow submitting HTML, so we'll disable this plugin in that case.
-        // Bug was fixed in 3.1.1 minor release (2016052301) and in master version 2016070700.
-        var version = parseInt($mmSite.getInfo().version, 10),
-            localMobileEnabled = $mmSite.checkIfAppUsesLocalMobile();
-
-        return (version >= 2016052301 && version < 2016052400) || version >= 2016070700 || localMobileEnabled;
+        // Bug was fixed in 3.1.1 minor release and in 3.2.
+        return $mmSite.isVersionGreaterEqualThan('3.1.1') || $mmSite.checkIfAppUsesLocalMobile();
     };
 
     /**
@@ -169,11 +166,19 @@ angular.module('mm.addons.mod_assign')
      * @return {Void}
      */
     self.prepareSubmissionData = function(assign, submission, plugin, inputData, pluginData, offline, userId, siteId) {
-        pluginData.onlinetext_editor = {
-            text: getTextToSubmit(plugin, inputData),
-            format: 1,
-            itemid: 0 // Can't add new files yet, so we use a fake itemid.
-        };
+        return $mmUtil.isRichTextEditorEnabled().then(function(enabled) {
+            var text = getTextToSubmit(plugin, inputData);
+            if (!enabled) {
+                // Rich text editor not enabled, add some HTML to the text if needed.
+                text = $mmText.formatHtmlLines(text);
+            }
+
+            pluginData.onlinetext_editor = {
+                text: text,
+                format: 1,
+                itemid: 0 // Can't add new files yet, so we use a fake itemid.
+            };
+        });
     };
 
     /**

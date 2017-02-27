@@ -23,7 +23,8 @@ angular.module('mm.addons.badges')
  * @ngdoc service
  * @name $mmaBadgesHandlers
  */
-.factory('$mmaBadgesHandlers', function($mmaBadges, $mmUtil, $q, $mmContentLinksHelper, mmUserProfileHandlersTypeNewPage) {
+.factory('$mmaBadgesHandlers', function($mmaBadges, $mmContentLinksHelper, mmUserProfileHandlersTypeNewPage,
+            $mmContentLinkHandlerFactory) {
 
     var self = {};
 
@@ -101,108 +102,46 @@ angular.module('mm.addons.badges')
     };
 
     /**
-     * Content links handler.
+     * Content links handler for My Badges.
      *
      * @module mm.addons.badges
      * @ngdoc method
-     * @name $mmaBadgesHandlers#linksHandler
+     * @name $mmaBadgesHandlers#myBadgesLinksHandler
      */
-    self.linksHandler = function() {
-
-        var self = {},
-            patterns = ['/badges/mybadges.php', '/badges/badge.php'];
-
-        /**
-         * Whether or not the handler is enabled for a certain site.
-         *
-         * @param  {String} siteId Site ID.
-         * @return {Promise}       Promise resolved with true if enabled.
-         */
-        function isPluginEnabled(siteId) {
-            return $mmaBadges.isPluginEnabled(siteId);
-        }
-
-        /**
-         * Go to My Badges.
-         *
-         * @param {String} siteId Site ID.
-         */
-        function goToMyBadges(siteId) {
-            var stateParams = {
-                courseid: 0
-            };
-            $mmContentLinksHelper.goInSite('site.userbadges', stateParams, siteId);
-        }
-
-        /**
-         * Go to view a certain badge.
-         *
-         * @param {String} hash   Badge's unique hash.
-         * @param {String} siteId Site ID.
-         */
-        function goToBadge(hash, siteId) {
-            var stateParams = {
-                cid: 0,
-                uniquehash: hash
-            };
-            $mmContentLinksHelper.goInSite('site.issuedbadge', stateParams, siteId);
-        }
-
-        /**
-         * Get actions to perform with the link.
-         *
-         * @param {String[]} siteIds  Site IDs the URL belongs to.
-         * @param {String} url        URL to treat.
-         * @return {Promise}          Promise resolved with the list of actions.
-         *                            See {@link $mmContentLinksDelegate#registerLinkHandler}.
-         */
-        self.getActions = function(siteIds, url) {
-            var params = $mmUtil.extractUrlParams(url),
-                isMyBadges = url.indexOf(patterns[0]) > -1,
-                isBadge = url.indexOf(patterns[1]) > -1 && typeof params.hash != 'undefined';
-
-            if (isMyBadges || isBadge) {
-                // Pass false because all sites should have the same siteurl.
-                return $mmContentLinksHelper.filterSupportedSites(siteIds, isPluginEnabled, false).then(function(ids) {
-                    if (!ids.length) {
-                        return [];
-                    }
-
-                    // Return actions.
-                    return [{
-                        message: 'mm.core.view',
-                        icon: 'ion-eye',
-                        sites: ids,
-                        action: function(siteId) {
-                            if (isMyBadges) {
-                                goToMyBadges(siteId);
-                            } else if (isBadge) {
-                                goToBadge(params.hash, siteId);
-                            }
-                        }
-                    }];
-                });
+    self.myBadgesLinksHandler = $mmContentLinkHandlerFactory.createChild('/badges/mybadges.php', '$mmUserDelegate_mmaBadges');
+    // Check if the handler is enabled for a certain site. See $mmContentLinkHandlerFactory#isEnabled.
+    self.myBadgesLinksHandler.isEnabled = $mmaBadges.isPluginEnabled;
+    // Get actions to perform with the link. See $mmContentLinkHandlerFactory#getActions.
+    self.myBadgesLinksHandler.getActions = function(siteIds, url, params, courseId) {
+        return [{
+            action: function(siteId) {
+                var stateParams = {
+                    courseid: 0
+                };
+                $mmContentLinksHelper.goInSite('site.userbadges', stateParams, siteId);
             }
+        }];
+    };
 
-            return $q.when([]);
-        };
-
-        /**
-         * Check if the URL is handled by this handler. If so, returns the URL of the site.
-         *
-         * @param  {String} url URL to check.
-         * @return {String}     Site URL. Undefined if the URL doesn't belong to this handler.
-         */
-        self.handles = function(url) {
-            for (var i = 0; i < patterns.length; i++) {
-                var position = url.indexOf(patterns[i]);
-                if (position > -1) {
-                    return url.substr(0, position);
-                }
+    /**
+     * Content links handler for viewing a badge.
+     *
+     * @module mm.addons.badges
+     * @ngdoc method
+     * @name $mmaBadgesHandlers#badgeLinksHandler
+     */
+    self.badgeLinksHandler = $mmContentLinkHandlerFactory.createChild(/\/badges\/badge\.php.*([\?\&]hash=)/);
+    self.badgeLinksHandler.isEnabled = $mmaBadges.isPluginEnabled;
+    self.badgeLinksHandler.getActions = function(siteIds, url, params) {
+        return [{
+            action: function(siteId) {
+                var stateParams = {
+                    cid: 0,
+                    uniquehash: params.hash
+                };
+                $mmContentLinksHelper.goInSite('site.issuedbadge', stateParams, siteId);
             }
-        };
-
-        return self;
+        }];
     };
 
     return self;

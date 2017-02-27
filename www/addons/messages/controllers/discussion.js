@@ -24,7 +24,7 @@ angular.module('mm.addons.messages')
 .controller('mmaMessagesDiscussionCtrl', function($scope, $stateParams, $mmApp, $mmaMessages, $mmSite, $timeout, $mmEvents, $window,
         $ionicScrollDelegate, mmUserProfileState, $mmUtil, mmaMessagesPollInterval, $interval, $log, $ionicHistory, $ionicPlatform,
         mmCoreEventKeyboardShow, mmCoreEventKeyboardHide, mmaMessagesDiscussionLoadedEvent, mmaMessagesDiscussionLeftEvent,
-        $mmUser, $translate, mmaMessagesNewMessageEvent, mmaMessagesAutomSyncedEvent, $mmaMessagesSync, $q, md5,
+        $mmUser, $translate, mmaMessagesNewMessageEvent, mmaMessagesAutomSyncedEvent, $mmaMessagesSync, $q, md5, $mmText,
         mmaMessagesReadChangedEvent) {
 
     $log = $log.getInstance('mmaMessagesDiscussionCtrl');
@@ -85,6 +85,15 @@ angular.module('mm.addons.messages')
         return !moment(message.timecreated).isSame(prevMessage.timecreated, 'day');
     };
 
+    /**
+     * Copy message to clipboard
+     *
+     * @param  {String} text Message text to be copied.
+     */
+    $scope.copyMessage = function(text) {
+        $mmUtil.copyToClipboard(text);
+    };
+
     $scope.sendMessage = function(text) {
         var message;
 
@@ -98,7 +107,7 @@ angular.module('mm.addons.messages')
         $scope.data.showDelete = false;
         $scope.newMessage = ''; // Clear new message.
 
-        text = text.replace(/(?:\r\n|\r|\n)/g, '<br />');
+        text = $mmText.replaceNewLines(text, '<br>');
         message = {
             pending: true,
             sending: true,
@@ -139,18 +148,14 @@ angular.module('mm.addons.messages')
 
                     notifyNewMessage();
                 });
-            }, function(error) {
+            }).catch(function(error) {
                 messagesBeingSent--;
 
                 // Only close the keyboard if an error happens, we want the user to be able to send multiple
                 // messages without the keyboard being closed.
                 $mmApp.closeKeyboard();
 
-                if (typeof error === 'string') {
-                    $mmUtil.showErrorModal(error);
-                } else {
-                    $mmUtil.showErrorModal('mma.messages.messagenotsent', true);
-                }
+                $mmUtil.showErrorModalDefault(error, 'mma.messages.messagenotsent', true);
                 $scope.messages.splice($scope.messages.indexOf(message), 1);
             });
         });
@@ -561,11 +566,7 @@ angular.module('mm.addons.messages')
                 $scope.messages.splice(index, 1); // Remove message from the list without having to wait for re-fetch.
                 fetchMessages(); // Re-fetch messages to update cached data.
             }).catch(function(error) {
-                if (typeof error === 'string') {
-                    $mmUtil.showErrorModal(error);
-                } else {
-                    $mmUtil.showErrorModal('mma.messages.errordeletemessage', true);
-                }
+                $mmUtil.showErrorModalDefault(error, 'mma.messages.errordeletemessage', true);
             }).finally(function() {
                 modal.dismiss();
             });

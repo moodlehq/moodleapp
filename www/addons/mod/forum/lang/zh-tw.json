@@ -5,6 +5,7 @@
     "cannotcreatediscussion": "不能建立新的議題",
     "couldnotadd": "由於不明錯誤， 無法新增您的貼文",
     "discussion": "議題",
+    "discussionlocked": "這一議題已經被封鎖，所以你無法回應它",
     "discussionsubscription": "議題訂閱",
     "edit": "編輯",
     "erroremptymessage": "貼文的訊息不能是空白",
@@ -15,5 +16,7 @@
     "posttoforum": "貼文到討論區中",
     "re": "回應:",
     "reply": "回應",
-    "subject": "主旨"
+    "subject": "主旨",
+    "unread": "未閱讀",
+    "unreadpostsnumber": "{{$a}}篇未閱讀的貼文"
 }

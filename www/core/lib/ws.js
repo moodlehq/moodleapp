@@ -25,8 +25,8 @@ angular.module('mm.core')
  * @name $mmWS
  */
 .factory('$mmWS', function($http, $q, $log, $mmLang, $cordovaFileTransfer, $mmApp, $mmFS, mmCoreSessionExpired, $translate, $window,
-            mmCoreUserDeleted, md5, $timeout, mmWSTimeout, mmCoreUserPasswordChangeForced, mmCoreUserNotFullySetup,
-            mmCoreSitePolicyNotAgreed) {
+            mmCoreUserDeleted, md5, $timeout, mmWSTimeout, mmCoreUserPasswordChangeForced, mmCoreUserNotFullySetup, $mmText,
+            mmCoreSitePolicyNotAgreed, mmCoreUnicodeNotSupported) {
 
     $log = $log.getInstance('$mmWS');
 
@@ -49,13 +49,12 @@ angular.module('mm.core')
      *                    - wstoken string The Webservice token.
      *                    - responseExpected boolean Defaults to true. Set to false when the expected response is null.
      *                    - typeExpected string Defaults to 'object'. Use it when you expect a type that's not an object|array.
+     *                    - cleanUnicode boolean Defaults to false. Clean multibyte Unicode chars from data.
      * @return {Promise} Promise resolved with the response data in success and rejected with the error message if it fails.
      */
     self.call = function(method, data, preSets) {
 
         var siteurl;
-
-        data = convertValuesToString(data);
 
         if (typeof preSets == 'undefined' || preSets === null ||
                 typeof preSets.wstoken == 'undefined' || typeof preSets.siteurl == 'undefined') {
@@ -67,6 +66,13 @@ angular.module('mm.core')
         preSets.typeExpected = preSets.typeExpected || 'object';
         if (typeof preSets.responseExpected == 'undefined') {
             preSets.responseExpected = true;
+        }
+
+        try {
+            data = convertValuesToString(data, preSets.cleanUnicode);
+        } catch (e) {
+           // Empty cleaned text found.
+           return $mmLang.translateAndReject('mm.core.unicodenotsupportedcleanerror');
         }
 
         data.wsfunction = method;
@@ -133,6 +139,8 @@ angular.module('mm.core')
                     return $q.reject(mmCoreUserNotFullySetup);
                 } else if (data.errorcode === 'sitepolicynotagreed') {
                     return $q.reject(mmCoreSitePolicyNotAgreed);
+                } else if (data.errorcode === 'dmlwriteexception' && $mmText.hasUnicodeData(ajaxData)) {
+                    return $q.reject(mmCoreUnicodeNotSupported);
                 } else {
                     return $q.reject(data.message);
                 }
@@ -280,19 +288,27 @@ angular.module('mm.core')
      * Converts an objects values to strings where appropriate.
      * Arrays (associative or otherwise) will be maintained.
      *
-     * @param {Object} data The data that needs all the non-object values set to strings.
+     * @param {Object}  data            The data that needs all the non-object values set to strings.
+     * @param {Boolean} stripUnicode    If Unicode long chars need to be stripped.
      * @return {Object} The cleaned object, with multilevel array and objects preserved.
      */
-    function convertValuesToString(data) {
+    function convertValuesToString(data, stripUnicode) {
         var result = [];
         if (!angular.isArray(data) && angular.isObject(data)) {
             result = {};
         }
         for (var el in data) {
             if (angular.isObject(data[el])) {
-                result[el] = convertValuesToString(data[el]);
+                result[el] = convertValuesToString(data[el], stripUnicode);
             } else {
-                result[el] = data[el] + '';
+                if (typeof data[el] == "string") {
+                    result[el] = stripUnicode ? $mmText.stripUnicode(data[el]) : data[el];
+                    if (stripUnicode && data[el] != result[el] && result[el].trim().length == 0) {
+                        throw new Exception();
+                    }
+                } else {
+                    result[el] = data[el] + '';
+                }
             }
         }
         return result;
@@ -308,7 +324,7 @@ angular.module('mm.core')
      * @return {Promise}                The success returns the fileEntry, the reject will contain the error object.
      */
     self.downloadFile = function(url, path, addExtension) {
-        $log.debug('Downloading file ' + url);
+        $log.debug('Downloading file ' + url, path, addExtension);
 
         // Use a tmp path to download the file and then move it to final location.This is because if the download fails,
         // the local file is deleted.

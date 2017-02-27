@@ -69,7 +69,7 @@ angular.module('mm.core')
     this.$get = function($ionicLoading, $ionicPopup, $injector, $translate, $http, $log, $q, $mmLang, $mmFS, $timeout, $mmApp,
                 $mmText, mmCoreWifiDownloadThreshold, mmCoreDownloadThreshold, $ionicScrollDelegate, $mmWS, $cordovaInAppBrowser,
                 $mmConfig, mmCoreSettingsRichTextEditor, $rootScope, $ionicPlatform, $ionicHistory, mmCoreSplitViewBlock, $state,
-                $window) {
+                $window, $cordovaClipboard) {
 
         $log = $log.getInstance('$mmUtil');
 
@@ -78,7 +78,8 @@ angular.module('mm.core')
             inputSupportKeyboard = ['date', 'datetime', 'datetime-local', 'email', 'month', 'number', 'password',
                 'search', 'tel', 'text', 'time', 'url', 'week'],
             originalBackFunction = $rootScope.$ionicGoBack,
-            backFunctionsStack = [originalBackFunction];
+            backFunctionsStack = [originalBackFunction],
+            toastPromise;
 
         /**
          * Formats a URL, trim, lowercase, etc...
@@ -329,7 +330,7 @@ angular.module('mm.core')
                         // with white spaces, special characters...
                         if (path.indexOf(fsRoot > -1)) {
                             path = path.replace(fsRoot, "");
-                            path = encodeURIComponent(decodeURIComponent(path));
+                            path = encodeURIComponent($mmText.decodeURIComponent(path));
                             path = fsRoot + path;
                         }
 
@@ -517,9 +518,9 @@ angular.module('mm.core')
          * @module mm.core
          * @ngdoc method
          * @name $mmUtil#showModalLoading
-         * @param {String}  text           The text of the modal window.
-         * @param {Boolean} needsTranslate True if the 'text' is a $translate key, false otherwise.
-         * @return {Object}                Object with a 'dismiss' function to close the modal.
+         * @param {String}  [text]                  The text of the modal window. Default: mm.core.loading.
+         * @param {Boolean} [needsTranslate=false]  True if the 'text' is a $translate key, false otherwise.
+         * @return {Object}                         Object with a 'dismiss' function to close the modal.
          * @description
          * Usage:
          *     var modal = $mmUtil.showModalLoading(myText);
@@ -531,33 +532,22 @@ angular.module('mm.core')
                 modalShown = false,
                 showModalPromise;
 
-            if (!text) {
-                text = 'mm.core.loading';
-                needsTranslate = true;
-            }
-
-            function showModal(text) {
-                if (!modalClosed) {
-                    $ionicLoading.show({
-                        template:   '<ion-spinner></ion-spinner>' +
-                                    '<p>' + addFormatTextIfNeeded(text) + '</p>'
-                    });
-
-                    // Leave some delay before setting modalShown to true.
-                    // @todo In Ionic 1.3.1 $ionicLoading returns a promise, we should use that promise instead of a delay.
-                    showModalPromise = $timeout(function() {
-                        showModalPromise = null;
-                        if (!modalClosed) {
-                            modalShown = true;
-                        }
-                    }, 200);
+            if (!modalClosed) {
+                if (!text) {
+                    text = $translate.instant('mm.core.loading');
+                } else if (needsTranslate) {
+                    text = $translate.instant(text);
                 }
-            }
 
-            if (needsTranslate) {
-                $translate(text).then(showModal);
-            } else {
-                showModal(text);
+                showModalPromise = $ionicLoading.show({
+                    template:   '<ion-spinner></ion-spinner>' +
+                                '<p>' + addFormatTextIfNeeded(text) + '</p>'
+                }).then(function() {
+                    showModalPromise = null;
+                    if (!modalClosed) {
+                        modalShown = true;
+                    }
+                });
             }
 
             return {
@@ -575,6 +565,59 @@ angular.module('mm.core')
                 }
             };
         };
+
+        /**
+         * Displays an autodimissable toast modal window.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#showToast
+         * @param {String}  text                    The text of the toast.
+         * @param {Boolean} [needsTranslate=false]  True if the 'text' is a $translate key, false otherwise.
+         * @param {Number}  [duration=2000]         Duration in ms of the dimissable toast.
+         * @return {Promise}                        Returned by $ionicLoading.
+         */
+        self.showToast = function(text, needsTranslate, duration) {
+            duration = duration || 2000;
+
+            if (needsTranslate) {
+                text = $translate.instant(text);
+            }
+
+            return $ionicLoading.show({
+                template: text,
+                duration: duration,
+                noBackdrop: true,
+                hideOnStateChange: true
+            }).then(function() {
+                var container = angular.element(document.querySelector(".loading-container.visible")).addClass('mm-toast');
+
+                // Remove class on close.
+                $timeout.cancel(toastPromise);
+                toastPromise = $timeout(function() {
+                    container.removeClass('mm-toast');
+                }, duration);
+            });
+        };
+
+        /**
+         * Copies a text to clipboard and shows a toast message.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#showToast
+         * @param  {String} text Text to be copied
+         * @return {Promise}     Resolved when text is copied.
+         */
+        self.copyToClipboard = function(text) {
+            return $cordovaClipboard.copy(text).then(function() {
+                // Show toast using ionicLoading.
+                return self.showToast('mm.core.copiedtoclipboard', true);
+            }).catch(function () {
+                // Ignore errors.
+            });
+        };
+
 
         /**
          * Displays a loading modal window using a certain template.
@@ -621,10 +664,6 @@ angular.module('mm.core')
          *                                   If not defined, modal won't be automatically closed.
          */
         self.showErrorModal = function(errorMessage, needsTranslate, autocloseTime) {
-            var errorKey = 'mm.core.error',
-                langKeys = [errorKey],
-                matches;
-
             if (angular.isObject(errorMessage)) {
                 // We received an object instead of a string. Search for common properties.
                 if (typeof errorMessage.content != 'undefined') {
@@ -641,30 +680,32 @@ angular.module('mm.core')
                 }
 
                 // Try to remove tokens from the contents.
-                matches = errorMessage.match(/token"?[=|:]"?(\w*)/, '');
+                var matches = errorMessage.match(/token"?[=|:]"?(\w*)/, '');
                 if (matches && matches[1]) {
                     errorMessage = errorMessage.replace(new RegExp(matches[1], 'g'), 'secret');
                 }
             }
 
-            if (needsTranslate) {
-                langKeys.push(errorMessage);
+            var message = $mmText.decodeHTML(needsTranslate ? $translate.instant(errorMessage) : errorMessage),
+                popup = $ionicPopup.alert({
+                    title: getErrorTitle(message),
+                    template: addFormatTextIfNeeded(message) // Add format-text to handle links.
+                });
+
+            if (typeof autocloseTime != 'undefined' && !isNaN(parseInt(autocloseTime))) {
+                $timeout(function() {
+                    popup.close();
+                }, parseInt(autocloseTime));
             }
-
-            $translate(langKeys).then(function(translations) {
-                var message = $mmText.decodeHTML(needsTranslate ? translations[errorMessage] : errorMessage),
-                    popup = $ionicPopup.alert({
-                        title: $mmText.decodeHTML(translations[errorKey]),
-                        template: addFormatTextIfNeeded(message) // Add format-text to handle links.
-                    });
-
-                if (typeof autocloseTime != 'undefined' && !isNaN(parseInt(autocloseTime))) {
-                    $timeout(function() {
-                        popup.close();
-                    }, parseInt(autocloseTime));
-                }
-            });
         };
+
+        function getErrorTitle(message) {
+            if (message == $translate.instant('mm.core.networkerrormsg')) {
+                return '<span class="mm-icon-with-badge"><i class="icon ion-wifi"></i>\
+                    <i class="icon ion-alert-circled mm-icon-badge"></i></span>';
+            }
+            return $mmText.decodeHTML($translate.instant('mm.core.error'));
+        }
 
         /**
          * Show a modal with an error message specifying a default message if error is empty.
@@ -679,7 +720,7 @@ angular.module('mm.core')
          *                                    If not defined, modal won't be automatically closed.
          */
         self.showErrorModalDefault = function(errorMessage, defaultError, needsTranslate, autocloseTime) {
-            errorMessage = errorMessage ? errorMessage : defaultError;
+            errorMessage = typeof errorMessage == 'string' ? errorMessage : defaultError;
             return self.showErrorModal(errorMessage, needsTranslate, autocloseTime);
         };
 
@@ -730,6 +771,9 @@ angular.module('mm.core')
 
             options.template = addFormatTextIfNeeded(template); // Add format-text to handle links.
             options.title = title;
+            if (!title) {
+                options.cssClass = 'mm-nohead';
+            }
             return $ionicPopup.confirm(options).then(function(confirmed) {
                 if (!confirmed) {
                     return $q.reject();
@@ -774,7 +818,7 @@ angular.module('mm.core')
          */
         function addFormatTextIfNeeded(message) {
             if ($mmText.hasHTMLTags(message)) {
-                return '<mm-format-text>' + message + '</mm-format-text>';
+                return '<mm-format-text watch="true">' + message + '</mm-format-text>';
             }
             return message;
         }
@@ -870,6 +914,18 @@ angular.module('mm.core')
          */
         self.timestamp = function() {
             return Math.round(Date.now() / 1000);
+        };
+
+        /**
+         * Return the current timestamp in a "readable" format: YYYYMMDDHHmmSS.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#readableTimestamp
+         * @return {Number} The readable timestamp.
+         */
+        self.readableTimestamp = function() {
+            return moment(Date.now()).format('YYYYMMDDHHmmSS');
         };
 
         /**
@@ -1030,10 +1086,9 @@ angular.module('mm.core')
          * @return {Array}                      Array with the formatted tree, children will be on each node under children field.
          */
         self.formatTree = function(list, parentFieldName, idFieldName, rootParentId, maxDepth) {
-            var original = list,
-                map = {},
+            var map = {},
                 mapDepth = {},
-                node, parent, id,
+                parent, id,
                 tree = [];
 
             parentFieldName = parentFieldName || 'parent';
@@ -1049,24 +1104,25 @@ angular.module('mm.core')
                 // Use map to look-up the parents.
                 map[id] = index;
                 if (parent != rootParentId) {
-                    if (mapDepth[parent] == maxDepth) {
-                        // Reached max level of depth. Proceed with flat order. Find parent object of the current node.
-                        var parentNode = list[map[parent]];
-                        if (parentNode != null) {
+                    var parentNode = list[map[parent]];
+                    if (parentNode) {
+                        if (mapDepth[parent] == maxDepth) {
+                            // Reached max level of depth. Proceed with flat order. Find parent object of the current node.
                             var parentOfParent = parentNode[parentFieldName];
-                            // This element will be the child of the node that is two levels up the hierarchy
-                            // (i.e. the child of node.parent.parent).
-                            list[map[parentOfParent]].children.push(node);
-                            // Assign depth level to the same depth as the parent (i.e. max depth level).
-                            mapDepth[id] = mapDepth[parent];
-                            // Change the parent to be the one that is two levels up the hierarchy.
-                            //node.parent = parentOfParent;
+                            if (parentOfParent) {
+                                // This element will be the child of the node that is two levels up the hierarchy
+                                // (i.e. the child of node.parent.parent).
+                                list[map[parentOfParent]].children.push(node);
+                                // Assign depth level to the same depth as the parent (i.e. max depth level).
+                                mapDepth[id] = mapDepth[parent];
+                                // Change the parent to be the one that is two levels up the hierarchy.
+                                node.parent = parentOfParent;
+                            }
+                        } else {
+                            parentNode.children.push(node);
+                            // Increase the depth level.
+                            mapDepth[id] = mapDepth[parent] + 1;
                         }
-                    } else {
-                        list[map[parent]].children.push(node);
-
-                        // Increase the depth level.
-                        mapDepth[id] = mapDepth[parent] + 1;
                     }
                 } else {
                     tree.push(node);
@@ -1143,6 +1199,40 @@ angular.module('mm.core')
             });
 
             return deferred.promise;
+        };
+
+        /**
+         * Check if a promise works and returns true if resolves or false if rejects.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#promiseWorks
+         * @param  {Promise} promise    Promise to check
+         * @return {Promise}            Promise resolved with true if the promises resolves and false if rejects.
+         */
+        self.promiseWorks = function(promise) {
+            return promise.then(function() {
+                return true;
+            }).catch(function() {
+                return false;
+            });
+        };
+
+        /**
+         * Check if a promise works and returns true if rejects or false if resolves.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#promiseFails
+         * @param  {Promise} promise    Promise to check
+         * @return {Promise}            Promise resolved with true if the promises rejects and false if resolves.
+         */
+        self.promiseFails = function(promise) {
+            return promise.then(function() {
+                return false;
+            }).catch(function() {
+                return true;
+            });
         };
 
         /**
@@ -1308,7 +1398,7 @@ angular.module('mm.core')
             // Convert float to string.
             float += '';
             return float.replace('.', localeSeparator);
-        }
+        };
 
         /**
          * Converts locale specific floating point/comma number back to standard PHP float value
@@ -1351,7 +1441,7 @@ angular.module('mm.core')
                 return false;
             }
             return localeFloat;
-        }
+        };
 
         /**
          * Serialize an object to be used in a request.
@@ -1425,15 +1515,23 @@ angular.module('mm.core')
             // Treat elements with src (img, audio, video, ...).
             media = div[0].querySelectorAll('img, video, audio, source, track');
             angular.forEach(media, function(el) {
-                var src = paths[decodeURIComponent(el.getAttribute('src'))];
+                var src = paths[$mmText.decodeURIComponent(el.getAttribute('src'))];
                 if (typeof src !== 'undefined') {
                     el.setAttribute('src', src);
+                }
+
+                // Treat video posters.
+                if (el.tagName == 'VIDEO' && el.getAttribute('poster')) {
+                    src = paths[$mmText.decodeURIComponent(el.getAttribute('poster'))];
+                    if (typeof src !== 'undefined') {
+                        el.setAttribute('poster', src);
+                    }
                 }
             });
 
             // We do the same for links.
             angular.forEach(div.find('a'), function(anchor) {
-                var href = decodeURIComponent(anchor.getAttribute('href')),
+                var href = $mmText.decodeURIComponent(anchor.getAttribute('href')),
                     url = paths[href];
 
                 if (typeof url !== 'undefined') {
@@ -1728,12 +1826,20 @@ angular.module('mm.core')
                 urls = [];
 
             div.innerHTML = html;
-            elements = div.querySelectorAll('a, img, audio, video, source');
+            elements = div.querySelectorAll('a, img, audio, video, source, track');
 
             angular.forEach(elements, function(element) {
                 var url = element.tagName === 'A' ? element.href : element.src;
                 if (url && self.isDownloadableUrl(url) && urls.indexOf(url) == -1) {
                     urls.push(url);
+                }
+
+                // Treat video poster.
+                if (element.tagName == 'VIDEO' && element.getAttribute('poster')) {
+                    url = element.getAttribute('poster');
+                    if (url && self.isDownloadableUrl(url) && urls.indexOf(url) == -1) {
+                        urls.push(url);
+                    }
                 }
             });
 
@@ -1774,21 +1880,35 @@ angular.module('mm.core')
          * @return {Object[]}         Array of objects with the name & value of each property.
          */
         self.objectToArrayOfObjects = function(obj, keyName, valueName, sort) {
-            var result = [],
-                keys = Object.keys(obj);
+            var keys = Object.keys(obj);
 
             if (sort) {
                 keys = keys.sort();
             }
 
-            angular.forEach(keys, function(key) {
+            return keys.map(function(key) {
                 var entry = {};
                 entry[keyName] = key;
                 entry[valueName] = obj[key];
-                result.push(entry);
+                return entry;
             });
-            return result;
         };
+
+        /**
+         * Converts an object into an arrayloosing the keys.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#objectToArray
+         * @param  {Object} obj       Object to convert.
+         * @return {Array}            Array with the values of the object but loosing the keys.
+         */
+        self.objectToArray = function(obj) {
+            return Object.keys(obj).map(function(key) {
+                return obj[key];
+            });
+        };
+
 
         /**
          * Tests to see whether two arrays or objects have the same value at a particular key.
@@ -1872,7 +1992,8 @@ angular.module('mm.core')
                 $translate.instant('mm.core.errorinvalidresponse'),
                 $translate.instant('mm.core.sitemaintenance'),
                 $translate.instant('mm.core.upgraderunning'),
-                $translate.instant('mm.core.nopasswordchangeforced')
+                $translate.instant('mm.core.nopasswordchangeforced'),
+                $translate.instant('mm.core.unicodenotsupported')
             ];
             return error && localErrors.indexOf(error) == -1;
         };
@@ -2125,6 +2246,152 @@ angular.module('mm.core')
             }
 
             return elementMidPoint > $window.innerHeight || elementMidPoint < scrollTopPos;
+        };
+
+        /**
+         * Copy properties from one object to another.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#copyProperties
+         * @param  {Object} from Object to copy the properties from.
+         * @param  {Object} to   Object where to store the properties.
+         * @return {Void}
+         */
+        self.copyProperties = function(from, to) {
+            angular.forEach(from, function(value, name) {
+                to[name] = angular.copy(value);
+            });
+        };
+
+        /**
+         * Filter the list of site IDs based on a isEnabled function.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#filterEnabledSites
+         * @param  {String[]} siteIds     Site IDs to filter.
+         * @param  {Function} isEnabledFn Function to call for each site. Must return true or a promise resolved with true if
+         *                                enabled. It receives a siteId param and all the params sent to this function after
+         *                                'checkAll'.
+         * @param  {Boolean} checkAll     True if it should check all the sites, false if it should check only 1 and treat them all
+         *                                depending on this result.
+         * @param  {Mixed}                All the params sent after checkAll will be passed to isEnabledFn.
+         * @return {Promise}              Promise resolved with the list of enabled sites.
+         */
+        self.filterEnabledSites = function(siteIds, isEnabledFn, checkAll) {
+            var promises = [],
+                enabledSites = [],
+                extraParams = Array.prototype.slice.call(arguments, 3); // Params received after 'checkAll'.
+
+            angular.forEach(siteIds, function(siteId) {
+                if (checkAll || !promises.length) {
+                    promises.push($q.when(isEnabledFn.apply(isEnabledFn, [siteId].concat(extraParams))).then(function(enabled) {
+                        if (enabled) {
+                            enabledSites.push(siteId);
+                        }
+                    }));
+                }
+            });
+
+            return self.allPromises(promises).catch(function() {
+                // Ignore errors.
+            }).then(function() {
+                if (!checkAll) {
+                    // Checking 1 was enough, so it will either return all the sites or none.
+                    return enabledSites.length ? siteIds : [];
+                } else {
+                    return enabledSites;
+                }
+            });
+        };
+
+        /**
+         * Returns element height of an element.
+         *
+         * @param  {Object}  element                DOM element to measure.
+         * @param  {Boolean} [usePadding=false]     Use padding to calculate the measure.
+         * @param  {Boolean} [useMargin=false]      Use margin to calculate the measure.
+         * @param  {Boolean} [useBorder=false]      Use borders to calculate the measure.
+         * @param  {Boolean} [innerMeasure=false]   If inner measure is needed: padding, margin or borders will be substracted.
+         * @return {Number}                         Height in pixels.
+         */
+        self.getElementHeight = function(element, usePadding, useMargin, useBorder, innerMeasure) {
+            var measure = element.offsetHeight || element.height || element.clientHeight || 0;
+
+            // Measure not correctly taken.
+            if (measure <= 0) {
+                var angElement = angular.element(element);
+                if (angElement.css('display') == '') {
+                    angElement.css('display', 'inline-block');
+                    measure = element.offsetHeight || element.height || element.clientHeight || 0;
+                    angElement.css('display', '');
+                }
+            }
+
+            if (usePadding || useMargin || useBorder) {
+                var surround = 0,
+                    cs = getComputedStyle(element);
+                if (usePadding) {
+                    surround += parseInt(cs.paddingTop, 10) + parseInt(cs.paddingBottom, 10);
+                }
+                if (useMargin) {
+                    surround += parseInt(cs.marginTop, 10) + parseInt(cs.marginBottom, 10);
+                }
+                if (useBorder) {
+                    surround += parseInt(cs.borderTop, 10) + parseInt(cs.borderBottom, 10);
+                }
+                if (innerMeasure) {
+                    measure = measure > surround ? measure - surround : 0;
+                } else {
+                    measure += surround;
+                }
+            }
+            return measure;
+        };
+
+        /**
+         * Returns element width of an element.
+         *
+         * @param  {Object}  element                DOM element to measure.
+         * @param  {Boolean} [usePadding=false]     Use padding to calculate the measure.
+         * @param  {Boolean} [useMargin=false]      Use margin to calculate the measure.
+         * @param  {Boolean} [useBorder=false]      Use borders to calculate the measure.
+         * @param  {Boolean} [innerMeasure=false]   If inner measure is needed: padding, margin or borders will be substracted.
+         * @return {Number}                         Witdh in pixels.
+         */
+        self.getElementWidth = function(element, usePadding, useMargin, useBorder, innerMeasure) {
+            var measure = element.offsetWidth || element.width || element.clientWidth || 0;
+
+            // Measure not correctly taken.
+            if (measure <= 0) {
+                var angElement = angular.element(element);
+                if (angElement.css('display') == '') {
+                    angElement.css('display', 'inline-block');
+                    measure = element.offsetWidth || element.width || element.clientWidth || 0;
+                    angElement.css('display', '');
+                }
+            }
+
+            if (usePadding || useMargin || useBorder) {
+                var surround = 0,
+                    cs = getComputedStyle(element);
+                if (usePadding) {
+                    surround += parseInt(cs.paddingLeft, 10) + parseInt(cs.paddingRight, 10);
+                }
+                if (useMargin) {
+                    surround += parseInt(cs.marginLeft, 10) + parseInt(cs.marginRight, 10);
+                }
+                if (useBorder) {
+                    surround += parseInt(cs.borderLeft, 10) + parseInt(cs.borderRight, 10);
+                }
+                if (innerMeasure) {
+                    measure = measure > surround ? measure - surround : 0;
+                } else {
+                    measure += surround;
+                }
+            }
+            return measure;
         };
 
         return self;

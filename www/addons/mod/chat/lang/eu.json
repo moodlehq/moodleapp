@@ -14,6 +14,6 @@
     "mustbeonlinetosendmessages": "On-line egon behar duzu mezuak bidaltzeko",
     "nomessages": "Ez dago mezurik oraindik",
     "send": "Bidali",
-    "sessionstart": "Txat-saioa gutxi barru hasiko da: {{$a}}",
+    "sessionstart": "Txat-saioa {{$a.date}}-(e)tan hasiko da, (hemendik {{$a.fromnow}}-(e)ra)",
     "talk": "Hitz egin"
 }

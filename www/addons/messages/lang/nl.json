@@ -11,6 +11,7 @@
     "errorwhileretrievingcontacts": "Fout bij het ophalen van contacten van de server.",
     "errorwhileretrievingdiscussions": "Fout bij het ophalen van discussies van de server.",
     "errorwhileretrievingmessages": "Fout bij het ophalen van berichten van de server.",
+    "message": "Berichtinhoud",
     "messagenotsent": "Het bericht is niet verzonden. Probeer het later opnieuw.",
     "messagepreferences": "Berichten voorkeuren",
     "messages": "Berichten",

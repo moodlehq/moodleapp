@@ -19,6 +19,7 @@ angular.module('mm.core', ['pascalprecht.translate'])
 .constant('mmCoreUserPasswordChangeForced', 'mmCoreUserPasswordChangeForced')
 .constant('mmCoreUserNotFullySetup', 'mmCoreUserNotFullySetup')
 .constant('mmCoreSitePolicyNotAgreed', 'mmCoreSitePolicyNotAgreed')
+.constant('mmCoreUnicodeNotSupported', 'mmCoreUnicodeNotSupported')
 .constant('mmCoreSecondsYear', 31536000)
 .constant('mmCoreSecondsDay', 86400)
 .constant('mmCoreSecondsHour', 3600)
@@ -43,6 +44,11 @@ angular.module('mm.core', ['pascalprecht.translate'])
 
     // Use JS scrolling.
     $ionicConfigProvider.scrolling.jsScrolling(true);
+
+    // Translate back button (it's only shown in iOS and browser).
+    if (!ionic.Platform.isAndroid()) {
+        $ionicConfigProvider.backButton.text("{{'mm.core.back' | translate}}");
+    }
 
     // Decorate $ionicPlatform.
     $provide.decorator('$ionicPlatform', ['$delegate', '$window', function($delegate, $window) {
@@ -88,13 +94,16 @@ angular.module('mm.core', ['pascalprecht.translate'])
             },
             cache: false,
             template: '<ion-view><ion-content mm-state-class><mm-loading class="mm-loading-center"></mm-loading></ion-content></ion-view>',
-            controller: function($scope, $state, $stateParams, $mmSite, $mmSitesManager, $ionicHistory, $mmAddonManager, $mmApp) {
+            controller: function($scope, $state, $stateParams, $mmSite, $mmSitesManager, $ionicHistory, $mmAddonManager, $mmApp,
+                        $mmLoginHelper) {
 
                 $ionicHistory.nextViewOptions({disableBack: true});
 
                 function loadSiteAndGo() {
                     $mmSitesManager.loadSite($stateParams.siteid).then(function() {
-                        $state.go($stateParams.state, $stateParams.params);
+                        if (!$mmLoginHelper.isSiteLoggedOut($stateParams.state, $stateParams.params)) {
+                            $state.go($stateParams.state, $stateParams.params);
+                        }
                     }, function() {
                         // Site doesn't exist.
                         $state.go('mm_login.sites');
@@ -192,6 +201,11 @@ angular.module('mm.core', ['pascalprecht.translate'])
         $window.addEventListener('native.keyboardshow', function(e) {
             $mmEvents.trigger(mmCoreEventKeyboardShow, e);
 
+            // Resize is not triggered on iOS.
+            if (ionic.Platform.isIOS()) {
+                ionic.trigger('resize');
+            }
+
             if (ionic.Platform.isIOS() && document.activeElement && document.activeElement.tagName != 'BODY') {
                 if ($mmUtil.closest(document.activeElement, 'ion-footer-bar[keyboard-attach]')) {
                     // Input element is in a footer with keyboard-attach directive, nothing to be done.
@@ -224,6 +238,11 @@ angular.module('mm.core', ['pascalprecht.translate'])
         });
         $window.addEventListener('native.keyboardhide', function(e) {
             $mmEvents.trigger(mmCoreEventKeyboardHide, e);
+
+            // Resize is not triggered on iOS.
+            if (ionic.Platform.isIOS()) {
+                ionic.trigger('resize');
+            }
         });
     });
 

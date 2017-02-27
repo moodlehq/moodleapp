@@ -21,7 +21,7 @@ angular.module('mm.addons.notifications')
  * @ngdoc service
  * @name $mmaNotifications
  */
-.factory('$mmaNotifications', function($q, $log, $mmSite, $mmSitesManager, $mmUser, mmaNotificationsListLimit) {
+.factory('$mmaNotifications', function($q, $log, $mmSite, $mmSitesManager, $mmUser, $mmUtil, mmaNotificationsListLimit) {
 
     $log = $log.getInstance('$mmaNotifications');
 
@@ -214,7 +214,8 @@ angular.module('mm.addons.notifications')
      */
     self.markNotificationRead = function(notificationId) {
         var params = {
-                'messageid': notificationId
+                'messageid': notificationId,
+                'timeread': $mmUtil.timestamp()
             };
         return $mmSite.write('core_message_mark_message_read', params);
 

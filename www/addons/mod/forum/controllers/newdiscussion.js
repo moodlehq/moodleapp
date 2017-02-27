@@ -23,46 +23,52 @@ angular.module('mm.addons.mod_forum')
  */
 .controller('mmaModForumNewDiscussionCtrl', function($scope, $stateParams, $mmGroups, $q, $mmaModForum, $mmEvents, $ionicPlatform,
             $mmUtil, $ionicHistory, $translate, mmaModForumNewDiscussionEvent, $mmaModForumOffline, $mmSite, mmaModForumComponent,
-            mmaModForumAutomSyncedEvent, $mmSyncBlock, $mmaModForumSync) {
+            mmaModForumAutomSyncedEvent, $mmSyncBlock, $mmaModForumSync, $mmText, $mmaModForumHelper, $mmFileUploaderHelper) {
 
-    var courseid = $stateParams.cid,
-        forumid = $stateParams.forumid,
-        cmid = $stateParams.cmid,
+    var courseId = $stateParams.cid,
+        forumId = $stateParams.forumid,
+        cmId = $stateParams.cmid,
         timecreated = $stateParams.timecreated,
-        forumName,
         syncObserver,
-        syncId;
+        syncId,
+        originalData;
 
-    $scope.newdiscussion = {
+    // Block leaving the view, we want to show a confirm to the user if there's unsaved data.
+    $mmUtil.blockLeaveView($scope, leaveView);
+
+    $scope.newDiscussion = {
         subject: '',
         text: '',
-        subscribe: true
+        subscribe: true,
+        files: []
     };
 
     $scope.hasOffline = false;
+    $scope.component = mmaModForumComponent;
+    $scope.canAddAttachments = $mmaModForum.canAddAttachments();
 
     // Fetch if forum uses groups and the groups it uses.
     function fetchDiscussionData(refresh) {
-        return $mmGroups.getActivityGroupMode(cmid).then(function(mode) {
+        return $mmGroups.getActivityGroupMode(cmId).then(function(mode) {
             var promises = [];
 
             if (mode === $mmGroups.SEPARATEGROUPS || mode === $mmGroups.VISIBLEGROUPS) {
-                promises.push($mmGroups.getActivityAllowedGroups(cmid).then(function(forumgroups) {
+                promises.push($mmGroups.getActivityAllowedGroups(cmId).then(function(forumgroups) {
                     var promise;
                     if (mode === $mmGroups.VISIBLEGROUPS) {
                         // We need to check which of the returned groups the user can post to.
                         promise = validateVisibleGroups(forumgroups, refresh);
                     } else {
-                        // WS already filters groups, no need to do it ourselves.
-                        promise = $q.when(forumgroups);
+                        // WS already filters groups, no need to do it ourselves. Add "All participants" if needed.
+                        promise = addAllParticipantsOption(forumgroups, true);
                     }
 
                     return promise.then(function(forumgroups) {
                         if (forumgroups.length > 0) {
                             $scope.groups = forumgroups;
                             // Do not override groupid.
-                            $scope.newdiscussion.groupid = $scope.newdiscussion.groupid ?
-                                $scope.newdiscussion.groupid : forumgroups[0].id;
+                            $scope.newDiscussion.groupid = $scope.newDiscussion.groupid ?
+                                $scope.newDiscussion.groupid : forumgroups[0].id;
                             $scope.showGroups = true;
                         } else {
                             var message = mode === $mmGroups.SEPARATEGROUPS ?
@@ -75,39 +81,45 @@ angular.module('mm.addons.mod_forum')
                 $scope.showGroups = false;
             }
 
-            // Get forum name to send offline discussions.
-            promises.push($mmaModForum.getForum(courseid, cmid).then(function(forum) {
-                forumName = forum.name;
-            }).catch(function() {
-                // Ignore errors.
+            // Get forum.
+            promises.push($mmaModForum.getForum(courseId, cmId).then(function(forum) {
+                $scope.forum = forum;
             }));
 
             // If editing a discussion, get offline data.
             if (timecreated && !refresh) {
-                syncId = $mmaModForumSync.getForumSyncId(forumid);
+                syncId = $mmaModForumSync.getForumSyncId(forumId);
                 promises.push($mmaModForumSync.waitForSync(syncId).then(function() {
                     // Do not block if the scope is already destroyed.
                     if (!$scope.$$destroyed) {
                         $mmSyncBlock.blockOperation(mmaModForumComponent, syncId);
                     }
-                    return $mmaModForumOffline.getNewDiscussion(forumid, timecreated).then(function(discussion) {
+                    return $mmaModForumOffline.getNewDiscussion(forumId, timecreated).then(function(discussion) {
                         $scope.hasOffline = true;
-                        $scope.newdiscussion.groupid = discussion.groupid ? discussion.groupid : $scope.newdiscussion.groupid;
-                        $scope.newdiscussion.subject = discussion.subject;
-                        $scope.newdiscussion.text = discussion.message;
-                        $scope.newdiscussion.subscribe = discussion.subscribe;
+                        $scope.newDiscussion.groupid = discussion.groupid ? discussion.groupid : $scope.newDiscussion.groupid;
+                        $scope.newDiscussion.subject = discussion.subject;
+                        $scope.newDiscussion.text = discussion.message;
+                        $scope.newDiscussion.subscribe = discussion.subscribe;
+
+                        // Treat offline attachments if any.
+                        if (discussion.attachments && discussion.attachments.offline) {
+                            return $mmaModForumHelper.getNewDiscussionStoredFiles(forumId, timecreated).then(function(files) {
+                                $scope.newDiscussion.files = files;
+                            });
+                        }
                     });
                 }));
             }
+
             return $q.all(promises);
-        }).then(function(message) {
+        }).then(function() {
+            if (!originalData) {
+                // Initialize original data.
+                originalData = angular.copy($scope.newDiscussion);
+            }
             $scope.showForm = true;
         }).catch(function(message) {
-            if (message) {
-                $mmUtil.showErrorModal(message);
-            } else {
-                $mmUtil.showErrorModal('mma.mod_forum.errorgetgroups', true);
-            }
+            $mmUtil.showErrorModalDefault(message, 'mma.mod_forum.errorgetgroups', true);
             $scope.showForm = false;
             return $q.reject();
         });
@@ -118,20 +130,20 @@ angular.module('mm.addons.mod_forum')
         if ($mmaModForum.isCanAddDiscussionAvailable()) {
             // Use the canAddDiscussion function to filter the groups.
             // We first check if the user can post to all the groups.
-            return $mmaModForum.canAddDiscussionToAll(forumid).catch(function() {
+            return $mmaModForum.canAddDiscussionToAll(forumId).catch(function() {
                 // The call failed, let's assume he can't.
                 return false;
             }).then(function(canAdd) {
                 if (canAdd) {
-                    // The user can post to all groups, return them all.
-                    return forumgroups;
+                    // The user can post to all groups, add the "All participants" option and return them all.
+                    return addAllParticipantsOption(forumgroups);
                 } else {
                     // The user can't post to all groups, let's check which groups he can post to.
                     var promises = [],
                         filtered = [];
 
                     angular.forEach(forumgroups, function(group) {
-                        promises.push($mmaModForum.canAddDiscussion(forumid, group.id).catch(function() {
+                        promises.push($mmaModForum.canAddDiscussion(forumId, group.id).catch(function() {
                             // The call failed, let's return true so the group is shown. If the user can't post to
                             // it an error will be shown when he tries to add the discussion.
                             return true;
@@ -150,7 +162,7 @@ angular.module('mm.addons.mod_forum')
         } else {
             // We can't check it using WS. We'll get the groups the user belongs to and use them to
             // filter the groups to post.
-            return $mmGroups.getUserGroupsInCourse(courseid, refresh).then(function(usergroups) {
+            return $mmGroups.getUserGroupsInCourse(courseId, refresh).then(function(usergroups) {
                 if (usergroups.length === 0) {
                     // User doesn't belong to any group, probably a teacher. Let's return all groups,
                     // if the user can't post to some of them it will be filtered by add discussion WS.
@@ -177,15 +189,46 @@ angular.module('mm.addons.mod_forum')
         return filtered;
     }
 
+    // Add the "All participants" option to a list of groups if the user can add a discussion to all participants.
+    function addAllParticipantsOption(groups, check) {
+        var promise;
+
+        if (!$mmaModForum.isAllParticipantsFixed()) {
+            // All participants has a bug, don't add it.
+            return $q.when(groups);
+        } else if (check) {
+            // We need to check if the user can add a discussion to all participants.
+            promise = $mmaModForum.canAddDiscussionToAll(forumId).catch(function() {
+                // The call failed, let's assume he can't.
+                return false;
+            });
+        } else {
+            // No need to check, assume the user can.
+            promise = $q.when(true);
+        }
+
+        return promise.then(function(canAdd) {
+            if (canAdd) {
+                groups.unshift({
+                    courseid: courseId,
+                    id: -1,
+                    name: $translate.instant('mm.core.allparticipants')
+                });
+            }
+
+            return groups;
+        });
+    }
+
     fetchDiscussionData().finally(function() {
         $scope.groupsLoaded = true;
     });
 
     // Pull to refresh.
     $scope.refreshGroups = function() {
-        var p1 = $mmGroups.invalidateActivityGroupMode(cmid),
-            p2 = $mmGroups.invalidateActivityAllowedGroups(cmid),
-            p3 = $mmaModForum.invalidateCanAddDiscussion(forumid);
+        var p1 = $mmGroups.invalidateActivityGroupMode(cmId),
+            p2 = $mmGroups.invalidateActivityAllowedGroups(cmId),
+            p3 = $mmaModForum.invalidateCanAddDiscussion(forumId);
 
         $q.all([p1, p2, p3]).finally(function() {
             fetchDiscussionData(true).finally(function() {
@@ -195,34 +238,61 @@ angular.module('mm.addons.mod_forum')
     };
 
     // Convenience function to update or return to discussions depending on device.
-    function returnToDiscussions(discussionid) {
+    function returnToDiscussions(discussionId) {
         var data = {
-            forumid: forumid,
-            cmid: cmid
+            forumid: forumId,
+            cmid: cmId
         };
 
-        if (discussionid) {
-            data.discussionid = discussionid;
+        if (discussionId) {
+            data.discussionid = discussionId;
         }
         $mmEvents.trigger(mmaModForumNewDiscussionEvent, data);
+
+        // Delete the local files from the tmp folder.
+        $mmFileUploaderHelper.clearTmpFiles($scope.newDiscussion.files);
 
         if ($ionicPlatform.isTablet()) {
             // Empty form.
             $scope.hasOffline = false;
-            $scope.newdiscussion.subject = '';
-            $scope.newdiscussion.text = '';
+            $scope.newDiscussion.subject = '';
+            $scope.newDiscussion.text = '';
+            $scope.newDiscussion.files = [];
+            originalData = angular.copy($scope.newDiscussion);
         } else {
             // Go back to discussions list.
             $ionicHistory.goBack();
         }
     }
 
+    // Ask to confirm if there are changes.
+    function leaveView() {
+        var promise;
+
+        if (!$mmaModForumHelper.hasPostDataChanged($scope.newDiscussion, originalData)) {
+            promise = $q.when();
+        } else {
+            // Show confirmation if some data has been modified.
+            promise = $mmUtil.showConfirm($translate('mm.core.confirmcanceledit'));
+        }
+
+        return promise.then(function() {
+            // Delete the local files from the tmp folder.
+            $mmFileUploaderHelper.clearTmpFiles($scope.newDiscussion.files);
+        });
+    }
+
     // Add a new discussion.
     $scope.add = function() {
-        var subject = $scope.newdiscussion.subject,
-            message = $scope.newdiscussion.text,
-            subscribe = $scope.newdiscussion.subscribe,
-            groupid = $scope.newdiscussion.groupid;
+        var modal,
+            forumName = $scope.forum.name,
+            subject = $scope.newDiscussion.subject,
+            message = $scope.newDiscussion.text,
+            subscribe = $scope.newDiscussion.subscribe,
+            groupId = $scope.newDiscussion.groupid,
+            attachments = $scope.newDiscussion.files,
+            discTimecreated = timecreated || Date.now(),
+            saveOffline = false;
 
         if (!subject) {
             $mmUtil.showErrorModal('mma.mod_forum.erroremptysubject', true);
@@ -233,34 +303,55 @@ angular.module('mm.addons.mod_forum')
             return;
         }
 
+        modal = $mmUtil.showModalLoading('mm.core.sending', true);
+
         // Check if rich text editor is enabled or not.
         $mmUtil.isRichTextEditorEnabled().then(function(enabled) {
             if (!enabled) {
                 // Rich text editor not enabled, add some HTML to the message if needed.
-                if (message.indexOf('<p>') == -1) {
-                    // Wrap the text in <p> tags.
-                    message = '<p>' + message + '</p>';
-                }
-                message = message.replace(/\n/g, '<br>');
+                message = $mmText.formatHtmlLines(message);
             }
 
-            return $mmaModForum.addNewDiscussion(forumid, forumName, courseid, subject, message, subscribe, groupid, undefined,
-                timecreated);
-        }).then(function(discussionid) {
-            returnToDiscussions(discussionid);
-        }).catch(function(message) {
-            if (message) {
-                $mmUtil.showErrorModal(message);
-            } else {
-                $mmUtil.showErrorModal('mma.mod_forum.cannotcreatediscussion', true);
+            // Upload attachments first if any.
+            if (attachments.length) {
+                return $mmaModForumHelper.uploadOrStoreNewDiscussionFiles(forumId, discTimecreated, attachments, false)
+                        .catch(function() {
+                    // Cannot upload them in online, save them in offline.
+                    saveOffline = true;
+                    return $mmaModForumHelper.uploadOrStoreNewDiscussionFiles(forumId, discTimecreated, attachments, true);
+                });
             }
+        }).then(function(attach) {
+            if (saveOffline) {
+                // Save discussion in offline.
+                return $mmaModForumOffline.addNewDiscussion(forumId, forumName, courseId, subject,
+                        message, subscribe, groupId, attach, discTimecreated).then(function() {
+                    // Don't return anything.
+                });
+            } else {
+                // Try to send it to server.
+                // Don't allow offline if there are attachments since they were uploaded fine.
+                return $mmaModForum.addNewDiscussion(forumId, forumName, courseId, subject, message, subscribe,
+                        groupId, attach, undefined, discTimecreated, !attachments.length);
+            }
+        }).then(function(discussionId) {
+            if (discussionId) {
+                // Data sent to server, delete stored files (if any).
+                $mmaModForumHelper.deleteNewDiscussionStoredFiles(forumId, discTimecreated);
+            }
+
+            returnToDiscussions(discussionId);
+        }).catch(function(message) {
+            $mmUtil.showErrorModalDefault(message, 'mma.mod_forum.cannotcreatediscussion', true);
+        }).finally(function() {
+            modal.dismiss();
         });
     };
 
     if (timecreated) {
         // Refresh data if this forum is synchronized automatically. Only if we're editing one.
         syncObserver = $mmEvents.on(mmaModForumAutomSyncedEvent, function(data) {
-            if (data && data.siteid == $mmSite.getId() && data.forumid == forumid && data.userid == $mmSite.getUserId()) {
+            if (data && data.siteid == $mmSite.getId() && data.forumid == forumId && data.userid == $mmSite.getUserId()) {
                 $mmUtil.showModal('mm.core.notice', 'mm.core.contenteditingsynced');
                 returnToDiscussions();
             }
@@ -270,10 +361,24 @@ angular.module('mm.addons.mod_forum')
     // Discard an offline saved discussion.
     $scope.discard = function() {
         return $mmUtil.showConfirm($translate('mm.core.areyousure')).then(function() {
-            return $mmaModForumOffline.deleteNewDiscussion(forumid, timecreated).then(function() {
+            var promises = [];
+
+            promises.push($mmaModForumOffline.deleteNewDiscussion(forumId, timecreated));
+            promises.push($mmaModForumHelper.deleteNewDiscussionStoredFiles(forumId, timecreated).catch(function() {
+                // Ignore errors, maybe there are no files.
+            }));
+
+            return $q.all(promises).then(function() {
                 returnToDiscussions();
             });
         });
+    };
+
+    // Text changed when rendered.
+    $scope.firstRender = function() {
+        if (originalData) {
+            originalData.text = $scope.newDiscussion.text;
+        }
     };
 
     $scope.$on('$destroy', function(){

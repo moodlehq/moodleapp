@@ -204,7 +204,7 @@ angular.module('mm.core')
                 $mmFilepool.getFileEventNameByUrl(siteId, fileUrl).then(function(eventName) {
                     observer = $mmEvents.on(eventName, function(data) {
                         getState(scope, siteId, fileUrl, timeModified, alwaysDownload);
-                        if (!data.success) {
+                        if (data.action == 'download' && !data.success) {
                             $mmUtil.showErrorModal('mm.core.errordownloading', true);
                         }
                     });
@@ -233,7 +233,7 @@ angular.module('mm.core')
                     });
                 } else {
                     // File doesn't need to be opened (it's a prefetch). Show confirm modal if file size is defined and it's big.
-                    promise = fileSize ? $mmUtil.confirmDownloadSize(fileSize) : $q.when();
+                    promise = fileSize ? $mmUtil.confirmDownloadSize({size: fileSize, total: true}) : $q.when();
                     promise.then(function() {
                         // User confirmed, add the file to queue.
                         $mmFilepool.invalidateFileByUrl(siteId, fileUrl).finally(function() {

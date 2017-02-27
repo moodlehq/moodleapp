@@ -7,6 +7,7 @@
     "contacts": "コンタクト",
     "deletemessage": "メッセージを削除する",
     "deletemessageconfirmation": "本当にこのメッセージを削除してもよろしいですか? あなたのメッセージング履歴からのみ削除され、メッセージを送受信したユーザはまだ閲覧することができます。",
+    "message": "メッセージ本文",
     "messagepreferences": "メッセージプリファレンス",
     "messages": "メッセージ",
     "newmessage": "新しいメッセージ",

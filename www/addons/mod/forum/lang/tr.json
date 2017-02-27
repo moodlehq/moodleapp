@@ -5,12 +5,18 @@
     "cannotcreatediscussion": "Yeni tartışma oluşturulamadı",
     "couldnotadd": "Bilinmeyen bir nedenle mesajınız eklenemedi",
     "discussion": "Tartışma",
+    "discussionlocked": "Bu tartışma kilitli olduğundan artık yanıtlayamıyorsunuz.",
+    "discussionsubscription": "Tartışma aboneliği",
     "edit": "Düzelt",
+    "erroremptymessage": "Yazı mesajı boş olamaz",
+    "erroremptysubject": "Gönderi konusu boş olamaz.",
     "forumnodiscussionsyet": "Bu forum da henuz hiç tartışma başlığı yok",
     "group": "Grup",
     "message": "Mesaj",
     "posttoforum": "Foruma gönder",
     "re": "Ynt:",
     "reply": "Yanıtla",
-    "subject": "Konu"
+    "subject": "Konu",
+    "unread": "Okunmamış",
+    "unreadpostsnumber": "{{$a}} okunmamış mesaj"
 }

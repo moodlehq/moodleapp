@@ -36,15 +36,17 @@ angular.module('mm.core.fileuploader')
      *                           returning an object defining these functions. See {@link $mmUtil#resolveObject}.
      *                             - isEnabled (Boolean|Promise) Whether or not the handler is enabled on a site level.
      *                                                           When using a promise, it should return a boolean.
-     *                             - getController (Object) Returns the object that will act as controller. This is the list of
-     *                                     expected scope variables:
+     *                             - getData (Object) Returns an object with the data to display the handler. Accepted properties:
+     *                                         * name Required. A name to identify the handler. Allows filtering it.
      *                                         * class Optional. Class to add to the handler's row.
      *                                         * title Required. Title to show in the handler's row.
      *                                         * icon Optional. Icon to show in the handler's row.
-     *                                         * action Required. A function called when the handler is clicked, receives maxSize
-     *                                             as parameter. It must return an object - or a promise resolved with an object -
+     *                                         * afterRender(maxSize, upload, allowOffline) Optional. Called when the handler is
+     *                                             rendered.
+     *                                         * action(maxSize, upload, allowOffline) Required. A function called when the handler
+     *                                             is clicked. It must return an object - or a promise resolved with an object -
      *                                             containing these properties:
-     *                                                 - uploaded Boolean. Whether the handler uploaded the file.
+     *                                                 - uploaded Boolean. Whether the handler uploaded or treated the file.
      *                                                 - path String. Ignored if uploaded=true. The path of the file to upload.
      *                                                 - fileEntry Object. Ignored if uploaded=true. The fileEntry to upload.
      *                                                 - delete Boolean. Ignored if uploaded=true. Whether the file should be
@@ -91,16 +93,15 @@ angular.module('mm.core.fileuploader')
          * @module mm.core.fileuploader
          * @ngdoc method
          * @name $mmFileUploaderDelegate#getHandlers
-         * @return {Promise} Resolved with an array of objects containing 'priority' and 'controller'.
+         * @return {Promise} Resolved with an array of objects containing 'priority' and the handler data.
          */
         self.getHandlers = function() {
             var handlers = [];
 
             angular.forEach(enabledHandlers, function(handler) {
-                handlers.push({
-                    controller: handler.instance.getController(),
-                    priority: handler.priority
-                });
+                var data = handler.instance.getData();
+                data.priority = handler.priority;
+                handlers.push(data);
             });
 
             return handlers;

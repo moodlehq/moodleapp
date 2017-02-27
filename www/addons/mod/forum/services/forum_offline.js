@@ -36,11 +36,8 @@ angular.module('mm.addons.mod_forum')
                     name: 'timecreated'
                 },
                 {
-                    // Not using compound indexes because they seem to have issues with where().
                     name: 'forumAndUser',
-                    generator: function(obj) {
-                        return [obj.forumid, obj.userid];
-                    }
+                    keyPath: ['forumid', 'userid']
                 }
             ]
         },
@@ -61,18 +58,12 @@ angular.module('mm.addons.mod_forum')
                     name: 'timecreated'
                 },
                 {
-                    // Not using compound indexes because they seem to have issues with where().
                     name: 'discussionAndUser',
-                    generator: function(obj) {
-                        return [obj.discussionid, obj.userid];
-                    }
+                    keyPath: ['discussionid', 'userid']
                 },
                 {
-                    // Not using compound indexes because they seem to have issues with where().
                     name: 'forumAndUser',
-                    generator: function(obj) {
-                        return [obj.forumid, obj.userid];
-                    }
+                    keyPath: ['forumid', 'userid']
                 }
             ]
         }
@@ -88,7 +79,7 @@ angular.module('mm.addons.mod_forum')
  * @name $mmaModForumOffline
  */
 .factory('$mmaModForumOffline', function($log, mmaModForumOfflineDiscussionsStore, $mmSitesManager, mmaModForumOfflineRepliesStore,
-        $mmSite, $mmUser) {
+        $mmSite, $mmFS) {
 
     $log = $log.getInstance('$mmaModForumOffline');
 
@@ -199,18 +190,21 @@ angular.module('mm.addons.mod_forum')
      * @module mm.addons.mod_forum
      * @ngdoc method
      * @name $mmaModForumOffline#addNewDiscussion
-     * @param {Number}  forumId   Forum ID.
-     * @param {String}  name      Forum name.
-     * @param {Number}  courseId  Course ID the forum belongs to.
-     * @param {String}  subject   New discussion's subject.
-     * @param {String}  message   New discussion's message.
-     * @param {String}  subscribe True if should subscribe to the discussion, false otherwise.
-     * @param {String}  [groupId] Group this discussion belongs to.
-     * @param {String}  [siteId]  Site ID. If not defined, current site.
-     * @param  {Number} [userId]  User the discussion belong to. If not defined, current user in site.
-     * @return {Promise}          Promise resolved when new discussion is successfully saved.
+     * @param  {Number} forumId       Forum ID.
+     * @param  {String} name          Forum name.
+     * @param  {Number} courseId      Course ID the forum belongs to.
+     * @param  {String} subject       New discussion's subject.
+     * @param  {String} message       New discussion's message.
+     * @param  {String} subscribe     True if should subscribe to the discussion, false otherwise.
+     * @param  {String} [groupId]     Group this discussion belongs to.
+     * @param  {Object} [attach]      Result of $mmFileUploader#storeFilesToUpload for attachments.
+     * @param  {Number} [timecreated] The time the discussion was created. If not defined, current time.
+     * @param  {String} [siteId]      Site ID. If not defined, current site.
+     * @param  {Number} [userId]      User the discussion belong to. If not defined, current user in site.
+     * @return {Promise}              Promise resolved when new discussion is successfully saved.
      */
-    self.addNewDiscussion = function(forumId, name, courseId, subject, message, subscribe, groupId, siteId, userId) {
+    self.addNewDiscussion = function(forumId, name, courseId, subject, message, subscribe, groupId, attach, timecreated,
+                siteId, userId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -226,8 +220,13 @@ angular.module('mm.addons.mod_forum')
                     subscribe: subscribe,
                     groupid: groupId || -1,
                     userid: userId,
-                    timecreated: new Date().getTime()
+                    timecreated: timecreated || new Date().getTime()
                 };
+
+            if (attach) {
+                entry.attachments = attach;
+            }
+
             return db.insert(mmaModForumOfflineDiscussionsStore, entry);
         });
     };
@@ -350,42 +349,60 @@ angular.module('mm.addons.mod_forum')
     };
 
     /**
-     * Convert offline reply to online format in order to be compatible with them.
+     * Get the path to the folder where to store files for offline attachments in a forum.
      *
      * @module mm.addons.mod_forum
      * @ngdoc method
-     * @name $mmaModForumOffline#convertOfflineReplyToOnline
-     * @param  {Object} offlineReply    Offline version of the reply.
-     * @return {Promise}                Promise resolved with the object converted to Online.
+     * @name $mmaModForumOffline#getForumFolder
+     * @param  {Number} forumId  Forum ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with the path.
      */
-    self.convertOfflineReplyToOnline = function(offlineReply) {
-        var reply = {
-            attachment: "",
-            canreply: false,
-            children: [],
-            created: offlineReply.timecreated,
-            discussion: offlineReply.discussionid,
-            id: false,
-            mailed: 0,
-            mailnow: 0,
-            message: offlineReply.message,
-            messageformat: 1,
-            messagetrust: 0,
-            modified: false,
-            parent: offlineReply.postid,
-            postread: false,
-            subject: offlineReply.subject,
-            totalscore: 0,
-            userid: offlineReply.userid
-        };
+    self.getForumFolder = function(forumId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
 
-        return $mmUser.getProfile(offlineReply.userid, offlineReply.courseid, true).then(function(user) {
-            reply.userfullname = user.fullname;
-            reply.userpictureurl = user.profileimageurl;
-        }).catch(function() {
-            // Ignore errors.
-        }).then(function() {
-            return reply;
+            var siteFolderPath = $mmFS.getSiteFolder(site.getId()),
+                forumFolderPath = 'offlineforum/' + forumId;
+
+            return $mmFS.concatenatePaths(siteFolderPath, forumFolderPath);
+        });
+    };
+
+    /**
+     * Get the path to the folder where to store files for a new offline discussion.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForumOffline#getNewDiscussionFolder
+     * @param  {Number} forumId     Forum ID.
+     * @param  {Number} timecreated The time the discussion was created.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with the path.
+     */
+    self.getNewDiscussionFolder = function(forumId, timecreated, siteId) {
+        return self.getForumFolder(forumId, siteId).then(function(folderPath) {
+            return $mmFS.concatenatePaths(folderPath, 'newdisc_' + timecreated);
+        });
+    };
+
+    /**
+     * Get the path to the folder where to store files for a new offline reply.
+     *
+     * @module mm.addons.mod_forum
+     * @ngdoc method
+     * @name $mmaModForumOffline#getReplyFolder
+     * @param  {Number} forumId     Forum ID.
+     * @param  {Number} postId      ID of the post being replied.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @param  {Number} [userId]    User the replies belong to. If not defined, current user in site.
+     * @return {Promise}            Promise resolved with the path.
+     */
+    self.getReplyFolder = function(forumId, postId, siteId, userId) {
+        return self.getForumFolder(forumId, siteId).then(function(folderPath) {
+            return $mmSitesManager.getSite(siteId).then(function(site) {
+                userId = userId || site.getUserId();
+                return $mmFS.concatenatePaths(folderPath, 'reply_' + postId + '_' + userId);
+            });
         });
     };
 
@@ -395,18 +412,19 @@ angular.module('mm.addons.mod_forum')
      * @module mm.addons.mod_forum
      * @ngdoc method
      * @name $mmaModForumOffline#replyPost
-     * @param {Number}  postId          ID of the post being replied.
-     * @param {Number}  discussionId    ID of the discussion the user is replying to.
-     * @param {Number}  forumId         ID of the forum the user is replying to.
-     * @param {String}  name            Forum name.
-     * @param {Number}  courseId        Course ID the forum belongs to.
-     * @param {String}  subject         New post's subject.
-     * @param {String}  message         New post's message.
-     * @param {String}  [siteId]        Site ID. If not defined, current site.
-     * @param  {Number} [userId]        User the post belong to. If not defined, current user in site.
-     * @return {Promise}                Promise resolved when the post is created.
+     * @param {Number}  postId       ID of the post being replied.
+     * @param {Number}  discussionId ID of the discussion the user is replying to.
+     * @param {Number}  forumId      ID of the forum the user is replying to.
+     * @param {String}  name         Forum name.
+     * @param {Number}  courseId     Course ID the forum belongs to.
+     * @param {String}  subject      New post's subject.
+     * @param {String}  message      New post's message.
+     * @param  {Object} [attach]     Result of $mmFileUploader#storeFilesToUpload for attachments.
+     * @param {String}  [siteId]     Site ID. If not defined, current site.
+     * @param  {Number} [userId]     User the post belong to. If not defined, current user in site.
+     * @return {Promise}             Promise resolved when the post is created.
      */
-    self.replyPost = function(postId, discussionId, forumId, name, courseId, subject, message, siteId, userId) {
+    self.replyPost = function(postId, discussionId, forumId, name, courseId, subject, message, attach, siteId, userId) {
         siteId = siteId || $mmSite.getId();
 
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -424,6 +442,11 @@ angular.module('mm.addons.mod_forum')
                     userid: userId,
                     timecreated: new Date().getTime()
                 };
+
+            if (attach) {
+                discussion.attachments = attach;
+            }
+
             return db.insert(mmaModForumOfflineRepliesStore, discussion);
         });
     };

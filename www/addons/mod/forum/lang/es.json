@@ -23,5 +23,7 @@
     "reply": "Responder",
     "sortnewestfirst": "Mostrar los más nuevos primero",
     "sortoldestfirst": "Mostrar los más antiguos primero",
-    "subject": "Asunto"
+    "subject": "Asunto",
+    "unread": "No leído",
+    "unreadpostsnumber": "{{$a}} mensajes no leídos"
 }

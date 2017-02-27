@@ -21,7 +21,7 @@ angular.module('mm.addons.messages')
  * @ngdoc service
  * @name $mmaMessages
  */
-.factory('$mmaMessages', function($mmSite, $mmSitesManager, $log, $q, $mmUser, $mmaMessagesOffline, $mmApp,
+.factory('$mmaMessages', function($mmSite, $mmSitesManager, $log, $q, $mmUser, $mmaMessagesOffline, $mmApp, $mmUtil,
             mmaMessagesNewMessageEvent, mmaMessagesLimitMessages) {
     $log = $log.getInstance('$mmaMessages');
 
@@ -449,7 +449,8 @@ angular.module('mm.addons.messages')
      */
     self.markMessageRead = function(messageId) {
         var params = {
-                'messageid': messageId
+                'messageid': messageId,
+                'timeread': $mmUtil.timestamp()
             };
         return $mmSite.write('core_message_mark_message_read', params);
 
@@ -1092,7 +1093,7 @@ angular.module('mm.addons.messages')
         return self.sendMessagesOnline(messages, siteId).catch(function(error) {
             return $q.reject({
                 error: error,
-                wserror: false
+                wserror: $mmUtil.isWebServiceError(error)
             });
         }).then(function(response) {
             if (response && response[0] && response[0].msgid === -1) {
@@ -1122,8 +1123,6 @@ angular.module('mm.addons.messages')
      *                           have been sent, the resolve param can contain errors for messages not sent.
      */
     self.sendMessagesOnline = function(messages, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var data = {
                     messages: messages

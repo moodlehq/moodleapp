@@ -137,8 +137,8 @@ angular.module('mm.core')
      * @return {Promise}      Promise to be resolved when the file is retrieved.
      */
     self.getFile = function(path) {
-        // Paths cannot start with "/".
-        path = self.removeStartingSlash(path);
+        // Remove basePath if it's in the path.
+        path = self.removeStartingSlash(path.replace(basePath, ''));
         return self.init().then(function() {
             $log.debug('Get file: ' + path);
             return $cordovaFile.checkFile(basePath, path);
@@ -155,8 +155,8 @@ angular.module('mm.core')
      * @return {Promise}      Promise to be resolved when the directory is retrieved.
      */
     self.getDir = function(path) {
-        // Paths cannot start with "/".
-        path = self.removeStartingSlash(path);
+        // Remove basePath if it's in the path.
+        path = self.removeStartingSlash(path.replace(basePath, ''));
         return self.init().then(function() {
             $log.debug('Get directory: '+path);
             return $cordovaFile.checkDir(basePath, path);
@@ -186,8 +186,8 @@ angular.module('mm.core')
      * @return {Promise}              Promise to be resolved when the dir/file is created.
      */
     function create(isDirectory, path, failIfExists, base) {
-        // Paths cannot start with "/".
-        path = self.removeStartingSlash(path);
+        // Remove basePath if it's in the path.
+        path = self.removeStartingSlash(path.replace(basePath, ''));
         return self.init().then(function() {
             base = base || basePath;
 
@@ -257,8 +257,8 @@ angular.module('mm.core')
      * @return {Promise}         Promise to be resolved when the directory is deleted.
      */
     self.removeDir = function(path) {
-        // Paths cannot start with "/".
-        path = self.removeStartingSlash(path);
+        // Remove basePath if it's in the path.
+        path = self.removeStartingSlash(path.replace(basePath, ''));
         return self.init().then(function() {
             $log.debug('Remove directory: ' + path);
             return $cordovaFile.removeRecursively(basePath, path);
@@ -275,8 +275,8 @@ angular.module('mm.core')
      * @return {Promise}         Promise to be resolved when the file is deleted.
      */
     self.removeFile = function(path) {
-        // Paths cannot start with "/".
-        path = self.removeStartingSlash(path);
+        // Remove basePath if it's in the path.
+        path = self.removeStartingSlash(path.replace(basePath, ''));
         return self.init().then(function() {
             $log.debug('Remove file: ' + path);
             return $cordovaFile.removeFile(basePath, path);
@@ -308,8 +308,8 @@ angular.module('mm.core')
      * @return {Promise}     Promise to be resolved when the contents are retrieved.
      */
     self.getDirectoryContents = function(path) {
-        // Paths cannot start with "/".
-        path = self.removeStartingSlash(path);
+        // Remove basePath if it's in the path.
+        path = self.removeStartingSlash(path.replace(basePath, ''));
 
         $log.debug('Get contents of dir: ' + path);
         return self.getDir(path).then(function(dirEntry) {
@@ -379,8 +379,8 @@ angular.module('mm.core')
      * @return {Promise}     Promise to be resolved when the size is calculated.
      */
     self.getDirectorySize = function(path) {
-        // Paths cannot start with "/".
-        path = self.removeStartingSlash(path);
+        // Remove basePath if it's in the path.
+        path = self.removeStartingSlash(path.replace(basePath, ''));
 
         $log.debug('Get size of dir: ' + path);
         return self.getDir(path).then(function(dirEntry) {
@@ -398,8 +398,8 @@ angular.module('mm.core')
      * @return {Promise}     Promise to be resolved when the size is calculated.
      */
     self.getFileSize = function(path) {
-        // Paths cannot start with "/".
-        path = self.removeStartingSlash(path);
+        // Remove basePath if it's in the path.
+        path = self.removeStartingSlash(path.replace(basePath, ''));
 
         $log.debug('Get size of file: ' + path);
         return self.getFile(path).then(function(fileEntry) {
@@ -491,7 +491,7 @@ angular.module('mm.core')
      * @return {String}          The file name normalized.
      */
     self.normalizeFileName = function(filename) {
-        filename = decodeURIComponent(filename);
+        filename = $mmText.decodeURIComponent(filename);
         return filename;
     };
 
@@ -510,8 +510,8 @@ angular.module('mm.core')
      * @return {Promise}        Promise to be resolved when the file is read.
      */
     self.readFile = function(path, format) {
-        // Paths cannot start with "/".
-        path = self.removeStartingSlash(path);
+        // Remove basePath if it's in the path.
+        path = self.removeStartingSlash(path.replace(basePath, ''));
         format = format || self.FORMATTEXT;
         $log.debug('Read file ' + path + ' with format '+format);
         switch (format) {
@@ -585,8 +585,8 @@ angular.module('mm.core')
      * @return {Promise}      Promise to be resolved when the file is written.
      */
     self.writeFile = function(path, data) {
-        // Paths cannot start with "/".
-        path = self.removeStartingSlash(path);
+        // Remove basePath if it's in the path.
+        path = self.removeStartingSlash(path.replace(basePath, ''));
         $log.debug('Write file: ' + path);
         return self.init().then(function() {
             // Create file (and parent folders) to prevent errors.
@@ -697,9 +697,9 @@ angular.module('mm.core')
      * @return {Promise}            Promise resolved when the entry is moved.
      */
     self.moveFile = function(originalPath, newPath) {
-        // Paths cannot start with "/".
-        originalPath = self.removeStartingSlash(originalPath);
-        newPath = self.removeStartingSlash(newPath);
+        // Remove basePath if it's in the paths.
+        originalPath = self.removeStartingSlash(originalPath.replace(basePath, ''));
+        newPath = self.removeStartingSlash(newPath.replace(basePath, ''));
 
         return self.init().then(function() {
             if (isHTMLAPI) {
@@ -742,9 +742,9 @@ angular.module('mm.core')
      * @return {Promise}      Promise resolved when the entry is copied.
      */
     self.copyFile = function(from, to) {
-        // Paths cannot start with "/".
-        from = self.removeStartingSlash(from);
-        to = self.removeStartingSlash(to);
+        // Paths cannot start with "/". Remove basePath if present.
+        from = self.removeStartingSlash(from.replace(basePath, ''));
+        to = self.removeStartingSlash(to.replace(basePath, ''));
 
         return self.init().then(function() {
             if (isHTMLAPI) {
@@ -869,15 +869,20 @@ angular.module('mm.core')
      */
     self.getFileIcon = function(filename) {
         var ext = self.getFileExtension(filename),
-            icon;
+            icon = 'unknown';
 
-        if (ext && extToMime[ext] && extToMime[ext].icon) {
-            icon = extToMime[ext].icon + '-64.png';
-        } else {
-            icon = 'unknown-64.png';
+        if (ext && extToMime[ext]) {
+            if (extToMime[ext].icon) {
+                icon = extToMime[ext].icon;
+            } else {
+                var type = extToMime[ext].type.split('/')[0];
+                if (type == 'video' || type == 'text' || type == 'image' || type == 'document' || type == 'audio') {
+                    icon = type;
+                }
+            }
         }
 
-        return 'img/files/' + icon;
+        return 'img/files/' + icon + '-64.png';
     };
 
     /**
@@ -909,6 +914,10 @@ angular.module('mm.core')
 
         if (dot > -1) {
             ext = filename.substr(dot + 1).toLowerCase();
+
+            // Remove hash in extension if there's any. @see $mmFilepool#_getFileIdByUrl
+            ext = ext.replace(/_.{32}$/, '');
+
             // Check extension corresponds to a mimetype to know if it's valid.
             if (typeof self.getMimeType(ext) == 'undefined') {
                 $log.debug('Get file extension: Not valid extension ' + ext);
@@ -1072,8 +1081,8 @@ angular.module('mm.core')
      * @return {Promise}             Promise resolved when the file is unzipped.
      */
     self.unzipFile = function(path, destFolder) {
-        // Paths cannot start with "/".
-        path = self.removeStartingSlash(path);
+        // Remove basePath if it's in the path.
+        path = self.removeStartingSlash(path.replace(basePath, ''));
 
         // Get the source file.
         return self.getFile(path).then(function(fileEntry) {
@@ -1137,8 +1146,8 @@ angular.module('mm.core')
      * @return {Promise}       Promise resolved with metadata.
      */
     self.getMetadataFromPath = function(path, isDir) {
-        // Paths cannot start with "/".
-        path = self.removeStartingSlash(path);
+        // Remove basePath if it's in the path.
+        path = self.removeStartingSlash(path.replace(basePath, ''));
 
         var fn = isDir ? self.getDir : self.getFile;
         return fn(path).then(function(entry) {
@@ -1237,7 +1246,7 @@ angular.module('mm.core')
                 number = 1;
 
             // Clean the file name.
-            fileNameWithoutExtension = $mmText.removeSpecialCharactersForFiles(decodeURIComponent(fileNameWithoutExtension));
+            fileNameWithoutExtension = $mmText.removeSpecialCharactersForFiles($mmText.decodeURIComponent(fileNameWithoutExtension));
 
             // Index the files by name.
             angular.forEach(entries, function(entry) {
@@ -1267,7 +1276,7 @@ angular.module('mm.core')
             }
         }).catch(function() {
             // Folder doesn't exist, name is unique. Clean it and return it.
-            return $mmText.removeSpecialCharactersForFiles(decodeURIComponent(fileName));
+            return $mmText.removeSpecialCharactersForFiles($mmText.decodeURIComponent(fileName));
         });
     };
 

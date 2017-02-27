@@ -102,11 +102,7 @@ angular.module('mm.core')
                             scope.afterChange();
                         }
                     }).catch(function(error) {
-                        if (error) {
-                            $mmUtil.showErrorModal(error);
-                        } else {
-                            $mmUtil.showErrorModal('mm.core.errorchangecompletion', true);
-                        }
+                        $mmUtil.showErrorModalDefault(error, 'mm.core.errorchangecompletion', true);
                     }).finally(function() {
                         modal.dismiss();
                     });

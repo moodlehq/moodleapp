@@ -28,7 +28,7 @@ angular.module('mm.core')
  *
  * @param {Number} [mmMaxRows] Maximum number of rows to be shown. Defaults to 5.
  */
-.directive('mmAutoRows', function() {
+.directive('mmAutoRows', function($mmUtil) {
 
     /**
      * Determine how many rows should be set for the given textarea.
@@ -42,7 +42,7 @@ angular.module('mm.core')
             maxRows = parseInt(attrs.mmMaxRows, 10) || 5,
             computedStyle = getComputedStyle(element[0]),
             padding = (parseInt(computedStyle.paddingBottom, 10) || 0) + (parseInt(computedStyle.paddingTop, 10) || 0),
-            height = (element[0].offsetHeight || element[0].height || element[0].clientHeight || 0) - padding,
+            height = $mmUtil.getElementHeight(element[0]) - padding,
             scrollHeight,
             rows;
 

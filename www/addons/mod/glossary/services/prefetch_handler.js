@@ -22,7 +22,8 @@ angular.module('mm.addons.mod_glossary')
  * @name $mmaModGlossaryPrefetchHandler
  */
 .factory('$mmaModGlossaryPrefetchHandler', function($mmaModGlossary, mmaModGlossaryComponent, $mmFilepool, $q, $mmUser,
-            mmCoreDownloaded, mmCoreOutdated, $mmUtil, $mmPrefetchFactory, $mmCoursePrefetchDelegate) {
+            mmCoreDownloaded, mmCoreOutdated, $mmUtil, $mmPrefetchFactory, $mmCoursePrefetchDelegate,
+            mmaModGlossaryShowAllCategories) {
 
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModGlossaryComponent, false);
 
@@ -215,32 +216,36 @@ angular.module('mm.addons.mod_glossary')
     function prefetchGlossary(module, courseId, single, siteId) {
         var revision,
             timemod;
+        siteId = siteId || $mmSite.getId();
 
         // Prefetch the glossary data.
-        return $mmaModGlossary.getGlossary(courseId, module.id).then(function(glossary) {
+        return $mmaModGlossary.getGlossary(courseId, module.id, siteId).then(function(glossary) {
             var promises = [];
 
             angular.forEach(glossary.browsemodes, function(mode) {
                 switch(mode) {
                     case 'letter': // Always done. Look bellow.
+                        break;
                     case 'cat': // Not implemented.
+                        promises.push($mmaModGlossary.fetchAllEntries($mmaModGlossary.getEntriesByCategory,
+                            [glossary.id, mmaModGlossaryShowAllCategories], false, undefined, undefined, siteId));
                         break;
                     case 'date':
                         promises.push($mmaModGlossary.fetchAllEntries($mmaModGlossary.getEntriesByDate,
-                            [glossary.id, 'CREATION', 'DESC']));
+                            [glossary.id, 'CREATION', 'DESC'], false, undefined, undefined, siteId));
                         promises.push($mmaModGlossary.fetchAllEntries($mmaModGlossary.getEntriesByDate,
-                            [glossary.id, 'UPDATE', 'DESC']));
+                            [glossary.id, 'UPDATE', 'DESC'], false, undefined, undefined, siteId));
                         break;
                     case 'author':
                         promises.push($mmaModGlossary.fetchAllEntries($mmaModGlossary.getEntriesByAuthor,
-                            [glossary.id, 'ALL', 'LASTNAME', 'ASC']));
+                            [glossary.id, 'ALL', 'LASTNAME', 'ASC'], false, undefined, undefined, siteId));
                         break;
                 }
             });
 
             // Fetch all entries to get information from.
-            promises.push($mmaModGlossary.fetchAllEntries($mmaModGlossary.getEntriesByLetter, [glossary.id, 'ALL'])
-                    .then(function(entries) {
+            promises.push($mmaModGlossary.fetchAllEntries($mmaModGlossary.getEntriesByLetter, [glossary.id, 'ALL'], false,
+                    undefined, undefined, siteId).then(function(entries) {
                 var promises = [],
                     files = getFilesFromGlossaryAndEntries(module, glossary, entries),
                     userIds = [];
@@ -248,7 +253,7 @@ angular.module('mm.addons.mod_glossary')
                 // Fetch user avatars.
                 angular.forEach(entries, function(entry) {
                     // Fetch individual entries.
-                    promises.push($mmaModGlossary.getEntry(entry.id));
+                    promises.push($mmaModGlossary.getEntry(entry.id, siteId));
 
                     userIds.push(entry.userid);
                 });
