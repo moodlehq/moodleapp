@@ -56,10 +56,8 @@ angular.module('mm.core')
      * @return {Promise}        Promise resolved when the groups are retrieved.
      */
     self.getActivityAllowedGroups = function(cmid, userid, siteId) {
-        userid = userid || $mmSite.getUserId();
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
+            userid = userid || site.getUserId();
             var params = {
                     cmid: cmid,
                     userid: userid
@@ -98,8 +96,6 @@ angular.module('mm.core')
      * @return {Promise}    Promise resolved when the group mode is retrieved.
      */
     self.getActivityGroupMode = function(cmid, siteId) {
-        siteId = siteId || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     cmid: cmid
@@ -114,6 +110,24 @@ angular.module('mm.core')
                 }
                 return response.groupmode;
             });
+        });
+    };
+
+    /**
+     * Get if group mode of an activity is enabled.
+     *
+     * @module mm.core.groups
+     * @ngdoc method
+     * @name $mmGroups#activityHasGroups
+     * @param {Number} cmid Course module ID.
+     * @param {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}    Promise resolved with true if the group mode is retrieved and enabled.
+     */
+    self.activityHasGroups = function(cmid, siteId) {
+        return self.getActivityGroupMode(cmid, siteId).then(function(groupmode) {
+            return groupmode === self.SEPARATEGROUPS || groupmode === self.VISIBLEGROUPS;
+        }).catch(function() {
+            return false;
         });
     };
 
@@ -178,8 +192,6 @@ angular.module('mm.core')
      * @return {Promise}        Promise to be resolved when the groups are retrieved.
      */
     self.getUserGroupsInCourse = function(courseid, refresh, siteid, userid) {
-        siteid = siteid || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteid).then(function(site) {
             var presets = {},
                 data = {

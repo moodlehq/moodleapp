@@ -495,6 +495,7 @@ angular.module('mm.addons.mod_assign')
                 }));
             }
 
+            promises.push($mmGroups.activityHasGroups(assign.cmid));
             promises.push($mmGroups.getActivityAllowedGroups(assign.cmid, false, siteId));
 
             return $q.all(promises);

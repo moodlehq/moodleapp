@@ -25,7 +25,7 @@ angular.module('mm.addons.mod_assign')
         mmaModAssignComponent, $q, $state, mmaModAssignSubmissionInvalidatedEvent, $mmEvents, $mmSite, mmaModAssignGradedEvent,
         mmaModAssignSubmissionSavedEvent, $mmCourse, $mmApp, mmaModAssignSubmittedForGradingEvent, $mmaModAssignSync, $mmText,
         mmaModAssignEventAutomSynced, $ionicScrollDelegate, mmCoreEventOnlineStatusChanged, mmaModAssignEventManualSynced,
-        mmaModAssignSubmissionStatusSubmitted, mmaModAssignSubmissionStatusDraft, mmaModAssignNeedGrading, $translate) {
+        mmaModAssignSubmissionStatusSubmitted, mmaModAssignSubmissionStatusDraft, mmaModAssignNeedGrading, $translate, $mmGroups) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         siteId = $mmSite.getId(),
@@ -44,6 +44,7 @@ angular.module('mm.addons.mod_assign')
     $scope.mmaModAssignSubmissionStatusSubmitted = mmaModAssignSubmissionStatusSubmitted;
     $scope.mmaModAssignSubmissionStatusDraft = mmaModAssignSubmissionStatusDraft;
     $scope.mmaModAssignNeedGrading = mmaModAssignNeedGrading;
+    $scope.showNumbers = true;
 
     // Check if submit through app is supported.
     $mmaModAssign.isSaveAndSubmitSupported().then(function(enabled) {
@@ -53,7 +54,7 @@ angular.module('mm.addons.mod_assign')
     $scope.gotoSubmissionList = function(status, count) {
         if (typeof status == 'undefined') {
             $state.go('site.mod_assign-submission-list', {courseid: courseId, moduleid: module.id, modulename: module.name});
-        } else if (count) {
+        } else if (count || !$scope.showNumbers) {
             $state.go('site.mod_assign-submission-list', {status: status, courseid: courseId, moduleid: module.id, modulename: module.name});
         }
     };
@@ -107,14 +108,19 @@ angular.module('mm.addons.mod_assign')
                         }
                     }
 
-                    return $mmaModAssign.getSubmissionStatus(assign.id).then(function(response) {
-                        $scope.summary = response.gradingsummary;
+                    // Check if groupmode is enabled to avoid showing wrong numbers.
+                    return $mmGroups.activityHasGroups(assign.cmid).then(function(hasGroups) {
+                        $scope.showNumbers = !hasGroups;
 
-                        $scope.needsGradingAvalaible = response.gradingsummary.submissionsneedgradingcount > 0 &&
-                            $mmSite.isVersionGreaterEqualThan('3.2');
-                    }).catch(function() {
-                        // Fail silently (WS is not available, fallback).
-                        return $q.when();
+                        return $mmaModAssign.getSubmissionStatus(assign.id).then(function(response) {
+                            $scope.summary = response.gradingsummary;
+
+                            $scope.needsGradingAvalaible = response.gradingsummary.submissionsneedgradingcount > 0 &&
+                                $mmSite.isVersionGreaterEqualThan('3.2');
+                        }).catch(function() {
+                            // Fail silently (WS is not available, fallback).
+                            return $q.when();
+                        });
                     });
                 }
             });
