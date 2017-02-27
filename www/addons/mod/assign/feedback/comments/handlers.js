@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc service
  * @name $mmaModAssignFeedbackCommentsHandler
  */
-.factory('$mmaModAssignFeedbackCommentsHandler', function($mmText, $mmSite) {
+.factory('$mmaModAssignFeedbackCommentsHandler', function($mmText, $mmSite, $mmUtil) {
 
     var self = {},
         drafts = {};
@@ -66,7 +66,14 @@ angular.module('mm.addons.mod_assign')
     self.prepareFeedbackData = function(assignId, userId, pluginData, siteId) {
         var draft = self.getDraft(assignId, userId, siteId);
         if (draft) {
-            pluginData.assignfeedbackcomments_editor = draft;
+            return $mmUtil.isRichTextEditorEnabled().then(function(enabled) {
+                if (!enabled) {
+                    // Rich text editor not enabled, add some HTML to the text if needed.
+                    draft.text = $mmText.formatHtmlLines(draft.text);
+                }
+
+                pluginData.assignfeedbackcomments_editor = draft;
+            });
         }
     };
 

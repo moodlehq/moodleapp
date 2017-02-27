@@ -99,7 +99,7 @@ angular.module('mm.core')
         // Then, we rely on the browser. We need to wrap the text to be sure is HTML.
         text = angular.element('<p>').html(text).text(); // Get directive's content.
         // Recover or remove new lines.
-        text = self.replaceNewLines(text, singleLine ? ' ' : '<br />');
+        text = self.replaceNewLines(text, singleLine ? ' ' : '<br>');
         return text;
     };
 
@@ -155,7 +155,7 @@ angular.module('mm.core')
             // Wrap the text in <p> tags.
             text = '<p>' + text + '</p>';
         }
-        return text.replace(/\n/g, '<br>');
+        return self.replaceNewLines(text, '<br>');
     };
 
     /**

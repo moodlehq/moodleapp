@@ -70,6 +70,8 @@ angular.module('mm.addons.mod_wiki')
 
         if (rteEnabled) {
             text = $mmText.restorePluginfileUrls(text, subwikiFiles);
+        } else {
+            text = $mmText.formatHtmlLines(text);
         }
 
         if (editing) {

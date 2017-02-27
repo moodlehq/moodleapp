@@ -421,15 +421,15 @@ angular.module('mm.addons.mod_scorm')
         return $mmSitesManager.getSite(siteId).then(function(site) {
             userId = userId || site.getUserId();
 
-            var fileName, where;
+            var fieldName, where;
 
             if (excludeSynced && excludeNotSynced) {
                 return $q.when([]);
             } else if (excludeSynced || excludeNotSynced) {
-                fileName = 'scormUserAttemptSynced';
+                fieldName = 'scormUserAttemptSynced';
                 where = [scormId, userId, attempt, excludeNotSynced ? 1 : 0];
             } else {
-                fileName = 'scormUserAttempt';
+                fieldName = 'scormUserAttempt';
                 where = [scormId, userId, attempt];
             }
             return site.getDb().whereEqual(mmaModScormOfflineTracksStore, fieldName, where);

@@ -337,7 +337,7 @@ angular.module('mm.addons.mod_forum')
 
     // Refresh data if this forum discussion is synchronized from discussions list.
     syncManualObserver = $mmEvents.on(mmaModForumManualSyncedEvent, function(data) {
-        if (data && data.siteid == $mmSite.getId() && data.forumid == forum.id && data.userid == $mmSite.getUserId()) {
+        if (forum && data && data.siteid == $mmSite.getId() && data.forumid == forum.id && data.userid == $mmSite.getUserId()) {
             // Refresh the data.
             $scope.discussionsLoaded = false;
             return showSpinnerAndFetch(false);
@@ -360,6 +360,7 @@ angular.module('mm.addons.mod_forum')
         obsNewDisc && obsNewDisc.off && obsNewDisc.off();
         obsReply && obsReply.off && obsReply.off();
         syncObserver && syncObserver.off && syncObserver.off();
+        syncManualObserver && syncManualObserver.off && syncManualObserver.off();
         onlineObserver && onlineObserver.off && onlineObserver.off();
     });
 });
