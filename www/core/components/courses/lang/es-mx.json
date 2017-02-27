@@ -1,10 +1,12 @@
 {
     "allowguests": "Este curso permite la entrada de invitados",
     "availablecourses": "Cursos disponibles",
+    "cannotretrievemorecategories": "No se pueden recuperar categorías más profundas que el nivel {{$a}}.",
     "categories": "Categorías",
     "confirmselfenrol": "¿Está Usted seguro de querer inscribirse a Usted mismo en este curso?",
     "courses": "Cursos",
     "enrolme": "Inscribirme",
+    "errorloadcategories": "Ocurrió un error al cargar categorías.",
     "errorloadcourses": "Ocurrió un error al cargar los cursos.",
     "errorsearching": "Ocurrio un error al buscar.",
     "errorselfenrol": "Ocurrio un error al auto-inscribir.",

@@ -1,0 +1,8 @@
+{
+    "errorwhileconnecting": "Įvyko klaida jungiantis prie pokalbio.",
+    "errorwhilegettingchatdata": "Klaida gaunant pokalbio duomenis.",
+    "errorwhilegettingchatusers": "Klaida gaunant pokalbio dalyvių informaciją.",
+    "errorwhileretrievingmessages": "Klaida gaunant žinutes iš serverio.",
+    "errorwhilesendingmessage": "Klaida siunčiant žinutę.",
+    "mustbeonlinetosendmessages": "Norėdamas išsiųsti žinutę, turite būti prisijungęs."
+}

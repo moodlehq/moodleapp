@@ -1,7 +1,8 @@
 {
-    "calendarevents": "Kalendereinträge",
+    "calendarevents": "Kalender",
+    "defaultnotificationtime": "Standardmäßige Benachrichtigungszeit",
     "errorloadevent": "Fehler beim Laden des Kalendereintrags",
     "errorloadevents": "Fehler beim Laden der Kalendereinträge",
-    "noevents": "Keine Kalendereinträge verfügbar",
-    "notifications": "Nachrichten"
+    "noevents": "Keine Kalendereinträge",
+    "notifications": "Benachrichtigung"
 }

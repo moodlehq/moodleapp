@@ -5,7 +5,7 @@
     "country": "Land",
     "description": "Beskrivelse",
     "details": "Detaljer",
-    "detailsnotavailable": "Denne bruges detaljer er ikke tilgængelige for dig.",
+    "detailsnotavailable": "Denne brugers data er ikke tilgængelige for dig.",
     "editingteacher": "Lærer",
     "email": "Email",
     "emailagain": "E-mail (igen)",
@@ -19,7 +19,7 @@
     "phone2": "Mobil",
     "roles": "Roller",
     "student": "Studerende",
-    "teacher": "Ikke redigerende lærer",
+    "teacher": "Medlærer",
     "viewprofile": "Vis Profil",
     "webpage": "Webside"
 }

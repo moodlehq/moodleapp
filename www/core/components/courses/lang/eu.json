@@ -1,10 +1,12 @@
 {
     "allowguests": "Ikastaro honetan bisitariak sar daitezke",
     "availablecourses": "Eskura dauden ikastaroak",
+    "cannotretrievemorecategories": "{{$a}}. maila baino sakonagoko kategoriak ezin dira eskuratu.",
     "categories": "Ikastaro-kategoriak",
     "confirmselfenrol": "Ziur zaude ikastaro honetan izena eman nahi duzula?",
     "courses": "Ikastaroak",
     "enrolme": "Matrikulatu nazazu",
+    "errorloadcategories": "Errorea gertatu da kategoriak kargatzean.",
     "errorloadcourses": "Errore bat gertatu da ikastaroak kargatzean.",
     "errorsearching": "Errorea gertatu da bilatzean.",
     "errorselfenrol": "Errorea gertatu da matrikulazio automatikoa egitean",

@@ -24,6 +24,8 @@
     "refreshdiscussions": "Actualitza els debats",
     "refreshposts": "Actualitza els missatges",
     "reply": "Respon",
+    "sortnewestfirst": "Mostra els més recents primer",
+    "sortoldestfirst": "Mostra els més antics primer",
     "subject": "Assumpte",
     "unread": "No llegit",
     "unreadpostsnumber": "{{$a}} missatges no llegits"

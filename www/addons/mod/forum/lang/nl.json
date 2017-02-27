@@ -9,7 +9,7 @@
     "discussionsubscription": "Inschrijving discussie",
     "edit": "Wijzig",
     "erroremptymessage": "Bericht kan niet leeg zijn",
-    "erroremptysubject": "Onderwerp kan niet leeg zijn",
+    "erroremptysubject": "Onderwerp mag niet leeg zijn",
     "errorgetforum": "Fout bij het ophalen van forumgegevens",
     "errorgetgroups": "Fout bij het ophalen van groepinstellingen.",
     "forumnodiscussionsyet": "Er zijn nog geen discussies in dit forum",
@@ -25,6 +25,8 @@
     "refreshdiscussions": "Discussie verversen",
     "refreshposts": "Discussieberichten verversen",
     "reply": "Antwoord",
+    "sortnewestfirst": "Toon nieuwste eerst",
+    "sortoldestfirst": "Toon oudste eerst",
     "subject": "Onderwerp",
     "unread": "Niet gelezen",
     "unreadpostsnumber": "{{$a}} ongelezen berichten"

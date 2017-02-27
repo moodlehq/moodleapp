@@ -4,6 +4,7 @@
     "complete": "Concluído",
     "correct": "Correto",
     "errorattachmentsnotsupported": "O aplicativo ainda não suporta anexar arquivos à resposta.",
+    "errorinlinefilesnotsupported": "O aplicativo ainda não suporta a edição direta de arquivos.",
     "errorquestionnotsupported": "Esse tipo de questão não é suportada pelo aplicativo: {{$a}}.",
     "feedback": "Feedback",
     "howtodraganddrop": "Toque para selecionar e então toque para soltar.",

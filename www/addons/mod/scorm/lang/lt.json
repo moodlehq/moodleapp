@@ -1,0 +1,19 @@
+{
+    "cannotcalculategrade": "Negalima suskaičiuoti įvertinimo.",
+    "dataattemptshown": "Duomenys priklausom bandymui Nr. {{number}}.",
+    "errorcreateofflineattempt": "Klaida bandant pildyti neprisijungus. Bandykite dar kartą.",
+    "errordownloadscorm": "Klaida siunčiant SCORM: \"{{name}}\".",
+    "errorgetscorm": "Klaida gaunant SCORM duomenis.",
+    "errorinvalidversion": "Atsiprašome, programėlė palaiko tik SCROM 1.2. versiją.",
+    "errornotdownloadable": "SCORM paketų siųsti Moodle sistema negalima. Prašome susisiekti su Moodle svetainės administratoriumi.",
+    "errornovalidsco": "SCORM neturi matomo SCO įkelti.",
+    "errorpackagefile": "Atsiprašome, palaikomi tik ZIP paketai.",
+    "errorsyncscorm": "Klaida sinchronizuojant. Pabandykite dar kartą.",
+    "lastsync": "Paskutinė sinchronizacija",
+    "offlineattemptnote": "Yra nesinchronizuotų duomenų.",
+    "offlineattemptovermax": "Bandymas nepatvirtintas, nes viršytas jų limitas.",
+    "scormstatusnotdownloaded": "SCORM neatsiųsta. Programa automatiškai atsisiųs ją atidarius.",
+    "scormstatusoutdated": "SCORM pakeista nuo paskutiniojo atsisiuntimo. Programa automatiškai atsisiųs ją atidarius.",
+    "warningofflinedatadeleted": "Kai kurie neprijungti  bandymo {{number}} duomenys  buvo ištrinti, nes jie negalėjo būti perkelti į naują bandymą.",
+    "warningsynconlineincomplete": "Kaikurie bandymai negali būti sinchronizuoti su svetaine dėl to, kad paskutiniai prisijungimo duomenys nebuvo pabaigti. Prašome pabaigti."
+}

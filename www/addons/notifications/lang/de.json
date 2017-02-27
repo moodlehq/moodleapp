@@ -1,6 +1,6 @@
 {
-    "errorgetnotifications": "Fehler beim Abrufen von Mitteilungen",
-    "notificationpreferences": "Einstellungen für Benachrichtigungen",
-    "notifications": "Mitteilungen",
-    "therearentnotificationsyet": "Keine Mitteilungen verfügbar"
+    "errorgetnotifications": "Fehler beim Laden der Mitteilungen",
+    "notificationpreferences": "Systemmitteilungen",
+    "notifications": "Systemmitteilungen",
+    "therearentnotificationsyet": "Keine Mitteilungen"
 }

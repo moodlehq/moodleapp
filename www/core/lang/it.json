@@ -44,6 +44,7 @@
     "download": "Scarica",
     "downloading": "Scaricamento in corso",
     "edit": "Modifica",
+    "elementseparator": ",",
     "error": "Errore",
     "errorchangecompletion": "Si è verificato un errore durante la modifica dello stato di completamento. Per favore riprova.",
     "errordeletefile": "Si è verificato un errore durante l'eliminazione del file. Per favore riprova.",

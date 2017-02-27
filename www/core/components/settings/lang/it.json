@@ -1,5 +1,6 @@
 {
     "about": "Informazioni",
+    "appname": "Moodle Mobile {{version}}",
     "appready": "App ready",
     "cacheexpirationtime": "Durata cache (millisecondi)",
     "cordovadevicemodel": "Modello del dispositivo Cordova",
@@ -11,6 +12,7 @@
     "currentlanguage": "Lingua in uso",
     "deletesitefiles": "Sei sicuro di eliminare i file scaricati dal sito '{{sitename}}'?",
     "deletesitefilestitle": "Elimina file del sito",
+    "development": "Sviluppo",
     "deviceinfo": "Informazioni sul dispositivo",
     "deviceos": "SO del dispositivo",
     "devicewebworkers": "Dispositivi Web Worker supportati",
@@ -39,6 +41,7 @@
     "sites": "Siti",
     "spaceusage": "Spazio utilizzato",
     "storagetype": "Tipo di storage",
+    "success": "Effettuato correttamente!",
     "synchronization": "Sincronizzazione",
     "synchronizenow": "Sincronizza adesso",
     "synchronizing": "Sincronizzazione in corso",

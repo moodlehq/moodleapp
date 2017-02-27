@@ -1,10 +1,12 @@
 {
     "allowguests": "Der Kurs ist für Gäste zugänglich",
     "availablecourses": "Kursliste",
+    "cannotretrievemorecategories": "Kursbereiche tiefer als Level {{$a}} können nicht abgerufen werden.",
     "categories": "Kursbereiche",
     "confirmselfenrol": "Möchten Sie sich selbst in diesen Kurs einschreiben?",
     "courses": "Kurse",
     "enrolme": "Selbst einschreiben",
+    "errorloadcategories": "Fehler beim Laden der Kursbereiche",
     "errorloadcourses": "Fehler beim Laden der Kurse",
     "errorsearching": "Fehler beim Suchen",
     "errorselfenrol": "Fehler bei der Selbsteinschreibung",

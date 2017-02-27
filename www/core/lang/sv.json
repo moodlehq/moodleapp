@@ -41,6 +41,7 @@
     "download": "Ladda ner",
     "downloading": "Laddar ner",
     "edit": "Redigera",
+    "elementseparator": ",",
     "error": "Fel",
     "errorchangecompletion": "Ett fel uppstod när du ändrade status för fullföljande. Var god försök igen.",
     "errordownloading": "Fel vid nedladdning av fil",
