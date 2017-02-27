@@ -151,11 +151,18 @@ angular.module('mm.core')
      * @return {String}                  Formatted text.
      */
     self.formatHtmlLines = function(text) {
+        var hasHTMLTags = self.hasHTMLTags(text);
         if (text.indexOf('<p>') == -1) {
             // Wrap the text in <p> tags.
             text = '<p>' + text + '</p>';
         }
-        return self.replaceNewLines(text, '<br>');
+
+        if (!hasHTMLTags) {
+            // The text doesn't have HTML, replace new lines for <br>.
+            return self.replaceNewLines(text, '<br>');
+        }
+
+        return text;
     };
 
     /**

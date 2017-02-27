@@ -80,7 +80,7 @@ angular.module('mm.addons.mod_assign')
                 }
 
                 $scope.userSubmission = $mmaModAssign.getSubmissionObjectFromAttempt(assign, response.lastattempt);
-                $scope.allowOffline = $scope.userSubmission.status == 'new';
+                $scope.allowOffline = $scope.userSubmission.status == 'new' || $scope.userSubmission.status == 'reopened';
 
                 // Only show submission statement if we are editing our own submission.
                 if (assign.requiresubmissionstatement && !assign.submissiondrafts && userId == $mmSite.getUserId()) {
