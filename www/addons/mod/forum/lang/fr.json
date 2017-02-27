@@ -22,8 +22,6 @@
     "refreshdiscussions": "Rafraîchir les discussions",
     "refreshposts": "Rafraîchir les messages des discussions",
     "reply": "Répondre",
-    "sortnewestfirst": "Afficher la plus récente en premier",
-    "sortoldestfirst": "Afficher la plus ancienne en premier",
     "subject": "Sujet",
     "unread": "Non lu",
     "unreadpostsnumber": "{{$a}} messages non lus"

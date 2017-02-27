@@ -126,7 +126,7 @@
     "nocomments": "No hay comentarios",
     "nograde": "No hay calificación",
     "none": "Ninguno(a)",
-    "nopasswordchangeforced": "Usted no puede proceder sin cambiar su contraseña.",
+    "nopasswordchangeforced": "No puede seguir sin cambiar su contraseña, sin embargo no existe ninguna página disponible para cambiarla. Por favor contacte a su administrador de Moodle.",
     "nopermissions": "Lo sentimos, pero por el momento no tiene permiso para hacer eso ({{$a}})",
     "notapplicable": "no disp.",
     "notice": "Aviso",

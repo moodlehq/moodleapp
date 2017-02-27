@@ -125,7 +125,7 @@
     "nocomments": "Iruzkinik ez",
     "nograde": "Kalifikaziorik ez",
     "none": "Bat ere ez",
-    "nopasswordchangeforced": "Ezin duzu jarraitu zure pasahitza aldatu gabe.",
+    "nopasswordchangeforced": "Ezin duzu aurrera egin pasahitza aldatu gabe, baina ez dago aldatzeko inongo orririk. Mesedez, jarri harremanetan zure Moodle Kudeatzailearekin.",
     "nopermissions": "Sentitzen dugu, baina oraingoz ez duzu hori egiteko baimenik ({{$a}})",
     "notapplicable": "ezin da aplikatu",
     "notice": "Abisua",

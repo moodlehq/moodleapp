@@ -22,8 +22,6 @@
     "refreshdiscussions": "Discussie verversen",
     "refreshposts": "Discussieberichten verversen",
     "reply": "Antwoord",
-    "sortnewestfirst": "Toon nieuwste eerst",
-    "sortoldestfirst": "Toon oudste eerst",
     "subject": "Onderwerp",
     "unread": "Niet gelezen",
     "unreadpostsnumber": "{{$a}} ongelezen berichten"

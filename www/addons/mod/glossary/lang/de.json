@@ -1,10 +1,10 @@
 {
     "attachment": "Anhang",
-    "browsemode": "Einträge durchblättern",
+    "browsemode": "Einträge blättern",
     "byalphabet": "Alphabetisch",
     "byauthor": "Nach Autor/in",
-    "bynewestfirst": "Neu zuerst",
-    "byrecentlyupdated": "Gerade aktualisiert",
+    "bynewestfirst": "Neueste zuerst",
+    "byrecentlyupdated": "Aktuelle zuerst",
     "bysearch": "Suchen",
     "casesensitive": "Groß-/Kleinschreibung",
     "categories": "Kursbereiche",
@@ -12,6 +12,6 @@
     "errorloadingentries": "Fehler beim Laden von Einträgen",
     "errorloadingentry": "Fehler beim Laden des Eintrags",
     "errorloadingglossary": "Fehler beim Laden des Glossars",
-    "noentriesfound": "Keine Einträge",
+    "noentriesfound": "Keine Einträge verfügbar",
     "searchquery": "Suchanfrage"
 }
