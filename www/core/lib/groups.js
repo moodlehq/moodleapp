@@ -50,22 +50,20 @@ angular.module('mm.core')
      * @module mm.core.groups
      * @ngdoc method
      * @name $mmGroups#getActivityAllowedGroups
-     * @param {Number} cmid     Course module ID.
-     * @param {Number} [userid] User ID. If not defined, use current user.
+     * @param {Number} cmId     Course module ID.
+     * @param {Number} [userId] User ID. If not defined, use current user.
      * @param {String} [siteId] Site ID. If not defined, current site.
      * @return {Promise}        Promise resolved when the groups are retrieved.
      */
-    self.getActivityAllowedGroups = function(cmid, userid, siteId) {
-        userid = userid || $mmSite.getUserId();
-        siteId = siteId || $mmSite.getId();
-
+    self.getActivityAllowedGroups = function(cmId, userId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
+            userId = userId || site.getUserId();
             var params = {
-                    cmid: cmid,
-                    userid: userid
+                    cmid: cmId,
+                    userid: userId
                 },
                 preSets = {
-                    cacheKey: getActivityAllowedGroupsCacheKey(cmid, userid)
+                    cacheKey: getActivityAllowedGroupsCacheKey(cmId, userId)
                 };
 
             return site.read('core_group_get_activity_allowed_groups', params, preSets).then(function(response) {
@@ -80,11 +78,11 @@ angular.module('mm.core')
     /**
      * Get cache key for group mode WS calls.
      *
-     * @param {Number} cmid Course module ID.
+     * @param {Number} cmId Course module ID.
      * @return {String}     Cache key.
      */
-    function getActivityAllowedGroupsCacheKey(cmid, userid) {
-        return 'mmGroups:allowedgroups:' + cmid + ':' + userid;
+    function getActivityAllowedGroupsCacheKey(cmId, userId) {
+        return 'mmGroups:allowedgroups:' + cmId + ':' + userId;
     }
 
     /**
@@ -93,19 +91,17 @@ angular.module('mm.core')
      * @module mm.core.groups
      * @ngdoc method
      * @name $mmGroups#getActivityGroupMode
-     * @param {Number} cmid Course module ID.
+     * @param {Number} cmId     Course module ID.
      * @param {String} [siteId] Site ID. If not defined, current site.
-     * @return {Promise}    Promise resolved when the group mode is retrieved.
+     * @return {Promise}        Promise resolved when the group mode is retrieved.
      */
-    self.getActivityGroupMode = function(cmid, siteId) {
-        siteId = siteId || $mmSite.getId();
-
+    self.getActivityGroupMode = function(cmId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
-                    cmid: cmid
+                    cmid: cmId
                 },
                 preSets = {
-                    cacheKey: getActivityGroupModeCacheKey(cmid)
+                    cacheKey: getActivityGroupModeCacheKey(cmId)
                 };
 
             return site.read('core_group_get_activity_groupmode', params, preSets).then(function(response) {
@@ -114,6 +110,48 @@ angular.module('mm.core')
                 }
                 return response.groupmode;
             });
+        });
+    };
+
+    /**
+     * Get if group mode of an activity is enabled.
+     *
+     * @module mm.core.groups
+     * @ngdoc method
+     * @name $mmGroups#activityHasGroups
+     * @param {Number} cmId Course module ID.
+     * @param {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}    Promise resolved with true if the group mode is retrieved and enabled.
+     */
+    self.activityHasGroups = function(cmId, siteId) {
+        return self.getActivityGroupMode(cmId, siteId).then(function(groupmode) {
+            return groupmode === self.SEPARATEGROUPS || groupmode === self.VISIBLEGROUPS;
+        }).catch(function() {
+            return false;
+        });
+    };
+
+    /**
+     * Get the groups allowed in an activity if they are allowed.
+     *
+     * @module mm.core.groups
+     * @ngdoc method
+     * @name $mmGroups#getActivityAllowedGroupsIfEnabled
+     * @param {Number} cmId     Course module ID.
+     * @param {Number} [userId] User ID. If not defined, use current user.
+     * @param {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the groups are retrieved. If not allowed, empty array will be returned.
+     */
+    self.getActivityAllowedGroupsIfEnabled = function(cmId, userId, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        // Get real groupmode, in case it's forced by the course.
+        return self.activityHasGroups(cmId, siteId).then(function(hasGroups) {
+            if (hasGroups) {
+                // Get the groups available for the user.
+                return self.getActivityAllowedGroups(cmId, userId, siteId);
+            }
+            return [];
         });
     };
 
@@ -178,8 +216,6 @@ angular.module('mm.core')
      * @return {Promise}        Promise to be resolved when the groups are retrieved.
      */
     self.getUserGroupsInCourse = function(courseid, refresh, siteid, userid) {
-        siteid = siteid || $mmSite.getId();
-
         return $mmSitesManager.getSite(siteid).then(function(site) {
             var presets = {},
                 data = {
