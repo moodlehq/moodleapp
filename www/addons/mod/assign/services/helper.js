@@ -22,7 +22,8 @@ angular.module('mm.addons.mod_assign')
  * @name $mmaModAssignHelper
  */
 .factory('$mmaModAssignHelper', function($mmUtil, $mmaModAssignSubmissionDelegate, $q, $mmSite, $mmFS, $mmaModAssign, $mmGroups,
-            $mmFileUploader, mmaModAssignComponent, $mmaModAssignOffline, $mmaModAssignFeedbackDelegate) {
+            $mmFileUploader, mmaModAssignComponent, $mmaModAssignOffline, $mmaModAssignFeedbackDelegate,
+            mmaModAssignSubmissionStatusNew, mmaModAssignSubmissionStatusReopened) {
 
     var self = {};
 
@@ -41,7 +42,7 @@ angular.module('mm.addons.mod_assign')
             return false;
         }
 
-        if (submission.status == 'new' || submission.status == 'reopened') {
+        if (submission.status == mmaModAssignSubmissionStatusNew || submission.status == mmaModAssignSubmissionStatusReopened) {
             // It's a new submission, allow creating it in offline.
             return true;
         }
