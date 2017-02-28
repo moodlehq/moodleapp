@@ -302,6 +302,8 @@ angular.module('mm.addons.mod_assign')
             var isBlind = !!blindId,
                 assign;
 
+            scope.previousAttempt = false;
+
             if (!submitId) {
                 submitId = $mmSite.getUserId();
                 isBlind = false;
@@ -352,7 +354,13 @@ angular.module('mm.addons.mod_assign')
                     scope.submissionStatusAvailable = true;
 
                     scope.lastAttempt = response.lastattempt;
-                    scope.previousAttempts = response.previousattempts;
+                    if (response.previousattempts && response.previousattempts.length > 0) {
+                        var previousAttempts = response.previousattempts.sort(function(a, b) {
+                            return a.attemptnumber - b.attemptnumber;
+                        });
+                        scope.previousAttempt = previousAttempts[previousAttempts.length - 1];
+                    }
+
                     scope.membersToSubmit = [];
                     if (response.lastattempt) {
                         scope.canSubmit = !scope.isSubmittedForGrading && !scope.submittedOffline &&
@@ -427,7 +435,13 @@ angular.module('mm.addons.mod_assign')
                         if (scope.userSubmission) {
                             if (!assign.teamsubmission || !response.lastattempt.submissiongroup ||
                                     !assign.preventsubmissionnotingroup) {
-                                scope.submissionPlugins = scope.userSubmission.plugins;
+                                if (scope.previousAttempt && scope.previousAttempt.submission.plugins &&
+                                        scope.userSubmission.status == mmaModAssignSubmissionStatusReopened) {
+                                    // Get latest attempt if avalaible.
+                                    scope.submissionPlugins = scope.previousAttempt.submission.plugins;
+                                } else {
+                                    scope.submissionPlugins = scope.userSubmission.plugins;
+                                }
                             }
                         }
                     }
@@ -516,11 +530,7 @@ angular.module('mm.addons.mod_assign')
                     });
                 });
             }).catch(function(message) {
-                if (message) {
-                    $mmUtil.showErrorModal(message);
-                } else {
-                    $mmUtil.showErrorModal('Error getting assigment data.');
-                }
+                $mmUtil.showErrorModalDefault(message, 'Error getting assigment data.');
                 return $q.reject();
             }).finally(function() {
                 scope.loaded = true;
@@ -614,15 +624,14 @@ angular.module('mm.addons.mod_assign')
                     return;
                 }
 
-                if (!scope.previousAttempts || !scope.previousAttempts.length) {
+                if (!scope.previousAttempt) {
                     // Cannot access previous attempts, just go to edit.
                     scope.goToEdit();
                     return;
                 }
 
                 var modal = $mmUtil.showModalLoading(),
-                    previousAttempt = scope.previousAttempts[scope.previousAttempts.length - 1],
-                    previousSubmission = $mmaModAssign.getSubmissionObjectFromAttempt(scope.assign, previousAttempt);
+                    previousSubmission = $mmaModAssign.getSubmissionObjectFromAttempt(scope.assign, scope.previousAttempt);
 
                 $mmaModAssignHelper.getSubmissionSizeForCopy(scope.assign, previousSubmission).catch(function() {
                     // Error calculating size, return -1.
