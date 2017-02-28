@@ -1246,7 +1246,7 @@ angular.module('mm.core')
      *
      * @module mm.core
      * @ngdoc method
-     * @name $mmFilepool#getInternalUrlByUrl
+     * @name $mmFilepool#getDirectoryUrlByUrl
      * @param {String} siteId  The site ID.
      * @param {String} fileUrl The file URL.
      * @return {Promise}       Resolved with the URL. Rejected otherwise.
@@ -1739,6 +1739,26 @@ angular.module('mm.core')
         if ($mmFS.isAvailable()) {
             return $mmFS.getFile(filePath).then(function(fileEntry) {
                 return fileEntry.toURL();
+            });
+        }
+        return $q.reject();
+    };
+
+    /**
+     * Returns the local URL of a file.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmFilepool#getInternalUrlByUrl
+     * @param {String} siteId  The site ID.
+     * @param {String} fileUrl The file URL.
+     * @return {Promise}       Resolved with the URL. Rejected otherwise.
+     */
+    self.getInternalUrlByUrl = function(siteId, fileUrl) {
+        if ($mmFS.isAvailable()) {
+            return self._fixPluginfileURL(siteId, fileUrl).then(function(fileUrl) {
+                var fileId = self._getFileIdByUrl(fileUrl);
+                return self._getInternalUrlById(siteId, fileId);
             });
         }
         return $q.reject();

@@ -82,12 +82,12 @@ angular.module('mm.core')
 
         scope.isDownloading = true;
         return $mmFilepool.downloadUrl(siteId, fileUrl, false, component, componentId, timeModified).then(function(localUrl) {
-            getState(scope, siteId, fileUrl, timeModified, alwaysDownload); // Update state.
             return localUrl;
-        }, function() {
+        }).catch(function() {
+            // Call getState to make sure we have the right state.
             return getState(scope, siteId, fileUrl, timeModified, alwaysDownload).then(function() {
                 if (scope.isDownloaded) {
-                    return localUrl;
+                    return $mmFilepool.getInternalUrlByUrl(siteId, fileUrl);
                 } else {
                     return $q.reject();
                 }
@@ -127,8 +127,10 @@ angular.module('mm.core')
                         return $q.reject();
                     }
 
+                    var isDownloading = scope.isDownloading;
+                    scope.isDownloading = true; // This check could take a while, show spinner.
                     return $mmFilepool.shouldDownloadBeforeOpen(fixedUrl, fileSize).then(function() {
-                        if (scope.isDownloading) {
+                        if (isDownloading) {
                             // It's already downloading, stop.
                             return;
                         }
@@ -140,7 +142,7 @@ angular.module('mm.core')
                             downloadFile(scope, siteId, fileUrl, component, componentId, timeModified, alwaysDownload);
                         }
 
-                        if (scope.isDownloading || !scope.isDownloaded || isOnline) {
+                        if (isDownloading|| !scope.isDownloaded || isOnline) {
                             // Not downloaded or outdated and online, return the online URL.
                             return fixedUrl;
                         } else {
@@ -201,12 +203,10 @@ angular.module('mm.core')
             if (canDownload) {
                 getState(scope, siteId, fileUrl, timeModified, alwaysDownload);
 
+                // Update state when receiving events about this file.
                 $mmFilepool.getFileEventNameByUrl(siteId, fileUrl).then(function(eventName) {
-                    observer = $mmEvents.on(eventName, function(data) {
+                    observer = $mmEvents.on(eventName, function() {
                         getState(scope, siteId, fileUrl, timeModified, alwaysDownload);
-                        if (data.action == 'download' && !data.success) {
-                            $mmUtil.showErrorModal('mm.core.errordownloading', true);
-                        }
                     });
                 });
             }
@@ -229,7 +229,7 @@ angular.module('mm.core')
                     // File needs to be opened now. If file needs to be downloaded, skip the queue.
                     openFile(scope, siteId, fileUrl, fileSize, component, componentId, timeModified, alwaysDownload)
                             .catch(function(error) {
-                        $mmUtil.showErrorModal(error);
+                        $mmUtil.showErrorModalDefault(error, 'mm.core.errordownloading', true);
                     });
                 } else {
                     // File doesn't need to be opened (it's a prefetch). Show confirm modal if file size is defined and it's big.
@@ -238,7 +238,9 @@ angular.module('mm.core')
                         // User confirmed, add the file to queue.
                         $mmFilepool.invalidateFileByUrl(siteId, fileUrl).finally(function() {
                             scope.isDownloading = true;
-                            $mmFilepool.addToQueueByUrl(siteId, fileUrl, component, componentId, timeModified);
+                            $mmFilepool.addToQueueByUrl(siteId, fileUrl, component, componentId, timeModified).catch(function() {
+                                $mmUtil.showErrorModal('mm.core.errordownloading', true);
+                            });
                         });
                     });
                 }
