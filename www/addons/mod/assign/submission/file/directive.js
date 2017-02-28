@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_assign')
  * @name mmaModAssignSubmissionFile
  */
 .directive('mmaModAssignSubmissionFile', function($mmaModAssign, $mmaModAssignSubmissionFileSession, $mmaModAssignHelper,
-            $mmaModAssignOffline, mmaModAssignSubmissionFileName, $mmFileUploaderHelper) {
+            $mmaModAssignOffline, mmaModAssignSubmissionFileName, $mmFileUploaderHelper, $q) {
     return {
         restrict: 'A',
         priority: 100,
@@ -32,18 +32,27 @@ angular.module('mm.addons.mod_assign')
                 return;
             }
 
-            scope.files = $mmaModAssign.getSubmissionPluginAttachments(scope.plugin);
-
             // Get the offline data.
-            $mmaModAssignOffline.getSubmission(scope.assign.id).then(function(offlineData) {
-                if (offlineData && offlineData.plugindata && offlineData.plugindata.files_filemanager &&
-                        offlineData.plugindata.files_filemanager.offline) {
-                    // Has offline files.
-                    return $mmaModAssignHelper.getStoredSubmissionFiles(scope.assign.id, mmaModAssignSubmissionFileName)
-                            .then(function(files) {
-                        files = $mmFileUploaderHelper.markOfflineFiles(files);
-                        scope.files = scope.files.concat(files);
+            $mmaModAssignOffline.getSubmission(scope.assign.id).catch(function() {
+                // Error getting data, assume there's no offline submission.
+            }).then(function(offlineData) {
+                if (offlineData && offlineData.plugindata && offlineData.plugindata.files_filemanager) {
+                    // Has offline data.
+                    var promise;
+                    if (offlineData.plugindata.files_filemanager.offline) {
+                        promise = $mmaModAssignHelper.getStoredSubmissionFiles(scope.assign.id, mmaModAssignSubmissionFileName);
+                    } else {
+                        promise = $q.when([]);
+                    }
+
+                    return promise.then(function(offlineFiles) {
+                        var onlineFiles = offlineData.plugindata.files_filemanager.online || [];
+                        offlineFiles = $mmFileUploaderHelper.markOfflineFiles(offlineFiles);
+                        scope.files = onlineFiles.concat(offlineFiles);
                     });
+                } else {
+                    // No offline data, get the online files.
+                    scope.files = $mmaModAssign.getSubmissionPluginAttachments(scope.plugin);
                 }
             }).finally(function() {
                 $mmaModAssignSubmissionFileSession.setFiles(scope.assign.id, scope.files);

@@ -30,8 +30,29 @@ angular.module('mm.addons.mod_assign')
     var self = {};
 
     /**
+     * Check if the plugin can be edited in offline for existing submissions.
+     * In general, this should return false if the plugin uses Moodle filters. The reason is that the app only prefetches
+     * filtered data, and the user should edit unfiltered data.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionFileHandler#canEditOffline
+     * @param  {Object} assign     Assignment.
+     * @param  {Object} submission Submission.
+     * @param  {Object} plugin     Plugin.
+     * @return {Boolean}           Whether the plugin can be edited in offline for existing submissions.
+     */
+    self.canEditOffline = function(assign, submission, plugin) {
+        // This plugin doesn't use Moodle filters, it can be edited in offline.
+        return true;
+    };
+
+    /**
      * Clear some temporary data because a submission was cancelled.
      *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionFileHandler#clearTmpData
      * @param  {Object} assign     Assignment.
      * @param  {Object} submission Submission to clear the data for.
      * @param  {Object} plugin     Plugin to clear the data for.
@@ -51,6 +72,9 @@ angular.module('mm.addons.mod_assign')
      * Function meant to copy a submission.
      * Should add to pluginData the data to send to server based in the data in plugin (previous attempt).
      *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionFileHandler#copySubmissionData
      * @param  {Object} assign     Assignment.
      * @param  {Object} plugin     Plugin data of the previous submission (the one to get the data from).
      * @param  {Object} pluginData Object where to add the plugin data.
@@ -68,6 +92,9 @@ angular.module('mm.addons.mod_assign')
     /**
      * Delete offline data stored for a certain submission.
      *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionFileHandler#deleteOfflineData
      * @param  {Object} assign      Assignment.
      * @param  {Object} submission  Submission affected.
      * @param  {Object} plugin      Plugin to delete the data for.
@@ -85,6 +112,9 @@ angular.module('mm.addons.mod_assign')
     /**
      * Get the size of data (in bytes) this plugin will send to copy a previous attempt.
      *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionFileHandler#getSizeForCopy
      * @param  {Object} assign Assignment.
      * @param  {Object} plugin Plugin data of the previous submission (the one to get the data from).
      * @return {Promise}       Promise resolved with the size.
@@ -112,6 +142,9 @@ angular.module('mm.addons.mod_assign')
     /**
      * Get the size of data (in bytes) this plugin will send to add or edit a submission.
      *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionFileHandler#getSizeForEdit
      * @param  {Object} assign     Assignment.
      * @param  {Object} submission Submission to check data.
      * @param  {Object} plugin     Plugin to get the data for.
@@ -164,9 +197,12 @@ angular.module('mm.addons.mod_assign')
     };
 
     /**
-     * Whether or not the rule is enabled for the site.
+     * Whether or not the plugin is enabled for the site.
      *
-     * @return {Boolean}
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionFileHandler#isEnabled
+     * @return {Boolean} Whether the plugin is enabled.
      */
     self.isEnabled = function() {
         return true;
@@ -177,7 +213,10 @@ angular.module('mm.addons.mod_assign')
      * This should return true if the plugin has no submission component (allow_submissions=false),
      * otherwise the user won't be able to edit submissions at all.
      *
-     * @return {Boolean}
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionFileHandler#isEnabledForEdit
+     * @return {Boolean} Whether the plugin is enabled for edit.
      */
     self.isEnabledForEdit = function() {
         return true;
@@ -186,6 +225,9 @@ angular.module('mm.addons.mod_assign')
     /**
      * Get the name of the directive to render this plugin.
      *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionFileHandler#getDirectiveName
      * @param  {Object} plugin Plugin to get the directive for.
      * @param  {Boolean} edit  True if editing a submission, false if read only.
      * @return {String} Directive name.
@@ -198,6 +240,9 @@ angular.module('mm.addons.mod_assign')
      * Get files used by this plugin.
      * The files returned by this function will be prefetched when the user prefetches the assign.
      *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionFileHandler#getPluginFiles
      * @param  {Object} assign     Assignment.
      * @param  {Object} submission Submission to check data.
      * @param  {Object} plugin     Plugin.
@@ -211,6 +256,9 @@ angular.module('mm.addons.mod_assign')
     /**
      * Check if the submission data has changed for this plugin.
      *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionFileHandler#hasDataChanged
      * @param  {Object} assign     Assignment.
      * @param  {Object} submission Submission to check data.
      * @param  {Object} plugin     Plugin.
@@ -254,6 +302,9 @@ angular.module('mm.addons.mod_assign')
     /**
      * Should prepare and add to pluginData the data to send to server based in the input data.
      *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionFileHandler#prepareSubmissionData
      * @param  {Object} assign     Assignment.
      * @param  {Object} submission Submission affected.
      * @param  {Object} plugin     Plugin to get the data for.
@@ -286,6 +337,9 @@ angular.module('mm.addons.mod_assign')
     /**
      * Should prepare and add to pluginData the data to send to server to synchronize an offline submission.
      *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignSubmissionFileHandler#prepareSyncData
      * @param  {Object} assign      Assignment.
      * @param  {Object} submission  Submission affected.
      * @param  {Object} plugin      Plugin to get the data for.

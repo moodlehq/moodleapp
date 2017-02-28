@@ -65,13 +65,13 @@ angular.module('mm.addons.mod_assign')
                 // Cannot connect. Get cached data.
                 return $mmaModAssign.getSubmissionStatus(assign.id, userId, isBlind).then(function(response) {
                     var userSubmission = $mmaModAssign.getSubmissionObjectFromAttempt(assign, response.lastattempt);
-                    if (userSubmission && (userSubmission.status == 'new' || userSubmission.status == 'reopened')) {
-                        // It's a new submission, allow creating it in offline.
+                    if ($mmaModAssignHelper.canEditSubmissionOffline(assign, userSubmission)) {
                         return response;
-                    } else {
-                        // User is editing a submission, we don't allow it in offline for now so reject.
-                        return $q.reject(error);
                     }
+
+                    // Submission cannot be edited in offline, reject.
+                    $scope.allowOffline = false;
+                    return $q.reject(error);
                 });
             }).then(function(response) {
                 if (!response.lastattempt.canedit) {
@@ -80,7 +80,7 @@ angular.module('mm.addons.mod_assign')
                 }
 
                 $scope.userSubmission = $mmaModAssign.getSubmissionObjectFromAttempt(assign, response.lastattempt);
-                $scope.allowOffline = $scope.userSubmission.status == 'new' || $scope.userSubmission.status == 'reopened';
+                $scope.allowOffline = true; // If offline isn't allowed we shouldn't have reached this point.
 
                 // Only show submission statement if we are editing our own submission.
                 if (assign.requiresubmissionstatement && !assign.submissiondrafts && userId == $mmSite.getUserId()) {

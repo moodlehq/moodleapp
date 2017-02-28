@@ -27,6 +27,36 @@ angular.module('mm.addons.mod_assign')
     var self = {};
 
     /**
+     * Check if a submission can be edited in offline.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignHelper#canEditSubmissionOffline
+     * @param  {Object} assign     Assignment.
+     * @param  {Object} submission Submission.
+     * @return {Boolean}           True if can edit offline, false otherwise.
+     */
+    self.canEditSubmissionOffline = function(assign, submission) {
+        if (!submission) {
+            return false;
+        }
+
+        if (submission.status == 'new' || submission.status == 'reopened') {
+            // It's a new submission, allow creating it in offline.
+            return true;
+        }
+
+        for (var i = 0; i < submission.plugins.length; i++) {
+            var plugin = submission.plugins[i];
+            if (!$mmaModAssignSubmissionDelegate.canPluginEditOffline(assign, submission, plugin)) {
+                return false;
+            }
+        }
+
+        return true;
+    };
+
+    /**
      * Clear plugins temporary data because a submission was cancelled.
      *
      * @module mm.addons.mod_assign
