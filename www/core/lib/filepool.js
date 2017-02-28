@@ -740,10 +740,12 @@ angular.module('mm.core')
 
                     if (typeof fileObject === 'undefined') {
                         // We do not have the file, download and add to pool.
+                        self._notifyFileDownloading(siteId, fileId);
                         return self._downloadForPoolByUrl(siteId, fileUrl, revision, timemodified, filePath);
 
                     } else if (self._isFileOutdated(fileObject, revision, timemodified) && $mmApp.isOnline() && !ignoreStale) {
                         // The file is outdated, force the download and update it.
+                        self._notifyFileDownloading(siteId, fileId);
                         return self._downloadForPoolByUrl(siteId, fileUrl, revision, timemodified, filePath, fileObject);
                     }
 
@@ -757,11 +759,13 @@ angular.module('mm.core')
                         return response;
                     }, function() {
                         // The file was not found in the pool, weird.
+                        self._notifyFileDownloading(siteId, fileId);
                         return self._downloadForPoolByUrl(siteId, fileUrl, revision, timemodified, filePath, fileObject);
                     });
 
                 }, function() {
                     // The file is not in the pool just yet.
+                    self._notifyFileDownloading(siteId, fileId);
                     return self._downloadForPoolByUrl(siteId, fileUrl, revision, timemodified, filePath);
                 })
                 .then(function(response) {
@@ -803,8 +807,6 @@ angular.module('mm.core')
             extension = $mmFS.guessExtensionFromUrl(fileUrl),
             addExtension = typeof filePath == "undefined",
             pathPromise = filePath ? filePath : self._getFilePath(siteId, fileId, extension);
-
-        self._notifyFileDownloading(siteId, fileId);
 
         return $q.when(pathPromise).then(function(filePath) {
             if (poolFileObject && poolFileObject.fileId !== fileId) {
@@ -1631,9 +1633,10 @@ angular.module('mm.core')
      * @param {String} siteId           The site ID.
      * @param {String} fileUrl          File URL.
      * @param {Number} [timemodified=0] The time this file was modified.
+     * @param {String} [filePath]       Filepath to download the file to. If defined, no extension will be added.
      * @return {Promise}                Promise resolved with the file state.
      */
-    self.getFileStateByUrl = function(siteId, fileUrl, timemodified) {
+    self.getFileStateByUrl = function(siteId, fileUrl, timemodified, filePath) {
         var fileId,
             revision;
 
@@ -1646,18 +1649,28 @@ angular.module('mm.core')
             // Restore old file if needed.
             return self._restoreOldFileIfNeeded(siteId, fileId, fileUrl);
         }).then(function() {
-
             return self._hasFileInQueue(siteId, fileId).then(function() {
                 return mmCoreDownloading;
             }, function() {
-                return self._hasFileInPool(siteId, fileId).then(function(fileObject) {
-                    if (self._isFileOutdated(fileObject, revision, timemodified)) {
-                        return mmCoreOutdated;
-                    } else {
-                        return mmCoreDownloaded;
+                // Check if the file is being downloaded right now.
+                var extension = $mmFS.guessExtensionFromUrl(fileUrl),
+                    pathPromise = filePath ? filePath : self._getFilePath(siteId, fileId, extension);
+
+                return $q.when(pathPromise).then(function(filePath) {
+                    var downloadId = self.getFileDownloadId(fileUrl, filePath);
+                    if (filePromises[siteId] && filePromises[siteId][downloadId]) {
+                        return mmCoreDownloading;
                     }
-                }, function() {
-                    return mmCoreNotDownloaded;
+
+                    return self._hasFileInPool(siteId, fileId).then(function(fileObject) {
+                        if (self._isFileOutdated(fileObject, revision, timemodified)) {
+                            return mmCoreOutdated;
+                        } else {
+                            return mmCoreDownloaded;
+                        }
+                    }, function() {
+                        return mmCoreNotDownloaded;
+                    });
                 });
             });
         });
