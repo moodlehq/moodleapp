@@ -380,6 +380,11 @@ angular.module('mm.addons.mod_assign')
         var promises = [],
             subs = [];
 
+        // Empty participants list will be treated as no list.
+        if (participants && participants.length == 0) {
+            participants = false;
+        }
+
         angular.forEach(submissions, function(submission) {
             submission.submitid = submission.userid > 0 ? submission.userid : submission.blindid;
             if (submission.submitid <= 0) {
@@ -506,7 +511,7 @@ angular.module('mm.addons.mod_assign')
                 return $q.reject();
             }
 
-            groupId = 0;
+            groupId = groupId || 0;
             var params = {
                     "assignid": assignId,
                     "groupid": groupId,

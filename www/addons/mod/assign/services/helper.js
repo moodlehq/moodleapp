@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_assign')
  * @ngdoc service
  * @name $mmaModAssignHelper
  */
-.factory('$mmaModAssignHelper', function($mmUtil, $mmaModAssignSubmissionDelegate, $q, $mmSite, $mmFS, $mmaModAssign,
+.factory('$mmaModAssignHelper', function($mmUtil, $mmaModAssignSubmissionDelegate, $q, $mmSite, $mmFS, $mmaModAssign, $mmGroups,
             $mmFileUploader, mmaModAssignComponent, $mmaModAssignOffline, $mmaModAssignFeedbackDelegate) {
 
     var self = {};
@@ -477,6 +477,44 @@ angular.module('mm.addons.mod_assign')
             }
         });
         return configs;
+    };
+
+    /**
+     * List the participants for a single assignment, with some summary info about their submissions.
+     *
+     * @module mm.addons.mod_assign
+     * @ngdoc method
+     * @name $mmaModAssignHelper#getParticipants
+     * @param {Object} assign       Assignment object
+     * @param {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}            Promise resolved with the list of participants and summary of submissions.
+     */
+    self.getParticipants = function(assign, siteId) {
+        siteId = siteId || $mmSite.getId();
+
+        return $mmaModAssign.listParticipants(assign.id, undefined, siteId).then(function(participants) {
+            if (participants && participants.length > 0) {
+                return participants;
+            }
+
+            // If no participants returned, get participants by groups.
+            return $mmGroups.getActivityAllowedGroupsIfEnabled(assign.cmid, undefined, siteId).then(function(userGroups) {
+                var promises = [],
+                    particips = {};
+
+                angular.forEach(userGroups, function(userGroup) {
+                    promises.push($mmaModAssign.listParticipants(assign.id, userGroup.id, siteId).then(function(parts) {
+                        // Do not get repeated users.
+                        angular.forEach(parts, function(p) {
+                            particips[p.id] = p;
+                        });
+                    }));
+                });
+                return $q.all(promises).then(function() {
+                    return $mmUtil.objectToArray(particips);
+                });
+            });
+        });
     };
 
     return self;

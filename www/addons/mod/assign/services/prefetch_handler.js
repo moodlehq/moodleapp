@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_assign')
  */
 .factory('$mmaModAssignPrefetchHandler', function($mmaModAssign, mmaModAssignComponent, $mmSite, $mmFilepool, $q, $mmCourseHelper,
         $mmCourse, $mmGroups, $mmUser, $mmaModAssignSubmissionDelegate, $mmaModAssignFeedbackDelegate, $mmPrefetchFactory,
-        $mmGrades, $mmSitesManager) {
+        $mmGrades, $mmSitesManager, $mmaModAssignHelper) {
 
     var self = $mmPrefetchFactory.createPrefetchHandler(mmaModAssignComponent, false);
 
@@ -479,7 +479,7 @@ angular.module('mm.addons.mod_assign')
                 }));
 
                 // Get list participants.
-                promises.push($mmaModAssign.listParticipants(assign.id, 0, siteId).then(function (participants) {
+                promises.push($mmaModAssignHelper.getParticipants(assign, siteId).then(function (participants) {
                     angular.forEach(participants, function(participant) {
                         if (participant.profileimageurl) {
                             $mmFilepool.addToQueueByUrl(siteId, participant.profileimageurl);
