@@ -211,7 +211,7 @@
             </a>
         </div>
 
-        <div class="mm-warning" ng-if="isGrading && !canSaveGrades">
+        <div class="mm-warning-card-icon" ng-if="isGrading && !canSaveGrades">
             <i class="icon ion-alert-circled padding"></i> {{ 'mma.mod_assign.cannotgradefromapp' | translate:{$a: moduleName} }}
             <a ng-if="gradeUrl" href="{{ gradeUrl }}" mm-link class="button button-block icon-right ion-share">{{ 'mm.core.openinbrowser' | translate }}</a>
         </div>

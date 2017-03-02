@@ -8,8 +8,8 @@
 <!-- Question behaviour directives -->
 <div class="item item-complex" mm-question-behaviour ng-repeat="directive in behaviourDirectives"></div>
 <!-- Question validation error. -->
-<div class="item item-text-wrap" ng-if="question.validationError">
-    <p class="mm-error">{{ question.validationError }}</p>
+<div class="item item-text-wrap mm-error-item" ng-if="question.validationError">
+    <p>{{ question.validationError }}</p>
 </div>
 <!-- Question behaviour buttons. -->
 <div class="item item-text-wrap" ng-repeat="bButton in question.behaviourButtons">

@@ -12,7 +12,7 @@
         </ion-refresher>
         <mm-loading hide-until="notesLoaded">
             <!-- There are notes pending to be synchronized. -->
-            <div class="mm-warning" ng-if="hasOffline">
+            <div class="mm-warning-card-icon" ng-if="hasOffline">
                 <i class="icon ion-alert-circled padding"></i> {{ 'mm.core.thereisdatatosync' | translate:{$a: notesStr} }}
             </div>
 
