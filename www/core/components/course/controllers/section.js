@@ -63,13 +63,17 @@ angular.module('mm.core.course')
                 } else {
                     sectionnumber = sectionId;
                     promise = $mmCourse.getSection(courseId, false, true, sectionId).then(function(section) {
-                        $scope.title = section.name;
+                        $scope.title = section.name.trim();
                         $scope.summary = section.summary;
                         return [section];
                     });
                 }
 
                 return promise.then(function(sections) {
+                    sections = sections.map(function(section) {
+                        section.name = section.name.trim() || false;
+                        return section;
+                    });
 
                     $scope.hasContent = $mmCourseHelper.addContentHandlerControllerForSectionModules(sections, courseId,
                         moduleId, completionStatus, $scope);
@@ -82,11 +86,7 @@ angular.module('mm.core.course')
                         $mmCourse.logView(courseId);
                     }
                 }, function(error) {
-                    if (error) {
-                        $mmUtil.showErrorModal(error);
-                    } else {
-                        $mmUtil.showErrorModal('mm.course.couldnotloadsectioncontent', true);
-                    }
+                    $mmUtil.showErrorModalDefault(error, 'mm.course.couldnotloadsectioncontent', true);
                 });
             });
         });
