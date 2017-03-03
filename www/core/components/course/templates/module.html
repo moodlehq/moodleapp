@@ -1,4 +1,4 @@
-<a id="mm-course-module-{{module.id}}" class="item item-text-wrap mm-course-module-handler clearfix {{class}}" ng-click="action && action($event)" ng-class="{'item-media': icon, 'mm-not-clickable': !action}" ng-controller="module._controller" title="{{ module.name }}">
+<a id="mm-course-module-{{module.id}}" class="item item-text-wrap mm-course-module-handler clearfix {{class}}" ng-click="action && action($event)" ng-class="{'item-media': icon, 'mm-not-clickable': !action}" ng-controller="module._controller" title="{{ module.name }}" ng-if="module.visibleoncoursepage !== 0">
 
     <img ng-src="{{ icon }}" alt="" role="presentation" ng-if="icon">
 
