@@ -77,10 +77,11 @@ angular.module('mm.addons.mod_forum')
     }
 
     // Convenience function to get forum discussions.
-    function fetchPosts(sync, showErrors) {
+    function fetchPosts(sync, showErrors, forceMarkAsRead) {
         var syncPromise,
             onlinePosts = [],
-            offlineReplies = [];
+            offlineReplies = [],
+            hasUnreadPosts = false;
 
         $scope.isOnline = $mmApp.isOnline();
         $scope.isTablet = $ionicPlatform.isTablet();
@@ -104,10 +105,11 @@ angular.module('mm.addons.mod_forum')
 
                     var convertPromises = [];
 
-                    // Index posts to allow quick access.
+                    // Index posts to allow quick access. Also check unread field.
                     var posts = {};
                     angular.forEach(onlinePosts, function(post) {
-                        posts[post.id] = post;
+                        posts[post.id] = post
+                        hasUnreadPosts = hasUnreadPosts || !post.postread;
                     });
 
                     angular.forEach(replies, function(offlineReply) {
@@ -158,6 +160,11 @@ angular.module('mm.addons.mod_forum')
                     $scope.discussion.userfullname = null;
                 }
 
+                // forum.istracked is more reliable than $stateParams.trackposts.
+                if (typeof forum.istracked != "undefined") {
+                    $scope.trackPosts = forum.istracked;
+                }
+
                 forumId = forum.id;
                 cmid = forum.cmid;
                 $scope.componentId = cmid;
@@ -172,6 +179,11 @@ angular.module('mm.addons.mod_forum')
             $scope.discussionLoaded = true;
             $scope.refreshPostsIcon = 'ion-refresh';
             $scope.syncIcon = 'ion-loop';
+
+            if (forceMarkAsRead || (hasUnreadPosts && $scope.trackPosts)) {
+                // // Add log in Moodle and mark unread posts as readed.
+                $mmaModForum.logDiscussionView(discussionId);
+            }
         });
     }
 
@@ -234,10 +246,7 @@ angular.module('mm.addons.mod_forum')
         $mmEvents.trigger(mmaModForumReplyDiscussionEvent, data);
     }
 
-    fetchPosts(true).then(function() {
-        // Add log in Moodle.
-        $mmaModForum.logDiscussionView(discussionId);
-    });
+    fetchPosts(true, false, true);
 
     // Pull to refresh.
     $scope.refreshPosts = function(showErrors) {
