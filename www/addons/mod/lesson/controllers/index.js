@@ -22,11 +22,12 @@ angular.module('mm.addons.mod_lesson')
  * @name mmaModLessonIndexCtrl
  */
 .controller('mmaModLessonIndexCtrl', function($scope, $stateParams, $mmaModLesson, $mmCourse, $q, $translate, $ionicScrollDelegate,
-            $mmEvents, $mmText, $mmUtil, $mmCourseHelper, mmaModLessonComponent, $mmApp, mmCoreEventOnlineStatusChanged) {
+            $mmEvents, $mmText, $mmUtil, $mmCourseHelper, mmaModLessonComponent, $mmApp, $state, mmCoreEventOnlineStatusChanged) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         lesson,
+        accessInfo,
         scrollView = $ionicScrollDelegate.$getByHandle('mmaModLessonIndexScroll'),
         onlineObserver;
 
@@ -44,13 +45,21 @@ angular.module('mm.addons.mod_lesson')
             lesson = lessonData;
             $scope.lesson = lesson;
 
-            $scope.now = Date.now();
             $scope.title = lesson.name || $scope.title;
             $scope.description = lesson.intro; // Show description only if intro is present.
 
             return $mmaModLesson.getAccessInformation(lesson.id);
         }).then(function(info) {
+            accessInfo = info;
             $scope.preventMessages = info.preventaccessreasons;
+            if ($scope.preventMessages && $scope.preventMessages.length) {
+                // Lesson cannot be attempted, stop.
+                return;
+            }
+
+            // Check to see if end of lesson was reached and if the user left.
+            $scope.leftDuringTimed = info.lastpageseen && info.lastpageseen != $mmaModLesson.LESSON_EOL &&
+                    info.leftduringtimedsession;
         }).then(function() {
             // All data obtained, now fill the context menu.
             $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModLessonComponent);
@@ -59,7 +68,9 @@ angular.module('mm.addons.mod_lesson')
                 // Get lesson failed, retry without using cache since it might be a new activity.
                 return refreshData();
             }
-            return $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
+
+            $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
+            return $q.reject();
         });
     }
 
@@ -68,6 +79,9 @@ angular.module('mm.addons.mod_lesson')
         var promises = [];
 
         promises.push($mmaModLesson.invalidateLessonData(courseId));
+        if (lesson) {
+            promises.push($mmaModLesson.invalidateAccessInformation(lesson.id));
+        }
 
         return $q.all(promises).finally(function() {
             return fetchLessonData(true);
@@ -83,6 +97,16 @@ angular.module('mm.addons.mod_lesson')
         $scope.lessonLoaded = true;
         $scope.refreshIcon = 'ion-refresh';
     });
+
+    // Start the lesson.
+    $scope.start = function(continueLast) {
+        var pageId = $scope.leftDuringTimed ? (continueLast ? accessInfo.lastpageseen : accessInfo.firstpageid) : false;
+        $state.go('site.mod_lesson-player', {
+            courseid: courseId,
+            lessonid: lesson.id,
+            pageid: pageId
+        });
+    };
 
     // Pull to refresh.
     $scope.refreshLesson = function() {

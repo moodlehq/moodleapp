@@ -15,6 +15,23 @@
             <div class="mm-info-card" ng-if="lesson && preventMessages && preventMessages.length" ng-repeat="message in preventMessages">
                 <i class="icon ion-information-circled padding"></i> {{ message.message }}
             </div>
+
+            <div ng-if="lesson && (!preventMessages || !preventMessages.length)">
+                <div ng-if="leftDuringTimed" class="card">
+                    <!-- User left during the session, ask to continue. -->
+                    <p class="item" ng-bind-html="'mma.mod_lesson.youhaveseen' | translate"></p>
+                    <div class="item button-bar">
+                        <button class="button" ng-click="start(true)">{{ 'mm.core.yes' | translate }}</button>
+                        <button class="button" ng-click="start(false)">{{ 'mm.core.no' | translate }}</button>
+                    </div>
+                </div>
+                <div ng-if="!leftDuringTimed" class="card">
+                    <!-- User hasn't left during the session, show a start button. -->
+                    <div class="item">
+                        <button class="button button-block" ng-click="start(false)">{{ 'mma.mod_lesson.startattempt' | translate }}</button>
+                    </div>
+                </div>
+            </div>
         </mm-loading>
     </ion-content>
 </ion-view>

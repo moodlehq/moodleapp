@@ -27,6 +27,8 @@ angular.module('mm.addons.mod_lesson')
 
     var self = {};
 
+    self.LESSON_EOL = -9;
+
     /**
      * Get cache key for access information WS calls.
      *
@@ -149,6 +151,70 @@ angular.module('mm.addons.mod_lesson')
     };
 
     /**
+     * Get cache key for get page data WS calls.
+     *
+     * @param {Number} lessonId Lesson ID.
+     * @param {Number} pageId   Page ID.
+     * @return {String}         Cache key.
+     */
+    function getPageDataCacheKey(lessonId, pageId) {
+        return getPageDataCommonCacheKey(lessonId) + ':' + pageId;
+    }
+
+    /**
+     * Get common cache key for get page data WS calls.
+     *
+     * @param {Number} lessonId Lesson ID.
+     * @return {String}         Cache key.
+     */
+    function getPageDataCommonCacheKey(lessonId) {
+        return 'mmaModLesson:pageData:' + lessonId;
+    }
+
+    /**
+     * Get the access information of a certain lesson.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#getAccessInformation
+     * @param  {Number} lessonId     Lesson ID.
+     * @param  {Number} pageId       Page ID.
+     * @param  {String} [password]   Lesson password (if any).
+     * @param  {Boolean} [review]    If the user wants to review just after finishing (1 hour margin).
+     * @param  {Boolean} forceCache  True if it should return cached data. Has priority over ignoreCache.
+     * @param  {Boolean} ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}             Promise resolved with the access information-
+     */
+    self.getPageData = function(lessonId, pageId, password, review, forceCache, ignoreCache, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    lessonid: lessonId,
+                    pageid: pageId
+                },
+                preSets = {
+                    cacheKey: getPageDataCacheKey(lessonId, pageId)
+                };
+
+            if (typeof password != 'undefined') {
+                params.password = password;
+            }
+            if (review) {
+                params.review = true;
+            }
+
+            if (forceCache) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+
+            return site.read('mod_lesson_get_page_data', params, preSets);
+        });
+    };
+
+    /**
      * Invalidates Lesson data.
      *
      * @module mm.addons.mod_lesson
@@ -181,6 +247,39 @@ angular.module('mm.addons.mod_lesson')
     };
 
     /**
+     * Invalidates page data for all pages.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#invalidatePageData
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when the data is invalidated.
+     */
+    self.invalidatePageData = function(lessonId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKeyStartingWith(getPageDataCommonCacheKey(lessonId));
+        });
+    };
+
+    /**
+     * Invalidates page data for a certain page.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#invalidatePageDataForPage
+     * @param  {Number} lessonId Attempt ID.
+     * @param  {Number} pageId   Page ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when the data is invalidated.
+     */
+    self.invalidatePageDataForPage = function(lessonId, pageId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getPageDataCacheKey(lessonId, pageId));
+        });
+    };
+
+    /**
      * Return whether or not the plugin is enabled in a certain site. Plugin is enabled if the lesson WS are available.
      *
      * @module mm.addons.mod_lesson
@@ -193,6 +292,44 @@ angular.module('mm.addons.mod_lesson')
         return $mmSitesManager.getSite(siteId).then(function(site) {
             // All WS were introduced at the same time so checking one is enough.
             return site.wsAvailable('mod_lesson_get_lesson_access_information');
+        });
+    };
+
+    /**
+     * Start or continue an attempt.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#launchAttempt
+     * @param  {String} id         Lesson ID.
+     * @param  {String} [password] Lesson password (if any).
+     * @param  {Number} [pageId]   Page id to continue from (only when continuing an attempt).
+     * @param  {Boolean} [review]  If the user wants to review just after finishing (1 hour margin).
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved when the WS call is successful.
+     */
+    self.launchAttempt = function(id, password, pageId, review, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                lessonid: id
+            };
+
+            if (typeof password != 'undefined') {
+                params.password = password;
+            }
+            if (typeof pageId == 'number') {
+                params.pageid = pageId;
+            }
+            if (review) {
+                params.review = true;
+            }
+
+            return site.write('mod_lesson_launch_attempt', params).then(function(result) {
+                if (!result.status) {
+                    return $q.reject();
+                }
+                return result;
+            });
         });
     };
 
@@ -221,6 +358,7 @@ angular.module('mm.addons.mod_lesson')
                 if (!result.status) {
                     return $q.reject();
                 }
+                return result;
             });
         });
     };
