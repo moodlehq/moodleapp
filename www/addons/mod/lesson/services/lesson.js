@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_lesson')
  * @ngdoc service
  * @name $mmaModLesson
  */
-.factory('$mmaModLesson', function($log, $mmSitesManager, $q) {
+.factory('$mmaModLesson', function($log, $mmSitesManager, $q, $mmUtil) {
 
     $log = $log.getInstance('$mmaModLesson');
 
@@ -177,20 +177,23 @@ angular.module('mm.addons.mod_lesson')
      * @module mm.addons.mod_lesson
      * @ngdoc method
      * @name $mmaModLesson#getAccessInformation
-     * @param  {Number} lessonId     Lesson ID.
-     * @param  {Number} pageId       Page ID.
-     * @param  {String} [password]   Lesson password (if any).
-     * @param  {Boolean} [review]    If the user wants to review just after finishing (1 hour margin).
-     * @param  {Boolean} forceCache  True if it should return cached data. Has priority over ignoreCache.
-     * @param  {Boolean} ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param  {String} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise}             Promise resolved with the access information-
+     * @param  {Number} lessonId           Lesson ID.
+     * @param  {Number} pageId             Page ID.
+     * @param  {String} [password]         Lesson password (if any).
+     * @param  {Boolean} [review]          If the user wants to review just after finishing (1 hour margin).
+     * @param  {Boolean} [includeContents] Include the page rendered contents.
+     * @param  {Boolean} forceCache        True if it should return cached data. Has priority over ignoreCache.
+     * @param  {Boolean} ignoreCache       True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String} [siteId]           Site ID. If not defined, current site.
+     * @return {Promise}                   Promise resolved with the access information-
      */
-    self.getPageData = function(lessonId, pageId, password, review, forceCache, ignoreCache, siteId) {
+    self.getPageData = function(lessonId, pageId, password, review, includeContents, forceCache, ignoreCache, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     lessonid: lessonId,
-                    pageid: pageId
+                    pageid: pageId,
+                    review: review ? 1 : 0,
+                    returncontents: includeContents ? 1 : 0
                 },
                 preSets = {
                     cacheKey: getPageDataCacheKey(lessonId, pageId)
@@ -198,9 +201,6 @@ angular.module('mm.addons.mod_lesson')
 
             if (typeof password != 'undefined') {
                 params.password = password;
-            }
-            if (review) {
-                params.review = true;
             }
 
             if (forceCache) {
@@ -311,7 +311,8 @@ angular.module('mm.addons.mod_lesson')
     self.launchAttempt = function(id, password, pageId, review, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
-                lessonid: id
+                lessonid: id,
+                review: review ? 1 : 0
             };
 
             if (typeof password != 'undefined') {
@@ -319,9 +320,6 @@ angular.module('mm.addons.mod_lesson')
             }
             if (typeof pageId == 'number') {
                 params.pageid = pageId;
-            }
-            if (review) {
-                params.review = true;
             }
 
             return site.write('mod_lesson_launch_attempt', params).then(function(result) {
@@ -360,6 +358,37 @@ angular.module('mm.addons.mod_lesson')
                 }
                 return result;
             });
+        });
+    };
+
+    /**
+     * Process a lesson page, saving its data.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#processAttempt
+     * @param  {Number} lessonId   Lesson ID.
+     * @param  {Number} pageId     Page ID.
+     * @param  {Object} data       Data to save.
+     * @param  {String} [password] Lesson password (if any).
+     * @param  {Boolean} [review]  If the user wants to review just after finishing (1 hour margin).
+     * @param  {String} [siteId]   Site ID. If not defined, current site.
+     * @return {Promise}           Promise resolved in success, rejected otherwise.
+     */
+    self.processPage = function(lessonId, pageId, data, password, review, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                lessonid: lessonId,
+                pageid: pageId,
+                data: $mmUtil.objectToArrayOfObjects(data, 'name', 'value'),
+                review: review ? 1 : 0
+            };
+
+            if (typeof password != 'undefined') {
+                params.password = password;
+            }
+
+            return site.write('mod_lesson_process_page', params);
         });
     };
 

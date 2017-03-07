@@ -22,13 +22,14 @@ angular.module('mm.addons.mod_lesson')
  * @name mmaModLessonIndexCtrl
  */
 .controller('mmaModLessonIndexCtrl', function($scope, $stateParams, $mmaModLesson, $mmCourse, $q, $translate, $ionicScrollDelegate,
-            $mmEvents, $mmText, $mmUtil, $mmCourseHelper, mmaModLessonComponent, $mmApp, $state, mmCoreEventOnlineStatusChanged) {
+            $mmEvents, $mmText, $mmUtil, $mmCourseHelper, mmaModLessonComponent, $mmApp, $state, mmCoreEventOnlineStatusChanged,
+            $ionicHistory) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         lesson,
         accessInfo,
-        scrollView = $ionicScrollDelegate.$getByHandle('mmaModLessonIndexScroll'),
+        scrollView,
         onlineObserver;
 
     $scope.title = module.name;
@@ -88,6 +89,21 @@ angular.module('mm.addons.mod_lesson')
         });
     }
 
+    function showSpinnerAndRefresh() {
+        if (!scrollView) {
+            scrollView = $ionicScrollDelegate.$getByHandle('mmaModLessonIndexScroll');
+        }
+
+        $scope.lessonLoaded = false;
+        $scope.refreshIcon = 'spinner';
+        scrollView.scrollTop();
+
+        refreshData().finally(function() {
+            $scope.lessonLoaded = true;
+            $scope.refreshIcon = 'ion-refresh';
+        });
+    }
+
     // Fetch the Lesson data.
     fetchLessonData().then(function() {
         $mmaModLesson.logViewLesson(lesson.id).then(function() {
@@ -124,7 +140,23 @@ angular.module('mm.addons.mod_lesson')
         $mmText.expandText($translate.instant('mm.core.description'), $scope.description, false, mmaModLessonComponent, module.id);
     };
 
-    // Refresh online status when changes.
+    // Update data when we come back from the player since the status could have changed.
+    // We want to skip the first $ionicView.enter event because it's when the view is created.
+    var skip = true;
+    $scope.$on('$ionicView.enter', function() {
+        if (skip) {
+            skip = false;
+            return;
+        }
+
+        var forwardView = $ionicHistory.forwardView();
+        if (forwardView && forwardView.stateName === 'site.mod_lesson-player') {
+            // Refresh data.
+            showSpinnerAndRefresh();
+        }
+    });
+
+    // Update online status when changes.
     onlineObserver = $mmEvents.on(mmCoreEventOnlineStatusChanged, function(online) {
         $scope.isOnline = online;
     });

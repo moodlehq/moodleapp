@@ -1,9 +1,19 @@
 <ion-view can-swipe-back="false">
     <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
-    <ion-content padding="true" mm-state-class delegate-handle="mmaModLessonPlayerScroll">
+    <ion-content mm-state-class delegate-handle="mmaModLessonPlayerScroll">
         <mm-loading hide-until="pageLoaded">
-            <!-- TODO: Print questions and buttons. -->
-            <mm-format-text watch="true" component="{{component}}" component-id="{{lesson.coursemodule}}">{{pageContent}}</mm-format-text>
+            <div ng-if="!endOfLesson" class="list">
+                <!-- TODO: Print questions. -->
+                <mm-format-text class="item" watch="true" component="{{component}}" component-id="{{lesson.coursemodule}}">{{pageContent}}</mm-format-text>
+                <div ng-if="pageButtons && pageButtons.length" class="item">
+                    <button ng-repeat="button in pageButtons track by button.id" class="button button-block" id="{{button.id}}" title="{{button.title}}" ng-click="buttonClicked(button)">{{button.content}}</button>
+                </div>
+            </div>
+            <!-- End of lesson reached. -->
+            <div ng-if="endOfLesson" class="padding">
+                <h3>{{ 'mma.mod_lesson.congratulations' | translate }}</h3>
+                <p>{{ 'mma.mod_lesson.welldone' | translate }}</p>
+            </div>
         </mm-loading>
     </ion-content>
 </ion-view>

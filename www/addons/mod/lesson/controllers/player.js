@@ -22,15 +22,15 @@ angular.module('mm.addons.mod_lesson')
  * @name mmaModLessonPlayerCtrl
  */
 .controller('mmaModLessonPlayerCtrl', function($scope, $stateParams, $mmaModLesson, $q, $ionicScrollDelegate, $mmUtil,
-            mmaModLessonComponent, $mmSyncBlock) {
+            mmaModLessonComponent, $mmSyncBlock, $mmaModLessonHelper) {
 
     var lessonId = $stateParams.lessonid,
         courseId = $stateParams.courseid,
-        pageId = $stateParams.pageid,
+        currentPage = $stateParams.pageid,
         lesson,
         accessInfo,
         offline = false,
-        scrollView = $ionicScrollDelegate.$getByHandle('mmaModLessonPlayerScroll');
+        scrollView;
 
     // Block the lesson so it cannot be synced.
     $mmSyncBlock.blockOperation(mmaModLessonComponent, lessonId);
@@ -57,7 +57,7 @@ angular.module('mm.addons.mod_lesson')
                 return;
             }
 
-            return launchAttempt(pageId);
+            return launchAttempt(currentPage);
         }).catch(function(message) {
             $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
             return $q.reject();
@@ -67,19 +67,30 @@ angular.module('mm.addons.mod_lesson')
     // Start or continue an attempt.
     function launchAttempt(pageId) {
         return $mmaModLesson.launchAttempt(lesson.id, undefined, pageId).then(function() {
-            pageId = pageId || accessInfo.firstpageid;
+            currentPage = pageId || accessInfo.firstpageid;
 
-            return loadPage(pageId);
+            return loadPage(currentPage);
         });
     }
 
     // Load a certain page.
     function loadPage(pageId) {
-        return $mmaModLesson.getPageData(lesson.id, pageId, undefined, false, offline, true).then(function(data) {
+        return $mmaModLesson.getPageData(lesson.id, pageId, undefined, false, true, offline, true).then(function(data) {
             $scope.title = data.page.title;
             $scope.pageContent = data.page.contents;
             $scope.pageLoaded = true;
+            $scope.pageButtons = $mmaModLessonHelper.getPageButtonsFromHtml(data.pagecontent);
+            currentPage = pageId;
         });
+    }
+
+    // Scroll top and show the spinner.
+    function showLoading() {
+        if (!scrollView) {
+            scrollView = $ionicScrollDelegate.$getByHandle('mmaModLessonPlayerScroll');
+        }
+        scrollView.scrollTop();
+        $scope.pageLoaded = false;
     }
 
     // Function called when the user wants to leave the player. Save the attempt before leaving.
@@ -92,5 +103,34 @@ angular.module('mm.addons.mod_lesson')
     fetchLessonData().finally(function() {
         $scope.pageLoaded = true;
     });
+
+    // A button was clicked.
+    $scope.buttonClicked = function(button) {
+        showLoading();
+
+        return $mmaModLesson.processPage(lessonId, currentPage, button.data).then(function(result) {
+            if (result.newpageid === 0) {
+                // Not a valid page, return to entry view.
+                // This happens, for example, when the user clicks to go to previous page and there is no previous page.
+                blockData && blockData.back();
+                return;
+            } else if (result.newpageid == $mmaModLesson.LESSON_EOL) {
+                // End of lesson reached.
+                // @todo Show grade, progress bar, min questions, etc. in final page.
+                $scope.endOfLesson = true;
+                $scope.title = lesson.name;
+                return;
+            }
+
+            $scope.endOfLesson = false;
+            // Load new page.
+            return loadPage(result.newpageid);
+        }).catch(function(error) {
+            $mmUtil.showErrorModalDefault(error, 'Error processing page');
+            return $q.reject();
+        }).finally(function() {
+            $scope.pageLoaded = true;
+        });
+    };
 
 });
