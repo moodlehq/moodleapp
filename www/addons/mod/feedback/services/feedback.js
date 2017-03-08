@@ -35,13 +35,23 @@ angular.module('mm.addons.mod_feedback')
     }
 
     /**
+     * Get prefix cache key for all feedback activity data WS calls.
+     *
+     * @param {Number} feedbackId Feedback ID.
+     * @return {String}         Cache key.
+     */
+    function getFeedbackDataPrefixCacheKey(feedbackId) {
+        return 'mmaModFeedback:' + feedbackId;
+    }
+
+    /**
      * Get cache key for feedback access information data WS calls.
      *
      * @param {Number} feedbackId Feedback ID.
      * @return {String}         Cache key.
      */
     function getFeedbackAccessInformationDataCacheKey(feedbackId) {
-        return 'mmaModFeedback:access:' + feedbackId;
+        return getFeedbackDataPrefixCacheKey(feedbackId) + ':access';
     }
 
     /**
@@ -51,7 +61,7 @@ angular.module('mm.addons.mod_feedback')
      * @return {String}         Cache key.
      */
     function getAnalysisDataPrefixCacheKey(feedbackId) {
-        return 'mmaModFeedback:analysis:' + feedbackId;
+        return getFeedbackDataPrefixCacheKey(feedbackId) + ':analysis';
     }
 
     /**
@@ -79,7 +89,7 @@ angular.module('mm.addons.mod_feedback')
     self.isPluginEnabled = function(siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return  site.wsAvailable('mod_feedback_get_feedbacks_by_courses') &&
-                    site.wsAvailable('mod_feedback_get_access_information');
+                    site.wsAvailable('mod_feedback_get_feedback_access_information');
         });
     };
 
@@ -190,10 +200,7 @@ angular.module('mm.addons.mod_feedback')
                     cacheKey: getFeedbackAccessInformationDataCacheKey(feedbackId)
                 };
 
-            return site.read('mod_feedback_get_access_information', params, preSets).then(function(accessData) {
-                accessData.capabilities = $mmUtil.objectToKeyValueMap(accessData.capabilities, 'name', 'enabled', 'mod/feedback:');
-                return accessData;
-            });
+            return site.read('mod_feedback_get_feedback_access_information', params, preSets);
         });
     };
 
@@ -275,8 +282,7 @@ angular.module('mm.addons.mod_feedback')
             var ps = [];
             // Do not invalidate feedback data before getting feedback info, we need it!
             ps.push(self.invalidateFeedbackData(courseId, siteId));
-            ps.push(self.invalidateFeedbackAccessInformationData(feedback.id, siteId));
-            ps.push(self.invalidateAnalysisData(feedback.id, siteId));
+            ps.push(self.invalidateWsCacheForKeyStartingWith(getFeedbackDataPrefixCacheKey(feedback.id), siteId));
 
             return $q.all(ps);
         });

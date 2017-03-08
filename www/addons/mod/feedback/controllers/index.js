@@ -22,7 +22,7 @@ angular.module('mm.addons.mod_feedback')
  * @name mmaModFeedbackIndexCtrl
  */
 .controller('mmaModFeedbackIndexCtrl', function($scope, $stateParams, $mmaModFeedback, $mmUtil, $mmCourseHelper, $q, $mmCourse,
-            $mmText, mmaModFeedbackComponent, $mmEvents, $ionicScrollDelegate, $mmApp, $translate, $mmGroups, $mmSite,
+            $mmText, mmaModFeedbackComponent, $mmEvents, $ionicScrollDelegate, $mmApp, $translate, $mmGroups, $mmaModFeedbackHelper,
             mmCoreEventOnlineStatusChanged) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
@@ -54,39 +54,17 @@ angular.module('mm.addons.mod_feedback')
 
             return $mmaModFeedback.getFeedbackAccessInformation(feedback.id);
         }).then(function(accessData) {
-            $scope.feedback.canSubmit = accessData.cansubmit;
-            $scope.feedback.canComplete = accessData.cancomplete;
-            $scope.feedback.isOpen = accessData.isopen;
-            $scope.feedback.hasQuestions = !accessData.isempty;
-            $scope.feedback.canViewAnalysis = accessData.canviewanalysis;
-            $scope.feedback.isAlreadySubmitted = accessData.isalreadysubmitted;
-            $scope.feedback.isAnonymous = accessData.isanonymous;
-            $scope.capabilities = accessData.capabilities;
+            $scope.access = accessData;
 
-            if ($scope.capabilities.edititems) {
+            if (accessData.canedititems) {
                 feedback.timeopen = parseInt(feedback.timeopen) * 1000 || false;
                 feedback.openTimeReadable = feedback.timeopen ? moment(feedback.timeopen).format('LLL') : false;
                 feedback.timeclose = parseInt(feedback.timeclose) * 1000 || false;
                 feedback.closeTimeReadable = feedback.timeclose ? moment(feedback.timeclose).format('LLL') : false;
 
                 // Get groups (only for teachers).
-                return $mmGroups.getActivityGroupMode(feedback.coursemodule).then(function(groupMode) {
-                    if (groupMode === $mmGroups.SEPARATEGROUPS || groupMode === $mmGroups.VISIBLEGROUPS) {
-                        $scope.separateGroups = groupMode === $mmGroups.SEPARATEGROUPS;
-                        $scope.visibleGroups = groupMode === $mmGroups.VISIBLEGROUPS;
-                        return $mmGroups.getActivityAllowedGroups(feedback.coursemodule);
-                    }
-                    return [];
-                }).then(function (groups) {
-                    if (groups.length <= 0) {
-                        $scope.separateGroups = false;
-                        $scope.visibleGroups = false;
-                    } else {
-                        $scope.groups = [
-                            {'id': 0, 'name': $translate.instant('mm.core.allparticipants')}
-                        ];
-                        $scope.groups = $scope.groups.concat(groups);
-                    }
+                return $mmaModFeedbackHelper.getFeedbackGroupInfo(feedback.coursemodule).then(function(groupInfo) {
+                    $scope.groupInfo = groupInfo;
                     return $scope.setGroup($scope.selectedGroup);
                 });
             }
@@ -168,10 +146,9 @@ angular.module('mm.addons.mod_feedback')
         }
     };
 
-    // Temporary function to link non implemented features.
-    $scope.openFeatureUrl = function(feature) {
-        var url = $mmSite.getURL() + '/mod/feedback/' + feature + '.php?id=' + feedback.coursemodule;
-        $mmUtil.openInApp(url);
+    // Function to link implemented features.
+    $scope.openFeature = function(feature, notImplemented) {
+        $mmaModFeedbackHelper.openFeature(feature, module, courseId, notImplemented);
     };
 
     function scrollTop() {

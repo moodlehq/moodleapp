@@ -51,12 +51,20 @@ angular.module('mm.addons.mod_feedback')
      * @module mm.addons.mod_feedback
      * @ngdoc method
      * @name $mmaModFeedbackPrefetchHandler#getFiles
-     * @param {Object} module   Module to get the files.
-     * @param {Number} courseId Course ID the module belongs to.
-     * @return {Promise}        Promise resolved with the list of files.
+     * @param  {Object} module    Module to get the files.
+     * @param  {Number} courseId  Course ID the module belongs to.
+     * @param  {String} [siteId]  Site ID. If not defined, current site.
+     * @return {Promise}          Promise resolved with the list of files.
      */
-    self.getFiles = function(module, courseId) {
-        return self.getIntroFiles(module, courseId);
+    self.getFiles = function(module, courseId, siteId) {
+        return $mmaModFeedback.getFeedback(courseId, module.id, siteId).then(function(feedback) {
+            // Get intro files and page after submit files.
+            var files = feedback.pageaftersubmitfiles || [];
+            return files.concat(self.getIntroFilesFromInstance(module, feedback));
+        }).catch(function() {
+            // Feedback not found, return empty list.
+            return [];
+        });
     };
 
     /**
@@ -172,24 +180,22 @@ angular.module('mm.addons.mod_feedback')
      */
     function prefetchFeedback(module, courseId, single, siteId) {
         // Prefetch the feedback data.
-        return $mmaModFeedback.getFeedback(courseId, module.id).then(function(feedback) {
-            var p1 = [],
-                files = self.getIntroFilesFromInstance(module, feedback);
+        return $mmaModFeedback.getFeedback(courseId, module.id, siteId).then(function(feedback) {
+            var p1 = [];
 
-            // Prefetch files.
-            angular.forEach(files, function(file) {
-                p1.push($mmFilepool.addToQueueByUrl(siteId, file.fileurl, self.component, module.id, file.timemodified));
-            });
+            p1.push(self.getFiles(module, courseId, siteId).then(function(files) {
+                return $mmFilepool.addFilesToQueueByUrl(siteId, files, self.component, module.id);
+            }));
 
-            p1.push($mmaModFeedback.getFeedbackAccessInformation(feedback.id).then(function(accessData) {
+            p1.push($mmaModFeedback.getFeedbackAccessInformation(feedback.id, siteId).then(function(accessData) {
                 var p2 = [];
-                if (accessData.capabilities && accessData.capabilities.edititems) {
+                if (accessData.canedititems || accessData.canviewreports) {
                     // Get all groups analysis.
-                    p2.push($mmaModFeedback.getAnalysis(feedback.id));
-                    p2.push($mmGroups.getActivityAllowedGroupsIfEnabled(feedback.coursemodule).then(function(groups) {
+                    p2.push($mmaModFeedback.getAnalysis(feedback.id, undefined, siteId));
+                    p2.push($mmGroups.getActivityAllowedGroupsIfEnabled(feedback.coursemodule, undefined, siteId).then(function(groups) {
                         var p3 = [];
                         angular.forEach(groups, function(group) {
-                            p3.push($mmaModFeedback.getAnalysis(feedback.id, group.id));
+                            p3.push($mmaModFeedback.getAnalysis(feedback.id, group.id, siteId));
                         });
 
                         return $q.all(p3);

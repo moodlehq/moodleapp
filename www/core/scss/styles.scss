@@ -562,6 +562,15 @@ mm-navigation-bar {
   padding: $item-padding / 2;
 }
 
+.row-buttons {
+  @include display-flex();
+  padding: $item-padding - ($button-block-margin / 2);
+
+  .button.button-block {
+    @include flex(1);
+    margin: ($button-block-margin / 2);
+  }
+}
 
 /* Message cards */
 // Mixin to create message "cards" with a colored border-bottom and, optionally, an icon. For examples, for mm-warning.
