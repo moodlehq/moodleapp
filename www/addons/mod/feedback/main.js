@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.addons.mod_feedback', [])
+angular.module('mm.addons.mod_feedback', ["chart.js"])
 
 .constant('mmaModFeedbackComponent', 'mmaModFeedback')
 
@@ -33,11 +33,28 @@ angular.module('mm.addons.mod_feedback', [])
                 templateUrl: 'addons/mod/feedback/templates/index.html'
             }
         }
+    })
+
+    .state('site.mod_feedback-analysis', {
+        url: '/mod_feedback-analysis',
+        params: {
+            feedbackid: null,
+            courseid: null,
+            module: null,
+            moduleid: null // Redundant parameter to fix a problem passing object as parameters. To be fixed in MOBILE-1370.
+        },
+        views: {
+            'site': {
+                controller: 'mmaModFeedbackAnalysisCtrl',
+                templateUrl: 'addons/mod/feedback/templates/analysis.html'
+            }
+        }
     });
 })
 
 .config(function($mmCourseDelegateProvider, $mmContentLinksDelegateProvider, $mmCoursePrefetchDelegateProvider) {
     $mmCourseDelegateProvider.registerContentHandler('mmaModFeedback', 'feedback', '$mmaModFeedbackHandlers.courseContent');
     $mmContentLinksDelegateProvider.registerLinkHandler('mmaModFeedback:index', '$mmaModFeedbackHandlers.indexLinksHandler');
+    $mmContentLinksDelegateProvider.registerLinkHandler('mmaModFeedback:analysis', '$mmaModFeedbackHandlers.analysisLinksHandler');
     $mmCoursePrefetchDelegateProvider.registerPrefetchHandler('mmaModFeedback', 'feedback', '$mmaModFeedbackPrefetchHandler');
 });

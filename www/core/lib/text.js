@@ -683,5 +683,23 @@ angular.module('mm.core')
         return uri;
     };
 
+    /**
+     * Same as Javascript's JSON.parse, but if an exception is thrown it will return the original text.
+     *
+     * @module mm.core
+     * @ngdoc method
+     * @name $mmText#parseJSON
+     * @param  {String} json JSON text.
+     * @return {Mixed}       JSON parsed as object or what it gets.
+     */
+    self.parseJSON = function(json) {
+        try {
+            return JSON.parse(json);
+        } catch(ex) {
+            // Error, use the json text.
+        }
+        return json;
+    };
+
     return self;
 });
