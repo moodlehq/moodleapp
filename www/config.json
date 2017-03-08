@@ -11,7 +11,7 @@
     "demo_sites": {},
     "gcmpn": "sorce-moodle-1",
     "customurlscheme": "moodlemobile",
-    "siteurl": "http://192.168.1.120/ElearningDemo",
+    "siteurl": "http://dev.sorce.online/",
     "skipssoconfirmation": "false",
     "forcedefaultlanguage": "false"
 }
