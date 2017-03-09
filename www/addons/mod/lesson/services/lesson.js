@@ -50,7 +50,7 @@ angular.module('mm.addons.mod_lesson')
                 review: review ? 1 : 0
             };
 
-            if (typeof password != 'undefined') {
+            if (typeof password == 'string') {
                 params.password = password;
             }
 
@@ -217,11 +217,11 @@ angular.module('mm.addons.mod_lesson')
     }
 
     /**
-     * Get the access information of a certain lesson.
+     * Get page data.
      *
      * @module mm.addons.mod_lesson
      * @ngdoc method
-     * @name $mmaModLesson#getAccessInformation
+     * @name $mmaModLesson#getPageData
      * @param  {Number} lessonId           Lesson ID.
      * @param  {Number} pageId             Page ID.
      * @param  {String} [password]         Lesson password (if any).
@@ -230,7 +230,7 @@ angular.module('mm.addons.mod_lesson')
      * @param  {Boolean} forceCache        True if it should return cached data. Has priority over ignoreCache.
      * @param  {Boolean} ignoreCache       True if it should ignore cached data (it will always fail in offline or server down).
      * @param  {String} [siteId]           Site ID. If not defined, current site.
-     * @return {Promise}                   Promise resolved with the access information-
+     * @return {Promise}                   Promise resolved with the page data.
      */
     self.getPageData = function(lessonId, pageId, password, review, includeContents, forceCache, ignoreCache, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
@@ -244,7 +244,7 @@ angular.module('mm.addons.mod_lesson')
                     cacheKey: getPageDataCacheKey(lessonId, pageId)
                 };
 
-            if (typeof password != 'undefined') {
+            if (typeof password == 'string') {
                 params.password = password;
             }
 
@@ -256,6 +256,55 @@ angular.module('mm.addons.mod_lesson')
             }
 
             return site.read('mod_lesson_get_page_data', params, preSets);
+        });
+    };
+
+    /**
+     * Get cache key for get pages WS calls.
+     *
+     * @param  {Number} lessonId Lesson ID.
+     * @return {String}          Cache key.
+     */
+    function getPagesCacheKey(lessonId) {
+        return 'mmaModLesson:pages:' + lessonId;
+    }
+
+    /**
+     * Get lesson pages.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#getPages
+     * @param  {Number} lessonId     Lesson ID.
+     * @param  {String} [password]   Lesson password (if any).
+     * @param  {Boolean} forceCache  True if it should return cached data. Has priority over ignoreCache.
+     * @param  {Boolean} ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}             Promise resolved with the pages.
+     */
+    self.getPages = function(lessonId, password, forceCache, ignoreCache, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    lessonid: lessonId,
+                },
+                preSets = {
+                    cacheKey: getPagesCacheKey(lessonId)
+                };
+
+            if (typeof password == 'string') {
+                params.password = password;
+            }
+
+            if (forceCache) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+
+            return site.read('mod_lesson_get_pages', params, preSets).then(function(response) {
+                return response.pages;
+            });
         });
     };
 
@@ -360,7 +409,7 @@ angular.module('mm.addons.mod_lesson')
                 review: review ? 1 : 0
             };
 
-            if (typeof password != 'undefined') {
+            if (typeof password == 'string') {
                 params.password = password;
             }
             if (typeof pageId == 'number') {
@@ -393,7 +442,7 @@ angular.module('mm.addons.mod_lesson')
                 lessonid: id
             };
 
-            if (typeof password != 'undefined') {
+            if (typeof password == 'string') {
                 params.password = password;
             }
 
@@ -429,7 +478,7 @@ angular.module('mm.addons.mod_lesson')
                 review: review ? 1 : 0
             };
 
-            if (typeof password != 'undefined') {
+            if (typeof password == 'string') {
                 params.password = password;
             }
 

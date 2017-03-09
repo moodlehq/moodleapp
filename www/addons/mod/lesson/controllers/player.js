@@ -22,11 +22,10 @@ angular.module('mm.addons.mod_lesson')
  * @name mmaModLessonPlayerCtrl
  */
 .controller('mmaModLessonPlayerCtrl', function($scope, $stateParams, $mmaModLesson, $q, $ionicScrollDelegate, $mmUtil,
-            mmaModLessonComponent, $mmSyncBlock, $mmaModLessonHelper) {
+            mmaModLessonComponent, $mmSyncBlock, $mmaModLessonHelper, $mmSideMenu) {
 
     var lessonId = $stateParams.lessonid,
         courseId = $stateParams.courseid,
-        currentPage = $stateParams.pageid,
         lesson,
         accessInfo,
         offline = false,
@@ -39,6 +38,7 @@ angular.module('mm.addons.mod_lesson')
     blockData = $mmUtil.blockLeaveView($scope, leavePlayer);
 
     $scope.component = mmaModLessonComponent;
+    $scope.currentPage = $stateParams.pageid;
 
     // Convenience function to get Lesson data.
     function fetchLessonData() {
@@ -57,7 +57,7 @@ angular.module('mm.addons.mod_lesson')
                 return;
             }
 
-            return launchAttempt(currentPage);
+            return launchAttempt($scope.currentPage);
         }).catch(function(message) {
             $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
             return $q.reject();
@@ -67,9 +67,9 @@ angular.module('mm.addons.mod_lesson')
     // Start or continue an attempt.
     function launchAttempt(pageId) {
         return $mmaModLesson.launchAttempt(lesson.id, undefined, pageId).then(function() {
-            currentPage = pageId || accessInfo.firstpageid;
+            $scope.currentPage = pageId || accessInfo.firstpageid;
 
-            return loadPage(currentPage);
+            return loadPage($scope.currentPage);
         });
     }
 
@@ -80,7 +80,13 @@ angular.module('mm.addons.mod_lesson')
             $scope.pageContent = data.page.contents;
             $scope.pageLoaded = true;
             $scope.pageButtons = $mmaModLessonHelper.getPageButtonsFromHtml(data.pagecontent);
-            currentPage = pageId;
+            $scope.currentPage = pageId;
+
+            if (data.displaymenu && !$scope.displayMenu) {
+                // Load the menu.
+                loadMenu();
+            }
+            $scope.displayMenu = !!data.displaymenu;
         });
     }
 
@@ -106,6 +112,26 @@ angular.module('mm.addons.mod_lesson')
         return $q.when();
     }
 
+    // Load the lesson menu.
+    function loadMenu() {
+        if ($scope.loadingMenu) {
+            // Already loading.
+            return;
+        }
+
+        $scope.loadingMenu = true;
+        return $mmaModLesson.getPages(lesson.id).then(function(pages) {
+            $scope.lessonPages = pages.map(function(entry) {
+                return entry.page;
+            });
+        }).catch(function(error) {
+            $mmUtil.showErrorModalDefault(error, 'Error loading menu.');
+            return $q.reject();
+        }).finally(function() {
+            $scope.loadingMenu = false;
+        });
+    }
+
     // Fetch the Lesson data.
     fetchLessonData().finally(function() {
         $scope.pageLoaded = true;
@@ -115,7 +141,7 @@ angular.module('mm.addons.mod_lesson')
     $scope.buttonClicked = function(button) {
         showLoading();
 
-        return $mmaModLesson.processPage(lessonId, currentPage, button.data).then(function(result) {
+        return $mmaModLesson.processPage(lessonId, $scope.currentPage, button.data).then(function(result) {
             if (result.newpageid === 0) {
                 // Not a valid page, return to entry view.
                 // This happens, for example, when the user clicks to go to previous page and there is no previous page.
@@ -138,5 +164,28 @@ angular.module('mm.addons.mod_lesson')
             $scope.pageLoaded = true;
         });
     };
+
+    // Menu page was clicked, load the page.
+    $scope.loadPage = function(pageId) {
+        if (!$scope.eolData && $scope.currentPage == pageId) {
+            // Page already loaded, stop.
+            return;
+        }
+
+        showLoading();
+
+        return loadPage(pageId).then(function() {
+            // Page loaded, hide the EOL page if shown.
+            $scope.eolData = false;
+        }).catch(function(error) {
+            $mmUtil.showErrorModalDefault(error, 'Error loading page');
+            return $q.reject();
+        }).finally(function() {
+            $scope.pageLoaded = true;
+        });
+    };
+
+    // Setup right side menu.
+    $mmSideMenu.showRightSideMenu('addons/mod/lesson/templates/menu.html', $scope);
 
 });
