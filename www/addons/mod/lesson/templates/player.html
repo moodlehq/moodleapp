@@ -2,7 +2,7 @@
     <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
     <ion-content mm-state-class delegate-handle="mmaModLessonPlayerScroll">
         <mm-loading hide-until="pageLoaded">
-            <div ng-if="!endOfLesson" class="list">
+            <div ng-if="!eolData" class="list">
                 <!-- TODO: Print questions. -->
                 <mm-format-text class="item" watch="true" component="{{component}}" component-id="{{lesson.coursemodule}}">{{pageContent}}</mm-format-text>
                 <div ng-if="pageButtons && pageButtons.length" class="item">
@@ -10,9 +10,23 @@
                 </div>
             </div>
             <!-- End of lesson reached. -->
-            <div ng-if="endOfLesson" class="padding">
-                <h3>{{ 'mma.mod_lesson.congratulations' | translate }}</h3>
-                <p>{{ 'mma.mod_lesson.welldone' | translate }}</p>
+            <div ng-if="eolData" class="padding">
+                <h3 ng-if="eolData.gradelesson">{{ 'mma.mod_lesson.congratulations' | translate }}</h3>
+                <p ng-if="eolData.notenoughtimespent">{{ eolData.notenoughtimespent.message }}</p>
+                <p ng-if="eolData.numberofpagesviewed">{{ eolData.numberofpagesviewed.message }}</p>
+                <p ng-if="eolData.youshouldview">{{ eolData.youshouldview.message }}</p>
+                <p ng-if="eolData.numberofcorrectanswers">{{ eolData.numberofcorrectanswers.message }}</p>
+                <p ng-if="eolData.displayscorewithessays">{{ eolData.displayscorewithessays.message }}</p>
+                <p ng-if="!eolData.displayscorewithessays && eolData.displayscorewithoutessays">{{ eolData.displayscorewithoutessays.message }}</p>
+                <p ng-if="eolData.yourcurrentgradeisoutof">{{ eolData.yourcurrentgradeisoutof.message }}</p>
+                <p ng-if="eolData.eolstudentoutoftimenoanswers">{{ eolData.eolstudentoutoftimenoanswers.message }}</p>
+                <p ng-if="eolData.welldone">{{ eolData.welldone.message }}</p>
+                <!-- @todo progress bar -->
+                <p ng-if="eolData.displayofgrade">{{ eolData.displayofgrade.message }}</p>
+                <p ng-if="eolData.reviewlesson">{{ eolData.reviewlesson.message }}</p>
+                <p ng-if="eolData.modattemptsnoteacher">{{ eolData.modattemptsnoteacher.message }}</p>
+                <!-- @todo Activity link. -->
+                <!-- @todo Return & grade links. -->
             </div>
         </mm-loading>
     </ion-content>

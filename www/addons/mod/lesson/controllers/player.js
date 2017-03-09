@@ -84,6 +84,13 @@ angular.module('mm.addons.mod_lesson')
         });
     }
 
+    // Finish the attempt.
+    function finishAttempt() {
+        return $mmaModLesson.finishAttempt(lesson.id).then(function(data) {
+            $scope.eolData = data.data;
+        });
+    }
+
     // Scroll top and show the spinner.
     function showLoading() {
         if (!scrollView) {
@@ -117,13 +124,12 @@ angular.module('mm.addons.mod_lesson')
             } else if (result.newpageid == $mmaModLesson.LESSON_EOL) {
                 // End of lesson reached.
                 // @todo Show grade, progress bar, min questions, etc. in final page.
-                $scope.endOfLesson = true;
                 $scope.title = lesson.name;
-                return;
+                return finishAttempt();
             }
 
-            $scope.endOfLesson = false;
             // Load new page.
+            $scope.eolData = false;
             return loadPage(result.newpageid);
         }).catch(function(error) {
             $mmUtil.showErrorModalDefault(error, 'Error processing page');

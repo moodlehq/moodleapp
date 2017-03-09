@@ -30,6 +30,51 @@ angular.module('mm.addons.mod_lesson')
     self.LESSON_EOL = -9;
 
     /**
+     * Finishes an attempt.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#finishAttempt
+     * @param  {Number} lessonId     Lesson ID.
+     * @param  {String} [password]   Lesson password (if any).
+     * @param  {Boolean} [outOfTime] If the user ran out of time.
+     * @param  {Boolean} [review]    If the user wants to review just after finishing (1 hour margin).
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}             Promise resolved in success, rejected otherwise.
+     */
+    self.finishAttempt = function(lessonId, password, outOfTime, review, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                lessonid: lessonId,
+                outoftime: outOfTime ? 1 : 0,
+                review: review ? 1 : 0
+            };
+
+            if (typeof password != 'undefined') {
+                params.password = password;
+            }
+
+            return site.write('mod_lesson_finish_attempt', params).then(function(response) {
+                // Convert the data array into an object and decode the values.
+                var map = {};
+                angular.forEach(response.data, function(entry) {
+                    if (entry.value && typeof entry.value == 'string' && entry.value !== '1') {
+                        // It's a JSON encoded object. Try to decode it.
+                        try {
+                            entry.value = JSON.parse(entry.value);
+                        } catch(ex) {
+                            // Error decoding it, leave the value as it is.
+                        }
+                    }
+                    map[entry.name] = entry;
+                });
+                response.data = map;
+                return response;
+            });
+        });
+    };
+
+    /**
      * Get cache key for access information WS calls.
      *
      * @param  {Number} lessonId Lesson ID.
