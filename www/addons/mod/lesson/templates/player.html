@@ -8,7 +8,8 @@
             <div ng-class='{"mma-mod-lesson-slideshow": lesson.slideshow}' ng-style="{'width': lessonWidth, 'height': lessonHeight}">
                 <div ng-if="!eolData" class="list">
                     <!-- TODO: Print questions. -->
-                    <mm-format-text class="item item-text-wrap" watch="true" component="{{component}}" component-id="{{lesson.coursemodule}}">{{pageContent}}</mm-format-text>
+                    <mm-format-text ng-if="pageData.ongoingscore" class="item item-text-wrap mma-mod-lesson-ongoingscore" watch="true">{{pageData.ongoingscore}}</mm-format-text>
+                    <p class="item item-text-wrap"><mm-format-text watch="true" component="{{component}}" component-id="{{lesson.coursemodule}}">{{pageContent}}</mm-format-text></p>
                     <div ng-if="pageButtons && pageButtons.length" class="item">
                         <button ng-repeat="button in pageButtons track by button.id" class="button button-block" id="{{button.id}}" title="{{button.title}}" ng-click="buttonClicked(button)">{{button.content}}</button>
                     </div>

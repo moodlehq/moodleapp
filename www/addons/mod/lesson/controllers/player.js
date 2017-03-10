@@ -80,6 +80,7 @@ angular.module('mm.addons.mod_lesson')
     // Load a certain page.
     function loadPage(pageId) {
         return $mmaModLesson.getPageData(lesson.id, pageId, undefined, false, true, offline, true).then(function(data) {
+            $scope.pageData = data;
             $scope.title = data.page.title;
             $scope.pageContent = data.page.contents;
             $scope.pageLoaded = true;
