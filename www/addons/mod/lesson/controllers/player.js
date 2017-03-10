@@ -98,6 +98,11 @@ angular.module('mm.addons.mod_lesson')
     function finishAttempt() {
         return $mmaModLesson.finishAttempt(lesson.id).then(function(data) {
             $scope.eolData = data.data;
+
+            // Format activity link if present.
+            if ($scope.eolData && $scope.eolData.activitylink) {
+                $scope.eolData.activitylink.value = $mmaModLessonHelper.formatActivityLink($scope.eolData.activitylink.value);
+            }
         });
     }
 

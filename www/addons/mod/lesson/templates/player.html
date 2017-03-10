@@ -29,7 +29,7 @@
                     <p ng-if="eolData.displayofgrade">{{ eolData.displayofgrade.message }}</p>
                     <p ng-if="eolData.reviewlesson">{{ eolData.reviewlesson.message }}</p>
                     <p ng-if="eolData.modattemptsnoteacher">{{ eolData.modattemptsnoteacher.message }}</p>
-                    <!-- @todo Activity link. -->
+                    <mm-format-text ng-if="eolData.activitylink" watch="true">{{ eolData.activitylink.value }}</mm-format-text>
                     <!-- @todo Return & grade links. -->
                 </div>
             </div>
