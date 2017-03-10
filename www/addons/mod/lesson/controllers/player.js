@@ -48,6 +48,9 @@ angular.module('mm.addons.mod_lesson')
             $scope.title = lesson.name; // Temporary title.
             $scope.mediaFile = lesson.mediafiles && lesson.mediafiles[0];
 
+            $scope.lessonWidth = lesson.slideshow ?  $mmUtil.formatPixelsSize(lesson.mediawidth) : '';
+            $scope.lessonHeight = lesson.slideshow ?  $mmUtil.formatPixelsSize(lesson.mediaheight) : '';
+
             return $mmaModLesson.getAccessInformation(lesson.id, offline, true);
         }).then(function(info) {
             accessInfo = info;
