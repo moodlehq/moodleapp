@@ -22,7 +22,7 @@ angular.module('mm.addons.messages')
  * @name $mmaMessages
  */
 .factory('$mmaMessages', function($mmSite, $mmSitesManager, $log, $q, $mmUser, $mmaMessagesOffline, $mmApp, $mmUtil,
-            mmaMessagesNewMessageEvent, mmaMessagesLimitMessages) {
+            mmaMessagesNewMessageEvent, mmaMessagesLimitMessages, mmaMessagesLimitSearchMessages) {
     $log = $log.getInstance('$mmaMessages');
 
     var self = {};
@@ -954,6 +954,20 @@ angular.module('mm.addons.messages')
      *
      * @module mm.addons.messages
      * @ngdoc method
+     * @name $mmaMessages#isSearchEnabled
+     * @return {Boolean}
+     * @deprecated since v3.3. Please use $mmaMessages#isSearchContactsEnabled instead. MOBILE-1789.
+     */
+    self.isSearchEnabled = function() {
+        $log.debug('$mmaMessages#isSearchEnabled has been deprecated, please use $mmaMessages#isSearchContactsEnabled instead');
+        return self.isSearchContactsEnabled();
+    };
+
+    /**
+     * Returns whether or not we can search contacts.
+     *
+     * @module mm.addons.messages
+     * @ngdoc method
      * @name $mmaMessages#isSearchContactsEnabled
      * @return {Boolean}
      */
@@ -971,7 +985,7 @@ angular.module('mm.addons.messages')
      */
     self.isSearchMessagesEnabled = function() {
         return $mmSite.wsAvailable('core_message_data_for_messagearea_search_messages');
-    }
+    };
 
     /**
      * Remove a contact.
@@ -1028,23 +1042,26 @@ angular.module('mm.addons.messages')
 
     /**
      * Search for all the messges with a specific text.
-     * 
+     *
      * @module mm.addons.messages
      * @ngdoc method
      * @name $mmaMessages#searchMessages
-     * @param {String}  query   The query string
-     * @return {Promise}
+     * @param  {String} query         The query string
+     * @param  {Number} [userId]      The user ID. If not defined, current user.
+     * @param  {Number} [limitFrom]   Position of the first result to get. Defaults to 0.
+     * @param  {Number} [limitNumber] Number of results to get. Defaults to mmaMessagesLimitSearchMessages.
+     * @return {Promise}              Promise resolved with the results.
      */
-    self.searchMessages = function(userId, query, limitFrom, limitNum) {
+    self.searchMessages = function(query, userId, limitFrom, limitNum) {
         var param = {
-            userid: userId,
-            search: query,
-            limitfrom: limitFrom,
-            limitnum: limitNum
-        },
-        preSets = {
-            getFromCache: 0 // Always try to get updated data. If it fails, it will get it from cache.
-        };
+                userid: userId || $mmSite.getUserId(),
+                search: query,
+                limitfrom: limitFrom || 0,
+                limitnum: limitNum || mmaMessagesLimitSearchMessages
+            },
+            preSets = {
+                getFromCache: 0 // Always try to get updated data. If it fails, it will get it from cache.
+            };
 
         return $mmSite.read('core_message_data_for_messagearea_search_messages', param, preSets).then(function(searchResults) {
             return searchResults.contacts;

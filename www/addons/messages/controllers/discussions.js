@@ -23,10 +23,9 @@ angular.module('mm.addons.messages')
  */
 .controller('mmaMessagesDiscussionsCtrl', function($scope, $mmUtil, $mmaMessages, $rootScope, $mmEvents, $mmSite, $ionicPlatform,
             mmCoreSplitViewLoad, mmaMessagesNewMessageEvent, $mmAddonManager, mmaMessagesReadChangedEvent,
-            mmaMessagesReadCronEvent, $translate, $q, $mmApp, mmaMessagesLimitSearchMessages) {
+            mmaMessagesReadCronEvent, $translate, $q, $mmApp) {
     var newMessagesObserver, readChangedObserver, cronObserver,
         siteId = $mmSite.getId(),
-        userId = $mmSite.getUserId(),
         discussions,
         $mmPushNotificationsDelegate = $mmAddonManager.get('$mmPushNotificationsDelegate'),
         unregisterResume,
@@ -36,8 +35,8 @@ angular.module('mm.addons.messages')
     $scope.loaded = false;
     $scope.formData = {
         searchString: ''
-    }
-    $scope.showSearchResults = false;   // to switch the view template. discussions or searchResults
+    };
+    $scope.showSearchResults = false; // To switch the view template: discussions or searchResults.
     $scope.results = null;
 
     function fetchDiscussions() {
@@ -79,8 +78,8 @@ angular.module('mm.addons.messages')
         $scope.loaded = false;
         $scope.loadingMessage = searchingMessage;
 
-        return $mmaMessages.searchMessages(userId, query, 0, mmaMessagesLimitSearchMessages).then(function(searchResults) {
-            $scope.showSearchResults = true;    
+        return $mmaMessages.searchMessages(query).then(function(searchResults) {
+            $scope.showSearchResults = true;
             $scope.results = searchResults;
         }).catch(function(error) {
             $mmUtil.showErrorModalDefault(error, 'mma.messages.errorwhileretrievingmessages', true);
@@ -97,7 +96,6 @@ angular.module('mm.addons.messages')
             $scope.loaded = true;
         });
     };
-    
 
     fetchDiscussions().finally(function() {
         // Tell mm-split-view that it can load the first link now in tablets. We need to do it
