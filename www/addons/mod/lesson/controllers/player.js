@@ -99,6 +99,7 @@ angular.module('mm.addons.mod_lesson')
     function finishAttempt() {
         return $mmaModLesson.finishAttempt(lesson.id).then(function(data) {
             $scope.eolData = data.data;
+            $scope.eolProgress = data.progress;
 
             // Format activity link if present.
             if ($scope.eolData && $scope.eolData.activitylink) {
