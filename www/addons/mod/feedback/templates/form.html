@@ -1,0 +1,46 @@
+<ion-view>
+    <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <mm-context-menu>
+            <mm-context-menu-item priority="900" ng-if="moduleUrl" href="moduleUrl" content="'mm.core.openinbrowser' | translate" icon-action="'ion-share'"></mm-context-menu-item>
+            <mm-context-menu-item priority="800" ng-if="description" content="'mm.core.moduleintro' | translate" action="expandDescription()" icon-action="'ion-arrow-right-c'"></mm-context-menu-item>
+            <mm-context-menu-item priority="700" ng-if="feedbackLoaded && !hasOffline && isOnline" content="'mm.core.refresh' | translate" action="refreshFeedback(false)" icon-action="refreshIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
+        </mm-context-menu>
+    </ion-nav-buttons>
+    <ion-content mm-state-class>
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="feedbackLoaded" on-refresh="refreshFeedback(false)"></ion-refresher>
+        <mm-loading hide-until="feedbackLoaded">
+            <section ng-if="access.cansubmit && !access.isempty">
+                <div class="list">
+                    <div class="item item-text-wrap">
+                        <p class="item-heading">{{ 'mma.mod_feedback.mode' | translate }}</p>
+                        <p ng-if="access.isanonymous">{{ 'mma.mod_feedback.anonymous' | translate }}</p>
+                        <p ng-if="!access.isanonymous">{{ 'mma.mod_feedback.non_anonymous' | translate }}</p>
+                    </div>
+                </div>
+                <div class="list" ng-if="items && items.length">
+                    <div ng-repeat="item in items track by $index" class="item item-text-wrap">
+                        <p class="item-heading" mm-mark-required="{{item.required}}" ng-if="item.name">{{item.itemnumber}}. {{ item.name }}</p>
+                        <p class="item-text-wrap" ng-if="!item.template && item.presentation">{{ item.presentation }}</p>
+                        <div class="item-text-wrap" ng-if="item.template" ng-include="item.template"></div>
+                    </div>
+                </div>
+
+                <div class="item item-text-wrap row-buttons responsive-sm">
+                    <button class="button button-block" ng-click="cancel()">
+                        {{ 'mm.core.cancel' | translate }}
+                    </button>
+                    <button ng-if="hasPrevPage !== false" class="button button-block icon-left ion-chevron-left" ng-click="gotoPage(hasPrevPage)">
+                        {{ 'mma.mod_feedback.previous_page' | translate }}
+                    </button>
+                    <button ng-if="hasNextPage !== false" class="button button-block button-positive icon-right ion-chevron-right" ng-click="gotoPage(hasNextPage)">
+                        {{ 'mma.mod_feedback.next_page' | translate }}
+                    </button>
+                    <button ng-if="hasNextPage === false" class="button button-block button-positive" ng-click="save()">
+                        {{ 'mma.mod_feedback.save_entries' | translate }}
+                    </button>
+                </div>
+            </section>
+        </mm-loading>
+    </ion-content>
+</ion-view>

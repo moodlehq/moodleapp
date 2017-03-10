@@ -201,6 +201,12 @@ angular.module('mm.addons.mod_feedback')
                         return $q.all(p3);
                     }));
                 }
+                if (accessData.cancomplete && accessData.cansubmit && !accessData.isempty) {
+                    p2.push($mmaModFeedback.getResumePage(feedback.id, siteId).then(function(page) {
+                        // @todo: Get all pages.
+                        return $mmaModFeedback.getPageItems(feedback.id, page, siteId);
+                    }));
+                }
 
                 return $q.all(p2);
             }));

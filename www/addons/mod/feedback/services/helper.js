@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_feedback')
  * @ngdoc service
  * @name $mmaModFeedbackHelper
  */
-.factory('$mmaModFeedbackHelper', function($ionicHistory, $mmGroups, $translate, $mmSite, $mmUtil, $state) {
+.factory('$mmaModFeedbackHelper', function($ionicHistory, $mmGroups, $translate, $mmSite, $mmUtil, $state, $mmText) {
 
     var self = {};
 
@@ -123,6 +123,20 @@ angular.module('mm.addons.mod_feedback')
 
             return backTimes;
         }
+    };
+
+    /**
+     * Process and returns item to print form.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedbackHelper#getItemForm
+     * @param {Object}  item           Item to process
+     * @return {Object}       Item processed to show form.
+     */
+    self.getItemForm = function(item) {
+        // @todo: work on itemData.
+        return item;
     };
 
     return self;

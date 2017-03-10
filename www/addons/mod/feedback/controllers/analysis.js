@@ -82,6 +82,8 @@ angular.module('mm.addons.mod_feedback')
                     $scope.groupInfo = groupInfo;
                     return $scope.setGroup($scope.selectedGroup);
                 });
+            } else {
+                // @todo: go back
             }
         }).catch(function(message) {
             if (!refresh) {

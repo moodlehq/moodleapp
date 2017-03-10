@@ -76,6 +76,46 @@ angular.module('mm.addons.mod_feedback')
         return getAnalysisDataPrefixCacheKey(feedbackId) + ":" + groupId;
     }
 
+    /**
+     * Get prefix cache key for resume feedback page data WS calls.
+     *
+     * @param {Number} feedbackId   Feedback ID.
+     * @return {String}             Cache key.
+     */
+    function getResumePageDataCacheKey(feedbackId) {
+        return getFeedbackDataPrefixCacheKey(feedbackId) + ':launch';
+    }
+
+    /**
+     * Get prefix cache key for all pages data WS calls.
+     *
+     * @param  {Number} feedbackId  Feedback ID.
+     * @return {String}             Cache key.
+     */
+    function getPagesDataPrefixCacheKey(feedbackId) {
+        return getFeedbackDataPrefixCacheKey(feedbackId) + ':page:';
+    }
+
+    /**
+     * Get cache key for get page items feedback data WS calls.
+     *
+     * @param  {Number} feedbackId  Feedback ID.
+     * @param  {Number} page        The page to get.
+     * @return {String}             Cache key.
+     */
+    function getPageItemsDataCacheKey(feedbackId, page) {
+        return getPagesDataPrefixCacheKey(feedbackId) + page;
+    }
+
+    /**
+     * Get cache key for get items feedback data WS calls.
+     *
+     * @param  {Number} feedbackId  Feedback ID.
+     * @return {String}             Cache key.
+     */
+    function getItemsDataCacheKey(feedbackId) {
+        return getFeedbackDataPrefixCacheKey(feedbackId) + ':items';
+    }
 
     /**
      * Return whether or not the plugin is enabled in a certain site. Plugin is enabled if the feedback WS are available.
@@ -89,7 +129,9 @@ angular.module('mm.addons.mod_feedback')
     self.isPluginEnabled = function(siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return  site.wsAvailable('mod_feedback_get_feedbacks_by_courses') &&
-                    site.wsAvailable('mod_feedback_get_feedback_access_information');
+                    site.wsAvailable('mod_feedback_get_feedback_access_information') &&
+                    site.wsAvailable('mod_feedback_get_page_items') &&
+                    site.wsAvailable('mod_feedback_get_items');
         });
     };
 
@@ -261,6 +303,163 @@ angular.module('mm.addons.mod_feedback')
     self.invalidateAnalysisData = function(feedbackId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKeyStartingWith(getAnalysisDataPrefixCacheKey(feedbackId));
+        });
+    };
+
+    /**
+     * Gets the resume page information.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#getResumePage
+     * @param   {Number}    feedbackId      Feedback ID.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the info is retrieved.
+     */
+    self.getResumePage = function(feedbackId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    feedbackid: feedbackId
+                },
+                preSets = {
+                    cacheKey: getResumePageDataCacheKey(feedbackId)
+                };
+
+            return site.read('mod_feedback_launch_feedback', params, preSets).then(function(response) {
+                if (response && typeof response.gopage != "undefined") {
+                    return response.gopage;
+                }
+                return $q.reject();
+            });
+        });
+    };
+
+    /**
+     * Invalidates launch feedback data.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#invalidateLaunchFeedbackData
+     * @param {Number} feedbackId   Feedback ID.
+     * @param  {String} [siteId]    Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateResumePageData = function(feedbackId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getResumePageDataCacheKey(feedbackId));
+        });
+    };
+
+    /**
+     * Get a single feedback page items.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#getPageItems
+     * @param   {Number}    feedbackId      Feedback ID.
+     * @param   {Number}    page            The page to get.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the info is retrieved.
+     */
+    self.getPageItems = function(feedbackId, page, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    feedbackid: feedbackId,
+                    page: page
+                },
+                preSets = {
+                    cacheKey: getPageItemsDataCacheKey(feedbackId, page)
+                };
+
+            return site.read('mod_feedback_get_page_items', params, preSets);
+        });
+    };
+
+    /**
+     * Invalidates get page items data.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#invalidatePageItemsData
+     * @param  {Number} feedbackId   Feedback ID.
+     * @param  {Number} page         The page to get.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidatePageItemsData = function(feedbackId, page, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getPageItemsDataCacheKey(feedbackId, page));
+        });
+    };
+
+    /**
+     * Invalidates all pages data.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#invalidateAllPagesData
+     * @param  {Number} feedbackId   Feedback ID.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateAllPagesData = function(feedbackId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKeyStartingWith(getPagesDataPrefixCacheKey(feedbackId));
+        });
+    };
+
+    /**
+     * Returns the items (questions) in the given feedback.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#getItems
+     * @param   {Number}    feedbackId      Feedback ID.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the info is retrieved.
+     */
+    self.getItems = function(feedbackId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    feedbackid: feedbackId
+                },
+                preSets = {
+                    cacheKey: getItemsDataCacheKey(feedbackId)
+                };
+
+            return site.read('mod_feedback_get_items', params, preSets);
+        });
+    };
+
+    /**
+     * Invalidates get items data.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#invalidateItemsData
+     * @param  {Number} feedbackId   Feedback ID.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateItemsData = function(feedbackId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getItemsDataCacheKey(feedbackId));
+        });
+    };
+
+    /**
+     * Invalidates all pages data.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#invalidateAllPagesData
+     * @param  {Number} feedbackId   Feedback ID.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateAllPagesData = function(feedbackId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKeyStartingWith(getPagesDataPrefixCacheKey(feedbackId));
         });
     };
 

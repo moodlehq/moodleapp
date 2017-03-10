@@ -173,6 +173,11 @@ angular.module('mm.addons.mod_feedback')
     self.analysisLinksHandler.getActions = function(siteIds, url, params, courseId) {
         return [{
             action: function(siteId) {
+                if (typeof params.id == 'undefined') {
+                    // Id not defined. Cannot treat the URL.
+                    return false;
+                }
+
                 var modal = $mmUtil.showModalLoading(),
                     moduleId = parseInt(params.id, 10);
 
@@ -184,6 +189,50 @@ angular.module('mm.addons.mod_feedback')
                         courseid: module.course
                     };
                     return $mmContentLinksHelper.goInSite('site.mod_feedback-analysis', stateParams, siteId);
+                }).finally(function() {
+                    modal.dismiss();
+                });
+            }
+        }];
+    };
+
+    /**
+     * Content links handler for feedback complete questions.
+     * Match mod/feedback/complete.php with a valid feedback id and optional page.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedbackHandlers#completeLinksHandler
+     */
+    self.completeLinksHandler = $mmContentLinkHandlerFactory.createChild(
+                /\/mod\/feedback\/complete\.php.*([\?\&](id|gopage)=\d+)/, '$mmCourseDelegate_mmaModFeedback');
+
+    // Check if the handler is enabled for a certain site. See $mmContentLinkHandlerFactory#isEnabled.
+    self.completeLinksHandler.isEnabled = $mmaModFeedback.isPluginEnabled;
+
+    // Get actions to perform with the link. See $mmContentLinkHandlerFactory#getActions.
+    self.completeLinksHandler.getActions = function(siteIds, url, params, courseId) {
+        return [{
+            action: function(siteId) {
+                if (typeof params.id == 'undefined') {
+                    // Id not defined. Cannot treat the URL.
+                    return false;
+                }
+
+                var modal = $mmUtil.showModalLoading(),
+                    moduleId = parseInt(params.id, 10);
+
+                return $mmCourse.getModuleBasicInfo(moduleId).then(function(module) {
+                    var stateParams = {
+                        module: module,
+                        moduleid: module.id,
+                        feedbackid: module.instance,
+                        courseid: module.course,
+                    };
+                    if (typeof params.gopage == 'undefined') {
+                        stateParams.page = parseInt(params.gopage, 10);
+                    }
+                    return $mmContentLinksHelper.goInSite('site.mod_feedback-form', stateParams, siteId);
                 }).finally(function() {
                     modal.dismiss();
                 });

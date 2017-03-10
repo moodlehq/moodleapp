@@ -60,8 +60,11 @@
                     </div>
                     <div class="item item-text-wrap row-buttons responsive-sm">
                         <button class="button button-block icon-left ion-search" ng-click="openFeature('print', true)">{{ 'mma.mod_feedback.preview' | translate }}</button>
-                        <button ng-if="access.cancomplete && access.cansubmit" class="button button-block button-positive icon-right ion-chevron-right" ng-click="openFeature('complete', true)">
+                        <button ng-if="access.cancomplete && access.cansubmit && !goPage" class="button button-block button-positive icon-right ion-chevron-right" ng-click="gotoAnswerQuestions()">
                             {{ 'mma.mod_feedback.complete_the_form' | translate }}
+                        </button>
+                        <button ng-if="access.cancomplete && access.cansubmit && goPage" class="button button-block button-positive icon-right ion-chevron-right" ng-click="gotoAnswerQuestions(goPage)">
+                            {{ 'mma.mod_feedback.continue_the_form' | translate }}
                         </button>
                     </div>
                 </div>

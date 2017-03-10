@@ -35,6 +35,23 @@ angular.module('mm.addons.mod_feedback', ["chart.js"])
         }
     })
 
+    .state('site.mod_feedback-form', {
+        url: '/mod_feedback-form',
+        params: {
+            feedbackid: null,
+            page: null,
+            courseid: null,
+            module: null,
+            moduleid: null // Redundant parameter to fix a problem passing object as parameters. To be fixed in MOBILE-1370.
+        },
+        views: {
+            'site': {
+                controller: 'mmaModFeedbackFormCtrl',
+                templateUrl: 'addons/mod/feedback/templates/form.html'
+            }
+        }
+    })
+
     .state('site.mod_feedback-analysis', {
         url: '/mod_feedback-analysis',
         params: {
