@@ -46,6 +46,7 @@ angular.module('mm.addons.mod_lesson')
             lesson = lessonData;
             $scope.lesson = lesson;
             $scope.title = lesson.name; // Temporary title.
+            $scope.mediaFile = lesson.mediafiles && lesson.mediafiles[0];
 
             return $mmaModLesson.getAccessInformation(lesson.id, offline, true);
         }).then(function(info) {

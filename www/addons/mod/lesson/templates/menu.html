@@ -1,6 +1,12 @@
 <ion-content id="mma-mod-lesson-menu">
     <nav>
         <ul class="list">
+            <!-- Media file. -->
+            <div ng-if="rsmScope.mediaFile">
+                <li class="item item-divider"><h2>{{ 'mma.mod_lesson.linkedmedia' | translate }}</h2></li>
+                <mm-file file="rsmScope.mediaFile" component="{{rsmScope.component}}" component-id="{{rsmScope.lesson.coursemodule}}" timemodified="{{rsmScope.mediaFile.timemodified}}"></mm-file>
+            </div>
+            <!-- Lesson menu. -->
             <div ng-if="rsmScope.displayMenu">
                 <li class="item item-divider"><h2>{{ 'mma.mod_lesson.lessonmenu' | translate }}</h2></li>
                 <div class="item text-center" ng-if="rsmScope.loadingMenu">

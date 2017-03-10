@@ -1,7 +1,7 @@
 <ion-view can-swipe-back="false">
     <ion-nav-title><mm-format-text watch="true">{{ title }}</mm-format-text></ion-nav-title>
     <ion-nav-buttons side="secondary">
-        <button menu-toggle="right" ng-if="displayMenu" class="button button-icon icon ion-bookmark" aria-label="{{ 'mma.mod_lesson.lessonmenu' | translate }}"></button>
+        <button menu-toggle="right" ng-if="displayMenu || mediaFile" class="button button-icon icon ion-bookmark" aria-label="{{ 'mma.mod_lesson.lessonmenu' | translate }}"></button>
     </ion-nav-buttons>
     <ion-content mm-state-class delegate-handle="mmaModLessonPlayerScroll">
         <mm-loading hide-until="pageLoaded">
