@@ -21,9 +21,17 @@ angular.module('mm.addons.mod_feedback')
  * @ngdoc service
  * @name $mmaModFeedbackHelper
  */
-.factory('$mmaModFeedbackHelper', function($ionicHistory, $mmGroups, $translate, $mmSite, $mmUtil, $state, $mmText) {
+.factory('$mmaModFeedbackHelper', function($ionicHistory, $mmGroups, $translate, $mmSite, $mmUtil, $state, $mmText, $translate) {
 
-    var self = {};
+    var self = {},
+        MODE_RESPONSETIME = 1,
+        MODE_COURSE = 2,
+        MODE_CATEGORY = 3,
+        FEEDBACK_LINE_SEP = '|',
+        FEEDBACK_MULTICHOICE_TYPE_SEP = '>>>>>',
+        FEEDBACK_MULTICHOICE_ADJUST_SEP = '<<<<<',
+        FEEDBACK_MULTICHOICE_HIDENOSELECT = 'h',
+        FEEDBACK_MULTICHOICERATED_VALUE_SEP = '####';
 
     /**
      * Get activity feedback group info to be shown on templates.
@@ -132,10 +140,83 @@ angular.module('mm.addons.mod_feedback')
      * @ngdoc method
      * @name $mmaModFeedbackHelper#getItemForm
      * @param {Object}  item           Item to process
+     * @param {Boolean} preview        Previewing options.
      * @return {Object}       Item processed to show form.
      */
-    self.getItemForm = function(item) {
-        // @todo: work on itemData.
+    self.getItemForm = function(item, preview) {
+        switch (item.typ) {
+            case 'label':
+                item.name = "";
+                item.template = 'label';
+                item.presentation = $mmText.replacePluginfileUrls(item.presentation, item.itemfiles);
+                break;
+            case 'info':
+                var type = parseInt(item.presentation, 10);
+                if (type == MODE_COURSE || type == MODE_CATEGORY) {
+                    item.presentation = item.otherdata;
+                } else if (type == MODE_RESPONSETIME) {
+                    item.presentation = moment(new Date().getTime()).format($translate.instant('mm.core.dffulldate'));
+                } else {
+                    // Errors on item, return false.
+                    return false;
+                }
+                item.template = 'label';
+                break;
+            case 'numeric':
+                var range = item.presentation.split(FEEDBACK_LINE_SEP) || [];
+                item.rangefrom = range.length > 0 ? parseInt(range[0], 10) || '' : '',
+                item.rangeto = range.length > 1 ? parseInt(range[1], 10) || '' : '',
+                item.template = 'numeric';
+                break;
+            case 'textfield':
+                var sizeAndLength = item.presentation.split(FEEDBACK_LINE_SEP) || [];
+                item.size = sizeAndLength.length > 0 && sizeAndLength[0] >= 5 ? sizeAndLength[0] : 30,
+                item.length = sizeAndLength.length > 1 ? sizeAndLength[1] : 255;
+                item.template = 'textfield';
+                break;
+            case 'textarea':
+                var widthAndHeight = item.presentation.split(FEEDBACK_LINE_SEP) || [];
+                item.width = widthAndHeight.length > 0 && widthAndHeight[0] >= 5 ? widthAndHeight[0] : 30,
+                item.height = widthAndHeight.length > 1 ? widthAndHeight[1] : 5;
+                item.template = 'textarea';
+                break;
+            case 'multichoice':
+            case 'multichoicerated':
+                var parts = item.presentation.split(FEEDBACK_MULTICHOICE_TYPE_SEP) || [];
+                item.subtype = parts.length > 0 && parts[0] ? parts[0] : 'r';
+                item.presentation = parts.length > 1 ? parts[1] : '';
+                if (item.subtype != 'd') {
+                    parts = item.presentation.split(FEEDBACK_MULTICHOICE_ADJUST_SEP) || [];
+                    item.presentation = parts.length > 0 ? parts[0] : '';
+                    // Horizontal are not supported right now.
+                    //item.horizontal = parts.length > 1 && !!parts[1];
+                } else {
+                    item.class = "item-select";
+                }
+
+                item.choices = item.presentation.split(FEEDBACK_LINE_SEP) || [];
+                item.choices = item.choices.map(function(choice, index) {
+                    var weightValue = choice.split(FEEDBACK_MULTICHOICERATED_VALUE_SEP) || [''],
+                    choice = weightValue.length == 1 ? weightValue[0] : '(' + weightValue[0] + ') ' + weightValue[1];
+                    return {value: index + 1, label: choice};
+                });
+                if (item.subtype === 'r' && item.options.search(FEEDBACK_MULTICHOICE_HIDENOSELECT) == -1) {
+                    item.choices.unshift({value: 0, label: $translate.instant('mma.mod_feedback.not_selected')});
+                }
+                item.template = 'multichoice-' + item.subtype;
+                break;
+            case 'pagebreak':
+            case 'captcha':
+                if (!preview) {
+                    // Captcha is not supported right now because it doesn't make sense (app cannot be used as guest).
+                    // Otherwise label will be shown on preview.
+                    // Pagebreaks are only used on preview.
+                    return false;
+                }
+                break;
+            default:
+                return false;
+        }
         return item;
     };
 

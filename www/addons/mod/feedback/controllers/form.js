@@ -21,13 +21,15 @@ angular.module('mm.addons.mod_feedback')
  * @ngdoc controller
  * @name mmaModFeedbackFormCtrl
  */
-.controller('mmaModFeedbackFormCtrl', function($scope, $stateParams, $mmaModFeedback, $mmUtil, $q, $mmCourse, $mmText,
-            mmaModFeedbackComponent, $mmEvents, $mmApp, $translate, mmCoreEventOnlineStatusChanged, $mmaModFeedbackHelper) {
+.controller('mmaModFeedbackFormCtrl', function($scope, $stateParams, $mmaModFeedback, $mmUtil, $q, $mmCourse, $mmText, $timeout,
+            mmaModFeedbackComponent, $mmEvents, $mmApp, $translate, mmCoreEventOnlineStatusChanged, $mmaModFeedbackHelper,
+            $ionicScrollDelegate) {
     var feedbackId = $stateParams.feedbackid,
         module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         currentPage = $stateParams.page,
-        feedback;
+        feedback,
+        scrollView;
 
     $scope.title = $stateParams.title;
     $scope.moduleUrl = module.url;
@@ -52,7 +54,7 @@ angular.module('mm.addons.mod_feedback')
         }).then(function(accessData) {
             $scope.access = accessData;
 
-            if (accessData.cansubmit && !accessData.isempty) {
+            if (accessData.cancomplete && accessData.cansubmit && !accessData.isempty) {
 
                 return typeof currentPage == "undefined" ? $mmaModFeedback.getResumePage(feedback.id) : $q.when(currentPage);
             } else {
@@ -75,9 +77,13 @@ angular.module('mm.addons.mod_feedback')
 
     function fetchFeedbackPageData(page) {
         currentPage = page;
+
         return $mmaModFeedback.getPageItems(feedback.id, page).then(function(response) {
             $scope.items = response.items.map(function(itemData) {
                 return $mmaModFeedbackHelper.getItemForm(itemData);
+            }).filter(function(itemData) {
+                // Filter items with errors.
+                return itemData;
             });
 
             $scope.hasPrevPage = response.hasprevpage ? page - 1 : false;
@@ -106,6 +112,7 @@ angular.module('mm.addons.mod_feedback')
         $scope.feedbackLoaded = false;
         // @todo: send data and process it. Control required as well.
         return fetchFeedbackPageData(page).finally(function(){
+            scrollTop();
             $scope.feedbackLoaded = true;
         });
     };
@@ -139,6 +146,15 @@ angular.module('mm.addons.mod_feedback')
             });
         }
     };
+
+    function scrollTop() {
+        if (!scrollView) {
+            scrollView = $ionicScrollDelegate.$getByHandle('mmaModFeedbackFormScroll');
+        }
+        $timeout(function() {
+            scrollView && scrollView.scrollTop && scrollView.scrollTop();
+        });
+    }
 
     // Refresh online status when changes.
     onlineObserver = $mmEvents.on(mmCoreEventOnlineStatusChanged, function(online) {

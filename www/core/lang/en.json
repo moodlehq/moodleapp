@@ -42,6 +42,7 @@
     "delete": "Delete",
     "deleting": "Deleting",
     "description": "Description",
+    "dffulldate": "dddd, D MMMM YYYY h[:]mm A",
     "dfdaymonthyear": "MM-DD-YYYY",
     "dfdayweekmonth": "ddd, D MMM",
     "dflastweekdate": "ddd",

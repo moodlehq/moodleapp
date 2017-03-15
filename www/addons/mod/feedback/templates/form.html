@@ -7,10 +7,10 @@
             <mm-context-menu-item priority="700" ng-if="feedbackLoaded && !hasOffline && isOnline" content="'mm.core.refresh' | translate" action="refreshFeedback(false)" icon-action="refreshIcon" close-on-click="false" close-when-done="true"></mm-context-menu-item>
         </mm-context-menu>
     </ion-nav-buttons>
-    <ion-content mm-state-class>
+    <ion-content delegate-handle="mmaModFeedbackFormScroll" mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="feedbackLoaded" on-refresh="refreshFeedback(false)"></ion-refresher>
         <mm-loading hide-until="feedbackLoaded">
-            <section ng-if="access.cansubmit && !access.isempty">
+            <section ng-if="access.cancomplete && access.cansubmit && !access.isempty">
                 <div class="list">
                     <div class="item item-text-wrap">
                         <p class="item-heading">{{ 'mma.mod_feedback.mode' | translate }}</p>
@@ -19,12 +19,41 @@
                     </div>
                 </div>
                 <div class="list" ng-if="items && items.length">
-                    <div ng-repeat="item in items track by $index" class="item item-text-wrap">
-                        <p class="item-heading" mm-mark-required="{{item.required}}" ng-if="item.name">{{item.itemnumber}}. {{ item.name }}</p>
-                        <p class="item-text-wrap" ng-if="!item.template && item.presentation">{{ item.presentation }}</p>
-                        <div class="item-text-wrap" ng-if="item.template" ng-include="item.template"></div>
+                    <div ng-repeat="item in items track by $index" class="item item-text-wrap" ng-class="{'item-input item-stacked-label' : item.hasvalue, 'item-divider': item.typ == 'pagebreak'}">
+                        <p class="item-heading" mm-mark-required="{{item.required}}" ng-if="item.name"><span ng-if="item.itemnumber">{{item.itemnumber}}. </span>{{ item.name }}</p>
+                        <div class="item-text-wrap" ng-class="item.class" ng-if="item.template" ng-include="item.template"></div>
                     </div>
                 </div>
+
+                <script type="text/ng-template" id="label">
+                    <p><mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{ item.presentation }}</mm-format-text></p>
+                </script>
+
+                <script type="text/ng-template" id="textfield">
+                    <input type="text" value="{{item.value}}" autocorrect="off" size="{{item.size}}" size="{{item.length}}"/>
+                </script>
+
+                <script type="text/ng-template" id="numeric">
+                    <input type="number" value="{{item.value}}" min="{{item.rangefrom}}" max="{{item.rangeto}}"/>
+                </script>
+
+                <script type="text/ng-template" id="textarea">
+                    <textarea aria-multiline="true" rows="{{item.height}}" cols="{{item.width}}"></textarea>
+                </script>
+
+                <script type="text/ng-template" id="multichoice-r">
+                    <ion-radio ng-if="item.subtype == 'r'" ng-value="option.value" ng-repeat="option in item.choices">{{option.label}}</ion-radio>
+                </script>
+
+                <script type="text/ng-template" id="multichoice-c">
+                    <ion-checkbox ng-if="item.subtype == 'c'" ng-value="option.value" ng-repeat="option in item.choices">{{option.label}}</ion-checkbox>
+                </script>
+
+                <script type="text/ng-template" id="multichoice-d">
+                    <select ng-if="item.subtype == 'd'" mm-ios-select-fix>
+                        <option ng-repeat="option in item.choices" ng-value="option.value">{{option.label}}</option>
+                    </select>
+                </script>
 
                 <div class="item item-text-wrap row-buttons responsive-sm">
                     <button class="button button-block" ng-click="cancel()">

@@ -57,13 +57,25 @@ angular.module('mm.addons.mod_feedback')
      * @return {Promise}          Promise resolved with the list of files.
      */
     self.getFiles = function(module, courseId, siteId) {
-        return $mmaModFeedback.getFeedback(courseId, module.id, siteId).then(function(feedback) {
+        var files = [],
+            feedback;
+        return $mmaModFeedback.getFeedback(courseId, module.id, siteId).then(function(response) {
+            feedback = response;
+
             // Get intro files and page after submit files.
-            var files = feedback.pageaftersubmitfiles || [];
-            return files.concat(self.getIntroFilesFromInstance(module, feedback));
+            files = feedback.pageaftersubmitfiles || [];
+            files = files.concat(self.getIntroFilesFromInstance(module, feedback));
+
+            return $mmaModFeedback.getItems(feedback.id, siteId);
+        }).then(function(response) {
+            angular.forEach(response.items, function(item) {
+                files = files.concat(item.itemfiles);
+            });
+
+            return files;
         }).catch(function() {
-            // Feedback not found, return empty list.
-            return [];
+            // Any error, return the list we have.
+            return files;
         });
     };
 
@@ -201,6 +213,9 @@ angular.module('mm.addons.mod_feedback')
                         return $q.all(p3);
                     }));
                 }
+
+                p2.push($mmaModFeedback.getItems(feedback.id, siteId));
+
                 if (accessData.cancomplete && accessData.cansubmit && !accessData.isempty) {
                     p2.push($mmaModFeedback.getResumePage(feedback.id, siteId).then(function(page) {
                         // @todo: Get all pages.

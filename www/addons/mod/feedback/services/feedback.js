@@ -448,22 +448,6 @@ angular.module('mm.addons.mod_feedback')
     };
 
     /**
-     * Invalidates all pages data.
-     *
-     * @module mm.addons.mod_feedback
-     * @ngdoc method
-     * @name $mmaModFeedback#invalidateAllPagesData
-     * @param  {Number} feedbackId   Feedback ID.
-     * @param  {String} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise}        Promise resolved when the data is invalidated.
-     */
-    self.invalidateAllPagesData = function(feedbackId, siteId) {
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.invalidateWsCacheForKeyStartingWith(getPagesDataPrefixCacheKey(feedbackId));
-        });
-    };
-
-    /**
      * Invalidate the prefetched content except files.
      * To invalidate files, use $mmaModFeedback#invalidateFiles.
      *

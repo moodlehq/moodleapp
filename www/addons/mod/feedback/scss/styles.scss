@@ -7,3 +7,13 @@
     margin: 0 auto;
   }
 }
+
+.mm-site_mod_feedback-form {
+  .item-select select {
+      position: relative;
+      padding: $item-padding / 2;
+      max-width: 100%;
+      width: 100%;
+      direction: ltr;
+  }
+}
