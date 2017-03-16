@@ -10,7 +10,7 @@
     <ion-content delegate-handle="mmaModFeedbackFormScroll" mm-state-class>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="feedbackLoaded" on-refresh="refreshFeedback(false)"></ion-refresher>
         <mm-loading hide-until="feedbackLoaded">
-            <section ng-if="access.cancomplete && access.cansubmit && !access.isempty">
+            <section ng-if="items">
                 <div class="list">
                     <div class="item item-text-wrap">
                         <p class="item-heading">{{ 'mma.mod_feedback.mode' | translate }}</p>
@@ -19,7 +19,7 @@
                     </div>
                 </div>
                 <div class="list" ng-if="items && items.length">
-                    <div ng-repeat="item in items track by $index" class="item item-text-wrap" ng-class="{'item-input item-stacked-label' : item.hasvalue, 'item-divider': item.typ == 'pagebreak'}">
+                    <div ng-repeat="item in items track by $index" class="item item-text-wrap" ng-class="{'item-input item-stacked-label' : item.hasvalue, 'item-divider': item.typ == 'pagebreak', 'item-stable': item.dependitem > 0 && preview }">
                         <p class="item-heading" mm-mark-required="{{item.required}}" ng-if="item.name"><span ng-if="item.itemnumber">{{item.itemnumber}}. </span>{{ item.name }}</p>
                         <div class="item-text-wrap" ng-class="item.class" ng-if="item.template" ng-include="item.template"></div>
                     </div>
@@ -55,10 +55,7 @@
                     </select>
                 </script>
 
-                <div class="item item-text-wrap row-buttons responsive-sm">
-                    <button class="button button-block" ng-click="cancel()">
-                        {{ 'mm.core.cancel' | translate }}
-                    </button>
+                <div ng-if="!preview" class="item item-text-wrap row-buttons responsive-sm">
                     <button ng-if="hasPrevPage !== false" class="button button-block icon-left ion-chevron-left" ng-click="gotoPage(hasPrevPage)">
                         {{ 'mma.mod_feedback.previous_page' | translate }}
                     </button>

@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_feedback')
  */
 .controller('mmaModFeedbackFormCtrl', function($scope, $stateParams, $mmaModFeedback, $mmUtil, $q, $mmCourse, $mmText, $timeout,
             mmaModFeedbackComponent, $mmEvents, $mmApp, $translate, mmCoreEventOnlineStatusChanged, $mmaModFeedbackHelper,
-            $ionicScrollDelegate) {
+            $ionicScrollDelegate, $ionicHistory) {
     var feedbackId = $stateParams.feedbackid,
         module = $stateParams.module || {},
         courseId = $stateParams.courseid,
@@ -38,6 +38,7 @@ angular.module('mm.addons.mod_feedback')
     $scope.refreshIcon = 'spinner';
     $scope.component = mmaModFeedbackComponent;
     $scope.componentId = module.id;
+    $scope.preview = !!$stateParams.preview;
 
     // Convenience function to get feedback data.
     function fetchFeedbackFormData(refresh, showErrors) {
@@ -54,11 +55,11 @@ angular.module('mm.addons.mod_feedback')
         }).then(function(accessData) {
             $scope.access = accessData;
 
-            if (accessData.cancomplete && accessData.cansubmit && !accessData.isempty) {
-
+            if (!$scope.preview && accessData.cancomplete && accessData.cansubmit && !accessData.isempty) {
                 return typeof currentPage == "undefined" ? $mmaModFeedback.getResumePage(feedback.id) : $q.when(currentPage);
             } else {
-                // @todo: go back
+                $scope.preview = true;
+                return $q.when(0);
             }
         }).then(function(page) {
             return fetchFeedbackPageData(page);
@@ -76,18 +77,26 @@ angular.module('mm.addons.mod_feedback')
     }
 
     function fetchFeedbackPageData(page) {
-        currentPage = page;
+        var promise;
 
-        return $mmaModFeedback.getPageItems(feedback.id, page).then(function(response) {
+        if ($scope.preview) {
+            promise = $mmaModFeedback.getItems(feedback.id);
+        } else {
+            currentPage = page;
+
+            promise = $mmaModFeedback.getPageItems(feedback.id, page).then(function(response) {
+                $scope.hasPrevPage = response.hasprevpage ? page - 1 : false;
+                $scope.hasNextPage = response.hasnextpage ? page + 1 : false;
+                return response;
+            });
+        }
+        return promise.then(function(response) {
             $scope.items = response.items.map(function(itemData) {
-                return $mmaModFeedbackHelper.getItemForm(itemData);
+                return $mmaModFeedbackHelper.getItemForm(itemData, $scope.preview);
             }).filter(function(itemData) {
                 // Filter items with errors.
                 return itemData;
             });
-
-            $scope.hasPrevPage = response.hasprevpage ? page - 1 : false;
-            $scope.hasNextPage = response.hasnextpage ? page + 1 : false;
         });
     }
 
@@ -99,7 +108,11 @@ angular.module('mm.addons.mod_feedback')
         if (feedback) {
             promises.push($mmaModFeedback.invalidateFeedbackAccessInformationData(feedback.id));
             promises.push($mmaModFeedback.invalidateResumePageData(feedback.id));
-            promises.push($mmaModFeedback.invalidateAllPagesData(feedback.id));
+            if ($scope.preview) {
+                promises.push($mmaModFeedback.invalidateItemsData(feedback.id));
+            } else {
+                promises.push($mmaModFeedback.invalidateAllPagesData(feedback.id));
+            }
         }
 
         return $q.all(promises).finally(function() {
@@ -125,6 +138,7 @@ angular.module('mm.addons.mod_feedback')
     // Function to discard and go back.
     $scope.cancel = function() {
         // @todo
+        $ionicHistory.goBack();
     };
 
     fetchFeedbackFormData().finally(function() {

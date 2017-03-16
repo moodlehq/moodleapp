@@ -163,13 +163,14 @@ angular.module('mm.addons.mod_feedback')
     };
 
     // Function to go to the questions form.
-    $scope.gotoAnswerQuestions = function(page) {
+    $scope.gotoAnswerQuestions = function(page, preview) {
         var stateParams = {
             module: module,
             moduleid: module.id,
             courseid: courseId,
             feedbackid: module.instance,
-            page: page || 0
+            page: page || 0,
+            preview: !!preview
         };
         $state.go('site.mod_feedback-form', stateParams);
     };
