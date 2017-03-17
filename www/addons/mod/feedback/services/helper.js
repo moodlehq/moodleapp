@@ -154,8 +154,10 @@ angular.module('mm.addons.mod_feedback')
                 var type = parseInt(item.presentation, 10);
                 if (type == MODE_COURSE || type == MODE_CATEGORY) {
                     item.presentation = item.otherdata;
+                    item.value = item.otherdata;
                 } else if (type == MODE_RESPONSETIME) {
-                    item.presentation = moment(new Date().getTime()).format($translate.instant('mm.core.dffulldate'));
+                    item.value = new Date().getTime();
+                    item.presentation = moment(item.value).format($translate.instant('mm.core.dffulldate'));
                 } else {
                     // Errors on item, return false.
                     return false;
@@ -167,17 +169,20 @@ angular.module('mm.addons.mod_feedback')
                 item.rangefrom = range.length > 0 ? parseInt(range[0], 10) || '' : '',
                 item.rangeto = range.length > 1 ? parseInt(range[1], 10) || '' : '',
                 item.template = 'numeric';
+                item.value = "";
                 break;
             case 'textfield':
                 var sizeAndLength = item.presentation.split(FEEDBACK_LINE_SEP) || [];
                 item.size = sizeAndLength.length > 0 && sizeAndLength[0] >= 5 ? sizeAndLength[0] : 30,
                 item.length = sizeAndLength.length > 1 ? sizeAndLength[1] : 255;
+                item.value = "";
                 item.template = 'textfield';
                 break;
             case 'textarea':
                 var widthAndHeight = item.presentation.split(FEEDBACK_LINE_SEP) || [];
                 item.width = widthAndHeight.length > 0 && widthAndHeight[0] >= 5 ? widthAndHeight[0] : 30,
                 item.height = widthAndHeight.length > 1 ? widthAndHeight[1] : 5;
+                item.value = "";
                 item.template = 'textarea';
                 break;
             case 'multichoice':
@@ -200,8 +205,13 @@ angular.module('mm.addons.mod_feedback')
                     choice = weightValue.length == 1 ? weightValue[0] : '(' + weightValue[0] + ') ' + weightValue[1];
                     return {value: index + 1, label: choice};
                 });
+
                 if (item.subtype === 'r' && item.options.search(FEEDBACK_MULTICHOICE_HIDENOSELECT) == -1) {
                     item.choices.unshift({value: 0, label: $translate.instant('mma.mod_feedback.not_selected')});
+                    item.value = 0;
+                } else if (item.subtype === 'd') {
+                    item.choices.unshift({value: 0, label: ''});
+                    item.value = 0;
                 }
                 item.template = 'multichoice-' + item.subtype;
                 break;

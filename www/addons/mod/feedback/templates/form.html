@@ -30,28 +30,27 @@
                 </script>
 
                 <script type="text/ng-template" id="textfield">
-                    <input type="text" value="{{item.value}}" autocorrect="off" size="{{item.size}}" size="{{item.length}}"/>
+                    <input name="{{item.typ}}_{{item.id}}" type="text" ng-model="item.value" autocorrect="off" size="{{item.size}}" size="{{item.length}}"/>
                 </script>
 
                 <script type="text/ng-template" id="numeric">
-                    <input type="number" value="{{item.value}}" min="{{item.rangefrom}}" max="{{item.rangeto}}"/>
+                    <input name="{{item.typ}}_{{item.id}}" type="number" ng-model="item.value" min="{{item.rangefrom}}" max="{{item.rangeto}}"/>
                 </script>
 
                 <script type="text/ng-template" id="textarea">
-                    <textarea aria-multiline="true" rows="{{item.height}}" cols="{{item.width}}"></textarea>
+                    <textarea name="{{item.typ}}_{{item.id}}" aria-multiline="true" rows="{{item.height}}" cols="{{item.width}}" ng-model="item.value"></textarea>
                 </script>
 
                 <script type="text/ng-template" id="multichoice-r">
-                    <ion-radio ng-if="item.subtype == 'r'" ng-value="option.value" ng-repeat="option in item.choices">{{option.label}}</ion-radio>
+                    <ion-radio name="{{item.typ}}_{{item.id}}" ng-model="item.value" ng-value="option.value" ng-repeat="option in item.choices">{{option.label}}</ion-radio>
                 </script>
 
                 <script type="text/ng-template" id="multichoice-c">
-                    <ion-checkbox ng-if="item.subtype == 'c'" ng-value="option.value" ng-repeat="option in item.choices">{{option.label}}</ion-checkbox>
+                    <ion-checkbox name="{{item.typ}}_{{item.id}}" ng-model="option.checked" ng-value="option.value" ng-repeat="option in item.choices">{{option.label}}</ion-checkbox>
                 </script>
 
                 <script type="text/ng-template" id="multichoice-d">
-                    <select ng-if="item.subtype == 'd'" mm-ios-select-fix>
-                        <option ng-repeat="option in item.choices" ng-value="option.value">{{option.label}}</option>
+                    <select name="{{item.typ}}_{{item.id}}" ng-model="item.value" ng-options="option.value as option.label for option in item.choices" mm-ios-select-fix>
                     </select>
                 </script>
 

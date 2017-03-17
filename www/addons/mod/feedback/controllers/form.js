@@ -122,11 +122,61 @@ angular.module('mm.addons.mod_feedback')
 
     // Function to go to move through the questions form.
     $scope.gotoPage = function(page) {
+        var responses = {};
         $scope.feedbackLoaded = false;
-        // @todo: send data and process it. Control required as well.
-        return fetchFeedbackPageData(page).finally(function(){
-            scrollTop();
-            $scope.feedbackLoaded = true;
+
+        angular.forEach($scope.items, function(itemData) {
+            if (itemData.hasvalue) {
+                var name, value,
+                    nameTemp = itemData.typ + '_' + itemData.id,
+                    answered = false;
+                if (itemData.typ == "multichoice" && itemData.subtype == 'c') {
+                    name = nameTemp + '[0]';
+                    responses[name] = 0;
+                    angular.forEach(itemData.choices, function(choice, index) {
+                        name = nameTemp + '[' + (index + 1) + ']';
+                        value = choice.checked ? choice.value : 0;
+                        if (!answered && value) {
+                            answered = true;
+                        }
+                        responses[name] = value;
+                    });
+                } else {
+                    if (itemData.typ == "multichoice") {
+                        name = nameTemp + '[0]';
+                        value = itemData.value || 0;
+                    } else if (itemData.typ == "multichoicerated") {
+                        name = nameTemp;
+                        value = itemData.value || 0;
+                    } else {
+                        name = nameTemp;
+                        value = itemData.value || "";
+                    }
+
+                    answered = !!value;
+                    responses[name] = value;
+                }
+
+                if (itemData.required && !answered) {
+                    // Check if it has any value.
+                }
+
+            }
+        });
+
+        return $mmaModFeedback.processPage(feedback.id, currentPage, responses, page < currentPage).then(function(response) {
+            var promise;
+
+            if (isNaN(parseInt(response.jumpto, 10)) || response.jumpto == currentPage) {
+                promise = $q.when();
+            } else {
+                promise = fetchFeedbackPageData(page);
+            }
+
+            return promise.finally(function(){
+                scrollTop();
+                $scope.feedbackLoaded = true;
+            });
         });
     };
 

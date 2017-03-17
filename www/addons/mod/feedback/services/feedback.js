@@ -448,6 +448,32 @@ angular.module('mm.addons.mod_feedback')
     };
 
     /**
+     * Process a jump between pages.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#processPage
+     * @param   {Number}    feedbackId      Feedback ID.
+     * @param   {Number}    page            The page being processed.
+     * @param   {Object}    responses       The data to be processed the key is the field name (usually type[index]_id).
+     * @param   {Boolean}   goprevious      Whether we want to jump to previous page.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the info is retrieved.
+     */
+    self.processPage = function(feedbackId, page, responses, goprevious, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    feedbackid: feedbackId,
+                    page: page,
+                    responses: $mmUtil.objectToArrayOfObjects(responses, 'name', 'value'),
+                    goprevious: goprevious ? 1 : 0
+                };
+
+            return site.write('mod_feedback_process_page', params);
+        });
+    };
+
+    /**
      * Invalidate the prefetched content except files.
      * To invalidate files, use $mmaModFeedback#invalidateFiles.
      *
