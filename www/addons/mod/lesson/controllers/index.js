@@ -30,13 +30,17 @@ angular.module('mm.addons.mod_lesson')
         lesson,
         accessInfo,
         scrollView,
-        onlineObserver;
+        onlineObserver,
+        password;
 
     $scope.title = module.name;
     $scope.moduleUrl = module.url;
     $scope.refreshIcon = 'spinner';
     $scope.component = mmaModLessonComponent;
     $scope.componentId = module.id;
+    $scope.data = {
+        password: ''
+    };
 
     // Convenience function to get Lesson data.
     function fetchLessonData(refresh) {
@@ -51,16 +55,30 @@ angular.module('mm.addons.mod_lesson')
 
             return $mmaModLesson.getAccessInformation(lesson.id);
         }).then(function(info) {
+            var promise;
+
             accessInfo = info;
             $scope.preventMessages = info.preventaccessreasons;
+
             if ($scope.preventMessages && $scope.preventMessages.length) {
-                // Lesson cannot be attempted, stop.
-                return;
+                $scope.askPassword = $scope.preventMessages.length == 1 && $mmaModLesson.isPasswordProtected(info);
+                if ($scope.askPassword) {
+                    // The lesson requires a password. Check if there is one in memory or DB.
+                    promise = password ? $q.when(password) : $mmaModLesson.getStoredPassword(lesson.id);
+
+                    return promise.then(function(pwd) {
+                        return validatePassword(pwd);
+                    }).catch(function() {
+                        // No password or the validation failed. The password form will be shown.
+                    });
+                } else  {
+                    // Lesson cannot be attempted, stop.
+                    return;
+                }
             }
 
-            // Check to see if end of lesson was reached and if the user left.
-            $scope.leftDuringTimed = info.lastpageseen && info.lastpageseen != $mmaModLesson.LESSON_EOL &&
-                    info.leftduringtimedsession;
+            // Lesson can be attempted, don't ask the password and don't show prevent messages.
+            fetchDataFinished();
         }).then(function() {
             // All data obtained, now fill the context menu.
             $mmCourseHelper.fillContextMenu($scope, module, courseId, refresh, mmaModLessonComponent);
@@ -72,6 +90,34 @@ angular.module('mm.addons.mod_lesson')
 
             $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
             return $q.reject();
+        });
+    }
+
+    // Function called when all the data has been fetched.
+    function fetchDataFinished(pwd) {
+        password = pwd;
+        $scope.data.password = '';
+        $scope.askPassword = false;
+        $scope.preventMessages = [];
+        $scope.leftDuringTimed = $mmaModLesson.leftDuringTimed(accessInfo);
+
+        if (pwd) {
+            // Store the password in DB.
+            $mmaModLesson.storePassword(lesson.id, password);
+        }
+    }
+
+    // Validate a password and retrieve extra data.
+    function validatePassword(pwd) {
+        return $mmaModLesson.validatePassword(lesson.id, pwd).then(function() {
+            // Password validated, remove the form and the prevent message.
+            fetchDataFinished(pwd);
+
+            // Log view now that we have the password.
+            logView();
+        }).catch(function(error) {
+            password = '';
+            return $q.reject(error);
         });
     }
 
@@ -90,13 +136,9 @@ angular.module('mm.addons.mod_lesson')
     }
 
     function showSpinnerAndRefresh() {
-        if (!scrollView) {
-            scrollView = $ionicScrollDelegate.$getByHandle('mmaModLessonIndexScroll');
-        }
-
+        scrollTop();
         $scope.lessonLoaded = false;
         $scope.refreshIcon = 'spinner';
-        scrollView.scrollTop();
 
         refreshData().finally(function() {
             $scope.lessonLoaded = true;
@@ -104,11 +146,27 @@ angular.module('mm.addons.mod_lesson')
         });
     }
 
-    // Fetch the Lesson data.
-    fetchLessonData().then(function() {
-        $mmaModLesson.logViewLesson(lesson.id).then(function() {
+    function scrollTop() {
+        if (!scrollView) {
+            scrollView = $ionicScrollDelegate.$getByHandle('mmaModLessonIndexScroll');
+        }
+
+        scrollView.scrollTop();
+    }
+
+    // Log viewing the lesson.
+    function logView() {
+        $mmaModLesson.logViewLesson(lesson.id, password).then(function() {
             $mmCourse.checkModuleCompletion(courseId, module.completionstatus);
         });
+    }
+
+    // Fetch the Lesson data.
+    fetchLessonData().then(function() {
+        if (!$scope.preventMessages || !$scope.preventMessages.length) {
+            // Lesson can be attempted, log viewing it.
+            logView();
+        }
     }).finally(function() {
         $scope.lessonLoaded = true;
         $scope.refreshIcon = 'ion-refresh';
@@ -120,7 +178,27 @@ angular.module('mm.addons.mod_lesson')
         $state.go('site.mod_lesson-player', {
             courseid: courseId,
             lessonid: lesson.id,
-            pageid: pageId
+            pageid: pageId,
+            password: password
+        });
+    };
+
+    // Submit password for password protected lessons.
+    $scope.submitPassword = function(pwd) {
+        if (!pwd) {
+            $mmUtil.showErrorModal('mma.mod_lesson.emptypassword');
+            return;
+        }
+
+        scrollTop();
+        $scope.lessonLoaded = false;
+        $scope.refreshIcon = 'spinner';
+
+        validatePassword(pwd).catch(function(error) {
+            $mmUtil.showErrorModal(error);
+        }).finally(function() {
+            $scope.lessonLoaded = true;
+            $scope.refreshIcon = 'ion-refresh';
         });
     };
 

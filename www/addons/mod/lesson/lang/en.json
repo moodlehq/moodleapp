@@ -1,5 +1,8 @@
 {
     "congratulations": "Congratulations - end of lesson reached",
+    "continue": "Continue",
+    "emptypassword": "Password cannot be empty",
+    "enterpassword": "Please enter the password:",
     "lessonmenu": "Lesson menu",
     "linkedmedia": "Linked media",
     "progresscompleted": "You have completed {{$a}}% of the lesson",

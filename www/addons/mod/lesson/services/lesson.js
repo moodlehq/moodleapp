@@ -14,6 +14,19 @@
 
 angular.module('mm.addons.mod_lesson')
 
+.constant('mmaModLessonPasswordStore', 'mod_lesson_password')
+
+.config(function($mmSitesFactoryProvider, mmaModLessonPasswordStore) {
+    var stores = [
+        {
+            name: mmaModLessonPasswordStore,
+            keyPath: 'id',
+            indexes: []
+        }
+    ];
+    $mmSitesFactoryProvider.registerStores(stores);
+})
+
 /**
  * Lesson service.
  *
@@ -21,7 +34,7 @@ angular.module('mm.addons.mod_lesson')
  * @ngdoc service
  * @name $mmaModLesson
  */
-.factory('$mmaModLesson', function($log, $mmSitesManager, $q, $mmUtil) {
+.factory('$mmaModLesson', function($log, $mmSitesManager, $q, $mmUtil, mmaModLessonPasswordStore, $timeout) {
 
     $log = $log.getInstance('$mmaModLesson');
 
@@ -309,6 +322,24 @@ angular.module('mm.addons.mod_lesson')
     };
 
     /**
+     * Get a password stored in DB.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#getStoredPassword
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved with password on success, rejected otherwise.
+     */
+    self.getStoredPassword = function(lessonId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().get(mmaModLessonPasswordStore, lessonId).then(function(entry) {
+                return entry.password;
+            });
+        });
+    };
+
+    /**
      * Invalidates Lesson data.
      *
      * @module mm.addons.mod_lesson
@@ -374,6 +405,28 @@ angular.module('mm.addons.mod_lesson')
     };
 
     /**
+     * Check if a lesson is password protected based in the access info.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#isPasswordProtected
+     * @param  {Object}  info Lesson access info.
+     * @return {Boolean}      True if password protected, false otherwise.
+     */
+    self.isPasswordProtected = function(info) {
+        if (info && info.preventaccessreasons) {
+            for (var i = 0; i < info.preventaccessreasons.length; i++) {
+                var entry = info.preventaccessreasons[i];
+                if (entry.reason == 'passwordprotectedlesson') {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    };
+
+    /**
      * Return whether or not the plugin is enabled in a certain site. Plugin is enabled if the lesson WS are available.
      *
      * @module mm.addons.mod_lesson
@@ -423,6 +476,19 @@ angular.module('mm.addons.mod_lesson')
                 return result;
             });
         });
+    };
+
+    /**
+     * Check if the user left during a timed session.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#leftDuringTimed
+     * @param  {Object} info Lesson access info.
+     * @return {Boolean}     True if left during timed, false otherwise.
+     */
+    self.leftDuringTimed = function(info) {
+        return info && info.lastpageseen && info.lastpageseen != self.LESSON_EOL && info.leftduringtimedsession;
     };
 
     /**
@@ -483,6 +549,78 @@ angular.module('mm.addons.mod_lesson')
             }
 
             return site.write('mod_lesson_process_page', params);
+        });
+    };
+
+    /**
+     * Remove a password stored in DB.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#removeStoredPassword
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when removed.
+     */
+    self.removeStoredPassword = function(lessonId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.getDb().remove(mmaModLessonPasswordStore, lessonId);
+        });
+    };
+
+    /**
+     * Store a password in DB.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#storePassword
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {String} password Password to store.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when stored.
+     */
+    self.storePassword = function(lessonId, password, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var entry = {
+                id: lessonId,
+                password: password,
+                timemodified: new Date().getTime()
+            };
+
+            return site.getDb().insert(mmaModLessonPasswordStore, entry);
+        });
+    };
+
+    /**
+     * Validate a lesson password.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#validatePassword
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {String} password Lesson password (if any).
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved in success, rejected otherwise.
+     */
+    self.validatePassword = function(lessonId, password, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                lessonid: lessonId,
+                password: password
+            };
+
+            // @todo Use new WebService (not implemented yet).
+            return $timeout(function() {}, 1000).then(function() {
+                if (password != '123') {
+                    return $q.reject();
+                }
+            }).catch(function(error) {
+                if ($mmUtil.isWebServiceError(error)) {
+                    // The WebService returned an error, assume the password is wrong. Remove the stored password if any.
+                    self.removeStoredPassword(lessonId);
+                }
+                return $q.reject(error);
+            });
         });
     };
 

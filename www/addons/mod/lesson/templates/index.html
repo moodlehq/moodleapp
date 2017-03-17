@@ -12,9 +12,19 @@
         <mm-loading hide-until="lessonLoaded">
             <mm-course-mod-description description="description" watch="true" component="{{component}}" component-id="{{componentId}}"></mm-course-mod-description>
 
-            <div class="mm-info-card" ng-if="lesson && preventMessages && preventMessages.length" ng-repeat="message in preventMessages">
-                <i class="icon ion-information-circled padding"></i> {{ message.message }}
+            <!-- Prevent access messages. Only show the first one. -->
+            <div class="mm-info-card" ng-if="lesson && preventMessages && preventMessages.length">
+                <i class="icon ion-information-circled padding"></i> {{ preventMessages[0].message }}
             </div>
+
+            <!-- Input password for protected lessons. -->
+            <form ng-if="askPassword" class="card">
+                <ion-input class="item item-input item-stacked-label">
+                    <ion-label>{{ 'mma.mod_lesson.enterpassword' | translate }}</ion-label>
+                    <input id="mma-mod-lesson-password-input" type="password" placeholder="{{ 'mm.login.password' | translate }}" ng-model="data.password" mm-show-password>
+                    <button class="button button-block" ng-click="submitPassword(data.password)">{{ 'mma.mod_lesson.continue' | translate }}</button>
+                </ion-input>
+            </form>
 
             <div ng-if="lesson && (!preventMessages || !preventMessages.length)">
                 <div ng-if="leftDuringTimed" class="card">

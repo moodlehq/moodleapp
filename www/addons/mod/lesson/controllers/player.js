@@ -26,6 +26,7 @@ angular.module('mm.addons.mod_lesson')
 
     var lessonId = $stateParams.lessonid,
         courseId = $stateParams.courseid,
+        password = $stateParams.password,
         lesson,
         accessInfo,
         offline = false,
@@ -55,10 +56,13 @@ angular.module('mm.addons.mod_lesson')
         }).then(function(info) {
             accessInfo = info;
             if (info.preventaccessreasons && info.preventaccessreasons.length) {
-                // Lesson cannot be attempted, show message and go back.
-                $mmUtil.showErrorModal(info.preventaccessreasons[0]);
-                blockData && blockData.back();
-                return;
+                // If it's a password protected lesson and we have the password, allow attempting it.
+                if (!password || info.preventaccessreasons.length > 1 || !$mmaModLesson.isPasswordProtected(info)) {
+                    // Lesson cannot be attempted, show message and go back.
+                    $mmUtil.showErrorModal(info.preventaccessreasons[0]);
+                    blockData && blockData.back();
+                    return;
+                }
             }
 
             return launchAttempt($scope.currentPage);
@@ -70,7 +74,7 @@ angular.module('mm.addons.mod_lesson')
 
     // Start or continue an attempt.
     function launchAttempt(pageId) {
-        return $mmaModLesson.launchAttempt(lesson.id, undefined, pageId).then(function() {
+        return $mmaModLesson.launchAttempt(lesson.id, password, pageId).then(function() {
             $scope.currentPage = pageId || accessInfo.firstpageid;
 
             return loadPage($scope.currentPage);
@@ -79,7 +83,7 @@ angular.module('mm.addons.mod_lesson')
 
     // Load a certain page.
     function loadPage(pageId) {
-        return $mmaModLesson.getPageData(lesson.id, pageId, undefined, false, true, offline, true).then(function(data) {
+        return $mmaModLesson.getPageData(lesson.id, pageId, password, false, true, offline, true).then(function(data) {
             $scope.pageData = data;
             $scope.title = data.page.title;
             $scope.pageContent = data.page.contents;
@@ -97,7 +101,7 @@ angular.module('mm.addons.mod_lesson')
 
     // Finish the attempt.
     function finishAttempt() {
-        return $mmaModLesson.finishAttempt(lesson.id).then(function(data) {
+        return $mmaModLesson.finishAttempt(lesson.id, password).then(function(data) {
             $scope.eolData = data.data;
             $scope.eolProgress = data.progress;
 
@@ -131,7 +135,7 @@ angular.module('mm.addons.mod_lesson')
         }
 
         $scope.loadingMenu = true;
-        return $mmaModLesson.getPages(lesson.id).then(function(pages) {
+        return $mmaModLesson.getPages(lesson.id, password).then(function(pages) {
             $scope.lessonPages = pages.map(function(entry) {
                 return entry.page;
             });
@@ -152,7 +156,7 @@ angular.module('mm.addons.mod_lesson')
     $scope.buttonClicked = function(button) {
         showLoading();
 
-        return $mmaModLesson.processPage(lessonId, $scope.currentPage, button.data).then(function(result) {
+        return $mmaModLesson.processPage(lessonId, $scope.currentPage, button.data, password).then(function(result) {
             if (result.newpageid === 0) {
                 // Not a valid page, return to entry view.
                 // This happens, for example, when the user clicks to go to previous page and there is no previous page.
