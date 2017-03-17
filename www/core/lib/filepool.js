@@ -321,7 +321,7 @@ angular.module('mm.core')
         var promises = [];
         // Prefetch files.
         angular.forEach(files, function(file) {
-            promises.push(self.addToQueueByUrl(siteId, file.fileurl, component, componentId, file.timemodified));
+            promises.push(self.addToQueueByUrl(siteId, file.url || file.fileurl, component, componentId, file.timemodified));
         });
 
         return $q.all(promises);
@@ -643,7 +643,8 @@ angular.module('mm.core')
             angular.forEach(fileList, function(file) {
                 var path,
                     promise,
-                    fileLoaded = 0;
+                    fileLoaded = 0,
+                    fileUrl = file.url || file.fileurl;
 
                 if (dirPath) {
                     // Calculate the path to the file.
@@ -655,9 +656,9 @@ angular.module('mm.core')
                 }
 
                 if (prefetch) {
-                    promise = self.addToQueueByUrl(siteId, file.fileurl, component, componentId, file.timemodified, path);
+                    promise = self.addToQueueByUrl(siteId, fileUrl, component, componentId, file.timemodified, path);
                 } else {
-                    promise = self.downloadUrl(siteId, file.fileurl, false, component, componentId, file.timemodified, path);
+                    promise = self.downloadUrl(siteId, fileUrl, false, component, componentId, file.timemodified, path);
                 }
 
                 // Using undefined for success & fail will pass the success/failure to the parent promise.
@@ -1842,8 +1843,8 @@ angular.module('mm.core')
         var revision = 0;
 
         angular.forEach(files, function(file) {
-            if (file.fileurl) {
-                var r = self.getRevisionFromUrl(file.fileurl);
+            if (file.url || file.fileurl) {
+                var r = self.getRevisionFromUrl(file.url || file.fileurl);
                 if (r > revision) {
                     revision = r;
                 }

@@ -648,9 +648,10 @@ angular.module('mm.core')
 
                             // Retrieve file size if it's downloaded.
                             angular.forEach(files, function(file) {
-                                promises.push($mmFilepool.getFilePathByUrl(siteId, file.fileurl).then(function(path) {
+                                var fileUrl = file.url || file.fileurl;
+                                promises.push($mmFilepool.getFilePathByUrl(siteId, fileUrl).then(function(path) {
                                     return $mmFS.getFileSize(path).catch(function () {
-                                        return $mmFilepool.isFileDownloadingByUrl(siteId, file.fileurl).then(function() {
+                                        return $mmFilepool.isFileDownloadingByUrl(siteId, fileUrl).then(function() {
                                             // If downloading, count as downloaded.
                                             return file.filesize;
                                         }).catch(function() {
@@ -813,7 +814,8 @@ angular.module('mm.core')
                 promise = self.getModuleFiles(module, courseid).then(function(files) {
                     var promises = [];
                     angular.forEach(files, function(file) {
-                        promises.push($mmFilepool.removeFileByUrl(siteId, file.fileurl).catch(function() {
+                        var fileUrl = file.url || file.fileurl;
+                        promises.push($mmFilepool.removeFileByUrl(siteId, fileUrl).catch(function() {
                             // Ignore errors.
                         }));
                     });
