@@ -19,7 +19,7 @@
                     </div>
                 </div>
                 <div class="list" ng-if="items && items.length">
-                    <div ng-repeat="item in items track by $index" class="item item-text-wrap" ng-class="{'item-input item-stacked-label' : item.hasvalue, 'item-divider': item.typ == 'pagebreak', 'item-stable': item.dependitem > 0 && preview }">
+                    <div ng-repeat="item in items track by $index" class="item item-text-wrap" ng-class="{'item-input item-stacked-label' : item.hasvalue, 'item-divider': item.typ == 'pagebreak', 'item-stable': item.dependitem > 0}">
                         <p class="item-heading" mm-mark-required="{{item.required}}" ng-if="item.name"><span ng-if="item.itemnumber">{{item.itemnumber}}. </span>{{ item.name }}</p>
                         <div class="item-text-wrap" ng-class="item.class" ng-if="item.template" ng-include="item.template"></div>
                     </div>

@@ -217,10 +217,9 @@ angular.module('mm.addons.mod_feedback')
                 p2.push($mmaModFeedback.getItems(feedback.id, siteId));
 
                 if (accessData.cancomplete && accessData.cansubmit && !accessData.isempty) {
-                    p2.push($mmaModFeedback.getResumePage(feedback.id, siteId).then(function(page) {
-                        // @todo: Get all pages.
-                        return $mmaModFeedback.getPageItems(feedback.id, page, siteId);
-                    }));
+                    p2.push($mmaModFeedback.getCurrentValues(feedback.id, siteId));
+                    p2.push($mmaModFeedback.getResumePage(feedback.id, siteId));
+                    p2.push(getPageItemsAndNext(feedback.id, 0));
                 }
 
                 return $q.all(p2);
@@ -242,6 +241,14 @@ angular.module('mm.addons.mod_feedback')
                 };
             });
         });
+
+        function getPageItemsAndNext(feedbackId, page) {
+            return $mmaModFeedback.getPageItems(feedbackId, page, siteId).then(function(response) {
+                if (response.hasnextpage) {
+                    return getPageItemsAndNext(feedbackId, page + 1);
+                }
+            });
+        }
     }
 
     return self;

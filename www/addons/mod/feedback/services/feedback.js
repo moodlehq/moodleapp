@@ -118,6 +118,16 @@ angular.module('mm.addons.mod_feedback')
     }
 
     /**
+     * Get cache key for get current values feedback data WS calls.
+     *
+     * @param  {Number} feedbackId  Feedback ID.
+     * @return {String}             Cache key.
+     */
+    function getCurrentValuesDataCacheKey(feedbackId) {
+        return getFeedbackDataPrefixCacheKey(feedbackId) + ':currentvalues';
+    }
+
+    /**
      * Return whether or not the plugin is enabled in a certain site. Plugin is enabled if the feedback WS are available.
      *
      * @module mm.addons.mod_feedback
@@ -469,7 +479,56 @@ angular.module('mm.addons.mod_feedback')
                     goprevious: goprevious ? 1 : 0
                 };
 
-            return site.write('mod_feedback_process_page', params);
+            return site.write('mod_feedback_process_page', params).then(function(response) {
+                // Invalidate corrent values because they will change.
+                return self.invalidateCurrentValuesData(feedbackId, site.getId()).then(function() {
+                    return response;
+                });
+            });
+        });
+    };
+
+    /**
+     * Returns the temporary completion record for the current user.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#getCurrentValues
+     * @param   {Number}    feedbackId      Feedback ID.
+     * @param   {String}    [siteId]        Site ID. If not defined, current site.
+     * @return  {Promise}                   Promise resolved when the info is retrieved.
+     */
+    self.getCurrentValues = function(feedbackId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            var params = {
+                    feedbackid: feedbackId
+                },
+                preSets = {
+                    cacheKey: getCurrentValuesDataCacheKey(feedbackId)
+                };
+
+            return site.read('mod_feedback_get_unfinished_responses', params, preSets).then(function(response) {
+                if (response && typeof response.responses != "undefined") {
+                    return response.responses;
+                }
+                return $q.reject();
+            });
+        });
+    };
+
+    /**
+     * Invalidates temporary completion record data.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedback#invalidateCurrentVlauesData
+     * @param  {Number} feedbackId   Feedback ID.
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @return {Promise}        Promise resolved when the data is invalidated.
+     */
+    self.invalidateCurrentValuesData = function(feedbackId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getCurrentValuesDataCacheKey(feedbackId));
         });
     };
 

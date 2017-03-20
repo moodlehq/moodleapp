@@ -87,7 +87,21 @@ angular.module('mm.addons.mod_feedback')
             promise = $mmaModFeedback.getPageItems(feedback.id, page).then(function(response) {
                 $scope.hasPrevPage = response.hasprevpage ? page - 1 : false;
                 $scope.hasNextPage = response.hasnextpage ? page + 1 : false;
-                return response;
+
+                return $mmaModFeedback.getCurrentValues(feedback.id).then(function(values) {
+                    angular.forEach(response.items, function(itemData) {
+                        if (!itemData.hasvalue) {
+                            return;
+                        }
+                        for (var x in values) {
+                            if (values[x].item == itemData.id) {
+                                itemData.value = values[x].value;
+                                return;
+                            }
+                        }
+                    });
+                    return response;
+                });
             });
         }
         return promise.then(function(response) {
@@ -112,6 +126,7 @@ angular.module('mm.addons.mod_feedback')
                 promises.push($mmaModFeedback.invalidateItemsData(feedback.id));
             } else {
                 promises.push($mmaModFeedback.invalidateAllPagesData(feedback.id));
+                promises.push($mmaModFeedback.invalidateCurrentValuesData(feedback.id));
             }
         }
 

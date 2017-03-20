@@ -146,75 +146,19 @@ angular.module('mm.addons.mod_feedback')
     self.getItemForm = function(item, preview) {
         switch (item.typ) {
             case 'label':
-                item.name = "";
-                item.template = 'label';
-                item.presentation = $mmText.replacePluginfileUrls(item.presentation, item.itemfiles);
-                break;
+                return getItemFormLabel(item);
             case 'info':
-                var type = parseInt(item.presentation, 10);
-                if (type == MODE_COURSE || type == MODE_CATEGORY) {
-                    item.presentation = item.otherdata;
-                    item.value = item.otherdata;
-                } else if (type == MODE_RESPONSETIME) {
-                    item.value = new Date().getTime();
-                    item.presentation = moment(item.value).format($translate.instant('mm.core.dffulldate'));
-                } else {
-                    // Errors on item, return false.
-                    return false;
-                }
-                item.template = 'label';
-                break;
+                return getItemFormInfo(item);
             case 'numeric':
-                var range = item.presentation.split(FEEDBACK_LINE_SEP) || [];
-                item.rangefrom = range.length > 0 ? parseInt(range[0], 10) || '' : '',
-                item.rangeto = range.length > 1 ? parseInt(range[1], 10) || '' : '',
-                item.template = 'numeric';
-                item.value = "";
-                break;
+                return getItemFormNumeric(item);
             case 'textfield':
-                var sizeAndLength = item.presentation.split(FEEDBACK_LINE_SEP) || [];
-                item.size = sizeAndLength.length > 0 && sizeAndLength[0] >= 5 ? sizeAndLength[0] : 30,
-                item.length = sizeAndLength.length > 1 ? sizeAndLength[1] : 255;
-                item.value = "";
-                item.template = 'textfield';
-                break;
+                return getItemFormTextfield(item);
             case 'textarea':
-                var widthAndHeight = item.presentation.split(FEEDBACK_LINE_SEP) || [];
-                item.width = widthAndHeight.length > 0 && widthAndHeight[0] >= 5 ? widthAndHeight[0] : 30,
-                item.height = widthAndHeight.length > 1 ? widthAndHeight[1] : 5;
-                item.value = "";
-                item.template = 'textarea';
-                break;
+                return getItemFormTextarea(item);
             case 'multichoice':
+                return getItemFormMultichoice(item);
             case 'multichoicerated':
-                var parts = item.presentation.split(FEEDBACK_MULTICHOICE_TYPE_SEP) || [];
-                item.subtype = parts.length > 0 && parts[0] ? parts[0] : 'r';
-                item.presentation = parts.length > 1 ? parts[1] : '';
-                if (item.subtype != 'd') {
-                    parts = item.presentation.split(FEEDBACK_MULTICHOICE_ADJUST_SEP) || [];
-                    item.presentation = parts.length > 0 ? parts[0] : '';
-                    // Horizontal are not supported right now.
-                    //item.horizontal = parts.length > 1 && !!parts[1];
-                } else {
-                    item.class = "item-select";
-                }
-
-                item.choices = item.presentation.split(FEEDBACK_LINE_SEP) || [];
-                item.choices = item.choices.map(function(choice, index) {
-                    var weightValue = choice.split(FEEDBACK_MULTICHOICERATED_VALUE_SEP) || [''],
-                    choice = weightValue.length == 1 ? weightValue[0] : '(' + weightValue[0] + ') ' + weightValue[1];
-                    return {value: index + 1, label: choice};
-                });
-
-                if (item.subtype === 'r' && item.options.search(FEEDBACK_MULTICHOICE_HIDENOSELECT) == -1) {
-                    item.choices.unshift({value: 0, label: $translate.instant('mma.mod_feedback.not_selected')});
-                    item.value = 0;
-                } else if (item.subtype === 'd') {
-                    item.choices.unshift({value: 0, label: ''});
-                    item.value = 0;
-                }
-                item.template = 'multichoice-' + item.subtype;
-                break;
+                return getItemFormMultichoice(item);
             case 'pagebreak':
             case 'captcha':
                 if (!preview) {
@@ -228,6 +172,110 @@ angular.module('mm.addons.mod_feedback')
                 return false;
         }
         return item;
+
+        function getItemFormLabel(item) {
+            item.name = "";
+            item.template = 'label';
+            item.presentation = $mmText.replacePluginfileUrls(item.presentation, item.itemfiles);
+            return item;
+        }
+
+        function getItemFormInfo(item) {
+            var type = parseInt(item.presentation, 10);
+
+            if (type == MODE_COURSE || type == MODE_CATEGORY) {
+                item.presentation = item.otherdata;
+                item.value = typeof item.value != "undefined" ? item.value : item.otherdata;
+            } else if (type == MODE_RESPONSETIME) {
+                item.value = typeof item.value != "undefined" ? item.value : new Date().getTime();
+                item.presentation = moment(item.value).format($translate.instant('mm.core.dffulldate'));
+            } else {
+                // Errors on item, return false.
+                return false;
+            }
+
+            item.template = 'label';
+
+            return item;
+        }
+
+        function getItemFormNumeric(item) {
+            var range = item.presentation.split(FEEDBACK_LINE_SEP) || [];
+            item.rangefrom = range.length > 0 ? parseInt(range[0], 10) || '' : '',
+            item.rangeto = range.length > 1 ? parseInt(range[1], 10) || '' : '',
+            item.template = 'numeric';
+            item.value = typeof item.value != "undefined" ? item.value : "";
+
+            return item;
+        }
+
+        function getItemFormTextfield(item) {
+            var sizeAndLength = item.presentation.split(FEEDBACK_LINE_SEP) || [];
+            item.size = sizeAndLength.length > 0 && sizeAndLength[0] >= 5 ? sizeAndLength[0] : 30,
+            item.length = sizeAndLength.length > 1 ? sizeAndLength[1] : 255;
+            item.value = typeof item.value != "undefined" ? item.value : "";
+            item.template = 'textfield';
+
+            return item;
+        }
+
+        function getItemFormTextarea(item) {
+            var widthAndHeight = item.presentation.split(FEEDBACK_LINE_SEP) || [];
+            item.width = widthAndHeight.length > 0 && widthAndHeight[0] >= 5 ? widthAndHeight[0] : 30,
+            item.height = widthAndHeight.length > 1 ? widthAndHeight[1] : 5;
+            item.value = typeof item.value != "undefined" ? item.value : "";
+            item.template = 'textarea';
+
+            return item;
+        }
+
+        function getItemFormMultichoice(item) {
+            var parts = item.presentation.split(FEEDBACK_MULTICHOICE_TYPE_SEP) || [];
+            item.subtype = parts.length > 0 && parts[0] ? parts[0] : 'r';
+            item.presentation = parts.length > 1 ? parts[1] : '';
+            if (item.subtype != 'd') {
+                parts = item.presentation.split(FEEDBACK_MULTICHOICE_ADJUST_SEP) || [];
+                item.presentation = parts.length > 0 ? parts[0] : '';
+                // Horizontal are not supported right now.
+                //item.horizontal = parts.length > 1 && !!parts[1];
+            } else {
+                item.class = "item-select";
+            }
+
+            item.choices = item.presentation.split(FEEDBACK_LINE_SEP) || [];
+            item.choices = item.choices.map(function(choice, index) {
+                var weightValue = choice.split(FEEDBACK_MULTICHOICERATED_VALUE_SEP) || [''],
+                choice = weightValue.length == 1 ? weightValue[0] : '(' + weightValue[0] + ') ' + weightValue[1];
+                return {value: index + 1, label: choice};
+            });
+
+            if (item.subtype === 'r' && item.options.search(FEEDBACK_MULTICHOICE_HIDENOSELECT) == -1) {
+                item.choices.unshift({value: 0, label: $translate.instant('mma.mod_feedback.not_selected')});
+                item.value = typeof item.value != "undefined" ? parseInt(item.value, 10) : 0;
+            } else if (item.subtype === 'd') {
+                item.choices.unshift({value: 0, label: ''});
+                item.value = typeof item.value != "undefined" ? parseInt(item.value, 10) : 0;
+            } else if (item.subtype === 'c') {
+                if (typeof item.value == "undefined") {
+                    item.value = "";
+                } else {
+                    var values = item.value.split(FEEDBACK_LINE_SEP);
+                    angular.forEach(item.choices, function(choice) {
+                        for (var x in values) {
+                            if (choice.value == values[x]) {
+                                choice.checked = true;
+                                return;
+                            }
+                        }
+                    });
+                }
+            } else {
+                item.value = typeof item.value != "undefined" ? parseInt(item.value, 10) : "";
+            }
+            item.template = 'multichoice-' + item.subtype;
+
+            return item;
+        }
     };
 
     return self;
