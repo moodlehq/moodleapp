@@ -128,6 +128,7 @@ angular.module('mm.addons.mod_lesson')
         promises.push($mmaModLesson.invalidateLessonData(courseId));
         if (lesson) {
             promises.push($mmaModLesson.invalidateAccessInformation(lesson.id));
+            promises.push($mmaModLesson.invalidatePages(lesson.id));
         }
 
         return $q.all(promises).finally(function() {
@@ -174,7 +175,12 @@ angular.module('mm.addons.mod_lesson')
 
     // Start the lesson.
     $scope.start = function(continueLast) {
-        var pageId = $scope.leftDuringTimed ? (continueLast ? accessInfo.lastpageseen : accessInfo.firstpageid) : false;
+        // Calculate the pageId to load. If there is timelimit, lesson is always restarted from the start.
+        var pageId = false;
+        if ($scope.leftDuringTimed && !lesson.timelimit) {
+            pageId = continueLast ? accessInfo.lastpageseen : accessInfo.firstpageid;
+        }
+
         $state.go('site.mod_lesson-player', {
             courseid: courseId,
             lessonid: lesson.id,

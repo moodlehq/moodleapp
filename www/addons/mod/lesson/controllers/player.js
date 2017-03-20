@@ -40,6 +40,7 @@ angular.module('mm.addons.mod_lesson')
 
     $scope.component = mmaModLessonComponent;
     $scope.currentPage = $stateParams.pageid;
+    $scope.messages = [];
 
     // Convenience function to get Lesson data.
     function fetchLessonData() {
@@ -74,9 +75,20 @@ angular.module('mm.addons.mod_lesson')
 
     // Start or continue an attempt.
     function launchAttempt(pageId) {
-        return $mmaModLesson.launchAttempt(lesson.id, password, pageId).then(function() {
+        return $mmaModLesson.launchAttempt(lesson.id, password, pageId).then(function(data) {
             $scope.currentPage = pageId || accessInfo.firstpageid;
+            $scope.messages = data.messages || [];
 
+            if (lesson.timelimit) {
+                // Get the last lesson timer.
+                return $mmaModLesson.getTimers(lesson.id, false, true).then(function(timers) {
+                    var lastTimer = timers[timers.length - 1];
+                    $scope.endTime = lastTimer.starttime + lesson.timelimit;
+                });
+            }
+
+
+        }).then(function() {
             return loadPage($scope.currentPage);
         });
     }
@@ -90,6 +102,7 @@ angular.module('mm.addons.mod_lesson')
             $scope.pageLoaded = true;
             $scope.pageButtons = $mmaModLessonHelper.getPageButtonsFromHtml(data.pagecontent);
             $scope.currentPage = pageId;
+            $scope.messages = $scope.messages.concat(data.messages);
 
             if (data.displaymenu && !$scope.displayMenu) {
                 // Load the menu.
@@ -100,10 +113,13 @@ angular.module('mm.addons.mod_lesson')
     }
 
     // Finish the attempt.
-    function finishAttempt() {
-        return $mmaModLesson.finishAttempt(lesson.id, password).then(function(data) {
+    function finishAttempt(outOfTime) {
+        $scope.messages = [];
+        return $mmaModLesson.finishAttempt(lesson.id, password, outOfTime).then(function(data) {
+            $scope.title = lesson.name;
             $scope.eolData = data.data;
             $scope.eolProgress = data.progress;
+            $scope.messages = $scope.messages.concat(data.messages);
 
             // Format activity link if present.
             if ($scope.eolData && $scope.eolData.activitylink) {
@@ -164,13 +180,12 @@ angular.module('mm.addons.mod_lesson')
                 return;
             } else if (result.newpageid == $mmaModLesson.LESSON_EOL) {
                 // End of lesson reached.
-                // @todo Show grade, progress bar, min questions, etc. in final page.
-                $scope.title = lesson.name;
                 return finishAttempt();
             }
 
             // Load new page.
             $scope.eolData = false;
+            $scope.messages = [];
             return loadPage(result.newpageid);
         }).catch(function(error) {
             $mmUtil.showErrorModalDefault(error, 'Error processing page');
@@ -188,12 +203,27 @@ angular.module('mm.addons.mod_lesson')
         }
 
         showLoading();
+        $scope.messages = [];
 
         return loadPage(pageId).then(function() {
             // Page loaded, hide the EOL page if shown.
             $scope.eolData = false;
         }).catch(function(error) {
             $mmUtil.showErrorModalDefault(error, 'Error loading page');
+            return $q.reject();
+        }).finally(function() {
+            $scope.pageLoaded = true;
+        });
+    };
+
+    // Time up.
+    $scope.timeUp = function() {
+        // Time up called, hide the timer.
+        $scope.endTime = false;
+        showLoading();
+
+        return finishAttempt(true).catch(function(error) {
+            $mmUtil.showErrorModalDefault(error, 'Error finishing attempt');
             return $q.reject();
         }).finally(function() {
             $scope.pageLoaded = true;

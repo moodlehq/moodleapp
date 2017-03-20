@@ -340,6 +340,65 @@ angular.module('mm.addons.mod_lesson')
     };
 
     /**
+     * Get cache key for get timers WS calls.
+     *
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {Number} userId   User ID.
+     * @return {String}          Cache key.
+     */
+    function getTimersCacheKey(lessonId, userId) {
+        return getTimersCommonCacheKey(lessonId) + ':' + userId;
+    }
+
+    /**
+     * Get common cache key for get timers WS calls.
+     *
+     * @param {Number} lessonId Lesson ID.
+     * @return {String}         Cache key.
+     */
+    function getTimersCommonCacheKey(lessonId) {
+        return 'mmaModLesson:timers:' + lessonId;
+    }
+
+    /**
+     * Get lesson timers.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#getTimers
+     * @param  {Number} lessonId     Lesson ID.
+     * @param  {Boolean} forceCache  True if it should return cached data. Has priority over ignoreCache.
+     * @param  {Boolean} ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param  {String} [siteId]     Site ID. If not defined, current site.
+     * @param  {Number} [userId]     User ID. If not defined, site's current user.
+     * @return {Promise}             Promise resolved with the pages.
+     */
+    self.getTimers = function(lessonId, forceCache, ignoreCache, siteId, userId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            userId = userId || site.getUserId();
+
+            var params = {
+                    lessonid: lessonId,
+                    userid: userId
+                },
+                preSets = {
+                    cacheKey: getTimersCacheKey(lessonId, userId)
+                };
+
+            if (forceCache) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
+
+            return site.read('mod_lesson_get_user_timers', params, preSets).then(function(response) {
+                return response.timers;
+            });
+        });
+    };
+
+    /**
      * Invalidates Lesson data.
      *
      * @module mm.addons.mod_lesson
@@ -401,6 +460,56 @@ angular.module('mm.addons.mod_lesson')
     self.invalidatePageDataForPage = function(lessonId, pageId, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return site.invalidateWsCacheForKey(getPageDataCacheKey(lessonId, pageId));
+        });
+    };
+
+    /**
+     * Invalidates pages.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#invalidatePages
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when the data is invalidated.
+     */
+    self.invalidatePages = function(lessonId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKey(getPagesCacheKey(lessonId));
+        });
+    };
+
+    /**
+     * Invalidates timers for all users in a lesson.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#invalidateTimers
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @return {Promise}         Promise resolved when the data is invalidated.
+     */
+    self.invalidateTimers = function(lessonId, siteId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            return site.invalidateWsCacheForKeyStartingWith(getTimersCommonCacheKey(lessonId));
+        });
+    };
+
+    /**
+     * Invalidates timers for a certain user.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#invalidateTimersForUser
+     * @param  {Number} lessonId Lesson ID.
+     * @param  {String} [siteId] Site ID. If not defined, current site.
+     * @param  {Number} [userId] User ID. If not defined, site's current user.
+     * @return {Promise}         Promise resolved when the data is invalidated.
+     */
+    self.invalidateTimersForUser = function(lessonId, siteId, userId) {
+        return $mmSitesManager.getSite(siteId).then(function(site) {
+            userId = userId || site.getUserId();
+            return site.invalidateWsCacheForKey(getTimersCacheKey(lessonId, userId));
         });
     };
 

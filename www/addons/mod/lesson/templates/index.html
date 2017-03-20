@@ -14,7 +14,8 @@
 
             <!-- Prevent access messages. Only show the first one. -->
             <div class="mm-info-card" ng-if="lesson && preventMessages && preventMessages.length">
-                <i class="icon ion-information-circled padding"></i> {{ preventMessages[0].message }}
+                <!-- The messages can have html, use format-text. -->
+                <i class="icon ion-information-circled padding"></i> <mm-format-text watch="true">{{ preventMessages[0].message }}</mm-format-text>
             </div>
 
             <!-- Input password for protected lessons. -->
@@ -27,13 +28,24 @@
             </form>
 
             <div ng-if="lesson && (!preventMessages || !preventMessages.length)">
-                <div ng-if="leftDuringTimed" class="card">
-                    <!-- User left during the session, ask to continue. -->
+                <div ng-if="leftDuringTimed && !lesson.timelimit" class="card">
+                    <!-- User left during the session and there is no time limit, ask to continue. -->
                     <p class="item" ng-bind-html="'mma.mod_lesson.youhaveseen' | translate"></p>
                     <div class="item button-bar">
                         <button class="button" ng-click="start(true)">{{ 'mm.core.yes' | translate }}</button>
                         <button class="button" ng-click="start(false)">{{ 'mm.core.no' | translate }}</button>
                     </div>
+                </div>
+                <div ng-if="leftDuringTimed && lesson.timelimit && lesson.retake" class="card">
+                    <!-- User left during the session with time limit and retakes allowed, ask to continue. -->
+                    <p class="item" ng-bind-html="'mma.mod_lesson.leftduringtimed' | translate"></p>
+                    <div class="item">
+                        <button class="button button-block" ng-click="start(false)">{{ 'mma.mod_lesson.continue' | translate }}</button>
+                    </div>
+                </div>
+                <div ng-if="leftDuringTimed && lesson.timelimit && !lesson.retake" class="card">
+                    <!-- User left during the session with time limit and retakes not allowed. This should be handled by preventMessages -->
+                    <p class="item" ng-bind-html="'mma.mod_lesson.leftduringtimednoretake' | translate"></p>
                 </div>
                 <div ng-if="!leftDuringTimed" class="card">
                     <!-- User hasn't left during the session, show a start button. -->
