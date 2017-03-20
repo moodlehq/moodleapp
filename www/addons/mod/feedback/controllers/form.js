@@ -84,36 +84,22 @@ angular.module('mm.addons.mod_feedback')
         } else {
             currentPage = page;
 
-            promise = $mmaModFeedback.getPageItems(feedback.id, page).then(function(response) {
+            promise = $mmaModFeedbackHelper.getPageItems(feedback.id, page).then(function(response) {
                 $scope.hasPrevPage = response.hasprevpage ? page - 1 : false;
                 $scope.hasNextPage = response.hasnextpage ? page + 1 : false;
 
-                return $mmaModFeedback.getCurrentValues(feedback.id).then(function(values) {
-                    angular.forEach(response.items, function(itemData) {
-                        if (!itemData.hasvalue) {
-                            return;
-                        }
-                        for (var x in values) {
-                            if (values[x].item == itemData.id) {
-                                itemData.value = values[x].value;
-                                return;
-                            }
-                        }
-                    });
-                    return response;
-                });
+                return response;
             });
         }
         return promise.then(function(response) {
             $scope.items = response.items.map(function(itemData) {
                 return $mmaModFeedbackHelper.getItemForm(itemData, $scope.preview);
-            }).filter(function(itemData) {
+            }).filter(function(itemData, index, items) {
                 // Filter items with errors.
                 return itemData;
             });
         });
     }
-
 
     // Convenience function to refresh all the data.
     function refreshAllData(showErrors) {
@@ -122,12 +108,10 @@ angular.module('mm.addons.mod_feedback')
         if (feedback) {
             promises.push($mmaModFeedback.invalidateFeedbackAccessInformationData(feedback.id));
             promises.push($mmaModFeedback.invalidateResumePageData(feedback.id));
-            if ($scope.preview) {
-                promises.push($mmaModFeedback.invalidateItemsData(feedback.id));
-            } else {
-                promises.push($mmaModFeedback.invalidateAllPagesData(feedback.id));
+            if (!$scope.preview) {
                 promises.push($mmaModFeedback.invalidateCurrentValuesData(feedback.id));
             }
+            promises.push($mmaModFeedback.invalidateItemsData(feedback.id));
         }
 
         return $q.all(promises).finally(function() {

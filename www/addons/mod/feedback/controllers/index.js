@@ -60,7 +60,7 @@ angular.module('mm.addons.mod_feedback')
 
             if (accessData.cancomplete && accessData.cansubmit && accessData.isopen) {
                 promises.push($mmaModFeedback.getResumePage(feedback.id).then(function(goPage) {
-                    $scope.goPage = goPage;
+                    $scope.goPage = goPage > 0 ? goPage : false;
                 }));
             }
 

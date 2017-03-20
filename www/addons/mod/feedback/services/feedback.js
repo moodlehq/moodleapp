@@ -87,27 +87,6 @@ angular.module('mm.addons.mod_feedback')
     }
 
     /**
-     * Get prefix cache key for all pages data WS calls.
-     *
-     * @param  {Number} feedbackId  Feedback ID.
-     * @return {String}             Cache key.
-     */
-    function getPagesDataPrefixCacheKey(feedbackId) {
-        return getFeedbackDataPrefixCacheKey(feedbackId) + ':page:';
-    }
-
-    /**
-     * Get cache key for get page items feedback data WS calls.
-     *
-     * @param  {Number} feedbackId  Feedback ID.
-     * @param  {Number} page        The page to get.
-     * @return {String}             Cache key.
-     */
-    function getPageItemsDataCacheKey(feedbackId, page) {
-        return getPagesDataPrefixCacheKey(feedbackId) + page;
-    }
-
-    /**
      * Get cache key for get items feedback data WS calls.
      *
      * @param  {Number} feedbackId  Feedback ID.
@@ -337,7 +316,8 @@ angular.module('mm.addons.mod_feedback')
 
             return site.read('mod_feedback_launch_feedback', params, preSets).then(function(response) {
                 if (response && typeof response.gopage != "undefined") {
-                    return response.gopage;
+                    // WS will return -1 for last page but the user need to start again.
+                    return response.gopage > 0 ? response.gopage : 0;
                 }
                 return $q.reject();
             });
@@ -361,7 +341,7 @@ angular.module('mm.addons.mod_feedback')
     };
 
     /**
-     * Get a single feedback page items.
+     * Get a single feedback page items. This function is not cached, use $mmaModFeedbackHelper.getPageItems instead.
      *
      * @module mm.addons.mod_feedback
      * @ngdoc method
@@ -376,45 +356,9 @@ angular.module('mm.addons.mod_feedback')
             var params = {
                     feedbackid: feedbackId,
                     page: page
-                },
-                preSets = {
-                    cacheKey: getPageItemsDataCacheKey(feedbackId, page)
                 };
 
-            return site.read('mod_feedback_get_page_items', params, preSets);
-        });
-    };
-
-    /**
-     * Invalidates get page items data.
-     *
-     * @module mm.addons.mod_feedback
-     * @ngdoc method
-     * @name $mmaModFeedback#invalidatePageItemsData
-     * @param  {Number} feedbackId   Feedback ID.
-     * @param  {Number} page         The page to get.
-     * @param  {String} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise}        Promise resolved when the data is invalidated.
-     */
-    self.invalidatePageItemsData = function(feedbackId, page, siteId) {
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.invalidateWsCacheForKey(getPageItemsDataCacheKey(feedbackId, page));
-        });
-    };
-
-    /**
-     * Invalidates all pages data.
-     *
-     * @module mm.addons.mod_feedback
-     * @ngdoc method
-     * @name $mmaModFeedback#invalidateAllPagesData
-     * @param  {Number} feedbackId   Feedback ID.
-     * @param  {String} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise}        Promise resolved when the data is invalidated.
-     */
-    self.invalidateAllPagesData = function(feedbackId, siteId) {
-        return $mmSitesManager.getSite(siteId).then(function(site) {
-            return site.invalidateWsCacheForKeyStartingWith(getPagesDataPrefixCacheKey(feedbackId));
+            return site.write('mod_feedback_get_page_items', params);
         });
     };
 
