@@ -671,7 +671,7 @@ mm-navigation-bar {
   border-bottom: 3px solid $color !important;
   padding-top: 12px;
   padding-bottom: 9px;
-  i.icon:before {
+  i.icon:before:not(.radio-icon) {
     color: $color;
   }
   &.item-icon-left {

@@ -161,14 +161,14 @@ angular.module('mm.addons.mod_feedback')
             case 'multichoicerated':
                 return getItemFormMultichoice(item);
             case 'pagebreak':
-            case 'captcha':
                 if (!preview) {
-                    // Captcha is not supported right now because it doesn't make sense (app cannot be used as guest).
-                    // Otherwise label will be shown on preview.
                     // Pagebreaks are only used on preview.
                     return false;
                 }
                 break;
+            case 'captcha':
+                // Captcha is not supported right now. However label will be shown.
+                return getItemFormCaptcha(item);
             default:
                 return false;
         }
@@ -176,57 +176,61 @@ angular.module('mm.addons.mod_feedback')
 
         // Helper functions by type:
         function getItemFormLabel(item) {
-            item.name = "";
             item.template = 'label';
+            item.name = "";
             item.presentation = $mmText.replacePluginfileUrls(item.presentation, item.itemfiles);
             return item;
         }
 
         function getItemFormInfo(item) {
+            item.template = 'label';
+
             var type = parseInt(item.presentation, 10);
 
             if (type == MODE_COURSE || type == MODE_CATEGORY) {
                 item.presentation = item.otherdata;
-                item.value = typeof item.value != "undefined" ? item.value : item.otherdata;
+                item.value = typeof item.rawValue != "undefined" ? item.rawValue : item.otherdata;
             } else if (type == MODE_RESPONSETIME) {
-                item.value = typeof item.value != "undefined" ? item.value : new Date().getTime();
-                item.presentation = moment(item.value).format($translate.instant('mm.core.dffulldate'));
+                item.value = '__CURRENT__TIMESTAMP__';
+                var tempValue = typeof item.rawValue != "undefined" ? item.rawValue * 1000 : new Date().getTime();
+                item.presentation = moment(tempValue).format($translate.instant('mm.core.dffulldate'));
             } else {
                 // Errors on item, return false.
                 return false;
             }
 
-            item.template = 'label';
-
             return item;
         }
 
         function getItemFormNumeric(item) {
+            item.template = 'numeric';
+
             var range = item.presentation.split(FEEDBACK_LINE_SEP) || [];
             item.rangefrom = range.length > 0 ? parseInt(range[0], 10) || '' : '';
             item.rangeto = range.length > 1 ? parseInt(range[1], 10) || '' : '';
-            item.template = 'numeric';
-            item.value = typeof item.value != "undefined" ? item.value : "";
+            item.value = typeof item.rawValue != "undefined" ? item.rawValue : "";
 
             return item;
         }
 
         function getItemFormTextfield(item) {
+            item.template = 'textfield';
+
             var sizeAndLength = item.presentation.split(FEEDBACK_LINE_SEP) || [];
             item.size = sizeAndLength.length > 0 && sizeAndLength[0] >= 5 ? sizeAndLength[0] : 30;
             item.length = sizeAndLength.length > 1 ? sizeAndLength[1] : 255;
-            item.value = typeof item.value != "undefined" ? item.value : "";
-            item.template = 'textfield';
+            item.value = typeof item.rawValue != "undefined" ? item.rawValue : "";
 
             return item;
         }
 
         function getItemFormTextarea(item) {
+            item.template = 'textarea';
+
             var widthAndHeight = item.presentation.split(FEEDBACK_LINE_SEP) || [];
             item.width = widthAndHeight.length > 0 && widthAndHeight[0] >= 5 ? widthAndHeight[0] : 30;
             item.height = widthAndHeight.length > 1 ? widthAndHeight[1] : 5;
-            item.value = typeof item.value != "undefined" ? item.value : "";
-            item.template = 'textarea';
+            item.value = typeof item.rawValue != "undefined" ? item.rawValue : "";
 
             return item;
         }
@@ -234,6 +238,8 @@ angular.module('mm.addons.mod_feedback')
         function getItemFormMultichoice(item) {
             var parts = item.presentation.split(FEEDBACK_MULTICHOICE_TYPE_SEP) || [];
             item.subtype = parts.length > 0 && parts[0] ? parts[0] : 'r';
+            item.template = 'multichoice-' + item.subtype;
+
             item.presentation = parts.length > 1 ? parts[1] : '';
             if (item.subtype != 'd') {
                 parts = item.presentation.split(FEEDBACK_MULTICHOICE_ADJUST_SEP) || [];
@@ -253,15 +259,15 @@ angular.module('mm.addons.mod_feedback')
 
             if (item.subtype === 'r' && item.options.search(FEEDBACK_MULTICHOICE_HIDENOSELECT) == -1) {
                 item.choices.unshift({value: 0, label: $translate.instant('mma.mod_feedback.not_selected')});
-                item.value = typeof item.value != "undefined" ? parseInt(item.value, 10) : 0;
+                item.value = typeof item.rawValue != "undefined" ? parseInt(item.rawValue, 10) : 0;
             } else if (item.subtype === 'd') {
                 item.choices.unshift({value: 0, label: ''});
-                item.value = typeof item.value != "undefined" ? parseInt(item.value, 10) : 0;
+                item.value = typeof item.rawValue != "undefined" ? parseInt(item.rawValue, 10) : 0;
             } else if (item.subtype === 'c') {
-                if (typeof item.value == "undefined") {
+                if (typeof item.rawValue == "undefined") {
                     item.value = "";
                 } else {
-                    var values = item.value.split(FEEDBACK_LINE_SEP);
+                    var values = item.rawValue.split(FEEDBACK_LINE_SEP);
                     angular.forEach(item.choices, function(choice) {
                         for (var x in values) {
                             if (choice.value == values[x]) {
@@ -272,10 +278,15 @@ angular.module('mm.addons.mod_feedback')
                     });
                 }
             } else {
-                item.value = typeof item.value != "undefined" ? parseInt(item.value, 10) : "";
+                item.value = typeof item.rawValue != "undefined" ? parseInt(item.rawValue, 10) : "";
             }
-            item.template = 'multichoice-' + item.subtype;
 
+            return item;
+        }
+
+        function getItemFormCaptcha(item) {
+            item.template = 'captcha';
+            item.value = "";
             return item;
         }
     };
@@ -358,7 +369,7 @@ angular.module('mm.addons.mod_feedback')
 
                 for (var x in values) {
                     if (values[x].item == itemData.id) {
-                        itemData.value = values[x].value;
+                        itemData.rawValue = values[x].value;
                         return;
                     }
                 }
@@ -400,7 +411,7 @@ angular.module('mm.addons.mod_feedback')
                 return compareDependItemMultichoice(depend, item.dependvalue);
         }
 
-        return item.dependvalue == depend.value;
+        return item.dependvalue == depend.rawValue;
 
         // Helper functions by type:
         function compareDependItemMultichoice(item, dependValue) {
@@ -414,13 +425,13 @@ angular.module('mm.addons.mod_feedback')
 
 
             if (subtype === 'c') {
-                if (typeof item.value == "undefined") {
+                if (typeof item.rawValue == "undefined") {
                     values = [''];
                 } else {
-                    values = item.value.split(FEEDBACK_LINE_SEP);
+                    values = item.rawValue.split(FEEDBACK_LINE_SEP);
                 }
             } else {
-                values = [item.value];
+                values = [item.rawValue];
             }
 
             for (var index = 0; index < choices.length; index++) {

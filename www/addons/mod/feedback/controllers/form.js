@@ -23,12 +23,13 @@ angular.module('mm.addons.mod_feedback')
  */
 .controller('mmaModFeedbackFormCtrl', function($scope, $stateParams, $mmaModFeedback, $mmUtil, $q, $mmCourse, $mmText, $timeout,
             mmaModFeedbackComponent, $mmEvents, $mmApp, $translate, mmCoreEventOnlineStatusChanged, $mmaModFeedbackHelper,
-            $ionicScrollDelegate, $ionicHistory) {
+            $ionicScrollDelegate, $ionicHistory, $mmContentLinksHelper, $mmSite, $state) {
     var feedbackId = $stateParams.feedbackid,
         module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         currentPage = $stateParams.page,
         feedback,
+        siteAfterSubmit,
         scrollView;
 
     $scope.title = $stateParams.title;
@@ -71,13 +72,14 @@ angular.module('mm.addons.mod_feedback')
 
             $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
             return $q.reject();
-        }).finally(function(){
+        }).finally(function() {
             $scope.feedbackLoaded = true;
         });
     }
 
     function fetchFeedbackPageData(page) {
         var promise;
+        $scope.items = [];
 
         if ($scope.preview) {
             promise = $mmaModFeedback.getItems(feedback.id);
@@ -85,8 +87,8 @@ angular.module('mm.addons.mod_feedback')
             currentPage = page;
 
             promise = $mmaModFeedbackHelper.getPageItems(feedback.id, page).then(function(response) {
-                $scope.hasPrevPage = response.hasprevpage ? page - 1 : false;
-                $scope.hasNextPage = response.hasnextpage ? page + 1 : false;
+                $scope.hasPrevPage = !!response.hasprevpage;
+                $scope.hasNextPage = !!response.hasnextpage;
 
                 return response;
             });
@@ -94,7 +96,7 @@ angular.module('mm.addons.mod_feedback')
         return promise.then(function(response) {
             $scope.items = response.items.map(function(itemData) {
                 return $mmaModFeedbackHelper.getItemForm(itemData, $scope.preview);
-            }).filter(function(itemData, index, items) {
+            }).filter(function(itemData) {
                 // Filter items with errors.
                 return itemData;
             });
@@ -120,12 +122,15 @@ angular.module('mm.addons.mod_feedback')
     }
 
     // Function to go to move through the questions form.
-    $scope.gotoPage = function(page) {
-        var responses = {};
-        $scope.feedbackLoaded = false;
+    $scope.gotoPage = function(goPrevious) {
+        var responses = {},
+            promise;
+
+        var modal = $mmUtil.showModalLoading();
+        scrollTop();
 
         angular.forEach($scope.items, function(itemData) {
-            if (itemData.hasvalue) {
+            if (itemData.hasvalue || itemData.typ == "captcha") {
                 var name, value,
                     nameTemp = itemData.typ + '_' + itemData.id,
                     answered = false;
@@ -158,36 +163,74 @@ angular.module('mm.addons.mod_feedback')
 
                 if (itemData.required && !answered) {
                     // Check if it has any value.
+                    itemData.isEmpty = true;
+                } else {
+                    itemData.isEmpty = false;
                 }
-
             }
         });
 
-        return $mmaModFeedback.processPage(feedback.id, currentPage, responses, page < currentPage).then(function(response) {
-            var promise;
+        return $mmaModFeedback.processPage(feedback.id, currentPage, responses, goPrevious).then(function(response) {
+            var jumpTo = parseInt(response.jumpto, 10);
 
-            if (isNaN(parseInt(response.jumpto, 10)) || response.jumpto == currentPage) {
-                promise = $q.when();
+            if (response.completed) {
+                // Form is completed, show completion message and buttons.
+                $scope.items = [];
+                $scope.completed = true;
+                $scope.completionPageContents = response.completionpagecontents;
+                siteAfterSubmit = response.siteaftersubmit;
+
+                // Invalidate access information so user will see home page updated (continue form or completion messages).
+                // No need to wait the promises to finish.
+                $mmaModFeedback.invalidateFeedbackAccessInformationData(feedback.id);
+                $mmaModFeedback.invalidateResumePageData(feedback.id);
+            } else if (isNaN(jumpTo) || jumpTo == currentPage) {
+                // Errors on questions, stay in page.
+                return $q.when();
             } else {
-                promise = fetchFeedbackPageData(page);
+                // Invalidate access information so user will see home page updated (continue form).
+                $mmaModFeedback.invalidateResumePageData(feedback.id);
+                // Fetch the new page.
+                return fetchFeedbackPageData(jumpTo);
             }
-
-            return promise.finally(function(){
-                scrollTop();
-                $scope.feedbackLoaded = true;
-            });
+        }).catch(function(message) {
+            $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
+            return $q.reject();
+        }).finally(function() {
+            modal.dismiss();
         });
     };
 
-    // Function to send and save answers.
-    $scope.save = function() {
-        // @todo
+    // Function to go to the page after submit.
+    $scope.continue = function() {
+        if (siteAfterSubmit) {
+            var modal = $mmUtil.showModalLoading();
+            $mmContentLinksHelper.handleLink(siteAfterSubmit).then(function(treated) {
+                if (!treated) {
+                    return $mmSite.openInBrowserWithAutoLoginIfSameSite(siteAfterSubmit);
+                }
+            }).finally(function() {
+                modal.dismiss();
+            });
+        } else {
+            $state.go('redirect', {
+                state: 'site.mm_course',
+                params: {
+                    courseid: courseId
+                }
+            });
+        }
     };
 
     // Function to discard and go back.
     $scope.cancel = function() {
         // @todo
         $ionicHistory.goBack();
+    };
+
+    // Function to link implemented features.
+    $scope.openFeature = function(feature) {
+        $mmaModFeedbackHelper.openFeature(feature, module, courseId);
     };
 
     fetchFeedbackFormData().finally(function() {
