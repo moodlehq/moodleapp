@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_lesson')
  * @ngdoc service
  * @name $mmaModLessonHelper
  */
-.factory('$mmaModLessonHelper', function() {
+.factory('$mmaModLessonHelper', function($mmaModLesson) {
 
     var self = {};
 
@@ -101,6 +101,69 @@ angular.module('mm.addons.mod_lesson')
         });
 
         return buttons;
+    };
+
+    /**
+     * Get a question and all the data required to render it from the page data (result of $mmaModLesson#getPageData).
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonHelper#getQuestionFromPageData
+     * @param  {Object} pageData Page data (result of $mmaModLesson#getPageData).
+     * @return {Object}          Question data.
+     */
+    self.getQuestionFromPageData = function(pageData) {
+        var rootElement = document.createElement('div'),
+            fieldContainer,
+            hiddenInputs,
+            question = {
+                model: {}
+            };
+
+        // Get the container of the question answers if it exists.
+        rootElement.innerHTML = pageData.pagecontent;
+        fieldContainer = rootElement.querySelector('.fcontainer');
+
+        // Get hidden inputs and add their data to the model.
+        hiddenInputs = rootElement.querySelectorAll('input[type="hidden"]');
+        angular.forEach(hiddenInputs, function(input) {
+            question.model[input.name] = input.value;
+        });
+
+        if (!fieldContainer) {
+            // Element not found, return.
+            return question;
+        }
+
+        switch (pageData.page.qtype) {
+            case $mmaModLesson.LESSON_PAGE_TRUEFALSE:
+                question.template = 'truefalse';
+                question.options = [];
+
+                // Get all the options to show.
+                var labels = fieldContainer.querySelectorAll('.form-check-inline');
+                angular.forEach(labels, function(label) {
+                    var option = {},
+                        input = label.querySelector('input[type="radio"]');
+
+                    if (!input) {
+                        return;
+                    }
+
+                    option.id = input.id;
+                    option.name = input.name;
+                    option.value = input.value;
+
+                    // Remove the input and use the rest of the contents as the label.
+                    angular.element(input).remove();
+                    option.text = label.innerHTML.trim();
+
+                    question.options.push(option);
+                });
+                break;
+        }
+
+        return question;
     };
 
     return self;

@@ -42,6 +42,21 @@ angular.module('mm.addons.mod_lesson')
 
     self.LESSON_EOL = -9;
 
+    // Constants used to identify the type of pages and questions.
+    self.TYPE_QUESTION = 0;
+    self.TYPE_STRUCTURE = 1;
+
+    self.LESSON_PAGE_SHORTANSWER =  1;
+    self.LESSON_PAGE_TRUEFALSE =    2;
+    self.LESSON_PAGE_MULTICHOICE =  3;
+    self.LESSON_PAGE_MATCHING =     5;
+    self.LESSON_PAGE_NUMERICAL =    8;
+    self.LESSON_PAGE_ESSAY =        10;
+    self.LESSON_PAGE_BRANCHTABLE =  20;
+    self.LESSON_PAGE_ENDOFBRANCH =  21;
+    self.LESSON_PAGE_CLUSTER =      30;
+    self.LESSON_PAGE_ENDOFCLUSTER = 31;
+
     /**
      * Finishes an attempt.
      *
@@ -634,6 +649,19 @@ angular.module('mm.addons.mod_lesson')
             // All WS were introduced at the same time so checking one is enough.
             return site.wsAvailable('mod_lesson_get_lesson_access_information');
         });
+    };
+
+    /**
+     * Check if a page is a question page or a content page.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLesson#isQuestionPage
+     * @param  {Number} type Type of the page.
+     * @return {Boolean}     True if question page, false if content page.
+     */
+    self.isQuestionPage = function(type) {
+        return type == self.TYPE_QUESTION;
     };
 
     /**

@@ -13,20 +13,28 @@
             <div ng-class='{"mma-mod-lesson-slideshow": lesson.slideshow}' ng-style="{'width': lessonWidth, 'height': lessonHeight}">
                 <mm-timer ng-if="endTime" end-time="endTime" finished="timeUp()" timer-text="{{ 'mma.mod_lesson.timeremaining' | translate }}"></mm-timer>
 
-                <div ng-if="!eolData" class="list">
-                    <!-- TODO: Print questions. -->
+                <!-- Page content, including questions and buttons. -->
+                <div ng-if="!eolData && !processData" class="list">
                     <mm-format-text ng-if="pageData.ongoingscore" class="item item-text-wrap mma-mod-lesson-ongoingscore" watch="true">{{pageData.ongoingscore}}</mm-format-text>
                     <p class="item item-text-wrap"><mm-format-text watch="true" component="{{component}}" component-id="{{lesson.coursemodule}}">{{pageContent}}</mm-format-text></p>
+                    <form ng-if="question" name="mma-mod_lesson-player-form">
+                        <input ng-repeat="input in question.hiddenInputs" type="hidden" name="{{input.name}}" value="{{input.value}}" />
+                        <div ng-include="question.template"></div>
+                        <div class="item">
+                            <button class="button button-block" ng-click="submitQuestion()">{{ 'mma.mod_lesson.submit' | translate }}</button>
+                        </div>
+                    </form>
                     <div ng-if="pageButtons && pageButtons.length" class="item">
-                        <button ng-repeat="button in pageButtons track by button.id" class="button button-block" id="{{button.id}}" title="{{button.title}}" ng-click="buttonClicked(button)">{{button.content}}</button>
+                        <button ng-repeat="button in pageButtons track by button.id" class="button button-block" id="{{button.id}}" title="{{button.title}}" ng-click="buttonClicked(button.data)">{{button.content}}</button>
                     </div>
                     <div ng-if="lesson.progressbar" class="item">
                         <p>{{ 'mma.mod_lesson.progresscompleted' | translate:{$a: pageData.progress} }}</p>
                         <progress max="100" value="{{pageData.progress}}"></progress>
                     </div>
                 </div>
+
                 <!-- End of lesson reached. -->
-                <div ng-if="eolData" class="padding">
+                <div ng-if="eolData && !processData" class="padding">
                     <h3 ng-if="eolData.gradelesson">{{ 'mma.mod_lesson.congratulations' | translate }}</h3>
                     <p ng-if="eolData.notenoughtimespent">{{ eolData.notenoughtimespent.message }}</p>
                     <p ng-if="eolData.numberofpagesviewed">{{ eolData.numberofpagesviewed.message }}</p>
@@ -47,7 +55,23 @@
                     <mm-format-text ng-if="eolData.activitylink" watch="true">{{ eolData.activitylink.value }}</mm-format-text>
                     <!-- @todo Return & grade links. -->
                 </div>
+
+                <!-- Feedback returned when processing an action. -->
+                <div ng-if="processData" class="list">
+                    <mm-format-text ng-if="processData.ongoingscore && !processData.reviewmode" class="item item-text-wrap mma-mod-lesson-ongoingscore" watch="true">{{processData.ongoingscore}}</mm-format-text>
+                    <p ng-if="!processData.reviewmode" class="item item-text-wrap"><mm-format-text watch="true" component="{{component}}" component-id="{{lesson.coursemodule}}">{{processData.feedback}}</mm-format-text></p>
+                    <div ng-if="processData.buttons && processData.buttons.length" class="item">
+                        <button ng-repeat="button in processData.buttons track by $index" class="button button-block" ng-click="loadPage(button.pageid, true)">{{ button.label | translate }}</button>
+                    </div>
+                </div>
             </div>
+
+            <!-- List of questions templates. -->
+            <script type="text/ng-template" id="truefalse">
+                <ion-radio ng-repeat="option in question.options" id="{{option.id}}" name="{{option.name}}" ng-value="option.value" ng-model="question.model[option.name]">
+                    <p><mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{option.text}}</mm-format-text></p>
+                </ion-radio>
+            </script>
         </mm-loading>
     </ion-content>
 </ion-view>

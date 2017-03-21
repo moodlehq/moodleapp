@@ -9,7 +9,10 @@
     "linkedmedia": "Linked media",
     "loginfail": "Login failed, please try again...",
     "progresscompleted": "You have completed {{$a}}% of the lesson",
+    "reviewquestionback": "Yes, I'd like to try again",
+    "reviewquestioncontinue": "No, I just want to go on to the next question",
     "startattempt": "Start attempt",
+    "submit": "Submit",
     "timeremaining": "Time remaining",
     "youhaveseen": "You have seen more than one page of this lesson already.<br />Do you want to start at the last page you saw?"
 }
