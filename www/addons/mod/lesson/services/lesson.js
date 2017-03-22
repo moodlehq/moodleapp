@@ -762,7 +762,7 @@ angular.module('mm.addons.mod_lesson')
             var params = {
                 lessonid: lessonId,
                 pageid: pageId,
-                data: $mmUtil.objectToArrayOfObjects(data, 'name', 'value'),
+                data: $mmUtil.objectToArrayOfObjects(data, 'name', 'value', true),
                 review: review ? 1 : 0
             };
 

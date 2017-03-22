@@ -36,22 +36,22 @@
                 <!-- End of lesson reached. -->
                 <div ng-if="eolData && !processData" class="padding">
                     <h3 ng-if="eolData.gradelesson">{{ 'mma.mod_lesson.congratulations' | translate }}</h3>
-                    <p ng-if="eolData.notenoughtimespent">{{ eolData.notenoughtimespent.message }}</p>
-                    <p ng-if="eolData.numberofpagesviewed">{{ eolData.numberofpagesviewed.message }}</p>
-                    <p ng-if="eolData.youshouldview">{{ eolData.youshouldview.message }}</p>
-                    <p ng-if="eolData.numberofcorrectanswers">{{ eolData.numberofcorrectanswers.message }}</p>
-                    <p ng-if="eolData.displayscorewithessays">{{ eolData.displayscorewithessays.message }}</p>
-                    <p ng-if="!eolData.displayscorewithessays && eolData.displayscorewithoutessays">{{ eolData.displayscorewithoutessays.message }}</p>
-                    <p ng-if="eolData.yourcurrentgradeisoutof">{{ eolData.yourcurrentgradeisoutof.message }}</p>
-                    <p ng-if="eolData.eolstudentoutoftimenoanswers">{{ eolData.eolstudentoutoftimenoanswers.message }}</p>
-                    <p ng-if="eolData.welldone">{{ eolData.welldone.message }}</p>
+                    <p ng-if="eolData.notenoughtimespent"><mm-format-text>{{ eolData.notenoughtimespent.message }}</mm-format-text></p>
+                    <p ng-if="eolData.numberofpagesviewed"><mm-format-text>{{ eolData.numberofpagesviewed.message }}</mm-format-text></p>
+                    <p ng-if="eolData.youshouldview"><mm-format-text>{{ eolData.youshouldview.message }}</mm-format-text></p>
+                    <p ng-if="eolData.numberofcorrectanswers"><mm-format-text>{{ eolData.numberofcorrectanswers.message }}</mm-format-text></p>
+                    <p ng-if="eolData.displayscorewithessays"><mm-format-text>{{ eolData.displayscorewithessays.message }}</mm-format-text></p>
+                    <p ng-if="!eolData.displayscorewithessays && eolData.displayscorewithoutessays"><mm-format-text>{{ eolData.displayscorewithoutessays.message }}</mm-format-text></p>
+                    <p ng-if="eolData.yourcurrentgradeisoutof"><mm-format-text>{{ eolData.yourcurrentgradeisoutof.message }}</mm-format-text></p>
+                    <p ng-if="eolData.eolstudentoutoftimenoanswers"><mm-format-text>{{ eolData.eolstudentoutoftimenoanswers.message }}</mm-format-text></p>
+                    <p ng-if="eolData.welldone"><mm-format-text>{{ eolData.welldone.message }}</mm-format-text></p>
                     <div ng-if="lesson.progressbar && eolData.progressbar">
                         <p>{{ 'mma.mod_lesson.progresscompleted' | translate:{$a: eolProgress} }}</p>
                         <progress max="100" value="{{eolProgress}}"></progress>
                     </div>
-                    <p ng-if="eolData.displayofgrade">{{ eolData.displayofgrade.message }}</p>
-                    <p ng-if="eolData.reviewlesson">{{ eolData.reviewlesson.message }}</p>
-                    <p ng-if="eolData.modattemptsnoteacher">{{ eolData.modattemptsnoteacher.message }}</p>
+                    <p ng-if="eolData.displayofgrade"><mm-format-text>{{ eolData.displayofgrade.message }}</mm-format-text></p>
+                    <p ng-if="eolData.reviewlesson"><mm-format-text>{{ eolData.reviewlesson.message }}</mm-format-text></p>
+                    <p ng-if="eolData.modattemptsnoteacher"><mm-format-text>{{ eolData.modattemptsnoteacher.message }}</mm-format-text></p>
                     <mm-format-text ng-if="eolData.activitylink" watch="true">{{ eolData.activitylink.value }}</mm-format-text>
                     <!-- @todo Return & grade links. -->
                 </div>
@@ -67,10 +67,40 @@
             </div>
 
             <!-- List of questions templates. -->
-            <script type="text/ng-template" id="truefalse">
-                <ion-radio ng-repeat="option in question.options" id="{{option.id}}" name="{{option.name}}" ng-value="option.value" ng-model="question.model[option.name]">
-                    <p><mm-format-text watch="true" component="{{component}}" component-id="{{componentId}}">{{option.text}}</mm-format-text></p>
+            <script type="text/ng-template" id="multichoice">
+                <ion-radio ng-if="!question.multi" ng-repeat="option in question.options" id="{{option.id}}" name="{{option.name}}" ng-value="option.value" ng-model="question.model[option.name]">
+                    <p><mm-format-text watch="true" component="{{component}}" component-id="{{lesson.coursemodule}}">{{option.text}}</mm-format-text></p>
                 </ion-radio>
+                <ion-checkbox ng-if="question.multi" ng-repeat="option in question.options" id="{{option.id}}" name="{{option.name}}" ng-value="option.value" ng-model="question.model[option.name]" class="item-text-wrap item-checkbox-right">
+                    <p><mm-format-text watch="true" component="{{component}}" component-id="{{lesson.coursemodule}}">{{option.text}}</mm-format-text></p>
+                </ion-checkbox>
+            </script>
+
+            <script type="text/ng-template" id="shortanswer">
+                <ion-input class="item item-input">
+                    <input type="{{question.input.type}}" placeholder="{{ 'mma.mod_lesson.youranswer' | translate }}" id="{{question.input.id}}" name="{{question.input.name}}" autocorrect="off" ng-model="question.model[question.input.name]"  ng-value="question.input.value" maxlength="{{question.input.maxlength}}">
+                </ion-input>
+            </script>
+
+            <script type="text/ng-template" id="essay">
+                <ion-input class="item item-input mm-item-has-rich-text-editor">
+                    <mm-rich-text-editor model="question.model[question.textarea.name]" property="{{question.textarea.property}}" placeholder="{{ 'mma.mod_lesson.youranswer' | translate }}" name="{{question.textarea.name}}" scroll-handle="mmaModLessonPlayerScroll" component="{{component}}" component-id="{{lesson.coursemodule}}"></mm-rich-text-editor>
+                </ion-input>
+            </script>
+
+            <script type="text/ng-template" id="matching">
+                <div class="item item-text-wrap row mm-item-padding" ng-repeat="row in question.rows">
+                    <div class="col">
+                        <p><mm-format-text id="mma-mod_lesson-{{row.id}}" watch="true" component="{{component}}" component-id="{{lesson.coursemodule}}">{{ row.text }}</mm-format-text></p>
+                    </div>
+                    <div class="col item-select">
+                        <select id="{{row.id}}" name="{{row.name}}" aria-labelledby="mma-mod_lesson-{{row.id}}" ng-options="option.label for option in row.options" ng-model="question.model[row.name]" mm-ios-select-fix>
+                        </select>
+                        <p class="mm-select-fix" ng-if="question.model[row.name] && question.model[row.name].label">
+                            {{question.model[row.name].label}}
+                        </p>
+                    </div>
+                </div>
             </script>
         </mm-loading>
     </ion-content>

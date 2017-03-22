@@ -21,7 +21,7 @@ angular.module('mm.addons.mod_lesson')
  * @ngdoc service
  * @name $mmaModLessonHelper
  */
-.factory('$mmaModLessonHelper', function($mmaModLesson) {
+.factory('$mmaModLessonHelper', function($mmaModLesson, $mmText, $q, $mmUtil) {
 
     var self = {};
 
@@ -89,7 +89,7 @@ angular.module('mm.addons.mod_lesson')
             button = {
                 id: buttonEl.id,
                 title: buttonEl.title,
-                content: buttonEl.innerHTML,
+                content: buttonEl.innerHTML.trim(),
                 data: {}
             };
 
@@ -116,6 +116,7 @@ angular.module('mm.addons.mod_lesson')
         var rootElement = document.createElement('div'),
             fieldContainer,
             hiddenInputs,
+            type,
             question = {
                 model: {}
             };
@@ -137,33 +138,167 @@ angular.module('mm.addons.mod_lesson')
 
         switch (pageData.page.qtype) {
             case $mmaModLesson.LESSON_PAGE_TRUEFALSE:
-                question.template = 'truefalse';
+            case $mmaModLesson.LESSON_PAGE_MULTICHOICE:
+                question.template = 'multichoice';
                 question.options = [];
 
-                // Get all the options to show.
-                var labels = fieldContainer.querySelectorAll('.form-check-inline');
-                angular.forEach(labels, function(label) {
-                    var option = {},
-                        input = label.querySelector('input[type="radio"]');
+                // Get all the inputs. Search radio first.
+                var inputs = fieldContainer.querySelectorAll('input[type="radio"]');
+                if (!inputs || !inputs.length) {
+                    // Radio buttons not found, it might be a multi answer. Search for checkbox.
+                    question.multi = true;
+                    inputs = fieldContainer.querySelectorAll('input[type="checkbox"]');
 
-                    if (!input) {
+                    if (!inputs || !inputs.length) {
+                        // No checkbox found either. Stop.
+                        return false;
+                    }
+                }
+
+                angular.forEach(inputs, function(input) {
+                    var option = {
+                            id: input.id,
+                            name: input.name,
+                            value: input.value
+                        },
+                        parent = input.parentNode;
+
+                    // Remove the input and use the rest of the parent contents as the label.
+                    angular.element(input).remove();
+                    option.text = parent.innerHTML.trim();
+
+                    question.options.push(option);
+                });
+                break;
+
+            case $mmaModLesson.LESSON_PAGE_NUMERICAL:
+                type = 'number';
+            case $mmaModLesson.LESSON_PAGE_SHORTANSWER:
+                question.template = 'shortanswer';
+
+                // Get the input.
+                var input = fieldContainer.querySelector('input[type="text"], input[type="number"]');
+                if (!input) {
+                    return false;
+                }
+
+                question.input = {
+                    id: input.id,
+                    name: input.name,
+                    maxlength: input.maxLength,
+                    value: input.value,
+                    type: type || 'text'
+                };
+                break;
+
+            case $mmaModLesson.LESSON_PAGE_ESSAY:
+                question.template = 'essay';
+
+                // Get the textarea.
+                var textarea = fieldContainer.querySelector('textarea'),
+                    nameMatch;
+                if (!textarea) {
+                    return false;
+                }
+
+                // Extract the model name and the property from the textarea's name.
+                textarea.name = textarea.name || 'answer[text]';
+                nameMatch = textarea.name.match(/([^\[]*)\[([^\[]*)\]/);
+
+                question.textarea = {
+                    id: textarea.id,
+                    fullName: textarea.name,
+                    name: nameMatch[1] || 'answer',
+                    property: nameMatch[2] || 'text'
+                };
+
+                // Init the model.
+                question.model[question.textarea.name] = {};
+                break;
+
+            case $mmaModLesson.LESSON_PAGE_MATCHING:
+                question.template = 'matching';
+
+                var rows = fieldContainer.querySelectorAll('.answeroption');
+                question.rows = [];
+
+                angular.forEach(rows, function(row) {
+                    var label = row.querySelector('label'),
+                        select = row.querySelector('select'),
+                        options = row.querySelectorAll('option'),
+                        rowModel = {};
+
+                    if (!label || !select || !options || !options.length) {
                         return;
                     }
 
-                    option.id = input.id;
-                    option.name = input.name;
-                    option.value = input.value;
+                    // Get the row's text (label).
+                    rowModel.text = label.innerHTML.trim();
+                    rowModel.id = select.id;
+                    rowModel.name = select.name;
+                    rowModel.options = [];
 
-                    // Remove the input and use the rest of the contents as the label.
-                    angular.element(input).remove();
-                    option.text = label.innerHTML.trim();
+                    // Treat each option.
+                    angular.forEach(options, function(option) {
+                        if (typeof option.value == 'undefined') {
+                            // Option not valid, ignore it.
+                            return;
+                        }
 
-                    question.options.push(option);
+                        var opt = {
+                            value: option.value,
+                            label: option.innerHTML.trim(),
+                            selected: option.selected
+                        };
+
+                        if (opt.selected) {
+                            question.model[rowModel.name] = opt;
+                        }
+
+                        rowModel.options.push(opt);
+                    });
+
+                    question.rows.push(rowModel);
                 });
                 break;
         }
 
         return question;
+    };
+
+    /**
+     * Prepare the question model to be sent to server.
+     *
+     * @module mm.addons.mod_lesson
+     * @ngdoc method
+     * @name $mmaModLessonHelper#prepareQuestionModel
+     * @param  {Object} question Question to prepare.
+     * @return {Promise}         Promise resolved with the model when done.
+     */
+    self.prepareQuestionModel = function(question) {
+        // Create a copy of the model so changing it doesn't affect the template.
+        var model = angular.copy(question.model);
+        if (question.template == 'essay') {
+            // The answer might need formatting. Check if rich text editor is enabled or not.
+            return $mmUtil.isRichTextEditorEnabled().then(function(enabled) {
+                if (!enabled) {
+                    // Rich text editor not enabled, add some HTML to the answer if needed.
+                    var answer = model[question.textarea.name],
+                        propertyName = question.textarea.property;
+                    answer[propertyName] = $mmText.formatHtmlLines(answer[propertyName]);
+                }
+
+                return model;
+            });
+        } else if (question.template == 'matching') {
+            angular.forEach(question.rows, function(row) {
+                if (typeof model[row.name] == 'object') {
+                    model[row.name] = model[row.name].value;
+                }
+            });
+        }
+
+        return $q.when(model);
     };
 
     return self;

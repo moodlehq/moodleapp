@@ -254,7 +254,12 @@ angular.module('mm.addons.mod_lesson')
 
     // Submit a question.
     $scope.submitQuestion = function() {
-        processPage($scope.question.model);
+        showLoading();
+        $mmaModLessonHelper.prepareQuestionModel($scope.question).then(function(model) {
+            return processPage(model);
+        }).finally(function() {
+            $scope.pageLoaded = true;
+        });
     };
 
     // Load a page from menu or when continuing from a feedback page.
