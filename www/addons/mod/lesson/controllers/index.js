@@ -109,7 +109,9 @@ angular.module('mm.addons.mod_lesson')
 
     // Validate a password and retrieve extra data.
     function validatePassword(pwd) {
-        return $mmaModLesson.validatePassword(lesson.id, pwd).then(function() {
+        return $mmaModLesson.getLessonWithPassword(lesson.id, pwd).then(function(lessonData) {
+            lesson = lessonData;
+
             // Password validated, remove the form and the prevent message.
             fetchDataFinished(pwd);
 
@@ -129,6 +131,7 @@ angular.module('mm.addons.mod_lesson')
         if (lesson) {
             promises.push($mmaModLesson.invalidateAccessInformation(lesson.id));
             promises.push($mmaModLesson.invalidatePages(lesson.id));
+            promises.push($mmaModLesson.invalidateLessonWithPassword(lesson.id));
         }
 
         return $q.all(promises).finally(function() {
@@ -192,7 +195,7 @@ angular.module('mm.addons.mod_lesson')
     // Submit password for password protected lessons.
     $scope.submitPassword = function(pwd) {
         if (!pwd) {
-            $mmUtil.showErrorModal('mma.mod_lesson.emptypassword');
+            $mmUtil.showErrorModal('mma.mod_lesson.emptypassword', true);
             return;
         }
 

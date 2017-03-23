@@ -48,10 +48,6 @@ angular.module('mm.addons.mod_lesson')
             lesson = lessonData;
             $scope.lesson = lesson;
             $scope.title = lesson.name; // Temporary title.
-            $scope.mediaFile = lesson.mediafiles && lesson.mediafiles[0];
-
-            $scope.lessonWidth = lesson.slideshow ?  $mmUtil.formatPixelsSize(lesson.mediawidth) : '';
-            $scope.lessonHeight = lesson.slideshow ?  $mmUtil.formatPixelsSize(lesson.mediaheight) : '';
 
             return $mmaModLesson.getAccessInformation(lesson.id, offline, true);
         }).then(function(info) {
@@ -60,15 +56,27 @@ angular.module('mm.addons.mod_lesson')
                 // If it's a password protected lesson and we have the password, allow attempting it.
                 if (!password || info.preventaccessreasons.length > 1 || !$mmaModLesson.isPasswordProtected(info)) {
                     // Lesson cannot be attempted, show message and go back.
-                    $mmUtil.showErrorModal(info.preventaccessreasons[0]);
-                    blockData && blockData.back();
-                    return;
+                    return $q.reject(info.preventaccessreasons[0]);
                 }
             }
+
+            if (password) {
+                // Lesson uses password, get the whole lesson object.
+                return $mmaModLesson.getLessonWithPassword(lesson.id, password, true, offline, true).then(function(lessonData) {
+                    lesson = lessonData;
+                    $scope.lesson = lesson;
+                });
+            }
+        }).then(function() {
+            $scope.mediaFile = lesson.mediafiles && lesson.mediafiles[0];
+
+            $scope.lessonWidth = lesson.slideshow ?  $mmUtil.formatPixelsSize(lesson.mediawidth) : '';
+            $scope.lessonHeight = lesson.slideshow ?  $mmUtil.formatPixelsSize(lesson.mediaheight) : '';
 
             return launchAttempt($scope.currentPage);
         }).catch(function(message) {
             $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
+            blockData && blockData.back();
             return $q.reject();
         });
     }

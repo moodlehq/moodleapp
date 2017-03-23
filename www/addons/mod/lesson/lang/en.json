@@ -7,6 +7,7 @@
     "leftduringtimednoretake": "You have left during a timed lesson and you are<br />not allowed to retake or continue the lesson.",
     "lessonmenu": "Lesson menu",
     "linkedmedia": "Linked media",
+    "loginfail": "Login failed, please try again...",
     "progresscompleted": "You have completed {{$a}}% of the lesson",
     "startattempt": "Start attempt",
     "timeremaining": "Time remaining",
