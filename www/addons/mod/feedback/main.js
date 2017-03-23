@@ -15,6 +15,7 @@
 angular.module('mm.addons.mod_feedback', ["chart.js"])
 
 .constant('mmaModFeedbackComponent', 'mmaModFeedback')
+.constant('mmaModFeedbackEventFormSubmitted', 'mma_mod_feedback_form_submitted')
 
 .config(function($stateProvider) {
 
@@ -38,7 +39,6 @@ angular.module('mm.addons.mod_feedback', ["chart.js"])
     .state('site.mod_feedback-form', {
         url: '/mod_feedback-form',
         params: {
-            feedbackid: null,
             page: null,
             preview: null,
             courseid: null,

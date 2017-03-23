@@ -23,12 +23,13 @@ angular.module('mm.addons.mod_feedback')
  */
 .controller('mmaModFeedbackIndexCtrl', function($scope, $stateParams, $mmaModFeedback, $mmUtil, $mmCourseHelper, $q, $mmCourse,
             $mmText, mmaModFeedbackComponent, $mmEvents, $ionicScrollDelegate, $mmApp, $translate, $mmGroups, $mmaModFeedbackHelper,
-            mmCoreEventOnlineStatusChanged, $state) {
+            mmCoreEventOnlineStatusChanged, $state, mmaModFeedbackEventFormSubmitted) {
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
         feedback,
         scrollView,
-        onlineObserver;
+        onlineObserver,
+        obsSubmitted;
 
     $scope.title = module.name;
     $scope.description = module.description;
@@ -163,13 +164,11 @@ angular.module('mm.addons.mod_feedback')
     };
 
     // Function to go to the questions form.
-    $scope.gotoAnswerQuestions = function(page, preview) {
+    $scope.gotoAnswerQuestions = function(preview) {
         var stateParams = {
             module: module,
             moduleid: module.id,
             courseid: courseId,
-            feedbackid: module.instance,
-            page: page || 0,
             preview: !!preview
         };
         $state.go('site.mod_feedback-form', stateParams);
@@ -183,6 +182,14 @@ angular.module('mm.addons.mod_feedback')
         scrollView && scrollView.scrollTop && scrollView.scrollTop();
     }
 
+    // Listen for form submit events.
+    obsSubmitted = $mmEvents.on(mmaModFeedbackEventFormSubmitted, function(data) {
+        // Go to review attempt if an attempt in this quiz was finished and synced.
+        if (data.feedbackId === feedback.id) {
+            fetchFeedbackData(true);
+        }
+    });
+
     // Refresh online status when changes.
     onlineObserver = $mmEvents.on(mmCoreEventOnlineStatusChanged, function(online) {
         $scope.isOnline = online;
@@ -190,5 +197,6 @@ angular.module('mm.addons.mod_feedback')
 
     $scope.$on('$destroy', function() {
         onlineObserver && onlineObserver.off && onlineObserver.off();
+        obsSubmitted && obsSubmitted.off && obsSubmitted.off();
     });
 });

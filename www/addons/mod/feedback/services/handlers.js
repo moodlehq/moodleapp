@@ -271,7 +271,6 @@ angular.module('mm.addons.mod_feedback')
                     var stateParams = {
                         module: module,
                         moduleid: module.id,
-                        feedbackid: module.instance,
                         courseid: module.course,
                         preview: true
                     };

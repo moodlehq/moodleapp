@@ -118,9 +118,7 @@ angular.module('mm.addons.mod_feedback')
     self.isPluginEnabled = function(siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             return  site.wsAvailable('mod_feedback_get_feedbacks_by_courses') &&
-                    site.wsAvailable('mod_feedback_get_feedback_access_information') &&
-                    site.wsAvailable('mod_feedback_get_page_items') &&
-                    site.wsAvailable('mod_feedback_get_items');
+                    site.wsAvailable('mod_feedback_get_feedback_access_information');
         });
     };
 
@@ -219,10 +217,12 @@ angular.module('mm.addons.mod_feedback')
      * @ngdoc method
      * @name $mmaModFeedback#getFeedbackAccessInformation
      * @param   {Number}    feedbackId      Feedback ID.
+     * @param   {Boolean}   offline         True if it should return cached data. Has priority over ignoreCache.
+     * @param   {Boolean}   ignoreCache     True if it should ignore cached data (it will always fail in offline or server down).
      * @param   {String}    [siteId]        Site ID. If not defined, current site.
      * @return  {Promise}                   Promise resolved when the feedback is retrieved.
      */
-    self.getFeedbackAccessInformation = function(feedbackId, siteId) {
+    self.getFeedbackAccessInformation = function(feedbackId, offline, ignoreCache, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     feedbackid: feedbackId
@@ -230,6 +230,13 @@ angular.module('mm.addons.mod_feedback')
                 preSets = {
                     cacheKey: getFeedbackAccessInformationDataCacheKey(feedbackId)
                 };
+
+            if (offline) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
 
             return site.read('mod_feedback_get_feedback_access_information', params, preSets);
         });
@@ -302,10 +309,12 @@ angular.module('mm.addons.mod_feedback')
      * @ngdoc method
      * @name $mmaModFeedback#getResumePage
      * @param   {Number}    feedbackId      Feedback ID.
+     * @param   {Boolean}   offline         True if it should return cached data. Has priority over ignoreCache.
+     * @param   {Boolean}   ignoreCache     True if it should ignore cached data (it will always fail in offline or server down).
      * @param   {String}    [siteId]        Site ID. If not defined, current site.
      * @return  {Promise}                   Promise resolved when the info is retrieved.
      */
-    self.getResumePage = function(feedbackId, siteId) {
+    self.getResumePage = function(feedbackId, offline, ignoreCache, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     feedbackid: feedbackId
@@ -313,6 +322,13 @@ angular.module('mm.addons.mod_feedback')
                 preSets = {
                     cacheKey: getResumePageDataCacheKey(feedbackId)
                 };
+
+            if (offline) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
 
             return site.read('mod_feedback_launch_feedback', params, preSets).then(function(response) {
                 if (response && typeof response.gopage != "undefined") {
@@ -439,10 +455,12 @@ angular.module('mm.addons.mod_feedback')
      * @ngdoc method
      * @name $mmaModFeedback#getCurrentValues
      * @param   {Number}    feedbackId      Feedback ID.
+     * @param   {Boolean}   offline         True if it should return cached data. Has priority over ignoreCache.
+     * @param   {Boolean}   ignoreCache     True if it should ignore cached data (it will always fail in offline or server down).
      * @param   {String}    [siteId]        Site ID. If not defined, current site.
      * @return  {Promise}                   Promise resolved when the info is retrieved.
      */
-    self.getCurrentValues = function(feedbackId, siteId) {
+    self.getCurrentValues = function(feedbackId, offline, ignoreCache, siteId) {
         return $mmSitesManager.getSite(siteId).then(function(site) {
             var params = {
                     feedbackid: feedbackId
@@ -450,6 +468,13 @@ angular.module('mm.addons.mod_feedback')
                 preSets = {
                     cacheKey: getCurrentValuesDataCacheKey(feedbackId)
                 };
+
+            if (offline) {
+                preSets.omitExpires = true;
+            } else if (ignoreCache) {
+                preSets.getFromCache = 0;
+                preSets.emergencyCache = 0;
+            }
 
             return site.read('mod_feedback_get_unfinished_responses', params, preSets).then(function(response) {
                 if (response && typeof response.responses != "undefined") {

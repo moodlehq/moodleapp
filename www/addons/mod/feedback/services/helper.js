@@ -215,23 +215,14 @@ angular.module('mm.addons.mod_feedback')
 
         function getItemFormTextfield(item) {
             item.template = 'textfield';
-
-            var sizeAndLength = item.presentation.split(FEEDBACK_LINE_SEP) || [];
-            item.size = sizeAndLength.length > 0 && sizeAndLength[0] >= 5 ? sizeAndLength[0] : 30;
-            item.length = sizeAndLength.length > 1 ? sizeAndLength[1] : 255;
+            item.length = item.presentation.split(FEEDBACK_LINE_SEP)[1] || 255;
             item.value = typeof item.rawValue != "undefined" ? item.rawValue : "";
-
             return item;
         }
 
         function getItemFormTextarea(item) {
             item.template = 'textarea';
-
-            var widthAndHeight = item.presentation.split(FEEDBACK_LINE_SEP) || [];
-            item.width = widthAndHeight.length > 0 && widthAndHeight[0] >= 5 ? widthAndHeight[0] : 30;
-            item.height = widthAndHeight.length > 1 ? widthAndHeight[1] : 5;
             item.value = typeof item.rawValue != "undefined" ? item.rawValue : "";
-
             return item;
         }
 
@@ -299,18 +290,20 @@ angular.module('mm.addons.mod_feedback')
      * @name $mmaModFeedbackHelper#getPageItems
      * @param   {Number}    feedbackId      Feedback ID.
      * @param   {Number}    page            The page to get.
+     * @param   {Boolean}   offline         True if it should return cached data. Has priority over ignoreCache.
+     * @param   {Boolean}   ignoreCache     True if it should ignore cached data (it will always fail in offline or server down).
      * @return  {Promise}                   Promise resolved when the info is retrieved.
      */
-    self.getPageItems = function(feedbackId, page) {
+    self.getPageItems = function(feedbackId, page, offline, ignoreCache) {
         return $mmaModFeedback.getPageItems(feedbackId, page).then(function(response) {
-            return fillValues(feedbackId, response.items).then(function(items) {
+            return fillValues(feedbackId, response.items, offline, ignoreCache).then(function(items) {
                 response.items = items;
                 return response;
             });
         }).catch(function() {
             // If getPageItems fail we should calculate it using getItems.
             return $mmaModFeedback.getItems(feedbackId).then(function(response) {
-                return fillValues(feedbackId, response.items).then(function(items) {
+                return fillValues(feedbackId, response.items, offline, ignoreCache).then(function(items) {
                     // Separate items by pages.
                     var pageItems = [],
                         currentPage = 0,
@@ -354,14 +347,14 @@ angular.module('mm.addons.mod_feedback')
     };
 
     /**
-     * Check dependency of a question item.
+     * Fill values of item questions.
      *
      * @param   {Number}   feedbackId Feedback ID.
      * @param   {Array}    items      Item to fill the value.
      * @return  {Promise}             Resolved with values when done.
      */
-    function fillValues(feedbackId, items) {
-        return $mmaModFeedback.getCurrentValues(feedbackId).then(function(values) {
+    function fillValues(feedbackId, items, offline, ignoreCache) {
+        return $mmaModFeedback.getCurrentValues(feedbackId, offline, ignoreCache).then(function(values) {
             angular.forEach(items, function(itemData) {
                 if (!itemData.hasvalue) {
                     return;
@@ -454,6 +447,62 @@ angular.module('mm.addons.mod_feedback')
             return false;
         }
     }
+
+    /**
+     * Get page items responses to be sent.
+     *
+     * @module mm.addons.mod_feedback
+     * @ngdoc method
+     * @name $mmaModFeedbackHelper#getPageItemsResponses
+     * @param   {Array}    items      Items where the values are.
+     * @return  {Object}              Responses object to be sent.
+     */
+    self.getPageItemsResponses = function(items) {
+        var responses = {};
+
+        angular.forEach(items, function(itemData) {
+            if (itemData.hasvalue || itemData.typ == "captcha") {
+                var name, value,
+                    nameTemp = itemData.typ + '_' + itemData.id,
+                    answered = false;
+                if (itemData.typ == "multichoice" && itemData.subtype == 'c') {
+                    name = nameTemp + '[0]';
+                    responses[name] = 0;
+                    angular.forEach(itemData.choices, function(choice, index) {
+                        name = nameTemp + '[' + (index + 1) + ']';
+                        value = choice.checked ? choice.value : 0;
+                        if (!answered && value) {
+                            answered = true;
+                        }
+                        responses[name] = value;
+                    });
+                } else {
+                    if (itemData.typ == "multichoice") {
+                        name = nameTemp + '[0]';
+                        value = itemData.value || 0;
+                    } else if (itemData.typ == "multichoicerated") {
+                        name = nameTemp;
+                        value = itemData.value || 0;
+                    } else {
+                        name = nameTemp;
+                        value = itemData.value || "";
+                    }
+
+                    answered = !!value;
+                    responses[name] = value;
+                }
+
+                if (itemData.required && !answered) {
+                    // Check if it has any value.
+                    itemData.isEmpty = true;
+                } else {
+                    itemData.isEmpty = false;
+                }
+            }
+        });
+
+        return responses;
+    };
 
     return self;
 });

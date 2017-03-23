@@ -57,10 +57,8 @@ angular.module('mm.addons.mod_feedback')
      * @return {Promise}          Promise resolved with the list of files.
      */
     self.getFiles = function(module, courseId, siteId) {
-        var files = [],
-            feedback;
-        return $mmaModFeedback.getFeedback(courseId, module.id, siteId).then(function(response) {
-            feedback = response;
+        var files = [];
+        return $mmaModFeedback.getFeedback(courseId, module.id, siteId).then(function(feedback) {
 
             // Get intro files and page after submit files.
             files = feedback.pageaftersubmitfiles || [];
@@ -199,7 +197,7 @@ angular.module('mm.addons.mod_feedback')
                 return $mmFilepool.addFilesToQueueByUrl(siteId, files, self.component, module.id);
             }));
 
-            p1.push($mmaModFeedback.getFeedbackAccessInformation(feedback.id, siteId).then(function(accessData) {
+            p1.push($mmaModFeedback.getFeedbackAccessInformation(feedback.id, false, true, siteId).then(function(accessData) {
                 var p2 = [];
                 if (accessData.canedititems || accessData.canviewreports) {
                     // Get all groups analysis.
@@ -217,8 +215,8 @@ angular.module('mm.addons.mod_feedback')
                 p2.push($mmaModFeedback.getItems(feedback.id, siteId));
 
                 if (accessData.cancomplete && accessData.cansubmit && !accessData.isempty) {
-                    p2.push($mmaModFeedback.getCurrentValues(feedback.id, siteId));
-                    p2.push($mmaModFeedback.getResumePage(feedback.id, siteId));
+                    p2.push($mmaModFeedback.getCurrentValues(feedback.id, false, true, siteId));
+                    p2.push($mmaModFeedback.getResumePage(feedback.id, false, true, siteId));
                 }
 
                 return $q.all(p2);
