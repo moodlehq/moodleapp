@@ -758,13 +758,16 @@ gulp.task('remoteaddon-build', ['remoteaddon-copy'], function(done) {
   pathToReplace = newYargs.argv.jspath;
   if (typeof pathToReplace == 'undefined') {
     if (path.indexOf('www') === 0) {
-      pathToReplace = path.replace('www/', '');
+      pathToReplace = path.replace(/www[\/\\]/, '');
     } else {
       pathToReplace = path;
     }
   }
 
   jsPaths = getRemoteAddonPaths(remoteAddonPaths.js, path);
+
+  // Convert all backslash (\) to slash (/) to make it work in Windows.
+  pathToReplace = pathToReplace.replace(/\\/g, '/');
 
   if (pathToReplace.slice(-1) == '/') {
     wildcard = wildcard + '/';
