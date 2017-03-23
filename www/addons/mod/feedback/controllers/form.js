@@ -23,7 +23,7 @@ angular.module('mm.addons.mod_feedback')
  */
 .controller('mmaModFeedbackFormCtrl', function($scope, $stateParams, $mmaModFeedback, $mmUtil, $q, $timeout, $mmSite, $state,
             mmaModFeedbackComponent, $mmEvents, $mmApp, mmCoreEventOnlineStatusChanged, $mmaModFeedbackHelper, $ionicScrollDelegate,
-            $ionicHistory, $mmContentLinksHelper,mmaModFeedbackEventFormSubmitted) {
+            $ionicHistory, $mmContentLinksHelper,mmaModFeedbackEventFormSubmitted, $translate) {
 
     var module = $stateParams.module || {},
         courseId = $stateParams.courseid,
@@ -33,13 +33,17 @@ angular.module('mm.addons.mod_feedback')
         scrollView,
         onlineObserver,
         offline = false,
-        submitted = false;
+        submitted = false,
+        originalData;
 
     $scope.title = $stateParams.title;
     $scope.courseId = courseId;
     $scope.component = mmaModFeedbackComponent;
     $scope.componentId = module.id;
     $scope.preview = !!$stateParams.preview;
+
+    // Block leaving the view, we want to save changes before leaving.
+    blockData = $mmUtil.blockLeaveView($scope, leavePlayer);
 
     // Convenience function to get feedback data.
     function fetchFeedbackFormData() {
@@ -66,7 +70,8 @@ angular.module('mm.addons.mod_feedback')
             return fetchFeedbackPageData(page);
         }).catch(function(message) {
             $mmUtil.showErrorModalDefault(message, 'mm.course.errorgetmodule', true);
-            return $ionicHistory.goBack();
+            blockData && blockData.back();
+            return $q.reject();
         }).finally(function() {
             $scope.feedbackLoaded = true;
         });
@@ -95,6 +100,10 @@ angular.module('mm.addons.mod_feedback')
                 // Filter items with errors.
                 return itemData;
             });
+
+            if (!$scope.preview) {
+                originalData = $mmaModFeedbackHelper.getPageItemsResponses($scope.items);
+            }
         });
     }
 
@@ -138,6 +147,17 @@ angular.module('mm.addons.mod_feedback')
         });
     };
 
+    function leavePlayer() {
+        var responses = $mmaModFeedbackHelper.getPageItemsResponses($scope.items);
+        if ($scope.items && !$scope.completed && originalData) {
+            // Form submitted. Check if there is any change.
+            if (!$mmUtil.basicLeftCompare(responses, originalData, 3)) {
+                 return $mmUtil.showConfirm($translate('mm.core.confirmcanceledit'));
+            }
+        }
+        return $q.when();
+    }
+
     // Function to go to the page after submit.
     $scope.continue = function() {
         if (siteAfterSubmit) {
@@ -157,12 +177,6 @@ angular.module('mm.addons.mod_feedback')
                 }
             });
         }
-    };
-
-    // Function to discard and go back.
-    $scope.cancel = function() {
-        // @todo
-        $ionicHistory.goBack();
     };
 
     // Function to link implemented features.
